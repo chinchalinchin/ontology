@@ -21,10 +21,12 @@ from app.config.enums import (
 )
 from app.models.properties import PropertiesSchema
 from app.models.config import ConfigurationSchema
-from app.services.generators.game.factory import Factory
-from app.services.generators.game.decomposer import Decomposer
-from app.services.generators.game.perimeter import Perimeter
-
+from app.services.generators.game import (
+    Factory, 
+    Decomposer,
+    Perimeter,
+    Actuator
+)
 if TYPE_CHECKING:
     from app.game.board import Board
 
@@ -118,14 +120,16 @@ class Migrator:
 
                 
                 prop_instance_key = instance_key
-                if category_key == AssetCategories.SHEETS.value and \
-                        instance_key == AssetInstances.PLAYERS.value:
+                if category_key == AssetCategories.SHEETS.value and (
+                    instance_key == AssetInstances.PLAYERS.value
+                ):
                     prop_instance_key = AssetInstances.SPRITES.value
                     
                 cat_props = getattr(self.properties, category_key, None)
                 inst_props = getattr(cat_props, prop_instance_key, {})
                 props = inst_props.get(asset_id)
 
+                logger.info(asset_name)
                 asset = Asset(
                     taxonomy   = Factory.taxonomy(
                         asset_id, 
@@ -143,11 +147,15 @@ class Migrator:
             self.current += 1
             yield True
 
-        # 3. Post-Hydration Phase: Procedural Boundaries
+        # 3. Post-Hydration Phase: Procedural Boundaries & Steady-State Fluid
         perimeter_gen = Perimeter()
         for layer in self.board.layers():
             self.board.perimeters[layer] = perimeter_gen.generate(self.board, layer)
 
+        actuator = Actuator()
+        fluids = self.board.instances(AssetInstances.FLUIDS.value)
+        for fluid in fluids:
+            actuator.pump(fluid, self.board)
 
     def step(self, budget_ms: int = 16) -> bool:
         """

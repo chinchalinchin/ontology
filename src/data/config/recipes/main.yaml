@@ -30,7 +30,7 @@ recipes:
     passive:
       frame: iterable
       animation: lifecycle
-    fluid:
+    fluids:
       frame: fluid
       animation: lifecycle
   objects:

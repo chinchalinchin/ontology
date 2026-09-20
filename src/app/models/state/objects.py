@@ -138,9 +138,13 @@ class CollectableState(EffectState):
 
 @dataclass(slots=True)
 class FluidState(EffectState):
+    # Overrides
+    height: Optional[int] = 0
+    depth: int = -1
+    # Fluid Fields
     length: int = 0
     pool: Optional[Pool] = None
     hitboxes: List[Hitbox] = field(default_factory=list) # type: ignore
     dirty: bool = True
-    height: Optional[int] = 0
-    depth: int = -1
+    flow: int = 1
+    source: Directions = Directions.DOWN.value

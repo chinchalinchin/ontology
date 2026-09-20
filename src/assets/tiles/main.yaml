@@ -30,11 +30,6 @@
           w: 32
           l: 32
         friction: 100
-      lava: 
-        dimensions:
-          w: 32
-          l: 32
-        friction: 0
       mud:
         dimensions:
           w: 32
@@ -46,11 +41,6 @@
           l: 32
         friction: 0
       soil:
-        dimensions:
-          w: 32
-          l: 32
-        friction: 0
-      water:
         dimensions:
           w: 32
           l: 32

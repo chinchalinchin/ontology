@@ -1,51 +1,51 @@
-effects:
-  passive:
-    - id: water-ripples-vertical
-      name: moat-tile-0
-      layer: '0'
-      position:
-        x: 70
-        y: 0
-      height: -1
-    - id: water-ripples-vertical
-      name: moat-tile-0
-      layer: '0'
-      position:
-        x: 70
-        y: 96
-      height: -1
-    - id: water-ripples-vertical
-      name: moat-tile-0
-      layer: '0'
-      position:
-        x: 70
-        y: 192
-      height: -1
-    - id: water-ripples-vertical
-      name: moat-tile-0
-      layer: '0'
-      position:
-        x: 70
-        y: 288
-      height: -1
-    - id: water-ripples-vertical
-      name: moat-tile-0
-      layer: '0'
-      position:
-        x: 70
-        y: 384
-      height: -1
-    - id: water-ripples-vertical
-      name: moat-tile-0
-      layer: '0'
-      position:
-        x: 70
-        y: 480
-      height: -1
-    - id: water-ripples-vertical
-      name: moat-tile-0
-      layer: '0'
-      position:
-        x: 70
-        y: 576
-      height: -1
+# effects:
+#   passive:
+#     - id: water-ripples-vertical
+#       name: moat-tile-0
+#       layer: '0'
+#       position:
+#         x: 70
+#         y: 0
+#       height: -1
+#     - id: water-ripples-vertical
+#       name: moat-tile-0
+#       layer: '0'
+#       position:
+#         x: 70
+#         y: 96
+#       height: -1
+#     - id: water-ripples-vertical
+#       name: moat-tile-0
+#       layer: '0'
+#       position:
+#         x: 70
+#         y: 192
+#       height: -1
+#     - id: water-ripples-vertical
+#       name: moat-tile-0
+#       layer: '0'
+#       position:
+#         x: 70
+#         y: 288
+#       height: -1
+#     - id: water-ripples-vertical
+#       name: moat-tile-0
+#       layer: '0'
+#       position:
+#         x: 70
+#         y: 384
+#       height: -1
+#     - id: water-ripples-vertical
+#       name: moat-tile-0
+#       layer: '0'
+#       position:
+#         x: 70
+#         y: 480
+#       height: -1
+#     - id: water-ripples-vertical
+#       name: moat-tile-0
+#       layer: '0'
+#       position:
+#         x: 70
+#         y: 576
+#       height: -1

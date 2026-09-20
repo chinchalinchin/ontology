@@ -121,14 +121,6 @@ class WidgetProperties(AssetProperties):
     frames: Optional[List[str]] = field(default_factory=list)
 
 # ---------------------------------------------------------------------------------------
-
-@dataclass(slots=True)
-class FluidProperties(EffectProperties):
-    source: str = Directions.DOWN.value
-    flow: int = 1
-    mass: int = -1
-
-# ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------- ROOT SCHEMAS
 
 @dataclass(slots=True)
@@ -142,7 +134,8 @@ class EffectPropertyInstances:
     reactables: Dict[str, EffectProperties] = field(default_factory=dict)
     hazards: Dict[str, EffectProperties] = field(default_factory=dict)
     passive: Dict[str, EffectProperties] = field(default_factory=dict)
-
+    fluids: Dict[str, EffectProperties] = field(default_factory=dict)
+    
 @dataclass(slots=True)
 class ObjectPropertyInstances:
     chests: Dict[str, ObjectProperties] = field(default_factory=dict)

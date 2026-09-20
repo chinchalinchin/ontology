@@ -150,6 +150,35 @@
     - Frame: {{ asset.state.animation.frame }}
     - Tick: {{ asset.state.animation.tick }}
 {%- endif %}
+{%- if asset.state.source is defined and asset.state.source is not none %}
+  - Source: `{{ asset.state.source.value if asset.state.source.value is defined else asset.state.source }}`
+{%- endif %}
+{%- if asset.state.flow is defined and asset.state.flow is not none %}
+  - Flow: {{ asset.state.flow }}
+{%- endif %}
+{%- if asset.state.length is defined and asset.state.length is not none %}
+  - Length: {{ asset.state.length }}
+{%- endif %}
+{%- if asset.state.dirty is defined and asset.state.dirty is not none %}
+  - Dirty: {{ asset.state.dirty }}
+{%- endif %}
+{%- if asset.state.pool is defined and asset.state.pool is not none %}
+  - Pool:
+    - Position: ({{ asset.state.pool.x }}, {{ asset.state.pool.y }})
+    - Dimensions: w: {{ asset.state.pool.w }}, l: {{ asset.state.pool.l }}
+{%- endif %}
+{%- if asset.state.hitboxes is defined and asset.state.hitboxes %}
+  - Hitboxes:
+{%- for hb in asset.state.hitboxes %}
+{%- if hb.position is defined and hb.dimensions is defined %}
+    - Position: ({{ hb.position.x }}, {{ hb.position.y }}) | Dimensions: w: {{ hb.dimensions.w }}, l: {{ hb.dimensions.l }}
+{%- elif hb.x is defined and hb.y is defined %}
+    - Position: ({{ hb.x }}, {{ hb.y }}) | Dimensions: w: {{ hb.w | default(hb.width, true) }}, l: {{ hb.l | default(hb.length, true) }}
+{%- else %}
+    - {{ hb }}
+{%- endif %}
+{%- endfor %}
+{%- endif %}
 {%- if asset.state.plot is defined and asset.state.plot is not none %}
   - Plot:
 {%- if asset.state.plot.current is defined and asset.state.plot.current is not none %}

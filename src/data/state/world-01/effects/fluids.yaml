@@ -1,0 +1,10 @@
+effects:
+  fluids:
+    - id: waterflow
+      name: jasilynns-tears
+      layer: '0'
+      position:
+        x: 70
+        y: 0
+      flow: 2
+      source: down

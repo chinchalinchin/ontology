@@ -89,6 +89,7 @@ class Factory:
         FrameRecipe.TRAVERSAL: TraversalFrame,
         FrameRecipe.METER: MeterFrame,
         FrameRecipe.INDEX: IndexFrame,
+        FrameRecipe.FLUID: FluidFrame,
         FrameRecipe.NONE: NoFrame
     }
 

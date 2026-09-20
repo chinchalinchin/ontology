@@ -79,3 +79,13 @@ cpdef bint los(
     float y2, 
     list rects
 )
+
+cpdef tuple raycast(
+    int sx, 
+    int sy, 
+    int sw, 
+    int sl, 
+    str direction, 
+    list obstacles, 
+    int max_dist
+)

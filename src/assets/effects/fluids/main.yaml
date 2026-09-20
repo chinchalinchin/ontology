@@ -1,0 +1,12 @@
+effects:
+  fluids:
+    waterflow:
+      dimensions:
+        w: 32
+        l: 32
+      lifecycle: 
+        type: continuous
+        delay: 60
+      count: 3
+      hitboxes: null
+      mass: 0

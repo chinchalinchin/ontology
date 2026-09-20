@@ -43,6 +43,7 @@ class EffectRecipe:
     passive: Recipe = None 
     collectables: Recipe = None
     reactables: Recipe = None
+    fluids: Recipe = None
 
 @dataclass(slots=True, frozen=True)
 class ObjectRecipe:
@@ -50,6 +51,7 @@ class ObjectRecipe:
     crates: Recipe = None
     doors: Recipe = None
     gates: Recipe = None
+    obstacles: Recipe = None
     plates: Recipe = None
     signs: Recipe = None
 

@@ -25,7 +25,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 06: Intentions](./phases/implement/phase-06.md)
     - [x]: [Phase 07: Compositions](./phases/implement/phase-07.md)
     - [x]: [Phase 08: Pathfinding](./phases/implement/phase-08.md)
-    - [~]: [Phase 09: Hydrodynamics](./phases/implement/phase-09.md)
+    - [x]: [Phase 09: Hydrodynamics](./phases/implement/phase-09.md)
     - [ ]: [Phase n: Commerce](./phases/implement/phase-n.md)
     - [ ]: [Phase n+1: Towns](./phase/implement/phase-n+1.md)
   - Refactor:
@@ -56,6 +56,8 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 08.01: Obstable Geometry](./phases/refactor/refactor-08-01.md)
       - [x]: [Phase 08.02: NavigationMechanics](./phases/refactor/refactor-08-02.md)
       - [x]: [Phase 08.03: Trajectory Optimization](./phases/refactor/refactor-08-03.md)
+    - Phase 09:
+      - [ ]: [Phase 09.01: Fluid Flows](./phases/refactor/refactor-09-01.md)
   - Patch:
     - [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering Instantiated Assets](./phases/patch/bug-b001.md)
@@ -84,7 +86,7 @@ The templates in this section can be used to modify the Task Board.
 
 ##### Template: Bug Report
 
-For ancillary or tangential bugs detected, use the following template to open new Bugs,
+For ancillary or tangential bugs detected, use the following template to open new reports,
 
 ```jinja2
 {% for bug in bugs %}

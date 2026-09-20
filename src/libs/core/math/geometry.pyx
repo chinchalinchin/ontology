@@ -435,36 +435,36 @@ cpdef tuple raycast(
         ref = obs[4] if len(obs) >= 5 else obs
 
         if direction == "down":
-            # Orthogonal cross-sectional overlap on X
+            # Orthogonal cross-sectional overlap on X; strictly downstream on Y
             if ox < sx + sw and ox + ow > sx:
-                if oy >= sy:
+                if oy > sy:
                     dist = oy - sy
                     if dist < min_dist:
                         min_dist = dist
                         hit_obs = ref
 
         elif direction == "up":
-            # Orthogonal cross-sectional overlap on X
+            # Orthogonal cross-sectional overlap on X; strictly upstream on Y
             if ox < sx + sw and ox + ow > sx:
-                if oy + ol <= sy:
+                if oy + ol < sy:
                     dist = sy - (oy + ol)
                     if dist < min_dist:
                         min_dist = dist
                         hit_obs = ref
 
         elif direction == "right":
-            # Orthogonal cross-sectional overlap on Y
+            # Orthogonal cross-sectional overlap on Y; strictly downstream on X
             if oy < sy + sl and oy + ol > sy:
-                if ox >= sx:
+                if ox > sx:
                     dist = ox - sx
                     if dist < min_dist:
                         min_dist = dist
                         hit_obs = ref
 
         elif direction == "left":
-            # Orthogonal cross-sectional overlap on Y
+            # Orthogonal cross-sectional overlap on Y; strictly upstream on X
             if oy < sy + sl and oy + ol > sy:
-                if ox + ow <= sx:
+                if ox + ow < sx:
                     dist = sx - (ox + ow)
                     if dist < min_dist:
                         min_dist = dist
