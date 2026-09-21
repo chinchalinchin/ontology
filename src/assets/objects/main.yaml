@@ -27,6 +27,12 @@ objects:
         l: 30
       mass: 100
       hitboxes: null
+    bookshelf:
+      dimensions:
+        w: 54
+        l: 64
+      mass: 100
+      hitboxes: null
   # -------------------------------------------------------
   gates:
     gate-castle:
@@ -59,3 +65,10 @@ objects:
           dimensions:
             w: 22
             l: 24
+  obstacles:
+    gray-rock:
+      mass: 0
+      dimensions: 
+        w: 56
+        l: 56
+      hitboxes: null

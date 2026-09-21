@@ -308,7 +308,7 @@ When *interacting* with a Chest, the [Player](./02-sprites.md#player) is shown t
 **Frame: IterableFrame**
 
 * `keys(id, state): returns [ ("{id}-{state.animation.frame}", 0, 0) ]`
-* `index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimensions.w, properties.dimensions.l) }`
+* `index(id, properties): returns { "{id}-{i}": (i * w, 0, w, l) for i in range(properties.count) }`
 
 **State: ContainerState**
 
@@ -366,7 +366,7 @@ Gates are Binary Objects whose state is connected to Plates. When a Gate is on (
 **Frame: IterableFrame**
 
 * `keys(id, state): returns [ ("{id}-{state.animation.frame}", 0, 0) ]`
-* `index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `index(id, properties): returns { "{id}-{i}": (i * w, 0, w, l) for i in range(properties.count) }`
 
 **State: SwitchState**
 
@@ -392,7 +392,7 @@ Plates are Binary Objects whose state can be changed by intersection, e.g. when 
 **Frame: IterableFrame**
 
 * `keys(id, state): returns [ ("{id}-{state.animation.frame}", 0, 0) ]`
-* `index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `index(id, properties): returns { "{id}-{i}": (i * w, 0, w, l) for i in range(properties.count) }`
 
 **State: SwitchState**
 
@@ -514,8 +514,8 @@ Most Effects iterate over a single row of frames using `IterableFrame` and advan
 
 **Frame: IterableFrame**
 
-* `keys(id, state) : [ ("{id}-{state.animation.frame}", 0, 0) ]`
-* `index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, state): returns [ ("{id}-{state.animation.frame}", 0, 0) ]`
+* `index(id, properties): returns { "{id}-{i}": (i * w, 0, w, l) for i in range(properties.count) }`
 
 **Lifecycles**
 

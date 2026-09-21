@@ -155,7 +155,10 @@ class Builder:
         
         # Attach Migrator logic for deferred ECS evaluation
         from app.services.orchestration import Migrator
-        self.board.migrator = Migrator(self.board, self.context.properties, self.context.configurations)
+        self.board.migrator = Migrator(self.board, 
+            self.context.properties, 
+            self.context.configurations
+        )
 
 
     def build_registry(self) -> None:
@@ -207,12 +210,12 @@ class Builder:
                     self.registry
                 )
 
-        core_cfg = getattr(self.context.configurations.mechanics, 'core', None) or [
+        core_cfg = self.context.configurations.mechanics.core or [
             Mechanics.MENU.value, 
             Mechanics.ANIMATION.value, 
             Mechanics.REMOVE.value
         ]
-        world_cfg = getattr(self.context.configurations.mechanics, 'world', None) or [
+        world_cfg = self.context.configurations.mechanics.world or [
             Mechanics.PLAYER.value, 
             Mechanics.COGNITION.value, 
             Mechanics.TRANSITION.value, 

@@ -5,7 +5,7 @@ compositions:
     owner: player
     position:
       x: 150
-      y: 150
+      y: 750
   - id: postern-gate
     name: gate-test
     owner: the-government

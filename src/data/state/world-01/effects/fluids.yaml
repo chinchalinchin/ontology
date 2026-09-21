@@ -1,10 +1,25 @@
 effects:
   fluids:
     - id: waterflow
-      name: jasilynns-tears
+      name: jasilynns-tears-00
       layer: '0'
       position:
         x: 70
         y: 0
       flow: 2
+      source: down
+    - id: waterflow
+      name: jasilynns-tears-01
+      layer: '0'
+      position:
+        x: 600
+        y: 600
+      source: left
+    - id: waterflow
+      name: jasilynns-tears-02
+      layer: '0'
+      flow: 4
+      position:
+        x: 632
+        y: 0
       source: down

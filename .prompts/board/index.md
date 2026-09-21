@@ -69,6 +69,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Bug B006: Raycast Boundary Grazing](./phases/patch/bug-b006.md)
     - [x]: [Bug B007: Cradle Spawning](./phases/patch/bug-b007.md)
     - [ ]: [Bug B008: Open Gate Obstruction](./phases/patch/bug-b008.md)
+    - [~]: [Bug B009: Irregular Composition Behavior](./phases/patch/bug-b009.md)
   - Achieve:
     - [x]: [Goal 01: Boundaries](./phases/achieve/goal-01.md)
     - [x]: [Goal 02: ScrollController, Library & Plots](./phases/achieve/goal-02)

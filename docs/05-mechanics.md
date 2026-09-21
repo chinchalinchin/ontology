@@ -197,8 +197,8 @@ These Mechanics handle ambient world state, high-level game calculations and oth
 FluidMechanics governs fluid emission across active layers. It executes after physical momentum updates (`MotionMechanics` and `CollisionMechanics`) and uses reactive dirty-checking:
 
 1. **Change Detection**: Inspects active crates ($\vert{}v\vert{} > 0$) and switch-linked gates. If any dynamic obstacle within a fluid's influence zone mutates, `fluid.state.dirty` is set to `True`.
-2. **Raycast Truncation**: Raycasts along `properties.source` against board boundaries and non-sheet solid assets ($m \ge 0$). Calculates distance $D$ to the nearest occluder.
-3. **Annular Pooling**: If the occluder is an internal obstacle rather than a perimeter boundary, expands a radial pool of radius `flow` around the obstacle perimeter, partitioned into four rectangular bounding boxes.
+2. **Raycast Truncation**: Raycasts along `state.source` against board boundaries and non-sheet solid assets ($m \ge 0$). Calculates distance $D$ to the nearest occluder.
+3. **Annular Pooling**: If the occluder is an internal obstacle rather than a perimeter boundary, expands a radial pool of radius `state.flow` around the obstacle perimeter, partitioned into four rectangular bounding boxes.
 4. **Hitbox Update**: Injects composite hitboxes for the stream path and pool boundaries into the broad-phase spatial hash.
 
 ## Configuration

@@ -138,6 +138,7 @@ class EffectPropertyInstances:
     
 @dataclass(slots=True)
 class ObjectPropertyInstances:
+    obstacles: Dict[str, ObjectProperties] = field(default_factory=dict)
     chests: Dict[str, ObjectProperties] = field(default_factory=dict)
     crates: Dict[str, ObjectProperties] = field(default_factory=dict)
     doors: Dict[str, ObjectProperties] = field(default_factory=dict)
