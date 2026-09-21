@@ -1,0 +1,9 @@
+objects:
+  chests:
+    # --------------------------- WOODEN CHESTS
+    wood-chest:
+      dimensions:
+        w: 32
+        l: 32
+      mass: 1
+      hitboxes: null

@@ -1,0 +1,9 @@
+objects:
+  gates:
+    castle-gate:
+      mass: 0
+      dimensions:
+        w: 64
+        l: 64
+      hitboxes: null
+      count: 2

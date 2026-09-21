@@ -1,0 +1,27 @@
+objects:
+  crates:
+    # --------------------------- WOODEN CRATES
+    wood-barrel:
+      dimensions:
+        w: 28
+        l: 38
+      mass: 5
+      hitboxes:
+        - position:
+            x: 0
+            y: 0
+          dimensions:
+            w: 28
+            l: 38
+    wood-box:
+      dimensions:
+        w: 28
+        l: 30
+      mass: 100
+      hitboxes: null
+    wood-bookshelf:
+      dimensions:
+        w: 54
+        l: 64
+      mass: 100
+      hitboxes: null

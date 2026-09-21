@@ -51,7 +51,7 @@ compositions:
                 out:
                   x: 43
                   y: 163
-            crate:
+            crates:
               - id: bookshelf
                 name: house-bookshelf
                 layer: brick-house-compose-layer

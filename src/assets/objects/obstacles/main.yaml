@@ -1,0 +1,14 @@
+objects:
+  obstacles:
+    gray-rock-00:
+      mass: 0
+      dimensions: 
+        w: 56
+        l: 56
+      hitboxes: null
+    gray-rock-01:
+      mass: 0
+      dimensions:
+        w: 56
+        l: 57
+      hitboxes:null

@@ -1,0 +1,9 @@
+objects:
+  plates:
+    stone-switch:
+      mass: -1
+      dimensions:
+        w: 15
+        l: 14
+      count: 2
+      hitboxes: null
