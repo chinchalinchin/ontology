@@ -1385,8 +1385,8 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <p>FluidMechanics governs fluid emission across active layers. It executes after physical momentum updates (<code>MotionMechanics</code> and <code>CollisionMechanics</code>) and uses reactive dirty-checking:</p>
 <ol>
 <li><strong>Change Detection</strong>: Inspects active crates (<span class="arithmatex">\(\vert{}v\vert{} &gt; 0\)</span>) and switch-linked gates. If any dynamic obstacle within a fluid's influence zone mutates, <code>fluid.state.dirty</code> is set to <code>True</code>.</li>
-<li><strong>Raycast Truncation</strong>: Raycasts along <code>properties.source</code> against board boundaries and non-sheet solid assets (<span class="arithmatex">\(m \ge 0\)</span>). Calculates distance <span class="arithmatex">\(D\)</span> to the nearest occluder.</li>
-<li><strong>Annular Pooling</strong>: If the occluder is an internal obstacle rather than a perimeter boundary, expands a radial pool of radius <code>flow</code> around the obstacle perimeter, partitioned into four rectangular bounding boxes.</li>
+<li><strong>Raycast Truncation</strong>: Raycasts along <code>state.source</code> against board boundaries and non-sheet solid assets (<span class="arithmatex">\(m \ge 0\)</span>). Calculates distance <span class="arithmatex">\(D\)</span> to the nearest occluder.</li>
+<li><strong>Annular Pooling</strong>: If the occluder is an internal obstacle rather than a perimeter boundary, expands a radial pool of radius <code>state.flow</code> around the obstacle perimeter, partitioned into four rectangular bounding boxes.</li>
 <li><strong>Hitbox Update</strong>: Injects composite hitboxes for the stream path and pool boundaries into the broad-phase spatial hash.</li>
 </ol>
 <h2 id="configuration">Configuration</h2>

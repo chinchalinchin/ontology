@@ -1475,6 +1475,8 @@
 <p>The state files for each Board are maintained in <code>/src/data/state/&lt;board-key&gt;/**</code>.</p>
 <p><strong>Cradle</strong></p>
 <p>The Board posseses a Cradle field for instantiating Assets through game Mechanics, e.g. <code>CombatMechanics</code> uses the Cradle to inject new Projectiles into the Board state.</p>
+<p><strong>Migrator</strong></p>
+<p>The Board posses a Migrator field for asynchronously loading game state.</p>
 <h3 id="screen">Screen</h3>
 <ul>
 <li>Package: <code>app.game.screen</code></li>
