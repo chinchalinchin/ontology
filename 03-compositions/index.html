@@ -1143,7 +1143,7 @@
 <p>Composition Configuration can be found in <code>/src/data/config/compositions/main.yml</code>, otherwise known as the <em>composition directory</em>.</p>
 <h2 id="overview">Overview</h2>
 <p>From the perspective of the <a href="../00-overview/#state">state files</a>, Compositions are another type of Asset that can be deployed onto the Board. Similar to the <a href="../02-sprites/#player">Player</a>, they are a "<em>virtual</em>" Asset composed of other Assets, i.e. they do not have properties of their own. Unlike the Player, which is a special type of Sprite, Compositions are collections of multiple Assets. When a Composition is deployed onto the Board, its individual Assets are added to the appropriate (Category, Instance)-nodes in the <a href="../01-assets/#asset-hierarchy">Asset Hierarchy</a></p>
-<p>Compositions are organized around <a href="../01-assets/#struts">Struts</a>. They serve as abstract containers (or wrappers) around Struts. Compositions, in a sense, are the <em>realization</em> of a Strut. While Struts can be deployed individually onto the Board, their true purpose to provide a "root" for other Assets.</p>
+<p>Compositions are organized around <a href="../01-assets/#struts">Struts</a>. They serve as abstract containers (or wrappers) for Struts. Compositions, in a sense, are the <em>realization</em> of a Strut. While Struts can be deployed individually onto the Board, their true purpose is to provide a "root" for other Assets.</p>
 <p>A Composition is a way to reuse common Asset configurations in the state without having to specify their individual components each time they are deployed. Functionally, Compositions serve no purpose from the Board's perspective. They only serve to simplify the amount of state specification that is required to fully declare a complex, high-level game Board.</p>
 <p>To achieve this, Compositions have a <em>Pseudo State</em> and a <em>Deployed State</em>. A Composition Pseudo State is a formula for constructing the game state of its component Assets from its Deployed State. The Pseudo State of a Composition is configured in the composition directory, whereas the Deployed State is set in the state directory, alongside the other Asset states.</p>
 <p><strong>Pseudo State: CompositionPseudoState</strong></p>
@@ -1166,7 +1166,7 @@
 <li><code>owner: str</code></li>
 </ul>
 <h3 id="root-struts">Root Struts</h3>
-<p>Every Composition has atleast one <a href="../01-assets/#struts">Strut</a>, known as the root Strut. If it has more than one, the other Struts are known as branch Struts. </p>
+<p>Every Composition has atleast one <a href="../01-assets/#struts">Strut</a>, known as the root Strut. If it has more than one Strut, the other Struts are known as branch Struts. </p>
 <p>A Composition contains other Assets in predefined configurations, known as the Composition components. Each Strut in a Composition has components.</p>
 <p>For example, a <code>brick-house</code> Composition might contain a <code>frame-brick</code> Strut as its root Strut and then a <code>mansion</code> Door as a component Asset. The Composition specifies the relative position of the <code>mansion</code> Door with respect to the origin of the <code>frame-brick</code> Strut, i.e. all component Assets in a Composition have their positions unpacked relative to the root Strut's deployed position. </p>
 <h3 id="pseudo-state">Pseudo State</h3>
@@ -1229,7 +1229,7 @@
 <p class="admonition-title">Note</p>
 <p>Except for Position (see immediately below), the Pseudo State of the components of a Composition overrides the deployed state of the root Strut. In this example, the <code>state.layer</code> of <code>door-frame</code> would be <code>compose-layer</code>, regardless of the <code>layer</code> passed to the root Strut when deployed. </p>
 </div>
-<p>The root Strut (<code>brick-house.root</code>) does not have a Position, where as the <code>brick-house.branches</code> Strut does; this is the defining featuer of Composition Pseudo State. The Composition configuration leaves the root Strut Position state and layer "empty", so that it can be injected by the state file during deployment; however the configuration for component Assets contain information for constructing their states from the root Strut state. Consider deploying the above Composition onto a Board, e.g. with the following YAML in the state directory,</p>
+<p>The root Strut (<code>brick-house.root</code>) does not have a Position, where as the <code>brick-house.branches</code> Strut does; this is the defining feature of Composition Pseudo State. The Composition configuration leaves the root Strut Position state and layer "empty", so that it can be injected by the state file during deployment. Component Assets and branching Struts define Pseudo States relative to their hierarchical contexts. Consider deploying the above Composition onto a Board, e.g. with the following YAML in the state directory,</p>
 <div class="highlight"><pre><span></span><code><span class="nt">compositions</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">brick-house</span>
 <span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">player-home</span>
@@ -1242,17 +1242,30 @@
 <p>Compositions are not processed by the same hydration algorithm as the other Assets in the state file. A special Decomposer class is used to process the Composition's Deployed State into its component Asset states. </p>
 <p>In the current example, the branch of the Composition has its Strut position calculated relative to the root Strut. The components of each Strut are then calculated relative to its parent Strut.</p>
 <p>The root Position, <code>(100, 100)</code>, is added to each of its individual components <strong>and</strong> the branching Strut, whose position is then used to calculated its own component Assets' Positions. In this example, <code>house-door</code> is located at <code>(120, 120)</code>, whereas the <code>house-interior</code> is located at <code>(110, 110)</code> so that <code>door-frame</code> inherits this branch's starting location and is calculated as <code>(130, 130)</code>. The details of this calculation are given below,</p>
+<p>Hydration uses the following rules:</p>
 <ul>
-<li><strong>Coordinate Translation:</strong> <code>Child Absolute Position = Parent Absolute Position + Child Pseudo Position</code>.<ul>
-<li><em>Root's Component:</em> <code>(100, 100) + (20, 20) = (120, 120)</code></li>
-<li><em>Branching Strut:</em> <code>(100, 100) + (10, 10) = (110, 110)</code></li>
-<li><em>Branch's Component:</em> <code>(110, 110) + (20, 20) = (130, 130)</code></li>
+<li><strong>Layer-Bounded Coordinate Translation:</strong><ul>
+<li><strong>Same Layer:</strong> <code>Child Position = Parent Position + Child Pseudo Position</code>.</li>
+<li><strong>Cross Layer:</strong> When an entity defines a <code>layer</code> differing from its immediate parent, coordinates decouple from the parent's world position and anchor to layer origin <code>(0, 0)</code>: <code>Child Position = (0, 0) + Child Pseudo Position</code>.<ul>
+<li><em>Root Component (<code>house-door</code> on <code>'0'</code>):</em> <code>(100, 100) + (20, 20) = (120, 120)</code></li>
+<li><em>Branching Strut (<code>house-interior</code> on <code>'compose-layer'</code>):</em> <code>(0, 0) + (10, 10) = (10, 10)</code></li>
+<li><em>Branch Component (<code>door-frame</code> on <code>'compose-layer'</code>):</em> <code>(10, 10) + (20, 20) = (30, 30)</code></li>
+<li><strong>Teleport <code>out</code> Resolution:</strong></li>
 </ul>
 </li>
 </ul>
+</li>
+<li><strong>Returning to Root Layer (<code>outlayer == root.layer</code>):</strong> Teleport exit positions offset by the deployed root position: <code>Child Out = Root Position + Child Pseudo Out</code>. (<code>door-frame.out</code> evaluates to <code>(100, 100) + (10, 10) = (110, 110)</code>).</li>
+<li><strong>Entering Interior Layers (<code>outlayer != root.layer</code>):</strong> Teleport exit positions remain local to the destination layer's coordinate plane: <code>Child Out = Child Pseudo Out</code>. (<code>house-door.out</code> evaluates to <code>(10, 10)</code>).</li>
+</ul>
 <p>Other than Position, which is calculated according to the above formula, any state attribute <em>not</em> specified in a component Asset Pseudo State automatically inherits the root Strut's Deployed State, if those attributes exist on the root Strut. </p>
 <p>The Pseudo State of component Assets (and branching Struts) can be bound to the root Struts Deployed State as well, to allow for the parameterization of relationships. In this example, the Deployed State <code>layer</code> is passed down as a reference to the component <code>door-frame</code> Asset, which then uses it to specify its (Pseudo State) attribute for <code>outlayer</code> through the use of <code>bind(root.layer)</code>; This is how the interior Door leads back to the deployed layer, allowing the Player to return from whence they came. In other words, a binding is a formal constraints between Asset states that makes component Asset states dependent on the root Strut state. This constraint is realized during the Composition unpacking and Pseudo State hydration.</p>
-<p>All component Assets can <code>bind(state)</code> to a root Strut state attribute injected into the Composition from the state directory files. When component Asset reference <code>bind(root.layer)</code> this is a reference to the root Strut's layer. Only state attributes defined on the root Strut can be bound.</p>
+<p>All component Assets can <code>bind()</code> to a root Strut state attribute injected into the Composition from the state directory files. When component Asset reference <code>bind(root.layer)</code> this is a reference to the root Strut's layer. Only state attributes defined on the root Strut can be bound.</p>
+<ul>
+<li><strong>Contextual Bindings:</strong> Component Pseudo States can bind attributes to either their immediate parent or the root strut context via regex evaluation:</li>
+<li><code>bind(parent.)</code>: Queries the immediate parent node context (e.g., <code>owner: bind(parent.owner)</code> or <code>height: bind(parent.height)</code>).</li>
+<li><code>bind(root.)</code> or <code>bind()</code>: Queries the root deployment context (e.g., <code>outlayer: bind(root.layer)</code>).</li>
+</ul>
 <p>In addition, unique names are generated for each component Asset of a Composition according to the schema: <code>&lt;instance.name&gt;-&lt;strut.name&gt;-&lt;component.name&gt;-&lt;increment&gt;</code>, where <code>&lt;increment&gt;</code> is an index to track the number of unique Compositions deployed on the Board to ensure each has a correspondingly unique name.</p>
 <h2 id="decomposer">Decomposer</h2>
 <p>The Decomposer is the package of the application responsible for translating Composition Configuration into Assets. Taking the example from the previous section, the algorithm for the expansion (decomposition) logic can be modeled as a tree traversal (like Depth-First Search), where spatial data and inherited state propagate downward from parent to child.</p>
@@ -1265,19 +1278,29 @@
 <p><strong>2. State Superposition (Parent to Child)</strong></p>
 <p>For every child node (whether it is a component of the root, or a branching Strut), apply the following logic:</p>
 <ul>
-<li><strong>Coordinate Translation:</strong> <code>Child Absolute Position = Parent Absolute Position + Child Pseudo Position</code>.<ul>
-<li><em>Root's Component:</em> <code>(100, 100) + (20, 20) = (120, 120)</code></li>
-<li><em>Branching Strut:</em> <code>(100, 100) + (10, 10) = (110, 110)</code></li>
-<li><em>Branch's Component:</em> <code>(110, 110) + (20, 20) = (130, 130)</code></li>
+<li><strong>Layer Parity Check:</strong> Compare the child's resolved <code>layer</code> against <code>parent_context['layer']</code>.</li>
+<li><strong>Coordinate Translation:</strong><ul>
+<li>If layers match: <code>Child Absolute Position = Parent Absolute Position + Child Pseudo Position</code>.</li>
+<li>If layers differ: <code>Child Absolute Position = (0, 0) + Child Pseudo Position</code>.</li>
 </ul>
 </li>
-<li><strong>Attribute Inheritance:</strong> If a child's PseudoState lacks a required field (like <code>owner</code> or <code>layer</code>), it inherits that value directly from its immediate Parent, not necessarily the Root.</li>
+<li><strong>Teleport Out Translation:</strong> If the asset defines an <code>out</code> coordinate:<ul>
+<li>If <code>outlayer == root_context['layer']</code>: <code>Child Absolute Out = Root Absolute Position + Child Pseudo Out</code>.</li>
+<li>Otherwise: <code>Child Absolute Out = Child Pseudo Out</code>.</li>
+</ul>
+</li>
+<li><strong>Attribute Inheritance:</strong> If a child's PseudoState omits <code>owner</code> or <code>layer</code>, it inherits the value from its immediate parent context.</li>
+<li><strong>Context Propagation:</strong> Calculate the physical bottom edge (<code>node_height = pos.y + dim.l</code>) and record <code>position</code>, <code>layer</code>, <code>owner</code>, <code>name</code>, and <code>height</code> as the active parent context for subsequent child traversals.</li>
 </ul>
 <p><strong>3. Late-Binding Resolution</strong></p>
 <ul>
-<li><strong>Action:</strong> Before finalizing a child's state, scan all of its string values for the regex pattern <code>bind\(([^)]+)\)</code>.</li>
-<li><strong>Evaluation:</strong> If a match like <code>bind(root.layer)</code> is found, parse the target (<code>layer</code>) and query the "Root Context" created in Step 1.</li>
-<li><strong>Override:</strong> Replace the string with the resolved value. If a branch specifies <code>outlayer: bind(root.layer)</code>, and the deployed root layer is <code>'0'</code>, the branch's outlayer becomes <code>'0'</code>.</li>
+<li><strong>Action:</strong> Scan all string values for <code>bind\(([^)]+)\)</code>.</li>
+<li><strong>Evaluation:</strong><ul>
+<li>Matches for <code>bind(parent.)</code> query <code>parent_context</code>.</li>
+<li>Matches for <code>bind(root.)</code> or <code>bind()</code> query <code>root_context</code>.</li>
+</ul>
+</li>
+<li><strong>Override:</strong> Substitute the target string with the resolved context value prior to ECS component instantiation.</li>
 </ul>
 <p><strong>4. Unique Nomenclature Generation</strong></p>
 <ul>
