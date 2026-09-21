@@ -110,3 +110,64 @@ def test_decomposer_resolve_bind_patterns(mock_decomposer):
     
     # Unmatched keys return the original bind expression
     assert mock_decomposer._resolve_bind("bind(parent.nonexistent)", root_ctx, parent_ctx) == "bind(parent.nonexistent)"
+
+def test_decomposer_cross_layer_origin_decoupling(mock_cross_layer_decomposer):
+    """
+    Verify branches on foreign layers decouple from parent layer coordinates and bind to (0, 0).
+    """
+    deployed = PropertyState(
+        id="brick-house",
+        name="door-test",
+        layer="0",
+        owner="player",
+        position=Position(x=150, y=750)
+    )
+
+    assets = mock_cross_layer_decomposer.unpack(deployed)
+    root_strut = next(a for a in assets if a.id == "frame-brick")
+    interior_wall = next(a for a in assets if a.id == "wall-blue")
+    interior_floor = next(a for a in assets if a.id == "floor-wood")
+
+    # Root strut reflects deployed position on Layer 0
+    assert root_strut.state.layer == "0"
+    assert root_strut.state.position.x == 150
+    assert root_strut.state.position.y == 750
+
+    # Branch strut transitions to independent layer; position anchors to layer origin
+    assert interior_wall.state.layer == "brick-house-compose-layer"
+    assert interior_wall.state.position.x == 0
+    assert interior_wall.state.position.y == 0
+
+    # Branch component offsets relative to local branch strut origin
+    assert interior_floor.state.layer == "brick-house-compose-layer"
+    assert interior_floor.state.position.x == 0
+    assert interior_floor.state.position.y == 96
+
+
+def test_decomposer_cross_layer_door_out_resolution(mock_cross_layer_decomposer):
+    """
+    Ensure entrance doors output to local interior coordinates while exit doors offset by root position.
+    """
+    deployed = PropertyState(
+        id="brick-house",
+        name="door-test",
+        layer="0",
+        owner="player",
+        position=Position(x=150, y=750)
+    )
+
+    assets = mock_cross_layer_decomposer.unpack(deployed)
+    entrance_door = next(a for a in assets if a.id == "door-house")
+    exit_door = next(a for a in assets if a.id == "door-shadow")
+
+    # Entrance door: target is foreign interior layer; out coordinate remains local
+    assert entrance_door.state.layer == "0"
+    assert entrance_door.state.outlayer == "brick-house-compose-layer"
+    assert entrance_door.state.out.x == 82
+    assert entrance_door.state.out.y == 143
+
+    # Exit door: target matches root context layer; out coordinate offsets by deployed root position
+    assert exit_door.state.layer == "brick-house-compose-layer"
+    assert exit_door.state.outlayer == "0"
+    assert exit_door.state.out.x == 193  # 150 + 43
+    assert exit_door.state.out.y == 913  # 750 + 163
