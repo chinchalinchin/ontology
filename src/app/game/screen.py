@@ -51,7 +51,6 @@ class Screen:
     fg_canvas: TexturePtr
     registry: Registry
 
-
     def __init__(self, 
         screensize: Dimensions,
         boardsize: Dimensions,
@@ -59,36 +58,24 @@ class Screen:
         registry: Registry
     ):
         self.screensize = screensize
-        
-        # Hardware Minimum Clamp: Guarantee rendering bounds never drop below viewport size
-        self.boardsize = Dimensions(
-            w=max(boardsize.w, screensize.w),
-            l=max(boardsize.l, screensize.l)
-        )
-        
+        self.boardsize = boardsize
+        self.registry = registry
+
+        # Hardware Target Minimum: Texture size must not drop below viewport bounds
+        canvas_w = max(boardsize.w, screensize.w)
+        canvas_l = max(boardsize.l, screensize.l)
+
         logger.info(
             f"Initializing Screen (Viewport: {self.screensize.w}x{self.screensize.l} |" 
             f"Board: {self.boardsize.w}x{self.boardsize.l})"
         )
         
-        self.registry = registry
-
-        # Canvas Opacity Flag: If layer has no tiles, initialize to opaque black
         is_opaque = len(tiles) == 0
 
-        # Instantiate Painter's Algorithm Targets
-        self.bg_canvas = render.canvas(
-            self.boardsize.w, 
-            self.boardsize.l, 
-            opaque=is_opaque
-        )
-        self.fg_canvas = render.canvas(
-            self.boardsize.w, 
-            self.boardsize.l
-        ) # Foreground stays transparent
+        self.bg_canvas = render.canvas(canvas_w, canvas_l, opaque=is_opaque)
+        self.fg_canvas = render.canvas(canvas_w, canvas_l)
         
         back_tiles, fore_tiles = self._prerender(tiles)
-        
         render.construct(self.bg_canvas, back_tiles)
         render.construct(self.fg_canvas, fore_tiles)
 
@@ -190,19 +177,22 @@ class Screen:
         dim: Dimensions
     ) -> Position:
         """
-        Calculates the camera's top-left coordinates, centered on the focus target,
-        and clamps it to the boundaries of the board.
+        Calculates camera viewport coordinates. 
+        Centers layers smaller than viewport dimensions via negative offsets.
         """
-        # Center the camera on the target
-        cam_x = focus.x + (dim.w // 2) - (self.screensize.w // 2)
-        cam_y = focus.y + (dim.l // 2) - (self.screensize.l // 2)
+        if self.boardsize.w < self.screensize.w:
+            cam_x = -((self.screensize.w - self.boardsize.w) // 2)
+        else:
+            cam_x = focus.x + (dim.w // 2) - (self.screensize.w // 2)
+            max_x = self.boardsize.w - self.screensize.w
+            cam_x = max(0, min(cam_x, max_x))
 
-        # Clamp to board edges
-        max_x = max(0, self.boardsize.w - self.screensize.w)
-        max_y = max(0, self.boardsize.l - self.screensize.l)
-
-        cam_x = max(0, min(cam_x, max_x))
-        cam_y = max(0, min(cam_y, max_y))
+        if self.boardsize.l < self.screensize.l:
+            cam_y = -((self.screensize.l - self.boardsize.l) // 2)
+        else:
+            cam_y = focus.y + (dim.l // 2) - (self.screensize.l // 2)
+            max_y = self.boardsize.l - self.screensize.l
+            cam_y = max(0, min(cam_y, max_y))
 
         return Position(x=cam_x, y=cam_y)
 
@@ -352,35 +342,19 @@ class Screen:
         if self.fg_canvas:
             render.destroy(self.fg_canvas)
 
-        # 2. Update dimensions
         if screensize:
             self.screensize = screensize
 
-        # Hardware Minimum Clamp: Guarantee rendering bounds never drop below viewport size
-        self.boardsize = Dimensions(
-            w=max(boardsize.w, self.screensize.w),
-            l=max(boardsize.l, self.screensize.l)
-        )
-        
-        logger.debug(f"New Canvas Bounds: {self.boardsize.w}x{self.boardsize.l}")
+        self.boardsize = boardsize
+        canvas_w = max(boardsize.w, self.screensize.w)
+        canvas_l = max(boardsize.l, self.screensize.l)
 
-        # 3. Canvas Opacity Flag: If layer has no tiles, initialize to opaque black
         is_opaque = len(tiles) == 0
 
-        # 4. Reallocate VRAM
-        self.bg_canvas = render.canvas(
-            self.boardsize.w, 
-            self.boardsize.l, 
-            opaque=is_opaque
-        )
-        self.fg_canvas = render.canvas(
-            self.boardsize.w, 
-            self.boardsize.l
-        )
+        self.bg_canvas = render.canvas(canvas_w, canvas_l, opaque=is_opaque)
+        self.fg_canvas = render.canvas(canvas_w, canvas_l)
 
-        # 5. Prerender and Construct
         back_tiles, fore_tiles = self._prerender(tiles)
-
         render.construct(self.bg_canvas, back_tiles)
         render.construct(self.fg_canvas, fore_tiles)
 

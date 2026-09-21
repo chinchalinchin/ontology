@@ -129,8 +129,6 @@ class Decomposer:
         inst_key: str, 
         is_strut: bool = False
     ) -> AssetState:
-        """
-        """
         kwargs = {}
         for f in dataclasses.fields(state_obj):
             val = getattr(state_obj, f.name, None)
@@ -141,37 +139,43 @@ class Decomposer:
         if 'owner' in kwargs and not kwargs['owner']:
             kwargs['owner'] = parent_context['owner']
 
-            
+        # Layer Transition Boundary: If moving to an independent layer, reset local origin
+        is_cross_layer = kwargs.get('layer') != parent_context.get('layer')
+        base_pos = Position(0, 0) if is_cross_layer else parent_context['position']
+
         pseudo_pos = kwargs.get('position')
         if pseudo_pos:
             kwargs['position'] = Position(
-                x=parent_context['position'].x + pseudo_pos.x,
-                y=parent_context['position'].y + pseudo_pos.y
+                x=base_pos.x + pseudo_pos.x,
+                y=base_pos.y + pseudo_pos.y
             )
         else:
-            kwargs['position'] = Position(
-                parent_context['position'].x, 
-                parent_context['position'].y
-            )
+            kwargs['position'] = Position(base_pos.x, base_pos.y)
 
-        # Apply spatial superposition to the teleport out coordinate
+        # Teleport destination coordinate mapping
         pseudo_out = kwargs.get('out')
         if pseudo_out:
-            kwargs['out'] = Position(
-                x=root_context['position'].x + pseudo_out.x,
-                y=root_context['position'].y + pseudo_out.y
-            )
+            outlayer = kwargs.get('outlayer')
+            # If returning to root layer, offset by deployed root position
+            if outlayer == root_context.get('layer'):
+                kwargs['out'] = Position(
+                    x=root_context['position'].x + pseudo_out.x,
+                    y=root_context['position'].y + pseudo_out.y
+                )
+            else:
+                # Target is an interior layer; coordinates are local to that layer
+                kwargs['out'] = Position(pseudo_out.x, pseudo_out.y)
 
         base_inst = inst_key[:-1] if inst_key.endswith('s') else inst_key
         
         if is_strut:
             b_name = kwargs.get('name') or root_context['name']
-            kwargs['name'] = f"{base_inst}-{b_name}-{inc}"
+            kwargs['name'] = '-'.join([base_inst, b_name, str(inc)])
         else:
-            kwargs['name'] = f"{base_inst}-{parent_context['name']}-{inc}"
+            kwargs['name'] = '-'.join([base_inst, parent_context['name'], str(inc)])
         
         return type(state_obj)(**kwargs)
-
+    
 
     def _create_asset(self, 
         cat_key: str, 

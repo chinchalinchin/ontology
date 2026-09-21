@@ -78,6 +78,7 @@ from app.models.config import (
 from app.models.state import (
     StateSchema, 
     ObjectStateInstances, 
+    CraftStateInstances,
     SpriteState,
     PlayerState,
     DoorState,
@@ -297,6 +298,158 @@ def mock_fluid_board(mock_fluid, mock_crate, mock_configurations):
             Boundary(Position(319, 0), Dimensions(1, 320))
         ]
         return board
+
+# ---------------------------------------------------------------------------
+# ----------------------------------------------- CROSS-LAYER FIXTURES
+# ---------------------------------------------------------------------------
+
+@pytest.fixture
+def mock_cross_layer_decomposer():
+    """
+    Decomposer fixture configured with cross-layer branching and door-circuit bindings.
+    """
+    props = PropertiesSchema()
+    props.crafts.struts["frame-brick"] = CraftProperties(
+        dimensions=Dimensions(w=96, l=190),
+        cost=[Cost(item="stone", quantity=10)]
+    )
+    props.crafts.struts["wall-blue"] = CraftProperties(
+        dimensions=Dimensions(w=128, l=96),
+        cost=[Cost(item="wood", quantity=10)]
+    )
+    props.crafts.struts["floor-wood"] = CraftProperties(
+        dimensions=Dimensions(w=128, l=96),
+        cost=[Cost(item="wood", quantity=10)]
+    )
+    props.objects.doors["door-house"] = ObjectProperties(
+        dimensions=Dimensions(w=32, l=48)
+    )
+    props.objects.doors["door-shadow"] = ObjectProperties(
+        dimensions=Dimensions(w=32, l=48)
+    )
+
+    comp_config = CompositionConfiguration(
+        root=CompositionPseudoState(
+            strut=PropertyState(id="frame-brick", name="house"),
+            components=StateSchema(
+                objects=ObjectStateInstances(
+                    doors=[
+                        DoorState(
+                            id="door-house",
+                            name="entrance",
+                            layer="0",
+                            outlayer="brick-house-compose-layer",
+                            position=Position(x=32, y=118),
+                            out=Position(x=82, y=143)
+                        )
+                    ]
+                )
+            )
+        ),
+        branches=[
+            CompositionPseudoState(
+                strut=PropertyState(
+                    id="wall-blue",
+                    name="house-interior",
+                    layer="brick-house-compose-layer",
+                    position=Position(x=0, y=0),
+                    owner="bind(root.owner)"
+                ),
+                components=StateSchema(
+                    crafts=CraftStateInstances(
+                        struts=[
+                            PropertyState(
+                                id="floor-wood",
+                                name="house-floor",
+                                layer="brick-house-compose-layer",
+                                position=Position(x=0, y=96),
+                                owner="bind(root.owner)"
+                            )
+                        ]
+                    ),
+                    objects=ObjectStateInstances(
+                        doors=[
+                            DoorState(
+                                id="door-shadow",
+                                name="house-doorframe",
+                                layer="brick-house-compose-layer",
+                                outlayer="bind(root.layer)",
+                                position=Position(x=47, y=142),
+                                out=Position(x=43, y=163)
+                            )
+                        ]
+                    )
+                )
+            )
+        ]
+    )
+
+    compositions = {"brick-house": comp_config}
+    recipes = RecipeConfiguration(
+        crafts=CraftRecipe(
+            struts=Recipe(frame=FrameRecipe.SINGLE, animation=AnimationRecipe.NONE)
+        ),
+        objects=ObjectRecipe(
+            doors=Recipe(frame=FrameRecipe.SINGLE, animation=AnimationRecipe.NONE)
+        )
+    )
+
+    return Decomposer(compositions=compositions, properties=props, recipes=recipes)
+
+
+@pytest.fixture
+def mock_multi_layer_board(mock_configurations):
+    """
+    Board pre-hydrated across Layer 0 (mixed tiles and crafts) and a tileless interior layer.
+    """
+    # Layer 0: Tile Asset (Extent: 320x320)
+    tile_tax = Taxonomy("tile-grass", "grass", AssetCategories.TILES.value, AssetInstances.BACK.value)
+    tile_props = TileProperties(dimensions=Dimensions(w=32, l=32))
+    tile_state = MultiplierState(
+        id="tile-grass",
+        name="grass",
+        layer="0",
+        position=Position(x=0, y=0),
+        multiple=Multiple(nx=10, ny=10)
+    )
+    tile = Asset(tile_tax, tile_props, tile_state, DummyFrame(), DummyAnimation())
+
+    # Layer 0: Castle Wall Strut (Extent: 250+222=472, 250+133=383)
+    strut0_tax = Taxonomy("strut-castle", "castle", AssetCategories.CRAFTS.value, AssetInstances.STRUTS.value)
+    strut0_props = CraftProperties(dimensions=Dimensions(w=222, l=133), cost=[], mass=0)
+    strut0_state = PropertyState(id="strut-castle", name="castle", layer="0", position=Position(x=250, y=250))
+    strut0 = Asset(strut0_tax, strut0_props, strut0_state, DummyFrame(), DummyAnimation())
+
+    # Layer "brick-house-compose-layer": Tileless Wall Strut (Extent: 0+128=128, 0+96=96)
+    interior_wall_tax = Taxonomy("strut-wall", "wall", AssetCategories.CRAFTS.value, AssetInstances.STRUTS.value)
+    interior_wall_props = CraftProperties(dimensions=Dimensions(w=128, l=96), cost=[], mass=0)
+    interior_wall_state = PropertyState(
+        id="strut-wall",
+        name="wall",
+        layer="brick-house-compose-layer",
+        position=Position(x=0, y=0)
+    )
+    interior_wall = Asset(interior_wall_tax, interior_wall_props, interior_wall_state, DummyFrame(), DummyAnimation())
+
+    # Layer "brick-house-compose-layer": Tileless Floor Strut (Extent: 0+128=128, 96+96=192)
+    interior_floor_tax = Taxonomy("strut-floor", "floor", AssetCategories.CRAFTS.value, AssetInstances.STRUTS.value)
+    interior_floor_props = CraftProperties(dimensions=Dimensions(w=128, l=96), cost=[], mass=0)
+    interior_floor_state = PropertyState(
+        id="strut-floor",
+        name="floor",
+        layer="brick-house-compose-layer",
+        position=Position(x=0, y=96)
+    )
+    interior_floor = Asset(interior_floor_tax, interior_floor_props, interior_floor_state, DummyFrame(), DummyAnimation())
+
+    equipment = EquipmentGroup(armor={}, tools={}, utilities={}, weapons={}, shields={})
+
+    with patch("app.game.board.settings.TILE_HASH_SIZE", 32):
+        return Board(
+            assets=[tile, strut0, interior_wall, interior_floor],
+            configurations=mock_configurations,
+            equipment=equipment
+        )
     
 # ---------------------------------------------------------------------------
 # ------------------------------------------------------- MOCK CONFIGURATIONS

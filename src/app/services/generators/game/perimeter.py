@@ -49,7 +49,7 @@ class Perimeter:
             
         # 2. Map Game Space
         objects = board.categories(AssetCategories.OBJECTS.value, layer)
-        crafts = board.categories(AssetCategories.CRAFTS.value)
+        crafts = board.categories(AssetCategories.CRAFTS.value, layer)
         space = objects + crafts
         for obj in space:
             x1 = int(obj.state.position.x)

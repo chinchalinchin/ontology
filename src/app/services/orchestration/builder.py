@@ -201,11 +201,10 @@ class Builder:
         else:
             self.screens = {}
             for layer in self.board.layers():
-                max_width = max((self.board.size(layer)[0].w for layer in self.board.layers()), default=0)
-                max_length = max((self.board.size(layer)[0].l for layer in self.board.layers()), default=0)
+                layer_size = self.board.size(layer)[0]
                 self.screens[layer] = Screen(
                     self.context.screensize, 
-                    Dimensions(max_width, max_length),
+                    Dimensions(layer_size.w, layer_size.l),
                     self.board.categories(AssetCategories.TILES.value, layer),
                     self.registry
                 )

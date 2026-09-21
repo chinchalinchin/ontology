@@ -74,3 +74,33 @@ def test_board_spatial_hashing(mock_board):
     
     # Out of Bounds: Cell (2,2) - Contains position 70, 70
     assert mock_board.tile('0', Position(x=70, y=70)) is None
+
+def test_board_size_tileless_layer(mock_multi_layer_board):
+    """
+    Verify layer extents derive from crafts and physical entities when no tiles are present.
+    """
+    sizes = mock_multi_layer_board.size("brick-house-compose-layer")
+    assert len(sizes) == 1
+    assert sizes[0].w == 128
+    assert sizes[0].l == 192
+
+
+def test_board_size_mixed_layer(mock_multi_layer_board):
+    """
+    Verify layer extents expand beyond tile boundaries when craft structures exceed terrain.
+    """
+    sizes = mock_multi_layer_board.size("0")
+    assert len(sizes) == 1
+    # Tile extent is (320, 320); castle strut extent is (250+222=472, 250+133=383)
+    assert sizes[0].w == 472
+    assert sizes[0].l == 383
+
+
+def test_board_size_empty_layer(mock_multi_layer_board):
+    """
+    Ensure querying an unpopulated or missing layer returns zero dimensions without raising errors.
+    """
+    sizes = mock_multi_layer_board.size("unpopulated-layer")
+    assert len(sizes) == 1
+    assert sizes[0].w == 0
+    assert sizes[0].l == 0

@@ -482,15 +482,15 @@ def write(
     SDL_DestroyTexture(text_tex)
     SDL_FreeSurface(text_surface)
                  
-
+ 
 def render(
     TexturePtr background, 
     TexturePtr foreground, 
     list assets, 
-    int cam_x,
+    int cam_x, 
     int cam_y, 
     int screen_w, 
-    int screen_l,
+    int screen_l, 
     TexturePtr target=None
 ):
     """
@@ -506,15 +506,14 @@ def render(
     cdef int sx, sy, sw, sl, dx, dy, dw, dl
 
     if background is not None:
-        bg_src.x = cam_x
-        bg_src.y = cam_y
-        bg_src.w = screen_w
-        bg_src.h = screen_l
-
-        bg_dst.x = 0
-        bg_dst.y = 0
-        bg_dst.w = screen_w
-        bg_dst.h = screen_l
+        bg_src.x = cam_x if cam_x >= 0 else 0
+        bg_src.y = cam_y if cam_y >= 0 else 0
+        bg_dst.x = 0 if cam_x >= 0 else -cam_x
+        bg_dst.y = 0 if cam_y >= 0 else -cam_y
+        bg_src.w = min(screen_w - bg_dst.x, background.w - bg_src.x)
+        bg_src.h = min(screen_l - bg_dst.y, background.l - bg_src.y)
+        bg_dst.w = bg_src.w
+        bg_dst.h = bg_src.h
 
         bg_status = SDL_RenderCopy(_renderer, background.ptr, &bg_src, &bg_dst)
         if bg_status < 0:
@@ -524,32 +523,27 @@ def render(
 
     for asset in assets:
         tex_wrapper, sx, sy, sw, sl, dx, dy, dw, dl = asset
-        
         c_src.x, c_src.y, c_src.w, c_src.h = sx, sy, sw, sl
-        
         c_dst.x = dx - cam_x
         c_dst.y = dy - cam_y
-        c_dst.w, c_dst.h = dw, dl
-            
+        c_dst.w = dw
+        c_dst.h = dl
         SDL_RenderCopy(_renderer, tex_wrapper.ptr, &c_src, &c_dst)
 
     if foreground is not None:
-        bg_src.x = cam_x
-        bg_src.y = cam_y
-        bg_src.w = screen_w
-        bg_src.h = screen_l
-        
-        bg_dst.x = 0
-        bg_dst.y = 0
-        bg_dst.w = screen_w
-        bg_dst.h = screen_l
-                    
+        bg_src.x = cam_x if cam_x >= 0 else 0
+        bg_src.y = cam_y if cam_y >= 0 else 0
+        bg_dst.x = 0 if cam_x >= 0 else -cam_x
+        bg_dst.y = 0 if cam_y >= 0 else -cam_y
+        bg_src.w = min(screen_w - bg_dst.x, foreground.w - bg_src.x)
+        bg_src.h = min(screen_l - bg_dst.y, foreground.l - bg_src.y)
+        bg_dst.w = bg_src.w
+        bg_dst.h = bg_src.h
+
         SDL_RenderCopy(_renderer, foreground.ptr, &bg_src, &bg_dst)
-    
-    # 2. Safely restore the default render target
+
     if target is not None:
         SDL_SetRenderTarget(_renderer, NULL)
-
         
 def save(str filename, int w, int l, TexturePtr target=None):
     """Extracts pixel data from the active hardware renderer or a specific texture to disk."""

@@ -184,3 +184,60 @@ def test_screen_draw_culling_and_sorting(mock_construct, mock_canvas, mock_rende
     
     assert active_assets[1][5] == 100  # asset3 dx
     assert active_assets[1][6] == 120  # asset3 dy
+
+@patch('app.game.screen.render.canvas')
+@patch('app.game.screen.render.construct')
+def test_screen_camera_centering_sub_viewport(mock_construct, mock_canvas, mock_registry):
+    """
+    Ensure layers smaller than the viewport center correctly using negative camera offsets.
+    """
+    screen = Screen(
+        screensize=Dimensions(w=480, l=480),
+        boardsize=Dimensions(w=128, l=192),
+        tiles=[],
+        registry=mock_registry
+    )
+
+    # Focus coordinate should be disregarded; offset is derived strictly from dimension differences
+    pos = screen.camera(focus=Position(x=64, y=96), dim=Dimensions(w=32, l=32))
+    assert pos.x == -176  # -((480 - 128) // 2)
+    assert pos.y == -144  # -((480 - 192) // 2)
+
+
+@patch('app.game.screen.render.canvas')
+@patch('app.game.screen.render.construct')
+def test_screen_camera_asymmetric_centering(mock_construct, mock_canvas, mock_registry):
+    """
+    Ensure camera centers axes that are smaller than the viewport while clamping larger axes.
+    """
+    screen = Screen(
+        screensize=Dimensions(w=480, l=480),
+        boardsize=Dimensions(w=200, l=1000),
+        tiles=[],
+        registry=mock_registry
+    )
+
+    # Horizontal axis is sub-viewport (centered); vertical axis exceeds viewport (clamped)
+    pos = screen.camera(focus=Position(x=100, y=800), dim=Dimensions(w=32, l=32))
+    assert pos.x == -140  # -((480 - 200) // 2)
+    assert pos.y == 520   # min(800 + 16 - 240, 1000 - 480)
+
+
+@patch('app.game.screen.render.canvas')
+@patch('app.game.screen.render.construct')
+def test_screen_boardsize_preservation_and_canvas_allocation(mock_construct, mock_canvas, mock_registry):
+    """
+    Ensure Screen retains unpadded board dimensions while allocating canvas textures to viewport bounds.
+    """
+    screen = Screen(
+        screensize=Dimensions(w=480, l=480),
+        boardsize=Dimensions(w=128, l=192),
+        tiles=[],
+        registry=mock_registry
+    )
+
+    assert screen.boardsize.w == 128
+    assert screen.boardsize.l == 192
+
+    # Verify canvas allocation enforces hardware viewport minimums
+    mock_canvas.assert_any_call(480, 480, opaque=True)

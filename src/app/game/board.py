@@ -275,7 +275,7 @@ class Board:
         """
         if layer is None:
             return self._assets
-        return self._cached_layers[layer]
+        return self._cached_layers.get(layer, [])
 
 
     def weights(self, layer=None) -> List[Asset]:
@@ -337,19 +337,34 @@ class Board:
 
     def size(self, layer=None) -> List[Dimensions]:
         """
-        Calculates the size of Board by layer. If no layer is specified, method will return a list of all layer sizes as a List.
+        Calculates the spatial extent of the Board by layer. 
+        Evaluates tiles, objects, crafts, and sheets to support tileless composition layers.
         """
-
-        layers = [ layer ] if layer is not None else self.layers()
+        layers = [layer] if layer is not None else self.layers()
         layer_sizes = []
 
-        for layer in layers:
-            tiles = self.categories(AssetCategories.TILES.value, layer)
-            w = max([ tile.state.position.x + tile.state.multiple.nx * tile.properties.dimensions.w 
-                    for tile in tiles ], default = 0)
-            l = max([tile.state.position.y + tile.state.multiple.ny * tile.properties.dimensions.l
-                    for tile in tiles], default = 0)
-            layer_sizes.append(Dimensions(w=w, l=l))
+        for l in layers:
+            layer_assets = self.assets(l)
+            max_w = 0
+            max_l = 0
+
+            for asset in layer_assets:
+                if asset.category == AssetCategories.TILES.value:
+                    ext_w = int(asset.state.position.x) + (asset.state.multiple.nx * asset.properties.dimensions.w)
+                    ext_l = int(asset.state.position.y) + (asset.state.multiple.ny * asset.properties.dimensions.l)
+                elif asset.dimensions:
+                    ext_w = int(asset.state.position.x) + asset.dimensions.w
+                    ext_l = int(asset.state.position.y) + asset.dimensions.l
+                else:
+                    continue
+
+                if ext_w > max_w:
+                    max_w = ext_w
+                if ext_l > max_l:
+                    max_l = ext_l
+
+            layer_sizes.append(Dimensions(w=max_w, l=max_l))
+
         return layer_sizes
 
     # ------------------------------------------------ MUTATORS

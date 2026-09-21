@@ -1,7 +1,6 @@
 """
 # Ontology: tests.unit.test_app_services_generators_perimeter.py
 """
-import pytest
 from unittest.mock import patch
 
 from app.services.generators.game.perimeter import Perimeter
@@ -60,3 +59,20 @@ def test_perimeter_generator_empty_layer(mock_board):
         
         mock_sweep.assert_not_called()
         assert perimeter == []
+
+def test_perimeter_extract_crafts_layer_isolation(mock_multi_layer_board):
+    """
+    Ensure Perimeter.extract evaluates crafts strictly within the target layer boundary.
+    """
+    perimeter = Perimeter()
+
+    # Extract boundaries for the tileless composition layer
+    interior_rects = perimeter.extract(mock_multi_layer_board, "brick-house-compose-layer")
+
+    # Layer contains only interior wall (0, 0, 128, 96) and floor (0, 96, 128, 192)
+    assert len(interior_rects) == 2
+    assert (0, 0, 128, 96) in interior_rects
+    assert (0, 96, 128, 192) in interior_rects
+
+    # Ensure Layer 0 castle strut (250, 250, 472, 383) is excluded
+    assert not any(r[0] == 250 and r[1] == 250 for r in interior_rects)
