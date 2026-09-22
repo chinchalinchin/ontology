@@ -49,6 +49,7 @@ class AssetInstances(str, Enum):
     OBSTACLES       = "obstacles"
     PLATES          = "plates"
     SIGNS           = "signs"
+    RAFTS           = "rafts"
     # CRAFTS
     STRUTS          = "struts"
     DECORS          = "decors"
@@ -227,6 +228,9 @@ class ExpressionsPalette(str, Enum):
     BUBBLES         = "bubbles"
     BUFFS           = "buffs"
 
+class EffectsPalette(str, Enum):
+    SPLASH          = "splash"
+
 class Inventories(str, Enum):
     EQUIPMENT       = "equipment"
     POUCH           = "pouch"
@@ -297,6 +301,10 @@ class Shortcuts(str, Enum):
     COMPOSITIONS    = "compositions"
     GIZMOS          = "gizmos"
     PLOTS           = "plots"
+
+class ChannelTypes(int, Enum):
+    TINT            = 0
+    SUBMERGE        = 1
 
 # -------------------------------- WIDGET ENUMERATIONS
 

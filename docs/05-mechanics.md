@@ -60,10 +60,13 @@ Inert Assets are exluded from these considerations. They are spawned with a Velo
 
 The general flow of MotionMechanics is given by,
 
-* **Kinematic Assets (Players)**: Directly polls input devices. Directional inputs clamp velocity vectors to `character.speed` and immediately nullify orthogonal velocity components.
-* **Motive Assets (Sprites)**: Guided by `NavigationMechanics`. Evaluates `sprite.state.trajectory.target` (generated via RRT pathfinding and line-of-sight checks). Calculates the steering vector toward the current waypoint, accelerates by `character.impulse * dt`, and clamps velocity to `character.speed` via `physics.dynamics()`.
-* **Frictive Assets (Crates)**: Passively receive momentum from physical collisions. Velocity magnitude decays linearly each tick according to the underlying tile's `TileProperties.friction` coefficient:
-  $$v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)$$
+Assets with Mass are divided into Kinematic, Motive, Inert, and Frictive Assets.
+
+* **Kinematic Assets (Players)**: Polls input devices. In dry environments, input clamps velocity vectors to `character.speed` and nullifies orthogonal components. When intersecting an active Fluid stream or pool, kinematic snapping is disabled: voluntary input velocity is added vectorally to the underlying fluid current:
+  $$\vec{v}_{\text{final}} = \vec{v}_{\text{input}} + \vec{v}_{\text{current}}$$
+* **Motive Assets (Sprites)**: Guided by `NavigationMechanics`. Evaluates avoidance and waypoint steering vectors. In fluid corridors, the environmental current vector is added to the steering vector.
+* **Frictive Assets (Crates)**: Passively receive momentum from physical collisions, decaying via tile friction. Floating dynamic bodies in fluids drift along the stream vector.
+* **Rafts**: Specialized dynamic objects that do not obstruct fluid propagation. Rafts passively drift at the fluid current velocity $\vec{v}_{\text{current}}$. Passengers aboard a Raft adopt the Raft's velocity as their baseline reference frame, suppressing the submerged state.
 * **Inert Assets (Projectiles)**: Translate along ballistic linear trajectories until lifetime expiration or boundary collision triggers garbage collection.
 
 The mathematical bounds for Friction are $[0, \infty)$.

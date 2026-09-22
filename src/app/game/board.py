@@ -83,6 +83,8 @@ class Board:
         self.loaded = False
         self.paused = False
         self.plot = None
+        self.device = None
+        self.cradle = None
         self.menus = []
         self.overlays = []
         self.configurations = configurations
@@ -292,13 +294,14 @@ class Board:
         """
         if layer is None:
             return []
-
+        
+        chests = self._cached_instances.get(layer, {}).get(AssetInstances.CHESTS.value, [])
         signs = self._cached_instances.get(layer, {}).get(AssetInstances.SIGNS.value, [])
         crates = self._cached_instances.get(layer, {}).get(AssetInstances.CRATES.value, [])
         gates = self._cached_instances.get(layer, {}).get(AssetInstances.GATES.value, [])
         struts = self._cached_instances.get(layer, {}).get(AssetInstances.STRUTS.value, [])
 
-        return crates + gates + struts + signs
+        return crates + gates + struts + signs + chests
 
     
     def layers(self) -> List[str]:
@@ -453,7 +456,14 @@ class Board:
             self._cached_categories[layer].setdefault(asset.category, []).append(asset)
             self._cached_instances[layer].setdefault(asset.instance, []).append(asset)
             self._cached_layers[layer].append(asset)
-            
+
+            logger.info(
+                f"Appending Asset(id={asset.id}, "
+                f"name={asset.name}, "
+                f"category={asset.category}, "
+                f"instance={asset.instance})"
+            )
+
             if asset.category != AssetCategories.TILES.value:
                 self._cached_renderables[layer].append(asset)
                 if asset.properties.mass >= 0:

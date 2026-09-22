@@ -135,6 +135,7 @@ class MutatorTriggers:
     frightened: bool = False
     dead: bool = False
     vision: bool = False
+    submerged: bool = False
 
 @dataclass(slots=True)
 class MutatorParameters:

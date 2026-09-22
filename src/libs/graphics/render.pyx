@@ -127,7 +127,16 @@ cdef extern from "SDL2/SDL.h":
         int b, 
         int a
     )
-        
+    int SDL_SetTextureColorMod(
+        SDL_Texture* texture, 
+        unsigned char r, 
+        unsigned char g, 
+        unsigned char b
+    )
+    int SDL_SetTextureAlphaMod(
+        SDL_Texture* texture, 
+        unsigned char alpha
+    )
     unsigned int SDL_INIT_VIDEO
     unsigned int SDL_PIXELFORMAT_RGBA32
 
@@ -495,15 +504,14 @@ def render(
 ):
     """
     Executes the active frame render passing flat coordinates to bypass Python object allocations.
-    assets format: (TexturePtr, src_x, src_y, src_w, src_l, dst_x, dst_y, dst_w, dst_l)
+    assets format: (TexturePtr, src_x, src_y, src_w, src_l, dst_x, dst_y, dst_w, dst_l, r, g, b, a)
     """
-    # 1. Route the render output to the custom target (if provided)
     if target is not None:
         SDL_SetRenderTarget(_renderer, target.ptr)
 
     cdef SDL_Rect c_src, c_dst, bg_src, bg_dst
     cdef TexturePtr tex_wrapper
-    cdef int sx, sy, sw, sl, dx, dy, dw, dl
+    cdef int sx, sy, sw, sl, dx, dy, dw, dl, r, g, b, a
 
     if background is not None:
         bg_src.x = cam_x if cam_x >= 0 else 0
@@ -515,20 +523,27 @@ def render(
         bg_dst.w = bg_src.w
         bg_dst.h = bg_src.h
 
-        bg_status = SDL_RenderCopy(_renderer, background.ptr, &bg_src, &bg_dst)
-        if bg_status < 0:
-            logger.error(f"Background RenderCopy failed: {SDL_GetError().decode('utf-8')} "
-                         f"| Texture Size: {background.w}x{background.l} "
-                         f"| Requested Source: {bg_src.w}x{bg_src.h}")
+        SDL_RenderCopy(_renderer, background.ptr, &bg_src, &bg_dst)
 
     for asset in assets:
-        tex_wrapper, sx, sy, sw, sl, dx, dy, dw, dl = asset
+        tex_wrapper, sx, sy, sw, sl, dx, dy, dw, dl, r, g, b, a = asset
         c_src.x, c_src.y, c_src.w, c_src.h = sx, sy, sw, sl
         c_dst.x = dx - cam_x
         c_dst.y = dy - cam_y
         c_dst.w = dw
         c_dst.h = dl
+
+        if r != 255 or g != 255 or b != 255:
+            SDL_SetTextureColorMod(tex_wrapper.ptr, r, g, b)
+        if a != 255:
+            SDL_SetTextureAlphaMod(tex_wrapper.ptr, a)
+
         SDL_RenderCopy(_renderer, tex_wrapper.ptr, &c_src, &c_dst)
+
+        if r != 255 or g != 255 or b != 255:
+            SDL_SetTextureColorMod(tex_wrapper.ptr, 255, 255, 255)
+        if a != 255:
+            SDL_SetTextureAlphaMod(tex_wrapper.ptr, 255)
 
     if foreground is not None:
         bg_src.x = cam_x if cam_x >= 0 else 0
@@ -544,7 +559,30 @@ def render(
 
     if target is not None:
         SDL_SetRenderTarget(_renderer, NULL)
-        
+
+
+def channel(list channel_ops, int cam_x, int cam_y):
+    """
+    Renders auxiliary channel passes (tints, highlights) directly over the backbuffer.
+    channel_ops format: (c_type, dx, dy, dw, dl, r, g, b, a)
+    """
+    cdef SDL_Rect rect
+    cdef int c_type, dx, dy, dw, dl, r, g, b, a
+
+    SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_BLEND)
+
+    for op in channel_ops:
+        c_type, dx, dy, dw, dl, r, g, b, a = op
+        rect.x = dx - cam_x
+        rect.y = dy - cam_y
+        rect.w = dw
+        rect.h = dl
+
+        if c_type == 0:  # TINT / Fill Rect
+            SDL_SetRenderDrawColor(_renderer, r, g, b, a)
+            SDL_RenderFillRect(_renderer, &rect)
+              
+              
 def save(str filename, int w, int l, TexturePtr target=None):
     """Extracts pixel data from the active hardware renderer or a specific texture to disk."""
     cdef bytes b_filename = filename.encode('utf-8')

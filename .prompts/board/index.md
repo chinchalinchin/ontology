@@ -57,8 +57,9 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 08.02: NavigationMechanics](./phases/refactor/refactor-08-02.md)
       - [x]: [Phase 08.03: Trajectory Optimization](./phases/refactor/refactor-08-03.md)
     - Phase 09:
-      - [ ]: [Phase 09.01: Fluid Flows](./phases/refactor/refactor-09-01.md)
-      - [ ]: [Phase 09.02: Bridges & Bifurcation](./phases/refactor/refactor-09-02.md)
+      - [x]: [Phase 09.01: Fluid Flows](./phases/refactor/refactor-09-01.md)
+      - [ ]: [Phase 09.02: Shorelines & Geography](./phases/refactor/refactor-09-02.md)
+      - [ ]: [Phase 09.03: Bridges, Bifurcation & Bouyancy](./phases/refactor/refactor-09-03.md)
   - Patch:
     - [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering Instantiated Assets](./phases/patch/bug-b001.md)

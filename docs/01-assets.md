@@ -123,6 +123,8 @@ These attributes are part of the base class from which all other states inherit.
 | Tile | Fore | Base |
 | Tile | Grid | Base |
 | Object | Crate | Base, Velocity |
+| Object | Obstacle | Base, Velocity |
+| Object | Raft | Base, Velocity |
 | Object | Sign | Base, Persona, Lexicon |
 | Object | Door | Base, OutLayer |
 | Object | Chest | Base, Animation, Switch, Content |
@@ -279,7 +281,7 @@ Objects are mutable Assets made of a single frame or pair of frames. They are me
 
 **Binary Frames**
 
-An Object with two frames is considered to have an *on* and *off* state, i.e. a binary trigger. *Binary Objects* are Objects whose frame is dependent on their internal state switch.
+An Object with two frames is considered to have an *on* and *off* state, i.e. a binary trigger. *Binary Objects* are Objects whose frame is dependent on an internal state switch.
 
 Binary Objects frames are always organized in horizontal rows. The off frame will always start at `(0,0)` and the on frame will always start at `(w,0)`. Because of this relation, the dimensions of a Chest image file will always be `(2w, h)`. 
 
@@ -402,6 +404,30 @@ Plates are Binary Objects whose state can be changed by intersection, e.g. when 
 * `link: str`
 * `position: Position`
 * `switch: bool`
+
+### Rafts
+
+Rafts are mutable, inanimate Objects that allow Sprites and Players to traverse Fluid corridors without entering the `submerged` state or being swept away individually. Rafts do not obstruct Fluid flow.
+
+**Dynamics & Relative Motion**
+
+* When deployed in a Fluid corridor, a Raft drifts along the Fluid's `source` vector at a speed proportional to `flow`.
+* Characters boarding a Raft have their `mutators.triggers.submerged` mutator suppressed.
+* While aboard, character locomotion is evaluated relative to the Raft's deck:
+  $$\vec{v}_{\text{world}} = \vec{v}_{\text{locomotion}} + \vec{v}_{\text{raft}}$$
+
+**Frame: SingleFrame**
+
+* `keys(id, state)`: returns `[(id, 0, 0)]`
+* `index(id, properties)`: returns `{id: (0, 0, properties.dimensions.w, properties.dimensions.l)}`
+
+**State: PositionalState**
+
+* `layer: str`
+* `position: Position`
+* `velocity: Velocity`
+* `depth: int = 0`
+* `height: Optional[int] = None`
 
 ### Signs
 
@@ -530,6 +556,12 @@ In other words, the State Model determines the function of the Effect, but the L
 ### Passive
 
 Passive effects that do not participate in collision resolution or interactions (e.g., torches, water ripples, falling leaves).
+
+**Required Passive Effects**
+
+Due to dependencies on other Assets and Mechanics, the following Passive Effects are required to exist at runtime,
+
+- `splash`: Animation for "submerged" Assets moving in in Fluid fields.
 
 **State: AnimatorState**
 

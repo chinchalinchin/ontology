@@ -185,6 +185,7 @@ class Builder:
             expressions=self.context.properties.cursors.expressions,
             collectables=self.context.properties.effects.collectables,
             hazards=self.context.properties.effects.hazards,
+            passive=self.context.properties.effects.passive,
             struts=self.context.properties.crafts.struts
         )
         cradle = Factory.cradle(spawnable_groups, self.context.configurations.recipes, self.decomposer)

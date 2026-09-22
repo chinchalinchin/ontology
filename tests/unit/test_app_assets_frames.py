@@ -35,7 +35,8 @@ from app.models.state import (
 from app.config.enums import (
     Directions,
     RequiredAssets,
-    ExpressionsPalette
+    ExpressionsPalette,
+    ChannelTypes
 )
 
 # Cython Libraries
@@ -300,3 +301,34 @@ def test_fluid_frame_keys_with_annular_pool():
     assert (f"waterflow{SEPARATOR}0", -32, 64) in keys
     assert (f"waterflow{SEPARATOR}0", 0, 64) in keys
     assert (f"waterflow{SEPARATOR}0", 32, 64) in keys
+
+
+def test_sprite_frame_channels_dry():
+    """
+    Verify SpriteFrame.channels returns an empty list when sprite is not submerged.
+    """
+    frame = SpriteFrame()
+    state = SpriteState(id="player")
+    state.mutators.triggers.submerged = False
+    props = SheetProperties(dimensions=Dimensions(w=64, l=64))
+
+    directives = frame.channels("player", state, props)
+    assert directives == []
+
+
+def test_sprite_frame_channels_submerged():
+    """
+    Verify SpriteFrame.channels emits SUBMERGE directive with half-length split
+    and aquatic modulation payload when sprite is submerged.
+    """
+    frame = SpriteFrame()
+    state = SpriteState(id="player")
+    state.mutators.triggers.submerged = True
+    props = SheetProperties(dimensions=Dimensions(w=64, l=64))
+
+    directives = frame.channels("player", state, props)
+    assert len(directives) == 1
+    assert directives[0] == (
+        ChannelTypes.SUBMERGE.value,
+        (32, 40, 110, 180, 170)
+    )

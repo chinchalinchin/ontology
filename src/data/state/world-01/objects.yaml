@@ -1,6 +1,6 @@
 objects:
   crates: 
-    - id: barrel
+    - id: wood-barrel
       name: castle-dawn-barrel-00
       layer: '0'
       position:
@@ -16,13 +16,13 @@ objects:
         x: 430
         y: 370
   obstacles:
-    - id: gray-rock
+    - id: gray-rock-00
       name: jasilynns-rock
       layer: '0'
       position:
         x: 68
         y: 600
-    - id: gray-rock
+    - id: gray-rock-00
       name: jasilynns-other-rock
       layer: '0'
       position:

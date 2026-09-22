@@ -32,6 +32,9 @@ PATH_RETRY_INTERVAL = 60
 TELEMETRY_TICKS = 600
 ### SPIN_RATE:
 SPIN_RATE = 0.002
+### BASE_FLOW_SPEED: Base Fluid vector field speed magnitude.
+BASE_FLOW_SPEED = 20
+
 # ---------------------------------------------------
 ## ----------------------------------- STATE SETTINGS
 ### ON/OFF: Binary Object Keys

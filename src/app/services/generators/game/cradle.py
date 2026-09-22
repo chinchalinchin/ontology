@@ -21,13 +21,13 @@ from app.services.generators.game.factory import Factory
 from app.models.config import RecipeConfiguration
 from app.models.groups import SpawnableGroup
 from app.models.state import (
+    AnimationState,
     MotorState, 
     PropertyState,
     AttachmentState,
     EffectState,
     HazardState,
     CollectableState,
-    ReactableState,
     Damage,
     Lot
 )
@@ -175,6 +175,28 @@ class Cradle:
             name=name,
             category=AssetCategories.EFFECTS,
             instance=AssetInstances.HAZARDS
+        )
+        return Asset(taxonomy, properties, state, frame, animation)
+
+    def spawn_passive(self, id: str, layer: str, position: Position) -> Asset:
+        recipe = self.recipes.effects.passive
+        properties = self.spawnables.passive.get(id)
+        name = self.name()
+
+        state = EffectState(
+            id=id,
+            name=name,
+            layer=layer,
+            position=position,
+            animation=AnimationState()
+        )
+        frame = Factory.frame(recipe.frame)
+        animation = Factory.animation(recipe.animation)
+        taxonomy = Factory.taxonomy(
+            id=id,
+            name=name,
+            category=AssetCategories.EFFECTS,
+            instance=AssetInstances.PASSIVE
         )
         return Asset(taxonomy, properties, state, frame, animation)
 

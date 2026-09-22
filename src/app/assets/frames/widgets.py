@@ -29,6 +29,14 @@ class TraversalFrame(Frame):
     ## TraversalFrame
     """
 
+    def channels(self, 
+        id: str, 
+        state: AssetState,
+        properties: WidgetProperties
+    ) -> List[Tuple]:
+        return []
+    
+    
     def keys(self, id: str, state: AssetState) -> List[str]:
         """
         """
@@ -55,6 +63,14 @@ class MeterFrame(Frame):
     ## MeterFrame
     """
 
+    def channels(self, 
+        id: str, 
+        state: AssetState,
+        properties: WidgetProperties
+    ) -> List[Tuple]:
+        return []
+    
+    
     def keys(self, id: str, state: AssetState) -> List[str]:
         """
         """
@@ -84,6 +100,14 @@ class IndexFrame(Frame):
 
     Parses horizontal sheets where each frame corresponds to a specific string key.
     """
+
+    def channels(self, 
+        id: str, 
+        state: AssetState,
+        properties: WidgetProperties
+    ) -> List[Tuple]:
+        return []
+    
     def keys(self, id: str, state: AssetState) -> List[Tuple[str, int, int]]:
         icon_key = getattr(state, "icon", None)
         if not icon_key:

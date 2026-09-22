@@ -15,7 +15,8 @@ from typing import (
 from app.assets.base import Asset
 from app.config.enums import (
     AssetInstances, 
-    AssetCategories
+    AssetCategories,
+    ChannelTypes
 )
 from app.models.state.widgets import (
     DisplayState,
@@ -226,7 +227,8 @@ class Screen:
         """
         pov = self.camera(focus, dim)
         active_assets = []
-        
+        active_channels = []
+
         # Height-sort the assets directly prior to querying asset.frame.keys()
         #   Primary Sort: Explicit Height OR (Y + Length)
         #   Secondary Sort: Depth-index tie-breaker for overlapping entities
@@ -237,10 +239,14 @@ class Screen:
             a.state.depth
         ))
 
+
         for asset in assets:
             if asset.category == AssetCategories.TILES: continue
 
             frame_keys = asset.frame.keys(asset.id, asset.state)
+            channels = asset.frame.channels(asset.id, asset.state, asset.properties)
+            submerge_channel = next((op for op in channels if op[0] == ChannelTypes.SUBMERGE.value), None)
+
             for frame_key, ox, oy in frame_keys:
                 tex_data = self.registry.image(frame_key)
 
@@ -249,7 +255,7 @@ class Screen:
                         isinstance(asset.state, SpriteState) or 
                         isinstance(asset.state, PlayerState)
                     ):
-                        logger.warning(f"Registry MISS: Frame key not found: '{frame_key}'")
+                        logger.warning(f"Registry MISS! Frame key not found: '{frame_key}'")
                     continue 
 
                 # Flatten mapping to C-level PRIMITIVE INTEGERS for destination logic
@@ -260,7 +266,39 @@ class Screen:
                 # Strict Camera Culling: Only pass geometry if intersecting the camera frame 
                 if (dx + dw >= pov.x and dx <= pov.x + self.screensize.w and
                     dy + dl >= pov.y and dy <= pov.y + self.screensize.l):
-                    active_assets.append((tex, sx, sy, sw, sl, dx, dy, dw, dl))
+                    if submerge_channel is None:
+                        active_assets.append((
+                            tex, sx, sy, sw, sl, 
+                            dx, dy, dw, dl,
+                            255, 255, 255, 255
+                        ))
+                    else:
+                        split_y, r, g, b, a = submerge_channel[1]
+                        # Upper slice: normal rendering
+                        active_assets.append((
+                            tex, sx, sy, sw, split_y,
+                            dx, dy, dw, split_y,
+                            255, 255, 255, 255
+                        ))
+                        # Lower slice: submerged texture modulation
+                        rem_l = sl - split_y
+                        active_assets.append((
+                            tex, sx, sy + split_y, sw, rem_l,
+                            dx, dy + split_y, dw, rem_l,
+                            r, g, b, a
+                        ))
+
+                # 2. Auxiliary Channel Tuples
+                for c_type, payload in channels:
+                    if c_type == ChannelTypes.TINT.value:
+                        ox, oy, ow, ol, r, g, b, a = payload
+                        active_channels.append((
+                            c_type,
+                            asset.state.position.x + ox,
+                            asset.state.position.y + oy,
+                            ow, ol,
+                            r, g, b, a
+                        ))
 
         logger.debug(f"Render Payload: Camera({pov.x}, {pov.y}) | Total Assets: {len(active_assets)}")
 
@@ -274,6 +312,9 @@ class Screen:
             self.screensize.w, 
             self.screensize.l
         )
+
+        if active_channels:
+            render.channel(active_channels, pov.x, pov.y)
 
 
     def stamp(self, widget: Asset, content: Union[str, List[str]]) -> None:

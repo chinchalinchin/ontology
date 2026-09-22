@@ -129,7 +129,6 @@ class Migrator:
                 inst_props = getattr(cat_props, prop_instance_key, {})
                 props = inst_props.get(asset_id)
 
-                logger.info(asset_name)
                 asset = Asset(
                     taxonomy   = Factory.taxonomy(
                         asset_id, 

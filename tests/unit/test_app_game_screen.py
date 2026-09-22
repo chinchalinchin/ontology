@@ -25,7 +25,8 @@ from libs.core.models import (
 from app.config.enums import (
     AssetCategories, 
     Actions, 
-    Directions
+    Directions,
+    ChannelTypes
 )
 
 @patch('app.game.screen.render.canvas')
@@ -241,3 +242,65 @@ def test_screen_boardsize_preservation_and_canvas_allocation(mock_construct, moc
 
     # Verify canvas allocation enforces hardware viewport minimums
     mock_canvas.assert_any_call(480, 480, opaque=True)
+    
+@patch('app.game.screen.render.render')
+@patch('app.game.screen.render.canvas')
+@patch('app.game.screen.render.construct')
+def test_screen_draw_submerge_channel_splitting(
+    mock_construct, 
+    mock_canvas, 
+    mock_render, 
+    mock_registry
+):
+    """
+    Test that Screen.draw splits texture passes into upper unmodulated and
+    lower aquatic-modulated slices when ChannelTypes.SUBMERGE is active.
+    """
+    from app.assets.frames.core import ChannelTypes
+
+    # Configure texture crop size to 64x64 matching sprite dimensions
+    mock_registry.image.side_effect = lambda key: (MagicMock(), 0, 0, 64, 64)
+
+    screen = Screen(
+        screensize=Dimensions(w=800, l=600),
+        boardsize=Dimensions(w=1600, l=1200),
+        tiles=[],
+        registry=mock_registry
+    )
+
+    sprite_asset = MagicMock()
+    sprite_asset.category = AssetCategories.SHEETS
+    sprite_asset.id = "player"
+    sprite_asset.state = MagicMock()
+    sprite_asset.state.position = Position(x=100, y=100)
+    sprite_asset.state.height = 100
+    sprite_asset.state.depth = 0
+    sprite_asset.dimensions = Dimensions(w=64, l=64)
+    sprite_asset.properties = MagicMock()
+    sprite_asset.frame.keys.return_value = [("player-walk-down-0", 0, 0)]
+    sprite_asset.frame.channels.return_value = [
+        (ChannelTypes.SUBMERGE.value, (32, 40, 110, 180, 170))
+    ]
+
+    screen.draw([sprite_asset], focus=Position(x=0, y=0), dim=Dimensions(w=32, l=32))
+
+    mock_render.assert_called_once()
+    active_assets = mock_render.call_args[0][2]
+
+    # Upper slice and lower slice generated from single frame key
+    assert len(active_assets) == 2
+
+    # Upper slice: height 32, normal modulation (255, 255, 255, 255)
+    upper = active_assets[0]
+    assert upper[4] == 32    # sl = split_y = 32
+    assert upper[6] == 100   # dy
+    assert upper[8] == 32    # dl = split_y = 32
+    assert upper[9:] == (255, 255, 255, 255)
+
+    # Lower slice: height 32, aquatic modulation (40, 110, 180, 170)
+    lower = active_assets[1]
+    assert lower[2] == 32    # sy + split_y = 0 + 32 = 32
+    assert lower[4] == 32    # rem_l = 64 - 32 = 32
+    assert lower[6] == 132   # dy + split_y = 100 + 32 = 132
+    assert lower[8] == 32    # dl = rem_l = 32
+    assert lower[9:] == (40, 110, 180, 170)

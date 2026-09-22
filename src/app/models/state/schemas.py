@@ -52,6 +52,7 @@ class ObjectStateInstances:
     obstacles: List[PositionalState] = field(default_factory=list)
     plates: List[SwitchState] = field(default_factory=list)
     signs: List[DialogueState] = field(default_factory=list)
+    rafts: List[PositionalState] = field(default_factory=list)
     
 @dataclass(slots=True)
 class CraftStateInstances:

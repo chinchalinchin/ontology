@@ -55,6 +55,9 @@ recipes:
     signs:
       frame: single
       animation: none
+    rafts:
+      frame: single
+      animation: none
   sheets:
     players:
       frame: sprite

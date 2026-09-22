@@ -24,7 +24,8 @@ from app.config.enums import (
     Directions,
     Intentions,
     RequiredAssets,
-    ExpressionsPalette
+    ExpressionsPalette,
+    ChannelTypes
 )
 from app.assets.base import Frame
 from app.models.state import (
@@ -47,6 +48,13 @@ class NoFrame(Frame):
     ## NoFrame
     """
 
+    def channels(self, 
+        id: str, 
+        state: AssetState,
+        properties: AssetProperties
+    ) -> List[Tuple]:
+        return []
+    
     def keys(self, id: str, state: AssetState) -> List[str]:
         """
         """
@@ -65,6 +73,13 @@ class SingleFrame(Frame):
     ## SingleFrame
     """
 
+    def channels(self, 
+        id: str, 
+        state: AssetState,
+        properties: AssetProperties
+    ) -> List[Tuple]:
+        return []
+    
     def keys(self, id: str, state: AssetState) -> List[str]:
         """
         """
@@ -83,6 +98,14 @@ class IterableFrame(Frame):
     """
     ## IterableFrame
     """
+    
+    def channels(self, 
+        id: str, 
+        state: AssetState,
+        properties: AssetProperties
+    ) -> List[Tuple]:
+        return []
+
     def keys(self, id: str, state: AssetState) -> List[str]:
         """
         """
@@ -116,6 +139,13 @@ class FluidFrame(Frame):
         self.tile_w = tile_w
         self.tile_l = tile_l
 
+    def channels(self, 
+        id: str, 
+        state: AssetState,
+        properties: AssetProperties
+    ) -> List[Tuple]:
+        return []
+    
     def index(self, id: str, properties: EffectProperties) -> Dict[str, Tuple[int, int, int, int]]:
         """
         Pre-indexes full animation frames alongside multi-axis forward and reverse
@@ -305,6 +335,13 @@ class StateFrame(Frame):
     ## StateFrame
     """
 
+    def channels(self, 
+        id: str, 
+        state: AssetState,
+        properties: AssetProperties
+    ) -> List[Tuple]:
+        return []
+    
     def keys(self, id: str, state: AssetState) -> List[str]:
         """
         """
@@ -348,6 +385,28 @@ class SpriteFrame(StateFrame):
     Specialized Frame component for Sprites that yields a strict Z-indexed list of frame keys based on the Sprite's inventory.
     """
 
+    def channels(self, 
+        id: str, 
+        state: SpriteState,
+        properties: SheetProperties
+    ) -> List[Tuple]:
+        channel_directives = []
+        
+        if state.mutators.triggers.submerged:
+            l = properties.dimensions.l
+            half_l = l // 2
+            
+            # (CHANNEL_SUBMERGE, split_y, r, g, b, a)
+            # e.g., deep aquatic modulation: RGBA(40, 110, 180, 170)
+            # TODO: this should be codified in a ChannelPayload data structure to pass to the screen. Screen should unpack channel payload into Cython primitives.            
+            payload = half_l, 40, 110, 180, 170
+            channel_directives.append((
+                ChannelTypes.SUBMERGE.value,
+                payload
+            ))
+            
+        return channel_directives
+    
     def keys(self, id: str, state: SpriteState) -> List[str]:
         # Start with the base Persona frame key
         frame_keys = super().keys(id, state)

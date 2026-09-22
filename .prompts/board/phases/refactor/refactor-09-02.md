@@ -1,144 +1,239 @@
-### Bug Reports
+### Architectural Analysis: Shorelines & Virtual Edge Hydrodynamics
 
-##### Bug B009: Directional Up/Left Occlusion Blindspot in Raycast Candidate Collection
+---
 
-**STATUS**: OPEN
+### 1. Taxonomy & Asset Placement
 
-**SEVERITY**: HIGH
+#### `Category: Effects` vs. Dedicated `Category: Geography`
 
-**Description**
+In the engine’s Entity-Component-System (ECS) architecture:
 
-In `Actuator._collect_obstacles`, candidate filtering for upward (`UP`) and leftward (`LEFT`) fluid propagation discards valid obstacles located immediately in front of or adjacent to the emitter origin.
+* **Category** dictates the *Properties Model* (`AssetProperties`) loaded at boot time via `src/assets//main.yaml`.
+* **Instance** dictates the *State Model* (`AssetState`) hydrated dynamically on the `Board`.
 
-For `direction == Directions.UP.value`, the filter executes:
+Placing Shorelines under `AssetCategories.EFFECTS` as `AssetInstances.SHORELINES` (or `GEOGRAPHY`) has distinct advantages:
 
-```python
-if (oy + ol) >= fy:
-    continue
+1. **Property Alignment:** Shorelines frequently require frame-animation for water lapping, waves, or foam cascades. `EffectProperties` already contains `LifecycleProperties` (`continuous`, `periodic`, `temporary`), `count`, and `dimensions`, avoiding the creation of an entirely redundant Category root in `PropertiesSchema`.
+2. **Dynamic Generation:** If shorelines are generated procedurally by `Actuator` when a fluid stream pumps or truncates, they behave as environmental effects coupled to the life of the fluid emitter rather than static terrain tiles.
 
 ```
-
-Because upward raycasts target decreasing Y-coordinates ($y < f_y$), an obstacle immediately adjacent or slightly overlapping the emitter top edge ($o_y + o_l = f_y$) evaluates to `True` and is excluded from the obstacle manifest. The raycast completely ignores the obstacle and extends past it to the map perimeter. The identical defect occurs on lateral leftward propagation (`ox + ow >= fx`).
-
-**Steps to Replicate**
-
-1. Place an obstacle Crate of dimensions `(32, 32)` at position `(100, 68)`.
-2. Place a Fluid emitter of dimensions `(32, 32)` at position `(100, 100)` with `source = up`.
-3. The Crate's bottom edge is at $y = 68 + 32 = 100 = f_y$.
-4. Trigger `Actuator.pump()`. `_collect_obstacles` discards the crate because `(oy + ol) >= fy` is `True`.
-5. The fluid raycasts through the crate to the map boundary.
-
-**Proposed Remediation**
-
-Filter candidate obstacles based on whether their entire body is strictly behind the emitter origin, taking the stream's cross-sectional axis into account:
-
-```python
-if direction == Directions.UP.value and oy >= fy:
-    continue
-elif direction == Directions.DOWN.value and (oy + ol) <= fy:
-    continue
-elif direction == Directions.LEFT.value and ox >= fx:
-    continue
-elif direction == Directions.RIGHT.value and (ox + ow) <= fx:
-    continue
+                  AssetCategories.EFFECTS
+                             │
+     ┌──────────────┬────────┴─────┬──────────────┬──────────────┐
+     ▼              ▼              ▼              ▼              ▼
+  fluids         passive        hazards      collectables    shorelines
+(FluidState)  (AnimatorState) (HazardState)   (LotState)   (ShorelineState)
 
 ```
 
 ---
 
-##### Bug B010: Stream and Annular Pool Texture Overdraw
+### 2. State & Actuator Coupling: Independent Assets vs. Child Geometry
 
-**STATUS**: OPEN
+A key design fork is whether Shorelines exist on the `Board` as independent `Asset` instances or as composite geometric metadata within `FluidState`.
 
-**SEVERITY**: MEDIUM
+#### The Dynamic Churn Problem
 
-**Description**
+When a Crate is pushed across a fluid stream, `FluidMechanics` sets `fluid.state.dirty = True`. `Actuator.pump()` recalculates raycasts, truncates lengths, and resizes pools.
 
-When a fluid stream encounters an obstacle and generates an annular pool, `Actuator._partition_pool` creates a top flank hitbox extending from $y = o_y - \text{flow} \cdot f_l$ to $y = o_y$. Concurrently, `Actuator.pump` sets `stream_length = oy - fy`, projecting stream corridor tiles all the way to $o_y$.
+* **If Shorelines are Independent Board Assets:** `Actuator` must continuously call `board.remove(old_shores)` and `board.add(new_shores)`, invalidating `Board` spatial grid caches, layer caches, and character tables on every tick a dynamic body moves.
+* **If Shorelines are Bound to Fluid:** `FluidState` holds a collection of procedural perimeter descriptors (e.g., `shores: List[ShorelineBoundary]`). `Actuator.pump()` updates them in-place.
 
-In `FluidFrame.keys`, full-tile keys are emitted along the stream corridor from $f_y$ to $o_y$, and the pool iteration subsequently emits full-tile keys across the top flank from $o_y - \text{flow} \cdot f_l$ to $o_y$. The stream corridor column within this band receives two identical overlapping texture blits on the same frame, doubling alpha-blended opacity and causing visual stuttering.
-
-**Proposed Remediation**
-
-In `Actuator.pump`, truncate the active stream length at the outer edge of the annular pool boundary rather than the obstacle face:
-
-```python
-if pool_bounds and flow > 0:
-    if direction == Directions.DOWN.value:
-        stream_length = max(0, pool_bounds.y - fy)
-    elif direction == Directions.UP.value:
-        stream_length = max(0, fy - (pool_bounds.y + pool_bounds.l))
-    elif direction == Directions.RIGHT.value:
-        stream_length = max(0, pool_bounds.x - fx)
-    elif direction == Directions.LEFT.value:
-        stream_length = max(0, fx - (pool_bounds.x + pool_bounds.w))
-
-```
+**Recommendation:** Treat Shorelines as independent `Asset` instances managed through `Cradle`, but assign them a direct parent reference `fluid_name: str`. When `Actuator.pump()` executes, it clears and rebuilds only the shoreline assets tagged with that fluid's name, preventing full board cache churn.
 
 ---
 
-##### Bug B011: Missing Chests in Obstacle Catalogue
+### 3. The "Virtual Edge" & Ledge Transition Mechanics
 
-**STATUS**: OPEN
+The proposal to treat the shoreline as a virtual edge that triggers a "fall" / hop into the water solves the visual ambiguity of the submersion channel.
 
-**SEVERITY**: LOW
-
-**Description**
-
-In `Board.obstacles(layer)`, the catalogue query gathers `crates`, `gates`, `struts`, and `signs`, but omits `chests`. While `Board.weights(layer)` includes chests (due to `mass: int = 0`), any subsystem querying `Board.obstacles()` directly will fail to treat chests as solid colliders or occluders.
-
-**Proposed Remediation**
-
-Update `Board.obstacles()` to include `AssetInstances.CHESTS.value`:
-
-```python
-chests = self._cached_instances.get(layer, {}).get(AssetInstances.CHESTS.value, [])
-return crates + gates + struts + signs + chests
+```
+       [ DRY TERRAIN ]             [ SHORELINE ]              [ FLUID STREAM ]
+                                 (w_shore / l_shore)
+     ──┬─────────────────────────┬───────────────────────────┬───────────────────
+       │                         │                           │
+       │                         │  Footprint crosses edge:  │
+       │                         │  1. Positional Shift (Δs) ───►  Submerged = True
+       │                         │  2. Cradle.spawn(splash)  │     Current Applied
+       │                         │                           │
 
 ```
 
+#### Traversal Mechanics
+
+1. **The Crossing Condition:**
+Immersion should trigger when the entity’s *sensory anchor / footprint* $(x + \frac{w}{2}, y + l)$ crosses the shoreline sensor boundary from the dry side to the wet side.
+2. **Positional Shift ($\vec{\delta}_{\text{shore}}$):**
+When the entity commits across the virtual edge, add an orthogonal displacement vector pointing into the water:
+
+$$\vec{\delta}_{\text{shore}} = \begin{cases}    (0,\, +l_{\text{shore}}) & \text{North bank (entering South)} \\    (0,\, -l_{\text{shore}}) & \text{South bank (entering North)} \\    (+w_{\text{shore}},\, 0) & \text{West bank (entering East)} \\    (-w_{\text{shore}},\, 0) & \text{East bank (entering West)}    \end{cases}$$
+
+This instantaneous shift visually simulates stepping down off a bank or hopping off a ledge, clearing the edge boundary in a single frame.
+3. **Transition Triggering:**
+The moment $\vec{\delta}_{\text{shore}}$ applies:
+
+* `mutators.triggers.submerged` switches to `True`.
+* `Cradle.spawn_passive("splash", layer, pos)` instantiates the water splash particle.
+* The entity is now squarely inside the fluid hitbox; `fields.py` immediately begins imparting $\vec{v}_{\text{current}}$.
+
+4. **Bi-Directional vs. One-Way Ledges:**
+* **Cliffs / Sheer Banks:** One-way. Once in the water, the shoreline edge acts as an obstacle ($m = 0$) preventing the sprite from climbing back out.
+* **Beaches / Shallow Banks:** Bi-directional. Crossing from water onto the shore clears `submerged = False` and negates current velocity.
+
+
+
 ---
 
-### Backlog Proposal
+### 4. Rendering & Frame Multipliers (`FluidFrame` Reuse)
 
-#### Backlog: Hydrodynamic Flow Bifurcation, Bridges & Buoyancy
+Can `FluidFrame` be reused for shorelines?
+
+Yes. `FluidFrame` already handles:
+
+1. Dynamic length expansion.
+2. Integer multiple tile repetition (`length // dim`).
+3. Fractional sub-pixel truncation slicing (`length % dim`).
+
+#### Necessary Adaptation: Orthogonal Orientation
+
+In `FluidFrame`, the textures tile *along* the direction of the fluid (`source`). A shoreline, however, tiles *along* the border of the stream (e.g., an East shoreline runs along the Y-axis for a North-South fluid, but its visual face points West into the water).
+
+* Either parameterize `FluidFrame` with an `axis: Axis.PARALLEL | Axis.ORTHOGONAL` setting, or create a specialized `ShorelineFrame(Frame)` that accepts `(orientation: Directions, length: int)`.
+* **Z-Ordering:** Shorelines must declare:
+
+$$\text{depth} = 0, \quad \text{height} = 0$$
+
+This ensures the shoreline sorts *above* the underlying water (`depth: -1`) so the transparent water-lapping foam renders over the fluid, while characters (`depth: 0, height = y + l`) sort cleanly on top.
+
+---
+
+### Codebase Changes Required
+
+1. **Schemas & Enums (`models/properties.py`, `config/enums.py`):**
+* Add `SHORELINES = "shorelines"` to `AssetInstances`.
+* Add `shorelines: Dict[str, EffectProperties]` to `EffectPropertyInstances`.
+
+
+2. **State Models (`models/state/objects.py`):**
+* Create `ShorelineState(AssetState)`: contains `position`, `orientation: Directions`, `length: int`, `bidirectional: bool`, `parent_fluid: str`.
+
+
+3. **Asset Frame (`assets/frames/core.py`):**
+* Generalize `FluidFrame` or implement `ShorelineFrame` to tile cardinal border segments (`north`, `south`, `east`, `west`) with distal edge slicing.
+
+
+4. **Actuator Perimeter Decomposition (`services/generators/game/actuator.py`):**
+* Update `Actuator` to calculate perimeter flanks of active streams and annular pools.
+* Dispatch shoreline generation to construct bounding shore sensors along unoccluded fluid borders.
+
+
+5. **Environmental Motion & Virtual Edge (`logic/modules/motion/fields.py`):**
+* Intercept shoreline crossings.
+* Apply positional shift $\vec{\delta}_{\text{shore}}$, spawn splash particles, and toggle `mutators.triggers.submerged`.
+
+
+
+---
+
+### Task Board Phase Specification
+
+```markdown
+#### Backlog: Phase 09.02 - Shorelines & Virtual Edge Hydrodynamics
 
 **Overview**
 
-Transition the fluid subsystem from single linear raycasts to dynamic field propagation. Introduces multi-branch obstacle bifurcation, bridge layer elevation masks, and kinetic momentum transfer to floating physical bodies ($m > 0$).
+Eliminates abrupt fluid boundary transitions and visual submersion-channel clipping by introducing procedural Shoreline assets along fluid perimeters. Implements virtual edge mechanics that simulate stepping down into water, applying an instantaneous positional shift, triggering waterline splash particles, and synchronizing character submersion states with environmental geometry.
 
-##### Goal: Obstacle Bifurcation & Downstream Continuation
+##### Goal: Shoreline Taxonomy, Schemas & Recipes
 
-When an obstacle occludes a fluid stream, the annular pool should not form a dead end. Fluid that pools laterally around the obstacle should check for downstream clearance along the original source vector, propagating two secondary branch streams past the obstacle flanks until blocked.
+Register `shorelines` under `AssetCategories.EFFECTS`. Define `ShorelineState` to track orientation, length, and parent fluid emitter links. Configure asset recipes supporting 4-way cardinal shoreline profiles (`north`, `south`, `east`, `west`) with animated foam lifecycles.
 
-##### Goal: Bridge Hitbox Masking & Elevation Layering
+```yaml
+# Property Recipe Concept
+effects:
+  shorelines:
+    shoreline-grass-water:
+      dimensions:
+        w: 32
+        l: 16
+      lifecycle:
+        type: continuous
+        delay: 30
+      count: 3
+      hitboxes: null
+      mass: -1
 
-Introduce `bridges` under `AssetCategories.CRAFTS`. Bridges declare `elevation: int = 1` and contain hitboxes that override underlying fluid sensor hitboxes during `SpatialMechanics` broad-phase evaluation, permitting characters and crates to cross fluid streams without triggering environmental hazard checks.
+```
 
-##### Goal: Buoyancy & Current Displacement
+##### Goal: Procedural Shoreline Generation in Actuator
 
-In `FluidMechanics`, iterate over dynamic weights ($m > 0$, such as crates) intersecting fluid stream or pool hitboxes. Apply a directional impulse proportional to `flow` along the stream vector, simulating buoyancy and flotsam drift without requiring explicit scripting.
+Expand `Actuator` to generate shoreline perimeters around active fluid corridors and annular pools during `pump()`. Shorelines are dynamically generated on unoccluded fluid flanks, tracking fluid stream lengths and truncations.
+
+```python
+# Actuator Perimeter Flank Calculation
+def _generate_shorelines(self, fluid: Asset, stream_length: int, pool: Optional[Pool], board: Board) -> List[Asset]:
+    # Compute perimeter flank bounding boxes along East, West, North, and South unoccluded boundaries
+    # Construct ShorelineState instances tied to parent fluid name
+    pass
+
+```
+
+##### Goal: Virtual Edge Traversals & Ledge Drop Mechanics
+
+Implement virtual edge traversal logic in `fields.py`. When an entity's sensory footprint crosses a shoreline sensor into open water, apply an orthogonal positional shift equal to the shoreline thickness, spawn splash particles, toggle `mutators.triggers.submerged = True`, and impart environmental current.
+
+```python
+# Virtual Edge Spatial Shift
+if crossing_shoreline_into_water:
+    asset.state.position.x += shore_delta_x
+    asset.state.position.y += shore_delta_y
+    asset.state.mutators.triggers.submerged = True
+    board.cradle.spawn_passive("splash", layer, splash_pos)
+
+```
+
+##### Goal: Sliced Shoreline Frame Component
+
+Implement `ShorelineFrame` (or adapt `FluidFrame`) to dynamically tile and slice shoreline assets across variable corridor lengths and pool perimeters using cardinal orientation schemas.
 
 ##### Tasks
 
-**1. Task: Multi-Branch Fluid Stream Propagation**
+**1. Task: Schemas, Models & Asset Recipes**
 
-*Objective*: Implement recursive branch raycasting in `Actuator` to project secondary flows past obstacle flanks.
+*Objective*: Integrate shoreline definitions into engine taxonomy and configuration registries.
 
-* [] Subtask: Refactor `Actuator.pump()` to evaluate left and right flank discharge points after annular pool partitioning.
-* [] Subtask: Emit secondary `Hitbox` corridors for active downstream branches.
-* [] Subtask: Update `FluidFrame.keys()` to render multi-branch offset manifests.
+* [] Subtask: Add `SHORELINES` to `AssetInstances` enum in `app/config/enums.py`.
+* [] Subtask: Add `shorelines: Dict[str, EffectProperties]` to `EffectPropertyInstances` schema in `app/models/properties.py`.
+* [] Subtask: Implement `ShorelineState` with `orientation`, `length`, `bidirectional`, and `parent_fluid` fields in `app/models/state/objects.py`.
+* [] Subtask: Add recipes for cardinal shoreline assets in `recipes/main.yaml`.
 
-**2. Task: Bridge Taxonomy & Hitbox Masking**
+**2. Task: Shoreline Frame Indexing & Slicing**
 
-*Objective*: Implement bridges that dynamically suppress fluid hazard hitboxes.
+*Objective*: Render repeating and sliced shoreline segments along variable stream lengths.
 
-* [] Subtask: Register `bridges` in `crafts` property schemas with an `elevation: 1` attribute.
-* [] Subtask: In `SpatialMechanics`, filter out overlapping `mass: -1` fluid hitboxes when an entity intersects an active bridge hitbox.
+* [] Subtask: Implement `ShorelineFrame` in `app/assets/frames/core.py` supporting cardinal crop indexing (`north`, `south`, `east`, `west`).
+* [] Subtask: Add fractional distal slicing for shoreline edges meeting truncated boundaries.
+* [] Subtask: Verify shoreline Z-ordering defaults (`depth = 0`, `height = 0`) to layer foam over water tiles.
 
-**3. Task: Fluid Current Dynamics**
+**3. Task: Procedural Shoreline Generation**
 
-*Objective*: Apply passive velocity vectors to dynamic bodies in fluid corridors.
+*Objective*: Automatically instantiate and synchronize shoreline entities with fluid geometry.
 
-* [] Subtask: Add `current: Velocity` vector calculation to `Actuator` based on `stream.source`.
-* [] Subtask: In `FluidMechanics`, accelerate floating bodies ($m > 0$) along the current vector, clamping to terminal stream speed.
+* [] Subtask: Add `_calculate_shoreline_flanks()` to `Actuator` in `app/services/generators/game/actuator.py`.
+* [] Subtask: Generate flank bounds for linear stream corridors based on emitter `source` and `length`.
+* [] Subtask: Generate outer flank bounds for annular obstacle pools.
+* [] Subtask: Add `cradle.spawn_shoreline()` and manage child shoreline lifecycles during `Actuator.pump()`.
+
+**4. Task: Virtual Edge Motion & Immersion Transitions**
+
+*Objective*: Resolve edge crossing physics, positional shifting, and submersion gating.
+
+* [] Subtask: Add shoreline sensor intersection checks in `app/game/logic/modules/motion/fields.py`.
+* [] Subtask: Implement orthogonal positional shift $\vec{\delta}_{\text{shore}}$ upon water entry.
+* [] Subtask: Gate `mutators.triggers.submerged = True` strictly to entities past the shoreline edge.
+* [] Subtask: Dispatch `cradle.spawn_passive("splash", ...)` at the shoreline crossing coordinate.
+* [] Subtask: Configure reverse traversal logic for bi-directional banks vs. one-way ledges.
+
+```
+
+```

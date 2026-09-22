@@ -1,6 +1,7 @@
 effects:
   fluids:
-    waterflow:
+    # -------------------------------------------------------
+    waterflow-00:
       dimensions:
         w: 32
         l: 32
@@ -8,5 +9,16 @@ effects:
         type: continuous
         delay: 60
       count: 3
+      hitboxes: null
+      mass: 0
+    # -------------------------------------------------------
+    waterflow-01:
+      dimensions:
+        w: 32
+        l: 96
+      lifecycle:
+        type: continuous
+        delay: 20
+      count: 5
       hitboxes: null
       mass: 0

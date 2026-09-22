@@ -78,6 +78,10 @@ class Actuator:
             ):
                 continue
 
+            # Rafts do not participate in fluid obstruction
+            if asset.instance == AssetInstances.RAFTS.value:
+                continue
+
             if asset.instance == AssetInstances.GATES.value and asset.state.switch:
                 continue
 
@@ -88,13 +92,13 @@ class Actuator:
                 ol = hb.dimensions.l
 
                 # Exclude bodies positioned at or behind the emitter origin
-                if direction == Directions.DOWN.value and oy <= fy:
+                if direction == Directions.UP.value and oy >= fy:
                     continue
-                elif direction == Directions.UP.value and (oy + ol) >= fy:
+                elif direction == Directions.DOWN.value and (oy + ol) <= fy:
                     continue
-                elif direction == Directions.RIGHT.value and ox <= fx:
+                elif direction == Directions.LEFT.value and ox >= fx:
                     continue
-                elif direction == Directions.LEFT.value and (ox + ow) >= fx:
+                elif direction == Directions.RIGHT.value and (ox + ow) <= fx:
                     continue
 
                 obstacle_tuples.append((ox, oy, ow, ol, asset))
@@ -151,6 +155,10 @@ class Actuator:
         fluid: Asset,
         flow: int
     ) -> Tuple[Pool, List[Hitbox]]:
+        """
+        Calculates a solid annular flood zone around an obstacle struck by fluid.
+        Floods the complete outer bounding box to prevent transparent pixel edge bleed.
+        """
         ox = obstacle.state.position.x
         oy = obstacle.state.position.y
         ow = obstacle.dimensions.w
@@ -169,14 +177,12 @@ class Actuator:
 
         pool_bounds = Pool(x=pool_x, y=pool_y, w=pool_w, l=pool_l)
 
-        flank_hitboxes = [
-            Hitbox(Position(pool_x - fx, pool_y - fy), Dimensions(pool_w, flow * fl)),
-            Hitbox(Position(pool_x - fx, (oy + ol) - fy), Dimensions(pool_w, flow * fl)),
-            Hitbox(Position(pool_x - fx, oy - fy), Dimensions(flow * fw, ol)),
-            Hitbox(Position((ox + ow) - fx, oy - fy), Dimensions(flow * fw, ol))
+        # Single solid hitbox covering the entire rectangular pool area
+        pool_hitboxes = [
+            Hitbox(Position(pool_x - fx, pool_y - fy), Dimensions(pool_w, pool_l))
         ]
 
-        return pool_bounds, flank_hitboxes
+        return pool_bounds, pool_hitboxes
 
     def pump(self, fluid: Asset, board: Board) -> Tuple[int, Optional[Pool], List[Hitbox]]:
         source_prop = fluid.state.source
@@ -209,7 +215,6 @@ class Actuator:
             hitboxes.append(stream_hb)
 
         pool_bounds: Optional[Pool] = None
-        # Filter out boundaries
         if isinstance(struck_obstacle, Asset) and flow > 0:
             pool_bounds, pool_hitboxes = self._partition_pool(struck_obstacle, fluid, flow)
             hitboxes.extend(pool_hitboxes)
@@ -218,7 +223,7 @@ class Actuator:
         fluid.state.pool = pool_bounds
         fluid.state.hitboxes = hitboxes
         fluid.state.dirty = False
-        fluid.properties.hitboxes = hitboxes
+        # Do not mutate fluid.properties.hitboxes (properties are static/shared across instances)
 
         logger.info(
             settings.SEPARATOR.join([

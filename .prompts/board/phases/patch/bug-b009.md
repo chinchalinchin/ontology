@@ -1,4 +1,5 @@
 ##### Bug B009: Irregular Composition Behavior
+
 !!! note
     State dumps are snapshots of the game state at the *end* of the session.
 

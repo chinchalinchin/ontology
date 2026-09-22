@@ -52,7 +52,7 @@ compositions:
                   x: 43
                   y: 163
             crates:
-              - id: bookshelf
+              - id: wood-bookshelf
                 name: house-bookshelf
                 layer: brick-house-compose-layer
                 depth: 0

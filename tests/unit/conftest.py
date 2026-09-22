@@ -132,6 +132,7 @@ from libs.core.math.space import Space
 # ---------------------------------------------------------------------------
 
 class DummyFrame(Frame):
+    def channels(self, id, state, properties): return []
     def keys(self, id, state): return [id]
     def index(self, id, properties): return {}
 
@@ -527,7 +528,8 @@ def mock_spawnables():
         expressions={},
         collectables={},
         hazards={},
-        struts={}
+        struts={},
+        passive={}
     )
 
 
@@ -721,6 +723,25 @@ def mock_crate():
     )
     return Asset(tax, props, state, DummyFrame(), DummyAnimation())
 
+@pytest.fixture
+def mock_raft():
+    """
+    Raft asset fixture for testing hydrodynamic drift and surface interception.
+    """
+    tax = Taxonomy(
+        "raft-1",
+        "wood-raft",
+        AssetCategories.OBJECTS.value,
+        AssetInstances.RAFTS.value
+    )
+    props = ObjectProperties(dimensions=Dimensions(w=32, l=32), mass=5)
+    state = PositionalState(
+        id="raft-1",
+        layer="0",
+        position=Position(x=70, y=50),
+        velocity=Velocity(vx=0.0, vy=0.0)
+    )
+    return Asset(tax, props, state, DummyFrame(), DummyAnimation())
 
 @pytest.fixture
 def mock_space_grid():

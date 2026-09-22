@@ -55,6 +55,17 @@ class Frame(ABC):
         """
         pass
 
+    @abstractmethod
+    def channels(self, 
+        id: str, 
+        state: AssetState,
+        properties: AssetProperties
+    ) -> List[Tuple]:
+        """
+        Emits auxiliary rendering directives (tints, masks, overlays) evaluated against dynamic asset state.
+        """
+        pass
+
 
 class Animation(ABC):
     """
@@ -118,10 +129,15 @@ class Asset:
 
     @property
     def hitboxes(self) -> List[Hitbox]:
-        """Unified hitbox retrieval. Defaults to sprite bounding box if none explicitly defined."""
+        """
+        Unified hitbox retrieval. Prefers dynamic state hitboxes if present,
+        falling back to static property definitions.
+        """
+        state_hbs = getattr(self.state, "hitboxes", None)
+        if state_hbs is not None:
+            return state_hbs
+
         hbs = self.properties.hitboxes
-            
-        # Automatically generate a default physics body matching the visual dimensions
         if not hbs and self.dimensions:
             hbs = [Hitbox(Position(0, 0), self.dimensions)]
             

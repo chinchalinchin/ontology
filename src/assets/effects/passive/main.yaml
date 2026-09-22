@@ -38,14 +38,15 @@ effects:
       hitboxes: null
       mass: -1
     # -------------------------------------------------------
-    water-ripples-vertical:
-      count: 5
+    # ------------------------------------ PERIODIC EFFECTS
+    # -------------------------------------------------------
+    splash: 
+      count: 3
       dimensions:
-        w: 32
-        l: 96
-      lifecycle:
-        type: continuous
-        delay: 20
+        w: 60
+        l: 12
+      lifecycle: 
+        type: temporary
+        delay: 15
       hitboxes: null
-      mass: 0
-
+      mass: -1

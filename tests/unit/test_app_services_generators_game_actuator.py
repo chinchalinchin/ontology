@@ -53,38 +53,6 @@ def test_actuator_pump_down_to_boundary(mock_fluid_board):
     assert hitboxes[0].dimensions.l == 319
     assert fluid.state.dirty is False
 
-
-def test_actuator_pump_down_to_obstacle_with_pool(mock_fluid_board):
-    """
-    Verify internal obstacle collision truncates stream and forms 4-flank annular pool.
-    """
-    board = mock_fluid_board
-    fluid = board.instances(AssetInstances.FLUIDS.value)[0]
-    fluid.state.position = Position(x=70, y=0)
-    fluid.state.source = Directions.DOWN
-    fluid.state.flow = 2
-
-    crate = board.instances(AssetInstances.CRATES.value)[0]
-    crate.state.position = Position(x=70, y=96)
-    crate.properties.dimensions = Dimensions(w=32, l=32)
-
-    actuator = Actuator()
-    length, pool, hitboxes = actuator.pump(fluid, board)
-
-    assert length == 96
-    assert pool is not None
-    # Pool bounds: ox - 2*32 = 6, oy - 2*32 = 32, ow + 4*32 = 160, ol + 4*32 = 160
-    assert pool.x == 6
-    assert pool.y == 32
-    assert pool.w == 160
-    assert pool.l == 160
-
-    # 1 stream hitbox + 4 pool flank hitboxes
-    assert len(hitboxes) == 5
-    assert hitboxes[0].dimensions.w == 32
-    assert hitboxes[0].dimensions.l == 96
-
-
 def test_actuator_upstream_obstacles_ignored(mock_fluid_board):
     """
     Verify obstacles positioned at or behind emitter origin are not struck.
@@ -157,3 +125,73 @@ def test_actuator_character_sheets_ignored(mock_fluid_board, mock_board_assets):
     length, pool, hitboxes = actuator.pump(fluid, board)
 
     assert length == 120
+
+def test_actuator_pump_down_to_obstacle_with_pool(mock_fluid_board):
+    """
+    Verify internal obstacle collision truncates stream and forms a solid annular pool.
+    """
+    board = mock_fluid_board
+    fluid = board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid.state.position = Position(x=70, y=0)
+    fluid.state.source = Directions.DOWN
+    fluid.state.flow = 2
+
+    crate = board.instances(AssetInstances.CRATES.value)[0]
+    crate.state.position = Position(x=70, y=96)
+    crate.properties.dimensions = Dimensions(w=32, l=32)
+
+    actuator = Actuator()
+    length, pool, hitboxes = actuator.pump(fluid, board)
+
+    assert length == 96
+    assert pool is not None
+    # Pool bounds: ox - 2*32 = 6, oy - 2*32 = 32, ow + 4*32 = 160, ol + 4*32 = 160
+    assert pool.x == 6
+    assert pool.y == 32
+    assert pool.w == 160
+    assert pool.l == 160
+
+    # 1 stream hitbox + 1 solid pool hitbox covering outer flood extent
+    assert len(hitboxes) == 2
+    assert hitboxes[0].dimensions.w == 32
+    assert hitboxes[0].dimensions.l == 96
+    assert hitboxes[1].position.x == -64  # pool.x - fluid.x (6 - 70)
+    assert hitboxes[1].position.y == 32   # pool.y - fluid.y (32 - 0)
+    assert hitboxes[1].dimensions.w == 160
+    assert hitboxes[1].dimensions.l == 160
+
+
+def test_actuator_rafts_ignored_as_obstacles(mock_fluid_board, mock_raft):
+    """
+    Verify rafts (RAFTS) bypass raycast truncation and do not occlude fluids.
+    """
+    board = mock_fluid_board
+    fluid = board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid.state.position = Position(x=70, y=0)
+    fluid.state.source = Directions.DOWN
+
+    mock_raft.state.position = Position(x=70, y=40)
+    board.add([mock_raft])
+
+    crate = board.instances(AssetInstances.CRATES.value)[0]
+    crate.state.position = Position(x=70, y=120)
+
+    actuator = Actuator()
+    length, pool, hitboxes = actuator.pump(fluid, board)
+
+    # Stream ignores raft at y=40 and truncates on crate at y=120
+    assert length == 120
+
+
+def test_actuator_pump_does_not_mutate_shared_properties(mock_fluid_board):
+    """
+    Verify Actuator.pump does not mutate shared EffectProperties.hitboxes.
+    """
+    board = mock_fluid_board
+    fluid = board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid.properties.hitboxes = []
+
+    actuator = Actuator()
+    actuator.pump(fluid, board)
+
+    assert fluid.properties.hitboxes == []

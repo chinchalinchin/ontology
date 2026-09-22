@@ -146,7 +146,8 @@ Mutators are *condition-driven*. They may also be *parameterized*; In other word
     - Triggered if Sprite is surrounded by more than `fear.enemy` enemies with the pixel distance of `fear.radius`.
 - `triggers.vision`: Trigger if a Sprite is within visible distance of its Goal.
 - `trigger.action`: Triggers if a Sprite is within acting distance of its Goal.
-
+* `triggers.submerged`: Triggered when the entity's footprint intersects an active Fluid stream or pool without being aboard a Raft or Bridge. When active, `Screen.draw` renders a semi-transparent water tint over the lower half of the Sprite, and `Cradle` dispatches a temporary `splash` effect.
+```
 **Parameters**
 
 - `parameters.fear.radius`: Radius of separation within which the Sprite triggers the `triggers.fear` mutator. Measured in pixels.

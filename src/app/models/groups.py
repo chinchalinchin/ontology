@@ -37,4 +37,5 @@ class SpawnableGroup:
     expressions: Dict[str, CursorProperties]
     collectables: Dict[str, EffectProperties]
     hazards: Dict[str, EffectProperties]
+    passive: Dict[str, EffectProperties]
     struts: Dict[str, CraftProperties]
