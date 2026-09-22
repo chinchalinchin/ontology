@@ -210,7 +210,7 @@ Evaluated during `fields.update()`. When an entity intersects a `shoreline` sens
   * `bidirectional == True`: Allows wading back onto land. Crossing back clears `submerged` and removes current velocity.
   * `bidirectional == False` (cliff/ledge): Treats the edge as a sheer drop. Reverse traversal is blocked by nullifying velocity components directed against $\hat{n}_{\text{water}}$.
 
-#### Refactor: Phase 09.02 v2 - Shores & Geography (CANCELLED: See v2 below)
+#### Refactor: Phase 09.02 v2 - Shores & Geography (CANCELLED: See v3 below)
 
 **Overview**
 
@@ -381,7 +381,7 @@ Right Flank:
 | **Multi-Biome Support** | Impossible (Entire stream used 1 bank texture) | Native (Stream changes bank graphics when crossing tile types) |
 | **Lifecycle** | Orphan risks during crate/gate movement | Tracked via `fluid.state.shorelines` and pruned on dirty re-pumps |
 
-#### Refactor: Phase 09.02 v3 - Shorelines & Geography
+#### Refactor: Phase 09.02 v3 - Shorelines & Geography (CANCELLED: See v4 below)
 
 **Overview**
 
@@ -436,60 +436,55 @@ Implement sensory edge crossing in `fields.py`. Detect when character footprints
 
 ##### Tasks
 
+!!! warning
+  This set of Tasks has been cancelled due to the subsequent Architectural Analyses. They have been kept merely for record-keeping purposes, to demonstrate the thought process that led to the actual Task list.
+
 **1. Task: Schemas, Taxonomy & Secondary Indexing**
 
 *Objective*: Establish `GEOGRAPHY` data structures and the `(tile, fluid) -> shoreline` relational index.
 
-* [ ] Subtask: Add `GEOGRAPHY = "geography"` to `AssetCategories` and `SHORELINES = "shorelines"` to `AssetInstances` in `app/config/enums.py`.
-* [ ] Subtask: Implement `GeographyProperties` in `app/models/properties.py` containing `tile: str`, `fluid: Optional[str]`, `thickness: int = 8`, `dimensions: Dimensions`, `hitboxes: List[Hitbox]`, and `mass: int = -1`.
-* [ ] Subtask: Add `geography: GeographyPropertyInstances` to `PropertiesSchema`.
-* [ ] Subtask: Implement inverted lookup cache `_shoreline_index: Dict[Tuple[str, Optional[str]], str]` in `Registry` or `Loader` mapping `(tile_id, fluid_id)` to `shoreline_id`.
-* [ ] Subtask: Implement `ShorelineState` in `app/models/state/objects.py` with `orientation`, `length`, `thickness`, `bidirectional`, and `parent_fluid`.
-* [ ] Subtask: Add `shorelines: List[str]` to `FluidState` to track managed child entities.
+* [!: Cancelled] Subtask: Add `GEOGRAPHY = "geography"` to `AssetCategories` and `SHORELINES = "shorelines"` to `AssetInstances` in `app/config/enums.py`.
+* [!: Cancelled] Subtask: Implement `GeographyProperties` in `app/models/properties.py` containing `tile: str`, `fluid: Optional[str]`, `thickness: int = 8`, `dimensions: Dimensions`, `hitboxes: List[Hitbox]`, and `mass: int = -1`.
+* [!: Cancelled] Subtask: Add `geography: GeographyPropertyInstances` to `PropertiesSchema`.
+* [!: Cancelled] Subtask: Implement inverted lookup cache `_shoreline_index: Dict[Tuple[str, Optional[str]], str]` in `Registry` or `Loader` mapping `(tile_id, fluid_id)` to `shoreline_id`.
+* [!: Cancelled] Subtask: Implement `ShorelineState` in `app/models/state/objects.py` with `orientation`, `length`, `thickness`, `bidirectional`, and `parent_fluid`.
+* [!: Cancelled] Subtask: Add `shorelines: List[str]` to `FluidState` to track managed child entities.
 
 **2. Task: ShorelineFrame Indexing & Slicing**
 
 *Objective*: Render repeating and sliced shoreline segments along variable stream lengths.
 
-* [ ] Subtask: Implement `ShorelineFrame` in `app/assets/frames/core.py`.
-* [ ] Subtask: Index 4 cardinal rows (0: North, 1: West, 2: South, 3: East) in `ShorelineFrame.index()`.
-* [ ] Subtask: Generate full-tile keys and fractional distal crop keys in `ShorelineFrame.index()`.
-* [ ] Subtask: Implement `ShorelineFrame.keys()` emitting tile repetition offsets along `state.length` with terminal slice remainders.
-* [ ] Subtask: Verify Z-order default (`depth = 0`, `height = 0`) to sort banks above water canvas.
+* [!: Cancelled] Subtask: Implement `ShorelineFrame` in `app/assets/frames/core.py`.
+* [!: Cancelled] Subtask: Index 4 cardinal rows (0: North, 1: West, 2: South, 3: East) in `ShorelineFrame.index()`.
+* [!: Cancelled] Subtask: Generate full-tile keys and fractional distal crop keys in `ShorelineFrame.index()`.
+* [!: Cancelled] Subtask: Implement `ShorelineFrame.keys()` emitting tile repetition offsets along `state.length` with terminal slice remainders.
+* [!: Cancelled] Subtask: Verify Z-order default (`depth = 0`, `height = 0`) to sort banks above water canvas.
 
 **3. Task: Grid-Discretized Flank Extraction in Actuator**
 
 *Objective*: Map adjacent board tiles to shoreline segments during fluid generation.
 
-* [ ] Subtask: Implement `_sample_flank_cells()` in `app/services/generators/game/actuator.py` to step along linear stream and pool margins at `TILE_HASH_SIZE` increments.
-* [ ] Subtask: Implement `_resolve_tile_shorelines()` querying `board.tile(layer, pos)` at each cell and mapping to `shoreline_id`.
-* [ ] Subtask: Coalesce contiguous cells sharing the same `shoreline_id` into cohesive `ShorelineState` segments.
-* [ ] Subtask: Add distal remainder slicing to handle fractional terminal stream lengths.
-* [ ] Subtask: Implement child shoreline cleanup in `Actuator.pump()`: purge entities tracked in `fluid.state.shorelines` from `Board` before re-allocating.
-* [ ] Subtask: Add `cradle.spawn_shoreline()` to `app/services/generators/game/cradle.py`.
+* [!: Cancelled] Subtask: Implement `_sample_flank_cells()` in `app/services/generators/game/actuator.py` to step along linear stream and pool margins at `TILE_HASH_SIZE` increments.
+* [!: Cancelled] Subtask: Implement `_resolve_tile_shorelines()` querying `board.tile(layer, pos)` at each cell and mapping to `shoreline_id`.
+* [!: Cancelled] Subtask: Coalesce contiguous cells sharing the same `shoreline_id` into cohesive `ShorelineState` segments.
+* [!: Cancelled] Subtask: Add distal remainder slicing to handle fractional terminal stream lengths.
+* [!: Cancelled] Subtask: Implement child shoreline cleanup in `Actuator.pump()`: purge entities tracked in `fluid.state.shorelines` from `Board` before re-allocating.
+* [!: Cancelled] Subtask: Add `cradle.spawn_shoreline()` to `app/services/generators/game/cradle.py`.
 
 **4. Task: Virtual Edge Motion & Immersion Transitions**
 
 *Objective*: Handle spatial drop shifts, immersion gating, and ledge constraints.
 
-* [ ] Subtask: Add shoreline sensor query pass in `app/game/logic/modules/motion/fields.py`.
-* [ ] Subtask: Calculate velocity dot products against shoreline normals to verify direction of traversal (land $\to$ water vs water $\to$ land).
-* [ ] Subtask: Apply orthogonal spatial nudge $\vec{\delta}_{\text{shore}}$ upon water entry.
-* [ ] Subtask: Gate `mutators.triggers.submerged = True` strictly to entities clearing the shoreline sensor.
-* [ ] Subtask: Dispatch `board.cradle.spawn_passive("splash", ...)` at the crossing coordinate.
-* [ ] Subtask: Enforce one-way constraint on non-bidirectional banks by nullifying reverse velocities.
+* [!: Cancelled]  Subtask: Add shoreline sensor query pass in `app/game/logic/modules/motion/fields.py`.
+* [!: Cancelled]  Subtask: Calculate velocity dot products against shoreline normals to verify direction of traversal (land $\to$ water vs water $\to$ land).
+* [!: Cancelled]  Subtask: Apply orthogonal spatial nudge $\vec{\delta}_{\text{shore}}$ upon water entry.
+* [!: Cancelled]  Subtask: Gate `mutators.triggers.submerged = True` strictly to entities clearing the shoreline sensor.
+* [!: Cancelled]  Subtask: Dispatch `board.cradle.spawn_passive("splash", ...)` at the crossing coordinate.
+* [!: Cancelled]  Subtask: Enforce one-way constraint on non-bidirectional banks by nullifying reverse velocities.
 
 ##### User Review
 
 Okay, bugs logged and documentation updated. Backlog mostly accepted. I think the task list is basically finalized, but two further points I want to drill down into before proceeding to the implementation of the refactor. 
-
-Starting with the simpler issue:
-
-```markdown
-* [ ] Subtask: Implement `ShorelineFrame` in `app/assets/frames/core.py`.
-```
-
-It seems like the ShorelineFrame is basically identical to the FluidFrame logic, is it not? Is there any reason the FluidFrame cannot be reused?
 
 ```markdown
 - [ ] Subtask: Implement inverted lookup cache `_shoreline_index: Dict[Tuple[str, Optional[str]], str]` in `Registry` or `Loader` mapping `(tile_id, fluid_id)` to `shoreline_id`.
@@ -541,3 +536,173 @@ class Mechanic(ABC):
 ```
 
 Might need modified. Currently the Builder checks the class name on the Mechanics to inject their dependencies. It might be better to setup a codified interface to accept the Mechanic dependencies.
+
+##### Architectural Analysis
+
+**Secondary Indexing: Location & Lifecycle**
+
+The relationship between `Tile`, `Fluid`, and `Shoreline` is static metadata declared in YAML:
+
+```yaml
+# src/assets/geography/main.yaml
+geography:
+  shorelines:
+    shoreline-grass-water:
+      tile: tile-grass-meadow
+      fluid: fluid-water-clean      # Optional constraint
+      dimensions: { w: 32, l: 32 }
+      thickness: 8
+      mass: -1
+
+```
+
+**Where the Index Lives**
+
+Neither the `Registry`, `Screen`, nor `Board` needs to know that `tile-grass-meadow` maps to `shoreline-grass-water`.
+
+* The **`Registry`** only cares about rasterizing image files into `TexturePtr` crop maps.
+* The **`Board`** is a database of deployed entities.
+* The **`Screen`** only reads resolved frame keys.
+
+The only component that performs this relational translation is the **`Actuator`**. Therefore, the lookup table belongs directly in the `Actuator` domain as a `ShorelineIndex`:
+
+```python
+class ShorelineIndex:
+    """
+    Relational lookup table mapping (tile_id, fluid_id) tuples to shoreline asset IDs.
+    """
+    def __init__(self, entries: Dict[Tuple[str, Optional[str]], str]):
+        self._entries = entries
+
+    def resolve(self, tile_id: str, fluid_id: Optional[str] = None) -> Optional[str]:
+        # 1. Exact match: (tile, fluid)
+        if fluid_id and (tile_id, fluid_id) in self._entries:
+            return self._entries[(tile_id, fluid_id)]
+        # 2. Substrate fallback: (tile, None)
+        return self._entries.get((tile_id, None))
+
+```
+
+**Compilation Timing**
+
+The `ShorelineIndex` is built during the **Bootstrapping Phase** (in `Orchestrator.__init__`) immediately after `PropertiesSchema` is parsed by Pydantic:
+
+1. `Orchestrator` iterates over `properties.geography.shorelines`.
+2. It compiles `ShorelineIndex({(p.tile, p.fluid): asset_id, ...})`.
+3. It passes `ShorelineIndex` into the `Actuator` during construction.
+
+**Actuator Lifecycle & Mechanic Dependency Injection**
+
+Currently, `Actuator` is instantiated ad-hoc inside `Migrator` and `FluidMechanics`:
+
+* In `Migrator._build_generator()`: `actuator = Actuator()`
+* In `FluidMechanics.__init__()`: `self.actuator = Actuator()`
+
+If `Actuator` requires injected properties or a `ShorelineIndex`, ad-hoc instantiation becomes untenable. Furthermore, inspecting mechanic class names in the Builder (`if isinstance(m, TransitionMechanics): ...`) is a brittle anti-pattern.
+
+**Evaluating the Mechanic Interface**
+
+```python
+class Mechanic(ABC):
+    @abstractmethod 
+    def update(self, 
+        board: Board, 
+        delta: float,
+        bus: collections.deque, 
+        payload: DevicePayload
+    ) -> None:
+        pass
+
+```
+
+The runtime interface `Mechanic.update(...)` is **not** where static dependencies belong. Polluting `update()` with `actuator`, `isl_matrix`, or `plot_engine` would bloat the game loop signature and violate Interface Segregation. Static dependencies belong in the **constructor (`__init__`)**.
+
+**Recommended Solution: Mechanics Factory with Constructor Injection**
+
+Replace generic `cls()` instantiation with an explicit `MechanicsFactory` (or provider registry) inside the orchestration pipeline.
+
+```
+Orchestrator Bootstrapping
+┌─────────────────────────┐
+│     PropertiesSchema    │ ───> ShorelineIndex ───> Actuator
+└─────────────────────────┘                              │
+                                                         ▼
+┌─────────────────────────┐                     ┌──────────────────┐
+│ Configuration (YAML)    │ ──────────────────> │ MechanicsFactory │
+└─────────────────────────┘                     └────────┬─────────┘
+                                                         │
+                         ┌───────────────────────────────┴───────────────────────────────┐
+                         ▼                                                               ▼
+             FluidMechanics(actuator)                                        TransitionMechanics(matrix)
+
+```
+
+```python
+class MechanicsFactory:
+    """
+    Instantiates mechanics with explicit constructor dependency injection,
+    eliminating runtime class-name inspection.
+    """
+    def __init__(self, 
+        actuator: Actuator, 
+        isl_matrix: Any, 
+        plot_engine: Any
+    ):
+        self._builders = {
+            "fluid": lambda: FluidMechanics(actuator=actuator),
+            "transition": lambda: TransitionMechanics(matrix=isl_matrix),
+            "plot": lambda: PlotMechanics(engine=plot_engine),
+            "motion": lambda: MotionMechanics(),
+            "animation": lambda: AnimationMechanics(),
+            "menu": lambda: MenuMechanics(),
+            "remove": lambda: RemoveMechanics(),
+            "combat": lambda: CombatMechanics(),
+            "interaction": lambda: InteractionMechanics(),
+            "cognition": lambda: CognitionMechanics(),
+            "navigation": lambda: NavigationMechanics(),
+            "player": lambda: PlayerMechanics(),
+            "social": lambda: SpeechMechanics(),
+            "switch": lambda: SwitchMechanics(),
+            "projectile": lambda: ProjectileMechanics(),
+            "collision": lambda: CollisionMechanics(),
+        }
+
+    def build(self, key: str) -> Mechanic:
+        builder = self._builders.get(key)
+        if not builder:
+            raise KeyError(f"No mechanic factory registered for key: '{key}'")
+        return builder()
+
+```
+
+**Why This Cleanly Resolves Both Problems**
+
+1. **Eliminates Ad-Hoc Instantiation**:
+
+`Actuator` is constructed once during bootstrap:
+
+```python
+shoreline_index = ShorelineIndex.from_properties(properties.geography.shorelines)
+actuator = Actuator(shorelines=shoreline_index)
+```
+
+2. **Unified Migrator & FluidMechanics Dependency**:
+
+* `Migrator` receives `actuator` directly in its constructor: `Migrator(board, properties, configurations, actuator=actuator)`.
+* `FluidMechanics` receives the exact same `actuator` via `MechanicsFactory`.
+
+3. **Strict Immutability**:
+
+Mechanics never exist in an unconfigured, half-initialized state. No secondary `configure()` calls or class-name checks are required.
+
+4. **Preserves the Core Engine Loop**:
+
+The `Mechanic.update()` interface remains strictly focused on per-frame game state (`board`, `delta`, `bus`, `payload`).
+
+##### Grooming: Finalization
+
+Consolidate the discussion into a finalized task list. Integrate the Factory recommendation into the existing framework.
+
+#### Refactor: Phase 09.02 v4 - Shorelines & Geography
+
+TODO
