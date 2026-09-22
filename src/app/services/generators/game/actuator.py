@@ -226,11 +226,11 @@ class Actuator:
         # Do not mutate fluid.properties.hitboxes (properties are static/shared across instances)
 
         logger.info(
-            settings.SEPARATOR.join([
-                "Telemetry:Fluid",
-                fluid.name,
-                direction
-            ]) + f" | Length: {stream_length}px | Struck: {getattr(struck_obstacle, 'name', 'bounds')} | Pool: {pool_bounds is not None}"
+            f"Fluid(name={fluid.name}, direction={direction}): "
+            f" Length: {stream_length}px,  "
+            f"Struck: {getattr(struck_obstacle, 'name', 'bounds')}, "
+            f"Pool: {pool_bounds is not None}"
         )
 
         return stream_length, pool_bounds, hitboxes
+    

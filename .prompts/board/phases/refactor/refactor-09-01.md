@@ -1446,3 +1446,201 @@ There is, of course, one slight problem that might possibly be a gigantic can wo
 The channel does its job. It only covers the Sprite frame based on the split calculations and only applies to non-transparent pixels. However, along the edges of the Fluid, the "submersion" channel renders slightly above where the Fluid actually starts, due to the non-dependence of the split calculation on the Fluid asset it is occupying. 
 
 It seems like in order to rectify this the Screen would have to know the locations of Fluids, which violates the separate of responsbilities. I don't see a nice way around it.
+
+##### Architectural Analysis
+
+The root problem is a mismatch of dimensional assumptions:
+
+**The 1D Local Assumption vs. 2D World Reality**
+
+* `SpriteFrame.channels` assumes immersion is a static, 1D attribute of the character: *"If submerged, the water surface is always at local $y = \frac{l}{2}$ across the full width $w$."*
+* In the world, immersion is a **2D spatial intersection**. When an entity steps into water from the top, their feet ($y + l$) cross the threshold first. Until the character's waist ($y + \frac{l}{2}$) reaches the fluid coordinate $y_{\text{fluid}}$, applying a $\frac{l}{2}$ split causes the aquatic tint to start in mid-air over dry land.
+
+**Path 1: Leave the Can of Worms Closed (Level Design & Anchor Tuning)**
+
+This is how most classical 2D engines (and LPC specifications) handle water:
+
+1. *Gate Submersion on Footprint Anchors, Not Bounding Boxes:*
+
+Currently, `_intersects(asset, fluid)` checks the whole entity body or default hitbox. If the player's top-left origin is at $y = 180$ and $l = 64$, their feet are at $y = 244$. If the fluid starts at $y = 220$, the collision flags `submerged = True` immediately, while the waist is still up at $y = 212$ (over dry land).
+
+* If `fields.py` only triggers `submerged = True` when the entity's **sensory anchor / feet** penetrate past the waistline depth ($y + \frac{l}{2} \ge y_{\text{fluid}}$), the tint never appears prematurely on dry land.
+
+
+2. *Masking with the Splash Particle:*
+
+This is the primary functional reason the `splash` effect was added: the temporary splash particle spawned at $(x, y_{\text{waterline}})$ draws on top of the boundary during the entry transition frames, visually hiding the transition discontinuity until the character is fully inside the corridor.
+
+3. *Shoreline Colliders:*
+
+In practice, open water is bordered by bank tiles (`fore` decals, shoreline cliffs, or $m = 0$ boundaries) or shallow transition tiles, preventing characters from casually grazing edge boundaries.
+
+**Path 2: Pass Overlap Geometry Through State (Clean Architecture)**
+
+If you *do* want the water line to adjust dynamically without violating separation of concerns, **the logic belongs in `fields.py`, not `Screen`.**
+
+`fields.py` *already* has the asset and the fluid in scope during the physics pass, and it already evaluates their bounding boxes:
+
+```
+[fields.py]                               [State]                               [SpriteFrame]                 [Screen]
+Calculates overlap:                  Stores relative offset:              Emits dynamic payload:        Unpacks flat primitive:
+dy = clamp(fluid.y - asset.y, 0, l)  ──>  mutators.triggers.waterline = dy ──> split_y = state.waterline ──> (tex, ..., split_y, ...)
+```
+
+1. *In `fields.py`:*
+
+When an asset intersects a fluid, compute the relative penetration along the vertical axis:
+
+$$
+\text{penetration} = \text{fluid.pos.y} - \text{asset.pos.y}
+$$
+
+$$
+\text{waterline} = \text{clamp}\left(\text{penetration},\, \frac{l}{2},\, l\right)
+$$
+
+Assign `asset.state.mutators.triggers.waterline = waterline`.
+
+2. *In `SpriteFrame.channels`:*
+
+Instead of hardcoding `half_l = l // 2`:
+
+```python
+split_y = getattr(state.mutators.triggers, "waterline", half_l)
+payload = (split_y, 40, 110, 180, 170)
+```
+
+3. *In `Screen.draw`:*
+
+Zero changes required. `Screen` already receives `split_y` via the `ChannelTypes.SUBMERGE` payload and splits the texture accordingly.
+
+`Screen` remains completely ignorant of fluids, `Frame` remains decoupled from the world database, and the dynamic waterline is resolved entirely within the motion/physics domain.
+
+
+**Path 3: The Lateral Boundary Problem (The True Can of Worms)**
+
+The vertical boundary (top/bottom entry) is simple to solve via Path 1 or Path 2 because a horizontal texture split (`split_y`) aligns with the water line.
+
+The real "can of worms" is **lateral boundaries** (e.g., walking east-west across a north-south flowing stream):
+
+* If a 64px-wide sprite wades along the western bank of a 32px-wide stream, half of their torso is over water and half is over grass.
+* Because SDL texture modulation (`SDL_SetTextureColorMod`) operates on whole `SDL_Rect` slices, clipping a character vertically *and* horizontally would require quadrant slicing (4 sub-rectangles per equipment layer) or a hardware stencil buffer.
+
+##### User Review
+
+Hmm. This touches on another problem with Fluids, actually, and it might actually yield the cleanest solution. Path 1 is the cleanest solution. However, needto modify it slightly. There are shoreline assets that haven't been brought into the engine yet. The edges of Fluid are currently very abrupt. They need to transition more naturally into the background tiles. They can be put into the assets directory to index them, but the question is what is the asset category and instance? Inclined to call them Geography and put them under Effects, and part of the Actuator's job can be instantiating Geography assets (instance=shoreline) along the edges of the Fluid. Assets have north, south, east and west facing directions. The correct solution is to treat the shoreline as a virtual edge, so when the the lower boundary of the sprite or object crosses the shoreline, it "falls" into the water, producing the splash and the submersion channel and coinciding with a positional shift equal to the dimension of the shore being traversed (horizontal or vertical dimensions). Subsequent problem will be multiplying the shoreline assets across the boundary, as they will need to be indexed in a similar (or possibly identical, so FluidFrame can probably be reused here) to Fluids. 
+
+Discuss this approach, analyze it and what needs changed to achieve it. Put together a phase for the backlog for this refactor.
+
+##### Architectural Analysis: Shorelines & Virtual Edge Hydrodynamics
+
+**`Category: Effects` vs. Dedicated `Category: Geography`**
+
+In the engine’s Entity-Component-System (ECS) architecture:
+
+* **Category** dictates the *Properties Model* (`AssetProperties`) loaded at boot time via `src/assets//main.yaml`.
+* **Instance** dictates the *State Model* (`AssetState`) hydrated dynamically on the `Board`.
+
+Placing Shorelines under `AssetCategories.EFFECTS` as `AssetInstances.SHORELINES` (or `GEOGRAPHY`) has distinct advantages:
+
+1. **Property Alignment:** Shorelines frequently require frame-animation for water lapping, waves, or foam cascades. `EffectProperties` already contains `LifecycleProperties` (`continuous`, `periodic`, `temporary`), `count`, and `dimensions`, avoiding the creation of an entirely redundant Category root in `PropertiesSchema`.
+2. **Dynamic Generation:** If shorelines are generated procedurally by `Actuator` when a fluid stream pumps or truncates, they behave as environmental effects coupled to the life of the fluid emitter rather than static terrain tiles.
+
+```
+                  AssetCategories.EFFECTS
+                             │
+     ┌──────────────┬────────┴─────┬──────────────┬──────────────┐
+     ▼              ▼              ▼              ▼              ▼
+  fluids         passive        hazards      collectables    shorelines
+(FluidState)  (AnimatorState) (HazardState)   (LotState)   (ShorelineState)
+
+```
+
+**State & Actuator Coupling: Independent Assets vs. Child Geometry**
+
+A key design fork is whether Shorelines exist on the `Board` as independent `Asset` instances or as composite geometric metadata within `FluidState`.
+
+*The Dynamic Churn Problem*
+
+When a Crate is pushed across a fluid stream, `FluidMechanics` sets `fluid.state.dirty = True`. `Actuator.pump()` recalculates raycasts, truncates lengths, and resizes pools.
+
+* **If Shorelines are Independent Board Assets:** `Actuator` must continuously call `board.remove(old_shores)` and `board.add(new_shores)`, invalidating `Board` spatial grid caches, layer caches, and character tables on every tick a dynamic body moves.
+* **If Shorelines are Bound to Fluid:** `FluidState` holds a collection of procedural perimeter descriptors (e.g., `shores: List[ShorelineBoundary]`). `Actuator.pump()` updates them in-place.
+
+**Recommendation:** Treat Shorelines as independent `Asset` instances managed through `Cradle`, but assign them a direct parent reference `fluid_name: str`. When `Actuator.pump()` executes, it clears and rebuilds only the shoreline assets tagged with that fluid's name, preventing full board cache churn.
+
+**The "Virtual Edge" & Ledge Transition Mechanics**
+
+The proposal to treat the shoreline as a virtual edge that triggers a "fall" / hop into the water solves the visual ambiguity of the submersion channel.
+
+```
+       [ DRY TERRAIN ]             [ SHORELINE ]              [ FLUID STREAM ]
+                                 (w_shore / l_shore)
+     ──┬─────────────────────────┬───────────────────────────┬───────────────────
+       │                         │                           │
+       │                         │  Footprint crosses edge:  │
+       │                         │  1. Positional Shift (Δs) ───►  Submerged = True
+       │                         │  2. Cradle.spawn(splash)  │     Current Applied
+       │                         │                           │
+
+```
+
+*Traversal Mechanics*
+
+1. **The Crossing Condition:**
+Immersion should trigger when the entity’s *sensory anchor / footprint* $(x + \frac{w}{2}, y + l)$ crosses the shoreline sensor boundary from the dry side to the wet side.
+2. **Positional Shift ($\vec{\delta}_{\text{shore}}$):**
+When the entity commits across the virtual edge, add an orthogonal displacement vector pointing into the water:
+
+$$\vec{\delta}_{\text{shore}} = \begin{cases}    (0,\, +l_{\text{shore}}) & \text{North bank (entering South)} \\    (0,\, -l_{\text{shore}}) & \text{South bank (entering North)} \\    (+w_{\text{shore}},\, 0) & \text{West bank (entering East)} \\    (-w_{\text{shore}},\, 0) & \text{East bank (entering West)}    \end{cases}$$
+
+This instantaneous shift visually simulates stepping down off a bank or hopping off a ledge, clearing the edge boundary in a single frame.
+3. **Transition Triggering:**
+The moment $\vec{\delta}_{\text{shore}}$ applies:
+
+* `mutators.triggers.submerged` switches to `True`.
+* `Cradle.spawn_passive("splash", layer, pos)` instantiates the water splash particle.
+* The entity is now squarely inside the fluid hitbox; `fields.py` immediately begins imparting $\vec{v}_{\text{current}}$.
+
+4. **Bi-Directional vs. One-Way Ledges:**
+* **Cliffs / Sheer Banks:** One-way. Once in the water, the shoreline edge acts as an obstacle ($m = 0$) preventing the sprite from climbing back out.
+* **Beaches / Shallow Banks:** Bi-directional. Crossing from water onto the shore clears `submerged = False` and negates current velocity.
+
+**Rendering & Frame Multipliers (`FluidFrame` Reuse)**
+
+Can `FluidFrame` be reused for shorelines?
+
+Yes. `FluidFrame` already handles:
+
+1. Dynamic length expansion.
+2. Integer multiple tile repetition (`length // dim`).
+3. Fractional sub-pixel truncation slicing (`length % dim`).
+
+**Necessary Adaptation: Orthogonal Orientation**
+
+In `FluidFrame`, the textures tile *along* the direction of the fluid (`source`). A shoreline, however, tiles *along* the border of the stream (e.g., an East shoreline runs along the Y-axis for a North-South fluid, but its visual face points West into the water).
+
+* Either parameterize `FluidFrame` with an `axis: Axis.PARALLEL | Axis.ORTHOGONAL` setting, or create a specialized `ShorelineFrame(Frame)` that accepts `(orientation: Directions, length: int)`.
+* **Z-Ordering:** Shorelines must declare:
+
+$$\text{depth} = 0, \quad \text{height} = 0$$
+
+This ensures the shoreline sorts *above* the underlying water (`depth: -1`) so the transparent water-lapping foam renders over the fluid, while characters (`depth: 0, height = y + l`) sort cleanly on top.
+
+**Codebase Changes Required**
+
+1. **Schemas & Enums (`models/properties.py`, `config/enums.py`):**
+    * Add `SHORELINES = "shorelines"` to `AssetInstances`.
+    * Add `shorelines: Dict[str, EffectProperties]` to `EffectPropertyInstances`.
+2. **State Models (`models/state/objects.py`):**
+    * Create `ShorelineState(AssetState)`: contains `position`, `orientation: Directions`, `length: int`, `bidirectional: bool`, `parent_fluid: str`.
+3. **Asset Frame (`assets/frames/core.py`):**
+    * Generalize `FluidFrame` or implement `ShorelineFrame` to tile cardinal border segments (`north`, `south`, `east`, `west`) with distal edge slicing.
+4. **Actuator Perimeter Decomposition (`services/generators/game/actuator.py`):**
+    * Update `Actuator` to calculate perimeter flanks of active streams and annular pools.
+    * Dispatch shoreline generation to construct bounding shore sensors along unoccluded fluid borders.
+5. **Environmental Motion & Virtual Edge (`logic/modules/motion/fields.py`):**
+    * Intercept shoreline crossings.
+    * Apply positional shift $\vec{\delta}_{\text{shore}}$, spawn splash particles, and toggle `mutators.triggers.submerged`.
+
+[Discussion Moved to Refactor Phase 09.02](./refactor-09-02.md)
