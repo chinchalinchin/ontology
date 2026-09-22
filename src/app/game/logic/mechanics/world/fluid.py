@@ -10,7 +10,10 @@ from typing import Dict, Set, Tuple, TYPE_CHECKING
 
 # Application Libraries
 import app.config.settings as settings
-from app.config.enums import AssetInstances
+from app.config.enums import (
+    AssetInstances,
+    MechanicExecutors
+)
 from app.game.logic.mechanics import Mechanic
 from app.models.state import DevicePayload
 from app.services.generators.game.actuator import Actuator
@@ -31,7 +34,7 @@ class FluidMechanics(Mechanic):
 
     @property
     def actuator(self) -> Actuator:
-        return self.executors["actuator"]
+        return self.executors[MechanicExecutors.ACTUATOR.value]
     
     def __init__(self):
         super().__init__()

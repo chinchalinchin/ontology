@@ -9,6 +9,7 @@ import logging
 from typing import TYPE_CHECKING, Optional
 
 # Application Libraries
+from app.config.enums import MechanicExecutors
 from app.game.logic.mechanics import Mechanic
 from app.models.state import DevicePayload
 from app.services.translators.base import Executor
@@ -26,7 +27,7 @@ class PlotMechanics(Mechanic):
 
     @property
     def executor(self) -> Optional[Executor]:
-        return self.executors.get("plot")
+        return self.executors.get(MechanicExecutors.PLOT.value)
     
     def update(self, 
         board: Board, 

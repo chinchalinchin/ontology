@@ -10,7 +10,6 @@ from typing import (
 )
 from dataclasses import dataclass, field
 
-
 @dataclass(slots=True)
 class WorldPayload:
     intention: Optional[str] = None

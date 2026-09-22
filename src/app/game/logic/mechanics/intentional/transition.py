@@ -14,7 +14,8 @@ if TYPE_CHECKING:
 from app.config.enums import (
     StaticIntentions,
     AssetInstances,
-    Intentions
+    Intentions,
+    MechanicExecutors
 )
 from app.game.logic.modules.maps import AnimationMap
 from app.game.logic.mechanics import Mechanic
@@ -32,7 +33,7 @@ class TransitionMechanics(Mechanic):
 
     @property
     def executor(self) -> Optional[Executor]:
-        return self.executors.get("intention")
+        return self.executors.get(MechanicExecutors.INTENTION.value)
     
     def update(self, 
         board: Board, 

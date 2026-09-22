@@ -1017,12 +1017,12 @@ def mechanics(config: MechanicConfig, executors: Dict[str, Any]) -> Mechanic:
 
 *Objective*: Provide cardinal row atlas indexing and distal fractional slicing for variable corridor lengths.
 
-* [ ] Subtask: Implement `ShorelineFrame` in `app/assets/frames/core.py`.
-* [ ] Subtask: Index 4 cardinal rows (Row 0: North, Row 1: West, Row 2: South, Row 3: East) in `ShorelineFrame.index()`.
-* [ ] Subtask: Generate fractional crop keys for remainder slices in `ShorelineFrame.index()`.
-* [ ] Subtask: Implement `ShorelineFrame.keys()` emitting tile repetition offsets along `state.length` with terminal slice remainders.
-* [ ] Subtask: Register `FrameRecipe.SHORELINE` to `ShorelineFrame` in `Factory.FRAME_MAP`.
-* [ ] Subtask: Verify default Z-ordering sorts shorelines above fluid surfaces (`depth = 0, height = 0`).
+* [~] Subtask: Implement `ShorelineFrame` in `app/assets/frames/core.py`.
+* [x] Subtask: Index 4 cardinal rows (Row 0: North, Row 1: West, Row 2: South, Row 3: East) in `ShorelineFrame.index()`.
+* [x] Subtask: Generate fractional crop keys for remainder slices in `ShorelineFrame.index()`.
+* [x] Subtask: Implement `ShorelineFrame.keys()` emitting tile repetition offsets along `state.length` with terminal slice remainders.
+* [x] Subtask: Register `FrameRecipe.SHORELINE` to `ShorelineFrame` in `Factory.FRAME_MAP`.
+* [x] Subtask: Verify default Z-ordering sorts shorelines above fluid surfaces (`depth = 0, height = 0`).
 
 **4. Task: Flank Discretization & Procedural Generation in Actuator**
 

@@ -22,12 +22,14 @@ from app.models.state.objects import (
     SwitchState,
     PropertyState,
     MotorState,
+    DialogueState,
+    AttachmentState,
+)
+from app.models.state.effects import (
     EffectState,
     HazardState,
     ReactableState,
     CollectableState,
-    DialogueState,
-    AttachmentState,
     FluidState
 )
 from app.models.state.sprites import (

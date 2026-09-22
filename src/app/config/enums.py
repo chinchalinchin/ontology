@@ -311,6 +311,11 @@ class ChannelTypes(int, Enum):
     TINT            = 0
     SUBMERGE        = 1
 
+class MechanicExecutors(str, Enum):
+    PLOT            = "plot"
+    INTENTION       = "intention"
+    ACTUATOR        = "actuator"
+
 # -------------------------------- WIDGET ENUMERATIONS
 
 class Controllers(str, Enum):

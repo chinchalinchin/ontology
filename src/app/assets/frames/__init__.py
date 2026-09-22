@@ -1,10 +1,17 @@
 from app.assets.frames.core import (
     NoFrame,
     SingleFrame,
-    IterableFrame,
-    StateFrame,
-    SpriteFrame,
+    IterableFrame
+)
+from app.assets.frames.effects import (
     FluidFrame
+)
+from app.assets.frames.geography import (
+    ShorelineFrame
+)
+from app.assets.frames.sheets import (
+    StateFrame,
+    SpriteFrame
 )
 from app.assets.frames.widgets import (
     TraversalFrame,
@@ -19,6 +26,7 @@ __all__ = [
     'SpriteFrame',
     'FluidFrame',
     'TraversalFrame',
+    'ShorelineFrame',
     'MeterFrame',
     'IndexFrame'
 ]

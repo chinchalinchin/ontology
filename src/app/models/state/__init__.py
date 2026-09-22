@@ -9,8 +9,20 @@ from app.models.state.devices import (
     MenuPayload,
     WorldPayload
 )
-from app.models.state.objects import (
+from app.models.state.effects import (
     FluidState,
+    HazardState,
+    EffectState,
+    ReactableState,
+    CollectableState,
+    Damage,
+    Lot,
+    Pool
+)
+from app.models.state.geography import (
+    ShorelineState
+)
+from app.models.state.objects import (
     MultiplierState,
     ContainerState,
     PositionalState,
@@ -18,15 +30,8 @@ from app.models.state.objects import (
     SwitchState,
     PropertyState,
     MotorState,
-    EffectState,
-    HazardState,
-    ReactableState,
-    CollectableState,
     AttachmentState,
     DialogueState,
-    Damage,
-    Lot,
-    Pool
 )
 from app.models.state.schemas import (
     TileStateInstances,
@@ -73,7 +78,6 @@ __all__ = [
     'WorldPayload',
     'MenuPayload',
     # OBJECT STATES
-    'FluidState',
     'MultiplierState',
     'ContainerState',
     'PositionalState',
@@ -81,9 +85,6 @@ __all__ = [
     'SwitchState',
     'PropertyState',
     'DialogueState',
-    'Damage',
-    'Lot',
-    'Pool',
     # CURSOR STATES
     'MotorState',
     'AttachmentState',
@@ -92,6 +93,12 @@ __all__ = [
     'HazardState',
     'ReactableState',
     'CollectableState',
+    'FluidState',
+    'Damage',
+    'Lot',
+    'Pool',
+    # GEOGRAPHY STATES
+    'ShorelineState',
     # SPRITE STATES
     'SpriteState',
     'PlayerState',

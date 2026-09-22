@@ -17,17 +17,19 @@ from app.config.enums import (
     AssetInstances,
     Directions
 )
-from app.models.state.objects import Pool
+from app.models.state import Pool
+
+if TYPE_CHECKING: 
+    from app.game.board import Board
+    from app.game.logic.relations.shorelines import ShorelineIndex
+
+# Cython Libraries
 from libs.core.math import geometry
 from libs.core.models import (
     Dimensions,
     Hitbox,
     Position
 )
-
-if TYPE_CHECKING: 
-    from app.game.board import Board
-    from app.game.logic.relations.shorelines import ShorelineIndex
 
 logger = logging.getLogger(__name__)
 

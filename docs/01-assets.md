@@ -520,6 +520,12 @@ N/A
 
 Geography Assets represent inanimate, immutable structural and topographical landforms (e.g., shorelines, cliffs, ledges, and terraces). Geography Assets define transition thresholds between differing biome zones, elevations, and fluid corridors.
 
+1. **Atlas format**: Vertical $w \times 4l$ ($32 \times 128$) with rows: `0: up`, `1: left`, `2: down`, `3: right`.
+2. **Keying**: Uses `Directions` (`up`, `left`, `down`, `right`). Slices keyed as `{id}-{direction}-{rem}`.
+3. **Propagation**: Normalized to top-left; tiles advance in $+X$ for `up`/`down`, $+Y$ for `left`/`right`.
+4. **Slicing**: Forward-only slicing along the active propagation axis ($s \times l$ for horizontal, $w \times s$ for vertical).
+5. **Corners**: Excluded from Phase 09.02 (TODO).
+
 **Relational Secondary Keys**
 
 Geography assets act as relational bridges across environmental categories. Specifically, Shorelines declare secondary keys referencing the background `Tile` (and optionally `Fluid`) assets they border:
@@ -545,6 +551,13 @@ $
 ### Shorelines
 
 Shorelines are procedural, inanimate Geography sensors instantiated along unoccluded fluid corridors and pool perimeters. When an `Actuator` pumps a fluid emitter, it discretizes the unoccluded perimeter into grid cells, queries `board.tile(layer, coord)`, resolves the matching Shoreline asset via the relational index, and coalesces contiguous homogenous cells into cohesive shoreline entities.
+
+**Rows**
+
+- Row 0: `Directions.UP.value` ("up" / North bank: Land North, Water South)
+- Row 1: `Directions.LEFT.value` ("left" / West bank: Land West, Water East)
+- Row 2: `Directions.DOWN.value` ("down" / South bank: Land South, Water North)
+Row 3: `Directions.RIGHT.value` ("right" / East bank: Land East, Water West)
 
 **Frame: ShorelineFrame**
 

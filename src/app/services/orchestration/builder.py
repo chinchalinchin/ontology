@@ -21,7 +21,8 @@ from app.config.loader import Loader
 from app.config.enums import (
     Devices, 
     Mechanics,
-    AssetCategories
+    AssetCategories,
+    MechanicExecutors
 )
 from app.game.board import Board
 from app.game.engine import Engine
@@ -80,6 +81,7 @@ class Builder:
         self.world: List[Mechanic] = []
         self.executors: Dict[str, Any] = {}
 
+
     def _actions(self) -> None:
         """
         Globally pre-hydrates Actions in Properties.
@@ -106,6 +108,7 @@ class Builder:
             **resolved_sheets
         )
 
+
     def load_data(self, state_key: str = None) -> None:
         """
         Loads YAML configuration data for properties and global configurations.
@@ -119,6 +122,7 @@ class Builder:
         else:
             logger.info("No state key provided. Booting in unhydrated mode for Main Menu...")
             self.context.state = None
+
 
     def build_executors(self) -> None:
         """
@@ -135,10 +139,11 @@ class Builder:
         actuator_executor = Actuator(shorelines=shoreline_index)
 
         self.executors = {
-            "intention": intention_executor,
-            "plot": plot_executor,
-            "actuator": actuator_executor
+            MechanicExecutors.INTENTION.value: intention_executor,
+            MechanicExecutors.PLOT.value: plot_executor,
+            MechanicExecutors.ACTUATOR.value: actuator_executor
         }
+
 
     def init_subsystems(self, screensize: Dimensions, headless: bool = True) -> None:
         logger.info("Initializing SDL and Cython rendering subsystems...")
@@ -149,6 +154,7 @@ class Builder:
         # IMPORTANT: This MUST be called before the Registry inits.
         if not headless:
             render.show()
+
 
     def build_board(self) -> None:
         logger.info("Constructing Empty Board and Migrator subsystem...")
@@ -180,8 +186,9 @@ class Builder:
             self.board, 
             self.context.properties, 
             self.context.configurations,
-            actuator=self.executors["actuator"]
+            actuator=self.executors[MechanicExecutors.ACTUATOR.value]
         )
+
 
     def build_registry(self) -> None:
         """
@@ -193,6 +200,7 @@ class Builder:
             recipes=self.context.configurations.recipes,
             typography=self.context.properties.fonts
         )
+
 
     def build_services(self, device: Devices) -> None:
         logger.info("Injecting Generators and Devices into Board...")
