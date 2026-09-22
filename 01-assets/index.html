@@ -484,6 +484,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#rafts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rafts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#signs" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1557,6 +1568,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#rafts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rafts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#signs" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2029,6 +2051,16 @@
 </tr>
 <tr>
 <td>Object</td>
+<td>Obstacle</td>
+<td>Base, Velocity</td>
+</tr>
+<tr>
+<td>Object</td>
+<td>Raft</td>
+<td>Base, Velocity</td>
+</tr>
+<tr>
+<td>Object</td>
 <td>Sign</td>
 <td>Base, Persona, Lexicon</td>
 </tr>
@@ -2265,7 +2297,7 @@
 </ul>
 <p>Objects are mutable Assets made of a single frame or pair of frames. They are meant to encapsulate interactions and objects.</p>
 <p><strong>Binary Frames</strong></p>
-<p>An Object with two frames is considered to have an <em>on</em> and <em>off</em> state, i.e. a binary trigger. <em>Binary Objects</em> are Objects whose frame is dependent on their internal state switch.</p>
+<p>An Object with two frames is considered to have an <em>on</em> and <em>off</em> state, i.e. a binary trigger. <em>Binary Objects</em> are Objects whose frame is dependent on an internal state switch.</p>
 <p>Binary Objects frames are always organized in horizontal rows. The off frame will always start at <code>(0,0)</code> and the on frame will always start at <code>(w,0)</code>. Because of this relation, the dimensions of a Chest image file will always be <code>(2w, h)</code>. </p>
 <p>Binary Objects have a <code>count</code> of 2, where as all other Objects are initialized with <code>count = 1</code> by default.</p>
 <p><strong>Properties: ObjectProperties</strong></p>
@@ -2374,6 +2406,28 @@
 <li><code>link: str</code></li>
 <li><code>position: Position</code></li>
 <li><code>switch: bool</code></li>
+</ul>
+<h3 id="rafts">Rafts</h3>
+<p>Rafts are mutable, inanimate Objects that allow Sprites and Players to traverse Fluid corridors without entering the <code>submerged</code> state or being swept away individually. Rafts do not obstruct Fluid flow.</p>
+<p><strong>Dynamics &amp; Relative Motion</strong></p>
+<ul>
+<li>When deployed in a Fluid corridor, a Raft drifts along the Fluid's <code>source</code> vector at a speed proportional to <code>flow</code>.</li>
+<li>Characters boarding a Raft have their <code>mutators.triggers.submerged</code> mutator suppressed.</li>
+<li>While aboard, character locomotion is evaluated relative to the Raft's deck:
+  $<span class="arithmatex">\(\vec{v}_{\text{world}} = \vec{v}_{\text{locomotion}} + \vec{v}_{\text{raft}}\)</span>$</li>
+</ul>
+<p><strong>Frame: SingleFrame</strong></p>
+<ul>
+<li><code>keys(id, state)</code>: returns <code>[(id, 0, 0)]</code></li>
+<li><code>index(id, properties)</code>: returns <code>{id: (0, 0, properties.dimensions.w, properties.dimensions.l)}</code></li>
+</ul>
+<p><strong>State: PositionalState</strong></p>
+<ul>
+<li><code>layer: str</code></li>
+<li><code>position: Position</code></li>
+<li><code>velocity: Velocity</code></li>
+<li><code>depth: int = 0</code></li>
+<li><code>height: Optional[int] = None</code></li>
 </ul>
 <h3 id="signs">Signs</h3>
 <p>Signs are immutable, inanimate Objects whose <code>content</code> is transmitted into a <a href="../06-widgets/#menus">Text Menu</a> when a Player enters into the <code>interact</code> <a href="../04-intentions/">Intention</a>.</p>
@@ -2504,6 +2558,11 @@
 <p>In other words, the State Model determines the function of the Effect, but the Lifecycle determines the Animation update schema.</p>
 <h3 id="passive">Passive</h3>
 <p>Passive effects that do not participate in collision resolution or interactions (e.g., torches, water ripples, falling leaves).</p>
+<p><strong>Required Passive Effects</strong></p>
+<p>Due to dependencies on other Assets and Mechanics, the following Passive Effects are required to exist at runtime,</p>
+<ul>
+<li><code>splash</code>: Animation for "submerged" Assets moving in in Fluid fields.</li>
+</ul>
 <p><strong>State: AnimatorState</strong></p>
 <ul>
 <li><code>layer: str</code></li>

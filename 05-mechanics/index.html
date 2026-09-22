@@ -1210,11 +1210,13 @@
 <p>Frictive Assets have motion imparted to them via collisions. Afterwards, the force of friction (technically an impulse) is applied to the resultant Velocity every game tick until that Velocity has been brought to zero. The force of friction is proportional to the currently occupied Tile's  <code>properties.friction</code>.</p>
 <p>Inert Assets are exluded from these considerations. They are spawned with a Velocity vector and an initial position; They follow the trajectory determined by these parameters until the distance between their initial and current position exceeds the garbage collection limit.</p>
 <p>The general flow of MotionMechanics is given by,</p>
+<p>Assets with Mass are divided into Kinematic, Motive, Inert, and Frictive Assets.</p>
 <ul>
-<li><strong>Kinematic Assets (Players)</strong>: Directly polls input devices. Directional inputs clamp velocity vectors to <code>character.speed</code> and immediately nullify orthogonal velocity components.</li>
-<li><strong>Motive Assets (Sprites)</strong>: Guided by <code>NavigationMechanics</code>. Evaluates <code>sprite.state.trajectory.target</code> (generated via RRT pathfinding and line-of-sight checks). Calculates the steering vector toward the current waypoint, accelerates by <code>character.impulse * dt</code>, and clamps velocity to <code>character.speed</code> via <code>physics.dynamics()</code>.</li>
-<li><strong>Frictive Assets (Crates)</strong>: Passively receive momentum from physical collisions. Velocity magnitude decays linearly each tick according to the underlying tile's <code>TileProperties.friction</code> coefficient:
-  $<span class="arithmatex">\(v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)\)</span>$</li>
+<li><strong>Kinematic Assets (Players)</strong>: Polls input devices. In dry environments, input clamps velocity vectors to <code>character.speed</code> and nullifies orthogonal components. When intersecting an active Fluid stream or pool, kinematic snapping is disabled: voluntary input velocity is added vectorally to the underlying fluid current:
+  $<span class="arithmatex">\(\vec{v}_{\text{final}} = \vec{v}_{\text{input}} + \vec{v}_{\text{current}}\)</span>$</li>
+<li><strong>Motive Assets (Sprites)</strong>: Guided by <code>NavigationMechanics</code>. Evaluates avoidance and waypoint steering vectors. In fluid corridors, the environmental current vector is added to the steering vector.</li>
+<li><strong>Frictive Assets (Crates)</strong>: Passively receive momentum from physical collisions, decaying via tile friction. Floating dynamic bodies in fluids drift along the stream vector.</li>
+<li><strong>Rafts</strong>: Specialized dynamic objects that do not obstruct fluid propagation. Rafts passively drift at the fluid current velocity <span class="arithmatex">\(\vec{v}_{\text{current}}\)</span>. Passengers aboard a Raft adopt the Raft's velocity as their baseline reference frame, suppressing the submerged state.</li>
 <li><strong>Inert Assets (Projectiles)</strong>: Translate along ballistic linear trajectories until lifetime expiration or boundary collision triggers garbage collection.</li>
 </ul>
 <p>The mathematical bounds for Friction are <span class="arithmatex">\([0, \infty)\)</span>.</p>
