@@ -214,7 +214,8 @@ class Builder:
             collectables=self.context.properties.effects.collectables,
             hazards=self.context.properties.effects.hazards,
             passive=self.context.properties.effects.passive,
-            struts=self.context.properties.crafts.struts
+            struts=self.context.properties.crafts.struts,
+            shorelines=self.context.properties.geography.shorelines
         )
         cradle = Factory.cradle(
             spawnable_groups, 

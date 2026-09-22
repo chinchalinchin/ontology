@@ -35,6 +35,13 @@ DIRECTION_VECTORS = {
     Directions.RIGHT.value: (1.0, 0.0),
 }
 
+SHORELINE_NORMALS = {
+    Directions.UP.value: (0.0, 1.0),     # Land North -> Inward water normal points South (+Y)
+    Directions.DOWN.value: (0.0, -1.0),   # Land South -> Inward water normal points North (-Y)
+    Directions.LEFT.value: (1.0, 0.0),    # Land West  -> Inward water normal points East (+X)
+    Directions.RIGHT.value: (-1.0, 0.0),  # Land East  -> Inward water normal points West (-X)
+}
+
 
 def _direction_vector(source: Any) -> Tuple[float, float]:
     """
@@ -42,6 +49,14 @@ def _direction_vector(source: Any) -> Tuple[float, float]:
     """
     direction = source.value if hasattr(source, "value") else str(source)
     return DIRECTION_VECTORS.get(direction, (0.0, 0.0))
+
+
+def _shoreline_normal(orientation: Any) -> Tuple[float, float]:
+    """
+    Extracts normalized 2D inward water normal vector from shoreline orientation.
+    """
+    direction = orientation.value if hasattr(orientation, "value") else str(orientation)
+    return SHORELINE_NORMALS.get(direction, (0.0, 0.0))
 
 
 def _fluid_velocity(fluid: Asset) -> Tuple[float, float]:
@@ -99,8 +114,9 @@ def update(assets: List[Asset], board: Board, delta: float) -> None:
     1. Resolves passive hydrodynamic currents for Rafts.
     2. Implements Surface Interception: entities on Rafts adopt Raft reference frames
        and suppress submersion.
-    3. Implements Direct Immersion: entities in Fluids acquire current velocity
-       vectorally and trigger submersion/splash transitions.
+    3. Implements Virtual Edge Traversals: shoreline crossings trigger spatial drop
+       displacement, toggle submersion, emit splash particles, and enforce one-way ledges.
+    4. Implements Direct Immersion: entities in Fluids acquire current velocity vectorally.
     """
     rafts = [a for a in assets if a.instance == AssetInstances.RAFTS.value]
     _update_rafts(rafts, board)
@@ -140,7 +156,55 @@ def update(assets: List[Asset], board: Board, delta: float) -> None:
             continue
 
         # -------------------------------------------------------------
-        # 2. DIRECT ENVIRONMENTAL FLUID IMMERSION
+        # 2. VIRTUAL EDGE CROSSING (SHORELINES)
+        # -------------------------------------------------------------
+        shorelines = board.instances(AssetInstances.SHORELINES.value, layer)
+        in_shoreline = False
+
+        for shore in shorelines:
+            if _intersects(asset, shore):
+                in_shoreline = True
+                nx, ny = _shoreline_normal(shore.state.orientation)
+                vx = asset.state.velocity.vx
+                vy = asset.state.velocity.vy
+                v_dot = vx * nx + vy * ny
+
+                # Entry transition: velocity points into water
+                if v_dot > 0:
+                    if asset.instance in (
+                        AssetInstances.PLAYERS.value,
+                        AssetInstances.SPRITES.value
+                    ):
+                        if not asset.state.mutators.triggers.submerged:
+                            # Apply orthogonal step-down spatial displacement
+                            t = shore.state.thickness
+                            asset.state.position.x += int(nx * t)
+                            asset.state.position.y += int(ny * t)
+                            asset.state.mutators.triggers.submerged = True
+
+                            if board.cradle:
+                                splash_pos = Position(
+                                    int(asset.state.position.x),
+                                    int(asset.state.position.y + (asset.dimensions.l // 2))
+                                )
+                                splash = board.cradle.spawn_passive(
+                                    EffectsPalette.SPLASH.value, 
+                                    layer, 
+                                    splash_pos
+                                )
+                                board.add([splash])
+
+                # Exit / Ledge constraint: velocity points toward bank
+                elif v_dot < 0:
+                    if not shore.state.bidirectional:
+                        # Sheer cliff/ledge: nullify velocity component directed against bank
+                        if nx != 0.0:
+                            asset.state.velocity.vx = 0.0
+                        if ny != 0.0:
+                            asset.state.velocity.vy = 0.0
+
+        # -------------------------------------------------------------
+        # 3. DIRECT ENVIRONMENTAL FLUID IMMERSION
         # -------------------------------------------------------------
         fluids = board.instances(AssetInstances.FLUIDS.value, layer)
         in_fluid = False
@@ -170,11 +234,16 @@ def update(assets: List[Asset], board: Board, delta: float) -> None:
                         int(asset.state.position.x),
                         int(asset.state.position.y + (asset.dimensions.l // 2))
                     )
-                    splash = board.cradle.spawn_passive(EffectsPalette.SPLASH.value, layer, splash_pos)
+                    splash = board.cradle.spawn_passive(
+                        EffectsPalette.SPLASH.value, 
+                        layer, 
+                        splash_pos
+                    )
                     board.add([splash])
         else:
-            if asset.instance in (
-                AssetInstances.PLAYERS.value,
-                AssetInstances.SPRITES.value
-            ):
-                asset.state.mutators.triggers.submerged = False
+            if not in_shoreline:
+                if asset.instance in (
+                    AssetInstances.PLAYERS.value,
+                    AssetInstances.SPRITES.value
+                ):
+                    asset.state.mutators.triggers.submerged = False

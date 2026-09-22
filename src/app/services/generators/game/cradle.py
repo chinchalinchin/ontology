@@ -28,6 +28,7 @@ from app.models.state import (
     EffectState,
     HazardState,
     CollectableState,
+    ShorelineState,
     Damage,
     Lot
 )
@@ -151,6 +152,7 @@ class Cradle:
         )
         return Asset(taxonomy, properties, state, frame, animation)
 
+
     def spawn_hazard(self, 
         id: str, 
         layer: str, 
@@ -178,6 +180,7 @@ class Cradle:
         )
         return Asset(taxonomy, properties, state, frame, animation)
 
+
     def spawn_passive(self, id: str, layer: str, position: Position) -> Asset:
         recipe = self.recipes.effects.passive
         properties = self.spawnables.passive.get(id)
@@ -199,6 +202,7 @@ class Cradle:
             instance=AssetInstances.PASSIVE.value
         )
         return Asset(taxonomy, properties, state, frame, animation)
+
 
     def spawn_strut(self, 
         id: str, 
@@ -229,6 +233,45 @@ class Cradle:
         return Asset(taxonomy, properties, state, frame, animation)
 
 
+    def spawn_shoreline(self,
+        id: str,
+        layer: str,
+        position: Position,
+        orientation: str,
+        length: int,
+        parent_fluid: str,
+        hitboxes: List[Hitbox], # type: ignore
+        bidirectional: bool = True
+    ) -> Asset:
+        recipe = self.recipes.geography.shorelines
+        properties = self.spawnables.shorelines.get(id)
+        name = self.name()
+
+        thickness = properties.thickness if properties else 8
+
+        state = ShorelineState(
+            id=id,
+            name=name,
+            layer=layer,
+            position=position,
+            orientation=orientation,
+            length=length,
+            thickness=self.properties.thickness,
+            bidirectional=bidirectional,
+            parent_fluid=parent_fluid,
+            hitboxes=hitboxes
+        )
+        frame = Factory.frame(recipe.frame)
+        animation = Factory.animation(recipe.animation)
+        taxonomy = Factory.taxonomy(
+            id=id,
+            name=name,
+            category=AssetCategories.GEOGRAPHY.value,
+            instance=AssetInstances.SHORELINES.value
+        )
+        return Asset(taxonomy, properties, state, frame, animation)
+
+    
     def spawn_composition(self, 
         id: str, 
         position: Position,  # type: ignore

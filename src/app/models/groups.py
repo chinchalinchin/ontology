@@ -1,41 +1,38 @@
 """
 # Ontology: app.models.groups
 
+Dataclasses for grouping asset properties for injection into generators and registries.
 """
+from __future__ import annotations
+
 # Standard Libraries
 from typing import Dict
 from dataclasses import dataclass, field
 
 # Application Libraries
 from app.models.properties import (
-    AssetProperties,
-    SheetProperties,
     CursorProperties,
+    EffectProperties,
     CraftProperties,
-    EffectProperties
+    GeographyProperties,
+    SheetProperties
 )
 
-# ---------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------- GROUP MODELS
-# ---------------------------------------------------------------------------------------
-
 @dataclass(slots=True)
-class EquipmentGroup(AssetProperties):
-    """
-    """
-    armor: Dict[str, SheetProperties]
-    tools: Dict[str, SheetProperties]
-    utilities: Dict[str, SheetProperties]
-    weapons: Dict[str, SheetProperties]
+class EquipmentGroup:
+    armor: Dict[str, SheetProperties] = field(default_factory=dict)
+    weapons: Dict[str, SheetProperties] = field(default_factory=dict)
+    tools: Dict[str, SheetProperties] = field(default_factory=dict)
+    utilities: Dict[str, SheetProperties] = field(default_factory=dict)
     shields: Dict[str, SheetProperties] = field(default_factory=dict)
+
 
 @dataclass(slots=True)
 class SpawnableGroup:
-    """
-    """
-    projectiles: Dict[str, CursorProperties]
-    expressions: Dict[str, CursorProperties]
-    collectables: Dict[str, EffectProperties]
-    hazards: Dict[str, EffectProperties]
-    passive: Dict[str, EffectProperties]
-    struts: Dict[str, CraftProperties]
+    projectiles: Dict[str, CursorProperties] = field(default_factory=dict)
+    expressions: Dict[str, CursorProperties] = field(default_factory=dict)
+    collectables: Dict[str, EffectProperties] = field(default_factory=dict)
+    hazards: Dict[str, EffectProperties] = field(default_factory=dict)
+    passive: Dict[str, EffectProperties] = field(default_factory=dict)
+    struts: Dict[str, CraftProperties] = field(default_factory=dict)
+    shorelines: Dict[str, GeographyProperties] = field(default_factory=dict)
