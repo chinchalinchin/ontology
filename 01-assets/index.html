@@ -550,6 +550,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#geography" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Geography
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Geography">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shorelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shorelines
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#effects" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1634,6 +1662,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#geography" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Geography
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Geography">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#shorelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shorelines
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#effects" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1997,6 +2053,14 @@
 <td>Dimensions, Hitboxes, Lifecycle, Count, Mass</td>
 </tr>
 <tr>
+<td>Geography</td>
+<td>Dimensions, Hitboxes, TODO</td>
+</tr>
+<tr>
+<td>Resources</td>
+<td>Dimensions, Hitboxes, TODO</td>
+</tr>
+<tr>
 <td>Crafts</td>
 <td>Dimensions, Hitboxes, Mass, Cost</td>
 </tr>
@@ -2123,6 +2187,11 @@
 <td>Cursor</td>
 <td>Projectile</td>
 <td>Base, Initial, Velocity</td>
+</tr>
+<tr>
+<td>Geography</td>
+<td>Shoreline</td>
+<td>Base, TODO</td>
 </tr>
 <tr>
 <td>Effect</td>
@@ -2499,6 +2568,58 @@
 <li><code>initial: Position</code></li>
 <li><code>velocity: Velocity</code></li>
 <li><code>speed: int</code></li>
+</ul>
+<h2 id="geography">Geography</h2>
+<ul>
+<li>Property File: <code>/src/assets/geography/main.yaml</code></li>
+</ul>
+<p>Geography Assets represent inanimate, immutable structural and topographical landforms (e.g., shorelines, cliffs, ledges, and terraces). Geography Assets define transition thresholds between differing biome zones, elevations, and fluid corridors.</p>
+<p><strong>Relational Secondary Keys</strong></p>
+<p>Geography assets act as relational bridges across environmental categories. Specifically, Shorelines declare secondary keys referencing the background <code>Tile</code> (and optionally <code>Fluid</code>) assets they border:</p>
+<ul>
+<li><code>tile: str</code>: Asset ID of the terrain tile to which this geography margin binds.</li>
+<li><code>fluid: Optional[str]</code>: Optional asset ID of the fluid type required to activate this margin.</li>
+</ul>
+<p>During engine bootstrapping, the <code>Registry</code> indexes these declarations into a composite lookup map:</p>
+<p>$
+\text{Index}[(tile_id, fluid_id)] \to shoreline_id
+$</p>
+<p><strong>Properties: GeographyProperties</strong></p>
+<ul>
+<li><code>dimensions: Dimensions</code></li>
+<li><code>hitboxes: List[Hitbox]</code></li>
+<li><code>tile: str</code></li>
+<li><code>fluid: Optional[str] = None</code></li>
+<li><code>thickness: int = 8</code></li>
+<li><code>mass: int = -1</code></li>
+</ul>
+<h3 id="shorelines">Shorelines</h3>
+<p>Shorelines are procedural, inanimate Geography sensors instantiated along unoccluded fluid corridors and pool perimeters. When an <code>Actuator</code> pumps a fluid emitter, it discretizes the unoccluded perimeter into grid cells, queries <code>board.tile(layer, coord)</code>, resolves the matching Shoreline asset via the relational index, and coalesces contiguous homogenous cells into cohesive shoreline entities.</p>
+<p><strong>Frame: ShorelineFrame</strong></p>
+<div class="admonition todo">
+<p class="admonition-title">Todo</p>
+<p>This is basically a Fluid frame. Possibly reuse?</p>
+</div>
+<ul>
+<li>Indexes 4 cardinal orientation rows:<ul>
+<li>Row 0: <code>north</code> (Land North, Water South)</li>
+<li>Row 1: <code>west</code> (Land West, Water East)</li>
+<li>Row 2: <code>south</code> (Land South, Water North)</li>
+<li>Row 3: <code>east</code> (Land East, Water West)</li>
+</ul>
+</li>
+<li><code>keys(id, state)</code> emits repeating full tiles along <code>state.length</code> and a fractional distal slice for remainders.</li>
+</ul>
+<p><strong>State: ShorelineState</strong></p>
+<ul>
+<li><code>layer: str</code></li>
+<li><code>position: Position</code></li>
+<li><code>orientation: str</code> (<code>north</code>, <code>west</code>, <code>south</code>, <code>east</code>)</li>
+<li><code>length: int</code></li>
+<li><code>thickness: int</code></li>
+<li><code>bidirectional: bool = True</code></li>
+<li><code>parent_fluid: str</code></li>
+<li><code>hitboxes: List[Hitbox]</code></li>
 </ul>
 <h2 id="effects">Effects</h2>
 <ul>
