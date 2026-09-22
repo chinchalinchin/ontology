@@ -241,7 +241,7 @@ class Screen:
 
 
         for asset in assets:
-            if asset.category == AssetCategories.TILES: continue
+            if asset.category == AssetCategories.TILES.value: continue
 
             frame_keys = asset.frame.keys(asset.id, asset.state)
             channels = asset.frame.channels(asset.id, asset.state, asset.properties)
@@ -300,7 +300,10 @@ class Screen:
                             r, g, b, a
                         ))
 
-        logger.debug(f"Render Payload: Camera({pov.x}, {pov.y}) | Total Assets: {len(active_assets)}")
+        logger.debug(
+            f"Render Payload: Camera({pov.x}, {pov.y}) | "
+            f" Total Assets: {len(active_assets)}"
+        )
 
         # Pass purely native integers to bypass heavy object allocation
         render.render(
@@ -448,7 +451,7 @@ class Screen:
         ))
 
         for asset in assets:
-            if asset.category == AssetCategories.TILES: continue
+            if asset.category == AssetCategories.TILES.value: continue
 
             frame_keys = asset.frame.keys(asset.id, asset.state)
             for frame_key, ox, oy in frame_keys:

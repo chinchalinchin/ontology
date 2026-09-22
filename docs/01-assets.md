@@ -100,6 +100,8 @@ Asset *Categories* form the top layer of the hierarchy. Each Asset Category is d
 | Cursors | Dimensions |
 | Objects | Dimensions, Hitboxes, Mass |
 | Effects | Dimensions, Hitboxes, Lifecycle, Count, Mass |
+| Geography| Dimensions, Hitboxes, TODO | 
+| Resources | Dimensions, Hitboxes, TODO |
 | Crafts | Dimensions, Hitboxes, Mass, Cost |
 | Sheets | Dimensions, Hitboxes, Mass, Stack, Actions |
 | Widgets | Dimensions, Frames |
@@ -138,6 +140,7 @@ These attributes are part of the base class from which all other states inherit.
 | Resource | Ore | Base, Vein |
 | Cursor | Expression | Base, Attachment |
 | Cursor | Projectile | Base, Initial, Velocity |
+| Geography | Shoreline | Base, TODO |
 | Effect | Passive | Base, Animation |
 | Effect | Hazard | Base, Animation, Damage |
 | Effect | Collectable | Base, Animation, Lot |
@@ -510,6 +513,61 @@ N/A
 * `initial: Position`
 * `velocity: Velocity`
 * `speed: int`
+
+## Geography
+
+* Property File: `/src/assets/geography/main.yaml`
+
+Geography Assets represent inanimate, immutable structural and topographical landforms (e.g., shorelines, cliffs, ledges, and terraces). Geography Assets define transition thresholds between differing biome zones, elevations, and fluid corridors.
+
+**Relational Secondary Keys**
+
+Geography assets act as relational bridges across environmental categories. Specifically, Shorelines declare secondary keys referencing the background `Tile` (and optionally `Fluid`) assets they border:
+
+* `tile: str`: Asset ID of the terrain tile to which this geography margin binds.
+* `fluid: Optional[str]`: Optional asset ID of the fluid type required to activate this margin.
+
+During engine bootstrapping, the `Registry` indexes these declarations into a composite lookup map:
+
+$
+\text{Index}[(tile\_id, fluid\_id)] \to shoreline\_id
+$
+
+**Properties: GeographyProperties**
+
+* `dimensions: Dimensions`
+* `hitboxes: List[Hitbox]`
+* `tile: str`
+* `fluid: Optional[str] = None`
+* `thickness: int = 8`
+* `mass: int = -1`
+
+### Shorelines
+
+Shorelines are procedural, inanimate Geography sensors instantiated along unoccluded fluid corridors and pool perimeters. When an `Actuator` pumps a fluid emitter, it discretizes the unoccluded perimeter into grid cells, queries `board.tile(layer, coord)`, resolves the matching Shoreline asset via the relational index, and coalesces contiguous homogenous cells into cohesive shoreline entities.
+
+**Frame: ShorelineFrame**
+
+!!! TODO
+    This is basically a Fluid frame. Possibly reuse?
+    
+* Indexes 4 cardinal orientation rows:
+    * Row 0: `north` (Land North, Water South)
+    * Row 1: `west` (Land West, Water East)
+    * Row 2: `south` (Land South, Water North)
+    * Row 3: `east` (Land East, Water West)
+* `keys(id, state)` emits repeating full tiles along `state.length` and a fractional distal slice for remainders.
+
+**State: ShorelineState**
+
+* `layer: str`
+* `position: Position`
+* `orientation: str` (`north`, `west`, `south`, `east`)
+* `length: int`
+* `thickness: int`
+* `bidirectional: bool = True`
+* `parent_fluid: str`
+* `hitboxes: List[Hitbox]`
 
 ## Effects
 

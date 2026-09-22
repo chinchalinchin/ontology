@@ -21,10 +21,11 @@ Assets are divided into non-overlapping categories, known as the [Asset Hierarch
 - [Crafts](./01-assets.md#crafts)
 - [Cursors](./01-assets.md#cursors)
 - [Effects](./01-assets.md#effects)
+- [Geography](./01-assets.md#geography)
 - [Objects](./01-assets.md#objects)
 - [Sheets](./01-assets.md#sheets)
 - [Sounds](./07-sounds.md)
-- Resources
+- [Resources](./01-assets.md#resources)
 - [Tiles](./01-assets.md#tiles)
 - [Widgets](./06-widgets.md)
 

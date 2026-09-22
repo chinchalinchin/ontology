@@ -41,11 +41,11 @@ class MotionMechanics(Mechanic):
         bus: collections.deque, 
         payload: DevicePayload
     ) -> None:
-        players = board.instances(AssetInstances.PLAYERS)
-        sprites = board.instances(AssetInstances.SPRITES)
-        crates = board.instances(AssetInstances.CRATES)
-        projectiles = board.instances(AssetInstances.PROJECTILES)
-        rafts = board.instances(AssetInstances.RAFTS)
+        players = board.instances(AssetInstances.PLAYERS.value)
+        sprites = board.instances(AssetInstances.SPRITES.value)
+        crates = board.instances(AssetInstances.CRATES.value)
+        projectiles = board.instances(AssetInstances.PROJECTILES.value)
+        rafts = board.instances(AssetInstances.RAFTS.value)
 
         kinematic.update(players, payload, delta)
         motive.update(sprites, board, delta)
