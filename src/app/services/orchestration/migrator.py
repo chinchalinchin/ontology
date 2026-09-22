@@ -41,15 +41,18 @@ class Migrator:
     decomposer: Decomposer
     configurations: ConfigurationSchema
     properties: PropertiesSchema
+    actuator: Actuator
 
     def __init__(self, 
         board: Board, 
         properties: PropertiesSchema, 
-        configurations: ConfigurationSchema
+        configurations: ConfigurationSchema,
+        actuator: Optional[Actuator] = None
     ):
         self.board = board
         self.properties = properties
         self.configurations = configurations
+        self.actuator = actuator or Actuator()
         self.target: Optional[str] = None
         self.state = None
         self.decomposer = None
@@ -117,7 +120,6 @@ class Migrator:
                 
                 cat_recipes = getattr(self.configurations.recipes, category_key, None)
                 recipe = getattr(cat_recipes, instance_key, None)
-
                 
                 prop_instance_key = instance_key
                 if category_key == AssetCategories.SHEETS.value and (
@@ -151,10 +153,9 @@ class Migrator:
         for layer in self.board.layers():
             self.board.perimeters[layer] = perimeter_gen.generate(self.board, layer)
 
-        actuator = Actuator()
         fluids = self.board.instances(AssetInstances.FLUIDS.value)
         for fluid in fluids:
-            actuator.pump(fluid, self.board)
+            self.actuator.pump(fluid, self.board)
 
     def step(self, budget_ms: int = 16) -> bool:
         """
@@ -170,7 +171,6 @@ class Migrator:
         start = time.perf_counter()
         
         while True:
-            # Yield execution back to Engine if time boundary is breached
             if (time.perf_counter() - start) * 1000 > budget_ms:
                 return False
                 

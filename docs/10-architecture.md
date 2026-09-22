@@ -64,6 +64,17 @@ def _play(self, delta) -> None:
 
 When a [MenuEvent](./06-widgets.md#events) fires and a modal Menu is pushed to the screen, `board.paused` evaluates to `True`. The Engine skips the `world` mechanics loop entirely. The world freezes, but `core` mechanics continue ticking, allowing the Player to navigate the menu while background torches remain animated without the risk of enemies moving or attacking.
 
+### Dependency Injection & MechanicsFactory
+
+Mechanics enforce strict separation between static construction dependencies and per-frame execution arguments:
+
+1. **Execution Interface (`Mechanic.update`)**: The runtime interface `update(board, delta, bus, payload)` receives only transient frame state. Static services are never passed through `update()`.
+2. **Constructor Injection (`MechanicsFactory`)**: Systems requiring external services (such as `Actuator` for `FluidMechanics`, or compiled ISL expression trees for `TransitionMechanics` and `PlotMechanics`) receive them strictly through their constructor via `MechanicsFactory`.
+
+```mermaid
+--*<-- "static/mmd/mechanics.bootstrap.mmd
+```
+
 ## Maps
 
 Maps associate ancillary Asset states to their final Animation state. See [AnimationMap](./04-intentions.md#animationmap) for more information.

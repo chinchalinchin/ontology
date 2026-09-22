@@ -10,7 +10,8 @@ import logging
 import dataclasses
 from typing import (
     Dict, 
-    List
+    List,
+    Any
 )
 from enum import Enum
 
@@ -26,6 +27,7 @@ from app.game.board import Board
 from app.game.engine import Engine
 from app.game.screen import Screen
 from app.game.logic.mechanics import Mechanic
+from app.game.logic.relations.shorelines import ShorelineIndex
 from app.models.groups import (
     SpawnableGroup, 
     EquipmentGroup
@@ -35,7 +37,8 @@ from app.models.properties import PropertiesSchema
 from app.models.config import ConfigurationSchema
 from app.services.generators.game import (
     Factory,
-    Decomposer
+    Decomposer,
+    Actuator
 )
 from app.services.generators.menus import (
     Provider, 
@@ -75,8 +78,8 @@ class Builder:
         self.screens: Dict[str, Screen] = {}
         self.core: List[Mechanic] = []
         self.world: List[Mechanic] = []
+        self.executors: Dict[str, Any] = {}
 
-    
     def _actions(self) -> None:
         """
         Globally pre-hydrates Actions in Properties.
@@ -103,7 +106,6 @@ class Builder:
             **resolved_sheets
         )
 
-
     def load_data(self, state_key: str = None) -> None:
         """
         Loads YAML configuration data for properties and global configurations.
@@ -118,10 +120,27 @@ class Builder:
             logger.info("No state key provided. Booting in unhydrated mode for Main Menu...")
             self.context.state = None
 
+    def build_executors(self) -> None:
+        """
+        Compiles and registers master mechanic executors.
+        """
+        logger.info("Compiling master mechanic executors...")
+        translator = Factory.translator(settings.ISL_TRANSLATOR)
+        intention_executor = translator.compile(self.context.configurations.intentions)
+        plot_executor = translator.compile(self.context.configurations.plots)
+
+        shoreline_index = ShorelineIndex.from_properties(
+            self.context.properties.geography.shorelines
+        )
+        actuator_executor = Actuator(shorelines=shoreline_index)
+
+        self.executors = {
+            "intention": intention_executor,
+            "plot": plot_executor,
+            "actuator": actuator_executor
+        }
 
     def init_subsystems(self, screensize: Dimensions, headless: bool = True) -> None:
-        """
-        """
         logger.info("Initializing SDL and Cython rendering subsystems...")
         self.context.screensize = screensize
         self.context.headless = headless
@@ -131,10 +150,12 @@ class Builder:
         if not headless:
             render.show()
 
-
     def build_board(self) -> None:
         logger.info("Constructing Empty Board and Migrator subsystem...")
         self._actions()
+
+        if not self.executors:
+            self.build_executors()
 
         # 1. Instantiate Decomposer ahead of standard Asset migrations
         self.decomposer = Decomposer(
@@ -155,11 +176,12 @@ class Builder:
         
         # Attach Migrator logic for deferred ECS evaluation
         from app.services.orchestration import Migrator
-        self.board.migrator = Migrator(self.board, 
+        self.board.migrator = Migrator(
+            self.board, 
             self.context.properties, 
-            self.context.configurations
+            self.context.configurations,
+            actuator=self.executors["actuator"]
         )
-
 
     def build_registry(self) -> None:
         """
@@ -172,14 +194,12 @@ class Builder:
             typography=self.context.properties.fonts
         )
 
-
     def build_services(self, device: Devices) -> None:
-        """
-        """
         logger.info("Injecting Generators and Devices into Board...")
         device_mapping = getattr(self.context.configurations.mappings, device, None)
         device_instance = Factory.device(device, device_mapping)
         self.board.set_device(device_instance)
+
         spawnable_groups = SpawnableGroup(
             projectiles=self.context.properties.cursors.projectiles,
             expressions=self.context.properties.cursors.expressions,
@@ -188,9 +208,12 @@ class Builder:
             passive=self.context.properties.effects.passive,
             struts=self.context.properties.crafts.struts
         )
-        cradle = Factory.cradle(spawnable_groups, self.context.configurations.recipes, self.decomposer)
+        cradle = Factory.cradle(
+            spawnable_groups, 
+            self.context.configurations.recipes, 
+            self.decomposer
+        )
         self.board.set_cradle(cradle)
-
 
     def build_pipeline(self) -> None:
         logger.info("Building rendering pipelines, mechanics, and UI...")
@@ -222,25 +245,12 @@ class Builder:
             Mechanics.MOTION.value
         ]
         
-        self.core = [Factory.mechanics(m) for m in core_cfg]
-        self.world = [Factory.mechanics(m) for m in world_cfg]
+        self.core = [Factory.mechanics(m, self.executors) for m in core_cfg]
+        self.world = [Factory.mechanics(m, self.executors) for m in world_cfg]
 
         self.library = Library(self.context.configurations.library)
         self.binder = Binder(self.registry, self.library)
         self.fabricator = Fabricator()
-
-        translator = Factory.translator(settings.ISL_TRANSLATOR)
-        intention_executor = translator.compile(self.context.configurations.intentions)
-        
-        # New: Compile Plot ISL Rules
-        plot_cfg = self.context.configurations.plots
-        plot_executor = translator.compile(plot_cfg) if plot_cfg else None
-            
-        for m in self.world:
-            if type(m).__name__ == 'TransitionMechanics':
-                m.executor = intention_executor
-            elif type(m).__name__ == 'PlotMechanics':
-                m.executor = plot_executor
 
         # Allocate Menu Provider & Views with new dependencies
         self.provider = Provider(
@@ -249,7 +259,6 @@ class Builder:
             self.binder,
             self.fabricator
         )
-
 
     def get_engine(self) -> Engine:
         logger.info("Engine successfully assembled.")

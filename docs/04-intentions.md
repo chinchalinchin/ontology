@@ -104,10 +104,10 @@ intentions:
 Provided below is the Intention Transition Matrix bundled with the application by default,
 
 ```mermaid
---8<-- "static/mmd/intention-transitions.mmd"
+--8<-- "static/mmd/executor-intention-transitions.mmd"
 ```
 
---8<-- "static/md/intention-transitions.md"
+--8<-- "static/md/executor-intention-transitions.md"
 
 **Intentional Scripting Language (ISL)**
 

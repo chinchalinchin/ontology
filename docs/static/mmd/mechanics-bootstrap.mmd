@@ -1,0 +1,18 @@
+flowchart TD
+    subgraph Orchestrator_Bootstrapping["Orchestrator Bootstrapping"]
+        PS["PropertiesSchema"]
+        CFG["Configuration (YAML)"]
+        SI["ShorelineIndex"]
+        ACT["Actuator"]
+        MF["MechanicsFactory"]
+        FM["FluidMechanics(actuator)"]
+        TM["TransitionMechanics(executor)"]
+
+        PS --> SI
+        SI --> ACT
+        PS --> CFG
+        CFG --> MF
+        ACT --> MF
+        MF --> FM
+        MF --> TM
+    end

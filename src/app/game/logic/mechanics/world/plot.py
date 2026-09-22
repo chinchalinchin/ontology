@@ -6,7 +6,7 @@ from __future__ import annotations
 # Standard Libraries
 import collections
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 # Application Libraries
 from app.game.logic.mechanics import Mechanic
@@ -18,11 +18,15 @@ if TYPE_CHECKING:
     
 logger = logging.getLogger(__name__)
 
+
 class PlotMechanics(Mechanic):
     """
     Evaluates global Plot transitions via the ISL executor against game world state.
     """
-    executor: Executor = None
+
+    @property
+    def executor(self) -> Optional[Executor]:
+        return self.executors.get("plot")
     
     def update(self, 
         board: Board, 
@@ -30,7 +34,7 @@ class PlotMechanics(Mechanic):
         bus: collections.deque, 
         payload: DevicePayload
     ) -> None:
-        if not self.executor or not board.plot.current:
+        if not self.executor or not board.plot or not board.plot.current:
             return
             
         current_plot = board.plot.current

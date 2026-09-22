@@ -107,6 +107,15 @@ class CraftProperties(AssetProperties):
     hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
 
 @dataclass(slots=True)
+class GeographyProperties(AssetProperties):
+    dimensions: Dimensions # type: ignore
+    tile: str
+    hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
+    fluid: Optional[str] = None
+    thickness: int = 8
+    mass: int = -1
+
+@dataclass(slots=True)
 class SheetProperties(AssetProperties):
     dimensions: Dimensions # type: ignore
     stack: List[str] = field(default_factory=list)
@@ -135,7 +144,11 @@ class EffectPropertyInstances:
     hazards: Dict[str, EffectProperties] = field(default_factory=dict)
     passive: Dict[str, EffectProperties] = field(default_factory=dict)
     fluids: Dict[str, EffectProperties] = field(default_factory=dict)
-    
+
+@dataclass(slots=True)
+class GeographyPropertyInstances:
+    shorelines: Dict[str, GeographyProperties] = field(default_factory=dict)
+
 @dataclass(slots=True)
 class ObjectPropertyInstances:
     obstacles: Dict[str, ObjectProperties] = field(default_factory=dict)
@@ -179,6 +192,7 @@ class WidgetPropertyInstances:
 class PropertiesSchema:
     tiles: TilePropertyInstances = field(default_factory=TilePropertyInstances)
     effects: EffectPropertyInstances = field(default_factory=EffectPropertyInstances)
+    geography: GeographyPropertyInstances = field(default_factory=GeographyPropertyInstances)
     objects: ObjectPropertyInstances = field(default_factory=ObjectPropertyInstances)
     crafts: CraftPropertyInstances = field(default_factory=CraftPropertyInstances)
     cursors: CursorPropertyInstances = field(default_factory=CursorPropertyInstances)

@@ -26,11 +26,17 @@ class FluidMechanics(Mechanic):
     World mechanic monitoring dynamic obstacle velocities and gate switch
     transitions to invalidate and recalculate fluid propagation.
     """
+    _crate_positions: Dict[str, Tuple[int, int]]
+    _gate_states: Dict[str, bool]
 
+    @property
+    def actuator(self) -> Actuator:
+        return self.executors["actuator"]
+    
     def __init__(self):
-        self.actuator = Actuator()
-        self._crate_positions: Dict[str, Tuple[int, int]] = {}
-        self._gate_states: Dict[str, bool] = {}
+        super().__init__()
+        self._crate_positions = {}
+        self._gate_states = {}
 
     def update(
         self,

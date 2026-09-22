@@ -17,6 +17,10 @@ recipes:
     projectiles:
       frame: single
       animation: none
+  geography:
+    shorelines:
+      frame: shoreline
+      animation: none
   effects:
     collectables:
       frame: iterable

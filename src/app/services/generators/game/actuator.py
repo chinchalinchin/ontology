@@ -27,6 +27,7 @@ from libs.core.models import (
 
 if TYPE_CHECKING: 
     from app.game.board import Board
+    from app.game.logic.relations.shorelines import ShorelineIndex
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +37,10 @@ class Actuator:
     Stateless geometric service calculating raycast stream truncation,
     annular pooling bounds, and compound sensor hitboxes.
     """
+    shorelines: Optional[ShorelineIndex]
+
+    def __init__(self, shorelines: Optional[ShorelineIndex] = None):
+        self.shorelines = shorelines
 
     def _collect_obstacles(self, fluid: Asset, board: Board, direction: str) -> List[Tuple]:
         layer = fluid.state.layer
@@ -46,7 +51,6 @@ class Actuator:
         # 1. Map boundaries from procedural perimeter sweep
         perimeters = board.perimeters.get(layer, [])
         for b in perimeters:
-            # Exclude boundaries positioned at or behind the emitter origin
             if direction == Directions.DOWN.value and b.position.y <= fy:
                 continue
             elif direction == Directions.UP.value and (b.position.y + b.dimensions.l) >= fy:
@@ -78,7 +82,6 @@ class Actuator:
             ):
                 continue
 
-            # Rafts do not participate in fluid obstruction
             if asset.instance == AssetInstances.RAFTS.value:
                 continue
 
@@ -91,7 +94,6 @@ class Actuator:
                 ow = hb.dimensions.w
                 ol = hb.dimensions.l
 
-                # Exclude bodies positioned at or behind the emitter origin
                 if direction == Directions.UP.value and oy >= fy:
                     continue
                 elif direction == Directions.DOWN.value and (oy + ol) <= fy:
@@ -155,10 +157,6 @@ class Actuator:
         fluid: Asset,
         flow: int
     ) -> Tuple[Pool, List[Hitbox]]:
-        """
-        Calculates a solid annular flood zone around an obstacle struck by fluid.
-        Floods the complete outer bounding box to prevent transparent pixel edge bleed.
-        """
         ox = obstacle.state.position.x
         oy = obstacle.state.position.y
         ow = obstacle.dimensions.w
@@ -176,8 +174,6 @@ class Actuator:
         pool_l = ol + 2 * flow * fl
 
         pool_bounds = Pool(x=pool_x, y=pool_y, w=pool_w, l=pool_l)
-
-        # Single solid hitbox covering the entire rectangular pool area
         pool_hitboxes = [
             Hitbox(Position(pool_x - fx, pool_y - fy), Dimensions(pool_w, pool_l))
         ]
@@ -223,14 +219,12 @@ class Actuator:
         fluid.state.pool = pool_bounds
         fluid.state.hitboxes = hitboxes
         fluid.state.dirty = False
-        # Do not mutate fluid.properties.hitboxes (properties are static/shared across instances)
 
         logger.info(
-            f"Fluid(name={fluid.name}, direction={direction}): "
+            f"Fluid(name={fluid.name}, direction={direction}) | "
             f" Length: {stream_length}px,  "
             f"Struck: {getattr(struck_obstacle, 'name', 'bounds')}, "
             f"Pool: {pool_bounds is not None}"
         )
 
         return stream_length, pool_bounds, hitboxes
-    

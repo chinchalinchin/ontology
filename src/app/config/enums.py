@@ -21,6 +21,7 @@ class AssetCategories(str, Enum):
     CRAFTS          = "crafts"
     CURSORS         = "cursors"
     EFFECTS         = "effects"
+    GEOGRAPHY       = "geography"
     OBJECTS         = "objects"
     SHEETS          = "sheets"
     RESOURCES       = "resources"
@@ -41,6 +42,8 @@ class AssetInstances(str, Enum):
     COLLECTABLES    = "collectables"
     REACTABLES      = "reactables"
     FLUIDS          = "fluids"
+    # GEOGRAPHY     
+    SHORELINES      = "shorelines"
     # OBJECTS
     CHESTS          = "chests"
     CRATES          = "crates"
@@ -113,6 +116,8 @@ class FrameRecipe(str, Enum):
     FLUID           = "fluid"
     STATE           = "state"
     SPRITE          = "sprite"
+    SHORELINE       = "shoreline"
+    # WIDGETS
     METER           = "meter"
     TRAVERSAL       = "traversal"
     INDEX           = "index"

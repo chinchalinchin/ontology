@@ -69,9 +69,14 @@ class LibraryConfiguration:
 # --------------------------------------------------------------- MECHANICS CONFIGURATION
 
 @dataclass(slots=True, frozen=True)
+class MechanicsInstance:
+    key: str
+    executors: List[str] = field(default_factory = list)
+
+@dataclass(slots=True, frozen=True)
 class MechanicsConfiguration(Configuration):
-    core: List[str] = field(default_factory=list)
-    world: List[str] = field(default_factory=list)
+    core: List[MechanicsInstance] = field(default_factory=list)
+    world: List[MechanicsInstance] = field(default_factory=list)
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------- COMPOSITION CONFIGURATION

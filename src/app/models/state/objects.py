@@ -114,6 +114,18 @@ class AttachmentState(AssetState):
     ttl: Optional[int] = 120
     offset: Optional[Position] = None # type: ignore
 
+# --------------------------------------------------------------------- GEOGRAPHY STATES
+
+@dataclass(slots=True)
+class ShorelineState(AssetState):
+    position: Optional[Position] = None # type: ignore
+    orientation: str = Directions.DOWN.value
+    length: int = 0
+    thickness: int = 8
+    bidirectional: bool = True
+    parent_fluid: Optional[str] = None
+    hitboxes: List[Hitbox] = field(default_factory=list) # type: ignore
+
 # ------------------------------------------------------------------------ EFFECT STATES
 
 @dataclass(slots=True)
@@ -148,3 +160,4 @@ class FluidState(EffectState):
     dirty: bool = True
     flow: int = 1
     source: Directions = Directions.DOWN.value
+    shorelines: List[str] = field(default_factory=list)

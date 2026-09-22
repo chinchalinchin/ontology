@@ -4,7 +4,7 @@
 Package for instantiating Asset classes and their components.
 """
 # Standard Libraries
-from typing import Any
+from typing import Any, Dict
 
 # Application Libraries
 from app.assets.animations import (
@@ -35,7 +35,7 @@ from app.assets.frames import (
 from app.config.enums import (
     AnimationRecipe, 
     FrameRecipe, 
-    Devices,
+    Devices, 
     Mechanics,
     Controllers,
     Translators
@@ -56,7 +56,8 @@ from app.game.logic.mechanics import (
     CognitionMechanics,
     PlotMechanics,
     NavigationMechanics,
-    FluidMechanics
+    FluidMechanics,
+    Mechanic
 )
 from app.game.menus.controllers import (
     DisplayController,
@@ -173,12 +174,42 @@ class Factory:
         return Cradle(spawnables, recipes, decomposer)
 
     @staticmethod 
-    def mechanics(kind: Any):
-        if isinstance(kind, str):
-            for enum_key, cls in Factory.MECHANICS_MAP.items():
-                if enum_key.value == kind:
-                    return cls()
-        return Factory.MECHANICS_MAP.get(kind, AnimationMechanics)()
+    def mechanics(config: Any, executors: Dict[str, Any] = None) -> Mechanic:
+        key = getattr(config, "key", None)
+        if key is None:
+            key = config.value if hasattr(config, "value") else str(config)
+
+        target_cls = None
+        for enum_key, cls in Factory.MECHANICS_MAP.items():
+            if enum_key.value == key or enum_key == key:
+                target_cls = cls
+                break
+
+        if not target_cls:
+            target_cls = Factory.MECHANICS_MAP.get(key)
+
+        if not target_cls:
+            raise KeyError(f"No mechanic class registered for key: '{key}'")
+
+        mechanic_instance = target_cls()
+
+        executor_keys = getattr(config, "executors", [])
+        if executor_keys:
+            if executors is None:
+                raise KeyError(
+                    f"Mechanic '{key}' declared executors {executor_keys}, "
+                    f"but no executor registry was provided."
+                )
+            for executor_key in executor_keys:
+                executor = executors.get(executor_key)
+                if executor is None:
+                    raise KeyError(
+                        f"Mechanic '{key}' requested executor '{executor_key}', "
+                        f"but it is not registered in the active executor map."
+                    )
+                mechanic_instance.set_executor(executor_key, executor)
+
+        return mechanic_instance
 
     @staticmethod
     def controller(kind: Any):
@@ -196,4 +227,4 @@ class Factory:
     @staticmethod
     def context(menu: str, **kwargs):
         # TODO
-        pass 
+        pass

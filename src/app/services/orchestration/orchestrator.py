@@ -32,7 +32,8 @@ class Orchestrator:
         headless: bool = False
     ) -> Engine:
         # Load state definitions (deferred evaluation by Migrator)
-        self.builder.load_data(state_key) 
+        self.builder.load_data(state_key)
+        self.builder.build_executors()
         self.builder.init_subsystems(screensize, headless)
         
         self.builder.build_board()

@@ -527,7 +527,7 @@ Geography assets act as relational bridges across environmental categories. Spec
 * `tile: str`: Asset ID of the terrain tile to which this geography margin binds.
 * `fluid: Optional[str]`: Optional asset ID of the fluid type required to activate this margin.
 
-During engine bootstrapping, the `Registry` indexes these declarations into a composite lookup map:
+During engine bootstrapping, `ShorelineIndex` compiles these declarations into a composite lookup map:
 
 $
 \text{Index}[(tile\_id, fluid\_id)] \to shoreline\_id
@@ -548,9 +548,6 @@ Shorelines are procedural, inanimate Geography sensors instantiated along unoccl
 
 **Frame: ShorelineFrame**
 
-!!! TODO
-    This is basically a Fluid frame. Possibly reuse?
-    
 * Indexes 4 cardinal orientation rows:
     * Row 0: `north` (Land North, Water South)
     * Row 1: `west` (Land West, Water East)
@@ -606,7 +603,7 @@ Most Effects iterate over a single row of frames using `IterableFrame` and advan
 Rather than implementing separate Animation classes to handle Effect animations (which would lead to a combinatorial explosion with the composition of Animation and State implementations to span the space of possible Effects instances, e.g. `HarzardContinuousAnimation`, `HazardPeriodicAnimation`, `HazardTemporaryAnimation` would have the same functional purpose of being a Hazard but different logic handling their Animation), Effects have a Lifecycle that determines how their Animation is handled.
 
 ```mermaid
---8<-- "static/mmd/effect-model.mmd"
+--8<-- "static/mmd/models-effect.mmd"
 ```
 
 In other words, the State Model determines the function of the Effect, but the Lifecycle determines the Animation update schema.

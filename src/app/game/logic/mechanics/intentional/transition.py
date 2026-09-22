@@ -3,7 +3,7 @@
 """
 # Standard Libraries
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 import collections
 import logging
 
@@ -23,14 +23,16 @@ from app.services.translators.base import Executor
 
 logger = logging.getLogger(__name__)
 
+
 class TransitionMechanics(Mechanic):
     """
     Evaluates Intention transition criteria and resolves the Sprite's intended
     goals to animation Actions and spatial Directions.
     """
-    
-    # Injected dynamically during engine construction
-    executor: Executor = None 
+
+    @property
+    def executor(self) -> Optional[Executor]:
+        return self.executors.get("intention")
     
     def update(self, 
         board: Board, 
@@ -38,7 +40,6 @@ class TransitionMechanics(Mechanic):
         bus: collections.deque,
         payload: DevicePayload
     ) -> None:
-        
         sprites = board.instances(AssetInstances.SPRITES.value)
         sprites_dict = board.characters()  
 

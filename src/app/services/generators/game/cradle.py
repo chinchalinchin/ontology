@@ -117,8 +117,8 @@ class Cradle:
         taxonomy = Factory.taxonomy(
             id = id, 
             name = name, 
-            category = AssetCategories.CURSORS, 
-            instance = AssetInstances.PROJECTILES
+            category = AssetCategories.CURSORS.value, 
+            instance = AssetInstances.PROJECTILES.value
         )
         
         return Asset(taxonomy, properties, state, frame, animation)
@@ -146,8 +146,8 @@ class Cradle:
         taxonomy = Factory.taxonomy(
             id=id,
             name=name,
-            category=AssetCategories.EFFECTS,
-            instance=AssetInstances.COLLECTABLES
+            category=AssetCategories.EFFECTS.value,
+            instance=AssetInstances.COLLECTABLES.value
         )
         return Asset(taxonomy, properties, state, frame, animation)
 
@@ -173,8 +173,8 @@ class Cradle:
         taxonomy = Factory.taxonomy(
             id=id,
             name=name,
-            category=AssetCategories.EFFECTS,
-            instance=AssetInstances.HAZARDS
+            category=AssetCategories.EFFECTS.value,
+            instance=AssetInstances.HAZARDS.value
         )
         return Asset(taxonomy, properties, state, frame, animation)
 
@@ -195,8 +195,8 @@ class Cradle:
         taxonomy = Factory.taxonomy(
             id=id,
             name=name,
-            category=AssetCategories.EFFECTS,
-            instance=AssetInstances.PASSIVE
+            category=AssetCategories.EFFECTS.value,
+            instance=AssetInstances.PASSIVE.value
         )
         return Asset(taxonomy, properties, state, frame, animation)
 
@@ -222,8 +222,8 @@ class Cradle:
         taxonomy = Factory.taxonomy(
             id          = id, 
             name        = name, 
-            category    = AssetCategories.CRAFTS, 
-            instance    = AssetInstances.STRUTS
+            category    = AssetCategories.CRAFTS.value, 
+            instance    = AssetInstances.STRUTS.value
         )
         
         return Asset(taxonomy, properties, state, frame, animation)

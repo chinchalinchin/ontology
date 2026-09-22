@@ -31,7 +31,7 @@ As should already be obvious, much of the logic in Mechanics is in support of Sp
 To visualize how this all ties together for a [Sprite](./02-sprites.md) in a single frame,
 
 ```mermaid
---8<-- "static/mmd/mechanics-flow.mmd"
+--8<-- "static/mmd/mechanics-sprite-flow.mmd"
 ```
 
 ### Core
@@ -143,7 +143,7 @@ The [Player](./02-sprites.md#player) does not observe momentum transfers. Instea
 **CombatMechanics**
 
 ```mermaid
---8<-- "static/mmd/combat-mechanics.mmd"
+--8<-- "static/mmd/mechanics-combat.mmd"
 ```
 
 In CombatMechanics, entities do not query spatial reach using their default body hitboxes (`asset.hitboxes`). Because CollisionMechanics prevents overlapping physical boundaries, character torsos will rarely intersect target bodies during weapon strikes. Instead, CombatMechanics queries the active weapon attackbox (`CombatMap.attackboxes`) associated with the entity's current `(action, direction, frame)`. Attacker spatial primitives are injected into the broad-phase spatial hash using their active weapon reach, evaluating collisions strictly against the target's physical hitboxes. Attackers with no attackboxes configured on their current animation frame bypass combat collision checks entirely.

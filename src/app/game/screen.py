@@ -107,9 +107,9 @@ class Screen:
                     tile.state.multiple.nx, tile.state.multiple.ny
                 )
                 # Route properties
-                if tile.taxonomy.instance == AssetInstances.BACK:
+                if tile.taxonomy.instance == AssetInstances.BACK.value:
                     back_tiles.append(tile_tuple)
-                elif tile.taxonomy.instance == AssetInstances.FORE:
+                elif tile.taxonomy.instance == AssetInstances.FORE.value:
                     fore_tiles.append(tile_tuple)
                     
         return back_tiles, fore_tiles
