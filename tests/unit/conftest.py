@@ -1083,6 +1083,7 @@ def mock_raft(
         animation = DummyAnimation()
     )
 
+
 @pytest.fixture
 def mock_crate(
     mock_object_properties,
