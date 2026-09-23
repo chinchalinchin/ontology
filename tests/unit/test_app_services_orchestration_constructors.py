@@ -39,7 +39,7 @@ def test_builder_build_services(mock_builder):
     mock_builder.load_data("world-01")
     mock_builder.build_board()
     
-    mock_builder.build_services(Devices.KEYBOARD)
+    mock_builder.build_services(Devices.KEYBOARD.value)
     
     assert mock_builder.board.cradle is not None
     # Ensure the keyboard mapping from configuration was applied
@@ -55,7 +55,7 @@ def test_orchestrator_construct(mock_render, mock_registry, mock_screen, mock_or
     engine = mock_orchestrator.orchestrate(
         state_key="world-01", 
         screensize=dims, 
-        device=Devices.KEYBOARD, 
+        device=Devices.KEYBOARD.value, 
         headless=True
     )
     

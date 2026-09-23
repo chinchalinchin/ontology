@@ -70,7 +70,8 @@ from app.game.menus.controllers import (
     InventoryController
 )
 from app.models.config import (
-    RecipeConfiguration
+    RecipeConfiguration,
+    MechanicsInstance
 )
 from app.models.groups import SpawnableGroup
 from app.game.devices import (
@@ -84,72 +85,72 @@ from app.services.translators import (
 
 class Factory:
     FRAME_MAP = {
-        FrameRecipe.SPRITE: SpriteFrame,
-        FrameRecipe.SINGLE: SingleFrame,
-        FrameRecipe.ITERABLE: IterableFrame,
-        FrameRecipe.STATE: StateFrame,
-        FrameRecipe.TRAVERSAL: TraversalFrame,
-        FrameRecipe.METER: MeterFrame,
-        FrameRecipe.INDEX: IndexFrame,
-        FrameRecipe.FLUID: FluidFrame,
-        FrameRecipe.SHORELINE: ShorelineFrame,
-        FrameRecipe.NONE: NoFrame
+        FrameRecipe.SPRITE.value: SpriteFrame,
+        FrameRecipe.SINGLE.value: SingleFrame,
+        FrameRecipe.ITERABLE.value: IterableFrame,
+        FrameRecipe.STATE.value: StateFrame,
+        FrameRecipe.TRAVERSAL.value: TraversalFrame,
+        FrameRecipe.METER.value: MeterFrame,
+        FrameRecipe.INDEX.value: IndexFrame,
+        FrameRecipe.FLUID.value: FluidFrame,
+        FrameRecipe.SHORELINE.value: ShorelineFrame,
+        FrameRecipe.NONE.value: NoFrame
     }
 
     ANIMATION_MAP = {
-        AnimationRecipe.BINARY: BinaryAnimation,
-        AnimationRecipe.LIFECYCLE: LifecycleAnimation,
-        AnimationRecipe.STATE: StateAnimation,
-        AnimationRecipe.SPRITE: SpriteAnimation,
-        AnimationRecipe.TRAVERSAL: TraversalAnimation,
-        AnimationRecipe.METER: MeterAnimation,
-        AnimationRecipe.NONE: NoAnimation
+        AnimationRecipe.BINARY.value: BinaryAnimation,
+        AnimationRecipe.LIFECYCLE.value: LifecycleAnimation,
+        AnimationRecipe.STATE.value: StateAnimation,
+        AnimationRecipe.SPRITE.value: SpriteAnimation,
+        AnimationRecipe.TRAVERSAL.value: TraversalAnimation,
+        AnimationRecipe.METER.value: MeterAnimation,
+        AnimationRecipe.NONE.value: NoAnimation
     }
 
     DEVICE_MAP = {
-        Devices.KEYBOARD: Keyboard,
-        Devices.CONTROLLER: Controller
+        Devices.KEYBOARD.value: Keyboard,
+        Devices.CONTROLLER.value: Controller
     }
 
     MECHANICS_MAP = {
-        Mechanics.ANIMATION: AnimationMechanics,
-        Mechanics.COLLISION: CollisionMechanics,
-        Mechanics.PROJECTILE: ProjectileMechanics,
-        Mechanics.SWITCH: SwitchMechanics,
-        Mechanics.TRANSITION: TransitionMechanics,
-        Mechanics.INTERACTION: InteractionMechanics,
-        Mechanics.PLAYER: PlayerMechanics,
-        Mechanics.REMOVE: RemoveMechanics,
-        Mechanics.COMBAT: CombatMechanics,
-        Mechanics.MOTION: MotionMechanics,
-        Mechanics.SOCIAL: SocialMechanics,
-        Mechanics.MENU: MenuMechanics,
-        Mechanics.COGNITION: CognitionMechanics,
-        Mechanics.PLOT: PlotMechanics,
-        Mechanics.NAVIGATION: NavigationMechanics,
-        Mechanics.FLUID: FluidMechanics
+        Mechanics.ANIMATION.value: AnimationMechanics,
+        Mechanics.COLLISION.value: CollisionMechanics,
+        Mechanics.PROJECTILE.value: ProjectileMechanics,
+        Mechanics.SWITCH.value: SwitchMechanics,
+        Mechanics.TRANSITION.value: TransitionMechanics,
+        Mechanics.INTERACTION.value: InteractionMechanics,
+        Mechanics.PLAYER.value: PlayerMechanics,
+        Mechanics.REMOVE.value: RemoveMechanics,
+        Mechanics.COMBAT.value: CombatMechanics,
+        Mechanics.MOTION.value: MotionMechanics,
+        Mechanics.SOCIAL.value: SocialMechanics,
+        Mechanics.MENU.value: MenuMechanics,
+        Mechanics.COGNITION.value: CognitionMechanics,
+        Mechanics.PLOT.value: PlotMechanics,
+        Mechanics.NAVIGATION.value: NavigationMechanics,
+        Mechanics.FLUID.value: FluidMechanics
     }
 
     CONTROLLER_MAP  = {
-        Controllers.DISPLAY: DisplayController,
-        Controllers.SCROLL: ScrollController,
-        Controllers.MAIN: MainController,
-        Controllers.LOAD: LoadController,
-        Controllers.PAUSE: PauseController,
-        Controllers.OPTIONS: OptionsController,
-        Controllers.INVENTORY: InventoryController
+        Controllers.DISPLAY.value: DisplayController,
+        Controllers.SCROLL.value: ScrollController,
+        Controllers.MAIN.value: MainController,
+        Controllers.LOAD.value: LoadController,
+        Controllers.PAUSE.value: PauseController,
+        Controllers.OPTIONS.value: OptionsController,
+        Controllers.INVENTORY.value: InventoryController
     }
     
     TRANSLATOR_MAP = {
-        Translators.LAMBDA: LambdaTranslator,
-        Translators.COMPILER: CompilerTranslator
+        Translators.LAMBDA.value: LambdaTranslator,
+        Translators.COMPILER.value: CompilerTranslator
     }
 
     @staticmethod
     def frame(recipe: Any) -> Frame:
         if isinstance(recipe, str):
             for enum_key, frame_cls in Factory.FRAME_MAP.items():
-                if enum_key.value == recipe:
+                if enum_key == recipe:
                     return frame_cls()
         return Factory.FRAME_MAP.get(recipe, NoFrame)()
 
@@ -157,7 +158,7 @@ class Factory:
     def animation(recipe: Any) -> Animation:
         if isinstance(recipe, str):
             for enum_key, anim_cls in Factory.ANIMATION_MAP.items():
-                if enum_key.value == recipe:
+                if enum_key == recipe:
                     return anim_cls()
         return Factory.ANIMATION_MAP.get(recipe, NoAnimation)()
     
@@ -176,26 +177,21 @@ class Factory:
         return Cradle(spawnables, recipes, decomposer)
 
     @staticmethod 
-    def mechanics(config: Any, executors: Dict[str, Any] = None) -> Mechanic:
-        key = getattr(config, "key", None)
-        if key is None:
-            key = config.value if hasattr(config, "value") else str(config)
+    def mechanics(config: MechanicsInstance, executors: Dict[str, Any] = None) -> Mechanic:
+        key = config.key
 
         target_cls = None
         for enum_key, cls in Factory.MECHANICS_MAP.items():
-            if enum_key.value == key or enum_key == key:
+            if enum_key == key:
                 target_cls = cls
                 break
 
         if not target_cls:
-            target_cls = Factory.MECHANICS_MAP.get(key)
-
-        if not target_cls:
-            raise KeyError(f"No mechanic class registered for key: '{key}'")
+            target_cls = Factory.MECHANICS_MAP.get(key, AnimationMechanics)
 
         mechanic_instance = target_cls()
 
-        executor_keys = getattr(config, "executors", [])
+        executor_keys = config.executors
         if executor_keys:
             if executors is None:
                 raise KeyError(
@@ -217,7 +213,7 @@ class Factory:
     def controller(kind: Any):
         if isinstance(kind, str):
             for enum_key, cls in Factory.CONTROLLER_MAP.items():
-                if enum_key.value == kind:
+                if enum_key == kind:
                     return cls()
         return Factory.CONTROLLER_MAP.get(kind, ScrollController)()
 

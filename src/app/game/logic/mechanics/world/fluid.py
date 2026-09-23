@@ -6,7 +6,13 @@ from __future__ import annotations
 # Standard Libraries
 import collections
 import logging
-from typing import Dict, Set, Tuple, TYPE_CHECKING
+from typing import (
+    Dict, 
+    Set, 
+    Tuple, 
+    Optional,
+    TYPE_CHECKING
+)
 
 # Application Libraries
 import app.config.settings as settings
@@ -34,12 +40,21 @@ class FluidMechanics(Mechanic):
 
     @property
     def actuator(self) -> Actuator:
+        if MechanicExecutors.ACTUATOR.value not in self.executors:
+            self.executors[MechanicExecutors.ACTUATOR.value] = Actuator()
         return self.executors[MechanicExecutors.ACTUATOR.value]
-    
-    def __init__(self):
+
+    @actuator.setter
+    def actuator(self, value: Actuator) -> None:
+        self.executors[MechanicExecutors.ACTUATOR.value] = value
+
+    def __init__(self, actuator: Optional[Actuator] = None):
         super().__init__()
+        if actuator is not None:
+            self.set_executor(MechanicExecutors.ACTUATOR.value, actuator)
         self._crate_positions = {}
         self._gate_states = {}
+
 
     def update(
         self,

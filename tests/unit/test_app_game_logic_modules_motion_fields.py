@@ -28,6 +28,9 @@ from app.models.state import (
     Mutators,
     MutatorTriggers
 )
+from app.models.groups import SpawnableGroup
+from app.game.logic.modules.motion import fields
+from app.services.generators.game.cradle import Cradle
 
 # Cython Libraries
 from libs.core.models import Position, Dimensions, Hitbox, Velocity
@@ -299,3 +302,57 @@ def test_projectiles_bypass_field_forces(mock_fluid_board):
     # Ballistic velocity remains unaffected by current
     assert projectile.state.velocity.vx == 50.0
     assert projectile.state.velocity.vy == 0.0
+
+
+def test_fields_shoreline_entry_nudge_and_submerge(mock_board, mock_shoreline, mock_recipes):
+    """
+    Verify crossing shoreline into water applies orthogonal step-down displacement,
+    toggles submerged=True, and spawns splash particles.
+    """
+    board = mock_board
+    spawnables = SpawnableGroup(
+        projectiles={}, expressions={}, collectables={},
+        hazards={}, struts={}, shorelines={},
+        passive={"splash": EffectProperties(dimensions=Dimensions(w=16, l=16), count=3, mass=-1)}
+    )
+    board.cradle = Cradle(spawnables, mock_recipes, None)
+
+    player = board.player()
+    player.state.position = Position(x=70, y=0)
+    # Moving East (+X) into water against West shoreline (orientation=LEFT, normal=(1, 0))
+    player.state.velocity = Velocity(vx=4.0, vy=0.0)
+    player.state.mutators.triggers.submerged = False
+
+    board.add([mock_shoreline])
+
+    fields.update([player], board, 0.016)
+
+    # Position nudged by thickness (8px) along inward water normal (1, 0) -> x = 70 + 8 = 78
+    assert player.state.position.x == 78
+    assert player.state.mutators.triggers.submerged is True
+
+    # Verify splash particle spawned
+    passives = board.instances(AssetInstances.PASSIVE.value, "0")
+    assert len(passives) > 0
+
+
+def test_fields_shoreline_sheer_ledge_blocks_exit(mock_board, mock_shoreline):
+    """
+    Verify non-bidirectional sheer ledges nullify velocities directed against the bank.
+    """
+    board = mock_board
+    player = board.player()
+    player.state.position = Position(x=70, y=0)
+    player.state.mutators.triggers.submerged = True
+
+    # Configure shoreline as one-way ledge
+    mock_shoreline.state.bidirectional = False
+    # Player trying to move West (-X) out of water (v_dot = -4 * 1 < 0)
+    player.state.velocity = Velocity(vx=-4.0, vy=0.0)
+
+    board.add([mock_shoreline])
+
+    fields.update([player], board, 0.016)
+
+    # Velocity directed against the bank is nullified
+    assert player.state.velocity.vx == 0.0

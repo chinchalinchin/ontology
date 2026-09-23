@@ -24,11 +24,17 @@ class PlotMechanics(Mechanic):
     """
     Evaluates global Plot transitions via the ISL executor against game world state.
     """
-
     @property
     def executor(self) -> Optional[Executor]:
         return self.executors.get(MechanicExecutors.PLOT.value)
-    
+
+    @executor.setter
+    def executor(self, executor: Optional[Executor]) -> None:
+        if executor is None:
+            self.executors.pop(MechanicExecutors.PLOT.value, None)
+        else:
+            self.executors[MechanicExecutors.PLOT.value] = executor
+
     def update(self, 
         board: Board, 
         delta: float, 

@@ -1,8 +1,8 @@
 geography:
   shorelines:
     grassy-shore:
-      tile: "grass"
-      fluid: "waterflow"
+      tile: grass
+      fluid: waterflow-00
       dimensions: 
         w: 32
         l: 32

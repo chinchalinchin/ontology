@@ -254,9 +254,11 @@ class Cradle:
             name=name,
             layer=layer,
             position=position,
+            height=0,
+            depth=0,
             orientation=orientation,
             length=length,
-            thickness=self.properties.thickness,
+            thickness=thickness,
             bidirectional=bidirectional,
             parent_fluid=parent_fluid,
             hitboxes=hitboxes
@@ -271,7 +273,7 @@ class Cradle:
         )
         return Asset(taxonomy, properties, state, frame, animation)
 
-    
+
     def spawn_composition(self, 
         id: str, 
         position: Position,  # type: ignore

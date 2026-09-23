@@ -111,7 +111,7 @@ def test_decomposer_resolve_bind_patterns(mock_decomposer):
     # Unmatched keys return the original bind expression
     assert mock_decomposer._resolve_bind("bind(parent.nonexistent)", root_ctx, parent_ctx) == "bind(parent.nonexistent)"
 
-def test_decomposer_cross_layer_origin_decoupling(mock_cross_layer_decomposer):
+def test_decomposer_cross_layer_origin_decoupling(mock_decomposer):
     """
     Verify branches on foreign layers decouple from parent layer coordinates and bind to (0, 0).
     """
@@ -123,7 +123,7 @@ def test_decomposer_cross_layer_origin_decoupling(mock_cross_layer_decomposer):
         position=Position(x=150, y=750)
     )
 
-    assets = mock_cross_layer_decomposer.unpack(deployed)
+    assets = mock_decomposer.unpack(deployed)
     root_strut = next(a for a in assets if a.id == "frame-brick")
     interior_wall = next(a for a in assets if a.id == "wall-blue")
     interior_floor = next(a for a in assets if a.id == "floor-wood")
@@ -144,7 +144,7 @@ def test_decomposer_cross_layer_origin_decoupling(mock_cross_layer_decomposer):
     assert interior_floor.state.position.y == 96
 
 
-def test_decomposer_cross_layer_door_out_resolution(mock_cross_layer_decomposer):
+def test_decomposer_cross_layer_door_out_resolution(mock_decomposer):
     """
     Ensure entrance doors output to local interior coordinates while exit doors offset by root position.
     """
@@ -156,7 +156,7 @@ def test_decomposer_cross_layer_door_out_resolution(mock_cross_layer_decomposer)
         position=Position(x=150, y=750)
     )
 
-    assets = mock_cross_layer_decomposer.unpack(deployed)
+    assets = mock_decomposer.unpack(deployed)
     entrance_door = next(a for a in assets if a.id == "door-house")
     exit_door = next(a for a in assets if a.id == "door-shadow")
 

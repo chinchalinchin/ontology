@@ -17,7 +17,7 @@ def test_keyboard_initialization(mock_mapping: DeviceMapping):
     """
     keyboard = Keyboard(mock_mapping)
     
-    expected_scancodes = {44, 8, 26, 22}
+    expected_scancodes = {44, 8, 26, 22, 41}
     assert set(keyboard._scancodes) == expected_scancodes
     
     # Ensure the initial state frame is populated with 0s
@@ -141,37 +141,37 @@ def test_keyboard_multiple_goals_accumulation(mock_poll, mock_pump, mock_mapping
     assert set(result.world.goals) == {'up', 'down'}
 
 
-def test_keyboard_context_switching(mock_menu_device_mapping: DeviceMapping):
+def test_keyboard_context_switching(mock_mapping: DeviceMapping):
     """
     Ensure switching contexts recalculates scancodes and resets tracking state.
     """
-    keyboard = Keyboard(mock_menu_device_mapping)
+    keyboard = Keyboard(mock_mapping)
     
     # World Context
     expected_world_codes = {44, 8, 26, 22, 41}
     assert set(keyboard._scancodes) == expected_world_codes
-    assert keyboard._context == DeviceContexts.WORLD
+    assert keyboard._context == DeviceContexts.WORLD.value
 
     # Switch to Menu Context
-    keyboard.context(DeviceContexts.MENU)
+    keyboard.context(DeviceContexts.MENU.value)
     expected_menu_codes = {79, 80, 40, 41}
     assert set(keyboard._scancodes) == expected_menu_codes
-    assert keyboard._context == DeviceContexts.MENU
+    assert keyboard._context == DeviceContexts.MENU.value
 
     # Guard clause: Re-invoking the same context preserves the state buffer
     keyboard._last_state[79] = 1
-    keyboard.context(DeviceContexts.MENU)
+    keyboard.context(DeviceContexts.MENU.value)
     assert keyboard._last_state[79] == 1
 
 
 @patch('app.game.devices.sdl.pump')
 @patch('app.game.devices.sdl.poll')
-def test_keyboard_menu_polling_edge_triggered(mock_poll, mock_pump, mock_menu_device_mapping: DeviceMapping):
+def test_keyboard_menu_polling_edge_triggered(mock_poll, mock_pump, mock_mapping: DeviceMapping):
     """
     Ensure Traversal and Interaction inputs in MENU context trigger only on rising edges.
     """
-    keyboard = Keyboard(mock_menu_device_mapping)
-    keyboard.context(DeviceContexts.MENU)
+    keyboard = Keyboard(mock_mapping)
+    keyboard.context(DeviceContexts.MENU.value)
 
     # Frame 1: Press 'north' (79) and 'select' (40)
     mock_poll.return_value = tuple(1 if code in {79, 40} else 0 for code in keyboard._scancodes)
@@ -200,11 +200,11 @@ def test_keyboard_menu_polling_edge_triggered(mock_poll, mock_pump, mock_menu_de
 
 @patch('app.game.devices.sdl.pump')
 @patch('app.game.devices.sdl.poll')
-def test_keyboard_world_menu_trigger(mock_poll, mock_pump, mock_menu_device_mapping: DeviceMapping):
+def test_keyboard_world_menu_trigger(mock_poll, mock_pump, mock_mapping: DeviceMapping):
     """
     Ensure opening a menu while in WORLD context is edge-triggered.
     """
-    keyboard = Keyboard(mock_menu_device_mapping)
+    keyboard = Keyboard(mock_mapping)
 
     # Frame 1: Press 'pause' (41)
     mock_poll.return_value = tuple(1 if code == 41 else 0 for code in keyboard._scancodes)

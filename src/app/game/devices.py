@@ -34,7 +34,7 @@ class Keyboard(Device):
     def __init__(self, mapping: DeviceMapping):
         super().__init__(mapping)   
         self._context = None
-        self.context(DeviceContexts.WORLD)
+        self.context(DeviceContexts.WORLD.value)
 
     def context(self, map: str) -> None:
         # Guard clause: Do not wipe the input buffer if the context isn't changing
@@ -42,13 +42,13 @@ class Keyboard(Device):
             return
             
         self._context = map 
-        if map == DeviceContexts.WORLD:
+        if map == DeviceContexts.WORLD.value:
             i_codes = [v for v in self.mapping.world.intentions.values() if v is not None]
             g_codes = [v for v in self.mapping.world.goals.values() if v is not None]
             m_codes = [v for v in self.mapping.world.menus.values() if v is not None]
             self._scancodes = tuple(set(i_codes + g_codes + m_codes))
 
-        elif map == DeviceContexts.MENU:
+        elif map == DeviceContexts.MENU.value:
             t_codes = [v for v in self.mapping.menu.traversal.values() if v is not None]
             i_codes = [v for v in self.mapping.menu.interactions.values() if v is not None]
             self._scancodes = tuple(set(t_codes + i_codes))
@@ -65,7 +65,7 @@ class Keyboard(Device):
         world_payload = WorldPayload()
         menu_payload = MenuPayload()
         
-        if self._context == DeviceContexts.WORLD:
+        if self._context == DeviceContexts.WORLD.value:
             # Edge-triggered, singular resolution
             for k, v in self.mapping.world.intentions.items():
                 if v is not None and current_dict.get(v) and not self._last_state.get(v):
@@ -83,7 +83,7 @@ class Keyboard(Device):
                 if v is not None and current_dict.get(v):
                     world_payload.goals.append(k)
                     
-        elif self._context == DeviceContexts.MENU:
+        elif self._context == DeviceContexts.MENU.value:
             # Edge-triggered, singular resolution
             for k, v in self.mapping.menu.traversal.items():
                 if v is not None and current_dict.get(v) and not self._last_state.get(v):

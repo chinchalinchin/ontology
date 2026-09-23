@@ -5,6 +5,7 @@ from app.models.config.core import (
     IntentionConfiguration,
     CompositionPseudoState,
     CompositionConfiguration,
+    MechanicsInstance,
     MechanicsConfiguration
 )
 from app.models.config.mappings import (
@@ -29,6 +30,7 @@ from app.models.config.recipes import (
     EffectRecipe,
     ObjectRecipe,
     SheetRecipe,
+    GeographyRecipe,
     WidgetRecipe,
     RecipeConfiguration
 )
@@ -58,7 +60,9 @@ __all__ = [
     'ObjectRecipe',
     'SheetRecipe',
     'WidgetRecipe',
+    'GeographyRecipe',
     'RecipeConfiguration',
     'ConfigurationSchema',
-    'MenuBinding'
+    'MenuBinding',
+    'MechanicsInstance'
 ]

@@ -72,7 +72,10 @@ def test_provider_unpack_widget_page(mock_provider_render, mock_bindings_render,
         id="test-page",
         name="page-1",
         instance=AssetInstances.PAGES.value,
-        bind=MenuBinding(schema=Bindings.TEXT.value, target={"content": "context.text"})
+        bind=MenuBinding(
+            schema=Bindings.TEXT.value, 
+            target={"content": "context.text"}
+        )
     )
     context = {"text": "Hello World"}
     

@@ -2,31 +2,47 @@
 # Ontology: tests.unit.test_app_services_generators_game_actuator
 """
 # Test Libraries
-from tests.unit.conftest import DummyFrame, DummyAnimation
+from tests.unit.conftest import (
+    DummyFrame, 
+    DummyAnimation
+)
 
 # Application Libraries
 from app.assets.base import (
     Asset, 
     Taxonomy
 )
+from app.assets.frames import (
+    FluidFrame
+)
 from app.config.enums import (
     AssetCategories,
     AssetInstances,
     Directions
 )
-from app.models.properties import ObjectProperties
-from app.models.state.objects import (
-    PositionalState, 
-    SwitchState
+from app.models.properties import (
+    ObjectProperties,
+    EffectProperties
 )
-from app.services.generators.game.actuator import Actuator
+from app.models.groups import (
+    SpawnableGroup
+)
+from app.models.state import (
+    PositionalState, 
+    SwitchState,
+    FluidState
+)
+from app.services.generators.game import (
+    Actuator,
+    Cradle
+)
+
+from app.game.logic.relations import ShorelineIndex
 
 # Cython Libraries
 from libs.core.models import (
     Position, 
-    Dimensions, 
-    Hitbox, 
-    Velocity
+    Dimensions
 )
 
 
@@ -145,21 +161,22 @@ def test_actuator_pump_down_to_obstacle_with_pool(mock_fluid_board):
 
     assert length == 96
     assert pool is not None
-    # Pool bounds: ox - 2*32 = 6, oy - 2*32 = 32, ow + 4*32 = 160, ol + 4*32 = 160
-    assert pool.x == 6
+    # Pool bounds snapped to 32px tile grid:
+    # X: [6, 166] -> snapped to [0, 192], width = 192
+    # Y: [32, 192] -> snapped to [32, 192], length = 160
+    assert pool.x == 0
     assert pool.y == 32
-    assert pool.w == 160
+    assert pool.w == 192
     assert pool.l == 160
 
     # 1 stream hitbox + 1 solid pool hitbox covering outer flood extent
     assert len(hitboxes) == 2
     assert hitboxes[0].dimensions.w == 32
     assert hitboxes[0].dimensions.l == 96
-    assert hitboxes[1].position.x == -64  # pool.x - fluid.x (6 - 70)
+    assert hitboxes[1].position.x == -70  # pool.x - fluid.x (0 - 70)
     assert hitboxes[1].position.y == 32   # pool.y - fluid.y (32 - 0)
-    assert hitboxes[1].dimensions.w == 160
+    assert hitboxes[1].dimensions.w == 192
     assert hitboxes[1].dimensions.l == 160
-
 
 def test_actuator_rafts_ignored_as_obstacles(mock_fluid_board, mock_raft):
     """
@@ -195,3 +212,81 @@ def test_actuator_pump_does_not_mutate_shared_properties(mock_fluid_board):
     actuator.pump(fluid, board)
 
     assert fluid.properties.hitboxes == []
+
+def test_actuator_generates_and_purges_shorelines(mock_fluid_board, mock_geography_properties, mock_recipes):
+    """
+    Verify Actuator generates shorelines on unoccluded flanks and purges them on re-pump.
+    """
+    board = mock_fluid_board
+    fluid = board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid.state.position = Position(x=70, y=0)
+    fluid.state.source = Directions.DOWN
+
+    # Setup Cradle and ShorelineIndex
+    spawnables = SpawnableGroup(
+        projectiles={}, expressions={}, collectables={},
+        hazards={}, passive={}, struts={},
+        shorelines={"grassy-shore": mock_geography_properties}
+    )
+    board.cradle = Cradle(spawnables, mock_recipes, None)
+    shoreline_index = ShorelineIndex({("tile-1", "waterflow-1"): "grassy-shore"})
+
+    actuator = Actuator(shorelines=shoreline_index)
+    actuator.pump(fluid, board)
+
+    shorelines = board.instances(AssetInstances.SHORELINES.value, "0")
+    assert len(shorelines) > 0
+    assert len(fluid.state.shorelines) == len(shorelines)
+
+    # Initial child shoreline names
+    first_shoreline_names = set(fluid.state.shorelines)
+
+    # Re-pump should purge old shorelines and regenerate without duplicate asset names
+    actuator.pump(fluid, board)
+    current_shoreline_names = set(fluid.state.shorelines)
+
+    # Ensure none of the old child entities remain on the board
+    for old_name in first_shoreline_names:
+        assert board.asset(old_name, "0") is None
+
+    assert len(current_shoreline_names) > 0
+
+
+def test_actuator_water_meeting_water_suppresses_shorelines(mock_fluid_board, mock_geography_properties, mock_recipes):
+    """
+    Verify that when water meets water across overlapping fluid bounds,
+    internal shoreline generation is suppressed.
+    """
+    board = mock_fluid_board
+    fluid1 = board.instances(AssetInstances.FLUIDS.value)[0]
+
+    # Spawn second adjacent fluid covering the full height of the corridor
+    tax2 = Taxonomy("waterflow-1", "fluid-2", AssetCategories.EFFECTS.value, AssetInstances.FLUIDS.value)
+    props2 = EffectProperties(dimensions=Dimensions(w=32, l=32), count=3, mass=-1)
+    state2 = FluidState(
+        id="waterflow-1",
+        name="fluid-2",
+        layer="0",
+        position=Position(x=102, y=0),  # Adjacent directly to East flank of fluid1
+        source=Directions.DOWN.value,
+        flow=1,
+        length=320
+    )
+    fluid2 = Asset(tax2, props2, state2, FluidFrame(), DummyAnimation())
+    board.add([fluid2])
+
+    spawnables = SpawnableGroup(
+        projectiles={}, expressions={}, collectables={},
+        hazards={}, passive={}, struts={},
+        shorelines={"grassy-shore": mock_geography_properties}
+    )
+    board.cradle = Cradle(spawnables, mock_recipes, None)
+    shoreline_index = ShorelineIndex({("tile-1", "waterflow-1"): "grassy-shore"})
+
+    actuator = Actuator(shorelines=shoreline_index)
+    actuator.pump(fluid1, board)
+
+    # Fluid1 East flank directly touches Fluid2 water: East shoreline (RIGHT) is suppressed
+    shorelines = [board.asset(name, "0") for name in fluid1.state.shorelines if board.asset(name, "0")]
+    right_shorelines = [s for s in shorelines if s.state.orientation == Directions.RIGHT.value]
+    assert len(right_shorelines) == 0

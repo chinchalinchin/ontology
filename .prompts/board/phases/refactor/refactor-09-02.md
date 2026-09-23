@@ -1028,20 +1028,213 @@ def mechanics(config: MechanicConfig, executors: Dict[str, Any]) -> Mechanic:
 
 *Objective*: Dynamically extract unoccluded perimeters, resolve terrain tiles, and manage child shoreline lifecycles.
 
-* [ ] Subtask: Implement flank boundary extraction for linear stream corridors (left, right, distal) based on emitter `source` and `length`.
-* [ ] Subtask: Implement outer flank perimeter extraction for annular pools based on `pool` bounds.
-* [ ] Subtask: Implement `_detect_flank_occlusions()` querying `board.perimeters` and static solid obstacles ($m \ge 0$).
-* [ ] Subtask: Discretize unoccluded flanks into 32px cells, query `board.tile(layer, coord)`, and resolve `shoreline_id` via `ShorelineIndex`.
-* [ ] Subtask: Coalesce contiguous cells sharing the same `shoreline_id` and orientation into unified `ShorelineState` entities.
-* [ ] Subtask: Implement child shoreline purging in `Actuator.pump()`: remove entities listed in `fluid.state.shorelines` from `Board` before re-allocating.
-* [ ] Subtask: Add `cradle.spawn_shoreline()` helper in `app/services/generators/game/cradle.py`.
+* [x] Subtask: Implement flank boundary extraction for linear stream corridors (left, right, distal) based on emitter `source` and `length`.
+* [x] Subtask: Implement outer flank perimeter extraction for annular pools based on `pool` bounds.
+* [x] Subtask: Implement `_detect_flank_occlusions()` querying `board.perimeters` and static solid obstacles ($m \ge 0$).
+* [x] Subtask: Discretize unoccluded flanks into 32px cells, query `board.tile(layer, coord)`, and resolve `shoreline_id` via `ShorelineIndex`.
+* [x] Subtask: Coalesce contiguous cells sharing the same `shoreline_id` and orientation into unified `ShorelineState` entities.
+* [x] Subtask: Implement child shoreline purging in `Actuator.pump()`: remove entities listed in `fluid.state.shorelines` from `Board` before re-allocating.
+* [x] Subtask: Add `cradle.spawn_shoreline()` helper in `app/services/generators/game/cradle.py`.
 
 **5. Task: Virtual Edge Traversals in Motion Pipeline**
 
 *Objective*: Resolve sensory shoreline crossings, spatial drop displacement, immersion gating, and one-way ledges in `fields.py`.
 
-* [ ] Subtask: Add shoreline sensor query pass in `app/game/logic/modules/motion/fields.py`.
-* [ ] Subtask: Compute velocity dot products against shoreline inward normals to differentiate entry ($\vec{v} \cdot \hat{n} > 0$) versus exit ($\vec{v} \cdot \hat{n} < 0$).
-* [ ] Subtask: Apply orthogonal spatial nudge $\vec{\delta}_{\text{shore}} = \hat{n}_{\text{water}} \cdot t_{\text{shore}}$ upon water entry.
-* [ ] Subtask: Transition `asset.state.mutators.triggers.submerged = True` and emit splash passive particles upon crossing the shoreline sensor.
-* [ ] Subtask: Enforce one-way constraint on non-bidirectional shorelines by cancelling velocity vectors directed against the bank.
+* [x] Subtask: Add shoreline sensor query pass in `app/game/logic/modules/motion/fields.py`.
+* [x] Subtask: Compute velocity dot products against shoreline inward normals to differentiate entry ($\vec{v} \cdot \hat{n} > 0$) versus exit ($\vec{v} \cdot \hat{n} < 0$).
+* [x] Subtask: Apply orthogonal spatial nudge $\vec{\delta}_{\text{shore}} = \hat{n}_{\text{water}} \cdot t_{\text{shore}}$ upon water entry.
+* [x] Subtask: Transition `asset.state.mutators.triggers.submerged = True` and emit splash passive particles upon crossing the shoreline sensor.
+* [x] Subtask: Enforce one-way constraint on non-bidirectional shorelines by cancelling velocity vectors directed against the bank.
+
+##### Live Test
+
+**Tile Properties**
+
+```yaml
+tiles:
+  back:
+    grass:
+      dimensions:
+        w: 32
+        l: 32
+      friction: 100
+```
+
+**Fluid Properties**
+
+```yaml
+effects:
+  fluids:
+    waterflow-00:
+      dimensions:
+        w: 32
+        l: 32
+      lifecycle: 
+        type: continuous
+        delay: 60
+      count: 3
+      hitboxes: null
+      mass: 0
+```
+
+**Geography Properties**
+
+```yaml
+geography:
+  shorelines:
+    grassy-shore:
+      tile: grass
+      fluid: waterflow-00
+      dimensions: 
+        w: 32
+        l: 32
+      thickness: 10
+      mass: -1
+      hitboxes: null
+```
+
+**Fluid Initial State**
+
+```yaml
+effects:
+  fluids:
+    - id: waterflow-00
+      name: jasilynns-tears-00
+      layer: '0'
+      position:
+        x: 70
+        y: 0
+      flow: 2
+      source: down
+    - id: waterflow-00
+      name: jasilynns-tears-01
+      layer: '0'
+      position:
+        x: 600
+        y: 600
+      source: left
+    - id: waterflow-00
+      name: jasilynns-tears-02
+      layer: '0'
+      flow: 4
+      position:
+        x: 632
+        y: 0
+      source: down
+```
+
+**Results**
+
+Shorelines are successfully indexed and sliced. They are definitely rendering, but position placement is not correct. State dump included below.
+
+**Relevant Sections of State Dump**
+
+*Omitted after bug identified for brevity*
+
+!!! note
+  Any model updates from this phase are not yet reflected in the state dump.
+
+**State Dump Template**
+
+*Omitted after update for brevity*
+
+**Priorities**
+
+- Determine why the placement is off.
+- Add Geography and updated Fluid fields to the state dump template so all available information is dumped.
+
+
+##### Analysis
+
+**1. Off-by-32px Outer Displacement (Land Tile vs. Water Canvas)**
+
+In the state dump:
+
+* `jasilynns-tears-00` corridor runs down at $x = 70..102$ ($w = 32$).
+  * West shoreline (`spawn-152d68e1`) was anchored at $x = 38$ ($70 - 32$).
+  * East shoreline (`spawn-2a59bb68`) was anchored at $x = 102$ ($70 + 32$).
+* `jasilynns-tears-00.pool` runs from $y = 536..720$ ($l = 184$).
+  * North shoreline (`spawn-5164d94e`) was anchored at $y = 504$ ($536 - 32$).
+  * South shoreline (`spawn-6af427ab`) was anchored at $y = 720$ ($536 + 184$).
+
+Every shoreline was anchored **completely outside the water on the dry land tile**, rather than **directly on top of the water margin**.
+
+Because `ShorelineFrame` texture cells are drawn with transparent backdrops and foam positioned along the bank edge:
+
+* **UP (North bank)**: Foam along $(0, 0) \to (w, 0)$ (top edge). It must sit at $y = y_{\text{water}}$ so the foam paints on the northern margin of the water canvas.
+* **DOWN (South bank)**: Foam along $(0, l) \to (w, l)$ (bottom edge). It must sit at $y = y_{\text{water}} - 32$ so the bottom edge paints on the southern margin of the water canvas.
+* **LEFT (West bank)**: Foam along $(0, 0) \to (0, l)$ (left edge). It must sit at $x = x_{\text{water}}$ so the foam paints on the western margin of the water canvas.
+* **RIGHT (East bank)**: Foam along $(w, 0) \to (w, l)$ (right edge). It must sit at $x = x_{\text{water}} - 32$ so the right edge paints on the eastern margin of the water canvas.
+
+Anchoring on the adjacent land tile caused the textures and sensor hitboxes to float 32px away in the grass.
+
+**2. Corridor-to-Pool Junction Overrun & 24px Quantization Gaps**
+
+* For `jasilynns-tears-00`, the corridor descriptor ran from $y = 1$ to $y = 601$, ignoring the fact that the pool begins at $y = 536$.
+* When the flank sampling loop reached $c = 512$, the 32px step ($512..544$) crossed into the pool at $y = 536$. Because `_is_inside_fluid` tested the entire 32px bounding box, it rejected the whole block.
+* This dropped the remaining unoccluded 24px ($512..536$), creating an artificial gap before the pool.
+* **Fix**: When an annular pool exists, corridor flanks must terminate exactly where they meet the pool (`end = pool.y` for `DOWN`, `start = pool.y + pool.l` for `UP`, `end = pool.x` for `RIGHT`, `start = pool.x + pool.w` for `LEFT`). The distal flank must also be suppressed since the stream flows into the pool.
+
+**3. Duplicate Overlapping Shorelines at Pool Inflow**
+
+* `jasilynns-tears-01` had multiple shorelines at $(156, 568)$ (`spawn-bf6a9697` and `spawn-62dcfa9b`).
+* Because the stream corridor flanks overlapped the outer pool bounds, both the corridor North flank and the pool East flank generated shorelines at the junction.
+* Terminating the corridor at the pool boundary eliminates these collisions.
+
+##### Live Test
+
+*Note*: Same initial conditions.
+
+**State Dump**
+
+*Omitted after bug identified for brevity.*
+
+**Notes:**
+
+Placement is much cleaner now, however some bugs remain:
+
+- When the down and left waterflows meet, they form overlapping pools. Because they have different flow rates, their pools are different areas, so both shorelines get rendered, with the smaller area shorelines visible over the Fluid assets.
+- When crossing a shore from the north, i.e. player travelling in south direction, the first shoreline is initially rendered on top of the sprite, until the Sprite's lower bound crosses the lower bound of the shore frame, i.e. painter's algorithm. Shorelines need hardcoded depth and height to render underneath everything except the Fluid.
+- South and east banks are rendering slightly askew and not contiguous with the terrain tiles, i.e. the fluid frame is visible along the edges. This only seems to happen with pools, as the actual streams render as expected, i.e. blending in with the terrain tiles.  
+
+Here is the diagnosis and remediation for the three issues identified in the live test.
+
+##### Analysis
+
+1. **Bug 1: Overlapping Pool Shorelines (Smaller Pools Rendering Inside Larger Pools)**
+  * **Cause**: `_generate_shorelines` only evaluated `_is_inside_fluid` against the *current* fluid being pumped. When querying the adjacent substrate tile via `board.tile(layer, coord)`, it queried the static background tile map, which returned `grass` everywhere. It did not check whether that grass was actually submerged under water from *another* fluid on the board.
+  * **Fix**: Introduce `_is_water(px, py, layer, board)` and `_is_water_excluding(...)`. If the probe point (where dry land is supposed to be) is covered by any fluid's stream or pool, water meets water—no shoreline is generated. Additionally, any previously generated shorelines submerged by an expanding fluid are pruned during `pump()`.
+2. **Bug 2: Painter's Algorithm Depth/Height Sorting (Shoreline on top of Player)**
+  * **Cause**: `ShorelineState` was instantiated without explicitly setting `height = 0`. It inherited `height = None` from `AssetState`. When `height is None`, `Screen.draw()` falls back to geometric height (`state.position.y + dimensions.l`). For a northern pool shoreline at $y = 536$, its height evaluated to $536 + 32 = 568$. When the player approached from the north at $y = 510$, the player's height was $510 + 48 = 558 < 568$, causing the engine to sort and draw the shoreline *on top of* the player.
+  * **Fix**: Hardcode `height = 0` and `depth = 0` directly on `ShorelineState` and pass them explicitly in `cradle.spawn_shoreline()`. Because dynamic entities have geometric height $Y + L \ge 48 > 0$, the sort order is guaranteed: $\text{Fluid } (0, -1) < \text{Shoreline } (0, 0) < \text{Dynamic Entities } (>0, 0)$
+3. **Bug 3: South and East Banks Rendering Askew / Fluid Exposed Along Edges**
+  * **Cause**: In `_partition_pool`, `pool_w = ow + 2 * flow * fw` ($56 + 128 = 184$) and `pool_l = 184`. Because `ow = 56` is not a multiple of 32, the pool dimension was 184. `FluidFrame` renders pools by stepping in unit tiles (`range(0, 184, 32)`), which stamps full 32x32 tiles. The 6th tile at offset 160 rendered fluid out to $160 + 32 = 192$ px ($+8$ px overshoot). Meanwhile, `Actuator` placed the South and East shorelines at $184 - 32 = 152$, ending at 184. Consequently, $8$ pixels of raw fluid stuck out past the shorelines along the South and East edges.
+  * **Fix**: In `_partition_pool`, snap the pool's outer bounding box to `TILE_HASH_SIZE = 32` grid multiples. The pool expands to an exact multiple of 32 (e.g., $192 \times 224$), perfectly matching `FluidFrame`'s full-tile rasterization and aligning the pool and shorelines to the background terrain grid with zero pixel bleed.
+
+
+**1. `app/models/state/objects.py`**
+
+Enforce `height = 0` and `depth = 0` on `ShorelineState`:
+
+**2. `app/services/generators/game/cradle.py`**
+
+Explicitly set `height = 0` and `depth = 0` in `spawn_shoreline()`:
+
+**3. `app/services/generators/game/actuator.py`**
+
+Update `Actuator` to:
+
+1. Snap annular pool bounds to 32px tile grid multiples in `_partition_pool`.
+2. Cross-reference all active fluids on the layer via `_is_water` and `_is_water_excluding`.
+3. Check that the land-side probe point is not submerged before spawning a shoreline.
+4. Prune submerged shorelines from the board during `pump()`.
+
+##### User Review
+
+Unit tests passing. Bugs remain in the implementation, but they are minor and non-application breaking. Everything is working enough to call the MVP for this phase attained. 
+
+Before even getting to the bugs in the shoreline, the Actuator needs refactored. It is clear there is an entirely separate and logically contained service embedded in the Actuator for generating the Shoreline. There is no reason for the Shoreline generation to be embedded into the Actuator in such a manner.
+
+- Task: Analyze the dependencies Shoreline generation has on Fluid generation, and what sort of interface the Actuator will need. Ideally, the Shoreline generation service will be static and stateless, so the Actuator can call it on as needed basis.
+
+`is_water()` would seem a method that should belong to the Board, not the Actuator. Moreover, `is_water_excluding` is redundant; just overload `is_water` with an exclusion that defaults to None. 

@@ -46,6 +46,10 @@ class EffectRecipe:
     fluids: Recipe = None
 
 @dataclass(slots=True, frozen=True)
+class GeographyRecipe:
+    shorelines: Recipe = None
+
+@dataclass(slots=True, frozen=True)
 class ObjectRecipe:
     chests: Recipe = None
     crates: Recipe = None
@@ -82,6 +86,7 @@ class RecipeConfiguration(Configuration):
     crafts: CraftRecipe = None
     cursors: CursorRecipe = None
     effects: EffectRecipe = None
+    geography: GeographyRecipe = None
     objects: ObjectRecipe = None
     sheets: SheetRecipe = None
     widgets: WidgetRecipe = None

@@ -10,7 +10,8 @@ from app.assets.frames import (
     StateFrame, 
     SpriteFrame,
     IndexFrame,
-    FluidFrame
+    FluidFrame,
+    ShorelineFrame
 )
 from app.models.properties import (
     ObjectProperties,
@@ -18,6 +19,7 @@ from app.models.properties import (
     SheetProperties,
     WidgetProperties,
     EffectProperties,
+    GeographyProperties,
     Action,
     Direction
 )
@@ -30,6 +32,7 @@ from app.models.state import (
     IconState,
     AttachmentState,
     FluidState, 
+    ShorelineState,
     Pool
 )
 from app.config.enums import (
@@ -332,3 +335,78 @@ def test_sprite_frame_channels_submerged():
         ChannelTypes.SUBMERGE.value,
         (32, 40, 110, 180, 170)
     )
+
+
+def test_shoreline_frame_indexing():
+    """
+    Verify ShorelineFrame indexes 4 cardinal rows and forward fractional remainder slices.
+    """
+    frame = ShorelineFrame()
+    props = GeographyProperties(
+        dimensions=Dimensions(w=32, l=32),
+        tile="grass",
+        fluid="water",
+        thickness=8
+    )
+    crops = frame.index("grassy-shore", props)
+
+    # 1. Base full cardinal tile keys at row offsets
+    assert crops[f"grassy-shore{SEPARATOR}up"] == (0, 0, 32, 32)      # Row 0 (UP)
+    assert crops[f"grassy-shore{SEPARATOR}left"] == (0, 32, 32, 32)   # Row 1 (LEFT)
+    assert crops[f"grassy-shore{SEPARATOR}down"] == (0, 64, 32, 32)   # Row 2 (DOWN)
+    assert crops[f"grassy-shore{SEPARATOR}right"] == (0, 96, 32, 32)  # Row 3 (RIGHT)
+
+    # 2. Horizontal remainder slices across width (UP and DOWN)
+    assert crops[f"grassy-shore{SEPARATOR}up{SEPARATOR}16"] == (0, 0, 16, 32)
+    assert crops[f"grassy-shore{SEPARATOR}down{SEPARATOR}16"] == (0, 64, 16, 32)
+
+    # 3. Vertical remainder slices across length (LEFT and RIGHT)
+    assert crops[f"grassy-shore{SEPARATOR}left{SEPARATOR}16"] == (0, 32, 32, 16)
+    assert crops[f"grassy-shore{SEPARATOR}right{SEPARATOR}16"] == (0, 96, 32, 16)
+
+
+def test_shoreline_frame_keys_horizontal_full_and_slice():
+    """
+    Verify horizontal banks (UP/DOWN) emit full-tile keys along width and a terminal remainder.
+    """
+    frame = ShorelineFrame(tile_w=32, tile_l=32)
+    state = ShorelineState(
+        id="grassy-shore",
+        orientation=Directions.UP.value,
+        length=80  # 32 + 32 + 16
+    )
+    keys = frame.keys("grassy-shore", state)
+
+    assert len(keys) == 3
+    assert keys[0] == (f"grassy-shore{SEPARATOR}up", 0, 0)
+    assert keys[1] == (f"grassy-shore{SEPARATOR}up", 32, 0)
+    assert keys[2] == (f"grassy-shore{SEPARATOR}up{SEPARATOR}16", 64, 0)
+
+
+def test_shoreline_frame_keys_vertical_full_and_slice():
+    """
+    Verify vertical banks (LEFT/RIGHT) emit full-tile keys along length and a terminal remainder.
+    """
+    frame = ShorelineFrame(tile_w=32, tile_l=32)
+    state = ShorelineState(
+        id="grassy-shore",
+        orientation=Directions.LEFT.value,
+        length=80  # 32 + 32 + 16
+    )
+    keys = frame.keys("grassy-shore", state)
+
+    assert len(keys) == 3
+    assert keys[0] == (f"grassy-shore{SEPARATOR}left", 0, 0)
+    assert keys[1] == (f"grassy-shore{SEPARATOR}left", 0, 32)
+    assert keys[2] == (f"grassy-shore{SEPARATOR}left{SEPARATOR}16", 0, 64)
+
+
+def test_shoreline_frame_keys_zero_length():
+    frame = ShorelineFrame()
+    state = ShorelineState(id="grassy-shore", length=0)
+    assert frame.keys("grassy-shore", state) == []
+
+
+def test_shoreline_frame_channels():
+    frame = ShorelineFrame()
+    assert frame.channels("grassy-shore", None, None) == []

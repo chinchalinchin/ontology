@@ -33,8 +33,15 @@ class TransitionMechanics(Mechanic):
 
     @property
     def executor(self) -> Optional[Executor]:
-        return self.executors.get(MechanicExecutors.INTENTION.value)
-    
+        return self.executors.get("intention")
+
+    @executor.setter
+    def executor(self, executor: Optional[Executor]) -> None:
+        if executor is None:
+            self.executors.pop(MechanicExecutors.INTENTION.value, None)
+        else:
+            self.executors[MechanicExecutors.INTENTION.value] = executor
+
     def update(self, 
         board: Board, 
         delta: float, 

@@ -256,7 +256,6 @@ def test_screen_draw_submerge_channel_splitting(
     Test that Screen.draw splits texture passes into upper unmodulated and
     lower aquatic-modulated slices when ChannelTypes.SUBMERGE is active.
     """
-    from app.assets.frames.core import ChannelTypes
 
     # Configure texture crop size to 64x64 matching sprite dimensions
     mock_registry.image.side_effect = lambda key: (MagicMock(), 0, 0, 64, 64)

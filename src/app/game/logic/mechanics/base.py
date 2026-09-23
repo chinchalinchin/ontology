@@ -41,6 +41,18 @@ class Mechanic(ABC):
             return None
         return next(iter(self.executors.values()))
 
+    @executor.setter
+    def executor(self, executor: Any) -> None:
+        """Enables direct property assignment for single-executor workflows and tests."""
+        if executor is None:
+            self.executors.clear()
+        else:
+            if self.executors:
+                first_key = next(iter(self.executors.keys()))
+                self.executors[first_key] = executor
+            else:
+                self.executors["default"] = executor
+
     @abstractmethod 
     def update(self, 
         board: Board, 

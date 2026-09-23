@@ -10,13 +10,13 @@
   - Category: `{{ asset.category }}`
   - Instance: `{{ asset.instance }}`
   - ID: `{{ asset.id }}`
-  - Name: `{{asset.name }}`
+  - Name: `{{ asset.name }}`
 - **Components:**
   - Animation: `{{ asset.animation.__class__ }}`
   - Frame: `{{ asset.frame.__class__ }}`
 {%- set props = asset.properties if (asset.properties is defined and asset.properties is not none) else asset %}
 {%- set dims = props.dimensions if (props.dimensions is defined and props.dimensions is not none) else (asset.dimensions if (asset.dimensions is defined and asset.dimensions is not none) else none) %}
-{%- if dims or (props.mass is defined and props.mass is not none) or (props.count is defined and props.count is not none) or (props.friction is defined and props.friction is not none) or (props.cost is defined and props.cost) or (props.stack is defined and props.stack) or (props.hitboxes is defined and props.hitboxes) or (props.actions is defined and props.actions) or (props.frames is defined and props.frames) or (props.alignment is defined and props.alignment is not none) or (props.color is defined and props.color is not none) or (props.bold is defined and props.bold is not none) or (props.italics is defined and props.italics is not none) or (props.margins is defined and props.margins is not none) or (props.size is defined and props.size is not none) or (props.font is defined and props.font is not none) %}
+{%- if dims or (props.mass is defined and props.mass is not none) or (props.count is defined and props.count is not none) or (props.friction is defined and props.friction is not none) or (props.cost is defined and props.cost) or (props.stack is defined and props.stack) or (props.hitboxes is defined and props.hitboxes) or (props.actions is defined and props.actions) or (props.frames is defined and props.frames) or (props.alignment is defined and props.alignment is not none) or (props.color is defined and props.color is not none) or (props.bold is defined and props.bold is not none) or (props.italics is defined and props.italics is not none) or (props.margins is defined and props.margins is not none) or (props.size is defined and props.size is not none) or (props.font is defined and props.font is not none) or (props.tile is defined and props.tile is not none) or (props.fluid is defined and props.fluid is not none) or (props.thickness is defined and props.thickness is not none) %}
 - **Properties:**
 {%- if dims %}
   - Dimensions:
@@ -25,6 +25,15 @@
 {%- endif %}
 {%- if props.mass is defined and props.mass is not none %}
   - Mass: {{ props.mass }}
+{%- endif %}
+{%- if props.tile is defined and props.tile is not none %}
+  - Tile: `{{ props.tile }}`
+{%- endif %}
+{%- if props.fluid is defined and props.fluid is not none %}
+  - Fluid: `{{ props.fluid }}`
+{%- endif %}
+{%- if props.thickness is defined and props.thickness is not none %}
+  - Thickness: {{ props.thickness }}
 {%- endif %}
 {%- if props.lifecycle is defined and props.lifecycle is not none %}
   - Lifecycle: {{ props.lifecycle }}
@@ -136,6 +145,18 @@
 {%- if asset.state.direction is defined and asset.state.direction is not none %}
   - Direction: `{{ asset.state.direction }}`
 {%- endif %}
+{%- if asset.state.orientation is defined and asset.state.orientation is not none %}
+  - Orientation: `{{ asset.state.orientation.value if asset.state.orientation.value is defined else asset.state.orientation }}`
+{%- endif %}
+{%- if asset.state.thickness is defined and asset.state.thickness is not none %}
+  - Thickness: {{ asset.state.thickness }}
+{%- endif %}
+{%- if asset.state.bidirectional is defined and asset.state.bidirectional is not none %}
+  - Bidirectional: {{ asset.state.bidirectional }}
+{%- endif %}
+{%- if asset.state.parent_fluid is defined and asset.state.parent_fluid is not none %}
+  - Parent Fluid: `{{ asset.state.parent_fluid }}`
+{%- endif %}
 {%- if asset.state.multiple is defined and asset.state.multiple is not none %}
   - Multiple:
     - nx: {{ asset.state.multiple.nx }}
@@ -167,6 +188,12 @@
   - Pool:
     - Position: ({{ asset.state.pool.x }}, {{ asset.state.pool.y }})
     - Dimensions: w: {{ asset.state.pool.w }}, l: {{ asset.state.pool.l }}
+{%- endif %}
+{%- if asset.state.shorelines is defined and asset.state.shorelines %}
+  - Shorelines:
+{%- for s in asset.state.shorelines %}
+    - `{{ s }}`
+{%- endfor %}
 {%- endif %}
 {%- if asset.state.hitboxes is defined and asset.state.hitboxes %}
   - Hitboxes:
@@ -418,6 +445,7 @@
 
 {%- if bounds %}
 {% for b in bounds %}
+
 * Position: ({{ b.position.x }}, {{ b.position.y }}) | Dimensions: w: {{ b.dimensions.w }}, l: {{ b.dimensions.l }}
 {%- endfor %}
 {%- else %}

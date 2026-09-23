@@ -50,7 +50,10 @@ from app.game.logic.mechanics import (
     NavigationMechanics,
     FluidMechanics
 )
-from app.models.config import DeviceMapping
+from app.models.config import (
+    DeviceMapping,
+    MechanicsInstance
+)
 from app.game.menus.controllers import (
     DisplayController,
     ScrollController,
@@ -65,14 +68,14 @@ from app.services.generators.game.cradle import Cradle
 
 
 def test_factory_frame():
-    assert isinstance(Factory.frame(FrameRecipe.SPRITE), SpriteFrame)
-    assert isinstance(Factory.frame(FrameRecipe.SINGLE), SingleFrame)
-    assert isinstance(Factory.frame(FrameRecipe.ITERABLE), IterableFrame)
-    assert isinstance(Factory.frame(FrameRecipe.STATE), StateFrame)
-    assert isinstance(Factory.frame(FrameRecipe.TRAVERSAL), TraversalFrame)
-    assert isinstance(Factory.frame(FrameRecipe.METER), MeterFrame)
-    assert isinstance(Factory.frame(FrameRecipe.INDEX), IndexFrame)
-    assert isinstance(Factory.frame(FrameRecipe.NONE), NoFrame)
+    assert isinstance(Factory.frame(FrameRecipe.SPRITE.value), SpriteFrame)
+    assert isinstance(Factory.frame(FrameRecipe.SINGLE.value), SingleFrame)
+    assert isinstance(Factory.frame(FrameRecipe.ITERABLE.value), IterableFrame)
+    assert isinstance(Factory.frame(FrameRecipe.STATE.value), StateFrame)
+    assert isinstance(Factory.frame(FrameRecipe.TRAVERSAL.value), TraversalFrame)
+    assert isinstance(Factory.frame(FrameRecipe.METER.value), MeterFrame)
+    assert isinstance(Factory.frame(FrameRecipe.INDEX.value), IndexFrame)
+    assert isinstance(Factory.frame(FrameRecipe.NONE.value), NoFrame)
 
     assert isinstance(Factory.frame("sprite"), SpriteFrame)
     assert isinstance(Factory.frame("single"), SingleFrame)
@@ -81,13 +84,13 @@ def test_factory_frame():
 
 
 def test_factory_animation():
-    assert isinstance(Factory.animation(AnimationRecipe.BINARY), BinaryAnimation)
-    assert isinstance(Factory.animation(AnimationRecipe.LIFECYCLE), LifecycleAnimation)
-    assert isinstance(Factory.animation(AnimationRecipe.STATE), StateAnimation)
-    assert isinstance(Factory.animation(AnimationRecipe.SPRITE), SpriteAnimation)
-    assert isinstance(Factory.animation(AnimationRecipe.TRAVERSAL), TraversalAnimation)
-    assert isinstance(Factory.animation(AnimationRecipe.METER), MeterAnimation)
-    assert isinstance(Factory.animation(AnimationRecipe.NONE), NoAnimation)
+    assert isinstance(Factory.animation(AnimationRecipe.BINARY.value), BinaryAnimation)
+    assert isinstance(Factory.animation(AnimationRecipe.LIFECYCLE.value), LifecycleAnimation)
+    assert isinstance(Factory.animation(AnimationRecipe.STATE.value), StateAnimation)
+    assert isinstance(Factory.animation(AnimationRecipe.SPRITE.value), SpriteAnimation)
+    assert isinstance(Factory.animation(AnimationRecipe.TRAVERSAL.value), TraversalAnimation)
+    assert isinstance(Factory.animation(AnimationRecipe.METER.value), MeterAnimation)
+    assert isinstance(Factory.animation(AnimationRecipe.NONE.value), NoAnimation)
 
     assert isinstance(Factory.animation("binary"), BinaryAnimation)
     assert isinstance(Factory.animation("lifecycle"), LifecycleAnimation)
@@ -104,10 +107,10 @@ def test_factory_taxonomy():
 
 
 def test_factory_device(mock_mapping: DeviceMapping):
-    kb = Factory.device(Devices.KEYBOARD, mock_mapping)
+    kb = Factory.device(Devices.KEYBOARD.value, mock_mapping)
     assert isinstance(kb, Keyboard)
 
-    ctrl = Factory.device(Devices.CONTROLLER, mock_mapping)
+    ctrl = Factory.device(Devices.CONTROLLER.value, mock_mapping)
     assert isinstance(ctrl, Controller)
 
     fallback = Factory.device("unknown_device", mock_mapping)
@@ -121,48 +124,54 @@ def test_factory_cradle(mock_spawnables, mock_recipes):
 
 def test_factory_mechanics():
     mapping = {
-        Mechanics.ANIMATION: AnimationMechanics,
-        Mechanics.COLLISION: CollisionMechanics,
-        Mechanics.PROJECTILE: ProjectileMechanics,
-        Mechanics.SWITCH: SwitchMechanics,
-        Mechanics.TRANSITION: TransitionMechanics,
-        Mechanics.INTERACTION: InteractionMechanics,
-        Mechanics.PLAYER: PlayerMechanics,
-        Mechanics.REMOVE: RemoveMechanics,
-        Mechanics.COMBAT: CombatMechanics,
-        Mechanics.MOTION: MotionMechanics,
-        Mechanics.SOCIAL: SocialMechanics,
-        Mechanics.MENU: MenuMechanics,
-        Mechanics.COGNITION: CognitionMechanics,
-        Mechanics.PLOT: PlotMechanics,
-        Mechanics.NAVIGATION: NavigationMechanics,
-        Mechanics.FLUID: FluidMechanics
+        Mechanics.ANIMATION.value: AnimationMechanics,
+        Mechanics.COLLISION.value: CollisionMechanics,
+        Mechanics.PROJECTILE.value: ProjectileMechanics,
+        Mechanics.SWITCH.value: SwitchMechanics,
+        Mechanics.TRANSITION.value: TransitionMechanics,
+        Mechanics.INTERACTION.value: InteractionMechanics,
+        Mechanics.PLAYER.value: PlayerMechanics,
+        Mechanics.REMOVE.value: RemoveMechanics,
+        Mechanics.COMBAT.value: CombatMechanics,
+        Mechanics.MOTION.value: MotionMechanics,
+        Mechanics.SOCIAL.value: SocialMechanics,
+        Mechanics.MENU.value: MenuMechanics,
+        Mechanics.COGNITION.value: CognitionMechanics,
+        Mechanics.PLOT.value: PlotMechanics,
+        Mechanics.NAVIGATION.value: NavigationMechanics,
+        Mechanics.FLUID.value: FluidMechanics
     }
     for enum_key, cls in mapping.items():
-        assert isinstance(Factory.mechanics(enum_key), cls)
-        assert isinstance(Factory.mechanics(enum_key.value), cls)
+        instance = MechanicsInstance(
+            key=enum_key,
+            executors=[]
+        )
+        assert isinstance(Factory.mechanics(instance), cls)
 
-    assert isinstance(Factory.mechanics("unmapped_mechanic"), AnimationMechanics)
+    unmapped_instance = MechanicsInstance(
+        key="unmapped_mechanics",
+        executors= []
+    )
+    assert isinstance(Factory.mechanics(unmapped_instance), AnimationMechanics)
 
 
 def test_factory_controller():
     mapping = {
-        Controllers.DISPLAY: DisplayController,
-        Controllers.SCROLL: ScrollController,
-        Controllers.MAIN: MainController,
-        Controllers.LOAD: LoadController,
-        Controllers.PAUSE: PauseController,
-        Controllers.OPTIONS: OptionsController,
-        Controllers.INVENTORY: InventoryController
+        Controllers.DISPLAY.value: DisplayController,
+        Controllers.SCROLL.value: ScrollController,
+        Controllers.MAIN.value: MainController,
+        Controllers.LOAD.value: LoadController,
+        Controllers.PAUSE.value: PauseController,
+        Controllers.OPTIONS.value: OptionsController,
+        Controllers.INVENTORY.value: InventoryController
     }
     for enum_key, cls in mapping.items():
         assert isinstance(Factory.controller(enum_key), cls)
-        assert isinstance(Factory.controller(enum_key.value), cls)
 
     assert isinstance(Factory.controller("unmapped_controller"), ScrollController)
 
 
 def test_factory_translator():
-    assert isinstance(Factory.translator(Translators.LAMBDA), LambdaTranslator)
-    assert isinstance(Factory.translator(Translators.COMPILER), CompilerTranslator)
+    assert isinstance(Factory.translator(Translators.LAMBDA.value), LambdaTranslator)
+    assert isinstance(Factory.translator(Translators.COMPILER.value), CompilerTranslator)
     assert isinstance(Factory.translator("unmapped_translator"), LambdaTranslator)
