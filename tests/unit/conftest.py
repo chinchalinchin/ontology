@@ -72,6 +72,7 @@ from app.models.properties import (
     GeographyPropertyInstances,
     ObjectPropertyInstances,
     TilePropertyInstances,
+    EffectPropertyInstances,
     # -------- SCHEMA
     PropertiesSchema,
 )
@@ -109,6 +110,7 @@ from app.models.state import (
     ObjectStateInstances, 
     CraftStateInstances,
     TileStateInstances,
+    EffectStateInstances,
     # -------- MODELS
     SpriteState,
     PlayerState,
@@ -315,6 +317,20 @@ def mock_object_properties() -> ObjectPropertyInstances:
             'wood-raft': ObjectProperties(
                 dimensions=Dimensions(w=32, l=32),
                 mass=5
+            )
+        }
+    )
+
+
+@pytest.fixture
+def mock_effect_properties() -> EffectPropertyInstances:
+    return EffectPropertyInstances(
+        fluids = {
+            'waterflow-01': EffectProperties(
+                dimensions=Dimensions(w=32, l=32),
+                count=3,
+                mass=-1,
+                lifecycle=Lifecycle(delay=60, persist=False)
             )
         }
     )
@@ -871,6 +887,20 @@ def mock_door_state() -> DoorState:
 
 
 @pytest.fixture
+def mock_fluid_state() -> FluidState:
+    return FluidState(
+        id="waterflow-1",
+        name="jasilynns-tears",
+        layer="0",
+        position=Position(x=70, y=0),
+        source=Directions.DOWN.value,
+        flow=2,
+        length=0,
+        dirty=True
+    )
+
+
+@pytest.fixture
 def mock_craft_states(
     mock_strut_state,
     mock_strut_state_alt,
@@ -1106,6 +1136,29 @@ def mock_crate(
     )
 
 
+
+@pytest.fixture
+def mock_fluid(
+    mock_effect_properties,
+    mock_fluid_state
+) -> Asset:
+    """
+    Standard directional fluid emitter asset configured with continuous lifecycle.
+    """
+    return Asset(
+        taxonomy = Taxonomy(
+            id = "waterflow-01",
+            name = "jasilynns-tears",
+            category = AssetCategories.EFFECTS.value,
+            instance = AssetInstances.FLUIDS.value
+        ), 
+        properties = mock_effect_properties.fluids.get('waterflow-01'), 
+        state = mock_fluid_state, 
+        frame = FluidFrame(tile_w=32, tile_l=32), 
+        animation = LifecycleAnimation()
+    )
+
+
 @pytest.fixture
 def mock_door(
     mock_object_properties,
@@ -1248,9 +1301,6 @@ def mock_board(
         ]
         return board
 
-# ---------------------------------------------------------------------------
-# ------------------------------------------------------ MOCK DATA STRUCTURES
-# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def mock_shoreline_index(mock_geography_properties):
@@ -1272,34 +1322,6 @@ def mock_space_grid():
     """
     return Space(cell_size=64, max_entities=100)
 
-@pytest.fixture
-def mock_fluid():
-    """
-    Standard directional fluid emitter asset configured with continuous lifecycle.
-    """
-    tax = Taxonomy(
-        "waterflow-1",
-        "jasilynns-tears",
-        AssetCategories.EFFECTS.value,
-        AssetInstances.FLUIDS.value
-    )
-    props = EffectProperties(
-        dimensions=Dimensions(w=32, l=32),
-        count=3,
-        mass=-1,
-        lifecycle=Lifecycle(delay=60, persist=False)
-    )
-    state = FluidState(
-        id="waterflow-1",
-        name="jasilynns-tears",
-        layer="0",
-        position=Position(x=70, y=0),
-        source=Directions.DOWN.value,
-        flow=2,
-        length=0,
-        dirty=True
-    )
-    return Asset(tax, props, state, FluidFrame(tile_w=32, tile_l=32), LifecycleAnimation())
 
 # -----------------------------------------------------------------------------
 # -------------------------------------------------------- PATHFINDING FIXTURES
