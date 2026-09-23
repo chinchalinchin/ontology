@@ -1,0 +1,105 @@
+# Task: unit-test(board)
+
+**Context**
+
+Currently in the process of refactoring and streamlining fixtures for the unit tests, so fixtures are not spaghetti-fied across thousands of lines of code.  
+
+**Priorty**
+
+- Assist in debugging the failing unit tests.
+
+**Guidelines**
+
+- **DO NOT ADD NEW UNIT TESTS**
+- **DO NOT CREATE FIXTURES IN THE TEST SCRIPTS**
+- **TESTS SHOULD REQUEST FIXTURES AND USE THEM; THIS SHIT IS OUT OF CONTROL**
+
+## Application Code
+
+### src/app/assets
+
+```python
+{{ file(root + '/src/app/assets/base.py') }}
+```
+
+### src/app/models/state
+
+```python
+{{ file(root + '/src/app/models/state/core.py') }}
+```
+
+```python
+{{ file(root + '/src/app/models/state/devices.py') }}
+```
+
+```python
+{{ file(root + '/src/app/models/state/sprites.py') }}
+```
+
+```python
+{{ file(root + '/src/app/models/state/objects.py') }}
+```
+
+```python
+{{ file(root + '/src/app/models/state/geography.py') }}
+```
+
+```python
+{{ file(root + '/src/app/models/state/effects.py') }}
+```
+
+```python
+{{ file(root + '/src/app/models/state/schemas.py') }}
+```
+
+### src/app/models/properties
+
+```python
+{{ file(root + '/src/app/models/properties.py') }}
+```
+
+### src/app/models/config
+
+```python
+{{ file(root + '/src/app/models/config/core.py') }}
+```
+
+```python
+{{ file(root + '/src/app/models/config/mappings.py') }}
+```
+
+```python
+{{ file(root + '/src/app/models/config/recipes.py') }}
+```
+
+```python
+{{ file(root + '/src/app/models/config/schemas.py') }}
+```
+
+### src/app/game/board
+
+```python
+{{ file(root + '/src/app/game/board.py') }}
+```
+
+## Unit tests
+
+### tests/unit/conftest
+
+```python
+{{ file(root + '/tests/unit/conftest.py') }}
+```
+
+### test/unit/test_app_game_board.py
+
+```python
+{{ file(root + '/tests/unit/test_app_game_board.py') }}
+```
+
+## Results
+
+```bash
+gmoore@localhost % pytest {{root}}/tests/unit/test_app_game_board.py
+
+{{ command('pytest ' + root + '/tests/unit/test_app_game_board.py') }}
+```

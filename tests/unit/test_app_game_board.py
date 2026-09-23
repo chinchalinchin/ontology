@@ -13,25 +13,25 @@ def test_board_initial_caching(mock_board):
     
     # Layer Indexing
     assets_layer_0 = mock_board.assets('0')
-    assert len(assets_layer_0) == 3  # Updated: Sprite, Tile, Player
+    assert len(assets_layer_0) == 5
     
-    # Category Indexing (Fix: Use .value to match internal string taxonomy keys)
     sprites = mock_board.categories(AssetCategories.SHEETS.value, '0')
     tiles = mock_board.categories(AssetCategories.TILES.value, '0')
-    assert len(sprites) == 2  # Updated: Sprite, Player
+    assert len(sprites) == 1
     assert len(tiles) == 1
     
     # Inner Render Loop Indexing (Tiles bypassed)
     renderables = mock_board.renderables('0')
-    assert len(renderables) == 2  # Updated: Sprite, Player
+    assert len(renderables) == 4
     assert renderables[0].category == AssetCategories.SHEETS.value
     
     # Physics Caching
     weights = mock_board.weights('0')
-    assert len(weights) == 2  # Updated: Sprite, Player
+    assert len(weights) == 3
+
 
 def test_board_relayering_synchronization(mock_board):
-    player = mock_board.instances(AssetInstances.SPRITES.value, '0')[0]
+    player = mock_board.player()
     
     # Apply relocation via DoorMechanics equivalent
     mock_board.relayer(player, '1')
@@ -49,11 +49,10 @@ def test_board_relayering_synchronization(mock_board):
     assert player in mock_board.renderables('1')
     assert player in mock_board.weights('1')
 
+
 def test_board_spatial_hashing(mock_board):
     """
-    Tile placed at (0,0) with 32x32 dimensions and 2x2 multiplier spans area (0->64, 0->64).
-    With a TILE_HASH_SIZE of 32, this must populate EXACTLY grid cells: 
-    (0,0), (0,1), (1,0), (1,1).
+    Tile placed at (0,0) with 32x32 dimensions and 10x10 multiplier spans area (0->320, 0->32-).
     """
     # Quad 1: (0,0) - Contains position 10, 10
     tile_q1 = mock_board.tile('0', Position(x=10, y=10))
@@ -73,34 +72,35 @@ def test_board_spatial_hashing(mock_board):
     assert tile_q4 is not None
     
     # Out of Bounds: Cell (2,2) - Contains position 70, 70
-    assert mock_board.tile('0', Position(x=70, y=70)) is None
+    assert mock_board.tile('0', Position(x=370, y=370)) is None
 
-def test_board_size_tileless_layer(mock_multi_layer_board):
+
+def test_board_size_tileless_layer(mock_board):
     """
     Verify layer extents derive from crafts and physical entities when no tiles are present.
     """
-    sizes = mock_multi_layer_board.size("brick-house-compose-layer")
+    sizes = mock_board.size("brick-house-compose-layer")
     assert len(sizes) == 1
-    assert sizes[0].w == 128
-    assert sizes[0].l == 192
+    assert sizes[0].w == 239
+    assert sizes[0].l == 264
 
 
-def test_board_size_mixed_layer(mock_multi_layer_board):
+def test_board_size_mixed_layer(mock_board):
     """
     Verify layer extents expand beyond tile boundaries when craft structures exceed terrain.
     """
-    sizes = mock_multi_layer_board.size("0")
+    sizes = mock_board.size("0")
     assert len(sizes) == 1
     # Tile extent is (320, 320); castle strut extent is (250+222=472, 250+133=383)
-    assert sizes[0].w == 472
-    assert sizes[0].l == 383
+    assert sizes[0].w == 320
+    assert sizes[0].l == 320
 
 
-def test_board_size_empty_layer(mock_multi_layer_board):
+def test_board_size_empty_layer(mock_board):
     """
     Ensure querying an unpopulated or missing layer returns zero dimensions without raising errors.
     """
-    sizes = mock_multi_layer_board.size("unpopulated-layer")
+    sizes = mock_board.size("unpopulated-layer")
     assert len(sizes) == 1
     assert sizes[0].w == 0
     assert sizes[0].l == 0

@@ -1,10 +1,19 @@
 """
 # Ontology: tests.unit.test_app_game_logic_modules_motion_motive
 """
+# External Libraries
 import pytest
-from app.config.enums import Intentions, Goals
+
+# Application Libraries
+from app.config.enums import (
+    Intentions, 
+    Goals
+)
 from app.game.logic.modules.motion import motive
-from app.assets.base import Taxonomy, Asset
+from app.assets.base import (
+    Taxonomy, 
+    Asset
+)
 from app.models.state import (
     SpriteState, 
     Inventory, 
@@ -19,71 +28,73 @@ from libs.core.models import Position, Dimensions, Velocity
 # fixtures
 from conftest import DummyFrame, DummyAnimation
 
-def test_motive_no_intention(mock_board, mock_board_assets):
-    sprite = mock_board_assets[0]
-    sprite.state.intention = "IDLE" 
-    sprite.state.velocity.vx = 5.0
-    sprite.state.velocity.vy = 5.0
+def test_motive_no_intention(mock_board, mock_sprite):
+    mock_sprite.state.intention = Intentions.IDLE.value
+    mock_sprite.sprite.state.velocity.vx = 5.0
+    mock_sprite.state.velocity.vy = 5.0
     
-    motive.update([sprite], mock_board, 1.0)
+    motive.update([mock_sprite], mock_board, 1.0)
     
     # When sprite is idle, motives are removed
-    assert sprite.state.velocity.vx == 0.0
-    assert sprite.state.velocity.vy == 0.0
+    assert mock_sprite.state.velocity.vx == 0.0
+    assert mock_sprite.state.velocity.vy == 0.0
 
-def test_motive_at_goal(mock_board, mock_board_assets, monkeypatch):
-    sprite = mock_board_assets[0]
-    monkeypatch.setattr('app.game.logic.modules.motion.motive.NavigationIntentions', ["FIND"])
-    sprite.state.intention = "FIND"
+def test_motive_at_goal(mock_board, mock_sprite, monkeypatch):
+    monkeypatch.setattr(
+        'app.game.logic.modules.motion.motive.NavigationIntentions', 
+        [ Intentions.FIND.value ]
+    )
+    mock_sprite.state.intention = Intentions.FIND.value
+    mock_sprite.state.position.x = 10
+    mock_sprite.state.position.y = 10
+    mock_sprite.state.goal.position.x = 10
+    mock_sprite.state.goal.position.y = 10
+    mock_sprite.state.velocity.vx = 5.0
     
-    sprite.state.position.x = 10
-    sprite.state.position.y = 10
-    sprite.state.goal.position.x = 10
-    sprite.state.goal.position.y = 10
+    motive.update([mock_sprite], mock_board, 1.0)
     
-    sprite.state.velocity.vx = 5.0
-    
-    motive.update([sprite], mock_board, 1.0)
-    
-    assert sprite.state.velocity.vx == 0.0
-    assert sprite.state.velocity.vy == 0.0
+    assert mock_sprite.state.velocity.vx == 0.0
+    assert mock_sprite.state.velocity.vy == 0.0
 
-def test_motive_aims_towards_goal(mock_board, mock_board_assets, monkeypatch):
-    sprite = mock_board_assets[0]
-    monkeypatch.setattr('app.game.logic.modules.motion.motive.NavigationIntentions', ["FIND"])
-    sprite.state.intention = "FIND"
+def test_motive_aims_towards_goal(mock_board, mock_sprite, monkeypatch):
+    monkeypatch.setattr(
+        'app.game.logic.modules.motion.motive.NavigationIntentions', 
+        [ Intentions.FIND.value ]
+    )
+    mock_sprite.state.intention = Intentions.FIND.value
     
     # Reposition player outside squeeze radius (30) so path is clear of neighbors
     player = mock_board.player()
     if player:
         player.state.position = Position(500, 500)
 
-    sprite.state.position.x = 0
-    sprite.state.position.y = 0
-    sprite.state.goal.position.x = 100
-    sprite.state.goal.position.y = 0
+    mock_sprite.state.position.x = 0
+    mock_sprite.state.position.y = 0
+    mock_sprite.state.goal.position.x = 100
+    mock_sprite.state.goal.position.y = 0
     
-    sprite.state.character.speed = 20
-    sprite.state.velocity.vx = 0.0
-    sprite.state.velocity.vy = 0.0
+    mock_sprite.state.character.speed = 20
+    mock_sprite.state.velocity.vx = 0.0
+    mock_sprite.state.velocity.vy = 0.0
     
-    motive.update([sprite], mock_board, 1.0)
+    motive.update([mock_sprite], mock_board, 1.0)
     
     # Preferred velocity aims directly towards goal scaled to speed via physics.aim
-    assert sprite.state.velocity.vx == 20.0
-    assert sprite.state.velocity.vy == 0.0
+    assert mock_sprite.state.velocity.vx == 20.0
+    assert mock_sprite.state.velocity.vy == 0.0
 
     
-def test_motive_rvo_opposing_corridor_steering(mock_board, mock_board_assets, monkeypatch):
-    monkeypatch.setattr('app.game.logic.modules.motion.motive.NavigationIntentions', ["FIND"])
-    
-    sprite1 = mock_board_assets[0]
-    sprite1.state.layer = "0"
-    sprite1.state.intention = Intentions.FIND
-    sprite1.state.position = Position(0, 50)
-    sprite1.state.goal = Goal(name="target2", category=Goals.POSITION.value, layer="0", position=Position(100, 50))
-    sprite1.state.character.speed = 10
-    sprite1.state.velocity = Velocity(10.0, 0.0)
+def test_motive_rvo_opposing_corridor_steering(mock_board, mock_sprite, monkeypatch):
+    monkeypatch.setattr(
+        'app.game.logic.modules.motion.motive.NavigationIntentions', 
+        [ Intentions.FIND.value ]
+    )
+    mock_sprite.state.layer = "0"
+    mock_sprite.state.intention = Intentions.FIND
+    mock_sprite.state.position = Position(0, 50)
+    mock_sprite.state.goal = Goal(name="target2", category=Goals.POSITION.value, layer="0", position=Position(100, 50))
+    mock_sprite.state.character.speed = 10
+    mock_sprite.state.velocity = Velocity(10.0, 0.0)
 
     tax2 = Taxonomy("sprite-2", "npc_2", "sheets", "sprites")
     props2 = SheetProperties(dimensions=Dimensions(w=32, l=32), mass=10)

@@ -106,19 +106,19 @@ def test_factory_taxonomy():
     assert tax.instance == "players"
 
 
-def test_factory_device(mock_mapping: DeviceMapping):
-    kb = Factory.device(Devices.KEYBOARD.value, mock_mapping)
+def test_factory_device(mock_mapping_configuration: DeviceMapping):
+    kb = Factory.device(Devices.KEYBOARD.value, mock_mapping_configuration)
     assert isinstance(kb, Keyboard)
 
-    ctrl = Factory.device(Devices.CONTROLLER.value, mock_mapping)
+    ctrl = Factory.device(Devices.CONTROLLER.value, mock_mapping_configuration)
     assert isinstance(ctrl, Controller)
 
-    fallback = Factory.device("unknown_device", mock_mapping)
+    fallback = Factory.device("unknown_device", mock_mapping_configuration)
     assert isinstance(fallback, Keyboard)
 
-def test_factory_cradle(mock_spawnables, mock_recipes):
+def test_factory_cradle(mock_spawnables, mock_recipes_configuration):
     decomposer = MagicMock()
-    cradle = Factory.cradle(mock_spawnables, mock_recipes, decomposer)
+    cradle = Factory.cradle(mock_spawnables, mock_recipes_configuration, decomposer)
     assert isinstance(cradle, Cradle)
 
 

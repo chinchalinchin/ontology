@@ -304,7 +304,11 @@ def test_projectiles_bypass_field_forces(mock_fluid_board):
     assert projectile.state.velocity.vy == 0.0
 
 
-def test_fields_shoreline_entry_nudge_and_submerge(mock_board, mock_shoreline, mock_recipes):
+def test_fields_shoreline_entry_nudge_and_submerge(
+    mock_board, 
+    mock_shoreline, 
+    mock_recipes_configuration
+):
     """
     Verify crossing shoreline into water applies orthogonal step-down displacement,
     toggles submerged=True, and spawns splash particles.
@@ -315,7 +319,7 @@ def test_fields_shoreline_entry_nudge_and_submerge(mock_board, mock_shoreline, m
         hazards={}, struts={}, shorelines={},
         passive={"splash": EffectProperties(dimensions=Dimensions(w=16, l=16), count=3, mass=-1)}
     )
-    board.cradle = Cradle(spawnables, mock_recipes, None)
+    board.cradle = Cradle(spawnables, mock_recipes_configuration, None)
 
     player = board.player()
     player.state.position = Position(x=70, y=0)

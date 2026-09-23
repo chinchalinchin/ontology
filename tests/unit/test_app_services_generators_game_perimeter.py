@@ -60,14 +60,14 @@ def test_perimeter_generator_empty_layer(mock_board):
         mock_sweep.assert_not_called()
         assert perimeter == []
 
-def test_perimeter_extract_crafts_layer_isolation(mock_multi_layer_board):
+def test_perimeter_extract_crafts_layer_isolation(mock_board):
     """
     Ensure Perimeter.extract evaluates crafts strictly within the target layer boundary.
     """
     perimeter = Perimeter()
 
     # Extract boundaries for the tileless composition layer
-    interior_rects = perimeter.extract(mock_multi_layer_board, "brick-house-compose-layer")
+    interior_rects = perimeter.extract(mock_board, "brick-house-compose-layer")
 
     # Layer contains only interior wall (0, 0, 128, 96) and floor (0, 96, 128, 192)
     assert len(interior_rects) == 2

@@ -41,6 +41,7 @@ from app.config.enums import (
     Intentions,
     Motivations,
     Directions,
+    Goals,
     # -------- MENU STRUCTURES
     Bindings,
     # -------- ENGINE SUGAR
@@ -90,7 +91,6 @@ from app.models.config import (
     Recipe,
     IntentionConfiguration,
     # ------- DEVICES
-    MappingConfiguration, 
     DeviceMapping,
     WorldMapping,
     # ------- MENUS
@@ -105,8 +105,10 @@ from app.models.state import (
     # -------- SCHEMA
     StateSchema, 
     # -------- INSTANCES
+    SheetStateInstances,
     ObjectStateInstances, 
     CraftStateInstances,
+    TileStateInstances,
     # -------- MODELS
     SpriteState,
     PlayerState,
@@ -127,8 +129,7 @@ from app.models.state import (
     RadialParameters,
     FearParameters,
     Character,
-    Meters,
-    Meter,
+    Goal,
     Psyche
 )
 from app.models.groups import (
@@ -158,9 +159,11 @@ from libs.core.models import (
 )
 from libs.core.math.space import Space
 
+
 # ---------------------------------------------------------------------------
 # -------------------------------------------------------------- MOCK CLASSES
 # ---------------------------------------------------------------------------
+
 
 class DummyFrame(Frame):
     def channels(self, id, state, properties): return []
@@ -207,7 +210,18 @@ def mock_font_properties() -> FontProperties:
 
 @pytest.fixture
 def mock_tile_properties() -> TilePropertyInstances:
-    return
+    return TilePropertyInstances(
+        back = {
+            'tile-1': TileProperties(
+                dimensions=Dimensions(w=32, l=32)
+            ),
+            'grass': TileProperties(
+                dimensions=Dimensions(w=32, l=32),
+                friction=100
+            )       
+        }
+    )
+
 
 @pytest.fixture
 def mock_craft_properties() -> CraftPropertyInstances:
@@ -233,7 +247,24 @@ def mock_craft_properties() -> CraftPropertyInstances:
             ),
             'floor-wood': CraftProperties(
                 dimensions=Dimensions(w=128, l=96),
-                cost=[Cost(item="wood", quantity=10)]
+                cost=[
+                    Cost(item="wood", quantity=10)
+                ]
+            ),
+            'strut-castle': CraftProperties(
+                dimensions=Dimensions(w=222, l=133), 
+                cost=[], 
+                mass=0
+            ),
+            'strut-wall':  CraftProperties(
+                dimensions=Dimensions(w=128, l=96), 
+                cost=[], 
+                mass=0
+            ),
+            'strut-floor': CraftProperties(
+                dimensions=Dimensions(w=128, l=96), 
+                cost=[], 
+                mass=0
             )
         }
     )
@@ -241,11 +272,18 @@ def mock_craft_properties() -> CraftPropertyInstances:
 
 @pytest.fixture
 def mock_sheet_properties() -> SheetPropertyInstances:
+    hb = Hitbox(Position(21, 23), Dimensions(22, 21))
     return SheetPropertyInstances(
         sprites = {
             "player": SheetProperties(
                 dimensions=Dimensions(w=64, l=64),
-                mass=7
+                mass=7,
+                hitboxes=[hb]
+            ),
+            'jasilynn':  SheetProperties(
+                dimensions=Dimensions(w=64, l=64),
+                mass=10,
+                hitboxes=[hb]
             )
         }
     )
@@ -256,13 +294,27 @@ def mock_object_properties() -> ObjectPropertyInstances:
     return ObjectPropertyInstances(
         doors = {
             "door-front": ObjectProperties(
-                dimensions=Dimensions(w=32, l=32)
+                dimensions=Dimensions(w=32, l=32),
+                hitboxes = [Hitbox(Position(0, 0), Dimensions(32, 32))],
+                mass = -1
             ),
             'door-shadow': ObjectProperties(
                 dimensions=Dimensions(w=32, l=48)
             ),
             'door-house': ObjectProperties(
                 dimensions=Dimensions(w=32, l=48)
+            )
+        },
+        crates = {
+            'wood-crate': ObjectProperties(
+                dimensions=Dimensions(w=32, l=32),
+                mass=5
+            ) 
+        },
+        rafts = {
+            'wood-raft': ObjectProperties(
+                dimensions=Dimensions(w=32, l=32),
+                mass=5
             )
         }
     )
@@ -362,10 +414,23 @@ def mock_properties(
 # -------------------------------------------------------------- MOCK GROUPS 
 # --------------------------------------------------------------------------
 
+
 @pytest.fixture
 def mock_equipment() -> EquipmentGroup:
     return EquipmentGroup(armor={}, tools={}, utilities={}, weapons={})
 
+
+@pytest.fixture
+def mock_spawnables(mock_geography_properties) -> SpawnableGroup:
+    return SpawnableGroup(
+        projectiles={},
+        expressions={},
+        collectables={},
+        hazards={},
+        struts={},
+        passive={},
+        shorelines=mock_geography_properties.shorelines
+    )
 
 # --------------------------------------------------------------------------
 # ------------------------------------------------------ MOCK CONFIGURATIONS
@@ -373,7 +438,7 @@ def mock_equipment() -> EquipmentGroup:
 
 
 @pytest.fixture
-def mock_composition_configuration():
+def mock_composition_configuration() -> CompositionConfiguration:
     return {
         "test-house": CompositionConfiguration(
             root=CompositionPseudoState(
@@ -466,7 +531,7 @@ def mock_composition_configuration():
 
 
 @pytest.fixture
-def mock_recipes():
+def mock_recipes_configuration() -> RecipeConfiguration:
     """Complete RecipeConfiguration matching native engine schemas."""
     return RecipeConfiguration(
         cursors=CursorRecipe(
@@ -574,30 +639,518 @@ def mock_recipes():
     )
 
 
-# --------------------------------------------------------------------------
-# -------------------------------------------------------------- MOCK ASSETS
-# --------------------------------------------------------------------------
+@pytest.fixture
+def mock_mapping_configuration() -> DeviceMapping:
+    """Base keyboard mapping."""
+    return DeviceMapping(
+        world=WorldMapping(
+            menus = { 
+                'pause': 41 
+            },
+            intentions={
+                'attack': 44, 
+                'interact': 8
+            },
+            goals={
+                'up': 26, 
+                'down': 22
+            }
+        ),
+        menu=MenuMapping(
+            traversal={
+                'north': 79, 
+                'south': 80
+            },
+            interactions={
+                'select': 40, 
+                'cancel': 41
+            }
+        )
+    )
 
 
 @pytest.fixture
-def mock_tile() -> Asset:
-    tile_tax = Taxonomy(
-        "tile-1",
-        "grass",
-        AssetCategories.TILES.value, 
-        AssetInstances.BACK.value
+def mock_intention_configuration():
+    """
+    Shared mock configurations covering various ISL edge cases.
+    """
+    return {
+        "idle": [
+            IntentionConfiguration(next="attack", conditions=["sprite.health < 50"]),
+            IntentionConfiguration(next="wander", conditions=["sprite.health >= 50"])
+        ],
+        "attack": [
+            IntentionConfiguration(next="idle", conditions=["sprites['enemy'].dead"])
+        ],
+        "town-locked": [
+            IntentionConfiguration(next="town-unlocked", conditions=["plot.mayor_bribed == True"])
+        ],
+        "find": [
+            # BUGFIX: Route targeting through the standard 'sprites' ISL dictionary namespace 
+            # instead of creating a custom root namespace.
+            IntentionConfiguration(next="interact", conditions=["functions.is_near(sprite.pos, sprites['target'].pos, 10)"])
+        ],
+        "bad_syntax": [
+            IntentionConfiguration(next="idle", conditions=["sprite.health =="]) # syntax error
+        ]
+    }
+
+
+@pytest.fixture
+def mock_configurations(
+    mock_recipes_configuration, 
+    mock_mapping_configuration,
+    mock_intention_configuration
+):
+    return ConfigurationSchema(
+        mappings=mock_mapping_configuration,
+        recipes=mock_recipes_configuration,
+        intentions=mock_intention_configuration
     )
-    tile_props = TileProperties(
-        dimensions=Dimensions(w=32, l=32)
+
+
+# --------------------------------------------------------------------------
+# -------------------------------------------------------------- MOCK STATES
+# --------------------------------------------------------------------------
+
+@pytest.fixture
+def mock_property_state() -> PropertyState:
+    return PropertyState(
+        id="strut-castle", 
+        name="castle", layer="0", 
+        position=Position(x=250, y=250)
     )
-    tile_state = MultiplierState(
+
+
+@pytest.fixture
+def mock_property_state_alt() -> PropertyState:
+    return PropertyState(
+        id="strut-wall",
+        name="wall",
+        layer="brick-house-compose-layer",
+        position=Position(x=0, y=0)
+    )
+
+
+@pytest.fixture
+def mock_property_state_alt2() -> PropertyState:
+    return PropertyState(
+        id="strut-floor",
+        name="floor",
+        layer="brick-house-compose-layer",
+        position=Position(x=0, y=96)
+    )
+
+
+@pytest.fixture
+def mock_player_state() -> PlayerState:
+    return PlayerState(
+        id="player",
+        name="player_1",
+        layer="0",
+        position=Position(x=10, y=10),
+        character=Character(
+            speed = 10,
+            defense = 10,
+            strength = 10
+        )
+    )
+
+
+@pytest.fixture
+def mock_sprite_state() -> SpriteState:
+    return SpriteState(
+        id="jasilynn",
+        name="evil-empress-jasilynn",
+        layer="brick-house-compose-layer",
+        position=Position(x=175, y=200),
+        intention=Intentions.FIND,
+        psyche=Psyche(
+            motivation=Motivations.CONQUEST.value, 
+            persona="empress-jasilynn", 
+            dialogue="greeting"
+        ),
+        mutators=Mutators(
+            triggers=MutatorTriggers(vision=True),
+            parameters=MutatorParameters(
+                vision=RadialParameters(radius=128),
+                action=RadialParameters(radius=25),
+                fear=FearParameters(radius=128, limit=0.5, enemy=5)
+            )
+        ),
+        inventory=Inventory(equipment=Equipment()),
+        animation=AnimationState(frame=0, tick=1)
+    )
+
+
+@pytest.fixture
+def mock_sprite_state_alt() -> SpriteState:
+    return SpriteState(
+        id="sprite", 
+        name="npc", 
+        layer="0",
+        position=Position(60, 50),
+        intention=Intentions.FIND,
+        goal=Goal(
+            name="target1", 
+            category=Goals.POSITION.value, 
+            layer="0", 
+            position=Position(0, 50)
+        ),
+        character=Character(
+            speed=10
+        ),
+        velocity=Velocity(-10.0, 0.0),
+        inventory=Inventory(
+            equipment=Equipment()
+        ),
+        animation=AnimationState()
+    )
+
+
+@pytest.fixture
+def mock_multiplier_state() -> MultiplierState:
+    return MultiplierState(
         id="tile-1",
         name="grass",
         layer="0",
         position=Position(x=0, y=0),
         multiple=Multiple(nx=10, ny=10)
     )
-    return Asset(tile_tax, tile_props, tile_state, DummyFrame(), DummyAnimation())
+
+
+@pytest.fixture
+def mock_shoreline_state() -> ShorelineState:
+    return ShorelineState(
+        id="grassy-shore",
+        name="shoreline-1",
+        layer="0",
+        position=Position(x=70, y=0),
+        height=0,
+        depth=0,
+        orientation=Directions.LEFT.value,
+        length=32,
+        thickness=8,
+        bidirectional=True,
+        parent_fluid="jasilynns-tears",
+        hitboxes=[
+            Hitbox(Position(0, 0), Dimensions(32, 8))
+        ]
+    )
+
+
+@pytest.fixture
+def mock_positional_state() -> PositionalState:
+    return PositionalState(
+        id="wood-crate", 
+        layer="0", 
+        position=Position(x=10, y=10), 
+        velocity=Velocity(vx=0.0, vy=0.0)
+    )
+
+
+@pytest.fixture
+def mock_positional_state_alt() -> PositionalState:
+    return PositionalState(
+        id="wood-raft",
+        layer="0",
+        position=Position(x=70, y=50),
+        velocity=Velocity(vx=0.0, vy=0.0)
+    )
+
+
+@pytest.fixture
+def mock_door_state() -> DoorState:
+    return DoorState(
+        id="door-front",
+        layer="0",
+        outlayer="brick-house-compose-layer",
+        position=Position(x=100, y=100),
+        out=Position(x=20, y=20)
+    )
+
+
+@pytest.fixture
+def mock_craft_states(
+    mock_strut_state,
+    mock_strut_state_alt,
+    mock_strut_state_alt2
+) -> CraftStateInstances:
+    return CraftStateInstances(
+        struts = [
+            mock_strut_state,
+            mock_strut_state_alt,
+            mock_strut_state_alt2
+        ]
+    )
+
+
+@pytest.fixture
+def mock_sheet_states(
+    mock_player_state,
+    mock_sprite_state
+) -> SheetStateInstances:
+    return SheetStateInstances(
+        players = [ mock_player_state ],
+        sprites = [ mock_sprite_state ]
+    )
+
+
+@pytest.fixture
+def mock_tile_states(
+    mock_back_tile
+) -> TileStateInstances:
+    return TileStateInstances(
+        back = [ mock_back_tile ]
+    )
+
+
+@pytest.fixture
+def mock_state(
+    mock_sheet_states,
+    mock_tile_states,
+    mock_craft_states
+):
+    return StateSchema(
+        sheets = mock_sheet_states,
+        tiles = mock_tile_states,
+        crafts = mock_craft_states
+    )
+
+
+# --------------------------------------------------------------------------
+# -------------------------------------------------------------- MOCK ASSETS
+# --------------------------------------------------------------------------
+
+
+@pytest.fixture
+def mock_back_tile(
+    mock_tile_properties,
+    mock_multiplier_state
+) -> Asset:
+    return Asset(
+        taxonomy = Taxonomy(
+            id = "tile-1",
+            name = "grass",
+            category = AssetCategories.TILES.value, 
+            instance = AssetInstances.BACK.value
+        ), 
+        properties = mock_tile_properties.back.get('tile-1'), 
+        state = mock_multiplier_state, 
+        frame = DummyFrame(), 
+        animation = DummyAnimation()
+    )
+
+
+@pytest.fixture
+def mock_shoreline(
+    mock_geography_properties,
+    mock_shoreline_state
+) -> Asset:
+    """Shoreline sensor asset fixture."""
+    return Asset(
+        taxonomy = Taxonomy(
+            id = "grassy-shore",
+            name = "shoreline-1",
+            category = AssetCategories.GEOGRAPHY.value,
+            instance = AssetInstances.SHORELINES.value
+        ), 
+        properties = mock_geography_properties.shorelines.get('grassy-shore'), 
+        state = mock_shoreline_state, 
+        frame = ShorelineFrame(tile_w=32, tile_l=32),
+        animation = DummyAnimation()
+    )
+
+
+@pytest.fixture
+def mock_sprite(
+    mock_sheet_properties,
+    mock_sprite_state
+) -> Asset:
+    """
+    Sprite asset featuring a standard LPC offset collision hitbox.
+    """
+    return Asset(
+        taxonomy = Taxonomy(
+            id = "jasilynn", 
+            name = "evil-empress-jasilynn", 
+            category = AssetCategories.SHEETS.value, 
+            instance = AssetInstances.SPRITES.value
+        ), 
+        properties = mock_sheet_properties.sprites.get('jasilynn'), 
+        state = mock_sprite_state, 
+        frame = DummyFrame(), 
+        animation = DummyAnimation()
+    )
+
+
+@pytest.fixture
+def mock_player(
+    mock_sheet_properties,
+    mock_player_state
+) -> Asset:
+    return Asset(
+        taxonomy=  Taxonomy(
+            id = "player",
+            name = "fakename",
+            category = AssetCategories.SHEETS.value, 
+            instance = AssetInstances.PLAYERS.value
+        ), 
+        properties = mock_sheet_properties.sprites.get('player'), 
+        state = mock_player_state, 
+        frame = DummyFrame(), 
+        animation = DummyAnimation()
+    )
+
+
+@pytest.fixture
+def mock_strut(
+    mock_craft_properties,
+    mock_property_state
+) -> Asset:
+    return Asset(
+        taxonomy = Taxonomy(
+            id = "strut-castle", 
+            name = "castle",
+            category = AssetCategories.CRAFTS.value,
+            instance = AssetInstances.STRUTS.value
+        ), 
+        properties = mock_craft_properties.struts.get('strut-castle'), 
+        state = mock_property_state, 
+        frame = DummyFrame(), 
+        animation = DummyAnimation()
+    )
+
+
+@pytest.fixture
+def mock_strut_alt(
+    mock_craft_properties,
+    mock_property_state_alt
+) -> Asset:
+    # Layer "brick-house-compose-layer": Tileless Wall Strut (Extent: 0+128=128, 0+96=96)
+    return Asset(
+        taxonomy = Taxonomy(
+            id = "strut-wall", 
+            name = "wall", 
+            category = AssetCategories.CRAFTS.value, 
+            instance = AssetInstances.STRUTS.value
+        ), 
+        properties = mock_craft_properties.struts.get('strut-wall'),
+        state = mock_property_state_alt, 
+        frame = DummyFrame(), 
+        animation = DummyAnimation()
+    )
+
+
+@pytest.fixture
+def mock_strut_alt2(
+    mock_craft_properties,
+    mock_property_state_alt2
+) -> Asset:
+    # Layer "brick-house-compose-layer": Tileless Floor Strut (Extent: 0+128=128, 96+96=192)
+    return Asset(
+        taxonomy = Taxonomy(
+            id = "strut-floor", 
+            name = "floor", 
+            category = AssetCategories.CRAFTS.value, 
+            instance = AssetInstances.STRUTS.value
+        ), 
+        properties = mock_craft_properties.struts.get('strut-floor'), 
+        state = mock_property_state_alt2, 
+        frame = DummyFrame(), 
+        animation = DummyAnimation()
+    )
+
+
+@pytest.fixture
+def mock_raft(
+    mock_object_properties,
+    mock_positional_state_alt
+):
+    """
+    Raft asset fixture for testing hydrodynamic drift and surface interception.
+    """
+    return Asset(
+        taxonomy = Taxonomy(
+            "raft-1",
+            "wood-raft",
+            AssetCategories.OBJECTS.value,
+            AssetInstances.RAFTS.value
+        ), 
+        properties = mock_object_properties.rafts.get('wood-raft'), 
+        state = mock_positional_state_alt, 
+        frame = DummyFrame(), 
+        animation = DummyAnimation()
+    )
+
+@pytest.fixture
+def mock_crate(
+    mock_object_properties,
+    mock_positional_state
+):
+    """
+    Generic crate asset to support mechanics tests utilizing frictive motion.
+    """
+    return Asset(
+        taxonomy = Taxonomy(
+            id = "wood-crate", 
+            name = "box", 
+            category = AssetCategories.OBJECTS.value, 
+            instance = AssetInstances.CRATES.value
+        ), 
+        properties = mock_object_properties.crates.get('wood-crate'),
+        state = mock_positional_state, 
+        frame = DummyFrame(), 
+        animation = DummyAnimation()
+    )
+
+
+@pytest.fixture
+def mock_door(
+    mock_object_properties,
+    mock_door_state
+) -> Asset:
+    """
+    Door asset transitioning from layer '0' to layer 'brick-house-compose-layer'.
+    """
+    return Asset(
+        taxonomy = Taxonomy(
+            id = "door-front", 
+            name = "wood-door", 
+            category = AssetCategories.OBJECTS.value, 
+            instance = AssetInstances.DOORS.value
+        ), 
+        properties = mock_object_properties.doors.get('door-front'), 
+        state = mock_door_state, 
+        frame = DummyFrame(), 
+        animation = DummyAnimation()
+    )
+
+
+@pytest.fixture
+def mock_assets(
+    mock_player,
+    mock_sprite,
+    mock_back_tile,
+    mock_fluid,
+    mock_door,
+    mock_crate,
+    mock_strut,
+    mock_strut_alt,
+    mock_strut_alt2
+):
+    return [
+        mock_sprite, 
+        mock_back_tile,
+        mock_player,
+        mock_fluid,
+        mock_door,
+        mock_crate,
+        mock_crate,
+        mock_strut,
+        mock_strut_alt,
+        mock_strut_alt2
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -619,14 +1172,14 @@ def mock_registry() -> MagicMock:
 @pytest.fixture
 def mock_decomposer(
     mock_composition_configuration, 
-    mock_properties, 
-    mock_recipes
+    mock_recipes_configuration,
+    mock_properties,
 ) -> Decomposer:
     # 1. Setup mock properties with costs for aggregation
     return Decomposer(
         compositions=mock_composition_configuration, 
         properties=mock_properties,
-        recipes=mock_recipes
+        recipes=mock_recipes_configuration
     )
 
 
@@ -660,11 +1213,11 @@ def mock_orchestrator(mock_builder) -> Orchestrator:
 @pytest.fixture
 def mock_provider(
     mock_binder, 
-    mock_recipes, 
+    mock_recipes_configuration, 
     mock_widget_properties
 ) -> Provider:
     return Provider(
-        recipes=mock_recipes.widgets, 
+        recipes=mock_recipes_configuration.widgets, 
         properties=mock_widget_properties, 
         binder=mock_binder
     )
@@ -675,46 +1228,16 @@ def mock_provider(
 # ---------------------------------------------------------------------------
 
 @pytest.fixture
-def mock_board(mock_board_assets, mock_configurations, mock_equipment):    
+def mock_board(
+    mock_assets, 
+    mock_configurations, 
+    mock_equipment
+) -> Board:    
     with patch('app.game.board.settings.TILE_HASH_SIZE', 32):
-        return Board(
-            assets=mock_board_assets, 
+        board = Board(
+            assets=mock_assets, 
             configurations=mock_configurations, 
             equipment=mock_equipment
-        )
-
-
-@pytest.fixture
-def mock_fluid_board(mock_fluid, mock_crate, mock_configurations):
-    """
-    Board pre-hydrated with a fluid emitter, dynamic crate, and terrain tiles.
-    """
-    tile_tax = Taxonomy(
-        "tile-1",
-        "grass",
-        AssetCategories.TILES.value, 
-        AssetInstances.BACK.value
-    )
-    tile_props = TileProperties(dimensions=Dimensions(w=32, l=32))
-    tile_state = MultiplierState(
-        id="tile-1",
-        name="grass",
-        layer="0",
-        position=Position(x=0, y=0),
-        multiple=Multiple(nx=10, ny=10)
-    )
-    tile = Asset(tile_tax, tile_props, tile_state, DummyFrame(), DummyAnimation())
-    equipment = EquipmentGroup(armor={}, tools={}, utilities={}, weapons={}, shields={})
-
-    with patch("app.game.board.settings.TILE_HASH_SIZE", 32):
-        board = Board(
-            assets=[
-                tile, 
-                mock_fluid, 
-                mock_crate
-            ],
-            configurations=mock_configurations,
-            equipment=equipment
         )
         board.perimeters["0"] = [
             Boundary(Position(0, 0), Dimensions(320, 1)),
@@ -725,255 +1248,13 @@ def mock_fluid_board(mock_fluid, mock_crate, mock_configurations):
         return board
 
 # ---------------------------------------------------------------------------
-# ----------------------------------------------- CROSS-LAYER FIXTURES
-# ---------------------------------------------------------------------------
-
-@pytest.fixture
-def mock_multi_layer_board(mock_configurations):
-    """
-    Board pre-hydrated across Layer 0 (mixed tiles and crafts) and a tileless interior layer.
-    """
-    # Layer 0: Tile Asset (Extent: 320x320)
-    tile_tax = Taxonomy(
-        "tile-grass", 
-        "grass", 
-        AssetCategories.TILES.value, 
-        AssetInstances.BACK.value
-    )
-    tile_props = TileProperties(dimensions=Dimensions(w=32, l=32))
-    tile_state = MultiplierState(
-        id="tile-grass",
-        name="grass",
-        layer="0",
-        position=Position(x=0, y=0),
-        multiple=Multiple(nx=10, ny=10)
-    )
-    tile = Asset(tile_tax, tile_props, tile_state, DummyFrame(), DummyAnimation())
-
-    # Layer 0: Castle Wall Strut (Extent: 250+222=472, 250+133=383)
-    strut0_tax = Taxonomy(
-        "strut-castle", 
-        "castle",
-        AssetCategories.CRAFTS.value,
-        AssetInstances.STRUTS.value
-    )
-    strut0_props = CraftProperties(
-        dimensions=Dimensions(w=222, l=133), 
-        cost=[], 
-        mass=0
-    )
-    strut0_state = PropertyState(
-        id="strut-castle", 
-        name="castle", layer="0", 
-        position=Position(x=250, y=250)
-    )
-    strut0 = Asset(
-        strut0_tax, 
-        strut0_props, 
-        strut0_state, 
-        DummyFrame(), 
-        DummyAnimation()
-    )
-
-    # Layer "brick-house-compose-layer": Tileless Wall Strut (Extent: 0+128=128, 0+96=96)
-    interior_wall_tax = Taxonomy(
-        "strut-wall", 
-        "wall", 
-        AssetCategories.CRAFTS.value, 
-        AssetInstances.STRUTS.value
-    )
-    interior_wall_props = CraftProperties(
-        dimensions=Dimensions(w=128, l=96), 
-        cost=[], 
-        mass=0
-    )
-    interior_wall_state = PropertyState(
-        id="strut-wall",
-        name="wall",
-        layer="brick-house-compose-layer",
-        position=Position(x=0, y=0)
-    )
-    interior_wall = Asset(
-        interior_wall_tax, 
-        interior_wall_props,
-        interior_wall_state, 
-        DummyFrame(), 
-        DummyAnimation()
-    )
-
-    # Layer "brick-house-compose-layer": Tileless Floor Strut (Extent: 0+128=128, 96+96=192)
-    interior_floor_tax = Taxonomy(
-        "strut-floor", 
-        "floor", 
-        AssetCategories.CRAFTS.value, 
-        AssetInstances.STRUTS.value
-    )
-    interior_floor_props = CraftProperties(
-        dimensions=Dimensions(w=128, l=96), 
-        cost=[], 
-        mass=0
-    )
-    interior_floor_state = PropertyState(
-        id="strut-floor",
-        name="floor",
-        layer="brick-house-compose-layer",
-        position=Position(x=0, y=96)
-    )
-    interior_floor = Asset(
-        interior_floor_tax, 
-        interior_floor_props, 
-        interior_floor_state, 
-        DummyFrame(), 
-        DummyAnimation()
-    )
-
-    equipment = EquipmentGroup(armor={}, tools={}, utilities={}, weapons={}, shields={})
-
-    with patch("app.game.board.settings.TILE_HASH_SIZE", 32):
-        return Board(
-            assets=[tile, strut0, interior_wall, interior_floor],
-            configurations=mock_configurations,
-            equipment=equipment
-        )
-    
-# ---------------------------------------------------------------------------
-# ------------------------------------------------------- MOCK CONFIGURATIONS
-
-@pytest.fixture
-def mock_mapping() -> DeviceMapping:
-    """Base keyboard mapping."""
-    return DeviceMapping(
-        world=WorldMapping(
-            menus = { 
-                'pause': 41 
-            },
-            intentions={
-                'attack': 44, 
-                'interact': 8
-            },
-            goals={
-                'up': 26, 
-                'down': 22
-            }
-        ),
-        menu=MenuMapping(
-            traversal={
-                'north': 79, 
-                'south': 80
-            },
-            interactions={
-                'select': 40, 
-                'cancel': 41
-            }
-        )
-    )
-
-
-@pytest.fixture
-def mock_configurations(mock_recipes, mock_mapping):
-    return ConfigurationSchema(
-        mappings=mock_mapping,
-        recipes=mock_recipes
-    )
-
-
-@pytest.fixture
-def mock_spawnables(mock_geography_properties):
-    return SpawnableGroup(
-        projectiles={},
-        expressions={},
-        collectables={},
-        hazards={},
-        struts={},
-        passive={},
-        shorelines={
-            "grassy-shore": mock_geography_properties
-        }
-    )
-
-
-@pytest.fixture
-def mock_isl_configs():
-    """
-    Shared mock configurations covering various ISL edge cases.
-    """
-    return {
-        "idle": [
-            IntentionConfiguration(next="attack", conditions=["sprite.health < 50"]),
-            IntentionConfiguration(next="wander", conditions=["sprite.health >= 50"])
-        ],
-        "attack": [
-            IntentionConfiguration(next="idle", conditions=["sprites['enemy'].dead"])
-        ],
-        "town-locked": [
-            IntentionConfiguration(next="town-unlocked", conditions=["plot.mayor_bribed == True"])
-        ],
-        "find": [
-            # BUGFIX: Route targeting through the standard 'sprites' ISL dictionary namespace 
-            # instead of creating a custom root namespace.
-            IntentionConfiguration(next="interact", conditions=["functions.is_near(sprite.pos, sprites['target'].pos, 10)"])
-        ],
-        "bad_syntax": [
-            IntentionConfiguration(next="idle", conditions=["sprite.health =="]) # syntax error
-        ]
-    }
-
-
-# ---------------------------------------------------------------------------
 # ------------------------------------------------------ MOCK DATA STRUCTURES
+# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def mock_shoreline_index(mock_geography_properties):
     """ShorelineIndex fixture compiled from mock properties."""
-    return ShorelineIndex.from_properties({
-        "grassy-shore": mock_geography_properties
-    })
-
-@pytest.fixture
-def mock_shoreline():
-    """Shoreline sensor asset fixture."""
-    tax = Taxonomy(
-        "grassy-shore",
-        "shoreline-1",
-        AssetCategories.GEOGRAPHY.value,
-        AssetInstances.SHORELINES.value
-    )
-    props = GeographyProperties(
-        dimensions=Dimensions(w=32, l=32),
-        tile="tile-1",
-        fluid="waterflow-1",
-        thickness=8,
-        mass=-1
-    )
-    hb = Hitbox(Position(0, 0), Dimensions(32, 8))
-    state = ShorelineState(
-        id="grassy-shore",
-        name="shoreline-1",
-        layer="0",
-        position=Position(x=70, y=0),
-        height=0,
-        depth=0,
-        orientation=Directions.LEFT.value,
-        length=32,
-        thickness=8,
-        bidirectional=True,
-        parent_fluid="jasilynns-tears",
-        hitboxes=[hb]
-    )
-    return Asset(tax, props, state, ShorelineFrame(tile_w=32, tile_l=32), DummyAnimation())
-
-@pytest.fixture
-def mock_state():
-    state = StateSchema()
-    state.sheets.sprites.append(
-        SpriteState(
-            id="player",
-            name="player_1",
-            layer="0",
-            position=Position(x=10, y=10)
-        )
-    )
-    return state
+    return ShorelineIndex.from_properties(mock_geography_properties.shorelines)
 
 
 @pytest.fixture
@@ -983,110 +1264,12 @@ def mock_boundary():
 
 
 @pytest.fixture
-def mock_board_assets():
-    # 1. Dynamic Asset (Sprite) - Use primitive strings for taxonomy matching Orchestrator initialization
-    sprite_tax = Taxonomy("sprite-1", "npc", AssetCategories.SHEETS.value, AssetInstances.SPRITES.value)
-    sprite_props = SheetProperties(dimensions=Dimensions(w=32, l=32), mass=10)
-    sprite_state = SpriteState(
-        id="sprite-1", 
-        name="npc", 
-        layer="0", 
-        position=Position(x=10, y=10),
-        intention=Intentions.IDLE,
-        psyche=Psyche(motivation=Motivations.CONQUEST.value, expression="none", dialogue="none", persona="test"),
-        mutators=Mutators(
-            triggers=MutatorTriggers(),
-            parameters=MutatorParameters(
-                fear=FearParameters(radius=50, limit=0.2, enemy=1),
-                vision=RadialParameters(radius=100),
-                action=RadialParameters(radius=10)
-            )
-        ),
-        inventory=Inventory(equipment=Equipment()),
-        animation=AnimationState(frame=0, tick=0)
-    )
-    sprite = Asset(sprite_tax, sprite_props, sprite_state, DummyFrame(), DummyAnimation())
-
-    # 2. Static Asset (Tile)
-    tile_tax = Taxonomy("tile-1", "grass", AssetCategories.TILES.value, AssetInstances.BACK.value)
-    tile_props = TileProperties(dimensions=Dimensions(w=32, l=32))
-    tile_state = MultiplierState(
-        id="tile-1", name="grass", layer="0", position=Position(x=0, y=0), multiple=Multiple(nx=2, ny=2)
-    )
-    tile = Asset(tile_tax, tile_props, tile_state, DummyFrame(), DummyAnimation())
-    
-    # 3. Dynamic Asset (Player)
-    player_tax = Taxonomy("player-1", "hero", AssetCategories.SHEETS.value, AssetInstances.PLAYERS.value)
-    player_props = SheetProperties(dimensions=Dimensions(w=32, l=32), mass=10)
-    player_state = PlayerState(
-        id="player-1", 
-        name="hero", 
-        layer="0", 
-        position=Position(x=10, y=10),
-        inventory=Inventory(equipment=Equipment()),
-        mutators=Mutators(triggers=MutatorTriggers()),
-        character=Character(speed=5, strength=10, defense=10),
-        meters=Meters(health=Meter(current=100, maximum=100), magic=Meter(current=100, maximum=100)),
-        animation=AnimationState(frame=0, tick=0)
-    )
-    player = Asset(player_tax, player_props, player_state, DummyFrame(), DummyAnimation())
-    
-    return [sprite, tile, player]
-
-
-@pytest.fixture
-def mock_crate():
-    """
-    Generic crate asset to support mechanics tests utilizing frictive motion.
-    """
-    tax = Taxonomy("crate-1", "box", AssetCategories.OBJECTS.value, AssetInstances.CRATES.value)
-    props = SheetProperties(dimensions=Dimensions(w=32, l=32), mass=5) 
-    state = PositionalState(
-        id="crate-1", layer="0", position=Position(x=10, y=10), velocity=Velocity(vx=0.0, vy=0.0)
-    )
-    return Asset(tax, props, state, DummyFrame(), DummyAnimation())
-
-@pytest.fixture
-def mock_raft():
-    """
-    Raft asset fixture for testing hydrodynamic drift and surface interception.
-    """
-    tax = Taxonomy(
-        "raft-1",
-        "wood-raft",
-        AssetCategories.OBJECTS.value,
-        AssetInstances.RAFTS.value
-    )
-    props = ObjectProperties(dimensions=Dimensions(w=32, l=32), mass=5)
-    state = PositionalState(
-        id="raft-1",
-        layer="0",
-        position=Position(x=70, y=50),
-        velocity=Velocity(vx=0.0, vy=0.0)
-    )
-    return Asset(tax, props, state, DummyFrame(), DummyAnimation())
-
-@pytest.fixture
 def mock_space_grid():
     """
     Fixture providing an initialized Cython Space grid for testing 
     O(1) bucket lookups and broad-phase physics.
     """
     return Space(cell_size=64, max_entities=100)
-
-
-@pytest.fixture
-def mock_strut():
-    """
-    Generic strut asset to support perimeter generator tests for CRAFTS.
-    """
-    tax = Taxonomy("strut-1", "wall", AssetCategories.CRAFTS.value, AssetInstances.STRUTS.value)
-    props = CraftProperties(dimensions=Dimensions(w=32, l=32), cost=[], mass=0) 
-    state = PropertyState(
-        id="strut-1", layer="0", position=Position(x=40, y=40), owner="player"
-    )
-    return Asset(tax, props, state, DummyFrame(), DummyAnimation())
-
 
 @pytest.fixture
 def mock_fluid():
@@ -1162,61 +1345,6 @@ def mock_multi_hitbox_asset():
         layer="0",
         position=Position(x=250, y=250),
         owner="player"
-    )
-    return Asset(tax, props, state, DummyFrame(), DummyAnimation())
-
-
-@pytest.fixture
-def mock_sprite_with_hitbox():
-    """
-    Sprite asset featuring a standard LPC offset collision hitbox.
-    """
-    tax = Taxonomy("sprite-jasilynn", "evil-empress-jasilynn", AssetCategories.SHEETS.value, AssetInstances.SPRITES.value)
-    hb = Hitbox(Position(21, 23), Dimensions(22, 21))
-    props = SheetProperties(
-        dimensions=Dimensions(w=64, l=64),
-        mass=10,
-        hitboxes=[hb]
-    )
-    state = SpriteState(
-        id="sprite-jasilynn",
-        name="evil-empress-jasilynn",
-        layer="brick-house-compose-layer",
-        position=Position(x=175, y=200),
-        intention=Intentions.FIND,
-        psyche=Psyche(motivation=Motivations.CONQUEST.value, persona="empress-jasilynn", dialogue="greeting"),
-        mutators=Mutators(
-            triggers=MutatorTriggers(vision=True),
-            parameters=MutatorParameters(
-                vision=RadialParameters(radius=128),
-                action=RadialParameters(radius=25),
-                fear=FearParameters(radius=128, limit=0.5, enemy=5)
-            )
-        ),
-        inventory=Inventory(equipment=Equipment()),
-        animation=AnimationState(frame=0, tick=1)
-    )
-    return Asset(tax, props, state, DummyFrame(), DummyAnimation())
-
-
-@pytest.fixture
-def mock_door_asset():
-    """
-    Door asset transitioning from layer '0' to layer 'brick-house-compose-layer'.
-    """
-    tax = Taxonomy("door-1", "wood-door", AssetCategories.OBJECTS.value, AssetInstances.DOORS.value)
-    hb = Hitbox(Position(0, 0), Dimensions(32, 32))
-    props = ObjectProperties(
-        dimensions=Dimensions(w=32, l=32),
-        hitboxes=[hb],
-        mass=-1
-    )
-    state = DoorState(
-        id="door-1",
-        layer="0",
-        outlayer="brick-house-compose-layer",
-        position=Position(x=100, y=100),
-        out=Position(x=20, y=20)
     )
     return Asset(tax, props, state, DummyFrame(), DummyAnimation())
 

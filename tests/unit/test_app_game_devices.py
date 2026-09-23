@@ -11,11 +11,11 @@ from app.models.config import DeviceMapping, WorldMapping, MenuMapping
 from app.models.state import DevicePayload
 
 
-def test_keyboard_initialization(mock_mapping: DeviceMapping):
+def test_keyboard_initialization(mock_mapping_configuration: DeviceMapping):
     """
     Ensure the scancodes and initial state dictionaries are populated correctly.
     """
-    keyboard = Keyboard(mock_mapping)
+    keyboard = Keyboard(mock_mapping_configuration)
     
     expected_scancodes = {44, 8, 26, 22, 41}
     assert set(keyboard._scancodes) == expected_scancodes
@@ -25,12 +25,12 @@ def test_keyboard_initialization(mock_mapping: DeviceMapping):
     assert len(keyboard._last_state) == len(expected_scancodes)
 
 
-def test_controller_initialization(mock_mapping: DeviceMapping):
+def test_controller_initialization(mock_mapping_configuration: DeviceMapping):
     """
     Ensure Controller instantiates and retains its mapping configuration.
     """
-    controller = Controller(mock_mapping)
-    assert controller.mapping == mock_mapping
+    controller = Controller(mock_mapping_configuration)
+    assert controller.mapping == mock_mapping_configuration
 
 
 def test_keyboard_handles_none_scancodes():
@@ -51,11 +51,15 @@ def test_keyboard_handles_none_scancodes():
 
 @patch('app.game.devices.sdl.pump')
 @patch('app.game.devices.sdl.poll')
-def test_keyboard_polling_return_type_and_mappings(mock_poll, mock_pump, mock_mapping: DeviceMapping):
+def test_keyboard_polling_return_type_and_mappings(
+    mock_poll, 
+    mock_pump, 
+    mock_mapping_configuration: DeviceMapping
+):
     """
     Ensure the poll method correctly formats the returned dict with active scancodes.
     """
-    keyboard = Keyboard(mock_mapping)
+    keyboard = Keyboard(mock_mapping_configuration)
     
     # Simulate 'up' (26) and 'interact' (8) being pressed
     pressed_codes = {26, 8}
@@ -74,11 +78,15 @@ def test_keyboard_polling_return_type_and_mappings(mock_poll, mock_pump, mock_ma
 
 @patch('app.game.devices.sdl.pump')
 @patch('app.game.devices.sdl.poll')
-def test_keyboard_edge_triggered_intentions(mock_poll, mock_pump, mock_mapping: DeviceMapping):
+def test_keyboard_edge_triggered_intentions(
+    mock_poll, 
+    mock_pump, 
+    mock_mapping_configuration: DeviceMapping
+):
     """
     Ensure Intentions only trigger on the rising edge (0 -> 1) of the keypress.
     """
-    keyboard = Keyboard(mock_mapping)
+    keyboard = Keyboard(mock_mapping_configuration)
     
     # Frame 1: Press 'attack' (44)
     mock_poll.return_value = tuple(1 if code == 44 else 0 for code in keyboard._scancodes)
@@ -103,11 +111,15 @@ def test_keyboard_edge_triggered_intentions(mock_poll, mock_pump, mock_mapping: 
 
 @patch('app.game.devices.sdl.pump')
 @patch('app.game.devices.sdl.poll')
-def test_keyboard_level_triggered_goals(mock_poll, mock_pump, mock_mapping: DeviceMapping):
+def test_keyboard_level_triggered_goals(
+    mock_poll,
+    mock_pump, 
+    mock_mapping_configuration: DeviceMapping
+):
     """
     Ensure Goals trigger continuously (level-triggered) while the key is held.
     """
-    keyboard = Keyboard(mock_mapping)
+    keyboard = Keyboard(mock_mapping_configuration)
     
     # Frame 1: Press 'down' (22)
     mock_poll.return_value = tuple(1 if code == 22 else 0 for code in keyboard._scancodes)
@@ -127,11 +139,15 @@ def test_keyboard_level_triggered_goals(mock_poll, mock_pump, mock_mapping: Devi
 
 @patch('app.game.devices.sdl.pump')
 @patch('app.game.devices.sdl.poll')
-def test_keyboard_multiple_goals_accumulation(mock_poll, mock_pump, mock_mapping: DeviceMapping):
+def test_keyboard_multiple_goals_accumulation(
+    mock_poll, 
+    mock_pump, 
+    mock_mapping_configuration: DeviceMapping
+):
     """
     Ensure multiple simultaneously pressed directional keys accumulate into world.goals.
     """
-    keyboard = Keyboard(mock_mapping)
+    keyboard = Keyboard(mock_mapping_configuration)
     
     # Simulate 'up' (26) and 'down' (22) pressed simultaneously
     pressed_codes = {26, 22}
@@ -141,11 +157,11 @@ def test_keyboard_multiple_goals_accumulation(mock_poll, mock_pump, mock_mapping
     assert set(result.world.goals) == {'up', 'down'}
 
 
-def test_keyboard_context_switching(mock_mapping: DeviceMapping):
+def test_keyboard_context_switching(mock_mapping_configuration: DeviceMapping):
     """
     Ensure switching contexts recalculates scancodes and resets tracking state.
     """
-    keyboard = Keyboard(mock_mapping)
+    keyboard = Keyboard(mock_mapping_configuration)
     
     # World Context
     expected_world_codes = {44, 8, 26, 22, 41}
@@ -166,11 +182,15 @@ def test_keyboard_context_switching(mock_mapping: DeviceMapping):
 
 @patch('app.game.devices.sdl.pump')
 @patch('app.game.devices.sdl.poll')
-def test_keyboard_menu_polling_edge_triggered(mock_poll, mock_pump, mock_mapping: DeviceMapping):
+def test_keyboard_menu_polling_edge_triggered(
+    mock_poll, 
+    mock_pump, 
+    mock_mapping_configuration: DeviceMapping
+):
     """
     Ensure Traversal and Interaction inputs in MENU context trigger only on rising edges.
     """
-    keyboard = Keyboard(mock_mapping)
+    keyboard = Keyboard(mock_mapping_configuration)
     keyboard.context(DeviceContexts.MENU.value)
 
     # Frame 1: Press 'north' (79) and 'select' (40)
@@ -200,11 +220,15 @@ def test_keyboard_menu_polling_edge_triggered(mock_poll, mock_pump, mock_mapping
 
 @patch('app.game.devices.sdl.pump')
 @patch('app.game.devices.sdl.poll')
-def test_keyboard_world_menu_trigger(mock_poll, mock_pump, mock_mapping: DeviceMapping):
+def test_keyboard_world_menu_trigger(
+    mock_poll, 
+    mock_pump, 
+    mock_mapping_configuration: DeviceMapping
+):
     """
     Ensure opening a menu while in WORLD context is edge-triggered.
     """
-    keyboard = Keyboard(mock_mapping)
+    keyboard = Keyboard(mock_mapping_configuration)
 
     # Frame 1: Press 'pause' (41)
     mock_poll.return_value = tuple(1 if code == 41 else 0 for code in keyboard._scancodes)

@@ -16,10 +16,10 @@ from libs.core.models import Position, Boundary, Dimensions
 # ANCHOR & OBSTACLE TESTS
 # ---------------------------------------------------------------------------
 
-def test_navigation_anchor_with_hitbox(mock_sprite_with_hitbox):
+def test_navigation_anchor_with_hitbox(mock_sprite):
     # Position: (175, 200), Hitbox: pos=(21, 23), dim=(22, 21)
     # Footprint anchor: x = 175 + 21 + 22 // 2 = 207, y = 200 + 23 + 21 // 2 = 233
-    anchor = NavigationMechanics.anchor(mock_sprite_with_hitbox)
+    anchor = NavigationMechanics.anchor(mock_sprite)
     assert anchor.x == 207
     assert anchor.y == 233
 
@@ -72,8 +72,8 @@ def test_navigation_obstacles_exclusion_and_perimeters(mock_board, mock_offset_h
 # STATE & TARGET ANCHOR TESTS
 # ---------------------------------------------------------------------------
 
-def test_navigation_navigating(mock_sprite_with_hitbox):
-    sprite = mock_sprite_with_hitbox
+def test_navigation_navigating(mock_sprite):
+    sprite = mock_sprite
     sprite.state.goal = Goal(name="target", category=Goals.TARGET.value)
 
     sprite.state.intention = Intentions.FIND
@@ -96,10 +96,10 @@ def test_navigation_navigating(mock_sprite_with_hitbox):
     assert NavigationMechanics.navigating(sprite) is False
 
 
-def test_navigation_clear(mock_sprite_with_hitbox):
+def test_navigation_clear(mock_sprite):
     mechanic = NavigationMechanics()
 
-    sprite = mock_sprite_with_hitbox
+    sprite = mock_sprite
     sprite.state.trajectory.target = Position(10, 10)
     sprite.state.trajectory.vertices = [Position(10, 10), Position(20, 20)]
     sprite.state.trajectory.stalled = True
@@ -111,29 +111,29 @@ def test_navigation_clear(mock_sprite_with_hitbox):
     assert sprite.state.trajectory.stalled is False
 
 
-def test_navigation_target_same_layer_asset(mock_board, mock_sprite_with_hitbox):
+def test_navigation_target_same_layer_asset(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
     player = mock_board.player()
-    mock_board.relayer(player, mock_sprite_with_hitbox.state.layer)
+    mock_board.relayer(player, mock_sprite.state.layer)
     player.state.position = Position(300, 300)
 
-    mock_sprite_with_hitbox.state.goal = Goal(
+    mock_sprite.state.goal = Goal(
         name=player.name,
         category=Goals.TARGET.value,
         layer=player.state.layer,
         position=Position(300, 300)
     )
 
-    target_anchor = mechanic._target(mock_sprite_with_hitbox, mock_board)
+    target_anchor = mechanic._target(mock_sprite, mock_board)
     expected_anchor = NavigationMechanics.anchor(player)
 
     assert target_anchor.x == expected_anchor.x
     assert target_anchor.y == expected_anchor.y
 
 
-def test_navigation_target_coordinate_displacement(mock_board, mock_sprite_with_hitbox):
+def test_navigation_target_coordinate_displacement(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
-    sprite = mock_sprite_with_hitbox
+    sprite = mock_sprite
     sprite.state.goal = Goal(
         name=None,
         category=Goals.POSITION.value,
@@ -153,9 +153,9 @@ def test_navigation_target_coordinate_displacement(mock_board, mock_sprite_with_
 # TRAJECTORY PLANNING & PROGRESSION TESTS
 # ---------------------------------------------------------------------------
 
-def test_navigation_clear_line_of_sight(mock_board, mock_sprite_with_hitbox):
+def test_navigation_clear_line_of_sight(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
-    sprite = mock_sprite_with_hitbox
+    sprite = mock_sprite
     sprite.state.goal = Goal(
         name="open-space",
         category=Goals.POSITION.value,
@@ -172,9 +172,9 @@ def test_navigation_clear_line_of_sight(mock_board, mock_sprite_with_hitbox):
     assert sprite.state.trajectory.cooldown == 0
 
 
-def test_navigation_occluded_los_generates_waypoints(mock_board, mock_sprite_with_hitbox):
+def test_navigation_occluded_los_generates_waypoints(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
-    sprite = mock_sprite_with_hitbox
+    sprite = mock_sprite
     sprite.state.goal = Goal(
         name="behind-wall",
         category=Goals.POSITION.value,
@@ -205,9 +205,9 @@ def test_navigation_occluded_los_generates_waypoints(mock_board, mock_sprite_wit
     assert sprite.state.trajectory.stalled is False
 
 
-def test_navigation_stalled_path_enters_cooldown(mock_board, mock_sprite_with_hitbox):
+def test_navigation_stalled_path_enters_cooldown(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
-    sprite = mock_sprite_with_hitbox
+    sprite = mock_sprite
     sprite.state.goal = Goal(
         name="unreachable",
         category=Goals.POSITION.value,
@@ -225,9 +225,9 @@ def test_navigation_stalled_path_enters_cooldown(mock_board, mock_sprite_with_hi
     assert sprite.state.trajectory.cooldown == getattr(settings, "PATH_RETRY_INTERVAL", 60)
 
 
-def test_navigation_cooldown_active_bypasses_planner(mock_board, mock_sprite_with_hitbox):
+def test_navigation_cooldown_active_bypasses_planner(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
-    sprite = mock_sprite_with_hitbox
+    sprite = mock_sprite
     sprite.state.goal = Goal(
         name="unreachable",
         category=Goals.POSITION.value,
@@ -244,9 +244,9 @@ def test_navigation_cooldown_active_bypasses_planner(mock_board, mock_sprite_wit
         assert sprite.state.trajectory.cooldown == 9
 
 
-def test_navigation_waypoint_arrival_advances_queue(mock_board, mock_sprite_with_hitbox):
+def test_navigation_waypoint_arrival_advances_queue(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
-    sprite = mock_sprite_with_hitbox
+    sprite = mock_sprite
     sprite.state.position = Position(100, 100)
     sprite.state.goal = Goal(
         name="destination",
@@ -268,9 +268,9 @@ def test_navigation_waypoint_arrival_advances_queue(mock_board, mock_sprite_with
     assert sprite.state.trajectory.target == wp2
 
 
-def test_navigation_waypoint_arrival_final_sets_goal_target(mock_board, mock_sprite_with_hitbox):
+def test_navigation_waypoint_arrival_final_sets_goal_target(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
-    sprite = mock_sprite_with_hitbox
+    sprite = mock_sprite
     sprite.state.position = Position(150, 150)
     sprite.state.goal = Goal(
         name="destination",
@@ -291,9 +291,9 @@ def test_navigation_waypoint_arrival_final_sets_goal_target(mock_board, mock_spr
     assert sprite.state.trajectory.target == sprite.state.goal.position
 
 
-def test_navigation_waypoint_arrival_final_sets_goal_target(mock_board, mock_sprite_with_hitbox):
+def test_navigation_waypoint_arrival_final_sets_goal_target(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
-    sprite = mock_sprite_with_hitbox
+    sprite = mock_sprite
     sprite.state.position = Position(150, 150)
     sprite.state.goal = Goal(
         name="destination",
@@ -314,9 +314,9 @@ def test_navigation_waypoint_arrival_final_sets_goal_target(mock_board, mock_spr
     assert sprite.state.trajectory.target == sprite.state.goal.position
     
 
-def test_navigation_dynamic_replan_when_waypoint_blocked(mock_board, mock_sprite_with_hitbox):
+def test_navigation_dynamic_replan_when_waypoint_blocked(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
-    sprite = mock_sprite_with_hitbox
+    sprite = mock_sprite
     sprite.state.goal = Goal(
         name="destination",
         category=Goals.POSITION.value,

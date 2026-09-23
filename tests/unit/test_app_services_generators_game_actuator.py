@@ -213,7 +213,11 @@ def test_actuator_pump_does_not_mutate_shared_properties(mock_fluid_board):
 
     assert fluid.properties.hitboxes == []
 
-def test_actuator_generates_and_purges_shorelines(mock_fluid_board, mock_geography_properties, mock_recipes):
+def test_actuator_generates_and_purges_shorelines(
+    mock_fluid_board, 
+    mock_geography_properties, 
+    mock_recipes_configuration
+):
     """
     Verify Actuator generates shorelines on unoccluded flanks and purges them on re-pump.
     """
@@ -228,7 +232,7 @@ def test_actuator_generates_and_purges_shorelines(mock_fluid_board, mock_geograp
         hazards={}, passive={}, struts={},
         shorelines={"grassy-shore": mock_geography_properties}
     )
-    board.cradle = Cradle(spawnables, mock_recipes, None)
+    board.cradle = Cradle(spawnables, mock_recipes_configuration, None)
     shoreline_index = ShorelineIndex({("tile-1", "waterflow-1"): "grassy-shore"})
 
     actuator = Actuator(shorelines=shoreline_index)
@@ -252,7 +256,11 @@ def test_actuator_generates_and_purges_shorelines(mock_fluid_board, mock_geograp
     assert len(current_shoreline_names) > 0
 
 
-def test_actuator_water_meeting_water_suppresses_shorelines(mock_fluid_board, mock_geography_properties, mock_recipes):
+def test_actuator_water_meeting_water_suppresses_shorelines(
+    mock_fluid_board, 
+    mock_geography_properties, 
+    mock_recipes_configuration
+):
     """
     Verify that when water meets water across overlapping fluid bounds,
     internal shoreline generation is suppressed.
@@ -280,7 +288,11 @@ def test_actuator_water_meeting_water_suppresses_shorelines(mock_fluid_board, mo
         hazards={}, passive={}, struts={},
         shorelines={"grassy-shore": mock_geography_properties}
     )
-    board.cradle = Cradle(spawnables, mock_recipes, None)
+    board.cradle = Cradle(
+        spawnables, 
+        mock_recipes_configuration, 
+        None
+    )
     shoreline_index = ShorelineIndex({("tile-1", "waterflow-1"): "grassy-shore"})
 
     actuator = Actuator(shorelines=shoreline_index)
