@@ -1,22 +1,32 @@
 """
 # Ontology: tests.unit.test_app_game_logic_mechanics_intentional_cognition
 """
-from unittest.mock import MagicMock, patch
-
-import pytest
-from app.config.enums import Goals, Intentions, AssetInstances
-from app.game.logic.mechanics.intentional.cognition import CognitionMechanics, WANDER
+# Application Libraries
+from app.config.enums import (
+    Goals, 
+    Intentions,
+    AssetInstances
+)
+from app.game.logic.mechanics.intentional.cognition import (
+    CognitionMechanics, 
+    WANDER
+)
 from app.models.state import Goal
+
+# Cython Libraries
 from libs.core.models import Position
 
 
 def test_cognition_track_target_in_range(mock_board):
     mechanic = CognitionMechanics()
-    sprite = mock_board.instances("sprites")[0]
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
     player = mock_board.player()
 
     player.state.position = Position(30, 30)
+    player.state.layer = "1"
 
+    sprite.state.position = Position(10, 10)
+    sprite.state.layer = "1"
     sprite.state.goal = Goal(
         name=player.name,
         category=Goals.TARGET.value,
@@ -34,11 +44,13 @@ def test_cognition_track_target_in_range(mock_board):
 
 def test_cognition_track_target_out_of_range(mock_board):
     mechanic = CognitionMechanics()
-    sprite = mock_board.instances("sprites")[0]
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
     player = mock_board.player()
 
     player.state.position = Position(200, 200)
-
+    player.state.layer = "1"
+    sprite.state.position = Position(10, 10)
+    sprite.state.layer = "1"
     sprite.state.goal = Goal(
         name=player.name,
         category=Goals.TARGET.value,
@@ -56,7 +68,7 @@ def test_cognition_track_target_out_of_range(mock_board):
 
 def test_cognition_resolve_target_dead(mock_board):
     mechanic = CognitionMechanics()
-    sprite = mock_board.instances("sprites")[0]
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
     player = mock_board.player()
     player.state.mutators.triggers.dead = True
 
@@ -75,7 +87,7 @@ def test_cognition_resolve_target_dead(mock_board):
 
 def test_cognition_resolve_subject_no_dialogue(mock_board):
     mechanic = CognitionMechanics()
-    sprite = mock_board.instances("sprites")[0]
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
 
     sprite.state.goal = Goal(
         name="some_npc",
@@ -91,7 +103,7 @@ def test_cognition_resolve_subject_no_dialogue(mock_board):
 
 def test_cognition_resolve_position_goal(mock_board):
     mechanic = CognitionMechanics()
-    sprite = mock_board.instances("sprites")[0]
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
     sprite.state.position = Position(50, 50)
     sprite.state.mutators.parameters.action.radius = 15
 
@@ -107,7 +119,7 @@ def test_cognition_resolve_position_goal(mock_board):
 
 def test_cognition_resolve_object_door_transition(mock_board):
     mechanic = CognitionMechanics()
-    sprite = mock_board.instances("sprites")[0]
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
     sprite.state.layer = "brick-house-compose-layer"
 
     sprite.state.goal = Goal(
@@ -125,15 +137,22 @@ def test_cognition_resolve_object_door_transition(mock_board):
 
 def test_cognition_ideate_dialogue_target(mock_board):
     mechanic = CognitionMechanics()
-    sprite = mock_board.instances("sprites")[0]
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
     player = mock_board.player()
     
     sprite.state.psyche.dialogue = "hello"
+    sprite.state.intention = Intentions.IDLE.value
     sprite.state.mutators.parameters.vision.radius = 100
-    sprite.state.goal = Goal(name="wander", category=Goals.POSITION.value, position=Position(100, 100))
+    sprite.state.layer = "1"
+    sprite.state.goal = Goal(
+        name="wander", 
+        category=Goals.POSITION.value, 
+        position=Position(100, 100)
+    )
     sprite.state.position = Position(0, 0)
     player.state.position = Position(10, 10)
-    
+    player.state.layer = "1"
+
     mechanic._ideate(sprite, mock_board)
     
     assert sprite.state.goal.category == Goals.SUBJECT.value
@@ -143,7 +162,7 @@ def test_cognition_ideate_dialogue_target(mock_board):
 
 def test_cognition_remember_idle_only(mock_board):
     mechanic = CognitionMechanics()
-    sprite = mock_board.instances("sprites")[0]
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
     
     sprite.state.goal = None
     sprite.state.intention = Intentions.ATTACK.value
@@ -157,22 +176,28 @@ def test_cognition_remember_idle_only(mock_board):
     assert sprite.state.goal.name == "old_goal"
 
 
-def test_cognition_door_finder(mock_board, mock_door_asset):
-    mock_board.add([mock_door_asset])
-    sprite = mock_board.instances("sprites")[0]
+def test_cognition_door_finder(mock_board):
+    door = mock_board.instances(AssetInstances.DOORS.value)[0]
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+
+    sprite.state.layer = door.state.layer 
     sprite.state.position = Position(90, 90)
     sprite.state.mutators.parameters.vision.radius = 50
-    sprite.state.goal = Goal(name="target", category=Goals.TARGET.value, layer="brick-house-compose-layer")
+    sprite.state.goal = Goal(
+        name="target", 
+        category=Goals.TARGET.value, 
+        layer="brick-house-compose-layer"
+    )
 
     door = CognitionMechanics.door(sprite, mock_board)
     assert door is not None
     assert door.name == "wood-door"
 
 
-def test_cognition_track_cross_layer_subsumption(mock_board, mock_door_asset):
-    mock_board.add([mock_door_asset])
+def test_cognition_track_cross_layer_subsumption(mock_board):
     mechanic = CognitionMechanics()
-    sprite = mock_board.instances("sprites")[0]
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+    sprite.state.layer = '0'
     sprite.state.position = Position(90, 90)
     sprite.state.mutators.parameters.vision.radius = 50
 
@@ -212,7 +237,7 @@ def test_cognition_project_escape(mock_board):
 
 def test_cognition_project_wander(mock_board):
     mechanic = CognitionMechanics()
-    sprite = mock_board.instances("sprites")[0]
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
     sprite.state.intention = Intentions.WANDER.value
     sprite.state.goal = None
     sprite.state.position = Position(50, 50)
@@ -227,7 +252,7 @@ def test_cognition_project_wander(mock_board):
 
 
 def test_cognition_complete(mock_board):
-    sprite = mock_board.instances("sprites")[0]
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
     sprite.state.goal = None
     assert CognitionMechanics.complete(sprite, mock_board) is True
 

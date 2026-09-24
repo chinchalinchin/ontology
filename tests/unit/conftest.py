@@ -1000,15 +1000,26 @@ def mock_tile_states(
 
 
 @pytest.fixture
+def mock_object_states(
+    mock_door_state
+) -> ObjectStateInstances:
+    return ObjectStateInstances(
+        doors = [ mock_door_state ]
+    )
+
+
+@pytest.fixture
 def mock_state(
     mock_sheet_states,
     mock_tile_states,
-    mock_craft_states
+    mock_craft_states,
+    mock_object_states
 ):
     return StateSchema(
         sheets = mock_sheet_states,
         tiles = mock_tile_states,
-        crafts = mock_craft_states
+        crafts = mock_craft_states,
+        objects = mock_object_states,
     )
 
 
@@ -1436,6 +1447,8 @@ def mock_actuator(
     mock_shoreline_index
 ) -> Actuator:
     return Actuator(shorelines=mock_shoreline_index)
+
+
 # ---------------------------------------------------------------------------
 # ----------------------------------------------------------- MOCK COMPONENTS
 # ---------------------------------------------------------------------------

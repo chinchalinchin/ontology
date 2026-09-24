@@ -237,8 +237,7 @@ def test_actuator_generates_and_purges_shorelines(
 
 def test_actuator_water_meeting_water_suppresses_shorelines(
     mock_board, 
-    mock_geography_properties, 
-    mock_recipes_configuration
+    mock_actuator
 ):
     """
     Verify that when water meets water across overlapping fluid bounds,
@@ -261,20 +260,7 @@ def test_actuator_water_meeting_water_suppresses_shorelines(
     fluid2 = Asset(tax2, props2, state2, FluidFrame(), DummyAnimation())
     mock_board.add([fluid2])
 
-    spawnables = SpawnableGroup(
-        projectiles={}, expressions={}, collectables={},
-        hazards={}, passive={}, struts={},
-        shorelines={"grassy-shore": mock_geography_properties}
-    )
-    mock_board.cradle = Cradle(
-        spawnables, 
-        mock_recipes_configuration, 
-        None
-    )
-    shoreline_index = ShorelineIndex({("tile-1", "waterflow-1"): "grassy-shore"})
-
-    actuator = Actuator(shorelines=shoreline_index)
-    actuator.pump(fluid1, mock_board)
+    mock_actuator.pump(fluid1, mock_board)
 
     # Fluid1 East flank directly touches Fluid2 water: East shoreline (RIGHT) is suppressed
     shorelines = [
