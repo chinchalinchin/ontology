@@ -106,7 +106,14 @@ def test_motive_rvo_opposing_corridor_steering(
     mock_sprite.state.character.speed = 10
     mock_sprite.state.velocity = Velocity(10.0, 0.0)
 
-    
+    mock_sprite_alt.state.layer='0'
+    mock_sprite_alt.state.position = Position(70, 50)
+    mock_sprite_alt.state.goal = Goal(
+        name="npc", 
+        category=Goals.POSITION.value, 
+        layer="0", 
+        position=Position(30, 50)
+    )
 
     motive.update([mock_sprite, mock_sprite_alt], mock_board, 1.0)
 

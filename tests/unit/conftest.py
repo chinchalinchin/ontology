@@ -445,6 +445,7 @@ def mock_geography_properties() -> GeographyPropertyInstances:
 
 @pytest.fixture
 def mock_properties(
+    mock_cursor_properties,
     mock_geography_properties,
     mock_object_properties,
     mock_sheet_properties,
@@ -940,7 +941,7 @@ def mock_switch_state() -> SwitchState:
         id="castle-gate", 
         layer="0", 
         position=Position(x=70, y=80), 
-        switch=False
+        switch=True
     )
 
 

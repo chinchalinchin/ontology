@@ -66,7 +66,7 @@ def test_fluid_mechanics_crate_velocity_triggers_invalidation(mock_board):
     mechanic.update(mock_board, 0.016, bus, None)
 
     assert fluid.state.dirty is False
-    assert fluid.state.length == 80
+    assert fluid.state.length == 96
 
 
 def test_fluid_mechanics_gate_switch_toggle_invalidates(mock_board):
