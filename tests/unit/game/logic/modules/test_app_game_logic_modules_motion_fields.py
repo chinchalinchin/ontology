@@ -201,7 +201,6 @@ def test_entity_leaving_fluid_clears_submersion(mock_board):
     player.state.velocity.vy = 0.0
     player.state.mutators.triggers.submerged = True
 
-
     fields.update([player], mock_board, 0.016)
 
     assert player.state.mutators.triggers.submerged is False

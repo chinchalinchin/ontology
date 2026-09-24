@@ -36,7 +36,6 @@ from app.services.generators.game import (
     Actuator,
     Cradle
 )
-
 from app.game.logic.relations import ShorelineIndex
 
 # Cython Libraries
@@ -46,21 +45,20 @@ from libs.core.models import (
 )
 
 
-def test_actuator_pump_down_to_boundary(mock_fluid_board):
+def test_actuator_pump_down_to_boundary(mock_board):
     """
     Verify downward propagation truncates at boundary wall and does not pool.
     """
-    board = mock_fluid_board
-    fluid = board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
     fluid.state.position = Position(x=70, y=0)
     fluid.state.source = Directions.DOWN
 
     # Remove crate to ensure boundary is struck
-    crate = board.instances(AssetInstances.CRATES.value)[0]
-    board.remove([crate])
+    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
+    mock_board.remove([crate])
 
     actuator = Actuator()
-    length, pool, hitboxes = actuator.pump(fluid, board)
+    length, pool, hitboxes = actuator.pump(fluid, mock_board)
 
     assert length == 319
     assert pool is None
@@ -69,12 +67,12 @@ def test_actuator_pump_down_to_boundary(mock_fluid_board):
     assert hitboxes[0].dimensions.l == 319
     assert fluid.state.dirty is False
 
-def test_actuator_upstream_obstacles_ignored(mock_fluid_board):
+
+def test_actuator_upstream_obstacles_ignored(mock_board):
     """
     Verify obstacles positioned at or behind emitter origin are not struck.
     """
-    board = mock_fluid_board
-    fluid = board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
     fluid.state.position = Position(x=70, y=50)
     fluid.state.source = Directions.DOWN
 
@@ -85,24 +83,23 @@ def test_actuator_upstream_obstacles_ignored(mock_fluid_board):
     crate_up = Asset(crate_up_tax, crate_up_props, crate_up_state, DummyFrame(), DummyAnimation())
 
     # Downstream crate
-    crate_down = board.instances(AssetInstances.CRATES.value)[0]
+    crate_down = mock_board.instances(AssetInstances.CRATES.value)[0]
     crate_down.state.position = Position(x=70, y=150)
 
-    board.add([crate_up])
+    mock_board.add([crate_up])
 
     actuator = Actuator()
-    length, pool, hitboxes = actuator.pump(fluid, board)
+    length, pool, hitboxes = actuator.pump(fluid, mock_board)
 
     assert length == 100
     assert fluid.state.length == 100
 
 
-def test_actuator_open_gate_not_occluding(mock_fluid_board):
+def test_actuator_open_gate_not_occluding(mock_board, mock_actuator):
     """
     Verify open gates (switch=True) are bypassed during raycast truncation.
     """
-    board = mock_fluid_board
-    fluid = board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
     fluid.state.position = Position(x=70, y=0)
     fluid.state.source = Directions.DOWN
 
@@ -110,54 +107,50 @@ def test_actuator_open_gate_not_occluding(mock_fluid_board):
     gate_props = ObjectProperties(dimensions=Dimensions(w=32, l=32), mass=0)
     gate_state = SwitchState(id="gate-1", layer="0", position=Position(x=70, y=60), switch=True)
     gate = Asset(gate_tax, gate_props, gate_state, DummyFrame(), DummyAnimation())
-    board.add([gate])
+    mock_board.add([gate])
 
-    crate = board.instances(AssetInstances.CRATES.value)[0]
+    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
     crate.state.position = Position(x=70, y=120)
 
-    actuator = Actuator()
-    length, pool, hitboxes = actuator.pump(fluid, board)
+    length, pool, hitboxes = mock_actuator.pump(fluid, mock_board)
 
     assert length == 120
 
 
-def test_actuator_character_sheets_ignored(mock_fluid_board, mock_board_assets):
+def test_actuator_character_sheets_ignored(mock_board, mock_actuator):
     """
     Verify characters (SHEETS) do not obstruct fluid raycasts.
     """
-    board = mock_fluid_board
-    fluid = board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
     fluid.state.position = Position(x=70, y=0)
     fluid.state.source = Directions.DOWN
 
-    sprite = mock_board_assets[0]
-    sprite.state.position = Position(x=70, y=40)
-    board.add([sprite])
+    player = mock_board.player()
+    player.state.position = Position(x=70, y=40)
 
-    crate = board.instances(AssetInstances.CRATES.value)[0]
+    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
     crate.state.position = Position(x=70, y=120)
 
     actuator = Actuator()
-    length, pool, hitboxes = actuator.pump(fluid, board)
+    length, pool, hitboxes = mock_actuator.pump(fluid, mock_board)
 
     assert length == 120
 
-def test_actuator_pump_down_to_obstacle_with_pool(mock_fluid_board):
+
+def test_actuator_pump_down_to_obstacle_with_pool(mock_board, mock_actuator):
     """
     Verify internal obstacle collision truncates stream and forms a solid annular pool.
     """
-    board = mock_fluid_board
-    fluid = board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
     fluid.state.position = Position(x=70, y=0)
     fluid.state.source = Directions.DOWN
     fluid.state.flow = 2
 
-    crate = board.instances(AssetInstances.CRATES.value)[0]
+    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
     crate.state.position = Position(x=70, y=96)
     crate.properties.dimensions = Dimensions(w=32, l=32)
 
-    actuator = Actuator()
-    length, pool, hitboxes = actuator.pump(fluid, board)
+    length, pool, hitboxes = mock_actuator.pump(fluid, mock_board)
 
     assert length == 96
     assert pool is not None
@@ -178,67 +171,53 @@ def test_actuator_pump_down_to_obstacle_with_pool(mock_fluid_board):
     assert hitboxes[1].dimensions.w == 192
     assert hitboxes[1].dimensions.l == 160
 
-def test_actuator_rafts_ignored_as_obstacles(mock_fluid_board, mock_raft):
+
+def test_actuator_rafts_ignored_as_obstacles(mock_board, mock_raft, mock_actuator):
     """
     Verify rafts (RAFTS) bypass raycast truncation and do not occlude fluids.
     """
-    board = mock_fluid_board
-    fluid = board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
     fluid.state.position = Position(x=70, y=0)
     fluid.state.source = Directions.DOWN
 
     mock_raft.state.position = Position(x=70, y=40)
-    board.add([mock_raft])
 
-    crate = board.instances(AssetInstances.CRATES.value)[0]
+    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
     crate.state.position = Position(x=70, y=120)
 
-    actuator = Actuator()
-    length, pool, hitboxes = actuator.pump(fluid, board)
+
+    length, pool, hitboxes = mock_actuator.pump(fluid, mock_board)
 
     # Stream ignores raft at y=40 and truncates on crate at y=120
     assert length == 120
 
 
-def test_actuator_pump_does_not_mutate_shared_properties(mock_fluid_board):
+def test_actuator_pump_does_not_mutate_shared_properties(mock_board, mock_actuator):
     """
     Verify Actuator.pump does not mutate shared EffectProperties.hitboxes.
     """
-    board = mock_fluid_board
-    fluid = board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
     fluid.properties.hitboxes = []
 
-    actuator = Actuator()
-    actuator.pump(fluid, board)
+    mock_actuator.pump(fluid, mock_board)
 
     assert fluid.properties.hitboxes == []
 
+
 def test_actuator_generates_and_purges_shorelines(
-    mock_fluid_board, 
-    mock_geography_properties, 
-    mock_recipes_configuration
+    mock_board, 
+    mock_actuator
 ):
     """
     Verify Actuator generates shorelines on unoccluded flanks and purges them on re-pump.
     """
-    board = mock_fluid_board
-    fluid = board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
     fluid.state.position = Position(x=70, y=0)
     fluid.state.source = Directions.DOWN
 
-    # Setup Cradle and ShorelineIndex
-    spawnables = SpawnableGroup(
-        projectiles={}, expressions={}, collectables={},
-        hazards={}, passive={}, struts={},
-        shorelines={"grassy-shore": mock_geography_properties}
-    )
-    board.cradle = Cradle(spawnables, mock_recipes_configuration, None)
-    shoreline_index = ShorelineIndex({("tile-1", "waterflow-1"): "grassy-shore"})
+    mock_actuator.pump(fluid, mock_board)
 
-    actuator = Actuator(shorelines=shoreline_index)
-    actuator.pump(fluid, board)
-
-    shorelines = board.instances(AssetInstances.SHORELINES.value, "0")
+    shorelines = mock_board.instances(AssetInstances.SHORELINES.value, "0")
     assert len(shorelines) > 0
     assert len(fluid.state.shorelines) == len(shorelines)
 
@@ -246,18 +225,18 @@ def test_actuator_generates_and_purges_shorelines(
     first_shoreline_names = set(fluid.state.shorelines)
 
     # Re-pump should purge old shorelines and regenerate without duplicate asset names
-    actuator.pump(fluid, board)
+    mock_actuator.pump(fluid, mock_board)
     current_shoreline_names = set(fluid.state.shorelines)
 
     # Ensure none of the old child entities remain on the board
     for old_name in first_shoreline_names:
-        assert board.asset(old_name, "0") is None
+        assert mock_board.asset(old_name, "0") is None
 
     assert len(current_shoreline_names) > 0
 
 
 def test_actuator_water_meeting_water_suppresses_shorelines(
-    mock_fluid_board, 
+    mock_board, 
     mock_geography_properties, 
     mock_recipes_configuration
 ):
@@ -265,8 +244,7 @@ def test_actuator_water_meeting_water_suppresses_shorelines(
     Verify that when water meets water across overlapping fluid bounds,
     internal shoreline generation is suppressed.
     """
-    board = mock_fluid_board
-    fluid1 = board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid1 = mock_board.instances(AssetInstances.FLUIDS.value)[0]
 
     # Spawn second adjacent fluid covering the full height of the corridor
     tax2 = Taxonomy("waterflow-1", "fluid-2", AssetCategories.EFFECTS.value, AssetInstances.FLUIDS.value)
@@ -281,14 +259,14 @@ def test_actuator_water_meeting_water_suppresses_shorelines(
         length=320
     )
     fluid2 = Asset(tax2, props2, state2, FluidFrame(), DummyAnimation())
-    board.add([fluid2])
+    mock_board.add([fluid2])
 
     spawnables = SpawnableGroup(
         projectiles={}, expressions={}, collectables={},
         hazards={}, passive={}, struts={},
         shorelines={"grassy-shore": mock_geography_properties}
     )
-    board.cradle = Cradle(
+    mock_board.cradle = Cradle(
         spawnables, 
         mock_recipes_configuration, 
         None
@@ -296,9 +274,16 @@ def test_actuator_water_meeting_water_suppresses_shorelines(
     shoreline_index = ShorelineIndex({("tile-1", "waterflow-1"): "grassy-shore"})
 
     actuator = Actuator(shorelines=shoreline_index)
-    actuator.pump(fluid1, board)
+    actuator.pump(fluid1, mock_board)
 
     # Fluid1 East flank directly touches Fluid2 water: East shoreline (RIGHT) is suppressed
-    shorelines = [board.asset(name, "0") for name in fluid1.state.shorelines if board.asset(name, "0")]
-    right_shorelines = [s for s in shorelines if s.state.orientation == Directions.RIGHT.value]
+    shorelines = [
+        mock_board.asset(name, "0") 
+        for name in fluid1.state.shorelines 
+        if mock_board.asset(name, "0")
+    ]
+    right_shorelines = [
+        s for s in shorelines 
+        if s.state.orientation == Directions.RIGHT.value
+    ]
     assert len(right_shorelines) == 0

@@ -154,7 +154,8 @@ from app.services.generators.menus import (
 )
 from app.services.generators.game import (
     Decomposer,
-    Cradle
+    Cradle,
+    Actuator
 )
 
 # Cython Libraries
@@ -427,7 +428,7 @@ def mock_geography_properties() -> GeographyPropertyInstances:
             "grassy-shore": GeographyProperties(
                 dimensions=Dimensions(w=32, l=32),
                 tile="tile-1",
-                fluid="waterflow-1",
+                fluid="waterflow-01",
                 thickness=8,
                 mass=-1
             )
@@ -1428,6 +1429,13 @@ def mock_cradle(
     mock_spawnables
 ):
     return Cradle(mock_spawnables, mock_recipes_configuration, mock_decomposer)
+
+
+@pytest.fixture
+def mock_actuator(
+    mock_shoreline_index
+) -> Actuator:
+    return Actuator(shorelines=mock_shoreline_index)
 # ---------------------------------------------------------------------------
 # ----------------------------------------------------------- MOCK COMPONENTS
 # ---------------------------------------------------------------------------

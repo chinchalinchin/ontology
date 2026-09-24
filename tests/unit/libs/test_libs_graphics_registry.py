@@ -53,10 +53,15 @@ def test_registry_initialization_and_caching(mock_properties, mock_configuration
         assert 'sword' in registry._pending_assets
         assert len(registry._textures) == 0
 
-
 def test_registry_indexing_and_retrieval(mock_properties, mock_configurations):
     """Test that Registry correctly indexes StateFrame schemas and retrieves data JIT."""
-   
+    mock_configurations = dataclasses.replace(
+        mock_configurations,
+        recipes=dataclasses.replace(
+            mock_configurations.recipes,
+            sheets=SheetRecipe(sprites=Recipe(frame=FrameRecipe.STATE))
+        )
+    )
     
     actions = {
         "walk": Action(count=3, directions={"down": Direction(row=0), "up": Direction(row=1)})
