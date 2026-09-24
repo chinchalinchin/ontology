@@ -51,7 +51,7 @@ from app.game.logic.mechanics import (
     FluidMechanics
 )
 from app.models.config import (
-    DeviceMapping,
+    MappingConfiguration,
     MechanicsInstance
 )
 from app.game.menus.controllers import (
@@ -106,15 +106,16 @@ def test_factory_taxonomy():
     assert tax.instance == "players"
 
 
-def test_factory_device(mock_mapping_configuration: DeviceMapping):
-    kb = Factory.device(Devices.KEYBOARD.value, mock_mapping_configuration)
+def test_factory_device(mock_mapping_configuration: MappingConfiguration):
+    kb = Factory.device(Devices.KEYBOARD.value, mock_mapping_configuration.keyboard)
     assert isinstance(kb, Keyboard)
 
-    ctrl = Factory.device(Devices.CONTROLLER.value, mock_mapping_configuration)
+    ctrl = Factory.device(Devices.CONTROLLER.value, mock_mapping_configuration.controller)
     assert isinstance(ctrl, Controller)
 
-    fallback = Factory.device("unknown_device", mock_mapping_configuration)
+    fallback = Factory.device("unknown_device", mock_mapping_configuration.keyboard)
     assert isinstance(fallback, Keyboard)
+
 
 def test_factory_cradle(mock_spawnables, mock_recipes_configuration):
     decomposer = MagicMock()

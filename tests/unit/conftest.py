@@ -61,6 +61,7 @@ from app.models.properties import (
     ObjectProperties,
     SheetProperties,
     WidgetProperties,
+    CursorProperties,
     TileProperties,
     CraftProperties,
     ObjectProperties,
@@ -69,6 +70,7 @@ from app.models.properties import (
     FontProperties,
     # -------- INSTANCES
     CraftPropertyInstances,
+    CursorPropertyInstances,
     SheetPropertyInstances,
     WidgetPropertyInstances,
     GeographyPropertyInstances,
@@ -125,6 +127,7 @@ from app.models.state import (
     ShorelineState,
     FluidState,
     AnimationState,
+    MotorState,
     # -------- FIELDS
     Inventory,
     Equipment,
@@ -150,7 +153,8 @@ from app.services.generators.menus import (
     Binder
 )
 from app.services.generators.game import (
-    Decomposer
+    Decomposer,
+    Cradle
 )
 
 # Cython Libraries
@@ -289,6 +293,11 @@ def mock_sheet_properties() -> SheetPropertyInstances:
                 dimensions=Dimensions(w=64, l=64),
                 mass=10,
                 hitboxes=[hb]
+            ),
+            'sprite':  SheetProperties(
+                dimensions=Dimensions(w=64, l=64),
+                mass=10,
+                hitboxes=[hb]
             )
         }
     )
@@ -326,6 +335,15 @@ def mock_object_properties() -> ObjectPropertyInstances:
 
 
 @pytest.fixture
+def mock_cursor_properties() -> CursorPropertyInstances:
+    return CursorPropertyInstances(
+        projectiles = {
+            'arrow-1': CursorProperties(dimensions=Dimensions(w=16, l=16))
+        }
+    )
+
+
+@pytest.fixture
 def mock_effect_properties() -> EffectPropertyInstances:
     return EffectPropertyInstances(
         fluids = {
@@ -334,6 +352,13 @@ def mock_effect_properties() -> EffectPropertyInstances:
                 count=3,
                 mass=-1,
                 lifecycle=Lifecycle(delay=60, persist=False)
+            )
+        },
+        passive = {
+            "splash": EffectProperties(
+                dimensions=Dimensions(w=16, l=16), 
+                count=3, 
+                mass=-1
             )
         }
     )
@@ -420,6 +445,7 @@ def mock_properties(
     mock_tile_properties
 ) -> PropertiesSchema:
     return PropertiesSchema(
+        cursors = mock_cursor_properties,
         crafts = mock_craft_properties,
         geography = mock_geography_properties,
         objects = mock_object_properties,
@@ -450,6 +476,7 @@ def mock_spawnables(mock_geography_properties) -> SpawnableGroup:
         passive={},
         shorelines=mock_geography_properties.shorelines
     )
+
 
 # --------------------------------------------------------------------------
 # ------------------------------------------------------ MOCK CONFIGURATIONS
@@ -794,7 +821,8 @@ def mock_sprite_state() -> SpriteState:
             parameters=MutatorParameters(
                 vision=RadialParameters(radius=128),
                 action=RadialParameters(radius=25),
-                fear=FearParameters(radius=128, limit=0.5, enemy=5)
+                fear=FearParameters(radius=128, limit=0.5, enemy=5),
+                squeeze=RadialParameters(radius=10)
             )
         ),
         inventory=Inventory(equipment=Equipment()),
@@ -811,10 +839,19 @@ def mock_sprite_state_alt() -> SpriteState:
         position=Position(60, 50),
         intention=Intentions.FIND,
         goal=Goal(
-            name="target1", 
+            name="evil-empress-jasilynn", 
             category=Goals.POSITION.value, 
             layer="0", 
             position=Position(0, 50)
+        ),
+        mutators=Mutators(
+            triggers=MutatorTriggers(vision=True),
+            parameters=MutatorParameters(
+                vision=RadialParameters(radius=128),
+                action=RadialParameters(radius=25),
+                fear=FearParameters(radius=128, limit=0.5, enemy=5),
+                squeeze=RadialParameters(radius=10)
+            )
         ),
         character=Character(
             speed=10
@@ -890,6 +927,16 @@ def mock_door_state() -> DoorState:
 
 
 @pytest.fixture
+def mock_motor_state() -> MotorState:
+    return MotorState(
+        id="arrow-1",
+        layer="0",
+        position=Position(x=70, y=50),
+        velocity=Velocity(vx=50.0, vy=0.0)
+    )
+
+
+@pytest.fixture
 def mock_fluid_state() -> FluidState:
     return FluidState(
         id="waterflow-1",
@@ -900,6 +947,19 @@ def mock_fluid_state() -> FluidState:
         flow=2,
         length=0,
         dirty=True
+    )
+
+
+@pytest.fixture
+def mock_fluid_state_alt() -> FluidState:
+    return FluidState(
+        id="waterflow-1",
+        layer="0",
+        position=Position(x=200, y=100),
+        source=Directions.LEFT.value,
+        flow=1,
+        length=100,
+        hitboxes=[Hitbox(Position(-100, 0), Dimensions(100, 32))]
     )
 
 
@@ -1018,6 +1078,28 @@ def mock_sprite(
 
 
 @pytest.fixture
+def mock_sprite_alt(
+    mock_sheet_properties,
+    mock_sprite_state_alt
+) -> Asset:
+    """
+    Sprite asset featuring a standard LPC offset collision hitbox.
+    """
+    return Asset(
+        taxonomy = Taxonomy(
+            id = "sprite", 
+            name = "npc", 
+            category = AssetCategories.SHEETS.value, 
+            instance = AssetInstances.SPRITES.value
+        ), 
+        properties = mock_sheet_properties.sprites.get('sprite'), 
+        state = mock_sprite_state_alt, 
+        frame = DummyFrame(), 
+        animation = DummyAnimation()
+    )
+
+
+@pytest.fixture
 def mock_player(
     mock_sheet_properties,
     mock_player_state
@@ -1032,6 +1114,25 @@ def mock_player(
         properties = mock_sheet_properties.sprites.get('player'), 
         state = mock_player_state, 
         frame = DummyFrame(), 
+        animation = DummyAnimation()
+    )
+
+
+@pytest.fixture
+def mock_projectile(
+    mock_cursor_properties,
+    mock_motor_state
+):
+    return Asset(
+        taxonomy = Taxonomy(
+            id = "arrow-1",
+            name = "feathered-arrow",
+            category = AssetCategories.CURSORS.value,
+            instance = AssetInstances.PROJECTILES.value
+        ),
+        properties = mock_cursor_properties.projectiles.get('arrow-1'),
+        state = mock_motor_state, 
+        frame = DummyFrame(),
         animation = DummyAnimation()
     )
 
@@ -1139,7 +1240,6 @@ def mock_crate(
     )
 
 
-
 @pytest.fixture
 def mock_fluid(
     mock_effect_properties,
@@ -1157,6 +1257,28 @@ def mock_fluid(
         ), 
         properties = mock_effect_properties.fluids.get('waterflow-01'), 
         state = mock_fluid_state, 
+        frame = FluidFrame(tile_w=32, tile_l=32), 
+        animation = LifecycleAnimation()
+    )
+
+
+@pytest.fixture
+def mock_fluid_alt(
+    mock_effect_properties,
+    mock_fluid_state_alt
+) -> Asset:
+    """
+    Standard directional fluid emitter asset configured with continuous lifecycle.
+    """
+    return Asset(
+        taxonomy = Taxonomy(
+            id = "waterflow-01",
+            name = "jasilynns-tears-left",
+            category = AssetCategories.EFFECTS.value,
+            instance = AssetInstances.FLUIDS.value
+        ), 
+        properties = mock_effect_properties.fluids.get('waterflow-01'), 
+        state = mock_fluid_state_alt, 
         frame = FluidFrame(tile_w=32, tile_l=32), 
         animation = LifecycleAnimation()
     )
@@ -1188,8 +1310,10 @@ def mock_door(
 def mock_assets(
     mock_player,
     mock_sprite,
+    mock_sprite_alt,
     mock_back_tile,
     mock_fluid,
+    mock_fluid_alt,
     mock_door,
     mock_crate,
     mock_strut,
@@ -1198,9 +1322,11 @@ def mock_assets(
 ):
     return [
         mock_sprite, 
+        mock_sprite_alt,
         mock_back_tile,
         mock_player,
         mock_fluid,
+        mock_fluid_alt,
         mock_door,
         mock_crate,
         mock_crate,
@@ -1295,6 +1421,13 @@ def mock_provider(
     )
 
 
+@pytest.fixture
+def mock_cradle(
+    mock_decomposer,
+    mock_recipes_configuration,
+    mock_spawnables
+):
+    return Cradle(mock_spawnables, mock_recipes_configuration, mock_decomposer)
 # ---------------------------------------------------------------------------
 # ----------------------------------------------------------- MOCK COMPONENTS
 # ---------------------------------------------------------------------------
@@ -1303,7 +1436,8 @@ def mock_provider(
 def mock_board(
     mock_assets, 
     mock_configurations, 
-    mock_equipment
+    mock_equipment,
+    mock_cradle
 ) -> Board:    
     with patch('app.game.board.settings.TILE_HASH_SIZE', 32):
         board = Board(
@@ -1317,6 +1451,7 @@ def mock_board(
             Boundary(Position(0, 0), Dimensions(1, 320)),
             Boundary(Position(319, 0), Dimensions(1, 320))
         ]
+        board.set_cradle(mock_cradle)
         return board
 
 

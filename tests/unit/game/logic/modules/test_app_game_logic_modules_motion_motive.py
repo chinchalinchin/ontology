@@ -30,7 +30,7 @@ from conftest import DummyFrame, DummyAnimation
 
 def test_motive_no_intention(mock_board, mock_sprite):
     mock_sprite.state.intention = Intentions.IDLE.value
-    mock_sprite.sprite.state.velocity.vx = 5.0
+    mock_sprite.state.velocity.vx = 5.0
     mock_sprite.state.velocity.vy = 5.0
     
     motive.update([mock_sprite], mock_board, 1.0)
@@ -84,34 +84,33 @@ def test_motive_aims_towards_goal(mock_board, mock_sprite, monkeypatch):
     assert mock_sprite.state.velocity.vy == 0.0
 
     
-def test_motive_rvo_opposing_corridor_steering(mock_board, mock_sprite, monkeypatch):
+def test_motive_rvo_opposing_corridor_steering(
+    mock_board, 
+    mock_sprite, 
+    mock_sprite_alt,
+    monkeypatch
+):
     monkeypatch.setattr(
         'app.game.logic.modules.motion.motive.NavigationIntentions', 
         [ Intentions.FIND.value ]
     )
     mock_sprite.state.layer = "0"
-    mock_sprite.state.intention = Intentions.FIND
+    mock_sprite.state.intention = Intentions.FIND.value
     mock_sprite.state.position = Position(0, 50)
-    mock_sprite.state.goal = Goal(name="target2", category=Goals.POSITION.value, layer="0", position=Position(100, 50))
+    mock_sprite.state.goal = Goal(
+        name="npc", 
+        category=Goals.POSITION.value, 
+        layer="0", 
+        position=Position(100, 50)
+    )
     mock_sprite.state.character.speed = 10
     mock_sprite.state.velocity = Velocity(10.0, 0.0)
 
-    tax2 = Taxonomy("sprite-2", "npc_2", "sheets", "sprites")
-    props2 = SheetProperties(dimensions=Dimensions(w=32, l=32), mass=10)
-    state2 = SpriteState(
-        id="sprite-2", name="npc_2", layer="0",
-        position=Position(60, 50),
-        intention=Intentions.FIND,
-        goal=Goal(name="target1", category=Goals.POSITION.value, layer="0", position=Position(0, 50)),
-        character=Character(speed=10),
-        velocity=Velocity(-10.0, 0.0),
-        inventory=Inventory(equipment=Equipment()),
-        animation=AnimationState()
-    )
-    sprite2 = Asset(tax2, props2, state2, DummyFrame(), DummyAnimation())
-    mock_board.add([sprite2])
+    
 
-    motive.update([mock_sprite, sprite2], mock_board, 1.0)
+    motive.update([mock_sprite, mock_sprite_alt], mock_board, 1.0)
+
+    print(mock_sprite.state.velocity.vx)
 
     # RVO avoidance must cause lateral steering deviation or velocity adjustment
     assert mock_sprite.state.velocity.vx != 10.0 or mock_sprite.state.velocity.vy != 0.0

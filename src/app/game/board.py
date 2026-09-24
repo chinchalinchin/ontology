@@ -466,7 +466,9 @@ class Board:
 
             if asset.category != AssetCategories.TILES.value:
                 self._cached_renderables[layer].append(asset)
-                if asset.properties.mass >= 0:
+                if asset.category != AssetCategories.CURSORS and (
+                    asset.properties.mass >= 0
+                ):
                     self._cached_weights[layer].append(asset)
                 
             if asset.instance in (

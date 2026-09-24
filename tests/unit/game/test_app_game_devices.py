@@ -133,7 +133,7 @@ def test_keyboard_edge_triggered_intentions(
         1 if code == 44 else 0 for code in mock_keyboard._scancodes
     )
     result_frame_4 = mock_keyboard.poll()
-    assert result_frame_4.world.intention == Intentions.ATTACK.values
+    assert result_frame_4.world.intention == Intentions.ATTACK.value
 
 
 @patch('app.game.devices.sdl.pump')
