@@ -1,0 +1,17 @@
+{% set exclude = parameters.docs.exclude  
+                    if parameters.get('docs') 
+                        and parameters.docs.get('exclude') 
+                            else ['index.md']
+%}
+### View: {{ project.title | capitalize }} Documentation 
+
+----------- START HEADING BREAK: HEADING LEVELS RESET -----------
+
+{{ file(paths.root + paths.docs + docs_index) }}
+
+{% for doc in markdown(paths.root + paths.docs, exclude) %}
+{{ file(paths.root + paths.docs + doc) }}
+
+{% endfor %}
+
+----------- END HEADING BREAK: HEADING LEVELS RESUME -----------

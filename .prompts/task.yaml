@@ -1,5 +1,45 @@
-
-root: /home/grant/Projects/ontology
+# ---------------------- CONFIGURATION
+commands:
+  directory: tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
+parameters:
+  github:
+    phase: '09-02'
+    action: refactor
+    docs:
+      exclude:
+        - index.md
+        - 02-sprites.md
+        - 03-compositions.md
+        - 04-intentions.md
+        - 06-widgets.md
+        - 07-sounds.md
+        - 08-plots.md
+        - 09-emergence.md
+    specs: []
+  shell:
+    commands: []
+paths:
+  root: /home/grant/Projects/ontology/
+  actions: .githubs/workflows/
+  blocks: .prompts/tasks/.blocks/
+  board: .prompts/tasks/.board/
+  docs: docs/
+project:
+  title: ontology
 task:
   verb: test
   noun: app.services.orchestration
+user:
+  username: gmoore
+  ssh: /home/gmoore/.ssh/id_ed25519
+views:
+  github:
+    actions: false
+    board: false
+    specs: false
+    docs: false
+  shell:
+    directory: true
+    commands: false
+urls: 
+  github: github.com/chinchalinchin
