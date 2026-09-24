@@ -128,6 +128,7 @@ from app.models.state import (
     FluidState,
     AnimationState,
     MotorState,
+    SwitchState,
     # -------- FIELDS
     Inventory,
     Equipment,
@@ -330,6 +331,12 @@ def mock_object_properties() -> ObjectPropertyInstances:
             'wood-raft': ObjectProperties(
                 dimensions=Dimensions(w=32, l=32),
                 mass=5
+            )
+        },
+        gates = {
+            'castle-gate': ObjectProperties(
+                dimensions=Dimensions(w=32, l=32), 
+                mass=0
             )
         }
     )
@@ -928,6 +935,16 @@ def mock_door_state() -> DoorState:
 
 
 @pytest.fixture
+def mock_switch_state() -> SwitchState:
+    return SwitchState(
+        id="castle-gate", 
+        layer="0", 
+        position=Position(x=70, y=80), 
+        switch=False
+    )
+
+
+@pytest.fixture
 def mock_motor_state() -> MotorState:
     return MotorState(
         id="arrow-1",
@@ -1253,6 +1270,25 @@ def mock_crate(
 
 
 @pytest.fixture
+def mock_gate(
+    mock_object_properties,
+    mock_switch_state
+) -> Asset:
+    return Asset(
+        taxonomy = Taxonomy(
+            id  = 'castle-gate',
+            name = 'cool-gate',
+            category = AssetCategories.OBJECTS.value,
+            instance = AssetInstances.GATES.value
+        ),
+        properties = mock_object_properties.gates.get('castle-gate'),
+        state = mock_switch_state, 
+        frame = DummyFrame(),
+        animation = DummyAnimation()
+    )
+
+
+@pytest.fixture
 def mock_fluid(
     mock_effect_properties,
     mock_fluid_state
@@ -1328,6 +1364,7 @@ def mock_assets(
     mock_fluid_alt,
     mock_door,
     mock_crate,
+    mock_gate,
     mock_strut,
     mock_strut_alt,
     mock_strut_alt2
@@ -1340,7 +1377,7 @@ def mock_assets(
         mock_fluid,
         mock_fluid_alt,
         mock_door,
-        mock_crate,
+        mock_gate,
         mock_crate,
         mock_strut,
         mock_strut_alt,
