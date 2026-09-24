@@ -24,7 +24,7 @@ import sys
 
 # External Libraries
 import jinja2
-import yaml
+import yaml as pyyaml
 
 # -------------------- Configuration
 
@@ -180,10 +180,10 @@ def load(vars_path: str) -> dict:
     try:
         with open(vars_path, 'r', encoding='utf-8') as f:
             # Use safe_load to avoid arbitrary code execution from YAML tags
-            data = yaml.safe_load(f)
+            data = pyyaml.safe_load(f)
             print(f"Loaded variables from '{vars_path}'.")
             return data if data else {}
-    except yaml.YAMLError as e:
+    except pyyaml.YAMLError as e:
         print(f"Error parsing YAML from '{vars_path}': {e}")
         return {}
     except Exception as e:
