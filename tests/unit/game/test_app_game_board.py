@@ -13,21 +13,21 @@ def test_board_initial_caching(mock_board):
     
     # Layer Indexing
     assets_layer_0 = mock_board.assets('0')
-    assert len(assets_layer_0) == 7
+    assert len(assets_layer_0) == 9
     
     sprites = mock_board.categories(AssetCategories.SHEETS.value, '0')
     tiles = mock_board.categories(AssetCategories.TILES.value, '0')
-    assert len(sprites) == 1
+    assert len(sprites) == 2
     assert len(tiles) == 1
     
     # Inner Render Loop Indexing (Tiles bypassed)
     renderables = mock_board.renderables('0')
-    assert len(renderables) == 6
+    assert len(renderables) == 8
     assert renderables[0].category == AssetCategories.SHEETS.value
     
     # Physics Caching
     weights = mock_board.weights('0')
-    assert len(weights) == 4
+    assert len(weights) == 5
 
 
 def test_board_relayering_synchronization(mock_board):
