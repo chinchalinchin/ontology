@@ -35,7 +35,10 @@ from app.models.groups import (
 )
 from app.models.state import StateSchema
 from app.models.properties import PropertiesSchema
-from app.models.config import ConfigurationSchema
+from app.models.config import (
+    ConfigurationSchema, 
+    MechanicsInstance
+)
 from app.services.generators.game import (
     Factory,
     Decomposer,
@@ -243,15 +246,15 @@ class Builder:
                 )
 
         core_cfg = self.context.configurations.mechanics.core or [
-            Mechanics.MENU.value, 
-            Mechanics.ANIMATION.value, 
-            Mechanics.REMOVE.value
+            MechanicsInstance(Mechanics.MENU.value), 
+            MechanicsInstance(Mechanics.ANIMATION.value), 
+            MechanicsInstance(Mechanics.REMOVE.value)
         ]
         world_cfg = self.context.configurations.mechanics.world or [
-            Mechanics.PLAYER.value, 
-            Mechanics.COGNITION.value, 
-            Mechanics.TRANSITION.value, 
-            Mechanics.MOTION.value
+            MechanicsInstance(Mechanics.PLAYER.value), 
+            MechanicsInstance(Mechanics.COGNITION.value), 
+            MechanicsInstance(Mechanics.TRANSITION.value), 
+            MechanicsInstance(Mechanics.MOTION.value)
         ]
         
         self.core = [Factory.mechanics(m, self.executors) for m in core_cfg]

@@ -1,8 +1,5 @@
 
-## LINUX
 root: /home/grant/Projects/ontology
-## MAC
-# root: /Users/gmoore/Home/projects/ontology
 task:
   verb: test
-  noun: board
+  noun: app.services.orchestration

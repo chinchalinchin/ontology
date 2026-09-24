@@ -6,27 +6,26 @@ from unittest.mock import patch
 from app.services.generators.game.perimeter import Perimeter
 from libs.core.models import Boundary, Position, Dimensions
 
-def test_perimeter_generator_extract(mock_board, mock_crate, mock_strut):
+def test_perimeter_generator_extract(mock_board):
     """
     Verifies that the PerimeterGenerator correctly filters and translates 
     TILES, OBJECTS, and CRAFTS into Cython-compatible primitive rectangles.
     """
-    mock_board.add([mock_crate, mock_strut])
     generator = Perimeter()
     
     rects = generator.extract(mock_board, "0")
     
     # 1. Evaluate Tile primitive from mock_board_assets 
-    # (pos: 0,0 | w:32, l:32 | nx:2, ny:2 -> span is 64x64)
-    assert (0, 0, 64, 64) in rects
+    # (pos: 0,0 | w:32, l:32 | nx:10, ny:10 -> span is 320x320
+    assert (0, 0, 320, 320) in rects
     
     # 2. Evaluate Object primitive from mock_crate 
     # (pos: 10,10 | w:32, l:32)
     assert (10, 10, 42, 42) in rects
     
     # 3. Evaluate Craft primitive from mock_strut 
-    # (pos: 40,40 | w:32, l:32)
-    assert (40, 40, 72, 72) in rects
+    # (pos: 250, 250 | w:222, l:133)
+    assert  (250, 250, 472, 383) in rects
 
 def test_perimeter_generator_generate(mock_board):
     """

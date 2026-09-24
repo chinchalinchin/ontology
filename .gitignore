@@ -9,7 +9,6 @@ site/**
 **/*.*-dump.md
 **/prompt.md
 **/reply.md
-**/.prompts/**/*.md
 **/.pytest_cache/**
 **/.vscode/**
 **/logs/**

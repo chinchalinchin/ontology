@@ -12,11 +12,12 @@ from unittest.mock import (
 # External Libraries
 import pytest
 
+
 # NOTE: Inject the src/ directory into the Python path prior to any local imports
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "src"))
 
 
-# Applicaiton Libraries
+# Application Libraries
 from app.assets.base import (
     Asset, 
     Taxonomy,
@@ -47,6 +48,7 @@ from app.config.enums import (
     # -------- ENGINE SUGAR
     Shortcuts,
 )
+from app.game.devices import Keyboard
 from app.game.board import Board
 from app.game.logic.relations import ShorelineIndex
 from app.models.properties import (
@@ -92,6 +94,7 @@ from app.models.config import (
     Recipe,
     IntentionConfiguration,
     # ------- DEVICES
+    MappingConfiguration,
     DeviceMapping,
     WorldMapping,
     # ------- MENUS
@@ -452,7 +455,6 @@ def mock_spawnables(mock_geography_properties) -> SpawnableGroup:
 # ------------------------------------------------------ MOCK CONFIGURATIONS
 # --------------------------------------------------------------------------
 
-
 @pytest.fixture
 def mock_composition_configuration() -> CompositionConfiguration:
     return {
@@ -656,36 +658,6 @@ def mock_recipes_configuration() -> RecipeConfiguration:
 
 
 @pytest.fixture
-def mock_mapping_configuration() -> DeviceMapping:
-    """Base keyboard mapping."""
-    return DeviceMapping(
-        world=WorldMapping(
-            menus = { 
-                'pause': 41 
-            },
-            intentions={
-                'attack': 44, 
-                'interact': 8
-            },
-            goals={
-                'up': 26, 
-                'down': 22
-            }
-        ),
-        menu=MenuMapping(
-            traversal={
-                'north': 79, 
-                'south': 80
-            },
-            interactions={
-                'select': 40, 
-                'cancel': 41
-            }
-        )
-    )
-
-
-@pytest.fixture
 def mock_intention_configuration():
     """
     Shared mock configurations covering various ISL edge cases.
@@ -710,6 +682,37 @@ def mock_intention_configuration():
             IntentionConfiguration(next="idle", conditions=["sprite.health =="]) # syntax error
         ]
     }
+
+
+@pytest.fixture
+def mock_mapping_configuration() -> MappingConfiguration:
+    return MappingConfiguration(
+        keyboard = DeviceMapping(
+        world=WorldMapping(
+                menus = { 
+                    'pause': 41 
+                },
+                intentions={
+                    'attack': 44, 
+                    'interact': 8
+                },
+                goals={
+                    'up': 26, 
+                    'down': 22
+                }
+            ),
+            menu=MenuMapping(
+                traversal={
+                    'north': 79, 
+                    'south': 80
+                },
+                interactions={
+                    'select': 40, 
+                    'cancel': 41
+                }
+            )
+        )
+    )
 
 
 @pytest.fixture
@@ -902,15 +905,15 @@ def mock_fluid_state() -> FluidState:
 
 @pytest.fixture
 def mock_craft_states(
-    mock_strut_state,
-    mock_strut_state_alt,
-    mock_strut_state_alt2
+    mock_property_state,
+    mock_property_state_alt,
+    mock_property_state_alt2
 ) -> CraftStateInstances:
     return CraftStateInstances(
         struts = [
-            mock_strut_state,
-            mock_strut_state_alt,
-            mock_strut_state_alt2
+            mock_property_state,
+            mock_property_state_alt,
+            mock_property_state_alt2
         ]
     )
 
@@ -1219,6 +1222,21 @@ def mock_registry() -> MagicMock:
     return registry
 
 
+@pytest.fixture
+def mock_boundary() -> Boundary:
+    """Boundary spatial constraint fixture."""
+    return Boundary(Position(10, 20), Dimensions(30, 40))
+
+
+@pytest.fixture
+def mock_space_grid() -> Space:
+    """
+    Fixture providing an initialized Cython Space grid for testing 
+    O(1) bucket lookups and broad-phase physics.
+    """
+    return Space(cell_size=64, max_entities=100)
+
+
 # ---------------------------------------------------------------------------
 # ------------------------------------------------------------- MOCK SERVICES
 # ---------------------------------------------------------------------------
@@ -1303,24 +1321,15 @@ def mock_board(
 
 
 @pytest.fixture
+def mock_keyboard(
+    mock_mapping_configuration
+) -> Keyboard:
+    return Keyboard(mock_mapping_configuration.keyboard)
+
+@pytest.fixture
 def mock_shoreline_index(mock_geography_properties):
     """ShorelineIndex fixture compiled from mock properties."""
     return ShorelineIndex.from_properties(mock_geography_properties.shorelines)
-
-
-@pytest.fixture
-def mock_boundary():
-    """Boundary spatial constraint fixture."""
-    return Boundary(Position(10, 20), Dimensions(30, 40))
-
-
-@pytest.fixture
-def mock_space_grid():
-    """
-    Fixture providing an initialized Cython Space grid for testing 
-    O(1) bucket lookups and broad-phase physics.
-    """
-    return Space(cell_size=64, max_entities=100)
 
 
 # -----------------------------------------------------------------------------

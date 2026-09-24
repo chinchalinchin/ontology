@@ -1,18 +1,7 @@
-# Task: unit-test(board)
+# Task: unit-test(app.game)
 
-**Context**
+{% include '.blocks/guidelines/guidelines-coverage.md' %}
 
-Currently in the process of refactoring and streamlining fixtures for the unit tests, so fixtures are not spaghetti-fied across thousands of lines of code.  
-
-**Priorty**
-
-- Assist in debugging the failing unit tests.
-
-**Guidelines**
-
-- **DO NOT ADD NEW UNIT TESTS**
-- **DO NOT CREATE FIXTURES IN THE TEST SCRIPTS**
-- **TESTS SHOULD REQUEST FIXTURES AND USE THEM; THIS SHIT IS OUT OF CONTROL**
 
 ## Application Code
 
@@ -76,10 +65,14 @@ Currently in the process of refactoring and streamlining fixtures for the unit t
 {{ file(root + '/src/app/models/config/schemas.py') }}
 ```
 
-### src/app/game/board
+### src/app/game
 
 ```python
 {{ file(root + '/src/app/game/board.py') }}
+```
+
+```python
+{{ file(root + '/src/app/game/screen.py') }}
 ```
 
 ## Unit tests
@@ -90,7 +83,7 @@ Currently in the process of refactoring and streamlining fixtures for the unit t
 {{ file(root + '/tests/unit/conftest.py') }}
 ```
 
-### test/unit/test_app_game_board.py
+### test/unit/game/test_app_game_board.py
 
 ```python
 {{ file(root + '/tests/unit/test_app_game_board.py') }}

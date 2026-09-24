@@ -111,7 +111,7 @@ def test_motive_rvo_opposing_corridor_steering(mock_board, mock_sprite, monkeypa
     sprite2 = Asset(tax2, props2, state2, DummyFrame(), DummyAnimation())
     mock_board.add([sprite2])
 
-    motive.update([sprite1, sprite2], mock_board, 1.0)
+    motive.update([mock_sprite, sprite2], mock_board, 1.0)
 
     # RVO avoidance must cause lateral steering deviation or velocity adjustment
-    assert sprite1.state.velocity.vx != 10.0 or sprite1.state.velocity.vy != 0.0
+    assert mock_sprite.state.velocity.vx != 10.0 or mock_sprite.state.velocity.vy != 0.0
