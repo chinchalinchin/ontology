@@ -2,7 +2,10 @@
 # Ontology: tests.unit.test_app_game_logic_modules_motion_fields
 """
 # Standard Libraries
-from unittest.mock import MagicMock
+from unittest.mock import (
+    MagicMock,
+    patch
+)
 
 # External Libraries
 import pytest
@@ -35,6 +38,7 @@ from libs.core.models import (
     Velocity
 )
 
+
 @pytest.mark.fluids
 def test_direction_vectors():
     """
@@ -45,6 +49,7 @@ def test_direction_vectors():
     assert fields._direction_vector(Directions.LEFT.value) == (-1.0, 0.0)
     assert fields._direction_vector(Directions.RIGHT.value) == (1.0, 0.0)
     assert fields._direction_vector("unknown") == (0.0, 0.0)
+
 
 @pytest.mark.fluids
 def test_fluid_velocity():
@@ -66,6 +71,7 @@ def test_fluid_velocity():
     assert vx == 0.0
     assert vy == 40.0  # 2 * BASE_FLOW_SPEED (20.0)
 
+
 @pytest.mark.fluids
 def test_raft_passively_drifts_in_fluid(mock_board, mock_raft):
     """
@@ -82,6 +88,7 @@ def test_raft_passively_drifts_in_fluid(mock_board, mock_raft):
     assert mock_raft.state.velocity.vx == 0.0
     assert mock_raft.state.velocity.vy == 40.0
 
+
 @pytest.mark.fluids
 def test_raft_halts_when_outside_fluid(mock_board, mock_raft):
     """
@@ -95,6 +102,7 @@ def test_raft_halts_when_outside_fluid(mock_board, mock_raft):
     assert mock_raft.state.velocity.vx == 0.0
     assert mock_raft.state.velocity.vy == 0.0
 
+
 @pytest.mark.fluids
 def test_surface_interception_passenger_on_raft(mock_board, mock_raft):
     """
@@ -104,8 +112,9 @@ def test_surface_interception_passenger_on_raft(mock_board, mock_raft):
     fluid.state.length = 100
     fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(32, 100))]
 
-    # Raft at (70, 50)
+    # Raft at (70, 50) registered onto the board
     mock_raft.state.position = Position(x=70, y=50)
+    mock_board.add([mock_raft])
 
     player = mock_board.player()
     player.state.position.x = 70
@@ -114,13 +123,13 @@ def test_surface_interception_passenger_on_raft(mock_board, mock_raft):
     player.state.velocity.vy = 0.0
     player.state.mutators.triggers.submerged = True
 
-
     fields.update([mock_raft, player], mock_board, 0.016)
 
     # Player voluntary velocity (5, 0) + raft velocity (0, 40)
     assert player.state.velocity.vx == 5.0
     assert player.state.velocity.vy == 40.0
     assert player.state.mutators.triggers.submerged is False
+
 
 @pytest.mark.fluids
 def test_direct_immersion_in_fluid_adds_velocity_and_spawns_splash(mock_board):
@@ -166,10 +175,12 @@ def test_direct_immersion_in_fluid_adds_velocity_and_spawns_splash(mock_board):
 
     assert splash_asset in mock_board.assets("0")
 
+
 @pytest.mark.fluids
-def test_continuous_immersion_does_not_retrigger_splash(mock_board):
+def test_direct_immersion_in_fluid_adds_velocity_and_spawns_splash(mock_board):
     """
-    Verify entity already submerged does not re-dispatch splash particles on subsequent frames.
+    Verify un-rafted entity entering fluid acquires current velocity,
+    sets submerged=True, and dispatches splash generation via Cradle.
     """
     fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
     fluid.state.length = 100
@@ -178,16 +189,26 @@ def test_continuous_immersion_does_not_retrigger_splash(mock_board):
     player = mock_board.player()
     player.state.position.x = 70
     player.state.position.y = 50
-    player.state.velocity.vx = 0.0
-    player.state.velocity.vy= 0.0
-    player.state.mutators.triggers.submerged = True
+    player.state.velocity.vx = 0
+    player.state.velocity.vy = 10
+    player.state.mutators.triggers.submerged = False
 
+    # Spy on Cradle.spawn_passive using the wired fixture testbed
+    with patch.object(mock_board.cradle, "spawn_passive", wraps=mock_board.cradle.spawn_passive) as spy_spawn:
+        fields.update([player], mock_board, 0.016)
 
-    mock_board.cradle = MagicMock()
-    fields.update([player], mock_board, 0.016)
+        # Net velocity = voluntary (0, 10) + current (0, 40)
+        assert player.state.velocity.vx == 0.0
+        assert player.state.velocity.vy == 50.0
+        assert player.state.mutators.triggers.submerged is True
 
-    assert player.state.mutators.triggers.submerged is True
-    mock_board.cradle.spawn_passive.assert_not_called()
+        assert spy_spawn.call_count == 1
+        call_args = spy_spawn.call_args[0]
+        assert call_args[0] == "splash"
+        assert call_args[1] == "0"
+        assert call_args[2].x == 70
+        assert call_args[2].y == 82  # 50 + (64 // 2)
+
 
 @pytest.mark.fluids
 def test_entity_leaving_fluid_clears_submersion(mock_board):
@@ -204,6 +225,7 @@ def test_entity_leaving_fluid_clears_submersion(mock_board):
     fields.update([player], mock_board, 0.016)
 
     assert player.state.mutators.triggers.submerged is False
+
 
 @pytest.mark.fluids
 def test_lateral_fluid_flow_left(mock_board):
@@ -224,6 +246,7 @@ def test_lateral_fluid_flow_left(mock_board):
     assert player.state.velocity.vy == 0.0
     assert player.state.mutators.triggers.submerged is True
 
+
 @pytest.mark.fluids
 def test_projectiles_bypass_field_forces(mock_board, mock_projectile):
     """
@@ -240,6 +263,7 @@ def test_projectiles_bypass_field_forces(mock_board, mock_projectile):
     # Ballistic velocity remains unaffected by current
     assert mock_projectile.state.velocity.vx == 50.0
     assert mock_projectile.state.velocity.vy == 0.0
+
 
 @pytest.mark.fluids
 def test_fields_shoreline_entry_nudge_and_submerge(mock_board, mock_shoreline):
@@ -264,6 +288,7 @@ def test_fields_shoreline_entry_nudge_and_submerge(mock_board, mock_shoreline):
     # Verify splash particle spawned
     passives = mock_board.instances(AssetInstances.PASSIVE.value, "0")
     assert len(passives) > 0
+
 
 @pytest.mark.fluids
 def test_fields_shoreline_sheer_ledge_blocks_exit(mock_board, mock_shoreline):

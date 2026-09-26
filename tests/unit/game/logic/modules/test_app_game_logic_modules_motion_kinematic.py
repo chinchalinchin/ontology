@@ -7,6 +7,7 @@ import math
 # External Libraries
 import pytest
 
+# Application Libraries
 from app.game.logic.modules.motion import kinematic
 from app.config.enums import PlayerGoals
 from app.models.state import (
@@ -15,6 +16,7 @@ from app.models.state import (
     MenuPayload
 )
 
+@pytest.mark.motion
 def test_kinematic_movement_orthogonal(mock_player):
     payload = DevicePayload(
         world=WorldPayload(goals=[PlayerGoals.UP]),
@@ -26,6 +28,8 @@ def test_kinematic_movement_orthogonal(mock_player):
     assert mock_player.state.velocity.vx == 0.0
     assert mock_player.state.velocity.vy == -10.0
 
+
+@pytest.mark.motion
 def test_kinematic_movement_diagonal(mock_player):
     payload = DevicePayload(
         world=WorldPayload(goals=[PlayerGoals.UP, PlayerGoals.RIGHT]),
@@ -38,6 +42,8 @@ def test_kinematic_movement_diagonal(mock_player):
     assert math.isclose(mock_player.state.velocity.vx, expected_velocity, rel_tol=1e-4)
     assert math.isclose(mock_player.state.velocity.vy, -expected_velocity, rel_tol=1e-4)
 
+
+@pytest.mark.motion
 def test_kinematic_no_movement(mock_player):
     mock_player.state.velocity.vx = 5.0
     mock_player.state.velocity.vy = 5.0
@@ -54,6 +60,8 @@ def test_kinematic_no_movement(mock_player):
     assert mock_player.state.velocity.vx == 0.0
     assert mock_player.state.velocity.vy == 0.0
 
+
+@pytest.mark.motion
 def test_kinematic_axis_snap(mock_player):    
     # Provide an initial diagonal trajectory
     mock_player.state.velocity.vx = 5.0

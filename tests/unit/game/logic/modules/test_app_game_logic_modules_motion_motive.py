@@ -12,10 +12,9 @@ from app.config.enums import (
 from app.game.logic.modules.motion import motive
 from app.models.state import Goal
 
-
+# Cython Libraries
 from libs.core.models import (
     Position, 
-    Dimensions, 
     Velocity
 )
 
