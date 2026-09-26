@@ -8,6 +8,6 @@ The **Source Tool** provides **Views** into application code.
 
 ## Views
 
-{% if tools.views.source.workflows is defined %}
+{% if tools.views.source.workflows %}
 {% include 'tools/source/views/workflows' ~ tools.parameters.source.workflows ~ '.md.j2' %}
 {% endif %}

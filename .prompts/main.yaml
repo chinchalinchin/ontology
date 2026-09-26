@@ -38,8 +38,9 @@ tools:
       directory: true
       commands: false
     tests:
+      pytest: true
       fixtures: true
-      unit: true
+      workflows: true
 # ----------------------------------------------------
   parameters:
     manager:
@@ -62,4 +63,13 @@ tools:
       directory: tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
       commands: []
     tests:
+      pytest:
+        markers: 
+          - fluids
+      fixtures:
+        - assets
+        - components
+        - configuration
+        - properties
+        - state
       workflow: fluids

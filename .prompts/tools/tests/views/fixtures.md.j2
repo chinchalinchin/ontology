@@ -1,9 +1,10 @@
 ### View: Test Fixtures
 
-#### tests.unit.conftest
+#### tests.unit.fixtures
 
-**tests/unit/conftest.py**
+{% for fixture in tools.parameters.tests.fixtures %}
+**tests/unit/fixtures/{{ fixture }}.py**
 
 ```python
-{{ file(properties.paths.root + 'tests/unit/conftest.py') }}
+file(properties.paths.root + fixture + '.py')
 ```

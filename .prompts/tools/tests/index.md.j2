@@ -1,0 +1,25 @@
+{% if tools.views.tests.values() | select | list | length > 0 %}
+# Tool: Tests
+
+The **Tests Tool** provides **Views** into the application testing bed. 
+
+**pytest.ini**
+
+```toml
+{{ file(properites.paths.root + 'pytest.ini') }}
+```
+
+**tests/unit/conftest.py**
+
+```python
+{{ file(properties.paths.root + 'tests/unit/conftest.py') }}
+```
+
+## Views
+
+{% if tools.views.fixtures %}
+{% include 'tools/tests/views/fixtures.md'%}
+{% endif %}
+{% if tools.views.tests.workflows %}
+{% include 'tools/source/views/workflows' ~ tools.parameters.tests.workflows ~ '.md.j2' %}
+{% endif %}
