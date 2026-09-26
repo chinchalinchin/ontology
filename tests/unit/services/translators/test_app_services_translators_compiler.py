@@ -1,8 +1,13 @@
 """
-# Ontology: tests.unit.test_app_services_translators_compiler
+# Ontology: tests.unit.services.translators.test_app_services_translators_compiler
 """
-import pytest
+# Standard Libraries
 from unittest.mock import MagicMock
+
+# External Libraries
+import pytest
+
+# Application Libraries
 from app.services.translators.compiler import CompilerTranslator, CompilerExecutor
 
 def test_compiler_compiles_successfully(mock_intention_configuration):
@@ -14,6 +19,7 @@ def test_compiler_compiles_successfully(mock_intention_configuration):
     assert len(executor.transitions["idle"]) == 2
     assert executor.transitions["idle"][0].next == "attack"
 
+
 def test_compiler_evaluation_matches_first_condition(mock_intention_configuration):
     translator = CompilerTranslator()
     executor = translator.compile(mock_intention_configuration)
@@ -23,6 +29,7 @@ def test_compiler_evaluation_matches_first_condition(mock_intention_configuratio
     
     result = executor.evaluate("idle", {"sprite": sprite_mock})
     assert result == "attack"
+
 
 def test_compiler_evaluation_matches_second_condition(mock_intention_configuration):
     translator = CompilerTranslator()
@@ -34,6 +41,7 @@ def test_compiler_evaluation_matches_second_condition(mock_intention_configurati
     result = executor.evaluate("idle", {"sprite": sprite_mock})
     assert result == "wander"
 
+
 def test_compiler_evaluation_with_dictionary_lookup(mock_intention_configuration):
     translator = CompilerTranslator()
     executor = translator.compile(mock_intention_configuration)
@@ -43,16 +51,18 @@ def test_compiler_evaluation_with_dictionary_lookup(mock_intention_configuration
     
     result = executor.evaluate("attack", {"sprites": {"enemy": enemy_mock}})
     assert result == "idle"
+
     
-def test_compiler_evaluation_with_plot_metadata(mock_intention_configuration):
+def test_compiler_evaluation_with_plot_metadata(mock_plot_configuration):
     translator = CompilerTranslator()
-    executor = translator.compile(mock_intention_configuration)
+    executor = translator.compile(mock_plot_configuration)
     
     plot_mock = MagicMock()
     plot_mock.mayor_bribed = True
     
     result = executor.evaluate("town-locked", {"plot": plot_mock})
     assert result == "town-unlocked"
+
 
 def test_compiler_evaluation_attribute_error_handling(mock_intention_configuration):
     translator = CompilerTranslator()
@@ -62,6 +72,7 @@ def test_compiler_evaluation_attribute_error_handling(mock_intention_configurati
     
     result = executor.evaluate("idle", {"sprite": sprite_mock})
     assert result is None
+
     
 def test_compiler_evaluation_with_environ_functions(mock_intention_configuration):
     translator = CompilerTranslator()
@@ -78,12 +89,14 @@ def test_compiler_evaluation_with_environ_functions(mock_intention_configuration
     # Pass 'target' inside the standard 'sprites' ISL namespace 
     result = executor.evaluate("find", {"sprite": sprite_mock, "sprites": {"target": target_mock}})
     assert result == "interact"
+
     
 def test_compiler_evaluation_unknown_state(mock_intention_configuration):
     translator = CompilerTranslator()
     executor = translator.compile(mock_intention_configuration)
     result = executor.evaluate("unknown", {})
     assert result is None
+ 
     
 def test_compiler_ignores_bad_syntax(mock_intention_configuration):
     translator = CompilerTranslator()

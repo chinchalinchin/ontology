@@ -23,7 +23,9 @@ from app.models.config import (
     GeographyRecipe,
     SheetRecipe,
     Recipe,
+    # ------- TRANSITION CONFIGURATION
     IntentionConfiguration,
+    PlotConfiguration,
     # ------- DEVICES
     MappingConfiguration,
     DeviceMapping,
@@ -284,6 +286,20 @@ def mock_recipes_configuration() -> RecipeConfiguration:
             )
         ),
     )
+
+
+@pytest.fixture 
+def mock_plot_configuration():
+    """
+    """
+    return {
+        'town-locked': [
+            PlotConfiguration(
+                next='town-unlocked',
+                conditions = ['plot.mayor_bribed' ]
+            )
+        ]   
+    }
 
 
 @pytest.fixture
