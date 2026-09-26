@@ -63,14 +63,19 @@ def mock_equipment() -> EquipmentGroup:
 
 
 @pytest.fixture
-def mock_spawnables(mock_geography_properties) -> SpawnableGroup:
+def mock_spawnables(
+    mock_cursor_properties,
+    mock_geography_properties,
+    mock_effect_properties,
+    mock_craft_properties,
+) -> SpawnableGroup:
     return SpawnableGroup(
-        projectiles={},
-        expressions={},
-        collectables={},
-        hazards={},
-        struts={},
-        passive={},
+        projectiles=mock_cursor_properties.projectiles,
+        expressions=mock_cursor_properties.expressions,
+        collectables=mock_effect_properties.collectables,
+        hazards=mock_effect_properties.hazards,
+        struts=mock_craft_properties.struts,
+        passive=mock_effect_properties.passive,
         shorelines=mock_geography_properties.shorelines
     )
 

@@ -355,7 +355,8 @@ def mock_assets(
     mock_gate,
     mock_strut,
     mock_strut_alt,
-    mock_strut_alt2
+    mock_strut_alt2,
+    mock_raft
 ):
     return [
         mock_sprite, 
@@ -369,6 +370,7 @@ def mock_assets(
         mock_crate,
         mock_strut,
         mock_strut_alt,
-        mock_strut_alt2
+        mock_strut_alt2,
+        mock_raft
     ]
 
