@@ -4,12 +4,11 @@
     "implement": "phase",
     "refactor": "refactor"
 } %}
-{% set action = parameters.github.action %}
-{% set phase = parameters.github.phase %}
+{% set action = parameters.source.action %}
+{% set phase = parameters.source.phase %}
 {% set prefix = prefixes[action] %}
 {% set path = paths.root + paths.board + 'phases/' + action + "/" + prefix + "-" + phase + ".md" %}
 {# -------------------------------------------------  #}
-{% if views.github.board %}
 ### View: {{ project.title | capitalize }} Task Board
 
 - **Current Phase**: {{ prefix | upper }} {{ phase | upper }}
@@ -18,4 +17,3 @@
 {{ file(paths.root + paths.board + 'index.md') }}
 
 {{ file(path) }}
-{% endif %}

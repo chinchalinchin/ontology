@@ -28,9 +28,9 @@ import yaml as pyyaml
 
 # -------------------- Configuration
 
-DEFAULT_TEMPLATE                = 'task.md.j2'
-DEFAULT_VARS_FILE               = 'task.yaml'
-DEFAULT_OUTPUT_SUBDIR           = 'build'
+DEFAULT_TEMPLATE                = 'main.md.j2'
+DEFAULT_VARS_FILE               = 'main.yaml'
+DEFAULT_OUTPUT_SUBDIR           = ''
 DEFAULT_OUTPUT_FILE             = 'prompt.md'
 TEMPLATES                       = "tasks"
 

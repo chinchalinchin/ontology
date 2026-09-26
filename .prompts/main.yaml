@@ -1,11 +1,15 @@
 # ----------------------------------------------------
 paths:
-  root: /home/grant/Projects/ontology/
+  ## LINUX
+  # root: /home/grant/Projects/ontology
+  ## MACOS
+  root: /Users/gmoore/Home/projects/ontology
   actions: .githubs/workflows/
   blocks: .prompts/tasks/.blocks/
-  board: .prompts/tasks/.board/
+  board: .prompts/board/
   docs: docs/
-title: ontology
+project:
+  title: ontology
 user:
   username: gmoore
   ssh: /home/gmoore/.ssh/id_ed25519
@@ -13,16 +17,22 @@ urls:
   github: github.com/chinchalinchin
 # ----------------------------------------------------
 template:
-  verb: test
-  noun: app.services.orchestration
+  verb: iterate
+  noun: implementation
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
   views:
-    agent:
+    manager:
       board: false
       specs: false
       docs: false
+    source:
+      combat: false
+      fluids: false
+      intentions: false
+      menus: false
+      physics: false
     shell:
       directory: true
       commands: false

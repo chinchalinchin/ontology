@@ -1,0 +1,17 @@
+{% if task.views.manager.values() | select | list | length > 0 %}
+# Tool: Manager
+
+The **Manager Tool** provides **Views** into project planning, architectural designs and other high-level documents.
+
+## Views
+
+{% if task.views.manager.board %}
+{% include '.tools/agent/views/board.md.j2' %}
+{% endif %}
+{% if task.views.manager.docs %}
+{% include '.tools/agent/views/docs.md.j2' %}
+{% endif %}
+{% if task.views.manager.specs %}
+{% include '.tools/agent/views/specs.md.j2' %}
+{% endif %}
+{% endif %}

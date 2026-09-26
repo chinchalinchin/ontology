@@ -1,3 +1,5 @@
+#### Ontology: Task Board
+
 This is the Task Board for the project. Below is a backlog of completed and pending Tasks. Tasks are divided into Phases. Phases are not necessarily sequential.
 
 !!! "Task Progress Key"
@@ -83,7 +85,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
 - Backlog:
   - [Telemetry Menu](./backlog/todo-t000.md)
 
-#### Task Templates
+#### Ontology: Task Templates
 
 The templates in this section can be used to modify the Task Board.
 

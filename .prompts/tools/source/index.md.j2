@@ -1,0 +1,20 @@
+{% if task.views.source.values() | select | list | length > 0 %}
+# Tool: Source
+
+The **Source Tool** provides **Views** into application code. 
+
+!!! note
+    [{{ urls.github }}](https://{{ urls.github }}) is the version control for the environment.
+
+## Views
+
+{% if task.views.source.combat %}
+{% include '.tools/source/views/combat.md.j2' %}
+{% endif %}
+{% if task.views.source.intentions %}
+{% include '.tools/source/views/intentions.md.j2' %}
+{% endif %}
+{% if task.views.source.fluids %}
+{% include '.tools/source/views/fluids.md.j2' %}
+{% endif %}
+{% endif %}

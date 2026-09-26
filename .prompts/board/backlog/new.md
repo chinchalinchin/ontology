@@ -1,11 +1,8 @@
 ### Architectural Review
 
-1. **The Item/Inventory Transaction Bottleneck**:
-Entities cannot autonomously generate or exchange value. `SpriteState.inventory` remains an ad-hoc dictionary mutated directly by `InteractionMechanics` for chests and `MenuMechanics` for equipment slots. For Sprites to exhibit autonomous intentionality (mining, bartering, building), items and loot must exist as first-class physical entities with unified container interfaces.
-2. **The Production-Consumption Disconnect**:
-`Resources` (ore, crops), `Crafts` (struts), and `Effects` (collectables) represent the material cycle of the world. Currently, mining and crafting are stubbed. Without harvestable resources that convert to collectables, collectables that transfer to inventory, and inventory that funds strut construction, an autonomous society cannot emerge.
-3. **Decoupling Simulation from Tooling**:
-Phase 05 (Editor) is currently marked in progress (`[~]`). While authoring tools are convenient, the core value proposition of the engine is the headless, deterministic tick of the world state. Development effort should prioritize closed-loop simulation mechanics over UI authoring workflows.
+1. **The Item/Inventory Transaction Bottleneck**: Entities cannot autonomously generate or exchange value. `SpriteState.inventory` remains an ad-hoc dictionary mutated directly by `InteractionMechanics` for chests and `MenuMechanics` for equipment slots. For Sprites to exhibit autonomous intentionality (mining, bartering, building), items and loot must exist as first-class physical entities with unified container interfaces.
+2. **The Production-Consumption Disconnect**: `Resources` (ore, crops), `Crafts` (struts), and `Effects` (collectables) represent the material cycle of the world. Currently, mining and crafting are stubbed. Without harvestable resources that convert to collectables, collectables that transfer to inventory, and inventory that funds strut construction, an autonomous society cannot emerge.
+3. **Decoupling Simulation from Tooling**: Phase 05 (Editor) is currently marked in progress (`[~]`). While authoring tools are convenient, the core value proposition of the engine is the headless, deterministic tick of the world state. Development effort should prioritize closed-loop simulation mechanics over UI authoring workflows.
 
 ### Phase Roadmap Realignment
 
@@ -21,21 +18,6 @@ The current roadmap attempts to jump from spatial combat and navigation into **P
 **The Immediate Next Step**: Execute **Phase 08.04 (Inventory & Transaction Engine)** by implementing `InventoryController` (Goal 05) and `ExchangeController` (Goal 03). Decouple item manipulation entirely from `InteractionMechanics` and `MenuMechanics`, establishing transactional safety before introducing market exchange logic.
 
 ### Bug Reports
-
-##### Bug B009: Duplicate Board.serialize Method Declaration in app.game.board
-
-**STATUS**: OPEN
-**SEVERITY**: Medium
-
-**Description**
-
-`Board.serialize` is declared twice in immediate succession in `src/app/game/board.py` (line 463 and line 504). The second definition overwrites the first in the Python class dictionary. The first implementation completely omits all `AssetCategories.EFFECTS` from serialization dumps, whereas the second implementation incorporates filtering for temporary non-persistent effects. Having redundant, conflicting implementations creates maintenance hazards and violates static analysis standards.
-
-**Proposed Remediation**
-
-Remove the initial declaration of `Board.serialize` at line 463. Retain and document the second lifecycle-aware implementation at line 504.
-
----
 
 ##### Bug B010: Incomplete Cradle Effect Spawning Pipeline and SpawnableGroup Omissions
 
