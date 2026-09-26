@@ -1,0 +1,12 @@
+### View: Commands
+
+- This section contains additional information, scraped at prompt-time.
+
+{% for cmd in parameters.shell.commands -%}
+```bash
+{{ user.username }}@localhost %  {{ cmd }}
+
+{{ command(cmd) }}
+```
+
+{% endfor %}

@@ -1,7 +1,7 @@
-### View: {{ paths.root }} Directory Structure 
+### View: Directory
 
 ```bash
-{{ user.username }}@localhost % {{ commands.directory }} {{ paths.root }}
+{{ user.username }}@localhost % {{ parameters.shell.directory }} {{ paths.root }}
 
-{{ command(commands.directory + " " + paths.root) }}
+{{ command(parameters.shell.directory + " " + paths.root) }}
 ```

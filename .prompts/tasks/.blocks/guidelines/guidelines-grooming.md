@@ -1,3 +1,5 @@
+# Task: Ontology - Groom
+
 **Priority**
 
 Discuss the design and architecture of this application with respect to the current phase of the [Task Board](#view-ontology-task-board). Do not implement anything; instead step back and examine the big picture. Focus on the logical flow of the application. Suggest improvements, if applicable. Discuss what needs modified in the task backlog, if changes are required. Ensure tasking aligns with architecture. Break everything down, step-by-step.
