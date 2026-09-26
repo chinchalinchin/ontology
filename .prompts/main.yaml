@@ -8,6 +8,7 @@ properties:
     actions: .githubs/workflows/
     blocks: .prompts/tasks/.blocks/
     board: .prompts/board/
+    phases: .prompts/board/phases/
     docs: docs/
   project:
     title: ontology
@@ -30,9 +31,9 @@ tools:
     manager:
       board: true
       specs: false
-      docs: false
+      docs: true
     source:
-      combat: false
+      combat: true
       fluids: false
       intentions: false
       menus: false

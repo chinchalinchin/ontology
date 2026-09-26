@@ -7,7 +7,7 @@
 {% set action = tools.parameters.manager.action %}
 {% set phase = tools.parameters.manager.phase %}
 {% set prefix = prefixes[action] %}
-{% set path = properties.paths.root + properties.paths.board + 'phases/' + action + "/" + prefix + "-" + phase + ".md" %}
+{% set path = properties.paths.root + properties.paths.phases + action + "/" + prefix + "-" + phase + ".md" %}
 {# -------------------------------------------------  #}
 ### View: {{ properties.project.title | capitalize }} Task Board
 

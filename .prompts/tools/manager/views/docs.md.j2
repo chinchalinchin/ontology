@@ -1,16 +1,16 @@
-{% set exclude = parameters.docs.exclude  
-                    if parameters.get('docs') 
-                        and parameters.docs.get('exclude') 
+{% set exclude = tools.parameters.manager.docs.exclude  
+                    if tools.parameters.manager.get('docs') 
+                        and tools.parameters.manager.docs.get('exclude') 
                             else ['index.md']
 %}
-### View: {{ project.title | capitalize }} Documentation 
+### View: {{ properties.project.title | capitalize }} Documentation 
 
 ----------- START HEADING BREAK: HEADING LEVELS RESET -----------
 
-{{ file(properties.paths.root + paths.docs + docs_index) }}
+{{ file(properties.paths.root + properties.paths.docs + 'index.md') }}
 
-{% for doc in markdown(properties.paths.root + paths.docs, exclude) %}
-{{ file(properties.paths.root + paths.docs + doc) }}
+{% for doc in markdown(properties.paths.root + properties.paths.docs, exclude) %}
+{{ file(properties.paths.root + properties.paths.docs + doc) }}
 
 {% endfor %}
 
