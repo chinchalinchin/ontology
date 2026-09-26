@@ -288,22 +288,31 @@ def mock_intention_configuration():
     """
     return {
         "idle": [
-            IntentionConfiguration(next="attack", conditions=["sprite.health < 50"]),
-            IntentionConfiguration(next="wander", conditions=["sprite.health >= 50"])
+            IntentionConfiguration(
+                next="attack", 
+                conditions=["sprite.health < 50"]
+            ),
+            IntentionConfiguration(
+                next="wander", 
+                conditions=["sprite.health >= 50"]
+            )
         ],
         "attack": [
-            IntentionConfiguration(next="idle", conditions=["sprites['enemy'].dead"])
-        ],
-        "town-locked": [
-            IntentionConfiguration(next="town-unlocked", conditions=["plot.mayor_bribed == True"])
+            IntentionConfiguration(
+                next="idle", 
+                conditions=["sprites['enemy'].dead"]
+            )
         ],
         "find": [
-            # BUGFIX: Route targeting through the standard 'sprites' ISL dictionary namespace 
-            # instead of creating a custom root namespace.
-            IntentionConfiguration(next="interact", conditions=["functions.is_near(sprite.pos, sprites['target'].pos, 10)"])
+            IntentionConfiguration(
+                next="interact",
+                conditions=["functions.is_near(sprite.pos, sprites['target'].pos, 10)"])
         ],
         "bad_syntax": [
-            IntentionConfiguration(next="idle", conditions=["sprite.health =="]) # syntax error
+            IntentionConfiguration(
+                next="idle", 
+                conditions=["sprite.health =="]
+            ) # syntax error
         ]
     }
 

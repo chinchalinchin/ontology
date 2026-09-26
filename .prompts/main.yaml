@@ -69,6 +69,7 @@ tools:
       fixtures:
         - assets
         - components
+        - configuration
         - properties
         - state
       workflow: fluids
