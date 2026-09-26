@@ -1,0 +1,9 @@
+### View: Test Console
+
+#### pytest
+
+```bash
+{{ properties.user.username }}@localhost %  {{ tools.parameters.tests.console.pytest }} {{properties.paths.tests}}
+
+{{ command(tools.parameters.tests.console.pytest + ' ' + properties.paths.tests) }}
+```

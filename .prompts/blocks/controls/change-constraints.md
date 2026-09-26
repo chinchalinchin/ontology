@@ -1,4 +1,4 @@
-**Application Constraints**
+**Change Constraints**
 
 Changes that violate these constraints will be rejected.
 

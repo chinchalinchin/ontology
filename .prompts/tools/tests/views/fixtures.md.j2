@@ -6,5 +6,7 @@
 **tests/unit/fixtures/{{ fixture }}.py**
 
 ```python
-file(properties.paths.root + fixture + '.py')
+{{ file(properties.paths.root + properties.paths.fixtures + fixture + '.py') }}
 ```
+
+{% endfor %}

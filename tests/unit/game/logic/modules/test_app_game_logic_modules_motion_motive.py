@@ -10,24 +10,17 @@ from app.config.enums import (
     Goals
 )
 from app.game.logic.modules.motion import motive
-from app.assets.base import (
-    Taxonomy, 
-    Asset
-)
-from app.models.state import (
-    SpriteState, 
-    Inventory, 
-    Equipment, 
-    Character, 
-    AnimationState, 
-    Goal
-)
-from app.models.properties import SheetProperties
-from libs.core.models import Position, Dimensions, Velocity
+from app.models.state import Goal
 
-# fixtures
-from conftest import DummyFrame, DummyAnimation
 
+from libs.core.models import (
+    Position, 
+    Dimensions, 
+    Velocity
+)
+
+
+@pytest.mark.motion
 def test_motive_no_intention(mock_board, mock_sprite):
     mock_sprite.state.intention = Intentions.IDLE.value
     mock_sprite.state.velocity.vx = 5.0
@@ -39,6 +32,8 @@ def test_motive_no_intention(mock_board, mock_sprite):
     assert mock_sprite.state.velocity.vx == 0.0
     assert mock_sprite.state.velocity.vy == 0.0
 
+
+@pytest.mark.motion
 def test_motive_at_goal(mock_board, mock_sprite, monkeypatch):
     monkeypatch.setattr(
         'app.game.logic.modules.motion.motive.NavigationIntentions', 
@@ -56,6 +51,8 @@ def test_motive_at_goal(mock_board, mock_sprite, monkeypatch):
     assert mock_sprite.state.velocity.vx == 0.0
     assert mock_sprite.state.velocity.vy == 0.0
 
+
+@pytest.mark.motion
 def test_motive_aims_towards_goal(mock_board, mock_sprite, monkeypatch):
     monkeypatch.setattr(
         'app.game.logic.modules.motion.motive.NavigationIntentions', 
@@ -83,7 +80,9 @@ def test_motive_aims_towards_goal(mock_board, mock_sprite, monkeypatch):
     assert mock_sprite.state.velocity.vx == 20.0
     assert mock_sprite.state.velocity.vy == 0.0
 
-    
+
+@pytest.mark.intentions
+@pytest.mark.motion
 def test_motive_rvo_opposing_corridor_steering(
     mock_board, 
     mock_sprite, 

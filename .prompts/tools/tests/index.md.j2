@@ -6,7 +6,7 @@ The **Tests Tool** provides **Views** into the application testing bed.
 **pytest.ini**
 
 ```toml
-{{ file(properites.paths.root + 'pytest.ini') }}
+{{ file(properties.paths.root + 'pytest.ini') }}
 ```
 
 **tests/unit/conftest.py**
@@ -17,9 +17,14 @@ The **Tests Tool** provides **Views** into the application testing bed.
 
 ## Views
 
-{% if tools.views.fixtures %}
-{% include 'tools/tests/views/fixtures.md'%}
+{% if tools.views.tests.fixtures %}
+{% include 'tools/tests/views/fixtures.md.j2'%}
 {% endif %}
 {% if tools.views.tests.workflows %}
 {% include 'tools/source/views/workflows' ~ tools.parameters.tests.workflows ~ '.md.j2' %}
+{% endif %}
+{% if tools.views.tests.console %}
+{% include 'tools/tests/views/console.md.j2' %}
+{% endif %}
+
 {% endif %}

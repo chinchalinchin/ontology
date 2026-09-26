@@ -2,14 +2,16 @@
 properties:
   paths:
     ## LINUX
-    # root: /home/grant/Projects/ontology
+    root: /home/grant/Projects/ontology/
     ## MACOS
-    root: /Users/gmoore/Home/projects/ontology/
+    # root: /Users/gmoore/Home/projects/ontology/
     actions: .githubs/workflows/
     blocks: .prompts/tasks/.blocks/
     board: .prompts/board/
     phases: .prompts/board/phases/
     docs: docs/
+    tests: tests/unit/
+    fixtures: tests/unit/fixtures/
   project:
     title: ontology
   user:
@@ -21,7 +23,7 @@ properties:
 task:
   template:
     verb: iterate
-    noun: implementation
+    noun: coverage
   parameters:
     diagram: menu-flow.mmd
 # ----------------------------------------------------
@@ -31,16 +33,16 @@ tools:
     manager:
       board: false
       specs: false
-      docs: true
+      docs: false
     source:
-      workflows: true
+      workflow: false
     shell:
       directory: true
       commands: false
-    tests:
-      pytest: true
+    tests:  
+      console: true
       fixtures: true
-      workflows: true
+      workflow: true
 # ----------------------------------------------------
   parameters:
     manager:
@@ -63,13 +65,11 @@ tools:
       directory: tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
       commands: []
     tests:
-      pytest:
-        markers: 
-          - fluids
+      console:
+        pytest: pytest -m fluids
       fixtures:
         - assets
         - components
-        - configuration
         - properties
         - state
       workflow: fluids
