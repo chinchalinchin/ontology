@@ -33,9 +33,9 @@ tools:
     manager:
       board: false
       specs: false
-      docs: false
+      docs: true
     source:
-      workflow: false
+      workflow: true
     shell:
       directory: true
       commands: false
@@ -51,7 +51,6 @@ tools:
         action: refactor
       docs:
         exclude:
-          - index.md
           - 03-compositions.md
           - 04-intentions.md
           - 06-widgets.md
