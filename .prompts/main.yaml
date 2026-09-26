@@ -1,30 +1,34 @@
 # ----------------------------------------------------
-paths:
-  ## LINUX
-  # root: /home/grant/Projects/ontology
-  ## MACOS
-  root: /Users/gmoore/Home/projects/ontology
-  actions: .githubs/workflows/
-  blocks: .prompts/tasks/.blocks/
-  board: .prompts/board/
-  docs: docs/
-project:
-  title: ontology
-user:
-  username: gmoore
-  ssh: /home/gmoore/.ssh/id_ed25519
-urls: 
-  github: github.com/chinchalinchin
-# ----------------------------------------------------
-template:
-  verb: iterate
-  noun: implementation
+properties:
+  paths:
+    ## LINUX
+    # root: /home/grant/Projects/ontology
+    ## MACOS
+    root: /Users/gmoore/Home/projects/ontology/
+    actions: .githubs/workflows/
+    blocks: .prompts/tasks/.blocks/
+    board: .prompts/board/
+    docs: docs/
+  project:
+    title: ontology
+  user:
+    username: gmoore
+    ssh: /home/gmoore/.ssh/id_ed25519
+  urls: 
+    github: github.com/chinchalinchin
 # ----------------------------------------------------
 task:
+  template:
+    verb: iterate
+    noun: implementation
+  parameters:
+    diagram: menu-flow.mmd
+# ----------------------------------------------------
+tools:
 # ----------------------------------------------------
   views:
     manager:
-      board: false
+      board: true
       specs: false
       docs: false
     source:
@@ -38,7 +42,7 @@ task:
       commands: false
 # ----------------------------------------------------
   parameters:
-    agent:
+    manager:
       phase: '09-02'
       action: refactor
       docs:

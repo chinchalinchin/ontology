@@ -1,0 +1,81 @@
+## Ontology Workflow: Menus
+
+### app.assets
+
+**src/app/assets/base.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/base.py') }}
+```
+
+### app.models
+
+#### app.models.config
+
+**src/app/models/config/menus.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/config/menus.py')}}
+```
+
+#### app.models.state
+
+**src/app/models/state/core.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/state/core.py') }}
+```
+
+**src/app/models/state/widgets.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/state/widgets.py') }}
+```
+
+### app.game
+
+#### app.game.menus
+
+**src/app/game/menus/core.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/menus/core.py') }}
+```
+
+##### app.game.menus.bindings
+
+**src/app/game/menus/bindings/aperture.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/menus/bindings/aperture.py') }}
+```
+
+**src/app/game/menus/bindings/collection.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/menus/bindings/collection.py')}}
+```
+
+**src/app/game/menus/bindings/icon.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/menus/bindings/icon.py') }}
+```
+
+**src/app/game/menus/bindings/meter.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/menus/bindings/meter.py') }}
+```
+
+**src/app/game/menus/bindings/select.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/menus/bindings/select.py') }}
+```
+
+**src/app/gamen/menus/bindings/text.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/menus/bindings/text.py') }}
+```

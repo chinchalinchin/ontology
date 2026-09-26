@@ -4,16 +4,16 @@
     "implement": "phase",
     "refactor": "refactor"
 } %}
-{% set action = parameters.source.action %}
-{% set phase = parameters.source.phase %}
+{% set action = tools.parameters.manager.action %}
+{% set phase = tools.parameters.manager.phase %}
 {% set prefix = prefixes[action] %}
-{% set path = paths.root + paths.board + 'phases/' + action + "/" + prefix + "-" + phase + ".md" %}
+{% set path = properties.paths.root + properties.paths.board + 'phases/' + action + "/" + prefix + "-" + phase + ".md" %}
 {# -------------------------------------------------  #}
-### View: {{ project.title | capitalize }} Task Board
+### View: {{ properties.project.title | capitalize }} Task Board
 
 - **Current Phase**: {{ prefix | upper }} {{ phase | upper }}
 - **Current Phase Action**: {{ action | upper }}
 
-{{ file(paths.root + paths.board + 'index.md') }}
+{{ file(properties.paths.root + properties.paths.board + '/index.md') }}
 
 {{ file(path) }}

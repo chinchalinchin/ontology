@@ -2,9 +2,9 @@
 
 - This section contains additional information, scraped at prompt-time.
 
-{% for cmd in parameters.shell.commands -%}
+{% for cmd in tools.parameters.shell.commands -%}
 ```bash
-{{ user.username }}@localhost %  {{ cmd }}
+{{ properties.user.username }}@localhost %  {{ cmd }}
 
 {{ command(cmd) }}
 ```

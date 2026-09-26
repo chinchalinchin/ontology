@@ -1,6 +1,3 @@
-{% set specs = """
-
-""" %}
 # Task: diagram(asset hierarchy)
 
 Update the [Asset Hierarchy Diagram](#asset-hierarchy-diagram) to match the latest code and documentation.
@@ -8,32 +5,32 @@ Update the [Asset Hierarchy Diagram](#asset-hierarchy-diagram) to match the late
 **Guidelines**
 
 - Enumerate all Asset Categories and Instances.
-- The diagram is meant to be high-level. Do not include information about specific  fields or attributes.
+- The diagram is meant to be high-level. Do not include information about specific fields or attributes.
 
 ## Asset Hierarchy Diagram
 
 ```mermaid
-{{ file(root + '/docs/static/mmd/asset-hierarchy.md') }}
+{{ file(properties.paths.root + '/docs/static/mmd/asset-hierarchy.md') }}
 ```
 
 ## Latest Schema
 
 ### Property Schema
 
-{{ file(root + 'src/app/properties.py') }}
+{{ file(properties.paths.root + 'src/app/properties.py') }}
 
 ### State Schema
 
 ```python
-{{ file(root + 'src/app/models/state/schema.py')}}
+{{ file(properties.paths.root + 'src/app/models/state/schema.py')}}
 ```
 
 ---
 
 ```markdown
-{{ file(root + '/docs/01-assets.md') }}
+{{ file(properties.paths.root + '/docs/01-assets.md') }}
 ```
 
 ```markdown
-{{ file(root + '/docs/06-widgets.md') }}
+{{ file(properties.paths.root + '/docs/06-widgets.md') }}
 ```

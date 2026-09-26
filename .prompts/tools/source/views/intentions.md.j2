@@ -5,7 +5,7 @@
 **data/config/intentions/main.yaml**
 
 ```yaml
-{{ file(paths.root + 'data/config/intentions/main.yaml') }}
+{{ file(properties.paths.root + 'data/config/intentions/main.yaml') }}
 ```
 
 ### app.assets
@@ -13,7 +13,7 @@
 **src/app/assets/base.py**
 
 ```python
-{{ file(paths.root + 'src/app/assets/base.py') }}
+{{ file(properties.paths.root + 'src/app/assets/base.py') }}
 ```
 
 ### app.game
@@ -21,13 +21,13 @@
 **src/app/game/board.py**
 
 ```python
-{{ file(paths.root + 'src/app/game/board.py') }}
+{{ file(properties.paths.root + 'src/app/game/board.py') }}
 ```
 
 **src/app/game/engine.py**
 
 ```python
-{{ file(paths.root + 'src/app/game/engine.py') }}
+{{ file(properties.paths.root + 'src/app/game/engine.py') }}
 ```
 
 #### app.game.logic.mechanics
@@ -35,7 +35,7 @@
 **src/app/game/logic/mechanics/base.py**
 
 ```python
-{{ file(paths.root + 'src/app/game/logic/mechanics/base.py') }}
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/base.py') }}
 ```
 
 ##### app.game.logic.mechanics.core 
@@ -43,7 +43,7 @@
 ***src/app/game/logic/mechanics/core/animation.py**
 
 ```python
-{{ file(paths.root + 'src/app/game/logic/mechanics/core/animation.py') }}
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/core/animation.py') }}
 ```
 
 ##### app.game.logic.mechanics.intentional
@@ -51,19 +51,19 @@
 **src/app/game/logic/mechanics/intentional/cognition.py**
 
 ```python
-{{ file(paths.root + 'src/app/game/logic/mechanics/intentional/cognition.py') }}
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/intentional/cognition.py') }}
 ```
 
 **src/app/game/logic/mechanics/intentional/transition.py**
 
 ```python
-{{ file(paths.root + 'src/app/game/logic/mechanics/intentional/transition.py') }}
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/intentional/transition.py') }}
 ```
 
 **src/app/game/logic/mechanics/intentional/navigation.py**
 
 ```python
-{{ file(paths.root + 'src/app/game/logic/mechanics/intentional/navigation.py') }}
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/intentional/navigation.py') }}
 ```
 
 #### app.game.logic.modules 
@@ -73,7 +73,7 @@
 **src/app/game/logic/modules/maps/animation.py**
 
 ```python
-{{ file(paths.root + 'src/app/game/logic/modules/maps/animation.py') }}
+{{ file(properties.paths.root + 'src/app/game/logic/modules/maps/animation.py') }}
 ```
 
 ##### app.game.logic.modules.motion
@@ -81,7 +81,7 @@
 **src/app/game/logic/modules/motion/motive.py**
 
 ```python
-{{ file(paths.root + 'src/app/game/logic/modules/motion/motive.py') }}
+{{ file(properties.paths.root + 'src/app/game/logic/modules/motion/motive.py') }}
 ```
 
 ##### app.game.logic.modules.paths
@@ -89,7 +89,7 @@
 **src/app/game/logic/modules/paths/plans.py**
 
 ```python
-{{ file(paths.root + 'src/app/game/logic/modules/paths/plans.py') }}
+{{ file(properties.paths.root + 'src/app/game/logic/modules/paths/plans.py') }}
 ```
 
 #### app.models.state 
@@ -97,13 +97,13 @@
 **src/app/models/state/core.py**
 
 ```python
-{{ file(paths.root + 'src/app/models/state/core.py')}}
+{{ file(properties.paths.root + 'src/app/models/state/core.py')}}
 ```
 
 **src/app/models/state/sprites.py**
 
 ```python
-{{ file(paths.root + 'src/app/models/state/sprites.py' ) }}
+{{ file(properties.paths.root + 'src/app/models/state/sprites.py' ) }}
 ```
 
 ### libs.core
@@ -111,7 +111,7 @@
 **src/libs/core/models.pyx**
 
 ```cython
-{{ file(paths.root + 'src/libs/core/models.pyx') }}
+{{ file(properties.paths.root + 'src/libs/core/models.pyx') }}
 ```
 
 #### libs.core.math
@@ -119,11 +119,11 @@
 **src/libs/core/math/geometry.pyx**
 
 ```cython
-{{ file(paths.root + 'src/libs/core/math/geometry.pyx') }}
+{{ file(properties.paths.root + 'src/libs/core/math/geometry.pyx') }}
 ```
 
 **libs/core/math/paths.pyx**
 
 ```cython
-{{ file(paths.root + 'src/libs/core/math/paths.pyx') }}
+{{ file(properties.paths.root + 'src/libs/core/math/paths.pyx') }}
 ```

@@ -1,14 +1,14 @@
-{% if task.views.shell.values() | select | list | length > 0 %}
+{% if tools.views.shell.values() | select | list | length > 0 %}
 # Tool: Shell
 
 The **Shell Tool** provides **Views** into the local execution environment of the **User**.
 
 ## Views
 
-{% if task.views.shell.directory %}
-{% include '.tools/shell/views/directory.md.j2' %}
+{% if tools.views.shell.directory %}
+{% include 'tools/shell/views/directory.md.j2' %}
 {% endif %}
-{% if task.views.shell.commands %}
-{% include '.tools/shell/views/commands.md.j2' %}
+{% if tools.views.shell.commands %}
+{% include 'tools/shell/views/commands.md.j2' %}
 {% endif %}
 {% endif %}

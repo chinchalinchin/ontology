@@ -1,4 +1,4 @@
-# Task: update(/templates/.state-dump.md.j2)
+# Task: output(/templates/.state-dump.md.j2)
 
 The dump template is used to dump game state at the end of a CLI session through the command,
 
@@ -20,7 +20,7 @@ python main.py --dump-state start
 ## CLI
 
 ```python
-{{ file(root + '/src/cli.py') }}
+{{ file(properties.paths.root + '/src/cli.py') }}
 ```
 
 ## Latest Models
@@ -28,31 +28,31 @@ python main.py --dump-state start
 ### Base
 
 ```python
-{{ file(root + '/src/app/assets/base.py') }}
+{{ file(path.root + '/src/app/assets/base.py') }}
 ```
 
 ### State
 
 ```python
-{{ file(root + '/src/app/models/state/core.py') }}
+{{ file(path.root + '/src/app/models/state/core.py') }}
 ```
 
 ```python
-{{ file(root + '/src/app/models/state/sprites.py') }}
+{{ file(properties.paths.root + '/src/app/models/state/sprites.py') }}
 ```
 
 ```python
-{{ file(root + '/src/app/models/state/objects.py') }}
+{{ file(properties.paths.root + '/src/app/models/state/objects.py') }}
 ```
 
 ### Properties
 
 ```python
-{{ file(root + '/src/app/models/properties.py') }}
+{{ file(properties.paths.root + '/src/app/models/properties.py') }}
 ```
 
 ## Previous Dump Template
 
 ```jinja2
-{{ file(root + '/src/data/templates/.state-dump.md.j2') }}
+{{ file(properties.paths.root + '/src/data/templates/.state-dump.md.j2') }}
 ```

@@ -8,79 +8,79 @@
 ### src/app/config
 
 ```python
-{{ file(paths.root + '/src/app/config/enums.py') }}
+{{ file(properties.paths.root + '/src/app/config/enums.py') }}
 ```
 
 ```python
-{{ file(paths.root + '/src/app/config/loader.py') }}
+{{ file(properties.paths.root + '/src/app/config/loader.py') }}
 ```
 
 ### src/app/assets
 
 ```python
-{{ file(paths.root + '/src/app/assets/base.py') }}
+{{ file(properties.paths.root + '/src/app/assets/base.py') }}
 ```
 
 ### src/app/models/state
 
 ```python
-{{ file(paths.root + '/src/app/models/state/core.py') }}
+{{ file(properties.paths.root + '/src/app/models/state/core.py') }}
 ```
 
 ```python
-{{ file(paths.root + '/src/app/models/state/schemas.py') }}
+{{ file(properties.paths.root + '/src/app/models/state/schemas.py') }}
 ```
 
 ### src/app/models/properties
 
 ```python
-{{ file(paths.root + '/src/app/models/properties.py') }}
+{{ file(properties.paths.root + '/src/app/models/properties.py') }}
 ```
 
 ### src/app/models/config
 
 ```python
-{{ file(paths.root + '/src/app/models/config/core.py') }}
+{{ file(properties.paths.root + '/src/app/models/config/core.py') }}
 ```
 
 ```python
-{{ file(paths.root + '/src/app/models/config/mappings.py') }}
+{{ file(properties.paths.root + '/src/app/models/config/mappings.py') }}
 ```
 
 ```python
-{{ file(paths.root + '/src/app/models/config/recipes.py') }}
+{{ file(properties.paths.root + '/src/app/models/config/recipes.py') }}
 ```
 
 ```python
-{{ file(paths.root + '/src/app/models/config/schemas.py') }}
+{{ file(properties.paths.root + '/src/app/models/config/schemas.py') }}
 ```
 
 ### src/app/game
 
 ```python
-{{ file(paths.root + '/src/app/game/board.py') }}
+{{ file(properties.paths.root + '/src/app/game/board.py') }}
 ```
 
 ```python
-{{ file(paths.root + '/src/app/game/engine.py') }}
+{{ file(properties.paths.root + '/src/app/game/engine.py') }}
 ```
 
 ```python
-{{ file(paths.root + '/src/app/game/devices.py') }}
+{{ file(properties.paths.root + '/src/app/game/devices.py') }}
 ```
 
 ### src/app/services/orchestration
 
 ```python
-{{ file(paths.root + '/src/app/services/orchestration/orchestrator.py') }}
+{{ file(properties.paths.root + '/src/app/services/orchestration/orchestrator.py') }}
 ```
 
 ```python
-{{ file(paths.root + '/src/app/services/orchestration/builder.py') }}
+{{ file(properties.paths.root + '/src/app/services/orchestration/builder.py') }}
 ```
 
 ```python
-{{ file(paths.root + '/src/app/services/orchestration/migrator.py') }}
+{{ file(properties.paths.root + '/src/app/services/orchestration/migrator.py') }}
 ```
 
 ## Unit Tests
@@ -88,31 +88,31 @@
 ### tests/unit/conftest
 
 ```python
-{{ file(paths.root + '/tests/unit/conftest.py') }}
+{{ file(properties.paths.root + '/tests/unit/conftest.py') }}
 ```
 
 ### tests/unit/services/orchestration/test_app_services_orchestration_builder.py
 
 ```python
-{{ file(paths.root + '/tests/unit/services/orchestration/test_app_services_orchestration_builder.py') }}
+{{ file(properties.paths.root + '/tests/unit/services/orchestration/test_app_services_orchestration_builder.py') }}
 ```
 
 ### tests/unit/services/orchestration/test_app_services_orchestration_migrator.py
 
 ```python
-{{ file(paths.root + '/tests/unit/services/orchestration/test_app_services_orchestration_migrator.py') }}
+{{ file(properties.paths.root + '/tests/unit/services/orchestration/test_app_services_orchestration_migrator.py') }}
 ```
 
 ### tests/unit/services/orchestration/test_app_services_orchestration_orchestrator.py
 
 ```python
-{{ file(paths.root + '/tests/unit/services/orchestration/test_app_services_orchestration_orchestrator.py') }}
+{{ file(properties.paths.root + '/tests/unit/services/orchestration/test_app_services_orchestration_orchestrator.py') }}
 ```
 
 ## Test Console
 
 ```bash
-gmoore@localhost % pytest {{paths.root}}/tests/unit/services/orchestration/*
+gmoore@localhost % pytest {{properties.paths.root}}/tests/unit/services/orchestration/*
 
-{{ command('pytest ' + paths.root + '/tests/unit/services/orchestration/*') }}
+{{ command('pytest ' + properties.paths.root + '/tests/unit/services/orchestration/*') }}
 ```

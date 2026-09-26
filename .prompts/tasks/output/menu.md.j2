@@ -25,7 +25,7 @@ python main.py --dump-menus start
 ## CLI
 
 ```python
-{{ file(root + '/src/cli.py') }}
+{{ file(properties.paths.root + '/src/cli.py') }}
 ```
 
 ## Latest Models
@@ -33,53 +33,53 @@ python main.py --dump-menus start
 ### Asset Class
 
 ```python
-{{ file(root + '/src/app/assets/base.py') }}
+{{ file(properties.paths.root + '/src/app/assets/base.py') }}
 ```
 
 ### Widget State
 
 ```python
-{{ file(root + '/src/app/models/state/core.py') }}
+{{ file(properties.paths.root + '/src/app/models/state/core.py') }}
 ```
 
 ```python
-{{ file(root + '/src/app/models/state/widgets.py') }}
+{{ file(properties.paths.root + '/src/app/models/state/widgets.py') }}
 ```
 
 ### Menus
 
 ```python
-{{ file(root + '/src/app/game/menus/core.py') }}
+{{ file(properties.paths.root + '/src/app/game/menus/core.py') }}
 ```
 
 **Bindings**
 
 ```python
-{{ file(root + '/src/app/game/menus/bindings/aperture.py') }}
+{{ file(properties.paths.root + '/src/app/game/menus/bindings/aperture.py') }}
 ```
 
 ```python
-{{ file(root + '/src/app/game/menus/bindings/collection.py')}}
+{{ file(properties.paths.root + '/src/app/game/menus/bindings/collection.py')}}
 ```
 
 ```python
-{{ file(root + '/src/app/game/menus/bindings/icon.py') }}
+{{ file(properties.paths.root + '/src/app/game/menus/bindings/icon.py') }}
 ```
 
 ```python
-{{ file(root + '/src/app/game/menus/bindings/meter.py') }}
+{{ file(properties.paths.root + '/src/app/game/menus/bindings/meter.py') }}
 ```
 
 ```python
-{{ file(root + '/src/app/game/menus/bindings/select.py') }}
+{{ file(properties.paths.root + '/src/app/game/menus/bindings/select.py') }}
 ```
 
 ```python
-{{ file(root + '/src/app/game/menus/bindings/text.py') }}
+{{ file(properties.paths.root + '/src/app/game/menus/bindings/text.py') }}
 ```
 
 ## Previous Dump Template
 
 ```jinja2
-{{ file(root + '/src/data/templates/.menu-dump.md.j2') }}
+{{ file(properties.paths.root + '/src/data/templates/.menu-dump.md.j2') }}
 ```

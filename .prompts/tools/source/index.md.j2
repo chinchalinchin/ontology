@@ -1,4 +1,4 @@
-{% if task.views.source.values() | select | list | length > 0 %}
+{% if tools.views.source.values() | select | list | length > 0 %}
 # Tool: Source
 
 The **Source Tool** provides **Views** into application code. 
@@ -8,13 +8,13 @@ The **Source Tool** provides **Views** into application code.
 
 ## Views
 
-{% if task.views.source.combat %}
-{% include '.tools/source/views/combat.md.j2' %}
+{% if tools.views.source.combat %}
+{% include 'tools/source/views/combat.md.j2' %}
 {% endif %}
-{% if task.views.source.intentions %}
-{% include '.tools/source/views/intentions.md.j2' %}
+{% if tools.views.source.intentions %}
+{% include 'tools/source/views/intentions.md.j2' %}
 {% endif %}
-{% if task.views.source.fluids %}
-{% include '.tools/source/views/fluids.md.j2' %}
+{% if tools.views.source.fluids %}
+{% include 'tools/source/views/fluids.md.j2' %}
 {% endif %}
 {% endif %}

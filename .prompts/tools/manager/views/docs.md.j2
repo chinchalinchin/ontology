@@ -7,10 +7,10 @@
 
 ----------- START HEADING BREAK: HEADING LEVELS RESET -----------
 
-{{ file(paths.root + paths.docs + docs_index) }}
+{{ file(properties.paths.root + paths.docs + docs_index) }}
 
-{% for doc in markdown(paths.root + paths.docs, exclude) %}
-{{ file(paths.root + paths.docs + doc) }}
+{% for doc in markdown(properties.paths.root + paths.docs, exclude) %}
+{{ file(properties.paths.root + paths.docs + doc) }}
 
 {% endfor %}
 

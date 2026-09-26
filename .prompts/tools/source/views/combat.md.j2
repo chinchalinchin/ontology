@@ -5,7 +5,7 @@
 **src/app/assets/base.py**
 
 ```python
-{{ file(paths.root + 'src/app/assets/base.py') }}
+{{ file(properties.paths.root + 'src/app/assets/base.py') }}
 ```
 
 #### app.assets.frames
@@ -13,7 +13,7 @@
 **src/app/assets/frames/core.py**
 
 ```python
-{{ file(paths.root + 'src/app/assets/frames/core.py') }}
+{{ file(properties.paths.root + 'src/app/assets/frames/core.py') }}
 ```
 
 #### app.assets.animations
@@ -21,7 +21,7 @@
 **src/app/assets/animations/core.py**
 
 ```python
-{{ file(paths.root + 'src/app/assets/animations/core.py') }}
+{{ file(properties.paths.root + 'src/app/assets/animations/core.py') }}
 ```
 
 ### app.game
@@ -29,13 +29,13 @@
 **src/app/game/devices.py**
 
 ```python
-{{ file(paths.root + 'src/app/game/devices.py') }}
+{{ file(properties.paths.root + 'src/app/game/devices.py') }}
 ```
 
 **src/app/game/engine.py**
 
 ```python
-{{ file(paths.root + 'src/app/game/engine.py') }}
+{{ file(properties.paths.root + 'src/app/game/engine.py') }}
 ```
 
 #### app.game.logic.mechanics
@@ -43,7 +43,7 @@
 **src/app/game/logic/mechanics/base.py**
 
 ```python
-{{ file(paths.root + 'src/app/game/logic/mechanics/base.py') }}
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/base.py') }}
 ```
 
 ##### app.game.logic.mechanics.core 
@@ -51,7 +51,7 @@
 ***src/app/game/logic/mechanics/core/animation.py**
 
 ```python
-{{ file(paths.root + 'src/app/game/logic/mechanics/core/animation.py') }}
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/core/animation.py') }}
 ```
 
 ##### app.game.logic.mechanics.intentional
@@ -59,7 +59,7 @@
 **src/app/game/logic/mechanics/intentional/player.py**
 
 ```python
-{{ file(paths.root + 'src/app/game/logic/mechanics/intentional/player.py') }}
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/intentional/player.py') }}
 ```
 
 ##### app.game.logic.mechanics.spatial
@@ -67,13 +67,13 @@
 **src/app/game/logic/mechanics/spatial/base.py**
 
 ```python
-{{ file(paths.root + 'src/app/game/logic/mechancis/spatial/base.py') }}
+{{ file(properties.paths.root + 'src/app/game/logic/mechancis/spatial/base.py') }}
 ```
 
 **src/app/game/logic/mechanics/spatial/combat.py**
 
 ```python
-{{ file(paths.root + 'src/app/game/logic/mechanics/spatial/combat.py') }}
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/spatial/combat.py') }}
 ```
 
 ### app.models
@@ -81,7 +81,7 @@
 **src/app/models/properties.py**
 
 ```python
-{{ file(paths.root + 'src/app/models/properties.py')}}
+{{ file(properties.paths.root + 'src/app/models/properties.py')}}
 ```
 
 #### app.models.config 
@@ -89,13 +89,13 @@
 **src/app/models/config/core.py**
 
 ```python
-{{ file(paths.root + 'src/app/models/config/core.py')}}
+{{ file(properties.paths.root + 'src/app/models/config/core.py')}}
 ```
 
 **src/app/models/config/mappings.py**
 
 ```python
-{{ file(paths.root + 'src/app/models/config/mappings.py')}}
+{{ file(properties.paths.root + 'src/app/models/config/mappings.py')}}
 ```
 
 #### app.models.state 
@@ -103,19 +103,19 @@
 **src/app/models/state/core.py**
 
 ```python
-{{ file(paths.root + 'src/app/models/state/core.py')}}
+{{ file(properties.paths.root + 'src/app/models/state/core.py')}}
 ```
 
 **src/app/models/state/devices.py**
 
 ```python
-{{ file(paths.root + 'src/app/models/state/devices.py') }}
+{{ file(properties.paths.root + 'src/app/models/state/devices.py') }}
 ```
 
 **src/app/models/state/sprites.py**
 
 ```python
-{{ file(paths.root + 'src/app/models/state/sprites.py' ) }}
+{{ file(properties.paths.root + 'src/app/models/state/sprites.py' ) }}
 ```
 
 ### libs.core
@@ -125,5 +125,5 @@
 **src/libs/core/math/geometry.pyx**
 
 ```cython
-{{ file(paths.root + 'src/libs/core/math/geometry.pyx') }}
+{{ file(properties.paths.root + 'src/libs/core/math/geometry.pyx') }}
 ```

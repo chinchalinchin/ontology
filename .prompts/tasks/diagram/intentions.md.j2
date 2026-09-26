@@ -10,7 +10,7 @@ The [YAML](#latest-finite-automata-schema) represents a finite automaton and the
 ## Latest Schema
 
 ```yaml
-{{ file(root + '/src/data/config/intentions/main.yaml') }}
+{{ file(properties.paths.root + '/src/data/config/intentions/main.yaml') }}
 ```
 
 ## Old Representations
@@ -18,11 +18,11 @@ The [YAML](#latest-finite-automata-schema) represents a finite automaton and the
 ### Markdown Table
 
 ```markdown
-{{ file(root + '/docs/static/md/executor-intention-transitions.md') }}
+{{ file(properties.paths.root + '/docs/static/md/executor-intention-transitions.md') }}
 ```
 
 ### Mermaid Diagram
 
 ```mermaid
-{{ file(root + '/docs/static/mmd/executor-intention-transitions.mmd') }}
+{{ file(properties.paths.root + '/docs/static/mmd/executor-intention-transitions.mmd') }}
 ```
