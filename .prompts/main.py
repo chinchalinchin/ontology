@@ -34,7 +34,63 @@ DEFAULT_OUTPUT_SUBDIR           = ''
 DEFAULT_OUTPUT_FILE             = 'prompt.md'
 TEMPLATES                       = "tasks"
 
+MARKDOWN_TYPE_HINTS = {
+    'bash': 'bash',
+    'c': 'c',
+    'cc': 'cpp',
+    'cpp': 'cpp',
+    'cs': 'csharp',
+    'css': 'css',
+    'diff': 'diff',
+    'dockerfile': 'dockerfile',
+    'go': 'go',
+    'h': 'c',
+    'hpp': 'cpp',
+    'html': 'html',
+    'ini': 'ini',
+    'java': 'java',
+    'js': 'javascript',
+    'json': 'json',
+    'jsx': 'jsx',
+    'kt': 'kotlin',
+    'lua': 'lua',
+    'md': 'markdown',
+    'patch': 'diff',
+    'php': 'php',
+    'py': 'python',
+    'r': 'r',
+    'rb': 'ruby',
+    'rs': 'rust',
+    'scala': 'scala',
+    'sh': 'bash',
+    'sql': 'sql',
+    'svg': 'xml',
+    'swift': 'swift',
+    'toml': 'toml',
+    'ts': 'typescript',
+    'tsx': 'tsx',
+    'xml': 'xml',
+    'yaml': 'yaml',
+    'yml': 'yaml',
+    'zsh': 'zsh',
+}
+
 # -------------------- Templating Functions
+
+def typehint(filepath: str) -> str:
+    """
+    Infers a Markdown code block type hint from the file extension of filepath.
+
+    Args:
+        filepath (str): The path or filename to evaluate.
+
+    Returns:
+        str: The Markdown code fence identifier, or an empty string if unknown.
+    """
+    _, ext = os.path.splitext(filepath)
+    cleaned_ext = ext.lstrip('.').lower()
+    return MARKDOWN_TYPE_HINTS.get(cleaned_ext, '')
+
 
 def command(command_str: str) -> str:
     """
@@ -234,6 +290,7 @@ def render(template_path: str, output_path: str, vars_path: str) -> None:
     env.globals['markdown'] = markdown
     env.globals['yaml'] = yaml
     env.globals['now'] = now
+    env.globals['typehint'] = typehint
 
     # Load context files
     vars_data = load(vars_path)

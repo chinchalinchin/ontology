@@ -1,0 +1,117 @@
+### View: Workflow - Compositions
+
+#### app.assets
+
+**src/app/assets/base.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/base.py') }}
+```
+
+#### app.game
+
+**src/app/game/board.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/board.py') }}
+```
+
+**src/app/game/engine.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/engine.py') }}
+```
+
+**src/app/game/screen.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/engine.py') }}
+```
+
+#### app.models
+
+**src/app/models/properties.py**
+
+```python
+{{ file(properties.path.root + 'src/app/models/properties.py') }}
+```
+
+##### app.models.config
+
+**src/app/models/config/core.py**
+
+```python
+{{ file(properties.path.root + 'src/app/models/config/core.py') }}
+```
+
+##### app.models.state 
+
+**src/app/models/state/core.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/state/core.py') }}
+```
+
+**src/app/models/state/objects.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/state/objects.py' ) }}
+```
+
+**src/app/models/state/schemas.py:**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/state/schemas.py')}}
+```
+
+#### app.services
+
+##### app.services.generators
+
+###### app.services.generators.game
+
+**src/app/services/generators/game/decomposer.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/generators/game/decomposer.py' ) }}
+```
+
+**src/app/services/generators/game/factory.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/generators/game/factory.py' ) }}
+```
+
+**src/app/services/generators/game/perimeter.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/generators/game/perimeter.py' ) }}
+```
+
+##### app.services.orchestration
+
+**src/app/services/orchestration/builder.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/orchestration/builder.py') }}
+```
+
+**src/app/services/orchestration/orchestrator.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/orchestration/orchestrator.py') }}
+```
+
+**src/app/services/orchestration/migrator.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/orchestration/migrator.py') }}
+```
+
+#### libs.graphics
+
+**src/libs/graphics/render.pyx**
+
+```cython
+{{ file(properties.paths.root + 'src/libs/graphics/render.pyx') }}
+```

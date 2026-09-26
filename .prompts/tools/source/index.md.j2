@@ -8,13 +8,6 @@ The **Source Tool** provides **Views** into application code.
 
 ## Views
 
-{% if tools.views.source.combat %}
-{% include 'tools/source/views/combat.md.j2' %}
-{% endif %}
-{% if tools.views.source.intentions %}
-{% include 'tools/source/views/intentions.md.j2' %}
-{% endif %}
-{% if tools.views.source.fluids %}
-{% include 'tools/source/views/fluids.md.j2' %}
-{% endif %}
+{% if tools.views.source.workflows is defined %}
+{% include 'tools/source/views/workflows' ~ tools.parameters.source.workflows ~ '.md.j2' %}
 {% endif %}

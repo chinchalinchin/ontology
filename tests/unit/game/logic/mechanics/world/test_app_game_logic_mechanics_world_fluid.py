@@ -1,20 +1,25 @@
 """
 # Ontology: tests.unit.test_app_game_logic_mechanics_world_fluid
 """
+# Standard Libraries
 import collections
+
+# External Libraries
+import pytest
+
+# Application Libraries
 from app.config.enums import (
-    AssetCategories,
     AssetInstances,
-    Directions
 )
-from app.assets.base import Asset, Taxonomy
 from app.game.logic.mechanics.world.fluid import FluidMechanics
-from app.models.properties import ObjectProperties
-from app.models.state.objects import SwitchState
-from libs.core.models import Position, Dimensions, Velocity
-from tests.unit.conftest import DummyFrame, DummyAnimation
 
+# Cython Libraries
+from libs.core.models import (
+    Position, 
+    Velocity
+)
 
+@pytest.mark.fluids
 def test_fluid_mechanics_early_exit_no_fluids(mock_board):
     """
     Verify mechanic yields immediately when no fluids are instantiated.
@@ -24,6 +29,7 @@ def test_fluid_mechanics_early_exit_no_fluids(mock_board):
     mechanic.update(mock_board, 0.016, bus, None)
 
 
+@pytest.mark.fluids
 def test_fluid_mechanics_steady_state_no_invalidation(mock_board):
     """
     Verify stationary obstacles do not re-flag clean fluids as dirty.
@@ -46,6 +52,7 @@ def test_fluid_mechanics_steady_state_no_invalidation(mock_board):
     assert fluid.state.dirty is False
 
 
+@pytest.mark.fluids
 def test_fluid_mechanics_crate_velocity_triggers_invalidation(mock_board):
     """
     Verify moving crate marks fluid on that layer dirty and invokes Actuator.
@@ -69,6 +76,7 @@ def test_fluid_mechanics_crate_velocity_triggers_invalidation(mock_board):
     assert fluid.state.length == 96
 
 
+@pytest.mark.fluids
 def test_fluid_mechanics_gate_switch_toggle_invalidates(mock_board):
     """
     Verify gate switch transitions invalidate fluid flow.
@@ -89,6 +97,7 @@ def test_fluid_mechanics_gate_switch_toggle_invalidates(mock_board):
     assert fluid.state.dirty is False 
 
 
+@pytest.mark.fluids
 def test_fluid_mechanics_cross_layer_isolation(mock_board):
     """
     Verify obstacle movements on layer 1 do not invalidate fluids on layer 0.

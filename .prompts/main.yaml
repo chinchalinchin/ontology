@@ -29,27 +29,26 @@ tools:
 # ----------------------------------------------------
   views:
     manager:
-      board: true
+      board: false
       specs: false
       docs: true
     source:
-      combat: true
-      fluids: false
-      intentions: false
-      menus: false
-      physics: false
+      workflows: true
     shell:
       directory: true
       commands: false
+    tests:
+      fixtures: true
+      unit: true
 # ----------------------------------------------------
   parameters:
     manager:
-      phase: '09-02'
-      action: refactor
+      board:
+        phase: '09-02'
+        action: refactor
       docs:
         exclude:
           - index.md
-          - 02-sprites.md
           - 03-compositions.md
           - 04-intentions.md
           - 06-widgets.md
@@ -57,6 +56,10 @@ tools:
           - 08-plots.md
           - 09-emergence.md
       specs: []
+    source:
+      workflow: fluids
     shell:
       directory: tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
       commands: []
+    tests:
+      workflow: fluids

@@ -1,11 +1,17 @@
 """
 # Ontology: tests.unit.test_app_game_logic_relations_shorelines
 """
+# External Libraries
+import pytest
+
+# Application Libraries
 from app.game.logic.relations.shorelines import ShorelineIndex
 from app.models.properties import GeographyProperties
+
+# Cython Libraries
 from libs.core.models import Dimensions
 
-
+@pytest.mark.fluids
 def test_shoreline_index_exact_match():
     entries = {
         ("grass", "water-clean"): "shore-grass-clean",
@@ -18,6 +24,7 @@ def test_shoreline_index_exact_match():
     assert index.resolve("grass", "water-murky") == "shore-grass-murky"
 
 
+@pytest.mark.fluids
 def test_shoreline_index_substrate_fallback():
     entries = {
         ("sand", None): "shore-sand-default",
@@ -32,6 +39,7 @@ def test_shoreline_index_substrate_fallback():
     assert index.resolve("grass", "unknown-fluid") == "shore-grass-default"
 
 
+@pytest.mark.fluids
 def test_shoreline_index_unmapped_returns_none():
     entries = {("dirt", "water"): "shore-dirt"}
     index = ShorelineIndex(entries)
@@ -40,6 +48,7 @@ def test_shoreline_index_unmapped_returns_none():
     assert index.resolve("stone", None) is None
 
 
+@pytest.mark.fluids
 def test_shoreline_index_from_properties():
     props = {
         "grassy-river": GeographyProperties(

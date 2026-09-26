@@ -1,6 +1,9 @@
 """
 # Ontology: tests.unit.test_app_services_generators_game_actuator
 """
+# External Libraries
+import pytest
+
 # Test Libraries
 from tests.unit.conftest import (
     DummyFrame, 
@@ -24,9 +27,7 @@ from app.models.properties import (
     ObjectProperties,
     EffectProperties
 )
-from app.models.groups import (
-    SpawnableGroup
-)
+
 from app.models.state import (
     PositionalState, 
     SwitchState,
@@ -34,9 +35,7 @@ from app.models.state import (
 )
 from app.services.generators.game import (
     Actuator,
-    Cradle
 )
-from app.game.logic.relations import ShorelineIndex
 
 # Cython Libraries
 from libs.core.models import (
@@ -45,6 +44,7 @@ from libs.core.models import (
 )
 
 
+@pytest.mark.fluids
 def test_actuator_pump_down_to_boundary(mock_board):
     """
     Verify downward propagation truncates at boundary wall and does not pool.
@@ -68,6 +68,7 @@ def test_actuator_pump_down_to_boundary(mock_board):
     assert fluid.state.dirty is False
 
 
+@pytest.mark.fluids
 def test_actuator_upstream_obstacles_ignored(mock_board):
     """
     Verify obstacles positioned at or behind emitter origin are not struck.
@@ -95,6 +96,7 @@ def test_actuator_upstream_obstacles_ignored(mock_board):
     assert fluid.state.length == 100
 
 
+@pytest.mark.fluids
 def test_actuator_open_gate_not_occluding(mock_board, mock_actuator):
     """
     Verify open gates (switch=True) are bypassed during raycast truncation.
@@ -117,6 +119,7 @@ def test_actuator_open_gate_not_occluding(mock_board, mock_actuator):
     assert length == 120
 
 
+@pytest.mark.fluids
 def test_actuator_character_sheets_ignored(mock_board, mock_actuator):
     """
     Verify characters (SHEETS) do not obstruct fluid raycasts.
@@ -137,6 +140,7 @@ def test_actuator_character_sheets_ignored(mock_board, mock_actuator):
     assert length == 120
 
 
+@pytest.mark.fluids
 def test_actuator_pump_down_to_obstacle_with_pool(mock_board, mock_actuator):
     """
     Verify internal obstacle collision truncates stream and forms a solid annular pool.
@@ -172,6 +176,7 @@ def test_actuator_pump_down_to_obstacle_with_pool(mock_board, mock_actuator):
     assert hitboxes[1].dimensions.l == 160
 
 
+@pytest.mark.fluids
 def test_actuator_rafts_ignored_as_obstacles(mock_board, mock_raft, mock_actuator):
     """
     Verify rafts (RAFTS) bypass raycast truncation and do not occlude fluids.
@@ -192,6 +197,7 @@ def test_actuator_rafts_ignored_as_obstacles(mock_board, mock_raft, mock_actuato
     assert length == 120
 
 
+@pytest.mark.fluids
 def test_actuator_pump_does_not_mutate_shared_properties(mock_board, mock_actuator):
     """
     Verify Actuator.pump does not mutate shared EffectProperties.hitboxes.
@@ -204,6 +210,7 @@ def test_actuator_pump_does_not_mutate_shared_properties(mock_board, mock_actuat
     assert fluid.properties.hitboxes == []
 
 
+@pytest.mark.fluids
 def test_actuator_generates_and_purges_shorelines(
     mock_board, 
     mock_actuator
@@ -235,6 +242,7 @@ def test_actuator_generates_and_purges_shorelines(
     assert len(current_shoreline_names) > 0
 
 
+@pytest.mark.fluids
 def test_actuator_water_meeting_water_suppresses_shorelines(
     mock_board, 
     mock_actuator

@@ -4,6 +4,9 @@
 # Standard Libraries
 from unittest.mock import MagicMock
 
+# External Libraries
+import pytest
+
 # Testing Libraries
 from tests.unit.conftest import DummyFrame, DummyAnimation
 
@@ -16,26 +19,23 @@ from app.config.enums import (
 )
 from app.game.logic.modules.motion import fields
 from app.models.properties import (
-    ObjectProperties, 
     EffectProperties, 
-    SheetProperties
 )
 from app.models.state import (
     EffectState,
     FluidState,
-    PlayerState,
-    MotorState,
-    Mutators,
-    MutatorTriggers
 )
-from app.models.groups import SpawnableGroup
 from app.game.logic.modules.motion import fields
-from app.services.generators.game.cradle import Cradle
 
 # Cython Libraries
-from libs.core.models import Position, Dimensions, Hitbox, Velocity
+from libs.core.models import (
+    Position, 
+    Dimensions, 
+    Hitbox, 
+    Velocity
+)
 
-
+@pytest.mark.fluids
 def test_direction_vectors():
     """
     Verify normalized direction vector mapping across cardinal directions.
@@ -46,7 +46,7 @@ def test_direction_vectors():
     assert fields._direction_vector(Directions.RIGHT.value) == (1.0, 0.0)
     assert fields._direction_vector("unknown") == (0.0, 0.0)
 
-
+@pytest.mark.fluids
 def test_fluid_velocity():
     """
     Verify current velocity calculation based on emitter source and flow intensity.
@@ -66,7 +66,7 @@ def test_fluid_velocity():
     assert vx == 0.0
     assert vy == 40.0  # 2 * BASE_FLOW_SPEED (20.0)
 
-
+@pytest.mark.fluids
 def test_raft_passively_drifts_in_fluid(mock_board, mock_raft):
     """
     Verify raft intersecting an active fluid corridor acquires current velocity.
@@ -82,7 +82,7 @@ def test_raft_passively_drifts_in_fluid(mock_board, mock_raft):
     assert mock_raft.state.velocity.vx == 0.0
     assert mock_raft.state.velocity.vy == 40.0
 
-
+@pytest.mark.fluids
 def test_raft_halts_when_outside_fluid(mock_board, mock_raft):
     """
     Verify raft halts to zero velocity when not intersecting any fluid.
@@ -95,7 +95,7 @@ def test_raft_halts_when_outside_fluid(mock_board, mock_raft):
     assert mock_raft.state.velocity.vx == 0.0
     assert mock_raft.state.velocity.vy == 0.0
 
-
+@pytest.mark.fluids
 def test_surface_interception_passenger_on_raft(mock_board, mock_raft):
     """
     Verify passenger on a raft inherits raft drift and suppresses submersion.
@@ -122,7 +122,7 @@ def test_surface_interception_passenger_on_raft(mock_board, mock_raft):
     assert player.state.velocity.vy == 40.0
     assert player.state.mutators.triggers.submerged is False
 
-
+@pytest.mark.fluids
 def test_direct_immersion_in_fluid_adds_velocity_and_spawns_splash(mock_board):
     """
     Verify un-rafted entity entering fluid acquires current velocity,
@@ -166,7 +166,7 @@ def test_direct_immersion_in_fluid_adds_velocity_and_spawns_splash(mock_board):
 
     assert splash_asset in mock_board.assets("0")
 
-
+@pytest.mark.fluids
 def test_continuous_immersion_does_not_retrigger_splash(mock_board):
     """
     Verify entity already submerged does not re-dispatch splash particles on subsequent frames.
@@ -189,7 +189,7 @@ def test_continuous_immersion_does_not_retrigger_splash(mock_board):
     assert player.state.mutators.triggers.submerged is True
     mock_board.cradle.spawn_passive.assert_not_called()
 
-
+@pytest.mark.fluids
 def test_entity_leaving_fluid_clears_submersion(mock_board):
     """
     Verify entity leaving fluid corridor clears submerged trigger.
@@ -205,7 +205,7 @@ def test_entity_leaving_fluid_clears_submersion(mock_board):
 
     assert player.state.mutators.triggers.submerged is False
 
-
+@pytest.mark.fluids
 def test_lateral_fluid_flow_left(mock_board):
     """
     Verify lateral leftward fluid flow correctly imparts negative X velocity.
@@ -224,7 +224,7 @@ def test_lateral_fluid_flow_left(mock_board):
     assert player.state.velocity.vy == 0.0
     assert player.state.mutators.triggers.submerged is True
 
-
+@pytest.mark.fluids
 def test_projectiles_bypass_field_forces(mock_board, mock_projectile):
     """
     Verify ballistic projectiles ignore environmental fluid fields.
@@ -241,7 +241,7 @@ def test_projectiles_bypass_field_forces(mock_board, mock_projectile):
     assert mock_projectile.state.velocity.vx == 50.0
     assert mock_projectile.state.velocity.vy == 0.0
 
-
+@pytest.mark.fluids
 def test_fields_shoreline_entry_nudge_and_submerge(mock_board, mock_shoreline):
     """
     Verify crossing shoreline into water applies orthogonal step-down displacement,
@@ -265,7 +265,7 @@ def test_fields_shoreline_entry_nudge_and_submerge(mock_board, mock_shoreline):
     passives = mock_board.instances(AssetInstances.PASSIVE.value, "0")
     assert len(passives) > 0
 
-
+@pytest.mark.fluids
 def test_fields_shoreline_sheer_ledge_blocks_exit(mock_board, mock_shoreline):
     """
     Verify non-bidirectional sheer ledges nullify velocities directed against the bank.

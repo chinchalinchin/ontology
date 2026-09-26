@@ -4,8 +4,8 @@
     "implement": "phase",
     "refactor": "refactor"
 } %}
-{% set action = tools.parameters.manager.action %}
-{% set phase = tools.parameters.manager.phase %}
+{% set action = tools.parameters.manager.board.action %}
+{% set phase = tools.parameters.manager.board.phase %}
 {% set prefix = prefixes[action] %}
 {% set path = properties.paths.root + properties.paths.phases + action + "/" + prefix + "-" + phase + ".md" %}
 {# -------------------------------------------------  #}

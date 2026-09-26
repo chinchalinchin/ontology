@@ -12,6 +12,81 @@ from app.models.state import Goal, DevicePayload
 from libs.core.models import Position, Boundary, Dimensions
 
 
+## TODO: MOVE FIXTURES INTO DEDICATED MODULE
+
+# -----------------------------------------------------------------------------
+# -------------------------------------------------------- FIXTURE DEPENDENCIES
+# -----------------------------------------------------------------------------
+
+from app.config.enums import (
+    AssetCategories,
+    AssetInstances
+)
+from app.models.state import (
+    PropertyState
+)
+from app.models.properties import (
+    CraftProperties
+)
+from app.assets.base import (
+    Asset,
+    Taxonomy
+)
+from tests.unit.conftest import (
+    DummyFrame,
+    DummyAnimation
+)
+from libs.core.models import Hitbox
+
+# -----------------------------------------------------------------------------
+# -------------------------------------------------------- PATHFINDING FIXTURES
+# -----------------------------------------------------------------------------
+
+@pytest.fixture
+def mock_offset_hitbox_asset():
+    """
+    Asset with single offset collision hitbox and mass=0 (e.g. wall-blue).
+    """
+    tax = Taxonomy("wall-blue-1", "blue-wall", AssetCategories.CRAFTS.value, AssetInstances.STRUTS.value)
+    hb = Hitbox(Position(6, 17), Dimensions(116, 54))
+    props = CraftProperties(
+        dimensions=Dimensions(w=128, l=96),
+        cost=[],
+        mass=0,
+        hitboxes=[hb]
+    )
+    state = PropertyState(
+        id="wall-blue-1",
+        layer="brick-house-compose-layer",
+        position=Position(x=150, y=150),
+        owner="player"
+    )
+    return Asset(tax, props, state, DummyFrame(), DummyAnimation())
+
+
+@pytest.fixture
+def mock_multi_hitbox_asset():
+    """
+    Asset with multiple discrete hitboxes and mass=0 (e.g. wall-castle).
+    """
+    tax = Taxonomy("wall-castle-1", "castle-wall", AssetCategories.CRAFTS.value, AssetInstances.STRUTS.value)
+    hb1 = Hitbox(Position(178, 102), Dimensions(25, 12))
+    hb2 = Hitbox(Position(17, 102), Dimensions(25, 12))
+    hb3 = Hitbox(Position(5, 39), Dimensions(203, 63))
+    props = CraftProperties(
+        dimensions=Dimensions(w=222, l=133),
+        cost=[],
+        mass=0,
+        hitboxes=[hb1, hb2, hb3]
+    )
+    state = PropertyState(
+        id="wall-castle-1",
+        layer="0",
+        position=Position(x=250, y=250),
+        owner="player"
+    )
+    return Asset(tax, props, state, DummyFrame(), DummyAnimation())
+
 # ---------------------------------------------------------------------------
 # ANCHOR & OBSTACLE TESTS
 # ---------------------------------------------------------------------------
