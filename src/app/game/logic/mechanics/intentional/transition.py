@@ -55,7 +55,7 @@ class TransitionMechanics(Mechanic):
             # 1. Evaluate State ISL Conditions
             if self.executor and sprite.state.intention:
                 next_intent_str = self.executor.evaluate(
-                    current_state=sprite.state.intention.value,
+                    current_state=sprite.state.intention,
                     locals={'sprite': sprite.state, 'sprites': sprites_dict}
                 )
                 
@@ -66,7 +66,7 @@ class TransitionMechanics(Mechanic):
                     if next_intent != current_intent:
                         logger.info(
                             f"Transition({sprite.name}): "
-                            f"{sprite.state.intention.value} -> "
+                            f"{sprite.state.intention} -> "
                             f"{next_intent.value}"
                         )
                         

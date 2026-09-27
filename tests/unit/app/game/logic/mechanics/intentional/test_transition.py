@@ -4,66 +4,67 @@
 Unit tests for TransitionMechanics.
 """
 # Standard Libraries
-from unittest.mock import MagicMock
 import collections
 
 # External Libraries
 import pytest
 
 # Application Libraries
+from app.game.engine import Engine
 from app.game.logic.mechanics import TransitionMechanics
 from app.config.enums import (
     Intentions, 
     Actions, 
     Directions
 )
-from app.models.state import Goal
 
 # Cython Libraries
 from libs.core.models import Position
 
 
+def get_mechanic(engine: Engine, cls: type) -> TransitionMechanics:
+    """Retrieves a mechanic by class from the engine pipeline."""
+    return next((m for m in engine.core + engine.world if isinstance(m, cls)), None)
+
+
 @pytest.mark.intentions
-def test_transition_update_evaluates_executor(mock_board):
-    mechanic = TransitionMechanics()
-    
-    # Setup mock Executor
-    mock_executor = MagicMock()
-    mock_executor.evaluate.return_value = Intentions.HUNT
-    mechanic.executor = mock_executor
+def test_transition_update_evaluates_executor(mock_engine):
+    mechanic = get_mechanic(mock_engine, TransitionMechanics)
+    board = mock_engine.board
     
     # Setup sprite state
-    sprite = mock_board.instances("sprites")[0]
-    sprite.state.intention = Intentions.IDLE
-    sprite.state.goal = Goal(name="target", category="sprite", position=Position(x=20, y=20))
+    sprite = board.instances("sprites")[0]  # 'jasilynn'
+    sprite.state.intention = Intentions.IDLE.value
+    sprite.state.position = Position(x=10, y=10)
+    
+    # Mutate health to trigger real ISL transition to 'attack'
+    sprite.state.meters.health.current = 40
     
     # Run loop
     bus = collections.deque()
-    mechanic.update(mock_board, 0.16, bus, MagicMock())
+    mechanic.update(board, 0.16, bus, None)
     
     # Assert ISL logic mutated the intention
-    assert sprite.state.intention == Intentions.HUNT
+    assert sprite.state.intention == Intentions.ATTACK.value
     
-    # Assert AnimationMap correctly resolved the goal direction and intention action
-    # (HUNT -> WALK fallback, 10,10 to 20,20 -> RIGHT)
-    assert sprite.state.animation.action == Actions.WALK.value
-    assert sprite.state.animation.direction == Directions.RIGHT.value
-    
-    # Ensure evaluate was called with the sprite's state and cross-layer dict
-    mock_executor.evaluate.assert_called_once()
-    
+    # Assert AnimationMap correctly resolved the intention action 
+    # (ATTACK without weapon defaults to CAST)
+    assert sprite.state.animation.action == Actions.CAST.value
+
 
 @pytest.mark.intentions
-def test_transition_update_skips_without_executor(mock_board):
-    mechanic = TransitionMechanics()
+def test_transition_update_skips_without_executor(mock_engine):
+    mechanic = get_mechanic(mock_engine, TransitionMechanics)
     mechanic.executor = None
+    board = mock_engine.board
     
-    sprite = mock_board.instances("sprites")[0]
-    sprite.state.intention = Intentions.IDLE
+    sprite = board.instances("sprites")[0]
+    sprite.state.intention = Intentions.IDLE.value
+    sprite.state.meters.health.current = 40  # Would normally transition to attack
     
     bus = collections.deque()
-    mechanic.update(mock_board, 0.16, bus, MagicMock())
+    mechanic.update(board, 0.16, bus, None)
     
     # Should safely skip ISL evaluation and remain IDLE
-    assert sprite.state.intention == Intentions.IDLE
+    assert sprite.state.intention == Intentions.IDLE.value
     assert sprite.state.animation.action == Actions.WALK.value

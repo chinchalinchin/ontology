@@ -95,6 +95,7 @@ def test_motive_rvo_opposing_corridor_steering(
     mock_sprite.state.layer = "0"
     mock_sprite.state.intention = Intentions.FIND.value
     mock_sprite.state.position = Position(0, 50)
+    mock_sprite.state.mutators.parameters.squeeze.radius = 100  # Expand sensory footprint
     mock_sprite.state.goal = Goal(
         name="npc", 
         category=Goals.POSITION.value, 
@@ -106,6 +107,7 @@ def test_motive_rvo_opposing_corridor_steering(
 
     mock_sprite_alt.state.layer='0'
     mock_sprite_alt.state.position = Position(70, 50)
+    mock_sprite_alt.state.mutators.parameters.squeeze.radius = 100  # Expand sensory footprint
     mock_sprite_alt.state.goal = Goal(
         name="npc", 
         category=Goals.POSITION.value, 

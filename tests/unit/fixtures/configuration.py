@@ -8,6 +8,9 @@ from app.config.enums import (
     # -------- ASSET COMPONENTS
     FrameRecipe,
     AnimationRecipe,
+    # -------- MECHANICS
+    Mechanics,
+    MechanicExecutors
 )
 from app.models.config import (
     # ------ COMPOSITIONS
@@ -32,6 +35,9 @@ from app.models.config import (
     WorldMapping,
     # ------- MENUS
     MenuMapping,
+    # -------- MECHANICS
+    MechanicsInstance,
+    MechanicsConfiguration,
     # -------- SCHEMA
     ConfigurationSchema
 )
@@ -316,32 +322,36 @@ def mock_intention_configuration():
         "idle": [
             IntentionConfiguration(
                 next="attack", 
-                conditions=["sprite.health < 50"]
+                conditions=["sprite.meters.health.current < 50"]
             ),
             IntentionConfiguration(
                 next="wander", 
-                conditions=["sprite.health >= 50"]
+                conditions=["sprite.meters.health.current >= 50"]
             )
         ],
         "attack": [
             IntentionConfiguration(
                 next="idle", 
-                conditions=["sprites['enemy'].dead"]
+                conditions=["sprites.get('enemy') and sprites.get('enemy').mutators.triggers.dead"]
             )
         ],
         "find": [
             IntentionConfiguration(
                 next="interact",
-                conditions=["functions.is_near(sprite.pos, sprites['target'].pos, 10)"])
+                conditions=[
+                    "sprite.goal",
+                    "sprites.get(sprite.goal.name)",
+                    "functions.is_near(sprite.position, sprites.get(sprite.goal.name).position, 10)"
+                ]
+            )
         ],
         "bad_syntax": [
             IntentionConfiguration(
                 next="idle", 
-                conditions=["sprite.health =="]
+                conditions=["sprite.meters.health.current =="]
             ) # syntax error
         ]
     }
-
 
 @pytest.fixture
 def mock_mapping_configuration() -> MappingConfiguration:
@@ -375,9 +385,28 @@ def mock_mapping_configuration() -> MappingConfiguration:
 
 
 @pytest.fixture
+def mock_mechanic_configuration() -> MechanicsConfiguration:
+    return MechanicsConfiguration(
+        core = [],
+        world = [
+            MechanicsInstance(
+                key=Mechanics.TRANSITION.value, 
+                executors=[
+                    MechanicExecutors.INTENTION.value
+                ]
+            ),
+            MechanicsInstance(
+                key=Mechanics.MOTION.value
+            ),
+        ]
+    )
+
+
+@pytest.fixture
 def mock_configurations(
     mock_recipes_configuration, 
     mock_mapping_configuration,
+    mock_mechanics_configuration,
     mock_intention_configuration,
     mock_plot_configuration
 ):
@@ -385,6 +414,7 @@ def mock_configurations(
         mappings=mock_mapping_configuration,
         recipes=mock_recipes_configuration,
         intentions=mock_intention_configuration,
-        plots=mock_plot_configuration
+        plots=mock_plot_configuration,
+        mechanics=mock_mechanics_configuration
     )
 

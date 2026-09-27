@@ -12,8 +12,16 @@ from unittest.mock import (
 # External Libraries
 import pytest
 
+# Application Libraries
 from app.game.devices import Keyboard
 from app.game.board import Board
+from app.game.engine import Engine
+from app.services.generators.game.factory import Factory
+from app.services.translators import (
+    LambdaTranslator,
+    CompilerTranslator
+)
+from app.config.enums import MechanicExecutors
 
 # Cython Libraries
 from libs.core.models import (
@@ -21,7 +29,6 @@ from libs.core.models import (
     Position,
     Boundary
 )
-
 
 # ---------------------------------------------------------------------------
 # ----------------------------------------------------------- MOCK COMPONENTS
@@ -64,3 +71,81 @@ def mock_keyboard(
     mock_mapping_configuration
 ) -> Keyboard:
     return Keyboard(mock_mapping_configuration.keyboard)
+
+
+@pytest.fxiture
+def mock_lambda_executors(
+    mock_actuator,
+    mock_configurations,
+):
+    translator = LambdaTranslator()
+    intention_executor = translator.compile(mock_configurations.intentions)
+    plot_executor = translator.compile(mock_configurations.plots)
+    
+    return {
+        MechanicExecutors.INTENTION.value: intention_executor,
+        MechanicExecutors.PLOT.value: plot_executor,
+        MechanicExecutors.ACTUATOR.value: mock_actuator
+    }
+
+
+@pytest.fxiture
+def mock_compiler_executors(
+    mock_actuator,
+    mock_configurations,
+):
+    translator = CompilerTranslator()
+    intention_executor = translator.compile(mock_configurations.intentions)
+    plot_executor = translator.compile(mock_configurations.plots)
+    
+    return {
+        MechanicExecutors.INTENTION.value: intention_executor,
+        MechanicExecutors.PLOT.value: plot_executor,
+        MechanicExecutors.ACTUATOR.value: mock_actuator
+    }
+
+
+@pytest.fixture
+def mock_engine_with_lambda_transitions(
+    mock_board, 
+    mock_mechanics_configuration,
+    mock_lambda_executors
+) -> Engine:
+    """
+    Fully constructs the Engine with live Mechanics and Executors
+    """
+    world_mechanics = [
+        Factory.mechanics(m, mock_lambda_executors) 
+        for m in mock_mechanics_configuration.world
+    ]
+
+    return Engine(
+        board=mock_board,
+        screens={},
+        core=[],
+        world=world_mechanics,
+        provider=MagicMock()
+    )
+
+
+@pytest.fixture
+def mock_engine_with_compiler_transitions(
+    mock_board, 
+    mock_mechanics_configuration,
+    mock_compiler_executors
+) -> Engine:
+    """
+    Fully constructs the Engine with live Mechanics and Executors
+    """  
+    world_mechanics = [
+        Factory.mechanics(m, mock_compiler_executors) 
+        for m in mock_mechanics_configuration.world
+    ]
+
+    return Engine(
+        board=mock_board,
+        screens={},
+        core=[],
+        world=world_mechanics,
+        provider=MagicMock()
+    )
