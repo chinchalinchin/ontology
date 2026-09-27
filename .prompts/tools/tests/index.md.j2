@@ -20,8 +20,8 @@ The **Tests Tool** provides **Views** into the application testing bed.
 {% if tools.views.tests.fixtures %}
 {% include 'tools/tests/views/fixtures.md.j2'%}
 {% endif %}
-{% if tools.views.tests.workflows %}
-{% include 'tools/source/views/workflows' ~ tools.parameters.tests.workflows ~ '.md.j2' %}
+{% if tools.views.tests.workflow %}
+{% include 'tools/tests/views/workflows/' ~ tools.parameters.tests.workflow ~ '.md.j2' %}
 {% endif %}
 {% if tools.views.tests.console %}
 {% include 'tools/tests/views/console.md.j2' %}

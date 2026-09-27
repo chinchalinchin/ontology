@@ -210,13 +210,28 @@ def mock_positional_state() -> PositionalState:
 
 @pytest.fixture
 def mock_positional_state_alt() -> PositionalState:
+    """
+    Raft positional state initialized to an idle coordinate clear of fluid corridors.
+    """
     return PositionalState(
         id="wood-raft",
         layer="0",
-        position=Position(x=70, y=50),
+        position=Position(x=10, y=200),
         velocity=Velocity(vx=0.0, vy=0.0)
     )
 
+
+@pytest.fixture
+def mock_positional_state_alt2() -> PositionalState:
+    """
+    Upstream crate positional state positioned along the fluid x=70 axis.
+    """
+    return PositionalState(
+        id="wood-crate",
+        layer="0",
+        position=Position(x=70, y=10),
+        velocity=Velocity(vx=0.0, vy=0.0)
+    )
 
 @pytest.fixture
 def mock_door_state() -> DoorState:
@@ -275,6 +290,22 @@ def mock_fluid_state_alt() -> FluidState:
         hitboxes=[Hitbox(Position(-100, 0), Dimensions(100, 32))]
     )
 
+
+@pytest.fixture
+def mock_fluid_state_adjacent() -> FluidState:
+    """
+    Secondary fluid emitter state adjacent to fluid-1's East flank.
+    """
+    return FluidState(
+        id="waterflow-01",
+        name="fluid-adjacent",
+        layer="0",
+        position=Position(x=102, y=0),
+        source=Directions.DOWN.value,
+        flow=1,
+        length=320,
+        dirty=True
+    )
 
 @pytest.fixture
 def mock_craft_states(

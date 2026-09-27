@@ -132,48 +132,15 @@ def test_surface_interception_passenger_on_raft(mock_board, mock_raft):
 
 
 @pytest.mark.fluids
-def test_direct_immersion_in_fluid_adds_velocity_and_spawns_splash(mock_board):
+def test_shoreline_normals():
     """
-    Verify un-rafted entity entering fluid acquires current velocity,
-    sets submerged=True, and dispatches splash generation via Cradle.
+    Verify inward water normal vectors across cardinal bank orientations.
     """
-    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
-    fluid.state.length = 100
-    fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(32, 100))]
-
-    player = mock_board.player()
-    player.state.position.x = 70
-    player.state.position.y = 50
-    player.state.velocity.vx = 0
-    player.state.velocity.vy = 10
-    player.state.mutators.triggers.submerged = False
-
-
-    # Configure a typed passive splash asset to satisfy Board.add assertions
-    splash_tax = Taxonomy("splash", "splash-1", AssetCategories.EFFECTS.value, AssetInstances.PASSIVE.value)
-    splash_props = EffectProperties(dimensions=Dimensions(w=60, l=12), count=3, mass=-1)
-    splash_state = EffectState(id="splash", name="splash-1", layer="0", position=Position(x=70, y=66))
-    splash_asset = Asset(splash_tax, splash_props, splash_state, DummyFrame(), DummyAnimation())
-
-    mock_board.cradle = MagicMock()
-    mock_board.cradle.spawn_passive.return_value = splash_asset
-
-    fields.update([player], mock_board, 0.016)
-
-    # Net velocity = voluntary (0, 10) + current (0, 40)
-    assert player.state.velocity.vx == 0.0
-    assert player.state.velocity.vy == 50.0
-    assert player.state.mutators.triggers.submerged is True
-
-    # Assert mock invocation and validate coordinates without Cython pointer equality mismatch
-    assert mock_board.cradle.spawn_passive.call_count == 1
-    call_args = mock_board.cradle.spawn_passive.call_args[0]
-    assert call_args[0] == "splash"
-    assert call_args[1] == "0"
-    assert call_args[2].x == 70
-    assert call_args[2].y == 66  # 50 + (32 // 2)
-
-    assert splash_asset in mock_board.assets("0")
+    assert fields._shoreline_normal(Directions.UP.value) == (0.0, 1.0)
+    assert fields._shoreline_normal(Directions.DOWN.value) == (0.0, -1.0)
+    assert fields._shoreline_normal(Directions.LEFT.value) == (1.0, 0.0)
+    assert fields._shoreline_normal(Directions.RIGHT.value) == (-1.0, 0.0)
+    assert fields._shoreline_normal("unknown") == (0.0, 0.0)
 
 
 @pytest.mark.fluids
@@ -189,8 +156,8 @@ def test_direct_immersion_in_fluid_adds_velocity_and_spawns_splash(mock_board):
     player = mock_board.player()
     player.state.position.x = 70
     player.state.position.y = 50
-    player.state.velocity.vx = 0
-    player.state.velocity.vy = 10
+    player.state.velocity.vx = 0.0
+    player.state.velocity.vy = 10.0
     player.state.mutators.triggers.submerged = False
 
     # Spy on Cradle.spawn_passive using the wired fixture testbed
@@ -208,6 +175,10 @@ def test_direct_immersion_in_fluid_adds_velocity_and_spawns_splash(mock_board):
         assert call_args[1] == "0"
         assert call_args[2].x == 70
         assert call_args[2].y == 82  # 50 + (64 // 2)
+
+        # Confirm splash entity is persisted to the active board layer
+        passives = mock_board.instances(AssetInstances.PASSIVE.value, "0")
+        assert len(passives) > 0
 
 
 @pytest.mark.fluids

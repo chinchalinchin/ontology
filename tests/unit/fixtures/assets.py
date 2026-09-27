@@ -343,6 +343,49 @@ def mock_door(
 
 
 @pytest.fixture
+def mock_crate_alt(
+    mock_object_properties,
+    mock_positional_state_alt2
+) -> Asset:
+    """
+    Secondary crate asset fixture positioned upstream of fluid emitters.
+    """
+    return Asset(
+        taxonomy=Taxonomy(
+            id="wood-crate",
+            name="box-upstream",
+            category=AssetCategories.OBJECTS.value,
+            instance=AssetInstances.CRATES.value
+        ),
+        properties=mock_object_properties.crates.get("wood-crate"),
+        state=mock_positional_state_alt2,
+        frame=DummyFrame(),
+        animation=DummyAnimation()
+    )
+
+
+@pytest.fixture
+def mock_fluid_adjacent(
+    mock_effect_properties,
+    mock_fluid_state_adjacent
+) -> Asset:
+    """
+    Secondary parallel fluid emitter fixture for boundary occlusion tests.
+    """
+    return Asset(
+        taxonomy=Taxonomy(
+            id="waterflow-01",
+            name="fluid-adjacent",
+            category=AssetCategories.EFFECTS.value,
+            instance=AssetInstances.FLUIDS.value
+        ),
+        properties=mock_effect_properties.fluids.get("waterflow-01"),
+        state=mock_fluid_state_adjacent,
+        frame=FluidFrame(tile_w=32, tile_l=32),
+        animation=LifecycleAnimation()
+    )
+
+@pytest.fixture
 def mock_assets(
     mock_player,
     mock_sprite,
