@@ -6,12 +6,13 @@ Application fixtures have recently been reorganized and streamlined for reuse ra
 
 **Priorities**
       
-- Add unit test coverage for any new functionality implemented.
-- Add any unit tests for any areas of the code not already covered.
 - Debug the current run of the test pipeline located in the [Test Console](#view-test-console) section
+- (*Optional*) Add unit test coverage for any new functionality implemented.
+- (*Optional*) Add any unit tests for any areas of the code not already covered.
 
 **Coverage Guidelines**
 
+- Ensure all new tests are marked with a `@pytest.mark.<workflow>` annotation. Add workflows to `pytest.ini` sparingly.
 - Do **not** test code you haven't seen.
 - Add any fixtures to appropiate fixture module.
 - Do **not** create fixtures in the test itself; Tests should request fixtures and use them.

@@ -3,7 +3,7 @@
 #### pytest
 
 ```bash
-{{ properties.user.username }}@localhost %  {{ tools.parameters.tests.console.pytest }} {{properties.paths.tests}}
+{{ properties.user.username }}@localhost %  {{ tools.parameters.tests.console.pytest }} {{ properties.paths.root }}{{ properties.paths.tests }}
 
-{{ command(tools.parameters.tests.console.pytest + ' ' + properties.paths.tests) }}
+{{ command(tools.parameters.tests.console.pytest + ' ' + properties.paths.root + properties.paths.tests) }}
 ```

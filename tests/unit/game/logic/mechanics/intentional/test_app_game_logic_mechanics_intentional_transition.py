@@ -3,15 +3,27 @@
 
 Unit tests for TransitionMechanics.
 """
+# Standard Libraries
 from unittest.mock import MagicMock
 import collections
 
+# External Libraries
+import pytest
+
+# Application Libraries
 from app.game.logic.mechanics.intentional.transition import TransitionMechanics
-from app.config.enums import Intentions, Actions, Directions
-from libs.core.models import Position
+from app.config.enums import (
+    Intentions, 
+    Actions, 
+    Directions
+)
 from app.models.state import Goal
 
+# Cython Libraries
+from libs.core.models import Position
 
+
+@pytest.mark.intentions
 def test_transition_update_evaluates_executor(mock_board):
     mechanic = TransitionMechanics()
     
@@ -41,6 +53,7 @@ def test_transition_update_evaluates_executor(mock_board):
     mock_executor.evaluate.assert_called_once()
     
 
+@pytest.mark.intentions
 def test_transition_update_skips_without_executor(mock_board):
     mechanic = TransitionMechanics()
     mechanic.executor = None

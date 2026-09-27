@@ -1,14 +1,24 @@
 """
-# Ontology: tests.unit.test_app_game_logic_modules_paths
+# Ontology: tests.unit.game.logic.modules.test_app_game_logic_modules_paths
 """
+# Standard Library
 from unittest.mock import patch
+
+# External Libraries
 import pytest
 
-from app.game.logic.modules.paths.plan import Node, Planner
+# Application Libraries
+from app.game.logic.modules.paths.plan import (
+    Node, 
+    Planner
+)
+
+# Cython Libraries
 from libs.core.math.paths import rrt
 from libs.core.models import Position
 
 
+@pytest.mark.pathfinding
 def test_node_initialization():
     node = Node(10.5, 20.25)
     assert node.x == 10.5
@@ -16,6 +26,7 @@ def test_node_initialization():
     assert node.parent is None
 
 
+@pytest.mark.pathfinding
 def test_planner_initialization():
     start = Position(x=10, y=10)
     target = Position(x=50, y=60)
@@ -31,6 +42,7 @@ def test_planner_initialization():
     assert planner.max_iter == 100
 
 
+@pytest.mark.pathfinding
 def test_rrt_direct_clear_path():
     path = rrt(0.0, 0.0, 30.0, 0.0, [], step_size=15.0, max_iter=50)
     assert len(path) > 0
@@ -39,6 +51,7 @@ def test_rrt_direct_clear_path():
     assert all(isinstance(p, Position) for p in path)
 
 
+@pytest.mark.pathfinding
 def test_rrt_direct_obstacle_avoidance():
     # Target directly on the X axis, blocked by a wall at x=25
     wall = (20.0, -20.0, 10.0, 40.0)
@@ -52,6 +65,7 @@ def test_rrt_direct_obstacle_avoidance():
     assert deviated is True
 
 
+@pytest.mark.pathfinding
 def test_rrt_direct_unreachable_returns_empty():
     # Impenetrable enclosure around the target
     box = (-50.0, -50.0, 200.0, 200.0)
@@ -59,11 +73,13 @@ def test_rrt_direct_unreachable_returns_empty():
     assert path == []
 
 
+@pytest.mark.pathfinding
 def test_rrt_direct_zero_max_iter():
     path = rrt(0.0, 0.0, 100.0, 0.0, [], step_size=10.0, max_iter=0)
     assert path == []
 
 
+@pytest.mark.pathfinding
 def test_planner_plan_clear_path():
     start = Position(0, 0)
     target = Position(30, 0)
@@ -76,6 +92,7 @@ def test_planner_plan_clear_path():
     assert all(isinstance(p, Position) for p in path)
 
 
+@pytest.mark.pathfinding
 def test_planner_plan_unreachable_returns_empty():
     start = Position(0, 0)
     target = Position(100, 0)
@@ -86,6 +103,7 @@ def test_planner_plan_unreachable_returns_empty():
     assert path == []
 
 
+@pytest.mark.pathfinding
 def test_planner_delegates_to_rrt():
     start = Position(10, 20)
     target = Position(100, 200)
@@ -98,6 +116,7 @@ def test_planner_delegates_to_rrt():
         mock_rrt.assert_called_once_with(10.0, 20.0, 100.0, 200.0, obstacles, 20.0, 150)
         assert result == [target]
 
+@pytest.mark.pathfinding
 def test_rrt_path_pruning_straightens_obstructed_corridor():
     # Obstacle forcing RRT around a corner, with greedy string-pulling collapsing redundant vertices
     wall = (40.0, -10.0, 10.0, 30.0)

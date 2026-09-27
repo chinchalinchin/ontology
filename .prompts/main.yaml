@@ -52,24 +52,23 @@ tools:
       docs:
         exclude:
           - 03-compositions.md
-          - 04-intentions.md
           - 06-widgets.md
           - 07-sounds.md
           - 08-plots.md
           - 09-emergence.md
       specs: []
     source:
-      workflow: fluids
+      workflow: intentions
     shell:
       directory: tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
       commands: []
     tests:
       console:
-        pytest: pytest -m fluids
+        pytest: pytest -m intentions
       fixtures:
         - assets
         - components
         - configuration
         - properties
         - state
-      workflow: fluids
+      workflow: intentions

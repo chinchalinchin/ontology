@@ -25,7 +25,6 @@ from app.models.properties import (
     EffectProperties, 
 )
 from app.models.state import (
-    EffectState,
     FluidState,
 )
 from app.game.logic.modules.motion import fields
@@ -40,6 +39,7 @@ from libs.core.models import (
 
 
 @pytest.mark.fluids
+@pytest.mark.motion
 def test_direction_vectors():
     """
     Verify normalized direction vector mapping across cardinal directions.
@@ -52,6 +52,7 @@ def test_direction_vectors():
 
 
 @pytest.mark.fluids
+@pytest.mark.motion
 def test_fluid_velocity():
     """
     Verify current velocity calculation based on emitter source and flow intensity.
@@ -73,6 +74,7 @@ def test_fluid_velocity():
 
 
 @pytest.mark.fluids
+@pytest.mark.motion
 def test_raft_passively_drifts_in_fluid(mock_board, mock_raft):
     """
     Verify raft intersecting an active fluid corridor acquires current velocity.
@@ -90,6 +92,7 @@ def test_raft_passively_drifts_in_fluid(mock_board, mock_raft):
 
 
 @pytest.mark.fluids
+@pytest.mark.motion
 def test_raft_halts_when_outside_fluid(mock_board, mock_raft):
     """
     Verify raft halts to zero velocity when not intersecting any fluid.
@@ -104,6 +107,7 @@ def test_raft_halts_when_outside_fluid(mock_board, mock_raft):
 
 
 @pytest.mark.fluids
+@pytest.mark.motion
 def test_surface_interception_passenger_on_raft(mock_board, mock_raft):
     """
     Verify passenger on a raft inherits raft drift and suppresses submersion.
@@ -132,6 +136,7 @@ def test_surface_interception_passenger_on_raft(mock_board, mock_raft):
 
 
 @pytest.mark.fluids
+@pytest.mark.motion
 def test_shoreline_normals():
     """
     Verify inward water normal vectors across cardinal bank orientations.
@@ -144,6 +149,7 @@ def test_shoreline_normals():
 
 
 @pytest.mark.fluids
+@pytest.mark.motion
 def test_direct_immersion_in_fluid_adds_velocity_and_spawns_splash(mock_board):
     """
     Verify un-rafted entity entering fluid acquires current velocity,
@@ -182,6 +188,7 @@ def test_direct_immersion_in_fluid_adds_velocity_and_spawns_splash(mock_board):
 
 
 @pytest.mark.fluids
+@pytest.mark.motion
 def test_entity_leaving_fluid_clears_submersion(mock_board):
     """
     Verify entity leaving fluid corridor clears submerged trigger.
@@ -199,6 +206,7 @@ def test_entity_leaving_fluid_clears_submersion(mock_board):
 
 
 @pytest.mark.fluids
+@pytest.mark.motion
 def test_lateral_fluid_flow_left(mock_board):
     """
     Verify lateral leftward fluid flow correctly imparts negative X velocity.
@@ -219,6 +227,7 @@ def test_lateral_fluid_flow_left(mock_board):
 
 
 @pytest.mark.fluids
+@pytest.mark.motion
 def test_projectiles_bypass_field_forces(mock_board, mock_projectile):
     """
     Verify ballistic projectiles ignore environmental fluid fields.
@@ -237,6 +246,7 @@ def test_projectiles_bypass_field_forces(mock_board, mock_projectile):
 
 
 @pytest.mark.fluids
+@pytest.mark.motion
 def test_fields_shoreline_entry_nudge_and_submerge(mock_board, mock_shoreline):
     """
     Verify crossing shoreline into water applies orthogonal step-down displacement,
@@ -262,6 +272,7 @@ def test_fields_shoreline_entry_nudge_and_submerge(mock_board, mock_shoreline):
 
 
 @pytest.mark.fluids
+@pytest.mark.motion
 def test_fields_shoreline_sheer_ledge_blocks_exit(mock_board, mock_shoreline):
     """
     Verify non-bidirectional sheer ledges nullify velocities directed against the bank.
