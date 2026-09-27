@@ -60,8 +60,13 @@ from libs.core.models import Position
 
 
 @pytest.fixture
-def mock_equipment() -> EquipmentGroup:
-    return EquipmentGroup(armor={}, tools={}, utilities={}, weapons={})
+def mock_equipment(mock_sheet_properties) -> EquipmentGroup:
+    return EquipmentGroup(
+        armor={}, 
+        tools={}, 
+        utilities={}, 
+        weapons=mock_sheet_properties.weapons
+    )
 
 
 @pytest.fixture
@@ -373,11 +378,13 @@ def mock_mapping_configuration() -> MappingConfiguration:
 def mock_configurations(
     mock_recipes_configuration, 
     mock_mapping_configuration,
-    mock_intention_configuration
+    mock_intention_configuration,
+    mock_plot_configuration
 ):
     return ConfigurationSchema(
         mappings=mock_mapping_configuration,
         recipes=mock_recipes_configuration,
-        intentions=mock_intention_configuration
+        intentions=mock_intention_configuration,
+        plots=mock_plot_configuration
     )
 

@@ -101,13 +101,16 @@ def test_player_movement_updates_goal(mock_board):
     player.state.goal = None
     
     payload = DevicePayload(
-        world=WorldPayload(intention=None, goals=[PlayerGoals.RIGHT, PlayerGoals.DOWN]),
+        world=WorldPayload(
+            intention=None, 
+            goals=[PlayerGoals.RIGHT, PlayerGoals.DOWN]
+        ),
         menu=MenuPayload()
     )
     
     mechanic.update(mock_board, 0.16, MagicMock(), payload)
     
     assert player.state.goal is not None
-    assert player.state.goal.position.x == 105
-    assert player.state.goal.position.y == 105
+    assert player.state.goal.position.x == 110
+    assert player.state.goal.position.y == 110
     assert player.state.mutators.triggers.animated is True

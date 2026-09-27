@@ -2,6 +2,7 @@
 # Ontology: tests.unit.test_app_game_mechanics_core
 
 Unit tests for core engine mechanics including Animation and Garbage Collection.
+
 """
 from unittest.mock import Mock, MagicMock
 import collections
@@ -11,6 +12,8 @@ from app.models.state import DevicePayload, MenuPayload, WorldPayload
 from app.assets.base import Animation
 from app.assets.animations import LifecycleAnimation
 
+# This is some of the shittiest test code I have ever seen...
+# TODO: this needs scrapped and remade from scratch. this is atrocious.
 
 def test_animation_mechanics_update():
     """
@@ -22,6 +25,7 @@ def test_animation_mechanics_update():
     mechanic = AnimationMechanics()
     payload = DevicePayload(menu=MenuPayload(), world=WorldPayload())
 
+    # what the literally fuck is this
     def make_asset(cat, inst):
         a = MagicMock()
         a.category = getattr(cat, 'value', cat)
@@ -38,6 +42,7 @@ def test_animation_mechanics_update():
         a.animation = MagicMock(spec=Animation)
         return a
 
+    # PLEASE FUCKING KILL ME
     effect_asset = make_asset(AssetCategories.EFFECTS, AssetInstances.PASSIVE)
     sheet_asset = make_asset(AssetCategories.SHEETS, AssetInstances.SPRITES)
     chest_asset = make_asset(AssetCategories.OBJECTS, AssetInstances.CHESTS)
@@ -54,10 +59,12 @@ def test_animation_mechanics_update():
     board.renderables.return_value = assets
     board.layers.return_value = ["0"]
 
+    # jesus fucking christ
     def mock_categories(cat, layer=None):
         val = getattr(cat, 'value', cat)
         return [a for a in assets if a.category == val]
-        
+
+    # it doesn't stop
     def mock_instances(inst, layer=None):
         val = getattr(inst, 'value', inst)
         return [a for a in assets if a.instance == val]

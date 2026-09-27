@@ -18,7 +18,6 @@ class CombatMap:
     """
     """
 
-
     @staticmethod
     def attackboxes(sprite: SpriteState, equipment: EquipmentGroup) -> List[Hitbox]:
         frame_key = settings.SEPARATOR.join([

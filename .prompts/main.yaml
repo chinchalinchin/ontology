@@ -72,4 +72,7 @@ tools:
         - configuration
         - properties
         - state
+        # - services
+        # - structures
+        # - menus
       workflow: intentions

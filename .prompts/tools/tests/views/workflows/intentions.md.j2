@@ -1,70 +1,59 @@
 ### View: Workflow Tests - Intentions
 
-#### tests.unit.game
+{# #### tests.unit.app.game.logic.modules
 
-##### tests.unit.game.logic
-
-###### tests.unit.game.logic.modules
-
-
-**tests/unit/game/logic/modules/test_app_game_logic_modules_paths.py**
+**tests/unit/game/logic/modules/test_paths.py**
 
 ```python
-{{ file(properties.paths.root + 'tests/unit/game/logic/modules/test_app_game_logic_modules_paths.py') }}
-```
+{{ file(properties.paths.root + 'tests/unit/app/game/logic/modules/test_paths.py') }}
+``` #}
 
+#### tests.unit.app.game.logic.modules.motion
 
-**tests/unit/game/logic/modules/test_app_game_logic_modules_motion_motive.py**
-
-```python
-{{ file(properties.paths.root + 'tests/unit/game/logic/modules/test_app_game_logic_modules_motion_motive.py') }}
-```
-
-###### tests.unit.game.logic.mechanics
-
-####### tests.unit.game.logic.mechanics.intentional
-
-
-**tests/unit/game/logic/mechanics/world/test_app_game_logic_mechanics_intentional_cognition.py**
+**tests/unit/app/game/logic/modules/motion/test_motive.py**
 
 ```python
-{{ file(properties.paths.root + 'tests/unit/game/logic/mechanics/intentional/test_app_game_logic_mechanics_intentional_cognition.py') }}
+{{ file(properties.paths.root + 'tests/unit/app/game/logic/modules/motion/test_motive.py') }}
 ```
 
-**tests/unit/game/logic/mechanics/world/test_app_game_logic_mechanics_intentional_navigation.py**
+#### tests.unit.app.game.logic.mechanics.intentional
+
+{# **tests/unit/app/game/logic/mechanics/intentional/test_cognition.py**
 
 ```python
-{{ file(properties.paths.root + 'tests/unit/game/logic/mechanics/intentional/test_app_game_logic_mechanics_intentional_cognition.py') }}
+{{ file(properties.paths.root + 'tests/unit/app/game/logic/mechanics/intentional/test_cognition.py') }}
 ```
 
-
-**tests/unit/game/logic/mechanics/world/test_app_game_logic_mechanics_intentional_transition.py**
+**tests/unit/app/game/logic/mechanics/intentional/test_navigation.py**
 
 ```python
-{{ file(properties.paths.root + 'tests/unit/game/logic/mechanics/intentional/test_app_game_logic_mechanics_intentional_transition.py') }}
-```
+{{ file(properties.paths.root + 'tests/unit/app/game/logic/mechanics/intentional/test_navigation.py') }}
+``` #}
 
-
-#### tests.unit.services
-
-##### tests.unit.services.generators
-
-**tests/unit/services/generators/factory.py**
+**tests/unit/app/game/logic/mechanics/intentional/test_transition.py**
 
 ```python
-{{ file(properties.paths.root + 'tests/unit/services/generators/tests_factory.py')}}
+{{ file(properties.paths.root + 'tests/unit/app/game/logic/mechanics/intentional/test_transition.py') }}
 ```
 
-##### tests.unit.services.translators
+#### tests.unit.app.services.generators.game
 
-**tests/unit/services/translators/test_app_services_translators_compiler.py**
+**tests/unit/app/services/generators/game/test_factory.py**
 
 ```python
-{{ file(properties.paths.root + 'tests/unit/services/translators/test_app_services_translators_compiler.py') }}
+{{ file(properties.paths.root + 'tests/unit/app/services/generators/game/test_factory.py')}}
 ```
 
-**tests/unit/services/transloatrs/test_app_services_translator_lamb.py**
+{# #### tests.unit.app.services.translators
+
+**tests/unit/app/services/translators/test_compiler.py**
 
 ```python
-{{ file(properties.paths.root + 'tests/unit/services/translators/test_app_services_translators_lamb.py') }}
+{{ file(properties.paths.root + 'tests/unit/app/services/translators/test_compiler.py') }}
 ```
+
+**tests/unit/app/services/translators/test_lambda.py**
+
+```python
+{{ file(properties.paths.root + 'tests/unit/app/services/translators/test_lambda.py') }}
+``` #}

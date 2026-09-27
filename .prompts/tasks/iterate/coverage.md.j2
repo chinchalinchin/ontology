@@ -2,7 +2,7 @@
 
 **Context**
 
-Application fixtures have recently been reorganized and streamlined for reuse, rather than recreating them for every single test. This is an ongoing effort. Tests that have been fully migrated can be determined by the test file name. Prior to fixture migration, the test files were in a single directory and followed a `test_<path-to-module>.py` file name schema. After the fixture migration, tests are now organized in a package structure similar to the application itself, with a naming schema `tests.unit.<path-to-package>.test_<module>.py`. 
+Application fixtures have recently been reorganized and streamlined for reuse, rather than recreating them for every single test. This is an ongoing effort. Tests that have been migrated or are in the process of migration can be determined by the test file name. Prior to fixture migration, the test files were in a single directory and followed a `test_<path-to-module>.py` file name schema. After the fixture migration, tests are now organized in a package structure similar to the application itself, with a naming schema `tests.unit.<path-to-package>.test_<module>.py`. 
 
 However, some of the tests are now failing due to some of the fixtures not being migrated with perfect fidelity. Examine the tests, determine the intent and update them to use the new fixtures. If fixtures have to be added or updated, ensure the fixtures are not added adhoc, but fit into the existing testbed.
 
