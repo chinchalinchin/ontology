@@ -68,9 +68,8 @@ def test_raft_passively_drifts_in_fluid(mock_board, mock_raft, mock_fluid):
     """
     Verify raft intersecting an active fluid corridor acquires current velocity.
     """
-    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
-    fluid.state.length = 100
-    fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(32, 100))]
+    mock_fluid.state.length = 100
+    mock_fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(32, 100))]
 
     mock_raft.state.position = Position(x=70, y=50)
 
