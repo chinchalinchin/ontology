@@ -1,5 +1,5 @@
 """
-# Ontology: tests.unit.test_app_game_logic_modules_motion_kinematic.py
+# Ontology: tests.unit.app.game.logic.modules.motion.test_kinematic
 """
 # Standard Libraries
 import math
@@ -32,7 +32,9 @@ def test_kinematic_movement_orthogonal(mock_player):
 @pytest.mark.motion
 def test_kinematic_movement_diagonal(mock_player):
     payload = DevicePayload(
-        world=WorldPayload(goals=[PlayerGoals.UP, PlayerGoals.RIGHT]),
+        world=WorldPayload(
+            goals=[PlayerGoals.UP, PlayerGoals.RIGHT]
+        ),
         menu=MenuPayload()
     )
     

@@ -1,16 +1,21 @@
 """
-# Ontology: tests.unit.test_app_game_logic_maps.py
+# Ontology: tests.unit.app.game.logic.modules.test_app_game_logic_modules_maps
 """
 import pytest
 from unittest.mock import MagicMock
 
 from app.game.logic.modules.maps import AnimationMap, CombatMap
 from app.config.enums import Intentions, Actions, Directions
-from libs.core.models import Position, Dimensions, Hitbox
 from app.models.state import SpriteState, AnimationState, Inventory, Equipment
 from app.models.properties import SheetProperties
 from app.models.groups import EquipmentGroup
 
+# Cython Libraries
+from libs.core.models import (
+    Position, 
+    Dimensions, 
+    Hitbox
+)
 
 def test_animation_map_action_idle():
     state = MagicMock(intention=Intentions.IDLE)

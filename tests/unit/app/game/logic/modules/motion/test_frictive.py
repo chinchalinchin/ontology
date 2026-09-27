@@ -1,5 +1,5 @@
 """
-# Ontology: tests.unit.game.logic.modules.test_app_game_logic_modules_motion_frictive
+# Ontology: tests.unit.game.logic.modules.motion.test_frictive
 """
 # Standard Libaries
 from unittest.mock import MagicMock

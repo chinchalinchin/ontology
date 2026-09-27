@@ -1,5 +1,5 @@
 """
-# Ontology: tests.unit.test_app_game_logic_modules_motion_motive
+# Ontology: tests.unit.app.game.logic.modules.motion.motive
 """
 # External Libraries
 import pytest
@@ -114,8 +114,6 @@ def test_motive_rvo_opposing_corridor_steering(
     )
 
     motive.update([mock_sprite, mock_sprite_alt], mock_board, 1.0)
-
-    print(mock_sprite.state.velocity.vx)
 
     # RVO avoidance must cause lateral steering deviation or velocity adjustment
     assert mock_sprite.state.velocity.vx != 10.0 or mock_sprite.state.velocity.vy != 0.0
