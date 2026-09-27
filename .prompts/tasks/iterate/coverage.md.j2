@@ -4,6 +4,8 @@
 
 Application fixtures have recently been reorganized and streamlined for reuse rather than recreating them for every single test. However, some of the tests are now failing due to some of the fixtures not being migrated with fidelity. Examine the tests, determine the intent and update them to use the new fixtures. If fixtures have to be added or updated, ensure the fixtures are not added adhoc, but fit into the existing testbed.
 
+In addition, the Mechanics interface has recently been updated to include an optional executor and the Factory method for Mechanics has been updated to inject the appropriate executor. Factory unit tests have already been updated to reflect the new setup, but Intentional Mechanics unit tests have not yet been updated to accomodate.
+
 **Priorities**
       
 - Debug the current run of the test pipeline located in the [Test Console](#view-test-console) section
@@ -14,7 +16,7 @@ Application fixtures have recently been reorganized and streamlined for reuse ra
 
 - Ensure all new tests are marked with a `@pytest.mark.<workflow>` annotation. Add workflows to `pytest.ini` sparingly.
 - Do **not** test code you haven't seen.
-- Add any fixtures to appropiate fixture module.
+- Add any fixtures to the appropriate fixture module.
 - Do **not** create fixtures in the test itself; Tests should request fixtures and use them.
 - Treat `tests.unit.fixtures` as a test bed for constructing application objects. Fixtures should not be created in an adhoc manner; rather fixtures should exemplify and construct the application dependency tree prior to the execution of tests. 
     - **Example**: Do not construct a Hitbox in isolation to test a collision workflow; create the configuration, property and state fixtures necessary to bootstrap an Asset with that Hitbox so the application will initialize with the required data structures.

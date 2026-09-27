@@ -1,5 +1,13 @@
 ### View: Workflow - Intentions
 
+#### data 
+
+**src/data/config/intentions/main.yaml**
+
+```yaml
+{{ file(properties.paths.root + 'src/data/config/intentions/main.yaml')}}
+```
+
 #### app.assets
 
 **src/app/assets/base.py**
@@ -32,10 +40,10 @@
 
 ###### app.game.logic.mechanics.core 
 
-***src/app/game/logic/mechanics/core/animation.py**
+***src/app/game/logic/mechanics/core/motion.py**
 
 ```python
-{{ file(properties.paths.root + 'src/app/game/logic/mechanics/core/animation.py') }}
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/core/motion.py') }}
 ```
 
 ###### app.game.logic.mechanics.intentional
@@ -98,6 +106,34 @@
 {{ file(properties.paths.root + 'src/app/models/state/sprites.py' ) }}
 ```
 
+#### app.services
+
+##### app.services.generators
+
+###### app.services.generators.game
+
+**src/app/services/generators/game/factory.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/generators/game/factory.py') }}
+```
+
+##### app.services.orchestration
+
+**src/app/services/orchestration/builder.py**
+
+```python
+{{ file(properties.path.root + 'src/app/services/orchestration/builder.py') }}
+```
+
+##### app.services.translators
+
+**src/app/services/translators/base.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/translators/base.py') }}
+```
+
 #### libs.core
 
 **src/libs/core/models.pyx**
@@ -118,4 +154,10 @@
 
 ```cython
 {{ file(properties.paths.root + 'src/libs/core/math/paths.pyx') }}
+```
+
+**libs/core/math/physics.pyx**
+
+```cython
+{{ file(properties.paths.root + 'src/libs/core/math/physics.pyx') }}
 ```

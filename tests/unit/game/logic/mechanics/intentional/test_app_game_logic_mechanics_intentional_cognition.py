@@ -155,7 +155,7 @@ def test_cognition_ideate_dialogue_target(mock_board):
     sprite.state.mutators.parameters.vision.radius = 100
     sprite.state.layer = "1"
     sprite.state.goal = Goal(
-        name="wander", 
+        name=WANDER, 
         category=Goals.POSITION.value, 
         position=Position(100, 100)
     )
@@ -167,7 +167,7 @@ def test_cognition_ideate_dialogue_target(mock_board):
     
     assert sprite.state.goal.category == Goals.SUBJECT.value
     assert sprite.state.goal.name == player.name
-    assert "wander" in sprite.state.memory.goals
+    assert WANDER in sprite.state.memory.goals
 
 @pytest.mark.intentions
 def test_cognition_remember_idle_only(mock_board):
@@ -243,7 +243,11 @@ def test_cognition_project_escape(mock_board):
     sprite.state.intention = Intentions.ESCAPE.value
     sprite.state.mutators.triggers.vision = True
     sprite.state.position = Position(100, 100)
-    sprite.state.goal = Goal(name="threat", category=Goals.TARGET.value, position=Position(80, 80))
+    sprite.state.goal = Goal(
+        name="threat", 
+        category=Goals.TARGET.value, 
+        position=Position(80, 80)
+    )
 
     mechanic._project(sprite, mock_board)
 
@@ -277,7 +281,10 @@ def test_cognition_complete(mock_board):
 
     player = mock_board.player()
     player.state.mutators.triggers.dead = False
-    sprite.state.goal = Goal(name=player.name, category=Goals.TARGET.value)
+    sprite.state.goal = Goal(
+        name=player.name, 
+        category=Goals.TARGET.value
+    )
     assert CognitionMechanics.complete(sprite, mock_board) is False
 
     player.state.mutators.triggers.dead = True

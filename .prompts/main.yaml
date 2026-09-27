@@ -51,6 +51,7 @@ tools:
         action: refactor
       docs:
         exclude:
+          - index.md
           - 03-compositions.md
           - 06-widgets.md
           - 07-sounds.md

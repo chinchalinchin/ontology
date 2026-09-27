@@ -16,6 +16,8 @@ from app.services.translators.lamb import (
     LambdaExecutor
 )
 
+
+@pytest.mark.intentions
 def test_lambda_compiles_successfully(mock_intention_configuration):
     translator = LambdaTranslator()
     executor = translator.compile(mock_intention_configuration)
@@ -26,6 +28,7 @@ def test_lambda_compiles_successfully(mock_intention_configuration):
     assert executor.transitions[Intentions.IDLE.value][0].next == Intentions.ATTACK.value
 
 
+@pytest.mark.intentions
 def test_lambda_evaluation_matches_first_condition(mock_intention_configuration):
     translator = LambdaTranslator()
     executor = translator.compile(mock_intention_configuration)
@@ -41,6 +44,7 @@ def test_lambda_evaluation_matches_first_condition(mock_intention_configuration)
     assert result == Intentions.ATTACK.value
 
 
+@pytest.mark.intentions
 def test_lambda_evaluation_matches_second_condition(mock_intention_configuration):
     translator = LambdaTranslator()
     executor = translator.compile(mock_intention_configuration)
@@ -56,6 +60,7 @@ def test_lambda_evaluation_matches_second_condition(mock_intention_configuration
     assert result == Intentions.WANDER.value
 
 
+@pytest.mark.intentions
 def test_lambda_evaluation_with_dictionary_lookup(mock_intention_configuration):
     translator = LambdaTranslator()
     executor = translator.compile(mock_intention_configuration)
@@ -71,6 +76,7 @@ def test_lambda_evaluation_with_dictionary_lookup(mock_intention_configuration):
     assert result == Intentions.IDLE.value
 
 
+@pytest.mark.plots
 def test_lambda_evaluation_with_plot_metadata(mock_plot_configuration):
     translator = LambdaTranslator()
     executor = translator.compile(mock_plot_configuration)
@@ -83,6 +89,7 @@ def test_lambda_evaluation_with_plot_metadata(mock_plot_configuration):
     assert result == "town-unlocked"
 
 
+@pytest.mark.intentions
 def test_lambda_evaluation_attribute_error_handling(mock_intention_configuration):
     translator = LambdaTranslator()
     executor = translator.compile(mock_intention_configuration)
@@ -96,7 +103,8 @@ def test_lambda_evaluation_attribute_error_handling(mock_intention_configuration
 
     assert result is None
 
-    
+
+@pytest.mark.intentions
 def test_lambda_evaluation_with_environ_functions(mock_intention_configuration):
     translator = LambdaTranslator()
     executor = translator.compile(mock_intention_configuration)
@@ -115,9 +123,10 @@ def test_lambda_evaluation_with_environ_functions(mock_intention_configuration):
         {"sprite": sprite_mock, "sprites": {"target": target_mock}}
     )
 
-    assert result == "interact"
+    assert result == Intentions.INTERACT.value
 
-    
+
+@pytest.mark.intentions
 def test_lambda_evaluation_unknown_state(mock_intention_configuration):
     translator = LambdaTranslator()
     executor = translator.compile(mock_intention_configuration)
@@ -126,6 +135,7 @@ def test_lambda_evaluation_unknown_state(mock_intention_configuration):
     assert result is None
 
 
+@pytest.mark.intentions
 def test_lambda_ignores_bad_syntax(mock_intention_configuration):
     translator = LambdaTranslator()
     executor = translator.compile(mock_intention_configuration)

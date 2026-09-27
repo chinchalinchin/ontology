@@ -13,7 +13,6 @@ from typing import (
     List,
     Any
 )
-from enum import Enum
 
 # Application Libraries
 import app.config.settings as settings
