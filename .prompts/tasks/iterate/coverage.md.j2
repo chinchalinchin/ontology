@@ -2,15 +2,19 @@
 
 **Context**
 
-Application fixtures have recently been reorganized and streamlined for reuse rather than recreating them for every single test. However, some of the tests are now failing due to some of the fixtures not being migrated with fidelity. Examine the tests, determine the intent and update them to use the new fixtures. If fixtures have to be added or updated, ensure the fixtures are not added adhoc, but fit into the existing testbed.
+Application fixtures have recently been reorganized and streamlined for reuse, rather than recreating them for every single test. This is an ongoing effort. Tests that have been fully migrated can be determined by the test file name. Prior to fixture migration, the test files were in a single directory and followed a `test_<path-to-module>.py` file name schema. After the fixture migration, tests are now organized in a package structure similar to the application itself, with a naming schema `tests.unit.<path-to-package>.test_<module>.py`. 
 
-In addition, the Mechanics interface has recently been updated to include an optional executor and the Factory method for Mechanics has been updated to inject the appropriate executor. Factory unit tests have already been updated to reflect the new setup, but Intentional Mechanics unit tests have not yet been updated to accomodate.
+However, some of the tests are now failing due to some of the fixtures not being migrated with perfect fidelity. Examine the tests, determine the intent and update them to use the new fixtures. If fixtures have to be added or updated, ensure the fixtures are not added adhoc, but fit into the existing testbed.
+
+In addition, in a separate and unrelated refactor, the Mechanics interface has recently been updated to include an optional executor and the Factory method for Mechanics has been updated to inject the appropriate executor. 
 
 **Priorities**
       
 - Debug the current run of the test pipeline located in the [Test Console](#view-test-console) section
+{# 
 - (*Optional*) Add unit test coverage for any new functionality implemented.
 - (*Optional*) Add any unit tests for any areas of the code not already covered.
+#}
 
 **Coverage Guidelines**
 

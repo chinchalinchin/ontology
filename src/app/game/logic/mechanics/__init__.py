@@ -18,7 +18,8 @@ from app.game.logic.mechanics.intentional import (
     TransitionMechanics,
     PlayerMechanics,
     CognitionMechanics,
-    NavigationMechanics
+    NavigationMechanics,
+    WANDER
 )
 from app.game.logic.mechanics.world import (
     PlotMechanics,
@@ -44,6 +45,7 @@ __all__ = [
     'PlayerMechanics',
     'CognitionMechanics',
     'NavigationMechanics',
+    'WANDER',
     # 
     'PlotMechanics',
     'FluidMechanics'

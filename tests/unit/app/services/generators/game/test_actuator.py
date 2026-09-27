@@ -1,5 +1,5 @@
 """
-# Ontology: tests.unit.test_app_services_generators_game_actuator
+# Ontology: tests.unit.services.generators.game.test_actuator
 """
 # External Libraries
 import pytest
@@ -215,7 +215,7 @@ def test_actuator_generates_and_purges_shorelines(
 def test_actuator_water_meeting_water_suppresses_shorelines(
     mock_board,
     mock_actuator,
-    mock_fluid_adjacent
+    mock_fluid_alt2
 ):
     """
     Verify that when water meets water across overlapping fluid bounds,
@@ -224,7 +224,7 @@ def test_actuator_water_meeting_water_suppresses_shorelines(
     fluid1 = mock_board.instances(AssetInstances.FLUIDS.value)[0]
 
     # Add adjacent fluid fixture directly touching East flank of fluid1
-    mock_board.add([mock_fluid_adjacent])
+    mock_board.add([mock_fluid_alt2])
 
     mock_actuator.pump(fluid1, mock_board)
 

@@ -11,21 +11,20 @@ from app.assets.base import (
 )
 from app.assets.frames import (
     FluidFrame,
-    ShorelineFrame
+    IterableFrame,
+    ShorelineFrame,
+    SingleFrame,
+    SpriteFrame,
 )
 from app.assets.animations import (
-    LifecycleAnimation
+    NoAnimation,
+    BinaryAnimation,
+    LifecycleAnimation,
+    SpriteAnimation
 )
 from app.config.enums import ( 
-    # -------- ASSET HIERARCHY
     AssetCategories, 
     AssetInstances,
-)
-
-# Test Libraries
-from tests.unit.conftest import (
-    DummyAnimation,
-    DummyFrame
 )
 
 # --------------------------------------------------------------------------
@@ -47,8 +46,8 @@ def mock_back_tile(
         ), 
         properties = mock_tile_properties.back.get('tile-1'), 
         state = mock_multiplier_state, 
-        frame = DummyFrame(), 
-        animation = DummyAnimation()
+        frame = SingleFrame(), 
+        animation = NoAnimation()
     )
 
 
@@ -68,7 +67,7 @@ def mock_shoreline(
         properties = mock_geography_properties.shorelines.get('grassy-shore'), 
         state = mock_shoreline_state, 
         frame = ShorelineFrame(tile_w=32, tile_l=32),
-        animation = DummyAnimation()
+        animation = NoAnimation()
     )
 
 
@@ -89,8 +88,8 @@ def mock_sprite(
         ), 
         properties = mock_sheet_properties.sprites.get('jasilynn'), 
         state = mock_sprite_state, 
-        frame = DummyFrame(), 
-        animation = DummyAnimation()
+        frame = SpriteFrame(), 
+        animation = SpriteAnimation()
     )
 
 
@@ -111,8 +110,8 @@ def mock_sprite_alt(
         ), 
         properties = mock_sheet_properties.sprites.get('sprite'), 
         state = mock_sprite_state_alt, 
-        frame = DummyFrame(), 
-        animation = DummyAnimation()
+        frame = SpriteFrame(), 
+        animation = SpriteAnimation()
     )
 
 
@@ -130,8 +129,8 @@ def mock_player(
         ), 
         properties = mock_sheet_properties.sprites.get('player'), 
         state = mock_player_state, 
-        frame = DummyFrame(), 
-        animation = DummyAnimation()
+        frame = SpriteFrame(), 
+        animation = SpriteAnimation()
     )
 
 
@@ -149,8 +148,8 @@ def mock_projectile(
         ),
         properties = mock_cursor_properties.projectiles.get('arrow-1'),
         state = mock_motor_state, 
-        frame = DummyFrame(),
-        animation = DummyAnimation()
+        frame = SingleFrame(),
+        animation = NoAnimation()
     )
 
 
@@ -168,8 +167,8 @@ def mock_strut(
         ), 
         properties = mock_craft_properties.struts.get('strut-castle'), 
         state = mock_property_state, 
-        frame = DummyFrame(), 
-        animation = DummyAnimation()
+        frame = SingleFrame(), 
+        animation = NoAnimation()
     )
 
 
@@ -188,8 +187,8 @@ def mock_strut_alt(
         ), 
         properties = mock_craft_properties.struts.get('strut-wall'),
         state = mock_property_state_alt, 
-        frame = DummyFrame(), 
-        animation = DummyAnimation()
+        frame = SingleFrame(), 
+        animation = NoAnimation()
     )
 
 
@@ -208,8 +207,8 @@ def mock_strut_alt2(
         ), 
         properties = mock_craft_properties.struts.get('strut-floor'), 
         state = mock_property_state_alt2, 
-        frame = DummyFrame(), 
-        animation = DummyAnimation()
+        frame = SingleFrame(), 
+        animation = NoAnimation()
     )
 
 
@@ -230,8 +229,8 @@ def mock_raft(
         ), 
         properties = mock_object_properties.rafts.get('wood-raft'), 
         state = mock_positional_state_alt, 
-        frame = DummyFrame(), 
-        animation = DummyAnimation()
+        frame = SingleFrame(), 
+        animation = NoAnimation()
     )
 
 
@@ -252,8 +251,30 @@ def mock_crate(
         ), 
         properties = mock_object_properties.crates.get('wood-crate'),
         state = mock_positional_state, 
-        frame = DummyFrame(), 
-        animation = DummyAnimation()
+        frame = SingleFrame(), 
+        animation = NoAnimation()
+    )
+
+
+@pytest.fixture
+def mock_crate_alt(
+    mock_object_properties,
+    mock_positional_state_alt2
+) -> Asset:
+    """
+    Secondary crate asset fixture positioned upstream of fluid emitters.
+    """
+    return Asset(
+        taxonomy=Taxonomy(
+            id="wood-crate",
+            name="box-upstream",
+            category=AssetCategories.OBJECTS.value,
+            instance=AssetInstances.CRATES.value
+        ),
+        properties=mock_object_properties.crates.get("wood-crate"),
+        state=mock_positional_state_alt2,
+        frame=SingleFrame(),
+        animation=NoAnimation()
     )
 
 
@@ -271,8 +292,8 @@ def mock_gate(
         ),
         properties = mock_object_properties.gates.get('castle-gate'),
         state = mock_switch_state, 
-        frame = DummyFrame(),
-        animation = DummyAnimation()
+        frame = IterableFrame(),
+        animation = BinaryAnimation()
     )
 
 
@@ -321,6 +342,28 @@ def mock_fluid_alt(
 
 
 @pytest.fixture
+def mock_fluid_alt2(
+    mock_effect_properties,
+    mock_fluid_state_alt2
+) -> Asset:
+    """
+    Secondary parallel fluid emitter fixture for boundary occlusion tests.
+    """
+    return Asset(
+        taxonomy=Taxonomy(
+            id="waterflow-01",
+            name="fluid-adjacent",
+            category=AssetCategories.EFFECTS.value,
+            instance=AssetInstances.FLUIDS.value
+        ),
+        properties=mock_effect_properties.fluids.get("waterflow-01"),
+        state=mock_fluid_state_alt2,
+        frame=FluidFrame(tile_w=32, tile_l=32),
+        animation=LifecycleAnimation()
+    )
+
+
+@pytest.fixture
 def mock_door(
     mock_object_properties,
     mock_door_state
@@ -337,62 +380,20 @@ def mock_door(
         ), 
         properties = mock_object_properties.doors.get('door-front'), 
         state = mock_door_state, 
-        frame = DummyFrame(), 
-        animation = DummyAnimation()
+        frame = SingleFrame(), 
+        animation = NoAnimation()
     )
 
-
-@pytest.fixture
-def mock_crate_alt(
-    mock_object_properties,
-    mock_positional_state_alt2
-) -> Asset:
-    """
-    Secondary crate asset fixture positioned upstream of fluid emitters.
-    """
-    return Asset(
-        taxonomy=Taxonomy(
-            id="wood-crate",
-            name="box-upstream",
-            category=AssetCategories.OBJECTS.value,
-            instance=AssetInstances.CRATES.value
-        ),
-        properties=mock_object_properties.crates.get("wood-crate"),
-        state=mock_positional_state_alt2,
-        frame=DummyFrame(),
-        animation=DummyAnimation()
-    )
-
-
-@pytest.fixture
-def mock_fluid_adjacent(
-    mock_effect_properties,
-    mock_fluid_state_adjacent
-) -> Asset:
-    """
-    Secondary parallel fluid emitter fixture for boundary occlusion tests.
-    """
-    return Asset(
-        taxonomy=Taxonomy(
-            id="waterflow-01",
-            name="fluid-adjacent",
-            category=AssetCategories.EFFECTS.value,
-            instance=AssetInstances.FLUIDS.value
-        ),
-        properties=mock_effect_properties.fluids.get("waterflow-01"),
-        state=mock_fluid_state_adjacent,
-        frame=FluidFrame(tile_w=32, tile_l=32),
-        animation=LifecycleAnimation()
-    )
 
 @pytest.fixture
 def mock_assets(
+    mock_back_tile,
     mock_player,
     mock_sprite,
     mock_sprite_alt,
-    mock_back_tile,
     mock_fluid,
     mock_fluid_alt,
+    mock_fluid_alt2,
     mock_door,
     mock_crate,
     mock_gate,
@@ -402,12 +403,13 @@ def mock_assets(
     mock_raft
 ):
     return [
+        mock_back_tile,
         mock_sprite, 
         mock_sprite_alt,
-        mock_back_tile,
         mock_player,
         mock_fluid,
         mock_fluid_alt,
+        mock_fluid_alt2,
         mock_door,
         mock_gate,
         mock_crate,

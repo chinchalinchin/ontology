@@ -292,7 +292,7 @@ def mock_fluid_state_alt() -> FluidState:
 
 
 @pytest.fixture
-def mock_fluid_state_adjacent() -> FluidState:
+def mock_fluid_state_alt2() -> FluidState:
     """
     Secondary fluid emitter state adjacent to fluid-1's East flank.
     """

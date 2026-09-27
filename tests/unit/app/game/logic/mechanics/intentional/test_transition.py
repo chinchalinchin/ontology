@@ -1,5 +1,5 @@
 """
-# Ontology: tests.unit.test_app_game_logic_intentional_transition
+# Ontology: tests.unit.app.game.logic.mechanics.intentional.test_transition
 
 Unit tests for TransitionMechanics.
 """
@@ -11,7 +11,7 @@ import collections
 import pytest
 
 # Application Libraries
-from app.game.logic.mechanics.intentional.transition import TransitionMechanics
+from app.game.logic.mechanics import TransitionMechanics
 from app.config.enums import (
     Intentions, 
     Actions, 

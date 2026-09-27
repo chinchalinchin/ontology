@@ -1,5 +1,5 @@
 """
-# Ontology: tests.unit.test_app_assets_frames
+# Ontology: tests.unit.app.assets.test_frames
 """
 # Application Libraries
 from app.config.settings import SEPARATOR
@@ -49,6 +49,8 @@ from libs.core.models import (
     Hitbox
 )
 
+
+# TODO: refactor these tests to use fixtures
 
 def test_no_frame():
     frame = NoFrame()

@@ -1,5 +1,5 @@
 """
-# Ontology: tests.unit.test_app_game_logic_mechanics_intentional_cognition
+# Ontology: tests.unit.logic.mechanics.intentional.test_cognition
 """
 # External Libraries
 import pytest
@@ -10,7 +10,7 @@ from app.config.enums import (
     Intentions,
     AssetInstances
 )
-from app.game.logic.mechanics.intentional.cognition import (
+from app.game.logic.mechanics import (
     CognitionMechanics, 
     WANDER
 )

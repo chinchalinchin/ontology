@@ -1,26 +1,43 @@
 """
-# Ontology: tests.unit.test_app_game_logic_mechanics_intentional_navigation
+# Ontology: tests.unit.game.logic.mechanics.intentional.test_navigation
 """
+# Standard Libraries
 from collections import deque
 from unittest.mock import MagicMock, patch
 
+# External Libraries
 import pytest
-from app.config.enums import Goals, Intentions
+
+# Application Libraries
+from app.config.enums import (
+    Goals, 
+    Intentions
+)
 import app.config.settings as settings
-from app.game.logic.mechanics.intentional.navigation import NavigationMechanics
-from app.models.state import Goal, DevicePayload
-from libs.core.models import Position, Boundary, Dimensions
+from app.game.logic.mechanics import NavigationMechanics
+from app.models.state import (
+    Goal, 
+    DevicePayload
+)
+
+# Cython Libraries
+from libs.core.models import (
+    Position, 
+    Boundary, 
+    Dimensions
+)
 
 
-## TODO: MOVE FIXTURES INTO DEDICATED MODULE
+## TODO: MOVE FIXTURES AND THEIR DEPENDENCIES INTO DEDICATED MODULE
 
 # -----------------------------------------------------------------------------
 # -------------------------------------------------------- FIXTURE DEPENDENCIES
 # -----------------------------------------------------------------------------
 
-from app.config.enums import (
-    AssetCategories,
-    AssetInstances
+# Application Libraries
+from app.assets.base import (
+    Asset,
+    Taxonomy
 )
 from app.models.state import (
     PropertyState
@@ -28,14 +45,15 @@ from app.models.state import (
 from app.models.properties import (
     CraftProperties
 )
-from app.assets.base import (
-    Asset,
-    Taxonomy
+from app.assets.frames import SingleFrame
+from app.assets.animations import NoAnimation
+
+from app.config.enums import (
+    AssetCategories,
+    AssetInstances
 )
-from tests.unit.conftest import (
-    DummyFrame,
-    DummyAnimation
-)
+
+# Cython Libraries
 from libs.core.models import Hitbox
 
 # -----------------------------------------------------------------------------
@@ -61,7 +79,7 @@ def mock_offset_hitbox_asset():
         position=Position(x=150, y=150),
         owner="player"
     )
-    return Asset(tax, props, state, DummyFrame(), DummyAnimation())
+    return Asset(tax, props, state, SingleFrame(), NoAnimation())
 
 
 @pytest.fixture
@@ -85,7 +103,7 @@ def mock_multi_hitbox_asset():
         position=Position(x=250, y=250),
         owner="player"
     )
-    return Asset(tax, props, state, DummyFrame(), DummyAnimation())
+    return Asset(tax, props, state, SingleFrame(), NoAnimation())
 
 # ---------------------------------------------------------------------------
 # ANCHOR & OBSTACLE TESTS

@@ -1,7 +1,10 @@
 """
-# Ontology: tests.unit.test_app_assets_animations
+# Ontology: tests.unit.app.assets.test_animations
 """
+# Standard Libraries
 from unittest.mock import MagicMock
+
+# Application Libraries
 from app.assets.animations.core import (
     NoAnimation, 
     BinaryAnimation, 
@@ -22,8 +25,12 @@ from app.models.state import (
     MutatorTriggers
 )
 from app.models.state.objects import AttachmentState
+
+# Cython Libraries
 from libs.core.models import Dimensions
 
+
+# TODO: refactor these tests to use fixtures
 
 def test_no_animation():
     animation = NoAnimation()

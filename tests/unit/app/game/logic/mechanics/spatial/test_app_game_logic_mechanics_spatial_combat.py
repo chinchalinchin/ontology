@@ -1,14 +1,19 @@
 """
 # Ontology: tests.unit.test_app_game_logic_mechanics_spatial_combat.py
 """
-import pytest
+# Standard Libraries
 from unittest.mock import MagicMock
 
-from app.game.logic.mechanics.spatial.combat import CombatMechanics
-from app.config.enums import Intentions, AssetInstances, AssetCategories
-from libs.core.models import Position, Dimensions, Hitbox
-from app.assets.base import Asset, Taxonomy
-from app.models.properties import SheetProperties, EffectProperties, Lifecycle
+# External Libraries
+import pytest
+
+# Application Libraries
+from app.game.logic.mechanics import CombatMechanics
+from app.config.enums import (
+    Intentions, 
+    AssetInstances, 
+    AssetCategories
+)
 from app.models.state import (
     SpriteState, 
     PlayerState, 
@@ -21,8 +26,36 @@ from app.models.state import (
     ReactableState
 )
 from app.models.groups import EquipmentGroup
-from tests.unit.conftest import DummyFrame, DummyAnimation
 
+# Cython Libraries
+from libs.core.models import (
+    Position, 
+    Dimensions, 
+    Hitbox
+)
+
+# TODO: MIGRATE ALL OF THIS SLOP INTO PROPER FIXTURES
+
+# --------------------------------------------------------------------------------------
+
+from app.models.groups import EquipmentGroup
+from app.assets.base import (
+    Asset, 
+    Taxonomy
+)
+from app.assets.frames import (
+    SpriteFrame,
+    IterableFrame
+)
+from app.assets.animations import (
+    SpriteAnimation,
+    LifecycleAnimation
+)
+from app.models.properties import (
+    SheetProperties, 
+    EffectProperties, 
+    Lifecycle
+)
 
 def _create_player_attacker(x=10, y=10, action="slash", direction="right", frame=3, strength=20):
     tax = Taxonomy("player-1", "hero", AssetCategories.SHEETS.value, AssetInstances.PLAYERS.value)
@@ -39,7 +72,7 @@ def _create_player_attacker(x=10, y=10, action="slash", direction="right", frame
         intention=Intentions.ATTACK
     )
     state.inventory.equipment.weapon = "shortsword"
-    return Asset(tax, props, state, DummyFrame(), DummyAnimation())
+    return Asset(tax, props, state, SpriteFrame(), SpriteAnimation())
 
 
 def _create_sprite_target(x=50, y=20, defense=5, health=50):
@@ -59,7 +92,7 @@ def _create_sprite_target(x=50, y=20, defense=5, health=50):
         mutators=Mutators(triggers=MutatorTriggers(dead=False)),
         animation=AnimationState(frame=0, tick=0)
     )
-    return Asset(tax, props, state, DummyFrame(), DummyAnimation())
+    return Asset(tax, props, state, SpriteFrame(), SpriteAnimation())
 
 
 def _create_reactable_target(x=50, y=20):
@@ -79,7 +112,7 @@ def _create_reactable_target(x=50, y=20):
         intention=Intentions.ATTACK.value,
         active=False
     )
-    return Asset(tax, props, state, DummyFrame(), DummyAnimation())
+    return Asset(tax, props, state, IterableFrame(), LifecycleAnimation())
 
 
 def _create_equipment():
@@ -96,7 +129,9 @@ def _create_equipment():
         weapons={"shortsword": shortsword_props}
     )
 
+# --------------------------------------------------------------------------------------
 
+@pytest.mark.combat
 def test_combat_mechanics_melee_resolution(mock_board):
     mechanic = CombatMechanics()
     attacker = _create_player_attacker(x=10, y=10, strength=20)
@@ -113,6 +148,7 @@ def test_combat_mechanics_melee_resolution(mock_board):
     assert target.state.mutators.triggers.dead is False
 
 
+@pytest.mark.combat
 def test_combat_mechanics_lethal_blow(mock_board):
     mechanic = CombatMechanics()
     attacker = _create_player_attacker(x=10, y=10, strength=100)
@@ -128,6 +164,7 @@ def test_combat_mechanics_lethal_blow(mock_board):
     assert target.state.mutators.triggers.dead is True
 
 
+@pytest.mark.combat
 def test_combat_mechanics_reactable_trigger(mock_board):
     mechanic = CombatMechanics()
     attacker = _create_player_attacker(x=10, y=10)
@@ -135,7 +172,8 @@ def test_combat_mechanics_reactable_trigger(mock_board):
 
     mock_board.equipment = _create_equipment()
     mock_board.layers = lambda: ["0"]
-    
+
+    # what the fuck is this AI slop bullshit?
     def mock_instances(inst, layer=None):
         if inst == AssetInstances.PLAYERS.value:
             return [attacker]
@@ -149,6 +187,7 @@ def test_combat_mechanics_reactable_trigger(mock_board):
     assert dummy.state.active is True
 
 
+@pytest.mark.combat
 def test_combat_mechanics_inactive_attackbox_filtered(mock_board):
     mechanic = CombatMechanics()
     # Frame 0 has no active attackboxes configured
@@ -163,6 +202,7 @@ def test_combat_mechanics_inactive_attackbox_filtered(mock_board):
     assert target.state.meters.health.current == 50
 
 
+@pytest.mark.combat
 def test_combat_mechanics_unarmed_bypasses_melee(mock_board):
     mechanic = CombatMechanics()
     attacker = _create_player_attacker(x=10, y=10)

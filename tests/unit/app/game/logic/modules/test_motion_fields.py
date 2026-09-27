@@ -2,30 +2,15 @@
 # Ontology: tests.unit.test_app_game_logic_modules_motion_fields
 """
 # Standard Libraries
-from unittest.mock import (
-    MagicMock,
-    patch
-)
+from unittest.mock import patch
 
 # External Libraries
 import pytest
 
-# Testing Libraries
-from tests.unit.conftest import DummyFrame, DummyAnimation
-
 # Application Libraires
-from app.assets.base import Asset, Taxonomy
 from app.config.enums import (
-    AssetCategories,
     AssetInstances,
     Directions
-)
-from app.game.logic.modules.motion import fields
-from app.models.properties import (
-    EffectProperties, 
-)
-from app.models.state import (
-    FluidState,
 )
 from app.game.logic.modules.motion import fields
 
@@ -53,29 +38,33 @@ def test_direction_vectors():
 
 @pytest.mark.fluids
 @pytest.mark.motion
-def test_fluid_velocity():
+def test_shoreline_normals():
     """
-    Verify current velocity calculation based on emitter source and flow intensity.
+    Verify inward water normal vectors across cardinal bank orientations.
     """
-    tax = Taxonomy("w1", "water", AssetCategories.EFFECTS.value, AssetInstances.FLUIDS.value)
-    props = EffectProperties(dimensions=Dimensions(w=32, l=32), count=3)
-    state = FluidState(
-        id="w1",
-        layer="0",
-        position=Position(x=0, y=0),
-        source=Directions.DOWN.value,
-        flow=2
-    )
-    fluid = Asset(tax, props, state, DummyFrame(), DummyAnimation())
-
-    vx, vy = fields._fluid_velocity(fluid)
-    assert vx == 0.0
-    assert vy == 40.0  # 2 * BASE_FLOW_SPEED (20.0)
+    assert fields._shoreline_normal(Directions.UP.value) == (0.0, 1.0)
+    assert fields._shoreline_normal(Directions.DOWN.value) == (0.0, -1.0)
+    assert fields._shoreline_normal(Directions.LEFT.value) == (1.0, 0.0)
+    assert fields._shoreline_normal(Directions.RIGHT.value) == (-1.0, 0.0)
+    assert fields._shoreline_normal("unknown") == (0.0, 0.0)
 
 
 @pytest.mark.fluids
 @pytest.mark.motion
-def test_raft_passively_drifts_in_fluid(mock_board, mock_raft):
+def test_fluid_velocity(mock_fluid):
+    """
+    Verify current velocity calculation based on emitter source and flow intensity.
+    """
+    mock_fluid.state.flow = 2
+    with patch('app.config.settings.BASE_FLOW_SPEED', 20):
+        vx, vy = fields._fluid_velocity(mock_fluid)
+        assert vx == 0.0
+        assert vy == 40.0  # 2 * BASE_FLOW_SPEED (20.0)
+
+
+@pytest.mark.fluids
+@pytest.mark.motion
+def test_raft_passively_drifts_in_fluid(mock_board, mock_raft, mock_fluid):
     """
     Verify raft intersecting an active fluid corridor acquires current velocity.
     """
@@ -108,13 +97,12 @@ def test_raft_halts_when_outside_fluid(mock_board, mock_raft):
 
 @pytest.mark.fluids
 @pytest.mark.motion
-def test_surface_interception_passenger_on_raft(mock_board, mock_raft):
+def test_surface_interception_passenger_on_raft(mock_board, mock_raft, mock_fluid):
     """
     Verify passenger on a raft inherits raft drift and suppresses submersion.
     """
-    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
-    fluid.state.length = 100
-    fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(32, 100))]
+    mock_fluid.state.length = 100
+    mock_fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(32, 100))]
 
     # Raft at (70, 50) registered onto the board
     mock_raft.state.position = Position(x=70, y=50)
@@ -133,19 +121,6 @@ def test_surface_interception_passenger_on_raft(mock_board, mock_raft):
     assert player.state.velocity.vx == 5.0
     assert player.state.velocity.vy == 40.0
     assert player.state.mutators.triggers.submerged is False
-
-
-@pytest.mark.fluids
-@pytest.mark.motion
-def test_shoreline_normals():
-    """
-    Verify inward water normal vectors across cardinal bank orientations.
-    """
-    assert fields._shoreline_normal(Directions.UP.value) == (0.0, 1.0)
-    assert fields._shoreline_normal(Directions.DOWN.value) == (0.0, -1.0)
-    assert fields._shoreline_normal(Directions.LEFT.value) == (1.0, 0.0)
-    assert fields._shoreline_normal(Directions.RIGHT.value) == (-1.0, 0.0)
-    assert fields._shoreline_normal("unknown") == (0.0, 0.0)
 
 
 @pytest.mark.fluids

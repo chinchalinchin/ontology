@@ -1,5 +1,5 @@
 """
-# Ontology: tests.unit.test_app_services_generators__decomposer
+# Ontology: tests.unit.services.generators.test_decomposer
 """
 # Application Libraries
 from app.models.state import PropertyState
@@ -14,6 +14,7 @@ def test_decomposer_cost_aggregation(mock_decomposer):
     
     assert cost_dict.get("wood") == 10
     assert cost_dict.get("stone") == 5
+
 
 def test_decomposer_spatial_superposition(mock_decomposer):
     deployed = PropertyState(
@@ -43,6 +44,7 @@ def test_decomposer_spatial_superposition(mock_decomposer):
     assert branch_strut.state.position.x == 110
     assert branch_strut.state.position.y == 110
 
+
 def test_decomposer_late_binding(mock_decomposer):
     deployed = PropertyState(
         id="test-house",
@@ -59,9 +61,20 @@ def test_decomposer_late_binding(mock_decomposer):
     assert door.state.outlayer == "layer_1"
     assert branch_strut.state.owner == "player"
 
+
 def test_decomposer_nomenclature_generation(mock_decomposer):
-    deployed1 = PropertyState(id="test-house", name="home", layer="0", position=Position(0,0))
-    deployed2 = PropertyState(id="test-house", name="home", layer="0", position=Position(0,0))
+    deployed1 = PropertyState(
+        id="test-house",
+        name="home", 
+        layer="0", 
+        position=Position(0,0)
+    )
+    deployed2 = PropertyState(
+        id="test-house",
+        name="home", 
+        layer="0", 
+        position=Position(0,0)
+    )
     
     assets1 = mock_decomposer.unpack(deployed1)
     assets2 = mock_decomposer.unpack(deployed2)
@@ -78,13 +91,20 @@ def test_decomposer_nomenclature_generation(mock_decomposer):
     assert door1.name == "door-strut-base_house-1-1"
     assert door2.name == "door-strut-base_house-2-2"
 
+
 def test_decomposer_unmapped_composition(mock_decomposer):
     """
     Ensure non-existent composition keys yield empty lists without throwing exceptions.
     """
-    deployed = PropertyState(id="missing-comp", name="none", layer="0", position=Position(0, 0))
+    deployed = PropertyState(
+        id="missing-comp", 
+        name="none", 
+        layer="0", 
+        position=Position(0, 0)
+    )
     assert mock_decomposer.unpack(deployed) == []
     assert mock_decomposer.cost("missing-comp") == []
+
 
 def test_decomposer_resolve_bind_patterns(mock_decomposer):
     """
@@ -110,6 +130,7 @@ def test_decomposer_resolve_bind_patterns(mock_decomposer):
     
     # Unmatched keys return the original bind expression
     assert mock_decomposer._resolve_bind("bind(parent.nonexistent)", root_ctx, parent_ctx) == "bind(parent.nonexistent)"
+
 
 def test_decomposer_cross_layer_origin_decoupling(mock_decomposer):
     """

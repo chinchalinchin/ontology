@@ -1,11 +1,24 @@
 """
 # Ontology: tests.unit.test_app_services_generators_perimeter.py
 """
+# Standard Libraries
 from unittest.mock import patch
 
-from app.services.generators.game.perimeter import Perimeter
-from libs.core.models import Boundary, Position, Dimensions
+# External Libraries
+import pytest
 
+# Application Libraries
+from app.services.generators.game.perimeter import Perimeter
+
+# Cython Libraries
+from libs.core.models import (
+    Boundary, 
+    Position, 
+    Dimensions
+)
+
+
+@pytest.mark.services
 def test_perimeter_generator_extract(mock_board):
     """
     Verifies that the PerimeterGenerator correctly filters and translates 
@@ -27,6 +40,8 @@ def test_perimeter_generator_extract(mock_board):
     # (pos: 250, 250 | w:222, l:133)
     assert  (250, 250, 472, 383) in rects
 
+
+@pytest.mark.services
 def test_perimeter_generator_generate(mock_board):
     """
     Verifies that the generator safely passes the extracted primitives into 
@@ -47,6 +62,8 @@ def test_perimeter_generator_generate(mock_board):
         mock_sweep.assert_called_once()
         assert perimeter == mock_boundaries
 
+
+@pytest.mark.services
 def test_perimeter_generator_empty_layer(mock_board):
     """
     Verifies the generator short-circuits safely on an empty layer without invoking Cython.
@@ -59,6 +76,8 @@ def test_perimeter_generator_empty_layer(mock_board):
         mock_sweep.assert_not_called()
         assert perimeter == []
 
+
+@pytest.mark.services
 def test_perimeter_extract_crafts_layer_isolation(mock_board):
     """
     Ensure Perimeter.extract evaluates crafts strictly within the target layer boundary.
