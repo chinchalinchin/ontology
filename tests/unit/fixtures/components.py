@@ -73,7 +73,7 @@ def mock_keyboard(
     return Keyboard(mock_mapping_configuration.keyboard)
 
 
-@pytest.fxiture
+@pytest.fixture
 def mock_lambda_executors(
     mock_actuator,
     mock_configurations,
@@ -89,7 +89,7 @@ def mock_lambda_executors(
     }
 
 
-@pytest.fxiture
+@pytest.fixture
 def mock_compiler_executors(
     mock_actuator,
     mock_configurations,

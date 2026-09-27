@@ -244,3 +244,9 @@ class Engine:
 
         if self.board is not None:
             self.board.clear()
+
+    # --------------------------------------------------------- 
+    
+    def get_mechanic(self, cls: type) -> Mechanic:
+        """Retrieves a mechanic by class from the engine pipeline."""
+        return next((m for m in self.core + self.world if isinstance(m, cls)), None)

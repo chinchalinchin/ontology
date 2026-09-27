@@ -385,7 +385,7 @@ def mock_mapping_configuration() -> MappingConfiguration:
 
 
 @pytest.fixture
-def mock_mechanic_configuration() -> MechanicsConfiguration:
+def mock_mechanics_configuration() -> MechanicsConfiguration:
     return MechanicsConfiguration(
         core = [],
         world = [

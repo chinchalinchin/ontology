@@ -22,15 +22,11 @@ from app.config.enums import (
 from libs.core.models import Position
 
 
-def get_mechanic(engine: Engine, cls: type) -> TransitionMechanics:
-    """Retrieves a mechanic by class from the engine pipeline."""
-    return next((m for m in engine.core + engine.world if isinstance(m, cls)), None)
-
-
 @pytest.mark.intentions
-def test_transition_update_evaluates_executor(mock_engine):
-    mechanic = get_mechanic(mock_engine, TransitionMechanics)
-    board = mock_engine.board
+def test_transition_update_evaluates_executor(mock_engine_with_lambda_transitions):
+    engine = mock_engine_with_lambda_transitions
+    mechanic = engine.get_mechanic(TransitionMechanics)
+    board = engine.board
     
     # Setup sprite state
     sprite = board.instances("sprites")[0]  # 'jasilynn'
@@ -53,10 +49,11 @@ def test_transition_update_evaluates_executor(mock_engine):
 
 
 @pytest.mark.intentions
-def test_transition_update_skips_without_executor(mock_engine):
-    mechanic = get_mechanic(mock_engine, TransitionMechanics)
+def test_transition_update_skips_without_executor(mock_engine_with_lambda_transitions):
+    engine = mock_engine_with_lambda_transitions
+    mechanic = engine.get_mechanic(TransitionMechanics)
     mechanic.executor = None
-    board = mock_engine.board
+    board = engine.board
     
     sprite = board.instances("sprites")[0]
     sprite.state.intention = Intentions.IDLE.value
