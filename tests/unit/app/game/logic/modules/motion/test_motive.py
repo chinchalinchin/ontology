@@ -20,6 +20,7 @@ from libs.core.models import (
 
 
 @pytest.mark.motion
+@pytest.mark.intentions
 def test_motive_no_intention(mock_board, mock_sprite):
     mock_sprite.state.intention = Intentions.IDLE.value
     mock_sprite.state.velocity.vx = 5.0
@@ -33,6 +34,7 @@ def test_motive_no_intention(mock_board, mock_sprite):
 
 
 @pytest.mark.motion
+@pytest.mark.intentions
 def test_motive_at_goal(mock_board, mock_sprite, monkeypatch):
     monkeypatch.setattr(
         'app.game.logic.modules.motion.motive.NavigationIntentions', 
@@ -52,6 +54,7 @@ def test_motive_at_goal(mock_board, mock_sprite, monkeypatch):
 
 
 @pytest.mark.motion
+@pytest.mark.intentions
 def test_motive_aims_towards_goal(mock_board, mock_sprite, monkeypatch):
     monkeypatch.setattr(
         'app.game.logic.modules.motion.motive.NavigationIntentions', 

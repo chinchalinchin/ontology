@@ -28,8 +28,8 @@ class CollisionMechanics(SpatialMechanic):
 
     Mechanic responsible for resolving Asset collisions natively.
     """
-    def __init__(self):
-        super().__init__(max_entities=2000)
+    def __init__(self, cell_size : int = 64, max_entities : int = 200):
+        super().__init__(cell_size=cell_size, max_entities=max_entities)
 
 
     def _boundary(self, asset: Asset, boundary: Boundary):

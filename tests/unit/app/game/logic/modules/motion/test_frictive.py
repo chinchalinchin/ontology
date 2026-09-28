@@ -12,6 +12,7 @@ from app.game.logic.modules.motion import frictive
 
 
 @pytest.mark.motion
+@pytest.mark.physics
 def test_frictive_update_partial_decay(mock_crate, mock_board):
     # Set initial velocity moving right
     mock_crate.state.velocity.vx = 10.0
@@ -30,6 +31,7 @@ def test_frictive_update_partial_decay(mock_crate, mock_board):
 
 
 @pytest.mark.motion
+@pytest.mark.physics
 def test_frictive_update_full_stop(mock_crate, mock_board):
     # Assign a 3-4-5 triangle vector magnitude
     mock_crate.state.velocity.vx = 4.0
@@ -47,6 +49,7 @@ def test_frictive_update_full_stop(mock_crate, mock_board):
 
 
 @pytest.mark.motion
+@pytest.mark.physics
 def test_frictive_no_velocity(mock_crate, mock_board):
     mock_crate.state.velocity = None
     mock_board.tile = MagicMock()

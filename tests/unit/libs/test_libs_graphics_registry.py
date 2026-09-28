@@ -30,7 +30,11 @@ from libs.graphics.registry import (
 )
 from libs.core.models import Dimensions
 
-def test_registry_initialization_and_caching(mock_properties, mock_configurations):
+
+def test_registry_initialization_and_caching(
+    mock_properties, 
+    mock_configurations
+):
     """Test that Registry walks the asset directory and caches filepaths lazily."""
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry._sys_load_image') as mock_load:
@@ -53,8 +57,14 @@ def test_registry_initialization_and_caching(mock_properties, mock_configuration
         assert 'sword' in registry._pending_assets
         assert len(registry._textures) == 0
 
-def test_registry_indexing_and_retrieval(mock_properties, mock_configurations):
-    """Test that Registry correctly indexes StateFrame schemas and retrieves data JIT."""
+
+def test_registry_indexing_and_retrieval(
+    mock_properties,
+    mock_configurations
+):
+    """
+    Test that Registry correctly indexes StateFrame schemas and retrieves data JIT.
+    """
     mock_configurations = dataclasses.replace(
         mock_configurations,
         recipes=dataclasses.replace(
@@ -64,7 +74,12 @@ def test_registry_indexing_and_retrieval(mock_properties, mock_configurations):
     )
     
     actions = {
-        "walk": Action(count=3, directions={"down": Direction(row=0), "up": Direction(row=1)})
+        "walk": Action(
+            count=3, 
+            directions={
+                "down": Direction(row=0), 
+                "up": Direction(row=1)
+        })
     }
     mock_properties.sheets.sprites["player"].actions = actions
 
@@ -102,8 +117,13 @@ def test_registry_indexing_and_retrieval(mock_properties, mock_configurations):
         assert data[4] == 64   # src_l
         assert mock_load.call_count == 1
 
-def test_registry_iterable_frame_indexing(mock_properties, mock_configurations):
-    """Test IterableFrame indexing for multi-frame animations."""
+def test_registry_iterable_frame_indexing(
+    mock_properties, 
+    mock_configurations
+):
+    """
+    Test IterableFrame indexing for multi-frame animations.
+    """
     mock_properties.effects.passive["explosion"] = EffectProperties(
         dimensions=Dimensions(w=32, l=32),
         count=3
@@ -145,7 +165,11 @@ def test_registry_iterable_frame_indexing(mock_properties, mock_configurations):
             assert data[3] == 32      # src_w
             assert data[4] == 32      # src_l
 
-def test_registry_fallback_retrieval(mock_properties, mock_configurations):
+
+def test_registry_fallback_retrieval(
+    mock_properties, 
+    mock_configurations
+):
     """Test that Registry correctly falls back to raw textures for unindexed assets."""
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry._sys_load_image') as mock_load:
@@ -176,7 +200,11 @@ def test_registry_fallback_retrieval(mock_properties, mock_configurations):
         assert data[3] == 32
         assert data[4] == 32
 
-def test_registry_stack_assembly(mock_properties, mock_configurations):
+
+def test_registry_stack_assembly(
+    mock_properties, 
+    mock_configurations
+):
     """Test that Registry data-driven stacking works correctly via JIT compilation."""
     mock_properties.sheets.sprites["player"].stack = ["base_body", "armor", "helmet"]
 
@@ -215,7 +243,11 @@ def test_registry_stack_assembly(mock_properties, mock_configurations):
         assert args[0] == registry._textures["base_body"]
         assert len(args[1]) == 2
 
-def test_registry_cyclic_stack_resolution(mock_properties, mock_configurations):
+
+def test_registry_cyclic_stack_resolution(
+    mock_properties, 
+    mock_configurations
+):
     """Test that Registry breaks cyclic stack dependencies to prevent C-stack overflow."""
     mock_properties.sheets.sprites["player"].stack = ["player", "player-aura"]
 
@@ -251,8 +283,14 @@ def test_registry_cyclic_stack_resolution(mock_properties, mock_configurations):
         assert args[1] == [mock_aura_tex]
         assert registry._textures["player"] == mock_composed_tex
 
-def test_registry_prewarm_budget(mock_properties, mock_configurations):
-    """Test that prewarming exhausts the queue or yields to the time budget."""
+
+def test_registry_prewarm_budget(
+    mock_properties, 
+    mock_configurations
+):
+    """
+    Test that prewarming exhausts the queue or yields to the time budget.
+    """
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry._sys_load_image') as mock_load, \
          patch('libs.graphics.registry.time.perf_counter') as mock_time:
@@ -283,6 +321,7 @@ def test_registry_prewarm_budget(mock_properties, mock_configurations):
         assert done is True
         assert registry.current == 3
         assert len(registry._pending_assets) == 0
+
 
 def test_registry_noframe_indexing(mock_properties, mock_configurations):
     """Test NoFrame indexing returns a zeroed crop."""

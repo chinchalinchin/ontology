@@ -1,8 +1,7 @@
 # ----------------------------------------------------
 properties:
   paths:
-    ## LINUX
-    root: /home/grant/Projects/ontology/
+    root: <root-path>
     actions: .githubs/workflows/
     blocks: .prompts/tasks/.blocks/
     board: .prompts/board/
@@ -13,18 +12,19 @@ properties:
   project:
     title: ontology
   user:
-    username: grant
-    ssh: /home/gmoore/.ssh/id_ed25519
-    hostname: skynet
+    username: <username>
+    ssh: <keypath>
+    hostname: <hostname>
   urls: 
     github: github.com/chinchalinchin
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/coverage.md.j2
+  template: <path>/<file>.md.j2
 # ----------------------------------------------------
   parameters:
-    diagram: menu-flow.mmd
+    diagram: <diagram>.mmd
+    workflow: <workflow>
 # ----------------------------------------------------
 tools:
 # ----------------------------------------------------
@@ -39,40 +39,28 @@ tools:
       directory: false
       commands: false
     tests:  
-      console: true
+      console: false
       fixtures: false
       workflow: false
 # ----------------------------------------------------
   parameters:
     manager:
       board:
-        phase: '09-02'
-        action: refactor
+        phase: <board-phase>
+        action: <board-action>
       docs:
         exclude:
-          - index.md
-          - 02-sprites.md
-          - 03-compositions.md
-          - 04-intentions.md
-          - 06-widgets.md
-          - 07-sounds.md
-          - 08-plots.md
-          - 09-emergence.md
-      specs: []
+          - <doc-page>.md
+      specs:
+        - <spec-page>.md
     source:
-      workflow: physics
+      workflow: <workflow>
     shell:
       directory: tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
       commands: []
     tests:
-      console: pytest -m
+      console:
+        pytest: pytest -m <workflow>
       fixtures:
-        - assets
-        - components
-        # - configuration
-        - properties
-        - state
-        # - services
-        # - structures
-        # - menus
-      workflow: physics
+        - <fixture>
+      workflow: <workflow>

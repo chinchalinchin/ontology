@@ -9,6 +9,7 @@ However, some of the tests are now failing due to some of the fixtures not being
 **Priorities**
       
 - Debug the current run of the test pipeline located in the [Test Console](#view-test-console) section
+- Assist in refactoring the test bed fixtures.
 - (*Optional*) Add any unit tests for any areas of the code not already covered.
 - (*Optional*) Add unit test coverage for any new functionality implemented.
 
@@ -22,6 +23,7 @@ $$
 - Add any new fixtures to the appropriate fixture module.
 - Treat `tests.unit.fixtures` as a test bed for constructing application objects. Fixtures should not be created in an adhoc manner; instead, fixtures should exemplify and construct the application dependency tree prior to the execution of tests.  
 - If a test requires a specific edge case, request the fixture and mutate its attributes explicitly in the test setup.
+- The only actions that should be mocked are file-level access and image rendering.
 
 **Coverage Constraints**
 

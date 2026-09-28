@@ -22,5 +22,5 @@ Resources for generating prompts.
 
 ## Quickstart
 
-1. Adjust variables in `main.yaml`. The template entrypoint uses the following schema, `tasks/{{ template.verb }}/{{ template.noun }}` to locate a template in the `tasks/` directory. 
+1. Adjust variables in `main.yaml`.
 2. Generate prompt with `python .prompts/main.py`

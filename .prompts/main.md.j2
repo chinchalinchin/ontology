@@ -1,7 +1,6 @@
-{% set path = task.template.verb + "/" + task.template.noun + ".md.j2" %}
 {# ------------------------------------------------------------------- #}
 {% include 'blocks/context/index.md' %}
 
 {% include 'tools/index.md.j2' %}
 
-{% include path %}
+{% include task.template %}
