@@ -29,7 +29,7 @@ Assets are divided into non-overlapping categories, known as the [Asset Hierarch
 - [Tiles](./01-assets.md#tiles)
 - [Widgets](./06-widgets.md)
 
-Assets are placed in the `/src/assets/<category>/` directory and then registered to the Asset category index `/src/assets/<category>/main.yaml` file. The YAML index schema for each Asset configures its *properties*, i.e. the static attributes that are constant and do not change as a result of gameplay. 
+Assets are placed in the `/src/assets/<category>/` directory and then registered in a Asset category index `/src/assets/<category>/*.yaml` file. The YAML index schema for each Asset configures its *properties*, i.e. the static attributes that are constant and do not change as a result of gameplay. 
 
 The `/src/assets` directory is known as the *asset directory*.
 
@@ -101,19 +101,19 @@ The Registry loads in all of the Asset files when the application bootstraps. Th
 
 The Engine handles the core gameplay loop and framerate calculations. 
 
-**Bus**
+**Component: Bus**
 
 The Engine contains a Bus for processing Menu Events.
 
-**Provider**
+**Component: Provider**
 
 The Engine contains a Provider for instantiating Menus.
 
-**Binder**
+**Component: Binder**
 
 The Provider contains a Binder for binding Widget states to game state.
 
-**Library**
+**Component: Library**
 
 The Provider contains a Library for injecting Widget states with plot-dependent content.
 
@@ -125,11 +125,25 @@ The Board is the Game's "*database*". It holds all ingame Assets and Configurati
 
 The state files for each Board are maintained in `/src/data/state/<board-key>/**`.
 
-**Cradle**
+**Interface: Queries**
+
+The Board exposes spatial queries to evaluate dynamic environmental fields:
+
+* Hiearchy Queries
+    - `board.instances(key, layer)`: Returns a List of Asset on the given layer, filtered by Instance `key`.
+    - `board.categories(key, layer)`: Returns a List of Assets on the given layer, filtered by Category `key`
+* Physics Queries
+    - `board.weights(layer)`: Returns a list of Assets with positive mass on the given layer.
+    - `board.obstacles(layer)`: Returns a list of Assets that qualify as Obstacles.
+* Environment Queries
+    - `board.tile(layer, position, instance)`: Retrieves background or foreground [Tiles](./01-assets.md#tiles) via $O(1)$ spatial hash lookup.
+    - `board.water(layer, position, exclude=None)`: Evaluates whether a coordinate intersects any active [Fluid](./01-assets.md#fluids) stream or annular pool across the layer, with an optional entity exclusion filter.
+
+**Component: Cradle**
 
 The Board posseses a Cradle field for instantiating Assets through game Mechanics, e.g. `CombatMechanics` uses the Cradle to inject new Projectiles into the Board state.
 
-**Migrator**
+**Component: Migrator**
 
 The Board posses a Migrator field for asynchronously loading game state.
 

@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.motion.motive
+# Ontology: app.game.logic.modules.motion.motive
 """
 from __future__ import annotations
 

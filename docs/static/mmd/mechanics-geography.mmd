@@ -1,0 +1,14 @@
+flowchart TD
+    subgraph Pass 1: Fluid Physics
+        FM[FluidMechanics] -->|propagate all| ACT[Actuator]
+        ACT -->|Raycast & Annular Pools| FS[FluidStates]
+    end
+
+    subgraph Pass 2: Layer Geography
+        FM -->|purge layer shorelines| CR[Cartographer]
+        FM -->|generate layer shorelines| CR
+        CR -->|Extract Water Rectangles| FS
+        CR -->|contours sweep| CY[libs.core.math.geometry]
+        CR -->|Substrate Sampling| BD[Board]
+        CR -->|Spawn Shorelines| CD[Cradle]
+    end

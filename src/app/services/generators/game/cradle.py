@@ -239,8 +239,7 @@ class Cradle:
         position: Position,
         orientation: str,
         length: int,
-        parent_fluid: str,
-        hitboxes: List[Hitbox], # type: ignore
+        hitboxes: List[Hitbox],  # type: ignore
         bidirectional: bool = True
     ) -> Asset:
         recipe = self.recipes.geography.shorelines
@@ -260,7 +259,6 @@ class Cradle:
             length=length,
             thickness=thickness,
             bidirectional=bidirectional,
-            parent_fluid=parent_fluid,
             hitboxes=hitboxes
         )
         frame = Factory.frame(recipe.frame)
@@ -272,7 +270,6 @@ class Cradle:
             instance=AssetInstances.SHORELINES.value
         )
         return Asset(taxonomy, properties, state, frame, animation)
-
 
     def spawn_composition(self, 
         id: str, 

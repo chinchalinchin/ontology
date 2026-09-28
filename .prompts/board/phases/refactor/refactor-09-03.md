@@ -73,13 +73,12 @@ See [Latest State Dump](#latest-state-dump) for reproduction.
 
 **Proposed Remediation**
 
-1. Move `is_water` onto `Board` with an optional `exclude` argument.
+1. Move `water` onto `Board` with an optional `exclude` argument.
 2. In `FluidMechanics`, adopt a **two-pass execution pattern** across dirty layers:
     * **Pass 1 (Propagation)**: Update all dirty fluids' lengths, pools, and hitboxes via `Actuator.propagate()`.
-    * **Pass 2 (Shorelines)**: Generate shorelines across the updated fluids using `Cartographer.generate()`. Because all fluid pools and streams are already registered on the board, `board.is_water()` accurately suppresses shorelines at every water-to-water junction.
+    * **Pass 2 (Shorelines)**: Generate shorelines across the updated fluids using `Cartographer.generate()`. Because all fluid pools and streams are already registered on the board, `board.water()` accurately suppresses shorelines at every water-to-water junction.
 
-
-##### Bug B014: Single-Point Shoreline Submersion Culling
+###### Bug B014: Single-Point Shoreline Submersion Culling
 
 **STATUS**: OPEN
 **SEVERITY**: HIGH
@@ -96,16 +95,13 @@ See [Latest State Dump](#latest-state-dump) for reproduction.
 
 **Proposed Remediation**
 
-Deprecate the single-point `cull_submerged` routine. Defer shoreline synthesis until all layer fluid propagation has completed (Two-Pass update). During shoreline generation, `Cartographer` samples `board.is_water()` at each discrete tile step, preventing submerged segments from ever being generated or coalesced.
+Deprecate the single-point `cull_submerged` routine. Defer shoreline synthesis until all layer fluid propagation has completed (Two-Pass update). During shoreline generation, `Cartographer` samples `board.water()` at each discrete tile step, preventing submerged segments from ever being generated or coalesced.
 
 ---
 
 ##### Latest State Dump
 
 ###### Initial Conditions
-
-!!! note
-    Only Fluid property and state data included.
 
 **Properties**
 
@@ -181,1544 +177,13 @@ effects:
 
 **Application Logs**
 
-```bash
-2026-09-28 10:55:32,942 - INFO - __main__ - Starting CLI with command: 'start' for board: 'world-01'
-2026-09-28 10:55:32,945 - INFO - __main__ - Igniting engine for live execution...
-2026-09-28 10:55:32,946 - INFO - app.config.loader - Loading YAML property schemas...
-2026-09-28 10:55:33,268 - INFO - app.config.loader - Loading YAML configurations...
-2026-09-28 10:55:33,594 - INFO - app.services.orchestration.builder - Loading YAML data for target state: world-01 ...
-2026-09-28 10:55:33,596 - INFO - app.config.loader - Loading YAML state configurations from /home/grant/Projects/ontology/src/data/state/world-01 ...
-2026-09-28 10:55:33,760 - INFO - app.services.orchestration.builder - Compiling master mechanic executors...
-2026-09-28 10:55:33,767 - INFO - app.services.orchestration.builder - Initializing SDL and Cython rendering subsystems...
-2026-09-28 10:55:34,243 - INFO - app.services.orchestration.builder - Constructing Empty Board and Migrator subsystem...
-2026-09-28 10:55:34,244 - INFO - app.game.board - Initializing Board with 0 incoming assets.
-2026-09-28 10:55:34,245 - INFO - app.game.board - Board completely hydrated and initialized.
-2026-09-28 10:55:34,245 - INFO - app.services.orchestration.builder - Initializing Registry with native models...
-2026-09-28 10:55:34,266 - INFO - app.services.orchestration.builder - Injecting Generators and Devices into Board...
-2026-09-28 10:55:34,267 - INFO - app.services.orchestration.builder - Building rendering pipelines, mechanics, and UI...
-2026-09-28 10:55:34,267 - INFO - app.game.screen - Initializing Screen (Viewport: 480x480 |Board: 480x480)
-2026-09-28 10:55:34,270 - INFO - app.services.orchestration.builder - Engine successfully assembled.
-2026-09-28 10:55:34,271 - INFO - app.game.engine - Entering Game Loop...
-2026-09-28 10:55:34,309 - INFO - app.services.orchestration.migrator - Migrator starting hydration for target state: world-01
-2026-09-28 10:55:34,310 - INFO - app.config.loader - Loading YAML state configurations from /home/grant/Projects/ontology/src/data/state/world-01 ...
-2026-09-28 10:55:34,482 - INFO - app.game.board - Appending Asset(id=frame-brick, name=strut-house-1, category=crafts, instance=struts)
-2026-09-28 10:55:34,483 - INFO - app.game.board - Appending Asset(id=door-house, name=door-strut-house-1-1, category=objects, instance=doors)
-2026-09-28 10:55:34,483 - INFO - app.game.board - Appending Asset(id=wall-blue, name=strut-house-interior-1, category=crafts, instance=struts)
-2026-09-28 10:55:34,483 - INFO - app.game.board - Appending Asset(id=wood-bookshelf, name=crate-strut-house-interior-1-1, category=objects, instance=crates)
-2026-09-28 10:55:34,483 - INFO - app.game.board - Appending Asset(id=door-shadow, name=door-strut-house-interior-1-1, category=objects, instance=doors)
-2026-09-28 10:55:34,483 - INFO - app.game.board - Appending Asset(id=floor-wood, name=strut-strut-house-interior-1-1, category=crafts, instance=struts)
-2026-09-28 10:55:34,483 - INFO - app.game.board - Appending Asset(id=grandfather-clock, name=passive-strut-house-interior-1-1, category=effects, instance=passive)
-2026-09-28 10:55:34,690 - INFO - app.game.board - Appending Asset(id=wall-castle, name=strut-castle-exterior-2, category=crafts, instance=struts)
-2026-09-28 10:55:34,691 - INFO - app.game.board - Appending Asset(id=door-castle-open, name=door-strut-castle-exterior-2-2, category=objects, instance=doors)
-2026-09-28 10:55:34,691 - INFO - app.game.board - Appending Asset(id=castle-gate, name=gate-strut-castle-exterior-2-2, category=objects, instance=gates)
-2026-09-28 10:55:34,692 - INFO - app.game.board - Appending Asset(id=stone-switch, name=plate-strut-castle-exterior-2-2, category=objects, instance=plates)
-2026-09-28 10:55:34,692 - INFO - app.game.board - Appending Asset(id=torch, name=passive-strut-castle-exterior-2-2, category=effects, instance=passive)
-2026-09-28 10:55:34,692 - INFO - app.game.board - Appending Asset(id=torch, name=passive-strut-castle-exterior-2-2, category=effects, instance=passive)
-2026-09-28 10:55:34,692 - INFO - app.game.board - Appending Asset(id=grass, name=the-steppe, category=tiles, instance=back)
-2026-09-28 10:55:34,701 - INFO - app.game.board - Appending Asset(id=wood-barrel, name=castle-dawn-barrel-00, category=objects, instance=crates)
-2026-09-28 10:55:34,702 - INFO - app.game.board - Appending Asset(id=gray-rock-00, name=jasilynns-rock, category=objects, instance=obstacles)
-2026-09-28 10:55:34,702 - INFO - app.game.board - Appending Asset(id=gray-rock-00, name=jasilynns-other-rock, category=objects, instance=obstacles)
-2026-09-28 10:55:34,703 - INFO - app.game.board - Appending Asset(id=wood-bulletin, name=castle-dawn-sign-board-00, category=objects, instance=signs)
-2026-09-28 10:55:34,703 - INFO - app.game.board - Appending Asset(id=spinning-dummy, name=test-dummy, category=effects, instance=reactables)
-2026-09-28 10:55:34,703 - INFO - app.game.board - Appending Asset(id=waterflow-00, name=jasilynns-tears-00, category=effects, instance=fluids)
-2026-09-28 10:55:34,703 - INFO - app.game.board - Appending Asset(id=waterflow-00, name=jasilynns-tears-01, category=effects, instance=fluids)
-2026-09-28 10:55:34,704 - INFO - app.game.board - Appending Asset(id=waterflow-00, name=jasilynns-tears-02, category=effects, instance=fluids)
-2026-09-28 10:55:34,704 - INFO - app.game.board - Appending Asset(id=jasilynn, name=evil-empress-jasilynn, category=sheets, instance=sprites)
-2026-09-28 10:55:34,704 - INFO - app.game.board - Appending Asset(id=player, name=player, category=sheets, instance=players)
-2026-09-28 10:55:34,704 - INFO - app.services.generators.game.perimeter - Calculating dynamic perimeter boundaries for layer: 0
-2026-09-28 10:55:34,705 - INFO - app.services.generators.game.perimeter - Derived simply-connected hull containing 4 edges.
-2026-09-28 10:55:34,706 - INFO - app.services.generators.game.perimeter - Calculating dynamic perimeter boundaries for layer: brick-house-compose-layer
-2026-09-28 10:55:34,707 - INFO - app.services.generators.game.perimeter - Derived simply-connected hull containing 4 edges.
-2026-09-28 10:55:34,721 - INFO - app.game.board - Appending Asset(id=grassy-shore, name=spawn-d78b0176, category=geography, instance=shorelines)
-2026-09-28 10:55:34,722 - INFO - app.game.board - Appending Asset(id=grassy-shore, name=spawn-52e4eb17, category=geography, instance=shorelines)
-2026-09-28 10:55:34,722 - INFO - app.game.board - Appending Asset(id=grassy-shore, name=spawn-9fed8a16, category=geography, instance=shorelines)
-2026-09-28 10:55:34,723 - INFO - app.game.board - Appending Asset(id=grassy-shore, name=spawn-8efc539a, category=geography, instance=shorelines)
-2026-09-28 10:55:34,723 - INFO - app.game.board - Appending Asset(id=grassy-shore, name=spawn-beb2fbb2, category=geography, instance=shorelines)
-2026-09-28 10:55:34,723 - INFO - app.game.board - Appending Asset(id=grassy-shore, name=spawn-4cda0e35, category=geography, instance=shorelines)
-2026-09-28 10:55:34,723 - INFO - app.services.generators.game.actuator - Fluid(name=jasilynns-tears-00, direction=down) |  Length: 600px,  Struck: jasilynns-rock, Pool: True, Shorelines: 6
-2026-09-28 10:55:34,726 - INFO - app.game.board - Appending Asset(id=grassy-shore, name=spawn-47e588a6, category=geography, instance=shorelines)
-2026-09-28 10:55:34,727 - INFO - app.game.board - Appending Asset(id=grassy-shore, name=spawn-5a98a6a9, category=geography, instance=shorelines)
-2026-09-28 10:55:34,727 - INFO - app.services.generators.game.actuator - Fluid(name=jasilynns-tears-01, direction=left) |  Length: 476px,  Struck: jasilynns-rock, Pool: True, Shorelines: 2
-2026-09-28 10:55:34,737 - INFO - app.game.board - Appending Asset(id=grassy-shore, name=spawn-70b70118, category=geography, instance=shorelines)
-2026-09-28 10:55:34,738 - INFO - app.game.board - Appending Asset(id=grassy-shore, name=spawn-0679cfd4, category=geography, instance=shorelines)
-2026-09-28 10:55:34,738 - INFO - app.game.board - Appending Asset(id=grassy-shore, name=spawn-36279dac, category=geography, instance=shorelines)
-2026-09-28 10:55:34,738 - INFO - app.game.board - Appending Asset(id=grassy-shore, name=spawn-eb8704aa, category=geography, instance=shorelines)
-2026-09-28 10:55:34,738 - INFO - app.game.board - Appending Asset(id=grassy-shore, name=spawn-78786778, category=geography, instance=shorelines)
-2026-09-28 10:55:34,738 - INFO - app.game.board - Appending Asset(id=grassy-shore, name=spawn-7171832e, category=geography, instance=shorelines)
-2026-09-28 10:55:34,738 - INFO - app.game.board - Appending Asset(id=grassy-shore, name=spawn-a62a6298, category=geography, instance=shorelines)
-2026-09-28 10:55:34,738 - INFO - app.game.board - Appending Asset(id=grassy-shore, name=spawn-4d8345b0, category=geography, instance=shorelines)
-2026-09-28 10:55:34,739 - INFO - app.services.generators.game.actuator - Fluid(name=jasilynns-tears-02, direction=down) |  Length: 600px,  Struck: jasilynns-other-rock, Pool: True, Shorelines: 8
-libpng warning: iCCP: known incorrect sRGB profile
-libpng warning: iCCP: known incorrect sRGB profile
-libpng warning: iCCP: known incorrect sRGB profile
-libpng warning: iCCP: known incorrect sRGB profile
-libpng warning: iCCP: known incorrect sRGB profile
-libpng warning: iCCP: known incorrect sRGB profile
-libpng warning: iCCP: known incorrect sRGB profile
-libpng warning: iCCP: known incorrect sRGB profile
-libpng warning: iCCP: known incorrect sRGB profile
-libpng warning: iCCP: known incorrect sRGB profile
-libpng warning: iCCP: known incorrect sRGB profile
-libpng warning: iCCP: known incorrect sRGB profile
-libpng warning: iCCP: known incorrect sRGB profile
-libpng warning: iCCP: known incorrect sRGB profile
-libpng warning: iCCP: known incorrect sRGB profile
-libpng warning: iCCP: known incorrect sRGB profile
-libpng warning: iCCP: known incorrect sRGB profile
-libpng warning: iCCP: known incorrect sRGB profile
-libpng warning: iCCP: known incorrect sRGB profile
-libpng warning: iCCP: known incorrect sRGB profile
-2026-09-28 10:55:42,712 - INFO - app.game.menus.controllers.load - Hydration complete. Reallocating rendering canvases...
-2026-09-28 10:55:42,714 - INFO - app.game.screen - Rebaking Screen canvases for new world state...
-2026-09-28 10:55:42,775 - INFO - app.game.screen - Initializing Screen (Viewport: 480x480 |Board: 239x264)
-2026-09-28 10:55:42,779 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn tracked Goal(category=object, name = door-strut-house-interior-1-1, layer = brick-house-compose-layer, position=(47, 142))
-2026-09-28 10:55:42,782 - INFO - app.game.logic.mechanics.intentional.navigation - Pathfinding stalled for evil-empress-jasilynn; no valid route found.
-2026-09-28 10:55:42,787 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn tracked Goal(category=object, name = door-strut-house-interior-1-1, layer = brick-house-compose-layer, position=(47, 142))
-2026-09-28 10:55:42,811 - INFO - app.game.logic.mechanics.intentional.navigation - Pathfinding stalled for evil-empress-jasilynn; no valid route found.
-2026-09-28 10:55:42,834 - INFO - app.game.logic.mechanics.intentional.navigation - Pathfinding stalled for evil-empress-jasilynn; no valid route found.
-2026-09-28 10:55:42,846 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): Intentions.FIND -> interact
-2026-09-28 10:55:42,847 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn resolved Goal(category=object, name = door-strut-house-interior-1-1, layer = brick-house-compose-layer, position=(47, 142))
-2026-09-28 10:55:42,847 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): Intentions.INTERACT -> idle
-2026-09-28 10:55:42,848 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn remembered Goal(category=subject, name = player, layer = 0, position=(100, 200))
-2026-09-28 10:55:42,848 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): Intentions.IDLE -> find
-2026-09-28 10:55:42,869 - INFO - app.game.logic.mechanics.intentional.navigation - Pathfinding stalled for evil-empress-jasilynn; no valid route found.
-2026-09-28 10:55:42,908 - INFO - app.game.logic.mechanics.intentional.navigation - Pathfinding stalled for evil-empress-jasilynn; no valid route found.
-2026-09-28 10:55:43,347 - INFO - app.game.logic.mechanics.intentional.navigation - Pathfinding stalled for evil-empress-jasilynn; no valid route found.
-2026-09-28 10:55:44,371 - INFO - app.game.logic.mechanics.intentional.navigation - Pathfinding stalled for evil-empress-jasilynn; no valid route found.
-^C2026-09-28 10:55:44,525 - INFO - __main__ - Signal 2 received. Requesting graceful engine shutdown...
-2026-09-28 10:55:44,537 - INFO - __main__ - Generating state dump...
-2026-09-28 10:55:44,753 - INFO - __main__ - State dump successfully written to /home/grant/Projects/ontology/20260928_105544.state-dump.md
-2026-09-28 10:55:44,753 - INFO - app.game.engine - Stopping Engine and releasing resources...
-2026-09-28 10:55:45,102 - INFO - __main__ - CLI processes completed.
-```
+*Omitted after bug identified for brevity.*
 
 **State Dump**
 
-```markdown
-# Ontology: State Dump
+*Omitted after bug identified for brevity.*
 
-- **Board:** world-01
-- **Timestamp:** 20260928_105544
-
-## strut-house-1
-
-- **Taxonomy:**
-  - Category: `crafts`
-  - Instance: `struts`
-  - ID: `frame-brick`
-  - Name: `strut-house-1`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.core.SingleFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 96
-    - Length: 190
-  - Mass: 0
-  - Cost:
-    - `stone`: 10
-  - Hitboxes:
-    - Position: (10, 20) | Dimensions: w: 76, l: 144
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Position: (150, 750)
-  - Owner: `player`
-
-
-## door-strut-house-1-1
-
-- **Taxonomy:**
-  - Category: `objects`
-  - Instance: `doors`
-  - ID: `door-house`
-  - Name: `door-strut-house-1-1`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.core.SingleFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 48
-  - Mass: -1
-  - Count: 1
-- **State:**
-  - Layer: `0`
-  - Depth: 1
-  - Height: 940
-  - Position: (182, 868)
-  - Door Out:
-    - Layer: `brick-house-compose-layer`
-    - Position: (82, 143)
-
-
-## strut-house-interior-1
-
-- **Taxonomy:**
-  - Category: `crafts`
-  - Instance: `struts`
-  - ID: `wall-blue`
-  - Name: `strut-house-interior-1`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.core.SingleFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 128
-    - Length: 96
-  - Mass: 0
-  - Cost:
-    - `wood`: 10
-  - Hitboxes:
-    - Position: (6, 17) | Dimensions: w: 116, l: 54
-- **State:**
-  - Layer: `brick-house-compose-layer`
-  - Depth: 0
-  - Position: (0, 0)
-  - Owner: `player`
-
-
-## crate-strut-house-interior-1-1
-
-- **Taxonomy:**
-  - Category: `objects`
-  - Instance: `crates`
-  - ID: `wood-bookshelf`
-  - Name: `crate-strut-house-interior-1-1`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.core.SingleFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 54
-    - Length: 64
-  - Mass: 100
-  - Count: 1
-- **State:**
-  - Layer: `brick-house-compose-layer`
-  - Depth: 0
-  - Position: (33, 71)
-  - Velocity: (-0.0, -0.0)
-
-
-## door-strut-house-interior-1-1
-
-- **Taxonomy:**
-  - Category: `objects`
-  - Instance: `doors`
-  - ID: `door-shadow`
-  - Name: `door-strut-house-interior-1-1`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.core.SingleFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 48
-  - Mass: -1
-  - Count: 1
-- **State:**
-  - Layer: `brick-house-compose-layer`
-  - Depth: 0
-  - Position: (47, 142)
-  - Door Out:
-    - Layer: `0`
-    - Position: (193, 913)
-
-
-## strut-strut-house-interior-1-1
-
-- **Taxonomy:**
-  - Category: `crafts`
-  - Instance: `struts`
-  - ID: `floor-wood`
-  - Name: `strut-strut-house-interior-1-1`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.core.SingleFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 128
-    - Length: 96
-  - Mass: -1
-  - Cost:
-    - `wood`: 10
-- **State:**
-  - Layer: `brick-house-compose-layer`
-  - Depth: 0
-  - Height: -100
-  - Position: (0, 96)
-  - Owner: `player`
-
-
-## passive-strut-house-interior-1-1
-
-- **Taxonomy:**
-  - Category: `effects`
-  - Instance: `passive`
-  - ID: `grandfather-clock`
-  - Name: `passive-strut-house-interior-1-1`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
-  - Frame: `<class 'app.assets.frames.core.IterableFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 96
-  - Mass: 0
-  - Lifecycle: Lifecycle(type=<Lifecycles.CONTINUOUS: 'continuous'>, delay=60, frequency=0, cooldown=60, persist=False)
-  - Count: 12
-- **State:**
-  - Layer: `brick-house-compose-layer`
-  - Depth: 0
-  - Position: (1, 30)
-  - Active: `True`
-  - Animation:
-    - Action: `walk`
-    - Direction: `down`
-    - Frame: 6
-    - Tick: 19
-
-
-## strut-castle-exterior-2
-
-- **Taxonomy:**
-  - Category: `crafts`
-  - Instance: `struts`
-  - ID: `wall-castle`
-  - Name: `strut-castle-exterior-2`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.core.SingleFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 222
-    - Length: 133
-  - Mass: 0
-  - Cost:
-    - `stone`: 100
-  - Hitboxes:
-    - Position: (178, 102) | Dimensions: w: 25, l: 12
-    - Position: (17, 102) | Dimensions: w: 25, l: 12
-    - Position: (5, 39) | Dimensions: w: 203, l: 63
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Position: (250, 250)
-  - Owner: `the-government`
-
-
-## door-strut-castle-exterior-2-2
-
-- **Taxonomy:**
-  - Category: `objects`
-  - Instance: `doors`
-  - ID: `door-castle-open`
-  - Name: `door-strut-castle-exterior-2-2`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.core.SingleFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 64
-    - Length: 64
-  - Mass: -1
-  - Count: 1
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Height: 383
-  - Position: (331, 299)
-  - Door Out:
-    - Layer: `castle-compose-layer`
-
-
-## gate-strut-castle-exterior-2-2
-
-- **Taxonomy:**
-  - Category: `objects`
-  - Instance: `gates`
-  - ID: `castle-gate`
-  - Name: `gate-strut-castle-exterior-2-2`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.BinaryAnimation'>`
-  - Frame: `<class 'app.assets.frames.core.IterableFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 64
-    - Length: 64
-  - Mass: 0
-  - Count: 2
-- **State:**
-  - Layer: `0`
-  - Depth: 1
-  - Height: 383
-  - Position: (331, 299)
-  - Animation:
-    - Action: `walk`
-    - Direction: `down`
-    - Frame: 0
-    - Tick: 1
-  - Switch: False
-  - Link: `castle-gate-link`
-
-
-## plate-strut-castle-exterior-2-2
-
-- **Taxonomy:**
-  - Category: `objects`
-  - Instance: `plates`
-  - ID: `stone-switch`
-  - Name: `plate-strut-castle-exterior-2-2`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.BinaryAnimation'>`
-  - Frame: `<class 'app.assets.frames.core.IterableFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 15
-    - Length: 14
-  - Mass: -1
-  - Count: 2
-- **State:**
-  - Layer: `0`
-  - Depth: 1
-  - Height: 383
-  - Position: (274, 395)
-  - Animation:
-    - Action: `walk`
-    - Direction: `down`
-    - Frame: 0
-    - Tick: 1
-  - Switch: False
-  - Link: `castle-gate-link`
-
-
-## passive-strut-castle-exterior-2-2
-
-- **Taxonomy:**
-  - Category: `effects`
-  - Instance: `passive`
-  - ID: `torch`
-  - Name: `passive-strut-castle-exterior-2-2`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
-  - Frame: `<class 'app.assets.frames.core.IterableFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 64
-  - Mass: -1
-  - Lifecycle: Lifecycle(type=<Lifecycles.CONTINUOUS: 'continuous'>, delay=15, frequency=0, cooldown=60, persist=False)
-  - Count: 9
-- **State:**
-  - Layer: `0`
-  - Depth: 1
-  - Height: 383
-  - Position: (265, 308)
-  - Active: `True`
-  - Animation:
-    - Action: `walk`
-    - Direction: `down`
-    - Frame: 7
-    - Tick: 4
-
-
-## passive-strut-castle-exterior-2-2
-
-- **Taxonomy:**
-  - Category: `effects`
-  - Instance: `passive`
-  - ID: `torch`
-  - Name: `passive-strut-castle-exterior-2-2`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
-  - Frame: `<class 'app.assets.frames.core.IterableFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 64
-  - Mass: -1
-  - Lifecycle: Lifecycle(type=<Lifecycles.CONTINUOUS: 'continuous'>, delay=15, frequency=0, cooldown=60, persist=False)
-  - Count: 9
-- **State:**
-  - Layer: `0`
-  - Depth: 1
-  - Height: 383
-  - Position: (424, 308)
-  - Active: `True`
-  - Animation:
-    - Action: `walk`
-    - Direction: `down`
-    - Frame: 2
-    - Tick: 4
-
-
-## the-steppe
-
-- **Taxonomy:**
-  - Category: `tiles`
-  - Instance: `back`
-  - ID: `grass`
-  - Name: `the-steppe`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.core.SingleFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Friction: 100.0
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Position: (0, 0)
-  - Multiple:
-    - nx: 100
-    - ny: 100
-
-
-## castle-dawn-barrel-00
-
-- **Taxonomy:**
-  - Category: `objects`
-  - Instance: `crates`
-  - ID: `wood-barrel`
-  - Name: `castle-dawn-barrel-00`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.core.SingleFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 28
-    - Length: 38
-  - Mass: 5
-  - Count: 1
-  - Hitboxes:
-    - Position: (0, 0) | Dimensions: w: 28, l: 38
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Position: (110, 250)
-  - Velocity: (0.0, 0.0)
-
-
-## jasilynns-rock
-
-- **Taxonomy:**
-  - Category: `objects`
-  - Instance: `obstacles`
-  - ID: `gray-rock-00`
-  - Name: `jasilynns-rock`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.core.SingleFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 56
-    - Length: 56
-  - Mass: 0
-  - Count: 1
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Position: (68, 600)
-  - Velocity: (0.0, 0.0)
-
-
-## jasilynns-other-rock
-
-- **Taxonomy:**
-  - Category: `objects`
-  - Instance: `obstacles`
-  - ID: `gray-rock-00`
-  - Name: `jasilynns-other-rock`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.core.SingleFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 56
-    - Length: 56
-  - Mass: 0
-  - Count: 1
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Position: (632, 600)
-  - Velocity: (0.0, 0.0)
-
-
-## castle-dawn-sign-board-00
-
-- **Taxonomy:**
-  - Category: `objects`
-  - Instance: `signs`
-  - ID: `wood-bulletin`
-  - Name: `castle-dawn-sign-board-00`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.core.SingleFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 30
-    - Length: 32
-  - Mass: 0
-  - Count: 1
-  - Hitboxes:
-    - Position: (4, 4) | Dimensions: w: 22, l: 24
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Position: (430, 370)
-  - Persona: `castle-dawn-sign`
-  - Lexicon: `spring`
-
-
-## test-dummy
-
-- **Taxonomy:**
-  - Category: `effects`
-  - Instance: `reactables`
-  - ID: `spinning-dummy`
-  - Name: `test-dummy`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
-  - Frame: `<class 'app.assets.frames.core.IterableFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 64
-    - Length: 64
-  - Mass: 0
-  - Lifecycle: Lifecycle(type=<Lifecycles.TEMPORARY: 'temporary'>, delay=5, frequency=0, cooldown=30, persist=True)
-  - Count: 8
-  - Hitboxes:
-    - Position: (2, 20) | Dimensions: w: 14, l: 14
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Position: (225, 500)
-  - Active: `False`
-  - Animation:
-    - Action: `walk`
-    - Direction: `down`
-    - Frame: 0
-    - Tick: 0
-  - Intention: `attack`
-
-
-## jasilynns-tears-00
-
-- **Taxonomy:**
-  - Category: `effects`
-  - Instance: `fluids`
-  - ID: `waterflow-00`
-  - Name: `jasilynns-tears-00`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
-  - Frame: `<class 'app.assets.frames.effects.FluidFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Mass: 0
-  - Lifecycle: Lifecycle(type=<Lifecycles.CONTINUOUS: 'continuous'>, delay=60, frequency=0, cooldown=60, persist=False)
-  - Count: 3
-- **State:**
-  - Layer: `0`
-  - Depth: -1
-  - Height: 0
-  - Position: (70, 1)
-  - Active: `True`
-  - Animation:
-    - Action: `walk`
-    - Direction: `down`
-    - Frame: 0
-    - Tick: 19
-  - Source: `down`
-  - Flow: 2
-  - Length: 600
-  - Dirty: False
-  - Pool:
-    - Position: (0, 512)
-    - Dimensions: w: 192, l: 224
-  - Shorelines:
-    - `spawn-d78b0176`
-    - `spawn-52e4eb17`
-    - `spawn-9fed8a16`
-    - `spawn-8efc539a`
-    - `spawn-beb2fbb2`
-    - `spawn-4cda0e35`
-  - Hitboxes:
-    - Position: (0, 0) | Dimensions: w: 32, l: 600
-    - Position: (-70, 512) | Dimensions: w: 192, l: 224
-
-
-## jasilynns-tears-01
-
-- **Taxonomy:**
-  - Category: `effects`
-  - Instance: `fluids`
-  - ID: `waterflow-00`
-  - Name: `jasilynns-tears-01`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
-  - Frame: `<class 'app.assets.frames.effects.FluidFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Mass: 0
-  - Lifecycle: Lifecycle(type=<Lifecycles.CONTINUOUS: 'continuous'>, delay=60, frequency=0, cooldown=60, persist=False)
-  - Count: 3
-- **State:**
-  - Layer: `0`
-  - Depth: -1
-  - Height: 0
-  - Position: (600, 600)
-  - Active: `True`
-  - Animation:
-    - Action: `walk`
-    - Direction: `down`
-    - Frame: 0
-    - Tick: 19
-  - Source: `left`
-  - Flow: 1
-  - Length: 476
-  - Dirty: False
-  - Pool:
-    - Position: (32, 544)
-    - Dimensions: w: 128, l: 160
-  - Shorelines:
-    - `spawn-47e588a6`
-    - `spawn-5a98a6a9`
-  - Hitboxes:
-    - Position: (-476, 0) | Dimensions: w: 476, l: 32
-    - Position: (-568, -56) | Dimensions: w: 128, l: 160
-
-
-## jasilynns-tears-02
-
-- **Taxonomy:**
-  - Category: `effects`
-  - Instance: `fluids`
-  - ID: `waterflow-00`
-  - Name: `jasilynns-tears-02`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
-  - Frame: `<class 'app.assets.frames.effects.FluidFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Mass: 0
-  - Lifecycle: Lifecycle(type=<Lifecycles.CONTINUOUS: 'continuous'>, delay=60, frequency=0, cooldown=60, persist=False)
-  - Count: 3
-- **State:**
-  - Layer: `0`
-  - Depth: -1
-  - Height: 0
-  - Position: (632, 1)
-  - Active: `True`
-  - Animation:
-    - Action: `walk`
-    - Direction: `down`
-    - Frame: 0
-    - Tick: 19
-  - Source: `down`
-  - Flow: 4
-  - Length: 600
-  - Dirty: False
-  - Pool:
-    - Position: (480, 448)
-    - Dimensions: w: 352, l: 352
-  - Shorelines:
-    - `spawn-70b70118`
-    - `spawn-0679cfd4`
-    - `spawn-36279dac`
-    - `spawn-eb8704aa`
-    - `spawn-78786778`
-    - `spawn-7171832e`
-    - `spawn-a62a6298`
-    - `spawn-4d8345b0`
-  - Hitboxes:
-    - Position: (0, 0) | Dimensions: w: 32, l: 600
-    - Position: (-152, 448) | Dimensions: w: 352, l: 352
-
-
-## evil-empress-jasilynn
-
-- **Taxonomy:**
-  - Category: `sheets`
-  - Instance: `sprites`
-  - ID: `jasilynn`
-  - Name: `evil-empress-jasilynn`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.SpriteAnimation'>`
-  - Frame: `<class 'app.assets.frames.sheets.SpriteFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 64
-    - Length: 64
-  - Mass: 25
-  - Stack:
-    - `human-female-ivory`
-    - `torso-dress-red`
-    - `hair-long-black`
-    - `head-crown-gold`
-    - `feet-boots-black`
-  - Hitboxes:
-    - Position: (23, 34) | Dimensions: w: 18, l: 15
-  - Actions:
-    - `cast`:
-      - Count: 7
-      - Delay: 1
-      - Directions:
-        - `Directions.UP`: row 0
-        - `Directions.LEFT`: row 1
-        - `Directions.DOWN`: row 2
-        - `Directions.RIGHT`: row 3
-    - `thrust`:
-      - Count: 8
-      - Delay: 1
-      - Directions:
-        - `Directions.UP`: row 4
-        - `Directions.LEFT`: row 5
-        - `Directions.DOWN`: row 6
-        - `Directions.RIGHT`: row 7
-    - `walk`:
-      - Count: 9
-      - Delay: 3
-      - Directions:
-        - `Directions.UP`: row 8
-        - `Directions.LEFT`: row 9
-        - `Directions.DOWN`: row 10
-        - `Directions.RIGHT`: row 11
-    - `slash`:
-      - Count: 6
-      - Delay: 5
-      - Directions:
-        - `Directions.UP`: row 12
-        - `Directions.LEFT`: row 13
-        - `Directions.DOWN`: row 14
-        - `Directions.RIGHT`: row 15
-    - `shoot`:
-      - Count: 13
-      - Delay: 1
-      - Directions:
-        - `Directions.UP`: row 16
-        - `Directions.LEFT`: row 17
-        - `Directions.DOWN`: row 18
-        - `Directions.RIGHT`: row 19
-    - `die`:
-      - Count: 6
-      - Delay: 1
-      - Directions:
-        - `Directions.UP`: row 20
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Position: (171, 880)
-  - Velocity: (-5.192361831665039, 49.72966003417969)
-  - Animation:
-    - Action: `walk`
-    - Direction: `up`
-    - Frame: 4
-    - Tick: 0
-  - Character:
-    - Strength: 5
-    - Defense: 5
-    - Speed: 50
-    - Impulse: 25
-  - Meters:
-    - Health: 50 / 100
-    - Magic: 100 / 100
-  - Inventory:
-    - Wallet: 0
-    - Equipment:
-      - Weapon: `shortsword`
-  - Goal:
-    - Name: `player`
-    - Category: `subject`
-    - Layer: `0`
-    - Position: (100, 200)
-  - Mutators:
-    - Triggers:
-      - Animated: True
-      - Frightened: False
-      - Dead: False
-      - Vision: False
-    - Parameters:
-      - Fear:
-        - Radius: 100
-        - Limit: 0.5
-        - Enemy: 5
-      - Vision:
-        - Radius: 150
-      - Action:
-        - Radius: 25
-  - Memory:
-    - Sprites:
-      - `player`: (100, 200)
-    - Doors:
-      - `door-strut-house-interior-1-1`: `0`
-    - Relationships:
-      - `player`: `friend`
-  - Psyche:
-    - Persona: `empress-jasilynn`
-    - Motivation: `conquest`
-    - Dialogue: `greeting`
-  - Intention: `find`
-
-
-## player
-
-- **Taxonomy:**
-  - Category: `sheets`
-  - Instance: `players`
-  - ID: `player`
-  - Name: `player`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.SpriteAnimation'>`
-  - Frame: `<class 'app.assets.frames.sheets.SpriteFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 64
-    - Length: 64
-  - Mass: 7
-  - Stack:
-    - `human-male-ivory`
-    - `feet-boots-black`
-    - `legs-robe-black`
-    - `torso-shirt-male-black`
-    - `toros-cape-black`
-    - `head-glasses`
-    - `head-beard-white`
-    - `hair-curls-white`
-    - `head-wizard-hat-moon`
-  - Hitboxes:
-    - Position: (23, 34) | Dimensions: w: 18, l: 15
-  - Actions:
-    - `cast`:
-      - Count: 7
-      - Delay: 1
-      - Directions:
-        - `Directions.UP`: row 0
-        - `Directions.LEFT`: row 1
-        - `Directions.DOWN`: row 2
-        - `Directions.RIGHT`: row 3
-    - `thrust`:
-      - Count: 8
-      - Delay: 1
-      - Directions:
-        - `Directions.UP`: row 4
-        - `Directions.LEFT`: row 5
-        - `Directions.DOWN`: row 6
-        - `Directions.RIGHT`: row 7
-    - `walk`:
-      - Count: 9
-      - Delay: 3
-      - Directions:
-        - `Directions.UP`: row 8
-        - `Directions.LEFT`: row 9
-        - `Directions.DOWN`: row 10
-        - `Directions.RIGHT`: row 11
-    - `slash`:
-      - Count: 6
-      - Delay: 5
-      - Directions:
-        - `Directions.UP`: row 12
-        - `Directions.LEFT`: row 13
-        - `Directions.DOWN`: row 14
-        - `Directions.RIGHT`: row 15
-    - `shoot`:
-      - Count: 13
-      - Delay: 1
-      - Directions:
-        - `Directions.UP`: row 16
-        - `Directions.LEFT`: row 17
-        - `Directions.DOWN`: row 18
-        - `Directions.RIGHT`: row 19
-    - `die`:
-      - Count: 6
-      - Delay: 1
-      - Directions:
-        - `Directions.UP`: row 20
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Position: (10, 80)
-  - Velocity: (0.0, 0.0)
-  - Animation:
-    - Action: `walk`
-    - Direction: `down`
-    - Frame: 0
-    - Tick: 0
-  - Character:
-    - Strength: 5
-    - Defense: 5
-    - Speed: 100
-    - Impulse: 25
-  - Meters:
-    - Health: 50 / 100
-    - Magic: 100 / 100
-  - Inventory:
-    - Wallet: 0
-    - Equipment:
-      - Weapon: `shortsword`
-      - Shield: `buckler`
-  - Goal:
-    - Position: (10, 80)
-  - Mutators:
-    - Triggers:
-      - Animated: False
-      - Frightened: False
-      - Dead: False
-      - Vision: False
-    - Parameters:
-      - Fear:
-        - Radius: 30
-        - Limit: 0.5
-        - Enemy: 5
-      - Vision:
-        - Radius: 30
-      - Action:
-        - Radius: 30
-  - Intention: `idle`
-
-
-## spawn-d78b0176
-
-- **Taxonomy:**
-  - Category: `geography`
-  - Instance: `shorelines`
-  - ID: `grassy-shore`
-  - Name: `spawn-d78b0176`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.geography.ShorelineFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Mass: -1
-  - Tile: `grass`
-  - Fluid: `waterflow-00`
-  - Thickness: 10
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Height: 0
-  - Position: (70, 32)
-  - Orientation: `left`
-  - Thickness: 10
-  - Bidirectional: True
-  - Parent Fluid: `jasilynns-tears-00`
-  - Length: 480
-  - Hitboxes:
-    - Position: (0, 0) | Dimensions: w: 10, l: 480
-
-
-## spawn-52e4eb17
-
-- **Taxonomy:**
-  - Category: `geography`
-  - Instance: `shorelines`
-  - ID: `grassy-shore`
-  - Name: `spawn-52e4eb17`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.geography.ShorelineFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Mass: -1
-  - Tile: `grass`
-  - Fluid: `waterflow-00`
-  - Thickness: 10
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Height: 0
-  - Position: (70, 32)
-  - Orientation: `right`
-  - Thickness: 10
-  - Bidirectional: True
-  - Parent Fluid: `jasilynns-tears-00`
-  - Length: 480
-  - Hitboxes:
-    - Position: (22, 0) | Dimensions: w: 10, l: 480
-
-
-## spawn-9fed8a16
-
-- **Taxonomy:**
-  - Category: `geography`
-  - Instance: `shorelines`
-  - ID: `grassy-shore`
-  - Name: `spawn-9fed8a16`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.geography.ShorelineFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Mass: -1
-  - Tile: `grass`
-  - Fluid: `waterflow-00`
-  - Thickness: 10
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Height: 0
-  - Position: (32, 512)
-  - Orientation: `up`
-  - Thickness: 10
-  - Bidirectional: True
-  - Parent Fluid: `jasilynns-tears-00`
-  - Length: 64
-  - Hitboxes:
-    - Position: (0, 0) | Dimensions: w: 64, l: 10
-
-
-## spawn-8efc539a
-
-- **Taxonomy:**
-  - Category: `geography`
-  - Instance: `shorelines`
-  - ID: `grassy-shore`
-  - Name: `spawn-8efc539a`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.geography.ShorelineFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Mass: -1
-  - Tile: `grass`
-  - Fluid: `waterflow-00`
-  - Thickness: 10
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Height: 0
-  - Position: (128, 512)
-  - Orientation: `up`
-  - Thickness: 10
-  - Bidirectional: True
-  - Parent Fluid: `jasilynns-tears-00`
-  - Length: 64
-  - Hitboxes:
-    - Position: (0, 0) | Dimensions: w: 64, l: 10
-
-
-## spawn-beb2fbb2
-
-- **Taxonomy:**
-  - Category: `geography`
-  - Instance: `shorelines`
-  - ID: `grassy-shore`
-  - Name: `spawn-beb2fbb2`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.geography.ShorelineFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Mass: -1
-  - Tile: `grass`
-  - Fluid: `waterflow-00`
-  - Thickness: 10
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Height: 0
-  - Position: (32, 704)
-  - Orientation: `down`
-  - Thickness: 10
-  - Bidirectional: True
-  - Parent Fluid: `jasilynns-tears-00`
-  - Length: 160
-  - Hitboxes:
-    - Position: (0, 22) | Dimensions: w: 160, l: 10
-
-
-## spawn-4cda0e35
-
-- **Taxonomy:**
-  - Category: `geography`
-  - Instance: `shorelines`
-  - ID: `grassy-shore`
-  - Name: `spawn-4cda0e35`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.geography.ShorelineFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Mass: -1
-  - Tile: `grass`
-  - Fluid: `waterflow-00`
-  - Thickness: 10
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Height: 0
-  - Position: (160, 512)
-  - Orientation: `right`
-  - Thickness: 10
-  - Bidirectional: True
-  - Parent Fluid: `jasilynns-tears-00`
-  - Length: 224
-  - Hitboxes:
-    - Position: (22, 0) | Dimensions: w: 10, l: 224
-
-
-## spawn-47e588a6
-
-- **Taxonomy:**
-  - Category: `geography`
-  - Instance: `shorelines`
-  - ID: `grassy-shore`
-  - Name: `spawn-47e588a6`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.geography.ShorelineFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Mass: -1
-  - Tile: `grass`
-  - Fluid: `waterflow-00`
-  - Thickness: 10
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Height: 0
-  - Position: (192, 600)
-  - Orientation: `up`
-  - Thickness: 10
-  - Bidirectional: True
-  - Parent Fluid: `jasilynns-tears-01`
-  - Length: 408
-  - Hitboxes:
-    - Position: (0, 0) | Dimensions: w: 408, l: 10
-
-
-## spawn-5a98a6a9
-
-- **Taxonomy:**
-  - Category: `geography`
-  - Instance: `shorelines`
-  - ID: `grassy-shore`
-  - Name: `spawn-5a98a6a9`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.geography.ShorelineFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Mass: -1
-  - Tile: `grass`
-  - Fluid: `waterflow-00`
-  - Thickness: 10
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Height: 0
-  - Position: (192, 600)
-  - Orientation: `down`
-  - Thickness: 10
-  - Bidirectional: True
-  - Parent Fluid: `jasilynns-tears-01`
-  - Length: 408
-  - Hitboxes:
-    - Position: (0, 22) | Dimensions: w: 408, l: 10
-
-
-## spawn-70b70118
-
-- **Taxonomy:**
-  - Category: `geography`
-  - Instance: `shorelines`
-  - ID: `grassy-shore`
-  - Name: `spawn-70b70118`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.geography.ShorelineFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Mass: -1
-  - Tile: `grass`
-  - Fluid: `waterflow-00`
-  - Thickness: 10
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Height: 0
-  - Position: (632, 32)
-  - Orientation: `left`
-  - Thickness: 10
-  - Bidirectional: True
-  - Parent Fluid: `jasilynns-tears-02`
-  - Length: 416
-  - Hitboxes:
-    - Position: (0, 0) | Dimensions: w: 10, l: 416
-
-
-## spawn-0679cfd4
-
-- **Taxonomy:**
-  - Category: `geography`
-  - Instance: `shorelines`
-  - ID: `grassy-shore`
-  - Name: `spawn-0679cfd4`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.geography.ShorelineFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Mass: -1
-  - Tile: `grass`
-  - Fluid: `waterflow-00`
-  - Thickness: 10
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Height: 0
-  - Position: (632, 32)
-  - Orientation: `right`
-  - Thickness: 10
-  - Bidirectional: True
-  - Parent Fluid: `jasilynns-tears-02`
-  - Length: 416
-  - Hitboxes:
-    - Position: (22, 0) | Dimensions: w: 10, l: 416
-
-
-## spawn-36279dac
-
-- **Taxonomy:**
-  - Category: `geography`
-  - Instance: `shorelines`
-  - ID: `grassy-shore`
-  - Name: `spawn-36279dac`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.geography.ShorelineFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Mass: -1
-  - Tile: `grass`
-  - Fluid: `waterflow-00`
-  - Thickness: 10
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Height: 0
-  - Position: (480, 448)
-  - Orientation: `up`
-  - Thickness: 10
-  - Bidirectional: True
-  - Parent Fluid: `jasilynns-tears-02`
-  - Length: 160
-  - Hitboxes:
-    - Position: (0, 0) | Dimensions: w: 160, l: 10
-
-
-## spawn-eb8704aa
-
-- **Taxonomy:**
-  - Category: `geography`
-  - Instance: `shorelines`
-  - ID: `grassy-shore`
-  - Name: `spawn-eb8704aa`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.geography.ShorelineFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Mass: -1
-  - Tile: `grass`
-  - Fluid: `waterflow-00`
-  - Thickness: 10
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Height: 0
-  - Position: (672, 448)
-  - Orientation: `up`
-  - Thickness: 10
-  - Bidirectional: True
-  - Parent Fluid: `jasilynns-tears-02`
-  - Length: 160
-  - Hitboxes:
-    - Position: (0, 0) | Dimensions: w: 160, l: 10
-
-
-## spawn-78786778
-
-- **Taxonomy:**
-  - Category: `geography`
-  - Instance: `shorelines`
-  - ID: `grassy-shore`
-  - Name: `spawn-78786778`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.geography.ShorelineFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Mass: -1
-  - Tile: `grass`
-  - Fluid: `waterflow-00`
-  - Thickness: 10
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Height: 0
-  - Position: (480, 768)
-  - Orientation: `down`
-  - Thickness: 10
-  - Bidirectional: True
-  - Parent Fluid: `jasilynns-tears-02`
-  - Length: 352
-  - Hitboxes:
-    - Position: (0, 22) | Dimensions: w: 352, l: 10
-
-
-## spawn-7171832e
-
-- **Taxonomy:**
-  - Category: `geography`
-  - Instance: `shorelines`
-  - ID: `grassy-shore`
-  - Name: `spawn-7171832e`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.geography.ShorelineFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Mass: -1
-  - Tile: `grass`
-  - Fluid: `waterflow-00`
-  - Thickness: 10
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Height: 0
-  - Position: (480, 448)
-  - Orientation: `left`
-  - Thickness: 10
-  - Bidirectional: True
-  - Parent Fluid: `jasilynns-tears-02`
-  - Length: 160
-  - Hitboxes:
-    - Position: (0, 0) | Dimensions: w: 10, l: 160
-
-
-## spawn-a62a6298
-
-- **Taxonomy:**
-  - Category: `geography`
-  - Instance: `shorelines`
-  - ID: `grassy-shore`
-  - Name: `spawn-a62a6298`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.geography.ShorelineFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Mass: -1
-  - Tile: `grass`
-  - Fluid: `waterflow-00`
-  - Thickness: 10
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Height: 0
-  - Position: (480, 640)
-  - Orientation: `left`
-  - Thickness: 10
-  - Bidirectional: True
-  - Parent Fluid: `jasilynns-tears-02`
-  - Length: 160
-  - Hitboxes:
-    - Position: (0, 0) | Dimensions: w: 10, l: 160
-
-
-## spawn-4d8345b0
-
-- **Taxonomy:**
-  - Category: `geography`
-  - Instance: `shorelines`
-  - ID: `grassy-shore`
-  - Name: `spawn-4d8345b0`
-- **Components:**
-  - Animation: `<class 'app.assets.animations.core.NoAnimation'>`
-  - Frame: `<class 'app.assets.frames.geography.ShorelineFrame'>`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-  - Mass: -1
-  - Tile: `grass`
-  - Fluid: `waterflow-00`
-  - Thickness: 10
-- **State:**
-  - Layer: `0`
-  - Depth: 0
-  - Height: 0
-  - Position: (800, 448)
-  - Orientation: `right`
-  - Thickness: 10
-  - Bidirectional: True
-  - Parent Fluid: `jasilynns-tears-02`
-  - Length: 352
-  - Hitboxes:
-    - Position: (22, 0) | Dimensions: w: 10, l: 352
-
-
----
-
-# Perimeters
-
-## Layer: 0
-
-* Position: (0, 0) | Dimensions: w: 1, l: 3200
-* Position: (3200, 0) | Dimensions: w: 1, l: 3200
-* Position: (0, 0) | Dimensions: w: 3200, l: 1
-* Position: (0, 3200) | Dimensions: w: 3200, l: 1
-
-
-## Layer: brick-house-compose-layer
-
-* Position: (0, 0) | Dimensions: w: 1, l: 192
-* Position: (128, 0) | Dimensions: w: 1, l: 192
-* Position: (0, 0) | Dimensions: w: 128, l: 1
-* Position: (0, 192) | Dimensions: w: 128, l: 1
-```
-
-#### Architectural Analysis
+##### Architectural Analysis
 
 Currently, `Actuator.pump()` attempts to:
 
@@ -1733,12 +198,12 @@ Currently, `Actuator.pump()` attempts to:
 
 This tight coupling creates severe architectural friction:
 
-* **Embedded Terrain Queries**: Spatial queries like `_is_water()` and `_is_water_excluding()` query `board.instances(AssetInstances.FLUIDS.value, layer)` directly inside the actuator. The `Board` is the game's centralized database; environmental queries belong on `Board`, accessible to any mechanic or service without duplicating lookup algorithms.
+* **Embedded Terrain Queries**: Spatial queries like `_water()` and `_water_excluding()` query `board.instances(AssetInstances.FLUIDS.value, layer)` directly inside the actuator. The `Board` is the game's centralized database; environmental queries belong on `Board`, accessible to any mechanic or service without duplicating lookup algorithms.
 * **Stateful Leakage in a Generator**: The `Actuator` retains a reference to `ShorelineIndex` and mutates `Board` entities directly (`board.add()`, `board.remove()`), while also altering `FluidState`. Generator services in Ontology should remain stateless calculators that return pure geometric or entity specifications rather than orchestrating multi-entity world mutations.
 * **Inter-Fluid Order Dependencies (Bug B013)**: Because shoreline generation is coupled directly inside single-fluid `pump()` execution, each fluid emitter generates and cleans up shorelines in isolation. When multiple fluids cross or meet (e.g., a lateral stream entering a vertical pool), neither fluid has complete visibility over the resolved water boundaries of the other, resulting in disjointed shorelines inside pooled areas.
 * **Coupling Dynamic Masses to Fluid Raycasts (Bug B011)**: Treating dynamic objects ($m > 0$, such as `Crates`) as stream-blocking obstacles triggers an infinite feedback loop: fluid hits crate $\to$ creates pool $\to$ imparts velocity $\to$ crate moves $\to$ fluid marks dirty $\to$ stream recalculates $\to$ loop repeats.
 
-##### Dependency & Decomposition Analysis
+###### Dependency & Decomposition Analysis
 
 ```mermaid
 flowchart TD
@@ -1760,11 +225,11 @@ A shoreline is an environmental boundary asset. It has no physical or visual ide
 
 ##### Goal: Board Environmental Water Query Unification
 
-Migrate `is_water()` from `Actuator` to `Board` and eliminate `is_water_excluding()`. Provide an $O(N)$ spatial query on `Board` that evaluates whether a given Cartesian coordinate falls within any active fluid corridor or pool on a layer, with an optional fluid entity exclusion parameter.
+Migrate `water()` from `Actuator` to `Board` and eliminate `water_excluding()`. Provide an $O(N)$ spatial query on `Board` that evaluates whether a given Cartesian coordinate falls within any active fluid corridor or pool on a layer, with an optional fluid entity exclusion parameter.
 
 ```python
 # app/game/board.py
-def is_water(
+def water(
     self,
     layer: str,
     position: Position,
@@ -1857,92 +322,1290 @@ Update `FluidMechanics` to enforce the physics rule that dynamic bodies ($m > 0$
 
 **1. Task: Unify Water Query Interface on Board**
 
-*Objective*: Implement `Board.is_water()` with optional fluid entity exclusion and remove `_is_water` / `_is_water_excluding` from `Actuator`.
+*Objective*: Implement `Board.water()` with optional fluid entity exclusion and remove `_water` / `_water_excluding` from `Actuator`.
 
-* [ ] Subtask: Add `is_water(layer, position, exclude=None)` method to `Board` in `src/app/game/board.py`.
-* [ ] Subtask: Implement stream bounding box intersection helper `_in_stream(position, fluid)` in `Board`.
-* [ ] Subtask: Update unit tests for `Board` to verify coordinate intersection across pools and streams with exclusion filtering.
+* [x] Subtask: Add `water(layer, position, exclude=None)` method to `Board` in `src/app/game/board.py`.
+* [x] Subtask: Implement stream bounding box intersection helper `_in_stream(position, fluid)` in `Board`.
+* [x] Subtask: Update unit tests for `Board` to verify coordinate intersection across pools and streams with exclusion filtering.
 
 **2. Task: Restrict Fluid Occlusion to Immovable Assets (Fix B011)**
 
 *Objective*: Prevent dynamic bodies from blocking fluid streams and remove crate-based invalidation loops.
 
-* [ ] Subtask: Modify `Actuator._collect_obstacles` to filter candidates strictly by `asset.properties.mass == 0`.
-* [ ] Subtask: Remove `crates` traversal and `_crate_positions` invalidation logic from `FluidMechanics.update()`.
-* [ ] Subtask: Verify gate state transitions remain the sole dynamic trigger for layer fluid invalidation.
+* [x] Subtask: Modify `Actuator._collect_obstacles` to filter candidates strictly by `asset.properties.mass == 0`.
+* [x] Subtask: Remove `crates` traversal and `_crate_positions` invalidation logic from `FluidMechanics.update()`.
+* [x] Subtask: Verify gate state transitions remain the sole dynamic trigger for layer fluid invalidation.
 
 **3. Task: Extract Stateless Cartographer Service**
 
 *Objective*: Decouple all shoreline derivation and instantiation logic out of `Actuator` into a standalone service.
 
-* [ ] Subtask: Create `src/app/services/generators/game/shoreline.py` with class `Cartographer`.
-* [ ] Subtask: Move flank descriptor extraction, hitbox synthesis, substrate validation, and segment coalescing from `Actuator` to `Cartographer`.
-* [ ] Subtask: Implement `Cartographer.purge(fluid, board)` to centralize previous child shoreline disposal.
-* [ ] Subtask: Implement `Cartographer.generate(fluid, board, index)` returning spawned `Asset` lists without directly mutating `board`.
+* [~] Subtask: Create `src/app/services/generators/game/cartographer.py` with class `Cartographer`.
+* [x] Subtask: Move flank descriptor extraction, hitbox synthesis, substrate validation, and segment coalescing from `Actuator` to `Cartographer`.
+* [x] Subtask: Implement `Cartographer.purge(fluid, board)` to centralize previous child shoreline disposal.
+* [x] Subtask: Implement `Cartographer.generate(fluid, board, index)` returning spawned `Asset` lists without directly mutating `board`.
 
 **4. Task: Fix Endpoint and Flank Boundary Occlusions (Fix B012)**
 
 *Objective*: Ensure source asset dimensions and boundary-adjacent corridors generate complete shorelines.
 
-* [ ] Subtask: Add source cap descriptors in `Cartographer._extract_descriptors` for emitter origin margins bordered by land.
-* [ ] Subtask: Adjust `_detect_flank_occlusions` to prevent perpendicular 1px map perimeters from disqualifying parallel shoreline margins.
-* [ ] Subtask: Add regression unit tests verifying shorelines generate at `c = 0` for border emitters.
+* [x] Subtask: Add source cap descriptors in `Cartographer._extract_descriptors` for emitter origin margins bordered by land.
+* [x] Subtask: Adjust `_detect_flank_occlusions` to prevent perpendicular 1px map perimeters from disqualifying parallel shoreline margins.
+* [!: Conditional on User Acceptance] Subtask: Add regression unit tests verifying shorelines generate at `c = 0` for border emitters.
 
 **5. Task: Implement Two-Pass Layer Updates in FluidMechanics (Fix B013)**
 
 *Objective*: Resolve cross-fluid shoreline overlapping by decoupling fluid propagation from shoreline generation.
 
-* [ ] Subtask: Refactor `Actuator` to expose `propagate()` and `generate_shorelines()`.
-* [ ] Subtask: Update `FluidMechanics.update()` to execute Pass 1 (`propagate`) across all dirty layer fluids before executing Pass 2 (`generate_shorelines`).
-* [ ] Subtask: Eliminate single-point `cull_submerged` checks in favor of Pass 2 evaluation against `board.is_water()`.
+* [x] Subtask: Refactor `Actuator` to expose `propagate()` and `generate_shorelines()`.
+* [x] Subtask: Update `FluidMechanics.update()` to execute Pass 1 (`propagate`) across all dirty layer fluids before executing Pass 2 (`generate_shorelines`).
+* [x] Subtask: Eliminate single-point `cull_submerged` checks in favor of Pass 2 evaluation against `board.water()`.
+
+##### User Review
+
+###### Bug: Erratic Crate Behavior
+
+Crates now behave better, but still have a few bugs. When pushing a crate into a fluid stream, it goes haywire and flies across screen. I suspect what is going on is: Crate still has velocity orthogonal to the stream flow so the addition of field velocity causes Crate to go off course. 
+
+It seems as though what should occur is: when Crates (or other frictive Assets) enter into a stream field, their velocity is immediately snapped to the direction of the stream flow. All friction calculations should be suspended while the Crate is "floating".
+
+##### Bug: Erratic Shoreline Behavior
+
+Shorelines where Fluid streams meet separate Fluid streams are still being generated inside of the annular pool where the impinging stream intersects the pool. However, curiously, when the Player intersects a Switch to open a Gate, the shorelines along the intersection disappear. 
+
+##### Root Cause Analysis
+
+###### 1. Erratic Crate Behavior
+
+* **Friction Calculation**: In `frictive.py`, the engine was calculating ground tile friction decay on floating crates. When floating in fluid, friction should be suspended entirely so the body drifts with the current rather than decelerating against the underlying terrain.
+* **Per-Frame Velocity Accumulation**: In `fields.py`, direct immersion added fluid velocity vectorally via accumulation (`asset.state.velocity.vx += flow_vx`). Unlike kinematic assets (which clamp or overwrite velocity from user input every frame), frictive bodies persist velocity frame-to-frame. Accumulating `flow_vx` and `flow_vy` on every tick caused crate velocity to accelerate exponentially to thousands of pixels per second while retaining previous orthogonal momentum.
+* **Remediation**:
+1. In `frictive.py`, check `board.water(asset.state.layer, center_pos)` and bypass friction decay while floating.
+2. In `fields.py`, directly snap frictive assets (`AssetInstances.CRATES.value`) to the stream velocity vector (`vx = flow_vx`, `vy = flow_vy`) instead of accumulating.
+
+###### 2. Erratic Shoreline Behavior
+
+* **Sequential Startup Hydration**: During bootstrapping and state hydration, `Actuator.pump()` was called iteratively on each fluid emitter in isolation. When Fluid 0 (`jasilynns-tears-00`) was pumped, Fluid 1 (`jasilynns-tears-01`) had not yet propagated, so Fluid 0 generated shorelines across the perimeter of its pool where Fluid 1 enters. When Fluid 1 subsequently propagated into Fluid 0's pool, Fluid 0's existing shorelines were not purged or re-evaluated.
+* **Delayed Two-Pass Trigger in `FluidMechanics**`: `FluidMechanics.update()` previously only flagged fluids as dirty when a gate switch changed (`prev_switch is not None and prev_switch != curr_switch`). Because hydration marked fluids clean (`dirty = False`), the coordinated Two-Pass layer update never executed on frame 1. When the player stepped on a plate to open a gate, `FluidMechanics` invalidated the layer and ran the Two-Pass update for all layer fluids, which correctly purged and suppressed the intersecting shorelines.
+* **Single-Corner Probe Sampling**: In `Cartographer._coalesce_segments`, the boundary check sampled only the top-left index point `Position(c, probe_coord)`. Because fluid emitters can reside at fractional offsets (e.g., $x = 70$), testing $c = 64$ checked a point just outside the stream corridor, failing to detect water-to-water junctions.
+* **Remediation**:
+1. Refactor `Actuator.pump(fluid, board)` to execute Pass 1 (`propagate`) followed by Pass 2 (`generate_shorelines`) across all fluids on that layer.
+2. In `FluidMechanics.update()`, ensure that on the initial tick (`not self._initialized`), all layer fluids are marked dirty and run through the Two-Pass update.
+3. In `Cartographer`, implement `_is_step_water` to sample the active step interval across its midpoint and boundaries, preventing coordinate misalignment from bypassing water-to-water margin suppression.
+
+##### User Review
+
+All changes accepted and passing. Last remaining point before moving onto unit tests. 
+
+###### Crate Submersion (-> Arbitrary Asset Submersion)
+
+Currently, only Sprites have the submersion Channel directive applied to them. To achieve the effect of submersion in Fluid, SpriteFrame uses a Channel directive conditional on its `mutator` state field,
+
+The Screen then uses the Channel to call the Cython SDL interface.
+
+**NOTE**: The Screen is unaware the Channel came from a Sprite Asset.
+
+Mutators are currently specific to Sprites,
+
+Objects do not have Mutators.
+
+I believe the most architecturally sound course of action is make Mutators are core Asset state attribute available on all instances of Assets and shift the logic for submersion that currently resides SpriteFrame to the base Frame class.
+
+Analyze this proposal. Propose a sequence of tasks to achieve this functionality. Use the [Template: Backlog](#template-backlog).
+
+##### Analysis
+
+Promoting `mutators` to `AssetState` and shifting `ChannelTypes.SUBMERGE` derivation to `Frame.channels()` is architecturally sound:
+
+1. **ECS Consistency**: In Ontology, behavioral distinction is driven by injected components, while common physical/environmental states reside on the base model. Submersion is an environmental condition governed by spatial mechanics (`fields.py`), not a Sprite-exclusive cognitive state.
+2. **Elimination of Instance-Gated Logic**: Currently, `fields.py` explicitly gates submersion assignment behind `if asset.instance in (PLAYERS, SPRITES)`. Moving `mutators` to `AssetState` allows `fields.py` to toggle `asset.state.mutators.triggers.submerged` across all active entities (Crates, Sprites, Players) without duck typing or instance whitelisting.
+3. **DRY Rendering Directives**: `SpriteFrame` is currently the only frame calculating submerge channel offsets. Because submersion splits an asset's height at $l/2$ using `properties.dimensions.l`, placing this logic directly in `Frame.channels()` provides universal submersion rendering across all frame types (`SingleFrame`, `IterableFrame`, `SpriteFrame`) without code duplication.
+4. **Structural Segregation**: While `MutatorTriggers` (e.g., `submerged`, `animated`, `dead`) applies universally to all assets, `MutatorParameters` (e.g., `fear`, `vision`, `squeeze`) contains AI-specific sensory radiuses. Retaining `parameters: Optional[MutatorParameters] = None` on `Mutators` ensures the base footprint remains minimal for non-cognitive entities like Crates.
 
 ---
 
-## 5. Documentation Updates
+#### Refactor: Phase 09.03.01 - Unified Asset Mutators & Submersion Channel
 
-#### Draft: Fluid Mechanics Obstacle & Execution Specifications
+**Overview**
 
-* **Page**: `docs/05-mechanics.md`
-* **Heading**: `FluidMechanics`
+Elevate `mutators` from `SpriteState` to the foundational `AssetState` model, providing universal environmental status tracking across all physical entities. Migrate procedural submersion channel generation from `SpriteFrame` to the base `Frame` class, and update `fields.py` to evaluate submersion triggers and splash particle emissions uniformly across all dynamic and frictive bodies.
 
-##### Drift
+##### Goal: Universal Mutator State Promotion
 
-The existing documentation states that `FluidMechanics` inspects active crates ($\vert{}v\vert{} > 0$) to trigger invalidation and implies dynamic physical objects obstruct fluids. In execution, dynamic assets ($m > 0$) must not obstruct fluids, as fluid currents accelerate dynamic bodies rather than terminating against them. Only static barriers ($m = 0$) obstruct streams.
+Relocate `MutatorTriggers` and `Mutators` to the core state definitions. Add `mutators: Mutators = field(default_factory=Mutators)` to `AssetState` so that every deployed entity inherits state-level trigger flags with `submerged = False` by default.
 
-##### Update
+```python
+# app/models/state/core.py
+@dataclass(slots=True)
+class MutatorTriggers:
+    animated: bool = False
+    frightened: bool = False
+    dead: bool = False
+    vision: bool = False
+    submerged: bool = False
 
-```markdown
-**FluidMechanics**
+@dataclass(slots=True)
+class Mutators:
+    triggers: MutatorTriggers = field(default_factory=MutatorTriggers)
+    parameters: Optional[Any] = None
 
-FluidMechanics governs fluid emission and procedural shoreline margins across active layers. It executes after physical momentum updates (`MotionMechanics` and `CollisionMechanics`) and uses reactive dirty-checking:
-
-1. **Change Detection**: Inspects switch-linked gates (`AssetInstances.GATES`). If any static barrier within an active layer mutates state, affected fluids are marked `dirty`. Dynamic bodies (\(m > 0\), such as Crates) do not obstruct fluids and do not trigger invalidation.
-2. **Raycast Truncation**: Raycasts along `state.source` strictly against map boundaries and immovable static assets (\(m = 0\)). Dynamic bodies (\(m > 0\)) and sensors (\(m = -1\)) are bypassed. Calculates distance \(D\) to the nearest occluder.
-3. **Annular Pooling**: If the occluder is an internal obstacle rather than a perimeter boundary, expands a radial pool of radius `state.flow` around the obstacle perimeter, aligned to grid increments.
-4. **Hitbox Update**: Injects composite hitboxes for the stream path and pool boundaries into the broad-phase spatial hash.
-5. **Two-Pass Shoreline Synthesis**: Evaluates fluid propagation across all dirty emitters on a layer prior to generating procedural shorelines via `Cartographer`, preventing cross-fluid margin clipping.
+@dataclass(slots=True)
+class AssetState:
+    id: str
+    name: Optional[str] = None
+    layer: Optional[str] = None
+    depth: int = 0
+    height: Optional[Union[int, str]] = None
+    mutators: Mutators = field(default_factory=Mutators)
 
 ```
 
+##### Goal: Base Frame Submersion Channels
+
+Implement default channel emission in `Frame.channels()`. If `state.mutators.triggers.submerged` is active, calculate the horizontal half-length split ($l / 2$) from `properties.dimensions.l` and emit `(ChannelTypes.SUBMERGE.value, (half_l, 40, 110, 180, 170))`. Derived frames (such as `SpriteFrame`) call `super().channels()` and append their own specialized channel directives.
+
+```python
+# app/assets/base.py
+class Frame(ABC):
+    def channels(self, 
+        id: str, 
+        state: AssetState, 
+        properties: AssetProperties
+    ) -> List[Tuple]:
+        directives = []
+        if getattr(state, "mutators", None) and state.mutators.triggers.submerged:
+            if hasattr(properties, "dimensions") and properties.dimensions:
+                half_l = properties.dimensions.l // 2
+                directives.append((
+                    ChannelTypes.SUBMERGE.value,
+                    (half_l, 40, 110, 180, 170)
+                ))
+        return directives
+
+```
+
+##### Goal: Uniform Environmental Immersion Resolution
+
+Refactor `app.game.logic.modules.motion.fields` to remove entity instance whitelisting on shoreline crossings and direct fluid immersion. All non-raft mutable assets (Crates, Sprites, Players) entering or exiting water toggle `asset.state.mutators.triggers.submerged` and spawn splash particles via `Cradle`.
+
+##### Tasks
+
+**1. Task: Promote Mutator Models to Core State**
+
+*Objective*: Make `mutators` a standard field on `AssetState` and remove the redundant declaration from `SpriteState`.
+
+* [x] Subtask: Move `MutatorTriggers` and `Mutators` definitions into `src/app/models/state/core.py`.
+* [x] Subtask: Add `mutators: Mutators = field(default_factory=Mutators)` to `AssetState`.
+* [x] Subtask: Remove overridden `mutators` field from `SpriteState` in `src/app/models/state/sprites.py`.
+
+**2. Task: Implement Default Submersion in Base Frame**
+
+*Objective*: Provide universal `SUBMERGE` channel emission on `Frame` for all inheriting frame strategies.
+
+* [x] Subtask: Implement `channels()` on `Frame` in `src/app/assets/base.py` checking `state.mutators.triggers.submerged`.
+* [x] Subtask: Refactor `SingleFrame`, `IterableFrame`, and `StateFrame` to inherit or delegate to `Frame.channels()`.
+* [x] Subtask: Refactor `SpriteFrame.channels()` in `src/app/assets/frames/sprites.py` to call `super().channels()` and remove duplicated submersion slice logic.
+
+**3. Task: Generalize Field Immersion and Splash Handling**
+
+*Objective*: Apply shoreline ledge transitions, direct fluid immersion, and splash particle spawning across all mutable assets.
+
+* [x] Subtask: Remove `AssetInstances.PLAYERS.value` and `AssetInstances.SPRITES.value` instance filters for `submerged` state updates in `src/app/game/logic/modules/motion/fields.py`.
+* [x] Subtask: Ensure dynamic Crates crossing shorelines or entering fluids update `submerged = True` and emit splash particles via `board.cradle.spawn_passive`.
+* [x] Subtask: Ensure exiting water clears `submerged = False` across all mutable assets.
+
+##### User Review
+
+Everything is mostly working to spec. However, a subtler bug was discovered during this round of User Acceptance testing. When there are two adjacent Fluid streams, the Shoreline around the overlapping Pools from the adjacent streams is not being rendered at all.
+
+In addition, when the Player passes over an unrelated Gate, Shorelines are generated where the adjacent streams touch.
+
+**Initial Conditions**
+
+!!! note
+  This was tried with `name = jasilynns-tears-01` such that `position.x = 101` with the same results.
+
+```yaml
+effects:
+  fluids:
+    - id: waterflow-00
+      name: jasilynns-tears-00
+      layer: '0'
+      position:
+        x: 70
+        y: 0
+      flow: 2
+      source: down
+    - id: waterflow-00
+      name: jasilynns-tears-01
+      layer: '0'
+      position:
+        x: 102
+        y: 0
+      flow: 2
+      source: down
+    - id: waterflow-00
+      name: jasilynns-tears-02
+      layer: '0'
+      position:
+        x: 600
+        y: 600
+      source: left
+    - id: waterflow-00
+      name: jasilynns-tears-03
+      layer: '0'
+      flow: 4
+      position:
+        x: 632
+        y: 0
+      source: down
+```
+
+**Application Logs**
+
+*Omitted after bug identified for brevity*
+
+**State Dump**
+
+*Omitted after bug identified for brevity*
+
+**Hypotheses**
+
+- the `_is_step_water` function, due to its `exclude=fluid.name` parameter, suppresses shoreline generation for overlapping pools.  Both fluid streams, with identical pool dimensions, end up mutually excluding each other, resulting in no shoreline generation around either pool, mathematically explaining Bug 1.
+
+**Notes**
+ 
+- a core flaw: the shoreline logic is overly coupled to the individual Fluid instances. This leads to the mutual exclusion of shorelines at identical pool boundaries. Refactoring to decouple shoreline generation from individual fluids will resolve the core issue.
+  - This will entail an analysis of where to place the Shoreline State, as this state is currently a "Virtual State" on the Fluid asset. **Thought**: It could reside on the Board, similarly to the plot state, except keyed by layer.
+- shorelines represent where water on a layer meets land. They don't belong to individual fluids but arise from the overall water geography of the layer. This unified perspective simplifies the logic.
+- The shoreline should be linked to a layer as a whole, no longer belonging to a single fluid. This architectural shift simplifies the logic and provides a clean separation.
+- Possible Shoreline invariant formula: A shoreline exists at (x, y) with orientation O if and only if: the tile is water, the adjacent cell (in direction O) is not water, and this adjacent cell is valid land. This removes the mutual exclusion deadlock and ensures correct shoreline generation regardless of the water's origin. This is a core shift in design and will require careful planning.
+
+**Task**: Put together Phase 09.03.03 to refactor the Fluid workflow around these bugs.
+
+##### Architectural Analysis
+
+The erratic shoreline behavior discovered during User Acceptance Testing stems from a foundational category error: **treating Shorelines as dependent child entities of individual `Fluid` emitters rather than as emergent, layer-scoped environmental geography.**
+
+###### 1. Coincident Pool Mutual Exclusion Deadlock
+
+When two adjacent streams (`jasilynns-tears-00` and `jasilynns-tears-01`) strike the same immovable obstacle (`jasilynns-rock` at `x=68, y=600`), both calculate an identical annular pool bounding box:
+
+$$\text{Pool}_0 = \text{Pool}_1 = (x: 0, y: 512, w: 192, l: 224)$$
+
+During shoreline generation in `Cartographer._coalesce_segments`:
+
+```python
+# 2. Skip if shoreline tile is submerged under an overlapping fluid (Fix B013)
+if cls._is_step_water(board, layer, axis, c, step_len, center_fixed, exclude=fluid.name):
+    commit_segment()
+    c += step_len
+    continue
+```
+
+1. `Cartographer.generate(tears-00)` evaluates its pool perimeter at `center_fixed = 528`. It queries `board.water(layer, pos, exclude="jasilynns-tears-00")`. Because `tears-01` occupies the identical pool bounds, `board.water` evaluates to `True`. `Cartographer` classifies every single perimeter cell of `tears-00` as submerged under `tears-01` and discards them.
+2. `Cartographer.generate(tears-01)` evaluates its pool perimeter with `exclude="jasilynns-tears-01"`. Because `tears-00` occupies the identical pool bounds, `board.water` evaluates to `True`. `Cartographer` classifies every single perimeter cell of `tears-01` as submerged under `tears-00` and discards them.
+3. **Result**: Both fluids mutually suppress each other's shorelines, resulting in zero shorelines around the entire pool.
+
+###### 2. Startup Hydration vs. Gate Invalidation Desynchronization
+
+The appearance of shorelines when a player steps on an unrelated gate plate occurs due to order-dependent state hydration:
+
+1. **Hydration Phase**: The `Migrator` hydrates entities sequentially. When `tears-00` is hydrated and pumped, `tears-01` does not yet exist on the board. `tears-00` generates shorelines without seeing `tears-01`. When `tears-01` is later pumped, it sees `tears-00`'s established water corridor.
+2. **Runtime Invalidation**: When the player steps on a switch, `FluidMechanics.update()` flags all fluids on layer `0` as `dirty`. It executes Pass 1 (`propagate`) followed by Pass 2 (`generate_shorelines`) for each fluid iteratively:
+```python
+for f in layer_fluids:
+    self.actuator.generate_shorelines(f, board)
+```
+
+`Cartographer.purge(fluid, board)` only removes the shorelines associated with the active fluid instance (`fluid.state.shorelines`). Because shoreline synthesis is executed per-fluid rather than per-layer, cross-fluid boundary queries evaluate against partially updated intermediate states on `Board`.
+
+###### Remediation: Layer-Wide Geography Synthesis
+
+Shorelines represent the topological boundary where water meets dry substrate on a given layer. They have no physical or behavioral connection to individual fluid emitters.
+
+```mermaid
+flowchart TD
+    subgraph Pass 1: Fluid Physics
+        FM[FluidMechanics] -->|propagate all| ACT[Actuator]
+        ACT -->|Raycast & Annular Pools| FS[FluidStates]
+    end
+
+    subgraph Pass 2: Layer Geography
+        FM -->|purge layer shorelines| CR[Cartographer]
+        FM -->|generate layer shorelines| CR
+        CR -->|Extract Water Rectangles| FS
+        CR -->|contours sweep| CY[libs.core.math.geometry]
+        CR -->|Substrate Sampling| BD[Board]
+        CR -->|Spawn Shorelines| CD[Cradle]
+    end
+```
+
+1. **Decouple Shorelines from FluidState**:
+  * Remove `shorelines: List[str]` from `FluidState`.
+  * Remove `parent_fluid: str` from `ShorelineState`.
+  * Shorelines become first-class geography entities indexed on `Board` solely by `layer`.
+2. **Layer-Scoped Contour Sweep**:
+  * Instead of running 150 lines of directional flank descriptor extraction per fluid, `Cartographer` collects all active stream corridors and pool bounds on the layer into a single collection of primitive AABB tuples: $\text{Rects}_{\text{water}} = \{ (x_1, y_1, x_2, y_2)_{\text{stream}}, (x_1, y_1, x_2, y_2)_{\text{pool}} \}$
+  * Pass $\text{Rects}_{\text{water}}$ directly to `libs.core.math.geometry.contours()`.
+  * The existing Cython Sweep-Line XOR algorithm dissolves all shared interior edges, merges coincident pools, eliminates stream-to-pool seams, and returns the exact outer mathematical perimeter of the layer's aggregate water mask.
+3. **Stateless Substrate & Occlusion Evaluation**:
+  * `Cartographer` samples the exterior normal of each exposed contour boundary against `board.tile(layer, coord)`.
+  * `ShorelineIndex` resolves the matching `shoreline_id`.
+  * Contiguous segments are coalesced and spawned into `board` in a single pass. Mutual exclusion deadlocks and order dependencies are eliminated.
+
+##### Clarification: Where Shoreline State Lives
+
+```mermaid
+flowchart TD
+    subgraph Board Database
+        BD[Board]
+        BD -->|Layer Metadata| PERIM[board.perimeters: Dict[str, List[Boundary]]]
+        BD -->|Layer Metadata| SHORES[board.shorelines: Dict[str, List[Asset]]]
+        BD -->|Global Assets| ASSETS[board._assets: List[Asset]]
+    end
+
+    subgraph Geography Assets
+        ASSETS --> SHORE1[Asset: spawn-01]
+        ASSETS --> SHORE2[Asset: spawn-02]
+        SHORE1 --> SS1[state: ShorelineState]
+        SHORE2 --> SS2[state: ShorelineState]
+    end
+
+    subgraph Mechanics & Generators
+        FM[FluidMechanics] -->|Pass 2: purge & generate| CART[Cartographer]
+        CART -->|Update| SHORES
+        CART -->|board.add / board.remove| ASSETS
+    end
+
+```
+
+**Layer-Level State: `board.shorelines` on `Board`**
+
+The "virtual state" that previously lived on `fluid.state.shorelines` is migrated directly to `Board`, structured identically to `board.perimeters`:
+
+```python
+# app/game/board.py
+class Board:
+    # Public Layer Metadata
+    perimeters: Dict[str, List[Boundary]]
+    shorelines: Dict[str, List[Asset]]
+```
+
+* **Storage**: A layer-keyed collection on `Board` holding references to all active procedural shoreline `Asset` instances on that layer (`board.shorelines[layer] = [...]`).
+* **Initialization**: `board._init_cache(layer)` initializes `self.shorelines[layer] = []`.
+* **Database Synchronization**:
+* `board.add(assets)`: Whenever an added asset has `instance == AssetInstances.SHORELINES.value`, it is registered into `self.shorelines[layer]` (in addition to `_assets` and `_cached_renderables`).
+* `board.remove(assets)`: Automatically removes matching assets from `self.shorelines[layer]`.
+
 ---
 
-#### Draft: Board Environmental Query Interface
+##### Bug Reports
 
-* **Page**: `docs/00-overview.md`
-* **Heading**: `Board`
+###### Bug B015: Coincident Pool Mutual Exclusion & Flank Desynchronization
 
-##### Drift
+**STATUS**: OPEN
+**SEVERITY**: HIGH
 
-The `Board` documentation details `tile()`, `asset()`, and caching dictionaries, but does not specify spatial query interfaces for environmental fluid and water presence.
+**Description**
 
-##### Update
+When two fluid streams form identical or overlapping annular pools against the same obstacle, `Cartographer._coalesce_segments` evaluates each fluid's pool margin against `board.water(exclude=fluid.name)`. Because each pool's margin falls within the other fluid's pool bounds, both fluids mutually exclude each other, suppressing shoreline generation entirely. Furthermore, because `Cartographer.purge` and `Cartographer.generate` operate per-fluid, sequential startup hydration leaves stale shoreline artifacts that mutate whenever a dynamic gate switch invalidates the layer.
 
-```markdown
-**Environmental Queries**
+**Steps to Replicate**
 
-The Board exposes spatial queries to evaluate dynamic environmental fields without requiring mechanics to traverse entity collections:
+1. Define two fluid emitters (`jasilynns-tears-00` and `jasilynns-tears-01`) flowing in parallel along the same axis into a shared static obstacle ($m = 0$).
+2. Boot the engine and inspect the pool boundaries. Observe that zero shorelines are generated along the shared pool perimeter.
+3. Trigger a switch on an unrelated gate to invalidate the layer. Observe that shorelines appear and disappear along inter-stream boundaries.
 
-* `board.tile(layer, position, instance)`: Retrieves background or foreground tile entities via \(O(1)\) spatial hash lookup.
-* `board.is_water(layer, position, exclude=None)`: Evaluates whether a coordinate intersects any active fluid stream or annular pool across the layer, with an optional entity exclusion filter.
+**Proposed Remediation**
 
+Deprecate per-fluid shoreline generation. Remove `shorelines` from `FluidState` and `parent_fluid` from `ShorelineState`. Implement layer-wide shoreline synthesis in `Cartographer.generate(layer, board, index)` using `libs.core.math.geometry.contours` to derive the outer boundary of the layer's aggregate water mask.
+
+---
+
+#### Refactor: Phase 09.03.03 - Layer-Wide Fluid Geography & Contour Shorelines
+
+**Overview**
+
+Decouple shoreline geography from individual fluid emitters by removing relational parent-child tracking from `FluidState` and `ShorelineState`. Promote layer shoreline tracking to a first-class metadata collection on `Board` (`board.shorelines`), and migrate `Cartographer` to layer-wide geometric contour sweeps using `libs.core.math.geometry.contours()`.
+
+##### Goal: De-parenting Shoreline & Fluid State Models
+
+Remove `shorelines: List[str]` from `FluidState` and `parent_fluid: Optional[str]` from `ShorelineState`. Individual shoreline segments retain `ShorelineState` as their concrete ECS state model, while parent-child tracking is eliminated.
+
+```python
+# app/models/state/effects.py
+@dataclass(slots=True)
+class FluidState(EffectState):
+    height: Optional[int] = 0
+    depth: int = -1
+    length: int = 0
+    pool: Optional[Pool] = None
+    hitboxes: List[Hitbox] = field(default_factory=list)
+    dirty: bool = True
+    flow: int = 1
+    source: Directions = Directions.DOWN.value
+
+# app/models/state/geography.py
+@dataclass(slots=True)
+class ShorelineState(AssetState):
+    height: Optional[Union[int, str]] = 0
+    depth: int = 0
+    position: Optional[Position] = None
+    orientation: str = Directions.DOWN.value
+    length: int = 0
+    thickness: int = 8
+    bidirectional: bool = True
+    hitboxes: List[Hitbox] = field(default_factory=list)
+
+```
+
+##### Goal: Board Layer Shoreline Tracking
+
+Add `board.shorelines: Dict[str, List[Asset]]` to `Board` to track active procedural shoreline geography by layer, analogous to `board.perimeters`.
+
+```python
+# app/game/board.py
+class Board:
+    perimeters: Dict[str, List[Boundary]]
+    shorelines: Dict[str, List[Asset]]
+
+    def _init_cache(self, layer: Optional[str] = None) -> None:
+        ...
+        self.perimeters[layer] = []
+        self.shorelines[layer] = []
+
+    def get_shorelines(self, layer: Optional[str] = None) -> List[Asset]:
+        if layer is not None:
+            return self.shorelines.get(layer, [])
+        all_shores = []
+        for l_shores in self.shorelines.values():
+            all_shores.extend(l_shores)
+        return all_shores
+
+```
+
+##### Goal: Layer-Wide Geometric Water Contour Synthesis
+
+Refactor `Cartographer` to extract all layer water AABBs into `(min_x, min_y, max_x, max_y)` primitives, compute the outer boundary hull via `geometry.contours()`, evaluate bordering substrate tiles from `board.tile()`, and spawn coalesced `Shoreline` entities.
+
+```python
+# app/services/generators/game/cartographer.py
+class Cartographer:
+    @classmethod
+    def purge(cls, layer: str, board: Board) -> None:
+        shores = board.get_shorelines(layer)
+        if shores:
+            board.remove(list(shores))
+
+    @classmethod
+    def generate(
+        cls,
+        layer: str,
+        board: Board,
+        index: ShorelineIndex
+    ) -> List[Asset]:
+        water_rects = cls._collect_water_rectangles(layer, board)
+        if not water_rects:
+            return []
+        boundaries = geometry.contours(water_rects)
+        return cls._synthesize_margins(boundaries, layer, board, index)
+
+```
+
+##### Goal: Coordinated Two-Pass Layer Updates in FluidMechanics
+
+Update `FluidMechanics.update()` to execute Pass 1 (`Actuator.propagate`) across all dirty layer fluids, followed by a single layer-level Pass 2 (`Cartographer.purge` and `Cartographer.generate`).
+
+```python
+# app/game/logic/mechanics/world/fluid.py
+for layer in dirty_layers:
+    layer_fluids = board.instances(AssetInstances.FLUIDS.value, layer)
+    # Pass 1: Propagate fluid dynamics
+    for f in layer_fluids:
+        self.actuator.propagate(f, board)
+    # Pass 2: Synthesize layer geography
+    Cartographer.purge(layer, board)
+    new_shores = Cartographer.generate(layer, board, self.shorelines)
+    board.add(new_shores)
+```
+
+##### Tasks
+
+**1. Task: Establish Layer Shoreline State on Board**
+
+*Objective*: Add layer-scoped shoreline tracking to `Board` and update caching and mutation lifecycles.
+
+* [ ] Subtask: Add `shorelines: Dict[str, List[Asset]]` field to `Board` in `src/app/game/board.py`.
+* [ ] Subtask: Initialize `self.shorelines[layer] = []` in `Board._init_cache()`.
+* [ ] Subtask: Update `Board.add()` and `Board.remove()` to maintain `self.shorelines[layer]` alongside `_cached_instances`.
+* [ ] Subtask: Add `Board.get_shorelines(layer=None)` query interface.
+
+**2. Task: De-parent Shoreline and Fluid State Models**
+
+*Objective*: Remove `shorelines` from `FluidState` and `parent_fluid` from `ShorelineState` and `Cradle`.
+
+* [ ] Subtask: Remove `shorelines: List[str]` field from `FluidState` in `src/app/models/state/effects.py`.
+* [ ] Subtask: Remove `parent_fluid: Optional[str]` field from `ShorelineState` in `src/app/models/state/geography.py`.
+* [ ] Subtask: Remove `parent_fluid` parameter from `Cradle.spawn_shoreline` in `src/app/services/generators/game/cradle.py`.
+
+**3. Task: Implement Layer-Wide Geometric Contour Generation in Cartographer**
+
+*Objective*: Refactor `Cartographer` to extract layer water AABBs and derive unified shoreline boundaries using `geometry.contours()`.
+
+* [ ] Subtask: Implement `Cartographer._collect_water_rectangles(layer, board)` converting active streams and pools into `(min_x, min_y, max_x, max_y)` primitives.
+* [ ] Subtask: Implement `Cartographer.purge(layer, board)` using `board.get_shorelines(layer)`.
+* [ ] Subtask: Implement boundary orientation detection by probing outward normal coordinates against `board.water(layer, pos)`.
+* [ ] Subtask: Port 32px step sampling, substrate lookup (`board.tile`), occlusion checks (`_detect_flank_occlusions`), and contiguous segment coalescing to evaluate contour boundaries.
+* [ ] Subtask: Refactor `Cartographer.generate(layer, board, index)` to return all synthesized `Shoreline` entities for the layer.
+
+**4. Task: Refactor FluidMechanics Pipeline and Segregate Actuator**
+
+*Objective*: Remove shoreline delegation from `Actuator` and coordinate layer-wide two-pass updates in `FluidMechanics`.
+
+* [ ] Subtask: Remove `generate_shorelines()` and `self.shorelines` dependency from `Actuator` in `src/app/services/generators/game/actuator.py`.
+* [ ] Subtask: Update `Actuator.pump(fluid, board)` to strictly propagate fluid dynamics.
+* [ ] Subtask: Inject `ShorelineIndex` directly into `FluidMechanics`.
+* [ ] Subtask: Update `FluidMechanics.update()` to execute Pass 1 per-fluid and Pass 2 per-layer across all invalidated layers.
+
+---
+
+This will require changes to the Builder.
+
+**src/app/services/orchestration/builder.py**
+
+```python
+"""
+# Ontology: app.services.orchestration.constructors
+
+Classes for constructing game objects.
+"""
+from __future__ import annotations
+
+# Standard Libraries
+import logging
+import dataclasses
+from typing import (
+    Dict, 
+    List,
+    Any
+)
+
+# Application Libraries
+import app.config.settings as settings
+from app.config.loader import Loader
+from app.config.enums import (
+    Devices, 
+    Mechanics,
+    AssetCategories,
+    MechanicExecutors
+)
+from app.game.board import Board
+from app.game.engine import Engine
+from app.game.screen import Screen
+from app.game.logic.mechanics import Mechanic
+from app.game.logic.relations.shorelines import ShorelineIndex
+from app.models.groups import (
+    SpawnableGroup, 
+    EquipmentGroup
+)
+from app.models.state import StateSchema
+from app.models.properties import PropertiesSchema
+from app.models.config import (
+    ConfigurationSchema, 
+    MechanicsInstance
+)
+from app.services.generators.game import (
+    Factory,
+    Decomposer,
+    Actuator
+)
+from app.services.generators.menus import (
+    Provider, 
+    Library,
+    Binder,
+    Fabricator
+)
+
+# Cython Libraries
+import libs.graphics.render as render
+from libs.core.models import Dimensions
+from libs.graphics.registry import Registry
+
+logger = logging.getLogger(__name__)
+
+@dataclasses.dataclass
+class ApplicationContext:
+    """
+    Isolates raw data configurations before they are hydrated into Engine components.
+    """
+    properties: PropertiesSchema = None
+    state: StateSchema = None
+    configurations: ConfigurationSchema = None
+    screensize: Dimensions = None
+    headless: bool = False
+
+class Builder:
+    """
+    Constructs the discrete subsystems of the Ontology engine.
+    """
+    def __init__(self):
+        self.context = ApplicationContext()
+        self.registry: Registry = None
+        self.board: Board = None
+        self.provider: Provider = None
+        self.fabricator: Fabricator = None
+        self.screens: Dict[str, Screen] = {}
+        self.core: List[Mechanic] = []
+        self.world: List[Mechanic] = []
+        self.executors: Dict[str, Any] = {}
+
+
+    def _actions(self) -> None:
+        """
+        Globally pre-hydrates Actions in Properties.
+        """
+        resolved_sheets = {}
+        for sheet_field in dataclasses.fields(self.context.properties.sheets):
+            sheet_type = sheet_field.name
+            sheet_dict = getattr(self.context.properties.sheets, sheet_type, {})
+            resolved_dict = {}
+            for e_id, e_props in sheet_dict.items():
+                if isinstance(e_props.actions, str):
+                    action_data = next((
+                        a.data 
+                        for a in self.context.configurations.actions
+                        if a.id == e_props.actions
+                    ), {})
+                    resolved_dict[e_id] = dataclasses.replace(e_props, actions=action_data)
+                else:
+                    resolved_dict[e_id] = e_props
+            resolved_sheets[sheet_type] = resolved_dict
+            
+        self.context.properties.sheets = dataclasses.replace(
+            self.context.properties.sheets, 
+            **resolved_sheets
+        )
+
+
+    def load_data(self, state_key: str = None) -> None:
+        """
+        Loads YAML configuration data for properties and global configurations.
+        If state_key is None, state hydration is deferred to the Main Menu.
+        """
+        self.context.properties = Loader.load_properties()
+        self.context.configurations = Loader.load_configurations()
+        if state_key is not None:
+            logger.info(f"Loading YAML data for target state: {state_key} ...")
+            self.context.state = Loader.load_state(state_key)
+        else:
+            logger.info("No state key provided. Booting in unhydrated mode for Main Menu...")
+            self.context.state = None
+
+
+    def build_executors(self) -> None:
+        """
+        Compiles and registers master mechanic executors.
+        """
+        logger.info("Compiling master mechanic executors...")
+        translator = Factory.translator(settings.ISL_TRANSLATOR)
+        intention_executor = translator.compile(self.context.configurations.intentions)
+        plot_executor = translator.compile(self.context.configurations.plots)
+
+        shoreline_index = ShorelineIndex.from_properties(
+            self.context.properties.geography.shorelines
+        )
+        actuator_executor = Actuator(shorelines=shoreline_index)
+
+        self.executors = {
+            MechanicExecutors.INTENTION.value: intention_executor,
+            MechanicExecutors.PLOT.value: plot_executor,
+            MechanicExecutors.ACTUATOR.value: actuator_executor
+        }
+
+
+    def init_subsystems(self, screensize: Dimensions, headless: bool = True) -> None:
+        logger.info("Initializing SDL and Cython rendering subsystems...")
+        self.context.screensize = screensize
+        self.context.headless = headless
+        render.init(screensize.w, screensize.l, headless)
+
+        # IMPORTANT: This MUST be called before the Registry inits.
+        if not headless:
+            render.show()
+
+
+    def build_board(self) -> None:
+        logger.info("Constructing Empty Board and Migrator subsystem...")
+        self._actions()
+
+        if not self.executors:
+            self.build_executors()
+
+        # 1. Instantiate Decomposer ahead of standard Asset migrations
+        self.decomposer = Decomposer(
+            compositions=self.context.configurations.compositions,
+            properties=self.context.properties,
+            recipes=self.context.configurations.recipes
+        )
+
+        equipment = EquipmentGroup(
+            armor=self.context.properties.sheets.armor,
+            weapons=self.context.properties.sheets.weapons,
+            tools=self.context.properties.sheets.tools,
+            utilities=self.context.properties.sheets.utilities,
+            shields=self.context.properties.sheets.shields
+        )
+        
+        self.board = Board([], self.context.configurations, equipment)
+        
+        # Attach Migrator logic for deferred ECS evaluation
+        from app.services.orchestration import Migrator
+        self.board.migrator = Migrator(
+            self.board, 
+            self.context.properties, 
+            self.context.configurations,
+            actuator=self.executors[MechanicExecutors.ACTUATOR.value]
+        )
+
+
+    def build_registry(self) -> None:
+        """
+        Initializes Registry directly using native application models.
+        """
+        logger.info("Initializing Registry with native models...")
+        self.registry = Registry(
+            properties=self.context.properties,
+            recipes=self.context.configurations.recipes,
+            typography=self.context.properties.fonts
+        )
+
+
+    def build_services(self, device: Devices) -> None:
+        logger.info("Injecting Generators and Devices into Board...")
+        device_mapping = getattr(self.context.configurations.mappings, device, None)
+        device_instance = Factory.device(device, device_mapping)
+        self.board.set_device(device_instance)
+
+        spawnable_groups = SpawnableGroup(
+            projectiles=self.context.properties.cursors.projectiles,
+            expressions=self.context.properties.cursors.expressions,
+            collectables=self.context.properties.effects.collectables,
+            hazards=self.context.properties.effects.hazards,
+            passive=self.context.properties.effects.passive,
+            struts=self.context.properties.crafts.struts,
+            shorelines=self.context.properties.geography.shorelines
+        )
+        cradle = Factory.cradle(
+            spawnable_groups, 
+            self.context.configurations.recipes, 
+            self.decomposer
+        )
+        self.board.set_cradle(cradle)
+
+    def build_pipeline(self) -> None:
+        logger.info("Building rendering pipelines, mechanics, and UI...")
+
+        if not self.board.layers():
+            self.screens = {
+                'default': Screen(self.context.screensize, self.context.screensize, [], self.registry)
+            }
+        else:
+            self.screens = {}
+            for layer in self.board.layers():
+                layer_size = self.board.size(layer)[0]
+                self.screens[layer] = Screen(
+                    self.context.screensize, 
+                    Dimensions(layer_size.w, layer_size.l),
+                    self.board.categories(AssetCategories.TILES.value, layer),
+                    self.registry
+                )
+
+        core_cfg = self.context.configurations.mechanics.core or [
+            MechanicsInstance(Mechanics.MENU.value), 
+            MechanicsInstance(Mechanics.ANIMATION.value), 
+            MechanicsInstance(Mechanics.REMOVE.value)
+        ]
+        world_cfg = self.context.configurations.mechanics.world or [
+            MechanicsInstance(Mechanics.PLAYER.value), 
+            MechanicsInstance(Mechanics.COGNITION.value), 
+            MechanicsInstance(Mechanics.TRANSITION.value), 
+            MechanicsInstance(Mechanics.MOTION.value)
+        ]
+        
+        self.core = [Factory.mechanics(m, self.executors) for m in core_cfg]
+        self.world = [Factory.mechanics(m, self.executors) for m in world_cfg]
+
+        self.library = Library(self.context.configurations.library)
+        self.binder = Binder(self.registry, self.library)
+        self.fabricator = Fabricator()
+
+        # Allocate Menu Provider & Views with new dependencies
+        self.provider = Provider(
+            self.context.configurations.recipes.widgets, 
+            self.context.properties.widgets, 
+            self.binder,
+            self.fabricator
+        )
+
+    def get_engine(self) -> Engine:
+        logger.info("Engine successfully assembled.")
+        return Engine(
+            board=self.board, 
+            screens=self.screens, 
+            core=self.core, 
+            world=self.world, 
+            provider=self.provider
+        )
+```
+
+**src/app/services/orchestration/migrator.py**
+
+```python
+"""
+# Ontology: app.services.orchestration.migrator
+
+Package for state hydration and ECS component injection.
+"""
+from __future__ import annotations
+
+# Standard Libraries
+import time
+import dataclasses
+import logging
+from typing import Optional, TYPE_CHECKING
+
+# Application Libraries
+from app.assets.base import Asset
+from app.config.loader import Loader
+from app.config.enums import (
+    AssetCategories,
+    AssetInstances, 
+    Shortcuts
+)
+from app.models.properties import PropertiesSchema
+from app.models.config import ConfigurationSchema
+from app.services.generators.game import (
+    Factory, 
+    Decomposer,
+    Perimeter,
+    Actuator
+)
+if TYPE_CHECKING:
+    from app.game.board import Board
+
+logger = logging.getLogger(__name__)
+
+class Migrator:
+    """
+    Time-sliced state machine for unpacking board state dynamically,
+    preventing Python GIL locking during heavy loading operations.
+    """
+    board: Board
+    decomposer: Decomposer
+    configurations: ConfigurationSchema
+    properties: PropertiesSchema
+    actuator: Actuator
+
+    def __init__(self, 
+        board: Board, 
+        properties: PropertiesSchema, 
+        configurations: ConfigurationSchema,
+        actuator: Optional[Actuator] = None
+    ):
+        self.board = board
+        self.properties = properties
+        self.configurations = configurations
+        self.actuator = actuator or Actuator()
+        self.target: Optional[str] = None
+        self.state = None
+        self.decomposer = None
+        self._generator = None
+        
+        # Track counts to bind to Loading Menu Meters
+        self.maximum = 1
+        self.current = 0
+
+    def _build_generator(self):
+        logger.info(f"Migrator starting hydration for target state: {self.target}")
+        self.state = Loader.load_state(self.target)
+        
+        self.decomposer = Decomposer(
+            compositions=self.configurations.compositions,
+            properties=self.properties,
+            recipes=self.configurations.recipes
+        )
+        
+        # 1. Compile the manifest of objects to generate
+        tasks = []
+        if hasattr(self.state, Shortcuts.COMPOSITIONS.value) and self.state.compositions:
+            for comp_state in self.state.compositions:
+                tasks.append((Shortcuts.COMPOSITIONS.value, comp_state))
+
+        if hasattr(self.state, Shortcuts.PLOTS.value) and self.state.plots:
+            tasks.append((Shortcuts.PLOTS.value, self.state.plots))
+
+        for cat_field in dataclasses.fields(self.state):
+            category_key = cat_field.name
+            if category_key in Shortcuts: 
+                continue 
+                
+            category_data = getattr(self.state, category_key)
+            if not category_data: 
+                continue
+            
+            for inst_field in dataclasses.fields(category_data):
+                instance_key = inst_field.name
+                instance_list = getattr(category_data, instance_key)
+                if not instance_list: 
+                    continue
+                
+                for state_obj in instance_list:
+                    tasks.append(('asset', category_key, instance_key, state_obj))
+                    
+        self.maximum = max(1, len(tasks))
+        self.current = 0
+        
+        # 2. Yield through component injection
+        for task in tasks:
+            if task[0] == Shortcuts.COMPOSITIONS.value:
+                comp_state = task[1]
+                expanded_assets = self.decomposer.unpack(comp_state)
+                self.board.add(expanded_assets)
+
+            elif task[0] == Shortcuts.PLOTS.value:
+                plot = task[1]
+                self.board.set_plot(plot)
+
+            else:
+                _, category_key, instance_key, state_obj = task
+                asset_id = state_obj.id
+                asset_name = state_obj.name
+                
+                cat_recipes = getattr(self.configurations.recipes, category_key, None)
+                recipe = getattr(cat_recipes, instance_key, None)
+                
+                prop_instance_key = instance_key
+                if category_key == AssetCategories.SHEETS.value and (
+                    instance_key == AssetInstances.PLAYERS.value
+                ):
+                    prop_instance_key = AssetInstances.SPRITES.value
+                    
+                cat_props = getattr(self.properties, category_key, None)
+                inst_props = getattr(cat_props, prop_instance_key, {})
+                props = inst_props.get(asset_id)
+
+                asset = Asset(
+                    taxonomy   = Factory.taxonomy(
+                        asset_id, 
+                        asset_name, 
+                        category_key, 
+                        instance_key
+                    ),
+                    properties = props,
+                    state      = state_obj,
+                    frame      = Factory.frame(recipe.frame),
+                    animation  = Factory.animation(recipe.animation) 
+                )
+                self.board.add([asset])
+            
+            self.current += 1
+            yield True
+
+        # 3. Post-Hydration Phase: Procedural Boundaries & Steady-State Fluid
+        perimeter_gen = Perimeter()
+        for layer in self.board.layers():
+            self.board.perimeters[layer] = perimeter_gen.generate(self.board, layer)
+
+        fluids = self.board.instances(AssetInstances.FLUIDS.value)
+        for fluid in fluids:
+            self.actuator.pump(fluid, self.board)
+
+    def step(self, budget_ms: int = 16) -> bool:
+        """
+        Executes generation tasks until the time budget is exhausted.
+        Returns True when fully migrated, False if still working.
+        """
+        if not self.target:
+            return True
+            
+        if self._generator is None:
+            self._generator = self._build_generator()
+            
+        start = time.perf_counter()
+        
+        while True:
+            if (time.perf_counter() - start) * 1000 > budget_ms:
+                return False
+                
+            try:
+                next(self._generator)
+            except StopIteration:
+                self._generator = None
+                self.target = None
+                return True
+```
+
+**src/app/services/generators/game/factory.py**
+
+```python
+"""
+# Ontology: app.services.orchestration.factory
+
+Package for instantiating Asset classes and their components.
+"""
+# Standard Libraries
+from typing import Any, Dict
+
+# Application Libraries
+from app.assets.animations import (
+    BinaryAnimation, 
+    LifecycleAnimation,
+    StateAnimation,
+    SpriteAnimation,
+    TraversalAnimation,
+    MeterAnimation,
+    NoAnimation
+)
+from app.assets.base import (
+    Taxonomy,
+    Frame,
+    Animation
+)
+from app.assets.frames import (
+    SingleFrame, 
+    IterableFrame, 
+    StateFrame,
+    SpriteFrame,
+    FluidFrame,
+    ShorelineFrame,
+    TraversalFrame,
+    MeterFrame,
+    IndexFrame,
+    NoFrame
+)
+from app.config.enums import (
+    AnimationRecipe, 
+    FrameRecipe, 
+    Devices, 
+    Mechanics,
+    Controllers,
+    Translators
+)
+from app.game.logic.mechanics import (
+    AnimationMechanics,
+    CollisionMechanics, 
+    ProjectileMechanics,
+    SwitchMechanics, 
+    MotionMechanics,
+    CombatMechanics,
+    TransitionMechanics,
+    PlayerMechanics,
+    RemoveMechanics,
+    SocialMechanics,
+    InteractionMechanics,
+    MenuMechanics,
+    CognitionMechanics,
+    PlotMechanics,
+    NavigationMechanics,
+    FluidMechanics,
+    Mechanic
+)
+from app.game.menus.controllers import (
+    DisplayController,
+    ScrollController,
+    MainController,
+    LoadController,
+    PauseController,
+    OptionsController,
+    InventoryController
+)
+from app.models.config import (
+    RecipeConfiguration,
+    MechanicsInstance
+)
+from app.models.groups import SpawnableGroup
+from app.game.devices import (
+    Keyboard,
+    Controller
+)
+from app.services.translators import (
+    LambdaTranslator,
+    CompilerTranslator
+)
+
+class Factory:
+    FRAME_MAP = {
+        FrameRecipe.SPRITE.value: SpriteFrame,
+        FrameRecipe.SINGLE.value: SingleFrame,
+        FrameRecipe.ITERABLE.value: IterableFrame,
+        FrameRecipe.STATE.value: StateFrame,
+        FrameRecipe.TRAVERSAL.value: TraversalFrame,
+        FrameRecipe.METER.value: MeterFrame,
+        FrameRecipe.INDEX.value: IndexFrame,
+        FrameRecipe.FLUID.value: FluidFrame,
+        FrameRecipe.SHORELINE.value: ShorelineFrame,
+        FrameRecipe.NONE.value: NoFrame
+    }
+
+    ANIMATION_MAP = {
+        AnimationRecipe.BINARY.value: BinaryAnimation,
+        AnimationRecipe.LIFECYCLE.value: LifecycleAnimation,
+        AnimationRecipe.STATE.value: StateAnimation,
+        AnimationRecipe.SPRITE.value: SpriteAnimation,
+        AnimationRecipe.TRAVERSAL.value: TraversalAnimation,
+        AnimationRecipe.METER.value: MeterAnimation,
+        AnimationRecipe.NONE.value: NoAnimation
+    }
+
+    DEVICE_MAP = {
+        Devices.KEYBOARD.value: Keyboard,
+        Devices.CONTROLLER.value: Controller
+    }
+
+    MECHANICS_MAP = {
+        Mechanics.ANIMATION.value: AnimationMechanics,
+        Mechanics.COLLISION.value: CollisionMechanics,
+        Mechanics.PROJECTILE.value: ProjectileMechanics,
+        Mechanics.SWITCH.value: SwitchMechanics,
+        Mechanics.TRANSITION.value: TransitionMechanics,
+        Mechanics.INTERACTION.value: InteractionMechanics,
+        Mechanics.PLAYER.value: PlayerMechanics,
+        Mechanics.REMOVE.value: RemoveMechanics,
+        Mechanics.COMBAT.value: CombatMechanics,
+        Mechanics.MOTION.value: MotionMechanics,
+        Mechanics.SOCIAL.value: SocialMechanics,
+        Mechanics.MENU.value: MenuMechanics,
+        Mechanics.COGNITION.value: CognitionMechanics,
+        Mechanics.PLOT.value: PlotMechanics,
+        Mechanics.NAVIGATION.value: NavigationMechanics,
+        Mechanics.FLUID.value: FluidMechanics
+    }
+
+    CONTROLLER_MAP  = {
+        Controllers.DISPLAY.value: DisplayController,
+        Controllers.SCROLL.value: ScrollController,
+        Controllers.MAIN.value: MainController,
+        Controllers.LOAD.value: LoadController,
+        Controllers.PAUSE.value: PauseController,
+        Controllers.OPTIONS.value: OptionsController,
+        Controllers.INVENTORY.value: InventoryController
+    }
+    
+    TRANSLATOR_MAP = {
+        Translators.LAMBDA.value: LambdaTranslator,
+        Translators.COMPILER.value: CompilerTranslator
+    }
+
+    @staticmethod
+    def frame(recipe: Any) -> Frame:
+        if isinstance(recipe, str):
+            for enum_key, frame_cls in Factory.FRAME_MAP.items():
+                if enum_key == recipe:
+                    return frame_cls()
+        return Factory.FRAME_MAP.get(recipe, NoFrame)()
+
+    @staticmethod
+    def animation(recipe: Any) -> Animation:
+        if isinstance(recipe, str):
+            for enum_key, anim_cls in Factory.ANIMATION_MAP.items():
+                if enum_key == recipe:
+                    return anim_cls()
+        return Factory.ANIMATION_MAP.get(recipe, NoAnimation)()
+    
+    @staticmethod
+    def taxonomy(id: str, name: str, category: str, instance: str) -> Taxonomy:
+        return Taxonomy(id, name, category, instance)
+
+    @staticmethod
+    def device(dev: str, mapping: dict):
+        target_cls = Factory.DEVICE_MAP.get(dev, Keyboard)
+        return target_cls(mapping)
+
+    @staticmethod
+    def cradle(spawnables: SpawnableGroup, recipes: RecipeConfiguration, decomposer: Any):
+        from app.services.generators.game.cradle import Cradle
+        return Cradle(spawnables, recipes, decomposer)
+
+    @staticmethod 
+    def mechanics(config: MechanicsInstance, executors: Dict[str, Any] = None) -> Mechanic:
+        key = config.key
+
+        target_cls = None
+        for enum_key, cls in Factory.MECHANICS_MAP.items():
+            if enum_key == key:
+                target_cls = cls
+                break
+
+        if not target_cls:
+            target_cls = Factory.MECHANICS_MAP.get(key, AnimationMechanics)
+
+        mechanic_instance = target_cls()
+
+        executor_keys = config.executors
+        if executor_keys:
+            if executors is None:
+                raise KeyError(
+                    f"Mechanic '{key}' declared executors {executor_keys}, "
+                    f"but no executor registry was provided."
+                )
+            for executor_key in executor_keys:
+                executor = executors.get(executor_key)
+                if executor is None:
+                    raise KeyError(
+                        f"Mechanic '{key}' requested executor '{executor_key}', "
+                        f"but it is not registered in the active executor map."
+                    )
+                mechanic_instance.set_executor(executor_key, executor)
+
+        return mechanic_instance
+
+    @staticmethod
+    def controller(kind: Any):
+        if isinstance(kind, str):
+            for enum_key, cls in Factory.CONTROLLER_MAP.items():
+                if enum_key == kind:
+                    return cls()
+        return Factory.CONTROLLER_MAP.get(kind, ScrollController)()
+
+    @staticmethod
+    def translator(translation: str):
+        target_cls = Factory.TRANSLATOR_MAP.get(translation, LambdaTranslator)
+        return target_cls()
+
+    @staticmethod
+    def context(menu: str, **kwargs):
+        # TODO
+        pass
+```
+
+**Application Logs**
+
+```bash
+(.venv) grant@skynet:~/Projects/ontology$ python src/cli.py start world-01
+2026-09-28 16:27:34,465 - INFO - __main__ - Starting CLI with command: 'start' for board: 'world-01'
+2026-09-28 16:27:34,465 - INFO - __main__ - Igniting engine for live execution...
+2026-09-28 16:27:34,465 - INFO - app.config.loader - Loading YAML property schemas...
+2026-09-28 16:27:34,668 - INFO - app.config.loader - Loading YAML configurations...
+2026-09-28 16:27:34,928 - INFO - app.services.orchestration.builder - Loading YAML data for target state: world-01 ...
+2026-09-28 16:27:34,929 - INFO - app.config.loader - Loading YAML state configurations from /home/grant/Projects/ontology/src/data/state/world-01 ...
+2026-09-28 16:27:35,049 - INFO - app.services.orchestration.builder - Compiling master mechanic executors...
+Traceback (most recent call last):
+  File "/home/grant/Projects/ontology/src/cli.py", line 356, in <module>
+    main()
+    ~~~~^^
+  File "/home/grant/Projects/ontology/src/cli.py", line 331, in main
+    engine = handler(args, orchestrator, screensize)
+  File "/home/grant/Projects/ontology/src/cli.py", line 273, in handle_start
+    engine = orchestrator.orchestrate(
+        state_key=args.board_key,
+    ...<2 lines>...
+        headless=False
+    )
+  File "/home/grant/Projects/ontology/src/app/services/orchestration/orchestrator.py", line 36, in orchestrate
+    self.builder.build_executors()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/grant/Projects/ontology/src/app/services/orchestration/builder.py", line 141, in build_executors
+    actuator_executor = Actuator(shorelines=shoreline_index)
+TypeError: Actuator() takes no arguments
 ```

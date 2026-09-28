@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.motion.frictive
+# Ontology: app.game.logic.modules.motion.frictive
 """
 from __future__ import annotations
 
@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 def update(assets: List[Asset], board: Board, delta: float) -> None:
     """
     Determines linear velocity decay based on environmental properties for inert moving assets.
+    Suspends friction calculations while assets are floating in environmental water bodies.
     """
     for asset in assets:
         if asset.state.velocity is None:
@@ -31,6 +32,11 @@ def update(assets: List[Asset], board: Board, delta: float) -> None:
         cy = asset.state.position.y + (asset.dimensions.l / 2.0)
         
         center_pos = Position(int(cx), int(cy))
+
+        # Suspend friction calculations while the asset is floating in water
+        if board.water(asset.state.layer, center_pos):
+            continue
+
         tile = board.tile(asset.state.layer, center_pos)
 
         if not tile:

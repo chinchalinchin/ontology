@@ -84,4 +84,3 @@ class FluidState(EffectState):
     dirty: bool = True
     flow: int = 1
     source: Directions = Directions.DOWN.value
-    shorelines: List[str] = field(default_factory=list)

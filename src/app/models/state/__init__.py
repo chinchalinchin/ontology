@@ -3,12 +3,22 @@ from app.models.state.core import (
     AssetState,
     AnimationState,
     NoState,
-    PlotState
+    PlotState,
+    # --------- FIELDS
+    MutatorTriggers,
+    MutatorParameters,
+    RadialParameters,
+    FearParameters,
+    Mutators
 )
 from app.models.state.devices import (
     DevicePayload,
     MenuPayload,
     WorldPayload
+)
+from app.models.state.cursors import (
+    MotorState,
+    AttachmentState,
 )
 from app.models.state.effects import (
     FluidState,
@@ -30,8 +40,6 @@ from app.models.state.objects import (
     DoorState,
     SwitchState,
     PropertyState,
-    MotorState,
-    AttachmentState,
     DialogueState,
 )
 from app.models.state.schemas import (
@@ -53,12 +61,7 @@ from app.models.state.sprites import (
     Psyche,
     Goal,
     Inventory,
-    Memory,
-    MutatorTriggers,
-    MutatorParameters,
-    RadialParameters,
-    FearParameters,
-    Mutators
+    Memory
 )
 from app.models.state.widgets import (
     IconState,

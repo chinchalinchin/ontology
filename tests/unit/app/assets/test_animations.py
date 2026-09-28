@@ -22,9 +22,9 @@ from app.models.state import (
     ReactableState,
     Psyche, 
     Mutators, 
-    MutatorTriggers
+    MutatorTriggers,
+    AttachmentState
 )
-from app.models.state.objects import AttachmentState
 
 # Cython Libraries
 from libs.core.models import Dimensions

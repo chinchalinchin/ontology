@@ -1,7 +1,7 @@
 """
 # Ontology: app.game.board
 
-Package for game Board.
+Module for game database class, Board.
 """
 # Standard Libraries 
 import logging
@@ -9,7 +9,8 @@ from typing import (
     List, 
     Dict, 
     Tuple,
-    Any
+    Any,
+    Optional
 )
 from dataclasses import asdict
 
@@ -19,6 +20,7 @@ from app.assets.base import Asset
 from app.config.enums import (
     AssetCategories,
     AssetInstances,
+    Directions,
     Lifecycles
 )
 from app.config.loader import Loader
@@ -42,7 +44,8 @@ class Board:
     """
     ## Board
 
-    Central database for the game Engine. Holds all Asset state and configuration, and provides queryable interfaces for Mechanics to retrieve pertinent game data.
+    Central database for the game Engine. Holds all Asset state and configuration,
+    and provides queryable interfaces for Mechanics to retrieve pertinent game data.
     """
     # ------- Public Fields
     # Flags
@@ -51,6 +54,7 @@ class Board:
     # Game Data
     plot: PlotState
     perimeters: Dict[str, List[Boundary]]
+    shorelines: Dict[str, List[Asset]]
     # Configurations
     configurations: ConfigurationSchema
     equipment: EquipmentGroup
@@ -69,7 +73,7 @@ class Board:
     _cached_renderables: Dict[str, List[Asset]]
     _cached_weights: Dict[str, List[Asset]]
     _cached_tilemap: Dict[str, Dict[Tuple[int, int], Asset]]
-    _cached_characters: Dict[str, Any] # Cross-layer lookup for O(1) ISL targeting
+    _cached_characters: Dict[str, Any]
     # Catalogues
     _all_categories: Dict[str, List[Asset]]
     _all_instances: Dict[str, List[Asset]]
@@ -90,18 +94,16 @@ class Board:
         self.configurations = configurations
         self.equipment = equipment
         self.perimeters = {}
+        self.shorelines = {}
         self._assets = assets
         self._catalogue()
         self._cache()
-        # Ensure loaded remains False until fully hydrated by the Migrator
         logger.info("Board completely hydrated and initialized.")
 
     # ---------------------------------------------------------
     # ----------------------------------------- PRIVATE METHODS
 
     def _catalogue(self):
-        """
-        """
         self._all_categories = {}
         self._all_instances = {}
         for asset in self._assets:
@@ -116,8 +118,7 @@ class Board:
                 self._all_instances[inst] = []
             self._all_instances[inst].append(asset)
 
-
-    def _init_cache(self, layer = None) -> None:
+    def _init_cache(self, layer: Optional[str] = None) -> None:
         if layer is None:
             self._cached_categories = {}
             self._cached_instances = {}
@@ -126,6 +127,8 @@ class Board:
             self._cached_weights = {}
             self._cached_tilemap = {}
             self._cached_characters = {}
+            self.perimeters = {}
+            self.shorelines = {}
             return
 
         self._cached_categories[layer] = {}
@@ -138,13 +141,10 @@ class Board:
             AssetInstances.FORE.value: {}
         }
         self.perimeters[layer] = []
+        self.shorelines[layer] = []
         return
 
-
     def _cache(self):
-        """
-        Cache Assets queries by layer to prevent excessive list generations.
-        """
         logger.debug("Building initial board spatial caching dictionaries by layer/category/instance.")
         self._init_cache()
 
@@ -153,32 +153,25 @@ class Board:
             cat = asset.category
             inst = asset.instance
 
-            # Initialize layer dictionaries if not present
             if layer not in self._cached_categories:
                 self._init_cache(layer)
 
-            # Cache by layer and category
             if cat not in self._cached_categories[layer]:
                 self._cached_categories[layer][cat] = []
             self._cached_categories[layer][cat].append(asset)
             
-            # Cache by layer and instance
             if inst not in self._cached_instances[layer]:
                 self._cached_instances[layer][inst] = []
             self._cached_instances[layer][inst].append(asset)
 
-            # Cache by layer only
             self._cached_layers[layer].append(asset)
             
-            # Cache exclusively dynamic assets for the inner draw loop
             if cat != AssetCategories.TILES.value:
                 self._cached_renderables[layer].append(asset)
 
-            # Cached Assets with Weight
             if hasattr(asset.properties, 'mass') and asset.properties.mass >= 0:
                 self._cached_weights[layer].append(asset)
                 
-            # Cross-layer Character lookup for Intentional Scripting Language
             if cat == AssetCategories.SHEETS.value and inst in (
                 AssetInstances.SPRITES.value, 
                 AssetInstances.PLAYERS.value
@@ -186,7 +179,9 @@ class Board:
                 if asset.name:
                     self._cached_characters[asset.name] = asset.state
 
-            # Cache TileMap for O(1) friction/environment lookups
+            if inst == AssetInstances.SHORELINES.value:
+                self.shorelines[layer].append(asset)
+
             if cat == AssetCategories.TILES.value:
                 w = asset.properties.dimensions.w
                 l = asset.properties.dimensions.l
@@ -196,7 +191,6 @@ class Board:
                 end_x = start_x + (asset.state.multiple.nx * w)
                 end_y = start_y + (asset.state.multiple.ny * l)
 
-                # Hash the tile into every HASH_SIZE cell it intersects
                 for cx in range(
                     start_x // settings.TILE_HASH_SIZE, 
                     (end_x - 1) // settings.TILE_HASH_SIZE + 1
@@ -209,8 +203,61 @@ class Board:
                             self._cached_tilemap[layer][inst] = {}
                         self._cached_tilemap[layer][inst][(cx, cy)] = asset
 
+    def _in_stream(self, position: Position, fluid: Asset) -> bool:
+        """
+        Evaluates whether Cartesian coordinate intersects the directional stream corridor
+        of the specified fluid entity.
+        """
+        px = position.x
+        py = position.y
+        fx = fluid.state.position.x
+        fy = fluid.state.position.y
+        fw = fluid.properties.dimensions.w
+        fl = fluid.properties.dimensions.l
+        slen = fluid.state.length
+
+        direction = fluid.state.source
+        direction_val = direction.value if hasattr(direction, "value") else str(direction)
+
+        if direction_val == Directions.DOWN.value:
+            return fx <= px < fx + fw and fy <= py < fy + slen
+        elif direction_val == Directions.UP.value:
+            return fx <= px < fx + fw and fy - slen <= py < fy
+        elif direction_val == Directions.RIGHT.value:
+            return fx <= px < fx + slen and fy <= py < fy + fl
+        elif direction_val == Directions.LEFT.value:
+            return fx - slen <= px < fx and fy <= py < fy + fl
+
+        return False
+
     # ---------------------------------------------------------
     # ------------------------------------------ PUBLIC METHODS
+
+    # ---------------------------------------------- PREDICATES
+
+    def water(
+        self,
+        layer: str,
+        position: Position,
+        exclude: Optional[str] = None
+    ) -> bool:
+        """
+        Evaluates whether world coordinate (pos.x, pos.y) intersects any active
+        fluid stream corridor or annular pool on the given layer.
+        """
+        fluids = self.instances(AssetInstances.FLUIDS.value, layer)
+        for fluid in fluids:
+            if exclude and fluid.name == exclude:
+                continue
+            # Evaluate pool bounds
+            pool = fluid.state.pool
+            if pool and pool.x <= position.x < pool.x + pool.w and pool.y <= position.y < pool.y + pool.l:
+                return True
+            # Evaluate directional stream corridor bounds
+            if fluid.state.length > 0:
+                if self._in_stream(position, fluid):
+                    return True
+        return False
 
     # ------------------------------------------------ SETTERS 
 
@@ -225,9 +272,6 @@ class Board:
     # ------------------------------------------------ GETTERS
 
     def player(self, slot = 0) -> Asset:
-        """
-        Returns the player at the indicated slot safely even if the board is empty. Defaults to 0.
-        """
         players = self._all_instances.get(AssetInstances.PLAYERS.value, [])
         if not players:
             return None
@@ -235,114 +279,75 @@ class Board:
             return players[slot]
         return players[0]
 
-
     def tile(self, 
         layer: str, 
         position: Position, 
         instance: str = AssetInstances.BACK.value
     ) -> Asset:
-        """
-        Returns the Tile at the specified coordinate using O(1) grid-index lookup.
-        """
         cx = int(position.x) // settings.TILE_HASH_SIZE
         cy = int(position.y) // settings.TILE_HASH_SIZE
         return self._cached_tilemap.get(layer, {}).get(instance, {}).get((cx, cy))
 
-
     def character(self, name: str) -> Any:
-        """
-        O(1) retrieval of Sprite or Player state by name.
-        """
         return self._cached_characters.get(name)
 
-
     def characters(self) -> Dict[str, Any]:
-        """
-        Returns the cross-layer dictionary of all active Sprite and Player states.
-        """
         return self._cached_characters
 
-
     def asset(self, name: str, layer: str = None) -> Asset:
-        """
-        Retrieves a general Asset by its unique name. 
-        """
         search_list = self.renderables(layer) if layer else self._assets
         return next((a for a in search_list if a.name == name), None)
 
-    
     def assets(self, layer=None) -> List[Asset]:
-        """
-        Returns a list of Assets. If `layer` is specified, list will be filtered by Layer.
-        """
         if layer is None:
             return self._assets
         return self._cached_layers.get(layer, [])
 
-
     def weights(self, layer=None) -> List[Asset]:
-        """
-        Returns a list of Assets that have mass. If `layer` is specified, list will be filtered by Layer.
-        """
         if layer is None:
-            return [ asset for asset in self._assets  if asset.properties.mass >= 0 ]
+            return [ asset for asset in self._assets if asset.properties.mass >= 0 ]
         return self._cached_weights.get(layer, [])
 
-
     def obstacles(self, layer=None) -> List[Asset]:
-        """
-        """
         if layer is None:
             return []
-        
         chests = self._cached_instances.get(layer, {}).get(AssetInstances.CHESTS.value, [])
         signs = self._cached_instances.get(layer, {}).get(AssetInstances.SIGNS.value, [])
         crates = self._cached_instances.get(layer, {}).get(AssetInstances.CRATES.value, [])
         gates = self._cached_instances.get(layer, {}).get(AssetInstances.GATES.value, [])
         struts = self._cached_instances.get(layer, {}).get(AssetInstances.STRUTS.value, [])
-
         return crates + gates + struts + signs + chests
 
-    
     def layers(self) -> List[str]:
-        """
-        Returns a list of Layers.
-        """
         return list(self._cached_categories.keys())
 
-
     def categories(self, category, layer = None) -> List[Asset]:
-        """
-        Returns a reference to the cached list of categorized Assets. O(1) fetch.
-        """
         if layer is not None:
             return self._cached_categories.get(layer, {}).get(category, [])
         return self._all_categories.get(category, [])
 
-
     def instances(self, instance, layer = None) -> List[Asset]:
-        """
-        Returns a reference to the cached list of instanced Assets. O(1) fetch.
-        """
         if layer is not None:
             return self._cached_instances.get(layer, {}).get(instance, [])
         return self._all_instances.get(instance, [])
 
-        
     def renderables(self, layer=None) -> List[Asset]:
-        """
-        Returns a cached list of non-tile dynamic assets for rendering, saving frame iteration time.
-        """
         if layer is None:
             return [ asset for asset in self._assets if asset.category != AssetCategories.TILES.value ]
         return self._cached_renderables.get(layer, [])
 
+    def get_shorelines(self, layer: Optional[str] = None) -> List[Asset]:
+        """
+        Retrieves active procedural shoreline assets for a specific layer or across all layers.
+        """
+        if layer is not None:
+            return self.shorelines.get(layer, [])
+        all_shores: List[Asset] = []
+        for l_shores in self.shorelines.values():
+            all_shores.extend(l_shores)
+        return all_shores
 
     def size(self, layer=None) -> List[Dimensions]:
-        """
-        Calculates the spatial extent of the Board by layer. 
-        Evaluates tiles, objects, crafts, and sheets to support tileless composition layers.
-        """
         layers = [layer] if layer is not None else self.layers()
         layer_sizes = []
 
@@ -373,12 +378,6 @@ class Board:
     # ------------------------------------------------ MUTATORS
 
     def relayer(self, asset: Asset, new_layer: str) -> None:
-        """
-        Safely moves an asset between cached layer lists.
-
-        !!! warning
-            *Must* be called by DoorMechanics to ensure Assets and the Cache stay in sync.
-        """
         old_layer = asset.state.layer
         if old_layer == new_layer:
             return
@@ -388,7 +387,6 @@ class Board:
         cat = asset.category
         inst = asset.instance
 
-        # 1. Remove from old cached lists
         if old_layer in self._cached_categories and cat in self._cached_categories[old_layer]:
             if asset in self._cached_categories[old_layer][cat]:
                 self._cached_categories[old_layer][cat].remove(asset)
@@ -409,10 +407,11 @@ class Board:
             if asset in self._cached_weights[old_layer]:
                 self._cached_weights[old_layer].remove(asset)
 
-        # 2. Update state
+        if old_layer in self.shorelines and asset in self.shorelines[old_layer]:
+            self.shorelines[old_layer].remove(asset)
+
         asset.state.layer = new_layer
 
-        # 3. Append to new cached lists
         if new_layer not in self._cached_categories:
             self._init_cache(new_layer)
             
@@ -438,11 +437,12 @@ class Board:
         if asset.properties.mass >= 0:
             self._cached_weights[new_layer].append(asset)
 
+        if inst == AssetInstances.SHORELINES.value:
+            if new_layer not in self.shorelines:
+                self.shorelines[new_layer] = []
+            self.shorelines[new_layer].append(asset)
 
     def add(self, additions: List[Asset]) -> None:
-        """
-        Add Assets to the Board
-        """
         for asset in additions:
             layer = asset.state.layer
 
@@ -478,6 +478,9 @@ class Board:
                 if asset.name:
                     self._cached_characters[asset.name] = asset.state
 
+            if asset.instance == AssetInstances.SHORELINES.value:
+                self.shorelines[layer].append(asset)
+
             if asset.category == AssetCategories.TILES.value:
                 w = asset.properties.dimensions.w
                 l = asset.properties.dimensions.l
@@ -499,11 +502,7 @@ class Board:
                             self._cached_tilemap[layer][asset.instance] = {}
                         self._cached_tilemap[layer][asset.instance][(cx, cy)] = asset
 
-
     def remove(self, removals: List[Asset]) -> None:
-        """
-        Removes Assets from the board.
-        """
         for asset in removals:
             layer = asset.state.layer
             cat = asset.category
@@ -542,35 +541,30 @@ class Board:
                 if asset.name and asset.name in self._cached_characters:
                     del self._cached_characters[asset.name]
 
+            if layer in self.shorelines and asset in self.shorelines[layer]:
+                self.shorelines[layer].remove(asset)
 
     def clear(self) -> None:
-        """
-        Clears all cached and instantiated board assets and overlays.
-        """
         self._assets.clear()
         self._init_cache()
         self.menus.clear()
         self.overlays.clear()
+        self.shorelines.clear()
 
+    # ------------------------------------------------ EXPORTERS
 
     def serialize(self, slot: str) -> None:
-        """
-        Extracts active Board asset states and delegates serialization to Loader.
-        """
         dump: dict[str, dict[str, list[dict[str, Any]]]] = {}
 
         for asset in self._assets:
-            # Exclude UI widgets from world saves
             if asset.category == AssetCategories.WIDGETS.value:
                 continue
 
-            # Exclude temporary effects that self-terminate on final frame
             if asset.category == AssetCategories.EFFECTS.value:
                 lifecycle = getattr(asset.properties, "lifecycle", None)
                 if lifecycle and lifecycle.type == Lifecycles.TEMPORARY.value and not lifecycle.persist:
                     continue
 
-            # Exclude stateless Equipment wrappers
             if asset.category == AssetCategories.SHEETS.value and asset.instance not in (
                 AssetInstances.SPRITES.value,
                 AssetInstances.PLAYERS.value,

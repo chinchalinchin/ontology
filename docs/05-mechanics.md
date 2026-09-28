@@ -204,10 +204,8 @@ These Mechanics handle ambient world state, high-level game calculations and oth
 FluidMechanics governs fluid emission and procedural shoreline margins across active layers. It executes after physical momentum updates (`MotionMechanics` and `CollisionMechanics`) and uses reactive dirty-checking:
 
 1. **Change Detection**: Inspects switch-linked gates (`AssetInstances.GATES`). If any static barrier within an active layer mutates state, affected fluids are marked `dirty`. Dynamic bodies (\(m > 0\), such as Crates) do not obstruct fluids and do not trigger invalidation.
-2. **Raycast Truncation**: Raycasts along `state.source` strictly against map boundaries and immovable static assets (\(m = 0\)). Dynamic bodies (\(m > 0\)) and sensors (\(m = -1\)) are bypassed. Calculates distance \(D\) to the nearest occluder.
-3. **Annular Pooling**: If the occluder is an internal obstacle rather than a perimeter boundary, expands a radial pool of radius `state.flow` around the obstacle perimeter, aligned to grid increments.
-4. **Hitbox Update**: Injects composite hitboxes for the stream path and pool boundaries into the broad-phase spatial hash.
-5. **Two-Pass Shoreline Synthesis**: Evaluates fluid propagation across all dirty emitters on a layer prior to generating procedural shorelines via `Cartographer`, preventing cross-fluid margin clipping.
+2. **Pass 1 (Fluid Propagation)**: For every fluid on an invalidated layer, `Actuator.propagate()` raycasts along `state.source` strictly against map boundaries and immovable static assets (\(m = 0\)). If an internal static obstacle is struck, an annular pool of radius `state.flow` expands around the obstacle perimeter. Hitboxes for the stream corridor and pool are updated on `FluidState`.
+3. **Pass 2 (Layer Shoreline Synthesis)**: Once all fluid corridors and pools on the layer are resolved, `Cartographer.purge(layer, board)` clears previous layer shorelines. `Cartographer.generate(layer, board, shoreline_index)` compiles all layer water bounds into a unified contour sweep (`geometry.contours`), evaluates bordering substrate tiles, and instantiates non-overlapping `Shoreline` entities along the true land-water threshold.
 
 ## Configuration
 

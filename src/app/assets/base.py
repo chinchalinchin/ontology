@@ -7,13 +7,13 @@ Package for foundational Asset classes and interfaces.
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import (
-    Any,
     Dict,
     List, 
     Tuple
 )
 
 # Application Libraries
+from app.config.enums import ChannelTypes
 from app.models.properties import AssetProperties
 from app.models.state import AssetState
 
@@ -55,16 +55,25 @@ class Frame(ABC):
         """
         pass
 
-    @abstractmethod
     def channels(self, 
         id: str, 
-        state: AssetState,
+        state: AssetState, 
         properties: AssetProperties
     ) -> List[Tuple]:
-        """
-        Emits auxiliary rendering directives (tints, masks, overlays) evaluated against dynamic asset state.
-        """
-        pass
+        directives = []
+        if state.mutators.triggers.submerged:
+            if properties.dimensions:
+                half_l = properties.dimensions.l // 2
+                # (CHANNEL_SUBMERGE, split_y, r, g, b, a)
+                # e.g., deep aquatic modulation: RGBA(40, 110, 180, 170)
+                # TODO: this should be codified in a ChannelPayload data structure 
+                #       to pass to the screen. Screen should unpack channel payload 
+                #       into Cython primitives.  
+                directives.append((
+                    ChannelTypes.SUBMERGE.value,
+                    (half_l, 40, 110, 180, 170)
+                ))
+        return directives
 
 
 class Animation(ABC):

@@ -4,7 +4,7 @@ objects:
       name: castle-dawn-barrel-00
       layer: '0'
       position:
-        x: 110
+        x: 140
         y: 250
   signs:
     - id: wood-bulletin

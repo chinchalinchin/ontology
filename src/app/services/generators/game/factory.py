@@ -4,7 +4,7 @@
 Package for instantiating Asset classes and their components.
 """
 # Standard Libraries
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 # Application Libraries
 from app.assets.animations import (
@@ -177,7 +177,11 @@ class Factory:
         return Cradle(spawnables, recipes, decomposer)
 
     @staticmethod 
-    def mechanics(config: MechanicsInstance, executors: Dict[str, Any] = None) -> Mechanic:
+    def mechanics(
+        config: MechanicsInstance, 
+        executors: Dict[str, Any] = None,
+        shorelines: Any = None
+    ) -> Mechanic:
         key = config.key
 
         target_cls = None
@@ -189,7 +193,10 @@ class Factory:
         if not target_cls:
             target_cls = Factory.MECHANICS_MAP.get(key, AnimationMechanics)
 
-        mechanic_instance = target_cls()
+        if target_cls == FluidMechanics:
+            mechanic_instance = FluidMechanics(shorelines=shorelines)
+        else:
+            mechanic_instance = target_cls()
 
         executor_keys = config.executors
         if executor_keys:

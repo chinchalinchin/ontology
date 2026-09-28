@@ -48,12 +48,6 @@ class ShorelineFrame(Frame):
         self.tile_w = tile_w
         self.tile_l = tile_l
 
-    def channels(self, 
-        id: str, 
-        state: AssetState,
-        properties: AssetProperties
-    ) -> List[Tuple]:
-        return []
 
     def index(self, id: str, properties: GeographyProperties) -> Dict[str, Tuple[int, int, int, int]]:
         """

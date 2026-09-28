@@ -32,13 +32,6 @@ class NoFrame(Frame):
     """
     ## NoFrame
     """
-
-    def channels(self, 
-        id: str, 
-        state: AssetState,
-        properties: AssetProperties
-    ) -> List[Tuple]:
-        return []
     
     def keys(self, id: str, state: AssetState) -> List[str]:
         """
@@ -58,13 +51,6 @@ class SingleFrame(Frame):
     ## SingleFrame
     """
 
-    def channels(self, 
-        id: str, 
-        state: AssetState,
-        properties: AssetProperties
-    ) -> List[Tuple]:
-        return []
-    
     def keys(self, id: str, state: AssetState) -> List[str]:
         """
         """
@@ -84,12 +70,6 @@ class IterableFrame(Frame):
     ## IterableFrame
     """
     
-    def channels(self, 
-        id: str, 
-        state: AssetState,
-        properties: AssetProperties
-    ) -> List[Tuple]:
-        return []
 
     def keys(self, id: str, state: AssetState) -> List[str]:
         """

@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.motion.kinematic
+# Ontology: app.game.logic.modules.motion.kinematic
 """
 # Standard Libraries
 from typing import List

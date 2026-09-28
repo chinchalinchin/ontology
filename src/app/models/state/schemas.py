@@ -14,6 +14,10 @@ from dataclasses import (
 from app.models.state.core import (
     PlotState
 )
+from app.models.state.cursors import (
+    MotorState,
+    AttachmentState
+)
 from app.models.state.objects import (
     MultiplierState,
     ContainerState,
@@ -21,9 +25,7 @@ from app.models.state.objects import (
     DoorState,
     SwitchState,
     PropertyState,
-    MotorState,
-    DialogueState,
-    AttachmentState,
+    DialogueState
 )
 from app.models.state.effects import (
     EffectState,

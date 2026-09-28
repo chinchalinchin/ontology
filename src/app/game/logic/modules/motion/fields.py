@@ -8,7 +8,12 @@ from __future__ import annotations
 
 # Standard Libraries
 import logging
-from typing import List, Tuple, Any, TYPE_CHECKING
+from typing import (
+    List, 
+    Tuple, 
+    Any, 
+    TYPE_CHECKING
+)
 
 # Application Libraries
 import app.config.settings as settings
@@ -116,7 +121,8 @@ def update(assets: List[Asset], board: Board, delta: float) -> None:
        and suppress submersion.
     3. Implements Virtual Edge Traversals: shoreline crossings trigger spatial drop
        displacement, toggle submersion, emit splash particles, and enforce one-way ledges.
-    4. Implements Direct Immersion: entities in Fluids acquire current velocity vectorally.
+    4. Implements Direct Immersion: entities in Fluids acquire current velocity vectorally
+       and enter the submerged state.
     """
     rafts = [a for a in assets if a.instance == AssetInstances.RAFTS.value]
     _update_rafts(rafts, board)
@@ -148,11 +154,7 @@ def update(assets: List[Asset], board: Board, delta: float) -> None:
         if on_raft:
             asset.state.velocity.vx += raft_vx
             asset.state.velocity.vy += raft_vy
-            if asset.instance in (
-                AssetInstances.PLAYERS.value,
-                AssetInstances.SPRITES.value
-            ):
-                asset.state.mutators.triggers.submerged = False
+            asset.state.mutators.triggers.submerged = False
             continue
 
         # -------------------------------------------------------------
@@ -171,33 +173,27 @@ def update(assets: List[Asset], board: Board, delta: float) -> None:
 
                 # Entry transition: velocity points into water
                 if v_dot > 0:
-                    if asset.instance in (
-                        AssetInstances.PLAYERS.value,
-                        AssetInstances.SPRITES.value
-                    ):
-                        if not asset.state.mutators.triggers.submerged:
-                            # Apply orthogonal step-down spatial displacement
-                            t = shore.state.thickness
-                            asset.state.position.x += int(nx * t)
-                            asset.state.position.y += int(ny * t)
-                            asset.state.mutators.triggers.submerged = True
+                    if not asset.state.mutators.triggers.submerged:
+                        t = shore.state.thickness
+                        asset.state.position.x += int(nx * t)
+                        asset.state.position.y += int(ny * t)
+                        asset.state.mutators.triggers.submerged = True
 
-                            if board.cradle:
-                                splash_pos = Position(
-                                    int(asset.state.position.x),
-                                    int(asset.state.position.y + (asset.dimensions.l // 2))
-                                )
-                                splash = board.cradle.spawn_passive(
-                                    EffectsPalette.SPLASH.value, 
-                                    layer, 
-                                    splash_pos
-                                )
-                                board.add([splash])
+                        if board.cradle:
+                            splash_pos = Position(
+                                int(asset.state.position.x),
+                                int(asset.state.position.y + (asset.dimensions.l // 2))
+                            )
+                            splash = board.cradle.spawn_passive(
+                                EffectsPalette.SPLASH.value, 
+                                layer, 
+                                splash_pos
+                            )
+                            board.add([splash])
 
                 # Exit / Ledge constraint: velocity points toward bank
                 elif v_dot < 0:
                     if not shore.state.bidirectional:
-                        # Sheer cliff/ledge: nullify velocity component directed against bank
                         if nx != 0.0:
                             asset.state.velocity.vx = 0.0
                         if ny != 0.0:
@@ -219,31 +215,27 @@ def update(assets: List[Asset], board: Board, delta: float) -> None:
                 in_fluid = True
 
         if in_fluid:
-            asset.state.velocity.vx += flow_vx
-            asset.state.velocity.vy += flow_vy
+            if asset.instance == AssetInstances.CRATES.value:
+                asset.state.velocity.vx = flow_vx
+                asset.state.velocity.vy = flow_vy
+            else:
+                asset.state.velocity.vx += flow_vx
+                asset.state.velocity.vy += flow_vy
 
-            if asset.instance in (
-                AssetInstances.PLAYERS.value,
-                AssetInstances.SPRITES.value
-            ):
-                was_submerged = asset.state.mutators.triggers.submerged
-                asset.state.mutators.triggers.submerged = True
+            was_submerged = asset.state.mutators.triggers.submerged
+            asset.state.mutators.triggers.submerged = True
 
-                if not was_submerged and board.cradle:
-                    splash_pos = Position(
-                        int(asset.state.position.x),
-                        int(asset.state.position.y + (asset.dimensions.l // 2))
-                    )
-                    splash = board.cradle.spawn_passive(
-                        EffectsPalette.SPLASH.value, 
-                        layer, 
-                        splash_pos
-                    )
-                    board.add([splash])
+            if not was_submerged and board.cradle:
+                splash_pos = Position(
+                    int(asset.state.position.x),
+                    int(asset.state.position.y + (asset.dimensions.l // 2))
+                )
+                splash = board.cradle.spawn_passive(
+                    EffectsPalette.SPLASH.value, 
+                    layer, 
+                    splash_pos
+                )
+                board.add([splash])
         else:
             if not in_shoreline:
-                if asset.instance in (
-                    AssetInstances.PLAYERS.value,
-                    AssetInstances.SPRITES.value
-                ):
-                    asset.state.mutators.triggers.submerged = False
+                asset.state.mutators.triggers.submerged = False

@@ -41,13 +41,6 @@ class FluidFrame(Frame):
     def __init__(self, tile_w: int = 32, tile_l: int = 32):
         self.tile_w = tile_w
         self.tile_l = tile_l
-
-    def channels(self, 
-        id: str, 
-        state: AssetState,
-        properties: AssetProperties
-    ) -> List[Tuple]:
-        return []
     
     def index(self, id: str, properties: EffectProperties) -> Dict[str, Tuple[int, int, int, int]]:
         """

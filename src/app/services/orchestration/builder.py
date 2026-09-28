@@ -26,7 +26,10 @@ from app.config.enums import (
 from app.game.board import Board
 from app.game.engine import Engine
 from app.game.screen import Screen
-from app.game.logic.mechanics import Mechanic
+from app.game.logic.mechanics import (
+    Mechanic,
+    FluidMechanics
+)
 from app.game.logic.relations.shorelines import ShorelineIndex
 from app.models.groups import (
     SpawnableGroup, 
@@ -82,7 +85,7 @@ class Builder:
         self.core: List[Mechanic] = []
         self.world: List[Mechanic] = []
         self.executors: Dict[str, Any] = {}
-
+        self.shorelines: ShorelineIndex = None
 
     def _actions(self) -> None:
         """
@@ -110,7 +113,6 @@ class Builder:
             **resolved_sheets
         )
 
-
     def load_data(self, state_key: str = None) -> None:
         """
         Loads YAML configuration data for properties and global configurations.
@@ -125,7 +127,6 @@ class Builder:
             logger.info("No state key provided. Booting in unhydrated mode for Main Menu...")
             self.context.state = None
 
-
     def build_executors(self) -> None:
         """
         Compiles and registers master mechanic executors.
@@ -135,17 +136,16 @@ class Builder:
         intention_executor = translator.compile(self.context.configurations.intentions)
         plot_executor = translator.compile(self.context.configurations.plots)
 
-        shoreline_index = ShorelineIndex.from_properties(
+        self.shorelines = ShorelineIndex.from_properties(
             self.context.properties.geography.shorelines
         )
-        actuator_executor = Actuator(shorelines=shoreline_index)
+        actuator_executor = Actuator()
 
         self.executors = {
             MechanicExecutors.INTENTION.value: intention_executor,
             MechanicExecutors.PLOT.value: plot_executor,
             MechanicExecutors.ACTUATOR.value: actuator_executor
         }
-
 
     def init_subsystems(self, screensize: Dimensions, headless: bool = True) -> None:
         logger.info("Initializing SDL and Cython rendering subsystems...")
@@ -156,7 +156,6 @@ class Builder:
         # IMPORTANT: This MUST be called before the Registry inits.
         if not headless:
             render.show()
-
 
     def build_board(self) -> None:
         logger.info("Constructing Empty Board and Migrator subsystem...")
@@ -191,7 +190,6 @@ class Builder:
             actuator=self.executors[MechanicExecutors.ACTUATOR.value]
         )
 
-
     def build_registry(self) -> None:
         """
         Initializes Registry directly using native application models.
@@ -202,7 +200,6 @@ class Builder:
             recipes=self.context.configurations.recipes,
             typography=self.context.properties.fonts
         )
-
 
     def build_services(self, device: Devices) -> None:
         logger.info("Injecting Generators and Devices into Board...")
@@ -257,7 +254,7 @@ class Builder:
         ]
         
         self.core = [Factory.mechanics(m, self.executors) for m in core_cfg]
-        self.world = [Factory.mechanics(m, self.executors) for m in world_cfg]
+        self.world = [Factory.mechanics(m, self.executors, self.shorelines) for m in world_cfg]
 
         self.library = Library(self.context.configurations.library)
         self.binder = Binder(self.registry, self.library)

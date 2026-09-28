@@ -23,7 +23,6 @@ from app.models.state.core import (
     AssetState
 )
 
-
 # --------------------------------------------------------------------- GEOGRAPHY STATES
 
 @dataclass(slots=True)
@@ -37,5 +36,4 @@ class ShorelineState(AssetState):
     length: int = 0
     thickness: int = 8
     bidirectional: bool = True
-    parent_fluid: Optional[str] = None
     hitboxes: List[Hitbox] = field(default_factory=list)  # type: ignore

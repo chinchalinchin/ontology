@@ -9,7 +9,6 @@ import logging
 from typing import (
     Dict, 
     Set, 
-    Tuple, 
     Optional,
     TYPE_CHECKING
 )
@@ -23,20 +22,23 @@ from app.config.enums import (
 from app.game.logic.mechanics import Mechanic
 from app.models.state import DevicePayload
 from app.services.generators.game.actuator import Actuator
+from app.services.generators.game.cartographer import Cartographer
 
 if TYPE_CHECKING:
     from app.game.board import Board
+    from app.game.logic.relations.shorelines import ShorelineIndex
 
 logger = logging.getLogger(__name__)
 
 
 class FluidMechanics(Mechanic):
     """
-    World mechanic monitoring dynamic obstacle velocities and gate switch
-    transitions to invalidate and recalculate fluid propagation.
+    World mechanic monitoring static gate transitions to invalidate fluid propagation
+    and coordinating two-pass fluid propagation and layer shoreline generation.
     """
-    _crate_positions: Dict[str, Tuple[int, int]]
+    shorelines: Optional[ShorelineIndex]
     _gate_states: Dict[str, bool]
+    _initialized: bool
 
     @property
     def actuator(self) -> Actuator:
@@ -48,13 +50,17 @@ class FluidMechanics(Mechanic):
     def actuator(self, value: Actuator) -> None:
         self.executors[MechanicExecutors.ACTUATOR.value] = value
 
-    def __init__(self, actuator: Optional[Actuator] = None):
+    def __init__(
+        self, 
+        actuator: Optional[Actuator] = None,
+        shorelines: Optional[ShorelineIndex] = None
+    ):
         super().__init__()
         if actuator is not None:
             self.set_executor(MechanicExecutors.ACTUATOR.value, actuator)
-        self._crate_positions = {}
+        self.shorelines = shorelines
         self._gate_states = {}
-
+        self._initialized = False
 
     def update(
         self,
@@ -67,29 +73,16 @@ class FluidMechanics(Mechanic):
         if not fluids:
             return
 
-        crates = board.instances(AssetInstances.CRATES.value)
         gates = board.instances(AssetInstances.GATES.value)
         invalidated_layers: Set[str] = set()
 
-        for crate in crates:
-            layer = crate.state.layer
-            vx = crate.state.velocity.vx
-            vy = crate.state.velocity.vy
-            curr_pos = (crate.state.position.x, crate.state.position.y)
-            prev_pos = self._crate_positions.get(crate.name)
+        # Enforce two-pass synchronization on initial engine update
+        if not self._initialized:
+            for f in fluids:
+                invalidated_layers.add(f.state.layer)
+            self._initialized = True
 
-            if abs(vx) > 0 or abs(vy) > 0 or (prev_pos is not None and prev_pos != curr_pos):
-                invalidated_layers.add(layer)
-                logger.info(
-                    settings.SEPARATOR.join([
-                        "Telemetry:FluidMechanics",
-                        "Invalidation:Crate",
-                        crate.name
-                    ]) + f" at {curr_pos}"
-                )
-
-            self._crate_positions[crate.name] = curr_pos
-
+        # Gate state transitions trigger dynamic layer fluid invalidation (Fix B011)
         for gate in gates:
             layer = gate.state.layer
             curr_switch = gate.state.switch
@@ -111,5 +104,19 @@ class FluidMechanics(Mechanic):
             if fluid.state.layer in invalidated_layers:
                 fluid.state.dirty = True
 
-            if fluid.state.dirty:
-                self.actuator.pump(fluid, board)
+        dirty_fluids = [f for f in fluids if f.state.dirty]
+        if not dirty_fluids:
+            return
+
+        dirty_layers = {f.state.layer for f in dirty_fluids}
+        for layer in dirty_layers:
+            layer_fluids = board.instances(AssetInstances.FLUIDS.value, layer)
+            # Pass 1: Propagate fluid dynamics across all layer fluids
+            for f in layer_fluids:
+                self.actuator.propagate(f, board)
+            # Pass 2: Synthesize layer geography across settled water boundaries
+            if self.shorelines is not None:
+                Cartographer.purge(layer, board)
+                new_shores = Cartographer.generate(layer, board, self.shorelines)
+                if new_shores:
+                    board.add(new_shores)

@@ -6,7 +6,6 @@ Package for Sheet Frame implementations.
 # Stamdard Libraries
 from typing import (
     List,
-    Tuple,
 )
 import logging
 
@@ -16,7 +15,6 @@ from app.config.enums import (
     Intentions,
     RequiredAssets,
     ExpressionsPalette,
-    ChannelTypes
 )
 from app.assets.base import Frame
 from app.models.state import (
@@ -24,7 +22,6 @@ from app.models.state import (
     SpriteState
 )
 from app.models.properties import (
-    AssetProperties,
     SheetProperties,
 )
 
@@ -34,14 +31,6 @@ class StateFrame(Frame):
     """
     ## StateFrame
     """
-
-    def channels(self, 
-        id: str, 
-        state: AssetState,
-        properties: AssetProperties
-    ) -> List[Tuple]:
-        return []
-
     
     def keys(self, id: str, state: AssetState) -> List[str]:
         """
@@ -85,29 +74,6 @@ class SpriteFrame(StateFrame):
 
     Specialized Frame component for Sprites that yields a strict Z-indexed list of frame keys based on the Sprite's inventory.
     """
-
-    def channels(self, 
-        id: str, 
-        state: SpriteState,
-        properties: SheetProperties
-    ) -> List[Tuple]:
-        channel_directives = []
-        
-        if state.mutators.triggers.submerged:
-            l = properties.dimensions.l
-            half_l = l // 2
-            
-            # (CHANNEL_SUBMERGE, split_y, r, g, b, a)
-            # e.g., deep aquatic modulation: RGBA(40, 110, 180, 170)
-            # TODO: this should be codified in a ChannelPayload data structure to pass to the screen. Screen should unpack channel payload into Cython primitives.            
-            payload = half_l, 40, 110, 180, 170
-            channel_directives.append((
-                ChannelTypes.SUBMERGE.value,
-                payload
-            ))
-            
-        return channel_directives
-
     
     def keys(self, id: str, state: SpriteState) -> List[str]:
         # Start with the base Persona frame key

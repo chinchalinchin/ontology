@@ -550,14 +550,7 @@ $
 
 ### Shorelines
 
-Shorelines are procedural, inanimate Geography sensors instantiated along unoccluded fluid corridors and pool perimeters. When an `Actuator` pumps a fluid emitter, it discretizes the unoccluded perimeter into grid cells, queries `board.tile(layer, coord)`, resolves the matching Shoreline asset via the relational index, and coalesces contiguous homogenous cells into cohesive shoreline entities.
-
-**Rows**
-
-- Row 0: `Directions.UP.value` ("up" / North bank: Land North, Water South)
-- Row 1: `Directions.LEFT.value` ("left" / West bank: Land West, Water East)
-- Row 2: `Directions.DOWN.value` ("down" / South bank: Land South, Water North)
-Row 3: `Directions.RIGHT.value` ("right" / East bank: Land East, Water West)
+Shorelines are procedural, inanimate Geography sensors instantiated along unoccluded environmental water margins. Rather than belonging to individual fluid emitters, Shorelines are derived at the layer level: `FluidMechanics` aggregates all active fluid streams and annular pools on a layer, derives the outer perimeter hull via `geometry.contours()`, samples bordering substrate tiles from `Board`, and coalesces contiguous segments into cohesive shoreline entities.
 
 **Frame: ShorelineFrame**
 
@@ -576,7 +569,6 @@ Row 3: `Directions.RIGHT.value` ("right" / East bank: Land East, Water West)
 * `length: int`
 * `thickness: int`
 * `bidirectional: bool = True`
-* `parent_fluid: str`
 * `hitboxes: List[Hitbox]`
 
 ## Effects

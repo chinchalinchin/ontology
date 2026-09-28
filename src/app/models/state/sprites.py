@@ -24,7 +24,7 @@ from app.models.state.core import (
     AnimationState,
     AssetState
 )
-from app.models.state.objects import AttachmentState
+from app.models.state.cursors import AttachmentState
 
 # Cython Libraries
 from libs.core.models import (
@@ -118,36 +118,6 @@ class Trajectory:
     stalled: bool = False
     cooldown: int = 0
 
-# ---------------------------------------------------------------------------------------
-
-@dataclass(slots=True)
-class RadialParameters:
-    radius: int = 30
-
-@dataclass(slots=True)
-class FearParameters(RadialParameters):
-    limit: float = 0.50
-    enemy: int = 5
-
-@dataclass(slots=True)
-class MutatorTriggers:
-    animated: bool = False
-    frightened: bool = False
-    dead: bool = False
-    vision: bool = False
-    submerged: bool = False
-
-@dataclass(slots=True)
-class MutatorParameters:
-    fear: Optional[FearParameters] = field(default_factory=FearParameters)
-    vision: Optional[RadialParameters] = field(default_factory=RadialParameters)
-    action: Optional[RadialParameters] = field(default_factory=RadialParameters)
-    squeeze: Optional[RadialParameters] = field(default_factory=RadialParameters)
-    
-@dataclass(slots=True)
-class Mutators:
-    triggers: MutatorTriggers = field(default_factory=MutatorTriggers)
-    parameters: Optional[MutatorParameters] = None
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------- SPRITE STATES
@@ -160,7 +130,6 @@ class SpriteState(AssetState):
     character: Optional[Character] = field(default_factory=Character)
     inventory: Optional[Inventory] = field(default_factory=Inventory)
     meters: Optional[Meters] = field(default_factory=Meters)
-    mutators: Optional[Mutators] = field(default_factory=Mutators)
     memory: Optional[Memory] = field(default_factory=Memory)
     psyche: Optional[Psyche] = field(default_factory=Psyche)
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
@@ -173,7 +142,6 @@ class PlayerState(AssetState):
     character: Optional[Character] = field(default_factory=Character)
     inventory: Optional[Inventory] = field(default_factory=Inventory)
     meters: Optional[Meters] = field(default_factory=Meters)
-    mutators: Mutators = field(default_factory=Mutators)   
     goal: Optional[Goal] = field(default_factory=Goal)
     intention: Optional[Intentions] = Intentions.IDLE.value
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
