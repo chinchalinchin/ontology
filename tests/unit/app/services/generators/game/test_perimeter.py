@@ -88,7 +88,7 @@ def test_perimeter_extract_crafts_layer_isolation(mock_board):
     interior_rects = perimeter.extract(mock_board, "brick-house-compose-layer")
 
     # Layer contains only interior wall (0, 0, 128, 96) and floor (0, 96, 128, 192)
-    assert len(interior_rects) == 2
+    assert len(interior_rects) == 3
     assert (0, 0, 128, 96) in interior_rects
     assert (0, 96, 128, 192) in interior_rects
 

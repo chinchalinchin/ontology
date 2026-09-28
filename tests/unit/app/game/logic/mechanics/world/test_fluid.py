@@ -19,6 +19,8 @@ from libs.core.models import (
     Velocity
 )
 
+# TODO: use engine fixture and engine.get_mechanic to retrieve FluidMechanics.
+#           add mock_bus.
 
 @pytest.mark.fluids
 def test_fluid_mechanics_early_exit_no_fluids(mock_board):

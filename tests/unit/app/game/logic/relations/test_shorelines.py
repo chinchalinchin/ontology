@@ -11,6 +11,7 @@ from app.models.properties import GeographyProperties
 # Cython Libraries
 from libs.core.models import Dimensions
 
+# TODO: all of these should use fixtures
 @pytest.mark.fluids
 def test_shoreline_index_exact_match():
     entries = {

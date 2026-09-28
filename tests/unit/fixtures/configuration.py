@@ -415,6 +415,12 @@ def mock_mechanics_configuration() -> MechanicsConfiguration:
             MechanicsInstance(
                 key=Mechanics.MOTION.value
             ),
+            MechanicsInstance(
+                key=Mechanics.FLUID.value,
+                executors=[
+                    MechanicExecutors.ACTUATOR.value
+                ]
+            )
         ]
     )
 

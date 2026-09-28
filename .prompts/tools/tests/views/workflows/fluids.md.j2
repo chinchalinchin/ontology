@@ -1,41 +1,34 @@
 ### View: Workflow Tests - Fluids
 
-#### tests.unit.game
+#### tests.unit.app.game.logic.relations
 
-##### tests.unit.game.logic
-
-###### tests.unit.game.logic.relations
-
-**'tests/unit/game/logic/relations/test_app_game_logic_relations.p**
+**tests/unit/app/game/logic/relations/test_shorelines.py**
 
 ```python
-{{ file(properties.paths.root + 'tests/unit/game/logic/relations/test_app_game_logic_relations.py') }}
+{{ file(properties.paths.root + 'tests/unit/app/game/logic/relations/test_shorelines.py') }}
 ```
 
-###### tests.unit.game.logic.modules
+#### tests.unit.app.game.logic.modules
 
-**tests/unit/game/logic/modules/test_app_game_logic_modules_motion_fields.py**
+**tests/unit/app/game/logic/modules/motion/test_fields.py**
 
 ```python
-{{ file(properties.paths.root + 'tests/unit/game/logic/modules/test_app_game_logic_modules_motion_fields.py') }}
+{{ file(properties.paths.root + 'tests/unit/app/game/logic/modules/motion/test_fields.py') }}
 ```
 
-###### tests.unit.game.logic.mechanics
+#### tests.unit.app.game.logic.mechanics.world
 
-####### tests.unit.game.logic.mechanics.world
-
-**tests/unit/game/logic/mechanics/world/test_app_game_logic_mechanics_world_fluid.py**
+**tests/unit/app/game/logic/mechanics/world/test_fluid.py**
 
 ```python
-{{ file(properties.paths.root + 'tests/unit/game/logic/mechanics/world/test_app_game_logic_mechanics_world_fluid.py') }}
+{{ file(properties.paths.root + 'tests/unit/app/game/logic/mechanics/world/test_fluid.py') }}
 ```
 
-#### tests.unit.services
+#### tests.unit.app.services.generators.game
 
-##### tests.unit.services.generators
-
-**tests/unit/services/generators/test_app_services_generators_game_actuator.py**
+**tests/unit/app/services/generators/game/test_actuator.py**
 
 ```python
-{{ file(properties.paths.root + 'tests/unit/services/generators/test_app_services_generators_game_actuator.py')}}
+{{ file(properties.paths.root + 'tests/unit/app/services/generators/game/test_actuator.py')}}
 ```
+

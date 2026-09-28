@@ -61,20 +61,20 @@ tools:
           - 09-emergence.md
       specs: []
     source:
-      workflow: orchestration
+      workflow: fluids
     shell:
       directory: tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
       commands: []
     tests:
       console:
-        pytest: pytest -m orchestration
+        pytest: pytest -m fluids
       fixtures:
-        # - assets
+        - assets
         - components
-        - configuration
+        # - configuration
         - properties
-        # - state
+        - state
         - services
-        # - structures
+        - structures
         # - menus
-      workflow: orchestration
+      workflow: fluids

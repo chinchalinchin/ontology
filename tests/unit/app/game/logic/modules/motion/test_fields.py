@@ -22,6 +22,7 @@ from libs.core.models import (
     Velocity
 )
 
+# TODO: everything should use fixtures
 
 @pytest.mark.fluids
 @pytest.mark.motion

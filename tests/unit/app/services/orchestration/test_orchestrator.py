@@ -37,7 +37,7 @@ def test_orchestrator_construct(
     assert engine.board.loaded is False
     
     assert len(engine.core) == 3
-    assert len(engine.world) == 2
+    assert len(engine.world) == 3
     
     # Verify Cython SDL boundary layer was initialized correctly
     mock_render.init.assert_called_once_with(1280, 720, True)

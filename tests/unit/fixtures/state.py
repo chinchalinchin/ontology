@@ -179,7 +179,7 @@ def mock_switch_state_alt() -> SwitchState:
 def mock_container_state() -> ContainerState:
     return ContainerState(
         id="wood-chest",
-        layer="0",
+        layer="brick-house-compose-layer",
         depth=0,
         height=None,
         position=Position(x=100, y=100),
