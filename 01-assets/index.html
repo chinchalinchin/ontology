@@ -2574,13 +2574,20 @@
 <li>Property File: <code>/src/assets/geography/main.yaml</code></li>
 </ul>
 <p>Geography Assets represent inanimate, immutable structural and topographical landforms (e.g., shorelines, cliffs, ledges, and terraces). Geography Assets define transition thresholds between differing biome zones, elevations, and fluid corridors.</p>
+<ol>
+<li><strong>Atlas format</strong>: Vertical <span class="arithmatex">\(w \times 4l\)</span> (<span class="arithmatex">\(32 \times 128\)</span>) with rows: <code>0: up</code>, <code>1: left</code>, <code>2: down</code>, <code>3: right</code>.</li>
+<li><strong>Keying</strong>: Uses <code>Directions</code> (<code>up</code>, <code>left</code>, <code>down</code>, <code>right</code>). Slices keyed as <code>{id}-{direction}-{rem}</code>.</li>
+<li><strong>Propagation</strong>: Normalized to top-left; tiles advance in <span class="arithmatex">\(+X\)</span> for <code>up</code>/<code>down</code>, <span class="arithmatex">\(+Y\)</span> for <code>left</code>/<code>right</code>.</li>
+<li><strong>Slicing</strong>: Forward-only slicing along the active propagation axis (<span class="arithmatex">\(s \times l\)</span> for horizontal, <span class="arithmatex">\(w \times s\)</span> for vertical).</li>
+<li><strong>Corners</strong>: Excluded from Phase 09.02 (TODO).</li>
+</ol>
 <p><strong>Relational Secondary Keys</strong></p>
 <p>Geography assets act as relational bridges across environmental categories. Specifically, Shorelines declare secondary keys referencing the background <code>Tile</code> (and optionally <code>Fluid</code>) assets they border:</p>
 <ul>
 <li><code>tile: str</code>: Asset ID of the terrain tile to which this geography margin binds.</li>
 <li><code>fluid: Optional[str]</code>: Optional asset ID of the fluid type required to activate this margin.</li>
 </ul>
-<p>During engine bootstrapping, the <code>Registry</code> indexes these declarations into a composite lookup map:</p>
+<p>During engine bootstrapping, <code>ShorelineIndex</code> compiles these declarations into a composite lookup map:</p>
 <p>$
 \text{Index}[(tile_id, fluid_id)] \to shoreline_id
 $</p>
@@ -2595,11 +2602,14 @@ $</p>
 </ul>
 <h3 id="shorelines">Shorelines</h3>
 <p>Shorelines are procedural, inanimate Geography sensors instantiated along unoccluded fluid corridors and pool perimeters. When an <code>Actuator</code> pumps a fluid emitter, it discretizes the unoccluded perimeter into grid cells, queries <code>board.tile(layer, coord)</code>, resolves the matching Shoreline asset via the relational index, and coalesces contiguous homogenous cells into cohesive shoreline entities.</p>
+<p><strong>Rows</strong></p>
+<ul>
+<li>Row 0: <code>Directions.UP.value</code> ("up" / North bank: Land North, Water South)</li>
+<li>Row 1: <code>Directions.LEFT.value</code> ("left" / West bank: Land West, Water East)</li>
+<li>Row 2: <code>Directions.DOWN.value</code> ("down" / South bank: Land South, Water North)
+Row 3: <code>Directions.RIGHT.value</code> ("right" / East bank: Land East, Water West)</li>
+</ul>
 <p><strong>Frame: ShorelineFrame</strong></p>
-<div class="admonition todo">
-<p class="admonition-title">Todo</p>
-<p>This is basically a Fluid frame. Possibly reuse?</p>
-</div>
 <ul>
 <li>Indexes 4 cardinal orientation rows:<ul>
 <li>Row 0: <code>north</code> (Land North, Water South)</li>

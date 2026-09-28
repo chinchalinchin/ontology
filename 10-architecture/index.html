@@ -596,6 +596,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dependency-injection-mechanicsfactory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency Injection &amp; MechanicsFactory
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1177,6 +1194,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dependency-injection-mechanicsfactory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency Injection &amp; MechanicsFactory
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1368,6 +1402,13 @@
 <li><strong>World Mechanics:</strong> Systems that govern gameplay logic, physics, and NPC behavior. This includes <a href="../05-mechanics/">MotionMechanics, CombatMechanics, and PlayerMechanics</a>.</li>
 </ul>
 <p>When a <a href="../06-widgets/#events">MenuEvent</a> fires and a modal Menu is pushed to the screen, <code>board.paused</code> evaluates to <code>True</code>. The Engine skips the <code>world</code> mechanics loop entirely. The world freezes, but <code>core</code> mechanics continue ticking, allowing the Player to navigate the menu while background torches remain animated without the risk of enemies moving or attacking.</p>
+<h3 id="dependency-injection-mechanicsfactory">Dependency Injection &amp; MechanicsFactory</h3>
+<p>Mechanics enforce strict separation between static construction dependencies and per-frame execution arguments:</p>
+<ol>
+<li><strong>Execution Interface (<code>Mechanic.update</code>)</strong>: The runtime interface <code>update(board, delta, bus, payload)</code> receives only transient frame state. Static services are never passed through <code>update()</code>.</li>
+<li><strong>Constructor Injection (<code>MechanicsFactory</code>)</strong>: Systems requiring external services (such as <code>Actuator</code> for <code>FluidMechanics</code>, or compiled ISL expression trees for <code>TransitionMechanics</code> and <code>PlotMechanics</code>) receive them strictly through their constructor via <code>MechanicsFactory</code>.</li>
+</ol>
+<pre class="mermaid"><code>--*&lt;-- "static/mmd/mechanics.bootstrap.mmd</code></pre>
 <h2 id="maps">Maps</h2>
 <p>Maps associate ancillary Asset states to their final Animation state. See <a href="../04-intentions/#animationmap">AnimationMap</a> for more information.</p>
 <p>The <code>AnimationMap</code> plays a crucial role in enforcing logical constraints. For example, <code>TransitionMechanics</code> and <code>PlayerMechanics</code> utilize <code>AnimationMap.action(state, equipment)</code> to resolve whether an intended action is possible. This guarantees that an <code>attack</code> intention will not translate into a <code>thrust</code> animation action if the Sprite currently lacks the required tool or weapon equipped in its inventory.</p>
