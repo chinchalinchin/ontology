@@ -14,6 +14,9 @@
 - **Current Phase**: {{ prefix | upper }} {{ phase | upper }}
 - **Current Phase Action**: {{ action | upper }}
 
-{{ file(properties.paths.root + properties.paths.board + '/index.md') }}
+{{ file(properties.paths.root + properties.paths.board + '/' + properties.files.index) }}
+
+{{ file(properties.paths.root + properties.paths.templates + '/' + properties.files.index) }}
 
 {{ file(path) }}
+

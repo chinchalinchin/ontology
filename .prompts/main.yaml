@@ -1,15 +1,22 @@
 # ----------------------------------------------------
 properties:
+  files:
+    index: index.md
+    mkdocs: mkdocs.yaml
   paths:
-    ## LINUX
+    # ---------------------------------------
     root: /home/grant/Projects/ontology/
+    # ---------------------------------------
     actions: .githubs/workflows/
+    # ---------------------------------------
     blocks: .prompts/tasks/.blocks/
     board: .prompts/board/
-    phases: .prompts/board/phases/
     docs: docs/
-    tests: tests/unit/
+    diagrams: docs/static/mmd/
     fixtures: tests/unit/fixtures/
+    phases: .prompts/board/phases/
+    templates: .prompts/board/templates
+    tests: tests/unit/
   project:
     title: ontology
   user:
@@ -21,32 +28,32 @@ properties:
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/coverage.md.j2
+  template: iterate/grooming.md.j2
 # ----------------------------------------------------
   parameters:
-    diagram: menu-flow.mmd
+    diagram: mechanics-fluid.mmd
 # ----------------------------------------------------
 tools:
 # ----------------------------------------------------
   views:
     manager:
-      board: false
+      board: true
       specs: false
-      docs: false
+      docs: true
     source:
-      workflow: false
+      workflow: true
     shell:
-      directory: false
+      directory: true
       commands: false
     tests:  
-      console: true
+      console: false
       fixtures: false
       workflow: false
 # ----------------------------------------------------
   parameters:
     manager:
       board:
-        phase: '09-02'
+        phase: '09-03'
         action: refactor
       docs:
         exclude:
@@ -60,7 +67,7 @@ tools:
           - 09-emergence.md
       specs: []
     source:
-      workflow: physics
+      workflow: fluids
     shell:
       directory: tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
       commands: []
@@ -75,4 +82,4 @@ tools:
         # - services
         # - structures
         # - menus
-      workflow: physics
+      workflow: fluids

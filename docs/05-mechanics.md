@@ -197,12 +197,17 @@ These Mechanics handle ambient world state, high-level game calculations and oth
 
 **FluidMechanics**
 
-FluidMechanics governs fluid emission across active layers. It executes after physical momentum updates (`MotionMechanics` and `CollisionMechanics`) and uses reactive dirty-checking:
+```mermaid
+--8<-- "static/mmd/mechanics-fluid.mmd"
+```
 
-1. **Change Detection**: Inspects active crates ($\vert{}v\vert{} > 0$) and switch-linked gates. If any dynamic obstacle within a fluid's influence zone mutates, `fluid.state.dirty` is set to `True`.
-2. **Raycast Truncation**: Raycasts along `state.source` against board boundaries and non-sheet solid assets ($m \ge 0$). Calculates distance $D$ to the nearest occluder.
-3. **Annular Pooling**: If the occluder is an internal obstacle rather than a perimeter boundary, expands a radial pool of radius `state.flow` around the obstacle perimeter, partitioned into four rectangular bounding boxes.
+FluidMechanics governs fluid emission and procedural shoreline margins across active layers. It executes after physical momentum updates (`MotionMechanics` and `CollisionMechanics`) and uses reactive dirty-checking:
+
+1. **Change Detection**: Inspects switch-linked gates (`AssetInstances.GATES`). If any static barrier within an active layer mutates state, affected fluids are marked `dirty`. Dynamic bodies (\(m > 0\), such as Crates) do not obstruct fluids and do not trigger invalidation.
+2. **Raycast Truncation**: Raycasts along `state.source` strictly against map boundaries and immovable static assets (\(m = 0\)). Dynamic bodies (\(m > 0\)) and sensors (\(m = -1\)) are bypassed. Calculates distance \(D\) to the nearest occluder.
+3. **Annular Pooling**: If the occluder is an internal obstacle rather than a perimeter boundary, expands a radial pool of radius `state.flow` around the obstacle perimeter, aligned to grid increments.
 4. **Hitbox Update**: Injects composite hitboxes for the stream path and pool boundaries into the broad-phase spatial hash.
+5. **Two-Pass Shoreline Synthesis**: Evaluates fluid propagation across all dirty emitters on a layer prior to generating procedural shorelines via `Cartographer`, preventing cross-fluid margin clipping.
 
 ## Configuration
 

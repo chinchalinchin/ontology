@@ -1,0 +1,12 @@
+flowchart TD
+    classDef root fill:#512DA8,stroke:#9575CD,stroke-width:2px,color:#FFFFFF;
+    classDef orchestrator fill:#311B92,stroke:#7E57C2,stroke-width:1.5px,color:#EDE7F6;
+    classDef leaf fill:#1A233A,stroke:#448AFF,stroke-width:1.5px,color:#E1F5FE;
+
+    FM[FluidMechanics]:::root -->|1. propagate| ACT[Actuator]:::orchestrator
+    FM -->|2. generate| SG[ShorelineGenerator]:::orchestrator
+    ACT -->|Raycast & Hitboxes| CY[libs.core.math.geometry]:::leaf
+    ACT -->|Update State| FS[FluidState]:::leaf
+    SG -->|Resolve Shoreline ID| SI[ShorelineIndex]:::leaf
+    SG -->|Query Substrate & Water| BD[Board]:::leaf
+    SG -->|Spawn Assets| CR[Cradle]:::leaf
