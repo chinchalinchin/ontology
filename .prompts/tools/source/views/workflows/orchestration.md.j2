@@ -1,0 +1,109 @@
+### View: Workflow - Orchestration
+
+#### app.assets
+
+**src/app/assets/base.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/base.py') }}
+```
+
+#### app.config
+
+**src/app/config/loader.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/config/loader.py') }}
+```
+
+#### app.game
+
+**src/app/game/board.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/board.py') }}
+```
+
+**src/app/game/engine.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/engine.py') }}
+```
+
+#### app.game.menus
+
+##### app.game.menus.controllers 
+
+**src/app/game/menus/controllers/load.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/menus/controllers/load.py') }}
+```
+
+#### app.models
+
+**src/app/models/properties.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/properties.py') }}
+```
+
+##### app.models.config
+
+**src/app/models/config/core.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/config/core.py') }}
+```
+
+**src/app/models/config/schemas.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/config/schemas.py') }}
+```
+
+##### app.models.state 
+
+**src/app/models/state/core.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/state/core.py') }}
+```
+
+**src/app/models/state/schemas.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/state/schemas.py') }}
+```
+
+#### app.services
+
+##### app.services.generators
+
+###### app.services.generators.game
+
+**src/app/services/generators/game/factory.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/generators/game/factory.py') }}
+```
+
+##### app.services.orchestration
+
+**src/app/services/orchestration/builder.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/orchestration/builder.py') }}
+```
+
+**src/app/services/orchestration/migrator.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/orchestration/migrator.py') }}
+```
+
+**src/app/services/orchestration/orchestrator.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/orchestration/orchestrator.py') }}
+```

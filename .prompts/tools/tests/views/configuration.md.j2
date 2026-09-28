@@ -1,0 +1,13 @@
+### View: Test Configuration
+
+**pytest.ini**
+
+```toml
+{{ file(properties.paths.root + 'pytest.ini') }}
+```
+
+**tests/unit/conftest.py**
+
+```python
+{{ file(properties.paths.root + 'tests/unit/conftest.py') }}
+```

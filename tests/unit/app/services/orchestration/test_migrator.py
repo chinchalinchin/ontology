@@ -1,20 +1,36 @@
 """
-# Ontology: tests.unit.test_app_services_migrator
+# Ontology: tests.unit.app.services.orchestration.test_migrator
 """
-from unittest.mock import MagicMock, patch
+# Standard Libraries
+from unittest.mock import (
+    MagicMock, 
+    patch
+)
+
+# External Libraries
+import pytest
+
+# Appliation Libraries
 from app.services.orchestration.migrator import Migrator
 
+# TODO: remove the MagicMocks. Use fixtures.
+
+@pytest.mark.orchestration
 def test_migrator_no_target():
     migrator = Migrator(MagicMock(), MagicMock(), MagicMock())
     # Should return True instantly if no target is set
     assert migrator.step(budget_ms=16) is True
 
+
+@pytest.mark.orchestration
 @patch('app.services.orchestration.migrator.time.perf_counter')
 def test_migrator_time_slicing(mock_perf_counter):
     migrator = Migrator(MagicMock(), MagicMock(), MagicMock())
     migrator.target = "test-level"
-    
+
     # Create a fake generator that yields 3 times
+    # TODO: no, don't do this. it defeats the entire purpose of
+    #       the unit test. 
     def fake_gen():
         yield True
         yield True
@@ -35,6 +51,8 @@ def test_migrator_time_slicing(mock_perf_counter):
     assert migrator.target is None
     assert migrator._generator is None
 
+
+@pytest.mark.orchestration
 @patch('app.services.orchestration.migrator.dataclasses.fields')
 @patch('app.services.orchestration.migrator.Loader.load_state')
 @patch('app.services.orchestration.migrator.Decomposer')
@@ -64,6 +82,8 @@ def test_migrator_build_generator(mock_decomposer, mock_load_state, mock_fields)
     assert mock_board.add.called
     assert migrator.maximum >= 1
 
+
+@pytest.mark.orchestration
 @patch('app.services.orchestration.migrator.Loader.load_state')
 @patch('app.services.orchestration.migrator.Decomposer')
 def test_migrator_build_generator_assets(mock_decomposer, mock_load_state, mock_state):

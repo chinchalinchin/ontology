@@ -3,19 +3,11 @@
 
 The **Tests Tool** provides **Views** into the application testing bed. 
 
-**pytest.ini**
-
-```toml
-{{ file(properties.paths.root + 'pytest.ini') }}
-```
-
-**tests/unit/conftest.py**
-
-```python
-{{ file(properties.paths.root + 'tests/unit/conftest.py') }}
-```
+- **Current Workflow Focus**: {{ tools.parameters.tests.workflow | capitalize }}
 
 ## Views
+
+{% include 'tools/tests/views/configuration.md.j2' %}
 
 {% if tools.views.tests.fixtures %}
 {% include 'tools/tests/views/fixtures.md.j2'%}

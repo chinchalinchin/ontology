@@ -52,27 +52,29 @@ tools:
       docs:
         exclude:
           - index.md
+          - 02-sprites.md
           - 03-compositions.md
+          - 04-intentions.md
           - 06-widgets.md
           - 07-sounds.md
           - 08-plots.md
           - 09-emergence.md
       specs: []
     source:
-      workflow: intentions
+      workflow: orchestration
     shell:
       directory: tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
       commands: []
     tests:
       console:
-        pytest: pytest -m intentions
+        pytest: pytest -m orchestration
       fixtures:
-        - assets
+        # - assets
         - components
         - configuration
         - properties
-        - state
-        # - services
+        # - state
+        - services
         # - structures
         # - menus
-      workflow: intentions
+      workflow: orchestration

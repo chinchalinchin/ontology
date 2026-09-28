@@ -386,6 +386,63 @@ def mock_door(
 
 
 @pytest.fixture
+def mock_chest(
+    mock_object_properties,
+    mock_container_state
+) -> Asset:
+    return Asset(
+        taxonomy=Taxonomy(
+            id="wood-chest",
+            name="chest-1",
+            category=AssetCategories.OBJECTS.value,
+            instance=AssetInstances.CHESTS.value
+        ),
+        properties=mock_object_properties.chests.get('wood-chest'),
+        state=mock_container_state,
+        frame=IterableFrame(),
+        animation=BinaryAnimation()
+    )
+
+
+@pytest.fixture
+def mock_plate(
+    mock_object_properties,
+    mock_switch_state
+) -> Asset:
+    return Asset(
+        taxonomy=Taxonomy(
+            id="pressure-plate",
+            name="plate-1",
+            category=AssetCategories.OBJECTS.value,
+            instance=AssetInstances.PLATES.value
+        ),
+        properties=mock_object_properties.plates.get('pressure-plate'),
+        state=mock_switch_state,
+        frame=IterableFrame(),
+        animation=BinaryAnimation()
+    )
+
+
+@pytest.fixture
+def mock_reactable(
+    mock_effect_properties,
+    mock_reactable_state
+) -> Asset:
+    return Asset(
+        taxonomy=Taxonomy(
+            id="reactable-1",
+            name="reactable-1",
+            category=AssetCategories.EFFECTS.value,
+            instance=AssetInstances.REACTABLES.value
+        ),
+        properties=mock_effect_properties.reactables.get('reactable-1'),
+        state=mock_reactable_state,
+        frame=IterableFrame(),
+        animation=LifecycleAnimation()
+    )
+
+
+@pytest.fixture
 def mock_assets(
     mock_back_tile,
     mock_player,
@@ -394,7 +451,10 @@ def mock_assets(
     mock_fluid,
     mock_fluid_alt,
     mock_fluid_alt2,
+    mock_reactable,
     mock_door,
+    mock_chest,
+    mock_plate,
     mock_crate,
     mock_gate,
     mock_strut,
@@ -410,7 +470,10 @@ def mock_assets(
         mock_fluid,
         mock_fluid_alt,
         mock_fluid_alt2,
+        mock_reactable,
         mock_door,
+        mock_chest,
+        mock_plate,
         mock_gate,
         mock_crate,
         mock_strut,
@@ -418,4 +481,3 @@ def mock_assets(
         mock_strut_alt2,
         mock_raft
     ]
-

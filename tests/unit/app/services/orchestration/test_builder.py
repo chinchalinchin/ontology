@@ -4,12 +4,16 @@
 # Standard Libraries
 from unittest.mock import patch
 
+# External Libraries
+import pytest
+
 # Application Libraries
 from app.config.enums import Devices
 
 # Cython Libraries
 from libs.core.models import Dimensions
 
+@pytest.mark.orchestration
 def test_builder_load_data(mock_builder):
     mock_builder.load_data("world-01")
     
@@ -17,6 +21,8 @@ def test_builder_load_data(mock_builder):
     assert mock_builder.context.configurations is not None
     assert mock_builder.context.state is not None
 
+
+@pytest.mark.orchestration
 @patch('app.services.orchestration.builder.render')
 def test_builder_init_subsystems(mock_render, mock_builder):
     dims = Dimensions(w=1280, l=720)
@@ -27,6 +33,8 @@ def test_builder_init_subsystems(mock_render, mock_builder):
     mock_render.init.assert_called_once_with(1280, 720, False)
     mock_render.show.assert_called_once()
 
+
+@pytest.mark.orchestration
 def test_builder_build_board(mock_builder):
     # Setup prerequisite context
     mock_builder.load_data("world-01")
@@ -38,11 +46,12 @@ def test_builder_build_board(mock_builder):
     assert len(mock_builder.board.assets()) == 0
     assert mock_builder.decomposer is not None
 
+
+@pytest.mark.orchestration
 def test_builder_build_services(mock_builder):
     # Setup prerequisite context
     mock_builder.load_data("world-01")
     mock_builder.build_board()
-    
     mock_builder.build_services(Devices.KEYBOARD.value)
     
     assert mock_builder.board.cradle is not None

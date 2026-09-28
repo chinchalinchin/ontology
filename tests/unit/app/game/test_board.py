@@ -13,7 +13,7 @@ def test_board_initial_caching(mock_board):
     
     # Layer Indexing
     assets_layer_0 = mock_board.assets('0')
-    assert len(assets_layer_0) == 11
+    assert len(assets_layer_0) == 14
     
     sprites = mock_board.categories(AssetCategories.SHEETS.value, '0')
     tiles = mock_board.categories(AssetCategories.TILES.value, '0')
@@ -22,12 +22,12 @@ def test_board_initial_caching(mock_board):
     
     # Inner Render Loop Indexing (Tiles bypassed)
     renderables = mock_board.renderables('0')
-    assert len(renderables) == 10
+    assert len(renderables) == 13
     assert renderables[0].category == AssetCategories.SHEETS.value
     
     # Physics Caching
     weights = mock_board.weights('0')
-    assert len(weights) == 6
+    assert len(weights) == 7
 
 
 def test_board_relayering_synchronization(mock_board):

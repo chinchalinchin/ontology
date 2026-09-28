@@ -1,26 +1,31 @@
 # Task: Ontology - Coverage
 
-**Context**
+**Fixture Refactor Context**
 
-Application fixtures have recently been reorganized and streamlined for reuse, rather than recreating them for every single test. This is an ongoing effort. Tests that have been migrated or are in the process of migration can be determined by the test file name. Prior to fixture migration, the test files were in a single directory and followed a `test_<path-to-module>.py` file name schema. After the fixture migration, tests are now organized in a package structure similar to the application itself, with a naming schema `tests.unit.<path-to-package>.test_<module>.py`. 
+Application fixtures have recently been reorganized and streamlined for reuse, rather than recreating them for every single test. This is an ongoing effort. The goal is to remove all blackbox testing with MagicMocks.
 
 However, some of the tests are now failing due to some of the fixtures not being migrated with perfect fidelity. Examine the tests, determine the intent and update them to use the new fixtures. If fixtures have to be added or updated, ensure the fixtures are not added adhoc, but fit into the existing testbed.
-
-In addition, in a separate and unrelated refactor, the Mechanics interface has recently been updated to include an optional executor and the Factory method for Mechanics has been updated to inject the appropriate executor. 
 
 **Priorities**
       
 - Debug the current run of the test pipeline located in the [Test Console](#view-test-console) section
-{# 
-- (*Optional*) Add unit test coverage for any new functionality implemented.
 - (*Optional*) Add any unit tests for any areas of the code not already covered.
-#}
+- (*Optional*) Add unit test coverage for any new functionality implemented.
 
 **Coverage Guidelines**
 
-- Ensure all new tests are marked with a `@pytest.mark.<workflow>` annotation. Add workflows to `pytest.ini` sparingly.
+$$
+\text{Ideal Test} = \text{Fixture} \to \text{Setup} \to \text{Assertion}
+$$
+
+- Ensure all new tests are marked with a `@pytest.mark.<workflow>` annotation.
+- Add any new fixtures to the appropriate fixture module.
+- Treat `tests.unit.fixtures` as a test bed for constructing application objects. Fixtures should not be created in an adhoc manner; instead, fixtures should exemplify and construct the application dependency tree prior to the execution of tests.  
+- If a test requires a specific edge case, request the fixture and mutate its attributes explicitly in the test setup.
+
+**Coverage Constraints**
+
 - Do **not** test code you haven't seen.
-- Add any fixtures to the appropriate fixture module.
 - Do **not** create fixtures in the test itself; Tests should request fixtures and use them.
-- Treat `tests.unit.fixtures` as a test bed for constructing application objects. Fixtures should not be created in an adhoc manner; rather fixtures should exemplify and construct the application dependency tree prior to the execution of tests. 
-    - **Example**: Do not construct a Hitbox in isolation to test a collision workflow; create the configuration, property and state fixtures necessary to bootstrap an Asset with that Hitbox so the application will initialize with the required data structures.
+- Do **not** use MagicMocks unless *absolutely* necessary. Unit tests should not be a blackbox probe; they should test live code execution.
+- Do **not** test how a Mechanic does its job (e.g., asserting internal method calls) unless it delegates to a Cython module. Test the result on the Board.

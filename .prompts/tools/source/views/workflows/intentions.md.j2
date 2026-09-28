@@ -1,12 +1,12 @@
 ### View: Workflow - Intentions
 
-{# #### data 
+#### data 
 
 **src/data/config/intentions/main.yaml**
 
 ```yaml
 {{ file(properties.paths.root + 'src/data/config/intentions/main.yaml')}}
-``` #}
+```
 
 #### app.assets
 
@@ -38,33 +38,25 @@
 {{ file(properties.paths.root + 'src/app/game/logic/mechanics/base.py') }}
 ```
 
-###### app.game.logic.mechanics.core 
-
-***src/app/game/logic/mechanics/core/motion.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/game/logic/mechanics/core/motion.py') }}
-```
-
 ###### app.game.logic.mechanics.intentional
 
-{# **src/app/game/logic/mechanics/intentional/cognition.py**
+**src/app/game/logic/mechanics/intentional/cognition.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/game/logic/mechanics/intentional/cognition.py') }}
-``` #}
+```
 
 **src/app/game/logic/mechanics/intentional/transition.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/game/logic/mechanics/intentional/transition.py') }}
 ```
-{# 
+
 **src/app/game/logic/mechanics/intentional/navigation.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/game/logic/mechanics/intentional/navigation.py') }}
-``` #}
+```
 
 ##### app.game.logic.modules 
 
@@ -75,22 +67,6 @@
 ```python
 {{ file(properties.paths.root + 'src/app/game/logic/modules/maps/animation.py') }}
 ```
-
-###### app.game.logic.modules.motion
-
-**src/app/game/logic/modules/motion/motive.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/game/logic/modules/motion/motive.py') }}
-```
-
-{# ###### app.game.logic.modules.paths
-
-**src/app/game/logic/modules/paths/plan.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/game/logic/modules/paths/plan.py') }}
-``` #}
 
 ##### app.models.state 
 
@@ -126,14 +102,14 @@
 {{ file(properties.paths.root + 'src/app/services/orchestration/builder.py') }}
 ```
 
-{# 
+
 ##### app.services.translators
 
 **src/app/services/translators/base.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/services/translators/base.py') }}
-``` #}
+```
 
 #### libs.core
 

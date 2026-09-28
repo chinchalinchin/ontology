@@ -24,6 +24,8 @@ from app.models.state import (
     EffectStateInstances,
     # -------- MODELS
     PlotState,
+    ContainerState,
+    ReactableState,
     SpriteState,
     PlayerState,
     DoorState,
@@ -258,8 +260,21 @@ def mock_switch_state() -> SwitchState:
     return SwitchState(
         id="castle-gate", 
         layer="0", 
-        position=Position(x=70, y=80), 
+        position=Position(x=170, y=180), 
         switch=True
+    )
+
+
+@pytest.fixture
+def mock_switch_state_alt() -> SwitchState:
+    return SwitchState(
+        id="pressure-plate",
+        layer="0",
+        depth=0,
+        height=None,
+        position=Position(x=30, y=30),
+        switch=False,
+        link="castle-gate"
     )
 
 
@@ -317,6 +332,34 @@ def mock_fluid_state_alt2() -> FluidState:
     )
 
 @pytest.fixture
+def mock_container_state() -> ContainerState:
+    return ContainerState(
+        id="wood-chest",
+        layer="0",
+        depth=0,
+        height=None,
+        position=Position(x=100, y=100),
+        switch=False,
+        content=["gold-coin"]
+    )
+
+
+@pytest.fixture
+def mock_reactable_state() -> ReactableState:
+    return ReactableState(
+        id="reactable-1",
+        layer="0",
+        depth=0,
+        height=None,
+        position=Position(x=200, y=200),
+        animation=AnimationState(),
+        intention=Intentions.ATTACK.value,
+        active=True
+    )
+
+# ---------------------------------------------------------------------------------
+
+@pytest.fixture
 def mock_craft_states(
     mock_property_state,
     mock_property_state_alt,
@@ -328,6 +371,19 @@ def mock_craft_states(
             mock_property_state_alt,
             mock_property_state_alt2
         ]
+    )
+
+
+@pytest.fixture
+def mock_effect_states(
+    mock_reactable_state,
+    mock_fluid_state,
+    mock_fluid_state_alt,
+    mock_fluid_state_alt2
+) -> EffectStateInstances:
+    return EffectStateInstances(
+        reactables = [ mock_reactable_state ],
+        fluids = [ mock_fluid_state, mock_fluid_state_alt, mock_fluid_state_alt2 ],
     )
 
 
@@ -353,23 +409,32 @@ def mock_tile_states(
 
 @pytest.fixture
 def mock_object_states(
-    mock_door_state
+    mock_door_state,
+    mock_container_state,
+    mock_switch_state,
+    mock_switch_state_alt
 ) -> ObjectStateInstances:
     return ObjectStateInstances(
-        doors = [ mock_door_state ]
+        doors = [ mock_door_state ],
+        chests = [ mock_container_state ],
+        plates = [ mock_switch_state ],
+        gates = [ mock_switch_state_alt ]
     )
 
+# ---------------------------------------------------------------------------------
 
 @pytest.fixture
 def mock_state(
     mock_sheet_states,
     mock_tile_states,
     mock_craft_states,
-    mock_object_states
+    mock_object_states,
+    mock_effect_states
 ):
     return StateSchema(
+        effects = mock_effect_states,
         sheets = mock_sheet_states,
-        tiles = mock_tile_states,
+       tiles = mock_tile_states,
         crafts = mock_craft_states,
         objects = mock_object_states,
     )
