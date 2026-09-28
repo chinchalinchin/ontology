@@ -52,12 +52,6 @@
 {{ file(properties.paths.root + 'src/app/game/logic/mechanics/intentional/transition.py') }}
 ```
 
-**src/app/game/logic/mechanics/intentional/navigation.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/game/logic/mechanics/intentional/navigation.py') }}
-```
-
 ##### app.game.logic.modules 
 
 ###### app.game.logic.modules.map
@@ -82,27 +76,6 @@
 {{ file(properties.paths.root + 'src/app/models/state/sprites.py' ) }}
 ```
 
-#### app.services
-
-##### app.services.generators
-
-###### app.services.generators.game
-
-**src/app/services/generators/game/factory.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/services/generators/game/factory.py') }}
-```
-
-##### app.services.orchestration
-
-**src/app/services/orchestration/builder.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/services/orchestration/builder.py') }}
-```
-
-
 ##### app.services.translators
 
 **src/app/services/translators/base.py**
@@ -113,11 +86,6 @@
 
 #### libs.core
 
-**src/libs/core/models.pyx**
-
-```cython
-{{ file(properties.paths.root + 'src/libs/core/models.pyx') }}
-```
 
 ##### libs.core.math
 
@@ -125,16 +93,4 @@
 
 ```cython
 {{ file(properties.paths.root + 'src/libs/core/math/geometry.pyx') }}
-```
-
-{# **libs/core/math/paths.pyx**
-
-```cython
-{{ file(properties.paths.root + 'src/libs/core/math/paths.pyx') }}
-``` #}
-
-**libs/core/math/physics.pyx**
-
-```cython
-{{ file(properties.paths.root + 'src/libs/core/math/physics.pyx') }}
 ```

@@ -2,104 +2,93 @@
 # Ontology: tests.unit.app.services.orchestration.test_migrator
 """
 # Standard Libraries
-from unittest.mock import (
-    MagicMock, 
-    patch
-)
+import dataclasses
+from unittest.mock import patch
 
 # External Libraries
 import pytest
 
-# Appliation Libraries
-from app.services.orchestration.migrator import Migrator
-
-# TODO: remove the MagicMocks. Use fixtures.
-
-@pytest.mark.orchestration
-def test_migrator_no_target():
-    migrator = Migrator(MagicMock(), MagicMock(), MagicMock())
-    # Should return True instantly if no target is set
-    assert migrator.step(budget_ms=16) is True
+# Application Libraries
+import app.config.settings as settings
+from app.models.state.objects import PropertyState
 
 
 @pytest.mark.orchestration
+def test_migrator_no_target(mock_migrator):
+    assert mock_migrator.step(budget_ms=16) is True
+
+
+@pytest.mark.orchestration
+@patch.object(settings, 'SEPARATOR', new='-')
 @patch('app.services.orchestration.migrator.time.perf_counter')
-def test_migrator_time_slicing(mock_perf_counter):
-    migrator = Migrator(MagicMock(), MagicMock(), MagicMock())
-    migrator.target = "test-level"
-
-    # Create a fake generator that yields 3 times
-    # TODO: no, don't do this. it defeats the entire purpose of
-    #       the unit test. 
-    def fake_gen():
-        yield True
-        yield True
-        yield True
-        
-    migrator._build_generator = MagicMock(return_value=fake_gen())
-    
-    # 1st step: simulate exceeding budget immediately after 1st yield
-    # perf_counter will be called: start, then inside the loop
-    mock_perf_counter.side_effect = [0.0, 1.0, 2.0] # 1.0s diff = 1000ms > 16ms
-    
-    assert migrator.step(budget_ms=16) is False
-    
-    # 2nd step: process the remaining 2 yields without exceeding the budget
-    mock_perf_counter.side_effect = [0.0, 0.001, 0.002, 0.003, 0.004]
-    
-    assert migrator.step(budget_ms=16) is True
-    assert migrator.target is None
-    assert migrator._generator is None
-
-
-@pytest.mark.orchestration
-@patch('app.services.orchestration.migrator.dataclasses.fields')
 @patch('app.services.orchestration.migrator.Loader.load_state')
-@patch('app.services.orchestration.migrator.Decomposer')
-def test_migrator_build_generator(mock_decomposer, mock_load_state, mock_fields):
-    mock_board = MagicMock()
-    mock_props = MagicMock()
-    mock_configs = MagicMock()
-    
-    # Setup mock state with some compositions and normal assets
-    mock_state_magic = MagicMock()
-    mock_state_magic.compositions = ["comp1", "comp2"]
-    mock_load_state.return_value = mock_state_magic
-    
-    # Skip normal assets iteration for this test
-    mock_fields.return_value = []
-    
-    migrator = Migrator(mock_board, mock_props, mock_configs)
-    migrator.target = "test-level"
-    
-    gen = migrator._build_generator()
-    
-    # Run generator to completion
-    for _ in gen:
-        pass
-        
-    # Board should have had `add()` called for the unpacked compositions
-    assert mock_board.add.called
-    assert migrator.maximum >= 1
-
-
-@pytest.mark.orchestration
-@patch('app.services.orchestration.migrator.Loader.load_state')
-@patch('app.services.orchestration.migrator.Decomposer')
-def test_migrator_build_generator_assets(mock_decomposer, mock_load_state, mock_state):
-    mock_board = MagicMock()
-    mock_props = MagicMock()
-    mock_configs = MagicMock()
-    
-    # Use real mock_state from conftest (StateSchema with 1 Sprite)
+def test_migrator_time_slicing(
+    mock_load_state, 
+    mock_perf_counter, 
+    mock_migrator, 
+    mock_state
+):
+    # Clone an existing valid sprite state to preserve layer assignment
+    base_sprite = mock_state.sheets.sprites[0]
+    mock_state.sheets.sprites.append(
+        dataclasses.replace(base_sprite, name="sprite_clone_1")
+    )
     mock_load_state.return_value = mock_state
-    
-    migrator = Migrator(mock_board, mock_props, mock_configs)
-    migrator.target = "world-01"
-    
-    gen = migrator._build_generator()
+    mock_migrator.target = "world-01"
+
+    # Step 1: exceed budget after first iteration (start=0.0, check1=0.001 -> executes task, check2=1.0 -> 1000ms > 16ms)
+    mock_perf_counter.side_effect = [0.0, 0.001, 1.0]
+    assert mock_migrator.step(budget_ms=16) is False
+    assert mock_migrator.target == "world-01"
+    assert mock_migrator._generator is not None
+    assert mock_migrator.current >= 1
+
+    # Step 2: process remaining tasks within budget
+    mock_perf_counter.side_effect = [0.0] + [0.001 * i for i in range(1, 20)]
+    assert mock_migrator.step(budget_ms=16) is True
+    assert mock_migrator.target is None
+    assert mock_migrator._generator is None
+    assert mock_migrator.current == mock_migrator.maximum
+
+
+@pytest.mark.orchestration
+@patch.object(settings, 'SEPARATOR', new='-')
+@patch('app.services.orchestration.migrator.Loader.load_state')
+def test_migrator_build_generator_compositions(
+    mock_load_state, 
+    mock_migrator, 
+    mock_state
+):
+    mock_state.compositions = [
+        PropertyState(
+            id="brick-house", 
+            name="house_instance", 
+            layer="0"
+        )
+    ]
+    mock_load_state.return_value = mock_state
+    mock_migrator.target = "world-01"
+
+    initial_asset_count = len(mock_migrator.board.assets())
+    gen = mock_migrator._build_generator()
     for _ in gen:
         pass
-        
-    assert mock_board.add.called
-    assert migrator.maximum >= 1
+
+    assert len(mock_migrator.board.assets()) > initial_asset_count
+    assert mock_migrator.maximum >= 1
+
+
+@pytest.mark.orchestration
+@patch.object(settings, 'SEPARATOR', new='-')
+@patch('app.services.orchestration.migrator.Loader.load_state')
+def test_migrator_build_generator_assets(mock_load_state, mock_migrator, mock_state):
+    mock_load_state.return_value = mock_state
+    mock_migrator.target = "world-01"
+
+    initial_asset_count = len(mock_migrator.board.assets())
+    gen = mock_migrator._build_generator()
+    for _ in gen:
+        pass
+
+    assert len(mock_migrator.board.assets()) > initial_asset_count
+    assert mock_migrator.maximum >= 1

@@ -1,5 +1,7 @@
 """
-# Ontology: tests.unit.conftest
+# Ontology: tests.unit.fixtures.assets
+
+Mock Asset fixtures.
 """
 # External Libraries
 import pytest
@@ -407,7 +409,7 @@ def mock_chest(
 @pytest.fixture
 def mock_plate(
     mock_object_properties,
-    mock_switch_state
+    mock_switch_state_alt
 ) -> Asset:
     return Asset(
         taxonomy=Taxonomy(
@@ -417,7 +419,7 @@ def mock_plate(
             instance=AssetInstances.PLATES.value
         ),
         properties=mock_object_properties.plates.get('pressure-plate'),
-        state=mock_switch_state,
+        state=mock_switch_state_alt,
         frame=IterableFrame(),
         animation=BinaryAnimation()
     )

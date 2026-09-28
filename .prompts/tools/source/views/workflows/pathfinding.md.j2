@@ -38,6 +38,15 @@
 {{ file(properties.paths.root + 'src/app/game/logic/mechanics/core/motion.py') }}
 ```
 
+###### app.game.logic.mechanics.intentional
+
+
+**src/app/game/logic/mechanics/intentional/navigation.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/intentional/navigation.py') }}
+```
+
 ##### app.game.logic.modules 
 
 ###### app.game.logic.modules.motion
@@ -54,4 +63,26 @@
 
 ```python
 {{ file(properties.paths.root + 'src/app/game/logic/modules/paths/plan.py') }}
+```
+
+#### libs.core
+
+**src/libs/core/models.pyx**
+
+```cython
+{{ file(properties.paths.root + 'src/libs/core/models.pyx') }}
+```
+
+##### libs.core.math
+
+**libs/core/math/paths.pyx**
+
+```cython
+{{ file(properties.paths.root + 'src/libs/core/math/paths.pyx') }}
+```
+
+**libs/core/math/physics.pyx**
+
+```cython
+{{ file(properties.paths.root + 'src/libs/core/math/physics.pyx') }}
 ```

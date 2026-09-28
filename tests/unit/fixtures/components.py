@@ -1,7 +1,7 @@
 """
 # Ontology: tests.unit.fixtures.components
 
-Application component fixtures
+Mock application component fixtures
 """
 # Standard Libraries
 from unittest.mock import (

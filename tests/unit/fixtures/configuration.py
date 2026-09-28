@@ -1,5 +1,7 @@
 """
-# Ontology: tests.unit.conftest
+# Ontology: tests.unit.fixtures.configurations
+
+Mock application configuration fixtures.
 """
 # External Libraries
 import pytest
@@ -25,6 +27,7 @@ from app.models.config import (
     ObjectRecipe,
     GeographyRecipe,
     SheetRecipe,
+    TileRecipe,
     Recipe,
     # ------- TRANSITION CONFIGURATION
     IntentionConfiguration,
@@ -194,6 +197,16 @@ def mock_composition_configuration() -> CompositionConfiguration:
 def mock_recipes_configuration() -> RecipeConfiguration:
     """Complete RecipeConfiguration matching native engine schemas."""
     return RecipeConfiguration(
+        tiles=TileRecipe(
+            back=Recipe(
+                frame=FrameRecipe.SINGLE.value, 
+                animation=AnimationRecipe.NONE.value
+            ),
+            fore=Recipe(
+                frame=FrameRecipe.SINGLE.value, 
+                animation=AnimationRecipe.NONE.value
+            )
+        ),
         cursors=CursorRecipe(
             projectiles=Recipe(
                 frame=FrameRecipe.SINGLE.value, 
@@ -225,6 +238,10 @@ def mock_recipes_configuration() -> RecipeConfiguration:
             ),
             reactables=Recipe(
                 frame=FrameRecipe.ITERABLE.value, 
+                animation=AnimationRecipe.LIFECYCLE.value
+            ),
+            fluids=Recipe(
+                frame=FrameRecipe.FLUID.value, 
                 animation=AnimationRecipe.LIFECYCLE.value
             )
         ),

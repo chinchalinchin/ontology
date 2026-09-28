@@ -1,5 +1,7 @@
 """
-# Ontology: tests.unit.conftest
+# Ontology: tests.unit.fixtures.properties
+
+Mock Asset Property fixtures.
 """
 # External Libraries
 import pytest
@@ -7,7 +9,8 @@ import pytest
 # Application Libraries
 from app.config.enums import (
     Actions,
-    Directions
+    Directions,
+    Lifecycles,
 )
 from app.models.properties import (
     # -------- FIELDS
@@ -104,25 +107,29 @@ def mock_craft_properties() -> CraftPropertyInstances:
                 dimensions=Dimensions(w=96, l=190),
                 cost=[
                     Cost(item="stone", quantity=10)
-                ]
+                ],
+                mass=0
             ),
             'frame-wood': CraftProperties(
                 dimensions=Dimensions(w=100, l=100),
                 cost=[
                     Cost(item="wood", quantity=10)
-                ]
+                ],
+                mass=0
             ),
             'wall-blue': CraftProperties(
                 dimensions=Dimensions(w=128, l=96),
                 cost=[
                     Cost(item="stone", quantity=5)
-                ]
+                ],
+                mass=0
             ),
             'floor-wood': CraftProperties(
                 dimensions=Dimensions(w=128, l=96),
                 cost=[
                     Cost(item="wood", quantity=10)
-                ]
+                ],
+                mass=0
             ),
             'strut-castle': CraftProperties(
                 dimensions=Dimensions(w=222, l=133), 
@@ -198,10 +205,12 @@ def mock_object_properties() -> ObjectPropertyInstances:
                 mass = -1
             ),
             'door-shadow': ObjectProperties(
-                dimensions=Dimensions(w=32, l=48)
+                dimensions=Dimensions(w=32, l=48),
+                mass = -1
             ),
             'door-house': ObjectProperties(
-                dimensions=Dimensions(w=32, l=48)
+                dimensions=Dimensions(w=32, l=48),
+                mass = -1
             )
         },
         crates = {
@@ -258,14 +267,24 @@ def mock_effect_properties() -> EffectPropertyInstances:
                 dimensions=Dimensions(w=32, l=32),
                 count=3,
                 mass=-1,
-                lifecycle=Lifecycle(delay=60, persist=False)
+                lifecycle=Lifecycle(
+                    type=Lifecycles.CONTINUOUS.value,
+                    delay=60, 
+                    persist=False
+                )
             )
         },
         passive = {
             "splash": EffectProperties(
                 dimensions=Dimensions(w=16, l=16), 
                 count=3, 
-                mass=-1
+                mass=-1,
+                lifecycle=Lifecycle(
+                    type=Lifecycles.TEMPORARY.value, 
+                    delay=60, 
+                    frequency=0, 
+                    persist=False
+                )
             )
         },
         reactables = {
@@ -274,10 +293,10 @@ def mock_effect_properties() -> EffectPropertyInstances:
                 count=3,
                 mass=-1,
                 lifecycle=Lifecycle(
-                    type="temporary", 
+                    type=Lifecycles.TEMPORARY.value, 
                     delay=60, 
                     frequency=0, 
-                    persist=False
+                    persist=True
                 )
             )
         }
@@ -358,6 +377,7 @@ def mock_geography_properties() -> GeographyPropertyInstances:
 @pytest.fixture
 def mock_properties(
     mock_cursor_properties,
+    mock_effect_properties,
     mock_geography_properties,
     mock_object_properties,
     mock_sheet_properties,
@@ -368,6 +388,7 @@ def mock_properties(
     return PropertiesSchema(
         cursors = mock_cursor_properties,
         crafts = mock_craft_properties,
+        effects = mock_effect_properties,
         geography = mock_geography_properties,
         objects = mock_object_properties,
         sheets = mock_sheet_properties,

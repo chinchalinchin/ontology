@@ -1,5 +1,7 @@
 """
-# Ontology: tests.unit.conftest
+# Ontology: tests.unit.fixtures.services
+
+Mock application service fixtures.
 """
 # Standard Libraries
 from unittest.mock import (
@@ -37,12 +39,12 @@ def mock_builder(
     mock_properties, 
     mock_configurations, 
     mock_state
-) -> Builder:
+):
     with patch('app.services.orchestration.builder.Loader') as mock_loader:
         mock_loader.load_properties.return_value = mock_properties
         mock_loader.load_configurations.return_value = mock_configurations
         mock_loader.load_state.return_value = mock_state
-        return Builder()
+        yield Builder()
 
 
 @pytest.fixture
@@ -60,7 +62,7 @@ def mock_migrator(
     return Migrator(
         board = mock_board,
         properties = mock_properties,
-        configuration = mock_configurations,
+        configurations = mock_configurations,
         actuator = mock_actuator
     )
 
@@ -85,7 +87,11 @@ def mock_cradle(
     mock_recipes_configuration,
     mock_spawnables
 ):
-    return Cradle(mock_spawnables, mock_recipes_configuration, mock_decomposer)
+    return Cradle(
+        spawnables=mock_spawnables, 
+        recipes=mock_recipes_configuration, 
+        decomposer=mock_decomposer
+    )
 
 
 @pytest.fixture
