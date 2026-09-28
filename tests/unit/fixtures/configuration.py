@@ -307,7 +307,7 @@ def mock_plot_configuration():
         'town-locked': [
             PlotConfiguration(
                 next='town-unlocked',
-                conditions = ['plot.mayor_bribed' ]
+                conditions = ["'mayor_bribed' in plot.previous"]
             )
         ]   
     }

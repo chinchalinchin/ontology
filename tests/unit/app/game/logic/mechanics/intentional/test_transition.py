@@ -10,12 +10,11 @@ import collections
 import pytest
 
 # Application Libraries
-from app.game.engine import Engine
 from app.game.logic.mechanics import TransitionMechanics
 from app.config.enums import (
+    AssetInstances,
     Intentions, 
-    Actions, 
-    Directions
+    Actions,
 )
 
 # Cython Libraries
@@ -29,7 +28,7 @@ def test_transition_update_evaluates_executor(mock_engine_with_lambda_transition
     board = engine.board
     
     # Setup sprite state
-    sprite = board.instances("sprites")[0]  # 'jasilynn'
+    sprite = board.instances(AssetInstances.SPRITES.value)[0]  # 'jasilynn'
     sprite.state.intention = Intentions.IDLE.value
     sprite.state.position = Position(x=10, y=10)
     
@@ -55,7 +54,7 @@ def test_transition_update_skips_without_executor(mock_engine_with_lambda_transi
     mechanic.executor = None
     board = engine.board
     
-    sprite = board.instances("sprites")[0]
+    sprite = board.instances(AssetInstances.SPRITES.value)[0]
     sprite.state.intention = Intentions.IDLE.value
     sprite.state.meters.health.current = 40  # Would normally transition to attack
     

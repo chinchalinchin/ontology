@@ -23,6 +23,7 @@ from app.models.state import (
     TileStateInstances,
     EffectStateInstances,
     # -------- MODELS
+    PlotState,
     SpriteState,
     PlayerState,
     DoorState,
@@ -61,6 +62,14 @@ from libs.core.models import (
 # --------------------------------------------------------------------------
 # -------------------------------------------------------------- MOCK STATES
 # --------------------------------------------------------------------------
+
+@pytest.fixture
+def mock_plot_state() -> PlotState:
+    return PlotState(
+        current="town-locked",
+        previous=[]
+    )
+
 
 @pytest.fixture
 def mock_property_state() -> PropertyState:

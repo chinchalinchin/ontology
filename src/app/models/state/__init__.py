@@ -2,7 +2,8 @@
 from app.models.state.core import (
     AssetState,
     AnimationState,
-    NoState
+    NoState,
+    PlotState
 )
 from app.models.state.devices import (
     DevicePayload,
@@ -73,6 +74,7 @@ __all__ = [
     'AssetState',
     'AnimationState',
     'NoState',
+    'PlotState',
     # DEVICE STATES
     'DevicePayload',
     'WorldPayload',
