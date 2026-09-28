@@ -1384,12 +1384,25 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <li><code>fluid: FluidMechanics</code>: Resolves directional fluid propagation, obstacle impact truncation, and radial pool perimeter calculation.</li>
 </ul>
 <p><strong>FluidMechanics</strong></p>
-<p>FluidMechanics governs fluid emission across active layers. It executes after physical momentum updates (<code>MotionMechanics</code> and <code>CollisionMechanics</code>) and uses reactive dirty-checking:</p>
+<pre class="mermaid"><code>flowchart TD
+    classDef root fill:#512DA8,stroke:#9575CD,stroke-width:2px,color:#FFFFFF;
+    classDef orchestrator fill:#311B92,stroke:#7E57C2,stroke-width:1.5px,color:#EDE7F6;
+    classDef leaf fill:#1A233A,stroke:#448AFF,stroke-width:1.5px,color:#E1F5FE;
+
+    FM[FluidMechanics]:::root --&gt;|1. propagate| ACT[Actuator]:::orchestrator
+    FM --&gt;|2. generate| SG[ShorelineGenerator]:::orchestrator
+    ACT --&gt;|Raycast &amp; Hitboxes| CY[libs.core.math.geometry]:::leaf
+    ACT --&gt;|Update State| FS[FluidState]:::leaf
+    SG --&gt;|Resolve Shoreline ID| SI[ShorelineIndex]:::leaf
+    SG --&gt;|Query Substrate &amp; Water| BD[Board]:::leaf
+    SG --&gt;|Spawn Assets| CR[Cradle]:::leaf</code></pre>
+<p>FluidMechanics governs fluid emission and procedural shoreline margins across active layers. It executes after physical momentum updates (<code>MotionMechanics</code> and <code>CollisionMechanics</code>) and uses reactive dirty-checking:</p>
 <ol>
-<li><strong>Change Detection</strong>: Inspects active crates (<span class="arithmatex">\(\vert{}v\vert{} &gt; 0\)</span>) and switch-linked gates. If any dynamic obstacle within a fluid's influence zone mutates, <code>fluid.state.dirty</code> is set to <code>True</code>.</li>
-<li><strong>Raycast Truncation</strong>: Raycasts along <code>state.source</code> against board boundaries and non-sheet solid assets (<span class="arithmatex">\(m \ge 0\)</span>). Calculates distance <span class="arithmatex">\(D\)</span> to the nearest occluder.</li>
-<li><strong>Annular Pooling</strong>: If the occluder is an internal obstacle rather than a perimeter boundary, expands a radial pool of radius <code>state.flow</code> around the obstacle perimeter, partitioned into four rectangular bounding boxes.</li>
+<li><strong>Change Detection</strong>: Inspects switch-linked gates (<code>AssetInstances.GATES</code>). If any static barrier within an active layer mutates state, affected fluids are marked <code>dirty</code>. Dynamic bodies (<span class="arithmatex">\(m &gt; 0\)</span>, such as Crates) do not obstruct fluids and do not trigger invalidation.</li>
+<li><strong>Raycast Truncation</strong>: Raycasts along <code>state.source</code> strictly against map boundaries and immovable static assets (<span class="arithmatex">\(m = 0\)</span>). Dynamic bodies (<span class="arithmatex">\(m &gt; 0\)</span>) and sensors (<span class="arithmatex">\(m = -1\)</span>) are bypassed. Calculates distance <span class="arithmatex">\(D\)</span> to the nearest occluder.</li>
+<li><strong>Annular Pooling</strong>: If the occluder is an internal obstacle rather than a perimeter boundary, expands a radial pool of radius <code>state.flow</code> around the obstacle perimeter, aligned to grid increments.</li>
 <li><strong>Hitbox Update</strong>: Injects composite hitboxes for the stream path and pool boundaries into the broad-phase spatial hash.</li>
+<li><strong>Two-Pass Shoreline Synthesis</strong>: Evaluates fluid propagation across all dirty emitters on a layer prior to generating procedural shorelines via <code>Cartographer</code>, preventing cross-fluid margin clipping.</li>
 </ol>
 <h2 id="configuration">Configuration</h2>
 <ul>
