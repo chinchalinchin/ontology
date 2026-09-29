@@ -1,0 +1,12 @@
+{% set test_command = tools.parameters.tests.pipeline.command + ' ' + tools.parameters.tests.pipeline.marker %}
+{% set test_path = properties.paths.root + properties.paths.tests %}
+{# ----------------------------------------------------------------------  #}
+### View: Test Pipeline
+
+- **Current Workflow Focus**: `{{ tools.parameters.tests.pipeline.marker }}`
+
+```bash
+{{ properties.user.username }}@{{ properties.user.hostname }} % {{ test_command }} {{ test_path }}
+
+{{ command(test_command + ' ' + test_path) }}
+```
