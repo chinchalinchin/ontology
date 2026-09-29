@@ -2021,3 +2021,165 @@ libpng warning: iCCP: known incorrect sRGB profile
 * Position: (0, 0) | Dimensions: w: 128, l: 1
 * Position: (0, 192) | Dimensions: w: 128, l: 1
 ```
+
+
+
+##### Root Cause Analysis
+
+The bug is caused by a **property misconfiguration in the property file**: `mass: 0` was configured for `waterflow-00` and `waterflow-01`.
+
+In Ontology’s physics and spatial indexing architecture, $m = 0$ denotes an **immovable, solid static body** (such as a stone wall or obstacle), while $m = -1$ denotes a **sensor** (such as a plate, ledge, or trigger area) that registers overlap queries but is strictly bypassed by collision and spatial displacement resolution.
+
+```
+Expected Architecture:
+  Fluid (m = -1: Sensor)   ---> Bypassed by CollisionMechanics ---> Stays at x=70, x=100 (Overlapping)
+                                                                 ---> Cartographer sweeps merged water mask
+                                                                 ---> NO inter-stream shorelines
+
+Actual Architecture:
+  Fluid (m = 0: Static Body) ---> Board._cached_weights[layer] ingests Fluids (mass >= 0)
+                              ---> CollisionMechanics detects stream & boundary AABB overlap
+                              ---> Post-frame overlap separation displaces tears-01: x=100 -> x=104, y=0 -> y=1
+                              ---> 2px dry land gap emerges between stream margins (x=102..104)
+                              ---> Gate switch invalidates layer -> Cartographer regenerates
+                              ---> Cartographer finds dry substrate at x=103 -> Spawns opposing shorelines!
+
+```
+
+---
+
+##### Step-by-Step Breakdown of the Execution Failure
+
+###### 1. Registration into Collision Structures
+
+In `src/app/game/board.py`:
+
+```python
+if hasattr(asset.properties, 'mass') and asset.properties.mass >= 0:
+    self._cached_weights[layer].append(asset)
+
+```
+
+Because `waterflow-00` has `mass: 0` in `effects/fluids`, every spawned fluid instance (`jasilynns-tears-00`, `jasilynns-tears-01`, etc.) is registered into `board._cached_weights[layer]`.
+
+###### 2. Frame 1 (Startup Hydration)
+
+On the very first frame:
+
+* `FluidMechanics.update()` executes its initialization pass (`not self._initialized`), running `Cartographer.generate()` on the initial state coordinates: `tears-00` at $x \in [70, 102)$ and `tears-01` at $x \in [100, 132)$.
+* The two corridors overlap across $x \in [100, 102)$.
+* `geometry.contours()` merges the overlapping intervals in its sweep-line pass, dissolving the shared internal edges. As expected, **zero shorelines are generated between the streams**.
+
+###### 3. Steady-State Gameplay (Physical Overlap Separation)
+
+As gameplay proceeds:
+
+* `CollisionMechanics` iterates over `board.weights(layer)`.
+* Because `tears-00` and `tears-01` both have $m = 0$ with intersecting hitboxes, and intersect the static upper perimeter boundary at $y = 0$, `physics.collide` and boundary constraints resolve the spatial overlap:
+* Overlap with the map perimeter ($y=0, l=1$) displaces $y$ from `0` to `1` across all downward fluids.
+* Overlap between `tears-00` and `tears-01` ($x \in [100, 102)$) resolves by pushing `tears-01` along $+X$, displacing it from $x = 100$ to **$x = 104$** (as recorded in the state dump: `Position: (104, 1)`).
+* `tears-00` now terminates at $x = 102$, while `tears-01` begins at $x = 104$, creating a **2-pixel gap of dry substrate (`the-steppe` grass tile)** between $x = 102$ and $x = 104$.
+* However, because gate states have not changed, `fluid.state.dirty` remains `False`, so `Cartographer` does not execute and the visual anomaly remains dormant.
+
+###### 4. The Gate Switch Trigger
+
+When the player steps on `plate-strut-castle-exterior-2-2`:
+
+* `FluidMechanics.update()` detects `curr_switch != prev_switch` on `gate-strut-castle-exterior-2-2` and marks all layer `0` fluids `dirty = True`.
+* `Cartographer.purge(layer, board)` wipes the initial 17 shorelines.
+* `Cartographer.generate(layer, board, self.shorelines)` samples the **current, physically displaced positions**:
+    * Rect 1 (`tears-00`): $x \in [70, 102)$
+    * Rect 2 (`tears-01`): $x \in [104, 136)$
+* Because the streams no longer overlap or touch, `geometry.contours()` detects two distinct water bodies with dry land between them:
+* A right-facing boundary at $x = 102$ (Land East, Water West) $\to$ `spawn-9350bba3` (Position: (103, 1), `orientation: right`).
+* A left-facing boundary at $x = 104$ (Land West, Water East) $\to$ `spawn-51d49be1` (Position: (103, 1), `orientation: left`).
+* **Result**: Opposing vertical shorelines suddenly spawn along the entire length ($L = 511$) of the inter-stream corridor where the fluids were meant to be merged.
+
+---
+
+##### Remediation
+
+###### 1. Correct Fluid Properties (`src/assets/effects/*.yaml`)
+
+Fluids are environmental flow fields and sensors; they must have `mass: -1`:
+
+```yaml
+effects:
+  fluids:
+    waterflow-00:
+      dimensions:
+        w: 32
+        l: 32
+      lifecycle: 
+        type: continuous
+        delay: 60
+      count: 3
+      hitboxes: null
+      mass: -1
+    waterflow-01:
+      dimensions:
+        w: 32
+        l: 96
+      lifecycle:
+        type: continuous
+        delay: 20
+      count: 5
+      hitboxes: null
+      mass: -1
+
+```
+
+###### 2. Defensive Weight Filtering on `Board` (`src/app/game/board.py`)
+
+To prevent configuration errors from injecting non-physical effects into the collision broad-phase, explicitly exclude `AssetCategories.EFFECTS.value` and `AssetCategories.GEOGRAPHY.value` from `_cached_weights`:
+
+```python
+# src/app/game/board.py
+if (
+    hasattr(asset.properties, 'mass') 
+    and asset.properties.mass >= 0 
+    and asset.category not in (AssetCategories.EFFECTS.value, AssetCategories.GEOGRAPHY.value)
+):
+    self._cached_weights[layer].append(asset)
+
+```
+
+---
+
+##### Telemetry Logs for Verification
+
+To verify that fluid positions remain immutable and that `Cartographer` receives merged water AABBs without spatial drift during gate switch cycles, add the following telemetry logs:
+
+###### 1. Fluid Position Drift Check in `FluidMechanics.update`
+
+```python
+# src/app/game/logic/mechanics/world/fluid.py
+for f in layer_fluids:
+    logger.info(
+        f"Telemetry:FluidMechanics:PrePropagate:{f.name} pos=({f.state.position.x}, {f.state.position.y}) "
+        f"len={f.state.length} pool={f.state.pool}"
+    )
+
+```
+
+###### 2. Water Mask & Contour Segment Log in `Cartographer.generate`
+
+```python
+# src/app/services/generators/game/cartographer.py
+@classmethod
+def generate(cls, layer: str, board: Board, index: ShorelineIndex) -> List[Asset]:
+    water_rects = cls._collect_water_rectangles(layer, board)
+    logger.info(f"Telemetry:Cartographer:{layer}:CollectedWaterRects={water_rects}")
+    boundaries = geometry.contours(water_rects)
+    logger.info(
+        f"Telemetry:Cartographer:{layer}:DerivedContours="
+        f"{[(b.position.x, b.position.y, b.dimensions.w, b.dimensions.l) for b in boundaries]}"
+    )
+    ...
+
+```
+
+
+
+
+

@@ -169,7 +169,14 @@ class Board:
             if cat != AssetCategories.TILES.value:
                 self._cached_renderables[layer].append(asset)
 
-            if hasattr(asset.properties, 'mass') and asset.properties.mass >= 0:
+            if (
+                hasattr(asset.properties, 'mass') 
+                and asset.properties.mass >= 0 
+                and asset.category not in (
+                    AssetCategories.EFFECTS.value, 
+                    AssetCategories.GEOGRAPHY.value
+                )
+            ):
                 self._cached_weights[layer].append(asset)
                 
             if cat == AssetCategories.SHEETS.value and inst in (

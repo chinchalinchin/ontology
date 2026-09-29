@@ -415,7 +415,16 @@ class Cartographer:
         water_rects = cls._collect_water_rectangles(layer, board)
         if not water_rects:
             return []
+
+        logger.info(f"Telemetry:Cartographer:{layer}:CollectedWaterRects={water_rects}")
+
         boundaries = geometry.contours(water_rects)
+
+        logger.info(
+            f"Telemetry:Cartographer:{layer}:DerivedContours="
+            f"{[(b.position.x, b.position.y, b.dimensions.w, b.dimensions.l) for b in boundaries]}"
+        )
+        
         descriptors = []
         for b in boundaries:
             desc = cls._detect_boundary_orientation(b, layer, board)

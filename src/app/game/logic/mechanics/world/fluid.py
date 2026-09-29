@@ -123,7 +123,13 @@ class FluidMechanics(Mechanic):
             layer_fluids = board.instances(AssetInstances.FLUIDS.value, layer)
             # Pass 1: Propagate fluid dynamics across all layer fluids
             for f in layer_fluids:
+                logger.info(
+                    f"Telemetry:FluidMechanics:PrePropagate:{f.name} pos=({f.state.position.x}, {f.state.position.y}) "
+                    f"len={f.state.length} pool={f.state.pool}"
+                )
+
                 self.actuator.propagate(f, board)
+            
             # Pass 2: Synthesize layer geography across settled water boundaries
             if self.shorelines is not None:
                 Cartographer.purge(layer, board)
