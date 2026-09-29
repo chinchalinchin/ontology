@@ -10,7 +10,7 @@ effects:
         delay: 60
       count: 3
       hitboxes: null
-      mass: 0
+      mass: -1
     # -------------------------------------------------------
     waterflow-01:
       dimensions:
@@ -21,4 +21,4 @@ effects:
         delay: 20
       count: 5
       hitboxes: null
-      mass: 0
+      mass: -1
