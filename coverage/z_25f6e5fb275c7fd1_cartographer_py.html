@@ -54,8 +54,8 @@
             </div>
         </aside>
         <h2>
-            <span class="text">206 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">192<span class="text"> run</span></button>
+            <span class="text">208 statements &nbsp;</span>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">194<span class="text"> run</span></button>
             <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">14<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">3<span class="text"> excluded</span></button>
         </h2>
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="z_25f6e5fb275c7fd1_cradle_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.16.2">coverage.py v7.16.2</a>,
-            created at 2026-09-29 21:18 +0000
+            created at 2026-09-29 23:07 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -497,13 +497,22 @@
     <p class="run"><span class="n"><a id="t415" href="#t415">415</a></span><span class="t">        <span class="nam">water_rects</span> <span class="op">=</span> <span class="nam">cls</span><span class="op">.</span><span class="nam">_collect_water_rectangles</span><span class="op">(</span><span class="nam">layer</span><span class="op">,</span> <span class="nam">board</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t416" href="#t416">416</a></span><span class="t">        <span class="key">if</span> <span class="key">not</span> <span class="nam">water_rects</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t417" href="#t417">417</a></span><span class="t">            <span class="key">return</span> <span class="op">[</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t418" href="#t418">418</a></span><span class="t">        <span class="nam">boundaries</span> <span class="op">=</span> <span class="nam">geometry</span><span class="op">.</span><span class="nam">contours</span><span class="op">(</span><span class="nam">water_rects</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t419" href="#t419">419</a></span><span class="t">        <span class="nam">descriptors</span> <span class="op">=</span> <span class="op">[</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t420" href="#t420">420</a></span><span class="t">        <span class="key">for</span> <span class="nam">b</span> <span class="key">in</span> <span class="nam">boundaries</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t421" href="#t421">421</a></span><span class="t">            <span class="nam">desc</span> <span class="op">=</span> <span class="nam">cls</span><span class="op">.</span><span class="nam">_detect_boundary_orientation</span><span class="op">(</span><span class="nam">b</span><span class="op">,</span> <span class="nam">layer</span><span class="op">,</span> <span class="nam">board</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t422" href="#t422">422</a></span><span class="t">            <span class="key">if</span> <span class="nam">desc</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t423" href="#t423">423</a></span><span class="t">                <span class="nam">descriptors</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="nam">desc</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t424" href="#t424">424</a></span><span class="t">        <span class="key">return</span> <span class="nam">cls</span><span class="op">.</span><span class="nam">_coalesce_segments</span><span class="op">(</span><span class="nam">descriptors</span><span class="op">,</span> <span class="nam">layer</span><span class="op">,</span> <span class="nam">board</span><span class="op">,</span> <span class="nam">index</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t418" href="#t418">418</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t419" href="#t419">419</a></span><span class="t">        <span class="nam">logger</span><span class="op">.</span><span class="nam">info</span><span class="op">(</span><span class="fst">f&quot;</span><span class="fst">Telemetry:Cartographer:</span><span class="op">{</span><span class="nam">layer</span><span class="op">}</span><span class="fst">:CollectedWaterRects=</span><span class="op">{</span><span class="nam">water_rects</span><span class="op">}</span><span class="fst">&quot;</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t420" href="#t420">420</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t421" href="#t421">421</a></span><span class="t">        <span class="nam">boundaries</span> <span class="op">=</span> <span class="nam">geometry</span><span class="op">.</span><span class="nam">contours</span><span class="op">(</span><span class="nam">water_rects</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t422" href="#t422">422</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t423" href="#t423">423</a></span><span class="t">        <span class="nam">logger</span><span class="op">.</span><span class="nam">info</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t424" href="#t424">424</a></span><span class="t">            <span class="fst">f&quot;</span><span class="fst">Telemetry:Cartographer:</span><span class="op">{</span><span class="nam">layer</span><span class="op">}</span><span class="fst">:DerivedContours=</span><span class="fst">&quot;</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t425" href="#t425">425</a></span><span class="t">            <span class="fst">f&quot;</span><span class="op">{</span><span class="op">[</span><span class="op">(</span><span class="nam">b</span><span class="op">.</span><span class="nam">position</span><span class="op">.</span><span class="nam">x</span><span class="op">,</span> <span class="nam">b</span><span class="op">.</span><span class="nam">position</span><span class="op">.</span><span class="nam">y</span><span class="op">,</span> <span class="nam">b</span><span class="op">.</span><span class="nam">dimensions</span><span class="op">.</span><span class="nam">w</span><span class="op">,</span> <span class="nam">b</span><span class="op">.</span><span class="nam">dimensions</span><span class="op">.</span><span class="nam">l</span><span class="op">)</span> <span class="key">for</span> <span class="nam">b</span> <span class="key">in</span> <span class="nam">boundaries</span><span class="op">]</span><span class="op">}</span><span class="fst">&quot;</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t426" href="#t426">426</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t427" href="#t427">427</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t428" href="#t428">428</a></span><span class="t">        <span class="nam">descriptors</span> <span class="op">=</span> <span class="op">[</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t429" href="#t429">429</a></span><span class="t">        <span class="key">for</span> <span class="nam">b</span> <span class="key">in</span> <span class="nam">boundaries</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t430" href="#t430">430</a></span><span class="t">            <span class="nam">desc</span> <span class="op">=</span> <span class="nam">cls</span><span class="op">.</span><span class="nam">_detect_boundary_orientation</span><span class="op">(</span><span class="nam">b</span><span class="op">,</span> <span class="nam">layer</span><span class="op">,</span> <span class="nam">board</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t431" href="#t431">431</a></span><span class="t">            <span class="key">if</span> <span class="nam">desc</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t432" href="#t432">432</a></span><span class="t">                <span class="nam">descriptors</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="nam">desc</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t433" href="#t433">433</a></span><span class="t">        <span class="key">return</span> <span class="nam">cls</span><span class="op">.</span><span class="nam">_coalesce_segments</span><span class="op">(</span><span class="nam">descriptors</span><span class="op">,</span> <span class="nam">layer</span><span class="op">,</span> <span class="nam">board</span><span class="op">,</span> <span class="nam">index</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -513,7 +522,7 @@
             <a class="nav" href="z_25f6e5fb275c7fd1_cradle_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.16.2">coverage.py v7.16.2</a>,
-            created at 2026-09-29 21:18 +0000
+            created at 2026-09-29 23:07 +0000
         </p>
     </div>
 </footer>
