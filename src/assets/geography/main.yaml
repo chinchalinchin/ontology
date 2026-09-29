@@ -6,6 +6,6 @@ geography:
       dimensions: 
         w: 32
         l: 32
-      thickness: 10
+      thickness: 15
       mass: -1
       hitboxes: null
