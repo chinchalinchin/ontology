@@ -95,10 +95,8 @@ def mock_cradle(
 
 
 @pytest.fixture
-def mock_actuator(
-    mock_shoreline_index
-) -> Actuator:
-    return Actuator(shorelines=mock_shoreline_index)
+def mock_actuator() -> Actuator:
+    return Actuator()
 
 
 # ----------------------------------------------------------- MENU GENERATORS

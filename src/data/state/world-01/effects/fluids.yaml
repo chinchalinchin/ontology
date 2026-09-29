@@ -12,7 +12,7 @@ effects:
       name: jasilynns-tears-01
       layer: '0'
       position:
-        x: 101
+        x: 100
         y: 0
       flow: 2
       source: down

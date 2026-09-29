@@ -36,9 +36,9 @@ class FluidMechanics(Mechanic):
     World mechanic monitoring static gate transitions to invalidate fluid propagation
     and coordinating two-pass fluid propagation and layer shoreline generation.
     """
-    shorelines: Optional[ShorelineIndex]
     _gate_states: Dict[str, bool]
     _initialized: bool
+
 
     @property
     def actuator(self) -> Actuator:
@@ -46,21 +46,31 @@ class FluidMechanics(Mechanic):
             self.executors[MechanicExecutors.ACTUATOR.value] = Actuator()
         return self.executors[MechanicExecutors.ACTUATOR.value]
 
+
     @actuator.setter
     def actuator(self, value: Actuator) -> None:
         self.executors[MechanicExecutors.ACTUATOR.value] = value
 
-    def __init__(
-        self, 
-        actuator: Optional[Actuator] = None,
-        shorelines: Optional[ShorelineIndex] = None
-    ):
+
+    @property
+    def shorelines(self) -> Optional[ShorelineIndex]:
+        from app.config.enums import Relations
+        return self.relations.get(Relations.SHORELINES.value)
+
+
+    @shorelines.setter
+    def shorelines(self, value: ShorelineIndex) -> None:
+        from app.config.enums import Relations
+        self.set_relation(Relations.SHORELINES.value, value)
+
+
+    def __init__(self, actuator: Optional[Actuator] = None):
         super().__init__()
         if actuator is not None:
             self.set_executor(MechanicExecutors.ACTUATOR.value, actuator)
-        self.shorelines = shorelines
         self._gate_states = {}
         self._initialized = False
+
 
     def update(
         self,

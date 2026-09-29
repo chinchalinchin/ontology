@@ -28,7 +28,7 @@ properties:
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/implementation.md.j2
+  template: iterate/coverage.md.j2
 # ----------------------------------------------------
   parameters:
     diagram: mechanics-fluid.mmd
@@ -37,16 +37,16 @@ tools:
 # ----------------------------------------------------
   views:
     manager:
-      board: true
+      board: false
       specs: false
-      docs: true
+      docs: false
     source:
-      workflow: true
+      workflow: false
     shell:
-      directory: true
+      directory: false
       commands: false
     tests:  
-      console: false
+      console: true
       fixtures: false
       workflow: false
 # ----------------------------------------------------
@@ -76,10 +76,10 @@ tools:
       fixtures:
         - assets
         - components
-        # - configuration
+        - configuration
         - properties
         - state
-        # - services
-        # - structures
+        - services
+        - structures
         # - menus
       workflow: fluids

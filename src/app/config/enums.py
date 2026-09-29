@@ -311,6 +311,9 @@ class ChannelTypes(int, Enum):
     TINT            = 0
     SUBMERGE        = 1
 
+class Relations(str, Enum):
+    SHORELINES      = "shorelines"
+
 class MechanicExecutors(str, Enum):
     PLOT            = "plot"
     INTENTION       = "intention"

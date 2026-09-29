@@ -72,6 +72,7 @@ class LibraryConfiguration:
 class MechanicsInstance:
     key: str
     executors: List[str] = field(default_factory = list)
+    relations: List[str] = field(default_factory=list)
 
 @dataclass(slots=True, frozen=True)
 class MechanicsConfiguration(Configuration):

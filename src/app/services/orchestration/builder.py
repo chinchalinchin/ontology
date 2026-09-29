@@ -75,6 +75,7 @@ class Builder:
     """
     Constructs the discrete subsystems of the Ontology engine.
     """
+
     def __init__(self):
         self.context = ApplicationContext()
         self.registry: Registry = None
@@ -85,7 +86,7 @@ class Builder:
         self.core: List[Mechanic] = []
         self.world: List[Mechanic] = []
         self.executors: Dict[str, Any] = {}
-        self.shorelines: ShorelineIndex = None
+        self.relations: Dict[str, Any] = {}
 
     def _actions(self) -> None:
         """
@@ -127,18 +128,12 @@ class Builder:
             logger.info("No state key provided. Booting in unhydrated mode for Main Menu...")
             self.context.state = None
 
+
     def build_executors(self) -> None:
-        """
-        Compiles and registers master mechanic executors.
-        """
         logger.info("Compiling master mechanic executors...")
         translator = Factory.translator(settings.ISL_TRANSLATOR)
         intention_executor = translator.compile(self.context.configurations.intentions)
         plot_executor = translator.compile(self.context.configurations.plots)
-
-        self.shorelines = ShorelineIndex.from_properties(
-            self.context.properties.geography.shorelines
-        )
         actuator_executor = Actuator()
 
         self.executors = {
@@ -146,6 +141,17 @@ class Builder:
             MechanicExecutors.PLOT.value: plot_executor,
             MechanicExecutors.ACTUATOR.value: actuator_executor
         }
+
+
+    def build_relations(self) -> None:
+        logger.info("Compiling relational indices...")
+        from app.config.enums import Relations
+        self.relations = {
+            Relations.SHORELINES.value: ShorelineIndex.from_properties(
+                self.context.properties.geography.shorelines
+            )
+        }
+
 
     def init_subsystems(self, screensize: Dimensions, headless: bool = True) -> None:
         logger.info("Initializing SDL and Cython rendering subsystems...")
@@ -226,6 +232,9 @@ class Builder:
     def build_pipeline(self) -> None:
         logger.info("Building rendering pipelines, mechanics, and UI...")
 
+        if not self.relations:
+            self.build_relations()
+
         if not self.board.layers():
             self.screens = {
                 'default': Screen(self.context.screensize, self.context.screensize, [], self.registry)
@@ -253,14 +262,13 @@ class Builder:
             MechanicsInstance(Mechanics.MOTION.value)
         ]
         
-        self.core = [Factory.mechanics(m, self.executors) for m in core_cfg]
-        self.world = [Factory.mechanics(m, self.executors, self.shorelines) for m in world_cfg]
+        self.core = [Factory.mechanics(m, self.executors, self.relations) for m in core_cfg]
+        self.world = [Factory.mechanics(m, self.executors, self.relations) for m in world_cfg]
 
         self.library = Library(self.context.configurations.library)
         self.binder = Binder(self.registry, self.library)
         self.fabricator = Fabricator()
 
-        # Allocate Menu Provider & Views with new dependencies
         self.provider = Provider(
             self.context.configurations.recipes.widgets, 
             self.context.properties.widgets, 

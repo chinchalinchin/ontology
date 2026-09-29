@@ -294,7 +294,6 @@ def mock_shoreline_state() -> ShorelineState:
         length=32,
         thickness=8,
         bidirectional=True,
-        parent_fluid="jasilynns-tears",
         hitboxes=[
             Hitbox(Position(0, 0), Dimensions(32, 32))
         ]

@@ -410,5 +410,23 @@ def test_shoreline_frame_keys_zero_length():
 
 
 def test_shoreline_frame_channels():
+    """
+    Verify ShorelineFrame inherits universal Frame.channels behavior.
+    """
     frame = ShorelineFrame()
-    assert frame.channels("grassy-shore", None, None) == []
+    state = ShorelineState(id="grassy-shore")
+    props = GeographyProperties(
+        dimensions=Dimensions(w=32, l=32),
+        tile="grass",
+        fluid="water",
+        thickness=8
+    )
+
+    # 1. Dry state: no channel directives emitted
+    assert frame.channels("grassy-shore", state, props) == []
+
+    # 2. Submerged state: emits standard half-split aquatic channel directive
+    state.mutators.triggers.submerged = True
+    assert frame.channels("grassy-shore", state, props) == [
+        (ChannelTypes.SUBMERGE.value, (16, 40, 110, 180, 170))
+    ]

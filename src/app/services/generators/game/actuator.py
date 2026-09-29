@@ -77,7 +77,8 @@ class Actuator:
                 None
             ))
 
-        # 2. Environmental physical assets strictly restricted to immovable static bodies (mass == 0)
+        # 2. Environmental physical assets strictly restricted to 
+        #       immovable static bodies (mass == 0)
         candidates = set(board.weights(layer))
         candidates.update(board.obstacles(layer))
 
@@ -95,7 +96,7 @@ class Actuator:
                 asset.state.switch
             ): continue
 
-            # Exclude dynamic bodies (mass > 0) from fluid occlusion (Fix B011)
+            # Exclude dynamic bodies (mass > 0) from fluid occlusion
             if hasattr(asset.properties, "mass") and asset.properties.mass != 0:
                 continue
 

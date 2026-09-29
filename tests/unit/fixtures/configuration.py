@@ -12,7 +12,8 @@ from app.config.enums import (
     AnimationRecipe,
     # -------- MECHANICS
     Mechanics,
-    MechanicExecutors
+    MechanicExecutors,
+    Relations
 )
 from app.models.config import (
     # ------ COMPOSITIONS
@@ -410,20 +411,25 @@ def mock_mechanics_configuration() -> MechanicsConfiguration:
                 key=Mechanics.TRANSITION.value, 
                 executors=[
                     MechanicExecutors.INTENTION.value
-                ]
+                ],
+                relations=[]
             ),
             MechanicsInstance(
-                key=Mechanics.MOTION.value
+                key=Mechanics.MOTION.value,
+                executors=[],
+                relations=[]
             ),
             MechanicsInstance(
                 key=Mechanics.FLUID.value,
                 executors=[
                     MechanicExecutors.ACTUATOR.value
+                ],
+                relations=[
+                    Relations.SHORELINES.value
                 ]
             )
         ]
     )
-
 
 @pytest.fixture
 def mock_configurations(

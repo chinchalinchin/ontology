@@ -9,32 +9,20 @@ from app.config.enums import (
     AssetInstances,
     Directions
 )
-from app.services.generators.game import (
-    Actuator
-)
-
-# Cython Libraries
 from libs.core.models import (
     Position, 
-    Dimensions
 )
 
 
 @pytest.mark.fluids
-def test_actuator_pump_down_to_boundary(
-    mock_board,
-    mock_actuator
-):
+@pytest.mark.services
+def test_actuator_pump_down_to_boundary(mock_board, mock_actuator):
     """
     Verify downward propagation truncates at boundary wall and does not pool.
     """
     fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
     fluid.state.position = Position(x=70, y=0)
     fluid.state.source = Directions.DOWN
-
-    # Remove crate to ensure boundary is struck
-    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
-    mock_board.remove([crate])
 
     length, pool, hitboxes = mock_actuator.pump(fluid, mock_board)
 
@@ -44,14 +32,11 @@ def test_actuator_pump_down_to_boundary(
     assert hitboxes[0].dimensions.w == 32
     assert hitboxes[0].dimensions.l == 319
     assert fluid.state.dirty is False
-    
+
 
 @pytest.mark.fluids
-def test_actuator_upstream_obstacles_ignored(
-    mock_board, 
-    mock_crate_alt, 
-    mock_actuator
-):
+@pytest.mark.services
+def test_actuator_upstream_obstacles_ignored(mock_board, mock_actuator):
     """
     Verify obstacles positioned at or behind emitter origin are not struck.
     """
@@ -59,24 +44,25 @@ def test_actuator_upstream_obstacles_ignored(
     fluid.state.position = Position(x=70, y=50)
     fluid.state.source = Directions.DOWN
 
-    # Upstream crate via fixture
-    mock_board.add([mock_crate_alt])
+    # Upstream static strut (mass=0) at y=10
+    strut = mock_board.instances(AssetInstances.STRUTS.value)[0]
+    strut.state.position = Position(x=70, y=10)
 
-    # Downstream crate
-    crate_down = mock_board.instances(AssetInstances.CRATES.value)[0]
-    crate_down.state.position = Position(x=70, y=150)
+    # Downstream closed static gate (mass=0) at y=150
+    gate = mock_board.instances(AssetInstances.GATES.value)[0]
+    gate.state.switch = False
+    gate.state.position = Position(x=70, y=150)
 
     length, pool, hitboxes = mock_actuator.pump(fluid, mock_board)
 
+    # 150 - 50 = 100
     assert length == 100
     assert fluid.state.length == 100
 
 
 @pytest.mark.fluids
-def test_actuator_open_gate_not_occluding(
-    mock_board, 
-    mock_actuator
-):
+@pytest.mark.services
+def test_actuator_open_gate_not_occluding(mock_board, mock_actuator):
     """
     Verify open gates (switch=True) are bypassed during raycast truncation.
     """
@@ -84,13 +70,14 @@ def test_actuator_open_gate_not_occluding(
     fluid.state.position = Position(x=70, y=0)
     fluid.state.source = Directions.DOWN
 
-    # Use existing gate fixture on the board
+    # Open gate at y=60
     gate = mock_board.instances(AssetInstances.GATES.value)[0]
     gate.state.switch = True
     gate.state.position = Position(x=70, y=60)
 
-    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
-    crate.state.position = Position(x=70, y=120)
+    # Downstream static strut (mass=0) at y=120
+    strut = mock_board.instances(AssetInstances.STRUTS.value)[0]
+    strut.state.position = Position(x=70, y=120)
 
     length, pool, hitboxes = mock_actuator.pump(fluid, mock_board)
 
@@ -98,10 +85,8 @@ def test_actuator_open_gate_not_occluding(
 
 
 @pytest.mark.fluids
-def test_actuator_character_sheets_ignored(
-    mock_board, 
-    mock_actuator
-):
+@pytest.mark.services
+def test_actuator_character_sheets_ignored(mock_board, mock_actuator):
     """
     Verify characters (SHEETS) do not obstruct fluid raycasts.
     """
@@ -112,39 +97,59 @@ def test_actuator_character_sheets_ignored(
     player = mock_board.player()
     player.state.position = Position(x=70, y=40)
 
-    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
-    crate.state.position = Position(x=70, y=120)
+    # Downstream static strut (mass=0) at y=120
+    strut = mock_board.instances(AssetInstances.STRUTS.value)[0]
+    strut.state.position = Position(x=70, y=120)
 
-    actuator = Actuator()
     length, pool, hitboxes = mock_actuator.pump(fluid, mock_board)
 
     assert length == 120
 
 
 @pytest.mark.fluids
-def test_actuator_pump_down_to_obstacle_with_pool(
-    mock_board, 
-    mock_actuator
-):
+@pytest.mark.services
+def test_actuator_dynamic_bodies_ignored_as_obstacles(mock_board, mock_crate, mock_actuator):
     """
-    Verify internal obstacle collision truncates stream and forms a solid annular pool.
+    Verify dynamic bodies (mass > 0, such as Crates) do not occlude fluids (Fix B011).
+    """
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid.state.position = Position(x=70, y=0)
+    fluid.state.source = Directions.DOWN
+
+    # Dynamic crate (mass=5) placed in the stream corridor
+    mock_crate.state.position = Position(x=70, y=96)
+    mock_board.add([mock_crate])
+
+    length, pool, hitboxes = mock_actuator.pump(fluid, mock_board)
+
+    # Stream ignores dynamic body and continues to boundary at y=319
+    assert length == 319
+    assert pool is None
+
+
+@pytest.mark.fluids
+@pytest.mark.services
+def test_actuator_pump_down_to_obstacle_with_pool(mock_board, mock_actuator):
+    """
+    Verify internal static obstacle (mass=0) collision truncates stream and forms annular pool.
     """
     fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
     fluid.state.position = Position(x=70, y=0)
     fluid.state.source = Directions.DOWN
     fluid.state.flow = 2
 
-    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
-    crate.state.position = Position(x=70, y=96)
-    crate.properties.dimensions = Dimensions(w=32, l=32)
+    # Closed gate (mass=0, dimensions 32x32) at y=96
+    gate = mock_board.instances(AssetInstances.GATES.value)[0]
+    gate.state.switch = False
+    gate.state.position = Position(x=70, y=96)
 
     length, pool, hitboxes = mock_actuator.pump(fluid, mock_board)
 
     assert length == 96
     assert pool is not None
     # Pool bounds snapped to 32px tile grid:
-    # X: [6, 166] -> snapped to [0, 192], width = 192
-    # Y: [32, 192] -> snapped to [32, 192], length = 160
+    # X: [70 - 64, 70 + 32 + 64] = [6, 166] -> snapped [0, 192], w = 192
+    # Y: [96 - 64, 96 + 32 + 64] = [32, 192] -> snapped [32, 192], l = 160
     assert pool.x == 0
     assert pool.y == 32
     assert pool.w == 192
@@ -161,11 +166,8 @@ def test_actuator_pump_down_to_obstacle_with_pool(
 
 
 @pytest.mark.fluids
-def test_actuator_rafts_ignored_as_obstacles(
-    mock_board, 
-    mock_raft,
-    mock_actuator
-):
+@pytest.mark.services
+def test_actuator_rafts_ignored_as_obstacles(mock_board, mock_raft, mock_actuator):
     """
     Verify rafts (RAFTS) bypass raycast truncation and do not occlude fluids.
     """
@@ -175,101 +177,22 @@ def test_actuator_rafts_ignored_as_obstacles(
 
     mock_raft.state.position = Position(x=70, y=40)
 
-    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
-    crate.state.position = Position(x=70, y=120)
-
+    # Downstream static barrier (mass=0) at y=120
+    gate = mock_board.instances(AssetInstances.GATES.value)[0]
+    gate.state.switch = False
+    gate.state.position = Position(x=70, y=120)
 
     length, pool, hitboxes = mock_actuator.pump(fluid, mock_board)
 
-    # Stream ignores raft at y=40 and truncates on crate at y=120
+    # Stream ignores raft at y=40 and truncates on closed gate at y=120
     assert length == 120
 
 
 @pytest.mark.fluids
-def test_actuator_pump_does_not_mutate_shared_properties(
-    mock_board, 
-    mock_actuator
-):
+@pytest.mark.services
+def test_actuator_closed_gate_occludes_stream(mock_board, mock_actuator):
     """
-    Verify Actuator.pump does not mutate shared EffectProperties.hitboxes.
-    """
-    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
-    fluid.properties.hitboxes = []
-
-    mock_actuator.pump(fluid, mock_board)
-
-    assert fluid.properties.hitboxes == []
-
-
-@pytest.mark.fluids
-def test_actuator_generates_and_purges_shorelines(
-    mock_board, 
-    mock_actuator
-):
-    """
-    Verify Actuator generates shorelines on unoccluded flanks and purges them on re-pump.
-    """
-    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
-    fluid.state.position = Position(x=70, y=0)
-    fluid.state.source = Directions.DOWN
-
-    mock_actuator.pump(fluid, mock_board)
-
-    shorelines = mock_board.instances(AssetInstances.SHORELINES.value, "0")
-    assert len(shorelines) > 0
-    assert len(fluid.state.shorelines) == len(shorelines)
-
-    # Initial child shoreline names
-    first_shoreline_names = set(fluid.state.shorelines)
-
-    # Re-pump should purge old shorelines and regenerate without duplicate asset names
-    mock_actuator.pump(fluid, mock_board)
-    current_shoreline_names = set(fluid.state.shorelines)
-
-    # Ensure none of the old child entities remain on the board
-    for old_name in first_shoreline_names:
-        assert mock_board.asset(old_name, "0") is None
-
-    assert len(current_shoreline_names) > 0
-
-
-@pytest.mark.fluids
-def test_actuator_water_meeting_water_suppresses_shorelines(
-    mock_board,
-    mock_actuator,
-    mock_fluid_alt2
-):
-    """
-    Verify that when water meets water across overlapping fluid bounds,
-    internal shoreline generation is suppressed.
-    """
-    fluid1 = mock_board.instances(AssetInstances.FLUIDS.value)[0]
-
-    # Add adjacent fluid fixture directly touching East flank of fluid1
-    mock_board.add([mock_fluid_alt2])
-
-    mock_actuator.pump(fluid1, mock_board)
-
-    # Fluid1 East flank directly touches Fluid2 water: East shoreline (RIGHT) is suppressed
-    shorelines = [
-        mock_board.asset(name, "0")
-        for name in fluid1.state.shorelines
-        if mock_board.asset(name, "0")
-    ]
-    right_shorelines = [
-        s for s in shorelines
-        if s.state.orientation == Directions.RIGHT.value
-    ]
-    assert len(right_shorelines) == 0
-
-
-@pytest.mark.fluids
-def test_actuator_closed_gate_occludes_stream(
-    mock_board, 
-    mock_actuator
-):
-    """
-    Verify closed gates (switch=False) occlude raycasts and truncate fluid flow.
+    Verify closed gates (switch=False, mass=0) occlude raycasts and truncate fluid flow.
     """
     fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
     fluid.state.position = Position(x=70, y=0)
@@ -279,34 +202,21 @@ def test_actuator_closed_gate_occludes_stream(
     gate.state.switch = False
     gate.state.position = Position(x=70, y=60)
 
-    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
-    crate.state.position = Position(x=70, y=120)
-
     length, pool, hitboxes = mock_actuator.pump(fluid, mock_board)
 
-    # Truncates at the closed gate boundary at y=60 rather than crate at y=120
     assert length == 60
     assert fluid.state.length == 60
 
 
 @pytest.mark.fluids
-def test_actuator_character_sheets_ignored(
-    mock_board, 
-    mock_actuator
-):
+@pytest.mark.services
+def test_actuator_pump_does_not_mutate_shared_properties(mock_board, mock_actuator):
     """
-    Verify characters (SHEETS) do not obstruct fluid raycasts.
+    Verify Actuator.pump does not mutate shared EffectProperties.hitboxes.
     """
     fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
-    fluid.state.position = Position(x=70, y=0)
-    fluid.state.source = Directions.DOWN
+    fluid.properties.hitboxes = []
 
-    player = mock_board.player()
-    player.state.position = Position(x=70, y=40)
+    mock_actuator.pump(fluid, mock_board)
 
-    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
-    crate.state.position = Position(x=70, y=120)
-
-    length, pool, hitboxes = mock_actuator.pump(fluid, mock_board)
-
-    assert length == 120
+    assert fluid.properties.hitboxes == []

@@ -2,37 +2,54 @@ mechanics:
   core:
     - key: menu
       executors: []
+      relations: []
     - key: animation
       executors: []
+      relations: []
     - key: remove
       executors: []
+      relations: []
   world:
     - key: player
       executors: []
+      relations: []
     - key: cognition
       executors: []
+      relations: []
     - key: transition
       executors:
         - intention
+      relations: []
     - key: navigation
       executors: []
+      relations: []
     - key: motion
       executors: []
+      relations: []
     - key: interaction
       executors: []
+      relations: []
     - key: social
       executors: []
+      relations: []
     - key: collision
       executors: []
+      relations: []
     - key: fluid
       executors:
-          - actuator
+        - actuator
+      relations:
+        - shorelines
     - key: combat
       executors: []
+      relations: []
     - key: switch
       executors: []
+      relations: []
     - key: projectile
       executors: []
+      relations: []
     - key: plot
       executors:
         - plot
+      relations: []

@@ -836,776 +836,98 @@ for layer in dirty_layers:
 
 *Objective*: Add layer-scoped shoreline tracking to `Board` and update caching and mutation lifecycles.
 
-* [ ] Subtask: Add `shorelines: Dict[str, List[Asset]]` field to `Board` in `src/app/game/board.py`.
-* [ ] Subtask: Initialize `self.shorelines[layer] = []` in `Board._init_cache()`.
-* [ ] Subtask: Update `Board.add()` and `Board.remove()` to maintain `self.shorelines[layer]` alongside `_cached_instances`.
-* [ ] Subtask: Add `Board.get_shorelines(layer=None)` query interface.
+* [x] Subtask: Add `shorelines: Dict[str, List[Asset]]` field to `Board` in `src/app/game/board.py`.
+* [x] Subtask: Initialize `self.shorelines[layer] = []` in `Board._init_cache()`.
+* [x] Subtask: Update `Board.add()` and `Board.remove()` to maintain `self.shorelines[layer]` alongside `_cached_instances`.
+* [x] Subtask: Add `Board.get_shorelines(layer=None)` query interface.
 
 **2. Task: De-parent Shoreline and Fluid State Models**
 
 *Objective*: Remove `shorelines` from `FluidState` and `parent_fluid` from `ShorelineState` and `Cradle`.
 
-* [ ] Subtask: Remove `shorelines: List[str]` field from `FluidState` in `src/app/models/state/effects.py`.
-* [ ] Subtask: Remove `parent_fluid: Optional[str]` field from `ShorelineState` in `src/app/models/state/geography.py`.
-* [ ] Subtask: Remove `parent_fluid` parameter from `Cradle.spawn_shoreline` in `src/app/services/generators/game/cradle.py`.
+* [x] Subtask: Remove `shorelines: List[str]` field from `FluidState` in `src/app/models/state/effects.py`.
+* [x] Subtask: Remove `parent_fluid: Optional[str]` field from `ShorelineState` in `src/app/models/state/geography.py`.
+* [x] Subtask: Remove `parent_fluid` parameter from `Cradle.spawn_shoreline` in `src/app/services/generators/game/cradle.py`.
 
 **3. Task: Implement Layer-Wide Geometric Contour Generation in Cartographer**
 
 *Objective*: Refactor `Cartographer` to extract layer water AABBs and derive unified shoreline boundaries using `geometry.contours()`.
 
-* [ ] Subtask: Implement `Cartographer._collect_water_rectangles(layer, board)` converting active streams and pools into `(min_x, min_y, max_x, max_y)` primitives.
-* [ ] Subtask: Implement `Cartographer.purge(layer, board)` using `board.get_shorelines(layer)`.
-* [ ] Subtask: Implement boundary orientation detection by probing outward normal coordinates against `board.water(layer, pos)`.
-* [ ] Subtask: Port 32px step sampling, substrate lookup (`board.tile`), occlusion checks (`_detect_flank_occlusions`), and contiguous segment coalescing to evaluate contour boundaries.
-* [ ] Subtask: Refactor `Cartographer.generate(layer, board, index)` to return all synthesized `Shoreline` entities for the layer.
+* [x] Subtask: Implement `Cartographer._collect_water_rectangles(layer, board)` converting active streams and pools into `(min_x, min_y, max_x, max_y)` primitives.
+* [x] Subtask: Implement `Cartographer.purge(layer, board)` using `board.get_shorelines(layer)`.
+* [x] Subtask: Implement boundary orientation detection by probing outward normal coordinates against `board.water(layer, pos)`.
+* [x] Subtask: Port 32px step sampling, substrate lookup (`board.tile`), occlusion checks (`_detect_flank_occlusions`), and contiguous segment coalescing to evaluate contour boundaries.
+* [x] Subtask: Refactor `Cartographer.generate(layer, board, index)` to return all synthesized `Shoreline` entities for the layer.
 
 **4. Task: Refactor FluidMechanics Pipeline and Segregate Actuator**
 
 *Objective*: Remove shoreline delegation from `Actuator` and coordinate layer-wide two-pass updates in `FluidMechanics`.
 
-* [ ] Subtask: Remove `generate_shorelines()` and `self.shorelines` dependency from `Actuator` in `src/app/services/generators/game/actuator.py`.
-* [ ] Subtask: Update `Actuator.pump(fluid, board)` to strictly propagate fluid dynamics.
-* [ ] Subtask: Inject `ShorelineIndex` directly into `FluidMechanics`.
-* [ ] Subtask: Update `FluidMechanics.update()` to execute Pass 1 per-fluid and Pass 2 per-layer across all invalidated layers.
+* [x] Subtask: Remove `generate_shorelines()` and `self.shorelines` dependency from `Actuator` in `src/app/services/generators/game/actuator.py`.
+* [x] Subtask: Update `Actuator.pump(fluid, board)` to strictly propagate fluid dynamics.
+* [x] Subtask: Inject `ShorelineIndex` directly into `FluidMechanics`.
+* [x] Subtask: Update `FluidMechanics.update()` to execute Pass 1 per-fluid and Pass 2 per-layer across all invalidated layers.
 
 ---
 
-This will require changes to the Builder.
-
-**src/app/services/orchestration/builder.py**
-
-```python
-"""
-# Ontology: app.services.orchestration.constructors
-
-Classes for constructing game objects.
-"""
-from __future__ import annotations
-
-# Standard Libraries
-import logging
-import dataclasses
-from typing import (
-    Dict, 
-    List,
-    Any
-)
-
-# Application Libraries
-import app.config.settings as settings
-from app.config.loader import Loader
-from app.config.enums import (
-    Devices, 
-    Mechanics,
-    AssetCategories,
-    MechanicExecutors
-)
-from app.game.board import Board
-from app.game.engine import Engine
-from app.game.screen import Screen
-from app.game.logic.mechanics import Mechanic
-from app.game.logic.relations.shorelines import ShorelineIndex
-from app.models.groups import (
-    SpawnableGroup, 
-    EquipmentGroup
-)
-from app.models.state import StateSchema
-from app.models.properties import PropertiesSchema
-from app.models.config import (
-    ConfigurationSchema, 
-    MechanicsInstance
-)
-from app.services.generators.game import (
-    Factory,
-    Decomposer,
-    Actuator
-)
-from app.services.generators.menus import (
-    Provider, 
-    Library,
-    Binder,
-    Fabricator
-)
-
-# Cython Libraries
-import libs.graphics.render as render
-from libs.core.models import Dimensions
-from libs.graphics.registry import Registry
-
-logger = logging.getLogger(__name__)
-
-@dataclasses.dataclass
-class ApplicationContext:
-    """
-    Isolates raw data configurations before they are hydrated into Engine components.
-    """
-    properties: PropertiesSchema = None
-    state: StateSchema = None
-    configurations: ConfigurationSchema = None
-    screensize: Dimensions = None
-    headless: bool = False
-
-class Builder:
-    """
-    Constructs the discrete subsystems of the Ontology engine.
-    """
-    def __init__(self):
-        self.context = ApplicationContext()
-        self.registry: Registry = None
-        self.board: Board = None
-        self.provider: Provider = None
-        self.fabricator: Fabricator = None
-        self.screens: Dict[str, Screen] = {}
-        self.core: List[Mechanic] = []
-        self.world: List[Mechanic] = []
-        self.executors: Dict[str, Any] = {}
-
-
-    def _actions(self) -> None:
-        """
-        Globally pre-hydrates Actions in Properties.
-        """
-        resolved_sheets = {}
-        for sheet_field in dataclasses.fields(self.context.properties.sheets):
-            sheet_type = sheet_field.name
-            sheet_dict = getattr(self.context.properties.sheets, sheet_type, {})
-            resolved_dict = {}
-            for e_id, e_props in sheet_dict.items():
-                if isinstance(e_props.actions, str):
-                    action_data = next((
-                        a.data 
-                        for a in self.context.configurations.actions
-                        if a.id == e_props.actions
-                    ), {})
-                    resolved_dict[e_id] = dataclasses.replace(e_props, actions=action_data)
-                else:
-                    resolved_dict[e_id] = e_props
-            resolved_sheets[sheet_type] = resolved_dict
-            
-        self.context.properties.sheets = dataclasses.replace(
-            self.context.properties.sheets, 
-            **resolved_sheets
-        )
-
-
-    def load_data(self, state_key: str = None) -> None:
-        """
-        Loads YAML configuration data for properties and global configurations.
-        If state_key is None, state hydration is deferred to the Main Menu.
-        """
-        self.context.properties = Loader.load_properties()
-        self.context.configurations = Loader.load_configurations()
-        if state_key is not None:
-            logger.info(f"Loading YAML data for target state: {state_key} ...")
-            self.context.state = Loader.load_state(state_key)
-        else:
-            logger.info("No state key provided. Booting in unhydrated mode for Main Menu...")
-            self.context.state = None
-
-
-    def build_executors(self) -> None:
-        """
-        Compiles and registers master mechanic executors.
-        """
-        logger.info("Compiling master mechanic executors...")
-        translator = Factory.translator(settings.ISL_TRANSLATOR)
-        intention_executor = translator.compile(self.context.configurations.intentions)
-        plot_executor = translator.compile(self.context.configurations.plots)
-
-        shoreline_index = ShorelineIndex.from_properties(
-            self.context.properties.geography.shorelines
-        )
-        actuator_executor = Actuator(shorelines=shoreline_index)
-
-        self.executors = {
-            MechanicExecutors.INTENTION.value: intention_executor,
-            MechanicExecutors.PLOT.value: plot_executor,
-            MechanicExecutors.ACTUATOR.value: actuator_executor
-        }
-
-
-    def init_subsystems(self, screensize: Dimensions, headless: bool = True) -> None:
-        logger.info("Initializing SDL and Cython rendering subsystems...")
-        self.context.screensize = screensize
-        self.context.headless = headless
-        render.init(screensize.w, screensize.l, headless)
-
-        # IMPORTANT: This MUST be called before the Registry inits.
-        if not headless:
-            render.show()
-
-
-    def build_board(self) -> None:
-        logger.info("Constructing Empty Board and Migrator subsystem...")
-        self._actions()
-
-        if not self.executors:
-            self.build_executors()
-
-        # 1. Instantiate Decomposer ahead of standard Asset migrations
-        self.decomposer = Decomposer(
-            compositions=self.context.configurations.compositions,
-            properties=self.context.properties,
-            recipes=self.context.configurations.recipes
-        )
-
-        equipment = EquipmentGroup(
-            armor=self.context.properties.sheets.armor,
-            weapons=self.context.properties.sheets.weapons,
-            tools=self.context.properties.sheets.tools,
-            utilities=self.context.properties.sheets.utilities,
-            shields=self.context.properties.sheets.shields
-        )
-        
-        self.board = Board([], self.context.configurations, equipment)
-        
-        # Attach Migrator logic for deferred ECS evaluation
-        from app.services.orchestration import Migrator
-        self.board.migrator = Migrator(
-            self.board, 
-            self.context.properties, 
-            self.context.configurations,
-            actuator=self.executors[MechanicExecutors.ACTUATOR.value]
-        )
-
-
-    def build_registry(self) -> None:
-        """
-        Initializes Registry directly using native application models.
-        """
-        logger.info("Initializing Registry with native models...")
-        self.registry = Registry(
-            properties=self.context.properties,
-            recipes=self.context.configurations.recipes,
-            typography=self.context.properties.fonts
-        )
-
-
-    def build_services(self, device: Devices) -> None:
-        logger.info("Injecting Generators and Devices into Board...")
-        device_mapping = getattr(self.context.configurations.mappings, device, None)
-        device_instance = Factory.device(device, device_mapping)
-        self.board.set_device(device_instance)
-
-        spawnable_groups = SpawnableGroup(
-            projectiles=self.context.properties.cursors.projectiles,
-            expressions=self.context.properties.cursors.expressions,
-            collectables=self.context.properties.effects.collectables,
-            hazards=self.context.properties.effects.hazards,
-            passive=self.context.properties.effects.passive,
-            struts=self.context.properties.crafts.struts,
-            shorelines=self.context.properties.geography.shorelines
-        )
-        cradle = Factory.cradle(
-            spawnable_groups, 
-            self.context.configurations.recipes, 
-            self.decomposer
-        )
-        self.board.set_cradle(cradle)
-
-    def build_pipeline(self) -> None:
-        logger.info("Building rendering pipelines, mechanics, and UI...")
-
-        if not self.board.layers():
-            self.screens = {
-                'default': Screen(self.context.screensize, self.context.screensize, [], self.registry)
-            }
-        else:
-            self.screens = {}
-            for layer in self.board.layers():
-                layer_size = self.board.size(layer)[0]
-                self.screens[layer] = Screen(
-                    self.context.screensize, 
-                    Dimensions(layer_size.w, layer_size.l),
-                    self.board.categories(AssetCategories.TILES.value, layer),
-                    self.registry
-                )
-
-        core_cfg = self.context.configurations.mechanics.core or [
-            MechanicsInstance(Mechanics.MENU.value), 
-            MechanicsInstance(Mechanics.ANIMATION.value), 
-            MechanicsInstance(Mechanics.REMOVE.value)
-        ]
-        world_cfg = self.context.configurations.mechanics.world or [
-            MechanicsInstance(Mechanics.PLAYER.value), 
-            MechanicsInstance(Mechanics.COGNITION.value), 
-            MechanicsInstance(Mechanics.TRANSITION.value), 
-            MechanicsInstance(Mechanics.MOTION.value)
-        ]
-        
-        self.core = [Factory.mechanics(m, self.executors) for m in core_cfg]
-        self.world = [Factory.mechanics(m, self.executors) for m in world_cfg]
-
-        self.library = Library(self.context.configurations.library)
-        self.binder = Binder(self.registry, self.library)
-        self.fabricator = Fabricator()
-
-        # Allocate Menu Provider & Views with new dependencies
-        self.provider = Provider(
-            self.context.configurations.recipes.widgets, 
-            self.context.properties.widgets, 
-            self.binder,
-            self.fabricator
-        )
-
-    def get_engine(self) -> Engine:
-        logger.info("Engine successfully assembled.")
-        return Engine(
-            board=self.board, 
-            screens=self.screens, 
-            core=self.core, 
-            world=self.world, 
-            provider=self.provider
-        )
-```
-
-**src/app/services/orchestration/migrator.py**
-
-```python
-"""
-# Ontology: app.services.orchestration.migrator
-
-Package for state hydration and ECS component injection.
-"""
-from __future__ import annotations
-
-# Standard Libraries
-import time
-import dataclasses
-import logging
-from typing import Optional, TYPE_CHECKING
-
-# Application Libraries
-from app.assets.base import Asset
-from app.config.loader import Loader
-from app.config.enums import (
-    AssetCategories,
-    AssetInstances, 
-    Shortcuts
-)
-from app.models.properties import PropertiesSchema
-from app.models.config import ConfigurationSchema
-from app.services.generators.game import (
-    Factory, 
-    Decomposer,
-    Perimeter,
-    Actuator
-)
-if TYPE_CHECKING:
-    from app.game.board import Board
-
-logger = logging.getLogger(__name__)
-
-class Migrator:
-    """
-    Time-sliced state machine for unpacking board state dynamically,
-    preventing Python GIL locking during heavy loading operations.
-    """
-    board: Board
-    decomposer: Decomposer
-    configurations: ConfigurationSchema
-    properties: PropertiesSchema
-    actuator: Actuator
-
-    def __init__(self, 
-        board: Board, 
-        properties: PropertiesSchema, 
-        configurations: ConfigurationSchema,
-        actuator: Optional[Actuator] = None
-    ):
-        self.board = board
-        self.properties = properties
-        self.configurations = configurations
-        self.actuator = actuator or Actuator()
-        self.target: Optional[str] = None
-        self.state = None
-        self.decomposer = None
-        self._generator = None
-        
-        # Track counts to bind to Loading Menu Meters
-        self.maximum = 1
-        self.current = 0
-
-    def _build_generator(self):
-        logger.info(f"Migrator starting hydration for target state: {self.target}")
-        self.state = Loader.load_state(self.target)
-        
-        self.decomposer = Decomposer(
-            compositions=self.configurations.compositions,
-            properties=self.properties,
-            recipes=self.configurations.recipes
-        )
-        
-        # 1. Compile the manifest of objects to generate
-        tasks = []
-        if hasattr(self.state, Shortcuts.COMPOSITIONS.value) and self.state.compositions:
-            for comp_state in self.state.compositions:
-                tasks.append((Shortcuts.COMPOSITIONS.value, comp_state))
-
-        if hasattr(self.state, Shortcuts.PLOTS.value) and self.state.plots:
-            tasks.append((Shortcuts.PLOTS.value, self.state.plots))
-
-        for cat_field in dataclasses.fields(self.state):
-            category_key = cat_field.name
-            if category_key in Shortcuts: 
-                continue 
-                
-            category_data = getattr(self.state, category_key)
-            if not category_data: 
-                continue
-            
-            for inst_field in dataclasses.fields(category_data):
-                instance_key = inst_field.name
-                instance_list = getattr(category_data, instance_key)
-                if not instance_list: 
-                    continue
-                
-                for state_obj in instance_list:
-                    tasks.append(('asset', category_key, instance_key, state_obj))
-                    
-        self.maximum = max(1, len(tasks))
-        self.current = 0
-        
-        # 2. Yield through component injection
-        for task in tasks:
-            if task[0] == Shortcuts.COMPOSITIONS.value:
-                comp_state = task[1]
-                expanded_assets = self.decomposer.unpack(comp_state)
-                self.board.add(expanded_assets)
-
-            elif task[0] == Shortcuts.PLOTS.value:
-                plot = task[1]
-                self.board.set_plot(plot)
-
-            else:
-                _, category_key, instance_key, state_obj = task
-                asset_id = state_obj.id
-                asset_name = state_obj.name
-                
-                cat_recipes = getattr(self.configurations.recipes, category_key, None)
-                recipe = getattr(cat_recipes, instance_key, None)
-                
-                prop_instance_key = instance_key
-                if category_key == AssetCategories.SHEETS.value and (
-                    instance_key == AssetInstances.PLAYERS.value
-                ):
-                    prop_instance_key = AssetInstances.SPRITES.value
-                    
-                cat_props = getattr(self.properties, category_key, None)
-                inst_props = getattr(cat_props, prop_instance_key, {})
-                props = inst_props.get(asset_id)
-
-                asset = Asset(
-                    taxonomy   = Factory.taxonomy(
-                        asset_id, 
-                        asset_name, 
-                        category_key, 
-                        instance_key
-                    ),
-                    properties = props,
-                    state      = state_obj,
-                    frame      = Factory.frame(recipe.frame),
-                    animation  = Factory.animation(recipe.animation) 
-                )
-                self.board.add([asset])
-            
-            self.current += 1
-            yield True
-
-        # 3. Post-Hydration Phase: Procedural Boundaries & Steady-State Fluid
-        perimeter_gen = Perimeter()
-        for layer in self.board.layers():
-            self.board.perimeters[layer] = perimeter_gen.generate(self.board, layer)
-
-        fluids = self.board.instances(AssetInstances.FLUIDS.value)
-        for fluid in fluids:
-            self.actuator.pump(fluid, self.board)
-
-    def step(self, budget_ms: int = 16) -> bool:
-        """
-        Executes generation tasks until the time budget is exhausted.
-        Returns True when fully migrated, False if still working.
-        """
-        if not self.target:
-            return True
-            
-        if self._generator is None:
-            self._generator = self._build_generator()
-            
-        start = time.perf_counter()
-        
-        while True:
-            if (time.perf_counter() - start) * 1000 > budget_ms:
-                return False
-                
-            try:
-                next(self._generator)
-            except StopIteration:
-                self._generator = None
-                self.target = None
-                return True
-```
-
-**src/app/services/generators/game/factory.py**
-
-```python
-"""
-# Ontology: app.services.orchestration.factory
-
-Package for instantiating Asset classes and their components.
-"""
-# Standard Libraries
-from typing import Any, Dict
-
-# Application Libraries
-from app.assets.animations import (
-    BinaryAnimation, 
-    LifecycleAnimation,
-    StateAnimation,
-    SpriteAnimation,
-    TraversalAnimation,
-    MeterAnimation,
-    NoAnimation
-)
-from app.assets.base import (
-    Taxonomy,
-    Frame,
-    Animation
-)
-from app.assets.frames import (
-    SingleFrame, 
-    IterableFrame, 
-    StateFrame,
-    SpriteFrame,
-    FluidFrame,
-    ShorelineFrame,
-    TraversalFrame,
-    MeterFrame,
-    IndexFrame,
-    NoFrame
-)
-from app.config.enums import (
-    AnimationRecipe, 
-    FrameRecipe, 
-    Devices, 
-    Mechanics,
-    Controllers,
-    Translators
-)
-from app.game.logic.mechanics import (
-    AnimationMechanics,
-    CollisionMechanics, 
-    ProjectileMechanics,
-    SwitchMechanics, 
-    MotionMechanics,
-    CombatMechanics,
-    TransitionMechanics,
-    PlayerMechanics,
-    RemoveMechanics,
-    SocialMechanics,
-    InteractionMechanics,
-    MenuMechanics,
-    CognitionMechanics,
-    PlotMechanics,
-    NavigationMechanics,
-    FluidMechanics,
-    Mechanic
-)
-from app.game.menus.controllers import (
-    DisplayController,
-    ScrollController,
-    MainController,
-    LoadController,
-    PauseController,
-    OptionsController,
-    InventoryController
-)
-from app.models.config import (
-    RecipeConfiguration,
-    MechanicsInstance
-)
-from app.models.groups import SpawnableGroup
-from app.game.devices import (
-    Keyboard,
-    Controller
-)
-from app.services.translators import (
-    LambdaTranslator,
-    CompilerTranslator
-)
-
-class Factory:
-    FRAME_MAP = {
-        FrameRecipe.SPRITE.value: SpriteFrame,
-        FrameRecipe.SINGLE.value: SingleFrame,
-        FrameRecipe.ITERABLE.value: IterableFrame,
-        FrameRecipe.STATE.value: StateFrame,
-        FrameRecipe.TRAVERSAL.value: TraversalFrame,
-        FrameRecipe.METER.value: MeterFrame,
-        FrameRecipe.INDEX.value: IndexFrame,
-        FrameRecipe.FLUID.value: FluidFrame,
-        FrameRecipe.SHORELINE.value: ShorelineFrame,
-        FrameRecipe.NONE.value: NoFrame
-    }
-
-    ANIMATION_MAP = {
-        AnimationRecipe.BINARY.value: BinaryAnimation,
-        AnimationRecipe.LIFECYCLE.value: LifecycleAnimation,
-        AnimationRecipe.STATE.value: StateAnimation,
-        AnimationRecipe.SPRITE.value: SpriteAnimation,
-        AnimationRecipe.TRAVERSAL.value: TraversalAnimation,
-        AnimationRecipe.METER.value: MeterAnimation,
-        AnimationRecipe.NONE.value: NoAnimation
-    }
-
-    DEVICE_MAP = {
-        Devices.KEYBOARD.value: Keyboard,
-        Devices.CONTROLLER.value: Controller
-    }
-
-    MECHANICS_MAP = {
-        Mechanics.ANIMATION.value: AnimationMechanics,
-        Mechanics.COLLISION.value: CollisionMechanics,
-        Mechanics.PROJECTILE.value: ProjectileMechanics,
-        Mechanics.SWITCH.value: SwitchMechanics,
-        Mechanics.TRANSITION.value: TransitionMechanics,
-        Mechanics.INTERACTION.value: InteractionMechanics,
-        Mechanics.PLAYER.value: PlayerMechanics,
-        Mechanics.REMOVE.value: RemoveMechanics,
-        Mechanics.COMBAT.value: CombatMechanics,
-        Mechanics.MOTION.value: MotionMechanics,
-        Mechanics.SOCIAL.value: SocialMechanics,
-        Mechanics.MENU.value: MenuMechanics,
-        Mechanics.COGNITION.value: CognitionMechanics,
-        Mechanics.PLOT.value: PlotMechanics,
-        Mechanics.NAVIGATION.value: NavigationMechanics,
-        Mechanics.FLUID.value: FluidMechanics
-    }
-
-    CONTROLLER_MAP  = {
-        Controllers.DISPLAY.value: DisplayController,
-        Controllers.SCROLL.value: ScrollController,
-        Controllers.MAIN.value: MainController,
-        Controllers.LOAD.value: LoadController,
-        Controllers.PAUSE.value: PauseController,
-        Controllers.OPTIONS.value: OptionsController,
-        Controllers.INVENTORY.value: InventoryController
-    }
-    
-    TRANSLATOR_MAP = {
-        Translators.LAMBDA.value: LambdaTranslator,
-        Translators.COMPILER.value: CompilerTranslator
-    }
-
-    @staticmethod
-    def frame(recipe: Any) -> Frame:
-        if isinstance(recipe, str):
-            for enum_key, frame_cls in Factory.FRAME_MAP.items():
-                if enum_key == recipe:
-                    return frame_cls()
-        return Factory.FRAME_MAP.get(recipe, NoFrame)()
-
-    @staticmethod
-    def animation(recipe: Any) -> Animation:
-        if isinstance(recipe, str):
-            for enum_key, anim_cls in Factory.ANIMATION_MAP.items():
-                if enum_key == recipe:
-                    return anim_cls()
-        return Factory.ANIMATION_MAP.get(recipe, NoAnimation)()
-    
-    @staticmethod
-    def taxonomy(id: str, name: str, category: str, instance: str) -> Taxonomy:
-        return Taxonomy(id, name, category, instance)
-
-    @staticmethod
-    def device(dev: str, mapping: dict):
-        target_cls = Factory.DEVICE_MAP.get(dev, Keyboard)
-        return target_cls(mapping)
-
-    @staticmethod
-    def cradle(spawnables: SpawnableGroup, recipes: RecipeConfiguration, decomposer: Any):
-        from app.services.generators.game.cradle import Cradle
-        return Cradle(spawnables, recipes, decomposer)
-
-    @staticmethod 
-    def mechanics(config: MechanicsInstance, executors: Dict[str, Any] = None) -> Mechanic:
-        key = config.key
-
-        target_cls = None
-        for enum_key, cls in Factory.MECHANICS_MAP.items():
-            if enum_key == key:
-                target_cls = cls
-                break
-
-        if not target_cls:
-            target_cls = Factory.MECHANICS_MAP.get(key, AnimationMechanics)
-
-        mechanic_instance = target_cls()
-
-        executor_keys = config.executors
-        if executor_keys:
-            if executors is None:
-                raise KeyError(
-                    f"Mechanic '{key}' declared executors {executor_keys}, "
-                    f"but no executor registry was provided."
-                )
-            for executor_key in executor_keys:
-                executor = executors.get(executor_key)
-                if executor is None:
-                    raise KeyError(
-                        f"Mechanic '{key}' requested executor '{executor_key}', "
-                        f"but it is not registered in the active executor map."
-                    )
-                mechanic_instance.set_executor(executor_key, executor)
-
-        return mechanic_instance
-
-    @staticmethod
-    def controller(kind: Any):
-        if isinstance(kind, str):
-            for enum_key, cls in Factory.CONTROLLER_MAP.items():
-                if enum_key == kind:
-                    return cls()
-        return Factory.CONTROLLER_MAP.get(kind, ScrollController)()
-
-    @staticmethod
-    def translator(translation: str):
-        target_cls = Factory.TRANSLATOR_MAP.get(translation, LambdaTranslator)
-        return target_cls()
-
-    @staticmethod
-    def context(menu: str, **kwargs):
-        # TODO
-        pass
-```
-
-**Application Logs**
-
-```bash
-(.venv) grant@skynet:~/Projects/ontology$ python src/cli.py start world-01
-2026-09-28 16:27:34,465 - INFO - __main__ - Starting CLI with command: 'start' for board: 'world-01'
-2026-09-28 16:27:34,465 - INFO - __main__ - Igniting engine for live execution...
-2026-09-28 16:27:34,465 - INFO - app.config.loader - Loading YAML property schemas...
-2026-09-28 16:27:34,668 - INFO - app.config.loader - Loading YAML configurations...
-2026-09-28 16:27:34,928 - INFO - app.services.orchestration.builder - Loading YAML data for target state: world-01 ...
-2026-09-28 16:27:34,929 - INFO - app.config.loader - Loading YAML state configurations from /home/grant/Projects/ontology/src/data/state/world-01 ...
-2026-09-28 16:27:35,049 - INFO - app.services.orchestration.builder - Compiling master mechanic executors...
-Traceback (most recent call last):
-  File "/home/grant/Projects/ontology/src/cli.py", line 356, in <module>
-    main()
-    ~~~~^^
-  File "/home/grant/Projects/ontology/src/cli.py", line 331, in main
-    engine = handler(args, orchestrator, screensize)
-  File "/home/grant/Projects/ontology/src/cli.py", line 273, in handle_start
-    engine = orchestrator.orchestrate(
-        state_key=args.board_key,
-    ...<2 lines>...
-        headless=False
-    )
-  File "/home/grant/Projects/ontology/src/app/services/orchestration/orchestrator.py", line 36, in orchestrate
-    self.builder.build_executors()
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
-  File "/home/grant/Projects/ontology/src/app/services/orchestration/builder.py", line 141, in build_executors
-    actuator_executor = Actuator(shorelines=shoreline_index)
-TypeError: Actuator() takes no arguments
+This will require changes to the Builder to inject the dependencies correctly.
+
+I don't like how bespoke that makes the Mechanics factory method. Better way to do this, I believe, is to add a step in the Builder pipleine for `build_relations`, move the shoreline index instantiation there, add it to a map of relations (currently only shoreline) keyed by an enum for Relations. Then, similar to how the Mechanics base class has a `set_executor` interface to pass in an arbitrary executor, create another method for` set_relation`. Then, factory can accept a dictionary of relations. Then, mechanics config can be updated just so:
+
+```yaml
+mechanics:
+  core:
+    - key: menu
+      executors: []
+      relations: []
+    - key: animation
+      executors: []
+      relations: []
+    - key: remove
+      executors: []
+      relations: []
+  world:
+    - key: player
+      executors: []
+      relations: []
+    - key: cognition
+      executors: []
+      relations: []
+    - key: transition
+      executors:
+        - intention
+      relations: []
+    - key: navigation
+      executors: []
+      relations: []
+    - key: motion
+      executors: []
+      relations: []
+    - key: interaction
+      executors: []
+      relations: []
+    - key: social
+      executors: []
+      relations: []
+    - key: collision
+      executors: []
+      relations: []
+    - key: fluid
+      executors:
+        - actuator
+      relations:
+        - shorelines
+    - key: combat
+      executors: []
+      relations: []
+    - key: switch
+      executors: []
+      relations: []
+    - key: projectile
+      executors: []
+      relations: []
+    - key: plot
+      executors:
+        - plot
+      relations: []
 ```

@@ -8,6 +8,7 @@ from unittest.mock import (
     MagicMock, 
     patch
 )
+import collections
 
 # External Libraries
 import pytest
@@ -106,16 +107,29 @@ def mock_compiler_executors(
 
 
 @pytest.fixture
+def mock_bus() -> collections.deque:
+    return collections.deque()
+
+@pytest.fixture
+def mock_relations(mock_shoreline_index) -> dict:
+    from app.config.enums import Relations
+    return {
+        Relations.SHORELINES.value: mock_shoreline_index
+    }
+
+
+@pytest.fixture
 def mock_engine_with_lambda_transitions(
     mock_board, 
     mock_mechanics_configuration,
-    mock_lambda_executors
+    mock_lambda_executors,
+    mock_relations
 ) -> Engine:
     """
     Fully constructs the Engine with live Mechanics and Executors
     """
     world_mechanics = [
-        Factory.mechanics(m, mock_lambda_executors) 
+        Factory.mechanics(m, mock_lambda_executors, mock_relations) 
         for m in mock_mechanics_configuration.world
     ]
 
@@ -132,13 +146,14 @@ def mock_engine_with_lambda_transitions(
 def mock_engine_with_compiler_transitions(
     mock_board, 
     mock_mechanics_configuration,
-    mock_compiler_executors
+    mock_compiler_executors,
+    mock_relations
 ) -> Engine:
     """
     Fully constructs the Engine with live Mechanics and Executors
     """  
     world_mechanics = [
-        Factory.mechanics(m, mock_compiler_executors) 
+        Factory.mechanics(m, mock_compiler_executors, mock_relations) 
         for m in mock_mechanics_configuration.world
     ]
 

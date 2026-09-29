@@ -146,6 +146,7 @@ class Factory:
         Translators.COMPILER.value: CompilerTranslator
     }
 
+
     @staticmethod
     def frame(recipe: Any) -> Frame:
         if isinstance(recipe, str):
@@ -154,6 +155,7 @@ class Factory:
                     return frame_cls()
         return Factory.FRAME_MAP.get(recipe, NoFrame)()
 
+
     @staticmethod
     def animation(recipe: Any) -> Animation:
         if isinstance(recipe, str):
@@ -161,26 +163,30 @@ class Factory:
                 if enum_key == recipe:
                     return anim_cls()
         return Factory.ANIMATION_MAP.get(recipe, NoAnimation)()
+
     
     @staticmethod
     def taxonomy(id: str, name: str, category: str, instance: str) -> Taxonomy:
         return Taxonomy(id, name, category, instance)
+
 
     @staticmethod
     def device(dev: str, mapping: dict):
         target_cls = Factory.DEVICE_MAP.get(dev, Keyboard)
         return target_cls(mapping)
 
+
     @staticmethod
     def cradle(spawnables: SpawnableGroup, recipes: RecipeConfiguration, decomposer: Any):
         from app.services.generators.game.cradle import Cradle
         return Cradle(spawnables, recipes, decomposer)
 
+
     @staticmethod 
     def mechanics(
         config: MechanicsInstance, 
         executors: Dict[str, Any] = None,
-        shorelines: Any = None
+        relations: Dict[str, Any] = None
     ) -> Mechanic:
         key = config.key
 
@@ -193,11 +199,9 @@ class Factory:
         if not target_cls:
             target_cls = Factory.MECHANICS_MAP.get(key, AnimationMechanics)
 
-        if target_cls == FluidMechanics:
-            mechanic_instance = FluidMechanics(shorelines=shorelines)
-        else:
-            mechanic_instance = target_cls()
+        mechanic_instance = target_cls()
 
+        # 1. Resolve and inject executors
         executor_keys = config.executors
         if executor_keys:
             if executors is None:
@@ -214,7 +218,25 @@ class Factory:
                     )
                 mechanic_instance.set_executor(executor_key, executor)
 
+        # 2. Resolve and inject relations
+        relation_keys = config.relations
+        if relation_keys:
+            if relations is None:
+                raise KeyError(
+                    f"Mechanic '{key}' declared relations {relation_keys}, "
+                    f"but no relations registry was provided."
+                )
+            for relation_key in relation_keys:
+                relation = relations.get(relation_key)
+                if relation is None:
+                    raise KeyError(
+                        f"Mechanic '{key}' requested relation '{relation_key}', "
+                        f"but it is not registered in the active relations map."
+                    )
+                mechanic_instance.set_relation(relation_key, relation)
+
         return mechanic_instance
+    
 
     @staticmethod
     def controller(kind: Any):
