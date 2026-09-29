@@ -2601,14 +2601,7 @@ $</p>
 <li><code>mass: int = -1</code></li>
 </ul>
 <h3 id="shorelines">Shorelines</h3>
-<p>Shorelines are procedural, inanimate Geography sensors instantiated along unoccluded fluid corridors and pool perimeters. When an <code>Actuator</code> pumps a fluid emitter, it discretizes the unoccluded perimeter into grid cells, queries <code>board.tile(layer, coord)</code>, resolves the matching Shoreline asset via the relational index, and coalesces contiguous homogenous cells into cohesive shoreline entities.</p>
-<p><strong>Rows</strong></p>
-<ul>
-<li>Row 0: <code>Directions.UP.value</code> ("up" / North bank: Land North, Water South)</li>
-<li>Row 1: <code>Directions.LEFT.value</code> ("left" / West bank: Land West, Water East)</li>
-<li>Row 2: <code>Directions.DOWN.value</code> ("down" / South bank: Land South, Water North)
-Row 3: <code>Directions.RIGHT.value</code> ("right" / East bank: Land East, Water West)</li>
-</ul>
+<p>Shorelines are procedural, inanimate Geography sensors instantiated along unoccluded environmental water margins. Rather than belonging to individual fluid emitters, Shorelines are derived at the layer level: <code>FluidMechanics</code> aggregates all active fluid streams and annular pools on a layer, derives the outer perimeter hull via <code>geometry.contours()</code>, samples bordering substrate tiles from <code>Board</code>, and coalesces contiguous segments into cohesive shoreline entities.</p>
 <p><strong>Frame: ShorelineFrame</strong></p>
 <ul>
 <li>Indexes 4 cardinal orientation rows:<ul>
@@ -2628,7 +2621,6 @@ Row 3: <code>Directions.RIGHT.value</code> ("right" / East bank: Land East, Wate
 <li><code>length: int</code></li>
 <li><code>thickness: int</code></li>
 <li><code>bidirectional: bool = True</code></li>
-<li><code>parent_fluid: str</code></li>
 <li><code>hitboxes: List[Hitbox]</code></li>
 </ul>
 <h2 id="effects">Effects</h2>

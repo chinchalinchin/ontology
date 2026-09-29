@@ -1402,7 +1402,7 @@
 <li><a href="../01-assets/#tiles">Tiles</a></li>
 <li><a href="../06-widgets/">Widgets</a></li>
 </ul>
-<p>Assets are placed in the <code>/src/assets/&lt;category&gt;/</code> directory and then registered to the Asset category index <code>/src/assets/&lt;category&gt;/main.yaml</code> file. The YAML index schema for each Asset configures its <em>properties</em>, i.e. the static attributes that are constant and do not change as a result of gameplay. </p>
+<p>Assets are placed in the <code>/src/assets/&lt;category&gt;/</code> directory and then registered in a Asset category index <code>/src/assets/&lt;category&gt;/*.yaml</code> file. The YAML index schema for each Asset configures its <em>properties</em>, i.e. the static attributes that are constant and do not change as a result of gameplay. </p>
 <p>The <code>/src/assets</code> directory is known as the <em>asset directory</em>.</p>
 <p>See <a href="../appendices/01-schemas/#model-properties">Asset Schema</a> for more information on the Asset property index.</p>
 <h2 id="data">Data</h2>
@@ -1460,13 +1460,13 @@
 <li>Package: <code>app.game.engine</code></li>
 </ul>
 <p>The Engine handles the core gameplay loop and framerate calculations. </p>
-<p><strong>Bus</strong></p>
+<p><strong>Component: Bus</strong></p>
 <p>The Engine contains a Bus for processing Menu Events.</p>
-<p><strong>Provider</strong></p>
+<p><strong>Component: Provider</strong></p>
 <p>The Engine contains a Provider for instantiating Menus.</p>
-<p><strong>Binder</strong></p>
+<p><strong>Component: Binder</strong></p>
 <p>The Provider contains a Binder for binding Widget states to game state.</p>
-<p><strong>Library</strong></p>
+<p><strong>Component: Library</strong></p>
 <p>The Provider contains a Library for injecting Widget states with plot-dependent content.</p>
 <h3 id="board">Board</h3>
 <ul>
@@ -1474,9 +1474,28 @@
 </ul>
 <p>The Board is the Game's "<em>database</em>". It holds all ingame Assets and Configurations during the course of the game loop and exposes them to the engine through queryable interfaces.</p>
 <p>The state files for each Board are maintained in <code>/src/data/state/&lt;board-key&gt;/**</code>.</p>
-<p><strong>Cradle</strong></p>
+<p><strong>Interface: Queries</strong></p>
+<p>The Board exposes spatial queries to evaluate dynamic environmental fields:</p>
+<ul>
+<li>Hiearchy Queries<ul>
+<li><code>board.instances(key, layer)</code>: Returns a List of Asset on the given layer, filtered by Instance <code>key</code>.</li>
+<li><code>board.categories(key, layer)</code>: Returns a List of Assets on the given layer, filtered by Category <code>key</code></li>
+</ul>
+</li>
+<li>Physics Queries<ul>
+<li><code>board.weights(layer)</code>: Returns a list of Assets with positive mass on the given layer.</li>
+<li><code>board.obstacles(layer)</code>: Returns a list of Assets that qualify as Obstacles.</li>
+</ul>
+</li>
+<li>Environment Queries<ul>
+<li><code>board.tile(layer, position, instance)</code>: Retrieves background or foreground <a href="../01-assets/#tiles">Tiles</a> via <span class="arithmatex">\(O(1)\)</span> spatial hash lookup.</li>
+<li><code>board.water(layer, position, exclude=None)</code>: Evaluates whether a coordinate intersects any active <a href="../01-assets/#fluids">Fluid</a> stream or annular pool across the layer, with an optional entity exclusion filter.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Component: Cradle</strong></p>
 <p>The Board posseses a Cradle field for instantiating Assets through game Mechanics, e.g. <code>CombatMechanics</code> uses the Cradle to inject new Projectiles into the Board state.</p>
-<p><strong>Migrator</strong></p>
+<p><strong>Component: Migrator</strong></p>
 <p>The Board posses a Migrator field for asynchronously loading game state.</p>
 <h3 id="screen">Screen</h3>
 <ul>
