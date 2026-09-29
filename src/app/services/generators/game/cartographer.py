@@ -16,7 +16,6 @@ from typing import (
 )
 
 # Application Libraries
-import app.config.settings as settings
 from app.assets.base import Asset
 from app.config.enums import (
     AssetCategories,
