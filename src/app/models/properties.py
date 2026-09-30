@@ -163,7 +163,8 @@ class ObjectPropertyInstances:
 @dataclass(slots=True)
 class CraftPropertyInstances:
     struts: Dict[str, CraftProperties] = field(default_factory=dict)
-
+    bridges: Dict[str, CraftProperties] = field(default_factory=dict)
+    
 @dataclass(slots=True)
 class CursorPropertyInstances:
     expressions: Dict[str, CursorProperties] = field(default_factory=dict)

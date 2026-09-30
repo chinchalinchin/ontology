@@ -34,7 +34,7 @@ def update(assets: List[Asset], board: Board, delta: float) -> None:
         center_pos = Position(int(cx), int(cy))
 
         # Suspend friction calculations while the asset is floating in water
-        if board.water(asset.state.layer, center_pos):
+        if board.fluid(asset.state.layer, center_pos):
             continue
 
         tile = board.tile(asset.state.layer, center_pos)

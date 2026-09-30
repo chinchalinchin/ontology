@@ -6,7 +6,11 @@ Package for ingame Asset instantiation.
 from __future__ import annotations
 
 # Standard Libraries
-from typing import TYPE_CHECKING, List
+from typing import (
+    TYPE_CHECKING, 
+    List,
+    Optional
+)
 import logging 
 import uuid
 
@@ -22,6 +26,7 @@ from app.models.config import RecipeConfiguration
 from app.models.groups import SpawnableGroup
 from app.models.state import (
     AnimationState,
+    BridgeState,
     MotorState, 
     PropertyState,
     AttachmentState,
@@ -36,7 +41,11 @@ if TYPE_CHECKING:
     from app.services.generators.game.decomposer import Decomposer
     from app.models.properties import Cost
 
-from libs.core.models import Position, Velocity
+from libs.core.models import (
+    Position, 
+    Velocity,
+    Multiple
+)
 
 logger = logging.getLogger(__name__)
 
@@ -290,6 +299,32 @@ class Cradle:
         )
         return self.decomposer.unpack(pseudo_state)
 
+
+    def spawn_bridge(
+        self,
+        id: str,
+        layer: str,
+        position: Position,
+        orientation: str,
+        multiple: Multiple,
+        owner: Optional[str] = None
+    ) -> List[Asset]:
+        """
+        Spawns and unpacks a bridge configuration via Decomposer.
+        """
+        name = self.name()
+        bridge_state = BridgeState(
+            id=id,
+            name=name,
+            layer=layer,
+            position=position,
+            orientation=orientation,
+            multiple=multiple,
+            owner=owner,
+            depth=1,
+            height=0
+        )
+        return self.decomposer.bridge(bridge_state)
 
     def cost(self, id: str) -> List[Cost]:
         """

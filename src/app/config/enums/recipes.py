@@ -19,6 +19,7 @@ class FrameRecipe(str, Enum):
     SPRITE          = "sprite"
     CARDINAL        = "cardinal"
     METER           = "meter"
+    ORIENTED        = "oriented"
     TRAVERSAL       = "traversal"
     INDEX           = "index"
 

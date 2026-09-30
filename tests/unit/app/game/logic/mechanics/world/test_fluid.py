@@ -163,12 +163,12 @@ def test_board_water_subtile_precision(mock_board):
     fluid.state.length = 64
     fluid.state.pool = None
 
-    mock_board.update_water_cache("0")
+    mock_board.update_fluid_cache("0")
 
     # Inside stream corridor: x in [70, 102), y in [0, 64)
-    assert mock_board.water("0", Position(70, 10)) is True
-    assert mock_board.water("0", Position(101, 10)) is True
+    assert mock_board.fluid("0", Position(70, 10)) is True
+    assert mock_board.fluid("0", Position(101, 10)) is True
 
     # Same tile bucket (cx = 69 // 32 = 2, cy = 10 // 32 = 0) but outside corridor
-    assert mock_board.water("0", Position(69, 10)) is False
-    assert mock_board.water("0", Position(102, 10)) is False
+    assert mock_board.fluid("0", Position(69, 10)) is False
+    assert mock_board.fluid("0", Position(102, 10)) is False

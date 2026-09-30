@@ -48,6 +48,7 @@ class InertAssets(str, Enum):
 
 class Shortcuts(str, Enum):
     COMPOSITIONS    = "compositions"
+    BRIDGES         = "bridges"
     GIZMOS          = "gizmos"
     PLOTS           = "plots"
 

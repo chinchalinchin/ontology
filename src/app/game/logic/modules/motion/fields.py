@@ -135,25 +135,35 @@ def update(assets: List[Asset], board: Board, delta: float) -> None:
             continue
 
         layer = asset.state.layer
-        layer_rafts = board.instances(AssetInstances.RAFTS.value, layer)
 
         # -------------------------------------------------------------
-        # 1. SURFACE HIERARCHY INTERCEPTION (RAFTS)
+        # 1. SURFACE HIERARCHY INTERCEPTION (BRIDGES & RAFTS)
         # -------------------------------------------------------------
-        on_raft = False
-        raft_vx = 0.0
-        raft_vy = 0.0
+        on_surface = False
+        surface_vx = 0.0
+        surface_vy = 0.0
 
-        for raft in layer_rafts:
-            if _intersects(asset, raft):
-                on_raft = True
-                raft_vx = raft.state.velocity.vx
-                raft_vy = raft.state.velocity.vy
+        # 1a. Evaluate Static Bridges (sensor mass m = -1, zero drift)
+        layer_bridges = board.instances(AssetInstances.BRIDGES.value, layer)
+        for bridge in layer_bridges:
+            if _intersects(asset, bridge):
+                on_surface = True
+                surface_vx = 0.0
+                surface_vy = 0.0
                 break
 
-        if on_raft:
-            asset.state.velocity.vx += raft_vx
-            asset.state.velocity.vy += raft_vy
+        # 1b. Evaluate Dynamic Rafts (m > 0, drifts with current)
+        if not on_surface:
+            for raft in board.instances(AssetInstances.RAFTS.value, layer):
+                if _intersects(asset, raft):
+                    on_surface = True
+                    surface_vx = raft.state.velocity.vx
+                    surface_vy = raft.state.velocity.vy
+                    break
+
+        if on_surface:
+            asset.state.velocity.vx += surface_vx
+            asset.state.velocity.vy += surface_vy
             asset.state.mutators.triggers.submerged = False
             continue
 

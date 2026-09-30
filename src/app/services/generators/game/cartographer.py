@@ -51,11 +51,12 @@ class Cartographer:
         if shores:
             board.remove(list(shores))
 
+
     @classmethod
     def _collect_water_rectangles(cls, layer: str, board: Board) -> List[Tuple[int, int, int, int]]:
         """
-        Extracts active fluid stream corridors and annular pools on the layer
-        into primitive (min_x, min_y, max_x, max_y) AABB tuples for contour sweeps.
+        Extracts active fluid stream corridors, annular pools, and child branch
+        corridors into primitive (min_x, min_y, max_x, max_y) AABB tuples for contour sweeps.
         """
         fluids = board.instances(AssetInstances.FLUIDS.value, layer)
         rects: List[Tuple[int, int, int, int]] = []
@@ -84,6 +85,26 @@ class Cartographer:
             pool = fluid.state.pool
             if pool is not None and pool.w > 0 and pool.l > 0:
                 rects.append((pool.x, pool.y, pool.x + pool.w, pool.y + pool.l))
+
+            # 3. Child branch corridors
+            branches = getattr(fluid.state, "branches", None)
+            if branches:
+                for branch in branches:
+                    if branch.length <= 0:
+                        continue
+                    bx = branch.position.x
+                    by = branch.position.y
+                    b_dir = branch.source
+                    b_dir_str = b_dir.value if hasattr(b_dir, "value") else str(b_dir)
+
+                    if b_dir_str == Directions.DOWN.value:
+                        rects.append((bx, by, bx + fw, by + branch.length))
+                    elif b_dir_str == Directions.UP.value:
+                        rects.append((bx, by - branch.length, bx + fw, by))
+                    elif b_dir_str == Directions.RIGHT.value:
+                        rects.append((bx, by, bx + branch.length, by + fl))
+                    elif b_dir_str == Directions.LEFT.value:
+                        rects.append((bx - branch.length, by, bx, by + fl))
 
         return rects
 
@@ -126,7 +147,7 @@ class Cartographer:
         return Hitbox(Position(0, 0), Dimensions(length, thickness))
 
     @classmethod
-    def _is_step_water(
+    def is_step_fluid(
         cls,
         board: Board,
         layer: str,
@@ -143,7 +164,7 @@ class Cartographer:
         samples = [mid_c, start_c + 1, start_c + length - 1]
         for c in samples:
             pos = Position(c, fixed_coord) if axis == 'x' else Position(fixed_coord, c)
-            if board.water(layer, pos):
+            if board.fluid(layer, pos):
                 return True
         return False
 
@@ -272,7 +293,7 @@ class Cartographer:
                     probe_w, probe_l = 1, step_len
 
                 # 1. Water-to-water junction: skip if land-side probe intersects water
-                if cls._is_step_water(
+                if cls.is_step_fluid(
                     board, 
                     layer, 
                     axis, 

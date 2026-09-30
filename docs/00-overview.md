@@ -130,15 +130,22 @@ The state files for each Board are maintained in `/src/data/state/<board-key>/**
 The Board exposes interfaces for querying the game state:
 
 * Hierarchy Queries
-    - `board.instances(key, layer)`: Returns a List of Assets on the given layer, filtered by Instance `key`.
-    - `board.categories(key, layer)`: Returns a List of Assets on the given layer, filtered by Category `key`.
-    - `board.get_shorelines(layer=None)`: Retrieves active procedural shoreline assets for a specific layer or across all layers.
+    1. `board.instances(key, layer)`: Returns a List of Assets on the given layer, filtered by Instance `key`.
+    2. `board.categories(key, layer)`: Returns a List of Assets on the given layer, filtered by Category `key`.
 * Physics Queries
-    - `board.weights(layer)`: Returns a list of Assets with non-negative mass ($m \ge 0$) on the given layer (includes static and dynamic bodies; excludes sensors).
-    - `board.obstacles(layer)`: Returns a list of Assets that qualify as Obstacles.
+    1. `board.bridges(layer)`: Returns a list of Bridge Assets on a layer.
+    2. `board.weights(layer)`: Returns a list of Assets with non-negative mass ($m \ge 0$) on the given layer (includes static and dynamic bodies; excludes sensors).
+    3. `board.obstacles(layer)`: Returns a list of Assets that qualify as Obstacles.
 * Environment Queries
-    - `board.tile(layer, position, instance)`: Retrieves background or foreground [Tiles](./01-assets.md#tiles) via $O(1)$ spatial hash lookup.
-    - `board.water(layer, position, exclude=None)`: Evaluates whether a coordinate intersects any active [Fluid](./01-assets.md#fluids) stream or annular pool across the layer, with an optional entity exclusion filter.
+    1. `board.tile(layer, position, instance)`: Retrieves background or foreground [Tiles](./01-assets.md#tiles) via $O(1)$ spatial hash lookup.
+    2. `board.get_shorelines(layer=None)`: Retrieves active procedural shoreline assets for a specific layer or across all layers.
+
+**Interface: Predicates**
+
+THe Board exposes predicates for asserting conditions on the Board state.
+
+* Environment Predicates
+    - `board.fluid(layer, position, exclude=None)`: Evaluates whether a coordinate intersects any active [Fluid](./01-assets.md#fluids) stream or annular pool across the layer, with an optional entity exclusion filter.
 
 **Component: Cradle**
 

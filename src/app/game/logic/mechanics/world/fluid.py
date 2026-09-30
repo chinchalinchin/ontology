@@ -127,9 +127,11 @@ class FluidMechanics(Mechanic):
                     f"Telemetry:FluidMechanics:PrePropagate:{f.name} pos=({f.state.position.x}, {f.state.position.y}) "
                     f"len={f.state.length} pool={f.state.pool}"
                 )
-
                 self.actuator.propagate(f, board)
             
+            # Delegate layer water cache synchronization to FluidMechanics
+            board.update_fluid_cache(layer)
+
             # Pass 2: Synthesize layer geography across settled water boundaries
             if self.shorelines is not None:
                 Cartographer.purge(layer, board)

@@ -30,7 +30,8 @@ from app.models.state.assets import (
     CollectableState,
     FluidState,
     SpriteState,
-    PlayerState
+    PlayerState,
+    BridgeState
 )
 
 # ---------------------------------------------------------------------------------------
@@ -56,6 +57,7 @@ class ObjectStateInstances:
 class CraftStateInstances:
     struts: List[PropertyState] = field(default_factory=list)
     decors: List[PropertyState] = field(default_factory=list)
+    bridges: List[BridgeState] = field(default_factory=list)
     
 @dataclass(slots=True)
 class CursorStateInstances:

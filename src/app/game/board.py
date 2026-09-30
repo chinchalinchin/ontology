@@ -120,6 +120,7 @@ class Board:
                 self._all_instances[inst] = []
             self._all_instances[inst].append(asset)
 
+
     def _init_cache(self, layer: Optional[str] = None) -> None:
         if layer is None:
             self._cached_categories = {}
@@ -147,55 +148,6 @@ class Board:
         self.perimeters[layer] = []
         self.shorelines[layer] = []
         return
-
-    def _add_fluid_to_watermap(self, layer: str, fluid: Asset) -> None:
-        if layer not in self._cached_watermap:
-            self._cached_watermap[layer] = {}
-
-        fx = fluid.state.position.x
-        fy = fluid.state.position.y
-        fw = fluid.properties.dimensions.w
-        fl = fluid.properties.dimensions.l
-        length = fluid.state.length
-        direction = fluid.state.source
-        direction_val = direction.value if hasattr(direction, "value") else str(direction)
-
-        # 1. Directional stream corridor bounding box
-        if length > 0:
-            if direction_val == Directions.DOWN.value:
-                sx1, sy1, sx2, sy2 = fx, fy, fx + fw, fy + length
-            elif direction_val == Directions.UP.value:
-                sx1, sy1, sx2, sy2 = fx, fy - length, fx + fw, fy
-            elif direction_val == Directions.RIGHT.value:
-                sx1, sy1, sx2, sy2 = fx, fy, fx + length, fy + fl
-            elif direction_val == Directions.LEFT.value:
-                sx1, sy1, sx2, sy2 = fx - length, fy, fx, fy + fl
-            else:
-                sx1, sy1, sx2, sy2 = 0, 0, 0, 0
-
-            if sx2 > sx1 and sy2 > sy1:
-                start_cx = int(sx1) // settings.TILE_HASH_SIZE
-                end_cx = (int(sx2) - 1) // settings.TILE_HASH_SIZE + 1
-                start_cy = int(sy1) // settings.TILE_HASH_SIZE
-                end_cy = (int(sy2) - 1) // settings.TILE_HASH_SIZE + 1
-                for cx in range(start_cx, end_cx):
-                    for cy in range(start_cy, end_cy):
-                        bucket = self._cached_watermap[layer].setdefault((cx, cy), [])
-                        if fluid not in bucket:
-                            bucket.append(fluid)
-
-        # 2. Annular pool bounding box
-        pool = fluid.state.pool
-        if pool and pool.w > 0 and pool.l > 0:
-            start_cx = int(pool.x) // settings.TILE_HASH_SIZE
-            end_cx = (int(pool.x + pool.w) - 1) // settings.TILE_HASH_SIZE + 1
-            start_cy = int(pool.y) // settings.TILE_HASH_SIZE
-            end_cy = (int(pool.y + pool.l) - 1) // settings.TILE_HASH_SIZE + 1
-            for cx in range(start_cx, end_cx):
-                for cy in range(start_cy, end_cy):
-                    bucket = self._cached_watermap[layer].setdefault((cx, cy), [])
-                    if fluid not in bucket:
-                        bucket.append(fluid)
 
 
     def _cache(self):
@@ -265,13 +217,99 @@ class Board:
                         self._cached_tilemap[layer][inst][(cx, cy)] = asset
 
         for layer in list(self._cached_layers.keys()):
-            self.update_water_cache(layer)
+            self.update_fluid_cache(layer)
+
+
+    def _map_fluid(self, layer: str, fluid: Asset) -> None:
+        """
+        Indexes parent corridors, annular pools, and all active branch corridors
+        into the O(1) broad-phase water spatial hash grid.
+        """
+        if layer not in self._cached_watermap:
+            self._cached_watermap[layer] = {}
+
+        fx = fluid.state.position.x
+        fy = fluid.state.position.y
+        fw = fluid.properties.dimensions.w
+        fl = fluid.properties.dimensions.l
+        length = fluid.state.length
+        direction = fluid.state.source
+        direction_val = direction.value if hasattr(direction, "value") else str(direction)
+
+        def _index_box(x1: int, y1: int, x2: int, y2: int) -> None:
+            if x2 > x1 and y2 > y1:
+                start_cx = int(x1) // settings.TILE_HASH_SIZE
+                end_cx = (int(x2) - 1) // settings.TILE_HASH_SIZE + 1
+                start_cy = int(y1) // settings.TILE_HASH_SIZE
+                end_cy = (int(y2) - 1) // settings.TILE_HASH_SIZE + 1
+                for cx in range(start_cx, end_cx):
+                    for cy in range(start_cy, end_cy):
+                        bucket = self._cached_watermap[layer].setdefault((cx, cy), [])
+                        if fluid not in bucket:
+                            bucket.append(fluid)
+
+        # 1. Parent directional stream corridor
+        if length > 0:
+            if direction_val == Directions.DOWN.value:
+                _index_box(fx, fy, fx + fw, fy + length)
+            elif direction_val == Directions.UP.value:
+                _index_box(fx, fy - length, fx + fw, fy)
+            elif direction_val == Directions.RIGHT.value:
+                _index_box(fx, fy, fx + length, fy + fl)
+            elif direction_val == Directions.LEFT.value:
+                _index_box(fx - length, fy, fx, fy + fl)
+
+        # 2. Annular pool
+        pool = fluid.state.pool
+        if pool and pool.w > 0 and pool.l > 0:
+            _index_box(pool.x, pool.y, pool.x + pool.w, pool.y + pool.l)
+
+        # 3. Child branch corridors
+        branches = getattr(fluid.state, "branches", None)
+        if branches:
+            for branch in branches:
+                if branch.length <= 0:
+                    continue
+                bx = branch.position.x
+                by = branch.position.y
+                b_dir = branch.source
+                b_dir_val = b_dir.value if hasattr(b_dir, "value") else str(b_dir)
+
+                if b_dir_val == Directions.DOWN.value:
+                    _index_box(bx, by, bx + fw, by + branch.length)
+                elif b_dir_val == Directions.UP.value:
+                    _index_box(bx, by - branch.length, bx + fw, by)
+                elif b_dir_val == Directions.RIGHT.value:
+                    _index_box(bx, by, bx + branch.length, by + fl)
+                elif b_dir_val == Directions.LEFT.value:
+                    _index_box(bx - branch.length, by, bx, by + fl)
+    
+    # ---------------------------------------------- PREDICATES
+
+    # NOTE: these are essentially static. 
+    #       i.e. candidates for modularization
+    
+    def _is_weight(self, asset: Asset) -> bool:
+        """
+        Evaluates physical candidate qualification for weight caching, excluding
+        sensors, cursors, effects, geography, and terrain tiles.
+        """
+        return (
+            hasattr(asset.properties, "mass")
+            and asset.properties.mass >= 0
+            and asset.category not in (
+                AssetCategories.CURSORS.value,
+                AssetCategories.EFFECTS.value,
+                AssetCategories.GEOGRAPHY.value,
+                AssetCategories.TILES.value
+            )
+        )
 
 
     def _in_stream(self, position: Position, fluid: Asset) -> bool:
         """
-        Evaluates whether Cartesian coordinate intersects the directional stream corridor
-        of the specified fluid entity.
+        Evaluates whether Cartesian coordinate intersects the parent corridor or
+        any active child branch corridor of the specified fluid entity.
         """
         px = position.x
         py = position.y
@@ -285,13 +323,40 @@ class Board:
         direction_val = direction.value if hasattr(direction, "value") else str(direction)
 
         if direction_val == Directions.DOWN.value:
-            return fx <= px < fx + fw and fy <= py < fy + slen
+            if fx <= px < fx + fw and fy <= py < fy + slen:
+                return True
         elif direction_val == Directions.UP.value:
-            return fx <= px < fx + fw and fy - slen <= py < fy
+            if fx <= px < fx + fw and fy - slen <= py < fy:
+                return True
         elif direction_val == Directions.RIGHT.value:
-            return fx <= px < fx + slen and fy <= py < fy + fl
+            if fx <= px < fx + slen and fy <= py < fy + fl:
+                return True
         elif direction_val == Directions.LEFT.value:
-            return fx - slen <= px < fx and fy <= py < fy + fl
+            if fx - slen <= px < fx and fy <= py < fy + fl:
+                return True
+
+        branches = getattr(fluid.state, "branches", None)
+        if branches:
+            for branch in branches:
+                if branch.length <= 0:
+                    continue
+                bx = branch.position.x
+                by = branch.position.y
+                b_dir = branch.source
+                b_dir_val = b_dir.value if hasattr(b_dir, "value") else str(b_dir)
+
+                if b_dir_val == Directions.DOWN.value:
+                    if bx <= px < bx + fw and by <= py < by + branch.length:
+                        return True
+                elif b_dir_val == Directions.UP.value:
+                    if bx <= px < bx + fw and by - branch.length <= py < by:
+                        return True
+                elif b_dir_val == Directions.RIGHT.value:
+                    if bx <= px < bx + branch.length and by <= py < by + fl:
+                        return True
+                elif b_dir_val == Directions.LEFT.value:
+                    if bx - branch.length <= px < bx and by <= py < by + fl:
+                        return True
 
         return False
 
@@ -300,7 +365,7 @@ class Board:
 
     # ---------------------------------------------- PREDICATES
 
-    def water(
+    def fluid(
         self,
         layer: str,
         position: Position,
@@ -386,8 +451,9 @@ class Board:
 
 
     def weights(self, layer=None) -> List[Asset]:
+        """Returns physical weight assets (m >= 0) on the layer."""
         if layer is None:
-            return [ asset for asset in self._assets if asset.properties.mass >= 0 ]
+            return [asset for asset in self._assets if self._is_weight(asset)]
         return self._cached_weights.get(layer, [])
 
 
@@ -400,6 +466,11 @@ class Board:
         gates = self._cached_instances.get(layer, {}).get(AssetInstances.GATES.value, [])
         struts = self._cached_instances.get(layer, {}).get(AssetInstances.STRUTS.value, [])
         return crates + gates + struts + signs + chests
+
+
+    def bridges(self, layer: Optional[str] = None) -> List[Asset]:
+        """Retrieves static sensor bridge assets for a specific layer or across all layers."""
+        return self.instances(AssetInstances.BRIDGES.value, layer)
 
 
     def layers(self) -> List[str]:
@@ -467,7 +538,7 @@ class Board:
 
     # ------------------------------------------------ MUTATORS
 
-    def update_water_cache(self, layer: str) -> None:
+    def update_fluid_cache(self, layer: str) -> None:
         """
         Rebuilds the O(1) spatial water grid cache for the specified layer.
         """
@@ -478,7 +549,7 @@ class Board:
 
         fluids = self.instances(AssetInstances.FLUIDS.value, layer)
         for fluid in fluids:
-            self._add_fluid_to_watermap(layer, fluid)
+            self._map_fluid(layer, fluid)
 
 
     def cache_fluid(self, fluid: Asset) -> None:
@@ -487,7 +558,7 @@ class Board:
         """
         layer = fluid.state.layer
         if layer:
-            self.update_water_cache(layer)
+            self.update_fluid_cache(layer)
 
 
     def relayer(self, asset: Asset, new_layer: str) -> None:
@@ -556,8 +627,8 @@ class Board:
             self.shorelines[new_layer].append(asset)
 
         if inst == AssetInstances.FLUIDS.value:
-            self.update_water_cache(old_layer)
-            self.update_water_cache(new_layer)
+            self.update_fluid_cache(old_layer)
+            self.update_fluid_cache(new_layer)
 
 
     def add(self, additions: List[Asset]) -> None:
@@ -626,7 +697,7 @@ class Board:
                         self._cached_tilemap[layer][asset.instance][(cx, cy)] = asset
 
         for layer in affected_water_layers:
-            self.update_water_cache(layer)
+            self.update_fluid_cache(layer)
 
 
     def remove(self, removals: List[Asset]) -> None:
@@ -703,7 +774,7 @@ class Board:
         # 5. Invalidate water cache if fluids removed
         if AssetInstances.FLUIDS.value in affected_instances:
             for layer in affected_layers:
-                self.update_water_cache(layer)
+                self.update_fluid_cache(layer)
 
 
     def clear(self) -> None:

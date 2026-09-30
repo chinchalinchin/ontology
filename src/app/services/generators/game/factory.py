@@ -31,6 +31,7 @@ from app.assets.frames import (
     TraversalFrame,
     MeterFrame,
     IndexFrame,
+    OrientedFrame,
     NoFrame
 )
 from app.config.enums import (
@@ -94,6 +95,7 @@ class Factory:
         FrameRecipe.INDEX.value: IndexFrame,
         FrameRecipe.FLUID.value: FluidFrame,
         FrameRecipe.CARDINAL.value: CardinalFrame,
+        FrameRecipe.ORIENTED.value: OrientedFrame,
         FrameRecipe.NONE.value: NoFrame
     }
 

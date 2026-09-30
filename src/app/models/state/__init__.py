@@ -14,6 +14,7 @@ from app.models.state.core import (
 from app.models.state.assets import (
     # ---- CRAFT STATES
     PropertyState,
+    BridgeState,
     # ---- CURSOR STATES
     MotorState,
     AttachmentState,
@@ -27,6 +28,7 @@ from app.models.state.assets import (
     Damage,
     Lot,
     Pool,
+    Branch,
     # ---- GEOGRAPHY STATES
     ShorelineState,
     # ---- TILE STATES
@@ -92,6 +94,7 @@ __all__ = [
     'DialogueState',
     # CRAFT STATES
     'PropertyState',
+    'BridgeState',
     # CURSOR STATES
     'MotorState',
     'AttachmentState',
@@ -104,6 +107,7 @@ __all__ = [
     'Damage',
     'Lot',
     'Pool',
+    'Branch',
     # GEOGRAPHY STATES
     'ShorelineState',
     # SPRITE STATES

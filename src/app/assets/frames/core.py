@@ -20,9 +20,7 @@ import logging
 
 # Application Libraries
 import app.config.settings as settings
-from app.config.enums import (
-    Orientations
-)
+from app.config.enums import Orientations
 from app.assets.base import Frame
 from app.models.state import AssetState
 from app.models.properties import AssetProperties

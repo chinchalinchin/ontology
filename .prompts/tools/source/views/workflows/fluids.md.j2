@@ -90,11 +90,13 @@
 {{ file(properties.paths.root + 'src/app/game/logic/modules/motion/fields.py') }}
 ```
 
+{# 
 **src/app/game/logic/modules/motion/frictive.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/game/logic/modules/motion/frictive.py') }}
-```
+``` 
+#}
 
 ###### app.game.logic.relations
 
@@ -113,12 +115,6 @@
 ```
 
 ##### app.models.config
-
-**src/app/models/config/compositions.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/models/config/compositions.py') }}
-```
 
 **src/app/models/config/mechanics.py**
 
@@ -160,23 +156,15 @@
 {{ file(properties.paths.root + 'src/app/models/state/assets/geography.py' ) }}
 ```
 
-**src/app/models/state/assets/tiles.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/models/state/assets/tiles.py' ) }}
-```
-
 #### app.services
 
-{# 
 ##### app.services.orchestration
 
-**src/app/services/orchestration/builder.py**
+**src/app/services/orchestration/migrator.py**
 
 ```python
-{{ file(properties.paths.root + 'src/app/services/orchestration/builder.py') }}
+{{ file(properties.paths.root + 'src/app/services/orchestration/migrator.py') }}
 ``` 
-#}
 
 ##### app.services.generators
 

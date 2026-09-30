@@ -1,6 +1,7 @@
 # Application Libraries
 from app.models.state.assets.crafts import (
     PropertyState,
+    BridgeState
 )
 from app.models.state.assets.cursors import (
     MotorState,
@@ -14,7 +15,8 @@ from app.models.state.assets.effects import (
     CollectableState,
     Damage,
     Lot,
-    Pool
+    Pool,
+    Branch
 )
 from app.models.state.assets.geography import (
     ShorelineState
@@ -51,6 +53,7 @@ __all__ = [
     'DialogueState',
     # CRAFT STATES
     'PropertyState',
+    'BridgeState',
     # CURSOR STATES
     'MotorState',
     'AttachmentState',
@@ -63,6 +66,7 @@ __all__ = [
     'Damage',
     'Lot',
     'Pool',
+    'Branch',
     # GEOGRAPHY STATES
     'ShorelineState',
     # TILE STATES

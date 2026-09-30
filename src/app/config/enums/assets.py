@@ -45,6 +45,7 @@ class AssetInstances(str, Enum):
     SIGNS           = "signs"
     RAFTS           = "rafts"
     # CRAFTS
+    BRIDGES         = "bridges"
     STRUTS          = "struts"
     DECORS          = "decors"
     FORGES          = "forges"
