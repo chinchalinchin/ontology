@@ -22,7 +22,7 @@ from app.models.state.widgets import (
     DisplayState,
     PaneState
 )
-from app.models.state.sprites import (
+from app.models.state.assets.sprites import (
     SpriteState,
     PlayerState
 )

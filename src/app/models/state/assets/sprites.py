@@ -24,7 +24,7 @@ from app.models.state.core import (
     AnimationState,
     AssetState
 )
-from app.models.state.cursors import AttachmentState
+from app.models.state.assets.cursors import AttachmentState
 
 # Cython Libraries
 from libs.core.models import (

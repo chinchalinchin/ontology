@@ -10,7 +10,7 @@ import pytest
 
 # Application Libraries
 import app.config.settings as settings
-from app.models.state.objects import PropertyState
+from app.models.state.assets.objects import PropertyState
 
 
 @pytest.mark.orchestration

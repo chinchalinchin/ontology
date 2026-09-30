@@ -47,6 +47,7 @@ EMPTY = 0
 SRC_DIR = Path(__file__).resolve().parent.parent.parent
 ASSET_DIR = SRC_DIR / "assets"
 DATA_DIR = SRC_DIR / "data"
+DUMP_DIR = DATA_DIR / "dumps"
 LOG_DIR = DATA_DIR / "logs"
 CONFIG_DIR = DATA_DIR / "config"
 STATE_DIR = DATA_DIR / "state"

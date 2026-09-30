@@ -11,36 +11,49 @@ from app.models.state.core import (
     FearParameters,
     Mutators
 )
-from app.models.state.devices import (
-    DevicePayload,
-    MenuPayload,
-    WorldPayload
-)
-from app.models.state.cursors import (
+from app.models.state.assets import (
+    # ---- CRAFT STATES
+    PropertyState,
+    # ---- CURSOR STATES
     MotorState,
     AttachmentState,
-)
-from app.models.state.effects import (
+    # ---- EFFECT STATES
     FluidState,
     HazardState,
     EffectState,
     ReactableState,
     CollectableState,
+    # ------ EFFECT FIELDS
     Damage,
     Lot,
-    Pool
-)
-from app.models.state.geography import (
-    ShorelineState
-)
-from app.models.state.objects import (
+    Pool,
+    # ---- GEOGRAPHY STATES
+    ShorelineState,
+    # ---- TILE STATES
     MultiplierState,
+    # ---- OBJECT STATES
     ContainerState,
     PositionalState,
     DoorState,
     SwitchState,
-    PropertyState,
     DialogueState,
+    # ---- SHEET STATES
+    SpriteState,
+    PlayerState,
+    # ----- SHEET FIELDS
+    Character,
+    Equipment,
+    Meter,
+    Meters,
+    Psyche,
+    Goal,
+    Inventory,
+    Memory
+)
+from app.models.state.devices import (
+    DevicePayload,
+    MenuPayload,
+    WorldPayload
 )
 from app.models.state.schemas import (
     TileStateInstances,
@@ -50,18 +63,6 @@ from app.models.state.schemas import (
     EffectStateInstances,
     SheetStateInstances,
     StateSchema
-)
-from app.models.state.sprites import (
-    SpriteState,
-    PlayerState,
-    Character,
-    Equipment,
-    Meter,
-    Meters,
-    Psyche,
-    Goal,
-    Inventory,
-    Memory
 )
 from app.models.state.widgets import (
     IconState,
@@ -88,8 +89,9 @@ __all__ = [
     'PositionalState',
     'DoorState',
     'SwitchState',
-    'PropertyState',
     'DialogueState',
+    # CRAFT STATES
+    'PropertyState',
     # CURSOR STATES
     'MotorState',
     'AttachmentState',

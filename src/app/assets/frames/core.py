@@ -60,7 +60,9 @@ class SingleFrame(Frame):
     def index(self, id: str, properties: AssetProperties) -> Dict[str, Tuple[int, int, int, int]]:
         """
         """
-        return {id: (0, 0, properties.dimensions.w, properties.dimensions.l)}
+        return {
+            id: (0, 0, properties.dimensions.w, properties.dimensions.l)
+        }
 
 # -------------------------------------------------------------------------------------
 
@@ -70,13 +72,15 @@ class IterableFrame(Frame):
     ## IterableFrame
     """
     
-
     def keys(self, id: str, state: AssetState) -> List[str]:
         """
         """
-        return [
-            (settings.SEPARATOR.join([id, str(state.animation.frame)]), 0, 0)
-        ]
+        return [(
+            settings.SEPARATOR.join([
+                id, 
+                str(state.animation.frame)
+            ]), 0, 0
+        )]
 
         
     def index(self, id: str, properties: AssetProperties) -> Dict[str, Tuple[int, int, int, int]]:
@@ -86,6 +90,9 @@ class IterableFrame(Frame):
         l = properties.dimensions.l
 
         return { 
-            settings.SEPARATOR.join([id,str(i)]): (i * w, 0, w, l)
+            settings.SEPARATOR.join([
+                id,
+                str(i)
+            ]): (i * w, 0, w, l)
             for i in range(properties.count) 
         }

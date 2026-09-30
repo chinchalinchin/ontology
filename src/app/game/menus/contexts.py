@@ -18,8 +18,8 @@ from typing import (
 
 # Application Classes
 from app.models.state.core import PlotState
-from app.models.state.sprites import SpriteState
-from app.models.state.objects import DialogueState
+from app.models.state.assets.sprites import SpriteState
+from app.models.state.assets.objects import DialogueState
 
 # Cython Libraries
 from libs.graphics.registry import Registry

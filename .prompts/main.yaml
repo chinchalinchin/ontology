@@ -61,7 +61,6 @@ tools:
         exclude:
           - index.md
           - 02-sprites.md
-          - 03-compositions.md
           - 04-intentions.md
           - 06-widgets.md
           - 07-sounds.md

@@ -28,7 +28,6 @@ from app.game.engine import Engine
 from app.game.screen import Screen
 from app.game.logic.mechanics import (
     Mechanic,
-    FluidMechanics
 )
 from app.game.logic.relations.shorelines import ShorelineIndex
 from app.models.groups import (

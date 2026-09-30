@@ -246,6 +246,7 @@ class Decomposer:
         self._unpack_components(node.components, root_context, node_context, inc, assets)
         return assets
 
+
     def _unpack_components(self, 
         components: Any, 
         root_context: Dict[str, Any], 
@@ -277,8 +278,10 @@ class Decomposer:
                     )
                     assets.append(self._create_asset(cat_key, inst_key, new_state))
 
+
     # ---------------------------------------------------------
     # ------------------------------------------ PUBLIC METHODS
+
 
     def unpack(self, deployed_state: PropertyState) -> List[Asset]:
         """Flattens a Composition configuration into a native 1D list of fully hydrated Assets."""
@@ -306,6 +309,7 @@ class Decomposer:
                 assets.extend(self._unpack_node(branch, root_context, root_context, inc, is_root=False))
 
         return assets
+
 
     def cost(self, comp_id: str) -> List[Cost]:
         """Calculates the aggregate cost of an entire Composition tree."""
