@@ -581,4 +581,4 @@ Introduce `Orientations` enum and register `BRIDGES` under `AssetCategories.CRAF
 
 --- 
 
-Bug: When a submerged Asset (i.e. an Asset moving under the influence of a Fluid field) intersects a bridge, it should render underneath of the Bridge and continue moving through the field, i.e. it should "pass underneath" the Bridge when its velocity is transverse to the orientation of the Bridge.
+Bug For Later: When a submerged Asset (i.e. an Asset moving under the influence of a Fluid field) intersects a bridge, it should render underneath of the Bridge and continue moving through the field, i.e. it should "pass underneath" the Bridge when its velocity is transverse to the orientation of the Bridge.
