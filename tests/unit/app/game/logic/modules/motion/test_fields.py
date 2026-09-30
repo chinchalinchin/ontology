@@ -22,7 +22,6 @@ from libs.core.models import (
     Velocity
 )
 
-# TODO: everything should use fixtures
 
 @pytest.mark.fluids
 @pytest.mark.motion
@@ -267,3 +266,57 @@ def test_fields_shoreline_sheer_ledge_blocks_exit(mock_board, mock_shoreline):
 
     # Velocity directed against the bank is nullified
     assert player.state.velocity.vx == 0.0
+
+@pytest.mark.fluids
+@pytest.mark.motion
+def test_surface_interception_bridge_deck_crossings(mock_board, mock_bridge, mock_fluid):
+    """
+    Verify entities traversing a bridge deck suppress submersion, bypass fluid current
+    drift, and do not emit splash particles.
+    """
+    # Active stream corridor along x=70, y=[0, 100)
+    mock_fluid.state.length = 100
+    mock_fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(32, 100))]
+
+    # Bridge crosses at (70, 50)
+    mock_bridge.state.position = Position(x=70, y=50)
+    mock_board.add([mock_bridge])
+
+    player = mock_board.player()
+    player.state.position.x = 70
+    player.state.position.y = 50
+    player.state.velocity.vx = 4.0
+    player.state.velocity.vy = 0.0
+    player.state.mutators.triggers.submerged = True
+
+    with patch.object(mock_board.cradle, "spawn_passive", wraps=mock_board.cradle.spawn_passive) as spy_spawn:
+        fields.update([player], mock_board, 0.016)
+
+        # Entity velocity maintains voluntary speed, zero current drift
+        assert player.state.velocity.vx == 4.0
+        assert player.state.velocity.vy == 0.0
+        assert player.state.mutators.triggers.submerged is False
+        assert spy_spawn.call_count == 0
+
+
+@pytest.mark.fluids
+@pytest.mark.motion
+def test_surface_interception_bridge_preempts_shoreline(mock_board, mock_bridge, mock_shoreline):
+    """
+    Verify bridge deck surface interception evaluates before shoreline edge crossing,
+    suppressing orthogonal drop nudges and splash triggers.
+    """
+    mock_bridge.state.position = Position(x=70, y=0)
+    mock_shoreline.state.position = Position(x=70, y=0)
+    mock_board.add([mock_bridge, mock_shoreline])
+
+    player = mock_board.player()
+    player.state.position = Position(x=70, y=0)
+    player.state.velocity = Velocity(vx=4.0, vy=0.0)
+    player.state.mutators.triggers.submerged = False
+
+    fields.update([player], mock_board, 0.016)
+
+    # Position is not nudged by shoreline thickness (8px)
+    assert player.state.position.x == 70
+    assert player.state.mutators.triggers.submerged is False

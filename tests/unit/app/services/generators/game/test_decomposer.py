@@ -1,13 +1,24 @@
 """
 # Ontology: tests.unit.services.generators.test_decomposer
 """
+# External Libraries
+import pytest
+
 # Application Libraries
-from app.models.state import PropertyState
+from app.config.enums import Orientations
+from app.models.state import (
+    BridgeState,
+    PropertyState
+)
 
 # Cython Libraries
-from libs.core.models import Position
+from libs.core.models import (
+    Position,
+    Multiple
+)
 
 
+@pytest.mark.services
 def test_decomposer_cost_aggregation(mock_decomposer):
     costs = mock_decomposer.cost("test-house")
     cost_dict = {c.item: c.quantity for c in costs}
@@ -16,6 +27,7 @@ def test_decomposer_cost_aggregation(mock_decomposer):
     assert cost_dict.get("stone") == 5
 
 
+@pytest.mark.services
 def test_decomposer_spatial_superposition(mock_decomposer):
     deployed = PropertyState(
         id="test-house",
@@ -45,6 +57,7 @@ def test_decomposer_spatial_superposition(mock_decomposer):
     assert branch_strut.state.position.y == 110
 
 
+@pytest.mark.services
 def test_decomposer_late_binding(mock_decomposer):
     deployed = PropertyState(
         id="test-house",
@@ -62,6 +75,7 @@ def test_decomposer_late_binding(mock_decomposer):
     assert branch_strut.state.owner == "player"
 
 
+@pytest.mark.services
 def test_decomposer_nomenclature_generation(mock_decomposer):
     deployed1 = PropertyState(
         id="test-house",
@@ -92,6 +106,7 @@ def test_decomposer_nomenclature_generation(mock_decomposer):
     assert door2.name == "door-strut-base_house-2-2"
 
 
+@pytest.mark.services
 def test_decomposer_unmapped_composition(mock_decomposer):
     """
     Ensure non-existent composition keys yield empty lists without throwing exceptions.
@@ -106,6 +121,7 @@ def test_decomposer_unmapped_composition(mock_decomposer):
     assert mock_decomposer.cost("missing-comp") == []
 
 
+@pytest.mark.services
 def test_decomposer_resolve_bind_patterns(mock_decomposer):
     """
     Validate bind parsing logic across explicit parent, explicit root, and legacy syntax.
@@ -132,6 +148,7 @@ def test_decomposer_resolve_bind_patterns(mock_decomposer):
     assert mock_decomposer._resolve_bind("bind(parent.nonexistent)", root_ctx, parent_ctx) == "bind(parent.nonexistent)"
 
 
+@pytest.mark.services
 def test_decomposer_cross_layer_origin_decoupling(mock_decomposer):
     """
     Verify branches on foreign layers decouple from parent layer coordinates and bind to (0, 0).
@@ -165,6 +182,7 @@ def test_decomposer_cross_layer_origin_decoupling(mock_decomposer):
     assert interior_floor.state.position.y == 96
 
 
+@pytest.mark.services
 def test_decomposer_cross_layer_door_out_resolution(mock_decomposer):
     """
     Ensure entrance doors output to local interior coordinates while exit doors offset by root position.
@@ -192,3 +210,78 @@ def test_decomposer_cross_layer_door_out_resolution(mock_decomposer):
     assert exit_door.state.outlayer == "0"
     assert exit_door.state.out.x == 193  # 150 + 43
     assert exit_door.state.out.y == 913  # 750 + 163
+
+
+@pytest.mark.fluids
+@pytest.mark.services
+def test_decomposer_bridge_horizontal_expansion(mock_decomposer):
+    """
+    Verify Decomposer expands horizontal bridge multiplier into discrete unit assets
+    with sequential names, offset coordinates, and preserved craft properties.
+    """
+    state = BridgeState(
+        id="wood-bridge",
+        name="river-crossing",
+        layer="0",
+        position=Position(x=100, y=50),
+        orientation=Orientations.HORIZONTAL.value,
+        multiple=Multiple(nx=3, ny=1)
+    )
+
+    units = mock_decomposer.bridge(state)
+    assert len(units) == 3
+
+    assert units[0].name == "river-crossing-0"
+    assert units[0].state.position.x == 100
+    assert units[0].state.position.y == 50
+    assert units[0].state.depth == 1
+    assert units[0].state.height == 0
+
+    assert units[1].name == "river-crossing-1"
+    assert units[1].state.position.x == 132  # 100 + 32
+    assert units[1].state.position.y == 50
+
+    assert units[2].name == "river-crossing-2"
+    assert units[2].state.position.x == 164  # 100 + 64
+    assert units[2].state.position.y == 50
+
+
+@pytest.mark.fluids
+@pytest.mark.services
+def test_decomposer_bridge_vertical_expansion(mock_decomposer):
+    """
+    Verify Decomposer expands vertical bridge multiplier along +Y axis.
+    """
+    state = BridgeState(
+        id="wood-bridge",
+        name="chasm-bridge",
+        layer="0",
+        position=Position(x=50, y=100),
+        orientation=Orientations.VERTICAL.value,
+        multiple=Multiple(nx=1, ny=2)
+    )
+
+    units = mock_decomposer.bridge(state)
+    assert len(units) == 2
+
+    assert units[0].state.position.x == 50
+    assert units[0].state.position.y == 100
+    assert units[1].state.position.x == 50
+    assert units[1].state.position.y == 132
+
+
+@pytest.mark.fluids
+@pytest.mark.services
+def test_decomposer_bridge_linear_cost(mock_decomposer):
+    """
+    Verify bridge construction cost scales linearly with span length (N * cost).
+    """
+    mult = Multiple(nx=4, ny=1)
+    costs = mock_decomposer.bridge_cost(
+        "wood-bridge",
+        mult,
+        Orientations.HORIZONTAL.value
+    )
+    assert len(costs) == 1
+    assert costs[0].item == "wood"
+    assert costs[0].quantity == 8  # 4 * 2

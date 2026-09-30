@@ -1,13 +1,12 @@
 """
 # Ontology: app.models.config.core
 
-Models for typing the configuration attributes of Mechanics, Menus and other game components. See documentation for a more in-depth explanation of each field and its purpose. 
+Models for typing the core configuration attributes of game components.
 """
 # Standard Libraries
 from typing import (
     Dict, 
     List, 
-    Optional
 )
 from dataclasses import (
     dataclass, 
@@ -15,10 +14,6 @@ from dataclasses import (
 )
 
 # Application Libraries
-from app.models.state import (
-    PropertyState, 
-    StateSchema
-)
 from app.models.properties import Action
 
 # ---------------------------------------------------------------------------------------
@@ -57,37 +52,10 @@ class PlotConfiguration(Configuration):
     conditions: List[str] = field(default_factory=list)
 
 # ---------------------------------------------------------------------------------------
-# --------------------------------------------------------------- INTENTION CONFIGURATION
+# ----------------------------------------------------------------- LIBRARY CONFIGURATION
 
 @dataclass(slots=True, frozen=True)
 class LibraryConfiguration:
     """
     """
     pass
-
-# ---------------------------------------------------------------------------------------
-# --------------------------------------------------------------- MECHANICS CONFIGURATION
-
-@dataclass(slots=True, frozen=True)
-class MechanicsInstance:
-    key: str
-    executors: List[str] = field(default_factory = list)
-    relations: List[str] = field(default_factory=list)
-
-@dataclass(slots=True, frozen=True)
-class MechanicsConfiguration(Configuration):
-    core: List[MechanicsInstance] = field(default_factory=list)
-    world: List[MechanicsInstance] = field(default_factory=list)
-
-# ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------- COMPOSITION CONFIGURATION
-
-@dataclass(slots=True, frozen=True)
-class CompositionPseudoState:
-    strut: PropertyState
-    components: StateSchema
-
-@dataclass(slots=True, frozen=True)
-class CompositionConfiguration(Configuration):
-    root: CompositionPseudoState
-    branches: Optional[List[CompositionPseudoState]] = field(default_factory=list)

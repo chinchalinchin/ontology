@@ -19,11 +19,9 @@ from app.config.enums import (
 )
 from app.assets.base import Frame
 from app.models.state import (
-    AssetState, 
     FluidState
 )
 from app.models.properties import (
-    AssetProperties,
     EffectProperties
 )
 
@@ -221,5 +219,77 @@ class FluidFrame(Frame):
                 for px in range(state.pool.x, state.pool.x + state.pool.w, w):
                     for py in range(state.pool.y, state.pool.y + state.pool.l, l):
                         frame_keys.append((full_key, px - pos_x, py - pos_y))
+
+        # ---------------------------------------------------------
+        # 3. BRANCH CORRIDORS DECOMPOSITION
+        # ---------------------------------------------------------
+        if state.branches:
+            pos_x = state.position.x if state.position else 0
+            pos_y = state.position.y if state.position else 0
+
+            for branch in state.branches:
+                b_len = branch.length
+                if b_len <= 0:
+                    continue
+
+                b_dir = branch.source
+                b_dir_val = b_dir.value if hasattr(b_dir, "value") else str(b_dir)
+                b_off_x = branch.position.x - pos_x
+                b_off_y = branch.position.y - pos_y
+
+                b_dim = l if b_dir_val in (
+                    Directions.DOWN.value, 
+                    Directions.UP.value
+                ) else w
+                b_full = b_len // b_dim
+                b_rem = b_len % b_dim
+
+                if b_dir_val == Directions.DOWN.value:
+                    for i in range(b_full):
+                        frame_keys.append((full_key, b_off_x, b_off_y + i * l))
+                    if b_rem > 0:
+                        slice_key = settings.SEPARATOR.join([
+                            id,
+                            frame_str,
+                            Directions.DOWN.value,
+                            str(b_rem)
+                        ])
+                        frame_keys.append((slice_key, b_off_x, b_off_y + b_full * l))
+
+                elif b_dir_val == Directions.UP.value:
+                    for i in range(1, b_full + 1):
+                        frame_keys.append((full_key, b_off_x, b_off_y - i * l))
+                    if b_rem > 0:
+                        slice_key = settings.SEPARATOR.join([
+                            id,
+                            frame_str,
+                            Directions.UP.value,
+                            str(b_rem)
+                        ])
+                        frame_keys.append((slice_key, b_off_x, b_off_y - b_len))
+
+                elif b_dir_val == Directions.RIGHT.value:
+                    for i in range(b_full):
+                        frame_keys.append((full_key, b_off_x + i * w, b_off_y))
+                    if b_rem > 0:
+                        slice_key = settings.SEPARATOR.join([
+                            id,
+                            frame_str,
+                            Directions.RIGHT.value,
+                            str(b_rem)
+                        ])
+                        frame_keys.append((slice_key, b_off_x + b_full * w, b_off_y))
+
+                elif b_dir_val == Directions.LEFT.value:
+                    for i in range(1, b_full + 1):
+                        frame_keys.append((full_key, b_off_x - i * w, b_off_y))
+                    if b_rem > 0:
+                        slice_key = settings.SEPARATOR.join([
+                            id,
+                            frame_str,
+                            Directions.LEFT.value,
+                            str(b_rem)
+                        ])
+                        frame_keys.append((slice_key, b_off_x - b_len, b_off_y))
 
         return frame_keys

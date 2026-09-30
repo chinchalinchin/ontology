@@ -135,7 +135,7 @@ def dump(board_key, context, temp='state'):
         args['frames'] = frames
 
     dump_str = template.render(**args)
-    dump_out_path = Path.cwd() / f"{timestamp}.{temp}-dump.md"
+    dump_out_path = settings.DUMP_DIR / f"{timestamp}.{temp}-dump.md"
 
     with open(dump_out_path, "w", encoding="utf-8") as f:
         f.write(dump_str)

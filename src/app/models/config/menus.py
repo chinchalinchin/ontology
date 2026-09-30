@@ -100,5 +100,3 @@ class MenuConfiguration(Configuration):
     """
     controller: str
     roots: List[MenuNode]
-
-# NOTE: backwards compatibility is pointless when we are in the process of refactoring this exact functionality. let it fail, so we know where the bugs are.

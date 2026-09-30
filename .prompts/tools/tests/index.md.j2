@@ -3,13 +3,11 @@
 
 The **Tests Tool** provides **Views** into the application testing bed. 
 
-- **Current Workflow Focus**: {{ tools.parameters.tests.workflow | capitalize }}
-
 ## Views
 
+{% if tools.views.tests.fixtures %}
 {% include 'tools/tests/views/configuration.md.j2' %}
 
-{% if tools.views.tests.fixtures %}
 {% include 'tools/tests/views/fixtures.md.j2'%}
 {% endif %}
 
@@ -17,8 +15,12 @@ The **Tests Tool** provides **Views** into the application testing bed.
 {% include 'tools/tests/views/workflows/' ~ tools.parameters.tests.workflow ~ '.md.j2' %}
 {% endif %}
 
-{% if tools.views.tests.console %}
-{% include 'tools/tests/views/console.md.j2' %}
+{% if tools.views.tests.pipeline %}
+{% include 'tools/tests/views/pipeline.md.j2' %}
+{% endif %}
+
+{% if tools.views.tests.session %}
+{% include 'tools/tests/views/session.md.j2' %}
 {% endif %}
 
 {% endif %}

@@ -31,6 +31,7 @@ class TileRecipe:
 @dataclass(slots=True, frozen=True)
 class CraftRecipe:
     struts: Recipe = None
+    bridges: Recipe = None
 
 @dataclass(slots=True, frozen=True)
 class CursorRecipe:

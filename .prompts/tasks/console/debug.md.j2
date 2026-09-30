@@ -1,0 +1,31 @@
+# Task: Ontology - Debug
+
+All changes to application codebase accepted. Unit tests rejected until user acceptance is passing.
+
+Cython libraries recompiled,
+
+```bash
+(.venv) grant@skynet:~/Projects/ontology$ python setup.py build_ext --inplace
+Compiling src/libs/core/math/geometry.pyx because it changed.
+[1/1] Cythonizing src/libs/core/math/geometry.pyx
+running build_ext
+building 'libs.core.math.geometry' extension
+cc -pthread -fno-strict-overflow -Wsign-compare -Wunreachable-code -DNDEBUG -g -O3 -Wall -O3 -fstack-protector -fstack-clash-protection -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -fPIC -fPIC -I/home/grant/Projects/.venv/include -I/home/grant/.local/share/uv/python/cpython-3.14.6-linux-x86_64-gnu/include/python3.14 -c src/libs/core/math/geometry.c -o build/temp.linux-x86_64-cpython-314/src/libs/core/math/geometry.o
+cc -pthread -shared -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now -Wl,--exclude-libs,ALL build/temp.linux-x86_64-cpython-314/src/libs/core/math/geometry.o -L/home/grant/.local/share/uv/python/cpython-3.14.6-linux-x86_64-gnu/lib -o build/lib.linux-x86_64-cpython-314/libs/core/math/geometry.cpython-314-x86_64-linux-gnu.so
+copying build/lib.linux-x86_64-cpython-314/libs/core/models.cpython-314-x86_64-linux-gnu.so -> src/libs/core
+copying build/lib.linux-x86_64-cpython-314/libs/core/input.cpython-314-x86_64-linux-gnu.so -> src/libs/core
+copying build/lib.linux-x86_64-cpython-314/libs/core/math/geometry.cpython-314-x86_64-linux-gnu.so -> src/libs/core/math
+copying build/lib.linux-x86_64-cpython-314/libs/core/math/physics.cpython-314-x86_64-linux-gnu.so -> src/libs/core/math
+copying build/lib.linux-x86_64-cpython-314/libs/core/math/space.cpython-314-x86_64-linux-gnu.so -> src/libs/core/math
+copying build/lib.linux-x86_64-cpython-314/libs/core/math/paths.cpython-314-x86_64-linux-gnu.so -> src/libs/core/math
+copying build/lib.linux-x86_64-cpython-314/libs/graphics/render.cpython-314-x86_64-linux-gnu.so -> src/libs/graphics
+copying build/lib.linux-x86_64-cpython-314/libs/graphics/registry.cpython-314-x86_64-linux-gnu.so -> src/libs/graphics
+```
+
+Shorelines are no longer rendering along the Fluid streams themselves. They appear to be generating around the Fluid annular pools, but not the stream.
+
+**Priority**
+
+Assist in debugging the issue described. Further information related to the execution can be found in the [Test Session](#view-test-session) console.
+
+{% include 'blocks/controls/debugging-guidelines.md' %}

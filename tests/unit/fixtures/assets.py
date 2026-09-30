@@ -14,9 +14,10 @@ from app.assets.base import (
 from app.assets.frames import (
     FluidFrame,
     IterableFrame,
-    ShorelineFrame,
+    CardinalFrame,
     SingleFrame,
     SpriteFrame,
+    OrientedFrame
 )
 from app.assets.animations import (
     NoAnimation,
@@ -68,7 +69,7 @@ def mock_shoreline(
         ), 
         properties = mock_geography_properties.shorelines.get('grassy-shore'), 
         state = mock_shoreline_state, 
-        frame = ShorelineFrame(tile_w=32, tile_l=32),
+        frame = CardinalFrame(tile_w=32, tile_l=32),
         animation = NoAnimation()
     )
 
@@ -213,6 +214,24 @@ def mock_strut_alt2(
         animation = NoAnimation()
     )
 
+
+@pytest.fixture
+def mock_bridge(
+    mock_craft_properties,
+    mock_bridge_state
+) -> Asset:
+    return Asset(
+        taxonomy = Taxonomy(
+            id = "wood-bridge",
+            name = "bridge-main-0",
+            category = AssetCategories.CRAFTS.value,
+            instance = AssetInstances.BRIDGES.value
+        ),
+        properties = mock_craft_properties.bridges.get('wood-bridge'),
+        state = mock_bridge_state,
+        frame = OrientedFrame(),
+        animation = NoAnimation()
+    )
 
 @pytest.fixture
 def mock_raft(
@@ -461,7 +480,8 @@ def mock_assets(
     mock_strut,
     mock_strut_alt,
     mock_strut_alt2,
-    mock_raft
+    mock_raft,
+    mock_bridge
 ):
     return [
         mock_back_tile,
@@ -479,5 +499,6 @@ def mock_assets(
         mock_strut,
         mock_strut_alt,
         mock_strut_alt2,
-        mock_raft
+        mock_raft,
+        mock_bridge
     ]

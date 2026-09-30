@@ -4,16 +4,20 @@ from app.models.config.core import (
     ActionConfiguration,
     IntentionConfiguration,
     PlotConfiguration,
+)
+from app.models.config.compositions import (
     CompositionPseudoState,
-    CompositionConfiguration,
-    MechanicsInstance,
-    MechanicsConfiguration
+    CompositionConfiguration
 )
 from app.models.config.mappings import (
     WorldMapping,
     MenuMapping,
     DeviceMapping,
     MappingConfiguration
+)
+from app.models.config.mechanics import (
+    MechanicsInstance,
+    MechanicsConfiguration
 )
 from app.models.config.menus import (
     MenuConfiguration,

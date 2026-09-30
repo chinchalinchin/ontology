@@ -14,6 +14,7 @@ properties:
     docs: docs/
     diagrams: docs/static/mmd/
     fixtures: tests/unit/fixtures/
+    logs: src/data/logs/
     phases: .prompts/board/phases/
     templates: .prompts/board/templates
     tests: tests/unit/
@@ -46,14 +47,15 @@ tools:
       directory: true
       commands: false
     tests:  
-      console: false
+      pipeline: false
       fixtures: false
+      session: false
       workflow: false
 # ----------------------------------------------------
   parameters:
     manager:
       board:
-        phase: '09-03'
+        phase: '09-05'
         action: refactor
       docs:
         exclude:
@@ -69,10 +71,13 @@ tools:
     source:
       workflow: fluids
     shell:
-      directory: tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
+      directory: |
+        tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
       commands: []
     tests:
-      console: pytest -m
+      pipeline:
+        command: pytest -m
+        marker: fluids
       fixtures:
         - assets
         - components
@@ -83,3 +88,9 @@ tools:
         - structures
         # - menus
       workflow: fluids
+      session:
+        description: null
+        conditions:
+          - src/assets/effects/fluids/main.yaml
+          - src/assets/crafts/bridges.yaml
+          - src/data/state/world-01/effects/fluids.yaml

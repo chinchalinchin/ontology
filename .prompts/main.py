@@ -19,6 +19,7 @@ Security Warning:
 import argparse
 from datetime import datetime
 import os
+import re
 import subprocess
 import sys
 
@@ -132,7 +133,6 @@ def file(file_path: str) -> str:
         str: The content of the file, or an error message if the file is missing
              or unreadable.
     """
-    # Expand ~ if present
     full_path = os.path.expanduser(file_path)
 
     if not os.path.exists(full_path):
@@ -143,6 +143,90 @@ def file(file_path: str) -> str:
             return f.read().strip()
     except Exception as e:
         return f"Error reading file: {str(e)}"
+
+
+def dumps(path: str) -> str:
+    """
+    Scans the path for any state-dump files (yyyymmdd_hhmmss.state-dump.md),
+    orders them by date and time, and returns the content of the latest
+    markdown file as a string.
+
+    Args:
+        path (str): The directory path to inspect. Supports `~` expansion.
+
+    Returns:
+        str: The content of the latest state-dump file, or an error message.
+    """
+    full_path = os.path.expanduser(path)
+
+    if not os.path.exists(full_path) or not os.path.isdir(full_path):
+        return f"Error: Directory not found at {full_path}"
+
+    pattern = re.compile(r"^(\d{8}_\d{6})\.state-dump\.md$", re.IGNORECASE)
+    candidates = []
+
+    try:
+        for filename in os.listdir(full_path):
+            match = pattern.match(filename)
+            if match and os.path.isfile(os.path.join(full_path, filename)):
+                try:
+                    timestamp = datetime.strptime(match.group(1), "%Y%m%d_%H%M%S")
+                    candidates.append((timestamp, filename))
+                except ValueError:
+                    continue
+    except Exception as e:
+        return f"Error reading directory '{path}': {str(e)}"
+
+    if not candidates:
+        return f"Error: No state-dump files found at {full_path}"
+
+    candidates.sort(key=lambda item: item[0])
+    latest_filename = candidates[-1][1]
+
+    return file(os.path.join(full_path, latest_filename))
+
+
+def logs(path: str) -> str:
+    """
+    Scans the path for any log files (ontology_yyyy-mm-dd-execution.log),
+    orders them chronologically by date and numerically by execution,
+    and returns the content of the latest log file as a string.
+
+    Args:
+        path (str): The directory path to inspect. Supports `~` expansion.
+
+    Returns:
+        str: The content of the latest log file, or an error message.
+    """
+    full_path = os.path.expanduser(path)
+
+    if not os.path.exists(full_path) or not os.path.isdir(full_path):
+        return f"Error: Directory not found at {full_path}"
+
+    pattern = re.compile(r"^ontology_(\d{4}-\d{2}-\d{2})-(\d+)\.log$", re.IGNORECASE)
+    candidates = []
+
+    try:
+        for filename in os.listdir(full_path):
+            match = pattern.match(filename)
+            if match and os.path.isfile(os.path.join(full_path, filename)):
+                date_str, execution_str = match.groups()
+                try:
+                    log_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+                    execution_num = int(execution_str)
+                    candidates.append(((log_date, execution_num), filename))
+                except ValueError:
+                    continue
+    except Exception as e:
+        return f"Error reading directory '{path}': {str(e)}"
+
+    if not candidates:
+        return f"Error: No log files found at {full_path}"
+
+    candidates.sort(key=lambda item: item[0])
+    latest_filename = candidates[-1][1]
+
+    return file(os.path.join(full_path, latest_filename))
 
 
 def markdown(path: str, exclude: list | tuple | str | None = None) -> list:
@@ -163,27 +247,20 @@ def markdown(path: str, exclude: list | tuple | str | None = None) -> list:
     elif isinstance(exclude, str):
         exclude = [exclude]
 
-    # Normalize exclusion targets to lowercase for case-insensitive matching
     exclude_set = {name.lower() for name in exclude}
-
     full_path = os.path.expanduser(path)
-    
-    # Verify the path exists and is indeed a directory
+
     if not os.path.exists(full_path) or not os.path.isdir(full_path):
         return []
 
     try:
-        # Iterate over directory entries and filter for files ending with .md not in exclude_set
         md_files = [
             f for f in os.listdir(full_path)
             if f.lower().endswith('.md') 
             and f.lower() not in exclude_set
             and os.path.isfile(os.path.join(full_path, f))
         ]
-        
-        # Return the list alphabetized
         return sorted(md_files)
-        
     except Exception as e:
         print(f"Error reading directory '{path}': {e}")
         return []
@@ -229,13 +306,10 @@ def load(vars_path: str) -> dict:
               does not exist or cannot be parsed.
     """
     if not os.path.exists(vars_path):
-        # If the file doesn't exist, we just return empty context
-        # (unless it was explicitly requested, handled in main)
         return {}
 
     try:
         with open(vars_path, 'r', encoding='utf-8') as f:
-            # Use safe_load to avoid arbitrary code execution from YAML tags
             data = pyyaml.safe_load(f)
             print(f"Loaded variables from '{vars_path}'.")
             return data if data else {}
@@ -278,7 +352,7 @@ def render(template_path: str, output_path: str, vars_path: str) -> None:
 
     # Set up the Jinja2 environment
     env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader([ script_dir, templates ]),
+        loader=jinja2.FileSystemLoader([script_dir, templates]),
         autoescape=False,
         trim_blocks=True,
         lstrip_blocks=True
@@ -291,6 +365,8 @@ def render(template_path: str, output_path: str, vars_path: str) -> None:
     env.globals['yaml'] = yaml
     env.globals['now'] = now
     env.globals['typehint'] = typehint
+    env.globals['dumps'] = dumps
+    env.globals['logs'] = logs
 
     # Load context files
     vars_data = load(vars_path)

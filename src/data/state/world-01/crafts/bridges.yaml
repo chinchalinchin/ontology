@@ -1,0 +1,12 @@
+crafts:
+  bridges:
+    - id: wood-bridge
+      name: the-bridge-of-tears
+      position:
+        x: 40
+        y: 90
+      multiple:
+        nx: 1
+        ny: 0
+      owner: evil-empress-jasilynn
+      orientation: horizontal

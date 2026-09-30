@@ -17,11 +17,11 @@ def _get_session_log_filename(log_dir: Path = settings.LOG_DIR) -> str:
     Calculates the next session index for the current date and returns the filename.
     """
     date_str = datetime.now().strftime("%Y-%m-%d")
-    file_pattern = re.compile(rf"^ontology_{date_str}_(\d+)\.log$")
+    file_pattern = re.compile(rf"^ontology_{date_str}-(\d+)\.log$")
     
     max_index = 0
     if log_dir.exists():
-        for file_path in log_dir.glob(f"ontology_{date_str}_*.log"):
+        for file_path in log_dir.glob(f"ontology_{date_str}-*.log"):
             match = file_pattern.match(file_path.name)
             if match:
                 index = int(match.group(1))

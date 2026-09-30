@@ -1,7 +1,7 @@
 """
-# Ontology: app.models.config
+# Ontology: app.models.config.schemas
 
-Models for typing the configuration attributes of Mechanics and other game components. See documentation for a more in-depth explanation of each field and its purpose. 
+Models for typing the configuration schema.
 """
 # Standard Libraries
 from typing import (
@@ -17,11 +17,11 @@ from app.config.enums import (
 from app.models.config.core import (
     ActionConfiguration, 
     IntentionConfiguration,
-    MechanicsConfiguration,
     PlotConfiguration,
-    CompositionConfiguration,
     LibraryConfiguration
 )
+from app.models.config.compositions import CompositionConfiguration
+from app.models.config.mechanics import MechanicsConfiguration
 from app.models.config.mappings import MappingConfiguration
 from app.models.config.menus import MenuConfiguration
 from app.models.config.recipes import RecipeConfiguration

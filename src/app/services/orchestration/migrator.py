@@ -109,6 +109,13 @@ class Migrator:
                 expanded_assets = self.decomposer.unpack(comp_state)
                 self.board.add(expanded_assets)
 
+            elif task[0] == 'asset' and \
+                task[1] == AssetCategories.CRAFTS.value and \
+                task[2] == AssetInstances.BRIDGES.value:
+                bridge_state = task[3]
+                expanded_bridges = self.decomposer.bridge(bridge_state)
+                self.board.add(expanded_bridges)
+
             elif task[0] == Shortcuts.PLOTS.value:
                 plot = task[1]
                 self.board.set_plot(plot)
@@ -132,16 +139,16 @@ class Migrator:
                 props = inst_props.get(asset_id)
 
                 asset = Asset(
-                    taxonomy   = Factory.taxonomy(
-                        asset_id, 
-                        asset_name, 
-                        category_key, 
-                        instance_key
+                    taxonomy        = Factory.taxonomy(
+                        id          = asset_id, 
+                        name        = asset_name, 
+                        category    = category_key, 
+                        instance    = instance_key
                     ),
-                    properties = props,
-                    state      = state_obj,
-                    frame      = Factory.frame(recipe.frame),
-                    animation  = Factory.animation(recipe.animation) 
+                    properties      = props,
+                    state           = state_obj,
+                    frame           = Factory.frame(recipe.frame),
+                    animation       = Factory.animation(recipe.animation) 
                 )
                 self.board.add([asset])
             

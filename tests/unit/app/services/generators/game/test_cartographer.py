@@ -9,12 +9,14 @@ from app.config.enums import (
     AssetInstances,
     Directions
 )
-from app.models.state import Pool
-from app.services.generators.game.cartographer import Cartographer
-from libs.core.models import (
-    Position,
-    Dimensions
+from app.models.state import (
+    Branch,
+    Pool
 )
+from app.services.generators.game.cartographer import Cartographer
+
+# Cython Libraries
+from libs.core.models import Position
 
 
 @pytest.mark.fluids
@@ -204,3 +206,42 @@ def test_cartographer_board_shoreline_lifecycle(mock_board, mock_shoreline):
 
     mock_board.remove([mock_shoreline])
     assert len(mock_board.get_shorelines("0")) == 0
+
+
+@pytest.mark.fluids
+@pytest.mark.services
+def test_cartographer_collects_active_branch_rectangles(mock_board):
+    """
+    Verify Cartographer._collect_water_rectangles compiles bounding boxes for
+    parent streams, annular pools, and active child branch corridors.
+    """
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid.state.position = Position(x=70, y=0)
+    fluid.state.source = Directions.DOWN.value
+    fluid.state.length = 32
+    fluid.state.pool = Pool(x=0, y=32, w=192, l=160)
+    fluid.state.branches = [
+        Branch(
+            position=Position(x=0, y=192),
+            source=Directions.DOWN.value,
+            flow=1,
+            length=127
+        ),
+        Branch(
+            position=Position(x=160, y=192),
+            source=Directions.DOWN.value,
+            flow=1,
+            length=127
+        )
+    ]
+
+    rects = Cartographer._collect_water_rectangles("0", mock_board)
+
+    # Parent stream
+    assert (70, 0, 102, 32) in rects
+    # Annular pool
+    assert (0, 32, 192, 192) in rects
+    # Left branch corridor: (0, 192, 32, 192 + 127) -> (0, 192, 32, 319)
+    assert (0, 192, 32, 319) in rects
+    # Right branch corridor: (160, 192, 192, 192 + 127) -> (160, 192, 192, 319)
+    assert (160, 192, 192, 319) in rects

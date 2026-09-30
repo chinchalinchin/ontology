@@ -1,0 +1,11 @@
+crafts:
+  bridges:
+    wood-bridge:
+      dimensions:
+        w: 128
+        l: 128
+      cost:
+        - item: wood
+          quantity: 10
+      mass: -1
+      hitboxes: null

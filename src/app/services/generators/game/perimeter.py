@@ -17,7 +17,11 @@ if TYPE_CHECKING:
 
 # Cython Libraries
 import libs.core.math.geometry as geometry
-from libs.core.models import Boundary
+from libs.core.models import (
+    Boundary,
+    Dimensions,
+    Position
+)
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +65,7 @@ class Perimeter:
     def generate(self, board: Board, layer: str) -> List[Boundary]:
         """
         Master orchestrator for the Perimeter Generator pipeline.
+        Unpacks directed contour primitives into typed Boundary extension instances.
         """
         logger.info(
             f"Calculating dynamic perimeter boundaries for layer: {layer}"
@@ -70,7 +75,11 @@ class Perimeter:
         if not rects:
             return []
             
-        perimeter = geometry.contours(rects)
+        raw_contours = geometry.contours(rects)
+        perimeter = [
+            Boundary(Position(x, y), Dimensions(w, l))
+            for x, y, w, l, *_ in raw_contours
+        ]
         
         logger.info(
             f"Derived simply-connected hull containing {len(perimeter)} edges."

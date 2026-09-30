@@ -7,9 +7,11 @@ import pytest
 # Application Libraries
 from app.config.enums import (
     AssetInstances,
-    Relations
+    Relations,
+    Directions
 )
 from app.game.logic.mechanics.world.fluid import FluidMechanics
+from app.models.state.assets.effects import Branch
 
 # Cython Libraries
 from libs.core.models import (
@@ -83,6 +85,7 @@ def test_fluid_mechanics_gate_switch_toggle_invalidates(mock_board, mock_bus):
     Verify static gate switch transitions invalidate fluid flow and re-propagate length.
     """
     fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid.state.flow = 0
     gate = mock_board.instances(AssetInstances.GATES.value)[0]
 
     # Start with closed gate at y=60
@@ -147,3 +150,74 @@ def test_fluid_mechanics_two_pass_layer_shorelines(
     for shore in shores:
         assert shore.instance == AssetInstances.SHORELINES.value
         assert shore.state.layer == "0"
+
+
+@pytest.mark.fluids
+def test_board_water_subtile_precision(mock_board):
+    """
+    Verify Board.water broad/narrow spatial hash returns False for coordinates
+    sharing a 32px tile bucket with fluid but falling outside exact bounds.
+    """
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid.state.position = Position(x=70, y=0)
+    fluid.state.source = Directions.DOWN.value
+    fluid.state.length = 64
+    fluid.state.pool = None
+
+    mock_board.update_fluid_cache("0")
+
+    # Inside stream corridor: x in [70, 102), y in [0, 64)
+    assert mock_board.fluid("0", Position(70, 10)) is True
+    assert mock_board.fluid("0", Position(101, 10)) is True
+
+    # Same tile bucket (cx = 69 // 32 = 2, cy = 10 // 32 = 0) but outside corridor
+    assert mock_board.fluid("0", Position(69, 10)) is False
+    assert mock_board.fluid("0", Position(102, 10)) is False
+
+
+@pytest.mark.fluids
+def test_board_fluid_spatial_hash_indexes_child_branches(mock_board):
+    """
+    Verify Board broad/narrow spatial water checking detects Cartesian points
+    located inside active child branch corridors.
+    """
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid.state.position = Position(x=70, y=0)
+    fluid.state.source = Directions.DOWN.value
+    fluid.state.length = 32
+
+    # Attach secondary child branch discharging at (0, 192) flowing DOWN
+    fluid.state.branches = [
+        Branch(
+            position=Position(x=0, y=192),
+            source=Directions.DOWN.value,
+            flow=1,
+            length=100
+        )
+    ]
+
+    mock_board.update_fluid_cache("0")
+
+    # Coordinate inside child branch corridor: x in [0, 32), y in [192, 292)
+    assert mock_board.fluid("0", Position(10, 200)) is True
+    assert mock_board.fluid("0", Position(0, 192)) is True
+
+    # Coordinate outside branch corridor
+    assert mock_board.fluid("0", Position(35, 200)) is False
+    assert mock_board.fluid("0", Position(10, 300)) is False
+
+
+@pytest.mark.fluids
+def test_board_bridges_query_excludes_obstacles_and_weights(mock_board, mock_bridge):
+    """
+    Verify Board.bridges() returns sensor bridge assets while strictly excluding
+    them from board.obstacles() and board.weights().
+    """
+    mock_board.add([mock_bridge])
+
+    bridges = mock_board.bridges("0")
+    assert mock_bridge in bridges
+
+    # Bridges are sensors (mass = -1) and must not pollute pathfinding or weights
+    assert mock_bridge not in mock_board.obstacles("0")
+    assert mock_bridge not in mock_board.weights("0")

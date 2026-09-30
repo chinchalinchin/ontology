@@ -30,6 +30,8 @@ logger = logging.getLogger(__name__)
 class StateFrame(Frame):
     """
     ## StateFrame
+
+    TODO: should be called an "ActionFrame", since it's using the action field to generate the animation.
     """
     
     def keys(self, id: str, state: AssetState) -> List[str]:

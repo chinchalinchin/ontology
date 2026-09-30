@@ -8,12 +8,12 @@ from typing import (
     List,
     Optional
 )
-from dataclasses import dataclass, field
+from dataclasses import (
+    dataclass, 
+    field
+)
 
 # Application Libraries
-from app.config.enums import (
-    Directions,
-)
 from app.models.adapters import (
     PydanticPosition as Position, 
     PydanticMultiple as Multiple, 
@@ -25,27 +25,18 @@ from app.models.state.core import (
 )
 
 # Cython Libraries
-from libs.core.models import Velocity as CoreVelocity
+from libs.core.models import (
+    Velocity as CoreVelocity
+)
 
 # ---------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------- ASSET STATES
-
-# ------------------------------------------------------------------------ OBJECTS STATES
-
-@dataclass(slots=True)
-class MultiplierState(AssetState):
-    position: Optional[Position] = None # type: ignore
-    multiple: Optional[Multiple] = None # type: ignore
+# ------------------------------------------------------------------------- OBJECT STATES
+# ---------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
 class PositionalState(AssetState):
     position: Optional[Position] = None # type: ignore
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
-
-@dataclass(slots=True)
-class PropertyState(AssetState):
-    owner: Optional[str] = None
-    position: Optional[Position] = None # type: ignore
 
 @dataclass(slots=True)
 class ContainerState(AssetState):

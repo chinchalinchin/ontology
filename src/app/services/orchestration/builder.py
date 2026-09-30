@@ -21,14 +21,13 @@ from app.config.enums import (
     Devices, 
     Mechanics,
     AssetCategories,
-    MechanicExecutors
+    Executors
 )
 from app.game.board import Board
 from app.game.engine import Engine
 from app.game.screen import Screen
 from app.game.logic.mechanics import (
     Mechanic,
-    FluidMechanics
 )
 from app.game.logic.relations.shorelines import ShorelineIndex
 from app.models.groups import (
@@ -137,9 +136,9 @@ class Builder:
         actuator_executor = Actuator()
 
         self.executors = {
-            MechanicExecutors.INTENTION.value: intention_executor,
-            MechanicExecutors.PLOT.value: plot_executor,
-            MechanicExecutors.ACTUATOR.value: actuator_executor
+            Executors.INTENTION.value: intention_executor,
+            Executors.PLOT.value: plot_executor,
+            Executors.ACTUATOR.value: actuator_executor
         }
 
 
@@ -193,7 +192,7 @@ class Builder:
             self.board, 
             self.context.properties, 
             self.context.configurations,
-            actuator=self.executors[MechanicExecutors.ACTUATOR.value]
+            actuator=self.executors[Executors.ACTUATOR.value]
         )
 
     def build_registry(self) -> None:

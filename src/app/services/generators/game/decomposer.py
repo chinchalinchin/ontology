@@ -14,10 +14,12 @@ from typing import (
 )
 
 # Application Libraries
+import app.config.settings as settings
 from app.assets.base import Asset
 from app.config.enums import (
     AssetCategories, 
-    AssetInstances
+    AssetInstances,
+    Orientations
 )
 from app.services.generators.game.factory import Factory
 from app.models.config import (
@@ -29,12 +31,16 @@ from app.models.properties import (
     Cost
 )
 from app.models.state import (
-    PropertyState, 
-    AssetState
+    PropertyState,
+    BridgeState, 
+    AssetState,
 )
 
 # Cython Libraries
-from libs.core.models import Position
+from libs.core.models import (
+    Position,
+    Multiple
+)
 
 logger = logging.getLogger(__name__)
 
@@ -246,6 +252,7 @@ class Decomposer:
         self._unpack_components(node.components, root_context, node_context, inc, assets)
         return assets
 
+
     def _unpack_components(self, 
         components: Any, 
         root_context: Dict[str, Any], 
@@ -277,8 +284,10 @@ class Decomposer:
                     )
                     assets.append(self._create_asset(cat_key, inst_key, new_state))
 
+
     # ---------------------------------------------------------
     # ------------------------------------------ PUBLIC METHODS
+
 
     def unpack(self, deployed_state: PropertyState) -> List[Asset]:
         """Flattens a Composition configuration into a native 1D list of fully hydrated Assets."""
@@ -307,6 +316,78 @@ class Decomposer:
 
         return assets
 
+
+    def bridge(self, deployed_state: BridgeState) -> List[Asset]:
+        """
+        Expands a BridgeState with a structural multiplier into constituent unit
+        Asset instances with sequential names, offset positions, and static hitboxes.
+        """
+        props = self.properties.crafts.bridges.get(deployed_state.id)
+        if not props:
+            logger.error(
+                settings.SEPARATOR.join([
+                    "Decomposer",
+                    "BridgeMissingProperties",
+                    deployed_state.id
+                ])
+            )
+            return []
+
+        w = props.dimensions.w
+        l = props.dimensions.l
+        orientation = deployed_state.orientation
+        base_pos = deployed_state.position or Position(0, 0)
+        layer = deployed_state.layer or "0"
+
+        if orientation == Orientations.HORIZONTAL.value:
+            count = deployed_state.multiple.nx if deployed_state.multiple else 1
+        else:
+            count = deployed_state.multiple.ny if deployed_state.multiple else 1
+
+        unit_assets: List[Asset] = []
+        cat_recipes = getattr(self.recipes, AssetCategories.CRAFTS.value, None)
+        recipe = getattr(cat_recipes, AssetInstances.BRIDGES.value, None)
+
+        for i in range(count):
+            if orientation == Orientations.HORIZONTAL.value:
+                seg_pos = Position(base_pos.x + i * w, base_pos.y)
+            else:
+                seg_pos = Position(base_pos.x, base_pos.y + i * l)
+
+            unit_name = settings.SEPARATOR.join([
+                deployed_state.name or deployed_state.id,
+                str(i)
+            ])
+
+            unit_state = BridgeState(
+                id=deployed_state.id,
+                name=unit_name,
+                layer=layer,
+                position=seg_pos,
+                orientation=orientation,
+                multiple=Multiple(1, 1),
+                owner=deployed_state.owner,
+                depth=deployed_state.depth,
+                height=deployed_state.height
+            )
+
+            unit_asset = Asset(
+                taxonomy=Factory.taxonomy(
+                    deployed_state.id,
+                    unit_name,
+                    AssetCategories.CRAFTS.value,
+                    AssetInstances.BRIDGES.value
+                ),
+                properties=props,
+                state=unit_state,
+                frame=Factory.frame(recipe.frame),
+                animation=Factory.animation(recipe.animation)
+            )
+            unit_assets.append(unit_asset)
+
+        return unit_assets
+
+    
     def cost(self, comp_id: str) -> List[Cost]:
         """Calculates the aggregate cost of an entire Composition tree."""
         config = self.compositions.get(comp_id)
@@ -336,3 +417,18 @@ class Decomposer:
                 self._aggregate_components_cost(branch.components, cost_map)
                 
         return [Cost(item=k, quantity=v) for k, v in cost_map.items()]
+
+
+    def bridge_cost(self, id: str, multiple: Multiple, orientation: str) -> List[Cost]:
+        """
+        Calculates linear resource requirements (N * Cost) for a directional bridge.
+        """
+        props = self.properties.crafts.bridges.get(id)
+        if not props:
+            return []
+
+        count = multiple.nx if orientation == Orientations.HORIZONTAL.value else multiple.ny
+        return [
+            Cost(item=c.item, quantity=c.quantity * count)
+            for c in props.cost
+        ]

@@ -8,6 +8,7 @@ import logging
 from typing import (
     List, 
     Dict, 
+    Set,
     Tuple,
     Any,
     Optional
@@ -73,6 +74,7 @@ class Board:
     _cached_renderables: Dict[str, List[Asset]]
     _cached_weights: Dict[str, List[Asset]]
     _cached_tilemap: Dict[str, Dict[Tuple[int, int], Asset]]
+    _cached_watermap: Dict[str, Set[Tuple[int, int]]]
     _cached_characters: Dict[str, Any]
     # Catalogues
     _all_categories: Dict[str, List[Asset]]
@@ -118,6 +120,7 @@ class Board:
                 self._all_instances[inst] = []
             self._all_instances[inst].append(asset)
 
+
     def _init_cache(self, layer: Optional[str] = None) -> None:
         if layer is None:
             self._cached_categories = {}
@@ -126,6 +129,7 @@ class Board:
             self._cached_renderables = {}
             self._cached_weights = {}
             self._cached_tilemap = {}
+            self._cached_watermap = {}
             self._cached_characters = {}
             self.perimeters = {}
             self.shorelines = {}
@@ -140,9 +144,11 @@ class Board:
             AssetInstances.BACK.value: {},
             AssetInstances.FORE.value: {}
         }
+        self._cached_watermap[layer] = {}
         self.perimeters[layer] = []
         self.shorelines[layer] = []
         return
+
 
     def _cache(self):
         logger.debug("Building initial board spatial caching dictionaries by layer/category/instance.")
@@ -169,7 +175,14 @@ class Board:
             if cat != AssetCategories.TILES.value:
                 self._cached_renderables[layer].append(asset)
 
-            if hasattr(asset.properties, 'mass') and asset.properties.mass >= 0:
+            if (
+                hasattr(asset.properties, 'mass') 
+                and asset.properties.mass >= 0 
+                and asset.category not in (
+                    AssetCategories.EFFECTS.value, 
+                    AssetCategories.GEOGRAPHY.value
+                )
+            ):
                 self._cached_weights[layer].append(asset)
                 
             if cat == AssetCategories.SHEETS.value and inst in (
@@ -203,10 +216,100 @@ class Board:
                             self._cached_tilemap[layer][inst] = {}
                         self._cached_tilemap[layer][inst][(cx, cy)] = asset
 
+        for layer in list(self._cached_layers.keys()):
+            self.update_fluid_cache(layer)
+
+
+    def _map_fluid(self, layer: str, fluid: Asset) -> None:
+        """
+        Indexes parent corridors, annular pools, and all active branch corridors
+        into the O(1) broad-phase water spatial hash grid.
+        """
+        if layer not in self._cached_watermap:
+            self._cached_watermap[layer] = {}
+
+        fx = fluid.state.position.x
+        fy = fluid.state.position.y
+        fw = fluid.properties.dimensions.w
+        fl = fluid.properties.dimensions.l
+        length = fluid.state.length
+        direction = fluid.state.source
+        direction_val = direction.value if hasattr(direction, "value") else str(direction)
+
+        def _index_box(x1: int, y1: int, x2: int, y2: int) -> None:
+            if x2 > x1 and y2 > y1:
+                start_cx = int(x1) // settings.TILE_HASH_SIZE
+                end_cx = (int(x2) - 1) // settings.TILE_HASH_SIZE + 1
+                start_cy = int(y1) // settings.TILE_HASH_SIZE
+                end_cy = (int(y2) - 1) // settings.TILE_HASH_SIZE + 1
+                for cx in range(start_cx, end_cx):
+                    for cy in range(start_cy, end_cy):
+                        bucket = self._cached_watermap[layer].setdefault((cx, cy), [])
+                        if fluid not in bucket:
+                            bucket.append(fluid)
+
+        # 1. Parent directional stream corridor
+        if length > 0:
+            if direction_val == Directions.DOWN.value:
+                _index_box(fx, fy, fx + fw, fy + length)
+            elif direction_val == Directions.UP.value:
+                _index_box(fx, fy - length, fx + fw, fy)
+            elif direction_val == Directions.RIGHT.value:
+                _index_box(fx, fy, fx + length, fy + fl)
+            elif direction_val == Directions.LEFT.value:
+                _index_box(fx - length, fy, fx, fy + fl)
+
+        # 2. Annular pool
+        pool = fluid.state.pool
+        if pool and pool.w > 0 and pool.l > 0:
+            _index_box(pool.x, pool.y, pool.x + pool.w, pool.y + pool.l)
+
+        # 3. Child branch corridors
+        branches = getattr(fluid.state, "branches", None)
+        if branches:
+            for branch in branches:
+                if branch.length <= 0:
+                    continue
+                bx = branch.position.x
+                by = branch.position.y
+                b_dir = branch.source
+                b_dir_val = b_dir.value if hasattr(b_dir, "value") else str(b_dir)
+
+                if b_dir_val == Directions.DOWN.value:
+                    _index_box(bx, by, bx + fw, by + branch.length)
+                elif b_dir_val == Directions.UP.value:
+                    _index_box(bx, by - branch.length, bx + fw, by)
+                elif b_dir_val == Directions.RIGHT.value:
+                    _index_box(bx, by, bx + branch.length, by + fl)
+                elif b_dir_val == Directions.LEFT.value:
+                    _index_box(bx - branch.length, by, bx, by + fl)
+    
+    # ---------------------------------------------- PREDICATES
+
+    # NOTE: these are essentially static. 
+    #       i.e. candidates for modularization
+    
+    def _is_weight(self, asset: Asset) -> bool:
+        """
+        Evaluates physical candidate qualification for weight caching, excluding
+        sensors, cursors, effects, geography, and terrain tiles.
+        """
+        return (
+            hasattr(asset.properties, "mass")
+            and asset.properties.mass >= 0
+            and asset.category not in (
+                AssetCategories.CURSORS.value,
+                AssetCategories.EFFECTS.value,
+                AssetCategories.GEOGRAPHY.value,
+                AssetCategories.TILES.value
+            )
+        )
+
+
     def _in_stream(self, position: Position, fluid: Asset) -> bool:
         """
-        Evaluates whether Cartesian coordinate intersects the directional stream corridor
-        of the specified fluid entity.
+        Evaluates whether Cartesian coordinate intersects the parent corridor or
+        any active child branch corridor of the specified fluid entity.
         """
         px = position.x
         py = position.y
@@ -220,13 +323,40 @@ class Board:
         direction_val = direction.value if hasattr(direction, "value") else str(direction)
 
         if direction_val == Directions.DOWN.value:
-            return fx <= px < fx + fw and fy <= py < fy + slen
+            if fx <= px < fx + fw and fy <= py < fy + slen:
+                return True
         elif direction_val == Directions.UP.value:
-            return fx <= px < fx + fw and fy - slen <= py < fy
+            if fx <= px < fx + fw and fy - slen <= py < fy:
+                return True
         elif direction_val == Directions.RIGHT.value:
-            return fx <= px < fx + slen and fy <= py < fy + fl
+            if fx <= px < fx + slen and fy <= py < fy + fl:
+                return True
         elif direction_val == Directions.LEFT.value:
-            return fx - slen <= px < fx and fy <= py < fy + fl
+            if fx - slen <= px < fx and fy <= py < fy + fl:
+                return True
+
+        branches = getattr(fluid.state, "branches", None)
+        if branches:
+            for branch in branches:
+                if branch.length <= 0:
+                    continue
+                bx = branch.position.x
+                by = branch.position.y
+                b_dir = branch.source
+                b_dir_val = b_dir.value if hasattr(b_dir, "value") else str(b_dir)
+
+                if b_dir_val == Directions.DOWN.value:
+                    if bx <= px < bx + fw and by <= py < by + branch.length:
+                        return True
+                elif b_dir_val == Directions.UP.value:
+                    if bx <= px < bx + fw and by - branch.length <= py < by:
+                        return True
+                elif b_dir_val == Directions.RIGHT.value:
+                    if bx <= px < bx + branch.length and by <= py < by + fl:
+                        return True
+                elif b_dir_val == Directions.LEFT.value:
+                    if bx - branch.length <= px < bx and by <= py < by + fl:
+                        return True
 
         return False
 
@@ -235,28 +365,39 @@ class Board:
 
     # ---------------------------------------------- PREDICATES
 
-    def water(
+    def fluid(
         self,
         layer: str,
         position: Position,
         exclude: Optional[str] = None
     ) -> bool:
         """
-        Evaluates whether world coordinate (pos.x, pos.y) intersects any active
-        fluid stream corridor or annular pool on the given layer.
+        Evaluates whether Cartesian coordinate (pos.x, pos.y) intersects an active
+        fluid stream corridor or annular pool on the layer.
+        Uses O(1) broad-phase spatial hash lookup followed by narrow-phase AABB validation.
         """
-        fluids = self.instances(AssetInstances.FLUIDS.value, layer)
-        for fluid in fluids:
+        cx = int(position.x) // settings.TILE_HASH_SIZE
+        cy = int(position.y) // settings.TILE_HASH_SIZE
+        bucket = self._cached_watermap.get(layer, {}).get((cx, cy))
+        if not bucket:
+            return False
+
+        px = position.x
+        py = position.y
+
+        for fluid in bucket:
             if exclude and fluid.name == exclude:
                 continue
-            # Evaluate pool bounds
+
+            # Narrow-phase: pool bounds
             pool = fluid.state.pool
-            if pool and pool.x <= position.x < pool.x + pool.w and pool.y <= position.y < pool.y + pool.l:
+            if pool and pool.x <= px < pool.x + pool.w and pool.y <= py < pool.y + pool.l:
                 return True
-            # Evaluate directional stream corridor bounds
-            if fluid.state.length > 0:
-                if self._in_stream(position, fluid):
-                    return True
+
+            # Narrow-phase: stream corridor bounds
+            if fluid.state.length > 0 and self._in_stream(position, fluid):
+                return True
+
         return False
 
     # ------------------------------------------------ SETTERS 
@@ -279,6 +420,7 @@ class Board:
             return players[slot]
         return players[0]
 
+
     def tile(self, 
         layer: str, 
         position: Position, 
@@ -288,25 +430,32 @@ class Board:
         cy = int(position.y) // settings.TILE_HASH_SIZE
         return self._cached_tilemap.get(layer, {}).get(instance, {}).get((cx, cy))
 
+
     def character(self, name: str) -> Any:
         return self._cached_characters.get(name)
+
 
     def characters(self) -> Dict[str, Any]:
         return self._cached_characters
 
+
     def asset(self, name: str, layer: str = None) -> Asset:
         search_list = self.renderables(layer) if layer else self._assets
         return next((a for a in search_list if a.name == name), None)
+
 
     def assets(self, layer=None) -> List[Asset]:
         if layer is None:
             return self._assets
         return self._cached_layers.get(layer, [])
 
+
     def weights(self, layer=None) -> List[Asset]:
+        """Returns physical weight assets (m >= 0) on the layer."""
         if layer is None:
-            return [ asset for asset in self._assets if asset.properties.mass >= 0 ]
+            return [asset for asset in self._assets if self._is_weight(asset)]
         return self._cached_weights.get(layer, [])
+
 
     def obstacles(self, layer=None) -> List[Asset]:
         if layer is None:
@@ -318,23 +467,33 @@ class Board:
         struts = self._cached_instances.get(layer, {}).get(AssetInstances.STRUTS.value, [])
         return crates + gates + struts + signs + chests
 
+
+    def bridges(self, layer: Optional[str] = None) -> List[Asset]:
+        """Retrieves static sensor bridge assets for a specific layer or across all layers."""
+        return self.instances(AssetInstances.BRIDGES.value, layer)
+
+
     def layers(self) -> List[str]:
         return list(self._cached_categories.keys())
+
 
     def categories(self, category, layer = None) -> List[Asset]:
         if layer is not None:
             return self._cached_categories.get(layer, {}).get(category, [])
         return self._all_categories.get(category, [])
 
+
     def instances(self, instance, layer = None) -> List[Asset]:
         if layer is not None:
             return self._cached_instances.get(layer, {}).get(instance, [])
         return self._all_instances.get(instance, [])
 
+
     def renderables(self, layer=None) -> List[Asset]:
         if layer is None:
             return [ asset for asset in self._assets if asset.category != AssetCategories.TILES.value ]
         return self._cached_renderables.get(layer, [])
+
 
     def get_shorelines(self, layer: Optional[str] = None) -> List[Asset]:
         """
@@ -346,6 +505,7 @@ class Board:
         for l_shores in self.shorelines.values():
             all_shores.extend(l_shores)
         return all_shores
+
 
     def size(self, layer=None) -> List[Dimensions]:
         layers = [layer] if layer is not None else self.layers()
@@ -375,7 +535,31 @@ class Board:
 
         return layer_sizes
 
+
     # ------------------------------------------------ MUTATORS
+
+    def update_fluid_cache(self, layer: str) -> None:
+        """
+        Rebuilds the O(1) spatial water grid cache for the specified layer.
+        """
+        if layer not in self._cached_watermap:
+            self._cached_watermap[layer] = {}
+        else:
+            self._cached_watermap[layer].clear()
+
+        fluids = self.instances(AssetInstances.FLUIDS.value, layer)
+        for fluid in fluids:
+            self._map_fluid(layer, fluid)
+
+
+    def cache_fluid(self, fluid: Asset) -> None:
+        """
+        Updates the spatial water grid cache for the specified fluid's layer.
+        """
+        layer = fluid.state.layer
+        if layer:
+            self.update_fluid_cache(layer)
+
 
     def relayer(self, asset: Asset, new_layer: str) -> None:
         old_layer = asset.state.layer
@@ -442,7 +626,14 @@ class Board:
                 self.shorelines[new_layer] = []
             self.shorelines[new_layer].append(asset)
 
+        if inst == AssetInstances.FLUIDS.value:
+            self.update_fluid_cache(old_layer)
+            self.update_fluid_cache(new_layer)
+
+
     def add(self, additions: List[Asset]) -> None:
+        affected_water_layers: Set[str] = set()
+
         for asset in additions:
             layer = asset.state.layer
 
@@ -481,6 +672,9 @@ class Board:
             if asset.instance == AssetInstances.SHORELINES.value:
                 self.shorelines[layer].append(asset)
 
+            if asset.instance == AssetInstances.FLUIDS.value:
+                affected_water_layers.add(layer)
+
             if asset.category == AssetCategories.TILES.value:
                 w = asset.properties.dimensions.w
                 l = asset.properties.dimensions.l
@@ -502,47 +696,86 @@ class Board:
                             self._cached_tilemap[layer][asset.instance] = {}
                         self._cached_tilemap[layer][asset.instance][(cx, cy)] = asset
 
+        for layer in affected_water_layers:
+            self.update_fluid_cache(layer)
+
+
     def remove(self, removals: List[Asset]) -> None:
-        for asset in removals:
-            layer = asset.state.layer
-            cat = asset.category
-            inst = asset.instance
+        """
+        Performs bulk entity de-registration using set-membership comprehensions
+        to eliminate O(M * N) list search overhead.
+        """
+        if not removals:
+            return
 
-            if asset in self._assets:
-                self._assets.remove(asset)
+        removal_set = set(removals)
+        removal_names = {a.name for a in removals if a.name}
+        affected_layers = {a.state.layer for a in removals if a.state and a.state.layer}
+        affected_categories = {a.category for a in removals if a.category}
+        affected_instances = {a.instance for a in removals if a.instance}
 
-            if layer in self._cached_categories and cat in self._cached_categories[layer]:
-                if asset in self._cached_categories[layer][cat]:
-                    self._cached_categories[layer][cat].remove(asset)
-            
-            if layer in self._cached_instances and inst in self._cached_instances[layer]:
-                if asset in self._cached_instances[layer][inst]:
-                    self._cached_instances[layer][inst].remove(asset)
+        # 1. Global asset list filter
+        self._assets = [a for a in self._assets if a not in removal_set]
 
-            if layer in self._cached_layers and asset in self._cached_layers[layer]:
-                self._cached_layers[layer].remove(asset)
+        # 2. Layer-scoped cache filters
+        for layer in affected_layers:
+            if layer in self._cached_categories:
+                for cat in affected_categories:
+                    if cat in self._cached_categories[layer]:
+                        self._cached_categories[layer][cat] = [
+                            a for a in self._cached_categories[layer][cat] if a not in removal_set
+                        ]
 
-            if layer in self._cached_renderables and asset in self._cached_renderables[layer]:
-                self._cached_renderables[layer].remove(asset)
+            if layer in self._cached_instances:
+                for inst in affected_instances:
+                    if inst in self._cached_instances[layer]:
+                        self._cached_instances[layer][inst] = [
+                            a for a in self._cached_instances[layer][inst] if a not in removal_set
+                        ]
 
-            if layer in self._cached_weights and asset in self._cached_weights[layer]:
-                self._cached_weights[layer].remove(asset)
+            if layer in self._cached_layers:
+                self._cached_layers[layer] = [
+                    a for a in self._cached_layers[layer] if a not in removal_set
+                ]
 
-            if cat in self._all_categories and asset in self._all_categories[cat]:
-                self._all_categories[cat].remove(asset)
-                
-            if inst in self._all_instances and asset in self._all_instances[inst]:
-                self._all_instances[inst].remove(asset)
-                
-            if inst in (
-                AssetInstances.SPRITES.value, 
-                AssetInstances.PLAYERS.value
-            ):
-                if asset.name and asset.name in self._cached_characters:
-                    del self._cached_characters[asset.name]
+            if layer in self._cached_renderables:
+                self._cached_renderables[layer] = [
+                    a for a in self._cached_renderables[layer] if a not in removal_set
+                ]
 
-            if layer in self.shorelines and asset in self.shorelines[layer]:
-                self.shorelines[layer].remove(asset)
+            if layer in self._cached_weights:
+                self._cached_weights[layer] = [
+                    a for a in self._cached_weights[layer] if a not in removal_set
+                ]
+
+            if layer in self.shorelines:
+                self.shorelines[layer] = [
+                    a for a in self.shorelines[layer] if a not in removal_set
+                ]
+
+        # 3. Global catalogue filters
+        for cat in affected_categories:
+            if cat in self._all_categories:
+                self._all_categories[cat] = [
+                    a for a in self._all_categories[cat] if a not in removal_set
+                ]
+
+        for inst in affected_instances:
+            if inst in self._all_instances:
+                self._all_instances[inst] = [
+                    a for a in self._all_instances[inst] if a not in removal_set
+                ]
+
+        # 4. Character cache evictions
+        for name in removal_names:
+            if name in self._cached_characters:
+                del self._cached_characters[name]
+
+        # 5. Invalidate water cache if fluids removed
+        if AssetInstances.FLUIDS.value in affected_instances:
+            for layer in affected_layers:
+                self.update_fluid_cache(layer)
+
 
     def clear(self) -> None:
         self._assets.clear()

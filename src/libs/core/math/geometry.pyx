@@ -5,6 +5,9 @@
 # C Libraries
 from libc.math cimport sqrt
 
+# Application Libraries
+from app.config.enums import Directions
+
 # Cython Libraries
 from libs.core.models cimport (
     Position, 
@@ -33,14 +36,14 @@ cpdef tuple intersects(
         return None
     
     for item1 in hitboxes1:
-        hb1 = <Hitbox>item1
+        hb1 = item1
         x1 = pos1.x + hb1.position.x
         y1 = pos1.y + hb1.position.y
         w1 = hb1.dimensions.w
         h1 = hb1.dimensions.l
     
         for item2 in hitboxes2:
-            hb2 = <Hitbox>item2
+            hb2 = item2
             x2 = pos2.x + hb2.position.x
             y2 = pos2.y + hb2.position.y
             w2 = hb2.dimensions.w
@@ -60,8 +63,6 @@ cpdef bint onscreen(
     Dimensions p_dim, 
     Dimensions screen
 ):
-    """
-    """
     cdef int cam_x = p_pos.x + (p_dim.w // 2) - (screen.w // 2)
     cdef int cam_y = p_pos.y + (p_dim.l // 2) - (screen.l // 2)
     
@@ -78,8 +79,6 @@ cpdef bint cone(
     double cos_threshold, 
     str direction
 ):
-    """
-    """
     cdef int dx = tx - sx
     cdef int dy = ty - sy
     cdef int dist_sq = (dx * dx) + (dy * dy)
@@ -102,7 +101,7 @@ cpdef bint cone(
     elif direction == "right":
         ux = 1.0
         
-    cdef double dist = sqrt(<double>dist_sq)
+    cdef double dist = sqrt(dist_sq)
     cdef double dot_product = ((dx / dist) * ux) + ((dy / dist) * uy)
     
     return dot_product >= cos_threshold
@@ -126,9 +125,9 @@ cpdef bint nearby(
 cpdef tuple bounded(
     int a_x, 
     int a_y, 
-    list hitboxes,
+    list hitboxes, 
     int b_x, 
-    int b_y,
+    int b_y, 
     int b_w, 
     int b_l
 ):
@@ -139,7 +138,7 @@ cpdef tuple bounded(
     cdef Hitbox hb
     
     for item in hitboxes:
-        hb = <Hitbox>item
+        hb = item
         x1 = a_x + hb.position.x
         y1 = a_y + hb.position.y
         w1 = hb.dimensions.w
@@ -179,40 +178,58 @@ cdef list merge(list intervals):
     return merged
 
 
-cdef list xor(list A, list B):
+cdef tuple directed_diff(list A, list B):
     """
-    Evaluates the symmetric difference between two sets of merged intervals.
-    Any interval present in (A XOR B) exactly represents an exposed contour edge.
+    Evaluates asymmetric differences between two sets of merged intervals:
+    (B \\ A) represents entries into the shape.
+    (A \\ B) represents exits from the shape.
+    Returns: (entries, exits)
     """
     cdef list events = []
-    for start, end in A:
-        events.append((start, 1))
-        events.append((end, -1))
-    for start, end in B:
-        events.append((start, 1))
-        events.append((end, -1))
+    cdef tuple iv
+    cdef int start, end
+    
+    for iv in A:
+        start = iv[0]
+        end = iv[1]
+        events.append((start, 1, 0))
+        events.append((end, -1, 0))
+        
+    for iv in B:
+        start = iv[0]
+        end = iv[1]
+        events.append((start, 0, 1))
+        events.append((end, 0, -1))
         
     events.sort()
     
-    cdef list xor_intervals = []
-    cdef int count = 0
-    cdef int last_y = -1
+    cdef list entries = []
+    cdef list exits = []
+    cdef int count_a = 0
+    cdef int count_b = 0
+    cdef int last_coord = 0
+    cdef bint has_prev = False
     cdef int i = 0
     cdef int n = len(events)
-    cdef int y
+    cdef int coord
     
     while i < n:
-        y = events[i][0]
-        if count == 1 and y > last_y:
-            xor_intervals.append((last_y, y))
-            
-        # Process all coincident coordinates to avoid false fragmentation
-        while i < n and events[i][0] == y:
-            count += events[i][1]
+        coord = events[i][0]
+        if has_prev and coord > last_coord:
+            if count_a == 0 and count_b == 1:
+                entries.append((last_coord, coord))
+            elif count_a == 1 and count_b == 0:
+                exits.append((last_coord, coord))
+                
+        while i < n and events[i][0] == coord:
+            count_a += events[i][1]
+            count_b += events[i][2]
             i += 1
-        last_y = y
+            
+        last_coord = coord
+        has_prev = True
         
-    return merge(xor_intervals)
+    return merge(entries), merge(exits)
 
 # -----------------------------------------------------------------------------
 # LINE OF SIGHT & RAYCASTING
@@ -255,25 +272,21 @@ cdef bint c_punctures(
 
     for i in range(4):
         if p[i] == 0:
-            # Line is parallel to clipping edge: ignore if on or outside boundary
             if q[i] <= EPS:
                 return False
         else:
             r = q[i] / p[i]
             if p[i] < 0:
-                # Directed into half-space (entry)
                 if r > u2:
                     return False
                 elif r > u1:
                     u1 = r
             elif p[i] > 0:
-                # Directed out of half-space (exit)
                 if r <= u1 + EPS:
                     return False
                 elif r < u2:
                     u2 = r
 
-    # Require non-degenerate penetration depth to count as occlusion
     if u1 >= u2 - EPS:
         return False
         
@@ -314,9 +327,10 @@ cpdef bint los(float x1, float y1, float x2, float y2, list rects):
 cpdef list contours(list rects):
     """
     Executes a 2-pass Sweep-Line algorithm over primitive AABBs.
-    Returns the exact mathematical segments of the outer hull as Boundaries.
+    Returns directed boundary segments (x, y, w, l, orientation) preserving
+    edge outward normals without secondary spatial probing.
     Input: list of (min_x, min_y, max_x, max_y)
-    Output: list of Boundary
+    Output: list of tuple (x, y, w, l, orientation)
     """
     cdef list boundaries = []
     
@@ -327,8 +341,8 @@ cpdef list contours(list rects):
     cdef tuple r
     cdef int i = 0
     for r in rects:
-        v_events.append((r[0], 1, r[1], r[3], i))  # Left edge
-        v_events.append((r[2], -1, r[1], r[3], i)) # Right edge
+        v_events.append((r[0], 1, r[1], r[3], i))   # Left edge
+        v_events.append((r[2], -1, r[1], r[3], i))  # Right edge
         i += 1
         
     v_events.sort()
@@ -338,6 +352,8 @@ cpdef list contours(list rects):
     cdef list curr_merged_v = []
     cdef int x
     cdef int n_v = len(v_events)
+    cdef list entries_v, exits_v
+    cdef int y1, y2
     i = 0
     
     while i < n_v:
@@ -353,9 +369,11 @@ cpdef list contours(list rects):
             
         curr_merged_v = merge(list(active_v.values()))
         
-        for y1, y2 in xor(prev_merged_v, curr_merged_v):
-            # A vertical segment has width 1 and length y2 - y1
-            boundaries.append(Boundary(Position(x, y1), Dimensions(1, y2 - y1)))
+        entries_v, exits_v = directed_diff(prev_merged_v, curr_merged_v)
+        for y1, y2 in entries_v:
+            boundaries.append((x, y1, 1, y2 - y1, Directions.LEFT.value))
+        for y1, y2 in exits_v:
+            boundaries.append((x, y1, 1, y2 - y1, Directions.RIGHT.value))
             
         prev_merged_v = curr_merged_v
         
@@ -365,8 +383,8 @@ cpdef list contours(list rects):
     cdef list h_events = []
     i = 0
     for r in rects:
-        h_events.append((r[1], 1, r[0], r[2], i))  # Bottom edge
-        h_events.append((r[3], -1, r[0], r[2], i)) # Top edge
+        h_events.append((r[1], 1, r[0], r[2], i))   # Top edge
+        h_events.append((r[3], -1, r[0], r[2], i))  # Bottom edge
         i += 1
         
     h_events.sort()
@@ -376,6 +394,8 @@ cpdef list contours(list rects):
     cdef list curr_merged_h = []
     cdef int y
     cdef int n_h = len(h_events)
+    cdef list entries_h, exits_h
+    cdef int x1, x2
     i = 0
     
     while i < n_h:
@@ -391,13 +411,16 @@ cpdef list contours(list rects):
             
         curr_merged_h = merge(list(active_h.values()))
         
-        for x1, x2 in xor(prev_merged_h, curr_merged_h):
-            # A horizontal segment has width x2 - x1 and length 1
-            boundaries.append(Boundary(Position(x1, y), Dimensions(x2 - x1, 1)))
+        entries_h, exits_h = directed_diff(prev_merged_h, curr_merged_h)
+        for x1, x2 in entries_h:
+            boundaries.append((x1, y, x2 - x1, 1, Directions.UP.value))
+        for x1, x2 in exits_h:
+            boundaries.append((x1, y, x2 - x1, 1, Directions.DOWN.value))
             
         prev_merged_h = curr_merged_h
 
     return boundaries
+
 
 cpdef tuple raycast(
     int sx, 
@@ -411,13 +434,6 @@ cpdef tuple raycast(
     """
     Casts a directional 2D stream corridor of cross-section (sw, sl) from origin (sx, sy)
     against candidate AABB obstacles along cardinal directions.
-
-    Obstacle items in `obstacles` must be primitive tuples:
-        (ox, oy, ow, ol) or (ox, oy, ow, ol, ref)
-
-    Returns:
-        tuple: (int min_dist, object hit_obstacle)
-               If no obstacle is struck within max_dist, returns (max_dist, None).
     """
     cdef int min_dist = max_dist
     cdef object hit_obs = None
@@ -427,7 +443,7 @@ cpdef tuple raycast(
     cdef object ref
 
     for item in obstacles:
-        obs = <tuple>item
+        obs = item
         ox = obs[0]
         oy = obs[1]
         ow = obs[2]
@@ -435,7 +451,6 @@ cpdef tuple raycast(
         ref = obs[4] if len(obs) >= 5 else obs
 
         if direction == "down":
-            # Orthogonal cross-sectional overlap on X; strictly downstream on Y
             if ox < sx + sw and ox + ow > sx:
                 if oy > sy:
                     dist = oy - sy
@@ -444,7 +459,6 @@ cpdef tuple raycast(
                         hit_obs = ref
 
         elif direction == "up":
-            # Orthogonal cross-sectional overlap on X; strictly upstream on Y
             if ox < sx + sw and ox + ow > sx:
                 if oy + ol < sy:
                     dist = sy - (oy + ol)
@@ -453,7 +467,6 @@ cpdef tuple raycast(
                         hit_obs = ref
 
         elif direction == "right":
-            # Orthogonal cross-sectional overlap on Y; strictly downstream on X
             if oy < sy + sl and oy + ol > sy:
                 if ox > sx:
                     dist = ox - sx
@@ -462,7 +475,6 @@ cpdef tuple raycast(
                         hit_obs = ref
 
         elif direction == "left":
-            # Orthogonal cross-sectional overlap on Y; strictly upstream on X
             if oy < sy + sl and oy + ol > sy:
                 if ox + ow < sx:
                     dist = sx - (ox + ow)

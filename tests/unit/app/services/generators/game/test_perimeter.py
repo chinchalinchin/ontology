@@ -1,9 +1,6 @@
 """
-# Ontology: tests.unit.test_app_services_generators_perimeter.py
+# Ontology: tests.unit.app.services.generators.game.test_perimeter
 """
-# Standard Libraries
-from unittest.mock import patch
-
 # External Libraries
 import pytest
 
@@ -29,7 +26,7 @@ def test_perimeter_generator_extract(mock_board):
     rects = generator.extract(mock_board, "0")
     
     # 1. Evaluate Tile primitive from mock_board_assets 
-    # (pos: 0,0 | w:32, l:32 | nx:10, ny:10 -> span is 320x320
+    # (pos: 0,0 | w:32, l:32 | nx:10, ny:10 -> span is 320x320)
     assert (0, 0, 320, 320) in rects
     
     # 2. Evaluate Object primitive from mock_crate 
@@ -38,29 +35,27 @@ def test_perimeter_generator_extract(mock_board):
     
     # 3. Evaluate Craft primitive from mock_strut 
     # (pos: 250, 250 | w:222, l:133)
-    assert  (250, 250, 472, 383) in rects
+    assert (250, 250, 472, 383) in rects
 
 
 @pytest.mark.services
 def test_perimeter_generator_generate(mock_board):
     """
-    Verifies that the generator safely passes the extracted primitives into 
-    the Cython geometry pipeline and returns Boundary lists natively.
+    Verifies that the generator passes extracted primitives into the Cython 
+    geometry pipeline and unpacks directed tuples into typed Boundary instances.
     """
     generator = Perimeter()
-    
-    mock_boundaries = [
-        Boundary(Position(0, 0), Dimensions(64, 1)),
-        Boundary(Position(64, 0), Dimensions(1, 64))
-    ]
-    
-    with patch('app.services.generators.game.perimeter.geometry.contours') as mock_sweep:
-        mock_sweep.return_value = mock_boundaries
-        
-        perimeter = generator.generate(mock_board, "0")
-        
-        mock_sweep.assert_called_once()
-        assert perimeter == mock_boundaries
+    perimeter = generator.generate(mock_board, "0")
+
+    assert len(perimeter) > 0
+    for b in perimeter:
+        assert isinstance(b, Boundary)
+        assert isinstance(b.position, Position)
+        assert isinstance(b.dimensions, Dimensions)
+        assert isinstance(b.position.x, int)
+        assert isinstance(b.position.y, int)
+        assert isinstance(b.dimensions.w, int)
+        assert isinstance(b.dimensions.l, int)
 
 
 @pytest.mark.services
@@ -69,12 +64,8 @@ def test_perimeter_generator_empty_layer(mock_board):
     Verifies the generator short-circuits safely on an empty layer without invoking Cython.
     """
     generator = Perimeter()
-    
-    with patch('app.services.generators.game.perimeter.geometry.contours') as mock_sweep:
-        perimeter = generator.generate(mock_board, "empty-ghost-layer")
-        
-        mock_sweep.assert_not_called()
-        assert perimeter == []
+    perimeter = generator.generate(mock_board, "empty-ghost-layer")
+    assert perimeter == []
 
 
 @pytest.mark.services
@@ -87,10 +78,26 @@ def test_perimeter_extract_crafts_layer_isolation(mock_board):
     # Extract boundaries for the tileless composition layer
     interior_rects = perimeter.extract(mock_board, "brick-house-compose-layer")
 
-    # Layer contains only interior wall (0, 0, 128, 96) and floor (0, 96, 128, 192)
+    # Layer contains only interior wall (0, 0, 128, 96), floor (0, 96, 128, 192), and door (47, 142, 79, 190)
     assert len(interior_rects) == 3
     assert (0, 0, 128, 96) in interior_rects
     assert (0, 96, 128, 192) in interior_rects
 
     # Ensure Layer 0 castle strut (250, 250, 472, 383) is excluded
     assert not any(r[0] == 250 and r[1] == 250 for r in interior_rects)
+
+
+@pytest.mark.services
+def test_perimeter_generator_composition_layer(mock_board):
+    """
+    Verify Perimeter.generate derives a closed boundary hull for a multi-strut layer.
+    """
+    generator = Perimeter()
+    boundaries = generator.generate(mock_board, "brick-house-compose-layer")
+
+    assert len(boundaries) > 0
+    for b in boundaries:
+        assert isinstance(b, Boundary)
+        assert isinstance(b.position, Position)
+        assert isinstance(b.dimensions, Dimensions)
+        assert b.dimensions.w > 0 or b.dimensions.l > 0

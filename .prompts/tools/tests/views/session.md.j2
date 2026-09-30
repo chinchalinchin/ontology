@@ -1,0 +1,22 @@
+### View: User Test Session
+
+#### Initial Conditions
+
+{% for condition in tools.parameters.tests.session.conditions %}
+```yaml
+{{ file(properties.paths.root + condition )}}
+```
+
+{% endfor %}
+
+#### Application Logs
+
+```bash
+{{ logs(properties.paths.root + properties.paths.logs) }}
+```
+
+#### State Dump
+
+```markdown
+{{ dumps(properties.paths.root) }}
+```

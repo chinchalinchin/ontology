@@ -11,7 +11,7 @@ from app.assets.frames import (
     SpriteFrame,
     IndexFrame,
     FluidFrame,
-    ShorelineFrame
+    CardinalFrame
 )
 from app.models.properties import (
     ObjectProperties,
@@ -341,9 +341,9 @@ def test_sprite_frame_channels_submerged():
 
 def test_shoreline_frame_indexing():
     """
-    Verify ShorelineFrame indexes 4 cardinal rows and forward fractional remainder slices.
+    Verify CardinalFrame indexes 4 cardinal rows and forward fractional remainder slices.
     """
-    frame = ShorelineFrame()
+    frame = CardinalFrame()
     props = GeographyProperties(
         dimensions=Dimensions(w=32, l=32),
         tile="grass",
@@ -371,7 +371,7 @@ def test_shoreline_frame_keys_horizontal_full_and_slice():
     """
     Verify horizontal banks (UP/DOWN) emit full-tile keys along width and a terminal remainder.
     """
-    frame = ShorelineFrame(tile_w=32, tile_l=32)
+    frame = CardinalFrame(tile_w=32, tile_l=32)
     state = ShorelineState(
         id="grassy-shore",
         orientation=Directions.UP.value,
@@ -389,7 +389,7 @@ def test_shoreline_frame_keys_vertical_full_and_slice():
     """
     Verify vertical banks (LEFT/RIGHT) emit full-tile keys along length and a terminal remainder.
     """
-    frame = ShorelineFrame(tile_w=32, tile_l=32)
+    frame = CardinalFrame(tile_w=32, tile_l=32)
     state = ShorelineState(
         id="grassy-shore",
         orientation=Directions.LEFT.value,
@@ -404,16 +404,16 @@ def test_shoreline_frame_keys_vertical_full_and_slice():
 
 
 def test_shoreline_frame_keys_zero_length():
-    frame = ShorelineFrame()
+    frame = CardinalFrame()
     state = ShorelineState(id="grassy-shore", length=0)
     assert frame.keys("grassy-shore", state) == []
 
 
 def test_shoreline_frame_channels():
     """
-    Verify ShorelineFrame inherits universal Frame.channels behavior.
+    Verify CardinalFrame inherits universal Frame.channels behavior.
     """
-    frame = ShorelineFrame()
+    frame = CardinalFrame()
     state = ShorelineState(id="grassy-shore")
     props = GeographyProperties(
         dimensions=Dimensions(w=32, l=32),

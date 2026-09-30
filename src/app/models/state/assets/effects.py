@@ -50,6 +50,14 @@ class Pool:
     w: int
     l: int
 
+@dataclass(slots=True)
+class Branch:
+    position: Position # type: ignore
+    source: str
+    flow: int
+    length: int = 0
+    hitboxes: List[Hitbox] = field(default_factory=list) # type: ignore
+
 # ------------------------------------------------------------------------ EFFECT STATES
 
 @dataclass(slots=True)
@@ -80,6 +88,7 @@ class FluidState(EffectState):
     # Fluid Fields
     length: int = 0
     pool: Optional[Pool] = None
+    branches: List[Branch] = field(default_factory=list)
     hitboxes: List[Hitbox] = field(default_factory=list) # type: ignore
     dirty: bool = True
     flow: int = 1
