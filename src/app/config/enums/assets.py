@@ -114,6 +114,10 @@ class Actions(str, Enum):
     SHOOT           = "shoot"
     DIE             = "die"
 
+class Orientations(str, Enum):
+    HORIZONTAL      = "horizontal"
+    VERTICAL        = "vertical"
+    
 class Expressions(str, Enum):
     AGREEMENT       = "agreement"
     ANGER           = "anger"

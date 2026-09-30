@@ -27,7 +27,7 @@ from app.assets.frames import (
     StateFrame,
     SpriteFrame,
     FluidFrame,
-    ShorelineFrame,
+    CardinalFrame,
     TraversalFrame,
     MeterFrame,
     IndexFrame,
@@ -93,7 +93,7 @@ class Factory:
         FrameRecipe.METER.value: MeterFrame,
         FrameRecipe.INDEX.value: IndexFrame,
         FrameRecipe.FLUID.value: FluidFrame,
-        FrameRecipe.SHORELINE.value: ShorelineFrame,
+        FrameRecipe.CARDINAL.value: CardinalFrame,
         FrameRecipe.NONE.value: NoFrame
     }
 

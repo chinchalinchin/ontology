@@ -17,7 +17,7 @@ class FrameRecipe(str, Enum):
     FLUID           = "fluid"
     STATE           = "state"
     SPRITE          = "sprite"
-    SHORELINE       = "shoreline"
+    CARDINAL        = "cardinal"
     METER           = "meter"
     TRAVERSAL       = "traversal"
     INDEX           = "index"

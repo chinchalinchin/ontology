@@ -19,11 +19,9 @@ from app.config.enums import (
 )
 from app.assets.base import Frame
 from app.models.state import (
-    AssetState, 
     FluidState
 )
 from app.models.properties import (
-    AssetProperties,
     EffectProperties
 )
 

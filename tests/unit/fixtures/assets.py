@@ -14,7 +14,7 @@ from app.assets.base import (
 from app.assets.frames import (
     FluidFrame,
     IterableFrame,
-    ShorelineFrame,
+    CardinalFrame,
     SingleFrame,
     SpriteFrame,
 )
@@ -68,7 +68,7 @@ def mock_shoreline(
         ), 
         properties = mock_geography_properties.shorelines.get('grassy-shore'), 
         state = mock_shoreline_state, 
-        frame = ShorelineFrame(tile_w=32, tile_l=32),
+        frame = CardinalFrame(tile_w=32, tile_l=32),
         animation = NoAnimation()
     )
 

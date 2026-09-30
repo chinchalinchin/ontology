@@ -7,6 +7,9 @@ recipes:
       frame: single
       animation: none
   crafts:
+    bridges:
+      frame: oriented
+      animation: none
     struts:
       frame: single
       animation: none
@@ -19,7 +22,7 @@ recipes:
       animation: none
   geography:
     shorelines:
-      frame: shoreline
+      frame: cardinal
       animation: none
   effects:
     collectables:

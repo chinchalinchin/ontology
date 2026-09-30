@@ -457,6 +457,107 @@ N/A
 !!! todo "SeasonMechanics"
     Add linkage between Sign lexicon key and Resource SeasonMechanics.
 
+
+## Crafts
+
+* Property File: `/src/assets/crafts/main.yaml`
+
+Crafts are Assets that can be instantiated through game [Mechanics](./05-mechanics.md), such as `CommerceMechanics` or `ChemistryMechanics`. All Crafts have a `cost` associated with them. 
+
+**Cost**
+
+Cost is a set of quantities that must be satisfied before the Craft can be instantiated. It is a "formula" for the Craft's creation. 
+
+```yaml
+cost:
+    - key:
+      quantity:
+```
+
+The `key` referenced in the `cost` depends on the Instance type of the Craft. For example, a Strut costs Inventory Loot. The `cost` of a Strut is deducted from a Sprite's Inventory Loot when being instantiated.
+
+**Properties: CraftProperties**
+
+* `dimensions: Dimensions`
+* `hitboxes: List[Hitbox]`
+* `cost: Cost`
+* `mass: int`
+
+### Bridges
+
+Bridges are static, passable Crafts that elevate characters and dynamic items over Fluid corridors, annular pools, and Shoreline margins without entering the `submerged` state.
+
+**Oriented Frame Atlas**
+
+A Bridge image file embeds both horizontal and vertical deck spans in a single horizontal strip:
+
+* Cell 0: `horizontal` span (deck runs East-West to cross North-South streams).
+* Cell 1: `vertical` span (deck runs North-South to cross East-West streams).
+
+During bootstrap, `OrientedFrame` indexes these into discrete crop keys: `{id}-horizontal` and `{id}-vertical`. At runtime, `OrientedFrame.keys()` emits the key corresponding to `state.orientation`.
+
+**Decomposition & Structural Multipliers**
+
+Bridges are deployed via a 1D structural multiplier (`multiple.nx` for horizontal spans, `multiple.ny` for vertical spans).
+
+During world hydration or dynamic execution of the `build` Intention, the `Decomposer` unpacks a `BridgeState` into a contiguous series of $N$ unit `Asset` instances:
+* Each constituent segment receives an independent, absolute `Position` offset along the primary span axis.
+* Each constituent segment references the base unit's static `CraftProperties`, preserving immutable dimensions and relative deck hitboxes.
+* Construction cost scales linearly with span length ($N \times \text{Cost}$).
+
+**Dynamics & Environmental Interception**
+
+* Bridges are registered as Sensors ($m = -1$). They do not participate in momentum transfer or collision overlap resolution.
+* Bridges are excluded from `Board.obstacles()` and `Board.weights()`, allowing `NavigationMechanics` (RRT) to pathfind across river crossings.
+* In `MotionMechanics` (`fields.py`), intersecting a Bridge marks the entity as being on a surface:
+  * Fluid immersion and current velocity drift are suppressed ($\vec{v}_{\text{drift}} = \vec{0}$).
+  * Shoreline step-down nudges, ledge constraints, and splash particle emissions are bypassed.
+  * `mutators.triggers.submerged` is cleared to `False`.
+
+**Z-Ordering & Perspective**
+
+Bridges declare an explicit `height: 0` and `depth: 1`. This guarantees that Bridge decks render above background Tiles, Fluids (`depth: -1`), and Shorelines (`depth: 0`), while allowing entities crossing the deck to sort above the Bridge via dynamic geometric height ($y + l$).
+
+**Frame: OrientedFrame**
+
+* `keys(id, state): returns [(f"{id}-{state.orientation}", 0, 0)]`
+* `index(id, properties): returns {f"{id}-{Orientations.*}": (0, 0, w, l)}`
+
+**State: BridgeState**
+
+* `id: str`
+* `name: Optional[str]`
+* `layer: str`
+* `position: Position`
+* `orientation: str` (`horizontal`, `vertical`)
+* `multiple: Multiple` (`nx > 1` or `ny > 1`)
+* `owner: Optional[str]`
+* `depth: int = 1`
+* `height: Optional[int] = 0`
+
+### Struts 
+
+*Struts* are inanimate, immutable Assets. *Struts* are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. In other words, they possess an `owner`. 
+
+Struts may be placed on the Board through the state files manually, but are instantiated ingame through the `build` [Intention](./04-intentions.md). This is an oversimplification, as Struts are closely related to [Asset Compositions](./03-compositions.md), but generally true.
+
+**Animation: None**
+
+N/A
+
+**Frame: SingleFrame**
+
+* `keys(id, state): returns [ (id, 0, 0) ]`
+* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+
+**State: PropertyState**
+
+* `layer: str`
+* `depth: int`
+* `height: int`
+* `position: Position`
+* `owner: str`
+
 ## Cursors
 
 * Property File: `/src/assets/cursors/main.yaml`
@@ -514,64 +615,6 @@ N/A
 * `initial: Position`
 * `velocity: Velocity`
 * `speed: int`
-
-## Geography
-
-* Property File: `/src/assets/geography/main.yaml`
-
-Geography Assets represent inanimate, immutable structural and topographical landforms (e.g., shorelines, cliffs, ledges, and terraces). Geography Assets define transition thresholds between differing biome zones, elevations, and fluid corridors.
-
-1. **Atlas format**: Vertical $w \times 4l$ ($32 \times 128$) with rows: `0: up`, `1: left`, `2: down`, `3: right`.
-2. **Keying**: Uses `Directions` (`up`, `left`, `down`, `right`). Slices keyed as `{id}-{direction}-{rem}`.
-3. **Propagation**: Normalized to top-left; tiles advance in $+X$ for `up`/`down`, $+Y$ for `left`/`right`.
-4. **Slicing**: Forward-only slicing along the active propagation axis ($s \times l$ for horizontal, $w \times s$ for vertical).
-5. **Corners**: Excluded from Phase 09.02 (TODO).
-
-**Relational Secondary Keys**
-
-Geography assets act as relational bridges across environmental categories. Specifically, Shorelines declare secondary keys referencing the background `Tile` (and optionally `Fluid`) assets they border:
-
-* `tile: str`: Asset ID of the terrain tile to which this geography margin binds.
-* `fluid: Optional[str]`: Optional asset ID of the fluid type required to activate this margin.
-
-During engine bootstrapping, `ShorelineIndex` compiles these declarations into a composite lookup map:
-
-$
-\text{Index}[(tile\_id, fluid\_id)] \to shoreline\_id
-$
-
-**Properties: GeographyProperties**
-
-* `dimensions: Dimensions`
-* `hitboxes: List[Hitbox]`
-* `tile: str`
-* `fluid: Optional[str] = None`
-* `thickness: int = 8`
-* `mass: int = -1`
-
-### Shorelines
-
-Shorelines are procedural, inanimate Geography sensors instantiated along unoccluded environmental water margins. Rather than belonging to individual fluid emitters, Shorelines are derived at the layer level: `FluidMechanics` aggregates all active fluid streams and annular pools on a layer, derives the outer perimeter hull via `geometry.contours()`, samples bordering substrate tiles from `Board`, and coalesces contiguous segments into cohesive shoreline entities.
-
-**Frame: ShorelineFrame**
-
-* Indexes 4 cardinal orientation rows:
-    * Row 0: `up`    (Land North/Up, Water South/Down)
-    * Row 1: `left`  (Land West/Left, Water East/Right)
-    * Row 2: `down`  (Land South/Down, Water North/Up)
-    * Row 3: `right` (Land East/Right, Water West/Left)
-* `keys(id, state)` emits repeating full tiles along `state.length` and a fractional distal slice for remainders.
-
-**State: ShorelineState**
-
-* `layer: str`
-* `position: Position`
-* `orientation: str` (`up`, `left`, `down`, `right`)
-* `length: int`
-* `thickness: int`
-* `bidirectional: bool = True`
-* `hitboxes: List[Hitbox]`
-
 
 ## Effects
 
@@ -714,99 +757,63 @@ Fluids declare an explicit `height: 0` and `depth: -1`. This ensures the [render
 * `height: Optional[int] = 0`
 * `depth: int = -1`
 
-## Crafts
+## Geography
 
-* Property File: `/src/assets/crafts/main.yaml`
+* Property File: `/src/assets/geography/main.yaml`
 
-Crafts are Assets that can be instantiated through game [Mechanics](./05-mechanics.md), such as `CommerceMechanics` or `ChemistryMechanics`. All Crafts have a `cost` associated with them. 
+Geography Assets represent inanimate, immutable structural and topographical landforms (e.g., shorelines, cliffs, ledges, and terraces). Geography Assets define transition thresholds between differing biome zones, elevations, and fluid corridors.
 
-**Cost**
+1. **Atlas format**: Vertical $w \times 4l$ ($32 \times 128$) with rows: `0: up`, `1: left`, `2: down`, `3: right`.
+2. **Keying**: Uses `Directions` (`up`, `left`, `down`, `right`). Slices keyed as `{id}-{direction}-{rem}`.
+3. **Propagation**: Normalized to top-left; tiles advance in $+X$ for `up`/`down`, $+Y$ for `left`/`right`.
+4. **Slicing**: Forward-only slicing along the active propagation axis ($s \times l$ for horizontal, $w \times s$ for vertical).
+5. **Corners**: Excluded from Phase 09.02 (TODO).
 
-Cost is a set of quantities that must be satisfied before the Craft can be instantiated. It is a "formula" for the Craft's creation. 
+**Relational Secondary Keys**
 
-```yaml
-cost:
-    - key:
-      quantity:
-```
+Geography assets act as relational bridges across environmental categories. Specifically, Shorelines declare secondary keys referencing the background `Tile` (and optionally `Fluid`) assets they border:
 
-The `key` referenced in the `cost` depends on the Instance type of the Craft. For example, a Strut costs Inventory Loot. The `cost` of a Strut is deducted from a Sprite's Inventory Loot when being instantiated.
+* `tile: str`: Asset ID of the terrain tile to which this geography margin binds.
+* `fluid: Optional[str]`: Optional asset ID of the fluid type required to activate this margin.
 
-**Properties: CraftProperties**
+During engine bootstrapping, `ShorelineIndex` compiles these declarations into a composite lookup map:
+
+$
+\text{Index}[(tile\_id, fluid\_id)] \to shoreline\_id
+$
+
+**Properties: GeographyProperties**
 
 * `dimensions: Dimensions`
 * `hitboxes: List[Hitbox]`
-* `cost: Cost`
-* `mass: int`
+* `tile: str`
+* `fluid: Optional[str] = None`
+* `thickness: int = 8`
+* `mass: int = -1`
 
-### Bridges
+### Shorelines
 
-Bridges are static, passable Crafts that elevate characters and dynamic items over Fluid corridors, annular pools, and Shoreline margins without entering the `submerged` state.
+Shorelines are procedural, inanimate Geography sensors instantiated along unoccluded environmental water margins. Rather than belonging to individual fluid emitters, Shorelines are derived at the layer level: `FluidMechanics` aggregates all active fluid streams and annular pools on a layer, derives the outer perimeter hull via `geometry.contours()`, samples bordering substrate tiles from `Board`, and coalesces contiguous segments into cohesive shoreline entities.
 
-**Decomposition & Structural Multipliers**
+**Frame: CardinalFrame**
 
-Rather than defining bespoke assets for every river span, Bridges are configured as unit assets (`wood-bridge-horizontal`, `wood-bridge-vertical`, etc.) and deployed via a 1D structural multiplier (`multiple.nx` or `multiple.ny`). 
+* Indexes 4 cardinal orientation rows:
+    * Row 0: `up`    (Land North/Up, Water South/Down)
+    * Row 1: `left`  (Land West/Left, Water East/Right)
+    * Row 2: `down`  (Land South/Down, Water North/Up)
+    * Row 3: `right` (Land East/Right, Water West/Left)
+* `keys(id, state)` emits repeating full tiles along `state.length` and a fractional distal slice for remainders.
 
-During world hydration or dynamic execution of the `build` Intention, the `Decomposer` unpacks a `BridgeState` into a contiguous series of $N$ unit `Asset` instances:
-
-* Each constituent segment receives an independent, absolute `Position` offset along the primary span axis.
-* Each constituent segment references the base unit's static `CraftProperties`, preserving immutable dimensions and relative deck hitboxes.
-* Construction cost scales linearly with span length ($N \times \text{Cost}$).
-
-**Dynamics & Environmental Interception**
-
-* Bridges are registered as Sensors ($m = -1$). They do not participate in momentum transfer or collision overlap resolution.
-* Bridges are excluded from `Board.obstacles()` and `Board.weights()`, allowing `NavigationMechanics` (RRT) to pathfind across river crossings.
-* In `MotionMechanics` (`fields.py`), intersecting a Bridge marks the entity as being on a surface:
-  * Fluid immersion and current velocity drift are suppressed ($\vec{v}_{\text{drift}} = \vec{0}$).
-  * Shoreline step-down nudges, ledge constraints, and splash particle emissions are bypassed.
-  * `mutators.triggers.submerged` is cleared to `False`.
-
-**Z-Ordering & Perspective**
-
-Bridges declare an explicit `height: 0` and `depth: 1`. This guarantees that Bridge decks render above background Tiles, Fluids (`depth: -1`), and Shorelines (`depth: 0`), while allowing entities crossing the deck to sort above the bridge via dynamic geometric height ($y + l$).
-
-**Frame: IndexFrame?**
-
-!!! todo
-    Specify
-
-* Indexes orientation deck tiles from the asset source.
-* Emits `[(id, 0, 0)]` for each decomposed constituent segment.
-
-**State: BridgeState (Deployment Schema)**
-
-* `id: str`
-* `name: Optional[str]`
-* `layer: str`
-* `position: Position`
-* `multiple: Multiple` (`nx > 1` or `ny > 1`)
-* `owner: Optional[str]`
-* `depth: int = 1`
-* `height: Optional[int] = 0`
-
-### Struts 
-
-*Struts* are inanimate, immutable Assets. *Struts* are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. In other words, they possess an `owner`. 
-
-Struts may be placed on the Board through the state files manually, but are instantiated ingame through the `build` [Intention](./04-intentions.md). This is an oversimplification, as Struts are closely related to [Asset Compositions](./03-compositions.md), but generally true.
-
-**Animation: None**
-
-N/A
-
-**Frame: SingleFrame**
-
-* `keys(id, state): returns [ (id, 0, 0) ]`
-* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
-
-**State: PropertyState**
+**State: ShorelineState**
 
 * `layer: str`
-* `depth: int`
-* `height: int`
 * `position: Position`
-* `owner: str`
+* `orientation: str` (`up`, `left`, `down`, `right`)
+* `length: int`
+* `thickness: int`
+* `bidirectional: bool = True`
+* `hitboxes: List[Hitbox]`
+
 
 ## Resources
 

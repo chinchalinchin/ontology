@@ -732,17 +732,12 @@ class OrientedFrame(Frame):
     the corresponding orientation frame key.
     """
 
-    ORIENTATIONS = [
-        Orientations.HORIZONTAL.value,
-        Orientations.VERTICAL.value
-    ]
-
     def index(self, id: str, properties: CraftProperties) -> Dict[str, Tuple[int, int, int, int]]:
         w = properties.dimensions.w
         l = properties.dimensions.l
         crops: Dict[str, Tuple[int, int, int, int]] = {}
 
-        for i, orientation in enumerate(self.ORIENTATIONS):
+        for i, orientation in enumerate(Orientations):
             key = settings.SEPARATOR.join([id, orientation])
             crops[key] = (i * w, 0, w, l)
 
@@ -767,11 +762,7 @@ When `Decomposer.unpack_bridge()` processes a deployed `BridgeState`:
 
 
 
----
 
-### 6. Updated Task Backlog
-
-```jinja2
 #### Backlog: Phase 09.05 - Bridges & Bifurcation
 
 **Overview**
@@ -820,76 +811,3 @@ Introduce `Orientations` enum and register `BRIDGES` under `AssetCategories.CRAF
 
 - [ ] Subtask: Update `fields.update()` to evaluate bridge surface interception at the top of the hierarchy prior to dynamic Rafts.
 - [ ] Subtask: When intersecting a bridge, mark `on_surface = True`, set zero surface drift velocity ($\vec{v}_{\text{drift}} = \vec{0}$), clear `asset.state.mutators.triggers.submerged = False`, and bypass downstream shoreline edge crossing and fluid immersion passes.
-
-```
-
----
-
-### 7. Documentation Draft
-
-#### Draft: Bridge Crafts & OrientedFrame Specification
-
-* **Page**: `docs/01-assets.md`
-* **Heading**: `Crafts`
-
-##### Drift
-
-The crafts documentation specifies Struts, Decor, Forge, and Device, but lacks specifications for Bridges as multiplier-driven virtual crafts using `OrientedFrame` to select horizontal or vertical deck tiles.
-
-##### Update
-
-```markdown
-### Bridges
-
-Bridges are static, passable Crafts that elevate characters and dynamic items over Fluid corridors, annular pools, and Shoreline margins without entering the `submerged` state.
-
-**Oriented Frame Atlas**
-
-A Bridge image file embeds both horizontal and vertical deck spans in a single horizontal strip:
-* Cell 0: `horizontal` span (deck runs East-West to cross North-South streams).
-* Cell 1: `vertical` span (deck runs North-South to cross East-West streams).
-
-During bootstrap, `OrientedFrame` indexes these into discrete crop keys: `{id}-horizontal` and `{id}-vertical`. At runtime, `OrientedFrame.keys()` emits the key corresponding to `state.orientation`.
-
-**Decomposition & Structural Multipliers**
-
-Bridges are deployed via a 1D structural multiplier (`multiple.nx` for horizontal spans, `multiple.ny` for vertical spans).
-
-During world hydration or dynamic execution of the `build` Intention, the `Decomposer` unpacks a `BridgeState` into a contiguous series of $N$ unit `Asset` instances:
-* Each constituent segment receives an independent, absolute `Position` offset along the primary span axis.
-* Each constituent segment references the base unit's static `CraftProperties`, preserving immutable dimensions and relative deck hitboxes.
-* Construction cost scales linearly with span length ($N \times \text{Cost}$).
-
-**Dynamics & Environmental Interception**
-
-* Bridges are registered as Sensors ($m = -1$). They do not participate in momentum transfer or collision overlap resolution.
-* Bridges are excluded from `Board.obstacles()` and `Board.weights()`, allowing `NavigationMechanics` (RRT) to pathfind across river crossings.
-* In `MotionMechanics` (`fields.py`), intersecting a Bridge marks the entity as being on a surface:
-  * Fluid immersion and current velocity drift are suppressed ($\vec{v}_{\text{drift}} = \vec{0}$).
-  * Shoreline step-down nudges, ledge constraints, and splash particle emissions are bypassed.
-  * `mutators.triggers.submerged` is cleared to `False`.
-
-**Z-Ordering & Perspective**
-
-Bridges declare an explicit `height: 0` and `depth: 1`. This guarantees that Bridge decks render above background Tiles, Fluids (`depth: -1`), and Shorelines (`depth: 0`), while allowing entities crossing the deck to sort above the bridge via dynamic geometric height ($y + l$).
-
-**Frame: OrientedFrame**
-
-* `keys(id, state)`: returns `[(f"{id}-{state.orientation}", 0, 0)]`
-* `index(id, properties)`: returns `{f"{id}-horizontal": (0, 0, w, l), f"{id}-vertical": (w, 0, w, l)}`
-
-**State: BridgeState**
-
-* `id: str`
-* `name: Optional[str]`
-* `layer: str`
-* `position: Position`
-* `orientation: str` (`horizontal`, `vertical`)
-* `multiple: Multiple` (`nx > 1` or `ny > 1`)
-* `owner: Optional[str]`
-* `depth: int = 1`
-* `height: Optional[int] = 0`
-
-```
-
----
