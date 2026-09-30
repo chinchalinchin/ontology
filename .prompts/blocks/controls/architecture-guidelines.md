@@ -5,3 +5,4 @@ Let the data model validators do their job. All data must pass through strict Py
 **Enums**
 
 All enums are `class Test(str, Enum)`. Do not raise issues related to enum str comparisons. 
+

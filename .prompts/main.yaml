@@ -29,7 +29,7 @@ properties:
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: console/debug.md.j2
+  template: iterate/coverage.md.j2
 # ----------------------------------------------------
   parameters:
     diagram: mechanics-fluid.mmd
@@ -47,15 +47,15 @@ tools:
       directory: false
       commands: false
     tests:  
-      pipeline: false
+      pipeline: true
       fixtures: false
-      session: true
+      session: false
       workflow: false
 # ----------------------------------------------------
   parameters:
     manager:
       board:
-        phase: '09-03'
+        phase: '09-04'
         action: refactor
       docs:
         exclude:
@@ -84,8 +84,8 @@ tools:
         - configuration
         - properties
         - state
-        # - services
-        # - structures
+        - services
+        - structures
         # - menus
       workflow: fluids
       session:

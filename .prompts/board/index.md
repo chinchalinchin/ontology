@@ -62,7 +62,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 09.01: Fluid Flows](./phases/refactor/refactor-09-01.md)
       - [x]: [Phase 09.02: Shorelines & Geography](./phases/refactor/refactor-09-02.md)
       - [x]: [Phase 09.03: Consolidation](./phases/refactor/refactor-09-03.md)
-      - [ ]: [Phase 09.04: Optimization](./phases/refactor/refactor-09-04.md)
+      - [~]: [Phase 09.04: Optimization](./phases/refactor/refactor-09-04.md)
       - [ ]: [Phase 09.05: Bridges, Bifurcation & Bouyancy](./phases/refactor/refactor-09-03.md)
   - Patch:
     - [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
@@ -75,7 +75,8 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Bug B007: Cradle Spawning](./phases/patch/bug-b007.md)
     - [ ]: [Bug B008: Open Gate Obstruction](./phases/patch/bug-b008.md)
     - [x]: [Bug B009: Irregular Composition Behavior](./phases/patch/bug-b009.md)
-    - [x]: [Bug B010: Overlapping Fluid Behavior](./phases/patch/bug-b010.md)
+    - [x]: [Bug B010: Overlapping Fluid Shorelines](./phases/patch/bug-b010.md)
+    - [x]: [Bug B011: Stream and Annular Pool Texture Overdraw](./phases/patch/bug-b011.md)
   - Achieve:
     - [x]: [Goal 01: Boundaries](./phases/achieve/goal-01.md)
     - [x]: [Goal 02: ScrollController, Library & Plots](./phases/achieve/goal-02)

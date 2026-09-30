@@ -1,6 +1,6 @@
 ##### Bug B011: Stream and Annular Pool Texture Overdraw
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: MEDIUM
 
 **Description**

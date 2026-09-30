@@ -7,7 +7,8 @@ import pytest
 # Application Libraries
 from app.config.enums import (
     AssetInstances,
-    Relations
+    Relations,
+    Directions
 )
 from app.game.logic.mechanics.world.fluid import FluidMechanics
 
@@ -83,6 +84,7 @@ def test_fluid_mechanics_gate_switch_toggle_invalidates(mock_board, mock_bus):
     Verify static gate switch transitions invalidate fluid flow and re-propagate length.
     """
     fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid.state.flow = 0
     gate = mock_board.instances(AssetInstances.GATES.value)[0]
 
     # Start with closed gate at y=60
@@ -147,3 +149,26 @@ def test_fluid_mechanics_two_pass_layer_shorelines(
     for shore in shores:
         assert shore.instance == AssetInstances.SHORELINES.value
         assert shore.state.layer == "0"
+
+
+@pytest.mark.fluids
+def test_board_water_subtile_precision(mock_board):
+    """
+    Verify Board.water broad/narrow spatial hash returns False for coordinates
+    sharing a 32px tile bucket with fluid but falling outside exact bounds.
+    """
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid.state.position = Position(x=70, y=0)
+    fluid.state.source = Directions.DOWN.value
+    fluid.state.length = 64
+    fluid.state.pool = None
+
+    mock_board.update_water_cache("0")
+
+    # Inside stream corridor: x in [70, 102), y in [0, 64)
+    assert mock_board.water("0", Position(70, 10)) is True
+    assert mock_board.water("0", Position(101, 10)) is True
+
+    # Same tile bucket (cx = 69 // 32 = 2, cy = 10 // 32 = 0) but outside corridor
+    assert mock_board.water("0", Position(69, 10)) is False
+    assert mock_board.water("0", Position(102, 10)) is False

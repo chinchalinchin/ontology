@@ -266,6 +266,9 @@ class Actuator:
         fluid.state.hitboxes = hitboxes
         fluid.state.dirty = False
 
+        # Update O(1) environmental water grid cache on board
+        board.cache_fluid(fluid)
+
         return stream_length, pool_bounds, hitboxes
 
     def pump(self, fluid: Asset, board: Board) -> Tuple[int, Optional[Pool], List[Hitbox]]:

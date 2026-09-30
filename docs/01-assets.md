@@ -555,21 +555,22 @@ Shorelines are procedural, inanimate Geography sensors instantiated along unoccl
 **Frame: ShorelineFrame**
 
 * Indexes 4 cardinal orientation rows:
-    * Row 0: `north` (Land North, Water South)
-    * Row 1: `west` (Land West, Water East)
-    * Row 2: `south` (Land South, Water North)
-    * Row 3: `east` (Land East, Water West)
+    * Row 0: `up`    (Land North/Up, Water South/Down)
+    * Row 1: `left`  (Land West/Left, Water East/Right)
+    * Row 2: `down`  (Land South/Down, Water North/Up)
+    * Row 3: `right` (Land East/Right, Water West/Left)
 * `keys(id, state)` emits repeating full tiles along `state.length` and a fractional distal slice for remainders.
 
 **State: ShorelineState**
 
 * `layer: str`
 * `position: Position`
-* `orientation: str` (`north`, `west`, `south`, `east`)
+* `orientation: str` (`up`, `left`, `down`, `right`)
 * `length: int`
 * `thickness: int`
 * `bidirectional: bool = True`
 * `hitboxes: List[Hitbox]`
+
 
 ## Effects
 

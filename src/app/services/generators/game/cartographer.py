@@ -24,7 +24,6 @@ from app.config.enums import (
 )
 from libs.core.math import geometry
 from libs.core.models import (
-    Boundary,
     Dimensions,
     Hitbox,
     Position
@@ -87,74 +86,6 @@ class Cartographer:
                 rects.append((pool.x, pool.y, pool.x + pool.w, pool.y + pool.l))
 
         return rects
-
-    @classmethod
-    def _detect_boundary_orientation(
-        cls, 
-        boundary: Boundary, 
-        layer: str, 
-        board: Board
-    ) -> Optional[Dict]:
-        """
-        Identifies the directional water-to-land threshold for a contour boundary segment
-        by probing adjacent normal coordinates against board.water.
-        """
-        bx = boundary.position.x
-        by = boundary.position.y
-        bw = boundary.dimensions.w
-        bl = boundary.dimensions.l
-
-        # Horizontal boundary: length along X, thickness 1 along Y
-        if bl == 1:
-            mid_x = bx + bw // 2
-            is_south_water = board.water(layer, Position(mid_x, by))
-            is_north_water = board.water(layer, Position(mid_x, by - 1))
-
-            if is_south_water and not is_north_water:
-                return {
-                    'orientation': Directions.UP.value,
-                    'axis': 'x',
-                    'start': bx,
-                    'end': bx + bw,
-                    'margin_coord': by,
-                    'probe_coord': by - 1
-                }
-            elif is_north_water and not is_south_water:
-                return {
-                    'orientation': Directions.DOWN.value,
-                    'axis': 'x',
-                    'start': bx,
-                    'end': bx + bw,
-                    'margin_coord': by - 32,
-                    'probe_coord': by + 1
-                }
-
-        # Vertical boundary: thickness 1 along X, length along Y
-        elif bw == 1:
-            mid_y = by + bl // 2
-            is_east_water = board.water(layer, Position(bx, mid_y))
-            is_west_water = board.water(layer, Position(bx - 1, mid_y))
-
-            if is_east_water and not is_west_water:
-                return {
-                    'orientation': Directions.LEFT.value,
-                    'axis': 'y',
-                    'start': by,
-                    'end': by + bl,
-                    'margin_coord': bx,
-                    'probe_coord': bx - 1
-                }
-            elif is_west_water and not is_east_water:
-                return {
-                    'orientation': Directions.RIGHT.value,
-                    'axis': 'y',
-                    'start': by,
-                    'end': by + bl,
-                    'margin_coord': bx - 32,
-                    'probe_coord': bx + 1
-                }
-
-        return None
 
     @classmethod
     def _resolve_fluid_id(
@@ -341,7 +272,18 @@ class Cartographer:
                     probe_w, probe_l = 1, step_len
 
                 # 1. Water-to-water junction: skip if land-side probe intersects water
-                if cls._is_step_water(board, layer, axis, c, step_len, probe_coord):
+                if cls._is_step_water(
+                    board, 
+                    layer, 
+                    axis, 
+                    c, 
+                    step_len, 
+                    probe_coord
+                ):
+                    logger.info(
+                        f"Telemetry:Cartographer:SkipWaterJunction orientation={orientation} "
+                        f"axis={axis} c={c} probe_coord={probe_coord}"
+                    )
                     commit_segment()
                     c += step_len
                     continue
@@ -349,7 +291,15 @@ class Cartographer:
                 # 2. Skip if bordering substrate is occluded by boundary or obstacle (Fix B012)
                 probe_x = c if axis == 'x' else probe_coord
                 probe_y = probe_coord if axis == 'x' else c
-                if cls._detect_flank_occlusions(probe_x, probe_y, probe_w, probe_l, layer, board, axis=axis):
+                if cls._detect_flank_occlusions(
+                    probe_x, 
+                    probe_y, 
+                    probe_w, 
+                    probe_l, 
+                    layer, 
+                    board, 
+                    axis=axis
+                ):
                     commit_segment()
                     c += step_len
                     continue
@@ -364,17 +314,21 @@ class Cartographer:
                     continue
 
                 # 4. Resolve shoreline asset key from secondary relational index
-                fluid_id = cls._resolve_fluid_id(board, layer, axis, sample_c, margin_coord)
+                fluid_id = cls._resolve_fluid_id(
+                    board, 
+                    layer, 
+                    axis, 
+                    sample_c, 
+                    margin_coord
+                )
                 shoreline_id = index.resolve(tile.id, fluid_id)
                 if not shoreline_id:
                     commit_segment()
                     c += step_len
                     continue
 
-                thickness = 8
                 shore_props = board.cradle.spawnables.shorelines.get(shoreline_id)
-                if shore_props and hasattr(shore_props, 'thickness'):
-                    thickness = shore_props.thickness
+                thickness = shore_props.thickness
 
                 # 5. Coalesce contiguous runs
                 if (
@@ -421,13 +375,46 @@ class Cartographer:
         boundaries = geometry.contours(water_rects)
 
         logger.info(
-            f"Telemetry:Cartographer:{layer}:DerivedContours="
-            f"{[(b.position.x, b.position.y, b.dimensions.w, b.dimensions.l) for b in boundaries]}"
+            f"Telemetry:Cartographer:{layer}:DerivedContours={boundaries}"
         )
         
         descriptors = []
-        for b in boundaries:
-            desc = cls._detect_boundary_orientation(b, layer, board)
-            if desc:
-                descriptors.append(desc)
+        for x, y, w, l, orientation in boundaries:
+            if orientation == Directions.UP.value:
+                descriptors.append({
+                    'orientation': orientation,
+                    'axis': 'x',
+                    'start': x,
+                    'end': x + w,
+                    'margin_coord': y,
+                    'probe_coord': y - 1
+                })
+            elif orientation == Directions.DOWN.value:
+                descriptors.append({
+                    'orientation': orientation,
+                    'axis': 'x',
+                    'start': x,
+                    'end': x + w,
+                    'margin_coord': y - 32,
+                    'probe_coord': y + 1
+                })
+            elif orientation == Directions.LEFT.value:
+                descriptors.append({
+                    'orientation': orientation,
+                    'axis': 'y',
+                    'start': y,
+                    'end': y + l,
+                    'margin_coord': x,
+                    'probe_coord': x - 1
+                })
+            elif orientation == Directions.RIGHT.value:
+                descriptors.append({
+                    'orientation': orientation,
+                    'axis': 'y',
+                    'start': y,
+                    'end': y + l,
+                    'margin_coord': x - 32,
+                    'probe_coord': x + 1
+                })
+
         return cls._coalesce_segments(descriptors, layer, board, index)

@@ -127,13 +127,14 @@ The state files for each Board are maintained in `/src/data/state/<board-key>/**
 
 **Interface: Queries**
 
-The Board exposes spatial queries to evaluate dynamic environmental fields:
+The Board exposes interfaces for querying the game state:
 
-* Hiearchy Queries
-    - `board.instances(key, layer)`: Returns a List of Asset on the given layer, filtered by Instance `key`.
-    - `board.categories(key, layer)`: Returns a List of Assets on the given layer, filtered by Category `key`
+* Hierarchy Queries
+    - `board.instances(key, layer)`: Returns a List of Assets on the given layer, filtered by Instance `key`.
+    - `board.categories(key, layer)`: Returns a List of Assets on the given layer, filtered by Category `key`.
+    - `board.get_shorelines(layer=None)`: Retrieves active procedural shoreline assets for a specific layer or across all layers.
 * Physics Queries
-    - `board.weights(layer)`: Returns a list of Assets with positive mass on the given layer.
+    - `board.weights(layer)`: Returns a list of Assets with non-negative mass ($m \ge 0$) on the given layer (includes static and dynamic bodies; excludes sensors).
     - `board.obstacles(layer)`: Returns a list of Assets that qualify as Obstacles.
 * Environment Queries
     - `board.tile(layer, position, instance)`: Retrieves background or foreground [Tiles](./01-assets.md#tiles) via $O(1)$ spatial hash lookup.
@@ -157,7 +158,7 @@ The Screen acts as a high-level container for a Cythonized SDL rendering interfa
 
 ### Hitboxes
 
-Many Assets have Hitboxes. Hitboxes are *properties*, i.e., they are static and do not change. Hitboxes have positions and dimensions. To Hitboxes static, Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. Hitbox dimensions are always absolute. The following snippet shows the hitbox schema for an LPC Sprite Frame, with the image below showing how the hitbox translates into the physical image with a blue rectangle,
+Many Assets have Hitboxes. Hitboxes are *properties*, i.e., they are static and do not change. Hitboxes have positions and dimensions. To ensures Hitboxes remain static, Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. Hitbox dimensions are always absolute. The following snippet shows the hitbox schema for an LPC Sprite Frame, with the image below showing how the hitbox translates into the physical image with a blue rectangle,
 
 ```yaml
 position:
@@ -179,7 +180,7 @@ All deployed Assets have a Layer. Layers represent a "view" where the Asset is l
 
 Layers on a board can be traversed through Doors. The coordinate plane of each Layer is independent of every other. For example, a Sprite may enter a Door on Layer 1 at `(x_1, y_1)` and get released on Layer 3 at `(x_2, y_2)`. For this reason, each Layer may have different dimensions.
 
-Sprite interactions are constrained by their Layers. Because Layers are superimposed coordinates, all interaction calculations should be separated by Layer, to avoid inter-Layer collisions and interactions.
+Sprite interactions are constrained by their Layers. Because Layers are superimposed coordinates, all interaction calculations are separated by Layer, to avoid inter-Layer collisions and interactions.
 
 ### Sprites
 

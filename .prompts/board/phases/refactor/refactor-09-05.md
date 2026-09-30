@@ -39,3 +39,67 @@ In `FluidMechanics`, iterate over dynamic weights ($m > 0$, such as crates) inte
 
 * [] Subtask: Add `current: Velocity` vector calculation to `Actuator` based on `stream.source`.
 * [] Subtask: In `FluidMechanics`, accelerate floating bodies ($m > 0$) along the current vector, clamping to terminal stream speed.
+
+
+---
+
+#### Backlog: Phase 09.05 - Bridges, Bifurcation & Buoyancy
+
+**Overview**
+
+Expand the environmental mechanics to support recursive stream bifurcation across orthogonal axes, elevate characters and frictive assets over fluids via static architectural bridges, and generalize buoyancy properties across dynamic bodies.
+
+##### Goal: Generic Buoyancy Mechanics
+
+Decouple floating velocity assignment in `fields.py` from `AssetInstances.CRATES.value` by introducing a `buoyant: bool` property on dynamic objects ($m > 0$).
+
+```python
+# app/models/properties.py
+@dataclass(slots=True)
+class ObjectProperties(AssetProperties):
+    dimensions: Dimensions
+    mass: int = 0
+    count: int = 1
+    hitboxes: Optional[List[Hitbox]] = field(default_factory=list)
+    buoyant: bool = False
+
+```
+
+##### Goal: Architectural Bridges and Elevation Decks
+
+Introduce static bridge assets that define elevated surface planes across fluid corridors, intercepting character entities to suppress fluid velocity impulses and shoreline ledge drops.
+
+```python
+# app/game/logic/modules/motion/fields.py
+# Bridges act as static surface interceptors, similar to Rafts but immovable (m = 0)
+for bridge in layer_bridges:
+    if _intersects(asset, bridge):
+        on_bridge = True
+        asset.state.mutators.triggers.submerged = False
+        break
+
+```
+
+##### Tasks
+
+**1. Task: Generalize Dynamic Buoyancy**
+
+*Objective*: Allow any dynamic object to float in fluid currents based on properties rather than instance whitelisting.
+
+* [ ] Subtask: Add `buoyant: bool = False` to `ObjectProperties` in `src/app/models/properties.py`.
+* [ ] Subtask: Refactor `fields.py` to check `asset.properties.buoyant` when applying stream velocity and suppressing tile friction.
+
+**2. Task: Static Bridge Surface Interception**
+
+*Objective*: Prevent fluid immersion and shoreline triggering when traversing fluid streams via bridges.
+
+* [ ] Subtask: Create `Bridge` instance under `Objects` hierarchy with static mass ($m = 0$).
+* [ ] Subtask: Update `fields.update()` to evaluate Bridge intersections prior to shoreline and fluid immersion checks.
+
+**3. Task: Recursive Stream Bifurcation**
+
+*Objective*: Enable fluids striking static obstacles to branch into secondary corridors when unobstructed.
+
+* [ ] Subtask: Implement orthogonal branch raycasting in `Actuator` when an obstacle is struck and `flow > 1`.
+* [ ] Subtask: Partition compound hitboxes across bifurcated child streams.
+* [ ] Subtask: Verify layer water rectangle collection ingests bifurcated branches for seamless contour shoreline generation.
