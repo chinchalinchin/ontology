@@ -578,3 +578,7 @@ Introduce `Orientations` enum and register `BRIDGES` under `AssetCategories.CRAF
 
 - [x] Subtask: Update `fields.update()` to evaluate bridge surface interception at the top of the hierarchy prior to dynamic Rafts.
 - [x] Subtask: When intersecting a bridge, mark `on_surface = True`, set zero surface drift velocity ($\vec{v}_{\text{drift}} = \vec{0}$), clear `asset.state.mutators.triggers.submerged = False`, and bypass downstream shoreline edge crossing and fluid immersion passes.
+
+--- 
+
+Bug: When a submerged Asset (i.e. an Asset moving under the influence of a Fluid field) intersects a bridge, it should render underneath of the Bridge and continue moving through the field, i.e. it should "pass underneath" the Bridge when its velocity is transverse to the orientation of the Bridge.
