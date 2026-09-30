@@ -429,6 +429,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#bridges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bridges
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#chests" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1541,6 +1552,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#bridges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bridges
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#chests" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2375,6 +2397,31 @@
 <li><code>hitboxes: List[Hitbox]</code> </li>
 <li><code>count: int = 1</code></li>
 <li><code>mass: int</code></li>
+</ul>
+<h3 id="bridges">Bridges</h3>
+<p>Bridges are inanimate, immutable Objects that elevate characters and dynamic Assets over Fluid corridors, annular pools, and Shoreline margins without entering the <code>submerged</code> state.</p>
+<p><strong>Dynamics &amp; Environmental Interception</strong></p>
+<ul>
+<li>Bridges are registered as Sensors (<span class="arithmatex">\(m = -1\)</span>). They do not participate in momentum transfer or collision overlap resolution.</li>
+<li>When an entity's bounding box intersects a Bridge, <a href="../05-mechanics/#core">MotionMechanics</a> marks the entity as being on a surface:</li>
+<li>Fluid immersion and current velocity drift are suppressed (<span class="arithmatex">\(\vec{v}_{\text{drift}} = \vec{0}\)</span>).</li>
+<li>Shoreline step-down nudges, ledge constraints, and splash particle emissions are bypassed.</li>
+<li><code>mutators.triggers.submerged</code> is cleared to <code>False</code>.</li>
+<li>Bridges are excluded from <code>Board.obstacles()</code> to ensure <code>NavigationMechanics</code> can compute collision-free RRT trajectories across river crossings.</li>
+</ul>
+<p><strong>Z-Ordering &amp; Perspective</strong></p>
+<p>Bridges declare an explicit <code>height: 0</code> and <code>depth: 1</code>. This guarantees that Bridge decks render above background Tiles, Fluids (<code>depth: -1</code>), and Shorelines (<code>depth: 0</code>), while allowing entities crossing the deck to sort above the bridge via dynamic geometric height (<span class="arithmatex">\(y + l\)</span>).</p>
+<p><strong>Frame: SingleFrame</strong></p>
+<ul>
+<li><code>keys(id, state): returns [(id, 0, 0)]</code></li>
+<li><code>index(id, properties): returns {id: (0, 0, properties.dimensions.w, properties.dimensions.l)}</code></li>
+</ul>
+<p><strong>State: PositionalState</strong></p>
+<ul>
+<li><code>layer: str</code></li>
+<li><code>position: Position</code></li>
+<li><code>depth: int = 1</code></li>
+<li><code>height: Optional[int] = 0</code></li>
 </ul>
 <h3 id="chests">Chests</h3>
 <p><em>Chests</em> are <em>Binary Objects</em> whose frame can be changed by the player entering into an <code>interact</code> <a href="../04-intentions/">Intention</a> while intersecting the hitboxes of the Chest. When <code>switch == true</code>, the Chest is <em>on</em> (open). When <code>switch == false</code>, the Chest is <em>off</em> (closed).</p>
