@@ -29,7 +29,7 @@ properties:
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/coverage.md.j2
+  template: iterate/grooming.md.j2
 # ----------------------------------------------------
   parameters:
     diagram: mechanics-fluid.mmd
@@ -38,16 +38,16 @@ tools:
 # ----------------------------------------------------
   views:
     manager:
-      board: false
+      board: true
       specs: false
-      docs: false
+      docs: true
     source:
-      workflow: false
+      workflow: true
     shell:
       directory: false
       commands: false
     tests:  
-      pipeline: true
+      pipeline: false
       fixtures: false
       session: false
       workflow: false
@@ -55,7 +55,7 @@ tools:
   parameters:
     manager:
       board:
-        phase: '09-04'
+        phase: '09-05'
         action: refactor
       docs:
         exclude:

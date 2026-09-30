@@ -370,7 +370,9 @@ class Cartographer:
         if not water_rects:
             return []
 
-        logger.info(f"Telemetry:Cartographer:{layer}:CollectedWaterRects={water_rects}")
+        logger.info(
+            f"Telemetry:Cartographer:{layer}:CollectedWaterRects={water_rects}"
+        )
 
         boundaries = geometry.contours(water_rects)
 

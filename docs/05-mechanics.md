@@ -43,22 +43,9 @@ These Mechanics handle the core engine logic.
 - `motion: MotionMechanics`: Applies acceleration and velocity integrations to Assets to arrive at their next position.
 - `menu: MenuMechanics`: Handles Menu and Widget interactions.
 
-**MotionMechanics**
+### MotionMechanics
 
-Assets with Mass are divided into Kinenamtic, Motive, Inert and Frictive Assets. Kinematic and Motive Assets have Velocity states with (Speed, Impulse) properties that control the rate of change of their Velocity; Frictive and Inert Assets have a Velocity state, but have their Velocities controlled through external forces, i.e. Friction and garbage collection. 
-
-Kinematic Assets snap to Velocity vectors and do not change vectorally. This is used for the Player; When the Player presses right, the Player Sprite immediately changes *Velocity* (not Position) to the right, snapping to the inputted direction without getting sent into circular motion. In other words, velocities orthogonal to the Player's inputted direction are nulled out by the game loop; Velocity is used to control Player position, but only applies changes in one direction at once.
-
-!!! todo "Out-Of-Date: 2026/09/16"
-    Motive assets now use reciprocal velocities and RRT-generated trajectories with kinematic sliding to navigate.
-
-Motive Assets generate their own motion through their internal state by applying an Impulse every game tick, a directional acceleration vector that is applied until the magnitude of the resultant Velocity vector is equal to Speed. 
-
-Frictive Assets have motion imparted to them via collisions. Afterwards, the force of friction (technically an impulse) is applied to the resultant Velocity every game tick until that Velocity has been brought to zero. The force of friction is proportional to the currently occupied Tile's  `properties.friction`.
-
-Inert Assets are exluded from these considerations. They are spawned with a Velocity vector and an initial position; They follow the trajectory determined by these parameters until the distance between their initial and current position exceeds the garbage collection limit.
-
-The general flow of MotionMechanics is given by,
+#### Dynamics
 
 Assets with Mass are divided into Kinematic, Motive, Inert, and Frictive Assets.
 
@@ -76,11 +63,42 @@ The mathematical bounds for Friction are $[0, \infty)$.
 
 The `friction` property defines the rate of linear velocity decay, measured in pixels per second squared ($px/s^2$).
 
+**Updates**
+
 The engine updates the velocity magnitude $v$ via Symplectic Euler Integration:
 
 $$v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)$$
 
-**MenuMechanics**
+#### Fields
+
+##### Fluids
+
+Dynamic bodies (\(m > 0\)) interacting with active Fluid streams and pools evaluate hydrodynamic buoyancy via `properties.buoyant`:
+
+**Buoyant Dynamic Bodies (`buoyant: True`)**
+
+$$
+\vec{v}_{\text{body}} = \vec{v}_{\text{current}}
+$$
+
+* Enter the submerged state (`mutators.triggers.submerged = True`).
+* Tile friction decay is suspended in `frictive.py`, allowing continuous drift along the hydrological network.
+
+**Non-Buoyant Dynamic Bodies (`buoyant: False`)**
+
+* Sink to the substrate. Fluid current velocity is not imparted ($\vec{v}_{\text{drift}} = \vec{0}$).
+* Enter the submerged state (`mutators.triggers.submerged = True`).
+* Tile friction remains active, causing unpushed non-buoyant objects to settle and resist water flow.
+
+**Motive and Kinematic Characters (Sheets)**
+
+* Voluntary locomotion is preserved and vectorally superimposed with current velocity:
+
+$$
+\vec{v}_{\text{final}} = \vec{v}_{\text{locomotion}} + \vec{v}_{\text{current}}
+$$
+
+### MenuMechanics
 
 !!! note
     In the event of multiple Menus (e.g. a dialogue modal over a trade menu), MenuMechanics is constrained to interact with the top of the Menu stack (`board.menus[-1]`).
@@ -108,7 +126,7 @@ These Mechanics handle spatial interactions and collisions between Assets.
 - `interaction: InteractionMechanics`: (Cython) Resolves Asset interactions.
 - `social: SpeechMechanics`: Handle `speak` Intentions and [Plot calculations](./08-plots.md).
 
-**InteractionMechanics**
+#### InteractionMechanics
 
 !!! note
     `|` is used as a quantifier in the following.
@@ -120,11 +138,11 @@ These Mechanics handle spatial interactions and collisions between Assets.
         - `if target.instance == 'chests': TODO`
         - `if target.instance == 'doors': source.state.layer = door.state.outlayer` 
     - `if source.instance == 'players':`
-        - `if target.instance == 'chests': bus.append(MenuEvent('inventory', player.state)` 
+        - `if target.instance == 'chests': bus.append(MenuEvent('inventory', { 'context': player.state})` 
         - `if target.instance == 'doors': source.state.layer = door.state.outlayer` 
-        - `if target.instance == 'signs': TODO`
+        - `if target.instance == 'signs': bus.append(MenuEvent('dialogue', { 'object': sign.state, 'plot': plot.state}))`
 
-**CollisionMechanics**
+#### CollisionMechanics
 
 When Assets collide, overlap resolution uses inverse mass ratios to correct spatial positioning, ensuring immutable Assets with no Mass (`m = 0`) remain completely immobile while dynamic Assets with Mass (`m > 0`) absorb 100% of the displacement shift. Post-separation, Velocities are updated via elastic collision formulas, conserving momentum across all participating masses,
 
@@ -140,7 +158,7 @@ The [Player](./02-sprites.md#player) does not observe momentum transfers. Instea
     * **Player vs. Crate ($m=5$):** Both absorb the spatial shift proportional to their inverse mass. The Player pushes the Crate out of the way.
 * **Phase 2 - Momentum Transfer:** Bypass the 1D elastic collision calculation *only* for the Player.
 
-**CombatMechanics**
+#### CombatMechanics
 
 ```mermaid
 --8<-- "static/mmd/mechanics-combat.mmd"
@@ -161,7 +179,7 @@ These Mechanics handle Sprite intentionality, goal-seeking, and tactical navigat
 !!! important
     CognitionMechanics mutates Goals, TransitionMechanics mutates Intentions, NavigationMechanics populates Trajectories, and MotionMechanics integrates velocities. This separation of concerns **must** be preserved at all times.
 
-**CognitionMechanics**
+#### CognitionMechanics
 
 CognitionMechanics acts as the Sprite's deliberative core. It operates exclusively on high-level **Strategic Goals**. For example, for Sprite in the given Intention states, CognitionMechanics generates and manages the following Goals:
 
@@ -174,7 +192,7 @@ This is by no means an exhaustive list of CognitionMechanics' responsibility, bu
 
 Since CognitionMechanics is intrinsically tied to Sprite Intentions and Goals, the cognition workflow is covered in more detail in the [Intentions amd Goals documentation](./04-intentions.md#cognition).
 
-**NavigationMechanics**
+#### NavigationMechanics
 
 NavigationMechanics acts as the Sprite's tactical navigator, bridging strategic intent with physical locomotion:
 
@@ -195,7 +213,7 @@ These Mechanics handle ambient world state, high-level game calculations and oth
 - `plot: PlotMechanics`: Evaluates the [Plot Transition matrix](./08-plots.md) to transition the [Board's](./00-overview.md#board) plot state.
 - `fluid: FluidMechanics`: Resolves directional fluid propagation, obstacle impact truncation, and radial pool perimeter calculation.
 
-**FluidMechanics**
+#### FluidMechanics
 
 ```mermaid
 --8<-- "static/mmd/mechanics-fluid.mmd"
@@ -211,14 +229,32 @@ FluidMechanics governs fluid emission and procedural shoreline margins across ac
 
 * Location: `/src/data/config/mechanics/main.yaml`
 
-Mechanics Configuration defines what Mechanic classes are instantiated by the game engine. The order in which they are specified in the schema becomes the order of execution in the game engine.
+Mechanics Configuration defines what Mechanic classes are instantiated by the game engine and what dependencies to inject into them. The order in which they are specified in the schema becomes the order of execution in the game engine.
 
 ```yaml
 mechanics:
     core:
-        - <mechanic-key>
+        - key: <mechanic-key>
+          executors: []
+          relations: []
     world:
-        - <mechanic-key>
+        - key: <mechanic-key>
+          executors: []
+          relations: []
 ```
 
 Mechanics are divided into `world` Mechanics and `core` Mechanics. `core` Mechanics execute every single game loop, regardless of whether or not the [Board](./00-overview.md#board) is paused; These include AnimationMechanics and MenuMechanics. `world` Mechanics only execute when the Board is unpaused.
+
+### Executors
+
+Mechanics Executors are services made available to the request Mechanics. Available Executors are enumerated below.
+
+- `plot`: Executor for evaluating the conditions for [Plot Transitions](./08-plots.md).
+- `intention`: Executor for evaluating the conditions for [Intention Transitions](./04-intentions.md)
+- `actuator`: Executor for generating [Fluid](./01-assets.md#fluids) and [Shoreline](./01-assets.md#shorelines) Assets.
+
+### Relations
+
+Relations are static mappings configured at runtime. Available relations are enumerated below.
+
+- `shorelines`: A map of [Shoreline Geography Asset IDs](./01-assets.md#shorelines) to a compound index of [Tile Asset IDs](./01-assets.md#tiles) and [Fluid Asset ID](./01-assets.md#fluids). This relation maps Fluid Shorelines to the Tiles in which they are embedded, e.g. `grassy-shore` Shorelines are mapped to `grass` Tiles and `water` Fluids. 

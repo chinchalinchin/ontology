@@ -297,6 +297,35 @@ Binary Objects have a `count` of 2, where as all other Objects are initialized w
 * `count: int = 1`
 * `mass: int`
 
+### Bridges
+
+Bridges are inanimate, immutable Objects that elevate characters and dynamic Assets over Fluid corridors, annular pools, and Shoreline margins without entering the `submerged` state.
+
+**Dynamics & Environmental Interception**
+
+* Bridges are registered as Sensors ($m = -1$). They do not participate in momentum transfer or collision overlap resolution.
+* When an entity's bounding box intersects a Bridge, [MotionMechanics](./05-mechanics.md#core) marks the entity as being on a surface:
+  * Fluid immersion and current velocity drift are suppressed ($\vec{v}_{\text{drift}} = \vec{0}$).
+  * Shoreline step-down nudges, ledge constraints, and splash particle emissions are bypassed.
+  * `mutators.triggers.submerged` is cleared to `False`.
+* Bridges are excluded from `Board.obstacles()` to ensure `NavigationMechanics` can compute collision-free RRT trajectories across river crossings.
+
+**Z-Ordering & Perspective**
+
+Bridges declare an explicit `height: 0` and `depth: 1`. This guarantees that Bridge decks render above background Tiles, Fluids (`depth: -1`), and Shorelines (`depth: 0`), while allowing entities crossing the deck to sort above the bridge via dynamic geometric height ($y + l$).
+
+**Frame: SingleFrame**
+
+* `keys(id, state): returns [(id, 0, 0)]`
+* `index(id, properties): returns {id: (0, 0, properties.dimensions.w, properties.dimensions.l)}`
+
+**State: PositionalState**
+
+* `layer: str`
+* `position: Position`
+* `depth: int = 1`
+* `height: Optional[int] = 0`
+
 ### Chests
 
 *Chests* are *Binary Objects* whose frame can be changed by the player entering into an `interact` [Intention](./04-intentions.md) while intersecting the hitboxes of the Chest. When `switch == true`, the Chest is *on* (open). When `switch == false`, the Chest is *off* (closed).
