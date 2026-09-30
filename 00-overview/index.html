@@ -1477,20 +1477,28 @@
 <p><strong>Interface: Queries</strong></p>
 <p>The Board exposes interfaces for querying the game state:</p>
 <ul>
-<li>Hierarchy Queries<ul>
+<li>Hierarchy Queries<ol>
 <li><code>board.instances(key, layer)</code>: Returns a List of Assets on the given layer, filtered by Instance <code>key</code>.</li>
 <li><code>board.categories(key, layer)</code>: Returns a List of Assets on the given layer, filtered by Category <code>key</code>.</li>
-<li><code>board.get_shorelines(layer=None)</code>: Retrieves active procedural shoreline assets for a specific layer or across all layers.</li>
-</ul>
+</ol>
 </li>
-<li>Physics Queries<ul>
+<li>Physics Queries<ol>
+<li><code>board.bridges(layer)</code>: Returns a list of Bridge Assets on a layer.</li>
 <li><code>board.weights(layer)</code>: Returns a list of Assets with non-negative mass (<span class="arithmatex">\(m \ge 0\)</span>) on the given layer (includes static and dynamic bodies; excludes sensors).</li>
 <li><code>board.obstacles(layer)</code>: Returns a list of Assets that qualify as Obstacles.</li>
-</ul>
+</ol>
 </li>
-<li>Environment Queries<ul>
+<li>Environment Queries<ol>
 <li><code>board.tile(layer, position, instance)</code>: Retrieves background or foreground <a href="../01-assets/#tiles">Tiles</a> via <span class="arithmatex">\(O(1)\)</span> spatial hash lookup.</li>
-<li><code>board.water(layer, position, exclude=None)</code>: Evaluates whether a coordinate intersects any active <a href="../01-assets/#fluids">Fluid</a> stream or annular pool across the layer, with an optional entity exclusion filter.</li>
+<li><code>board.get_shorelines(layer=None)</code>: Retrieves active procedural shoreline assets for a specific layer or across all layers.</li>
+</ol>
+</li>
+</ul>
+<p><strong>Interface: Predicates</strong></p>
+<p>THe Board exposes predicates for asserting conditions on the Board state.</p>
+<ul>
+<li>Environment Predicates<ul>
+<li><code>board.fluid(layer, position, exclude=None)</code>: Evaluates whether a coordinate intersects any active <a href="../01-assets/#fluids">Fluid</a> stream or annular pool across the layer, with an optional entity exclusion filter.</li>
 </ul>
 </li>
 </ul>
