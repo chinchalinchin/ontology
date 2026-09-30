@@ -28,6 +28,16 @@
 {{ file(properties.paths.root + 'src/app/assets/frames/geography.py') }}
 ```
 
+#### app.config
+
+##### app.config.enums 
+
+**src/app/config/enums/assets.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/config/enums/assets.py') }}
+```
+
 #### app.game
 
 **src/app/game/board.py**
@@ -42,11 +52,13 @@
 {{ file(properties.paths.root + 'src/app/game/engine.py') }}
 ```
 
-{# **src/app/game/screen.py**
+{# 
+**src/app/game/screen.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/game/engine.py') }}
-``` #}
+``` 
+#}
 
 ##### app.game.logic
 
@@ -111,7 +123,7 @@
 **src/app/models/config/mechanics.py**
 
 ```python
-{{ file(properties.paths.root + 'src/app/models/config/core.py') }}
+{{ file(properties.paths.root + 'src/app/models/config/mechanics.py') }}
 ```
 
 ##### app.models.state 
@@ -133,7 +145,7 @@
 **src/app/models/state/assets/crafts.py**
 
 ```python
-{{ file(properties.paths.root + 'src/app/models/state/assets/objects.py' ) }}
+{{ file(properties.paths.root + 'src/app/models/state/assets/crafts.py' ) }}
 ```
 
 **src/app/models/state/assets/effects.py**
@@ -156,13 +168,15 @@
 
 #### app.services
 
-{# ##### app.services.orchestration
+{# 
+##### app.services.orchestration
 
 **src/app/services/orchestration/builder.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/services/orchestration/builder.py') }}
-``` #}
+``` 
+#}
 
 ##### app.services.generators
 

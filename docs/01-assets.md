@@ -132,6 +132,7 @@ These attributes are part of the base class from which all other states inherit.
 | Object | Chest | Base, Animation, Switch, Content |
 | Object | Gate | Base, Animation, Switch, Link |
 | Object | Plate | Base, Animation, Switch, Link |
+| Craft | Bridge | Base, Multiple |
 | Craft | Strut | Base, Owner |
 | Craft | Decor | Base, Owner |
 | Craft | Forge | Base, TODO |
@@ -296,35 +297,6 @@ Binary Objects have a `count` of 2, where as all other Objects are initialized w
 * `hitboxes: List[Hitbox]` 
 * `count: int = 1`
 * `mass: int`
-
-### Bridges
-
-Bridges are inanimate, immutable Objects that elevate characters and dynamic Assets over Fluid corridors, annular pools, and Shoreline margins without entering the `submerged` state.
-
-**Dynamics & Environmental Interception**
-
-* Bridges are registered as Sensors ($m = -1$). They do not participate in momentum transfer or collision overlap resolution.
-* When an entity's bounding box intersects a Bridge, [MotionMechanics](./05-mechanics.md#core) marks the entity as being on a surface:
-  * Fluid immersion and current velocity drift are suppressed ($\vec{v}_{\text{drift}} = \vec{0}$).
-  * Shoreline step-down nudges, ledge constraints, and splash particle emissions are bypassed.
-  * `mutators.triggers.submerged` is cleared to `False`.
-* Bridges are excluded from `Board.obstacles()` to ensure `NavigationMechanics` can compute collision-free RRT trajectories across river crossings.
-
-**Z-Ordering & Perspective**
-
-Bridges declare an explicit `height: 0` and `depth: 1`. This guarantees that Bridge decks render above background Tiles, Fluids (`depth: -1`), and Shorelines (`depth: 0`), while allowing entities crossing the deck to sort above the bridge via dynamic geometric height ($y + l$).
-
-**Frame: SingleFrame**
-
-* `keys(id, state): returns [(id, 0, 0)]`
-* `index(id, properties): returns {id: (0, 0, properties.dimensions.w, properties.dimensions.l)}`
-
-**State: PositionalState**
-
-* `layer: str`
-* `position: Position`
-* `depth: int = 1`
-* `height: Optional[int] = 0`
 
 ### Chests
 
@@ -766,6 +738,52 @@ The `key` referenced in the `cost` depends on the Instance type of the Craft. Fo
 * `hitboxes: List[Hitbox]`
 * `cost: Cost`
 * `mass: int`
+
+### Bridges
+
+Bridges are static, passable Crafts that elevate characters and dynamic items over Fluid corridors, annular pools, and Shoreline margins without entering the `submerged` state.
+
+**Decomposition & Structural Multipliers**
+
+Rather than defining bespoke assets for every river span, Bridges are configured as unit assets (`wood-bridge-horizontal`, `wood-bridge-vertical`, etc.) and deployed via a 1D structural multiplier (`multiple.nx` or `multiple.ny`). 
+
+During world hydration or dynamic execution of the `build` Intention, the `Decomposer` unpacks a `BridgeState` into a contiguous series of $N$ unit `Asset` instances:
+
+* Each constituent segment receives an independent, absolute `Position` offset along the primary span axis.
+* Each constituent segment references the base unit's static `CraftProperties`, preserving immutable dimensions and relative deck hitboxes.
+* Construction cost scales linearly with span length ($N \times \text{Cost}$).
+
+**Dynamics & Environmental Interception**
+
+* Bridges are registered as Sensors ($m = -1$). They do not participate in momentum transfer or collision overlap resolution.
+* Bridges are excluded from `Board.obstacles()` and `Board.weights()`, allowing `NavigationMechanics` (RRT) to pathfind across river crossings.
+* In `MotionMechanics` (`fields.py`), intersecting a Bridge marks the entity as being on a surface:
+  * Fluid immersion and current velocity drift are suppressed ($\vec{v}_{\text{drift}} = \vec{0}$).
+  * Shoreline step-down nudges, ledge constraints, and splash particle emissions are bypassed.
+  * `mutators.triggers.submerged` is cleared to `False`.
+
+**Z-Ordering & Perspective**
+
+Bridges declare an explicit `height: 0` and `depth: 1`. This guarantees that Bridge decks render above background Tiles, Fluids (`depth: -1`), and Shorelines (`depth: 0`), while allowing entities crossing the deck to sort above the bridge via dynamic geometric height ($y + l$).
+
+**Frame: IndexFrame?**
+
+!!! todo
+    Specify
+
+* Indexes orientation deck tiles from the asset source.
+* Emits `[(id, 0, 0)]` for each decomposed constituent segment.
+
+**State: BridgeState (Deployment Schema)**
+
+* `id: str`
+* `name: Optional[str]`
+* `layer: str`
+* `position: Position`
+* `multiple: Multiple` (`nx > 1` or `ny > 1`)
+* `owner: Optional[str]`
+* `depth: int = 1`
+* `height: Optional[int] = 0`
 
 ### Struts 
 

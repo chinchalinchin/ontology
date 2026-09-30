@@ -22,7 +22,7 @@ from app.services.translators import (
     LambdaTranslator,
     CompilerTranslator
 )
-from app.config.enums import MechanicExecutors
+from app.config.enums import Executors
 
 # Cython Libraries
 from libs.core.models import (
@@ -84,9 +84,9 @@ def mock_lambda_executors(
     plot_executor = translator.compile(mock_configurations.plots)
     
     return {
-        MechanicExecutors.INTENTION.value: intention_executor,
-        MechanicExecutors.PLOT.value: plot_executor,
-        MechanicExecutors.ACTUATOR.value: mock_actuator
+        Executors.INTENTION.value: intention_executor,
+        Executors.PLOT.value: plot_executor,
+        Executors.ACTUATOR.value: mock_actuator
     }
 
 
@@ -100,9 +100,9 @@ def mock_compiler_executors(
     plot_executor = translator.compile(mock_configurations.plots)
     
     return {
-        MechanicExecutors.INTENTION.value: intention_executor,
-        MechanicExecutors.PLOT.value: plot_executor,
-        MechanicExecutors.ACTUATOR.value: mock_actuator
+        Executors.INTENTION.value: intention_executor,
+        Executors.PLOT.value: plot_executor,
+        Executors.ACTUATOR.value: mock_actuator
     }
 
 

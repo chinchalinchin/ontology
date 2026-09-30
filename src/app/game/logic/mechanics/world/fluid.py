@@ -17,7 +17,7 @@ from typing import (
 import app.config.settings as settings
 from app.config.enums import (
     AssetInstances,
-    MechanicExecutors
+    Executors
 )
 from app.game.logic.mechanics import Mechanic
 from app.models.state import DevicePayload
@@ -42,14 +42,14 @@ class FluidMechanics(Mechanic):
 
     @property
     def actuator(self) -> Actuator:
-        if MechanicExecutors.ACTUATOR.value not in self.executors:
-            self.executors[MechanicExecutors.ACTUATOR.value] = Actuator()
-        return self.executors[MechanicExecutors.ACTUATOR.value]
+        if Executors.ACTUATOR.value not in self.executors:
+            self.executors[Executors.ACTUATOR.value] = Actuator()
+        return self.executors[Executors.ACTUATOR.value]
 
 
     @actuator.setter
     def actuator(self, value: Actuator) -> None:
-        self.executors[MechanicExecutors.ACTUATOR.value] = value
+        self.executors[Executors.ACTUATOR.value] = value
 
 
     @property
@@ -67,7 +67,7 @@ class FluidMechanics(Mechanic):
     def __init__(self, actuator: Optional[Actuator] = None):
         super().__init__()
         if actuator is not None:
-            self.set_executor(MechanicExecutors.ACTUATOR.value, actuator)
+            self.set_executor(Executors.ACTUATOR.value, actuator)
         self._gate_states = {}
         self._initialized = False
 

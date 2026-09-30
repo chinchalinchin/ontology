@@ -12,7 +12,7 @@ from app.config.enums import (
     AnimationRecipe,
     # -------- MECHANICS
     Mechanics,
-    MechanicExecutors,
+    Executors,
     Relations
 )
 from app.models.config import (
@@ -410,7 +410,7 @@ def mock_mechanics_configuration() -> MechanicsConfiguration:
             MechanicsInstance(
                 key=Mechanics.TRANSITION.value, 
                 executors=[
-                    MechanicExecutors.INTENTION.value
+                    Executors.INTENTION.value
                 ],
                 relations=[]
             ),
@@ -422,7 +422,7 @@ def mock_mechanics_configuration() -> MechanicsConfiguration:
             MechanicsInstance(
                 key=Mechanics.FLUID.value,
                 executors=[
-                    MechanicExecutors.ACTUATOR.value
+                    Executors.ACTUATOR.value
                 ],
                 relations=[
                     Relations.SHORELINES.value

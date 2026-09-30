@@ -1,7 +1,7 @@
 """
-# Ontology: app.assets.frames
+# Ontology: app.assets.frames.core
 
-Package for Asset Frame implementations. 
+Package for core Asset Frame implementations. 
 
 **Overview**
 

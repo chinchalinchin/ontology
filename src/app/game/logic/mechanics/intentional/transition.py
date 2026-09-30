@@ -15,7 +15,7 @@ from app.config.enums import (
     StaticIntentions,
     AssetInstances,
     Intentions,
-    MechanicExecutors
+    Executors
 )
 from app.game.logic.modules.maps import AnimationMap
 from app.game.logic.mechanics import Mechanic
@@ -38,9 +38,9 @@ class TransitionMechanics(Mechanic):
     @executor.setter
     def executor(self, executor: Optional[Executor]) -> None:
         if executor is None:
-            self.executors.pop(MechanicExecutors.INTENTION.value, None)
+            self.executors.pop(Executors.INTENTION.value, None)
         else:
-            self.executors[MechanicExecutors.INTENTION.value] = executor
+            self.executors[Executors.INTENTION.value] = executor
 
     def update(self, 
         board: Board, 

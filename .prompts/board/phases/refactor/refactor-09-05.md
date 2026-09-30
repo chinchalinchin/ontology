@@ -1,10 +1,9 @@
--- CURRENT DRAFT
-
 #### Refactor: Phase 09.05 - Bridges & Bifurication
 
 **Overview**
 
-Transition fluid mechanics from single-corridor truncations to branched hydrological networks with downstream flank continuation. Introduce static architectural bridge sensors that elevate entities above water corridors and shoreline thresholds without obstructing navigation. 
+Transition the fluid and geography mechanics from single-corridor raycasts to branched hydrological networks with downstream flank continuation, and implement procedural architectural bridge crafts that decompose into discrete static sensors, elevating entities over water corridors and shoreline thresholds without obstructing navigation or fluid flow.
+
 
 ##### Architectural Analysis I
 
@@ -143,11 +142,13 @@ def _is_weight(self, asset: Asset) -> bool:
             AssetCategories.TILES.value
         )
     )
+
 ```
 
 Apply this predicate uniformly across `_cache()`, `add()`, `relayer()`, and `weights()`.
 
 ###### Bug B013: Flank Discharge Coordinate Gap and Texture Overdraw in Proposed Bifurcation Raycasting
+
 
 **STATUS**: OPEN
 **SEVERITY**: MEDIUM
@@ -350,30 +351,6 @@ def _calculate_branch_discharges(
 
 Introduce `BRIDGES` under `AssetCategories.OBJECTS` with sensor mass ($m = -1$) and explicit Z-ordering parameters (`height = 0, depth = 1`). Implement surface hierarchy evaluation in `fields.py` to intercept entities traversing bridges, suppressing submersion, splash particles, shoreline nudges, and current drift. Ensure bridges remain accessible to NPC pathfinding by keeping them out of `Board.obstacles()`.
 
-##### Tasks
-
-**1. Task: Recursive Stream Bifurcation & Hydrodynamic Network Modeling**
-
-*Objective*: Implement lateral flank discharge raycasting in `Actuator` and extend broad-phase spatial caching, shoreline synthesis, and frame key emission across all active branches.
-
-* [ ] Subtask: Define `BranchCorridor` dataclass in `src/app/models/state/effects.py` and register `branches: List[BranchCorridor]` on `FluidState`.
-* [ ] Subtask: Refactor `Actuator.propagate()` to compute downstream flank origins from the pool boundary and raycast secondary child streams with `flow - 1`.
-* [ ] Subtask: Decouple `Actuator` from `Board` cache mutation by removing `board.cache_fluid()` calls from `Actuator.propagate()`, delegating cache invalidation to `FluidMechanics`.
-* [ ] Subtask: Update `Board._add_fluid_to_watermap()` to index parent corridors, annular pools, and all child branch corridors into `_cached_watermap`.
-* [ ] Subtask: Update `Board._in_stream()` to evaluate candidate coordinates against active child branch corridor bounding boxes.
-* [ ] Subtask: Update `Cartographer._collect_water_rectangles()` to compile primitive AABB tuples across all active branch corridors for contour analysis.
-* [ ] Subtask: Update `FluidFrame.keys()` to emit full-tile keys and distal remainder slices for each active branch corridor relative to `state.position`.
-
-**2. Task: Architectural Bridges & Surface Interception Hierarchy**
-
-*Objective*: Implement static bridge assets that elevate entities over fluid corridors and shorelines without interfering with navigation obstacle trees.
-
-* [ ] Subtask: Register `BRIDGES = "bridges"` in `AssetInstances` enum (`src/app/config/enums.py`).
-* [ ] Subtask: Add `bridges: Dict[str, ObjectProperties]` to `ObjectPropertyInstances` and state schemas.
-* [ ] Subtask: Configure default bridge property schema with $m = -1$, `height = 0`, and `depth = 1`.
-* [ ] Subtask: Expose `Board.bridges(layer)` query interface on `Board` while ensuring bridges are strictly excluded from `Board.obstacles()`.
-* [ ] Subtask: Update `fields.py` surface hierarchy resolution to evaluate bridge intersections, clearing `submerged = False`, setting zero drift velocity, and bypassing shoreline/fluid checks.
-
 ##### User Review
 
 ###### Scoping
@@ -433,447 +410,13 @@ This produces a "decomposition" of `multiple.nx` Bridge Assets at `(x, y)=(100, 
 
 This is similar to how Struts and Compositions function. A BridgeState is really a "schema" for instantiation. In fact, the "decomposition" of Bridges should probably slot into the existing Decomposer class.
 
-**src/app/models/config/core.py**
+##### Goals
 
-```python
-"""
-# Ontology: app.models.config.core
-
-Models for typing the configuration attributes of Mechanics, Menus and other game components. See documentation for a more in-depth explanation of each field and its purpose. 
-"""
-
-# ...
-
-@dataclass(slots=True, frozen=True)
-class CompositionPseudoState:
-    strut: PropertyState
-    components: StateSchema
-
-@dataclass(slots=True, frozen=True)
-class CompositionConfiguration(Configuration):
-    root: CompositionPseudoState
-    branches: Optional[List[CompositionPseudoState]] = field(default_factory=list)
-```
-
-**src/app/services/generators/game/decomposer.py**
-
-```python
-"""
-# Ontology: app.services.generators.decomposer
-
-Package for decomposing Compositions into their constituent Assets. 
-"""
-# Standard Libraries
-import re
-import dataclasses
-import logging
-from typing import (
-    Dict, 
-    List, 
-    Any
-)
-
-# Application Libraries
-from app.assets.base import Asset
-from app.config.enums import (
-    AssetCategories, 
-    AssetInstances
-)
-from app.services.generators.game.factory import Factory
-from app.models.config import (
-    CompositionConfiguration, 
-    RecipeConfiguration
-)
-from app.models.properties import (
-    PropertiesSchema, 
-    Cost
-)
-from app.models.state import (
-    PropertyState, 
-    AssetState
-)
-
-# Cython Libraries
-from libs.core.models import Position
-
-logger = logging.getLogger(__name__)
-
-class Decomposer:
-    compositions: Dict[str, CompositionConfiguration]
-    properties: PropertiesSchema
-    recipes: RecipeConfiguration
-    _increment: int
-
-    def __init__(self, 
-        compositions: Dict[str, CompositionConfiguration], 
-        properties: PropertiesSchema, 
-        recipes: RecipeConfiguration
-    ):
-        self.compositions = compositions
-        self.properties = properties
-        self.recipes = recipes
-        self._increment = 0
-
-    # ---------------------------------------------------------
-    # ------------------------------------------ COST UTILITIES
-
-    def _accumulate_cost(self, 
-        cat: str, 
-        inst: str, 
-        asset_id: str, 
-        cost_map: Dict[str, int]
-    ) -> None:
-        if cat == AssetCategories.CRAFTS.value:
-            cat_props = getattr(self.properties.crafts, inst, {})
-            props = cat_props.get(asset_id)
-            for c in props.cost:
-                cost_map[c.item] = cost_map.get(c.item, 0) + c.quantity
-
-
-    def _aggregate_components_cost(self, 
-        components: Any, 
-        cost_map: Dict[str, int]
-    ) -> None:
-        if not components: 
-            return
-        
-        for cat_field in dataclasses.fields(components):
-            cat_key = cat_field.name
-            cat_data = getattr(components, cat_key)
-
-            if not cat_data: continue
-            
-            for inst_field in dataclasses.fields(cat_data):
-                inst_key = inst_field.name
-                inst_list = getattr(cat_data, inst_key)
-
-                if not inst_list: continue
-                
-                for state_obj in inst_list:
-                    self._accumulate_cost(cat_key, inst_key, state_obj.id, cost_map)
-
-    # ---------------------------------------------------------
-    # ------------------------------------- HYDRATION UTILITIES
-
-    def _resolve_bind(self, 
-        val: Any, 
-        root_context: Dict[str, Any], 
-        parent_context: Dict[str, Any]
-    ) -> Any:
-        """
-        Map Composition `bind(root|parent.(.*))` binding to context.
-        """
-        if not isinstance(val, str):
-            return val
-            
-        # Prioritize explicit parent bindings
-        match_parent = re.match(r"^bind\(parent\.(.*?)\)$", val)
-        if match_parent:
-            key = match_parent.group(1)
-            return parent_context.get(key, val)
-            
-        # Support root bindings (and legacy bindings without a prefix)
-        match_root = re.match(r"^bind\((?:root\.)?(.*?)\)$", val)
-        if match_root:
-            key = match_root.group(1)
-            return root_context.get(key, val)
-            
-        return val
-
-
-    def _hydrate_state(self, 
-        state_obj: AssetState, 
-        root_context: Dict[str, Any], 
-        parent_context: Dict[str, Any], 
-        inc: int, 
-        inst_key: str, 
-        is_strut: bool = False
-    ) -> AssetState:
-        kwargs = {}
-        for f in dataclasses.fields(state_obj):
-            val = getattr(state_obj, f.name, None)
-            kwargs[f.name] = self._resolve_bind(val, root_context, parent_context)
-        
-        if 'layer' in kwargs and not kwargs['layer']:
-            kwargs['layer'] = parent_context['layer']
-        if 'owner' in kwargs and not kwargs['owner']:
-            kwargs['owner'] = parent_context['owner']
-
-        # Layer Transition Boundary: If moving to an independent layer, reset local origin
-        is_cross_layer = kwargs.get('layer') != parent_context.get('layer')
-        base_pos = Position(0, 0) if is_cross_layer else parent_context['position']
-
-        pseudo_pos = kwargs.get('position')
-        if pseudo_pos:
-            kwargs['position'] = Position(
-                x=base_pos.x + pseudo_pos.x,
-                y=base_pos.y + pseudo_pos.y
-            )
-        else:
-            kwargs['position'] = Position(base_pos.x, base_pos.y)
-
-        # Teleport destination coordinate mapping
-        pseudo_out = kwargs.get('out')
-        if pseudo_out:
-            outlayer = kwargs.get('outlayer')
-            # If returning to root layer, offset by deployed root position
-            if outlayer == root_context.get('layer'):
-                kwargs['out'] = Position(
-                    x=root_context['position'].x + pseudo_out.x,
-                    y=root_context['position'].y + pseudo_out.y
-                )
-            else:
-                # Target is an interior layer; coordinates are local to that layer
-                kwargs['out'] = Position(pseudo_out.x, pseudo_out.y)
-
-        base_inst = inst_key[:-1] if inst_key.endswith('s') else inst_key
-        
-        if is_strut:
-            b_name = kwargs.get('name') or root_context['name']
-            kwargs['name'] = '-'.join([base_inst, b_name, str(inc)])
-        else:
-            kwargs['name'] = '-'.join([base_inst, parent_context['name'], str(inc)])
-        
-        return type(state_obj)(**kwargs)
-    
-
-    def _create_asset(self, 
-        cat_key: str, 
-        inst_key: str, 
-        state_obj: AssetState
-    ) -> Asset:
-        cat_recipes = getattr(self.recipes, cat_key, None)
-        recipe = getattr(cat_recipes, inst_key, None)
-        
-        prop_instance_key = inst_key
-
-        if cat_key == AssetCategories.SHEETS.value and inst_key == AssetInstances.PLAYERS.value:
-            prop_instance_key = AssetInstances.SPRITES.value
-            
-        cat_props = getattr(self.properties, cat_key, None)
-        inst_props = getattr(cat_props, prop_instance_key, {}) 
-        props = inst_props.get(state_obj.id)
-        
-        taxonomy = Factory.taxonomy(state_obj.id, state_obj.name, cat_key, inst_key)
-        frame = Factory.frame(recipe.frame)
-        animation = Factory.animation(recipe.animation)
-        
-        return Asset(taxonomy, props, state_obj, frame, animation)
-
-    # ---------------------------------------------------------
-    # ------------------------------------- EXPANSION UTILITIES
-
-    def _unpack_node(self, 
-        node: Any, 
-        root_context: Dict[str, Any], 
-        parent_context: Dict[str, Any], 
-        inc: int, 
-        is_root: bool = False
-    ) -> List[Asset]:
-        assets = []
-        
-        strut_state = self._hydrate_state(
-            node.strut,
-            root_context,
-            parent_context,
-            inc,
-            AssetInstances.STRUTS.value,
-            is_strut=True
-        )
-        strut_asset = self._create_asset(
-            AssetCategories.CRAFTS.value, 
-            AssetInstances.STRUTS.value, 
-            strut_state
-        )
-        assets.append(strut_asset)
-
-        # 1. Calculate the physical bottom edge (height) of the instantiated Strut
-        node_height = strut_state.position.y + (strut_asset.dimensions.l if strut_asset.dimensions else 0)
-
-        # 2. Inject it into the context dictionary for child components to reference
-        node_context = {
-            "position": strut_state.position,
-            "layer": strut_state.layer,
-            "owner": getattr(strut_state, 'owner', None),
-            "name": strut_state.name,
-            "height": node_height
-        }
-        
-        # 3. If this is the root strut, its height becomes the root height
-        if is_root:
-            root_context["height"] = node_height
-
-        self._unpack_components(node.components, root_context, node_context, inc, assets)
-        return assets
-
-
-    def _unpack_components(self, 
-        components: Any, 
-        root_context: Dict[str, Any], 
-        parent_context: Dict[str, Any], 
-        inc: int, 
-        assets: List[Asset]
-    ) -> None:
-        if not components: 
-            return
-            
-        for cat_field in dataclasses.fields(components):
-            cat_key = cat_field.name
-            cat_data = getattr(components, cat_key)
-            if not cat_data: continue
-            
-            for inst_field in dataclasses.fields(cat_data):
-                inst_key = inst_field.name
-                inst_list = getattr(cat_data, inst_key)
-                if not inst_list: continue
-                
-                for pseudo_state in inst_list:
-                    new_state = self._hydrate_state(
-                        pseudo_state,
-                        root_context,
-                        parent_context,
-                        inc,
-                        inst_key,
-                        is_strut=False
-                    )
-                    assets.append(self._create_asset(cat_key, inst_key, new_state))
-
-
-    # ---------------------------------------------------------
-    # ------------------------------------------ PUBLIC METHODS
-
-
-    def unpack(self, deployed_state: PropertyState) -> List[Asset]:
-        """Flattens a Composition configuration into a native 1D list of fully hydrated Assets."""
-        assets = []
-        comp_config = self.compositions.get(deployed_state.id)
-        if not comp_config:
-            return assets
-
-        self._increment += 1
-        inc = self._increment
-
-        root_context = {
-            "id": deployed_state.id,
-            "name": getattr(deployed_state, 'name', ''),
-            "layer": getattr(deployed_state, 'layer', ''),
-            "owner": getattr(deployed_state, 'owner', None),
-            "position": getattr(deployed_state, 'position', Position(0,0))
-        }
-
-        # Unpack Root node first, explicitly flagging it as the root
-        assets.extend(self._unpack_node(comp_config.root, root_context, root_context, inc, is_root=True))
-
-        if comp_config.branches:
-            for branch in comp_config.branches:
-                assets.extend(self._unpack_node(branch, root_context, root_context, inc, is_root=False))
-
-        return assets
-
-
-    def cost(self, comp_id: str) -> List[Cost]:
-        """Calculates the aggregate cost of an entire Composition tree."""
-        config = self.compositions.get(comp_id)
-        if not config: 
-            return []
-        
-        cost_map = {}
-        
-        # Traverse Root
-        self._accumulate_cost(
-            AssetCategories.CRAFTS.value, 
-            AssetInstances.STRUTS.value, 
-            config.root.strut.id, 
-            cost_map
-        )
-        self._aggregate_components_cost(config.root.components, cost_map)
-        
-        # Traverse Branches
-        if config.branches:
-            for branch in config.branches:
-                self._accumulate_cost(
-                    AssetCategories.CRAFTS.value, 
-                    AssetInstances.STRUTS.value, 
-                    branch.strut.id, 
-                    cost_map
-                )
-                self._aggregate_components_cost(branch.components, cost_map)
-                
-        return [Cost(item=k, quantity=v) for k, v in cost_map.items()]
-```
-
-### Executive Summary & Architectural Evaluation
-
-The revised scope focuses **Phase 09.05** strictly on **Bridges & Bifurcation**, deferring dynamic buoyancy to the backlog.
-
-The user's architectural guidance regarding Bridges provides a critical breakthrough: **Bridges are Crafts, not Objects, and must decompose into constituent unit assets via `Decomposer`.**
-
----
-
-### Architectural Analysis: Bridges as Decomposed Crafts
-
-#### 1. Why Decomposed Crafts Beat "Stateful" Hitbox Mutation
-
-Attempting to stretch hitboxes dynamically across a multiplier (`multiple.nx` or `multiple.ny`) would violate the foundational engine invariant:
-
-> **"Code should never alter Asset Properties. Asset Properties are static and never change."**
-
-If a single Bridge asset were stretched across 3 tiles:
-
-* `asset.dimensions` and `asset.properties.hitboxes` would either need to be mutated at runtime or bypassed with dynamic state-level hitboxes.
-* Narrow-phase collision routines, camera culling, spatial hashing, and shoreline occlusion checks would all require special branching logic to handle non-uniform asset scales.
-
-By treating a deployed bridge declaration as a **virtual schema** that `Decomposer` unpacks into $N$ discrete unit `Asset` instances:
-
-1. **Properties Remain 100% Immutable**: Each constituent bridge segment references the static `CraftProperties` of its orientation (`wood-bridge-horizontal` or `wood-bridge-vertical`), retaining fixed dimensions and local relative hitboxes.
-2. **$O(1)$ Spatial Hashing & Collision Compatibility**: Each segment has its own Cartesian `Position`. Broad-phase grid insertion (`libs.core.math.space`) and narrow-phase AABB checks (`geometry.intersects`) process bridge segments like any standard entity with zero special-casing.
-3. **Natural Cost Aggregation**: `Decomposer.cost()` already traverses composite structures. Sizing a bridge to $N$ segments scales the construction cost linearly ($N \times \text{Cost}$) during the `build` intention.
-
-#### 2. Frame & Orientation Architecture
-
-A bridge asset file contains both horizontal and vertical deck tiles arranged horizontally:
-
-* **Frame 0 (Horizontal)**: $x \in [0, w)$, span oriented along the X-axis (crossing vertical rivers).
-* **Frame 1 (Vertical)**: $x \in [w, 2w)$, span oriented along the Y-axis (crossing horizontal rivers).
-
-To prevent frame indexing ambiguity:
-
-* `CraftProperties` registers distinct IDs: `wood-bridge-horizontal` and `wood-bridge-vertical`.
-* The `BridgeFrame` (or pre-indexed `IndexFrame`) maps:
-* `wood-bridge-horizontal` $\to (0, 0, w, l)$
-* `wood-bridge-vertical` $\to (w, 0, w, l)$
-
-
-* When deployed with `multiple.nx > 1`, `Decomposer` instantiates $N$ horizontal segments spaced by $w$.
-* When deployed with `multiple.ny > 1`, `Decomposer` instantiates $N$ vertical segments spaced by $l$.
-* Simultaneous 2D multiples (`nx > 1 and ny > 1`) are prohibited; bridges are strictly 1D linear structures.
-
-#### 3. Spatial Classification & Invariants
-
-| Subsystem | Bridge Behavior | Enforcement |
-| --- | --- | --- |
-| **Mass & Physics** | Sensor ($m = -1$) | Excluded from elastic collision resolution. Excluded from `Board.weights()` ($m \ge 0$). |
-| **Pathfinding (RRT)** | Passable Deck | Excluded from `Board.obstacles()`. NPCs pathfind directly across bridges. |
-| **Fluid Propagation** | Non-occluding | Excluded from `Actuator._collect_obstacles()`. Water flows uninterrupted beneath decks. |
-| **Shoreline Synthesis** | Non-occluding | Excluded from `Cartographer._detect_flank_occlusions()`. Natural shorelines generate beneath decks. |
-| **Z-Sorting** | Above water/shores, below entities | `height = 0`, `depth = 1`. (Fluid: `depth = -1`, Shoreline: `depth = 0`, Walkers: $y + l > 0$). |
-
----
-
-### Updated Task Board Backlog
-
-```jinja2
-#### Backlog: Phase 09.05 - Bridges & Bifurcation
-
-**Overview**
-
-Transition the fluid and geography mechanics from single-corridor raycasts to branched hydrological networks with downstream flank continuation, and implement procedural architectural bridge crafts that decompose into discrete static sensors, elevating entities over water corridors and shoreline thresholds without obstructing navigation or fluid flow.
-
-##### Goal: Hydrological Network Bifurcation & Downstream Raycasting
+###### Goal: Hydrological Network Bifurcation & Downstream Raycasting
 
 Implement recursive stream branching in `Actuator` when an immovable obstacle ($m = 0$) is struck and $\text{flow} > 1$. Ensure child streams discharge strictly from the downstream face of the annular pool along its lateral flanks, eliminating spatial gaps and texture overdraw. Update `FluidState`, `FluidFrame`, `Board`, and `Cartographer` to index and render branched networks. Decouple `Actuator` from direct `Board` cache mutation.
 
-##### Goal: Architectural Bridge Crafts & Decomposition Engine
+###### Goal: Architectural Bridge Crafts & Decomposition Engine
 
 Introduce `BRIDGES` under `AssetCategories.CRAFTS`. Define `BridgeState` utilizing a directional multiplier schema. Extend `Decomposer` to unpack bridge schemas into constituent unit `Asset` instances with sensor mass ($m = -1$) and explicit Z-ordering parameters (`height = 0, depth = 1`). Expose `Board.bridges(layer)` while strictly excluding bridges from `Board.obstacles()` and `Board.weights()`. Implement surface hierarchy evaluation in `fields.py` to intercept entities traversing bridges, suppressing submersion, splash particles, shoreline nudges, and current drift.
 
@@ -911,111 +454,387 @@ Introduce `BRIDGES` under `AssetCategories.CRAFTS`. Define `BridgeState` utilizi
 - [ ] Subtask: Update `fields.update()` to evaluate bridge surface interception at the top of the hierarchy prior to dynamic Rafts.
 - [ ] Subtask: When intersecting a bridge, mark `on_surface = True`, set zero surface drift velocity ($\vec{v}_{\text{drift}} = \vec{0}$), clear `asset.state.mutators.triggers.submerged = False`, and bypass downstream shoreline edge crossing and fluid immersion passes.
 
+##### User Review
+
+Closer to finalization, but not ready for implementation. Ambiguities remain.
+
+###### Bridge Frame Ambiguities
+
+There is a disconnect in the current tasking between the Bridge orientation and Bridge state. The vertical and horizontal frames of the Bridge are embedded in an Asset image file (`.png`) in a physical horizontal frame. In other words, Bridge State needs an `orientation` field, I think. And more clarification is needed on what is meant by properties and state with respect to frames.
+
+The properties of assets are meant to "span" the space of image file, i.e. properties define how to arrange the frames of an asset to achieve an animation or generation. The state of Assets are meant to access the partitions created by the property indexing in such a way that the state of the Asset "traverses" an "animation trajectory" in "frame space" as the state evolves as part of the game loop.
+
+Currently this is done in a couple of ways:
+
+- (action, direction) mappings for sheets
+- numerical indices for effects
+- categorical indices of widgets
+- etc.
+
+As the game has developed, certain abstractions are becoming clearer. A discussion is to be had regarding the Frame implementation to use for Bridges, as a segway into a greater discussion about the Frame interface. There are two existing Frame implementation that seem like they can be used:
+
+```python
+class IndexFrame(Frame):
+    """
+    ## IndexFrame
+
+    Parses horizontal sheets where each frame corresponds to a specific string key.
+    """
+    
+    def keys(self, id: str, state: AssetState) -> List[Tuple[str, int, int]]:
+        icon_key = getattr(state, "icon", None)
+        if not icon_key:
+            return []
+        return [(settings.SEPARATOR.join([id, icon_key]), 0, 0)]
+
+    def index(self, id: str, properties: WidgetProperties) -> Dict[str, Tuple[int, int, int, int]]:
+        w = properties.dimensions.w
+        l = properties.dimensions.l
+        frames = properties.frames
+        crops = {}
+        
+        # Failsafe: if no frames are defined, index the whole image
+        if not frames:
+            return {id: (0, 0, w, l)}
+            
+        for i, frame_name in enumerate(frames):
+            frame_index = settings.SEPARATOR.join([id, frame_name])
+            crops[frame_index] = (i * w, 0, w, l)
+            
+        return crops
 ```
+
+or 
+
+```python
+class IterableFrame(Frame):
+    """
+    ## IterableFrame
+    """
+    
+    def keys(self, id: str, state: AssetState) -> List[str]:
+        """
+        """
+        return [(
+            settings.SEPARATOR.join([
+                id, 
+                str(state.animation.frame)
+            ]), 0, 0
+        )]
+
+        
+    def index(self, id: str, properties: AssetProperties) -> Dict[str, Tuple[int, int, int, int]]:
+        """
+        """
+        w = properties.dimensions.w 
+        l = properties.dimensions.l
+
+        return { 
+            settings.SEPARATOR.join([
+                id,
+                str(i)
+            ]): (i * w, 0, w, l)
+            for i in range(properties.count) 
+        }
+```
+
+Most Frame classes have been created in an adhoc manner as the engine developed, though reuse and recycling has always been kept in mind.
+
+The indexing methods for both of these implementations are very similar; one simply use a sequence of numbers (IterableFrame with `0, 1, ..., properites.count`) versus a sequence of string categories (Index Frame with `properties.frames`). It is how they access the index via the state formulas that are materially different, e.g. IndexFrame uses a bespoke state field for icons versus IterableFrame's usage of an animation state field.
+
+While BridgeFrames may ultimately require a specific Frame implementation for their orientation of `horizontal` and `vertical`, there are other solutions that involve reusing these implemenations; I am always loathe to introduce polymorphisms and duck-typing, as it significantly decreases the readability of the code, but there does seem to be an asbtraction lurking there that may require neither.
+
+Analyze the problem of Bridge Frames and Frame interfaces in general. 
+
+
+
+### 1. Architectural Analysis: Properties vs. State in the Frame Interface
+
+In Ontology, the rendering pipeline separates texture allocation from runtime drawing:
+
+$$\text{Properties} \xrightarrow{\quad\text{index()}\quad} \text{Frame Space Basis } \mathcal{K} \subset \text{String} \times \text{AABB}$$
+
+$$\text{State} \xrightarrow{\quad\text{keys()}\quad} \text{Active Trajectory Point } \pi \in \mathcal{P}(\mathcal{K} \times \mathbb{Z} \times \mathbb{Z})$$
+
+1. **`AssetProperties` spans the Frame Space**: It is static, immutable, and ingested at boot. It defines the coordinate basis of the image file (e.g., grid cell dimensions $w \times l$, count of subdivisions, cardinal rows, nominal category labels).
+2. **`AssetState` traverses Frame Space**: It is dynamic, mutable, and evaluated every engine tick. It provides the active coordinate within that basis.
 
 ---
 
-### Deferred Backlog Item: Dynamic Buoyancy
+### 2. The Core Defect in `IterableFrame` vs. `IndexFrame`
 
-Per the executive decision, dynamic buoyancy mechanics are preserved in the backlog:
+Both `IterableFrame` and `IndexFrame` implement identical 1D horizontal texture slicing during `index()`:
+
+$$\text{Crop}_i = (i \cdot w, 0, w, l)$$
+
+The divergence—and current architectural limitation—is entirely in `keys()`:
+
+| Frame Class | Basis Type | Property Schema | State Expectation in `keys()` | Semantic Coupling |
+| --- | --- | --- | --- | --- |
+| **`IterableFrame`** | 1D Ordinal ($0 \dots N-1$) | `properties.count: int` | `state.animation.frame: int` | Hardcoded to temporal `AnimationState` |
+| **`IndexFrame`** | 1D Nominal ($\text{label}_0 \dots \text{label}_{N-1}$) | `properties.frames: List[str]` | `state.icon: str` | Hardcoded to UI/expression `icon` |
+
+#### Why Neither Fits Bridges As-Is
+
+1. **`IterableFrame` is a Category Error for Bridges**:
+* Bridges are static Crafts ($m = -1$, `Animation: None`).
+* Forcing `BridgeState` to hold an `AnimationState` with `frame = 0` or `frame = 1` misrepresents a structural orientation as a temporal animation cycle.
+* Resulting keys (`wood-bridge-0`, `wood-bridge-1`) discard domain clarity.
+
+
+2. **`IndexFrame` is Hardcoded to `state.icon**`:
+* `IndexFrame.index()` is completely general: it takes a list of string keys (`["horizontal", "vertical"]`) and slices them along X.
+* `IndexFrame.keys()`, however, explicitly executes `icon_key = getattr(state, "icon", None)`.
+* Naming a bridge's orientation attribute `icon` (`bridge.state.icon = "horizontal"`) is semantic nonsense.
+* Falling back to `getattr(state, "icon", getattr(state, "orientation", None))` is duck-typing that breaks type-safety and hides schema contracts.
+
+
+
+---
+
+### 3. The Lurking Abstraction
+
+The tension lies between **Domain Semantics** and **Graphics Engine Semantics**:
+
+* **The Domain Model** requires specialized nomenclature:
+* Expressions have an `icon` (`"agreement"`, `"surprise"`).
+* Bridges and Shorelines have an `orientation` (`"horizontal"`, `"vertical"` / `"up"`, `"down"`).
+* Gates and Chests have a `switch` (`True`, `False`).
+
+
+* **The Graphics Engine** requires only a discrete 1D coordinate to index into a texture atlas:
+
+$$\text{Target Key} = \text{SEPARATOR.join}([id, \text{coordinate}])$$
+
+
+
+There are two clean ways to resolve this without duck-typing or runtime polymorphism:
+
+```
+                    ┌──────────────────────────────────────────────┐
+                    │            Frame Resolution Paths            │
+                    └──────────────────────┬───────────────────────┘
+                                           │
+         ┌─────────────────────────────────┴─────────────────────────────────┐
+         ▼                                                                   ▼
+┌──────────────────────────────────────┐            ┌────────────────────────────────────────┐
+│ Path A: First-Class Spatial Strategy │            │  Path B: Canonical Categorical Slot    │
+│            (OrientedFrame)           │            │            (IndexFrame)                │
+├──────────────────────────────────────┤            ├────────────────────────────────────────┤
+│ • State uses domain: orientation     │            │ • State uses standardized: variant     │
+│ • Parallels ShorelineFrame           │            │ • Generalizes icon/orientation/switch  │
+│ • Preserves strict dataclass schemas │            │ • Single frame class for all 1D states │
+└──────────────────────────────────────┘            └────────────────────────────────────────┘
+
+```
+
+#### Path A: First-Class Spatial Strategy (`OrientedFrame`)
+
+Directionality is already a first-class concept in Ontology (`Directions`: `UP`, `DOWN`, `LEFT`, `RIGHT`). Linear structures (bridges, fences, barricades, aqueducts) introduce the 2-way orthogonal axis (`Orientations`: `HORIZONTAL`, `VERTICAL`).
+
+Just as `ShorelineFrame` maps cardinal `state.orientation` across rows, `OrientedFrame` maps axial `state.orientation` across a horizontal row:
+
+* **`OrientedFrame.index()`**:
+* `f"{id}-{Orientations.HORIZONTAL.value}": (0, 0, w, l)`
+* `f"{id}-{Orientations.VERTICAL.value}": (w, 0, w, l)`
+
+
+* **`OrientedFrame.keys()`**:
+* Reads typed `state.orientation: str`.
+* Returns `[(f"{id}-{state.orientation}", 0, 0)]`.
+
+
+* **Pros**: Perfectly mirrors `ShorelineFrame`. Zero duck-typing. High domain readability.
+* **Cons**: Adds a small, focused Frame class to `app.assets.frames.crafts`.
+
+#### Path B: Canonical Categorical Slot (`IndexFrame` via `state.variant`)
+
+Standardize all nominal 1D states onto a single protocol. Replace `state.icon` on `AttachmentState` and `state.orientation` on `BridgeState` with a shared field: `state.variant: str`:
+
+* **`IndexFrame.keys()`**: Strictly reads `state.variant`.
+* **Pros**: Unifies expressions, icons, and bridges under a single frame component.
+* **Cons**: Forces domain concepts (`icon`, `orientation`) into a generic name (`variant`), reducing semantic precision in gameplay logic (e.g., `fields.py` inspecting `bridge.state.variant` instead of `orientation`).
+
+---
+
+### 4. Recommendation for Phase 09.05
+
+Adopt **Path A (`OrientedFrame`)**.
+
+1. `Orientations` (`horizontal`, `vertical`) represents a fundamental spatial property of world entities, matching the engine's existing treatment of `Directions`.
+2. It keeps `BridgeState` semantically clean (`bridge.state.orientation = Orientations.HORIZONTAL.value`).
+3. It keeps `IndexFrame` isolated to UI/expressions without polluting it with duck-typing or forcing unrelated states to adopt an abstract `variant` field.
+
+---
+
+### 5. Technical Specifications for Bridge Crafts
+
+#### Enums (`src/app/config/enums.py`)
+
+```python
+class Orientations(str, Enum):
+    HORIZONTAL = "horizontal"
+    VERTICAL = "vertical"
+
+```
+
+#### Data Models
+
+##### Properties (`src/app/models/properties.py`)
+
+Bridges use `CraftProperties`. The file `src/assets/crafts/bridges/wood-bridge.png` has physical dimensions $2w \times l$.
+
+```python
+@dataclass(slots=True)
+class CraftProperties(AssetProperties):
+    dimensions: Dimensions  # Unit dimensions: (w, l) for a single span segment
+    cost: List[Cost]
+    mass: int = -1          # Static Sensor
+    hitboxes: Optional[List[Hitbox]] = field(default_factory=list)
+
+```
+
+##### State (`src/app/models/state/crafts.py`)
+
+```python
+@dataclass(slots=True)
+class BridgeState(AssetState):
+    # Overrides to enforce Z-ordering: Fluid (-1) < Shoreline (0) < Bridge (1) < Entities (>1)
+    height: Optional[int] = 0
+    depth: int = 1
+    # Bridge Fields
+    position: Optional[Position] = None
+    orientation: str = Orientations.HORIZONTAL.value
+    multiple: Optional[Multiple] = None
+    owner: Optional[str] = None
+
+```
+
+#### Frame Implementation (`src/app/assets/frames/crafts.py`)
+
+```python
+"""
+# Ontology: app.assets.frames.crafts
+
+Package for Craft Frame implementations.
+"""
+from typing import Dict, List, Tuple
+import app.config.settings as settings
+from app.assets.base import Frame
+from app.config.enums import Orientations
+from app.models.properties import CraftProperties
+from app.models.state.crafts import BridgeState
+
+
+class OrientedFrame(Frame):
+    """
+    Indexes 2-axis horizontal atlas frames (Horizontal, Vertical) and emits
+    the corresponding orientation frame key.
+    """
+
+    ORIENTATIONS = [
+        Orientations.HORIZONTAL.value,
+        Orientations.VERTICAL.value
+    ]
+
+    def index(self, id: str, properties: CraftProperties) -> Dict[str, Tuple[int, int, int, int]]:
+        w = properties.dimensions.w
+        l = properties.dimensions.l
+        crops: Dict[str, Tuple[int, int, int, int]] = {}
+
+        for i, orientation in enumerate(self.ORIENTATIONS):
+            key = settings.SEPARATOR.join([id, orientation])
+            crops[key] = (i * w, 0, w, l)
+
+        return crops
+
+    def keys(self, id: str, state: BridgeState) -> List[Tuple[str, int, int]]:
+        key = settings.SEPARATOR.join([id, state.orientation])
+        return [(key, 0, 0)]
+
+```
+
+#### Decomposition Logic (`src/app/services/generators/game/decomposer.py`)
+
+When `Decomposer.unpack_bridge()` processes a deployed `BridgeState`:
+
+* If `orientation == HORIZONTAL`: steps $N = \text{multiple.nx}$ times along $+X$, offsetting `Position(pos.x + i * w, pos.y)`.
+* If `orientation == VERTICAL`: steps $N = \text{multiple.ny}$ times along $+Y$, offsetting `Position(pos.x, pos.y + i * l)`.
+* Each constituent unit segment receives:
+* An independent `BridgeState` with `multiple = Multiple(nx=1, ny=1)`.
+* A sequential name: `settings.SEPARATOR.join([state.name, str(i)])`.
+* The static `CraftProperties` of the unit asset, preserving hitboxes and dimensions.
+
+
+
+---
+
+### 6. Updated Task Backlog
 
 ```jinja2
-#### Backlog: Hydrodynamic Buoyancy & Frictional Decoupling
+#### Backlog: Phase 09.05 - Bridges & Bifurcation
 
-**Overview** 
+**Overview**
 
-Generalize fluid interaction from hardcoded crate checks to property-driven dynamic flotation. Differentiate buoyant dynamic bodies (which float, drift with current velocity, and suppress ground friction) from non-buoyant dynamic bodies (which sink, resist drift, and maintain tile friction).
+Transition the fluid and geography mechanics from single-corridor raycasts to branched hydrological networks with downstream flank continuation, and implement procedural architectural bridge crafts that decompose into discrete static sensors, elevating entities over water corridors and shoreline thresholds without obstructing navigation or fluid flow.
 
-##### Goal: Property-Driven Buoyancy & Velocity Coupling
+##### Goal: Hydrological Network Bifurcation & Downstream Raycasting
 
-Incorporate declarative `buoyant: bool = False` into `ObjectProperties`. Update `fields.py` to inspect `asset.properties.buoyant` when applying fluid current vectors, reserving current velocity matching strictly for buoyant objects while allowing non-buoyant objects to sink without drift.
+Implement recursive stream branching in `Actuator` when an immovable obstacle ($m = 0$) is struck and $\text{flow} > 1$. Ensure child streams discharge strictly from the downstream face of the annular pool along its lateral flanks, eliminating spatial gaps and texture overdraw. Update `FluidState`, `FluidFrame`, `Board`, and `Cartographer` to index and render branched networks. Decouple `Actuator` from direct `Board` cache mutation.
 
-##### Goal: Submerged Frictional Decoupling
+##### Goal: Architectural Bridge Crafts & Oriented Frame Decomposition
 
-Refactor `frictive.py` so tile friction decay is suspended only when an asset is both submerged and buoyant. Ensure sunken non-buoyant objects continue to experience environmental friction decay against the underlying terrain tile.
+Introduce `Orientations` enum and register `BRIDGES` under `AssetCategories.CRAFTS`. Implement `OrientedFrame` to index horizontal and vertical deck tiles from a single asset image. Define `BridgeState` with structural multipliers and explicit Z-ordering parameters (`height = 0, depth = 1`). Extend `Decomposer` to unpack bridge schemas into constituent unit `Asset` instances with sensor mass ($m = -1$). Expose `Board.bridges(layer)` while strictly excluding bridges from `Board.obstacles()` and `Board.weights()`. Implement surface hierarchy evaluation in `fields.py` to intercept entities traversing bridges, suppressing submersion, splash particles, shoreline nudges, and current drift.
 
 ##### Tasks
 
-**1. Task: Property-Driven Buoyancy Integration**
+**1. Task: Recursive Stream Bifurcation & Hydrodynamic Network Modeling**
 
-*Objective*: Generalize hydrodynamic flotation across dynamic objects using `ObjectProperties.buoyant`.
+*Objective*: Implement lateral flank discharge raycasting in `Actuator` and extend broad-phase spatial caching, shoreline synthesis, and frame key emission across all active branches.
 
-- [ ] Subtask: Add `buoyant: bool = False` to `ObjectProperties` in `src/app/models/properties.py`.
-- [ ] Subtask: Update default object configurations in `/src/assets/objects/main.yaml` (`wood-crate`, `wood-barrel` to `buoyant: True`; `iron-crate`, `stone-block` to `buoyant: False`).
-- [ ] Subtask: Refactor `fields.py` to inspect `asset.properties.buoyant`, matching fluid velocity for buoyant objects while sinking non-buoyant objects without current acceleration.
-- [ ] Subtask: Refactor `frictive.py` to condition friction suspension strictly on `asset.state.mutators.triggers.submerged and getattr(asset.properties, "buoyant", False)`.
+- [ ] Subtask: Define `BranchCorridor` dataclass in `src/app/models/state/effects.py` and register `branches: List[BranchCorridor]` on `FluidState`.
+- [ ] Subtask: Refactor `Actuator.propagate()` to compute downstream flank origins from the pool boundary ($pool.y + pool.l$ for `DOWN`, $pool.x + pool.w$ for `RIGHT`, $pool.y$ for `UP`, $pool.x$ for `LEFT`) and raycast secondary child streams with `flow - 1`.
+- [ ] Subtask: Decouple `Actuator` from `Board` cache mutation by removing `board.cache_fluid()` calls from `Actuator.propagate()`, delegating cache invalidation to `FluidMechanics`.
+- [ ] Subtask: Update `Board._add_fluid_to_watermap()` to index parent corridors, annular pools, and all child branch corridors into `_cached_watermap`.
+- [ ] Subtask: Update `Board._in_stream()` to evaluate candidate coordinates against active child branch corridor bounding boxes.
+- [ ] Subtask: Update `Cartographer._collect_water_rectangles()` to compile primitive AABB tuples across all active branch corridors for contour analysis.
+- [ ] Subtask: Update `FluidFrame.keys()` to emit full-tile keys and distal remainder slices for each active branch corridor relative to `state.position`.
 
-```
+**2. Task: Architectural Bridge Crafts & Oriented Frame Strategy**
 
----
+*Objective*: Implement static bridge assets as Crafts using `OrientedFrame` and decompose multiplier configurations via `Decomposer`.
 
-### Bug Reports
+- [ ] Subtask: Add `Orientations` (`HORIZONTAL = "horizontal"`, `VERTICAL = "vertical"`) and `AssetInstances.BRIDGES = "bridges"` to `src/app/config/enums.py`.
+- [ ] Subtask: Add `bridges: Dict[str, CraftProperties]` to `CraftPropertyInstances` in `src/app/models/properties.py`.
+- [ ] Subtask: Create `BridgeState` in `src/app/models/state/crafts.py` with `orientation: str`, `multiple: Multiple`, `depth: int = 1`, and `height: int = 0`.
+- [ ] Subtask: Implement `OrientedFrame` in `src/app/assets/frames/crafts.py` mapping horizontal and vertical frame tiles.
+- [ ] Subtask: Register `bridges` in `RecipeConfiguration.crafts` (`frame: oriented`, `animation: none`, `state: BridgeState`).
+- [ ] Subtask: Implement `Decomposer.unpack_bridge(deployed_state: BridgeState) -> List[Asset]` to expand directed multipliers into constituent unit assets with sequential names, offset positions, and static hitboxes.
+- [ ] Subtask: Implement `Decomposer.cost_bridge(id: str, multiple: Multiple) -> List[Cost]` to calculate linear resource requirements ($N \times \text{cost}$).
+- [ ] Subtask: Update hydration loaders and `Board` instantiation to unpack `crafts.bridges` via `Decomposer`.
+- [ ] Subtask: Expose `Board.bridges(layer)` query method on `Board`, ensuring bridges are strictly excluded from `Board.obstacles()` and `Board.weights()`.
 
-```jinja2
-##### Bug B012: Inconsistent Physical Weight Caching Across Board Mutations
+**3. Task: Surface Interception Hierarchy in Motion Fields**
 
-**STATUS**: OPEN
-**SEVERITY**: HIGH
+*Objective*: Intercept entities traversing bridges in `fields.py` to suppress fluid immersion, current drift, and shoreline step-down nudges.
 
-**Description**
-
-The physical weight cache `Board._cached_weights` exhibits divergent asset filtering across its lifecycle methods (`_cache`, `add`, and `relayer`). In `_cache()`, assets in `EFFECTS` and `GEOGRAPHY` are explicitly excluded from weights even if their mass is non-negative ($m \ge 0$). However, `add()` only filters `CURSORS`, allowing `EFFECTS` and `GEOGRAPHY` assets with mass to pollute `_cached_weights`. Furthermore, `relayer()` only checks `asset.properties.mass >= 0`, completely omitting category validation. This causes spatial collision routines and `Actuator._collect_obstacles` to evaluate invalid candidate assets after dynamic state additions or layer transitions.
-
-**Proposed Remediation**
-
-Standardize weight predicate filtering into a shared internal method `Board._is_weight(asset: Asset) -> bool`:
-
-```python
-def _is_weight(self, asset: Asset) -> bool:
-    return (
-        hasattr(asset.properties, "mass")
-        and asset.properties.mass >= 0
-        and asset.category not in (
-            AssetCategories.CURSORS.value,
-            AssetCategories.EFFECTS.value,
-            AssetCategories.GEOGRAPHY.value,
-            AssetCategories.TILES.value
-        )
-    )
-
-```
-
-Apply this predicate uniformly across `_cache()`, `add()`, `relayer()`, and `weights()`.
-
-```
-
-```jinja2
-##### Bug B013: Flank Discharge Coordinate Gap and Texture Overdraw in Proposed Bifurcation Raycasting
-
-**STATUS**: OPEN
-**SEVERITY**: MEDIUM
-
-**Description**
-
-The task board's proposed discharge raycast coordinates for bifurcated fluid streams:
-
-$$(pool.x - fw, pool.y) \quad \text{and} \quad (pool.x + pool.w, pool.y)$$
-
-place secondary stream origins 1 tile ($fw$) outside the annular pool margin along the X-axis while starting at the upstream face of the pool ($pool.y$). For a stream flowing `DOWN`, this produces an unmeshed 1-tile gap at the pool flank and causes the secondary stream to travel parallel to the annular pool for length $pool.l$, creating severe texture overdraw and duplicate hitbox registrations.
-
-**Proposed Remediation**
-
-Update the bifurcation geometry calculation in `Actuator` so that discharge origins emanate from the downstream edge of the pool boundary ($pool.y + pool.l$ for `DOWN`, $pool.x + pool.w$ for `RIGHT`, $pool.y$ for `UP`, and $pool.x$ for `LEFT`), positioned flush at the lateral flanks ($pool.x$ and $pool.x + pool.w - fw$ for vertical streams).
+- [ ] Subtask: Update `fields.update()` to evaluate bridge surface interception at the top of the hierarchy prior to dynamic Rafts.
+- [ ] Subtask: When intersecting a bridge, mark `on_surface = True`, set zero surface drift velocity ($\vec{v}_{\text{drift}} = \vec{0}$), clear `asset.state.mutators.triggers.submerged = False`, and bypass downstream shoreline edge crossing and fluid immersion passes.
 
 ```
 
 ---
 
-### Documentation Drafts
+### 7. Documentation Draft
 
-#### Draft: Bridge Crafts & Decomposition Architecture
+#### Draft: Bridge Crafts & OrientedFrame Specification
 
 * **Page**: `docs/01-assets.md`
 * **Heading**: `Crafts`
 
 ##### Drift
 
-The crafts documentation specifies Struts, Decor, Forge, and Device, but lacks specifications for Bridges as multiplier-driven virtual crafts that decompose into discrete static sensors.
+The crafts documentation specifies Struts, Decor, Forge, and Device, but lacks specifications for Bridges as multiplier-driven virtual crafts using `OrientedFrame` to select horizontal or vertical deck tiles.
 
 ##### Update
 
@@ -1024,9 +843,17 @@ The crafts documentation specifies Struts, Decor, Forge, and Device, but lacks s
 
 Bridges are static, passable Crafts that elevate characters and dynamic items over Fluid corridors, annular pools, and Shoreline margins without entering the `submerged` state.
 
+**Oriented Frame Atlas**
+
+A Bridge image file embeds both horizontal and vertical deck spans in a single horizontal strip:
+* Cell 0: `horizontal` span (deck runs East-West to cross North-South streams).
+* Cell 1: `vertical` span (deck runs North-South to cross East-West streams).
+
+During bootstrap, `OrientedFrame` indexes these into discrete crop keys: `{id}-horizontal` and `{id}-vertical`. At runtime, `OrientedFrame.keys()` emits the key corresponding to `state.orientation`.
+
 **Decomposition & Structural Multipliers**
 
-Rather than defining bespoke assets for every river span, Bridges are configured as unit assets (`wood-bridge-horizontal`, `wood-bridge-vertical`) and deployed via a 1D structural multiplier (`multiple.nx` or `multiple.ny`). 
+Bridges are deployed via a 1D structural multiplier (`multiple.nx` for horizontal spans, `multiple.ny` for vertical spans).
 
 During world hydration or dynamic execution of the `build` Intention, the `Decomposer` unpacks a `BridgeState` into a contiguous series of $N$ unit `Asset` instances:
 * Each constituent segment receives an independent, absolute `Position` offset along the primary span axis.
@@ -1046,17 +873,18 @@ During world hydration or dynamic execution of the `build` Intention, the `Decom
 
 Bridges declare an explicit `height: 0` and `depth: 1`. This guarantees that Bridge decks render above background Tiles, Fluids (`depth: -1`), and Shorelines (`depth: 0`), while allowing entities crossing the deck to sort above the bridge via dynamic geometric height ($y + l$).
 
-**Frame: SingleFrame / IndexFrame**
+**Frame: OrientedFrame**
 
-* Indexes orientation deck tiles from the asset source.
-* Emits `[(id, 0, 0)]` for each decomposed constituent segment.
+* `keys(id, state)`: returns `[(f"{id}-{state.orientation}", 0, 0)]`
+* `index(id, properties)`: returns `{f"{id}-horizontal": (0, 0, w, l), f"{id}-vertical": (w, 0, w, l)}`
 
-**State: BridgeState (Deployment Schema)**
+**State: BridgeState**
 
 * `id: str`
 * `name: Optional[str]`
 * `layer: str`
 * `position: Position`
+* `orientation: str` (`horizontal`, `vertical`)
 * `multiple: Multiple` (`nx > 1` or `ny > 1`)
 * `owner: Optional[str]`
 * `depth: int = 1`

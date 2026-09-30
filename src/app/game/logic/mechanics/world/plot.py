@@ -9,7 +9,7 @@ import logging
 from typing import TYPE_CHECKING, Optional
 
 # Application Libraries
-from app.config.enums import MechanicExecutors
+from app.config.enums import Executors
 from app.game.logic.mechanics import Mechanic
 from app.models.state import DevicePayload
 from app.services.translators.base import Executor
@@ -26,14 +26,14 @@ class PlotMechanics(Mechanic):
     """
     @property
     def executor(self) -> Optional[Executor]:
-        return self.executors.get(MechanicExecutors.PLOT.value)
+        return self.executors.get(Executors.PLOT.value)
 
     @executor.setter
     def executor(self, executor: Optional[Executor]) -> None:
         if executor is None:
-            self.executors.pop(MechanicExecutors.PLOT.value, None)
+            self.executors.pop(Executors.PLOT.value, None)
         else:
-            self.executors[MechanicExecutors.PLOT.value] = executor
+            self.executors[Executors.PLOT.value] = executor
 
     def update(self, 
         board: Board, 
