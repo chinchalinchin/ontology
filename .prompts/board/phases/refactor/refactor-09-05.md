@@ -39,30 +39,3 @@ In `FluidMechanics`, iterate over dynamic weights ($m > 0$, such as crates) inte
 
 * [] Subtask: Add `current: Velocity` vector calculation to `Actuator` based on `stream.source`.
 * [] Subtask: In `FluidMechanics`, accelerate floating bodies ($m > 0$) along the current vector, clamping to terminal stream speed.
-
-##### Bug B010: Stream and Annular Pool Texture Overdraw
-
-**STATUS**: OPEN
-**SEVERITY**: MEDIUM
-
-**Description**
-
-When a fluid stream encounters an obstacle and generates an annular pool, `Actuator._partition_pool` creates a top flank hitbox extending from $y = o_y - \text{flow} \cdot f_l$ to $y = o_y$. Concurrently, `Actuator.pump` sets `stream_length = oy - fy`, projecting stream corridor tiles all the way to $o_y$.
-
-In `FluidFrame.keys`, full-tile keys are emitted along the stream corridor from $f_y$ to $o_y$, and the pool iteration subsequently emits full-tile keys across the top flank from $o_y - \text{flow} \cdot f_l$ to $o_y$. The stream corridor column within this band receives two identical overlapping texture blits on the same frame, doubling alpha-blended opacity and causing visual stuttering.
-
-**Proposed Remediation**
-
-In `Actuator.pump`, truncate the active stream length at the outer edge of the annular pool boundary rather than the obstacle face:
-
-```python
-if pool_bounds and flow > 0:
-    if direction == Directions.DOWN.value:
-        stream_length = max(0, pool_bounds.y - fy)
-    elif direction == Directions.UP.value:
-        stream_length = max(0, fy - (pool_bounds.y + pool_bounds.l))
-    elif direction == Directions.RIGHT.value:
-        stream_length = max(0, pool_bounds.x - fx)
-    elif direction == Directions.LEFT.value:
-        stream_length = max(0, fx - (pool_bounds.x + pool_bounds.w))
-```

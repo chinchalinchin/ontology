@@ -1,5 +1,8 @@
 ##### Bug B010: Overlapping Fluid Shoreline Generation During Gate Switch
 
+**STATUS**: CLOSED
+**SEVERITY**: HIGH
+
 ###### Description
 
 Player intersects Plate and triggers an unrelated Gate to open. This produces shoreline spawning where adjacent Fluids intersect. Player manually kills application through Ctrl+C.

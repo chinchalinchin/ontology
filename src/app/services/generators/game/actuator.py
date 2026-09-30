@@ -237,14 +237,28 @@ class Actuator:
             max_dist
         )
 
+        pool_bounds: Optional[Pool] = None
+        pool_hitboxes: List[Hitbox] = []
+
+        # 1. Expand pool and truncate stream corridor at pool margin (Fix B010)
+        if isinstance(struck_obstacle, Asset) and flow > 0:
+            pool_bounds, pool_hitboxes = self._partition_pool(struck_obstacle, fluid, flow)
+            
+            if direction == Directions.DOWN.value:
+                stream_length = max(0, pool_bounds.y - fy)
+            elif direction == Directions.UP.value:
+                stream_length = max(0, fy - (pool_bounds.y + pool_bounds.l))
+            elif direction == Directions.RIGHT.value:
+                stream_length = max(0, pool_bounds.x - fx)
+            elif direction == Directions.LEFT.value:
+                stream_length = max(0, fx - (pool_bounds.x + pool_bounds.w))
+
+        # 2. Build non-overlapping compound hitboxes
         hitboxes: List[Hitbox] = []
         stream_hb = self._build_stream_hitbox(direction, stream_length, fw, fl)
         if stream_hb:
             hitboxes.append(stream_hb)
-
-        pool_bounds: Optional[Pool] = None
-        if isinstance(struck_obstacle, Asset) and flow > 0:
-            pool_bounds, pool_hitboxes = self._partition_pool(struck_obstacle, fluid, flow)
+        if pool_hitboxes:
             hitboxes.extend(pool_hitboxes)
 
         fluid.state.length = stream_length
