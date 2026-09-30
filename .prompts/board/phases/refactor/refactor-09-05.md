@@ -549,32 +549,32 @@ Introduce `Orientations` enum and register `BRIDGES` under `AssetCategories.CRAF
 *Objective*: Implement lateral flank discharge raycasting in `Actuator` and extend broad-phase spatial caching, shoreline synthesis, and frame key emission across all active branches.
 
 - [x] Subtask: Define `BranchCorridor` dataclass in `src/app/models/state/effects.py` and register `branches: List[BranchCorridor]` on `FluidState`.
-- [ ] Subtask: Refactor `Actuator.propagate()` to compute downstream flank origins from the pool boundary ($pool.y + pool.l$ for `DOWN`, $pool.x + pool.w$ for `RIGHT`, $pool.y$ for `UP`, $pool.x$ for `LEFT`) and raycast secondary child streams with `flow - 1`.
-- [ ] Subtask: Decouple `Actuator` from `Board` cache mutation by removing `board.cache_fluid()` calls from `Actuator.propagate()`, delegating cache invalidation to `FluidMechanics`.
-- [ ] Subtask: Update `Board._add_fluid_to_watermap()` to index parent corridors, annular pools, and all child branch corridors into `_cached_watermap`.
-- [ ] Subtask: Update `Board._in_stream()` to evaluate candidate coordinates against active child branch corridor bounding boxes.
-- [ ] Subtask: Update `Cartographer._collect_water_rectangles()` to compile primitive AABB tuples across all active branch corridors for contour analysis.
-- [ ] Subtask: Update `FluidFrame.keys()` to emit full-tile keys and distal remainder slices for each active branch corridor relative to `state.position`.
+- [x] Subtask: Refactor `Actuator.propagate()` to compute downstream flank origins from the pool boundary ($pool.y + pool.l$ for `DOWN`, $pool.x + pool.w$ for `RIGHT`, $pool.y$ for `UP`, $pool.x$ for `LEFT`) and raycast secondary child streams with `flow - 1`.
+- [x] Subtask: Decouple `Actuator` from `Board` cache mutation by removing `board.cache_fluid()` calls from `Actuator.propagate()`, delegating cache invalidation to `FluidMechanics`.
+- [x] Subtask: Update `Board._add_fluid_to_watermap()` to index parent corridors, annular pools, and all child branch corridors into `_cached_watermap`.
+- [x] Subtask: Update `Board._in_stream()` to evaluate candidate coordinates against active child branch corridor bounding boxes.
+- [x] Subtask: Update `Cartographer._collect_water_rectangles()` to compile primitive AABB tuples across all active branch corridors for contour analysis.
+- [x] Subtask: Update `FluidFrame.keys()` to emit full-tile keys and distal remainder slices for each active branch corridor relative to `state.position`.
 
 **2. Task: Architectural Bridge Crafts & Oriented Frame Strategy**
 
 *Objective*: Implement static bridge assets as Crafts using `OrientedFrame` and decompose multiplier configurations via `Decomposer`.
 
 - [x] Subtask: Add `Orientations` (`HORIZONTAL = "horizontal"`, `VERTICAL = "vertical"`) and `AssetInstances.BRIDGES = "bridges"` to `src/app/config/enums.py`.
-- [ ] Subtask: Add `bridges: Dict[str, CraftProperties]` to `CraftPropertyInstances` in `src/app/models/properties.py`.
+- [x] Subtask: Add `bridges: Dict[str, CraftProperties]` to `CraftPropertyInstances` in `src/app/models/properties.py`.
 - [x] Subtask: Create `BridgeState` in `src/app/models/state/crafts.py` with `orientation: str`, `multiple: Multiple`, `depth: int = 1`, and `height: int = 0`.
 - [x] Subtask: Implement `OrientedFrame` in `src/app/assets/frames/crafts.py` mapping horizontal and vertical frame tiles. Register in the Factory.
 - [x] Subtask: Register `bridges` in `RecipeConfiguration.crafts` (`frame: oriented`, `animation: none`, `state: BridgeState`).
-- [ ] Subtask: Implement `Decomposer.bridge(deployed_state: BridgeState) -> List[Asset]` to expand directed multipliers into constituent unit assets with sequential names, offset positions, and static hitboxes.
-- [ ] Subtask: Implement `Decomposer.bridge_cost(id: str, multiple: Multiple) -> List[Cost]` to calculate linear resource requirements ($N \times \text{cost}$).
-- [ ] Subtask: Update hydration loaders and `Board` instantiation to unpack `crafts.bridges` via `Decomposer`.
-    - [ ]: Add `spawn_bridge()` to `Cradle`.
-    - [ ]: Add Bridge tasks to `Migrator` to called new `Decomposer` method.
-- [ ] Subtask: Expose `Board.bridges(layer)` query method on `Board`, ensuring bridges are strictly excluded from `Board.obstacles()` and `Board.weights()`.
+- [x] Subtask: Implement `Decomposer.bridge(deployed_state: BridgeState) -> List[Asset]` to expand directed multipliers into constituent unit assets with sequential names, offset positions, and static hitboxes.
+- [x] Subtask: Implement `Decomposer.bridge_cost(id: str, multiple: Multiple) -> List[Cost]` to calculate linear resource requirements ($N \times \text{cost}$).
+- [x] Subtask: Update hydration loaders and `Board` instantiation to unpack `crafts.bridges` via `Decomposer`.
+    - [x]: Add `spawn_bridge()` to `Cradle`.
+    - [x]: Add Bridge tasks to `Migrator` to called new `Decomposer` method.
+- [x] Subtask: Expose `Board.bridges(layer)` query method on `Board`, ensuring bridges are strictly excluded from `Board.obstacles()` and `Board.weights()`.
 
 **3. Task: Surface Interception Hierarchy in Motion Fields**
 
 *Objective*: Intercept entities traversing bridges in `fields.py` to suppress fluid immersion, current drift, and shoreline step-down nudges.
 
-- [ ] Subtask: Update `fields.update()` to evaluate bridge surface interception at the top of the hierarchy prior to dynamic Rafts.
-- [ ] Subtask: When intersecting a bridge, mark `on_surface = True`, set zero surface drift velocity ($\vec{v}_{\text{drift}} = \vec{0}$), clear `asset.state.mutators.triggers.submerged = False`, and bypass downstream shoreline edge crossing and fluid immersion passes.
+- [x] Subtask: Update `fields.update()` to evaluate bridge surface interception at the top of the hierarchy prior to dynamic Rafts.
+- [x] Subtask: When intersecting a bridge, mark `on_surface = True`, set zero surface drift velocity ($\vec{v}_{\text{drift}} = \vec{0}$), clear `asset.state.mutators.triggers.submerged = False`, and bypass downstream shoreline edge crossing and fluid immersion passes.

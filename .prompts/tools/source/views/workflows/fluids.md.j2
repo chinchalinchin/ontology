@@ -52,14 +52,6 @@
 {{ file(properties.paths.root + 'src/app/game/engine.py') }}
 ```
 
-{# 
-**src/app/game/screen.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/game/engine.py') }}
-``` 
-#}
-
 ##### app.game.logic
 
 ###### app.game.logic.mechanics
@@ -90,13 +82,11 @@
 {{ file(properties.paths.root + 'src/app/game/logic/modules/motion/fields.py') }}
 ```
 
-{# 
 **src/app/game/logic/modules/motion/frictive.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/game/logic/modules/motion/frictive.py') }}
-``` 
-#}
+```
 
 ###### app.game.logic.relations
 
@@ -138,11 +128,6 @@
 
 ###### app.models.state.assets
 
-**src/app/models/state/assets/crafts.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/models/state/assets/crafts.py' ) }}
-```
 
 **src/app/models/state/assets/effects.py**
 
@@ -158,14 +143,6 @@
 
 #### app.services
 
-##### app.services.orchestration
-
-**src/app/services/orchestration/migrator.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/services/orchestration/migrator.py') }}
-``` 
-
 ##### app.services.generators
 
 ###### app.services.generators.game
@@ -180,18 +157,6 @@
 
 ```python
 {{ file(properties.paths.root + 'src/app/services/generators/game/cartographer.py')}}
-```
-
-**src/app/services/generators/game/cradle.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/services/generators/game/cradle.py')}}
-```
-
-**src/app/services/generators/game/decomposer.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/services/generators/game/decomposer.py' ) }}
 ```
 
 #### libs.core
