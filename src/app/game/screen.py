@@ -464,7 +464,12 @@ class Screen:
 
                 if (dx + dw >= 0 and dx <= self.boardsize.w and
                     dy + dl >= 0 and dy <= self.boardsize.l):
-                    active_assets.append((tex, sx, sy, sw, sl, dx, dy, dw, dl))
+                    active_assets.append((
+                        tex, 
+                        sx, sy, sw, sl, 
+                        dx, dy, dw, dl,
+                        255, 255, 255, 255
+                    ))
         
         # 1. Allocate a temporary canvas matching the absolute board dimensions
         full_target = render.canvas(

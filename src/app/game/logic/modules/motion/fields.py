@@ -208,7 +208,7 @@ def update(assets: List[Asset], board: Board, delta: float) -> None:
                             f"Telemetry:Fields:ShorelineCrossing "
                             f"entity={asset.name} "
                             f"shore={shore.name} "
-                            f"orient={shore.state.orientation}",
+                            f"orient={shore.state.orientation} "
                             f"normal=({nx}, {ny}) "
                             f"pre_pos=({asset.state.position.x}, {asset.state.position.y}) "
                             f"dim=({asset.dimensions.w}, {asset.dimensions.l}) "

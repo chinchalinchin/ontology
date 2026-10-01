@@ -87,5 +87,5 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Goal 07: Door Interact Intentions](./phases/achieve/goal-07.md)
     - [x]: [Goal 08: CLI Handling](./phases/achieve/goal-08.md)
 - Backlog:
-  - [TODO 1: Telemetry Menu](./backlog/todo-t000.md)
-  - [TODO 2: Bouyancy](./backlog/todo-t001.md)
+  - [ ]: [TODO 1: Telemetry Menu](./backlog/todo-t000.md)
+  - [ ]: [TODO 2: Bouyancy](./backlog/todo-t001.md)
