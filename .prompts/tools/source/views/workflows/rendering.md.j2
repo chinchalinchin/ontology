@@ -1,0 +1,97 @@
+### View: Workflow - Rendering
+
+#### app.assets
+
+**src/app/assets/base.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/base.py') }}
+```
+
+##### app.assets.frames
+
+**src/app/assets/frames/core.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/frames/effects.py') }}
+```
+
+**src/app/assets/frames/effects.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/frames/effects.py') }}
+```
+
+**src/app/assets/frames/geography.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/frames/geography.py') }}
+```
+
+##### app.assets.animations
+
+**src/app/assets/animations/core.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/animations/core.py') }}
+```
+
+#### app.game
+
+**src/app/game/board.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/board.py') }}
+```
+
+**src/app/game/screen.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/screen.py') }}
+```
+
+##### app.game.logic
+
+###### app.game.logic.mechanics
+
+**src/app/game/logic/mechanics/base.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/base.py') }}
+```
+
+***src/app/game/logic/mechanics/core/animation.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/core/animation.py') }}
+```
+
+#### app.models
+
+**src/app/models/properties.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/properties.py') }}
+```
+
+##### app.models.state 
+
+**src/app/models/state/core.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/state/core.py')}}
+```
+
+**src/app/models/state/schemas.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/state/schemas.py')}}
+```
+
+#### libs.graphics
+
+**src/libs/graphics/render.pyx**
+
+```cython
+{{ file(properties.paths.root + 'src/libs/graphics/render.pyx')}}
+```

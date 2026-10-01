@@ -185,8 +185,11 @@ def update(assets: List[Asset], board: Board, delta: float) -> None:
                 if v_dot > 0:
                     if not asset.state.mutators.triggers.submerged:
                         t = shore.state.thickness
-                        asset.state.position.x += int(nx * t)
-                        asset.state.position.y += int(ny * t)
+                        disp_x = int(nx * (t + (asset.dimensions.w // 2))) if nx != 0.0 else 0
+                        disp_y = int(ny * (t + (asset.dimensions.l // 2))) if ny != 0.0 else 0
+
+                        asset.state.position.x += disp_x
+                        asset.state.position.y += disp_y
                         asset.state.mutators.triggers.submerged = True
 
                         if board.cradle:
@@ -200,6 +203,19 @@ def update(assets: List[Asset], board: Board, delta: float) -> None:
                                 splash_pos
                             )
                             board.add([splash])
+
+                        logger.info(
+                            f"Telemetry:Fields:ShorelineCrossing "
+                            f"entity={asset.name} "
+                            f"shore={shore.name} "
+                            f"orient={shore.state.orientation}",
+                            f"normal=({nx}, {ny}) "
+                            f"pre_pos=({asset.state.position.x}, {asset.state.position.y}) "
+                            f"dim=({asset.dimensions.w}, {asset.dimensions.l}) "
+                            f"displacement=({disp_x}, {disp_y}) "
+                            f"post_pos=({asset.state.position.x + disp_x}, {asset.state.position.y + disp_y})"
+                        )
+                        
 
                 # Exit / Ledge constraint: velocity points toward bank
                 elif v_dot < 0:
@@ -225,6 +241,12 @@ def update(assets: List[Asset], board: Board, delta: float) -> None:
                 in_fluid = True
 
         if in_fluid:
+            logger.debug(
+                f"Telemetry:Fields:FluidImmersion entity={asset.name} "
+                f"pos=({asset.state.position.x}, {asset.state.position.y}) "
+                f"applied_flow=({flow_vx}, {flow_vy}) "
+                f"final_vel=({asset.state.velocity.vx}, {asset.state.velocity.vy})"
+            )
             if asset.instance == AssetInstances.CRATES.value:
                 asset.state.velocity.vx = flow_vx
                 asset.state.velocity.vy = flow_vy

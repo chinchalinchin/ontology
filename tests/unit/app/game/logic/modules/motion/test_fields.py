@@ -223,8 +223,9 @@ def test_projectiles_bypass_field_forces(mock_board, mock_projectile):
 @pytest.mark.motion
 def test_fields_shoreline_entry_nudge_and_submerge(mock_board, mock_shoreline):
     """
-    Verify crossing shoreline into water applies orthogonal step-down displacement,
-    toggles submerged=True, and spawns splash particles.
+    Verify crossing shoreline into water applies orthogonal step-down displacement
+    accounting for shoreline thickness and half asset width, toggles submerged=True,
+    and spawns splash particles.
     """
     player = mock_board.player()
     player.state.position = Position(x=70, y=0)
@@ -236,13 +237,16 @@ def test_fields_shoreline_entry_nudge_and_submerge(mock_board, mock_shoreline):
 
     fields.update([player], mock_board, 0.016)
 
-    # Position nudged by thickness (8px) along inward water normal (1, 0) -> x = 70 + 8 = 78
-    assert player.state.position.x == 78
+    # Nudged along normal (1, 0) by thickness (8px) + half-width (32px): x = 70 + 40 = 110
+    assert player.state.position.x == 110
+    assert player.state.position.y == 0
     assert player.state.mutators.triggers.submerged is True
 
-    # Verify splash particle spawned
+    # Verify splash particle spawned at post-displacement position
     passives = mock_board.instances(AssetInstances.PASSIVE.value, "0")
     assert len(passives) > 0
+    assert passives[-1].state.position.x == 110
+    assert passives[-1].state.position.y == 0 + (player.dimensions.l // 2)
 
 
 @pytest.mark.fluids
@@ -320,3 +324,53 @@ def test_surface_interception_bridge_preempts_shoreline(mock_board, mock_bridge,
     # Position is not nudged by shoreline thickness (8px)
     assert player.state.position.x == 70
     assert player.state.mutators.triggers.submerged is False
+
+
+@pytest.mark.fluids
+@pytest.mark.motion
+@pytest.mark.parametrize(
+    "orientation,init_x,init_y,vx,vy,expected_x,expected_y",
+    [
+        # West bank (normal = (1, 0)): nudged +X by t(8) + w//2(32) = +40
+        (Directions.LEFT.value, 70, 50, 4.0, 0.0, 110, 50),
+        # East bank (normal = (-1, 0)): nudged -X by t(8) + w//2(32) = -40
+        (Directions.RIGHT.value, 70, 50, -4.0, 0.0, 30, 50),
+        # North bank (normal = (0, 1)): nudged +Y by t(8) + l//2(32) = +40
+        (Directions.UP.value, 70, 50, 0.0, 4.0, 70, 90),
+        # South bank (normal = (0, -1)): nudged -Y by t(8) + l//2(32) = -40
+        (Directions.DOWN.value, 70, 50, 0.0, -4.0, 70, 10),
+    ],
+)
+def test_fields_shoreline_entry_nudge_cardinal_axes(
+    mock_board,
+    mock_shoreline,
+    orientation,
+    init_x,
+    init_y,
+    vx,
+    vy,
+    expected_x,
+    expected_y,
+):
+    """
+    Verify orthogonal displacement applies thickness + half-dimension across all
+    cardinal entry normals (w // 2 for horizontal, l // 2 for vertical).
+    """
+    mock_shoreline.state.orientation = orientation
+    mock_shoreline.state.thickness = 8
+    mock_shoreline.state.position = Position(x=70, y=50)
+    mock_shoreline.state.hitboxes = [
+        Hitbox(Position(0, 0), Dimensions(32, 32))
+    ]
+    mock_board.add([mock_shoreline])
+
+    player = mock_board.player()
+    player.state.position = Position(x=init_x, y=init_y)
+    player.state.velocity = Velocity(vx=vx, vy=vy)
+    player.state.mutators.triggers.submerged = False
+
+    fields.update([player], mock_board, 0.016)
+
+    assert player.state.position.x == expected_x
+    assert player.state.position.y == expected_y
+    assert player.state.mutators.triggers.submerged is True

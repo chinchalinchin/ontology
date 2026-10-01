@@ -5,7 +5,8 @@ properties:
     mkdocs: mkdocs.yaml
   paths:
     # ---------------------------------------
-    root: /home/grant/Projects/ontology/
+    root: /Users/gmoore/Home/projects/ontology/
+    # root: /home/grant/Projects/ontology/
     # ---------------------------------------
     actions: .githubs/workflows/
     # ---------------------------------------
@@ -13,6 +14,7 @@ properties:
     board: .prompts/board/
     docs: docs/
     diagrams: docs/static/mmd/
+    dumps: src/data/dumps/
     fixtures: tests/unit/fixtures/
     logs: src/data/logs/
     phases: .prompts/board/phases/
@@ -29,7 +31,7 @@ properties:
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/conclusion.md.j2
+  template: console/debug.md.j2
 # ----------------------------------------------------
   parameters:
     diagram: mechanics-fluid.mmd
@@ -38,7 +40,7 @@ tools:
 # ----------------------------------------------------
   views:
     manager:
-      board: true
+      board: false
       specs: false
       docs: true
     source:
@@ -49,7 +51,7 @@ tools:
     tests:  
       pipeline: false
       fixtures: false
-      session: false
+      session: true
       workflow: false
 # ----------------------------------------------------
   parameters:
