@@ -7,6 +7,28 @@ on:
     branches: [ main ]
 
 jobs:
+  await-docker:
+    name: check-docker-builder
+    runs-on: ubuntu-latest
+    steps:
+      - name: wait for docker build if active
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Check if docker-builder was triggered for this commit
+          RUN_ID=$(gh run list \
+            --workflow="docker-builder" \
+            --commit="${{ github.sha }}" \
+            --json databaseId \
+            --jq '.[0].databaseId // empty')
+
+          if [ -n "$RUN_ID" ]; then
+            echo "Found active docker-builder run $RUN_ID. Waiting for completion..."
+            gh run watch "$RUN_ID" --exit-status
+          else
+            echo "Dockerfile unchanged; no docker-builder run queued. Unlocking immediately."
+          fi
+
   test:
     name: ontology-tests
     runs-on: ubuntu-latest
