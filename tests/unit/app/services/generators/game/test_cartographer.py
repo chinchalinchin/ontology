@@ -150,7 +150,10 @@ def test_cartographer_water_meeting_water_suppresses_shorelines(
     fluid1.state.source = Directions.DOWN.value
 
     # Remove pre-existing secondary fluids to isolate the two parallel streams
-    other_fluids = [f for f in mock_board.instances(AssetInstances.FLUIDS.value, "0") if f is not fluid1]
+    other_fluids = [
+        f for f in mock_board.instances(AssetInstances.FLUIDS.value, "0") 
+        if f is not fluid1
+    ]
     mock_board.remove(other_fluids)
 
     # Fluid 2 placed directly along East margin of Fluid 1 (x=70 + 32 = 102)
@@ -163,8 +166,14 @@ def test_cartographer_water_meeting_water_suppresses_shorelines(
 
     shores = Cartographer.generate("0", mock_board, mock_shoreline_index)
 
-    left_shores = [s for s in shores if s.state.orientation == Directions.LEFT.value]
-    right_shores = [s for s in shores if s.state.orientation == Directions.RIGHT.value]
+    left_shores = [
+        s for s in shores 
+        if s.state.orientation == Directions.LEFT.value
+    ]
+    right_shores = [
+        s for s in shores 
+        if s.state.orientation == Directions.RIGHT.value
+    ]
 
     # Outer West margin (x=70) generates West shorelines
     assert len(left_shores) > 0

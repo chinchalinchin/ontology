@@ -127,7 +127,7 @@ def test_surface_interception_passenger_on_raft(mock_board, mock_raft, mock_flui
 def test_direct_immersion_in_fluid_adds_velocity_and_spawns_splash(mock_board):
     """
     Verify un-rafted entity entering fluid acquires current velocity,
-    sets submerged=True, and dispatches splash generation via Cradle.
+    sets submerged=True, and generates a splash asset on the board layer.
     """
     fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
     fluid.state.length = 100
@@ -140,25 +140,20 @@ def test_direct_immersion_in_fluid_adds_velocity_and_spawns_splash(mock_board):
     player.state.velocity.vy = 10.0
     player.state.mutators.triggers.submerged = False
 
-    # Spy on Cradle.spawn_passive using the wired fixture testbed
-    with patch.object(mock_board.cradle, "spawn_passive", wraps=mock_board.cradle.spawn_passive) as spy_spawn:
-        fields.update([player], mock_board, 0.016)
+    initial_passives = len(mock_board.instances(AssetInstances.PASSIVE.value, "0"))
 
-        # Net velocity = voluntary (0, 10) + current (0, 40)
-        assert player.state.velocity.vx == 0.0
-        assert player.state.velocity.vy == 50.0
-        assert player.state.mutators.triggers.submerged is True
+    fields.update([player], mock_board, 0.016)
 
-        assert spy_spawn.call_count == 1
-        call_args = spy_spawn.call_args[0]
-        assert call_args[0] == "splash"
-        assert call_args[1] == "0"
-        assert call_args[2].x == 70
-        assert call_args[2].y == 82  # 50 + (64 // 2)
+    # Net velocity = voluntary (0, 10) + current (0, 40)
+    assert player.state.velocity.vx == 0.0
+    assert player.state.velocity.vy == 50.0
+    assert player.state.mutators.triggers.submerged is True
 
-        # Confirm splash entity is persisted to the active board layer
-        passives = mock_board.instances(AssetInstances.PASSIVE.value, "0")
-        assert len(passives) > 0
+    # Confirm splash entity is persisted to the active board layer
+    passives = mock_board.instances(AssetInstances.PASSIVE.value, "0")
+    assert len(passives) == initial_passives + 1
+    assert passives[-1].state.position.x == 70
+    assert passives[-1].state.position.y == 82  # 50 + (64 // 2)
 
 
 @pytest.mark.fluids
@@ -271,6 +266,7 @@ def test_fields_shoreline_sheer_ledge_blocks_exit(mock_board, mock_shoreline):
     # Velocity directed against the bank is nullified
     assert player.state.velocity.vx == 0.0
 
+
 @pytest.mark.fluids
 @pytest.mark.motion
 def test_surface_interception_bridge_deck_crossings(mock_board, mock_bridge, mock_fluid):
@@ -278,11 +274,9 @@ def test_surface_interception_bridge_deck_crossings(mock_board, mock_bridge, moc
     Verify entities traversing a bridge deck suppress submersion, bypass fluid current
     drift, and do not emit splash particles.
     """
-    # Active stream corridor along x=70, y=[0, 100)
     mock_fluid.state.length = 100
     mock_fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(32, 100))]
 
-    # Bridge crosses at (70, 50)
     mock_bridge.state.position = Position(x=70, y=50)
     mock_board.add([mock_bridge])
 
@@ -293,14 +287,14 @@ def test_surface_interception_bridge_deck_crossings(mock_board, mock_bridge, moc
     player.state.velocity.vy = 0.0
     player.state.mutators.triggers.submerged = True
 
-    with patch.object(mock_board.cradle, "spawn_passive", wraps=mock_board.cradle.spawn_passive) as spy_spawn:
-        fields.update([player], mock_board, 0.016)
+    initial_passives = len(mock_board.instances(AssetInstances.PASSIVE.value, "0"))
 
-        # Entity velocity maintains voluntary speed, zero current drift
-        assert player.state.velocity.vx == 4.0
-        assert player.state.velocity.vy == 0.0
-        assert player.state.mutators.triggers.submerged is False
-        assert spy_spawn.call_count == 0
+    fields.update([player], mock_board, 0.016)
+
+    assert player.state.velocity.vx == 4.0
+    assert player.state.velocity.vy == 0.0
+    assert player.state.mutators.triggers.submerged is False
+    assert len(mock_board.instances(AssetInstances.PASSIVE.value, "0")) == initial_passives
 
 
 @pytest.mark.fluids
@@ -374,3 +368,58 @@ def test_fields_shoreline_entry_nudge_cardinal_axes(
     assert player.state.position.x == expected_x
     assert player.state.position.y == expected_y
     assert player.state.mutators.triggers.submerged is True
+
+
+@pytest.mark.fluids
+@pytest.mark.motion
+def test_fields_bipartite_heterogeneous_resolution(
+    mock_board, 
+    mock_bridge, 
+    mock_raft, 
+    mock_crate, 
+    mock_fluid
+):
+    """
+    Verify physics.environment resolves multiple entities across bridges, rafts, 
+    and direct fluid immersion in a single frame update.
+    """
+    # Active stream corridor along x=70, y=[0, 300)
+    mock_fluid.state.length = 300
+    mock_fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(32, 300))]
+
+    # Bridge deck spans at (70, 50)
+    mock_bridge.state.position = Position(x=70, y=50)
+
+    # Raft floats downstream at (70, 150)
+    mock_raft.state.position = Position(x=70, y=150)
+
+    # Player 1 on bridge deck: voluntary movement only, submerged=False
+    player = mock_board.player()
+    player.state.position = Position(x=70, y=50)
+    player.state.velocity = Velocity(vx=5.0, vy=0.0)
+
+    # Crate immersed directly in fluid channel: acquires flow velocity (0, 40)
+    mock_crate.state.position = Position(x=70, y=250)
+    mock_crate.state.velocity = Velocity(vx=0.0, vy=0.0)
+
+    # NPC Sprite aboard the raft: inherits raft velocity
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+    sprite.state.layer = "0"
+    sprite.state.position = Position(x=70, y=150)
+    sprite.state.velocity = Velocity(vx=0.0, vy=0.0)
+
+    all_entities = [mock_raft, player, mock_crate, sprite]
+    fields.update(all_entities, mock_board, 0.016)
+
+    # 1. Player on bridge deck
+    assert player.state.velocity.vx == 5.0
+    assert player.state.velocity.vy == 0.0
+    assert player.state.mutators.triggers.submerged is False
+
+    # 2. Crate in water corridor
+    assert mock_crate.state.velocity.vy == 40.0
+    assert mock_crate.state.mutators.triggers.submerged is True
+
+    # 3. Sprite aboard drifting raft
+    assert sprite.state.velocity.vy == 40.0
+    assert sprite.state.mutators.triggers.submerged is False

@@ -24,7 +24,7 @@ def mock_geography_properties() -> GeographyPropertyInstances:
         shorelines = {
             "grassy-shore": GeographyProperties(
                 dimensions=Dimensions(w=32, l=32),
-                tile="tile-1",
+                tile="grass",
                 fluid="waterflow-01",
                 thickness=8,
                 mass=-1

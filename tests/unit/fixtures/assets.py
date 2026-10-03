@@ -42,12 +42,12 @@ def mock_back_tile(
 ) -> Asset:
     return Asset(
         taxonomy = Taxonomy(
-            id = "tile-1",
+            id = "grass",
             name = "grass",
             category = AssetCategories.TILES.value, 
             instance = AssetInstances.BACK.value
         ), 
-        properties = mock_tile_properties.back.get('tile-1'), 
+        properties = mock_tile_properties.back.get('grass'), 
         state = mock_multiplier_state, 
         frame = SingleFrame(), 
         animation = NoAnimation()

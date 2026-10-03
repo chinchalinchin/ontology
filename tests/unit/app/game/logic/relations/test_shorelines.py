@@ -6,68 +6,32 @@ import pytest
 
 # Application Libraries
 from app.game.logic.relations.shorelines import ShorelineIndex
-from app.models.properties import GeographyProperties
-
-# Cython Libraries
-from libs.core.models import Dimensions
-
-# TODO: all of these should use fixtures
-@pytest.mark.fluids
-def test_shoreline_index_exact_match():
-    entries = {
-        ("grass", "water-clean"): "shore-grass-clean",
-        ("grass", "water-murky"): "shore-grass-murky",
-        ("sand", None): "shore-sand"
-    }
-    index = ShorelineIndex(entries)
-
-    assert index.resolve("grass", "water-clean") == "shore-grass-clean"
-    assert index.resolve("grass", "water-murky") == "shore-grass-murky"
 
 
 @pytest.mark.fluids
-def test_shoreline_index_substrate_fallback():
-    entries = {
-        ("sand", None): "shore-sand-default",
-        ("grass", "water-clean"): "shore-grass-clean",
-        ("grass", None): "shore-grass-default"
-    }
-    index = ShorelineIndex(entries)
-
-    # Substrate fallback when fluid has no exact override
-    assert index.resolve("sand", "lava") == "shore-sand-default"
-    assert index.resolve("sand", None) == "shore-sand-default"
-    assert index.resolve("grass", "unknown-fluid") == "shore-grass-default"
+def test_shoreline_index_exact_match(mock_geography_properties):
+    index = ShorelineIndex.from_properties(mock_geography_properties.shorelines)
+    assert index.resolve("grass", "waterflow-01") == "grassy-shore"
 
 
 @pytest.mark.fluids
-def test_shoreline_index_unmapped_returns_none():
-    entries = {("dirt", "water"): "shore-dirt"}
-    index = ShorelineIndex(entries)
+def test_shoreline_index_substrate_fallback(mock_geography_properties):
+    # Temporarily bind an unconditioned shoreline to test substrate fallback
+    mock_geography_properties.shorelines["grassy-shore"].fluid = None
+    index = ShorelineIndex.from_properties(mock_geography_properties.shorelines)
 
-    assert index.resolve("stone", "water") is None
-    assert index.resolve("stone", None) is None
+    assert index.resolve("grass", "unknown-fluid") == "grassy-shore"
+    assert index.resolve("grass", None) == "grassy-shore"
 
 
 @pytest.mark.fluids
-def test_shoreline_index_from_properties():
-    props = {
-        "grassy-river": GeographyProperties(
-            dimensions=Dimensions(w=32, l=32),
-            tile="grass-meadow",
-            fluid="water-clean",
-            thickness=8
-        ),
-        "rocky-shore": GeographyProperties(
-            dimensions=Dimensions(w=32, l=32),
-            tile="stone-cavern",
-            fluid=None,
-            thickness=10
-        )
-    }
+def test_shoreline_index_unmapped_returns_none(mock_shoreline_index):
+    assert mock_shoreline_index.resolve("unregistered-tile", "waterflow-00") is None
+    assert mock_shoreline_index.resolve("unregistered-tile", None) is None
 
-    index = ShorelineIndex.from_properties(props)
 
-    assert index.resolve("grass-meadow", "water-clean") == "grassy-river"
-    assert index.resolve("stone-cavern", "any-fluid") == "rocky-shore"
-    assert index.resolve("unregistered-tile", "water-clean") is None
+@pytest.mark.fluids
+def test_shoreline_index_from_properties(mock_geography_properties):
+    index = ShorelineIndex.from_properties(mock_geography_properties.shorelines)
+    assert index.resolve("grass", "waterflow-01") == "grassy-shore"
+    assert index.resolve("unregistered-tile", "waterflow-01") is None

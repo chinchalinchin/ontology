@@ -389,7 +389,15 @@ class Board:
 
             pool = fluid.state.pool
             if pool and pool.w > 0 and pool.l > 0:
-                if geometry.inside(px, py, [(pool.x, pool.y, pool.x + pool.w, pool.y + pool.l)]):
+                if geometry.inside(
+                    px, 
+                    py, 
+                    [(
+                        pool.x, 
+                        pool.y, 
+                        pool.x + pool.w, 
+                        pool.y + pool.l
+                    )]):
                     return True
 
             if fluid.state.length > 0 and self._in_stream(position, fluid):

@@ -39,7 +39,7 @@ def mock_plot_state() -> PlotState:
 @pytest.fixture
 def mock_multiplier_state() -> MultiplierState:
     return MultiplierState(
-        id="tile-1",
+        id="grass",
         name="grass",
         layer="0",
         position=Position(x=0, y=0),

@@ -22,9 +22,6 @@ from libs.core.models import (
 def mock_tile_properties() -> TilePropertyInstances:
     return TilePropertyInstances(
         back = {
-            'tile-1': TileProperties(
-                dimensions=Dimensions(w=32, l=32)
-            ),
             'grass': TileProperties(
                 dimensions=Dimensions(w=32, l=32),
                 friction=100

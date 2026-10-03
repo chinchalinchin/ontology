@@ -185,3 +185,46 @@ def test_geometry_contours_directed():
         assert isinstance(w, int)
         assert isinstance(l, int)
         assert isinstance(orientation, str)
+
+# ----------------------------------------------------------------------------------------
+# POINT CONTAINMENT & BATCH OCCLUSION TESTS
+# ----------------------------------------------------------------------------------------
+
+def test_geometry_inside_point_in_aabbs():
+    boxes = [
+        (0, 0, 32, 32),
+        (100, 100, 150, 150)
+    ]
+    # Points inside intervals
+    assert geometry.inside(10, 10, boxes) is True
+    assert geometry.inside(0, 0, boxes) is True
+    assert geometry.inside(120, 130, boxes) is True
+
+    # Boundary edge conditions (half-open: [min, max))
+    assert geometry.inside(32, 10, boxes) is False
+    assert geometry.inside(10, 32, boxes) is False
+
+    # Point outside all boxes
+    assert geometry.inside(50, 50, boxes) is False
+
+
+def test_geometry_inside_empty_list():
+    assert geometry.inside(10, 10, []) is False
+
+
+def test_geometry_occluded_batch_overlap():
+    obstacles = [
+        (0, 0, 32, 32),
+        (100, 100, 64, 64)
+    ]
+    # Overlapping query AABB
+    assert geometry.occluded(16, 16, 32, 32, obstacles) is True
+    assert geometry.occluded(90, 90, 20, 20, obstacles) is True
+
+    # Clear query AABB
+    assert geometry.occluded(40, 40, 20, 20, obstacles) is False
+    assert geometry.occluded(200, 200, 32, 32, obstacles) is False
+
+
+def test_geometry_occluded_empty_list():
+    assert geometry.occluded(0, 0, 32, 32, []) is False
