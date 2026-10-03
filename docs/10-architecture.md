@@ -85,15 +85,25 @@ The `AnimationMap` plays a crucial role in enforcing logical constraints. For ex
 
 ### Spatial Grid Caching
 
+To optimize environmental lookups without traversing linear asset arrays, the Board utilizes two discrete \(O(1)\) spatial hash grids managed by `BoardCaches`:
 
-To optimize environmental lookups without traversing linear asset arrays, the Board partitions static tiles into an $O(1)$ spatial hash grid (`_cached_tilemap`), indexed with bucket size `TILE_HASH_SIZE = 32`.
+1. **Tile Spatial Grid (`tilemap`)**:
 
-To prevent foreground architectural tiles (`fore`) from overwriting terrain friction data (`back`), the cache nests by layer and instance:
+Partitions static tiles into spatial buckets of size `TILE_HASH_SIZE = 32`. To prevent foreground architectural tiles (`fore`) from overwriting terrain friction data (`back`), buckets nest by layer and instance:
 
-$$\text{tilemap}[\text{layer}][\text{instance}][(c_x, c_y)] \to \text{Asset}$$
+$$
+\text{tilemap}[\text{layer}][\text{instance}][(c_x, c_y)] \to \text{Asset}
+$$
 
-!!! note
-    `Board.tile(layer, position, instance=AssetInstances.BACK.value)` queries background friction tiles by default.
+2. **Hydrological Broad-Phase Grid (`watermap`)**:
+
+Indexes active fluid streams, annular pools, and branching corridors into spatial buckets of size `TILE_HASH_SIZE = 32`. Each bucket stores references to overlapping fluid entities:
+
+$$
+\text{watermap}[\text{layer}][(c_x, c_y)] \to \text{List}[\text{Asset}]
+$$
+
+When asserting fluid immersion (`board.fluid(layer, position)`), the engine queries the bucket corresponding to the coordinate in $O(1)$ time, then delegates to narrow-phase AABB segment validation via `app.game.board.predicates.in_fluid()`.
 
 ## Rendering
 

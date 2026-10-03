@@ -5,6 +5,9 @@
 import sys
 from pathlib import Path
 
+# External Libraries 
+import pytest
+
 # NOTE: Inject the src/ directory into the Python path prior to any local imports
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "src"))
 
@@ -42,3 +45,8 @@ pytest_plugins = [
     # -------------------------------
     "tests.unit.fixtures.structures"
 ]
+
+@pytest.fixture(autouse=True)
+def patch_app_settings(monkeypatch):
+    monkeypatch.setattr("app.config.settings.BASE_FLOW_SPEED", 20)
+    monkeypatch.setattr("app.config.settings.TILE_HASH_SIZE", 32)
