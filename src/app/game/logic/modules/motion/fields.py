@@ -214,9 +214,11 @@ def update(
         if not immersible_indices:
             continue
 
-        immersible_primitives = [asset_primitives[i] for i in immersible_indices]
         sub_to_orig = {sub_i: orig_i for sub_i, orig_i in enumerate(immersible_indices)}
-
+        immersible_primitives = [
+            l_assets[orig_i].primitive(sub_i) 
+            for sub_i, orig_i in enumerate(immersible_indices)
+        ]
         # -------------------------------------------------------------
         # 2. VIRTUAL EDGE CROSSING (SHORELINES)
         # -------------------------------------------------------------
@@ -240,8 +242,10 @@ def update(
                     if v_dot > 0:
                         if not asset.state.mutators.triggers.submerged:
                             t = shore.state.thickness
-                            asset.state.position.x += int(nx * t)
-                            asset.state.position.y += int(ny * t)
+                            step_x = int(nx * (t + (asset.dimensions.w // 2))) if nx != 0.0 else 0
+                            step_y = int(ny * (t + (asset.dimensions.l // 2))) if ny != 0.0 else 0
+                            asset.state.position.x += step_x
+                            asset.state.position.y += step_y
                             asset.state.mutators.triggers.submerged = True
 
                             if board.cradle:

@@ -5,8 +5,8 @@ properties:
     mkdocs: mkdocs.yaml
   paths:
     # ---------------------------------------
-    root: /Users/gmoore/Home/projects/ontology/
-    # root: /home/grant/Projects/ontology/
+    # root: /Users/gmoore/Home/projects/ontology/
+    root: /home/grant/Projects/ontology/
     # ---------------------------------------
     actions: .githubs/workflows/
     # ---------------------------------------
@@ -31,7 +31,7 @@ properties:
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: console/debug.md.j2
+  template: iterate/coverage.md.j2
 # ----------------------------------------------------
   parameters:
     diagram: mechanics-fluid.mmd
@@ -42,17 +42,17 @@ tools:
     manager:
       board: false
       specs: false
-      docs: true
+      docs: false
     source:
-      workflow: true
+      workflow: false
     shell:
-      directory: true
+      directory: false
       commands: false
     tests:  
-      pipeline: false
-      fixtures: false
-      session: true
-      workflow: false
+      pipeline: true
+      fixtures: true
+      session: false
+      workflow: true
 # ----------------------------------------------------
   parameters:
     manager:
@@ -83,9 +83,12 @@ tools:
       fixtures:
         - assets
         - components
-        - configuration
-        - properties
-        - state
+        - properties/crafts
+        - properties/effects
+        - properties/objects
+        - state/crafts
+        - state/effects
+        - state/objects
         - services
         - structures
         # - menus
@@ -96,3 +99,4 @@ tools:
           - src/assets/effects/fluids/main.yaml
           - src/assets/crafts/bridges.yaml
           - src/data/state/world-01/effects/fluids.yaml
+          - src/data/state/world-01/crafts/bridges.yaml

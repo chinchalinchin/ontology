@@ -63,7 +63,8 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 09.02: Shorelines & Geography](./phases/refactor/refactor-09-02.md)
       - [x]: [Phase 09.03: Consolidation](./phases/refactor/refactor-09-03.md)
       - [x]: [Phase 09.04: Optimization](./phases/refactor/refactor-09-04.md)
-      - [x]: [Phase 09.05: Bridges & Bifurcation](./phases/refactor/refactor-09-03.md)
+      - [x]: [Phase 09.05: Bridges & Bifurcation](./phases/refactor/refactor-09-05.md)
+      - [x]: [Phase 09.06: Cythonization](./phases/refactor/refactor-09-06.md)
   - Patch:
     - [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering Instantiated Assets](./phases/patch/bug-b001.md)

@@ -341,8 +341,9 @@ cpdef list environment(list assets, list fields, Space grid):
         f_data = fields[i]
         grid.insert(-i - 1, f_data[1], f_data[2], f_data[3], f_data[4])
 
-    for a_data in assets:
-        grid.insert(a_data[0], a_data[1], a_data[2], a_data[3], a_data[4])
+    for i in range(len(assets)):
+        a_data = assets[i]
+        grid.insert(i, a_data[1], a_data[2], a_data[3], a_data[4])
 
     cdef list candidate_pairs = grid.query()
     for pair in candidate_pairs:
