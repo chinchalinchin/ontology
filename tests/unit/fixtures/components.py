@@ -22,6 +22,10 @@ from app.services.translators import (
     LambdaTranslator,
     CompilerTranslator
 )
+from app.services.generators.menus.provider import Provider
+from app.services.generators.menus.fabricator import Fabricator
+from app.services.generators.menus.binder import Binder
+from app.services.generators.menus.library import Library
 from app.config.enums import Executors
 
 # Cython Libraries
@@ -31,9 +35,46 @@ from libs.core.models import (
     Boundary
 )
 
+class RenderStubScreen:
+    """
+    Screen double that stubs low-level SDL rendering passes without mocking engine logic.
+    """
+    def __init__(self, screensize, boardsize, tiles, registry):
+        self.screensize = screensize
+        self.boardsize = boardsize
+        self.tiles = tiles
+        self.registry = registry
+        self.cleared = False
+        self.drawn_assets = []
+        self.presented = False
+
+    def clear(self) -> None:
+        self.cleared = True
+
+    def draw(self, assets, position, dimensions) -> None:
+        self.drawn_assets = list(assets)
+
+    def interface(self, menus, overlays) -> None:
+        pass
+
+    def present(self) -> None:
+        self.presented = True
+
+    def destroy(self) -> None:
+        pass
+
 # ---------------------------------------------------------------------------
 # ----------------------------------------------------------- MOCK COMPONENTS
 # ---------------------------------------------------------------------------
+
+@pytest.fixture
+def mock_screen(mock_registry) -> RenderStubScreen:
+    return RenderStubScreen(
+        screensize=Dimensions(320, 240),
+        boardsize=Dimensions(640, 480),
+        tiles=[],
+        registry=mock_registry
+    )
 
 @pytest.fixture
 def mock_registry() -> MagicMock:
@@ -109,6 +150,7 @@ def mock_compiler_executors(
 def mock_bus() -> collections.deque:
     return collections.deque()
 
+
 @pytest.fixture
 def mock_relations(mock_shoreline_index) -> dict:
     from app.config.enums import Relations
@@ -122,7 +164,8 @@ def mock_engine_with_lambda_transitions(
     mock_board, 
     mock_mechanics_configuration,
     mock_lambda_executors,
-    mock_relations
+    mock_relations,
+    mock_provider
 ) -> Engine:
     """
     Fully constructs the Engine with live Mechanics and Executors
@@ -137,7 +180,7 @@ def mock_engine_with_lambda_transitions(
         screens={},
         core=[],
         world=world_mechanics,
-        provider=MagicMock()
+        provider=mock_provider
     )
 
 
@@ -146,7 +189,8 @@ def mock_engine_with_compiler_transitions(
     mock_board, 
     mock_mechanics_configuration,
     mock_compiler_executors,
-    mock_relations
+    mock_relations,
+    mock_provider
 ) -> Engine:
     """
     Fully constructs the Engine with live Mechanics and Executors
@@ -161,5 +205,23 @@ def mock_engine_with_compiler_transitions(
         screens={},
         core=[],
         world=world_mechanics,
-        provider=MagicMock()
+        provider=mock_provider
+    )
+
+@pytest.fixture
+def mock_engine_core(
+    mock_board,
+    mock_screen,
+    mock_provider
+) -> Engine:
+    """
+    Constructs an Engine with a live Board, live buses, concrete handlers, and stubbed rendering.
+    """
+
+    return Engine(
+        board=mock_board,
+        screens={"0": mock_screen},
+        core=[],
+        world=[],
+        provider=mock_provider
     )

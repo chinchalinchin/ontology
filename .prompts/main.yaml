@@ -40,19 +40,19 @@ tools:
 # ----------------------------------------------------
   views:
     manager:
-      board: true
+      board: false
       specs: false
-      docs: true
+      docs: false
     source:
-      workflow: true
+      workflow: false
     shell:
-      directory: true
+      directory: false
       commands: false
     tests:  
-      pipeline: false
-      fixtures: false
+      pipeline: true
+      fixtures: true
       session: false
-      workflow: false
+      workflow: true
 # ----------------------------------------------------
   parameters:
     manager:
@@ -79,7 +79,7 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: fluids
+        marker: main
       fixtures:
         - assets
         - components
@@ -92,7 +92,7 @@ tools:
         # - services
         # - structures
         # - menus
-      workflow: fluids
+      workflow: main
       session:
         description: null
         conditions:
