@@ -784,6 +784,8 @@
       
         
       
+        
+      
     
     
     
@@ -878,6 +880,34 @@
     
   
     Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/02-diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagrams
   
 
     
@@ -1127,28 +1157,28 @@
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">castle-dawn-unlocked</span>
 <span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(constants.RequiredAssets.PLAYER.value)</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(constants.RequiredAssets.PLAYER.value).state.inventory.loot.get(&#39;writ-of-dawn&#39;) &gt;= 1</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(constants.RequiredAssets.PLAYER.value).state.inventory.loot.get('writ-of-dawn') &gt;= 1</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">town-unlocked</span>
 <span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;castle-dawn-guard&#39;)</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;castle-dawn-guard&#39;).mutators.triggers.dead</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get('castle-dawn-guard')</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get('castle-dawn-guard').mutators.triggers.dead</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">castle-dawn-unlocked</span>
 <span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;evil-empress-jasilynn&#39;)</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;evil-empress-jasiylnn&#39;).state.memory.relationships.get(constants.RequiredAssets.PLAYER.value)</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;evil-empress-jasilynn&#39;).state.memory.relationships.get(constants.RequiredAssets.PLAYER.value) == constants.Relationships.FRIEND</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get('evil-empress-jasilynn')</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get('evil-empress-jasiylnn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value)</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get('evil-empress-jasilynn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value) == constants.Relationships.FRIEND</span>
 <span class="w">  </span><span class="nt">castle-dawn-unlocked</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">castle-dawn-hostile</span>
 <span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;evil-empress-jasilynn&#39;)</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;evil-empress-jasiylnn&#39;).state.memory.relationships.get(constants.RequiredAssets.PLAYER.value)</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;evil-empress-jasilynn&#39;).state.memory.relationships.get(constants.RequiredAssets.PLAYER.value) == constants.Relationships.FOE</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get('evil-empress-jasilynn')</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get('evil-empress-jasiylnn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value)</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get('evil-empress-jasilynn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value) == constants.Relationships.FOE</span>
 <span class="w">  </span><span class="nt">castle-dawn-hostile</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">castle-dawn-unlocked</span>
 <span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;evil-empress-jasilynn&#39;)</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;evil-empress-jasiylnn&#39;).state.memory.relationships.get(constants.RequiredAssets.PLAYER.value)</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;evil-empress-jasilynn&#39;).state.memory.relationships.get(constants.RequiredAssets.PLAYER.value) != constants.Relationships.FOE</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get('evil-empress-jasilynn')</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get('evil-empress-jasiylnn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value)</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get('evil-empress-jasilynn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value) != constants.Relationships.FOE</span>
 </code></pre></div>
 <p>TODO</p>
 

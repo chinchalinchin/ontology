@@ -967,6 +967,8 @@
       
         
       
+        
+      
     
     
     
@@ -1061,6 +1063,34 @@
     
   
     Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/02-diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagrams
   
 
     
@@ -1848,9 +1878,9 @@
 </ul>
 <p>In the provided <code>text</code> Menu example, the <code>text-scroll-up</code> and <code>text-scroll-down</code> Buttons are bound to the <code>selection</code> actions <code>scrollup</code> and <code>scrolldown</code>. Because these buttons control the Page widget, their <code>selector</code> bindings are set to <code>text-display</code>—the unique name of the target Page.</p>
 <p>When a Button is selected, the MenuMechanics route the input to the appropriate Controller (in this case, the <code>ScrollController</code>). The Controller uses the <code>selector</code> binding to perform an <span class="arithmatex">\(O(1)\)</span> dictionary lookup for the target widget and applies the <code>selection</code> action:</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ScrollController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ScrollController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">menu</span><span class="p">:</span> <span class="n">Menu</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">Board</span><span class="p">,</span> <span class="n">bus</span><span class="p">:</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">menu</span><span class="p">:</span> <span class="n">Menu</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">Board</span><span class="p">,</span> <span class="n">bus</span><span class="p">:</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">):</span>
         <span class="n">widget</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">widgets</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
 
         <span class="n">selection</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">binding</span><span class="o">.</span><span class="n">selection</span>
