@@ -31,7 +31,7 @@ properties:
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/coverage.md.j2
+  template: iterate/conclusion.md.j2
 # ----------------------------------------------------
   parameters:
     diagram: mechanics-fluid.mmd
@@ -40,16 +40,16 @@ tools:
 # ----------------------------------------------------
   views:
     manager:
-      board: false
+      board: true
       specs: false
-      docs: false
+      docs: true
     source:
-      workflow: false
+      workflow: true
     shell:
-      directory: false
+      directory: true
       commands: false
     tests:  
-      pipeline: true
+      pipeline: false
       fixtures: false
       session: false
       workflow: false
