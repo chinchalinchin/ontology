@@ -132,7 +132,7 @@ These attributes are part of the base class from which all other states inherit.
 | Object | Chest | Base, Animation, Switch, Content |
 | Object | Gate | Base, Animation, Switch, Link |
 | Object | Plate | Base, Animation, Switch, Link |
-| Craft | Bridge | Base, Multiple |
+| Craft | Bridge | Base, Multiple, Orientation, Owner |
 | Craft | Strut | Base, Owner |
 | Craft | Decor | Base, Owner |
 | Craft | Forge | Base, TODO |
@@ -146,7 +146,7 @@ These attributes are part of the base class from which all other states inherit.
 | Effect | Hazard | Base, Animation, Damage |
 | Effect | Collectable | Base, Animation, Lot |
 | Effect | Reactable | Base, Animation, Intention, Cooldown |
-| Effect | Fluid | Base, Animation, Source, Flow |
+| Effect | Fluid | Base, Animation, Source, Flow, Length, Pool, Branches |
 | Sheet | Pixie | Base, Animation |
 | Sheet | Sprite | Base, Animation, Velocity, Intention, Inventory, Meters, Memory, Mutators, Goal, Trajectory |
 | Widget | Icon | Base, Icon |
@@ -209,18 +209,18 @@ Tiles have coefficients of friction. These coefficient are used by [MotionMechan
 * `dimensions: Dimensions`
 * `friction: float`
 
-### Back
+**Frame: SingleFrame**
 
-A Back Tile is the first Asset rendered on screen. It has the lowest Z coordinate of all Assets; Back Tiles will *always* be rendered *under* all of the other Assets, regardless of their `depth` or `height`.
+* `keys(id, state): returns [ (id, 0, 0) ] "`
+* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **Animation: None**
 
 N/A
 
-**Frame: SingleFrame**
+### Back
 
-* `keys(id, state): returns [ (id, 0, 0) ] "`
-* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+A Back Tile is the first Asset rendered on screen. It has the lowest Z coordinate of all Assets; Back Tiles will *always* be rendered *under* all of the other Assets, regardless of their `depth` or `height`.
 
 **State: MultiplerState**
 
@@ -233,15 +233,6 @@ N/A
 ### Fore
 
 A Fore Tile is the last Asset rendered on screen. It has the highest Z coordinate of all Assets. Fore Tiles will always be rendered on top of all of other Assets, regardless of their `depth` or `height`. The *one* exception to this rule is Widgets. Fore Tiles are an "in-world" Asset, and thus their Z-ordering is superseded by Widgets.
-
-**Animation: None**
-
-N/A
-
-**Frame: SingleFrame**
-
-* `keys(id, state): returns [ (id, 0, 0) ] "`
-* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: MultiplerState**
 
@@ -259,15 +250,6 @@ There must be precisely *two* Grid tiles:
 
 - `focus`: A Grid Tile to represent active selections.
 - `cell`: A Grid Tile to represent idle selections.
-
-**Animation: None**
-
-N/A
-
-**Frame: SingleFrame**
-
-* `keys(id, None): returns [ (id, 0, 0) ] "`
-* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: MultiplerState**
 
@@ -666,7 +648,7 @@ Passive effects that do not participate in collision resolution or interactions 
 
 Due to dependencies on other Assets and Mechanics, the following Passive Effects are required to exist at runtime,
 
-- `splash`: Animation for "submerged" Assets moving in in Fluid fields.
+- `splash`: Animation for "submerged" Assets moving through Fluid fields.
 
 **State: AnimatorState**
 
@@ -732,12 +714,20 @@ Fluids are directional Effects that project along a `source` Direction until obs
 
 1. (**Source**) A Fluid has a `source`. A `source` is a Direction. Fluid flows in the Direction of its `source`. 
 2. (**Obstruction**) Fluids are obstructed by obstacles. Fluids form Pools around obstacles, determined by their `flow` rate.
-3. (**Bifurication**) When a Fluid meets an obstacle, it bifuricates across its orthogonal axes (e.g., a `down` flowing Fluid bifuricates in the `left` and `right` directions) until unobstructed and then continues flowing in its original `source` Direction (e.g. `down`). The number of times a Fluid may bifuricate is equal to its `flow`, e.g. a `flow = 3` means the Fluid may bifuricate three times.
-4. (**Fields**) When Sprites, Players or Pixies intersect a Fluid, they acquire a Velocity in the Direction of `source`, getting "swept" away. The speed imparted to a Sheet Asset by a Fluid is proportional to its `flow`, i.e. the higher the `flow`, the faster the resulting speed of the "swept" Asset.
+3. (**Bifurication**) When a Fluid meets an obstacle, it bifuricates across its orthogonal axes (e.g., a `down` flowing Fluid bifuricates in the `left` and `right` directions) and then continues flowing in its original `source` Direction (e.g. `down`). The number of times a Fluid may bifuricate is equal to its `flow`, e.g. a `flow = 3` means the Fluid may bifuricate three times.
+4. (**Fields**) When dynamic Assets (Sprites, Crates, etc.) intersect a Fluid, they acquire a Velocity in the Direction of `source`, getting "swept" away. The speed imparted to an Asset by a Fluid is proportional to its `flow`, i.e. the higher the `flow`, the faster the resulting speed of the "swept" Asset.
 
 **Z-Ordering & Sorting**
 
 Fluids declare an explicit `height: 0` and `depth: -1`. This ensures the [rendering pipeline](./10-architecture.md#graphics) sorts the resulting stream above Tiles but underneath other mutable Assets.
+
+**Branch Model**
+
+* `position: Position`: Absolute origin of the branch corridor.
+* `source: str`: Flow direction vector matching or orthogonal to parent stream.
+* `flow: int`: Attenuated flow intensity ($flow_{\text{parent}} - 1$).
+* `length: int`: Raycast truncation distance.
+* `hitboxes: List[Hitbox]`: Compound hitboxes covering the secondary stream corridor.
 
 **Frame: FluidFrame**
 
@@ -752,6 +742,7 @@ Fluids declare an explicit `height: 0` and `depth: -1`. This ensures the [render
 * `flow: int = 1`
 * `length: int = 0`
 * `pool: Optional[Pool] = None`
+* `branches: List[Branch]`
 * `hitboxes: List[Hitbox]`
 * `dirty: bool = True`
 * `height: Optional[int] = 0`

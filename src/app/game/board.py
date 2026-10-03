@@ -623,7 +623,7 @@ class Board:
         if new_layer not in self._cached_weights:
             self._cached_weights[new_layer] = []
             
-        if asset.properties.mass >= 0:
+        if self._is_weight(asset):
             self._cached_weights[new_layer].append(asset)
 
         if inst == AssetInstances.SHORELINES.value:
@@ -662,9 +662,7 @@ class Board:
 
             if asset.category != AssetCategories.TILES.value:
                 self._cached_renderables[layer].append(asset)
-                if asset.category != AssetCategories.CURSORS and (
-                    asset.properties.mass >= 0
-                ):
+                if self._is_weight(asset):
                     self._cached_weights[layer].append(asset)
                 
             if asset.instance in (

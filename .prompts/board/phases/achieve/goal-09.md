@@ -1,7 +1,20 @@
 
-#### Backlog: Transverse Fluids
+#### Achieve: Goal 09 - Transverse Fluids
 
 **Overview**
+
+Currently, `fields.py` checks AABB intersection with bridges unconditionally:
+
+```python
+layer_bridges = board.instances(AssetInstances.BRIDGES.value, layer)
+for bridge in layer_bridges:
+    if _intersects(asset, bridge):
+        on_surface = True
+        # ...
+
+```
+
+If an entity is already floating in a fluid stream and drifts beneath a bridge deck whose span is perpendicular to the flow, `fields.py` intercepts the entity, clears `submerged = False`, and halts its drift. Because the engine models 2D planar space with pseudo-depth (`height`, `depth`), an asset cannot distinguish between being *on top of* the bridge deck versus *underneath* it. Resolving this requires formalizing an `elevation` or entry-trajectory state attribute.
 
 Resolve the 2.5D elevation collapse where entities immersed in fluid fields are erroneously intercepted by bridge decks. When an asset's trajectory or environmental velocity vector aligns with a water corridor passing underneath a bridge, the entity should clear underneath the bridge deck, render below the bridge structure, and maintain fluid momentum.
 

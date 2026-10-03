@@ -73,7 +73,7 @@ $$v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)$$
 
 ##### Fluids
 
-Dynamic bodies (\(m > 0\)) interacting with active Fluid streams and pools evaluate hydrodynamic buoyancy via `properties.buoyant`:
+Dynamic bodies ($m > 0$) interacting with active Fluid streams and pools evaluate hydrodynamic buoyancy via `properties.buoyant`:
 
 **Buoyant Dynamic Bodies (`buoyant: True`)**
 
@@ -219,11 +219,15 @@ These Mechanics handle ambient world state, high-level game calculations and oth
 --8<-- "static/mmd/mechanics-fluid.mmd"
 ```
 
-FluidMechanics governs fluid emission and procedural shoreline margins across active layers. It executes after physical momentum updates (`MotionMechanics` and `CollisionMechanics`) and uses reactive dirty-checking:
+FluidMechanics governs fluid emission, recursive bifurcation, and procedural shoreline margins across active layers. It executes after physical momentum updates (`MotionMechanics` and `CollisionMechanics`) and uses reactive dirty-checking:
 
-1. **Change Detection**: Inspects switch-linked gates (`AssetInstances.GATES`). If any static barrier within an active layer mutates state, affected fluids are marked `dirty`. Dynamic bodies (\(m > 0\), such as Crates) do not obstruct fluids and do not trigger invalidation.
-2. **Pass 1 (Fluid Propagation)**: For every fluid on an invalidated layer, `Actuator.propagate()` raycasts along `state.source` strictly against map boundaries and immovable static assets (\(m = 0\)). If an internal static obstacle is struck, an annular pool of radius `state.flow` expands around the obstacle perimeter. Hitboxes for the stream corridor and pool are updated on `FluidState`.
-3. **Pass 2 (Layer Shoreline Synthesis)**: Once all fluid corridors and pools on the layer are resolved, `Cartographer.purge(layer, board)` clears previous layer shorelines. `Cartographer.generate(layer, board, shoreline_index)` compiles all layer water bounds into a unified contour sweep (`geometry.contours`), evaluates bordering substrate tiles, and instantiates non-overlapping `Shoreline` entities along the true land-water threshold.
+1. **Change Detection**: Inspects switch-linked gates (`AssetInstances.GATES`). If any static barrier within an active layer mutates state, affected fluids are marked `dirty`. Dynamic bodies ($m > 0$) do not obstruct fluids and do not trigger invalidation.
+2. **Pass 1 (Fluid Propagation & Bifurcation)**: For every fluid on an invalidated layer, `Actuator.propagate()` raycasts along `state.source` against map boundaries and immovable static assets ($m = 0$).
+    * If an internal static obstacle is struck, an annular pool of dimensions determined by `state.flow` expands around the obstacle perimeter.
+    * If `state.flow > 1`, secondary child streams are discharged from the downstream face of the annular pool along its lateral flanks, propagating with flow \(flow - 1\).
+    * Stream corridors, annular pools, and child branches compile compound hitboxes on `FluidState`.
+    * `FluidMechanics` synchronizes the layer water broad-phase cache via `board.update_fluid_cache(layer)`.
+3. **Pass 2 (Layer Shoreline Synthesis)**: Once all fluid corridors, pools, and branches on the layer are resolved, `Cartographer.purge(layer, board)` clears previous layer shorelines. `Cartographer.generate(layer, board, shoreline_index)` compiles all water bounds into a unified contour sweep (`geometry.contours`), evaluates bordering substrate tiles, and instantiates non-overlapping `Shoreline` entities along the true land-water threshold.
 
 ## Configuration
 
