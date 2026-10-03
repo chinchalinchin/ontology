@@ -40,9 +40,8 @@ jobs:
 
       - name: dependency-trees
         run: | 
-          export PATH="$GITHUB_WORKSPACE/.venv/bin:$PATH"
           chmod +x scripts/dependencies/main.sh
-          ./scripts/dependencies/main.sh
+          uv run ./scripts/dependencies/main.sh
 
       - name: documentation
         run: |
