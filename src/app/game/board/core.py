@@ -291,7 +291,7 @@ class Board:
         """
         layer = fluid.state.layer
         if layer:
-            self._cache.rebuild_self._cache(layer)
+            self._cache.rebuild_fluid(layer)
 
     def relayer(self, asset: Asset, new_layer: str) -> None:
         self._cache.relayer(asset, new_layer)

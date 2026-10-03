@@ -198,12 +198,15 @@ class Engine:
             work_time = self.time() - current_time
             sleep_time = delta - work_time
             
+            work_time = self.time() - current_time
+            sleep_time = delta - work_time
+            
             if sleep_time > 0:
                 if sleep_time > spin:
                     time.sleep(sleep_time - spin)
                 
                 while (self.time() - current_time) < delta:
-                    pass
+                    time.sleep(0)
 
             if self._telemetry(
                 telemetry_frames,

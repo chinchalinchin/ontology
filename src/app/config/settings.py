@@ -34,7 +34,8 @@ TELEMETRY_TICKS = 600
 SPIN_RATE = 0.002
 ### BASE_FLOW_SPEED: Base Fluid vector field speed magnitude.
 BASE_FLOW_SPEED = 20
-
+### FLUID_INVALIDATION_DEBOUNC_TICKS:
+FLUID_INVALIDATION_DEBOUNCE_TICKS = 2
 # ---------------------------------------------------
 ## ----------------------------------- STATE SETTINGS
 ### ON/OFF: Binary Object Keys

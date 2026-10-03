@@ -6,7 +6,9 @@ Python data models for typing Effect state attributes.
 # Standard Libraries
 from typing import ( 
     List,
-    Optional
+    Optional,
+    Tuple,
+    Dict
 )
 from dataclasses import dataclass, field
 
@@ -93,3 +95,4 @@ class FluidState(EffectState):
     dirty: bool = True
     flow: int = 1
     source: Directions = Directions.DOWN.value
+    _keys: Dict[int, List[Tuple[str, int, int]]] = field(default_factory=dict)

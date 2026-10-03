@@ -738,15 +738,16 @@ Fluids declare an explicit `height: 0` and `depth: -1`. This ensures the [render
 
 * `layer: Optional[str]`
 * `position: Position`
-* `source: Directions = Directions.DOWN.value`
-* `flow: int = 1`
-* `length: int = 0`
-* `pool: Optional[Pool] = None`
+* `source: Directions`
+* `flow: int`
+* `length: int`
+* `pool: Optional[Pool]`
 * `branches: List[Branch]`
 * `hitboxes: List[Hitbox]`
 * `dirty: bool = True`
 * `height: Optional[int] = 0`
 * `depth: int = -1`
+* `_keys: Dict[int, List[Tuple[str, int, int]]] = field(default_factory=dict)` (*Cache for pre-computing fluid keys*)
 
 ## Geography
 
@@ -799,12 +800,12 @@ Shorelines are procedural, inanimate Geography sensors instantiated along unoccl
 
 * `layer: str`
 * `position: Position`
-* `orientation: str` (`up`, `left`, `down`, `right`)
+* `orientation: str`
 * `length: int`
 * `thickness: int`
 * `bidirectional: bool = True`
 * `hitboxes: List[Hitbox]`
-
+* `_keys: Optional[List[Tuple[str, int, int]]] = None` (*Cache for pre-computing frame keys*)
 
 ## Resources
 

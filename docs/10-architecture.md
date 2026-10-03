@@ -85,7 +85,7 @@ The `AnimationMap` plays a crucial role in enforcing logical constraints. For ex
 
 ### Spatial Grid Caching
 
-To optimize environmental lookups without traversing linear asset arrays, the Board utilizes two discrete \(O(1)\) spatial hash grids managed by `BoardCaches`:
+To optimize environmental lookups without traversing linear asset arrays, the Board utilizes two discrete ($O(1)$) spatial hash grids managed by `BoardCaches`:
 
 1. **Tile Spatial Grid (`tilemap`)**:
 
@@ -100,7 +100,7 @@ $$
 Indexes active fluid streams, annular pools, and branching corridors into spatial buckets of size `TILE_HASH_SIZE = 32`. Each bucket stores references to overlapping fluid entities:
 
 $$
-\text{watermap}[\text{layer}][(c_x, c_y)] \to \text{List}[\text{Asset}]
+\text{fluidmap}[\text{layer}][(c_x, c_y)] \to \text{List}[\text{Asset}]
 $$
 
 When asserting fluid immersion (`board.fluid(layer, position)`), the engine queries the bucket corresponding to the coordinate in $O(1)$ time, then delegates to narrow-phase AABB segment validation via `app.game.board.predicates.in_fluid()`.

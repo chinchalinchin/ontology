@@ -93,11 +93,15 @@ class CardinalFrame(Frame):
     def keys(self, id: str, state: ShorelineState) -> List[Tuple[str, int, int]]:
         """
         Emits repeated full-tile keys along state.length and a terminal fractional
-        slice remainder.
+        slice remainder. Memoizes result on state._keys.
         """
+        if state._keys is not None:
+            return state._keys
+
         length = state.length
         if length <= 0:
-            return []
+            state._keys = []
+            return state._keys
 
         direction = state.orientation
         full_key = settings.SEPARATOR.join([
@@ -144,4 +148,5 @@ class CardinalFrame(Frame):
                 ])
                 frame_keys.append((slice_key, 0, full_tiles * l))
 
-        return frame_keys
+        state._keys = frame_keys
+        return state._keys

@@ -84,14 +84,7 @@ python src/cli.py  \
 
 ### Analysis
 
-#### Strip Corrupted Chunks
-
-```bash
-sudo snap install pngcrush --edge
-find src/assets/ -name "*.png" -exec pngcrush -ow -rem allb -reduce {} \;
-```
-
-#### Call Stacks
+#### Profile Tracing
 
 ```bash
 python -m cProfile -o engine_run.pstats src/cli.py start world-01
@@ -99,63 +92,19 @@ gprof2dot -f pstats engine_run.pstats --node-thres=1.0 --edge-thres=0.5 | dot -T
 ```
 
 #### Dependency Trees
+
 ```bash
 sudo apt install graphviz
 
-# 1. Core Components + Game Entity Generators
-PYTHONPATH=src pydeps src/app \
-  --only app.assets.base \
-         app.assets.frames.core \
-         app.assets.animations.core \
-         app.game.engine \
-         app.game.screen \
-         app.game.board \
-         app.game.logic.mechanics.base \
-         app.game.logic.mechanics.core.animation \
-         app.services.generators.game \
-  -x 'app.game.menus*' 'app.services.orchestration*' 'app.services.generators.menus*' 'app.config*' 'app.models*' \
-  --max-bacon=0 \
-  --cluster \
-  --rmprefix app. \
-  --rankdir LR \
-  --noshow \
-  -T svg \
-  -o docs/static/svg/core-generators.svg
-
-# 2. Mechanics Pipeline & Spatial Subsystems
-PYTHONPATH=src pydeps src/app \
-  --only app.game.logic.mechanics \
-         app.game.board \
-         app.assets.base \
-  -x 'app.game.menus*' 'app.services*' 'app.config*' 'app.models*' \
-  --max-bacon=0 \
-  --cluster \
-  --rmprefix app. \
-  --rankdir LR \
-  --noshow \
-  -T svg \
-  -o docs/static/svg/mechanics-pipeline.svg
-
-# 3. Architectural Layers
-PYTHONPATH=src pydeps src/app \
-  --only app.models \
-         app.config \
-         app.assets.base \
-  -x 'app.game*' 'app.services*' \
-  --max-bacon=0 \
-  --cluster \
-  --rmprefix app. \
-  --rankdir TB \
-  --noshow \
-  -T svg \
-  -o docs/static/svg/models-boundarie.svg
+chmod +x ./scripts/dependencies/main.sh
+uv run ./scripts/dependencies/main.sh
 ```
 
 ## Information
 
 ### Cython
 
-The Cython extensions are located in `src/libs/`. Once compiled, you can import each binary natively into your Python scripts:
+The Cython extensions are located in `src/libs/`. Once compiled, you can import each binary natively into the Python scripts:
 
 ```python
 import libs.core.math
@@ -164,7 +113,7 @@ from libs.graphics.registry import Registry
 
 **VSCode**
 
-To ensure the Pylance linter correctly resolves the compiled Cython libraries from the `src/` directory, add the following to your workspace settings:
+To ensure the Pylance linter correctly resolves the compiled Cython libraries from the `src/` directory, add the following to the workspace settings:
 
 ```json
 {
@@ -189,6 +138,13 @@ python ./scripts/concatenate/main.py \
   -v int \
   -f /path/ \
   -o /path/result.png
+```
+
+#### Strip Corrupted Chunks
+
+```bash
+sudo snap install pngcrush --edge
+find src/assets/ -name "*.png" -exec pngcrush -ow -rem allb -reduce {} \;
 ```
 
 ## Index

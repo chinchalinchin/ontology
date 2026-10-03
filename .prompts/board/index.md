@@ -65,11 +65,12 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 09.04: Optimization](./phases/refactor/refactor-09-04.md)
       - [x]: [Phase 09.05: Bridges & Bifurcation](./phases/refactor/refactor-09-05.md)
       - [x]: [Phase 09.06: Cythonization](./phases/refactor/refactor-09-06.md)
+      - [x]: [Phase 09.07: Frame Caching](./phases/refactor/refactor-09-07.md)
   - Patch:
     - [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering Instantiated Assets](./phases/patch/bug-b001.md)
     - [ ]: [Bug B002: Board Cache Wipe](./phases/patch/bug-b002.md)
-    - [ ]: [Bug B003: Painter's Algorithm String Exception](./phases/patch/bug-b003.md)
+    - [x]: [Bug B003: Painter's Algorithm String Exception](./phases/patch/bug-b003.md)
     - [x]: [Bug B004: Friction Regression](./phases/patch/bug-b004.md)
     - [x]: [Bug B005: Speak Regression](./phases/patch/bug-b005.md)
     - [x]: [Bug B006: Raycast Boundary Grazing](./phases/patch/bug-b006.md)

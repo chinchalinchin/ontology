@@ -48,7 +48,7 @@ def test_cartographer_generate_and_coalesce_shorelines(
     mock_actuator
 ):
     """
-    Verify Cartographer sweeps water contours, samples substrate tiles,
+    Verify Cartographer sweeps fluid contours, samples substrate tiles,
     and returns coalesced Shoreline assets without mutating board state.
     """
     fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
@@ -97,7 +97,7 @@ def test_cartographer_purge_clears_layer_shorelines(
 def test_cartographer_coincident_pools_do_not_deadlock(
     mock_board, 
     mock_shoreline_index, 
-    mock_actuator,
+    mock_actuator, 
     mock_fluid_alt2
 ):
     """
@@ -135,14 +135,14 @@ def test_cartographer_coincident_pools_do_not_deadlock(
 
 @pytest.mark.fluids
 @pytest.mark.services
-def test_cartographer_water_meeting_water_suppresses_shorelines(
+def test_cartographer_fluid_meeting_fluid_suppresses_shorelines(
     mock_board, 
     mock_shoreline_index, 
     mock_actuator, 
     mock_fluid_alt2
 ):
     """
-    Verify that interior water-to-water thresholds between adjacent streams
+    Verify that interior fluid-to-fluid thresholds between adjacent streams
     do not generate dividing shorelines.
     """
     fluid1 = mock_board.instances(AssetInstances.FLUIDS.value)[0]
@@ -192,9 +192,9 @@ def test_cartographer_water_meeting_water_suppresses_shorelines(
 
 @pytest.mark.fluids
 @pytest.mark.services
-def test_cartographer_empty_water_returns_empty(mock_board, mock_shoreline_index):
+def test_cartographer_empty_fluid_returns_empty(mock_board, mock_shoreline_index):
     """
-    Verify layers with no active water bodies return an empty list without error.
+    Verify layers with no active fluid bodies return an empty list without error.
     """
     shores = Cartographer.generate("unpopulated-layer", mock_board, mock_shoreline_index)
     assert shores == []

@@ -48,5 +48,6 @@ pytest_plugins = [
 
 @pytest.fixture(autouse=True)
 def patch_app_settings(monkeypatch):
+    monkeypatch.setattr("app.config.settings.FLUID_INVALIDATION_DEBOUNCE_TICKS", 0)
     monkeypatch.setattr("app.config.settings.BASE_FLOW_SPEED", 20)
     monkeypatch.setattr("app.config.settings.TILE_HASH_SIZE", 32)

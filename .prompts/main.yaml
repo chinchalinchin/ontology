@@ -50,15 +50,15 @@ tools:
       commands: false
     tests:  
       pipeline: true
-      fixtures: true
+      fixtures: false
       session: false
-      workflow: true
+      workflow: false
 # ----------------------------------------------------
   parameters:
     manager:
       board:
-        phase: '10'
-        action: achieve
+        phase: '09-07'
+        action: refactor
       docs:
         exclude:
           - index.md
@@ -71,7 +71,7 @@ tools:
           - 09-emergence.md
       specs: []
     source:
-      workflow: main
+      workflow: fluids
     shell:
       directory: |
         tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
@@ -79,24 +79,27 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: main
+        marker: fluids
       fixtures:
         - assets
         - components
-        # - properties/crafts
-        # - properties/effects
-        # - properties/objects
-        # - state/crafts
-        # - state/effects
-        # - state/objects
-        # - services
-        # - structures
+        - properties/crafts
+        - properties/effects
+        - properties/objects
+        - properties/tiles
+        - state/crafts
+        - state/effects
+        - state/objects
+        - state/world
+        - services
+        - structures
         # - menus
-      workflow: main
+      workflow: fluids
       session:
         description: null
         conditions:
           - src/assets/effects/fluids/main.yaml
+          - src/assets/geography/main.yaml
           - src/assets/crafts/bridges.yaml
           - src/data/state/world-01/effects/fluids.yaml
           - src/data/state/world-01/crafts/bridges.yaml

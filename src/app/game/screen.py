@@ -115,6 +115,20 @@ class Screen:
         return back_tiles, fore_tiles
 
 
+    @staticmethod
+    def _sort(asset: Asset) -> tuple[int, int]:
+        """
+        Module-level Painter's Algorithm sort key function.
+        Primary Key: Explicit Height (coerced to integer) OR geometric height (Y + Length).
+        Secondary Key: Depth tie-breaker.
+        Resolves Bug B003 by coercing state.height to int.
+        """
+        height = int(asset.state.height) if asset.state.height is not None else (
+            (asset.state.position.y + (asset.dimensions.l if asset.dimensions else 0))
+        )
+        return (height, asset.state.depth)
+
+
     def _widgets(self, menus: List[Menu]) -> None:
         """Helper to collect and superimpose widget primitives for a set of menus."""
         widgets = []
@@ -230,15 +244,7 @@ class Screen:
         active_channels = []
 
         # Height-sort the assets directly prior to querying asset.frame.keys()
-        #   Primary Sort: Explicit Height OR (Y + Length)
-        #   Secondary Sort: Depth-index tie-breaker for overlapping entities
-        assets.sort(key=lambda a: (
-            a.state.height if a.state.height is not None else (
-                (a.state.position.y + (a.dimensions.l if a.dimensions else 0))
-            ),
-            a.state.depth
-        ))
-
+        assets.sort(key=self._sort)
 
         for asset in assets:
             if asset.category == AssetCategories.TILES.value: continue
@@ -444,12 +450,8 @@ class Screen:
         logger.info(f"Extracting full board VRAM view buffer to file system -> {out_path}")
         active_assets = []
         
-        assets.sort(key=lambda a: (
-            a.state.height if a.state.height is not None else (
-                (a.state.position.y + (a.dimensions.l if a.dimensions else 0))
-            ),
-            a.state.depth
-        ))
+        # Height-sort the assets directly prior to querying asset.frame.keys()
+        assets.sort(key=self._sort)
 
         for asset in assets:
             if asset.category == AssetCategories.TILES.value: continue

@@ -7,7 +7,8 @@ Python data models for typing Geography state attributes.
 from typing import ( 
     List,
     Optional,
-    Union
+    Union,
+    Tuple
 )
 from dataclasses import dataclass, field
 
@@ -37,3 +38,4 @@ class ShorelineState(AssetState):
     thickness: int = 8
     bidirectional: bool = True
     hitboxes: List[Hitbox] = field(default_factory=list)  # type: ignore
+    _keys: Optional[List[Tuple[str, int, int]]] = None

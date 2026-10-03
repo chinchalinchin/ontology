@@ -1,8 +1,13 @@
 """
 # Ontology: tests.unit.test_app_game_screen.py
 """
+# Standard Libraries
 from unittest.mock import patch, MagicMock
 
+# External Libraries
+import pytest
+
+# Application Libraries
 from app.game.screen import Screen
 from app.assets.frames import (
     NoFrame, 
@@ -18,15 +23,17 @@ from app.models.state import (
     Inventory, 
     Equipment
 )
-from libs.core.models import (
-    Position, 
-    Dimensions
-)
 from app.config.enums import (
     AssetCategories, 
     Actions, 
     Directions,
     ChannelTypes
+)
+
+# Cython Libraries
+from libs.core.models import (
+    Position, 
+    Dimensions
 )
 
 @patch('app.game.screen.render.canvas')
@@ -303,3 +310,40 @@ def test_screen_draw_submerge_channel_splitting(
     assert lower[6] == 132   # dy + split_y = 100 + 32 = 132
     assert lower[8] == 32    # dl = rem_l = 32
     assert lower[9:] == (40, 110, 180, 170)
+
+
+
+@pytest.mark.main
+def test_screen_sort_integer_height_coercion(mock_crate, mock_strut):
+    """
+    Verify _sort coerces string heights to integer, preventing TypeError during
+    Painter's Algorithm Timsort passes (Bug B003).
+    """
+    mock_crate.state.height = "150"
+    mock_crate.state.depth = 1
+
+    mock_strut.state.height = 100
+    mock_strut.state.depth = 0
+
+    assert Screen._sort(mock_crate) == (150, 1)
+    assert Screen._sort(mock_strut) == (100, 0)
+
+    # Verify heterogeneous list sorts without TypeError
+    assets = [mock_crate, mock_strut]
+    assets.sort(key=Screen._sort)
+
+    assert assets[0] is mock_strut
+    assert assets[1] is mock_crate
+
+
+@pytest.mark.main
+def test_screen_sort_geometric_height_fallback(mock_crate):
+    """
+    Verify _sort falls back to Y + Length when state.height is None.
+    """
+    mock_crate.state.height = None
+    mock_crate.state.position.y = 50
+    mock_crate.state.depth = 2
+
+    # Dimensions are 32x32 -> height = 50 + 32 = 82
+    assert Screen._sort(mock_crate) == (82, 2)

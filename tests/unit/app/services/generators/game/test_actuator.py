@@ -323,3 +323,22 @@ def test_actuator_pump_up_to_obstacle_with_pool(mock_board, mock_actuator):
     assert length == 8
     assert hitboxes[0].dimensions.l == 8
     assert hitboxes[0].position.y == -8
+
+
+@pytest.mark.fluids
+@pytest.mark.services
+def test_actuator_propagate_clears_cached_frame_keys(mock_board, mock_actuator):
+    """
+    Verify Actuator.propagate clears fluid state frame key cache slots (Fix B014).
+    """
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid.state.position = Position(x=70, y=0)
+    fluid.state.source = Directions.DOWN.value
+
+    # Prime cache slot with synthetic pre-computed keys
+    fluid.state._keys[0] = [("stale-key", 0, 0)]
+
+    mock_actuator.propagate(fluid, mock_board)
+
+    # Cache dictionary must be wiped clean upon physical geometry update
+    assert len(fluid.state._keys) == 0

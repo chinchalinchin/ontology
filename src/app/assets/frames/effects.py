@@ -135,9 +135,14 @@ class FluidFrame(Frame):
         """
         Dynamically computes coordinate offsets and emits frame keys for the active
         stream corridor and surrounding annular pool without mutating state.
+        Memoizes computed frame keys indexed by animation frame index.
         """
+        frame_idx = state.animation.frame
+        if frame_idx in state._keys:
+            return state._keys[frame_idx]
+
         frame_keys: List[Tuple[str, int, int]] = []
-        frame_str = str(state.animation.frame)
+        frame_str = str(frame_idx)
         full_key = settings.SEPARATOR.join([id, frame_str])
 
         w = self.tile_w
@@ -197,8 +202,8 @@ class FluidFrame(Frame):
             if rem > 0:
                 slice_key = settings.SEPARATOR.join([
                     id, 
-                    frame_str,
-                    Directions.LEFT.value,
+                    frame_str, 
+                    Directions.LEFT.value, 
                     str(rem)
                 ])
                 frame_keys.append((slice_key, -length, 0))
@@ -292,4 +297,5 @@ class FluidFrame(Frame):
                         ])
                         frame_keys.append((slice_key, b_off_x - b_len, b_off_y))
 
+        state._keys[frame_idx] = frame_keys
         return frame_keys

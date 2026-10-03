@@ -386,6 +386,7 @@ class Actuator:
         fluid.state.branches = branches
         fluid.state.hitboxes = hitboxes
         fluid.state.dirty = False
+        fluid.state._keys.clear()
 
         return stream_length, pool_bounds, hitboxes
 
