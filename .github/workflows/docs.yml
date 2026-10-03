@@ -27,7 +27,6 @@ jobs:
 
       - name: setup
         run: |
-          echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
           uv venv --python 3.14
           uv pip install --group docs --group analysis
       
@@ -41,6 +40,7 @@ jobs:
 
       - name: dependency-trees
         run: | 
+          export PATH="$GITHUB_WORKSPACE/.venv/bin:$PATH"
           chmod +x scripts/dependencies/main.sh
           ./scripts/dependencies/main.sh
 
