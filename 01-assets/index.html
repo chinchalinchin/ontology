@@ -2838,15 +2838,16 @@
 <ul>
 <li><code>layer: Optional[str]</code></li>
 <li><code>position: Position</code></li>
-<li><code>source: Directions = Directions.DOWN.value</code></li>
-<li><code>flow: int = 1</code></li>
-<li><code>length: int = 0</code></li>
-<li><code>pool: Optional[Pool] = None</code></li>
+<li><code>source: Directions</code></li>
+<li><code>flow: int</code></li>
+<li><code>length: int</code></li>
+<li><code>pool: Optional[Pool]</code></li>
 <li><code>branches: List[Branch]</code></li>
 <li><code>hitboxes: List[Hitbox]</code></li>
 <li><code>dirty: bool = True</code></li>
 <li><code>height: Optional[int] = 0</code></li>
 <li><code>depth: int = -1</code></li>
+<li><code>_keys: Dict[int, List[Tuple[str, int, int]]] = field(default_factory=dict)</code> (<em>Cache for pre-computing fluid keys</em>)</li>
 </ul>
 <h2 id="geography">Geography</h2>
 <ul>
@@ -2896,11 +2897,12 @@ $</p>
 <ul>
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
-<li><code>orientation: str</code> (<code>up</code>, <code>left</code>, <code>down</code>, <code>right</code>)</li>
+<li><code>orientation: str</code></li>
 <li><code>length: int</code></li>
 <li><code>thickness: int</code></li>
 <li><code>bidirectional: bool = True</code></li>
 <li><code>hitboxes: List[Hitbox]</code></li>
+<li><code>_keys: Optional[List[Tuple[str, int, int]]] = None</code> (<em>Cache for pre-computing frame keys</em>)</li>
 </ul>
 <h2 id="resources">Resources</h2>
 <p>TODO</p>

@@ -1444,7 +1444,7 @@
 <p>The <code>AnimationMap</code> plays a crucial role in enforcing logical constraints. For example, <code>TransitionMechanics</code> and <code>PlayerMechanics</code> utilize <code>AnimationMap.action(state, equipment)</code> to resolve whether an intended action is possible. This guarantees that an <code>attack</code> intention will not translate into a <code>thrust</code> animation action if the Sprite currently lacks the required tool or weapon equipped in its inventory.</p>
 <h2 id="board">Board</h2>
 <h3 id="spatial-grid-caching">Spatial Grid Caching</h3>
-<p>To optimize environmental lookups without traversing linear asset arrays, the Board utilizes two discrete <span class="arithmatex">\(O(1)\)</span> spatial hash grids managed by <code>BoardCaches</code>:</p>
+<p>To optimize environmental lookups without traversing linear asset arrays, the Board utilizes two discrete (<span class="arithmatex">\(O(1)\)</span>) spatial hash grids managed by <code>BoardCaches</code>:</p>
 <ol>
 <li><strong>Tile Spatial Grid (<code>tilemap</code>)</strong>:</li>
 </ol>
@@ -1457,7 +1457,7 @@
 </ol>
 <p>Indexes active fluid streams, annular pools, and branching corridors into spatial buckets of size <code>TILE_HASH_SIZE = 32</code>. Each bucket stores references to overlapping fluid entities:</p>
 <div class="arithmatex">\[
-\text{watermap}[\text{layer}][(c_x, c_y)] \to \text{List}[\text{Asset}]
+\text{fluidmap}[\text{layer}][(c_x, c_y)] \to \text{List}[\text{Asset}]
 \]</div>
 <p>When asserting fluid immersion (<code>board.fluid(layer, position)</code>), the engine queries the bucket corresponding to the coordinate in <span class="arithmatex">\(O(1)\)</span> time, then delegates to narrow-phase AABB segment validation via <code>app.game.board.predicates.in_fluid()</code>.</p>
 <h2 id="rendering">Rendering</h2>
