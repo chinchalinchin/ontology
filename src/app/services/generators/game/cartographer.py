@@ -17,6 +17,7 @@ from typing import (
 
 # Application Libraries
 from app.assets.base import Asset
+from app.game.board import predicates
 from app.config.enums import (
     AssetCategories,
     AssetInstances,
@@ -47,7 +48,7 @@ class Cartographer:
         """
         Safely disposes of all procedural shoreline assets on the specified layer.
         """
-        shores = board.get_shorelines(layer)
+        shores = board.shorelines(layer)
         if shores:
             board.remove(list(shores))
 
@@ -129,7 +130,7 @@ class Cartographer:
             if pool and pool.w > 0 and pool.l > 0:
                 if geometry.inside(water_pos.x, water_pos.y, [(pool.x, pool.y, pool.x + pool.w, pool.y + pool.l)]):
                     return fluid.id
-            if fluid.state.length > 0 and board._in_stream(water_pos, fluid):
+            if fluid.state.length > 0 and predicates.in_stream(water_pos, fluid):
                 return fluid.id
         return None
 

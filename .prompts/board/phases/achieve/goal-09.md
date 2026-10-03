@@ -11,7 +11,6 @@ for bridge in layer_bridges:
     if _intersects(asset, bridge):
         on_surface = True
         # ...
-
 ```
 
 If an entity is already floating in a fluid stream and drifts beneath a bridge deck whose span is perpendicular to the flow, `fields.py` intercepts the entity, clears `submerged = False`, and halts its drift. Because the engine models 2D planar space with pseudo-depth (`height`, `depth`), an asset cannot distinguish between being *on top of* the bridge deck versus *underneath* it. Resolving this requires formalizing an `elevation` or entry-trajectory state attribute.
@@ -51,7 +50,6 @@ When an entity passes beneath a bridge deck, dynamically clamp its effective dep
 
 * [ ] Subtask: Define transverse alignment predicates in `src/app/game/logic/modules/motion/fields.py` comparing `bridge.state.orientation` with stream `source` direction.
 * [ ] Subtask: If `asset.state.mutators.triggers.submerged` is `True` upon entering bridge bounds and flow is transverse to the span, bypass surface interception and maintain immersion velocity.
-* [ ] Subtask: Write unit test validating a floating crate passing under a perpendicular bridge deck without clearing its `submerged` state or losing velocity.
 
 **2. Task: Visual Sorting for Bridge Underpass Entities**
 

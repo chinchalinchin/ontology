@@ -12,8 +12,8 @@ This is the Task Board for the project. Below is a backlog of completed and pend
 !!! "Phase Actions"
   - Implement: Complex, multi-task development of new functionality.
   - Refactor: Complex, multi-task iteration of existing functionality.
-  - Patch: Tasks for fixing logical bugs and errors in the codebase.
-  - Achieve: Short, encapsulated tasks for new functionality.
+  - Patch: Tasks for fixing logical bugs or errors in the codebase.
+  - Achieve: Short, encapsulated tasks for either new or existing functionality.
 
 **Table of Contents**
 
@@ -78,6 +78,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Bug B009: Irregular Composition Behavior](./phases/patch/bug-b009.md)
     - [x]: [Bug B010: Overlapping Fluid Shorelines](./phases/patch/bug-b010.md)
     - [x]: [Bug B011: Stream and Annular Pool Texture Overdraw](./phases/patch/bug-b011.md)
+    - [ ]: [Bug B012: Composition Duplication](./phases/patch/bug-b012.md)
   - Achieve:
     - [x]: [Goal 01: Boundaries](./phases/achieve/goal-01.md)
     - [x]: [Goal 02: ScrollController, Library & Plots](./phases/achieve/goal-02)
@@ -88,6 +89,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Goal 07: Door Interact Intentions](./phases/achieve/goal-07.md)
     - [x]: [Goal 08: CLI Handling](./phases/achieve/goal-08.md)
     - [ ]: [Goal 09: Transverse Fluid Submersion](./phases/achieve/goal-09.md)
+    - [x]: [Goal 10: Board Modularization](./phase/achieve/goal-10.md)
 - Backlog:
   - [ ]: [TODO 1: Telemetry Menu](./backlog/todo-t000.md)
   - [ ]: [TODO 2: Bouyancy](./backlog/todo-t001.md)

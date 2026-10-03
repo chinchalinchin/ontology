@@ -89,7 +89,7 @@ Update `Board._cached_watermap` to store flattened primitive rectangles `(min_x,
 * [x] Subtask: Implement `inside(int px, int py, list aabbs) -> bint` in `libs/core/math/geometry.pyx`.
 * [x] Subtask: Implement `occluded(int qx, int qy, int qw, int ql, list obstacles) -> bint` in `libs/core/math/geometry.pyx`.
 * [x] Subtask: Add Cython declarations for both functions to `libs/core/math/geometry.pxd`.
-* [ ] Subtask: Write unit tests verifying point containment and occlusion edge cases.
+* [x] Subtask: Write unit tests verifying point containment and occlusion edge cases.
 
 **2. Task: Bipartite Environmental Field Query**
 
@@ -98,7 +98,7 @@ Update `Board._cached_watermap` to store flattened primitive rectangles `(min_x,
 * [x] Subtask: Add `environmental_intersections(list asset_primitives, list field_primitives, Space grid) -> list` to `libs/core/math/physics.pyx`.
 * [x] Subtask: Export declaration in `libs/core/math/physics.pxd`.
 * [x] Subtask: Allocate and persist a `Space` instance on `MotionMechanics` to avoid per-frame grid allocation.
-* [ ] Subtask: Write unit tests validating bipartite retrieval against bridges, rafts, shorelines, and fluids.
+* [x] Subtask: Write unit tests validating bipartite retrieval against bridges, rafts, shorelines, and fluids.
 
 **3. Task: Pipeline Refactoring**
 

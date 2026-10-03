@@ -121,7 +121,7 @@ The Provider contains a Library for injecting Widget states with plot-dependent 
 
 - Package: `app.game.board`
 
-The Board is the Game's "*database*". It holds all ingame Assets and Configurations during the course of the game loop and exposes them to the engine through queryable interfaces.
+The Board acts as the Game's in-memory "database". It holds all in-game Assets and Configurations during the game loop, providing queryable interfaces to the Engine and Mechanics.
 
 The state files for each Board are maintained in `/src/data/state/<board-key>/**`.
 
@@ -138,7 +138,7 @@ The Board exposes interfaces for querying the game state:
     3. `board.obstacles(layer)`: Returns a list of Assets that qualify as Obstacles.
 * Environment Queries
     1. `board.tile(layer, position, instance)`: Retrieves background or foreground [Tiles](./01-assets.md#tiles) via $O(1)$ spatial hash lookup.
-    2. `board.get_shorelines(layer=None)`: Retrieves active procedural shoreline assets for a specific layer or across all layers.
+    2. `board.shorelines(layer=None)`: Retrieves active procedural shoreline assets for a specific layer or across all layers.
 
 **Interface: Predicates**
 

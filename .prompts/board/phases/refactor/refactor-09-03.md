@@ -775,7 +775,7 @@ class Board:
         self.perimeters[layer] = []
         self.shorelines[layer] = []
 
-    def get_shorelines(self, layer: Optional[str] = None) -> List[Asset]:
+    def shorelines(self, layer: Optional[str] = None) -> List[Asset]:
         if layer is not None:
             return self.shorelines.get(layer, [])
         all_shores = []
@@ -794,7 +794,7 @@ Refactor `Cartographer` to extract all layer water AABBs into `(min_x, min_y, ma
 class Cartographer:
     @classmethod
     def purge(cls, layer: str, board: Board) -> None:
-        shores = board.get_shorelines(layer)
+        shores = board.shorelines(layer)
         if shores:
             board.remove(list(shores))
 
@@ -839,7 +839,7 @@ for layer in dirty_layers:
 * [x] Subtask: Add `shorelines: Dict[str, List[Asset]]` field to `Board` in `src/app/game/board.py`.
 * [x] Subtask: Initialize `self.shorelines[layer] = []` in `Board._init_cache()`.
 * [x] Subtask: Update `Board.add()` and `Board.remove()` to maintain `self.shorelines[layer]` alongside `_cached_instances`.
-* [x] Subtask: Add `Board.get_shorelines(layer=None)` query interface.
+* [x] Subtask: Add `Board.shorelines(layer=None)` query interface.
 
 **2. Task: De-parent Shoreline and Fluid State Models**
 
@@ -854,7 +854,7 @@ for layer in dirty_layers:
 *Objective*: Refactor `Cartographer` to extract layer water AABBs and derive unified shoreline boundaries using `geometry.contours()`.
 
 * [x] Subtask: Implement `Cartographer._collect_water_rectangles(layer, board)` converting active streams and pools into `(min_x, min_y, max_x, max_y)` primitives.
-* [x] Subtask: Implement `Cartographer.purge(layer, board)` using `board.get_shorelines(layer)`.
+* [x] Subtask: Implement `Cartographer.purge(layer, board)` using `board.shorelines(layer)`.
 * [x] Subtask: Implement boundary orientation detection by probing outward normal coordinates against `board.water(layer, pos)`.
 * [x] Subtask: Port 32px step sampling, substrate lookup (`board.tile`), occlusion checks (`_detect_flank_occlusions`), and contiguous segment coalescing to evaluate contour boundaries.
 * [x] Subtask: Refactor `Cartographer.generate(layer, board, index)` to return all synthesized `Shoreline` entities for the layer.

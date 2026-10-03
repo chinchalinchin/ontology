@@ -145,7 +145,7 @@ def test_fluid_mechanics_two_pass_layer_shorelines(
 
     mechanic.update(mock_board, 0.016, mock_bus, None)
 
-    shores = mock_board.get_shorelines("0")
+    shores = mock_board.shorelines("0")
     assert len(shores) > 0
     for shore in shores:
         assert shore.instance == AssetInstances.SHORELINES.value

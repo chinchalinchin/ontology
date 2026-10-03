@@ -31,7 +31,7 @@ properties:
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/coverage.md.j2
+  template: iterate/grooming.md.j2
 # ----------------------------------------------------
   parameters:
     diagram: mechanics-fluid.mmd
@@ -40,25 +40,25 @@ tools:
 # ----------------------------------------------------
   views:
     manager:
-      board: false
+      board: true
       specs: false
-      docs: false
+      docs: true
     source:
-      workflow: false
+      workflow: true
     shell:
-      directory: false
+      directory: true
       commands: false
     tests:  
-      pipeline: true
-      fixtures: true
+      pipeline: false
+      fixtures: false
       session: false
-      workflow: true
+      workflow: false
 # ----------------------------------------------------
   parameters:
     manager:
       board:
-        phase: '09-05'
-        action: refactor
+        phase: '10'
+        action: achieve
       docs:
         exclude:
           - index.md
@@ -71,7 +71,7 @@ tools:
           - 09-emergence.md
       specs: []
     source:
-      workflow: fluids
+      workflow: main
     shell:
       directory: |
         tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"

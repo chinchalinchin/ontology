@@ -66,7 +66,7 @@ def test_cartographer_generate_and_coalesce_shorelines(
         assert len(shore.hitboxes) == 1
 
     # Verify board state is not mutated by generate()
-    assert len(mock_board.get_shorelines("0")) == 0
+    assert len(mock_board.shorelines("0")) == 0
 
 
 @pytest.mark.fluids
@@ -86,10 +86,10 @@ def test_cartographer_purge_clears_layer_shorelines(
 
     shores = Cartographer.generate("0", mock_board, mock_shoreline_index)
     mock_board.add(shores)
-    assert len(mock_board.get_shorelines("0")) > 0
+    assert len(mock_board.shorelines("0")) > 0
 
     Cartographer.purge("0", mock_board)
-    assert len(mock_board.get_shorelines("0")) == 0
+    assert len(mock_board.shorelines("0")) == 0
 
 
 @pytest.mark.fluids
@@ -207,14 +207,14 @@ def test_cartographer_board_shoreline_lifecycle(mock_board, mock_shoreline):
     Verify that Board correctly indexes and tracks procedural shoreline assets
     in board.shorelines[layer] on add and remove.
     """
-    assert len(mock_board.get_shorelines("0")) == 0
+    assert len(mock_board.shorelines("0")) == 0
 
     mock_board.add([mock_shoreline])
-    assert len(mock_board.get_shorelines("0")) == 1
-    assert mock_board.get_shorelines("0")[0] is mock_shoreline
+    assert len(mock_board.shorelines("0")) == 1
+    assert mock_board.shorelines("0")[0] is mock_shoreline
 
     mock_board.remove([mock_shoreline])
-    assert len(mock_board.get_shorelines("0")) == 0
+    assert len(mock_board.shorelines("0")) == 0
 
 
 @pytest.mark.fluids

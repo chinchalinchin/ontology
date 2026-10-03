@@ -1,0 +1,93 @@
+### View: Workflow - Main
+
+#### app.assets
+
+**src/app/assets/base.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/base.py') }}
+```
+
+##### app.assets.frames
+
+**src/app/assets/frames/core.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/frames/effects.py') }}
+```
+
+#### app.game
+
+**src/app/game/engine.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/engine.py') }}
+```
+
+**src/app/game/screen.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/screen.py') }}
+```
+
+##### app.game.board
+
+**src/app/game/core.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/core.py') }}
+```
+
+**src/app/game/board/predicates.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/board/predicates.py') }}
+```
+
+**src/app/game/board/caches.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/board/caches.py') }}
+```
+
+##### app.game.logic
+
+###### app.game.logic.mechanics
+
+**src/app/game/logic/mechanics/base.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/base.py') }}
+```
+
+#### app.models
+
+**src/app/models/properties.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/properties.py') }}
+```
+
+##### app.models.state 
+
+**src/app/models/state/core.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/state/core.py')}}
+```
+
+**src/app/models/state/schemas.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/state/schemas.py')}}
+```
+
+#### app.services
+
+##### app.services.orchestration
+
+**src/app/services/orchestration/builder.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/orchestration/builder.py' ) }}
+```
