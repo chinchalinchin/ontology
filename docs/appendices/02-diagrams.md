@@ -26,7 +26,7 @@ Mechanic Dependency Tree
 
 ### Menus
 
-![Menus Dependencies](../static/svg/dependencies-menues.svg)
+![Menus Dependencies](../static/svg/dependencies-menus.svg)
 /// caption
 Menus Dependency Tree
 ///

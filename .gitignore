@@ -13,6 +13,8 @@ site/**
 **/.vscode/**
 **/logs/**
 **/new.py
+TODOS.md
+**/*.pstats
 
 !**/.gitkeep
 !**/templates/*-dump.md

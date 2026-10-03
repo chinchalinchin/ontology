@@ -28,6 +28,7 @@ docs = [
 ]
 analysis = [
     "pydeps",
+    "vulture"
 ]
 
 [tool.uv]
