@@ -33,6 +33,7 @@ from app.models.config import ConfigurationSchema
 from app.models.groups import EquipmentGroup
 
 # Cython Libraries
+import libs.core.math.geometry as geometry
 from libs.core.models import (
     Dimensions, 
     Position,
@@ -311,10 +312,10 @@ class Board:
         Evaluates whether Cartesian coordinate intersects the parent corridor or
         any active child branch corridor of the specified fluid entity.
         """
-        px = position.x
-        py = position.y
-        fx = fluid.state.position.x
-        fy = fluid.state.position.y
+        px = int(position.x)
+        py = int(position.y)
+        fx = int(fluid.state.position.x)
+        fy = int(fluid.state.position.y)
         fw = fluid.properties.dimensions.w
         fl = fluid.properties.dimensions.l
         slen = fluid.state.length
@@ -322,43 +323,40 @@ class Board:
         direction = fluid.state.source
         direction_val = direction.value if hasattr(direction, "value") else str(direction)
 
-        if direction_val == Directions.DOWN.value:
-            if fx <= px < fx + fw and fy <= py < fy + slen:
-                return True
-        elif direction_val == Directions.UP.value:
-            if fx <= px < fx + fw and fy - slen <= py < fy:
-                return True
-        elif direction_val == Directions.RIGHT.value:
-            if fx <= px < fx + slen and fy <= py < fy + fl:
-                return True
-        elif direction_val == Directions.LEFT.value:
-            if fx - slen <= px < fx and fy <= py < fy + fl:
-                return True
+        aabbs: List[Tuple[int, int, int, int]] = []
 
-        branches = getattr(fluid.state, "branches", None)
-        if branches:
-            for branch in branches:
+        if slen > 0:
+            if direction_val == Directions.DOWN.value:
+                aabbs.append((fx, fy, fx + fw, fy + slen))
+            elif direction_val == Directions.UP.value:
+                aabbs.append((fx, fy - slen, fx + fw, fy))
+            elif direction_val == Directions.RIGHT.value:
+                aabbs.append((fx, fy, fx + slen, fy + fl))
+            elif direction_val == Directions.LEFT.value:
+                aabbs.append((fx - slen, fy, fx, fy + fl))
+
+        if fluid.state.branches:
+            for branch in fluid.state.branches:
                 if branch.length <= 0:
                     continue
-                bx = branch.position.x
-                by = branch.position.y
+                bx = int(branch.position.x)
+                by = int(branch.position.y)
                 b_dir = branch.source
                 b_dir_val = b_dir.value if hasattr(b_dir, "value") else str(b_dir)
 
                 if b_dir_val == Directions.DOWN.value:
-                    if bx <= px < bx + fw and by <= py < by + branch.length:
-                        return True
+                    aabbs.append((bx, by, bx + fw, by + branch.length))
                 elif b_dir_val == Directions.UP.value:
-                    if bx <= px < bx + fw and by - branch.length <= py < by:
-                        return True
+                    aabbs.append((bx, by - branch.length, bx + fw, by))
                 elif b_dir_val == Directions.RIGHT.value:
-                    if bx <= px < bx + branch.length and by <= py < by + fl:
-                        return True
+                    aabbs.append((bx, by, bx + branch.length, by + fl))
                 elif b_dir_val == Directions.LEFT.value:
-                    if bx - branch.length <= px < bx and by <= py < by + fl:
-                        return True
+                    aabbs.append((bx - branch.length, by, bx, by + fl))
 
-        return False
+        if not aabbs:
+            return False
+
+        return geometry.inside(px, py, aabbs)
 
     # ---------------------------------------------------------
     # ------------------------------------------ PUBLIC METHODS
@@ -382,19 +380,18 @@ class Board:
         if not bucket:
             return False
 
-        px = position.x
-        py = position.y
+        px = int(position.x)
+        py = int(position.y)
 
         for fluid in bucket:
             if exclude and fluid.name == exclude:
                 continue
 
-            # Narrow-phase: pool bounds
             pool = fluid.state.pool
-            if pool and pool.x <= px < pool.x + pool.w and pool.y <= py < pool.y + pool.l:
-                return True
+            if pool and pool.w > 0 and pool.l > 0:
+                if geometry.inside(px, py, [(pool.x, pool.y, pool.x + pool.w, pool.y + pool.l)]):
+                    return True
 
-            # Narrow-phase: stream corridor bounds
             if fluid.state.length > 0 and self._in_stream(position, fluid):
                 return True
 

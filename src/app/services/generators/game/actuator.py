@@ -128,6 +128,7 @@ class Actuator:
 
         return obstacle_tuples
 
+
     def _calculate_max_distance(
         self, 
         x: int, 
@@ -153,6 +154,7 @@ class Actuator:
 
         return 10000
 
+
     def _build_stream_hitbox(
         self, 
         direction: str, 
@@ -173,6 +175,7 @@ class Actuator:
             return Hitbox(Position(-length, 0), Dimensions(length, fl))
 
         return None
+
 
     def _partition_pool(
         self,
@@ -215,6 +218,7 @@ class Actuator:
 
         return pool_bounds, pool_hitboxes
 
+
     def _calculate_branch_discharges(
         self,
         pool: Pool, 
@@ -253,6 +257,7 @@ class Actuator:
             return [(top_pos, direction, child_flow), (bottom_pos, direction, child_flow)]
 
         return []
+
 
     def propagate(self, fluid: Asset, board: Board) -> Tuple[int, Optional[Pool], List[Hitbox]]:
         """
@@ -383,6 +388,7 @@ class Actuator:
         fluid.state.dirty = False
 
         return stream_length, pool_bounds, hitboxes
+
 
     def pump(self, fluid: Asset, board: Board) -> Tuple[int, Optional[Pool], List[Hitbox]]:
         """

@@ -1,16 +1,12 @@
-"""
-# Ontology: app.game.logic.modules.motion.fields
-
-Module for evaluating environmental vector fields (fluids, currents) and applying
-superposition and surface interception onto active mutable assets.
-"""
-from __future__ import annotations
+# src/app/game/logic/modules/motion/fields.py
 
 # Standard Libraries
 import logging
 from typing import (
     List, 
     Tuple, 
+    Dict,
+    Optional,
     Any, 
     TYPE_CHECKING
 )
@@ -28,7 +24,8 @@ if TYPE_CHECKING:
     from app.game.board import Board
 
 # Cython Libraries
-import libs.core.math.geometry as geometry
+import libs.core.math.physics as physics
+from libs.core.math.space import Space
 from libs.core.models import Position
 
 logger = logging.getLogger(__name__)
@@ -49,225 +46,267 @@ SHORELINE_NORMALS = {
 
 
 def _direction_vector(source: Any) -> Tuple[float, float]:
-    """
-    Extracts normalized 2D direction components from a source property.
-    """
     direction = source.value if hasattr(source, "value") else str(source)
     return DIRECTION_VECTORS.get(direction, (0.0, 0.0))
 
 
 def _shoreline_normal(orientation: Any) -> Tuple[float, float]:
-    """
-    Extracts normalized 2D inward water normal vector from shoreline orientation.
-    """
     direction = orientation.value if hasattr(orientation, "value") else str(orientation)
     return SHORELINE_NORMALS.get(direction, (0.0, 0.0))
 
 
 def _fluid_velocity(fluid: Asset) -> Tuple[float, float]:
-    """
-    Calculates environmental current velocity from fluid emitter source and flow intensity.
-    """
     ux, uy = _direction_vector(fluid.state.source)
     speed = fluid.state.flow * settings.BASE_FLOW_SPEED
     return ux * speed, uy * speed
 
 
-def _intersects(asset1: Asset, asset2: Asset) -> bool:
+def _extract_compound_sensor_primitives(
+    sensors: List[Asset]
+) -> Tuple[List[Tuple], List[Asset]]:
     """
-    Evaluates Axis-Aligned Bounding Box (AABB) intersection between two assets.
+    Decomposes assets with compound hitboxes into discrete primitive tuples
+    while maintaining a 1:1 lookup index to parent entities.
     """
-    return geometry.intersects(
-        asset1.state.position,
-        asset1.dimensions,
-        asset1.hitboxes,
-        asset2.state.position,
-        asset2.dimensions,
-        asset2.hitboxes
-    ) is not None
+    primitives: List[Tuple] = []
+    lookup: List[Asset] = []
+    idx = 0
+    for sensor in sensors:
+        sx = sensor.state.position.x
+        sy = sensor.state.position.y
+        for hb in sensor.hitboxes:
+            primitives.append((
+                idx,
+                sx + hb.position.x,
+                sy + hb.position.y,
+                hb.dimensions.w,
+                hb.dimensions.l,
+                [hb]
+            ))
+            lookup.append(sensor)
+            idx += 1
+    return primitives, lookup
 
 
-def _update_rafts(rafts: List[Asset], board: Board) -> None:
+def _update_rafts(rafts: List[Asset], board: Board, grid: Space) -> None:
     """
     Passively accelerates dynamic Rafts along intersecting fluid current vectors.
     """
+    if not rafts:
+        return
+
+    layer_rafts: Dict[str, List[Asset]] = {}
     for raft in rafts:
-        layer = raft.state.layer
+        layer_rafts.setdefault(raft.state.layer, []).append(raft)
+
+    for layer, l_rafts in layer_rafts.items():
         fluids = board.instances(AssetInstances.FLUIDS.value, layer)
-        flow_vx = 0.0
-        flow_vy = 0.0
-        in_fluid = False
-
-        for fluid in fluids:
-            if _intersects(raft, fluid):
-                fvx, fvy = _fluid_velocity(fluid)
-                flow_vx += fvx
-                flow_vy += fvy
-                in_fluid = True
-
-        if in_fluid:
-            raft.state.velocity.vx = flow_vx
-            raft.state.velocity.vy = flow_vy
-        else:
-            raft.state.velocity.vx = 0.0
-            raft.state.velocity.vy = 0.0
-
-
-def update(assets: List[Asset], board: Board, delta: float) -> None:
-    """
-    Executes environmental field resolution pass across active mutable entities:
-    1. Resolves passive hydrodynamic currents for Rafts.
-    2. Implements Surface Interception: entities on Rafts adopt Raft reference frames
-       and suppress submersion.
-    3. Implements Virtual Edge Traversals: shoreline crossings trigger spatial drop
-       displacement, toggle submersion, emit splash particles, and enforce one-way ledges.
-    4. Implements Direct Immersion: entities in Fluids acquire current velocity vectorally
-       and enter the submerged state.
-    """
-    rafts = [a for a in assets if a.instance == AssetInstances.RAFTS.value]
-    _update_rafts(rafts, board)
-
-    for asset in assets:
-        if asset.instance in (
-            AssetInstances.RAFTS.value,
-            AssetInstances.PROJECTILES.value
-        ):
+        if not fluids:
+            for raft in l_rafts:
+                raft.state.velocity.vx = 0.0
+                raft.state.velocity.vy = 0.0
             continue
 
-        layer = asset.state.layer
+        raft_primitives = [r.primitive(i) for i, r in enumerate(l_rafts)]
+        fluid_primitives, fluid_lookup = _extract_compound_sensor_primitives(fluids)
+
+        if not fluid_primitives:
+            for raft in l_rafts:
+                raft.state.velocity.vx = 0.0
+                raft.state.velocity.vy = 0.0
+            continue
+
+        matches = physics.environment(raft_primitives, fluid_primitives, grid)
+
+        raft_flows: Dict[int, Tuple[float, float]] = {
+            i: (0.0, 0.0) for i in range(len(l_rafts))
+        }
+        intersected: set[int] = set()
+
+        for r_idx, f_prim_idx in matches:
+            fluid = fluid_lookup[f_prim_idx]
+            fvx, fvy = _fluid_velocity(fluid)
+            cvx, cvy = raft_flows[r_idx]
+            raft_flows[r_idx] = (cvx + fvx, cvy + fvy)
+            intersected.add(r_idx)
+
+        for i, raft in enumerate(l_rafts):
+            if i in intersected:
+                flow_vx, flow_vy = raft_flows[i]
+                raft.state.velocity.vx = flow_vx
+                raft.state.velocity.vy = flow_vy
+            else:
+                raft.state.velocity.vx = 0.0
+                raft.state.velocity.vy = 0.0
+
+
+def update(
+    assets: List[Asset], 
+    board: Board, 
+    delta: float, 
+    grid: Optional[Space] = None
+) -> None:
+    """
+    Executes environmental field resolution pass across active mutable entities
+    using bipartite C-grid space hashing:
+    1. Passive hydrodynamic drift for Rafts.
+    2. Surface Interception (Bridges & Rafts) suppressing submersion and shoreline edge checks.
+    3. Virtual Edge Traversals (Shorelines) with drop nudges and splash particles.
+    4. Direct Immersion (Fluids) with vector superposition and submerged activation.
+    """
+    if grid is None:
+        grid = Space()
+
+    rafts = [
+        a for a in assets 
+        if a.instance == AssetInstances.RAFTS.value
+    ]
+    _update_rafts(rafts, board, grid)
+
+    target_assets = [
+        a for a in assets 
+        if a.instance not in (
+            AssetInstances.RAFTS.value, 
+            AssetInstances.PROJECTILES.value
+        )
+    ]
+
+    if not target_assets:
+        return
+
+    # Partition targets by layer
+    layer_assets: Dict[str, List[Asset]] = {}
+    for asset in target_assets:
+        layer_assets.setdefault(asset.state.layer, []).append(asset)
+
+    for layer, l_assets in layer_assets.items():
+        asset_primitives = [a.primitive(i) for i, a in enumerate(l_assets)]
+        on_surface_indices: set[int] = set()
 
         # -------------------------------------------------------------
         # 1. SURFACE HIERARCHY INTERCEPTION (BRIDGES & RAFTS)
         # -------------------------------------------------------------
-        on_surface = False
-        surface_vx = 0.0
-        surface_vy = 0.0
-
-        # 1a. Evaluate Static Bridges (sensor mass m = -1, zero drift)
         layer_bridges = board.instances(AssetInstances.BRIDGES.value, layer)
-        for bridge in layer_bridges:
-            if _intersects(asset, bridge):
-                on_surface = True
-                surface_vx = 0.0
-                surface_vy = 0.0
-                break
+        if layer_bridges:
+            bridge_prims, _ = _extract_compound_sensor_primitives(layer_bridges)
+            if bridge_prims:
+                bridge_matches = physics.environment(asset_primitives, bridge_prims, grid)
+                for a_idx, _ in bridge_matches:
+                    on_surface_indices.add(a_idx)
+                    asset = l_assets[a_idx]
+                    asset.state.mutators.triggers.submerged = False
 
-        # 1b. Evaluate Dynamic Rafts (m > 0, drifts with current)
-        if not on_surface:
-            for raft in board.instances(AssetInstances.RAFTS.value, layer):
-                if _intersects(asset, raft):
-                    on_surface = True
-                    surface_vx = raft.state.velocity.vx
-                    surface_vy = raft.state.velocity.vy
-                    break
+        layer_rafts = board.instances(AssetInstances.RAFTS.value, layer)
+        if layer_rafts:
+            raft_prims = [r.primitive(i) for i, r in enumerate(layer_rafts)]
+            raft_matches = physics.environment(asset_primitives, raft_prims, grid)
+            for a_idx, r_idx in raft_matches:
+                if a_idx not in on_surface_indices:
+                    on_surface_indices.add(a_idx)
+                    asset = l_assets[a_idx]
+                    raft = layer_rafts[r_idx]
+                    asset.state.velocity.vx += raft.state.velocity.vx
+                    asset.state.velocity.vy += raft.state.velocity.vy
+                    asset.state.mutators.triggers.submerged = False
 
-        if on_surface:
-            asset.state.velocity.vx += surface_vx
-            asset.state.velocity.vy += surface_vy
-            asset.state.mutators.triggers.submerged = False
+        # Filter out assets on surfaces for shoreline and fluid passes
+        immersible_indices = [i for i in range(len(l_assets)) if i not in on_surface_indices]
+        if not immersible_indices:
             continue
+
+        immersible_primitives = [asset_primitives[i] for i in immersible_indices]
+        sub_to_orig = {sub_i: orig_i for sub_i, orig_i in enumerate(immersible_indices)}
 
         # -------------------------------------------------------------
         # 2. VIRTUAL EDGE CROSSING (SHORELINES)
         # -------------------------------------------------------------
+        in_shoreline_indices: set[int] = set()
         shorelines = board.instances(AssetInstances.SHORELINES.value, layer)
-        in_shoreline = False
+        if shorelines:
+            shore_prims, shore_lookup = _extract_compound_sensor_primitives(shorelines)
+            if shore_prims:
+                shore_matches = physics.environment(immersible_primitives, shore_prims, grid)
+                for sub_idx, s_prim_idx in shore_matches:
+                    orig_idx = sub_to_orig[sub_idx]
+                    in_shoreline_indices.add(orig_idx)
+                    asset = l_assets[orig_idx]
+                    shore = shore_lookup[s_prim_idx]
 
-        for shore in shorelines:
-            if _intersects(asset, shore):
-                in_shoreline = True
-                nx, ny = _shoreline_normal(shore.state.orientation)
-                vx = asset.state.velocity.vx
-                vy = asset.state.velocity.vy
-                v_dot = vx * nx + vy * ny
+                    nx, ny = _shoreline_normal(shore.state.orientation)
+                    vx = asset.state.velocity.vx
+                    vy = asset.state.velocity.vy
+                    v_dot = vx * nx + vy * ny
 
-                # Entry transition: velocity points into water
-                if v_dot > 0:
-                    if not asset.state.mutators.triggers.submerged:
-                        t = shore.state.thickness
-                        disp_x = int(nx * (t + (asset.dimensions.w // 2))) if nx != 0.0 else 0
-                        disp_y = int(ny * (t + (asset.dimensions.l // 2))) if ny != 0.0 else 0
+                    if v_dot > 0:
+                        if not asset.state.mutators.triggers.submerged:
+                            t = shore.state.thickness
+                            asset.state.position.x += int(nx * t)
+                            asset.state.position.y += int(ny * t)
+                            asset.state.mutators.triggers.submerged = True
 
-                        asset.state.position.x += disp_x
-                        asset.state.position.y += disp_y
-                        asset.state.mutators.triggers.submerged = True
+                            if board.cradle:
+                                splash_pos = Position(
+                                    int(asset.state.position.x),
+                                    int(asset.state.position.y + (asset.dimensions.l // 2))
+                                )
+                                splash = board.cradle.spawn_passive(
+                                    EffectsPalette.SPLASH.value, 
+                                    layer, 
+                                    splash_pos
+                                )
+                                board.add([splash])
 
-                        if board.cradle:
-                            splash_pos = Position(
-                                int(asset.state.position.x),
-                                int(asset.state.position.y + (asset.dimensions.l // 2))
-                            )
-                            splash = board.cradle.spawn_passive(
-                                EffectsPalette.SPLASH.value, 
-                                layer, 
-                                splash_pos
-                            )
-                            board.add([splash])
-
-                        logger.info(
-                            f"Telemetry:Fields:ShorelineCrossing "
-                            f"entity={asset.name} "
-                            f"shore={shore.name} "
-                            f"orient={shore.state.orientation} "
-                            f"normal=({nx}, {ny}) "
-                            f"pre_pos=({asset.state.position.x}, {asset.state.position.y}) "
-                            f"dim=({asset.dimensions.w}, {asset.dimensions.l}) "
-                            f"displacement=({disp_x}, {disp_y}) "
-                            f"post_pos=({asset.state.position.x + disp_x}, {asset.state.position.y + disp_y})"
-                        )
-                        
-
-                # Exit / Ledge constraint: velocity points toward bank
-                elif v_dot < 0:
-                    if not shore.state.bidirectional:
-                        if nx != 0.0:
-                            asset.state.velocity.vx = 0.0
-                        if ny != 0.0:
-                            asset.state.velocity.vy = 0.0
+                    elif v_dot < 0:
+                        if not shore.state.bidirectional:
+                            if nx != 0.0:
+                                asset.state.velocity.vx = 0.0
+                            if ny != 0.0:
+                                asset.state.velocity.vy = 0.0
 
         # -------------------------------------------------------------
         # 3. DIRECT ENVIRONMENTAL FLUID IMMERSION
         # -------------------------------------------------------------
         fluids = board.instances(AssetInstances.FLUIDS.value, layer)
-        in_fluid = False
-        flow_vx = 0.0
-        flow_vy = 0.0
+        in_fluid_indices: set[int] = set()
+        fluid_flows: Dict[int, Tuple[float, float]] = {orig_idx: (0.0, 0.0) for orig_idx in immersible_indices}
 
-        for fluid in fluids:
-            if _intersects(asset, fluid):
-                fvx, fvy = _fluid_velocity(fluid)
-                flow_vx += fvx
-                flow_vy += fvy
-                in_fluid = True
+        if fluids:
+            fluid_prims, fluid_lookup = _extract_compound_sensor_primitives(fluids)
+            if fluid_prims:
+                fluid_matches = physics.environment(immersible_primitives, fluid_prims, grid)
+                for sub_idx, f_prim_idx in fluid_matches:
+                    orig_idx = sub_to_orig[sub_idx]
+                    in_fluid_indices.add(orig_idx)
+                    fluid = fluid_lookup[f_prim_idx]
+                    fvx, fvy = _fluid_velocity(fluid)
+                    cvx, cvy = fluid_flows[orig_idx]
+                    fluid_flows[orig_idx] = (cvx + fvx, cvy + fvy)
 
-        if in_fluid:
-            logger.debug(
-                f"Telemetry:Fields:FluidImmersion entity={asset.name} "
-                f"pos=({asset.state.position.x}, {asset.state.position.y}) "
-                f"applied_flow=({flow_vx}, {flow_vy}) "
-                f"final_vel=({asset.state.velocity.vx}, {asset.state.velocity.vy})"
-            )
-            if asset.instance == AssetInstances.CRATES.value:
-                asset.state.velocity.vx = flow_vx
-                asset.state.velocity.vy = flow_vy
+        for orig_idx in immersible_indices:
+            asset = l_assets[orig_idx]
+            if orig_idx in in_fluid_indices:
+                flow_vx, flow_vy = fluid_flows[orig_idx]
+                if asset.instance == AssetInstances.CRATES.value:
+                    asset.state.velocity.vx = flow_vx
+                    asset.state.velocity.vy = flow_vy
+                else:
+                    asset.state.velocity.vx += flow_vx
+                    asset.state.velocity.vy += flow_vy
+
+                was_submerged = asset.state.mutators.triggers.submerged
+                asset.state.mutators.triggers.submerged = True
+
+                if not was_submerged and board.cradle:
+                    splash_pos = Position(
+                        int(asset.state.position.x),
+                        int(asset.state.position.y + (asset.dimensions.l // 2))
+                    )
+                    splash = board.cradle.spawn_passive(
+                        EffectsPalette.SPLASH.value, 
+                        layer, 
+                        splash_pos
+                    )
+                    board.add([splash])
             else:
-                asset.state.velocity.vx += flow_vx
-                asset.state.velocity.vy += flow_vy
-
-            was_submerged = asset.state.mutators.triggers.submerged
-            asset.state.mutators.triggers.submerged = True
-
-            if not was_submerged and board.cradle:
-                splash_pos = Position(
-                    int(asset.state.position.x),
-                    int(asset.state.position.y + (asset.dimensions.l // 2))
-                )
-                splash = board.cradle.spawn_passive(
-                    EffectsPalette.SPLASH.value, 
-                    layer, 
-                    splash_pos
-                )
-                board.add([splash])
-        else:
-            if not in_shoreline:
-                asset.state.mutators.triggers.submerged = False
+                if orig_idx not in in_shoreline_indices:
+                    asset.state.mutators.triggers.submerged = False

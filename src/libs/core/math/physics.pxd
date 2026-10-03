@@ -2,7 +2,11 @@
 from libs.core.models cimport Position, Dimensions, Hitbox, Velocity
 from libs.core.math.space cimport Space
 
-cpdef list collisions(list primitive_data, Space grid)
+cpdef list collisions(
+    list primitive_data, 
+    Space grid
+)
+
 
 cpdef void collide(
     Position pos1, 
@@ -17,7 +21,12 @@ cpdef void collide(
     bint is_kinematic2
 )
 
-cpdef void integrate(list assets, float delta)
+
+cpdef void integrate(
+    list assets, 
+    float delta
+)
+
 
 cpdef void friction(
     Velocity vel, 
@@ -25,12 +34,14 @@ cpdef void friction(
     float delta
 )
 
+
 cpdef void kinematics(
     Velocity vel, 
     float ix, 
     float iy, 
     float speed
 )
+
 
 cpdef void dynamics(
     Velocity vel, 
@@ -43,11 +54,32 @@ cpdef void dynamics(
     float delta
 )
 
+
+cpdef void constrain(
+    Position pos,
+    Hitbox hb,
+    Velocity vel, 
+    bint is_kinematic,
+    int b_x, 
+    int b_y, 
+    int b_w, 
+    int b_l
+)
+
+
+cpdef list environment(
+    list assets, 
+    list fields,
+    Space grid
+)
+
+
 cpdef Velocity aim(
     Position pos, 
     Position target, 
     float speed
 )
+
 
 cpdef Velocity avoid(
     object asset,

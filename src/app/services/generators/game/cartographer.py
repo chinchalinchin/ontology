@@ -108,6 +108,7 @@ class Cartographer:
 
         return rects
 
+
     @classmethod
     def _resolve_fluid_id(
         cls,
@@ -125,11 +126,13 @@ class Cartographer:
         fluids = board.instances(AssetInstances.FLUIDS.value, layer)
         for fluid in fluids:
             pool = fluid.state.pool
-            if pool and pool.x <= water_pos.x < pool.x + pool.w and pool.y <= water_pos.y < pool.y + pool.l:
-                return fluid.id
+            if pool and pool.w > 0 and pool.l > 0:
+                if geometry.inside(water_pos.x, water_pos.y, [(pool.x, pool.y, pool.x + pool.w, pool.y + pool.l)]):
+                    return fluid.id
             if fluid.state.length > 0 and board._in_stream(water_pos, fluid):
                 return fluid.id
         return None
+
 
     @classmethod
     def _build_shoreline_hitbox(cls, orientation: str, length: int, thickness: int = 8) -> Hitbox:
@@ -145,6 +148,7 @@ class Cartographer:
         elif orientation == Directions.RIGHT.value:
             return Hitbox(Position(32 - thickness, 0), Dimensions(thickness, length))
         return Hitbox(Position(0, 0), Dimensions(length, thickness))
+
 
     @classmethod
     def is_step_fluid(
@@ -168,6 +172,7 @@ class Cartographer:
                 return True
         return False
 
+
     @classmethod
     def _detect_flank_occlusions(
         cls, 
@@ -190,23 +195,26 @@ class Cartographer:
                 return True
 
         perimeters = board.perimeters.get(layer, [])
+        perim_obstacles: List[Tuple[int, int, int, int]] = []
         for b in perimeters:
             bx = b.position.x
             by = b.position.y
             bw = b.dimensions.w
             bl = b.dimensions.l
 
-            # Ignore orthogonal 1px perimeter boundary segments
             if axis == 'y' and bl == 1:
                 continue
             if axis == 'x' and bw == 1:
                 continue
 
-            if x < bx + bw and x + w > bx and y < by + bl and y + l > by:
-                return True
+            perim_obstacles.append((bx, by, bw, bl))
+
+        if perim_obstacles and geometry.occluded(x, y, w, l, perim_obstacles):
+            return True
 
         candidates = set(board.weights(layer))
         candidates.update(board.obstacles(layer))
+        candidate_obstacles: List[Tuple[int, int, int, int]] = []
 
         for asset in candidates:
             if asset.category in (
@@ -229,11 +237,13 @@ class Cartographer:
                 oy = asset.state.position.y + hb.position.y
                 ow = hb.dimensions.w
                 ol = hb.dimensions.l
+                candidate_obstacles.append((ox, oy, ow, ol))
 
-                if x < ox + ow and x + w > ox and y < oy + ol and y + l > oy:
-                    return True
+        if candidate_obstacles and geometry.occluded(x, y, w, l, candidate_obstacles):
+            return True
 
         return False
+
 
     @classmethod
     def _coalesce_segments(
@@ -375,6 +385,7 @@ class Cartographer:
             commit_segment()
 
         return new_shorelines
+
 
     @classmethod
     def generate(

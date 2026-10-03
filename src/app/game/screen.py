@@ -369,6 +369,7 @@ class Screen:
                 render.dim(r=0, g=0, b=0, a=120)
                 self._widgets([menu])
 
+
     def rebake(self, 
         tiles: List[Asset], 
         boardsize: Dimensions,

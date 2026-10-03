@@ -86,6 +86,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Goal 06: Speak Intentions](./phases/achieve/goal-06.md)
     - [x]: [Goal 07: Door Interact Intentions](./phases/achieve/goal-07.md)
     - [x]: [Goal 08: CLI Handling](./phases/achieve/goal-08.md)
+    - [ ]: [Goal 09: Transverse Fluids](./phases/achieve/goal-09.md)
 - Backlog:
   - [ ]: [TODO 1: Telemetry Menu](./backlog/todo-t000.md)
   - [ ]: [TODO 2: Bouyancy](./backlog/todo-t001.md)

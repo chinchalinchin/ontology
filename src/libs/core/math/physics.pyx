@@ -325,6 +325,42 @@ cpdef void constrain(
             if vel is not None and not is_kinematic:
                 vel.vy = -vel.vy
 
+
+cpdef list environment(list assets, list fields, Space grid):
+    """
+    Evaluates candidate intersections between dynamic entities (positive IDs)
+    and environmental field sensors (negative IDs).
+    Returns list of (asset_index, field_index) tuples.
+    """
+    grid.clear()
+    cdef tuple f_data, a_data
+    cdef int i, id_a, id_b, asset_idx, field_idx
+    cdef list matches = []
+
+    for i in range(len(fields)):
+        f_data = fields[i]
+        grid.insert(-i - 1, f_data[1], f_data[2], f_data[3], f_data[4])
+
+    for a_data in assets:
+        grid.insert(a_data[0], a_data[1], a_data[2], a_data[3], a_data[4])
+
+    cdef list candidate_pairs = grid.query()
+    for pair in candidate_pairs:
+        id_a = pair[0]
+        id_b = pair[1]
+        if (id_a < 0 and id_b >= 0) or (id_a >= 0 and id_b < 0):
+            asset_idx = id_b if id_a < 0 else id_a
+            field_idx = (-id_a - 1) if id_a < 0 else (-id_b - 1)
+            
+            a_data = assets[asset_idx]
+            f_data = fields[field_idx]
+            
+            if bounded(a_data[1], a_data[2], a_data[5], f_data[1], f_data[2], f_data[3], f_data[4]) is not None:
+                matches.append((asset_idx, field_idx))
+
+    return matches
+
+
 # -----------------------------------------------------------------------------
 # RECIPROCAL VELOCITY OBSTACLES (RVO)
 # -----------------------------------------------------------------------------

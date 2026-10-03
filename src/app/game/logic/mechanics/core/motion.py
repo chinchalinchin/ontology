@@ -28,12 +28,17 @@ if TYPE_CHECKING:
 
 # Cython Libraries
 import libs.core.math.physics as physics
+from libs.core.math.space import Space
 
 logger = logging.getLogger(__name__)
 
+
 class MotionMechanics(Mechanic):
-    """
-    """
+    grid: Space
+
+    def __init__(self, cell_size: int = 64, max_entities: int = 2000):
+        super().__init__()
+        self.grid = Space(cell_size=cell_size, max_entities=max_entities)
 
     def update(self, 
         board: Board, 
@@ -52,5 +57,5 @@ class MotionMechanics(Mechanic):
         frictive.update(crates, board, delta)
         
         all_mutable = players + sprites + crates + projectiles + rafts
-        fields.update(all_mutable, board, delta)
+        fields.update(all_mutable, board, delta, grid=self.grid)
         physics.integrate(all_mutable, delta)

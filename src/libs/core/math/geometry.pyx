@@ -231,6 +231,32 @@ cdef tuple directed_diff(list A, list B):
         
     return merge(entries), merge(exits)
 
+
+cpdef bint inside(int px, int py, list aabbs):
+    cdef tuple box
+    cdef int x1, y1, x2, y2
+    for box in aabbs:
+        x1 = box[0]
+        y1 = box[1]
+        x2 = box[2]
+        y2 = box[3]
+        if x1 <= px < x2 and y1 <= py < y2:
+            return True
+    return False
+
+
+cpdef bint occluded(int qx, int qy, int qw, int ql, list obstacles):
+    cdef tuple obs
+    cdef int ox, oy, ow, ol
+    for obs in obstacles:
+        ox = obs[0]
+        oy = obs[1]
+        ow = obs[2]
+        ol = obs[3]
+        if qx < ox + ow and qx + qw > ox and qy < oy + ol and qy + ql > oy:
+            return True
+    return False
+
 # -----------------------------------------------------------------------------
 # LINE OF SIGHT & RAYCASTING
 # -----------------------------------------------------------------------------

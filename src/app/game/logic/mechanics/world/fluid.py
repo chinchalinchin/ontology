@@ -17,7 +17,8 @@ from typing import (
 import app.config.settings as settings
 from app.config.enums import (
     AssetInstances,
-    Executors
+    Executors,
+    Relations
 )
 from app.game.logic.mechanics import Mechanic
 from app.models.state import DevicePayload
@@ -54,13 +55,11 @@ class FluidMechanics(Mechanic):
 
     @property
     def shorelines(self) -> Optional[ShorelineIndex]:
-        from app.config.enums import Relations
         return self.relations.get(Relations.SHORELINES.value)
 
 
     @shorelines.setter
     def shorelines(self, value: ShorelineIndex) -> None:
-        from app.config.enums import Relations
         self.set_relation(Relations.SHORELINES.value, value)
 
 
@@ -92,7 +91,7 @@ class FluidMechanics(Mechanic):
                 invalidated_layers.add(f.state.layer)
             self._initialized = True
 
-        # Gate state transitions trigger dynamic layer fluid invalidation (Fix B011)
+        # Gate state transitions trigger dynamic layer fluid invalidation
         for gate in gates:
             layer = gate.state.layer
             curr_switch = gate.state.switch
@@ -124,8 +123,10 @@ class FluidMechanics(Mechanic):
             # Pass 1: Propagate fluid dynamics across all layer fluids
             for f in layer_fluids:
                 logger.info(
-                    f"Telemetry:FluidMechanics:PrePropagate:{f.name} pos=({f.state.position.x}, {f.state.position.y}) "
-                    f"len={f.state.length} pool={f.state.pool}"
+                    f"Telemetry:FluidMechanics:PrePropagate:{f.name} "
+                    f"pos=({f.state.position.x}, {f.state.position.y}) "
+                    f"len={f.state.length} "
+                    f"pool={f.state.pool}"
                 )
                 self.actuator.propagate(f, board)
             

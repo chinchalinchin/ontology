@@ -36,6 +36,22 @@ cpdef bint nearby(
     int radius
 )
 
+cpdef bint inside(
+    int px, 
+    int py,
+    list aabbs
+)
+
+
+cpdef bint occluded(
+    int qx,
+    int qy, 
+    int qw, 
+    int ql,
+    list obstacles
+)
+
+
 cdef bint c_punctures(
     float x1, 
     float y1, 

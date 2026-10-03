@@ -582,3 +582,182 @@ Introduce `Orientations` enum and register `BRIDGES` under `AssetCategories.CRAF
 --- 
 
 Bug For Later: When a submerged Asset (i.e. an Asset moving under the influence of a Fluid field) intersects a bridge, it should render underneath of the Bridge and continue moving through the field, i.e. it should "pass underneath" the Bridge when its velocity is transverse to the orientation of the Bridge.
+
+---
+
+### Latent Technical Debt & Architectural Tensions
+
+#### 1. The Bridge Underpass Dilemma (2.5D Elevation Collapse)
+
+Currently, `fields.py` checks AABB intersection with bridges unconditionally:
+
+```python
+layer_bridges = board.instances(AssetInstances.BRIDGES.value, layer)
+for bridge in layer_bridges:
+    if _intersects(asset, bridge):
+        on_surface = True
+        # ...
+
+```
+
+If an entity is already floating in a fluid stream and drifts beneath a bridge deck whose span is perpendicular to the flow, `fields.py` intercepts the entity, clears `submerged = False`, and halts its drift. Because the engine models 2D planar space with pseudo-depth (`height`, `depth`), an asset cannot distinguish between being *on top of* the bridge deck versus *underneath* it. Resolving this requires formalizing an `elevation` or entry-trajectory state attribute.
+
+
+
+### Documentation Divergences
+
+#### Draft: Fluid State Model & Branch Corridors
+
+* **Page**: `docs/01-assets.md`
+* **Heading**: `Fluids`
+
+##### Drift
+
+Phase 09.05 introduced child branch corridors to support recursive stream bifurcation around immovable static obstacles. `FluidState` in `src/app/models/state/assets/effects.py` was augmented with `branches: List[Branch]`, but the documentation in `01-assets.md#fluids` omits this field and the `Branch` data model entirely.
+
+##### Update
+
+```markdown
+**State: FluidState**
+
+* `layer: Optional[str]`
+* `position: Position`
+* `source: Directions = Directions.DOWN.value`
+* `flow: int = 1`
+* `length: int = 0`
+* `pool: Optional[Pool] = None`
+* `branches: List[Branch]`
+* `hitboxes: List[Hitbox]`
+* `dirty: bool = True`
+* `height: Optional[int] = 0`
+* `depth: int = -1`
+
+**Branch Model**
+
+* `position: Position`: Absolute origin of the branch corridor.
+* `source: str`: Flow direction vector matching or orthogonal to parent stream.
+* `flow: int`: Attenuated flow intensity (\(flow_{\text{parent}} - 1\)).
+* `length: int`: Raycast truncation distance.
+* `hitboxes: List[Hitbox]`: Compound hitboxes covering the secondary stream corridor.
+
+```
+
+---
+
+#### Draft: Asset Instance Hierarchy - Bridges & Fluids
+
+* **Page**: `docs/01-assets.md`
+* **Heading**: `Asset Hierarchy`
+
+##### Drift
+
+The Instances table in `01-assets.md#instances` lists `Bridge` state as `Base, Multiple` and `Fluid` state as `Base, Animation, Source, Flow`. This omits the `orientation` field required by `OrientedFrame` on `BridgeState`, and the `length`, `pool`, and `branches` fields on `FluidState`.
+
+##### Update
+
+```markdown
+| Asset Category | Asset Instance | State |
+| - | - | - | 
+| Craft | Bridge | Base, Multiple, Orientation, Owner |
+| Effect | Fluid | Base, Animation, Source, Flow, Length, Pool, Branches |
+
+```
+
+---
+
+#### Draft: FluidMechanics Two-Pass Bifurcation Pipeline
+
+* **Page**: `docs/05-mechanics.md`
+* **Heading**: `FluidMechanics`
+
+##### Drift
+
+The `FluidMechanics` overview describes fluid propagation purely in terms of single-corridor truncation and annular pool formation. It fails to document downstream flank bifurcation, child corridor raycasting, and broad-phase water cache synchronization.
+
+##### Update
+
+```markdown
+#### FluidMechanics
+
+FluidMechanics governs fluid emission, recursive bifurcation, and procedural shoreline margins across active layers. It executes after physical momentum updates (`MotionMechanics` and `CollisionMechanics`) and uses reactive dirty-checking:
+
+1. **Change Detection**: Inspects switch-linked gates (`AssetInstances.GATES`). If any static barrier within an active layer mutates state, affected fluids are marked `dirty`. Dynamic bodies (\(m > 0\)) do not obstruct fluids and do not trigger invalidation.
+2. **Pass 1 (Fluid Propagation & Bifurcation)**: For every fluid on an invalidated layer, `Actuator.propagate()` raycasts along `state.source` against map boundaries and immovable static assets (\(m = 0\)).
+    * If an internal static obstacle is struck, an annular pool of dimensions determined by `state.flow` expands around the obstacle perimeter.
+    * If `state.flow > 1`, secondary child streams are discharged from the downstream face of the annular pool along its lateral flanks, propagating with flow \(flow - 1\).
+    * Stream corridors, annular pools, and child branches compile compound hitboxes on `FluidState`.
+    * `FluidMechanics` synchronizes the layer water broad-phase cache via `board.update_fluid_cache(layer)`.
+3. **Pass 2 (Layer Shoreline Synthesis)**: Once all fluid corridors, pools, and branches on the layer are resolved, `Cartographer.purge(layer, board)` clears previous layer shorelines. `Cartographer.generate(layer, board, shoreline_index)` compiles all water bounds into a unified contour sweep (`geometry.contours`), evaluates bordering substrate tiles, and instantiates non-overlapping `Shoreline` entities along the true land-water threshold.
+
+```
+
+---
+
+### Bug Reports
+
+##### Bug B014: Duplicate FluidFrame Implementation in app.assets.frames.core
+
+**STATUS**: OPEN
+
+**SEVERITY**: LOW
+
+**Description**
+
+`src/app/assets/frames/core.py` contains a duplicate copy of `FluidFrame` which is identical to `src/app/assets/frames/effects.py`. The module docstring in `core.py` even reads `# Ontology: app.assets.frames.effects`. Having identical class implementations across two modules creates maintenance divergence risk if one file is modified and the other is imported by factory recipes.
+
+**Proposed Remediation**
+
+Remove `FluidFrame` from `src/app/assets/frames/core.py` and ensure all imports route through `src/app/assets/frames/effects.py` (or re-export `FluidFrame` from `effects.py` via `__all__` if `core.py` is intended as a package aggregation root).
+
+---
+
+##### Bug B015: Incomplete Weight Predicate in Board.add() and Board.relayer()
+
+**STATUS**: OPEN
+
+**SEVERITY**: HIGH
+
+**Description**
+
+`Board._is_weight(asset)` correctly filters physical candidate qualification by requiring `mass >= 0` and excluding `CURSORS`, `EFFECTS`, `GEOGRAPHY`, and `TILES`. However, neither `Board.add()` nor `Board.relayer()` uses this method.
+
+In `Board.add()`:
+
+```python
+if asset.category != AssetCategories.CURSORS and (
+    asset.properties.mass >= 0
+):
+    self._cached_weights[layer].append(asset)
+
+```
+
+In `Board.relayer()`:
+
+```python
+if asset.properties.mass >= 0:
+    self._cached_weights[new_layer].append(asset)
+
+```
+
+This allows mass-bearing assets in `EFFECTS`, `GEOGRAPHY`, or `TILES` added dynamically or moved between layers to enter `_cached_weights`. This directly pollutes `Actuator._collect_obstacles` and RRT obstacle extraction in `NavigationMechanics`.
+
+**Steps to Replicate**
+
+1. Instantiate an `Effect` or `Geography` asset with static mass property ($m = 0$).
+2. Add the asset to an active board using `board.add([asset])` or migrate an existing asset using `board.relayer(asset, "1")`.
+3. Query `board.weights(layer)`. The non-physical asset appears in the weight list.
+
+**Proposed Remediation**
+
+Refactor `Board.add()` and `Board.relayer()` to evaluate `self._is_weight(asset)` exclusively:
+
+```python
+# In Board.add()
+if self._is_weight(asset):
+    self._cached_weights[layer].append(asset)
+
+# In Board.relayer()
+if self._is_weight(asset):
+    self._cached_weights[new_layer].append(asset)
+
+```

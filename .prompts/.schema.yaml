@@ -1,14 +1,24 @@
 # ----------------------------------------------------
 properties:
+  files:
+    index: index.md
+    mkdocs: mkdocs.yaml
   paths:
-    root: <root-path>
+    # ---------------------------------------
+    root: <path>
+    # ---------------------------------------
     actions: .githubs/workflows/
-    blocks: .prompts/tasks/.blocks/
+    # ---------------------------------------
+    blocks: .prompts/tasks/blocks/
     board: .prompts/board/
-    phases: .prompts/board/phases/
     docs: docs/
-    tests: tests/unit/
+    diagrams: docs/static/mmd/
+    dumps: src/data/dumps/
     fixtures: tests/unit/fixtures/
+    logs: src/data/logs/
+    phases: .prompts/board/phases/
+    templates: .prompts/board/templates
+    tests: tests/unit/
   project:
     title: ontology
   user:
