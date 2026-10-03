@@ -1472,7 +1472,7 @@
 <ul>
 <li>Package: <code>app.game.board</code></li>
 </ul>
-<p>The Board is the Game's "<em>database</em>". It holds all ingame Assets and Configurations during the course of the game loop and exposes them to the engine through queryable interfaces.</p>
+<p>The Board acts as the Game's in-memory "database". It holds all in-game Assets and Configurations during the game loop, providing queryable interfaces to the Engine and Mechanics.</p>
 <p>The state files for each Board are maintained in <code>/src/data/state/&lt;board-key&gt;/**</code>.</p>
 <p><strong>Interface: Queries</strong></p>
 <p>The Board exposes interfaces for querying the game state:</p>
@@ -1490,7 +1490,7 @@
 </li>
 <li>Environment Queries<ol>
 <li><code>board.tile(layer, position, instance)</code>: Retrieves background or foreground <a href="../01-assets/#tiles">Tiles</a> via <span class="arithmatex">\(O(1)\)</span> spatial hash lookup.</li>
-<li><code>board.get_shorelines(layer=None)</code>: Retrieves active procedural shoreline assets for a specific layer or across all layers.</li>
+<li><code>board.shorelines(layer=None)</code>: Retrieves active procedural shoreline assets for a specific layer or across all layers.</li>
 </ol>
 </li>
 </ul>

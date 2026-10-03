@@ -1414,13 +1414,22 @@
 <p>The <code>AnimationMap</code> plays a crucial role in enforcing logical constraints. For example, <code>TransitionMechanics</code> and <code>PlayerMechanics</code> utilize <code>AnimationMap.action(state, equipment)</code> to resolve whether an intended action is possible. This guarantees that an <code>attack</code> intention will not translate into a <code>thrust</code> animation action if the Sprite currently lacks the required tool or weapon equipped in its inventory.</p>
 <h2 id="board">Board</h2>
 <h3 id="spatial-grid-caching">Spatial Grid Caching</h3>
-<p>To optimize environmental lookups without traversing linear asset arrays, the Board partitions static tiles into an <span class="arithmatex">\(O(1)\)</span> spatial hash grid (<code>_cached_tilemap</code>), indexed with bucket size <code>TILE_HASH_SIZE = 32</code>.</p>
-<p>To prevent foreground architectural tiles (<code>fore</code>) from overwriting terrain friction data (<code>back</code>), the cache nests by layer and instance:</p>
-<div class="arithmatex">\[\text{tilemap}[\text{layer}][\text{instance}][(c_x, c_y)] \to \text{Asset}\]</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><code>Board.tile(layer, position, instance=AssetInstances.BACK.value)</code> queries background friction tiles by default.</p>
-</div>
+<p>To optimize environmental lookups without traversing linear asset arrays, the Board utilizes two discrete <span class="arithmatex">\(O(1)\)</span> spatial hash grids managed by <code>BoardCaches</code>:</p>
+<ol>
+<li><strong>Tile Spatial Grid (<code>tilemap</code>)</strong>:</li>
+</ol>
+<p>Partitions static tiles into spatial buckets of size <code>TILE_HASH_SIZE = 32</code>. To prevent foreground architectural tiles (<code>fore</code>) from overwriting terrain friction data (<code>back</code>), buckets nest by layer and instance:</p>
+<div class="arithmatex">\[
+\text{tilemap}[\text{layer}][\text{instance}][(c_x, c_y)] \to \text{Asset}
+\]</div>
+<ol>
+<li><strong>Hydrological Broad-Phase Grid (<code>watermap</code>)</strong>:</li>
+</ol>
+<p>Indexes active fluid streams, annular pools, and branching corridors into spatial buckets of size <code>TILE_HASH_SIZE = 32</code>. Each bucket stores references to overlapping fluid entities:</p>
+<div class="arithmatex">\[
+\text{watermap}[\text{layer}][(c_x, c_y)] \to \text{List}[\text{Asset}]
+\]</div>
+<p>When asserting fluid immersion (<code>board.fluid(layer, position)</code>), the engine queries the bucket corresponding to the coordinate in <span class="arithmatex">\(O(1)\)</span> time, then delegates to narrow-phase AABB segment validation via <code>app.game.board.predicates.in_fluid()</code>.</p>
 <h2 id="rendering">Rendering</h2>
 <h3 id="depth-height">Depth &amp; Height</h3>
 <p>To accurately render perspective, the Screen <code>draw()</code> loop relies on a tuple-based sorting mechanism applied to all active Assets before they are passed across the Cython boundary. This system resolves the "Painter's Algorithm" dilemma where architectural decals (like Doors) need to render <em>on top of</em> their parent structures (like Strut), but <em>behind</em> dynamic Asset (like Players) that walk in front of the building.</p>
