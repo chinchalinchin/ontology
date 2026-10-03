@@ -20,7 +20,7 @@ jobs:
       - name: setup
         run: |
           uv venv --python 3.14
-          uv pip install -r requirements.txt
+          uv pip install -r pyproject.toml --group build --group test
 
       - name: cache
         id: cache-cython

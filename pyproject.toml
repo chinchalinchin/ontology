@@ -1,0 +1,34 @@
+[project]
+name = "ontology"
+version = "0.0.0"
+requires-python = ">=3.14"
+dependencies = [
+    "Cython==3.2.8",
+    "pydantic==2.13.4",
+    "pydantic-settings[yaml]==2.14.2",
+    "PyYAML==6.0.3",
+    "Jinja2==3.1.6",
+]
+
+[dependency-groups]
+build = [
+    "setuptools==83.0.0",
+]
+test = [
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
+]
+scripts = [
+    "pillow==12.3.0",
+]
+docs = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+]
+analysis = [
+    "pydeps",
+]
+
+[tool.uv]
+package = false

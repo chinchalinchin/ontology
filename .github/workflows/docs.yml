@@ -25,6 +25,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: setup
+        run: |
+          uv venv --python 3.14
+          uv pip install --group docs --group analysis
+      
       - name: download-coverage
         uses: actions/download-artifact@v4
         with:
@@ -33,13 +38,12 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Generate Dependency Graphs
+      - name: dependency-trees
         run: |
-          pip install pydeps
           chmod +x scripts/dependencies/main.sh
           ./scripts/dependencies/main.sh
 
-      - name: Build and Deploy Docs
+      - name: documentation
         run: |
           pip install mkdocs mkdocs-material mkdocstrings[python]
           git config --global user.name 'github-actions[bot]'
