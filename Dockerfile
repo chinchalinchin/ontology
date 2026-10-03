@@ -4,10 +4,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 ENV PATH="/root/.local/bin:$PATH"
 
-# Install system build dependencies and SDL2 headers
+# Install system build dependencies, SDL2 headers, graphviz, and git
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
+    git \
     gcc \
     build-essential \
     libsdl2-dev \
