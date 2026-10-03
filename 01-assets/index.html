@@ -2173,7 +2173,7 @@
 <tr>
 <td>Craft</td>
 <td>Bridge</td>
-<td>Base, Multiple</td>
+<td>Base, Multiple, Orientation, Owner</td>
 </tr>
 <tr>
 <td>Craft</td>
@@ -2243,7 +2243,7 @@
 <tr>
 <td>Effect</td>
 <td>Fluid</td>
-<td>Base, Animation, Source, Flow</td>
+<td>Base, Animation, Source, Flow, Length, Pool, Branches</td>
 </tr>
 <tr>
 <td>Sheet</td>
@@ -2331,15 +2331,15 @@
 <li><code>dimensions: Dimensions</code></li>
 <li><code>friction: float</code></li>
 </ul>
-<h3 id="back">Back</h3>
-<p>A Back Tile is the first Asset rendered on screen. It has the lowest Z coordinate of all Assets; Back Tiles will <em>always</em> be rendered <em>under</em> all of the other Assets, regardless of their <code>depth</code> or <code>height</code>.</p>
-<p><strong>Animation: None</strong></p>
-<p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
 <li><code>keys(id, state): returns [ (id, 0, 0) ] "</code></li>
 <li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
+<p><strong>Animation: None</strong></p>
+<p>N/A</p>
+<h3 id="back">Back</h3>
+<p>A Back Tile is the first Asset rendered on screen. It has the lowest Z coordinate of all Assets; Back Tiles will <em>always</em> be rendered <em>under</em> all of the other Assets, regardless of their <code>depth</code> or <code>height</code>.</p>
 <p><strong>State: MultiplerState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
@@ -2350,13 +2350,6 @@
 </ul>
 <h3 id="fore">Fore</h3>
 <p>A Fore Tile is the last Asset rendered on screen. It has the highest Z coordinate of all Assets. Fore Tiles will always be rendered on top of all of other Assets, regardless of their <code>depth</code> or <code>height</code>. The <em>one</em> exception to this rule is Widgets. Fore Tiles are an "in-world" Asset, and thus their Z-ordering is superseded by Widgets.</p>
-<p><strong>Animation: None</strong></p>
-<p>N/A</p>
-<p><strong>Frame: SingleFrame</strong></p>
-<ul>
-<li><code>keys(id, state): returns [ (id, 0, 0) ] "</code></li>
-<li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
-</ul>
 <p><strong>State: MultiplerState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
@@ -2371,13 +2364,6 @@
 <ul>
 <li><code>focus</code>: A Grid Tile to represent active selections.</li>
 <li><code>cell</code>: A Grid Tile to represent idle selections.</li>
-</ul>
-<p><strong>Animation: None</strong></p>
-<p>N/A</p>
-<p><strong>Frame: SingleFrame</strong></p>
-<ul>
-<li><code>keys(id, None): returns [ (id, 0, 0) ] "</code></li>
-<li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: MultiplerState</strong></p>
 <ul>
@@ -2737,7 +2723,7 @@
 <p><strong>Required Passive Effects</strong></p>
 <p>Due to dependencies on other Assets and Mechanics, the following Passive Effects are required to exist at runtime,</p>
 <ul>
-<li><code>splash</code>: Animation for "submerged" Assets moving in in Fluid fields.</li>
+<li><code>splash</code>: Animation for "submerged" Assets moving through Fluid fields.</li>
 </ul>
 <p><strong>State: AnimatorState</strong></p>
 <ul>
@@ -2800,11 +2786,19 @@
 <ol>
 <li>(<strong>Source</strong>) A Fluid has a <code>source</code>. A <code>source</code> is a Direction. Fluid flows in the Direction of its <code>source</code>. </li>
 <li>(<strong>Obstruction</strong>) Fluids are obstructed by obstacles. Fluids form Pools around obstacles, determined by their <code>flow</code> rate.</li>
-<li>(<strong>Bifurication</strong>) When a Fluid meets an obstacle, it bifuricates across its orthogonal axes (e.g., a <code>down</code> flowing Fluid bifuricates in the <code>left</code> and <code>right</code> directions) until unobstructed and then continues flowing in its original <code>source</code> Direction (e.g. <code>down</code>). The number of times a Fluid may bifuricate is equal to its <code>flow</code>, e.g. a <code>flow = 3</code> means the Fluid may bifuricate three times.</li>
-<li>(<strong>Fields</strong>) When Sprites, Players or Pixies intersect a Fluid, they acquire a Velocity in the Direction of <code>source</code>, getting "swept" away. The speed imparted to a Sheet Asset by a Fluid is proportional to its <code>flow</code>, i.e. the higher the <code>flow</code>, the faster the resulting speed of the "swept" Asset.</li>
+<li>(<strong>Bifurication</strong>) When a Fluid meets an obstacle, it bifuricates across its orthogonal axes (e.g., a <code>down</code> flowing Fluid bifuricates in the <code>left</code> and <code>right</code> directions) and then continues flowing in its original <code>source</code> Direction (e.g. <code>down</code>). The number of times a Fluid may bifuricate is equal to its <code>flow</code>, e.g. a <code>flow = 3</code> means the Fluid may bifuricate three times.</li>
+<li>(<strong>Fields</strong>) When dynamic Assets (Sprites, Crates, etc.) intersect a Fluid, they acquire a Velocity in the Direction of <code>source</code>, getting "swept" away. The speed imparted to an Asset by a Fluid is proportional to its <code>flow</code>, i.e. the higher the <code>flow</code>, the faster the resulting speed of the "swept" Asset.</li>
 </ol>
 <p><strong>Z-Ordering &amp; Sorting</strong></p>
 <p>Fluids declare an explicit <code>height: 0</code> and <code>depth: -1</code>. This ensures the <a href="../10-architecture/#graphics">rendering pipeline</a> sorts the resulting stream above Tiles but underneath other mutable Assets.</p>
+<p><strong>Branch Model</strong></p>
+<ul>
+<li><code>position: Position</code>: Absolute origin of the branch corridor.</li>
+<li><code>source: str</code>: Flow direction vector matching or orthogonal to parent stream.</li>
+<li><code>flow: int</code>: Attenuated flow intensity (<span class="arithmatex">\(flow_{\text{parent}} - 1\)</span>).</li>
+<li><code>length: int</code>: Raycast truncation distance.</li>
+<li><code>hitboxes: List[Hitbox]</code>: Compound hitboxes covering the secondary stream corridor.</li>
+</ul>
 <p><strong>Frame: FluidFrame</strong></p>
 <ul>
 <li><code>keys(id, state): returns [ ("{id}-{state.animation.frame}-{slices(state.pool, state.length)}", 0, 0)]</code> </li>
@@ -2818,6 +2812,7 @@
 <li><code>flow: int = 1</code></li>
 <li><code>length: int = 0</code></li>
 <li><code>pool: Optional[Pool] = None</code></li>
+<li><code>branches: List[Branch]</code></li>
 <li><code>hitboxes: List[Hitbox]</code></li>
 <li><code>dirty: bool = True</code></li>
 <li><code>height: Optional[int] = 0</code></li>
