@@ -3,9 +3,7 @@ name: ontology-image
 on:
   push:
     branches:
-      - main
-    paths:
-      - 'Dockerfile'
+      - build
   workflow_dispatch:
 
 jobs:
