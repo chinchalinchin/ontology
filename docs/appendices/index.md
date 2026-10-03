@@ -4,6 +4,7 @@
 
 - [Appendix 0: References](./00-references.md)
 - [Appendix I: Schemas](./01-schemas.md)
+- [Appendix II: Diagrams](./02-diagrams.md)
 
 ## References
 

@@ -15,3 +15,5 @@ pillow==12.3.0
 mkdocs
 mkdocs-material
 mkdocstrings[python]
+## Analysis
+pydeps src/app --cluster --max-bacon=3 --noshow -o build/module_deps.svg

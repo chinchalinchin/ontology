@@ -19,11 +19,13 @@
 - [Emergence](./09-emergence.md)
 - [Architecture](./10-architecture.md)
 - [Appendices](./appendices/index.md)
-    - [Appendix I: References](./appendices/00-references.md)
-    - [Appendix II: Schemas](./appendices/01-schemas.md)
+    - [Appendix O: References](./appendices/00-references.md)
+    - [Appendix I: Schemas](./appendices/01-schemas.md)
+    - [Appendix II: Diagrams](./appendices/02-diagrams.md)
 - [Specifications](./specs/index.md)
     - [Spec: Dialogue Loop](./specs/00-dialogue.md)
     - [Spec: Interaction Loop](./specs/01-interaction.md)
+    - [Spec: Wander Loop](./specs/02-wander.md)
     
 ## CI/CD
 

@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libsdl2-image-dev \
     libsdl2-ttf-dev \
     libsdl2-mixer-dev \
+    graphviz \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv package manager

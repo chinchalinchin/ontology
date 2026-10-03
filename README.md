@@ -82,6 +82,60 @@ python src/cli.py  \
     start $WORLD
 ```
 
+### Analysis
+
+```bash
+sudo apt install graphviz
+
+# 1. Core Components + Game Entity Generators
+PYTHONPATH=src pydeps src/app \
+  --only app.assets.base \
+         app.assets.frames.core \
+         app.assets.animations.core \
+         app.game.engine \
+         app.game.screen \
+         app.game.board \
+         app.game.logic.mechanics.base \
+         app.game.logic.mechanics.core.animation \
+         app.services.generators.game \
+  -x 'app.game.menus*' 'app.services.orchestration*' 'app.services.generators.menus*' 'app.config*' 'app.models*' \
+  --max-bacon=0 \
+  --cluster \
+  --rmprefix app. \
+  --rankdir LR \
+  --noshow \
+  -T svg \
+  -o docs/static/svg/core-generators.svg
+
+# 2. Mechanics Pipeline & Spatial Subsystems
+PYTHONPATH=src pydeps src/app \
+  --only app.game.logic.mechanics \
+         app.game.board \
+         app.assets.base \
+  -x 'app.game.menus*' 'app.services*' 'app.config*' 'app.models*' \
+  --max-bacon=0 \
+  --cluster \
+  --rmprefix app. \
+  --rankdir LR \
+  --noshow \
+  -T svg \
+  -o docs/static/svg/mechanics-pipeline.svg
+
+# 3. Architectural Layers
+PYTHONPATH=src pydeps src/app \
+  --only app.models \
+         app.config \
+         app.assets.base \
+  -x 'app.game*' 'app.services*' \
+  --max-bacon=0 \
+  --cluster \
+  --rmprefix app. \
+  --rankdir TB \
+  --noshow \
+  -T svg \
+  -o docs/static/svg/models-boundarie.svg
+```
+
 ## Information
 
 ### Cython
@@ -137,8 +191,10 @@ This section provides an overview of the project's directory and file structure.
 
 Batch scripts.
 
-* `/scripts/concatenate`: Script to concatenate image files into a row of frames.
-* `/scripts/transpose`: Script to transpose a column of frames into a row of frames.
+* `/scripts/concatenate`: Pillow script to concatenate image files into a horizontal row of frames.
+* `/scripts/transpose`: Pillow script to transpose a vertical column of frames into a horizontal row of frames.
+* `/scripts/unpack`: Pillow script to unpack a grid of frames into a horizontal row of grames.
+* `/scripts/dependencies`: BASH script for generating `pydeps` dependency tree graphs.
 
 ### /src
 
