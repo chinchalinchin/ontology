@@ -809,9 +809,63 @@ Shorelines are procedural, inanimate Geography sensors instantiated along unoccl
 
 ## Resources
 
-TODO
+* Property File: `/src/assets/resources/main.yaml`
+
+Resources are mutable, animatel Assets deployed onto the Board that progress through discrete structural or biological stages. Resources are divided into Crops, Trees and Ores.
+
+**Loot**
 
 A Resource contains a `loot` key. When Resources are mined through the `mine` [Intention](./04-intentions.md), they are converted into [Collectables](#effects). The `loot` key from the Resource is passed to the Collectable when it is instantiated as a byproduct of `mine`.
+
+**Properties: ResourceProperties**
+
+* `dimensions: Dimensions`
+* `hitboxes: List[Hitbox]`
+* `mass: int = 0`
+* `loot: str`: Inventory loot key dropped upon harvest or mining.
+* `stages: List[str]`: Ordered progression stages.
+
+**Frame: StageFrame**
+
+* `keys(id, state): returns [ (f"{id}-{state.stage}", 0, 0) ]`
+* `index(id, properties): returns { f"{id}-{stage}": (i * properties.dimensions.w, 0, properties.dimensions.w, properties.dimensions.l) for i, stage in enumerate(properties.stages) }`
+
+**Animation: TBD**
+
+TODO
+
+### Crops
+
+Crops are biological resources whose stage transitions are governed by macro-temporal seasons and soil fluid retention.
+
+**State: CropState**
+
+* `layer: str`
+* `depth: int = 0`
+* `height: Optional[int] = None`
+* `position: Position`
+* `stage: str`: Current biological stage (`sprout`, `growth`, `stalk`, `bloom`, `stump`).
+* `fluid_retention: float = 0.0`: Cumulative moisture level absorbed from adjacent fluid channels.
+* `harvested: bool = False`: Flag indicating whether the bloom stage has been harvested.
+
+### Ores
+
+Ores are mineral resources that transition through structural stages when acted upon by [Geology](./09-emergence.md#geology).
+
+**State: OreState**
+
+* `layer: str`
+* `depth: int = 0`
+* `height: Optional[int] = None`
+* `position: Position`
+* `stage: str`: Current excavation stage (`trace`, `deposit`, `nugget`, `vein`, `crystal`, `alloy`).
+* `vein: str`: Mineral classification key.
+
+### Trees 
+
+TODO
+
+**State: TreeState**
 
 TODO
 

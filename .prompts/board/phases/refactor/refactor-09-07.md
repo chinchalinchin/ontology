@@ -176,125 +176,9 @@ The new profile verifies that the Phase 09.07 optimizations successfully elimina
 
 ---
 
-##### Documentation Divergences
+##### Bug Reports
 
-###### Draft: Geography & Shoreline State Specification
-
-* **Page**: `docs/01-assets.md`
-* **Heading**: `Geography` / `Shorelines`
-
-###### Drift
-
-The documentation in `01-assets.md` leaves `GeographyProperties` and `ShorelineState` marked as `TODO` in the Asset Hierarchy tables, and omits the explicit Z-ordering override (`height: 0`, `depth: 0`), property relations (`tile`, `fluid`, `thickness`), and the `_keys` cache slot implemented in Phase 09.07.
-
-###### Update
-
-```markdown
-### Geography
-
-Geography Assets represent inanimate, immutable structural and topographical landforms (e.g., shorelines, cliffs, ledges). Geography Assets define transition thresholds between differing biome zones, elevations, and fluid corridors.
-
-**Properties: GeographyProperties**
-
-* `dimensions: Dimensions`
-* `hitboxes: List[Hitbox]`
-* `tile: str`: Terrain tile ID to which this margin binds.
-* `fluid: Optional[str] = None`: Optional fluid ID required to activate this margin.
-* `thickness: int = 8`: Width/length of the sensor threshold strip.
-* `mass: int = -1`: Sensor classification (bypasses collision resolution).
-
-### Shorelines
-
-Shorelines are procedural, inanimate Geography sensors instantiated along unoccluded environmental water margins.
-
-**Frame: CardinalFrame**
-
-* Indexes 4 cardinal orientation rows:
-    * Row 0: `up`    (Land North/Up, Water South/Down)
-    * Row 1: `left`  (Land West/Left, Water East/Right)
-    * Row 2: `down`  (Land South/Down, Water North/Up)
-    * Row 3: `right` (Land East/Right, Water West/Left)
-* `keys(id, state)` emits repeating full tiles along `state.length` and a fractional distal slice for remainders, memoized to `state._keys`.
-
-**State: ShorelineState**
-
-* `layer: str`
-* `position: Position`
-* `orientation: str` (`up`, `left`, `down`, `right`)
-* `length: int`
-* `thickness: int = 8`
-* `bidirectional: bool = True`
-* `hitboxes: List[Hitbox]`
-* `height: Optional[Union[int, str]] = 0`
-* `depth: int = 0`
-* `_keys: Optional[List[Tuple[str, int, int]]] = None`
-
-```
-
----
-
-###### Draft: Reactive Fluid Invalidation & Shift Detection
-
-* **Page**: `docs/05-mechanics.md`
-* **Heading**: `World` / `FluidMechanics`
-
-###### Drift
-
-`05-mechanics.md` describes an unconditional two-pass propagation pipeline where any gate switch immediately purges and regenerates layer shorelines. It omits the three-tier optimization introduced in Phase 09.07: spatial AABB/corridor intersection filtering, tick-based debounce windows, and geometric signature shift detection (`_fluid_signature`).
-
-###### Update
-
-```markdown
-#### FluidMechanics
-
-FluidMechanics governs fluid emission, recursive bifurcation, and procedural shoreline margins across active layers. It executes after physical momentum updates (`MotionMechanics` and `CollisionMechanics`) and uses a 3-tier reactive dirty-checking architecture:
-
-1. **Spatial Corridor Filtering**: Inspects switch-linked gates (`AssetInstances.GATES`). A mutating gate only flags the layer's fluids as `dirty` if the gate's AABB intersects active fluid compound hitboxes or falls within downstream emission corridors.
-2. **Debounce Accumulator**: Consecutive gate oscillations are coalesced using `settings.FLUID_INVALIDATION_DEBOUNCE_TICKS` before triggering propagation.
-3. **Pass 1 (Fluid Propagation & Bifurcation)**: For invalidated layers, `Actuator.propagate()` updates stream lengths, expands annular pools around static obstacles (\(m = 0\)), derives secondary branch corridors, and updates `board.update_fluid_cache(layer)`. Cache slots (`fluid.state._keys`) are cleared.
-4. **Pass 2 (Geometric Shift Detection & Shoreline Synthesis)**: Compares the pre- and post-propagation geometric signature (`_fluid_signature`: stream lengths, pool bounds, branch positions). If water geometry is invariant, shoreline regeneration is bypassed. If geometry shifted (or during hydration), `Cartographer.purge()` and `Cartographer.generate()` synthesize updated boundary contours.
-
-```
-
----
-
-###### Draft: Painter's Algorithm Sort Key & Integer Coercion
-
-* **Page**: `docs/10-architecture.md`
-* **Heading**: `Rendering` / `Depth & Height`
-
-###### Drift
-
-`10-architecture.md` documents Painter's Algorithm sorting using inline tuple evaluation. It fails to document the module-level static sort function `Screen._sort(asset)` introduced to eliminate per-frame closure allocations, and omits the integer coercion requirement for `state.height` that resolved Bug B003.
-
-###### Update
-
-```markdown
-### Depth & Height
-
-To accurately render perspective, the Screen `draw()` loop applies Painter's Algorithm sorting to all active assets before translating them to Cython primitives.
-
-Sorting is evaluated via the module-level static method `Screen._sort(asset)`:
-
-```python
-@staticmethod
-def _sort(asset: Asset) -> tuple[int, int]:
-    height = int(asset.state.height) if asset.state.height is not None else (
-        (asset.state.position.y + (asset.dimensions.l if asset.dimensions else 0))
-    )
-    return (height, asset.state.depth)
-```
-
-1. **Primary Key (Height)**: Evaluates dynamic geometric height ($y + l$). If an explicit `state.height` is present, it is coerced to an integer (`int(asset.state.height)`). Coercion prevents `TypeError` when late-binding compositions assign string tokens alongside integer positions (Bug B003).
-2. **Secondary Key (Depth)**: Serves as a tie-breaker when assets share identical heights. Fluids declare `depth: -1`, Shorelines declare `depth: 0`, Bridges declare `depth: 1`, and standard entities default to `depth: 0`.
-3. **Allocation Optimization**: Replacing per-frame `lambda` closures with `_sort` eliminates millions of transient function objects and reduces draw overhead across expanded entity sets.
-```
-
----
-
-## Bug Reports
-
-##### Bug B015: Branch Corridor Hitbox Slicing Duplication in FluidFrame
+###### Bug B015: Branch Corridor Hitbox Slicing Duplication in FluidFrame
 
 **STATUS**: OPEN
 **SEVERITY**: High
@@ -333,9 +217,7 @@ Deploy a fluid emitter with `flow = 2` that strikes an obstacle. Inspect the tup
 
 In `FluidFrame.keys()`, decompose `state.pool` exclusively using `state.pool.x, state.pool.y, state.pool.w, state.pool.l` (or an explicit `pool.hitboxes` attribute), rather than slicing `state.hitboxes[1:]`.
 
----
-
-##### Bug B016: Branch Corridor Fluid ID Resolution Miss in Cartographer
+###### Bug B016: Branch Corridor Fluid ID Resolution Miss in Cartographer
 
 **STATUS**: OPEN
 **SEVERITY**: Medium
@@ -366,9 +248,7 @@ Configure a shoreline that binds specifically to `(tile='grass', fluid='river')`
 
 In `Cartographer._resolve_fluid_id()`, iterate through `fluid.state.branches` and evaluate point containment against each branch corridor rectangle using `geometry.inside()`.
 
----
-
-##### Bug B017: Redundant Delta Recalculation in Engine Hybrid Pacer
+###### Bug B017: Redundant Delta Recalculation in Engine Hybrid Pacer
 
 **STATUS**: OPEN
 **SEVERITY**: Low

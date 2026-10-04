@@ -10,43 +10,8 @@
           w: 32
           l: 32
     back:
-      clay:
-        dimensions:
-          w: 32
-          l: 32
-        friction: 0
-      coal:
-        dimensions:
-          w: 32
-          l: 32
-        friction: 0
-      dirt:
-        dimensions:
-          w: 32
-          l: 32
-        friction: 0
       grass:
         dimensions:
           w: 32
           l: 32
         friction: 100
-      mud:
-        dimensions:
-          w: 32
-          l: 32
-        friction: 0
-      sand:
-        dimensions:
-          w: 32
-          l: 32
-        friction: 0
-      soil:
-        dimensions:
-          w: 32
-          l: 32
-        friction: 0
-      wheat:
-        dimensions:
-          w: 32
-          l: 32
-        friction: 0

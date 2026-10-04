@@ -31,7 +31,7 @@ properties:
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/conclusion.md.j2
+  template: iterate/grooming.md.j2
 # ----------------------------------------------------
   parameters:
     diagram: mechanics-fluid.mmd
@@ -57,8 +57,8 @@ tools:
   parameters:
     manager:
       board:
-        phase: '09-07'
-        action: refactor
+        phase: '10'
+        action: implement
       docs:
         exclude:
           - index.md
@@ -71,7 +71,7 @@ tools:
           - 09-emergence.md
       specs: []
     source:
-      workflow: fluids
+      workflow: main
     shell:
       directory: |
         tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"

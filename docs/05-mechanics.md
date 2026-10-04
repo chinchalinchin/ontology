@@ -219,15 +219,12 @@ These Mechanics handle ambient world state, high-level game calculations and oth
 --8<-- "static/mmd/mechanics-fluid.mmd"
 ```
 
-FluidMechanics governs fluid emission, recursive bifurcation, and procedural shoreline margins across active layers. It executes after physical momentum updates (`MotionMechanics` and `CollisionMechanics`) and uses reactive dirty-checking:
+FluidMechanics governs fluid emission, recursive bifurcation, and procedural shoreline margins across active layers. It executes after physical momentum updates (`MotionMechanics` and `CollisionMechanics`) and uses a 3-tier reactive dirty-checking architecture:
 
-1. **Change Detection**: Inspects switch-linked gates (`AssetInstances.GATES`). If any static barrier within an active layer mutates state, affected fluids are marked `dirty`. Dynamic bodies ($m > 0$) do not obstruct fluids and do not trigger invalidation.
-2. **Pass 1 (Fluid Propagation & Bifurcation)**: For every fluid on an invalidated layer, `Actuator.propagate()` raycasts along `state.source` against map boundaries and immovable static assets ($m = 0$).
-    * If an internal static obstacle is struck, an annular pool of dimensions determined by `state.flow` expands around the obstacle perimeter.
-    * If `state.flow > 1`, secondary child streams are discharged from the downstream face of the annular pool along its lateral flanks, propagating with flow \(flow - 1\).
-    * Stream corridors, annular pools, and child branches compile compound hitboxes on `FluidState`.
-    * `FluidMechanics` synchronizes the layer water broad-phase cache via `board.update_fluid_cache(layer)`.
-3. **Pass 2 (Layer Shoreline Synthesis)**: Once all fluid corridors, pools, and branches on the layer are resolved, `Cartographer.purge(layer, board)` clears previous layer shorelines. `Cartographer.generate(layer, board, shoreline_index)` compiles all water bounds into a unified contour sweep (`geometry.contours`), evaluates bordering substrate tiles, and instantiates non-overlapping `Shoreline` entities along the true land-water threshold.
+1. **Spatial Corridor Filtering**: Inspects switch-linked gates (`AssetInstances.GATES`). A mutating gate only flags the layer's fluids as `dirty` if the gate's AABB intersects active fluid compound hitboxes or falls within downstream emission corridors.
+2. **Debounce Accumulator**: Consecutive gate oscillations are coalesced using `settings.FLUID_INVALIDATION_DEBOUNCE_TICKS` before triggering propagation.
+3. **Pass 1 (Fluid Propagation & Bifurcation)**: For invalidated layers, `Actuator.propagate()` updates stream lengths, expands annular pools around static obstacles (\(m = 0\)), derives secondary branch corridors, and updates `board.update_fluid_cache(layer)`. Cache slots (`fluid.state._keys`) are cleared.
+4. **Pass 2 (Geometric Shift Detection & Shoreline Synthesis)**: Compares the pre- and post-propagation geometric signature (`_fluid_signature`: stream lengths, pool bounds, branch positions). If water geometry is invariant, shoreline regeneration is bypassed. If geometry shifted (or during hydration), `Cartographer.purge()` and `Cartographer.generate()` synthesize updated boundary contours.
 
 ## Configuration
 
@@ -239,12 +236,16 @@ Mechanics Configuration defines what Mechanic classes are instantiated by the ga
 mechanics:
     core:
         - key: <mechanic-key>
-          executors: []
-          relations: []
+          executors: 
+            - <executor-key>
+          relations: 
+            - <relation-key>
     world:
         - key: <mechanic-key>
-          executors: []
-          relations: []
+          executors: 
+            - <executor-key>
+          relations:
+            - <relation-key>
 ```
 
 Mechanics are divided into `world` Mechanics and `core` Mechanics. `core` Mechanics execute every single game loop, regardless of whether or not the [Board](./00-overview.md#board) is paused; These include AnimationMechanics and MenuMechanics. `world` Mechanics only execute when the Board is unpaused.

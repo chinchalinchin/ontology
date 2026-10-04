@@ -251,7 +251,10 @@ class Screen:
 
             frame_keys = asset.frame.keys(asset.id, asset.state)
             channels = asset.frame.channels(asset.id, asset.state, asset.properties)
-            submerge_channel = next((op for op in channels if op[0] == ChannelTypes.SUBMERGE.value), None)
+            submerge_channel = next((
+                op for op in channels 
+                if op[0] == ChannelTypes.SUBMERGE.value
+            ), None)
 
             for frame_key, ox, oy in frame_keys:
                 tex_data = self.registry.image(frame_key)

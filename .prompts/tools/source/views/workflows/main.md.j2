@@ -16,6 +16,14 @@
 {{ file(properties.paths.root + 'src/app/assets/frames/effects.py') }}
 ```
 
+##### app.assets.animations
+
+**src/app/assets/animations/core.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/animations/core.py') }}
+```
+
 #### app.game
 
 **src/app/game/engine.py**
@@ -32,22 +40,10 @@
 
 ##### app.game.board
 
-**src/app/game/core.py**
+**src/app/game/board/core.py**
 
 ```python
-{{ file(properties.paths.root + 'src/app/game/core.py') }}
-```
-
-**src/app/game/board/predicates.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/game/board/predicates.py') }}
-```
-
-**src/app/game/board/caches.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/game/board/caches.py') }}
+{{ file(properties.paths.root + 'src/app/game/board/core.py') }}
 ```
 
 ##### app.game.logic
@@ -58,6 +54,12 @@
 
 ```python
 {{ file(properties.paths.root + 'src/app/game/logic/mechanics/base.py') }}
+```
+
+**src/app/game/logic/mechanics/core/animation.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/core/animation.py') }}
 ```
 
 #### app.models
@@ -82,12 +84,10 @@
 {{ file(properties.paths.root + 'src/app/models/state/schemas.py')}}
 ```
 
-#### app.services
+###### app.models.state.assets
 
-##### app.services.orchestration
-
-**src/app/services/orchestration/builder.py**
+**src/app/models/state/assets/tiles.py**
 
 ```python
-{{ file(properties.paths.root + 'src/app/services/orchestration/builder.py' ) }}
+{{ file(properties.paths.root + 'src/app/models/state/assets/tiles.py') }}
 ```

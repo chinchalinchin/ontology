@@ -109,14 +109,11 @@ When asserting fluid immersion (`board.fluid(layer, position)`), the engine quer
 
 ### Depth & Height
 
-To accurately render perspective, the Screen `draw()` loop relies on a tuple-based sorting mechanism applied to all active Assets before they are passed across the Cython boundary. This system resolves the "Painter's Algorithm" dilemma where architectural decals (like Doors) need to render *on top of* their parent structures (like Strut), but *behind* dynamic Asset (like Players) that walk in front of the building.
+To accurately render perspective, the Screen `draw()` loop applies Painter's Algorithm sorting to all active assets before translating them to Cython primitives.
 
-The rendering pipeline sorts Assets using a two-part tuple: `(Primary Key, Secondary Key)`
-
-* **Primary Key: Height**: By default, an Asset's height is calculated dynamically using its Y-coordinate plus its physical length (`state.position.y + dimensions.l`). This ensures Assets closer to the bottom of the screen are drawn last, appearing "in front" of objects higher up. 
-    * **The Height Override:** Assets can optionally declare an explicit `state.height`. When present, this value bypasses the geometric calculation entirely. This is heavily utilized by Compositions via late-binding (e.g., `bind(parent.depth)`), forcing Component assets like Doors or Chests to occupy the exact same spatial "slice" as the wall to which they are attached.
-* **Secondary Key: Depth** If two Assets share the exact same height (either by coincidence or by explicit binding), the engine falls back to `state.depth` as a tie-breaker. All standard Assets default to `depth: 0`.
-    *   **Decal Rendering:** By assigning a component (like a Door) an explicit depth matching its parent Strut, and elevating its `z` index (e.g., `z: 1`), the engine guarantees the Door will always paint directly on top of the Strut, while both objects will collectively sort correctly against a Player walking in front of or behind them.
+1. **Primary Key (Height)**: Evaluates dynamic geometric height ($y + l$). If an explicit `state.height` is present, it is coerced to an integer (`int(asset.state.height)`). Coercion prevents `TypeError` when late-binding compositions assign string tokens alongside integer positions (Bug B003).
+2. **Secondary Key (Depth)**: Serves as a tie-breaker when assets share identical heights. Fluids declare `depth: -1`, Shorelines declare `depth: 0`, Bridges declare `depth: 1`, and standard entities default to `depth: 0`.
+3. **Allocation Optimization**: Replacing per-frame `lambda` closures with `_sort` eliminates millions of transient function objects and reduces draw overhead across expanded entity sets.
 
 ## Cython
 
