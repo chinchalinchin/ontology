@@ -1462,18 +1462,12 @@
 <p>When asserting fluid immersion (<code>board.fluid(layer, position)</code>), the engine queries the bucket corresponding to the coordinate in <span class="arithmatex">\(O(1)\)</span> time, then delegates to narrow-phase AABB segment validation via <code>app.game.board.predicates.in_fluid()</code>.</p>
 <h2 id="rendering">Rendering</h2>
 <h3 id="depth-height">Depth &amp; Height</h3>
-<p>To accurately render perspective, the Screen <code>draw()</code> loop relies on a tuple-based sorting mechanism applied to all active Assets before they are passed across the Cython boundary. This system resolves the "Painter's Algorithm" dilemma where architectural decals (like Doors) need to render <em>on top of</em> their parent structures (like Strut), but <em>behind</em> dynamic Asset (like Players) that walk in front of the building.</p>
-<p>The rendering pipeline sorts Assets using a two-part tuple: <code>(Primary Key, Secondary Key)</code></p>
-<ul>
-<li><strong>Primary Key: Height</strong>: By default, an Asset's height is calculated dynamically using its Y-coordinate plus its physical length (<code>state.position.y + dimensions.l</code>). This ensures Assets closer to the bottom of the screen are drawn last, appearing "in front" of objects higher up. <ul>
-<li><strong>The Height Override:</strong> Assets can optionally declare an explicit <code>state.height</code>. When present, this value bypasses the geometric calculation entirely. This is heavily utilized by Compositions via late-binding (e.g., <code>bind(parent.depth)</code>), forcing Component assets like Doors or Chests to occupy the exact same spatial "slice" as the wall to which they are attached.</li>
-</ul>
-</li>
-<li><strong>Secondary Key: Depth</strong> If two Assets share the exact same height (either by coincidence or by explicit binding), the engine falls back to <code>state.depth</code> as a tie-breaker. All standard Assets default to <code>depth: 0</code>.<ul>
-<li><strong>Decal Rendering:</strong> By assigning a component (like a Door) an explicit depth matching its parent Strut, and elevating its <code>z</code> index (e.g., <code>z: 1</code>), the engine guarantees the Door will always paint directly on top of the Strut, while both objects will collectively sort correctly against a Player walking in front of or behind them.</li>
-</ul>
-</li>
-</ul>
+<p>To accurately render perspective, the Screen <code>draw()</code> loop applies Painter's Algorithm sorting to all active assets before translating them to Cython primitives.</p>
+<ol>
+<li><strong>Primary Key (Height)</strong>: Evaluates dynamic geometric height (<span class="arithmatex">\(y + l\)</span>). If an explicit <code>state.height</code> is present, it is coerced to an integer (<code>int(asset.state.height)</code>). Coercion prevents <code>TypeError</code> when late-binding compositions assign string tokens alongside integer positions (Bug B003).</li>
+<li><strong>Secondary Key (Depth)</strong>: Serves as a tie-breaker when assets share identical heights. Fluids declare <code>depth: -1</code>, Shorelines declare <code>depth: 0</code>, Bridges declare <code>depth: 1</code>, and standard entities default to <code>depth: 0</code>.</li>
+<li><strong>Allocation Optimization</strong>: Replacing per-frame <code>lambda</code> closures with <code>_sort</code> eliminates millions of transient function objects and reduces draw overhead across expanded entity sets.</li>
+</ol>
 <h2 id="cython">Cython</h2>
 <p>While Python objects are fast enough for general logic, calculating collisions and processing rendering instructions for thousands of entities requires maximum performance. The engine strategically uses Cython to bridge this gap, adhering to a strict <strong>"Zero Heap Allocation in the Inner Loop"</strong> philosophy to prevent frame stutters caused by the Python Garbage Collector.</p>
 <div class="admonition important">

@@ -1800,17 +1800,12 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
     SG --&gt;|Resolve Shoreline ID| SI[ShorelineIndex]:::leaf
     SG --&gt;|Query Substrate &amp; Water| BD[Board]:::leaf
     SG --&gt;|Spawn Assets| CR[Cradle]:::leaf</code></pre>
-<p>FluidMechanics governs fluid emission, recursive bifurcation, and procedural shoreline margins across active layers. It executes after physical momentum updates (<code>MotionMechanics</code> and <code>CollisionMechanics</code>) and uses reactive dirty-checking:</p>
+<p>FluidMechanics governs fluid emission, recursive bifurcation, and procedural shoreline margins across active layers. It executes after physical momentum updates (<code>MotionMechanics</code> and <code>CollisionMechanics</code>) and uses a 3-tier reactive dirty-checking architecture:</p>
 <ol>
-<li><strong>Change Detection</strong>: Inspects switch-linked gates (<code>AssetInstances.GATES</code>). If any static barrier within an active layer mutates state, affected fluids are marked <code>dirty</code>. Dynamic bodies (<span class="arithmatex">\(m &gt; 0\)</span>) do not obstruct fluids and do not trigger invalidation.</li>
-<li><strong>Pass 1 (Fluid Propagation &amp; Bifurcation)</strong>: For every fluid on an invalidated layer, <code>Actuator.propagate()</code> raycasts along <code>state.source</code> against map boundaries and immovable static assets (<span class="arithmatex">\(m = 0\)</span>).<ul>
-<li>If an internal static obstacle is struck, an annular pool of dimensions determined by <code>state.flow</code> expands around the obstacle perimeter.</li>
-<li>If <code>state.flow &gt; 1</code>, secondary child streams are discharged from the downstream face of the annular pool along its lateral flanks, propagating with flow <span class="arithmatex">\(flow - 1\)</span>.</li>
-<li>Stream corridors, annular pools, and child branches compile compound hitboxes on <code>FluidState</code>.</li>
-<li><code>FluidMechanics</code> synchronizes the layer water broad-phase cache via <code>board.update_fluid_cache(layer)</code>.</li>
-</ul>
-</li>
-<li><strong>Pass 2 (Layer Shoreline Synthesis)</strong>: Once all fluid corridors, pools, and branches on the layer are resolved, <code>Cartographer.purge(layer, board)</code> clears previous layer shorelines. <code>Cartographer.generate(layer, board, shoreline_index)</code> compiles all water bounds into a unified contour sweep (<code>geometry.contours</code>), evaluates bordering substrate tiles, and instantiates non-overlapping <code>Shoreline</code> entities along the true land-water threshold.</li>
+<li><strong>Spatial Corridor Filtering</strong>: Inspects switch-linked gates (<code>AssetInstances.GATES</code>). A mutating gate only flags the layer's fluids as <code>dirty</code> if the gate's AABB intersects active fluid compound hitboxes or falls within downstream emission corridors.</li>
+<li><strong>Debounce Accumulator</strong>: Consecutive gate oscillations are coalesced using <code>settings.FLUID_INVALIDATION_DEBOUNCE_TICKS</code> before triggering propagation.</li>
+<li><strong>Pass 1 (Fluid Propagation &amp; Bifurcation)</strong>: For invalidated layers, <code>Actuator.propagate()</code> updates stream lengths, expands annular pools around static obstacles (<span class="arithmatex">\(m = 0\)</span>), derives secondary branch corridors, and updates <code>board.update_fluid_cache(layer)</code>. Cache slots (<code>fluid.state._keys</code>) are cleared.</li>
+<li><strong>Pass 2 (Geometric Shift Detection &amp; Shoreline Synthesis)</strong>: Compares the pre- and post-propagation geometric signature (<code>_fluid_signature</code>: stream lengths, pool bounds, branch positions). If water geometry is invariant, shoreline regeneration is bypassed. If geometry shifted (or during hydration), <code>Cartographer.purge()</code> and <code>Cartographer.generate()</code> synthesize updated boundary contours.</li>
 </ol>
 <h2 id="configuration">Configuration</h2>
 <ul>
@@ -1820,12 +1815,16 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <div class="highlight"><pre><span></span><code><span class="nt">mechanics</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">core</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;mechanic-key&gt;</span>
-<span class="w">          </span><span class="nt">executors</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
-<span class="w">          </span><span class="nt">relations</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">          </span><span class="nt">executors</span><span class="p">:</span><span class="w"> </span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;executor-key&gt;</span>
+<span class="w">          </span><span class="nt">relations</span><span class="p">:</span><span class="w"> </span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;relation-key&gt;</span>
 <span class="w">    </span><span class="nt">world</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;mechanic-key&gt;</span>
-<span class="w">          </span><span class="nt">executors</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
-<span class="w">          </span><span class="nt">relations</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">          </span><span class="nt">executors</span><span class="p">:</span><span class="w"> </span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;executor-key&gt;</span>
+<span class="w">          </span><span class="nt">relations</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;relation-key&gt;</span>
 </code></pre></div>
 <p>Mechanics are divided into <code>world</code> Mechanics and <code>core</code> Mechanics. <code>core</code> Mechanics execute every single game loop, regardless of whether or not the <a href="../00-overview/#board">Board</a> is paused; These include AnimationMechanics and MenuMechanics. <code>world</code> Mechanics only execute when the Board is unpaused.</p>
 <h3 id="executors">Executors</h3>

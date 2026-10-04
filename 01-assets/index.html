@@ -697,6 +697,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Resources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Crops
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ores
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trees
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1850,6 +1889,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Resources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Crops
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ores
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trees
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2905,8 +2983,53 @@ $</p>
 <li><code>_keys: Optional[List[Tuple[str, int, int]]] = None</code> (<em>Cache for pre-computing frame keys</em>)</li>
 </ul>
 <h2 id="resources">Resources</h2>
-<p>TODO</p>
+<ul>
+<li>Property File: <code>/src/assets/resources/main.yaml</code></li>
+</ul>
+<p>Resources are mutable, animatel Assets deployed onto the Board that progress through discrete structural or biological stages. Resources are divided into Crops, Trees and Ores.</p>
+<p><strong>Loot</strong></p>
 <p>A Resource contains a <code>loot</code> key. When Resources are mined through the <code>mine</code> <a href="../04-intentions/">Intention</a>, they are converted into <a href="#effects">Collectables</a>. The <code>loot</code> key from the Resource is passed to the Collectable when it is instantiated as a byproduct of <code>mine</code>.</p>
+<p><strong>Properties: ResourceProperties</strong></p>
+<ul>
+<li><code>dimensions: Dimensions</code></li>
+<li><code>hitboxes: List[Hitbox]</code></li>
+<li><code>mass: int = 0</code></li>
+<li><code>loot: str</code>: Inventory loot key dropped upon harvest or mining.</li>
+<li><code>stages: List[str]</code>: Ordered progression stages.</li>
+</ul>
+<p><strong>Frame: StageFrame</strong></p>
+<ul>
+<li><code>keys(id, state): returns [ (f"{id}-{state.stage}", 0, 0) ]</code></li>
+<li><code>index(id, properties): returns { f"{id}-{stage}": (i * properties.dimensions.w, 0, properties.dimensions.w, properties.dimensions.l) for i, stage in enumerate(properties.stages) }</code></li>
+</ul>
+<p><strong>Animation: TBD</strong></p>
+<p>TODO</p>
+<h3 id="crops">Crops</h3>
+<p>Crops are biological resources whose stage transitions are governed by macro-temporal seasons and soil fluid retention.</p>
+<p><strong>State: CropState</strong></p>
+<ul>
+<li><code>layer: str</code></li>
+<li><code>depth: int = 0</code></li>
+<li><code>height: Optional[int] = None</code></li>
+<li><code>position: Position</code></li>
+<li><code>stage: str</code>: Current biological stage (<code>sprout</code>, <code>growth</code>, <code>stalk</code>, <code>bloom</code>, <code>stump</code>).</li>
+<li><code>fluid_retention: float = 0.0</code>: Cumulative moisture level absorbed from adjacent fluid channels.</li>
+<li><code>harvested: bool = False</code>: Flag indicating whether the bloom stage has been harvested.</li>
+</ul>
+<h3 id="ores">Ores</h3>
+<p>Ores are mineral resources that transition through structural stages when acted upon by <a href="../09-emergence/#geology">Geology</a>.</p>
+<p><strong>State: OreState</strong></p>
+<ul>
+<li><code>layer: str</code></li>
+<li><code>depth: int = 0</code></li>
+<li><code>height: Optional[int] = None</code></li>
+<li><code>position: Position</code></li>
+<li><code>stage: str</code>: Current excavation stage (<code>trace</code>, <code>deposit</code>, <code>nugget</code>, <code>vein</code>, <code>crystal</code>, <code>alloy</code>).</li>
+<li><code>vein: str</code>: Mineral classification key.</li>
+</ul>
+<h3 id="trees">Trees</h3>
+<p>TODO</p>
+<p><strong>State: TreeState</strong></p>
 <p>TODO</p>
 <h2 id="sheets">Sheets</h2>
 <ul>
