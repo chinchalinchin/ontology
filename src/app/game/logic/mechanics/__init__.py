@@ -23,7 +23,8 @@ from app.game.logic.mechanics.intentional import (
 )
 from app.game.logic.mechanics.world import (
     PlotMechanics,
-    FluidMechanics
+    FluidMechanics,
+    SeasonMechanics
 )
 
 __all__ = [ 
@@ -48,5 +49,6 @@ __all__ = [
     'WANDER',
     # 
     'PlotMechanics',
-    'FluidMechanics'
+    'FluidMechanics',
+    'SeasonMecahnics'
 ]

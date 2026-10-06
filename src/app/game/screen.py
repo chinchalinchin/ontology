@@ -18,13 +18,16 @@ from app.config.enums import (
     AssetCategories,
     ChannelTypes
 )
+from app.models.state import (
+    CalendarState
+)
 from app.models.state.widgets import (
     DisplayState,
     PaneState
 )
 from app.models.state.assets.sprites import (
     SpriteState,
-    PlayerState
+    PlayerState,
 )
 from app.game.menus.core import Menu
 
@@ -56,7 +59,8 @@ class Screen:
         screensize: Dimensions,
         boardsize: Dimensions,
         tiles: List[Asset],
-        registry: Registry
+        registry: Registry,
+        calendar: CalendarState
     ):
         self.screensize = screensize
         self.boardsize = boardsize
@@ -76,42 +80,40 @@ class Screen:
         self.bg_canvas = render.canvas(canvas_w, canvas_l, opaque=is_opaque)
         self.fg_canvas = render.canvas(canvas_w, canvas_l)
         
-        back_tiles, fore_tiles = self._prerender(tiles)
+        back_tiles, fore_tiles = self._prerender(tiles, calendar)
         render.construct(self.bg_canvas, back_tiles)
         render.construct(self.fg_canvas, fore_tiles)
 
 
     def _prerender(self, 
-        tiles: List[Asset]
+        tiles: List[Asset], 
+        calendar: CalendarState
     ) -> tuple[list, list]:
-        """
-        Prerender Tile Assets.
-        """
         back_tiles, fore_tiles = [], []
-        
-        logger.debug(f"Constructing {len(tiles)} total tiles...")
 
         for tile in tiles:
-            frame_keys = tile.frame.keys(tile.id, tile.state)
+            # Query macro-temporal era projection
+            frame_keys = tile.frame.eras(tile.id, calendar)
+
             for frame_key, ox, oy in frame_keys:
                 tex_data = self.registry.image(frame_key)
-
-                if not tex_data: continue
+                if not tex_data:
+                    continue
 
                 tex, sx, sy, sw, sl = tex_data
                 tile_tuple = (
                     tex, sx, sy, sw, sl,
-                    tile.state.position.x + ox, 
+                    tile.state.position.x + ox,
                     tile.state.position.y + oy,
                     tile.dimensions.w, tile.dimensions.l,
                     tile.state.multiple.nx, tile.state.multiple.ny
                 )
-                # Route properties
+
                 if tile.taxonomy.instance == AssetInstances.BACK.value:
                     back_tiles.append(tile_tuple)
                 elif tile.taxonomy.instance == AssetInstances.FORE.value:
                     fore_tiles.append(tile_tuple)
-                    
+
         return back_tiles, fore_tiles
 
 
@@ -379,18 +381,19 @@ class Screen:
                 self._widgets([menu])
 
 
+    def reconstruct(self, tiles: List[Asset], calendar: CalendarState) -> None:
+        """Bakes updated seasonal tile frames without reallocating GPU texture memory."""
+        back_tiles, fore_tiles = self._prerender(tiles, calendar)
+        render.construct(self.bg_canvas, back_tiles)
+        render.construct(self.fg_canvas, fore_tiles)
+
+        
     def rebake(self, 
         tiles: List[Asset], 
         boardsize: Dimensions,
+        calendar: CalendarState,
         screensize: Dimensions = None
     ) -> None:
-        """
-        Dynamically reallocates Cython VRAM canvases for a new world state.
-        Safely destroys old textures immediately to prevent VRAM OOM crashes.
-        """
-        logger.info("Rebaking Screen canvases for new world state...")
-
-        # 1. Explicitly free GPU memory immediately (bypassing Python GC)
         if self.bg_canvas:
             render.destroy(self.bg_canvas)
         if self.fg_canvas:
@@ -404,11 +407,10 @@ class Screen:
         canvas_l = max(boardsize.l, self.screensize.l)
 
         is_opaque = len(tiles) == 0
-
         self.bg_canvas = render.canvas(canvas_w, canvas_l, opaque=is_opaque)
         self.fg_canvas = render.canvas(canvas_w, canvas_l)
 
-        back_tiles, fore_tiles = self._prerender(tiles)
+        back_tiles, fore_tiles = self._prerender(tiles, calendar)
         render.construct(self.bg_canvas, back_tiles)
         render.construct(self.fg_canvas, fore_tiles)
 

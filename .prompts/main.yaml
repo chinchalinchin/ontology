@@ -31,7 +31,7 @@ properties:
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/grooming.md.j2
+  template: iterate/implementation.md.j2
 # ----------------------------------------------------
   parameters:
     diagram: mechanics-fluid.mmd
@@ -68,10 +68,10 @@ tools:
           - 06-widgets.md
           - 07-sounds.md
           - 08-plots.md
-          - 09-emergence.md
+          - 10-emergence.md
       specs: []
     source:
-      workflow: main
+      workflow: seasons
     shell:
       directory: |
         tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
@@ -98,8 +98,15 @@ tools:
       session:
         description: null
         conditions:
-          - src/assets/effects/fluids/main.yaml
-          - src/assets/geography/main.yaml
-          - src/assets/crafts/bridges.yaml
-          - src/data/state/world-01/effects/fluids.yaml
-          - src/data/state/world-01/crafts/bridges.yaml
+          ## ------------------- PROPERTIES
+          # - src/assets/effects/fluids/main.yaml
+          # - src/assets/geography/main.yaml
+          - src/assets/resources/main.yaml
+          - src/assets/tiles/main.yaml
+          # - src/assets/crafts/bridges.yaml
+          ## ------------------- STATE
+          - src/data/state/world-01/resources/main.yaml
+          # - src/data/state/world-01/effects/fluids.yaml
+          # - src/data/state/world-01/crafts/bridges.yaml
+          ## -------------------- CONFIGURATION
+          - src/data/config/stages/main.yaml

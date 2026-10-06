@@ -28,8 +28,8 @@ from app.models.state.assets.objects import (
     SwitchState,
     DialogueState,
 )
-from app.models.state.assets.tiles import (
-    MultiplierState
+from app.models.state.assets.resources import (
+    ResourceState
 )
 from app.models.state.assets.sprites import (
     SpriteState,
@@ -42,6 +42,9 @@ from app.models.state.assets.sprites import (
     Goal,
     Inventory,
     Memory
+)
+from app.models.state.assets.tiles import (
+    MultiplierState
 )
 
 __all__ = [ 
@@ -67,6 +70,8 @@ __all__ = [
     'Lot',
     'Pool',
     'Branch',
+    # RESOURCE STATES
+    'ResourceState',
     # GEOGRAPHY STATES
     'ShorelineState',
     # TILE STATES

@@ -1,7 +1,7 @@
 recipes:
   tiles:
     back:
-      frame: single
+      frame: seasonal
       animation: none
     fore:
       frame: single
@@ -64,6 +64,16 @@ recipes:
       animation: none
     rafts:
       frame: single
+      animation: none
+  resources:
+    crops:
+      frame: stage
+      animation: none
+    ore: 
+      frame: stage
+      animation: none
+    trees:
+      frame: stage
       animation: none
   sheets:
     players:

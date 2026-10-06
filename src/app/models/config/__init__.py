@@ -2,8 +2,6 @@
 from app.models.config.core import (
     Configuration,
     ActionConfiguration,
-    IntentionConfiguration,
-    PlotConfiguration,
 )
 from app.models.config.compositions import (
     CompositionPseudoState,
@@ -39,6 +37,11 @@ from app.models.config.recipes import (
     WidgetRecipe,
     RecipeConfiguration
 )
+from app.models.config.transitions import (
+    IntentionConfiguration,
+    PlotConfiguration,
+    StageConfiguration
+)
 from app.models.config.schemas import ConfigurationSchema
 
 __all__ = [ 
@@ -46,6 +49,7 @@ __all__ = [
     'ActionConfiguration',
     'IntentionConfiguration',
     'PlotConfiguration',
+    'StageConfiguration',
     'CompositionPseudoState',
     'CompositionConfiguration',
     'MechanicsConfiguration',

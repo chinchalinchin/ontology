@@ -20,13 +20,17 @@ from app.assets.base import Asset
 from app.config.enums import (
     AssetCategories,
     AssetInstances,
-    Lifecycles
+    Lifecycles,
+    Shortcuts
 )
 from app.config.loader import Loader
 from app.game.devices import Device
 from app.game.menus.core import Menu
 from app.services.generators.game.cradle import Cradle
-from app.models.state.core import PlotState
+from app.models.state.core import (
+    PlotState,
+    CalendarState
+)
 from app.models.config import ConfigurationSchema
 from app.models.groups import EquipmentGroup
 from app.game.board.cache import Cache
@@ -55,6 +59,7 @@ class Board:
     paused: bool
     # Game Data
     plot: PlotState
+    calendar: CalendarState
     perimeters: Dict[str, List[Boundary]]
     # Configurations
     configurations: ConfigurationSchema
@@ -80,6 +85,7 @@ class Board:
         self.plot = None
         self.device = None
         self.cradle = None
+        self.calendar = CalendarState()
         self.menus = []
         self.overlays = []
         self.configurations = configurations
@@ -328,7 +334,7 @@ class Board:
     # ------------------------------------------------ EXPORTERS
 
     def serialize(self, slot: str) -> None:
-        dump: dict[str, dict[str, list[dict[str, Any]]]] = {}
+        dump: Dict[str, Any] = {}
 
         for asset in self._assets:
             if asset.category == AssetCategories.WIDGETS.value:
@@ -355,5 +361,11 @@ class Board:
                 dump[cat][inst] = []
 
             dump[cat][inst].append(asdict(asset.state))
+
+        # Serialize abstract world metadata (resolving Bug B015)
+        if self.calendar:
+            dump[Shortcuts.CALENDAR.value] = asdict(self.calendar)
+        if self.plot:
+            dump[Shortcuts.PLOTS.value] = asdict(self.plot) if hasattr(self.plot, "__dataclass_fields__") else self.plot
 
         Loader.save_state(slot, dump)

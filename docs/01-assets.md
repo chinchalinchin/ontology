@@ -10,7 +10,7 @@ This document serves to specify the Asset architecture and provide key definitio
 
 ## Overview 
 
-The Asset directory (and all subdirectories) contains Asset Image Files (`*.png`) and Asset Property indices (`*.yaml`). The [initialization](./10-architecture.md#initialization) will read in all of these files recursively and then use the property indices to index each Asset file. Each image file that appears in the Asset directories must be configured in a YAML file to get indexed and injected into the game. The property configuration in the `*.yaml` files must conform to the [Asset property schema](./appendices/01-schemas.md#model-properties) of the respective Asset Category they are configuring. 
+The Asset directory (and all subdirectories) contains Asset Image Files (`*.png`) and Asset Property indices (`*.yaml`). The [initialization](./11-architecture.md#initialization) will read in all of these files recursively and then use the property indices to index each Asset file. Each image file that appears in the Asset directories must be configured in a YAML file to get indexed and injected into the game. The property configuration in the `*.yaml` files must conform to the [Asset property schema](./appendices/01-schemas.md#model-properties) of the respective Asset Category they are configuring. 
 
 !!! important
     All `*.yaml` files in the Asset directories are merged into a single schema, so every key must be unique. If two image files have the same name, one of them will be overwritten during [Registry indexing](./00-overview.md#registry).
@@ -77,7 +77,7 @@ All Assets have a `depth` state attribute. This attribute controls the Z-orderin
 
 All Assets have an optional `height` state attribute. This attribute also modulates the Z-ordering, but the relationship is more complex than `depth`, relating to the application of the Painter's Algorithm. `height` is only a factor when dealing with [Compositions](./03-compositions.md). 
 
-See [Rendering documentation](./10-architecture.md#rendering) for a complete overview of `depth` and `height`.
+See [Rendering documentation](./11-architecture.md#rendering) for a complete overview of `depth` and `height`.
 
 ### Asset Hierarchy
 
@@ -192,15 +192,25 @@ An Asset's position in the Asset Hierarchy is encoded into its Taxonomy. These a
 
 `name` is the physical deployment of the Asset. Every Asset Instance deployed onto a Board has a unique `name`.
 
-`(category, instance)` collectively determine the components `(frame, animation, properties, state)` injected into an Asset class during the [Initialization](./10-architecture.md#initialization). More specifically, category determines properties (`category -> properties`), and instance determines everything else (`instance -> (frame, animation, state)`).
+`(category, instance)` collectively determine the components `(frame, animation, properties, state)` injected into an Asset class during the [Initialization](./11-architecture.md#initialization). More specifically, category determines properties (`category -> properties`), and instance determines everything else (`instance -> (frame, animation, state)`).
 
 ## Tiles
 
 * Property File: `/src/assets/tiles/main.yaml`
 
-Tiles are inanimate, immutable Assets. Tiles are the most basic type of Asset. They have a single frame, have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds and foregrounds by breaking each rendered image into a grid of Tiles. 
+Tiles are static, frictive Assets that form the terrain substrate. Tiles are arranged into continuous background (`back`) and foreground (`fore`) canvases.
 
 Tiles Instances have their dimensions fixed by their properties. These dimensions are configurable in the property file, but they apply to all Tiles of a particular instance universally. When a Tile is drawn, it is rendered as a `multiple` of the unit Tile configured in the Asset directory.
+
+**Event Driven Animation**
+
+Tiles are not animated per-frame in `Screen.draw()`. Instead, multi-season tiles leverage `SeasonalFrame` and event-driven canvas reconstruction:
+
+* **Back Tiles**: Rendered beneath all dynamic entities. Represent soil, turf, rock, and water substrates.
+* **Fore Tiles**: Rendered above all dynamic in-world entities (excluding UI widgets). Represent tree canopies, rooftops, and structural overhangs that characters traverse beneath.
+* **Temporal Invalidation**: Tile atlases contain 36 cells ($4_\text{seasons} \times 9_\text{periods}$). When `SeasonMechanics` advances a calendar period, a `SeasonEvent` triggers `Screen.reconstruct(board)`. The screen recompiles the static textures (`bg_canvas` and `fg_canvas`) using the updated seasonal frame keys.
+
+**Friction**
 
 Tiles have coefficients of friction. These coefficient are used by [MotionMechanics](./05-mechanics.md#spatial) to determine the rate of velocity decay for Frictive Assets traversing their area.
 
@@ -471,10 +481,10 @@ Bridges are static, passable Crafts that elevate characters and dynamic items ov
 
 **Oriented Frame Atlas**
 
-A Bridge image file embeds both horizontal and vertical deck spans in a single horizontal strip:
+A Bridge image file embeds both horizontal and vertical Frames spans in a single horizontal row:
 
-* Cell 0: `horizontal` span (deck runs East-West to cross North-South streams).
-* Cell 1: `vertical` span (deck runs North-South to cross East-West streams).
+* Cell 0: `horizontal` Frame (runs East-West to cross North-South streams).
+* Cell 1: `vertical` FRame (runs North-South to cross East-West streams).
 
 During bootstrap, `OrientedFrame` indexes these into discrete crop keys: `{id}-horizontal` and `{id}-vertical`. At runtime, `OrientedFrame.keys()` emits the key corresponding to `state.orientation`.
 
@@ -484,7 +494,7 @@ Bridges are deployed via a 1D structural multiplier (`multiple.nx` for horizonta
 
 During world hydration or dynamic execution of the `build` Intention, the `Decomposer` unpacks a `BridgeState` into a contiguous series of $N$ unit `Asset` instances:
 * Each constituent segment receives an independent, absolute `Position` offset along the primary span axis.
-* Each constituent segment references the base unit's static `CraftProperties`, preserving immutable dimensions and relative deck hitboxes.
+* Each constituent segment references the base unit's static `CraftProperties`, preserving immutable dimensions and relative hitboxes.
 * Construction cost scales linearly with span length ($N \times \text{Cost}$).
 
 **Dynamics & Environmental Interception**
@@ -707,47 +717,7 @@ Reactables Effects react to the [Intentional](./04-intentions.md) states of [Spr
 
 Fluids are directional Effects that project along a `source` Direction until obstructed by an obstacle. Once obstructed, Fluids form Pools around the obstacle and bifuricate into secondary streams.
 
-!!! note
-    Because Fluid assets span multiple grid units, they bypass standard geometric height calculation (`pos.y + dim.l`).
-
-**Principles of Fluid Flow**
-
-1. (**Source**) A Fluid has a `source`. A `source` is a Direction. Fluid flows in the Direction of its `source`. 
-2. (**Obstruction**) Fluids are obstructed by obstacles. Fluids form Pools around obstacles, determined by their `flow` rate.
-3. (**Bifurication**) When a Fluid meets an obstacle, it bifuricates across its orthogonal axes (e.g., a `down` flowing Fluid bifuricates in the `left` and `right` directions) and then continues flowing in its original `source` Direction (e.g. `down`). The number of times a Fluid may bifuricate is equal to its `flow`, e.g. a `flow = 3` means the Fluid may bifuricate three times.
-4. (**Fields**) When dynamic Assets (Sprites, Crates, etc.) intersect a Fluid, they acquire a Velocity in the Direction of `source`, getting "swept" away. The speed imparted to an Asset by a Fluid is proportional to its `flow`, i.e. the higher the `flow`, the faster the resulting speed of the "swept" Asset.
-
-**Z-Ordering & Sorting**
-
-Fluids declare an explicit `height: 0` and `depth: -1`. This ensures the [rendering pipeline](./10-architecture.md#graphics) sorts the resulting stream above Tiles but underneath other mutable Assets.
-
-**Branch Model**
-
-* `position: Position`: Absolute origin of the branch corridor.
-* `source: str`: Flow direction vector matching or orthogonal to parent stream.
-* `flow: int`: Attenuated flow intensity ($flow_{\text{parent}} - 1$).
-* `length: int`: Raycast truncation distance.
-* `hitboxes: List[Hitbox]`: Compound hitboxes covering the secondary stream corridor.
-
-**Frame: FluidFrame**
-
-* `keys(id, state): returns [ ("{id}-{state.animation.frame}-{slices(state.pool, state.length)}", 0, 0)]` 
-* `index(id, properties): returns { "{id}-{properties.count}-{slice(dimensions, directions)}": ( base_x, base_y, slice_w, slice_l ) }`: 
-
-**State: FluidState**
-
-* `layer: Optional[str]`
-* `position: Position`
-* `source: Directions`
-* `flow: int`
-* `length: int`
-* `pool: Optional[Pool]`
-* `branches: List[Branch]`
-* `hitboxes: List[Hitbox]`
-* `dirty: bool = True`
-* `height: Optional[int] = 0`
-* `depth: int = -1`
-* `_keys: Dict[int, List[Tuple[str, int, int]]] = field(default_factory=dict)` (*Cache for pre-computing fluid keys*)
+Fluids play a vital role in Seasons and Ecology. They are covered in more detail in the [Ecology documentation](./09-ecology.md#instance-fluids).
 
 ## Geography
 
@@ -783,39 +753,17 @@ $
 * `thickness: int = 8`
 * `mass: int = -1`
 
-### Shorelines
-
-Shorelines are procedural, inanimate Geography sensors instantiated along unoccluded environmental water margins. Rather than belonging to individual fluid emitters, Shorelines are derived at the layer level: `FluidMechanics` aggregates all active fluid streams and annular pools on a layer, derives the outer perimeter hull via `geometry.contours()`, samples bordering substrate tiles from `Board`, and coalesces contiguous segments into cohesive shoreline entities.
-
-**Frame: CardinalFrame**
-
-* Indexes 4 cardinal orientation rows:
-    * Row 0: `up`    (Land North/Up, Water South/Down)
-    * Row 1: `left`  (Land West/Left, Water East/Right)
-    * Row 2: `down`  (Land South/Down, Water North/Up)
-    * Row 3: `right` (Land East/Right, Water West/Left)
-* `keys(id, state)` emits repeating full tiles along `state.length` and a fractional distal slice for remainders.
-
-**State: ShorelineState**
-
-* `layer: str`
-* `position: Position`
-* `orientation: str`
-* `length: int`
-* `thickness: int`
-* `bidirectional: bool = True`
-* `hitboxes: List[Hitbox]`
-* `_keys: Optional[List[Tuple[str, int, int]]] = None` (*Cache for pre-computing frame keys*)
+Geography is not deployed onto the Board in an analogous fashion to other Asset Categories. Instead, Geography is procedurally generated using applications services (e.g. Actuator, Cartographer). See [Ecology documentation](./09-ecology.md#instance-fluids) for more information.
 
 ## Resources
 
 * Property File: `/src/assets/resources/main.yaml`
 
-Resources are mutable, animatel Assets deployed onto the Board that progress through discrete structural or biological stages. Resources are divided into Crops, Trees and Ores.
+Resources are mutable Assets deployed onto the Board that progress through discrete structural or biological stages, dependent on [Seasonal](./05-mechanics.md#world) parameters. Resources are divided into Crops, Trees and Ores.
 
 **Loot**
 
-A Resource contains a `loot` key. When Resources are mined through the `mine` [Intention](./04-intentions.md), they are converted into [Collectables](#effects). The `loot` key from the Resource is passed to the Collectable when it is instantiated as a byproduct of `mine`.
+A Resource contains a `loot` key. When Resources are mined through the `mine` [Intention](./04-intentions.md), they are converted into [Collectables](#effects). The `loot` key from the Resource is passed to the Collectable via the [Cradle](./00-overview.md#board) when it is instantiated as a byproduct of `mine`.
 
 **Properties: ResourceProperties**
 
@@ -830,44 +778,13 @@ A Resource contains a `loot` key. When Resources are mined through the `mine` [I
 * `keys(id, state): returns [ (f"{id}-{state.stage}", 0, 0) ]`
 * `index(id, properties): returns { f"{id}-{stage}": (i * properties.dimensions.w, 0, properties.dimensions.w, properties.dimensions.l) for i, stage in enumerate(properties.stages) }`
 
-**Animation: TBD**
+**Animation: None**
 
-TODO
+Resources do not cycle micro-frame animations. Their appearance updates when `SeasonMechanics` transitions `state.stage`.
 
-### Crops
+**Ecology**
 
-Crops are biological resources whose stage transitions are governed by macro-temporal seasons and soil fluid retention.
-
-**State: CropState**
-
-* `layer: str`
-* `depth: int = 0`
-* `height: Optional[int] = None`
-* `position: Position`
-* `stage: str`: Current biological stage (`sprout`, `growth`, `stalk`, `bloom`, `stump`).
-* `fluid_retention: float = 0.0`: Cumulative moisture level absorbed from adjacent fluid channels.
-* `harvested: bool = False`: Flag indicating whether the bloom stage has been harvested.
-
-### Ores
-
-Ores are mineral resources that transition through structural stages when acted upon by [Geology](./09-emergence.md#geology).
-
-**State: OreState**
-
-* `layer: str`
-* `depth: int = 0`
-* `height: Optional[int] = None`
-* `position: Position`
-* `stage: str`: Current excavation stage (`trace`, `deposit`, `nugget`, `vein`, `crystal`, `alloy`).
-* `vein: str`: Mineral classification key.
-
-### Trees 
-
-TODO
-
-**State: TreeState**
-
-TODO
+Resources form the core of [SeasonMechanics](./05-mechanics.md) and possess many unique interactions across Asset classes. They are covered in more detail in the [Ecology documentation](./09-ecology.md#category-resources)
 
 ## Sheets
 
@@ -940,7 +857,7 @@ An Attackbox is a special type of hitbox unique to Sheet Assets. It is mapped to
 
 A Stack is a list of Sheets keys to superimpose over one another to form the resultant Sheet used in the game. The Sheet stacks are drawn in the order they are specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.
 
-For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.png` might be stacked on top of `src/assets/sheets/<sheet-category>/skins/male-dark-human.png` to create a new Sheet asset used in the game. This Sprite stack is assembled in the [Registry](./00-overview.md#registry) using the `stack` property during the [application bootstrap](./10-architecture.md#initialization). The assembled `stack` is saved as a Sheet Asset, using the `<sheet-id>` as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.
+For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.png` might be stacked on top of `src/assets/sheets/<sheet-category>/skins/male-dark-human.png` to create a new Sheet asset used in the game. This Sprite stack is assembled in the [Registry](./00-overview.md#registry) using the `stack` property during the [application bootstrap](./11-architecture.md#initialization). The assembled `stack` is saved as a Sheet Asset, using the `<sheet-id>` as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.
 
 !!! note
     It is assumed all Sheets in a Stack conform to the same (Action, Direction) row mapping.
@@ -976,33 +893,6 @@ TODO
 
 Sprites are Sheets over multiple rows of frames, where each row may have a variable number of frames. Sprite have a diverse palette of Animation Actions. They are meant to encapsulate the core game entities, e.g. the player, NPCs, and enemies.
 
-**Animation: SpriteAnimation**
-
-- `state.animation.frame += 1`
-- `if state.animation.frame >= properties.actions[state.animation.action].count: state.animation.frame = 0`
-- `if state.psyche.expression: state.psyche.expression.ttl -= 1`
-
-**Frame: SpriteFrame**
-
-* `keys(id, state): returns [ ("{id}-{state.animation.action}-{state.animation.direction}-{animation.frame}", 0, 0) ] + [ (<equipment-frames>, 0, 0) ] + [ (<expression-frames>, offset.x, offset.y) ]`
-* `index(id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
-
-**State: SpriteState**
-
-* `layer: str`
-* `depth: int`
-* `height: int`
-* `position: Position`
-* `velocity: Velocity`
-* `animation: Animation`
-* `character: Character`
-* `intention: Intention`
-* `inventory: Inventory`
-* `meters: Dict[str, Meter]`
-* `mutators: Mutators`
-* `memory: Memory`
-* `goal: Goal`
-
 Sprite States are covered in more detail in the [Sprites documentation](./02-sprites.md).
 
 ### Equipment (Weapons, Utilities, Tools, Armor, Shields)
@@ -1013,19 +903,19 @@ Equipment is covered in more detail in the [Sprites documentation](./02-sprites.
 
 ## Widgets
 
-Widgets are used to constructs Menus. They are not a part of the core gameplay loop and have special Mechanics for their interaction. 
+Widgets are used to constructs Menus. They are not a part of the core gameplay loop and have special Mechanics that govern their lifecycle. 
 
 Widgets are covered in their own section, [Widgets](./06-widgets.md).
 
 ## Fonts
 
-Fonts are stateless Assets initialized at [runtime](./10-architecture.md#initialization). Rather than being deployed onto the Board, Fonts are loaded into the [Registry](./00-overview.md#registry) and utilized by the [Screen](./00-overview.md#screen) to rasterize text canvases for Widgets and dialogue modals.
+Fonts are stateless Assets initialized at [runtime](./11-architecture.md#initialization). Rather than being deployed onto the Board, Fonts are loaded into the [Registry](./00-overview.md#registry) and utilized by the [Screen](./00-overview.md#screen) to rasterize text canvases for Widgets and dialogue modals.
 
 A Font configuration pairs a `.ttf` file with styling rules. During bootstrap, the Registry ingests each font declared in `/src/assets/fonts/main.yaml` alongside its configuration, storing them as styled Cython `TTFFont` wrappers. When `outline` is specified, the Registry instantiates a secondary internal outline pointer configured via `TTF_SetFontOutline`, enabling `render.write()` to execute two-pass blended rendering (outline pass followed by foreground fill) without runtime glyph cache invalidation.
 
 In Menu hierarchies, fonts are scoped lexically at the `MenuPane` level: any `font` declared on a parent pane cascades down to all child panes and `Page` widgets unless explicitly shadowed by a nested pane.
 
-See [Graphics Architecture documentation](./10-architecture.md#graphics) for technical implementation details.
+See [Graphics Architecture documentation](./11-architecture.md#graphics) for technical implementation details.
 
 **Properties: FontProperties**
 

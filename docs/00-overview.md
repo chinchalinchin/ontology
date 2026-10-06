@@ -69,7 +69,7 @@ Mechanics and other components of the game Engine (e.g. Menus, Actions, etc.) ut
 
 The core components of the application are listed below in this seciton, in the rough order they are called in the course of bootstrapping.
 
-See [Architecture documentation](./10-architecture.md) for more information.
+See [Architecture documentation](./11-architecture.md) for more information.
 
 ### Loader
 

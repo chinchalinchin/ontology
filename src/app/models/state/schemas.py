@@ -12,7 +12,8 @@ from dataclasses import (
 
 # Application Libraries
 from app.models.state.core import (
-    PlotState
+    PlotState,
+    CalendarState
 )
 from app.models.state.assets import (
     MotorState,
@@ -31,7 +32,8 @@ from app.models.state.assets import (
     FluidState,
     SpriteState,
     PlayerState,
-    BridgeState
+    BridgeState,
+    ResourceState
 )
 
 # ---------------------------------------------------------------------------------------
@@ -58,6 +60,12 @@ class CraftStateInstances:
     struts: List[PropertyState] = field(default_factory=list)
     decors: List[PropertyState] = field(default_factory=list)
     bridges: List[BridgeState] = field(default_factory=list)
+
+@dataclass(slots=True)
+class ResourceStateInstances:
+    crops: List[ResourceState] = field(default_factory=list)
+    ore: List[ResourceState] = field(default_factory=list)
+    trees: List[ResourceState] = field(default_factory=list)
     
 @dataclass(slots=True)
 class CursorStateInstances:
@@ -79,11 +87,15 @@ class SheetStateInstances:
 
 @dataclass(slots=True)
 class StateSchema:
+    # ASSET STATES
     tiles: TileStateInstances = field(default_factory=TileStateInstances)
     objects: ObjectStateInstances = field(default_factory=ObjectStateInstances)
     crafts: CraftStateInstances = field(default_factory=CraftStateInstances)
     cursors: CursorStateInstances = field(default_factory=CursorStateInstances)
     effects: EffectStateInstances = field(default_factory=EffectStateInstances)
+    resources: ResourceStateInstances = field(default_factory=ResourceStateInstances)
     sheets: SheetStateInstances = field(default_factory=SheetStateInstances)
     compositions: List[PropertyState] = field(default_factory=list)
+    # BOARD STATES
     plots: PlotState = field(default_factory=PlotState)
+    calendar: CalendarState = field(default_factory=CalendarState)

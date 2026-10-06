@@ -19,7 +19,8 @@ from app.assets.base import Asset
 from app.config.enums import (
     AssetCategories, 
     AssetInstances,
-    Orientations
+    Orientations,
+    Shortcuts
 )
 from app.services.generators.game.factory import Factory
 from app.models.config import (
@@ -85,15 +86,19 @@ class Decomposer:
         
         for cat_field in dataclasses.fields(components):
             cat_key = cat_field.name
-            cat_data = getattr(components, cat_key)
+            if cat_key in Shortcuts:
+                continue
 
-            if not cat_data: continue
+            cat_data = getattr(components, cat_key)
+            if not cat_data: 
+                continue
             
             for inst_field in dataclasses.fields(cat_data):
                 inst_key = inst_field.name
                 inst_list = getattr(cat_data, inst_key)
 
-                if not inst_list: continue
+                if not inst_list: 
+                    continue
                 
                 for state_obj in inst_list:
                     self._accumulate_cost(cat_key, inst_key, state_obj.id, cost_map)
@@ -265,13 +270,18 @@ class Decomposer:
             
         for cat_field in dataclasses.fields(components):
             cat_key = cat_field.name
+            if cat_key in Shortcuts:
+                continue
+
             cat_data = getattr(components, cat_key)
-            if not cat_data: continue
+            if not cat_data: 
+                continue
             
             for inst_field in dataclasses.fields(cat_data):
                 inst_key = inst_field.name
                 inst_list = getattr(cat_data, inst_key)
-                if not inst_list: continue
+                if not inst_list: 
+                    continue
                 
                 for pseudo_state in inst_list:
                     new_state = self._hydrate_state(
@@ -283,7 +293,6 @@ class Decomposer:
                         is_strut=False
                     )
                     assets.append(self._create_asset(cat_key, inst_key, new_state))
-
 
     # ---------------------------------------------------------
     # ------------------------------------------ PUBLIC METHODS

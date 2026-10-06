@@ -11,9 +11,15 @@ from app.assets.frames.effects import (
 from app.assets.frames.geography import (
     CardinalFrame
 )
+from app.assets.frames.resources import (
+    StageFrame
+)
 from app.assets.frames.sheets import (
     StateFrame,
     SpriteFrame
+)
+from app.assets.frames.tiles import (
+    SeasonalFrame
 )
 from app.assets.frames.widgets import (
     TraversalFrame,
@@ -30,5 +36,7 @@ __all__ = [
     'CardinalFrame',
     'MeterFrame',
     'IndexFrame',
-    'OrientedFrame'
+    'OrientedFrame',
+    'StageFrame',
+    'SeasonalFrame'
 ]

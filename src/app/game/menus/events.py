@@ -29,6 +29,9 @@ class UpdateEvent(Event):
 class StateEvent(Event):
     id: str
 
+class SeasonEvent(Event):
+    pass
+
 class TerminalEvent(Event):
     pass
 

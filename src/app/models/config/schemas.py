@@ -16,9 +16,12 @@ from app.config.enums import (
 )
 from app.models.config.core import (
     ActionConfiguration, 
+    LibraryConfiguration
+)
+from app.models.config.transitions import (
     IntentionConfiguration,
     PlotConfiguration,
-    LibraryConfiguration
+    StageConfiguration,
 )
 from app.models.config.compositions import CompositionConfiguration
 from app.models.config.mechanics import MechanicsConfiguration
@@ -38,5 +41,6 @@ class ConfigurationSchema:
     mappings: MappingConfiguration = field(default_factory=MappingConfiguration)
     mechanics: MechanicsConfiguration = field(default_factory=MechanicsConfiguration)
     plots: Dict[str, List[PlotConfiguration]] = field(default_factory=dict)
+    stages: Dict[str, Dict[str, List[StageConfiguration]]] = field(default_factory=dict)
     recipes: RecipeConfiguration = field(default_factory=RecipeConfiguration)
     menus: Dict[str, MenuConfiguration] = field(default_factory=dict)

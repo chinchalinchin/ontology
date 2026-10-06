@@ -18,6 +18,8 @@ from dataclasses import (
 from app.config.enums import (
     Actions, 
     Directions,
+    Cycles,
+    Seasons
 )
 
 # ---------------------------------------------------------------------------------------
@@ -79,3 +81,11 @@ class AnimationState:
 class PlotState:
     current: Optional[str] = None
     previous: List[str] = field(default_factory=list)
+
+@dataclass(slots=True)
+class CalendarState:
+    year: int = 1
+    season: str = Seasons.SPRING.value
+    cycle: str = Cycles.ONSET.value
+    period: int = 0
+    elapsed: float = 0.0

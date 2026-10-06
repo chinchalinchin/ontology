@@ -226,6 +226,16 @@ FluidMechanics governs fluid emission, recursive bifurcation, and procedural sho
 3. **Pass 1 (Fluid Propagation & Bifurcation)**: For invalidated layers, `Actuator.propagate()` updates stream lengths, expands annular pools around static obstacles (\(m = 0\)), derives secondary branch corridors, and updates `board.update_fluid_cache(layer)`. Cache slots (`fluid.state._keys`) are cleared.
 4. **Pass 2 (Geometric Shift Detection & Shoreline Synthesis)**: Compares the pre- and post-propagation geometric signature (`_fluid_signature`: stream lengths, pool bounds, branch positions). If water geometry is invariant, shoreline regeneration is bypassed. If geometry shifted (or during hydration), `Cartographer.purge()` and `Cartographer.generate()` synthesize updated boundary contours.
 
+#### SeasonMechanics
+
+`SeasonMechanics` executes within the `world` mechanics pipeline, driving global time, soil hydrology, and biological resource lifecycles:
+
+1. **Temporal Integration**: Accumulates frame $\Delta t$ into `board.calendar.elapsed`. When elapsed time reaches `settings.PERIOD_DURATION_SECONDS` (400.0s), the mechanic advances `period` (0..2), `cycle` (`onset`, `peak`, `decline`), `season` (`spring`, `summer`, `autumn`, `winter`), and `year`, appending a `SeasonEvent` to the engine bus.
+2. **Hydrological Diffusion**: Iterates over `board.categories(AssetCategories.RESOURCES.value)`. Probes cardinal offsets against `board.fluid()` spatial buckets:
+   * **Moist Substrate**: Accumulates moisture via $\text{retention} \mathrel{+}= \kappa_{\text{diffusion}} \cdot \Delta t$.
+   * **Dry Substrate**: Evaporates moisture via $\text{retention} \mathrel{-}= \kappa_{\text{evap}} \cdot \mu_{\text{season}} \cdot \Delta t$.
+3. **Declarative Stage Transitions**: Queries `self.executor.evaluate( current_stage, locals)` against `/src/data/config/stages/main.yaml`.
+
 ## Configuration
 
 * Location: `/src/data/config/mechanics/main.yaml`
@@ -257,6 +267,9 @@ Mechanics Executors are services made available to the request Mechanics. Availa
 - `plot`: Executor for evaluating the conditions for [Plot Transitions](./08-plots.md).
 - `intention`: Executor for evaluating the conditions for [Intention Transitions](./04-intentions.md)
 - `actuator`: Executor for generating [Fluid](./01-assets.md#fluids) and [Shoreline](./01-assets.md#shorelines) Assets.
+- `annual`: TODO
+- `perennial`: TODO
+- `centennial`: TODO
 
 ### Relations
 

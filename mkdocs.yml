@@ -25,8 +25,9 @@ nav:
   - Widgets: 06-widgets.md
   - Sounds: 07-sounds.md
   - Plots: 08-plots.md
-  - Emergence: 09-emergence.md
-  - Architecture: 10-architecture.md
+  - Ecology: 09-ecology.md
+  - Emergence: 10-emergence.md
+  - Architecture: 11-architecture.md
   - Specifications:
     - Index: specs/index.md
     - Dialogue Loop: specs/00-dialogue.md

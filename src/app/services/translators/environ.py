@@ -8,13 +8,21 @@ from typing import Dict, List
 
 # Application Libraries
 from app.config.enums import (
-    Goals, 
-    Intentions, 
     RequiredAssets,
     AssetInstances, 
     AssetCategories,
+    # -------------
+    Goals, 
+    Intentions, 
     Motivations,
-    Relationships
+    Relationships,
+    # --------------
+    Seasons,
+    Cycles,
+    Lifespans,
+    AnnualStages,
+    PerennialStages,
+    CentennialStages
 )
 from app.models.state import (
     SpriteState,
@@ -82,7 +90,14 @@ class Environ:
         'Goals': Goals,
         'Intentions': Intentions,
         'Motivations': Motivations,
-        'Relationships': Relationships
+        'Relationships': Relationships,
+        #### Seasonality Space Enumerations
+        'Seasons': Seasons,
+        'Cycles': Cycles,
+        'Lifespans': Lifespans,
+        'AnnualStages': AnnualStages,
+        'PerennialStages': PerennialStages,
+        'CentennialStages': CentennialStages
     }
     functions: dict = {
         'is_near': is_near,

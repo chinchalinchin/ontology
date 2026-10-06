@@ -40,6 +40,12 @@ mechanics:
         - actuator
       relations:
         - shorelines
+    - key: season
+      executors:
+        - annual
+        - perennial
+        - centennial
+      relations: []
     - key: combat
       executors: []
       relations: []

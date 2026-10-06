@@ -32,6 +32,8 @@ from app.assets.frames import (
     MeterFrame,
     IndexFrame,
     OrientedFrame,
+    StageFrame,
+    SeasonalFrame,
     NoFrame
 )
 from app.config.enums import (
@@ -59,6 +61,7 @@ from app.game.logic.mechanics import (
     PlotMechanics,
     NavigationMechanics,
     FluidMechanics,
+    SeasonMechanics,
     Mechanic
 )
 from app.game.menus.controllers import (
@@ -86,17 +89,19 @@ from app.services.translators import (
 
 class Factory:
     FRAME_MAP = {
+        FrameRecipe.CARDINAL.value: CardinalFrame,
+        FrameRecipe.INDEX.value: IndexFrame,
+        FrameRecipe.ITERABLE.value: IterableFrame,
+        FrameRecipe.FLUID.value: FluidFrame,
+        FrameRecipe.METER.value: MeterFrame,
+        FrameRecipe.NONE.value: NoFrame,
+        FrameRecipe.ORIENTED.value: OrientedFrame,
+        FrameRecipe.SEASONAL.value: SeasonalFrame,
         FrameRecipe.SPRITE.value: SpriteFrame,
         FrameRecipe.SINGLE.value: SingleFrame,
-        FrameRecipe.ITERABLE.value: IterableFrame,
+        FrameRecipe.STAGE.value: StageFrame,
         FrameRecipe.STATE.value: StateFrame,
         FrameRecipe.TRAVERSAL.value: TraversalFrame,
-        FrameRecipe.METER.value: MeterFrame,
-        FrameRecipe.INDEX.value: IndexFrame,
-        FrameRecipe.FLUID.value: FluidFrame,
-        FrameRecipe.CARDINAL.value: CardinalFrame,
-        FrameRecipe.ORIENTED.value: OrientedFrame,
-        FrameRecipe.NONE.value: NoFrame
     }
 
     ANIMATION_MAP = {
@@ -116,21 +121,22 @@ class Factory:
 
     MECHANICS_MAP = {
         Mechanics.ANIMATION.value: AnimationMechanics,
+        Mechanics.COGNITION.value: CognitionMechanics,
         Mechanics.COLLISION.value: CollisionMechanics,
+        Mechanics.COMBAT.value: CombatMechanics,
+        Mechanics.FLUID.value: FluidMechanics,
+        Mechanics.INTERACTION.value: InteractionMechanics,
+        Mechanics.MENU.value: MenuMechanics,
+        Mechanics.MOTION.value: MotionMechanics,
+        Mechanics.NAVIGATION.value: NavigationMechanics,
+        Mechanics.PLAYER.value: PlayerMechanics,
+        Mechanics.PLOT.value: PlotMechanics,
         Mechanics.PROJECTILE.value: ProjectileMechanics,
+        Mechanics.REMOVE.value: RemoveMechanics,
+        Mechanics.SEASON.value: SeasonMechanics,
+        Mechanics.SOCIAL.value: SocialMechanics,
         Mechanics.SWITCH.value: SwitchMechanics,
         Mechanics.TRANSITION.value: TransitionMechanics,
-        Mechanics.INTERACTION.value: InteractionMechanics,
-        Mechanics.PLAYER.value: PlayerMechanics,
-        Mechanics.REMOVE.value: RemoveMechanics,
-        Mechanics.COMBAT.value: CombatMechanics,
-        Mechanics.MOTION.value: MotionMechanics,
-        Mechanics.SOCIAL.value: SocialMechanics,
-        Mechanics.MENU.value: MenuMechanics,
-        Mechanics.COGNITION.value: CognitionMechanics,
-        Mechanics.PLOT.value: PlotMechanics,
-        Mechanics.NAVIGATION.value: NavigationMechanics,
-        Mechanics.FLUID.value: FluidMechanics
     }
 
     CONTROLLER_MAP  = {

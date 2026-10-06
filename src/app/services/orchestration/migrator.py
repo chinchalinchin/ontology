@@ -81,6 +81,9 @@ class Migrator:
         if hasattr(self.state, Shortcuts.PLOTS.value) and self.state.plots:
             tasks.append((Shortcuts.PLOTS.value, self.state.plots))
 
+        if hasattr(self.state, Shortcuts.CALENDAR.value) and self.state.calendar:
+            self.board.calendar = self.state.calendar
+            
         for cat_field in dataclasses.fields(self.state):
             category_key = cat_field.name
             if category_key in Shortcuts: 

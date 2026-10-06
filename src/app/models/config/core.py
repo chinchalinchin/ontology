@@ -5,12 +5,10 @@ Models for typing the core configuration attributes of game components.
 """
 # Standard Libraries
 from typing import (
-    Dict, 
-    List, 
+    Dict
 )
 from dataclasses import (
     dataclass, 
-    field
 )
 
 # Application Libraries
@@ -31,26 +29,6 @@ class ActionConfiguration(Configuration):
     id: str
     data: Dict[str, Action]
     
-# ---------------------------------------------------------------------------------------
-# --------------------------------------------------------------- INTENTION CONFIGURATION
-
-@dataclass(slots=True, frozen=True)
-class IntentionConfiguration(Configuration):
-    """
-    """
-    next: str
-    conditions: List[str] = field(default_factory=list)
-
-# ---------------------------------------------------------------------------------------
-# -------------------------------------------------------------------- PLOT CONFIGURATION
-
-@dataclass(slots=True, frozen=True)
-class PlotConfiguration(Configuration):
-    """
-    """
-    next: str
-    conditions: List[str] = field(default_factory=list)
-
 # ---------------------------------------------------------------------------------------
 # ----------------------------------------------------------------- LIBRARY CONFIGURATION
 

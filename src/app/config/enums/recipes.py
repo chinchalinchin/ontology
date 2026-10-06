@@ -11,18 +11,20 @@ from enum import Enum
 #   NOTE: These are required Recipe configuration keys
 
 class FrameRecipe(str, Enum):
-    NONE            = "none"
-    SINGLE          = "single"
-    ITERABLE        = "iterable"
-    FLUID           = "fluid"
-    STATE           = "state"
-    SPRITE          = "sprite"
     CARDINAL        = "cardinal"
-    METER           = "meter"
-    ORIENTED        = "oriented"
-    TRAVERSAL       = "traversal"
+    FLUID           = "fluid"
     INDEX           = "index"
-
+    ITERABLE        = "iterable"
+    METER           = "meter"
+    NONE            = "none"
+    ORIENTED        = "oriented"
+    SINGLE          = "single"
+    SEASONAL        = "seasonal"
+    SPRITE          = "sprite"
+    STAGE           = "stage"
+    STATE           = "state"
+    TRAVERSAL       = "traversal"
+    
 class AnimationRecipe(str, Enum):
     NONE            = "none"
     BINARY          = "binary"

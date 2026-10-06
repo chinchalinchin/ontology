@@ -66,10 +66,16 @@ class LoadController(MenuController):
                 # Check for existing hardware canvases we can salvage
                 if i < len(old_screens):
                     screen = old_screens[i]
-                    screen.rebake(tiles, size, screensize)
+                    screen.rebake(tiles, size, board.calendar, screensize)
                     screens[layer] = screen
                 else:
-                    screens[layer] = Screen(screensize, size, tiles, registry)
+                    screens[layer] = Screen(
+                        screensize, 
+                        size, 
+                        tiles, 
+                        registry, 
+                        board.calendar
+                    )
                     
             # Explicitly force Cython VRAM deletion on discarded Screens
             for j in range(len(board.layers()), len(old_screens)):

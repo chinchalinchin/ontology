@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.maps
+# Ontology: app.game.maps.animation
 """
 # Application Libraries
 import app.config.settings as settings

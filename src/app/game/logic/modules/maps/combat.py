@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.maps
+# Ontology: app.game.maps.combat
 """
 # Standard Libraries
 from typing import List

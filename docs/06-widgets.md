@@ -52,7 +52,7 @@ At the end of the tick, before the rendering phase, the Engine drains its bus:
 - If MenuEvent: The Engine pauses the Board, calls the Provider to instantiate the Menu, and pushes it to board.menus.
 - If State Event: The Engine begins migrating state from the file system into the Board.
 - If TerminalEvent: The Engine pops the Menu off the stack and unpauses the Board.
-- If UpdateEvent: The Engine pulls the clean background and the font (e.g., `render.construct()` and `render.write()` [Cython interfaces](./10-architecture.md#cython)), and overwrites the Widget's TexturePtr in VRAM.
+- If UpdateEvent: The Engine pulls the clean background and the font (e.g., `render.construct()` and `render.write()` [Cython interfaces](./11-architecture.md#cython)), and overwrites the Widget's TexturePtr in VRAM.
 
 Finally, the [Screen](./00-overview.md#screen) iterates over the Widgets and passes it to Cython. 
 
@@ -390,7 +390,7 @@ The type of state a Gizmo binds to a Pane is dependent on the schema passed into
 
 The Provider, similiar to the [Decomposer](./03-compositions.md#decomposer), is responsible for unpacking Menu configurations into flat lists of Assets for the Engine. However, unlike the Decomposer, the Provider must also generate a traversal graph, inject bindings into Widgets and pass the result to a Menu.
 
-To start, ScreenPosition is a *configuration-time* concept, not a *runtime* concept. When the Provider and Layout engine instantiate a Menu, they must calculate the absolute pixel values `(px * screensize.w, py * screensize.l)` and inject a Position into the Widget state. By flattening the Menu tree and translating all percentages to absolute `Positions`, `Screen.draw()` can consume Widgets exactly like world Assets, satisfying the [zero-allocation principle](./10-architecture.md#cython).
+To start, ScreenPosition is a *configuration-time* concept, not a *runtime* concept. When the Provider and Layout engine instantiate a Menu, they must calculate the absolute pixel values `(px * screensize.w, py * screensize.l)` and inject a Position into the Widget state. By flattening the Menu tree and translating all percentages to absolute `Positions`, `Screen.draw()` can consume Widgets exactly like world Assets, satisfying the [zero-allocation principle](./11-architecture.md#cython).
 
 ### Controllers
 

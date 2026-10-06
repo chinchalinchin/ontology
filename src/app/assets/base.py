@@ -15,7 +15,10 @@ from typing import (
 # Application Libraries
 from app.config.enums import ChannelTypes
 from app.models.properties import AssetProperties
-from app.models.state import AssetState
+from app.models.state import (
+    AssetState,
+    CalendarState
+)
 
 # Cython Libraries
 from libs.core.models import (
@@ -75,7 +78,17 @@ class Frame(ABC):
                 ))
         return directives
 
+    def eras(self, 
+        id: str, 
+        calendar: CalendarState
+    ) -> List[Tuple[str, int, int]]:
+        """
+        Macro-temporal epochal projection for static pre-rendered canvas baking.
+        Default implementation falls back to static frame resolution.
+        """
+        return self.keys(id, None)
 
+    
 class Animation(ABC):
     """
     Foundational interface for Assets with animate states.

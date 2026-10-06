@@ -97,6 +97,7 @@ class Groups(str, Enum):
 #           partitioning Asset image files.
 
 class Lifecycles(str, Enum):
+    # TODO: rename to Frequencies. update properties accordingly.
     CONTINUOUS      = "continuous"
     PERIODIC        = "periodic"
     TEMPORARY       = "temporary"
@@ -129,6 +130,50 @@ class Expressions(str, Enum):
     SURPRISE        = "surprise"
     TIRED           = "tired"
 
+class Seasons(str, Enum):
+    SPRING          = "spring"
+    SUMMER          = "summer"
+    AUTUMN          = "autumn"
+    WINTER          = "winter"
+
+class Cycles(str, Enum):
+    ONSET           = "onset"
+    PEAK            = "peak"
+    DECLINE         = "decline"
+
+class Lifespans(str, Enum):
+    ANNUAL          = "annual"
+    PERENNIAL       = "perennial"
+    CENTENNIAL      = "centennial"
+
+class AnnualStages(str, Enum):
+    SPROUT          = "sprout"
+    GROWTH          = "growth"
+    STALK           = "stalk"
+    BLOOM           = "bloom"
+    STUMP           = "stump"
+
+class PerennialStages(str, Enum):
+    SAPLING         = "sapling"
+    BUSH            = "bush"
+    BRANCH          = "branch"
+    ADULT           = "adult"
+    VIBRANT         = "vibrant"
+    HEALTHY         = "healthy"
+    ABSCISE         = "abscise"
+    SNOWCAPT        = "snowcapt"
+    DYING           = "dying"
+    DEAD            = "dead"
+    STUMP           = "stump"
+
+class CentennialStages(str, Enum):
+    TRACE           = "trace"
+    DEPOSIT         = "deposit"
+    NUGGET          = "nugget"
+    VEIN            = "vein"
+    CRYSTAL         = "crystal"
+    ALLOY           = "alloy"
+    
 # -------------------------------- ASSET ID ENUMERATIONS
 #   NOTE: These are required Asset IDs.
 

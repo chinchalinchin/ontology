@@ -1,19 +1,28 @@
 resources:
+  trees:
+    deciduous:
+      dimensions:
+        w: 94
+        l: 137
+      lifespan: perennial
+      loot: wood
+      mass: 0
+      hitboxes: null
   crops:
+    lettuce:
+      dimensions:
+        w: 32
+        l: 22
+      lifespan: annual
+      loot: lettuce
+      mass: 0
+      hitboxes: null
   ore:
     gold:
       dimensions:
-        w: 384
+        w: 32
         l: 32
-    silver:
-      dimensions:
-        w: 384
-        l: 32
-    copper:
-      dimensions:
-        w: 384
-        l: 32
-    tin:
-      dimensions:
-        w: 384
-        l: 32
+      lifespan: centennial
+      loot: gold-ore
+      mass: 0
+      hitboxes: null

@@ -8,7 +8,8 @@ from app.config.enums import (
     Actions,
     Directions,
     Alignments,
-    Lifecycles
+    Lifecycles,
+    Lifespans
 )
 from app.models.adapters import (
     PydanticDimensions as Dimensions, 
@@ -107,6 +108,14 @@ class CraftProperties(AssetProperties):
     hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
 
 @dataclass(slots=True)
+class ResourceProperties(AssetProperties):
+    dimensions: Dimensions # type: ignore
+    loot: str
+    lifespan: Lifespans
+    mass: int = 0
+    hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
+
+@dataclass(slots=True)
 class GeographyProperties(AssetProperties):
     dimensions: Dimensions # type: ignore
     tile: str
@@ -164,7 +173,13 @@ class ObjectPropertyInstances:
 class CraftPropertyInstances:
     struts: Dict[str, CraftProperties] = field(default_factory=dict)
     bridges: Dict[str, CraftProperties] = field(default_factory=dict)
-    
+
+@dataclass(slots=True)
+class ResourcePropertyInstances:
+    crops: Dict[str, ResourceProperties] = field(default_factory=dict)
+    ore: Dict[str, ResourceProperties] = field(default_factory=dict)
+    trees: Dict[str, ResourceProperties] = field(default_factory=dict)
+
 @dataclass(slots=True)
 class CursorPropertyInstances:
     expressions: Dict[str, CursorProperties] = field(default_factory=dict)
@@ -197,6 +212,7 @@ class PropertiesSchema:
     objects: ObjectPropertyInstances = field(default_factory=ObjectPropertyInstances)
     crafts: CraftPropertyInstances = field(default_factory=CraftPropertyInstances)
     cursors: CursorPropertyInstances = field(default_factory=CursorPropertyInstances)
+    resources: ResourcePropertyInstances = field(default_factory=ResourcePropertyInstances)
     sheets: SheetPropertyInstances = field(default_factory=SheetPropertyInstances)
     fonts: Dict[str, FontProperties] = field(default_factory=dict)
     widgets: WidgetPropertyInstances = field(default_factory=WidgetPropertyInstances)

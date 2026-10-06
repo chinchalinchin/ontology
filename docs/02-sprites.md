@@ -79,13 +79,14 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
 
 **Animation: SpriteAnimation**
 
-- `state.psyche.expression.ttl -= 1` (Nullifies expression on expiration)
 - `state.animation.frame += 1`
 - `if state.animation.frame >= properties.actions[state.animation.action].count: state.animation.frame = 0`
+- `state.psyche.expression.ttl -= 1` (Nullifies expression on expiration)
+
 
 **Frame: SpriteFrame**
 
-* `keys(id, animation): returns [ "{id}-{animation.action}-{animation.direction}-{animation.frame}" ] + [ <equipment-frames>]`
+* `keys(id, state): returns [ ("{id}-{state.animation.action}-{state.animation.direction}-{animation.frame}", 0, 0) ] + [ (<equipment-frames>, 0, 0) ] + [ (<expression-frames>, offset.x, offset.y) ]`
 * `index(self, id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 ### Intentions
@@ -102,7 +103,7 @@ See [Goals documentation](./04-intentions.md) for more information.
 
 ### Trajectory
 
-Tactical obstacle avoidance is managed via Trajecotires. When direct line of sight to a strategic Goal is occluded, [NavigationMechanics](./05-mechanics.md#intentional) executes an [Rapidly-exploring Random Tree pathfinding routine](./10-architecture.md#math) and populates the trajectory buffer:
+Tactical obstacle avoidance is managed via Trajecotires. When direct line of sight to a strategic Goal is occluded, [NavigationMechanics](./05-mechanics.md#intentional) executes an [Rapidly-exploring Random Tree pathfinding routine](./11-architecture.md#math) and populates the trajectory buffer:
 
 * `target`: The immediate physical coordinate \((x, y)\) that `MotionMechanics` steers toward on the current tick. If line of sight to the strategic goal is clear, `target == sprite.state.goal.position`. If occluded, `target == vertices[0]`.
 * `vertices`: The FIFO queue of intermediate RRT avoidance coordinates, adjusted for sensory anchor displacement.
@@ -147,7 +148,7 @@ Mutators are *condition-driven*. They may also be *parameterized*; In other word
 - `triggers.vision`: Trigger if a Sprite is within visible distance of its Goal.
 - `trigger.action`: Triggers if a Sprite is within acting distance of its Goal.
 * `triggers.submerged`: Triggered when the entity's footprint intersects an active Fluid stream or pool without being aboard a Raft or Bridge. When active, `Screen.draw` renders a semi-transparent water tint over the lower half of the Sprite, and `Cradle` dispatches a temporary `splash` effect.
-```
+
 **Parameters**
 
 - `parameters.fear.radius`: Radius of separation within which the Sprite triggers the `triggers.fear` mutator. Measured in pixels.
@@ -156,7 +157,7 @@ Mutators are *condition-driven*. They may also be *parameterized*; In other word
 - `parameters.vision.radius`: Radius of separation within which the Sprite triggers the `triggers.vision` mutator. Measured in pixels.
 - `parameters.action.radius`: Radius of separation within which the Sprite triggers the `triggers.action` mutator. Measured in pixels.
 - `parameters.squeeze.radius`: Buffer radius used for avoiding obstacles during path-finding.
-- `parameters.community.radius`: Radius used for [Town Formation Mechanics](./09-emergence.md#towns).
+- `parameters.community.radius`: Radius used for [Town Formation Mechanics](./10-emergence.md#towns).
 
 ### Animation
 

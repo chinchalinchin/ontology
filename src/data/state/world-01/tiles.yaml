@@ -1,6 +1,6 @@
 tiles:
   back:
-    - id: grass
+    - id: temperate
       name: the-steppe
       layer: '0'
       position:

@@ -1,0 +1,17 @@
+resources:
+  trees: 
+    - id: deciduous
+      name: the-mighty-oak
+      layer: '0'
+      position: 
+        x: 500
+        y: 100
+      stage: sapling
+  crops:
+    - id: lettuce
+      name: some-lettuce
+      layer: '0'
+      position:
+        x: 415
+        y: 390
+      stage: stalk

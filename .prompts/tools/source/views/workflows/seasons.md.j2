@@ -1,0 +1,215 @@
+### View: Workflow - Seasons
+
+#### configuration
+
+**src/data/config/stages/main.yaml**
+
+```yaml
+{{ file(properties.paths.root + 'src/data/config/stages/main.yaml') }}
+```
+
+#### properties
+
+**src/assets/resources/main.yaml**
+
+```yaml
+{{ file(properties.paths.root + 'src/assets/resources/main.yaml') }}
+```
+
+**src/assets/tiles/main.yaml**
+
+```yaml
+{{ file(properties.paths.root + 'src/assets/tiles/main.yaml') }}
+```
+
+#### app.assets
+
+**src/app/assets/base.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/base.py') }}
+```
+
+##### app.assets.frames
+
+**src/app/assets/frames/core.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/frames/core.py') }}
+```
+
+**src/app/assets/frames/tiles.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/frames/tiles.py') }}
+```
+
+**src/app/assets/frames/resources.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/frames/resources.py') }}
+```
+
+##### app.assets.animations
+
+**src/app/assets/animations/core.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/animations/core.py') }}
+```
+
+#### app.game
+
+**src/app/game/engine.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/engine.py') }}
+```
+
+**src/app/game/screen.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/screen.py') }}
+```
+
+##### app.game.board
+
+**src/app/game/board/core.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/board/core.py') }}
+```
+
+##### app.game.menus
+
+**src/app/game/menus/events.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/menus/events.py') }}
+```
+
+**src/app/game/menus/contexts.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/menus/contexts.py') }}
+```
+
+###### app.game.menus.handlers
+
+**src/app/game/menus/handlers/seasons.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/menus/handlers/seasons.py') }}
+```
+
+##### app.game.logic
+
+###### app.game.logic.mechanics
+
+**src/app/game/logic/mechanics/base.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/base.py') }}
+```
+
+**src/app/game/logic/mechanics/world/seasons.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/world/seasons.py') }}
+```
+
+#### app.models
+
+**src/app/models/properties.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/properties.py') }}
+```
+
+##### app.models.config
+
+**src/app/models/config/transitions.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/config/transitions.py') }}
+```
+
+**src/app/models/config/mechanics.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/config/mechanics.py') }}
+```
+
+**src/app/models/config/schemas.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/config/schemas.py') }}
+```
+
+##### app.models.state 
+
+**src/app/models/state/core.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/state/core.py')}}
+```
+
+**src/app/models/state/schemas.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/state/schemas.py')}}
+```
+
+###### app.models.state.assets
+
+**src/app/models/state/assets/tiles.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/state/assets/tiles.py') }}
+```
+
+**src/app/models/state/assets/resources.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/state/assets/resources.py') }}
+```
+
+#### app.services
+
+##### app.services.orchestration
+
+**src/app/services/orchestration/builder.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/orchestration/builder.py') }}
+```
+
+**src/app/services/orchestration/migrator.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/orchestration/migrator.py') }}
+```
+
+##### app.services.generators
+
+###### app.services.generators.game
+
+**src/app/services/generators/game/factory.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/generators/game/factory.py') }}
+```
+
+##### app.services.translators
+
+**src/app/services/translators/base.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/translators/base.py') }}
+```
+
+**src/app/services/translators/environ.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/translators/environ.py') }}
+```

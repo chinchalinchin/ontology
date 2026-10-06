@@ -20,12 +20,14 @@ from app.game.menus.events import (
     TerminalEvent, 
     UpdateEvent,
     StateEvent,
+    SeasonEvent,
     EventContext
 )
 from app.game.menus.handlers import (
     MenuEventHandler,
     StateEventHandler,
     TerminalEventHandler,
+    SeasonEventHandler,
     UpdateEventHandler,
     EventHandler
 )
@@ -77,7 +79,8 @@ class Engine:
             MenuEvent: MenuEventHandler(),
             StateEvent: StateEventHandler(),
             TerminalEvent: TerminalEventHandler(),
-            UpdateEvent: UpdateEventHandler()
+            UpdateEvent: UpdateEventHandler(),
+            SeasonEvent: SeasonEventHandler()
         }
 
 

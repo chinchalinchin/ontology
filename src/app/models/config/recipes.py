@@ -61,6 +61,12 @@ class ObjectRecipe:
     signs: Recipe = None
 
 @dataclass(slots=True, frozen=True)
+class ResourceRecipe:
+    crops: Recipe = None
+    ore: Recipe = None
+    trees: Recipe = None
+    
+@dataclass(slots=True, frozen=True)
 class SheetRecipe:
     pixies: Recipe = None
     sprites: Recipe = None
@@ -90,4 +96,5 @@ class RecipeConfiguration(Configuration):
     geography: GeographyRecipe = None
     objects: ObjectRecipe = None
     sheets: SheetRecipe = None
+    resources: ResourceRecipe = None
     widgets: WidgetRecipe = None

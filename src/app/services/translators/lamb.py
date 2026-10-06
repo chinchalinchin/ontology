@@ -22,6 +22,8 @@ from app.services.translators.environ import Environ
 
 logger = logging.getLogger(__name__)
 
+LAMBDA_SIGNATURE = "lambda sprite=None, sprites=None, plot=None, resource=None, calendar=None, **kwargs: {cond}"
+
 class LambdaExecutor(Executor):
     def evaluate(self, current_state: str, locals: Dict[str, Any]) -> Optional[str]:
         if current_state not in self.transitions:
@@ -67,7 +69,7 @@ class LambdaTranslator(Translator):
                 for cond_str in config.conditions:
                     try:
                         # Dynamic parameter list accommodates any dict passed via **locals
-                        func_str = f"lambda sprite=None, sprites=None, plot=None, **kwargs: {cond_str}"
+                        func_str = LAMBDA_SIGNATURE.format(cond=cond_str)    
                         compiled_func = eval(func_str, self.env_globals)
                         callables.append(compiled_func)
                     except Exception as e:

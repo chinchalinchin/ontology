@@ -21,7 +21,8 @@ from app.config.enums import (
     Devices, 
     Mechanics,
     AssetCategories,
-    Executors
+    Executors,
+    Lifespans
 )
 from app.game.board import Board
 from app.game.engine import Engine
@@ -70,6 +71,7 @@ class ApplicationContext:
     screensize: Dimensions = None
     headless: bool = False
 
+
 class Builder:
     """
     Constructs the discrete subsystems of the Ontology engine.
@@ -86,6 +88,7 @@ class Builder:
         self.world: List[Mechanic] = []
         self.executors: Dict[str, Any] = {}
         self.relations: Dict[str, Any] = {}
+
 
     def _actions(self) -> None:
         """
@@ -112,6 +115,7 @@ class Builder:
             self.context.properties.sheets, 
             **resolved_sheets
         )
+
 
     def load_data(self, state_key: str = None) -> None:
         """
@@ -141,6 +145,11 @@ class Builder:
             Executors.ACTUATOR.value: actuator_executor
         }
 
+        # Compile independent stage executors keyed by Lifespan enum values
+        for lifespan in Lifespans:
+            stage_rules = self.context.configurations.stages.get(lifespan.value)
+            if stage_rules:
+                self.executors[lifespan.value] = translator.compile(stage_rules)
 
     def build_relations(self) -> None:
         logger.info("Compiling relational indices...")
@@ -161,6 +170,7 @@ class Builder:
         # IMPORTANT: This MUST be called before the Registry inits.
         if not headless:
             render.show()
+
 
     def build_board(self) -> None:
         logger.info("Constructing Empty Board and Migrator subsystem...")
@@ -195,6 +205,7 @@ class Builder:
             actuator=self.executors[Executors.ACTUATOR.value]
         )
 
+
     def build_registry(self) -> None:
         """
         Initializes Registry directly using native application models.
@@ -205,6 +216,7 @@ class Builder:
             recipes=self.context.configurations.recipes,
             typography=self.context.properties.fonts
         )
+
 
     def build_services(self, device: Devices) -> None:
         logger.info("Injecting Generators and Devices into Board...")
@@ -228,6 +240,7 @@ class Builder:
         )
         self.board.set_cradle(cradle)
 
+
     def build_pipeline(self) -> None:
         logger.info("Building rendering pipelines, mechanics, and UI...")
 
@@ -236,7 +249,13 @@ class Builder:
 
         if not self.board.layers():
             self.screens = {
-                'default': Screen(self.context.screensize, self.context.screensize, [], self.registry)
+                'default': Screen(
+                    self.context.screensize, 
+                    self.context.screensize,
+                    [], 
+                    self.registry,
+                    self.board.calendar
+                )
             }
         else:
             self.screens = {}
@@ -246,7 +265,8 @@ class Builder:
                     self.context.screensize, 
                     Dimensions(layer_size.w, layer_size.l),
                     self.board.categories(AssetCategories.TILES.value, layer),
-                    self.registry
+                    self.registry,
+                    self.board.calendar
                 )
 
         core_cfg = self.context.configurations.mechanics.core or [
@@ -274,6 +294,7 @@ class Builder:
             self.binder,
             self.fabricator
         )
+
 
     def get_engine(self) -> Engine:
         logger.info("Engine successfully assembled.")

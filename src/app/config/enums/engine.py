@@ -21,6 +21,7 @@ class Mechanics(str, Enum):
     PLOT            = "plot"
     PROJECTILE      = "projectile"
     REMOVE          = "remove"
+    SEASON          = "season"
     SOCIAL          = "social"
     SWITCH          = "switch"
     TRANSITION      = "transition"
@@ -47,6 +48,7 @@ class InertAssets(str, Enum):
     PROJECTILES     = "projectiles"
 
 class Shortcuts(str, Enum):
+    CALENDAR        = "calendar"
     COMPOSITIONS    = "compositions"
     BRIDGES         = "bridges"
     GIZMOS          = "gizmos"
@@ -62,8 +64,13 @@ class Relations(str, Enum):
     SHORELINES      = "shorelines"
 
 class Executors(str, Enum):
+    # TRANSITION EXECUTORS
     PLOT            = "plot"
     INTENTION       = "intention"
+    ANNUAL          = "annual"
+    PERENNIAL       = "perennial"
+    CENTENNIAL      = "centennial"
+    # GENERATORS
     ACTUATOR        = "actuator"
 
 class Translators(str, Enum):
