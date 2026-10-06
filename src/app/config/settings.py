@@ -57,7 +57,7 @@ FLUID_INVALIDATION_DEBOUNCE_TICKS: Final[int] = 2
 SEASON_DURATION_SECONDS: Final[int] = 3600
 """Length of a Season in seconds."""
 
-SEASON_EVAPORATION_MODIFERS: Final[dict[str, float]] = {
+SEASON_EVAPORATION_MODIFIERS: Final[dict[str, float]] = {
     Seasons.SPRING.value: 1.0,
     Seasons.SUMMER.value: 1.5,
     Seasons.AUTUMN.value: 1.0,
@@ -70,6 +70,9 @@ MAX_RETENTION: Final[int] = 100
 
 DIFFUSION_RATE: Final[float] = 10.0
 """Factor scaling moisture based on physical proximity to Fluid Assets."""
+
+EVAPORATION_RATE: Final[float] = 1.0
+"""Multiplicative factor that scales the moisture evaporation rate"""
 
 # ---------------------------------------------------
 # DIRECTORY SETTINGS

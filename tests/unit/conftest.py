@@ -32,6 +32,7 @@ pytest_plugins = [
     "tests.unit.fixtures.properties.tiles",
     "tests.unit.fixtures.properties.widgets",
     "tests.unit.fixtures.properties.sheets",
+    "tests.unit.fixtures.properties.resources",
     "tests.unit.fixtures.properties.schemas",
     # -------------------------------
     "tests.unit.fixtures.services",
@@ -40,6 +41,7 @@ pytest_plugins = [
     "tests.unit.fixtures.state.effects",
     "tests.unit.fixtures.state.objects",
     "tests.unit.fixtures.state.sheets",
+    "tests.unit.fixtures.state.resources",
     "tests.unit.fixtures.state.world",
     "tests.unit.fixtures.state.schemas",
     # -------------------------------

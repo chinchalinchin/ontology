@@ -43,12 +43,8 @@ class SeasonMechanics(Mechanic):
     """
 
     @property
-    def period_duration(self) -> float:
-        return getattr(
-            settings,
-            "PERIOD_DURATION_SECONDS",
-            getattr(settings, "SEASON_DURATION_SECONDS", 3600.0) / 9.0
-        )
+    def period(self) -> float:
+        return settings.SEASON_DURATION_SECONDS / 9.0
 
     def _advance_calendar(self, calendar: CalendarState) -> None:
         """
@@ -95,8 +91,8 @@ class SeasonMechanics(Mechanic):
         pos = resource.state.position
         if not pos:
             return []
-        w = resource.dimensions.w if resource.dimensions else 32
-        l = resource.dimensions.l if resource.dimensions else 32
+        w = resource.dimensions.w
+        l = resource.dimensions.l
         mid_x = pos.x + (w // 2)
         mid_y = pos.y + (l // 2)
         return [
@@ -117,7 +113,7 @@ class SeasonMechanics(Mechanic):
         # 1. Temporal Integration
         board.calendar.elapsed += delta
         period_changed = False
-        duration = self.period_duration
+        duration = self.period
 
         while board.calendar.elapsed >= duration:
             board.calendar.elapsed -= duration
@@ -131,23 +127,7 @@ class SeasonMechanics(Mechanic):
         if not resources:
             return
 
-        # 2. Hydrological Parameters
-        max_ret = getattr(settings, "MAX_RETENTION", 100.0)
-        diff_rate = getattr(settings, "DIFFUSION_RATE", 10.0)
-        evap_rate = getattr(settings, "EVAPORATION_RATE", 1.0)
-        evap_mods = getattr(
-            settings,
-            "SEASON_EVAPORATION_MODIFIERS",
-            {
-                Seasons.SPRING.value: 1.0,
-                Seasons.SUMMER.value: 1.5,
-                Seasons.AUTUMN.value: 1.0,
-                Seasons.WINTER.value: 0.5
-            }
-        )
-        season_mod = evap_mods.get(board.calendar.season, 1.0)
-
-        # 3. Environmental Diffusion & Stage Progression
+        # 1. Environmental Diffusion & Stage Progression
         for resource in resources:
             is_near_water = any(
                 board.fluid(resource.state.layer, probe_pos)
@@ -155,28 +135,26 @@ class SeasonMechanics(Mechanic):
             )
             if is_near_water:
                 resource.state.retention = min(
-                    max_ret,
-                    resource.state.retention + (diff_rate * delta)
+                    settings.MAX_RETENTION,
+                    resource.state.retention + (settings.DIFFUSION_RATE * delta)
                 )
             else:
-                resource.state.retention = max(
-                    0.0,
-                    resource.state.retention - (evap_rate * season_mod * delta)
-                )
+                evaporation_amount = delta * settings.EVAPORATION_RATE * \
+                                        settings.SEASON_EVAPORATION_MODIFIERS.get(board.calendar.season, 1.0) 
+                resource.state.retention = max(0.0, resource.state.retention - evaporation_amount)
 
-            lifespan = resource.properties.lifespan
-            lifespan_key = lifespan.value if hasattr(lifespan, "value") else str(lifespan)
-            executor = self.executors.get(lifespan_key)
+            executor = self.executors.get(resource.properties.lifespan)
+
             if not executor:
+                logger.info('lifespan executor not found')
                 continue
 
-            locals_env = {
+            locals = {
                 "resource": resource.state,
-                "calendar": board.calendar,
-                "properties": resource.properties
+                "calendar": board.calendar
             }
 
-            next_stage = executor.evaluate(resource.state.stage, locals_env)
+            next_stage = executor.evaluate(resource.state.stage, locals)
             if next_stage:
                 logger.info(
                     f"Transition(resource={resource.name}): "

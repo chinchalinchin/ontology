@@ -79,22 +79,25 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: fluids
+        marker: seasons
       fixtures:
         - assets
         - components
-        - properties/crafts
+        - configuration/transitions
+        # - properties/crafts
         - properties/effects
-        - properties/objects
+        # - properties/objects
         - properties/tiles
-        - state/crafts
-        - state/effects
-        - state/objects
+        # - state/crafts
+        # - state/effects
+        # - state/objects
+        - state/schemas
+        - state/resources
         - state/world
-        - services
-        - structures
+        # - services
+        # - structures
         # - menus
-      workflow: fluids
+      workflow: seasons
       session:
         description: null
         conditions:
@@ -105,7 +108,8 @@ tools:
           - src/assets/tiles/main.yaml
           # - src/assets/crafts/bridges.yaml
           ## ------------------- STATE
-          - src/data/state/world-01/resources/main.yaml
+          - src/data/state/world-01/resources/crops.yaml
+          - src/data/state/world-01/resources/trees.yaml
           # - src/data/state/world-01/effects/fluids.yaml
           # - src/data/state/world-01/crafts/bridges.yaml
           ## -------------------- CONFIGURATION
