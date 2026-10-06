@@ -1,6 +1,9 @@
 """
 # Ontology: tests.unit.app.assets.test_frames
 """
+# External Libraries
+import pytest
+
 # Application Libraries
 from app.config.settings import SEPARATOR
 from app.assets.frames import (
@@ -52,6 +55,7 @@ from libs.core.models import (
 
 # TODO: refactor these tests to use fixtures
 
+@pytest.mark.frames
 def test_no_frame():
     frame = NoFrame()
     assert frame.keys("test", None) == [("test", 0, 0)]
@@ -59,6 +63,7 @@ def test_no_frame():
     assert frame.index("test", props) == {"test": (0, 0, 0, 0)}
 
 
+@pytest.mark.frames
 def test_single_frame():
     frame = SingleFrame()
     assert frame.keys("test", None) == [("test", 0, 0)]
@@ -66,6 +71,7 @@ def test_single_frame():
     assert frame.index("test", props) == {"test": (0, 0, 32, 32)}
 
 
+@pytest.mark.frames
 def test_iterable_frame():
     frame = IterableFrame()
     state = SpriteState(id="test")
@@ -82,6 +88,7 @@ def test_iterable_frame():
     }
 
 
+@pytest.mark.frames
 def test_state_frame():
     frame = StateFrame()
     state = SpriteState(id="test")
@@ -105,6 +112,7 @@ def test_state_frame():
     assert frame.index("test", props) == expected_index
 
 
+@pytest.mark.frames
 def test_sprite_frame():
     frame = SpriteFrame()
     
@@ -138,6 +146,8 @@ def test_sprite_frame():
     assert keys[6] == (expr_key, 10, -10)
 
 
+@pytest.mark.frames
+@pytest.mark.menus
 def test_index_frame_indexing():
     frame = IndexFrame()
     props = WidgetProperties(
@@ -150,6 +160,8 @@ def test_index_frame_indexing():
     }
 
 
+@pytest.mark.frames
+@pytest.mark.menus
 def test_index_frame_suppresses_vacant_slot():
     frame = IndexFrame()
     
@@ -164,6 +176,8 @@ def test_index_frame_suppresses_vacant_slot():
     assert frame.keys("weapons", none_state) == []
 
 
+@pytest.mark.frames
+@pytest.mark.intentions
 def test_sprite_frame_player_suppresses_expression():
     """
     Ensure player entities suppress expression attachments in SpriteFrame.keys.
@@ -184,6 +198,8 @@ def test_sprite_frame_player_suppresses_expression():
     assert keys[0] == (f"{RequiredAssets.PLAYER.value}{SEPARATOR}walk{SEPARATOR}down{SEPARATOR}0", 0, 0)
 
 
+@pytest.mark.frames
+@pytest.mark.intentions
 def test_sprite_frame_no_equipment():
     """
     Ensure SpriteFrame handles sprites with empty or None equipment inventories cleanly.
@@ -198,6 +214,8 @@ def test_sprite_frame_no_equipment():
     assert keys == [(f"npc{SEPARATOR}walk{SEPARATOR}down{SEPARATOR}0", 0, 0)]
 
 
+@pytest.mark.frames
+@pytest.mark.fluids
 def test_fluid_frame_indexing():
     """
     Verify FluidFrame generates full tile keys and directional forward/reverse
@@ -228,6 +246,8 @@ def test_fluid_frame_indexing():
     assert crops[f"waterflow{SEPARATOR}0{SEPARATOR}left{SEPARATOR}slice{SEPARATOR}10"] == (22, 0, 10, 32)
 
 
+@pytest.mark.frames
+@pytest.mark.fluids
 def test_fluid_frame_keys_downward_stream():
     """
     Verify downward stream emits full tile keys plus fractional terminal slice.
@@ -245,6 +265,8 @@ def test_fluid_frame_keys_downward_stream():
     assert keys[1] == (f"waterflow{SEPARATOR}0{SEPARATOR}down{SEPARATOR}16", 0, 32)
 
 
+@pytest.mark.frames
+@pytest.mark.fluids
 def test_fluid_frame_keys_upward_stream():
     """
     Verify upward stream emits negative Y-coordinate offsets and reverse slice keys.
@@ -262,6 +284,8 @@ def test_fluid_frame_keys_upward_stream():
     assert keys[1] == (f"waterflow{SEPARATOR}0{SEPARATOR}up{SEPARATOR}16", 0, -48)
 
 
+@pytest.mark.frames
+@pytest.markfluids
 def test_fluid_frame_keys_lateral_streams():
     """
     Verify lateral streams emit X-axis offsets for right and left flow vectors.
@@ -281,6 +305,8 @@ def test_fluid_frame_keys_lateral_streams():
     assert keys_left[1] == (f"waterflow{SEPARATOR}0{SEPARATOR}left{SEPARATOR}16", -48, 0)
 
 
+@pytest.mark.frames
+@pytest.mark.fluids
 def test_fluid_frame_keys_with_annular_pool():
     """
     Verify annular pool hitboxes translate to grid-spaced frame key offsets.
@@ -308,6 +334,8 @@ def test_fluid_frame_keys_with_annular_pool():
     assert (f"waterflow{SEPARATOR}0", 32, 64) in keys
 
 
+@pytest.mark.frames
+@pytest.mark.fluids
 def test_sprite_frame_channels_dry():
     """
     Verify SpriteFrame.channels returns an empty list when sprite is not submerged.
@@ -321,6 +349,8 @@ def test_sprite_frame_channels_dry():
     assert directives == []
 
 
+@pytest.mark.frames
+@pytest.mark.fluids
 def test_sprite_frame_channels_submerged():
     """
     Verify SpriteFrame.channels emits SUBMERGE directive with half-length split
@@ -339,6 +369,9 @@ def test_sprite_frame_channels_submerged():
     )
 
 
+@pytest.mark.frames
+@pytest.mark.geology
+@pytest.mark.fluids
 def test_shoreline_frame_indexing():
     """
     Verify CardinalFrame indexes 4 cardinal rows and forward fractional remainder slices.
@@ -367,6 +400,9 @@ def test_shoreline_frame_indexing():
     assert crops[f"grassy-shore{SEPARATOR}right{SEPARATOR}16"] == (0, 96, 32, 16)
 
 
+@pytest.mark.frames
+@pytest.mark.geology
+@pytest.mark.fluids
 def test_shoreline_frame_keys_horizontal_full_and_slice():
     """
     Verify horizontal banks (UP/DOWN) emit full-tile keys along width and a terminal remainder.
@@ -385,6 +421,9 @@ def test_shoreline_frame_keys_horizontal_full_and_slice():
     assert keys[2] == (f"grassy-shore{SEPARATOR}up{SEPARATOR}16", 64, 0)
 
 
+@pytest.mark.frames
+@pytest.mark.geology
+@pytest.mark.fluids
 def test_shoreline_frame_keys_vertical_full_and_slice():
     """
     Verify vertical banks (LEFT/RIGHT) emit full-tile keys along length and a terminal remainder.
@@ -403,12 +442,18 @@ def test_shoreline_frame_keys_vertical_full_and_slice():
     assert keys[2] == (f"grassy-shore{SEPARATOR}left{SEPARATOR}16", 0, 64)
 
 
+@pytest.mark.frames
+@pytest.mark.geology
+@pytest.mark.fluids
 def test_shoreline_frame_keys_zero_length():
     frame = CardinalFrame()
     state = ShorelineState(id="grassy-shore", length=0)
     assert frame.keys("grassy-shore", state) == []
 
 
+@pytest.mark.frames
+@pytest.mark.geology
+@pytest.mark.fluids
 def test_shoreline_frame_channels():
     """
     Verify CardinalFrame inherits universal Frame.channels behavior.

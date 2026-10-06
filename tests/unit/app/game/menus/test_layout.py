@@ -1,18 +1,46 @@
 """
-# Ontology: tests.unit.test_app_game_menus_layout
+# Ontology: tests.unit.app.game.menus.layout
 """
+# Standard Libraries
 from unittest.mock import MagicMock
+
+# External Libraries
 import pytest
 
+# Application Libraries
 from app.game.menus.layout import Layout
-from app.models.config.menus import MenuNode, PaneParameters, ButtonParameters
-from app.config.enums import Layouts, Alignments, Traversal, Statuses, AssetInstances
-from libs.core.models import Dimensions, Position, ScreenPosition
-from app.models.state import PaneState, TraversalState
-from app.assets.base import Asset, Taxonomy
+from app.models.config.menus import (
+    MenuNode, 
+    PaneParameters,
+    ButtonParameters
+)
+from app.config.enums import (
+    Layouts, 
+    Alignments, 
+    Traversal, 
+    Statuses, 
+    AssetInstances
+)
+from app.models.state import (
+    PaneState, 
+    TraversalState
+)
+from app.assets.base import (
+    Asset, 
+    Taxonomy
+)
 from app.models.properties import WidgetProperties
 
+# Cython Libraries
+from libs.core.models import (
+    Dimensions, 
+    Position, 
+    ScreenPosition
+)
 
+# TODO: refactor to use fixtures
+
+@pytest.mark.menus
 def test_layout_compute_anchor():
     layout = Layout(Dimensions(w=1000, l=1000))
     root_cfg = MenuNode(
@@ -37,6 +65,7 @@ def test_layout_compute_anchor():
     assert mock_pane.state.position.y == 250
 
 
+@pytest.mark.menus
 def test_layout_overlay():
     layout = Layout(Dimensions(w=1000, l=1000))
     pane = MagicMock()
@@ -53,6 +82,7 @@ def test_layout_overlay():
     assert child.state.position.y == 175
 
 
+@pytest.mark.menus
 def test_layout_dock_center():
     layout = Layout(Dimensions(w=1000, l=1000))
     pane = MagicMock()
@@ -73,6 +103,7 @@ def test_layout_dock_center():
     assert c2.state.position.y == 40
 
 
+@pytest.mark.menus
 def test_layout_stack_center():
     layout = Layout(Dimensions(w=1000, l=1000))
     pane = MagicMock()
@@ -93,6 +124,7 @@ def test_layout_stack_center():
     assert c2.state.position.y == 75
 
 
+@pytest.mark.menus
 def test_layout_dock_with_explicit_dimensions():
     """Validates that adjacent dock containers respect explicit geometry without overlapping."""
     layout = Layout(Dimensions(w=640, l=480))
@@ -119,6 +151,7 @@ def test_layout_dock_with_explicit_dimensions():
     assert scroll_pane.state.position.x - (grid_pane.state.position.x + grid_pane.dimensions.w) == 10
 
 
+@pytest.mark.menus
 def test_layout_build_graph():
     layout = Layout(Dimensions(w=1000, l=1000))
     
@@ -147,6 +180,7 @@ def test_layout_build_graph():
     assert graph["b3"][Traversal.WEST] == "b1"
 
 
+@pytest.mark.menus
 def test_layout_build_graph_grid_to_controls():
     """Validates that right-column buttons in a 2x2 grid link EAST to adjacent scroll controls."""
     layout = Layout(Dimensions(w=640, l=480))

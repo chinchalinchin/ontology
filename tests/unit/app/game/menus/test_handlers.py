@@ -1,5 +1,5 @@
 """
-# Ontology: tests.unit.test_app_game_menus_handlers
+# Ontology: tests.unit.app.game.menus.test_handlers
 
 Test suite covering Event Routing Strategy implementations.
 """

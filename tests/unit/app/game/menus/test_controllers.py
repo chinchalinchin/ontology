@@ -1,9 +1,12 @@
 """
-# Ontology: tests.unit.test_app_game_menus_controllers
+# Ontology: tests.unit.app.game.menus.controllers
 """
 # Standard Libraries
 from unittest.mock import MagicMock
 from collections import deque
+
+# External Libraries
+import pytest
 
 # Application Libraries
 from app.config.enums import (
@@ -40,6 +43,7 @@ from app.models.properties import WidgetProperties
 # Cython Libraries
 from libs.core.models import Dimensions
 
+@pytest.mark.menus
 def test_main_controller_select():
     ctrl = MainController()
     
@@ -73,6 +77,8 @@ def test_main_controller_select():
     assert isinstance(event2, StateEvent)
     assert event2.id == 'world-01'
 
+
+@pytest.mark.menus
 def test_main_controller_update():
     ctrl = MainController()
     menu = MagicMock(spec=Menu)
@@ -84,6 +90,8 @@ def test_main_controller_update():
     # Main menu idle loop should prewarm the registry textures
     mock_registry.prewarm.assert_called_once_with(budget_ms=1)
 
+
+@pytest.mark.menus
 def test_load_controller_update():
     ctrl = LoadController()
     
@@ -123,6 +131,8 @@ def test_load_controller_update():
     assert len(bus) == 1
     assert isinstance(bus[0], TerminalEvent)
 
+
+@pytest.mark.menus
 def test_load_controller_update_not_done():
     ctrl = LoadController()
     
@@ -148,6 +158,8 @@ def test_load_controller_update_not_done():
     # Should not push terminal event or flip board state
     assert len(bus) == 0
 
+
+@pytest.mark.menus
 def test_scroll_controller_select():
     ctrl = ScrollController()
     menu = MagicMock(spec=Menu)
@@ -182,6 +194,8 @@ def test_scroll_controller_select():
     event = bus.popleft()
     assert isinstance(event, UpdateEvent)
 
+
+@pytest.mark.menus
 def test_inventory_controller_pagination():
     controller = InventoryController()
     bus = deque()
@@ -244,6 +258,7 @@ def test_inventory_controller_pagination():
     assert len(bus) == 1
 
 
+@pytest.mark.menus
 def test_inventory_controller_slot_equip():
     controller = InventoryController()
     bus = deque()
@@ -295,6 +310,7 @@ def test_inventory_controller_slot_equip():
     assert event.content == "shortsword"
 
 
+@pytest.mark.menus
 def test_inventory_controller_focus_recovery():
     controller = InventoryController()
     bus = deque()
