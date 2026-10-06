@@ -5,7 +5,10 @@ Package for Asset Animation implementations.
 """
 # Application Libraries
 import app.config.settings as settings
-from app.config.enums import Lifecycles
+from app.config.enums import (
+    Lifecycles,
+    Switches
+)
 from app.assets.base import Animation
 from app.models.properties import (
     AssetProperties, 
@@ -35,7 +38,7 @@ class BinaryAnimation(Animation):
     def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
         """
         """
-        state.animation.frame = settings.ON if state.switch else settings.OFF
+        state.animation.frame = Switches.ON.value if state.switch else Switches.OFF.value
         return state
 
 
@@ -46,9 +49,11 @@ class LifecycleAnimation(Animation):
     def cooldown(self, state: EffectState, properties: EffectProperties) -> EffectState:
         """
         """
-        limit = (properties.count - 1 
-                    if properties.lifecycle.persist 
-                    else properties.count)
+        limit = (
+            properties.count - 1 
+            if properties.lifecycle.persist else 
+            properties.count
+        )
         if state.animation.frame >= limit:
             state.cooldown -= 1
             if state.cooldown <= 0:

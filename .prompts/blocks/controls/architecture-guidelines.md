@@ -4,5 +4,5 @@ Let the data model validators do their job. All data must pass through strict Py
 
 **Enums**
 
-All enums are `class Test(str, Enum)`. Do not raise issues related to enum str comparisons. 
+All enums are `class StringEnum(str, Enum)` or `class IntEnum(int, Enum)` mixins. Do not raise issues related to Enum `str` or `int` comparisons. 
 

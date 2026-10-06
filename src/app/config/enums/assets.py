@@ -62,6 +62,7 @@ class AssetInstances(str, Enum):
     # RESOURCES
     CROPS           = "crops"
     ORE             = "ore"
+    TREES           = "trees"
     # WIDGETS
     PANES           = "panes"
     BUTTONS         = "buttons"
@@ -119,7 +120,14 @@ class Actions(str, Enum):
 class Orientations(str, Enum):
     HORIZONTAL      = "horizontal"
     VERTICAL        = "vertical"
-    
+
+class Switches(int, Enum):
+    ON              = 1
+    OFF             = 0
+
+class Gauges(str, Enum):
+    EMPTY           = "0"
+
 class Expressions(str, Enum):
     AGREEMENT       = "agreement"
     ANGER           = "anger"

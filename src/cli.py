@@ -173,10 +173,16 @@ def hydrate(engine, board_key, screensize):
         
         if i < len(old_screens):
             screen = old_screens[i]
-            screen.rebake(tiles, size, screensize)
+            screen.rebake(tiles, size, engine.board.calendar, screensize)
             engine.screens[layer] = screen
         else:
-            engine.screens[layer] = Screen(screensize, size, tiles, registry)
+            engine.screens[layer] = Screen(
+                screensize, 
+                size, 
+                tiles, 
+                registry, 
+                engine.board.calendar
+            )
             
     engine.board.loaded = True
 

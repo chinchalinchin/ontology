@@ -11,7 +11,12 @@ from app.config.enums.assets import (
     Directions,
     Actions,
     Expressions,
+    # ------
+    Switches,
+    # ------
     Orientations,
+    # ------
+    Gauges,
     # ------
     RequiredAssets,
     EffectsPalette,
@@ -83,10 +88,17 @@ __all__ = [
     'Groups',
     # ------
     'Lifecycles',
+    # -------
     'Directions',
     'Actions',
     'Expressions',
+    # -------
     'Orientations',
+    # -------
+    'Gauges',
+    # -------
+    'Switches',
+    # -------
     'Seasons',
     'Lifespans',
     'Cycles',

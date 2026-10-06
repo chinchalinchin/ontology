@@ -3,7 +3,10 @@ stages:
     sprout:
       - next: growth
         conditions:
-          - "calendar.season in [constants.Seasons.SPRING.value, constants.Seasons.SUMMER.value]"
+          - "calendar.season in [
+              constants.Seasons.SPRING.value, 
+              constants.Seasons.SUMMER.value
+            ]"
           - "resource.retention >= 20.0"
       - next: stump
         conditions:
@@ -12,7 +15,10 @@ stages:
     growth:
       - next: stalk
         conditions:
-          - "calendar.season in [constants.Seasons.SPRING.value, constants.Seasons.SUMMER.value]"
+          - "calendar.season in [
+              constants.Seasons.SPRING.value, 
+              constants.Seasons.SUMMER.value
+            ]"
           - "resource.retention >= 25.0"
       - next: stump
         conditions:
@@ -54,9 +60,6 @@ stages:
           - "calendar.season == constants.Seasons.SPRING.value"
           - "calendar.cycle == constants.Cycles.PEAK.value"
           - "resource.retention >= 15.0"
-      - next: dying
-        conditions:
-          - "resource.retention < 5.0"
 
     bush:
       - next: branch
@@ -64,9 +67,6 @@ stages:
           - "calendar.season == constants.Seasons.SPRING.value"
           - "calendar.cycle == constants.Cycles.DECLINE.value"
           - "resource.retention >= 20.0"
-      - next: dying
-        conditions:
-          - "resource.retention < 5.0"
 
     branch:
       - next: adult
@@ -74,9 +74,6 @@ stages:
           - "calendar.season == constants.Seasons.SUMMER.value"
           - "calendar.cycle == constants.Cycles.ONSET.value"
           - "resource.retention >= 25.0"
-      - next: dying
-        conditions:
-          - "resource.retention < 5.0"
 
     # -------------------------------------------------------------------------
     # BRIDGE STAGE: GENESIS COMPLETION & RECOVERY

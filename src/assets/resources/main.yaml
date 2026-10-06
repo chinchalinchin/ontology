@@ -17,6 +17,14 @@ resources:
       loot: lettuce
       mass: 0
       hitboxes: null
+    maize:
+      dimensions:
+        w: 32
+        l: 64
+      lifespan: annual
+      loot: maize
+      mass: 0
+      hitboxes: null
   ore:
     gold:
       dimensions:

@@ -12,7 +12,10 @@ import logging
 # Application Libraries
 import app.config.settings as settings
 from app.assets.base import Frame
-from app.config.enums import Statuses
+from app.config.enums import (
+    Statuses,
+    Gauges
+)
 from app.models.state import AssetState
 from app.models.properties import WidgetProperties
 
@@ -74,8 +77,8 @@ class MeterFrame(Frame):
         return [
             (settings.SEPARATOR.join([
                 id, 
-                str(settings.EMPTY
-            )]), 0, 0),
+                Gauges.EMPTY.value
+            ]), 0, 0),
             (settings.SEPARATOR.join([
                 id, 
                 str(state.animation.frame)
@@ -91,7 +94,7 @@ class MeterFrame(Frame):
         crops = {
            settings.SEPARATOR.join([
                id, 
-               str(settings.EMPTY)
+               Gauges.EMPTY.value
             ]): (0, 0, w, l)
         }
         for res in range(1, 101):
