@@ -1697,27 +1697,27 @@
 <p>Trees cycle through three epicycles:</p>
 <ol>
 <li><strong>Genesis</strong>:<ul>
-<li><span class="arithmatex">\(\text{sapling} \to \text{bush} &amp;\iff (\text{season} = \text{Spring}) \land (\text{cycle} = \text{Peak}) \land (\text{retention} \ge 15.0)\)</span></li>
-<li><span class="arithmatex">\(\text{bush} \to \text{branch} &amp;\iff (\text{season} = \text{Spring}) \land (\text{cycle} = \text{Decline}) \land (\text{retention} \ge 20.0)\)</span></li>
-<li><span class="arithmatex">\(\text{branch} \to \text{adult} &amp;\iff (\text{season} = \text{Summer}) \land (\text{cycle} = \text{Onset}) \land (\text{retention} \ge 25.0)\)</span> </li>
-<li><span class="arithmatex">\(\text{adult} \to \text{healthy} &amp;\iff (\text{season} = \text{Summer}) \land (\text{cycle} = \text{Peak}) \land (\text{retention} \ge 25.0)\)</span></li>
+<li><span class="arithmatex">\(\text{sapling} \to \text{bush} \iff (\text{season} = \text{Spring}) \land (\text{cycle} = \text{Peak}) \land (\text{retention} \ge 15.0)\)</span></li>
+<li><span class="arithmatex">\(\text{bush} \to \text{branch} \iff (\text{season} = \text{Spring}) \land (\text{cycle} = \text{Decline}) \land (\text{retention} \ge 20.0)\)</span></li>
+<li><span class="arithmatex">\(\text{branch} \to \text{adult} \iff (\text{season} = \text{Summer}) \land (\text{cycle} = \text{Onset}) \land (\text{retention} \ge 25.0)\)</span> </li>
+<li><span class="arithmatex">\(\text{adult} \to \text{healthy} \iff (\text{season} = \text{Summer}) \land (\text{cycle} = \text{Peak}) \land (\text{retention} \ge 25.0)\)</span></li>
 </ul>
 </li>
 <li><strong>Homeostasis</strong>:<ul>
-<li><span class="arithmatex">\(\text{healthy} \to \text{abscise} &amp;\iff (\text{season} = \text{Autumn}) \land (\text{retention} \ge 15.0)\)</span>     </li>
-<li><span class="arithmatex">\(\text{abscise} \to \text{snowcapt} &amp;\iff (\text{season} = \text{Winter}) \land (\text{retention} \ge 10.0)\)</span></li>
-<li><span class="arithmatex">\(\text{snowcapt} \to \text{vibrant} &amp;\iff (\text{season} = \text{Spring}) \land (\text{retention} \ge 15.0)\)</span>     </li>
-<li><span class="arithmatex">\(\text{vibrant} \to \text{healthy} &amp;\iff (\text{season} = \text{Summer}) \land (\text{retention} \ge 20.0)\)</span></li>
+<li><span class="arithmatex">\(\text{healthy} \to \text{abscise} \iff (\text{season} = \text{Autumn}) \land (\text{retention} \ge 15.0)\)</span>     </li>
+<li><span class="arithmatex">\(\text{abscise} \to \text{snowcapt} \iff (\text{season} = \text{Winter}) \land (\text{retention} \ge 10.0)\)</span></li>
+<li><span class="arithmatex">\(\text{snowcapt} \to \text{vibrant} \iff (\text{season} = \text{Spring}) \land (\text{retention} \ge 15.0)\)</span>     </li>
+<li><span class="arithmatex">\(\text{vibrant} \to \text{healthy} \iff (\text{season} = \text{Summer}) \land (\text{retention} \ge 20.0)\)</span></li>
 </ul>
 </li>
 <li><strong>Apoptosis</strong>:<ul>
 <li><span class="arithmatex">\(S_{\text{homeo}} = \{\text{vibrant}, \text{healthy}, \text{abscise}, \text{snowcapt}\}\)</span></li>
-<li><span class="arithmatex">\(\forall s \in S_{\text{homeo}}, \quad s \to \text{dying} &amp;\iff \text{retention} &lt; 5.0\)</span></li>
-<li><span class="arithmatex">\(\text{dying} \to \text{vibrant} &amp;\iff (\text{season} = \text{Spring}) \land (\text{retention} \ge 20.0)\)</span></li>
-<li><span class="arithmatex">\(\text{dying} \to \text{healthy} &amp;\iff (\text{season} = \text{Summer}) \land (\text{retention} \ge 20.0)\)</span>     </li>
-<li><span class="arithmatex">\(\text{dying} \to \text{dead} &amp;\iff (\text{season} = \text{Autumn}) \land (\text{retention} &lt; 5.0)\)</span>     </li>
-<li><span class="arithmatex">\(\text{dead} \to \text{stump} &amp;\iff \text{season} = \text{Winter}\)</span>     </li>
-<li><span class="arithmatex">\(\text{stump} \to \text{sapling} &amp;\iff (\text{season} = \text{Spring}) \land (\text{cycle} = \text{Onset}) \land (\text{period} = 0) \land (\text{retention} \ge 15.0)\)</span></li>
+<li><span class="arithmatex">\(\forall s \in S_{\text{homeo}}, \quad s \to \text{dying} \iff \text{retention} &lt; 5.0\)</span></li>
+<li><span class="arithmatex">\(\text{dying} \to \text{vibrant} \iff (\text{season} = \text{Spring}) \land (\text{retention} \ge 20.0)\)</span></li>
+<li><span class="arithmatex">\(\text{dying} \to \text{healthy} \iff (\text{season} = \text{Summer}) \land (\text{retention} \ge 20.0)\)</span>     </li>
+<li><span class="arithmatex">\(\text{dying} \to \text{dead} \iff (\text{season} = \text{Autumn}) \land (\text{retention} &lt; 5.0)\)</span>     </li>
+<li><span class="arithmatex">\(\text{dead} \to \text{stump} \iff \text{season} = \text{Winter}\)</span>     </li>
+<li><span class="arithmatex">\(\text{stump} \to \text{sapling} \iff (\text{season} = \text{Spring}) \land (\text{cycle} = \text{Onset}) \land (\text{period} = 0) \land (\text{retention} \ge 15.0)\)</span></li>
 </ul>
 </li>
 </ol>
