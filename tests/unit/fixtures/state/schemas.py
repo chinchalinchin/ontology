@@ -17,6 +17,7 @@ from app.models.state import (
     CraftStateInstances,
     TileStateInstances,
     EffectStateInstances,
+    ResourceStateInstances
 )
 
 
@@ -42,6 +43,17 @@ def mock_craft_states(
 
 
 @pytest.fixture
+def mock_resource_states(
+    mock_tree_state,
+    mock_crop_state
+) -> ResourceStateInstances:
+    return ResourceStateInstances(
+        trees=[mock_tree_state],
+        crops=[mock_crop_state]
+    )
+
+
+@pytest.fixture
 def mock_effect_states(
     mock_reactable_state,
     mock_fluid_state,
@@ -50,7 +62,11 @@ def mock_effect_states(
 ) -> EffectStateInstances:
     return EffectStateInstances(
         reactables = [ mock_reactable_state ],
-        fluids = [ mock_fluid_state, mock_fluid_state_alt, mock_fluid_state_alt2 ],
+        fluids = [ 
+            mock_fluid_state, 
+            mock_fluid_state_alt, 
+            mock_fluid_state_alt2 
+        ],
     )
 
 
@@ -96,13 +112,14 @@ def mock_state(
     mock_tile_states,
     mock_craft_states,
     mock_object_states,
-    mock_effect_states
+    mock_effect_states,
+    mock_resource_states
 ):
     return StateSchema(
-        effects = mock_effect_states,
-        sheets = mock_sheet_states,
-        tiles = mock_tile_states,
-        crafts = mock_craft_states,
-        objects = mock_object_states,
+        effects=mock_effect_states,
+        sheets=mock_sheet_states,
+        tiles=mock_tile_states,
+        crafts=mock_craft_states,
+        objects=mock_object_states,
+        resources=mock_resource_states
     )
-

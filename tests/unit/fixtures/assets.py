@@ -17,7 +17,9 @@ from app.assets.frames import (
     CardinalFrame,
     SingleFrame,
     SpriteFrame,
-    OrientedFrame
+    OrientedFrame,
+    SeasonalFrame,
+    StageFrame
 )
 from app.assets.animations import (
     NoAnimation,
@@ -34,6 +36,43 @@ from app.config.enums import (
 # -------------------------------------------------------------- MOCK ASSETS
 # --------------------------------------------------------------------------
 
+@pytest.fixture
+def mock_tree_resource(
+    mock_resource_properties,
+    mock_tree_state
+) -> Asset:
+    return Asset(
+        taxonomy=Taxonomy(
+            id="deciduous",
+            name="the-mighty-oak",
+            category=AssetCategories.RESOURCES.value,
+            instance=AssetInstances.TREES.value
+        ),
+        properties=mock_resource_properties.trees.get("deciduous"),
+        state=mock_tree_state,
+        frame=StageFrame(),
+        animation=NoAnimation()
+    )
+
+
+@pytest.fixture
+def mock_crop_resource(
+    mock_resource_properties,
+    mock_crop_state
+) -> Asset:
+    return Asset(
+        taxonomy=Taxonomy(
+            id="lettuce",
+            name="some-lettuce",
+            category=AssetCategories.RESOURCES.value,
+            instance=AssetInstances.CROPS.value
+        ),
+        properties=mock_resource_properties.crops.get("lettuce"),
+        state=mock_crop_state,
+        frame=StageFrame(),
+        animation=NoAnimation()
+    )
+
 
 @pytest.fixture
 def mock_back_tile(
@@ -42,14 +81,14 @@ def mock_back_tile(
 ) -> Asset:
     return Asset(
         taxonomy = Taxonomy(
-            id = "grass",
-            name = "grass",
+            id = "temperate",
+            name = "the-steppe",
             category = AssetCategories.TILES.value, 
             instance = AssetInstances.BACK.value
         ), 
-        properties = mock_tile_properties.back.get('grass'), 
+        properties = mock_tile_properties.back.get('temperate'), 
         state = mock_multiplier_state, 
-        frame = SingleFrame(), 
+        frame = SeasonalFrame(), 
         animation = NoAnimation()
     )
 

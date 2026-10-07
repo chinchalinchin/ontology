@@ -1,5 +1,5 @@
 """
-# Ontology: tests.unit.test_app_services_translators_lamb
+# Ontology: tests.unit.app.services.tranlators.test_lambda
 """
 # External Libraries
 import pytest

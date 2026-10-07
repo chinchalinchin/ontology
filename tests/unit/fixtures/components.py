@@ -6,7 +6,6 @@ Mock application component fixtures
 # Standard Libraries
 from unittest.mock import (
     MagicMock, 
-    patch
 )
 import collections
 
@@ -14,18 +13,19 @@ import collections
 import pytest
 
 # Application Libraries
+from app.config.enums import (
+    Relations
+)
 from app.game.devices import Keyboard
 from app.game.board import Board
 from app.game.engine import Engine
+from app.game.screen import Screen
+from app.models.state import CalendarState
 from app.services.generators.game.factory import Factory
 from app.services.translators import (
     LambdaTranslator,
     CompilerTranslator
 )
-from app.services.generators.menus.provider import Provider
-from app.services.generators.menus.fabricator import Fabricator
-from app.services.generators.menus.binder import Binder
-from app.services.generators.menus.library import Library
 from app.config.enums import Executors
 
 # Cython Libraries
@@ -35,46 +35,58 @@ from libs.core.models import (
     Boundary
 )
 
-class RenderStubScreen:
-    """
-    Screen double that stubs low-level SDL rendering passes without mocking engine logic.
-    """
-    def __init__(self, screensize, boardsize, tiles, registry):
-        self.screensize = screensize
-        self.boardsize = boardsize
-        self.tiles = tiles
-        self.registry = registry
-        self.cleared = False
-        self.drawn_assets = []
-        self.presented = False
-
-    def clear(self) -> None:
-        self.cleared = True
-
-    def draw(self, assets, position, dimensions) -> None:
-        self.drawn_assets = list(assets)
-
-    def interface(self, menus, overlays) -> None:
-        pass
-
-    def present(self) -> None:
-        self.presented = True
-
-    def destroy(self) -> None:
-        pass
-
 # ---------------------------------------------------------------------------
 # ----------------------------------------------------------- MOCK COMPONENTS
 # ---------------------------------------------------------------------------
 
 @pytest.fixture
-def mock_screen(mock_registry) -> RenderStubScreen:
-    return RenderStubScreen(
+def mock_screen(mock_registry, monkeypatch) -> Screen:
+    """
+    Concrete Screen instance with low-level SDL rendering functions stubbed out
+    and call-tracking spy attributes attached for engine loop verification.
+    """
+    monkeypatch.setattr("app.game.screen.render.canvas", lambda w, l, opaque=False: MagicMock())
+    monkeypatch.setattr("app.game.screen.render.construct", lambda canvas, tiles: None)
+    monkeypatch.setattr("app.game.screen.render.clear", lambda: None)
+    monkeypatch.setattr("app.game.screen.render.present", lambda: None)
+    monkeypatch.setattr("app.game.screen.render.destroy", lambda canvas: None)
+    monkeypatch.setattr("app.game.screen.render.render", lambda *args, **kwargs: None)
+    monkeypatch.setattr("app.game.screen.render.superimpose", lambda *args, **kwargs: None)
+    monkeypatch.setattr("app.game.screen.render.channel", lambda *args, **kwargs: None)
+    monkeypatch.setattr("app.game.screen.render.dim", lambda *args, **kwargs: None)
+
+    screen = Screen(
         screensize=Dimensions(320, 240),
         boardsize=Dimensions(640, 480),
         tiles=[],
-        registry=mock_registry
+        registry=mock_registry,
+        calendar=CalendarState()
     )
+
+    screen.cleared = False
+    screen.presented = False
+    screen.drawn_assets = []
+
+    real_clear = screen.clear
+    def _spy_clear():
+        screen.cleared = True
+        return real_clear()
+    monkeypatch.setattr(screen, "clear", _spy_clear)
+
+    real_present = screen.present
+    def _spy_present():
+        screen.presented = True
+        return real_present()
+    monkeypatch.setattr(screen, "present", _spy_present)
+
+    real_draw = screen.draw
+    def _spy_draw(assets, focus, dim):
+        screen.drawn_assets = list(assets)
+        return real_draw(assets, focus, dim)
+    monkeypatch.setattr(screen, "draw", _spy_draw)
+
+    return screen
+
 
 @pytest.fixture
 def mock_registry() -> MagicMock:
@@ -123,12 +135,17 @@ def mock_lambda_executors(
     intention_executor = translator.compile(mock_configurations.intentions)
     plot_executor = translator.compile(mock_configurations.plots)
     
-    return {
+    executors = {
         Executors.INTENTION.value: intention_executor,
         Executors.PLOT.value: plot_executor,
         Executors.ACTUATOR.value: mock_actuator
     }
 
+    if mock_configurations.stages:
+        for lifespan_key, rules in mock_configurations.stages.items():
+            executors[lifespan_key] = translator.compile(rules)
+
+    return executors
 
 @pytest.fixture
 def mock_compiler_executors(
@@ -139,12 +156,17 @@ def mock_compiler_executors(
     intention_executor = translator.compile(mock_configurations.intentions)
     plot_executor = translator.compile(mock_configurations.plots)
     
-    return {
+    executors = {
         Executors.INTENTION.value: intention_executor,
         Executors.PLOT.value: plot_executor,
         Executors.ACTUATOR.value: mock_actuator
     }
 
+    if mock_configurations.stages:
+        for lifespan_key, rules in mock_configurations.stages.items():
+            executors[lifespan_key] = translator.compile(rules)
+
+    return executors
 
 @pytest.fixture
 def mock_bus() -> collections.deque:
@@ -153,7 +175,6 @@ def mock_bus() -> collections.deque:
 
 @pytest.fixture
 def mock_relations(mock_shoreline_index) -> dict:
-    from app.config.enums import Relations
     return {
         Relations.SHORELINES.value: mock_shoreline_index
     }

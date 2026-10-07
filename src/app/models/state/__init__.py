@@ -67,6 +67,7 @@ from app.models.state.schemas import (
     CursorStateInstances,
     EffectStateInstances,
     SheetStateInstances,
+    ResourceStateInstances,
     StateSchema
 )
 from app.models.state.widgets import (
@@ -147,5 +148,6 @@ __all__ = [
     'CursorStateInstances',
     'EffectStateInstances',
     'SheetStateInstances',
+    'ResourceStateInstances',
     'StateSchema'
 ]

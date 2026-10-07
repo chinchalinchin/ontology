@@ -7,32 +7,12 @@ Mock application configuration fixtures.
 import pytest
 
 from app.config.enums import ( 
-    # -------- ASSET COMPONENTS
-    FrameRecipe,
-    AnimationRecipe,
     # -------- MECHANICS
     Mechanics,
     Executors,
     Relations
 )
 from app.models.config import (
-    # ------ COMPOSITIONS
-    CompositionConfiguration, 
-    CompositionPseudoState, 
-    # ------ RECIPES
-    RecipeConfiguration,
-    CursorRecipe,
-    CraftRecipe,
-    WidgetRecipe,
-    EffectRecipe,
-    ObjectRecipe,
-    GeographyRecipe,
-    SheetRecipe,
-    TileRecipe,
-    Recipe,
-    # ------- TRANSITION CONFIGURATION
-    IntentionConfiguration,
-    PlotConfiguration,
     # ------- DEVICES
     MappingConfiguration,
     DeviceMapping,
@@ -45,24 +25,6 @@ from app.models.config import (
     # -------- SCHEMA
     ConfigurationSchema
 )
-from app.models.state import (
-    # -------- SCHEMA
-    StateSchema, 
-    # -------- INSTANCES
-    ObjectStateInstances, 
-    CraftStateInstances,
-    # -------- MODELS
-    DoorState,
-    PropertyState
-)
-from app.models.groups import (
-    SpawnableGroup,
-    EquipmentGroup
-)
-
-# Cython Libraries
-from libs.core.models import Position
-
 
 # --------------------------------------------------------------------------
 # ------------------------------------------------------ MOCK CONFIGURATIONS
@@ -135,13 +97,14 @@ def mock_configurations(
     mock_mapping_configuration,
     mock_mechanics_configuration,
     mock_intention_configuration,
-    mock_plot_configuration
+    mock_plot_configuration,
+    mock_stage_configuration
 ):
     return ConfigurationSchema(
         mappings=mock_mapping_configuration,
         recipes=mock_recipes_configuration,
         intentions=mock_intention_configuration,
         plots=mock_plot_configuration,
-        mechanics=mock_mechanics_configuration
+        mechanics=mock_mechanics_configuration,
+        stages=mock_stage_configuration
     )
-

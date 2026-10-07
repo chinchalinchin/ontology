@@ -22,7 +22,7 @@ from libs.core.models import (
 def mock_tile_properties() -> TilePropertyInstances:
     return TilePropertyInstances(
         back = {
-            'grass': TileProperties(
+            'temperate': TileProperties(
                 dimensions=Dimensions(w=32, l=32),
                 friction=100
             )       

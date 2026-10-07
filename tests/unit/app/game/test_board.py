@@ -71,7 +71,7 @@ def test_board_spatial_hashing(mock_board):
     # Quad 1: (0,0) - Contains position 10, 10
     tile_q1 = mock_board.tile('0', Position(x=10, y=10))
     assert tile_q1 is not None
-    assert tile_q1.name == "grass"
+    assert tile_q1.name == "the-steppe"
     
     # Quad 2: (1,0) - Contains position 40, 10
     tile_q2 = mock_board.tile('0', Position(x=40, y=10))

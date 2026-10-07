@@ -28,7 +28,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 07: Compositions](./phases/implement/phase-07.md)
     - [x]: [Phase 08: Pathfinding](./phases/implement/phase-08.md)
     - [x]: [Phase 09: Hydrodynamics](./phases/implement/phase-09.md)
-    - [~]: [Phase 10: Seasons](./phases/implement/phase-10.md)
+    - [x]: [Phase 10: Seasons](./phases/implement/phase-10.md)
     - [ ]: [Phase n: Commerce](./phases/implement/phase-n.md)
     - [ ]: [Phase n+1: Towns](./phase/implement/phase-n+1.md)
   - Refactor:
@@ -67,6 +67,8 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 09.05: Bridges & Bifurcation](./phases/refactor/refactor-09-05.md)
       - [x]: [Phase 09.06: Cythonization](./phases/refactor/refactor-09-06.md)
       - [x]: [Phase 09.07: Frame Caching](./phases/refactor/refactor-09-07.md)
+    - Phase 10:
+      - [ ]: [Phase 10.01: Stage Hitboxes](./phases/refactor/refactor-10-01.md)
   - Patch:
     - [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering Instantiated Assets](./phases/patch/bug-b001.md)

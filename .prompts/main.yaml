@@ -31,7 +31,22 @@ properties:
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/implementation.md.j2
+  # -------------------------------------- MAINTENANCE
+  # template: console/debug.md.j2
+  # ---------------------------------- ITERATION CYCLE
+  # template: iterate/documentation.md.j2
+  # template: iterate/grooming.md.j2
+  # template: iterate/implementation.md.j2
+  template: iterate/coverage.md.j2
+  # template: iterate/conclusion.md.j2
+  # ------------------------------------- DESIGN TASKS
+  # template: design/menu.md.j2
+  # template: diagram/hierarchy.md.j2
+  # template: diagram/intentions.md.j2
+  # template: diagram/stages.md.j2
+  # template: output/menus.md.j2
+  # template: output/state.md.j2
+  # template: style/mermaid.md.j2
 # ----------------------------------------------------
   parameters:
     diagram: mechanics-fluid.mmd
@@ -40,19 +55,19 @@ tools:
 # ----------------------------------------------------
   views:
     manager:
-      board: true
+      board: false
       specs: false
-      docs: true
+      docs: false
     source:
-      workflow: true
+      workflow: false
     shell:
       directory: true
       commands: false
     tests:  
-      pipeline: false
-      fixtures: false
+      pipeline: true
+      fixtures: true
       session: false
-      workflow: false
+      workflow: true
 # ----------------------------------------------------
   parameters:
     manager:
@@ -62,13 +77,18 @@ tools:
       docs:
         exclude:
           - index.md
+          # - 00-overview.md
+          # - 01-assets.md
           - 02-sprites.md
           - 03-compositions.md
           - 04-intentions.md
+          # - 05-mechanics.md
           - 06-widgets.md
           - 07-sounds.md
           - 08-plots.md
+          # - 09-ecology.md
           - 10-emergence.md
+          # - 11-architecture.md
       specs: []
     source:
       workflow: seasons
@@ -81,36 +101,51 @@ tools:
         command: pytest -m
         marker: seasons
       fixtures:
-        - assets
-        - components
+        # ----------------------------
+        # - configuration/compositions
+        # - configuration/groups
+        # - configuration/recipes
         - configuration/transitions
+        - configuration/schemas
+        # ----------------------------
         # - properties/crafts
+        # - properties/cursors
         - properties/effects
+        # - properties/fonts
+        # - properties/geography
         # - properties/objects
+        - properties/resources
+        # - properites/sheets
         - properties/tiles
+        # - properties/widgets
+        - properties/schemas
+        # ----------------------------
         # - state/crafts
-        # - state/effects
+        - state/effects
         # - state/objects
-        - state/schemas
         - state/resources
         - state/world
+        - state/schemas
+        # ----------------------------
+        - assets
+        - components
+        # - menus
         # - services
         # - structures
-        # - menus
       workflow: seasons
       session:
         description: null
         conditions:
           ## ------------------- PROPERTIES
+          # - src/assets/crafts/bridges.yaml
           # - src/assets/effects/fluids/main.yaml
           # - src/assets/geography/main.yaml
           - src/assets/resources/main.yaml
           - src/assets/tiles/main.yaml
-          # - src/assets/crafts/bridges.yaml
           ## ------------------- STATE
+          # - src/data/state/world-01/crafts/bridges.yaml
+          # - src/data/state/world-01/effects/fluids.yaml
           - src/data/state/world-01/resources/crops.yaml
           - src/data/state/world-01/resources/trees.yaml
-          # - src/data/state/world-01/effects/fluids.yaml
-          # - src/data/state/world-01/crafts/bridges.yaml
           ## -------------------- CONFIGURATION
           - src/data/config/stages/main.yaml

@@ -34,6 +34,7 @@ from app.models.config.recipes import (
     ObjectRecipe,
     SheetRecipe,
     GeographyRecipe,
+    ResourceRecipe,
     WidgetRecipe,
     RecipeConfiguration
 )
@@ -71,6 +72,7 @@ __all__ = [
     'SheetRecipe',
     'WidgetRecipe',
     'GeographyRecipe',
+    'ResourceRecipe',
     'RecipeConfiguration',
     'ConfigurationSchema',
     'MenuBinding',

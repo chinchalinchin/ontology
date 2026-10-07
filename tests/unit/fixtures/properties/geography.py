@@ -22,9 +22,9 @@ def mock_geography_properties() -> GeographyPropertyInstances:
     """GeographyProperties dataclass fixture."""
     return GeographyPropertyInstances(
         shorelines = {
-            "grassy-shore": GeographyProperties(
+            "temperate-banks": GeographyProperties(
                 dimensions=Dimensions(w=32, l=32),
-                tile="grass",
+                tile="temperate",
                 fluid="waterflow-01",
                 thickness=8,
                 mass=-1

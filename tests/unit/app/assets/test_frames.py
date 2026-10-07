@@ -285,7 +285,7 @@ def test_fluid_frame_keys_upward_stream():
 
 
 @pytest.mark.frames
-@pytest.markfluids
+@pytest.mark.fluids
 def test_fluid_frame_keys_lateral_streams():
     """
     Verify lateral streams emit X-axis offsets for right and left flow vectors.
@@ -475,3 +475,136 @@ def test_shoreline_frame_channels():
     assert frame.channels("grassy-shore", state, props) == [
         (ChannelTypes.SUBMERGE.value, (16, 40, 110, 180, 170))
     ]
+
+
+from app.assets.frames import (
+    SeasonalFrame,
+    StageFrame
+)
+from app.config.enums import (
+    Seasons,
+    Cycles,
+    Lifespans,
+    AnnualStages,
+    PerennialStages
+)
+from app.models.properties import (
+    TileProperties,
+    ResourceProperties
+)
+from app.models.state import (
+    CalendarState,
+    ResourceState
+)
+
+
+@pytest.mark.frames
+@pytest.mark.seasons
+def test_seasonal_frame_indexing():
+    """
+    Verify SeasonalFrame generates a complete 36-cell atlas index
+    (4 seasons x 3 cycles x 3 periods) at contiguous coordinates.
+    """
+    frame = SeasonalFrame()
+    props = TileProperties(dimensions=Dimensions(w=32, l=32))
+    crops = frame.index("temperate", props)
+
+    assert len(crops) == 36
+
+    # Verify first cell: Spring-Onset-0 at (0, 0)
+    spring_key = f"temperate{SEPARATOR}spring{SEPARATOR}onset{SEPARATOR}0"
+    assert crops[spring_key] == (0, 0, 32, 32)
+
+    # Verify last period of Spring: Spring-Decline-2 at column 8 (8 * 32 = 256, 0)
+    spring_end_key = f"temperate{SEPARATOR}spring{SEPARATOR}decline{SEPARATOR}2"
+    assert crops[spring_end_end] if "spring_end_end" in locals() else crops[spring_end_key] == (256, 0, 32, 32)
+
+    # Verify Winter row (row 3): Winter-Decline-2 at (256, 96)
+    winter_key = f"temperate{SEPARATOR}winter{SEPARATOR}decline{SEPARATOR}2"
+    assert crops[winter_key] == (256, 96, 32, 32)
+
+
+@pytest.mark.frames
+@pytest.mark.seasons
+def test_seasonal_frame_eras():
+    """
+    Verify SeasonalFrame.eras maps calendar state to the canonical frame key.
+    """
+    frame = SeasonalFrame()
+    calendar = CalendarState(
+        season=Seasons.AUTUMN.value,
+        cycle=Cycles.PEAK.value,
+        period=2
+    )
+
+    keys = frame.eras("temperate", calendar)
+    expected_key = f"temperate{SEPARATOR}autumn{SEPARATOR}peak{SEPARATOR}2"
+    assert keys == [(expected_key, 0, 0)]
+
+
+@pytest.mark.frames
+@pytest.mark.seasons
+def test_seasonal_frame_keys_fallback():
+    """
+    Verify SeasonalFrame.keys returns the default spring-onset-0 frame key.
+    """
+    frame = SeasonalFrame()
+    keys = frame.keys("temperate", None)
+    expected_key = f"temperate{SEPARATOR}spring{SEPARATOR}onset{SEPARATOR}0"
+    assert keys == [(expected_key, 0, 0)]
+
+
+@pytest.mark.frames
+@pytest.mark.seasons
+def test_stage_frame_indexing_annual():
+    """
+    Verify StageFrame dynamically indexes horizontal cells for annual crops.
+    """
+    frame = StageFrame()
+    props = ResourceProperties(
+        dimensions=Dimensions(w=32, l=22),
+        lifespan=Lifespans.ANNUAL.value,
+        loot="lettuce",
+        mass=0
+    )
+    crops = frame.index("lettuce", props)
+
+    assert len(crops) == len(AnnualStages)
+    for i, stage in enumerate(AnnualStages):
+        key = f"lettuce{SEPARATOR}{stage.value}"
+        assert crops[key] == (i * 32, 0, 32, 22)
+
+
+@pytest.mark.frames
+@pytest.mark.seasons
+def test_stage_frame_indexing_perennial():
+    """
+    Verify StageFrame dynamically indexes horizontal cells for perennial trees.
+    """
+    frame = StageFrame()
+    props = ResourceProperties(
+        dimensions=Dimensions(w=94, l=137),
+        lifespan=Lifespans.PERENNIAL.value,
+        loot="wood",
+        mass=0
+    )
+    crops = frame.index("deciduous", props)
+
+    assert len(crops) == len(PerennialStages)
+    for i, stage in enumerate(PerennialStages):
+        key = f"deciduous{SEPARATOR}{stage.value}"
+        assert crops[key] == (i * 94, 0, 94, 137)
+
+
+@pytest.mark.frames
+@pytest.mark.seasons
+def test_stage_frame_keys():
+    """
+    Verify StageFrame resolves frame keys reflexively from state.stage.
+    """
+    frame = StageFrame()
+    state = ResourceState(id="deciduous", stage=PerennialStages.ADULT.value)
+    keys = frame.keys("deciduous", state)
+
+    expected_key = f"deciduous{SEPARATOR}{PerennialStages.ADULT.value}"
+    assert keys == [(expected_key, 0, 0)]

@@ -20,6 +20,7 @@ from app.models.config import (
     ObjectRecipe,
     GeographyRecipe,
     SheetRecipe,
+    ResourceRecipe,
     TileRecipe,
     Recipe,
 )
@@ -124,6 +125,20 @@ def mock_recipes_configuration() -> RecipeConfiguration:
             pixies=Recipe(
                 frame=FrameRecipe.STATE.value, 
                 animation=AnimationRecipe.STATE.value
+            )
+        ),
+        resources=ResourceRecipe(
+            trees=Recipe(
+                frame=FrameRecipe.STAGE.value,
+                animation=AnimationRecipe.NONE.value
+            ),
+            ore=Recipe(
+                frame=FrameRecipe.STAGE.value,
+                animation=AnimationRecipe.NONE.value
+            ),
+            crops=Recipe(
+                frame=FrameRecipe.STAGE.value,
+                animation=AnimationRecipe.NONE.value
             )
         ),
         widgets=WidgetRecipe(
