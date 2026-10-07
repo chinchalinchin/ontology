@@ -37,7 +37,7 @@ task:
   # template: console/debug.md.j2
   # ---------------------------------- ITERATION CYCLE
   # template: iterate/documentation.md.j2
-  # template: iterate/grooming.md.j2
+  template: iterate/grooming.md.j2
   # template: iterate/implementation.md.j2
   # template: iterate/coverage.md.j2
   # template: iterate/conclusion.md.j2
@@ -48,7 +48,7 @@ task:
   # template: diagram/stages.md.j2
   # template: output/menus.md.j2
   # template: output/state.md.j2
-  template: style/mermaid.md.j2
+  # template: style/mermaid.md.j2
 # ----------------------------------------------------
   # PLACEHOLDER UNTIL STRUCTURE EMERGES FOR TOOL
   parameters:
@@ -60,13 +60,13 @@ tools:
 # ----------------------------------------------------
   views:
     manager:
-      board: false
+      board: true
       specs: false
-      docs: false
+      docs: true
     source:
-      workflow: false
+      workflow: true
     shell:
-      directory: false
+      directory: true
       commands: false
     tests:  
       pipeline: false
@@ -77,8 +77,8 @@ tools:
   parameters:
     manager:
       board:
-        phase: '10'
-        action: implement
+        phase: '10-02'
+        action: refactor
       docs:
         exclude:
           - index.md
@@ -96,7 +96,7 @@ tools:
           # - 11-architecture.md
       specs: []
     source:
-      workflow: seasons
+      workflow: ecology
     shell:
       directory: |
         tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"

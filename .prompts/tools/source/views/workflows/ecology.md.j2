@@ -1,4 +1,5 @@
 ### View: Workflow - Ecology
+
 #### app.assets
 
 **src/app/assets/base.py**
@@ -31,14 +32,6 @@
 
 ```python
 {{ file(properties.paths.root + 'src/app/assets/frames/geography.py') }}
-```
-
-##### app.assets.animations
-
-**src/app/assets/animations/core.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/assets/animations/core.py') }}
 ```
 
 #### app.game
@@ -79,10 +72,10 @@
 {{ file(properties.paths.root + 'src/app/game/logic/mechanics/world/seasons.py') }}
 ```
 
-**src/app/game/logic/mechanics/world/fluids.py**
+**src/app/game/logic/mechanics/world/fluid.py**
 
 ```python
-{{ file(properties.paths.root + 'src/app/game/logic/mechanics/world/fluids.py') }}
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/world/fluid.py') }}
 ```
 
 #### app.models
@@ -144,23 +137,7 @@
 **src/app/models/state/assets/geography.py**
 
 ```python
-{{ file(properties.paths.root + 'src/app/models/state/assets/resources.py') }}
-```
-
-#### app.services
-
-##### app.services.orchestration
-
-**src/app/services/orchestration/builder.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/services/orchestration/builder.py') }}
-```
-
-**src/app/services/orchestration/migrator.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/services/orchestration/migrator.py') }}
+{{ file(properties.paths.root + 'src/app/models/state/assets/geography.py') }}
 ```
 
 ##### app.services.generators
@@ -177,4 +154,14 @@
 
 ```python
 {{ file(properties.paths.root + 'src/app/services/generators/game/cartographer.py') }}
+```
+
+#### libs.core
+
+##### libs.core.math
+
+**src/libs/core/math/geometry.pyx**
+
+```python
+{{ file(properties.paths.root + 'src/libs/core/math/geometry.pyx') }}
 ```
