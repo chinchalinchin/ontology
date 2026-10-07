@@ -1,4 +1,8 @@
 stateDiagram-v2
+    classDef growth fill:#2d2047,stroke:#9575cd,stroke-width:1.5px,color:#ede7f6
+    classDef peak fill:#39215c,stroke:#448aff,stroke-width:2px,color:#ffffff
+    classDef residue fill:#262930,stroke:#78909c,stroke-width:1.5px,color:#cfd8dc
+
     sprout --> growth
     sprout --> stump
     growth --> stalk
@@ -7,3 +11,7 @@ stateDiagram-v2
     stalk --> stump
     bloom --> stump
     stump --> sprout
+
+    class sprout,growth,stalk growth
+    class bloom peak
+    class stump residue

@@ -1638,6 +1638,10 @@
 </li>
 </ul>
 <pre class="mermaid"><code>stateDiagram-v2
+    classDef growth fill:#2d2047,stroke:#9575cd,stroke-width:1.5px,color:#ede7f6
+    classDef peak fill:#39215c,stroke:#448aff,stroke-width:2px,color:#ffffff
+    classDef residue fill:#262930,stroke:#78909c,stroke-width:1.5px,color:#cfd8dc
+
     sprout --&gt; growth
     sprout --&gt; stump
     growth --&gt; stalk
@@ -1645,7 +1649,11 @@
     stalk --&gt; bloom
     stalk --&gt; stump
     bloom --&gt; stump
-    stump --&gt; sprout</code></pre>
+    stump --&gt; sprout
+
+    class sprout,growth,stalk growth
+    class bloom peak
+    class stump residue</code></pre>
 <table>
 <thead>
 <tr>
@@ -1688,23 +1696,38 @@
 </ul>
 <p>Trees cycle through three epicycles:</p>
 <ol>
-<li><strong>Genesis</strong>:</li>
-<li><code>sapling -&gt; bush</code>: Spring Peak, <code>retention &gt;= 15.0</code></li>
-<li><code>bush -&gt; branch</code>: Spring Decline, <code>retention &gt;= 20.0</code></li>
-<li><code>branch -&gt; adult</code>: Summer Onset, <code>retention &gt;= 25.0</code></li>
-<li><code>adult -&gt; healthy</code>: Summer Peak, <code>retention &gt;= 25.0</code> (Enters Homeostasis)</li>
-<li><strong>Homeostasis</strong>:</li>
-<li><code>healthy -&gt; abscise</code>: Autumn, <code>retention &gt;= 15.0</code></li>
-<li><code>abscise -&gt; snowcapt</code>: Winter, <code>retention &gt;= 10.0</code></li>
-<li><code>snowcapt -&gt; vibrant</code>: Spring, <code>retention &gt;= 15.0</code></li>
-<li><code>vibrant -&gt; healthy</code>: Summer, <code>retention &gt;= 20.0</code></li>
-<li><strong>Apoptosis</strong>:</li>
-<li>Unhydrated Decay: Any Homeostasis stage transitions to <code>dying</code> when <code>retention &lt; 5.0</code>.</li>
-<li>Spring Recovery: <code>dying -&gt; vibrant</code> when <code>season == spring</code> and <code>retention &gt;= 20.0</code>.</li>
-<li>Summer Recovery: <code>dying -&gt; healthy</code> when <code>season == summer</code> and <code>retention &gt;= 20.0</code>.</li>
-<li>Terminal Decay: <code>dying -&gt; dead</code> (Autumn, <code>retention &lt; 5.0</code>) <span class="arithmatex">\(\to\)</span> <code>dead -&gt; stump</code> (Winter) <span class="arithmatex">\(\to\)</span> <code>stump -&gt; sapling</code> (Spring Onset).</li>
+<li><strong>Genesis</strong>:<ul>
+<li><span class="arithmatex">\(\text{sapling} \to \text{bush} &amp;\iff (\text{season} = \text{Spring}) \land (\text{cycle} = \text{Peak}) \land (\text{retention} \ge 15.0)\)</span></li>
+<li><span class="arithmatex">\(\text{bush} \to \text{branch} &amp;\iff (\text{season} = \text{Spring}) \land (\text{cycle} = \text{Decline}) \land (\text{retention} \ge 20.0)\)</span></li>
+<li><span class="arithmatex">\(\text{branch} \to \text{adult} &amp;\iff (\text{season} = \text{Summer}) \land (\text{cycle} = \text{Onset}) \land (\text{retention} \ge 25.0)\)</span> </li>
+<li><span class="arithmatex">\(\text{adult} \to \text{healthy} &amp;\iff (\text{season} = \text{Summer}) \land (\text{cycle} = \text{Peak}) \land (\text{retention} \ge 25.0)\)</span></li>
+</ul>
+</li>
+<li><strong>Homeostasis</strong>:<ul>
+<li><span class="arithmatex">\(\text{healthy} \to \text{abscise} &amp;\iff (\text{season} = \text{Autumn}) \land (\text{retention} \ge 15.0)\)</span>     </li>
+<li><span class="arithmatex">\(\text{abscise} \to \text{snowcapt} &amp;\iff (\text{season} = \text{Winter}) \land (\text{retention} \ge 10.0)\)</span></li>
+<li><span class="arithmatex">\(\text{snowcapt} \to \text{vibrant} &amp;\iff (\text{season} = \text{Spring}) \land (\text{retention} \ge 15.0)\)</span>     </li>
+<li><span class="arithmatex">\(\text{vibrant} \to \text{healthy} &amp;\iff (\text{season} = \text{Summer}) \land (\text{retention} \ge 20.0)\)</span></li>
+</ul>
+</li>
+<li><strong>Apoptosis</strong>:<ul>
+<li><span class="arithmatex">\(S_{\text{homeo}} = \{\text{vibrant}, \text{healthy}, \text{abscise}, \text{snowcapt}\}\)</span></li>
+<li><span class="arithmatex">\(\forall s \in S_{\text{homeo}}, \quad s \to \text{dying} &amp;\iff \text{retention} &lt; 5.0\)</span></li>
+<li><span class="arithmatex">\(\text{dying} \to \text{vibrant} &amp;\iff (\text{season} = \text{Spring}) \land (\text{retention} \ge 20.0)\)</span></li>
+<li><span class="arithmatex">\(\text{dying} \to \text{healthy} &amp;\iff (\text{season} = \text{Summer}) \land (\text{retention} \ge 20.0)\)</span>     </li>
+<li><span class="arithmatex">\(\text{dying} \to \text{dead} &amp;\iff (\text{season} = \text{Autumn}) \land (\text{retention} &lt; 5.0)\)</span>     </li>
+<li><span class="arithmatex">\(\text{dead} \to \text{stump} &amp;\iff \text{season} = \text{Winter}\)</span>     </li>
+<li><span class="arithmatex">\(\text{stump} \to \text{sapling} &amp;\iff (\text{season} = \text{Spring}) \land (\text{cycle} = \text{Onset}) \land (\text{period} = 0) \land (\text{retention} \ge 15.0)\)</span></li>
+</ul>
+</li>
 </ol>
 <pre class="mermaid"><code>stateDiagram-v2
+    classDef growth fill:#231a38,stroke:#7e57c2,stroke-width:1.5px,color:#ede7f6
+    classDef focal fill:#512da8,stroke:#d1c4e9,stroke-width:2px,color:#ffffff
+    classDef active fill:#0d2d4a,stroke:#448aff,stroke-width:1.5px,color:#e3f2fd
+    classDef dormant fill:#1a233a,stroke:#5c6bc0,stroke-width:1.5px,color:#e8eaf6
+    classDef decay fill:#262930,stroke:#78909c,stroke-width:1.5px,color:#cfd8dc
+
     sapling --&gt; bush
     bush --&gt; branch
     branch --&gt; adult
@@ -1725,7 +1748,13 @@
     dying --&gt; healthy
     dying --&gt; dead
     dead --&gt; stump
-    stump --&gt; sapling</code></pre>
+    stump --&gt; sapling
+
+    class sapling,bush,branch growth
+    class adult focal
+    class healthy,vibrant active
+    class abscise,snowcapt dormant
+    class dying,dead,stump decay</code></pre>
 <table>
 <thead>
 <tr>
@@ -1795,11 +1824,19 @@
 <h3 id="ore-veining">Ore Veining</h3>
 <p>TODO</p>
 <pre class="mermaid"><code>stateDiagram-v2
+    classDef raw fill:#231a38,stroke:#7e57c2,stroke-width:1.5px,color:#ede7f6
+    classDef formation fill:#2d2047,stroke:#9575cd,stroke-width:1.5px,color:#ede7f6
+    classDef refined fill:#39215c,stroke:#448aff,stroke-width:2px,color:#ffffff
+
     trace --&gt; deposit
     deposit --&gt; nugget
     nugget --&gt; vein
     vein --&gt; crystal
-    crystal --&gt; alloy</code></pre>
+    crystal --&gt; alloy
+
+    class trace,deposit raw
+    class nugget,vein formation
+    class crystal,alloy refined</code></pre>
 <table>
 <thead>
 <tr>

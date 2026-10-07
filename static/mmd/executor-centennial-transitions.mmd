@@ -1,6 +1,14 @@
 stateDiagram-v2
+    classDef raw fill:#231a38,stroke:#7e57c2,stroke-width:1.5px,color:#ede7f6
+    classDef formation fill:#2d2047,stroke:#9575cd,stroke-width:1.5px,color:#ede7f6
+    classDef refined fill:#39215c,stroke:#448aff,stroke-width:2px,color:#ffffff
+
     trace --> deposit
     deposit --> nugget
     nugget --> vein
     vein --> crystal
     crystal --> alloy
+
+    class trace,deposit raw
+    class nugget,vein formation
+    class crystal,alloy refined
