@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 # Application Libraries
 from app.config.enums import (
     Directions,
+    Seasons
 )
 from app.models.adapters import (
     PydanticPosition as Position, 
@@ -34,6 +35,7 @@ class ShorelineState(AssetState):
     # Shoreline fields
     position: Optional[Position] = None  # type: ignore
     orientation: str = Directions.DOWN.value
+    season: str = Seasons.SPRING.value
     length: int = 0
     thickness: int = 8
     bidirectional: bool = True

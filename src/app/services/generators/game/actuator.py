@@ -6,6 +6,7 @@ Package for constructing Fluid Effect flows and radial pools.
 from __future__ import annotations
 
 # Standard Libraries
+import math
 import logging
 from typing import (
     List, 
@@ -21,6 +22,7 @@ from app.config.enums import (
     AssetInstances,
     Directions
 )
+from app.game.board.fields import MoistureField
 from app.models.state import (
     Pool, 
     Branch
@@ -259,6 +261,68 @@ class Actuator:
         return []
 
 
+    def compile_moisture_field(self, layer: str, board: Board) -> MoistureField:
+        """
+        Constructs a MoistureField representing the linear superposition of all active
+        stream corridors, annular pools, and branches across the layer.
+        """
+        field = MoistureField()
+        layer_fluids = board.instances(AssetInstances.FLUIDS.value, layer)
+
+        for fluid in layer_fluids:
+            fx = fluid.state.position.x
+            fy = fluid.state.position.y
+            fw = fluid.properties.dimensions.w
+            fl = fluid.properties.dimensions.l
+            flow = fluid.state.flow
+            length = fluid.state.length
+            direction = fluid.state.source
+            dir_val = direction.value if hasattr(direction, "value") else str(direction)
+
+            # 1. Linear parent corridor line segment
+            if length > 0 and flow > 0:
+                mid_x = fx + (fw // 2)
+                mid_y = fy + (fl // 2)
+                if dir_val == Directions.DOWN.value:
+                    field.add_stream(mid_x, fy, mid_x, fy + length, flow)
+                elif dir_val == Directions.UP.value:
+                    field.add_stream(mid_x, fy, mid_x, fy - length, flow)
+                elif dir_val == Directions.RIGHT.value:
+                    field.add_stream(fx, mid_y, fx + length, mid_y, flow)
+                elif dir_val == Directions.LEFT.value:
+                    field.add_stream(fx, mid_y, fx - length, mid_y, flow)
+
+            # 2. Annular pool disk source
+            pool = fluid.state.pool
+            if pool and pool.w > 0 and pool.l > 0 and flow > 0:
+                cx = pool.x + (pool.w / 2.0)
+                cy = pool.y + (pool.l / 2.0)
+                radius = 0.5 * math.hypot(pool.w, pool.l)
+                field.add_pool(cx, cy, radius, flow)
+
+            # 3. Flank child branch corridors
+            if fluid.state.branches:
+                for branch in fluid.state.branches:
+                    if branch.length <= 0 or branch.flow <= 0:
+                        continue
+                    bx = branch.position.x
+                    by = branch.position.y
+                    b_mid_x = bx + (fw // 2)
+                    b_mid_y = by + (fl // 2)
+                    b_dir = branch.source
+                    b_dir_val = b_dir.value if hasattr(b_dir, "value") else str(b_dir)
+
+                    if b_dir_val == Directions.DOWN.value:
+                        field.add_stream(b_mid_x, by, b_mid_x, by + branch.length, branch.flow)
+                    elif b_dir_val == Directions.UP.value:
+                        field.add_stream(b_mid_x, by, b_mid_x, by - branch.length, branch.flow)
+                    elif b_dir_val == Directions.RIGHT.value:
+                        field.add_stream(bx, b_mid_y, bx + branch.length, b_mid_y, branch.flow)
+                    elif b_dir_val == Directions.LEFT.value:
+                        field.add_stream(bx, b_mid_y, bx - branch.length, b_mid_y, branch.flow)
+
+        return field
+
     def propagate(self, fluid: Asset, board: Board) -> Tuple[int, Optional[Pool], List[Hitbox]]:
         """
         Truncates fluid corridor against map bounds and static obstacles, expands annular
@@ -387,6 +451,10 @@ class Actuator:
         fluid.state.hitboxes = hitboxes
         fluid.state.dirty = False
         fluid.state._keys.clear()
+
+        # 4. Compile and assign continuous hydrological superposition field to Board
+        moisture_field = self.compile_moisture_field(layer, board)
+        board.set_moisture_field(layer, moisture_field)
 
         return stream_length, pool_bounds, hitboxes
 

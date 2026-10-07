@@ -345,7 +345,7 @@ class Cartographer:
                     c += step_len
                     continue
 
-                # 4. Resolve shoreline asset key from secondary relational index
+                # 4. Resolve shoreline asset key from secondary relational index with season
                 fluid_id = cls._resolve_fluid_id(
                     board, 
                     layer, 
@@ -353,7 +353,8 @@ class Cartographer:
                     sample_c, 
                     margin_coord
                 )
-                shoreline_id = index.resolve(tile.id, fluid_id)
+                season = board.calendar.season if board.calendar else None
+                shoreline_id = index.resolve(tile.id, fluid_id, season=season)
                 if not shoreline_id:
                     commit_segment()
                     c += step_len
@@ -378,6 +379,7 @@ class Cartographer:
                         'length': step_len,
                         'orientation': orientation,
                         'thickness': thickness,
+                        'season': season,
                         'expected_next': c + step_len
                     }
 

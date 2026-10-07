@@ -24,6 +24,7 @@ from app.config.enums import (
     Shortcuts
 )
 from app.config.loader import Loader
+from app.game.board.fields import MoistureField
 from app.game.devices import Device
 from app.game.menus.core import Menu
 from app.services.generators.game.cradle import Cradle
@@ -72,6 +73,7 @@ class Board:
     # ------- Private Fields
     _assets: List[Asset]
     _cache: Cache
+    _moisture_fields: Dict[str, MoistureField]
 
     def __init__(
         self,
@@ -92,6 +94,7 @@ class Board:
         self.equipment = equipment
         self.perimeters = {}
         self._assets = list(assets)
+        self._moisture_fields: Dict[str, MoistureField] = {}
         self._cache = Cache()
         self._cache.index_batch(self._assets)
         logger.info("Board completely hydrated and initialized.")
@@ -255,6 +258,15 @@ class Board:
         """
         return self._cache.get_shorelines(layer)
 
+    def moisture(self, layer: str, x: int, y: int) -> float:
+        """
+        Queries scalar moisture potential at coordinates (x, y) on the specified layer.
+        """
+        field = self._moisture_fields.get(layer)
+        if not field:
+            return 0.0
+        return field.evaluate(x, y)
+
     def size(self, layer: Optional[str] = None) -> List[Dimensions]:
         layers = [layer] if layer is not None else self.layers()
         layer_sizes = []
@@ -284,6 +296,20 @@ class Board:
         return layer_sizes
 
     # ------------------------------------------------ MUTATORS
+
+    def set_moisture_field(self, layer: str, field: MoistureField) -> None:
+        """
+        Stores the compiled MoistureField for the layer and precomputes
+        moisture_flux directly on all static ResourceState instances.
+        """
+        self._moisture_fields[layer] = field
+        resources = self.categories(AssetCategories.RESOURCES.value, layer)
+        for resource in resources:
+            if resource.state.position:
+                resource.state.moisture_flux = field.evaluate(
+                    resource.state.position.x,
+                    resource.state.position.y
+                )
 
     def update_fluid_cache(self, layer: str) -> None:
         """
@@ -330,6 +356,7 @@ class Board:
         self.menus.clear()
         self.overlays.clear()
         self.perimeters.clear()
+        self._moisture_fields.clear()
 
     # ------------------------------------------------ EXPORTERS
 

@@ -4,12 +4,8 @@
 Python data models for typing Resource state attributes.
 """
 # Standard Libraries
-from typing import ( 
-    Optional
-)
-from dataclasses import (
-    dataclass, 
-)
+from typing import Optional
+from dataclasses import dataclass
 
 # Application Libraries
 from app.config.enums.assets import (
@@ -35,4 +31,5 @@ class ResourceState(AssetState):
     stage: str = AnnualStages.STUMP.value
     position: Optional[Position] = None  # type: ignore
     retention: float = 0.0
+    moisture_flux: float = 0.0
     harvested: bool = False              # For harvestable bloom states

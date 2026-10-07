@@ -1,11 +1,11 @@
 geography:
   shorelines:
-    grassy-shore:
+    temperate-banks:
       tile: temperate
       fluid: waterflow-00
       dimensions: 
-        w: 32
-        l: 32
-      thickness: 15
+        w: 41
+        l: 41
+      thickness: 22
       mass: -1
       hitboxes: null

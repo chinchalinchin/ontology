@@ -2,7 +2,7 @@
 # Ontology: app.game.logic.mechanics.world.seasons
 
 Mechanic implementation governing macro-temporal progression,
-hydrological moisture diffusion, and biological stage transitions.
+continuous soil moisture flux integration, and throttled biological stage transitions.
 """
 from __future__ import annotations
 
@@ -10,7 +10,6 @@ from __future__ import annotations
 import collections
 import logging
 from typing import (
-    List,
     TYPE_CHECKING
 )
 
@@ -19,17 +18,14 @@ import app.config.settings as settings
 from app.config.enums import (
     AssetCategories,
     Seasons,
-    Cycles
+    Cycles,
+    Shortcuts
 )
 from app.game.logic.mechanics.base import Mechanic
 from app.game.menus.events import SeasonEvent
 from app.models.state import DevicePayload, CalendarState
 
-# Cython Libraries
-from libs.core.models import Position
-
 if TYPE_CHECKING:
-    from app.assets.base import Asset
     from app.game.board import Board
 
 logger = logging.getLogger(__name__)
@@ -38,9 +34,14 @@ logger = logging.getLogger(__name__)
 class SeasonMechanics(Mechanic):
     """
     World pipeline mechanic executing macro-temporal calendar tracking,
-    hydrological moisture diffusion from fluid networks, and declarative
-    biological stage transitions.
+    continuous soil moisture diffusion via potential fields, and throttled
+    declarative biological stage evaluations.
     """
+    _transition_accumulator: float
+
+    def __init__(self):
+        super().__init__()
+        self._transition_accumulator = 0.0
 
     @property
     def period(self) -> float:
@@ -83,26 +84,6 @@ class SeasonMechanics(Mechanic):
                 f"(Season: '{calendar.season}', Period: {calendar.period})"
             )
 
-    @staticmethod
-    def _probes(resource: Asset) -> List[Position]:
-        """
-        Generates center and cardinal boundary probe coordinates for hydrological lookup.
-        """
-        pos = resource.state.position
-        if not pos:
-            return []
-        w = resource.dimensions.w
-        l = resource.dimensions.l
-        mid_x = pos.x + (w // 2)
-        mid_y = pos.y + (l // 2)
-        return [
-            Position(mid_x, mid_y),
-            Position(mid_x, pos.y - 1),
-            Position(mid_x, pos.y + l),
-            Position(pos.x - 1, mid_y),
-            Position(pos.x + w, mid_y)
-        ]
-
     def update(
         self,
         board: Board,
@@ -127,37 +108,45 @@ class SeasonMechanics(Mechanic):
         if not resources:
             return
 
-        # 1. Environmental Diffusion & Stage Progression
+        # 2. Continuous Environmental Moisture Integration (Zero Inner-Loop Allocations)
+        evap_modifier = settings.SEASON_EVAPORATION_MODIFIERS.get(board.calendar.season, 1.0)
+        evaporation_step = delta * settings.EVAPORATION_RATE * evap_modifier
+        diffusion_step = settings.DIFFUSION_RATE * delta
+
         for resource in resources:
-            is_near_water = any(
-                board.fluid(resource.state.layer, probe_pos)
-                for probe_pos in self._probes(resource)
-            )
-            if is_near_water:
+            flux = resource.state.moisture_flux
+            if flux > 0.0:
                 resource.state.retention = min(
                     settings.MAX_RETENTION,
-                    resource.state.retention + (settings.DIFFUSION_RATE * delta)
+                    resource.state.retention + (flux * diffusion_step)
                 )
             else:
-                evaporation_amount = delta * settings.EVAPORATION_RATE * \
-                                        settings.SEASON_EVAPORATION_MODIFIERS.get(board.calendar.season, 1.0) 
-                resource.state.retention = max(0.0, resource.state.retention - evaporation_amount)
-
-            executor = self.executors.get(resource.properties.lifespan)
-
-            if not executor:
-                logger.info('lifespan executor not found')
-                continue
-
-            locals = {
-                "resource": resource.state,
-                "calendar": board.calendar
-            }
-
-            next_stage = executor.evaluate(resource.state.stage, locals)
-            if next_stage:
-                logger.info(
-                    f"Transition(resource={resource.name}): "
-                    f"'{resource.state.stage}' -> '{next_stage}'"
+                resource.state.retention = max(
+                    0.0,
+                    resource.state.retention - evaporation_step
                 )
-                resource.state.stage = next_stage
+
+        # 3. Throttled Declarative Stage Progression (1.0 Hz or Period Transition)
+        self._transition_accumulator += delta
+        should_evaluate = period_changed or (self._transition_accumulator >= 1.0)
+
+        if should_evaluate:
+            self._transition_accumulator = 0.0
+
+            for resource in resources:
+                executor = self.executors.get(resource.properties.lifespan)
+                if not executor:
+                    continue
+
+                locals_map = {
+                    AssetCategories.RESOURCES.value: resource.state,
+                    Shortcuts.CALENDAR.value: board.calendar
+                }
+
+                next_stage = executor.evaluate(resource.state.stage, locals_map)
+                if next_stage:
+                    logger.info(
+                        f"Transition(resource={resource.name}): "
+                        f"'{resource.state.stage}' -> '{next_stage}'"
+                    )
+                    resource.state.stage = next_stage

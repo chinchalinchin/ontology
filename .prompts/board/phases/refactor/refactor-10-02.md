@@ -600,5 +600,5 @@ Throttle expensive declarative stage evaluations in `SeasonMechanics` to 1.0-sec
 
 *Objective*: Eliminate texture bleed and ghosting on transparent foreground canopy tiles during season transitions.
 
-* [ ] Subtask: Expose `render.clear_target(target)` in `libs.graphics.render` to clear texture pointers via `SDL_SetRenderTarget` and `SDL_RenderClear`.
-* [ ] Subtask: Invoke target clearing on `self.fg_canvas` in `Screen.reconstruct()` before executing `render.construct(self.fg_canvas, fore_tiles)`.
+* [!: Will be addressed in separate Patch] Subtask: Expose `render.clear_target(target)` in `libs.graphics.render` to clear texture pointers via `SDL_SetRenderTarget` and `SDL_RenderClear`.
+* [!: Will be addressed in separate Patch] Subtask: Invoke target clearing on `self.fg_canvas` in `Screen.reconstruct()` before executing `render.construct(self.fg_canvas, fore_tiles)`.
