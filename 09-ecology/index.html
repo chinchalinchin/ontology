@@ -728,6 +728,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#ore-veining" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ore Veining
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1438,6 +1449,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#ore-veining" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ore Veining
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1615,35 +1637,205 @@
 </ul>
 </li>
 </ul>
+<pre class="mermaid"><code>stateDiagram-v2
+    sprout --&gt; growth
+    sprout --&gt; stump
+    growth --&gt; stalk
+    growth --&gt; stump
+    stalk --&gt; bloom
+    stalk --&gt; stump
+    bloom --&gt; stump
+    stump --&gt; sprout</code></pre>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Starting Stage</th>
+<th>Reachable Stages</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>sprout</td>
+<td>growth, stump</td>
+</tr>
+<tr>
+<td>2</td>
+<td>growth</td>
+<td>stalk, stump</td>
+</tr>
+<tr>
+<td>3</td>
+<td>stalk</td>
+<td>bloom, stump</td>
+</tr>
+<tr>
+<td>4</td>
+<td>bloom</td>
+<td>stump</td>
+</tr>
+<tr>
+<td>5</td>
+<td>stump</td>
+<td>sprout</td>
+</tr>
+</tbody>
+</table>
 <h3 id="tree-epicycles">Tree Epicycles</h3>
 <ul>
 <li>Governed by <a href="../05-mechanics/#seasonmechanics">SeasonMechanics</a></li>
 </ul>
-<p>Trees have an Epicycle in their Stages: Genesis, Homeostasis, Apoptosis</p>
+<p>Trees cycle through three epicycles:</p>
 <ol>
-<li>Genesis Epicycle Map: <ul>
-<li><code>board.season == spring and board.season.cycle == onset: tree.state.stage = sapling</code></li>
-<li><code>board.season == spring and board.season.cycle == peak: tree.state.stage = bush</code></li>
-<li><code>board.season == spring and board.season.cycle == decline: tree.state.stage = branch</code> </li>
-<li><code>board.season == summer and board.season.cycle == onset: tree.state.stage = adult</code></li>
-<li><code>board.season == summer and board.season.cycle == peak: tree.state.stage = healthy</code> (Enters Homoestasis)</li>
-</ul>
-</li>
-<li>Homeostasis Epicycle Map: <ul>
-<li><code>board.season == spring and tree.state.hydrated: tree.state.stage = vibrant</code></li>
-<li><code>board.season == summer and tree.state.hydrated: tree.state.stage = healthy</code></li>
-<li><code>board.season == autumn and tree.state.hydrated: tree.state.stage = abscise</code></li>
-<li><code>board.season == winter and tree.state.hydrated: tree.state.stage = snowcapt</code></li>
-</ul>
-</li>
-<li>Apoptosis Stage Season Map: <ul>
-<li><code>not tree.state.hydrated: tree.state.stage = dying</code></li>
-<li><code>tree.state.stage == dying and tree.state.hydrated: tree.state.stage = adult</code> (Re-enters Homoestasis)</li>
-<li><code>board.season == autumn and tree.state.stage == dying: tree.state.stage = dead</code> </li>
-<li><code>board.season == winter and tree.state.stage == dead: tree.stage.stage = stump</code></li>
-</ul>
-</li>
+<li><strong>Genesis</strong>:</li>
+<li><code>sapling -&gt; bush</code>: Spring Peak, <code>retention &gt;= 15.0</code></li>
+<li><code>bush -&gt; branch</code>: Spring Decline, <code>retention &gt;= 20.0</code></li>
+<li><code>branch -&gt; adult</code>: Summer Onset, <code>retention &gt;= 25.0</code></li>
+<li><code>adult -&gt; healthy</code>: Summer Peak, <code>retention &gt;= 25.0</code> (Enters Homeostasis)</li>
+<li><strong>Homeostasis</strong>:</li>
+<li><code>healthy -&gt; abscise</code>: Autumn, <code>retention &gt;= 15.0</code></li>
+<li><code>abscise -&gt; snowcapt</code>: Winter, <code>retention &gt;= 10.0</code></li>
+<li><code>snowcapt -&gt; vibrant</code>: Spring, <code>retention &gt;= 15.0</code></li>
+<li><code>vibrant -&gt; healthy</code>: Summer, <code>retention &gt;= 20.0</code></li>
+<li><strong>Apoptosis</strong>:</li>
+<li>Unhydrated Decay: Any Homeostasis stage transitions to <code>dying</code> when <code>retention &lt; 5.0</code>.</li>
+<li>Spring Recovery: <code>dying -&gt; vibrant</code> when <code>season == spring</code> and <code>retention &gt;= 20.0</code>.</li>
+<li>Summer Recovery: <code>dying -&gt; healthy</code> when <code>season == summer</code> and <code>retention &gt;= 20.0</code>.</li>
+<li>Terminal Decay: <code>dying -&gt; dead</code> (Autumn, <code>retention &lt; 5.0</code>) <span class="arithmatex">\(\to\)</span> <code>dead -&gt; stump</code> (Winter) <span class="arithmatex">\(\to\)</span> <code>stump -&gt; sapling</code> (Spring Onset).</li>
 </ol>
+<pre class="mermaid"><code>stateDiagram-v2
+    sapling --&gt; bush
+    bush --&gt; branch
+    branch --&gt; adult
+    adult --&gt; healthy
+    adult --&gt; vibrant
+    adult --&gt; abscise
+    adult --&gt; snowcapt
+    adult --&gt; dying
+    vibrant --&gt; healthy
+    vibrant --&gt; dying
+    healthy --&gt; abscise
+    healthy --&gt; dying
+    abscise --&gt; snowcapt
+    abscise --&gt; dying
+    snowcapt --&gt; vibrant
+    snowcapt --&gt; dying
+    dying --&gt; vibrant
+    dying --&gt; healthy
+    dying --&gt; dead
+    dead --&gt; stump
+    stump --&gt; sapling</code></pre>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Starting Stage</th>
+<th>Reachable Stages</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>sapling</td>
+<td>bush</td>
+</tr>
+<tr>
+<td>2</td>
+<td>bush</td>
+<td>branch</td>
+</tr>
+<tr>
+<td>3</td>
+<td>branch</td>
+<td>adult</td>
+</tr>
+<tr>
+<td>4</td>
+<td>adult</td>
+<td>healthy, vibrant, abscise, snowcapt, dying</td>
+</tr>
+<tr>
+<td>5</td>
+<td>vibrant</td>
+<td>healthy, dying</td>
+</tr>
+<tr>
+<td>6</td>
+<td>healthy</td>
+<td>abscise, dying</td>
+</tr>
+<tr>
+<td>7</td>
+<td>abscise</td>
+<td>snowcapt, dying</td>
+</tr>
+<tr>
+<td>8</td>
+<td>snowcapt</td>
+<td>vibrant, dying</td>
+</tr>
+<tr>
+<td>9</td>
+<td>dying</td>
+<td>vibrant, healthy, dead</td>
+</tr>
+<tr>
+<td>10</td>
+<td>dead</td>
+<td>stump</td>
+</tr>
+<tr>
+<td>11</td>
+<td>stump</td>
+<td>sapling</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ore-veining">Ore Veining</h3>
+<p>TODO</p>
+<pre class="mermaid"><code>stateDiagram-v2
+    trace --&gt; deposit
+    deposit --&gt; nugget
+    nugget --&gt; vein
+    vein --&gt; crystal
+    crystal --&gt; alloy</code></pre>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Starting Stage</th>
+<th>Reachable Stages</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>trace</td>
+<td>deposit</td>
+</tr>
+<tr>
+<td>2</td>
+<td>deposit</td>
+<td>nugget</td>
+</tr>
+<tr>
+<td>3</td>
+<td>nugget</td>
+<td>vein</td>
+</tr>
+<tr>
+<td>4</td>
+<td>vein</td>
+<td>crystal</td>
+</tr>
+<tr>
+<td>5</td>
+<td>crystal</td>
+<td>alloy</td>
+</tr>
+</tbody>
+</table>
 
 
 

@@ -2320,8 +2320,10 @@
 </ul>
 </li>
 <li><strong>Behavior: Frame:</strong> A static schema calculation used by the renderer to determine the correct texture string keys. An Asset can be a single logical entity composed of multiple superimposed rendered textures, therefore a Frame component returns a <code>List[(str, int, int)]</code> rather than a single <code>str</code>. The tuple <code>(int, int)</code> controls how much the frame is offset from its origin (mainly used in <a href="#expressions">Expressions</a> to pin a <a href="#cursors">Cursor Expressions</a> to the relative Position of a Sprite) In addition, Frames provide the indexing schema for textures used by the <a href="../00-overview/#registry">Registry</a> to store Assets in memory.<ul>
-<li><code>keys(id: str, state: AssetState) -&gt; List[Tuple[str, int, int]]</code>: Interface for retrieving Asset's current Frame key.</li>
+<li><code>keys(id: str, state: AssetState) -&gt; List[Tuple[str, int, int]]</code>: Reflexive intrinsic state projection for dynamic 60 Hz draw passes.</li>
 <li><code>index(id: str, properties: AssetProperties) -&gt; Dict[str, Tuple[int, int, int, int]]</code>: Interface for indexing Asset frames in Registry.</li>
+<li><code>eras(id: str, calendar: CalendarState) -&gt; List[Tuple[str, int, int]]</code>: Macro-temporal epochal projection for static pre-rendered canvas baking.</li>
+<li><code>channels(id: str, state: AssetState, properties: AssetProperties) -&gt; List[Tuple]</code>: Emits auxiliary shader and texture modulation directives (e.g., submersion splits).</li>
 </ul>
 </li>
 </ol>
@@ -2855,12 +2857,12 @@ $</p>
 <li><code>hitboxes: List[Hitbox]</code></li>
 <li><code>mass: int = 0</code></li>
 <li><code>loot: str</code>: Inventory loot key dropped upon harvest or mining.</li>
-<li><code>stages: List[str]</code>: Ordered progression stages.</li>
+<li><code>lifespan: Lifespans</code>: Biological or geological progression category (<code>annual</code>, <code>perennial</code>, <code>centennial</code>).</li>
 </ul>
 <p><strong>Frame: StageFrame</strong></p>
 <ul>
 <li><code>keys(id, state): returns [ (f"{id}-{state.stage}", 0, 0) ]</code></li>
-<li><code>index(id, properties): returns { f"{id}-{stage}": (i * properties.dimensions.w, 0, properties.dimensions.w, properties.dimensions.l) for i, stage in enumerate(properties.stages) }</code></li>
+<li><code>index(id, properties): returns { f"{id}-{stage}": (i * properties.dimensions.w, 0, properties.dimensions.w, properties.dimensions.l) for i, stage in enumerate(properties.lifespan) }</code></li>
 </ul>
 <p><strong>Animation: None</strong></p>
 <p>Resources do not cycle micro-frame animations. Their appearance updates when <code>SeasonMechanics</code> transitions <code>state.stage</code>.</p>

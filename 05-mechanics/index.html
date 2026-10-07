@@ -1863,7 +1863,7 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <li><strong>Hydrological Diffusion</strong>: Iterates over <code>board.categories(AssetCategories.RESOURCES.value)</code>. Probes cardinal offsets against <code>board.fluid()</code> spatial buckets:</li>
 <li><strong>Moist Substrate</strong>: Accumulates moisture via <span class="arithmatex">\(\text{retention} \mathrel{+}= \kappa_{\text{diffusion}} \cdot \Delta t\)</span>.</li>
 <li><strong>Dry Substrate</strong>: Evaporates moisture via <span class="arithmatex">\(\text{retention} \mathrel{-}= \kappa_{\text{evap}} \cdot \mu_{\text{season}} \cdot \Delta t\)</span>.</li>
-<li><strong>Declarative Stage Transitions</strong>: Queries <code>self.executor.evaluate( current_stage, locals)</code> against <code>/src/data/config/stages/main.yaml</code>.</li>
+<li><strong>Declarative Stage Transitions</strong>: Queries the appropriate lifespan executor (<code>self.executors.get(resource.properties.lifespan).evaluate(resource.state.stage, locals)</code>) against compiled stage rules.</li>
 </ol>
 <h2 id="configuration">Configuration</h2>
 <ul>
@@ -1891,9 +1891,9 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <li><code>plot</code>: Executor for evaluating the conditions for <a href="../08-plots/">Plot Transitions</a>.</li>
 <li><code>intention</code>: Executor for evaluating the conditions for <a href="../04-intentions/">Intention Transitions</a></li>
 <li><code>actuator</code>: Executor for generating <a href="../01-assets/#fluids">Fluid</a> and <a href="../01-assets/#shorelines">Shoreline</a> Assets.</li>
-<li><code>annual</code>: TODO</li>
-<li><code>perennial</code>: TODO</li>
-<li><code>centennial</code>: TODO</li>
+<li><code>annual</code>: ISL executor evaluating stage transitions for annual vegetation (crops).</li>
+<li><code>perennial</code>: ISL executor evaluating stage transitions for perennial flora (trees).</li>
+<li><code>centennial</code>: ISL executor evaluating geological progression (ores).</li>
 </ul>
 <h3 id="relations">Relations</h3>
 <p>Relations are static mappings configured at runtime. Available relations are enumerated below.</p>
