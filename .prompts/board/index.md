@@ -69,7 +69,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 09.07: Frame Caching](./phases/refactor/refactor-09-07.md)
     - Phase 10:
       - [ ]: [Phase 10.01: Stage Hitboxes](./phases/refactor/refactor-10-01.md)
-      - [~]: [Phase 10.02: Shoreline Seasonal Indexing](./phases/refactor/refactor-10-02.md)
+      - [x]: [Phase 10.02: Shoreline Seasonal Indexing](./phases/refactor/refactor-10-02.md)
   - Patch:
     - [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering Instantiated Assets](./phases/patch/bug-b001.md)

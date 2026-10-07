@@ -566,35 +566,35 @@ Throttle expensive declarative stage evaluations in `SeasonMechanics` to 1.0-sec
 
 *Objective*: Map shoreline atlas textures across cardinal rows and seasonal columns in `CardinalFrame`.
 
-* [ ] Subtask: Extend `CardinalFrame.index()` in `app.assets.frames.geography` to iterate over `Seasons` columns ($col \cdot w$) and `Directions` rows ($row \cdot l$), generating crop entries for `{id}-{season}-{direction}` and fractional slices `{id}-{season}-{direction}-{rem}`.
-* [ ] Subtask: Add `season: str = Seasons.SPRING.value` to `ShorelineState` in `app.models.state.assets.geography`.
-* [ ] Subtask: Update `CardinalFrame.keys()` to emit `{id}-{state.season}-{direction}` and memoize on `state._keys`.
+* [x] Subtask: Extend `CardinalFrame.index()` in `app.assets.frames.geography` to iterate over `Seasons` columns ($col \cdot w$) and `Directions` rows ($row \cdot l$), generating crop entries for `{id}-{season}-{direction}` and fractional slices `{id}-{season}-{direction}-{rem}`.
+* [x] Subtask: Add `season: str = Seasons.SPRING.value` to `ShorelineState` in `app.models.state.assets.geography`.
+* [x] Subtask: Update `CardinalFrame.keys()` to emit `{id}-{state.season}-{direction}` and memoize on `state._keys`.
 
 **2. Task: Shoreline Seasonal Event Handling & Relational Fallback**
 
 *Objective*: Synchronize shoreline state with calendar transitions and support compound relational fallbacks.
 
-* [ ] Subtask: Update `ShorelineIndex.resolve(tile_id, fluid_id, season=None)` in `app.game.logic.relations.shorelines` to query `(tile_id, fluid_id, season)` before falling back to `(tile_id, fluid_id)`.
-* [ ] Subtask: Update `Cartographer._coalesce_segments()` in `app.services.generators.game.cartographer` to pass `board.calendar.season` into `index.resolve()`.
-* [ ] Subtask: Implement `SeasonEventHandler.handle()` in `app.game.menus.handlers` to iterate over `board.shorelines()`, updating `state.season = context.board.calendar.season` and invalidating `state._keys = None`.
+* [x] Subtask: Update `ShorelineIndex.resolve(tile_id, fluid_id, season=None)` in `app.game.logic.relations.shorelines` to query `(tile_id, fluid_id, season)` before falling back to `(tile_id, fluid_id)`.
+* [x] Subtask: Update `Cartographer._coalesce_segments()` in `app.services.generators.game.cartographer` to pass `board.calendar.season` into `index.resolve()`.
+* [x] Subtask: Implement `SeasonEventHandler.handle()` in `app.game.menus.handlers` to iterate over `board.shorelines()`, updating `state.season = context.board.calendar.season` and invalidating `state._keys = None`.
 
 **3. Task: Hydrological Superposition Field Model**
 
 *Objective*: Implement continuous soil moisture potential modeling based on fluid geometry.
 
-* [ ] Subtask: Define `MoistureField` in `app.game.board.fields` supporting registered stream corridors (line segments) and annular pools (disks) with exponential distance attenuation.
-* [ ] Subtask: Update `Actuator.propagate()` in `app.services.generators.game.actuator` to compile active streams, pools, and branches into a `MoistureField` upon completing fluid propagation.
-* [ ] Subtask: Add `_moisture_fields: Dict[str, MoistureField]` and `board.set_moisture_field(layer, field)` to `Board` in `app.game.board.core`.
-* [ ] Subtask: Add `moisture_flux: float = 0.0` field to `ResourceState` in `app.models.state.assets.resources`.
-* [ ] Subtask: In `board.set_moisture_field()`, iterate over static resources on the layer and precompute `resource.state.moisture_flux = field.evaluate(pos.x, pos.y)`.
+* [x] Subtask: Define `MoistureField` in `app.game.board.fields` supporting registered stream corridors (line segments) and annular pools (disks) with exponential distance attenuation.
+* [x] Subtask: Update `Actuator.propagate()` in `app.services.generators.game.actuator` to compile active streams, pools, and branches into a `MoistureField` upon completing fluid propagation.
+* [x] Subtask: Add `_moisture_fields: Dict[str, MoistureField]` and `board.set_moisture_field(layer, field)` to `Board` in `app.game.board.core`.
+* [x] Subtask: Add `moisture_flux: float = 0.0` field to `ResourceState` in `app.models.state.assets.resources`.
+* [x] Subtask: In `board.set_moisture_field()`, iterate over static resources on the layer and precompute `resource.state.moisture_flux = field.evaluate(pos.x, pos.y)`.
 
 **4. Task: SeasonMechanics Refactoring & Throttling**
 
 *Objective*: Eliminate inner-loop heap allocations and throttle declarative AST evaluations.
 
-* [ ] Subtask: Remove `SeasonMechanics._probes()` in `app.game.logic.mechanics.world.seasons`.
-* [ ] Subtask: Refactor `SeasonMechanics.update()` to integrate moisture directly from `resource.state.moisture_flux` at 60 Hz.
-* [ ] Subtask: Add `_transition_accumulator: float = 0.0` to `SeasonMechanics` and throttle `executor.evaluate()` to execute once per second or when `period_changed == True`.
+* [x] Subtask: Remove `SeasonMechanics._probes()` in `app.game.logic.mechanics.world.seasons`.
+* [x] Subtask: Refactor `SeasonMechanics.update()` to integrate moisture directly from `resource.state.moisture_flux` at 60 Hz.
+* [x] Subtask: Add `_transition_accumulator: float = 0.0` to `SeasonMechanics` and throttle `executor.evaluate()` to execute once per second or when `period_changed == True`.
 
 **5. Task: Canvas Clear Pass in Screen.reconstruct() (Bug B013)**
 
