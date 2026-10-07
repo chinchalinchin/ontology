@@ -256,8 +256,10 @@ class Board:
         """
         Retrieves active procedural shoreline assets for a specific layer or across all layers.
         """
-        return self._cache.get_shorelines(layer)
-
+        if layer is not None:
+            return self._cache.get_shorelines(layer)
+        return self.instances(AssetInstances.SHORELINES.value)
+    
     def moisture(self, layer: str, x: int, y: int) -> float:
         """
         Queries scalar moisture potential at coordinates (x, y) on the specified layer.
@@ -306,10 +308,19 @@ class Board:
         resources = self.categories(AssetCategories.RESOURCES.value, layer)
         for resource in resources:
             if resource.state.position:
-                resource.state.moisture_flux = field.evaluate(
+                flux = field.evaluate(
                     resource.state.position.x,
                     resource.state.position.y
                 )
+                resource.state.moisture_flux = flux
+                logger.debug(
+                    f"Board: Layer={layer} resource='{resource.name}' at "
+                    f"({resource.state.position.x}, {resource.state.position.y}) "
+                    f"moisture_flux={flux:.4f}"
+                )
+        logger.info(
+            f"Board: Layer={layer} MoistureField cached across {len(resources)} resources."
+        )
 
     def update_fluid_cache(self, layer: str) -> None:
         """

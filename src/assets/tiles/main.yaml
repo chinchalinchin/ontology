@@ -10,13 +10,6 @@
           w: 32
           l: 32
     back:
-      # LEGACY
-      grass:
-        dimensions:
-          w: 32
-          l: 32
-        friction: 100
-      # SEASONAL
       temperate:
         dimensions:
           w: 32

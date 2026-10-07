@@ -290,6 +290,15 @@ class Cartographer:
                         hitboxes=[hb],
                         bidirectional=True
                     )
+                    target_season = curr_seg.get('season') or (board.calendar.season if board.calendar else None)
+                    if target_season:
+                        shore_asset.state.season = target_season
+
+                    logger.debug(
+                        f"Cartographer: Spawned shoreline '{shore_asset.name}' "
+                        f"(id='{shore_asset.id}', orientation='{curr_seg['orientation']}', "
+                        f"length={curr_seg['length']}, season='{shore_asset.state.season}')"
+                    )
                     new_shorelines.append(shore_asset)
                     curr_seg = None
 

@@ -383,10 +383,14 @@ class Screen:
 
     def reconstruct(self, tiles: List[Asset], calendar: CalendarState) -> None:
         """Bakes updated seasonal tile frames without reallocating GPU texture memory."""
+        logger.info(
+            f"Screen.reconstruct: Baking seasonal tile canvases for "
+            f"season='{calendar.season}', cycle='{calendar.cycle}', period={calendar.period} "
+            f"across {len(tiles)} tiles."
+        )
         back_tiles, fore_tiles = self._prerender(tiles, calendar)
         render.construct(self.bg_canvas, back_tiles)
         render.construct(self.fg_canvas, fore_tiles)
-
         
     def rebake(self, 
         tiles: List[Asset], 

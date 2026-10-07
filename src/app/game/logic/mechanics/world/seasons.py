@@ -43,15 +43,17 @@ class SeasonMechanics(Mechanic):
         super().__init__()
         self._transition_accumulator = 0.0
 
+
     @property
     def period(self) -> float:
         return settings.SEASON_DURATION_SECONDS / 9.0
+
 
     def _advance_calendar(self, calendar: CalendarState) -> None:
         """
         Advances the calendar state across discrete temporal buckets:
         period (0..2) -> cycle (onset, peak, decline) -> season -> year.
-        Emits log entries on cycle, season, and year transitions.
+        Emits log entries on period, cycle, season, and year transitions.
         """
         seasons = [s.value for s in Seasons]
         cycles = [c.value for c in Cycles]
@@ -83,6 +85,11 @@ class SeasonMechanics(Mechanic):
                 f"Calendar: Advanced cycle to '{calendar.cycle}' "
                 f"(Season: '{calendar.season}', Period: {calendar.period})"
             )
+        else:
+            logger.info(
+                f"Calendar: Advanced period to {calendar.period} "
+                f"(Season: '{calendar.season}', Cycle: '{calendar.cycle}')"
+            )
 
     def update(
         self,
@@ -102,13 +109,17 @@ class SeasonMechanics(Mechanic):
             period_changed = True
 
         if period_changed:
+            logger.info(
+                f"SeasonMechanics: Period boundary crossed. Emitting SeasonEvent for "
+                f"season='{board.calendar.season}', cycle='{board.calendar.cycle}', period={board.calendar.period}."
+            )
             bus.append(SeasonEvent())
 
         resources = board.categories(AssetCategories.RESOURCES.value)
         if not resources:
             return
 
-        # 2. Continuous Environmental Moisture Integration (Zero Inner-Loop Allocations)
+        # 2. Continuous Environmental Moisture Integration
         evap_modifier = settings.SEASON_EVAPORATION_MODIFIERS.get(board.calendar.season, 1.0)
         evaporation_step = delta * settings.EVAPORATION_RATE * evap_modifier
         diffusion_step = settings.DIFFUSION_RATE * delta
@@ -147,6 +158,7 @@ class SeasonMechanics(Mechanic):
                 if next_stage:
                     logger.info(
                         f"Transition(resource={resource.name}): "
-                        f"'{resource.state.stage}' -> '{next_stage}'"
+                        f"'{resource.state.stage}' -> '{next_stage}' "
+                        f"(Retention={resource.state.retention:.1f}, Season='{board.calendar.season}')"
                     )
                     resource.state.stage = next_stage

@@ -2,6 +2,14 @@
 
 - **Board:** {{ board_key }}
 - **Timestamp:** {{ timestamp }}
+{% if calendar is defined and calendar is not none -%}
+- **Calendar:**
+  - Year: {{ calendar.year }}
+  - Season: `{{ calendar.season }}`
+  - Cycle: `{{ calendar.cycle }}`
+  - Period: {{ calendar.period }}
+  - Elapsed: {{ calendar.elapsed }}
+{% endif -%}
 {% for asset in assets %}
 
 ## {{ asset.name | default(asset.state.name if (asset.state is defined and asset.state.name is defined) else none, true) | default(asset.id, true) }}
@@ -197,6 +205,9 @@
 {% if asset.state.orientation is defined and asset.state.orientation is not none -%}
   - Orientation: `{{ asset.state.orientation.value if asset.state.orientation.value is defined else asset.state.orientation }}`
 {% endif -%}
+{% if asset.state.season is defined and asset.state.season is not none -%}
+  - Season: `{{ asset.state.season.value if asset.state.season.value is defined else asset.state.season }}`
+{% endif -%}
 {% if asset.state.thickness is defined and asset.state.thickness is not none -%}
   - Thickness: {{ asset.state.thickness }}
 {% endif -%}
@@ -216,6 +227,9 @@
 {% endif -%}
 {% if asset.state.retention is defined and asset.state.retention is not none -%}
   - Retention: {{ asset.state.retention }}
+{% endif -%}
+{% if asset.state.moisture_flux is defined and asset.state.moisture_flux is not none -%}
+  - Moisture Flux: {{ asset.state.moisture_flux }}
 {% endif -%}
 {% if asset.state.harvested is defined and asset.state.harvested is not none -%}
   - Harvested: {{ asset.state.harvested }}
