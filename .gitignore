@@ -15,6 +15,7 @@ site/**
 **/new.py
 TODOS.md
 **/*.pstats
+engine-run.svg
 
 !**/.gitkeep
 !**/templates/*-dump.md

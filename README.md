@@ -88,7 +88,7 @@ python src/cli.py  \
 
 ```bash
 python -m cProfile -o engine_run.pstats src/cli.py start world-01
-gprof2dot -f pstats engine_run.pstats --node-thres=1.0 --edge-thres=0.5 | dot -Tsvg -o engine_callgraph.svg
+gprof2dot -f pstats engine-run.pstats --node-thres=1.0 --edge-thres=0.5 | dot -Tsvg -o engine-run.svg
 ```
 
 #### Dependency Trees
