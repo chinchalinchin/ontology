@@ -626,6 +626,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#seasonmechanics_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SeasonMechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1494,6 +1505,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#seasonmechanics_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SeasonMechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1857,13 +1879,14 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <li><strong>Pass 2 (Geometric Shift Detection &amp; Shoreline Synthesis)</strong>: Compares the pre- and post-propagation geometric signature (<code>_fluid_signature</code>: stream lengths, pool bounds, branch positions). If water geometry is invariant, shoreline regeneration is bypassed. If geometry shifted (or during hydration), <code>Cartographer.purge()</code> and <code>Cartographer.generate()</code> synthesize updated boundary contours.</li>
 </ol>
 <h4 id="seasonmechanics">SeasonMechanics</h4>
+<h4 id="seasonmechanics_1">SeasonMechanics</h4>
 <p><code>SeasonMechanics</code> executes within the <code>world</code> mechanics pipeline, driving global time, soil hydrology, and biological resource lifecycles:</p>
 <ol>
-<li><strong>Temporal Integration</strong>: Accumulates frame <span class="arithmatex">\(\Delta t\)</span> into <code>board.calendar.elapsed</code>. When elapsed time reaches <code>settings.PERIOD_DURATION_SECONDS</code> (400.0s), the mechanic advances <code>period</code> (0..2), <code>cycle</code> (<code>onset</code>, <code>peak</code>, <code>decline</code>), <code>season</code> (<code>spring</code>, <code>summer</code>, <code>autumn</code>, <code>winter</code>), and <code>year</code>, appending a <code>SeasonEvent</code> to the engine bus.</li>
-<li><strong>Hydrological Diffusion</strong>: Iterates over <code>board.categories(AssetCategories.RESOURCES.value)</code>. Probes cardinal offsets against <code>board.fluid()</code> spatial buckets:</li>
-<li><strong>Moist Substrate</strong>: Accumulates moisture via <span class="arithmatex">\(\text{retention} \mathrel{+}= \kappa_{\text{diffusion}} \cdot \Delta t\)</span>.</li>
-<li><strong>Dry Substrate</strong>: Evaporates moisture via <span class="arithmatex">\(\text{retention} \mathrel{-}= \kappa_{\text{evap}} \cdot \mu_{\text{season}} \cdot \Delta t\)</span>.</li>
-<li><strong>Declarative Stage Transitions</strong>: Queries the appropriate lifespan executor (<code>self.executors.get(resource.properties.lifespan).evaluate(resource.state.stage, locals)</code>) against compiled stage rules.</li>
+<li><strong>Temporal Integration</strong>: Accumulates frame <span class="arithmatex">\(\Delta t\)</span> into <code>board.calendar.elapsed</code>. When elapsed time reaches <code>settings.PERIOD_DURATION_SECONDS</code>, the mechanic advances <code>period</code> (0..2), <code>cycle</code> (<code>onset</code>, <code>peak</code>, <code>decline</code>), <code>season</code> (<code>spring</code>, <code>summer</code>, <code>autumn</code>, <code>winter</code>), and <code>year</code>, appending a <code>SeasonEvent</code> to the engine bus.</li>
+<li><strong>Environmental Hydrology (Potential Field Integration)</strong>: Soil moisture diffusion operates via a continuous scalar potential field calculated during <code>FluidMechanics</code> propagation and cached on <code>Board</code>. Dynamic 60 Hz updates avoid spatial lookups by reading <code>resource.state.moisture_flux</code>:</li>
+<li><strong>Positive Flux</strong>: Accumulates moisture via <span class="arithmatex">\(\text{retention} \mathrel{+}= \kappa_{\text{diffusion}} \cdot \text{moisture\_flux} \cdot \Delta t\)</span>.</li>
+<li><strong>Zero Flux</strong>: Evaporates moisture via <span class="arithmatex">\(\text{retention} \mathrel{-}= \kappa_{\text{evap}} \cdot \mu_{\text{season}} \cdot \Delta t\)</span>.</li>
+<li><strong>Throttled Stage Transitions</strong>: Biological and geological progression checks (<code>executor.evaluate(stage, locals)</code>) are decoupled from the 60 Hz physics loop, evaluating at a 1.0-second throttled frequency or upon calendar period transitions (<code>period_changed == True</code>).</li>
 </ol>
 <h2 id="configuration">Configuration</h2>
 <ul>

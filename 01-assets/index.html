@@ -2816,13 +2816,14 @@
 <ul>
 <li>Property File: <code>/src/assets/geography/main.yaml</code></li>
 </ul>
-<p>Geography Assets represent inanimate, immutable structural and topographical landforms (e.g., shorelines, cliffs, ledges, and terraces). Geography Assets define transition thresholds between differing biome zones, elevations, and fluid corridors.</p>
+<p>Geography Assets represent inanimate, immutable structural and topographical landforms (e.g., shorelines, cliffs, ledges, and terraces).</p>
 <ol>
-<li><strong>Atlas format</strong>: Vertical <span class="arithmatex">\(w \times 4l\)</span> (<span class="arithmatex">\(32 \times 128\)</span>) with rows: <code>0: up</code>, <code>1: left</code>, <code>2: down</code>, <code>3: right</code>.</li>
-<li><strong>Keying</strong>: Uses <code>Directions</code> (<code>up</code>, <code>left</code>, <code>down</code>, <code>right</code>). Slices keyed as <code>{id}-{direction}-{rem}</code>.</li>
-<li><strong>Propagation</strong>: Normalized to top-left; tiles advance in <span class="arithmatex">\(+X\)</span> for <code>up</code>/<code>down</code>, <span class="arithmatex">\(+Y\)</span> for <code>left</code>/<code>right</code>.</li>
-<li><strong>Slicing</strong>: Forward-only slicing along the active propagation axis (<span class="arithmatex">\(s \times l\)</span> for horizontal, <span class="arithmatex">\(w \times s\)</span> for vertical).</li>
-<li><strong>Corners</strong>: Excluded from Phase 09.02 (TODO).</li>
+<li><strong>Atlas Format</strong>: Multi-season grid <span class="arithmatex">\(4w \times 4l\)</span> (<span class="arithmatex">\(128 \times 128\)</span>) containing 16 primary cells:</li>
+<li>Columns (0..3): <code>spring</code>, <code>summer</code>, <code>autumn</code>, <code>winter</code></li>
+<li>Rows (0..3): <code>0: up</code>, <code>1: left</code>, <code>2: down</code>, <code>3: right</code></li>
+<li><strong>Keying</strong>: Uses <code>Seasons</code> and <code>Directions</code>. Keys follow <code>{id}-{season}-{direction}</code> with fractional slices keyed as <code>{id}-{season}-{direction}-{rem}</code>.</li>
+<li><strong>Z-Ordering</strong>: Shorelines declare an explicit <code>height: 0</code> and <code>depth: 0</code>. This guarantees shorelines render above Fluid corridors (<code>depth: -1</code>) but sort underneath physical entities (<code>height: y + l</code>).</li>
+<li><strong>Lifecycle &amp; Caching</strong>: Shorelines are procedural entities generated via <code>Cartographer</code>. Frame keys are computed via <code>CardinalFrame.keys()</code> and cached on <code>state._keys</code>. When <code>SeasonMechanics</code> emits a <code>SeasonEvent</code>, active shoreline state seasons are synchronized and frame caches invalidated (<code>state._keys = None</code>) without triggering geometric regeneration.</li>
 </ol>
 <p><strong>Relational Secondary Keys</strong></p>
 <p>Geography assets act as relational bridges across environmental categories. Specifically, Shorelines declare secondary keys referencing the background <code>Tile</code> (and optionally <code>Fluid</code>) assets they border:</p>
