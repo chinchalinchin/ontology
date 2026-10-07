@@ -615,6 +615,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#seasonmechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SeasonMechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -760,7 +771,34 @@
   
   
     <li class="md-nav__item">
-      <a href="../09-emergence/" class="md-nav__link">
+      <a href="../09-ecology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ecology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-emergence/" class="md-nav__link">
         
   
   
@@ -787,7 +825,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../10-architecture/" class="md-nav__link">
+      <a href="../11-architecture/" class="md-nav__link">
         
   
   
@@ -836,7 +874,7 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_13" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_14" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -858,14 +896,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_13" id="__nav_13_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_14" id="__nav_14_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_13">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -997,7 +1035,7 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_14" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -1019,14 +1057,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_14" id="__nav_14_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_15" id="__nav_15_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_14">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1150,10 +1188,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16" >
         
           
-          <label class="md-nav__link" for="__nav_15" id="__nav_15_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_16" id="__nav_16_label" tabindex="0">
             
   
   
@@ -1171,8 +1209,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_15">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1439,6 +1477,17 @@
     <span class="md-ellipsis">
       
         FluidMechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seasonmechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SeasonMechanics
       
     </span>
   </a>
@@ -1807,6 +1856,15 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <li><strong>Pass 1 (Fluid Propagation &amp; Bifurcation)</strong>: For invalidated layers, <code>Actuator.propagate()</code> updates stream lengths, expands annular pools around static obstacles (<span class="arithmatex">\(m = 0\)</span>), derives secondary branch corridors, and updates <code>board.update_fluid_cache(layer)</code>. Cache slots (<code>fluid.state._keys</code>) are cleared.</li>
 <li><strong>Pass 2 (Geometric Shift Detection &amp; Shoreline Synthesis)</strong>: Compares the pre- and post-propagation geometric signature (<code>_fluid_signature</code>: stream lengths, pool bounds, branch positions). If water geometry is invariant, shoreline regeneration is bypassed. If geometry shifted (or during hydration), <code>Cartographer.purge()</code> and <code>Cartographer.generate()</code> synthesize updated boundary contours.</li>
 </ol>
+<h4 id="seasonmechanics">SeasonMechanics</h4>
+<p><code>SeasonMechanics</code> executes within the <code>world</code> mechanics pipeline, driving global time, soil hydrology, and biological resource lifecycles:</p>
+<ol>
+<li><strong>Temporal Integration</strong>: Accumulates frame <span class="arithmatex">\(\Delta t\)</span> into <code>board.calendar.elapsed</code>. When elapsed time reaches <code>settings.PERIOD_DURATION_SECONDS</code> (400.0s), the mechanic advances <code>period</code> (0..2), <code>cycle</code> (<code>onset</code>, <code>peak</code>, <code>decline</code>), <code>season</code> (<code>spring</code>, <code>summer</code>, <code>autumn</code>, <code>winter</code>), and <code>year</code>, appending a <code>SeasonEvent</code> to the engine bus.</li>
+<li><strong>Hydrological Diffusion</strong>: Iterates over <code>board.categories(AssetCategories.RESOURCES.value)</code>. Probes cardinal offsets against <code>board.fluid()</code> spatial buckets:</li>
+<li><strong>Moist Substrate</strong>: Accumulates moisture via <span class="arithmatex">\(\text{retention} \mathrel{+}= \kappa_{\text{diffusion}} \cdot \Delta t\)</span>.</li>
+<li><strong>Dry Substrate</strong>: Evaporates moisture via <span class="arithmatex">\(\text{retention} \mathrel{-}= \kappa_{\text{evap}} \cdot \mu_{\text{season}} \cdot \Delta t\)</span>.</li>
+<li><strong>Declarative Stage Transitions</strong>: Queries <code>self.executor.evaluate( current_stage, locals)</code> against <code>/src/data/config/stages/main.yaml</code>.</li>
+</ol>
 <h2 id="configuration">Configuration</h2>
 <ul>
 <li>Location: <code>/src/data/config/mechanics/main.yaml</code></li>
@@ -1833,6 +1891,9 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <li><code>plot</code>: Executor for evaluating the conditions for <a href="../08-plots/">Plot Transitions</a>.</li>
 <li><code>intention</code>: Executor for evaluating the conditions for <a href="../04-intentions/">Intention Transitions</a></li>
 <li><code>actuator</code>: Executor for generating <a href="../01-assets/#fluids">Fluid</a> and <a href="../01-assets/#shorelines">Shoreline</a> Assets.</li>
+<li><code>annual</code>: TODO</li>
+<li><code>perennial</code>: TODO</li>
+<li><code>centennial</code>: TODO</li>
 </ul>
 <h3 id="relations">Relations</h3>
 <p>Relations are static mappings configured at runtime. Available relations are enumerated below.</p>

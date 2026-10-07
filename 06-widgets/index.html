@@ -742,7 +742,34 @@
   
   
     <li class="md-nav__item">
-      <a href="../09-emergence/" class="md-nav__link">
+      <a href="../09-ecology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ecology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-emergence/" class="md-nav__link">
         
   
   
@@ -769,7 +796,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../10-architecture/" class="md-nav__link">
+      <a href="../11-architecture/" class="md-nav__link">
         
   
   
@@ -818,7 +845,7 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_13" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_14" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -840,14 +867,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_13" id="__nav_13_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_14" id="__nav_14_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_13">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -979,7 +1006,7 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_14" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
         
           
           <div class="md-nav__link md-nav__container">
@@ -1001,14 +1028,14 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_14" id="__nav_14_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_15" id="__nav_15_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_14">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1132,10 +1159,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16" >
         
           
-          <label class="md-nav__link" for="__nav_15" id="__nav_15_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_16" id="__nav_16_label" tabindex="0">
             
   
   
@@ -1153,8 +1180,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_15">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1511,7 +1538,7 @@
 <li>If MenuEvent: The Engine pauses the Board, calls the Provider to instantiate the Menu, and pushes it to board.menus.</li>
 <li>If State Event: The Engine begins migrating state from the file system into the Board.</li>
 <li>If TerminalEvent: The Engine pops the Menu off the stack and unpauses the Board.</li>
-<li>If UpdateEvent: The Engine pulls the clean background and the font (e.g., <code>render.construct()</code> and <code>render.write()</code> <a href="../10-architecture/#cython">Cython interfaces</a>), and overwrites the Widget's TexturePtr in VRAM.</li>
+<li>If UpdateEvent: The Engine pulls the clean background and the font (e.g., <code>render.construct()</code> and <code>render.write()</code> <a href="../11-architecture/#cython">Cython interfaces</a>), and overwrites the Widget's TexturePtr in VRAM.</li>
 </ul>
 <p>Finally, the <a href="../00-overview/#screen">Screen</a> iterates over the Widgets and passes it to Cython. </p>
 <p><strong>MenuMechanics</strong></p>
@@ -1809,7 +1836,7 @@
 </ul>
 <h3 id="provider">Provider</h3>
 <p>The Provider, similiar to the <a href="../03-compositions/#decomposer">Decomposer</a>, is responsible for unpacking Menu configurations into flat lists of Assets for the Engine. However, unlike the Decomposer, the Provider must also generate a traversal graph, inject bindings into Widgets and pass the result to a Menu.</p>
-<p>To start, ScreenPosition is a <em>configuration-time</em> concept, not a <em>runtime</em> concept. When the Provider and Layout engine instantiate a Menu, they must calculate the absolute pixel values <code>(px * screensize.w, py * screensize.l)</code> and inject a Position into the Widget state. By flattening the Menu tree and translating all percentages to absolute <code>Positions</code>, <code>Screen.draw()</code> can consume Widgets exactly like world Assets, satisfying the <a href="../10-architecture/#cython">zero-allocation principle</a>.</p>
+<p>To start, ScreenPosition is a <em>configuration-time</em> concept, not a <em>runtime</em> concept. When the Provider and Layout engine instantiate a Menu, they must calculate the absolute pixel values <code>(px * screensize.w, py * screensize.l)</code> and inject a Position into the Widget state. By flattening the Menu tree and translating all percentages to absolute <code>Positions</code>, <code>Screen.draw()</code> can consume Widgets exactly like world Assets, satisfying the <a href="../11-architecture/#cython">zero-allocation principle</a>.</p>
 <h3 id="controllers">Controllers</h3>
 <p>Every Menu has a Controller that handles Menu-specific logic. </p>
 <p><strong>Selection Logic</strong></p>
