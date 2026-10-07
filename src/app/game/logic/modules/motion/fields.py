@@ -1,4 +1,7 @@
-# src/app/game/logic/modules/motion/fields.py
+"""
+# Ontology: app.game.logic.modules.motion.fields
+"""
+from __future__ import annotations
 
 # Standard Libraries
 import logging
