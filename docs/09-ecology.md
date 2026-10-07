@@ -165,25 +165,47 @@ Tiles undergo Seasons. The Season of a Tile has ripple effects on surrounding As
     * $\text{stalk} \to \text{bloom}$: $\text{board.season} = \text{autumn} \land \text{crop.state.retention} > \theta_{\text{bloom}}$
     * $\text{bloom} \to \text{stump}$: $(\text{board.season} = \text{autumn} \land \text{crop.state.harvested}) \lor \text{board.season} = \text{winter}$
 
+```mermaid
+--8<-- "static/mmd/executor-annual-transitions.mmd"
+```
+
+--8<-- "static/md/executor-annual-transitions.md"
+
 ### Tree Epicycles
 
 - Governed by [SeasonMechanics](./05-mechanics.md#seasonmechanics)
 
-Trees have an Epicycle in their Stages: Genesis, Homeostasis, Apoptosis
+Trees cycle through three epicycles:
 
-1. Genesis Epicycle Map: 
-    * `board.season == spring and board.season.cycle == onset: tree.state.stage = sapling`
-    * `board.season == spring and board.season.cycle == peak: tree.state.stage = bush`
-    * `board.season == spring and board.season.cycle == decline: tree.state.stage = branch` 
-    * `board.season == summer and board.season.cycle == onset: tree.state.stage = adult`
-    * `board.season == summer and board.season.cycle == peak: tree.state.stage = healthy` (Enters Homoestasis)
-2. Homeostasis Epicycle Map: 
-    * `board.season == spring and tree.state.hydrated: tree.state.stage = vibrant`
-    * `board.season == summer and tree.state.hydrated: tree.state.stage = healthy`
-    * `board.season == autumn and tree.state.hydrated: tree.state.stage = abscise`
-    * `board.season == winter and tree.state.hydrated: tree.state.stage = snowcapt`
-3. Apoptosis Stage Season Map: 
-    * `not tree.state.hydrated: tree.state.stage = dying`
-    * `tree.state.stage == dying and tree.state.hydrated: tree.state.stage = adult` (Re-enters Homoestasis)
-    * `board.season == autumn and tree.state.stage == dying: tree.state.stage = dead` 
-    * `board.season == winter and tree.state.stage == dead: tree.stage.stage = stump`
+1. **Genesis**:
+   * `sapling -> bush`: Spring Peak, `retention >= 15.0`
+   * `bush -> branch`: Spring Decline, `retention >= 20.0`
+   * `branch -> adult`: Summer Onset, `retention >= 25.0`
+   * `adult -> healthy`: Summer Peak, `retention >= 25.0` (Enters Homeostasis)
+2. **Homeostasis**:
+   * `healthy -> abscise`: Autumn, `retention >= 15.0`
+   * `abscise -> snowcapt`: Winter, `retention >= 10.0`
+   * `snowcapt -> vibrant`: Spring, `retention >= 15.0`
+   * `vibrant -> healthy`: Summer, `retention >= 20.0`
+3. **Apoptosis**:
+   * Unhydrated Decay: Any Homeostasis stage transitions to `dying` when `retention < 5.0`.
+   * Spring Recovery: `dying -> vibrant` when `season == spring` and `retention >= 20.0`.
+   * Summer Recovery: `dying -> healthy` when `season == summer` and `retention >= 20.0`.
+   * Terminal Decay: `dying -> dead` (Autumn, `retention < 5.0`) $\to$ `dead -> stump` (Winter) $\to$ `stump -> sapling` (Spring Onset).
+
+
+```mermaid
+--8<-- "static/mmd/executor-perennial-transitions.mmd"
+```
+
+--8<-- "static/md/executor-perennial-transitions.md"
+
+### Ore Veining
+
+TODO
+
+```mermaid
+--8<-- "static/mmd/executor-centennial-transitions.mmd"
+```
+
+--8<-- "static/md/executor-centennial-transitions.md"

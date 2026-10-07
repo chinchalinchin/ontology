@@ -1,0 +1,28 @@
+# Task: Finite Automata Documentation
+
+The [YAML](#latest-schema) represents a finite automata and the conditions for its transitions into different nodes. 
+
+**Guidelines**
+
+- Update the table and diagram to match the latest state of the automata presented in the YAML.
+- Do not include information about the conditions in the diagram or table. Only include the node connections.
+
+## Latest Schema
+
+```yaml
+{{ file(properties.paths.root + 'src/data/config/' + task.parameters.automata + '/main.yaml') }}
+```
+
+## Documentation
+
+### Markdown Table
+
+```markdown
+{{ file(properties.paths.root + 'docs/static/md/' + task.parameters.table) }}
+```
+
+### Mermaid Diagram
+
+```mermaid
+{{ file(properties.paths.root + 'docs/static/mmd/' + task.parameters.diagram) }}
+```

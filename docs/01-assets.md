@@ -169,8 +169,11 @@ The Recipe for an Asset, i.e. the list of components which go into a particular 
 3. **Behavior: Animation** Stateless strategies (e.g. `BinaryAnimation`, `StateAnimation`, etc.) injected into the Asset. These contain the specific logic for updating Animation frames.
     - `animate(state, properties)`: Interface for applying animation logic to Asset state.
 4. **Behavior: Frame:** A static schema calculation used by the renderer to determine the correct texture string keys. An Asset can be a single logical entity composed of multiple superimposed rendered textures, therefore a Frame component returns a `List[(str, int, int)]` rather than a single `str`. The tuple `(int, int)` controls how much the frame is offset from its origin (mainly used in [Expressions](#expressions) to pin a [Cursor Expressions](#cursors) to the relative Position of a Sprite) In addition, Frames provide the indexing schema for textures used by the [Registry](./00-overview.md#registry) to store Assets in memory.
-    - `keys(id: str, state: AssetState) -> List[Tuple[str, int, int]]`: Interface for retrieving Asset's current Frame key.
+    - `keys(id: str, state: AssetState) -> List[Tuple[str, int, int]]`: Reflexive intrinsic state projection for dynamic 60 Hz draw passes.
     - `index(id: str, properties: AssetProperties) -> Dict[str, Tuple[int, int, int, int]]`: Interface for indexing Asset frames in Registry.
+    - `eras(id: str, calendar: CalendarState) -> List[Tuple[str, int, int]]`: Macro-temporal epochal projection for static pre-rendered canvas baking.
+    - `channels(id: str, state: AssetState, properties: AssetProperties) -> List[Tuple]`: Emits auxiliary shader and texture modulation directives (e.g., submersion splits).
+
 
 !!! note
     The state model can be calculated from (Category, Instance), but (Animation, Frame) is independent of the state assigned to an Asset through the Asset Hierarchy. It must be specified through a Recipe.
@@ -771,12 +774,12 @@ A Resource contains a `loot` key. When Resources are mined through the `mine` [I
 * `hitboxes: List[Hitbox]`
 * `mass: int = 0`
 * `loot: str`: Inventory loot key dropped upon harvest or mining.
-* `stages: List[str]`: Ordered progression stages.
+* `lifespan: Lifespans`: Biological or geological progression category (`annual`, `perennial`, `centennial`).
 
 **Frame: StageFrame**
 
 * `keys(id, state): returns [ (f"{id}-{state.stage}", 0, 0) ]`
-* `index(id, properties): returns { f"{id}-{stage}": (i * properties.dimensions.w, 0, properties.dimensions.w, properties.dimensions.l) for i, stage in enumerate(properties.stages) }`
+* `index(id, properties): returns { f"{id}-{stage}": (i * properties.dimensions.w, 0, properties.dimensions.w, properties.dimensions.l) for i, stage in enumerate(properties.lifespan) }`
 
 **Animation: None**
 

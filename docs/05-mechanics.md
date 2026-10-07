@@ -234,8 +234,7 @@ FluidMechanics governs fluid emission, recursive bifurcation, and procedural sho
 2. **Hydrological Diffusion**: Iterates over `board.categories(AssetCategories.RESOURCES.value)`. Probes cardinal offsets against `board.fluid()` spatial buckets:
    * **Moist Substrate**: Accumulates moisture via $\text{retention} \mathrel{+}= \kappa_{\text{diffusion}} \cdot \Delta t$.
    * **Dry Substrate**: Evaporates moisture via $\text{retention} \mathrel{-}= \kappa_{\text{evap}} \cdot \mu_{\text{season}} \cdot \Delta t$.
-3. **Declarative Stage Transitions**: Queries `self.executor.evaluate( current_stage, locals)` against `/src/data/config/stages/main.yaml`.
-
+3. **Declarative Stage Transitions**: Queries the appropriate lifespan executor (`self.executors.get(resource.properties.lifespan).evaluate(resource.state.stage, locals)`) against compiled stage rules.
 ## Configuration
 
 * Location: `/src/data/config/mechanics/main.yaml`
@@ -267,9 +266,10 @@ Mechanics Executors are services made available to the request Mechanics. Availa
 - `plot`: Executor for evaluating the conditions for [Plot Transitions](./08-plots.md).
 - `intention`: Executor for evaluating the conditions for [Intention Transitions](./04-intentions.md)
 - `actuator`: Executor for generating [Fluid](./01-assets.md#fluids) and [Shoreline](./01-assets.md#shorelines) Assets.
-- `annual`: TODO
-- `perennial`: TODO
-- `centennial`: TODO
+- `annual`: ISL executor evaluating stage transitions for annual vegetation (crops).
+- `perennial`: ISL executor evaluating stage transitions for perennial flora (trees).
+- `centennial`: ISL executor evaluating geological progression (ores).
+
 
 ### Relations
 

@@ -37,19 +37,22 @@ task:
   # template: iterate/documentation.md.j2
   # template: iterate/grooming.md.j2
   # template: iterate/implementation.md.j2
-  template: iterate/coverage.md.j2
+  # template: iterate/coverage.md.j2
   # template: iterate/conclusion.md.j2
   # ------------------------------------- DESIGN TASKS
   # template: design/menu.md.j2
   # template: diagram/hierarchy.md.j2
-  # template: diagram/intentions.md.j2
+  template: diagram/automata.md.j2
   # template: diagram/stages.md.j2
   # template: output/menus.md.j2
   # template: output/state.md.j2
   # template: style/mermaid.md.j2
 # ----------------------------------------------------
+  # PLACEHOLDER UNTIL STRUCTURE EMERGES FOR TOOL
   parameters:
-    diagram: mechanics-fluid.mmd
+    automata: stages 
+    diagram: executor-stage-transitions.mmd
+    table: executor-stage-transitions.md
 # ----------------------------------------------------
 tools:
 # ----------------------------------------------------
@@ -61,13 +64,13 @@ tools:
     source:
       workflow: false
     shell:
-      directory: true
+      directory: false
       commands: false
     tests:  
-      pipeline: true
-      fixtures: true
+      pipeline: false
+      fixtures: false
       session: false
-      workflow: true
+      workflow: false
 # ----------------------------------------------------
   parameters:
     manager:

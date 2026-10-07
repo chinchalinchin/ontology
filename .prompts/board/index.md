@@ -69,6 +69,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 09.07: Frame Caching](./phases/refactor/refactor-09-07.md)
     - Phase 10:
       - [ ]: [Phase 10.01: Stage Hitboxes](./phases/refactor/refactor-10-01.md)
+      - [ ]: [Phase 10.02: Shoreline Seasonal Indexing](./phases/refactor/refactor-10-02.md)
   - Patch:
     - [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering Instantiated Assets](./phases/patch/bug-b001.md)
@@ -83,6 +84,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Bug B010: Overlapping Fluid Shorelines](./phases/patch/bug-b010.md)
     - [x]: [Bug B011: Stream and Annular Pool Texture Overdraw](./phases/patch/bug-b011.md)
     - [ ]: [Bug B012: Composition Duplication](./phases/patch/bug-b012.md)
+    - [ ]: [Bug B013: Canvas Bleed on Fore Tiles](./phases/patch/bug-b013.md)
   - Achieve:
     - [x]: [Goal 01: Boundaries](./phases/achieve/goal-01.md)
     - [x]: [Goal 02: ScrollController, Library & Plots](./phases/achieve/goal-02)
