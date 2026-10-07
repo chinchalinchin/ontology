@@ -8,20 +8,6 @@
 {{ file(properties.paths.root + 'src/data/config/stages/main.yaml') }}
 ```
 
-#### properties
-
-**src/assets/resources/main.yaml**
-
-```yaml
-{{ file(properties.paths.root + 'src/assets/resources/main.yaml') }}
-```
-
-**src/assets/tiles/main.yaml**
-
-```yaml
-{{ file(properties.paths.root + 'src/assets/tiles/main.yaml') }}
-```
-
 #### app.assets
 
 **src/app/assets/base.py**
@@ -74,18 +60,6 @@
 
 ##### app.game.menus
 
-**src/app/game/menus/events.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/game/menus/events.py') }}
-```
-
-**src/app/game/menus/contexts.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/game/menus/contexts.py') }}
-```
-
 ###### app.game.menus.handlers
 
 **src/app/game/menus/handlers/seasons.py**
@@ -132,24 +106,12 @@
 {{ file(properties.paths.root + 'src/app/models/config/mechanics.py') }}
 ```
 
-**src/app/models/config/schemas.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/models/config/schemas.py') }}
-```
-
 ##### app.models.state 
 
 **src/app/models/state/core.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/models/state/core.py')}}
-```
-
-**src/app/models/state/schemas.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/models/state/schemas.py')}}
 ```
 
 ###### app.models.state.assets
@@ -168,26 +130,16 @@
 
 #### app.services
 
-##### app.services.orchestration
+##### app.services.translators
 
-**src/app/services/orchestration/builder.py**
+**src/app/services/translators/base.py**
 
 ```python
-{{ file(properties.paths.root + 'src/app/services/orchestration/builder.py') }}
+{{ file(properties.paths.root + 'src/app/services/translators/base.py') }}
 ```
 
-**src/app/services/orchestration/migrator.py**
+**src/app/services/translators/environ.py**
 
 ```python
-{{ file(properties.paths.root + 'src/app/services/orchestration/migrator.py') }}
-```
-
-##### app.services.generators
-
-###### app.services.generators.game
-
-**src/app/services/generators/game/factory.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/services/generators/game/factory.py') }}
+{{ file(properties.paths.root + 'src/app/services/translators/environ.py') }}
 ```
