@@ -228,13 +228,16 @@ FluidMechanics governs fluid emission, recursive bifurcation, and procedural sho
 
 #### SeasonMechanics
 
+#### SeasonMechanics
+
 `SeasonMechanics` executes within the `world` mechanics pipeline, driving global time, soil hydrology, and biological resource lifecycles:
 
-1. **Temporal Integration**: Accumulates frame $\Delta t$ into `board.calendar.elapsed`. When elapsed time reaches `settings.PERIOD_DURATION_SECONDS` (400.0s), the mechanic advances `period` (0..2), `cycle` (`onset`, `peak`, `decline`), `season` (`spring`, `summer`, `autumn`, `winter`), and `year`, appending a `SeasonEvent` to the engine bus.
-2. **Hydrological Diffusion**: Iterates over `board.categories(AssetCategories.RESOURCES.value)`. Probes cardinal offsets against `board.fluid()` spatial buckets:
-   * **Moist Substrate**: Accumulates moisture via $\text{retention} \mathrel{+}= \kappa_{\text{diffusion}} \cdot \Delta t$.
-   * **Dry Substrate**: Evaporates moisture via $\text{retention} \mathrel{-}= \kappa_{\text{evap}} \cdot \mu_{\text{season}} \cdot \Delta t$.
-3. **Declarative Stage Transitions**: Queries the appropriate lifespan executor (`self.executors.get(resource.properties.lifespan).evaluate(resource.state.stage, locals)`) against compiled stage rules.
+1. **Temporal Integration**: Accumulates frame $\Delta t$ into `board.calendar.elapsed`. When elapsed time reaches `settings.PERIOD_DURATION_SECONDS`, the mechanic advances `period` (0..2), `cycle` (`onset`, `peak`, `decline`), `season` (`spring`, `summer`, `autumn`, `winter`), and `year`, appending a `SeasonEvent` to the engine bus.
+2. **Environmental Hydrology (Potential Field Integration)**: Soil moisture diffusion operates via a continuous scalar potential field calculated during `FluidMechanics` propagation and cached on `Board`. Dynamic 60 Hz updates avoid spatial lookups by reading `resource.state.moisture_flux`:
+   * **Positive Flux**: Accumulates moisture via $\text{retention} \mathrel{+}= \kappa_{\text{diffusion}} \cdot \text{moisture\_flux} \cdot \Delta t$.
+   * **Zero Flux**: Evaporates moisture via $\text{retention} \mathrel{-}= \kappa_{\text{evap}} \cdot \mu_{\text{season}} \cdot \Delta t$.
+3. **Throttled Stage Transitions**: Biological and geological progression checks (`executor.evaluate(stage, locals)`) are decoupled from the 60 Hz physics loop, evaluating at a 1.0-second throttled frequency or upon calendar period transitions (`period_changed == True`).
+
 ## Configuration
 
 * Location: `/src/data/config/mechanics/main.yaml`

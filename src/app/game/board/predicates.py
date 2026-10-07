@@ -53,7 +53,7 @@ def is_obstacle(asset: Asset) -> bool:
         AssetInstances.GATES.value,
         AssetInstances.STRUTS.value,
         AssetInstances.OBSTACLES.value,
-        AssetInstances.TREES.values,
+        AssetInstances.TREES.value,
     )
 
 

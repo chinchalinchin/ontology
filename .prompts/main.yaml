@@ -5,8 +5,8 @@ properties:
     mkdocs: mkdocs.yml
   paths:
     # ---------------------------------------
-    # root: /Users/gmoore/Home/projects/ontology/
-    root: /home/grant/Projects/ontology/
+    root: /Users/gmoore/Home/projects/ontology/
+    # root: /home/grant/Projects/ontology/
     # ---------------------------------------
     actions: .githubs/workflows/
     # ---------------------------------------

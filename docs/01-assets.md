@@ -100,7 +100,7 @@ Asset *Categories* form the top layer of the hierarchy. Each Asset Category is d
 | Cursors | Dimensions |
 | Objects | Dimensions, Hitboxes, Mass |
 | Effects | Dimensions, Hitboxes, Lifecycle, Count, Mass |
-| Geography| Dimensions, Hitboxes, TODO | 
+| Geography | Dimensions, Hitboxes, TODO | 
 | Resources | Dimensions, Hitboxes, TODO |
 | Crafts | Dimensions, Hitboxes, Mass, Cost |
 | Sheets | Dimensions, Hitboxes, Mass, Stack, Actions |
@@ -726,8 +726,6 @@ Fluids play a vital role in Seasons and Ecology. They are covered in more detail
 
 * Property File: `/src/assets/geography/main.yaml`
 
-### Geography
-
 Geography Assets represent inanimate, immutable structural and topographical landforms (e.g., shorelines, cliffs, ledges, and terraces).
 
 1. **Atlas Format**: Multi-season grid $4w \times 4l$ ($128 \times 128$) containing 16 primary cells:
@@ -735,7 +733,7 @@ Geography Assets represent inanimate, immutable structural and topographical lan
    - Rows (0..3): `0: up`, `1: left`, `2: down`, `3: right`
 2. **Keying**: Uses `Seasons` and `Directions`. Keys follow `{id}-{season}-{direction}` with fractional slices keyed as `{id}-{season}-{direction}-{rem}`.
 3. **Z-Ordering**: Shorelines declare an explicit `height: 0` and `depth: 0`. This guarantees shorelines render above Fluid corridors (`depth: -1`) but sort underneath physical entities (`height: y + l`).
-4. **Lifecycle & Caching**: Shorelines are procedural entities generated via `Cartographer`. Frame keys are computed via `CardinalFrame.keys()` and cached on `state._keys`. When `SeasonMechanics` emits a `SeasonEvent`, active shoreline state seasons are synchronized and frame caches invalidated without triggering geometric regeneration.
+4. **Lifecycle & Caching**: Shorelines are procedural entities generated via `Cartographer`. Frame keys are computed via `CardinalFrame.keys()` and cached on `state._keys`. When `SeasonMechanics` emits a `SeasonEvent`, active shoreline state seasons are synchronized and frame caches invalidated (`state._keys = None`) without triggering geometric regeneration.
 
 **Relational Secondary Keys**
 
