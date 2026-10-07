@@ -1,4 +1,3 @@
-{% set diagram = "mechanics-fluid.mmd" %}
 # Task: Mermaid Styling
 
 The following Mermaid diagram is embedded in a [mkdocs project](#mkdocs). Ensure the graph styles are aligned with the project themes.
@@ -6,15 +5,16 @@ The following Mermaid diagram is embedded in a [mkdocs project](#mkdocs). Ensure
 **Guidelines**
 
 - Always apply the principles of Material UI design and theming when selecting colors.
+- Use inline classDefs for styles.
 
 ## mmd
 
 ```mermaid
-{{ file(properties.paths.root + properties.paths.diagrams + diagram) }}
+{{ file(properties.paths.root + properties.paths.diagrams + task.parameters.diagram) }}
 ```
 
 ## mkdocs
 
 ```yaml
-{{ file(properties.paths.root + '/' + properties.files.mkdocs) }}
+{{ file(properties.paths.root + properties.files.mkdocs) }}
 ```

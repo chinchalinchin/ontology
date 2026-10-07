@@ -1,4 +1,10 @@
 stateDiagram-v2
+    classDef growth fill:#231a38,stroke:#7e57c2,stroke-width:1.5px,color:#ede7f6
+    classDef focal fill:#512da8,stroke:#d1c4e9,stroke-width:2px,color:#ffffff
+    classDef active fill:#0d2d4a,stroke:#448aff,stroke-width:1.5px,color:#e3f2fd
+    classDef dormant fill:#1a233a,stroke:#5c6bc0,stroke-width:1.5px,color:#e8eaf6
+    classDef decay fill:#262930,stroke:#78909c,stroke-width:1.5px,color:#cfd8dc
+
     sapling --> bush
     bush --> branch
     branch --> adult
@@ -20,3 +26,9 @@ stateDiagram-v2
     dying --> dead
     dead --> stump
     stump --> sapling
+
+    class sapling,bush,branch growth
+    class adult focal
+    class healthy,vibrant active
+    class abscise,snowcapt dormant
+    class dying,dead,stump decay

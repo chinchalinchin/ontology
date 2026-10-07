@@ -10,7 +10,7 @@ The [YAML](#latest-schema) represents a finite automata and the conditions for i
 ## Latest Schema
 
 ```yaml
-{{ file(properties.paths.root + 'src/data/config/' + task.parameters.automata + '/main.yaml') }}
+{{ file(properties.paths.root + properites.paths.config + task.parameters.automata + '/main.yaml') }}
 ```
 
 ## Documentation
@@ -18,11 +18,11 @@ The [YAML](#latest-schema) represents a finite automata and the conditions for i
 ### Markdown Table
 
 ```markdown
-{{ file(properties.paths.root + 'docs/static/md/' + task.parameters.table) }}
+{{ file(properties.paths.root + properties.paths.tables + task.parameters.table) }}
 ```
 
 ### Mermaid Diagram
 
 ```mermaid
-{{ file(properties.paths.root + 'docs/static/mmd/' + task.parameters.diagram) }}
+{{ file(properties.paths.root + properties.paths.diagrams + task.parameters.diagram) }}
 ```

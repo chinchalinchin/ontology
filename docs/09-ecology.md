@@ -178,21 +178,23 @@ Tiles undergo Seasons. The Season of a Tile has ripple effects on surrounding As
 Trees cycle through three epicycles:
 
 1. **Genesis**:
-   * `sapling -> bush`: Spring Peak, `retention >= 15.0`
-   * `bush -> branch`: Spring Decline, `retention >= 20.0`
-   * `branch -> adult`: Summer Onset, `retention >= 25.0`
-   * `adult -> healthy`: Summer Peak, `retention >= 25.0` (Enters Homeostasis)
+    - $\text{sapling} \to \text{bush} &\iff (\text{season} = \text{Spring}) \land (\text{cycle} = \text{Peak}) \land (\text{retention} \ge 15.0)$
+    - $\text{bush} \to \text{branch} &\iff (\text{season} = \text{Spring}) \land (\text{cycle} = \text{Decline}) \land (\text{retention} \ge 20.0)$
+    - $\text{branch} \to \text{adult} &\iff (\text{season} = \text{Summer}) \land (\text{cycle} = \text{Onset}) \land (\text{retention} \ge 25.0)$ 
+    - $\text{adult} \to \text{healthy} &\iff (\text{season} = \text{Summer}) \land (\text{cycle} = \text{Peak}) \land (\text{retention} \ge 25.0)$
 2. **Homeostasis**:
-   * `healthy -> abscise`: Autumn, `retention >= 15.0`
-   * `abscise -> snowcapt`: Winter, `retention >= 10.0`
-   * `snowcapt -> vibrant`: Spring, `retention >= 15.0`
-   * `vibrant -> healthy`: Summer, `retention >= 20.0`
+    - $\text{healthy} \to \text{abscise} &\iff (\text{season} = \text{Autumn}) \land (\text{retention} \ge 15.0)$     
+    - $\text{abscise} \to \text{snowcapt} &\iff (\text{season} = \text{Winter}) \land (\text{retention} \ge 10.0)$
+    - $\text{snowcapt} \to \text{vibrant} &\iff (\text{season} = \text{Spring}) \land (\text{retention} \ge 15.0)$     
+    - $\text{vibrant} \to \text{healthy} &\iff (\text{season} = \text{Summer}) \land (\text{retention} \ge 20.0)$
 3. **Apoptosis**:
-   * Unhydrated Decay: Any Homeostasis stage transitions to `dying` when `retention < 5.0`.
-   * Spring Recovery: `dying -> vibrant` when `season == spring` and `retention >= 20.0`.
-   * Summer Recovery: `dying -> healthy` when `season == summer` and `retention >= 20.0`.
-   * Terminal Decay: `dying -> dead` (Autumn, `retention < 5.0`) $\to$ `dead -> stump` (Winter) $\to$ `stump -> sapling` (Spring Onset).
-
+    - $S_{\text{homeo}} = \{\text{vibrant}, \text{healthy}, \text{abscise}, \text{snowcapt}\}$
+    - $\forall s \in S_{\text{homeo}}, \quad s \to \text{dying} &\iff \text{retention} < 5.0$
+    - $\text{dying} \to \text{vibrant} &\iff (\text{season} = \text{Spring}) \land (\text{retention} \ge 20.0)$
+    - $\text{dying} \to \text{healthy} &\iff (\text{season} = \text{Summer}) \land (\text{retention} \ge 20.0)$     
+    - $\text{dying} \to \text{dead} &\iff (\text{season} = \text{Autumn}) \land (\text{retention} < 5.0)$     
+    - $\text{dead} \to \text{stump} &\iff \text{season} = \text{Winter}$     
+    - $\text{stump} \to \text{sapling} &\iff (\text{season} = \text{Spring}) \land (\text{cycle} = \text{Onset}) \land (\text{period} = 0) \land (\text{retention} \ge 15.0)$
 
 ```mermaid
 --8<-- "static/mmd/executor-perennial-transitions.mmd"
