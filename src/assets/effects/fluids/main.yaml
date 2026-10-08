@@ -14,8 +14,8 @@ effects:
     # -------------------------------------------------------
     waterflow-01:
       dimensions:
-        w: 32
-        l: 96
+        w: 96
+        l: 32
       lifecycle:
         type: continuous
         delay: 20
