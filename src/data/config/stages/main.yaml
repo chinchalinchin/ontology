@@ -3,11 +3,8 @@ stages:
     sprout:
       - next: growth
         conditions:
-          - "calendar.season in [
-              constants.Seasons.SPRING.value, 
-              constants.Seasons.SUMMER.value
-            ]"
-          - "resource.retention >= 20.0"
+          - "calendar.season == constants.Seasons.SPRING.value"
+          - "resource.retention >= 50.0"
       - next: stump
         conditions:
           - "calendar.season == constants.Seasons.WINTER.value"
@@ -15,11 +12,8 @@ stages:
     growth:
       - next: stalk
         conditions:
-          - "calendar.season in [
-              constants.Seasons.SPRING.value, 
-              constants.Seasons.SUMMER.value
-            ]"
-          - "resource.retention >= 25.0"
+          - "calendar.season in constants.Seasons.SUMMER.value"
+          - "resource.retention >= 75.0"
       - next: stump
         conditions:
           - "calendar.season == constants.Seasons.WINTER.value"
@@ -28,7 +22,7 @@ stages:
       - next: bloom
         conditions:
           - "calendar.season == constants.Seasons.AUTUMN.value"
-          - "resource.retention >= 30.0"
+          - "resource.retention >= 85.0"
       - next: stump
         conditions:
           - "calendar.season == constants.Seasons.WINTER.value"

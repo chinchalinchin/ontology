@@ -97,40 +97,42 @@ from app.services.translators import (
 )
 
 class Factory:
-    FRAME_MAP = {
-        FrameRecipe.CARDINAL.value: CardinalFrame,
-        FrameRecipe.INDEX.value: IndexFrame,
-        FrameRecipe.ITERABLE.value: IterableFrame,
-        FrameRecipe.FLUID.value: FluidFrame,
-        FrameRecipe.METER.value: MeterFrame,
-        FrameRecipe.NONE.value: NoFrame,
-        FrameRecipe.ORIENTED.value: OrientedFrame,
-        FrameRecipe.SEASONAL.value: SeasonalFrame,
-        FrameRecipe.SPRITE.value: SpriteFrame,
-        FrameRecipe.SINGLE.value: SingleFrame,
-        FrameRecipe.STAGE.value: StageFrame,
-        FrameRecipe.STATE.value: StateFrame,
-        FrameRecipe.TRAVERSAL.value: TraversalFrame,
+    # ----------- FLYWEIGHT COMPONENTS
+    _FRAMES = {
+        FrameRecipe.CARDINAL.value: CardinalFrame(),
+        FrameRecipe.INDEX.value: IndexFrame(),
+        FrameRecipe.ITERABLE.value: IterableFrame(),
+        FrameRecipe.FLUID.value: FluidFrame(),
+        FrameRecipe.METER.value: MeterFrame(),
+        FrameRecipe.NONE.value: NoFrame(),
+        FrameRecipe.ORIENTED.value: OrientedFrame(),
+        FrameRecipe.SEASONAL.value: SeasonalFrame(),
+        FrameRecipe.SPRITE.value: SpriteFrame(),
+        FrameRecipe.SINGLE.value: SingleFrame(),
+        FrameRecipe.STAGE.value: StageFrame(),
+        FrameRecipe.STATE.value: StateFrame(),
+        FrameRecipe.TRAVERSAL.value: TraversalFrame(),
     }
 
-    ANIMATION_MAP = {
-        AnimationRecipe.BINARY.value: BinaryAnimation,
-        AnimationRecipe.LIFECYCLE.value: LifecycleAnimation,
-        AnimationRecipe.STATE.value: StateAnimation,
-        AnimationRecipe.SPRITE.value: SpriteAnimation,
-        AnimationRecipe.TRAVERSAL.value: TraversalAnimation,
-        AnimationRecipe.METER.value: MeterAnimation,
-        AnimationRecipe.NONE.value: NoAnimation
+    _ANIMATIONS = {
+        AnimationRecipe.BINARY.value: BinaryAnimation(),
+        AnimationRecipe.LIFECYCLE.value: LifecycleAnimation(),
+        AnimationRecipe.STATE.value: StateAnimation(),
+        AnimationRecipe.SPRITE.value: SpriteAnimation(),
+        AnimationRecipe.TRAVERSAL.value: TraversalAnimation(),
+        AnimationRecipe.METER.value: MeterAnimation(),
+        AnimationRecipe.NONE.value: NoAnimation()
     }
 
-    HITBOX_MAP = {
-        HitboxRecipe.STATIC.value: StaticHitbox,
-        HitboxRecipe.DYNAMIC.value: DynamicHitbox,
-        HitboxRecipe.STAGE.value: StageHitbox,
-        HitboxRecipe.ATTACK.value: AttackHitbox,
-        HitboxRecipe.NONE.value: NoHitbox
+    _HITBOXES = {
+        HitboxRecipe.STATIC.value: StaticHitbox(),
+        HitboxRecipe.DYNAMIC.value: DynamicHitbox(),
+        HitboxRecipe.STAGE.value: StageHitbox(),
+        HitboxRecipe.ATTACK.value: AttackHitbox(),
+        HitboxRecipe.NONE.value: NoHitbox()
     }
 
+    # ------------ STATEFUL COMPONENTS
     DEVICE_MAP = {
         Devices.KEYBOARD.value: Keyboard,
         Devices.CONTROLLER.value: Controller
@@ -171,25 +173,21 @@ class Factory:
         Translators.COMPILER.value: CompilerTranslator
     }
 
+    @classmethod
+    def frame(cls, recipe: Any) -> Frame:
+        key = recipe.value if hasattr(recipe, "value") else str(recipe)
+        return cls._FRAMES.get(key, cls._FRAMES[FrameRecipe.NONE.value])
 
-    @staticmethod
-    def frame(recipe: Any) -> Frame:
-        if isinstance(recipe, str):
-            for enum_key, frame_cls in Factory.FRAME_MAP.items():
-                if enum_key == recipe:
-                    return frame_cls()
-        return Factory.FRAME_MAP.get(recipe, NoFrame)()
+    @classmethod
+    def animation(cls, recipe: Any) -> Animation:
+        key = recipe.value if hasattr(recipe, "value") else str(recipe)
+        return cls._ANIMATIONS.get(key, cls._ANIMATIONS[AnimationRecipe.NONE.value])
 
+    @classmethod
+    def hitbox(cls, recipe: Any) -> HitboxSchema:
+        key = recipe.value if hasattr(recipe, "value") else str(recipe)
+        return cls._HITBOXES.get(key, cls._HITBOXES[HitboxRecipe.STATIC.value])
 
-    @staticmethod
-    def animation(recipe: Any) -> Animation:
-        if isinstance(recipe, str):
-            for enum_key, anim_cls in Factory.ANIMATION_MAP.items():
-                if enum_key == recipe:
-                    return anim_cls()
-        return Factory.ANIMATION_MAP.get(recipe, NoAnimation)()
-
-    
     @staticmethod
     def taxonomy(id: str, name: str, category: str, instance: str) -> Taxonomy:
         return Taxonomy(id, name, category, instance)
@@ -276,11 +274,6 @@ class Factory:
         target_cls = Factory.TRANSLATOR_MAP.get(translation, LambdaTranslator)
         return target_cls()
 
-    @staticmethod
-    def hitbox(schema: str):
-        target_cls = Factory.HITBOX_MAP.get(schema, StaticHitbox)
-        return target_cls()
-    
     @staticmethod
     def context(menu: str, **kwargs):
         # TODO
