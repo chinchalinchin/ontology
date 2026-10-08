@@ -96,7 +96,7 @@ tools:
           # - 11-architecture.md
       specs: []
     source:
-      workflow: fluids
+      workflow: seasons
     shell:
       directory: |
         tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
@@ -104,7 +104,7 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: fluids
+        marker: seasons
       fixtures:
         # ----------------------------
         # - configuration/compositions
@@ -117,7 +117,7 @@ tools:
         # - properties/cursors
         - properties/effects
         # - properties/fonts
-        - properties/geography
+        # - properties/geography
         # - properties/objects
         - properties/resources
         # - properites/sheets
@@ -127,7 +127,7 @@ tools:
         # ----------------------------
         # - state/crafts
         - state/effects
-        - state/objects
+        # - state/objects
         - state/resources
         - state/world
         - state/schemas
@@ -135,9 +135,9 @@ tools:
         - assets
         - components
         # - menus
-        - services
+        # - services
         - structures
-      workflow: fluids
+      workflow: seasons
       session:
         description: null
         conditions:
