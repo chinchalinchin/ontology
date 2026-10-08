@@ -512,28 +512,22 @@ def test_shoreline_frame_channels():
 
 @pytest.mark.frames
 @pytest.mark.seasons
-def test_seasonal_frame_indexing():
-    """
-    Verify SeasonalFrame generates a complete 36-cell atlas index
-    (4 seasons x 3 cycles x 3 periods) at contiguous coordinates.
-    """
-    frame = SeasonalFrame()
-    props = TileProperties(dimensions=Dimensions(w=32, l=32))
-    crops = frame.index("temperate", props)
+def test_seasonal_frame_indexing(mock_tile_properties):
+  """Verify SeasonalFrame generates a complete 36-cell atlas index."""
+  frame = SeasonalFrame()
+  props = mock_tile_properties.back['temperate']
+  crops = frame.index('temperate', props)
 
-    assert len(crops) == 36
+  assert len(crops) == 36
 
-    # Verify first cell: Spring-Onset-0 at (0, 0)
-    spring_key = f"temperate{SEPARATOR}spring{SEPARATOR}onset{SEPARATOR}0"
-    assert crops[spring_key] == (0, 0, 32, 32)
+  spring_key = f'temperate{SEPARATOR}spring{SEPARATOR}onset{SEPARATOR}0'
+  assert crops[spring_key] == (0, 0, 32, 32)
 
-    # Verify last period of Spring: Spring-Decline-2 at column 8 (8 * 32 = 256, 0)
-    spring_end_key = f"temperate{SEPARATOR}spring{SEPARATOR}decline{SEPARATOR}2"
-    assert crops[spring_end_end] if "spring_end_end" in locals() else crops[spring_end_key] == (256, 0, 32, 32)
+  spring_end_key = f'temperate{SEPARATOR}spring{SEPARATOR}decline{SEPARATOR}2'
+  assert crops[spring_end_key] == (256, 0, 32, 32)
 
-    # Verify Winter row (row 3): Winter-Decline-2 at (256, 96)
-    winter_key = f"temperate{SEPARATOR}winter{SEPARATOR}decline{SEPARATOR}2"
-    assert crops[winter_key] == (256, 96, 32, 32)
+  winter_key = f'temperate{SEPARATOR}winter{SEPARATOR}decline{SEPARATOR}2'
+  assert crops[winter_key] == (256, 96, 32, 32)
 
 
 @pytest.mark.frames
@@ -568,45 +562,31 @@ def test_seasonal_frame_keys_fallback():
 
 @pytest.mark.frames
 @pytest.mark.seasons
-def test_stage_frame_indexing_annual():
-    """
-    Verify StageFrame dynamically indexes horizontal cells for annual crops.
-    """
-    frame = StageFrame()
-    props = ResourceProperties(
-        dimensions=Dimensions(w=32, l=22),
-        lifespan=Lifespans.ANNUAL.value,
-        loot="lettuce",
-        mass=0
-    )
-    crops = frame.index("lettuce", props)
+def test_stage_frame_indexing_annual(mock_resource_properties):
+  """Verify StageFrame dynamically indexes horizontal cells for annual crops."""
+  frame = StageFrame()
+  props = mock_resource_properties.crops['lettuce']
+  crops = frame.index('lettuce', props)
 
-    assert len(crops) == len(AnnualStages)
-    for i, stage in enumerate(AnnualStages):
-        key = f"lettuce{SEPARATOR}{stage.value}"
-        assert crops[key] == (i * 32, 0, 32, 22)
+  assert len(crops) == len(AnnualStages)
+  for i, stage in enumerate(AnnualStages):
+    key = f'lettuce{SEPARATOR}{stage.value}'
+    assert crops[key] == (i * 32, 0, 32, 22)
 
 
 @pytest.mark.frames
 @pytest.mark.seasons
-def test_stage_frame_indexing_perennial():
-    """
-    Verify StageFrame dynamically indexes horizontal cells for perennial trees.
-    """
-    frame = StageFrame()
-    props = ResourceProperties(
-        dimensions=Dimensions(w=94, l=137),
-        lifespan=Lifespans.PERENNIAL.value,
-        loot="wood",
-        mass=0
-    )
-    crops = frame.index("deciduous", props)
+def test_stage_frame_indexing_perennial(mock_resource_properties):
+  """Verify StageFrame dynamically indexes horizontal cells for perennial trees."""
+  frame = StageFrame()
+  props = mock_resource_properties.trees['deciduous']
+  crops = frame.index('deciduous', props)
 
-    assert len(crops) == len(PerennialStages)
-    for i, stage in enumerate(PerennialStages):
-        key = f"deciduous{SEPARATOR}{stage.value}"
-        assert crops[key] == (i * 94, 0, 94, 137)
-
+  assert len(crops) == len(PerennialStages)
+  for i, stage in enumerate(PerennialStages):
+    key = f'deciduous{SEPARATOR}{stage.value}'
+    assert crops[key] == (i * 94, 0, 94, 137)
+    
 
 @pytest.mark.frames
 @pytest.mark.seasons

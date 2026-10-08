@@ -20,6 +20,7 @@ from app.game.devices import Keyboard
 from app.game.board import Board
 from app.game.engine import Engine
 from app.game.screen import Screen
+from app.game.logic.mechanics.world import SeasonMechanics
 from app.models.state import CalendarState
 from app.services.generators.game.factory import Factory
 from app.services.translators import (
@@ -41,51 +42,74 @@ from libs.core.models import (
 
 @pytest.fixture
 def mock_screen(mock_registry, monkeypatch) -> Screen:
-    """
-    Concrete Screen instance with low-level SDL rendering functions stubbed out
-    and call-tracking spy attributes attached for engine loop verification.
-    """
-    monkeypatch.setattr("app.game.screen.render.canvas", lambda w, l, opaque=False: MagicMock())
-    monkeypatch.setattr("app.game.screen.render.construct", lambda canvas, tiles: None)
-    monkeypatch.setattr("app.game.screen.render.clear", lambda: None)
-    monkeypatch.setattr("app.game.screen.render.present", lambda: None)
-    monkeypatch.setattr("app.game.screen.render.destroy", lambda canvas: None)
-    monkeypatch.setattr("app.game.screen.render.render", lambda *args, **kwargs: None)
-    monkeypatch.setattr("app.game.screen.render.superimpose", lambda *args, **kwargs: None)
-    monkeypatch.setattr("app.game.screen.render.channel", lambda *args, **kwargs: None)
-    monkeypatch.setattr("app.game.screen.render.dim", lambda *args, **kwargs: None)
+  monkeypatch.setattr(
+      "app.game.screen.render.canvas", lambda w, l, opaque=False: MagicMock()
+  )
+  monkeypatch.setattr(
+      "app.game.screen.render.construct", lambda canvas, tiles: None
+  )
+  monkeypatch.setattr("app.game.screen.render.clear", lambda: None)
+  monkeypatch.setattr("app.game.screen.render.present", lambda: None)
+  monkeypatch.setattr("app.game.screen.render.destroy", lambda canvas: None)
+  monkeypatch.setattr(
+      "app.game.screen.render.render", lambda *args, **kwargs: None
+  )
+  monkeypatch.setattr(
+      "app.game.screen.render.superimpose", lambda *args, **kwargs: None
+  )
+  monkeypatch.setattr(
+      "app.game.screen.render.channel", lambda *args, **kwargs: None
+  )
+  monkeypatch.setattr("app.game.screen.render.dim", lambda *args, **kwargs: None)
 
-    screen = Screen(
-        screensize=Dimensions(320, 240),
-        boardsize=Dimensions(640, 480),
-        tiles=[],
-        registry=mock_registry,
-        calendar=CalendarState()
-    )
+  screen = Screen(
+      screensize=Dimensions(320, 240),
+      boardsize=Dimensions(640, 480),
+      tiles=[],
+      registry=mock_registry,
+      calendar=CalendarState(),
+  )
 
-    screen.cleared = False
-    screen.presented = False
-    screen.drawn_assets = []
+  screen.cleared = False
+  screen.presented = False
+  screen.drawn_assets = []
+  screen.reconstructed_tiles = []
+  screen.reconstructed_calendar = None
 
-    real_clear = screen.clear
-    def _spy_clear():
-        screen.cleared = True
-        return real_clear()
-    monkeypatch.setattr(screen, "clear", _spy_clear)
+  real_clear = screen.clear
 
-    real_present = screen.present
-    def _spy_present():
-        screen.presented = True
-        return real_present()
-    monkeypatch.setattr(screen, "present", _spy_present)
+  def _spy_clear():
+    screen.cleared = True
+    return real_clear()
 
-    real_draw = screen.draw
-    def _spy_draw(assets, focus, dim):
-        screen.drawn_assets = list(assets)
-        return real_draw(assets, focus, dim)
-    monkeypatch.setattr(screen, "draw", _spy_draw)
+  monkeypatch.setattr(screen, "clear", _spy_clear)
 
-    return screen
+  real_present = screen.present
+
+  def _spy_present():
+    screen.presented = True
+    return real_present()
+
+  monkeypatch.setattr(screen, "present", _spy_present)
+
+  real_draw = screen.draw
+
+  def _spy_draw(assets, focus, dim):
+    screen.drawn_assets = list(assets)
+    return real_draw(assets, focus, dim)
+
+  monkeypatch.setattr(screen, "draw", _spy_draw)
+
+  real_reconstruct = screen.reconstruct
+
+  def _spy_reconstruct(tiles, calendar):
+    screen.reconstructed_tiles = list(tiles)
+    screen.reconstructed_calendar = calendar
+    return real_reconstruct(tiles, calendar)
+
+  monkeypatch.setattr(screen, "reconstruct", _spy_reconstruct)
+
+  return screen
 
 
 @pytest.fixture
@@ -246,3 +270,10 @@ def mock_engine_core(
         world=[],
         provider=mock_provider
     )
+
+@pytest.fixture
+def mock_season_mechanics(mock_lambda_executors) -> SeasonMechanics:
+  """Concrete SeasonMechanics instance pre-configured with compiled stage executors."""
+  mechanic = SeasonMechanics()
+  mechanic.executors = mock_lambda_executors
+  return mechanic

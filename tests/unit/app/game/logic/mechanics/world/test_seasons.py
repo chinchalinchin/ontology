@@ -30,39 +30,34 @@ from libs.core.models import (
 @pytest.mark.seasons
 @pytest.mark.ecology
 def test_season_mechanics_temporal_period_cycle_advancement(
-    mock_board,
-    mock_bus
+    mock_board, mock_season_mechanics, mock_bus
 ):
-    """
-    Verify accumulating delta advances calendar periods, rolls over cycles,
-    and resets the period counter.
-    """
-    mechanic = SeasonMechanics()
-    mock_board.calendar = CalendarState(
-        year=1,
-        season=Seasons.SPRING.value,
-        cycle=Cycles.ONSET.value,
-        period=0,
-        elapsed=0.0
-    )
-    period_duration = mechanic.period
+  mock_board.calendar = CalendarState(
+      year=1,
+      season=Seasons.SPRING.value,
+      cycle=Cycles.ONSET.value,
+      period=0,
+      elapsed=0.0,
+  )
+  period_duration = mock_season_mechanics.period
 
-    # Advance one full period
-    mechanic.update(mock_board, delta=period_duration, bus=mock_bus, payload=None)
+  mock_season_mechanics.update(
+      mock_board, delta=period_duration, bus=mock_bus, payload=None
+  )
 
-    assert mock_board.calendar.period == 1
-    assert mock_board.calendar.cycle == Cycles.ONSET.value
-    assert mock_board.calendar.season == Seasons.SPRING.value
-    assert len(mock_bus) == 1
-    assert isinstance(mock_bus.popleft(), SeasonEvent)
+  assert mock_board.calendar.period == 1
+  assert mock_board.calendar.cycle == Cycles.ONSET.value
+  assert mock_board.calendar.season == Seasons.SPRING.value
+  assert len(mock_bus) == 1
+  assert isinstance(mock_bus.popleft(), SeasonEvent)
 
-    # Advance remaining 2 periods to roll into Peak cycle
-    mechanic.update(mock_board, delta=period_duration * 2, bus=mock_bus, payload=None)
+  mock_season_mechanics.update(
+      mock_board, delta=period_duration * 2, bus=mock_bus, payload=None
+  )
 
-    assert mock_board.calendar.period == 0
-    assert mock_board.calendar.cycle == Cycles.PEAK.value
-    assert mock_board.calendar.season == Seasons.SPRING.value
-
+  assert mock_board.calendar.period == 0
+  assert mock_board.calendar.cycle == Cycles.PEAK.value
+  assert mock_board.calendar.season == Seasons.SPRING.value
 
 @pytest.mark.seasons
 @pytest.mark.ecology
@@ -150,34 +145,18 @@ def test_season_mechanics_hydrological_evaporation_dry_soil(
 @pytest.mark.seasons
 @pytest.mark.ecology
 def test_season_mechanics_annual_crop_stage_transition(
-    mock_board,
-    mock_crop_resource,
-    mock_lambda_executors,
-    mock_bus
+    mock_board, mock_season_mechanics, mock_bus
 ):
-    """
-    Verify an annual crop transitions from sprout to growth when preconditions
-    (spring season and retention >= 20.0) are fulfilled.
-    """
-    mechanic = SeasonMechanics()
-    mechanic.executors = mock_lambda_executors
+  crop = mock_board.asset("some-lettuce")
+  mock_board.calendar = CalendarState(
+      season=Seasons.SPRING.value, cycle=Cycles.ONSET.value, period=0
+  )
+  crop.state.stage = AnnualStages.SPROUT.value
+  crop.state.retention = 25.0
 
-    mock_board.calendar = CalendarState(
-        season=Seasons.SPRING.value,
-        cycle=Cycles.ONSET.value,
-        period=0
-    )
+  mock_season_mechanics.update(mock_board, delta=0.1, bus=mock_bus, payload=None)
 
-    mock_crop_resource.state.stage = AnnualStages.SPROUT.value
-    # Seed retention so evaporation does not drop below 20.0 threshold
-    mock_crop_resource.state.retention = 25.0
-
-    mock_board.clear()
-    mock_board.add([mock_crop_resource])
-
-    mechanic.update(mock_board, delta=0.1, bus=mock_bus, payload=None)
-
-    assert mock_crop_resource.state.stage == AnnualStages.GROWTH.value
+  assert crop.state.stage == AnnualStages.GROWTH.value
 
 
 @pytest.mark.seasons
@@ -214,33 +193,18 @@ def test_season_mechanics_annual_crop_winter_decay(
 @pytest.mark.seasons
 @pytest.mark.ecology
 def test_season_mechanics_perennial_tree_genesis_progression(
-    mock_board,
-    mock_tree_resource,
-    mock_lambda_executors,
-    mock_bus
+    mock_board, mock_season_mechanics, mock_bus
 ):
-    """
-    Verify a perennial tree progresses through Genesis DAG from sapling to bush
-    during Spring Peak with sufficient moisture.
-    """
-    mechanic = SeasonMechanics()
-    mechanic.executors = mock_lambda_executors
+  tree = mock_board.asset("the-mighty-oak")
+  mock_board.calendar = CalendarState(
+      season=Seasons.SPRING.value, cycle=Cycles.PEAK.value, period=0
+  )
+  tree.state.stage = PerennialStages.SAPLING.value
+  tree.state.retention = 20.0
 
-    mock_board.calendar = CalendarState(
-        season=Seasons.SPRING.value,
-        cycle=Cycles.PEAK.value,
-        period=0
-    )
+  mock_season_mechanics.update(mock_board, delta=0.1, bus=mock_bus, payload=None)
 
-    mock_tree_resource.state.stage = PerennialStages.SAPLING.value
-    mock_tree_resource.state.retention = 20.0
-
-    mock_board.clear()
-    mock_board.add([mock_tree_resource])
-
-    mechanic.update(mock_board, delta=0.1, bus=mock_bus, payload=None)
-
-    assert mock_tree_resource.state.stage == PerennialStages.BUSH.value
+  assert tree.state.stage == PerennialStages.BUSH.value
 
 
 @pytest.mark.seasons
@@ -305,51 +269,27 @@ def test_season_mechanics_perennial_tree_apoptosis_recovery(
 
 @pytest.mark.seasons
 def test_season_event_handler_reconstructs_screens(
-    mock_board,
-    mock_screen,
-    mock_back_tile,
-    mock_provider,
-    mock_bus,
-    monkeypatch
+    mock_board, mock_screen, mock_provider, mock_bus
 ):
-    """
-    Verify SeasonEventHandler handles SeasonEvent by invoking reconstruct()
-    on all active Screens with the current calendar state.
-    """
-    handler = SeasonEventHandler()
-    mock_board.calendar = CalendarState(
-        season=Seasons.AUTUMN.value,
-        cycle=Cycles.PEAK.value,
-        period=1
-    )
-    mock_board.clear()
-    mock_board.add([mock_back_tile])
+  handler = SeasonEventHandler()
+  mock_board.calendar = CalendarState(
+      season=Seasons.AUTUMN.value, cycle=Cycles.PEAK.value, period=1
+  )
 
-    captured = {}
-    real_reconstruct = mock_screen.reconstruct
+  context = EventContext(
+      board=mock_board,
+      screens={"0": mock_screen},
+      provider=mock_provider,
+      bus=mock_bus,
+  )
 
-    def _spy_reconstruct(tiles, calendar):
-        captured["tiles"] = list(tiles)
-        captured["calendar"] = calendar
-        return real_reconstruct(tiles, calendar)
+  handler.handle(SeasonEvent(), context)
 
-    monkeypatch.setattr(mock_screen, "reconstruct", _spy_reconstruct)
-
-    context = EventContext(
-        board=mock_board,
-        screens={"0": mock_screen},
-        provider=mock_provider,
-        bus=mock_bus
-    )
-
-    handler.handle(SeasonEvent(), context)
-
-    assert "tiles" in captured
-    assert len(captured["tiles"]) == 1
-    assert captured["tiles"][0] is mock_back_tile
-    assert captured["calendar"].season == Seasons.AUTUMN.value
-    assert captured["calendar"].cycle == Cycles.PEAK.value
-    assert captured["calendar"].period == 1
+  assert len(mock_screen.reconstructed_tiles) == 1
+  assert mock_screen.reconstructed_calendar.season == Seasons.AUTUMN.value
+  assert mock_screen.reconstructed_calendar.cycle == Cycles.PEAK.value
+  assert mock_screen.reconstructed_calendar.period == 1
+  
 
 @pytest.mark.seasons
 @pytest.mark.ecology
