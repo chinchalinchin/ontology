@@ -1,6 +1,6 @@
 effects:
   fluids:
-    - id: waterflow-01
+    - id: waterflow
       name: jasilynns-tears-00
       layer: '0'
       position:
@@ -8,7 +8,7 @@ effects:
         y: 0
       flow: 2
       source: down
-    - id: waterflow-01
+    - id: waterflow
       name: jasilynns-tears-03
       layer: '0'
       flow: 4
