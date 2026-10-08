@@ -39,8 +39,8 @@ task:
   # template: iterate/documentation.md.j2
   # template: iterate/grooming.md.j2
   # template: iterate/implementation.md.j2
-  template: iterate/coverage.md.j2
-  # template: iterate/conclusion.md.j2
+  # template: iterate/coverage.md.j2
+  template: iterate/conclusion.md.j2
   # ------------------------------------- DESIGN TASKS
   # template: design/menu.md.j2
   # template: diagram/hierarchy.md.j2
@@ -60,19 +60,19 @@ tools:
 # ----------------------------------------------------
   views:
     manager:
-      board: false
+      board: true
       specs: false
-      docs: false
+      docs: true
     source:
-      workflow: false
+      workflow: true
     shell:
-      directory: false
+      directory: true
       commands: false
     tests:  
-      pipeline: true
-      fixtures: true
+      pipeline: false
+      fixtures: false
       session: false
-      workflow: true
+      workflow: false
 # ----------------------------------------------------
   parameters:
     manager:
