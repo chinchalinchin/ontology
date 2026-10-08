@@ -610,8 +610,8 @@ Support stage-partitioned hitbox dictionaries in `ResourceProperties` and Pydant
 *Objective*: Implement polymorphic `HitboxSchema` strategies with zero runtime heap allocation.
 
 * [x] Subtask: Create `app.assets.base` declaring abstract interface `HitboxSchema(ABC)` with method `resolve(properties, state, frame) -> List[Hitbox]`.
-* [ ] Subtask: Implement `StaticHitbox`, `DynamicHitbox`, `StageHitbox`, `NoHitbox`, and `AttackHitbox` in `app.assets.hitboxes`.
-* [ ] Subtask: Fix the falsy hitbox bug by replacing `if not hbs and self.dimensions` with `if hbs is None and self.dimensions` across static fallbacks to preserve explicit `[]` passable declarations.
+* [x] Subtask: Implement `StaticHitbox`, `DynamicHitbox`, `StageHitbox`, `NoHitbox`, and `AttackHitbox` in `app.assets.hitboxes`.
+* [x] Subtask: Fix the falsy hitbox bug by replacing `if not hbs and self.dimensions` with `if hbs is None and self.dimensions` across static fallbacks to preserve explicit `[]` passable declarations.
 * [x] Subtask: Register pre-instantiated singletons in `Factory.hitbox()` within `app.services.generators.game.factory`.
 
 **3. Task: Resource Properties Model Extension & YAML Configuration**
@@ -626,7 +626,7 @@ Support stage-partitioned hitbox dictionaries in `ResourceProperties` and Pydant
 
 *Objective*: Update asset instantiation pipelines to inject `HitboxSchema` into `Asset` constructors.
 
-* [~] Subtask: Update `Asset.__init__` in `app.assets.base` to accept `hitbox: Optional[HitboxSchema] = None` and delegate `@property def hitboxes` to `self.hitbox.resolve(self.properties, self.state, self.frame)`.
+* [x] Subtask: Update `Asset.__init__` in `app.assets.base` to accept `hitbox: Optional[HitboxSchema] = None` and delegate `@property def hitboxes` to `self.hitbox.resolve(self.properties, self.state, self.frame)`.
 * [x] Subtask: Update `Migrator._build_generator` in `app.services.orchestration.migrator` to pass `hitbox=Factory.hitbox(recipe.hitbox)` to `Asset`.
 * [x] Subtask: Update `Decomposer.unpack` and `Decomposer.bridge` in `app.services.generators.game.decomposer` to inject `Factory.hitbox(recipe.hitbox)` into generated constituent assets.
 * [x] Subtack: Update `Cradle` instantiation methods to inject `Factory.hitbox(recipe.hitbox)`.
@@ -637,4 +637,5 @@ Support stage-partitioned hitbox dictionaries in `ResourceProperties` and Pydant
 
 * [!] Subtask: Update `src/data/templates/state.md` to format `props.hitboxes` cleanly when configured as a stage dictionary.
 * [!] Subtask: Author unit tests in `tests/unit/app/assets/test_hitboxes.py` verifying that `tree.hitboxes` matches trunk dimensions when `stage = "adult"`, stump dimensions when `stage = "stump"`, and passes through canopy coordinates without collision.
+* [ ] Subtask: Update `fluids` workflow unit tests to align with refactor.
 * [!] Subtask: Execute live verification via `python src/cli.py --dump-state start` ensuring characters navigate freely behind deciduous tree canopies.

@@ -47,6 +47,9 @@ from app.assets.frames import (
     SpriteFrame,
     IterableFrame
 )
+from app.assets.hitboxes import (
+    StaticHitbox
+)
 from app.assets.animations import (
     SpriteAnimation,
     LifecycleAnimation
@@ -72,7 +75,7 @@ def _create_player_attacker(x=10, y=10, action="slash", direction="right", frame
         intention=Intentions.ATTACK
     )
     state.inventory.equipment.weapon = "shortsword"
-    return Asset(tax, props, state, SpriteFrame(), SpriteAnimation())
+    return Asset(tax, props, state, SpriteFrame(), SpriteAnimation(), StaticHitbox())
 
 
 def _create_sprite_target(x=50, y=20, defense=5, health=50):
@@ -92,7 +95,7 @@ def _create_sprite_target(x=50, y=20, defense=5, health=50):
         mutators=Mutators(triggers=MutatorTriggers(dead=False)),
         animation=AnimationState(frame=0, tick=0)
     )
-    return Asset(tax, props, state, SpriteFrame(), SpriteAnimation())
+    return Asset(tax, props, state, SpriteFrame(), SpriteAnimation(), StaticHitbox())
 
 
 def _create_reactable_target(x=50, y=20):
@@ -112,7 +115,7 @@ def _create_reactable_target(x=50, y=20):
         intention=Intentions.ATTACK.value,
         active=False
     )
-    return Asset(tax, props, state, IterableFrame(), LifecycleAnimation())
+    return Asset(tax, props, state, IterableFrame(), LifecycleAnimation(), StaticHitbox())
 
 
 def _create_equipment():

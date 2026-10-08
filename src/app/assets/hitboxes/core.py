@@ -32,10 +32,12 @@ class StaticHitbox(HitboxSchema):
         state: AssetState,
         frame: Optional[Frame] = None
     ) -> List[Hitbox]:
-        if properties.hitboxes is None and properties.dimensions:
-            return [Hitbox(Position(0, 0), properties.dimensions)]
+        if properties.hitboxes is None:
+            if properties.dimensions:
+                return [Hitbox(Position(0, 0), properties.dimensions)]
+            return []
         return properties.hitboxes
-
+    
 class DynamicHitbox(HitboxSchema):
     """
     Resolves mutable hitboxes declared on AssetState.
@@ -48,8 +50,10 @@ class DynamicHitbox(HitboxSchema):
         frame: Optional[Frame] = None
     ) -> List[Hitbox]:
         if state.hitboxes is None:
-            if properties.hitboxes is None and properties.dimensions:
-                return [Hitbox(Position(0, 0), properties.dimensions)]
+            if properties.hitboxes is None:
+                if properties.dimensions:
+                    return [Hitbox(Position(0, 0), properties.dimensions)]
+                return []
             return properties.hitboxes
         return state.hitboxes
 

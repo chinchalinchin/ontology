@@ -9,11 +9,14 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 # Application Libraries
+import app.config.settings as settings
+from app.assets.hitboxes import (
+    StaticHitbox
+)
 from app.config.enums import (
     Goals, 
     Intentions
 )
-import app.config.settings as settings
 from app.game.logic.mechanics import NavigationMechanics
 from app.models.state import (
     Goal, 
@@ -79,7 +82,7 @@ def mock_offset_hitbox_asset():
         position=Position(x=150, y=150),
         owner="player"
     )
-    return Asset(tax, props, state, SingleFrame(), NoAnimation())
+    return Asset(tax, props, state, SingleFrame(), NoAnimation(), StaticHitbox())
 
 
 @pytest.fixture
@@ -103,7 +106,7 @@ def mock_multi_hitbox_asset():
         position=Position(x=250, y=250),
         owner="player"
     )
-    return Asset(tax, props, state, SingleFrame(), NoAnimation())
+    return Asset(tax, props, state, SingleFrame(), NoAnimation(), StaticHitbox())
 
 # ---------------------------------------------------------------------------
 # ANCHOR & OBSTACLE TESTS

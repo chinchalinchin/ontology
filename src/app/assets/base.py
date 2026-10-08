@@ -116,8 +116,8 @@ class HitboxSchema(ABC):
 
     @abstractmethod
     def get(self,
-        state: AssetState,
         properties: AssetProperties,
+        state: AssetState,
         frame: Frame
     ) -> List[Hitbox]:
         """

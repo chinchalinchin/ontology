@@ -86,14 +86,14 @@ class EffectProperties(AssetProperties):
     count: int
     lifecycle: Lifecycle = field(default_factory=Lifecycle)
     mass: int = -1
-    hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
+    hitboxes: Optional[List[Hitbox]] = None # type: ignore
 
 @dataclass(slots=True)
 class ObjectProperties(AssetProperties):
     dimensions: Dimensions # type: ignore
     mass: int = 0
     count: int = 1
-    hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
+    hitboxes: Optional[List[Hitbox]] = None # type: ignore
 
 @dataclass(slots=True)
 class TileProperties(AssetProperties):
@@ -105,7 +105,7 @@ class CraftProperties(AssetProperties):
     dimensions: Dimensions # type: ignore
     cost: List[Cost]
     mass: int = 0
-    hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
+    hitboxes: Optional[List[Hitbox]] = None # type: ignore
 
 @dataclass(slots=True)
 class ResourceProperties(AssetProperties):
@@ -113,7 +113,7 @@ class ResourceProperties(AssetProperties):
     loot: str
     lifespan: Lifespans
     mass: int = 0
-    hitboxes: Dict[str, Optional[List[Hitbox]]] = field(default_factory=dict) # type: ignore
+    hitboxes: Dict[str, Optional[List[Hitbox]]] = None # type: ignore
 
 @dataclass(slots=True)
 class GeographyProperties(AssetProperties):

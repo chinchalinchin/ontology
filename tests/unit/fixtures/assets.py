@@ -21,6 +21,13 @@ from app.assets.frames import (
     SeasonalFrame,
     StageFrame
 )
+from app.assets.hitboxes import (
+    StaticHitbox,
+    DynamicHitbox,
+    StageHitbox,
+    AttackHitbox,
+    NoHitbox
+)
 from app.assets.animations import (
     NoAnimation,
     BinaryAnimation,
@@ -51,7 +58,8 @@ def mock_tree_resource(
         properties=mock_resource_properties.trees.get("deciduous"),
         state=mock_tree_state,
         frame=StageFrame(),
-        animation=NoAnimation()
+        animation=NoAnimation(),
+        hitbox=StageHitbox()
     )
 
 
@@ -70,7 +78,8 @@ def mock_crop_resource(
         properties=mock_resource_properties.crops.get("lettuce"),
         state=mock_crop_state,
         frame=StageFrame(),
-        animation=NoAnimation()
+        animation=NoAnimation(),
+        hitbox=StageHitbox()
     )
 
 
@@ -89,7 +98,8 @@ def mock_back_tile(
         properties = mock_tile_properties.back.get('temperate'), 
         state = mock_multiplier_state, 
         frame = SeasonalFrame(), 
-        animation = NoAnimation()
+        animation = NoAnimation(),
+        hitbox=NoHitbox()
     )
 
 
@@ -109,7 +119,8 @@ def mock_shoreline(
         properties = mock_geography_properties.shorelines.get('grassy-shore'), 
         state = mock_shoreline_state, 
         frame = CardinalFrame(tile_w=32, tile_l=32),
-        animation = NoAnimation()
+        animation = NoAnimation(),
+        hitbox=DynamicHitbox()
     )
 
 
@@ -131,7 +142,8 @@ def mock_sprite(
         properties = mock_sheet_properties.sprites.get('jasilynn'), 
         state = mock_sprite_state, 
         frame = SpriteFrame(), 
-        animation = SpriteAnimation()
+        animation = SpriteAnimation(),
+        hitbox = StaticHitbox()
     )
 
 
@@ -153,7 +165,8 @@ def mock_sprite_alt(
         properties = mock_sheet_properties.sprites.get('sprite'), 
         state = mock_sprite_state_alt, 
         frame = SpriteFrame(), 
-        animation = SpriteAnimation()
+        animation = SpriteAnimation(),
+        hitbox = StaticHitbox()
     )
 
 
@@ -172,7 +185,8 @@ def mock_player(
         properties = mock_sheet_properties.sprites.get('player'), 
         state = mock_player_state, 
         frame = SpriteFrame(), 
-        animation = SpriteAnimation()
+        animation = SpriteAnimation(),
+        hitbox = StaticHitbox()
     )
 
 
@@ -191,7 +205,8 @@ def mock_projectile(
         properties = mock_cursor_properties.projectiles.get('arrow-1'),
         state = mock_motor_state, 
         frame = SingleFrame(),
-        animation = NoAnimation()
+        animation = NoAnimation(),
+        hitbox = StaticHitbox()
     )
 
 
@@ -210,7 +225,8 @@ def mock_strut(
         properties = mock_craft_properties.struts.get('strut-castle'), 
         state = mock_property_state, 
         frame = SingleFrame(), 
-        animation = NoAnimation()
+        animation = NoAnimation(),
+        hitbox = StaticHitbox()
     )
 
 
@@ -230,7 +246,8 @@ def mock_strut_alt(
         properties = mock_craft_properties.struts.get('strut-wall'),
         state = mock_property_state_alt, 
         frame = SingleFrame(), 
-        animation = NoAnimation()
+        animation = NoAnimation(),
+        hitbox = StaticHitbox()
     )
 
 
@@ -250,7 +267,8 @@ def mock_strut_alt2(
         properties = mock_craft_properties.struts.get('strut-floor'), 
         state = mock_property_state_alt2, 
         frame = SingleFrame(), 
-        animation = NoAnimation()
+        animation = NoAnimation(),
+        hitbox = StaticHitbox()
     )
 
 
@@ -269,7 +287,8 @@ def mock_bridge(
         properties = mock_craft_properties.bridges.get('wood-bridge'),
         state = mock_bridge_state,
         frame = OrientedFrame(),
-        animation = NoAnimation()
+        animation = NoAnimation(),
+        hitbox = StaticHitbox()
     )
 
 @pytest.fixture
@@ -290,7 +309,8 @@ def mock_raft(
         properties = mock_object_properties.rafts.get('wood-raft'), 
         state = mock_positional_state_alt, 
         frame = SingleFrame(), 
-        animation = NoAnimation()
+        animation = NoAnimation(),
+        hitbox = StaticHitbox()
     )
 
 
@@ -312,7 +332,8 @@ def mock_crate(
         properties = mock_object_properties.crates.get('wood-crate'),
         state = mock_positional_state, 
         frame = SingleFrame(), 
-        animation = NoAnimation()
+        animation = NoAnimation(),
+        hitbox = StaticHitbox()
     )
 
 
@@ -334,7 +355,8 @@ def mock_crate_alt(
         properties=mock_object_properties.crates.get("wood-crate"),
         state=mock_positional_state_alt2,
         frame=SingleFrame(),
-        animation=NoAnimation()
+        animation=NoAnimation(),
+        hitbox=StaticHitbox() 
     )
 
 
@@ -353,7 +375,8 @@ def mock_gate(
         properties = mock_object_properties.gates.get('castle-gate'),
         state = mock_switch_state, 
         frame = IterableFrame(),
-        animation = BinaryAnimation()
+        animation = BinaryAnimation(),
+        hitbox = StaticHitbox()
     )
 
 
@@ -375,7 +398,8 @@ def mock_fluid(
         properties = mock_effect_properties.fluids.get('waterflow-01'), 
         state = mock_fluid_state, 
         frame = FluidFrame(tile_w=32, tile_l=32), 
-        animation = LifecycleAnimation()
+        animation = LifecycleAnimation(),
+        hitbox = DynamicHitbox()
     )
 
 
@@ -397,7 +421,8 @@ def mock_fluid_alt(
         properties = mock_effect_properties.fluids.get('waterflow-01'), 
         state = mock_fluid_state_alt, 
         frame = FluidFrame(tile_w=32, tile_l=32), 
-        animation = LifecycleAnimation()
+        animation = LifecycleAnimation(),
+        hitbox = DynamicHitbox()
     )
 
 
@@ -419,7 +444,8 @@ def mock_fluid_alt2(
         properties=mock_effect_properties.fluids.get("waterflow-01"),
         state=mock_fluid_state_alt2,
         frame=FluidFrame(tile_w=32, tile_l=32),
-        animation=LifecycleAnimation()
+        animation=LifecycleAnimation(),
+        hitbox = DynamicHitbox()
     )
 
 
@@ -441,7 +467,8 @@ def mock_door(
         properties = mock_object_properties.doors.get('door-front'), 
         state = mock_door_state, 
         frame = SingleFrame(), 
-        animation = NoAnimation()
+        animation = NoAnimation(),
+        hitbox = StaticHitbox()
     )
 
 
@@ -460,7 +487,8 @@ def mock_chest(
         properties=mock_object_properties.chests.get('wood-chest'),
         state=mock_container_state,
         frame=IterableFrame(),
-        animation=BinaryAnimation()
+        animation=BinaryAnimation(),
+        hitbox = StaticHitbox()
     )
 
 
@@ -479,7 +507,8 @@ def mock_plate(
         properties=mock_object_properties.plates.get('pressure-plate'),
         state=mock_switch_state_alt,
         frame=IterableFrame(),
-        animation=BinaryAnimation()
+        animation=BinaryAnimation(),
+        hitbox = StaticHitbox()
     )
 
 
@@ -498,7 +527,8 @@ def mock_reactable(
         properties=mock_effect_properties.reactables.get('reactable-1'),
         state=mock_reactable_state,
         frame=IterableFrame(),
-        animation=LifecycleAnimation()
+        animation=LifecycleAnimation(),
+        hitbox = StaticHitbox()
     )
 
 

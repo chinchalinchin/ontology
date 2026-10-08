@@ -17,12 +17,13 @@ from app.models.properties import (
 # Cython Libraries
 from libs.core.models import (
     Dimensions, 
+    Hitbox, 
+    Position
 )
 
 
 @pytest.fixture
 def mock_resource_properties() -> ResourcePropertyInstances:
-    """ResourceProperties dataclass fixture."""
     return ResourcePropertyInstances(
         trees={
             "deciduous": ResourceProperties(
@@ -30,7 +31,19 @@ def mock_resource_properties() -> ResourcePropertyInstances:
                 lifespan=Lifespans.PERENNIAL.value,
                 loot="wood",
                 mass=0,
-                hitboxes=[]
+                hitboxes={
+                    "sapling": [],
+                    "bush": [Hitbox(Position(36, 114), Dimensions(22, 20))],
+                    "branch": [Hitbox(Position(36, 110), Dimensions(22, 24))],
+                    "adult": [Hitbox(Position(36, 110), Dimensions(22, 24))],
+                    "vibrant": [Hitbox(Position(36, 110), Dimensions(22, 24))],
+                    "healthy": [Hitbox(Position(36, 110), Dimensions(22, 24))],
+                    "abscise": [Hitbox(Position(36, 110), Dimensions(22, 24))],
+                    "snowcapt": [Hitbox(Position(36, 110), Dimensions(22, 24))],
+                    "dying": [Hitbox(Position(36, 110), Dimensions(22, 24))],
+                    "dead": [Hitbox(Position(36, 110), Dimensions(22, 24))],
+                    "stump": [Hitbox(Position(30, 115), Dimensions(34, 18))]
+                }
             )
         },
         crops={
@@ -39,7 +52,13 @@ def mock_resource_properties() -> ResourcePropertyInstances:
                 lifespan=Lifespans.ANNUAL.value,
                 loot="lettuce",
                 mass=0,
-                hitboxes=[]
+                hitboxes={
+                    "sprout": [],
+                    "growth": [],
+                    "stalk": [Hitbox(Position(6, 10), Dimensions(20, 12))],
+                    "bloom": [Hitbox(Position(4, 6), Dimensions(24, 16))],
+                    "stump": []
+                }
             )
         }
     )
