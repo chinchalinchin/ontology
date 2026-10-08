@@ -2,11 +2,11 @@
 
 **Overview**
 
-Presently, `Resource` entities maintain static hitboxes declared on immutable `ResourceProperties` (`properties.hitboxes`). When `SeasonMechanics` transitions a resource across biological stages (e.g., from `sapling` to `adult` to `stump`, or `sprout` to `bloom`), physical hitboxes remain invariant. An adult oak tree retains the physical footprint of a sapling, and a harvested crop or stump blocks navigation identically to a mature plant.
+Presently, `Resource` entities maintain static hitboxes declared on immutable `ResourceProperties` (`properties.hitboxes`). When `SeasonMechanics` transitions a resource across biological stages (e.g., from `sapling` to `adult` to `stump`, or `sprout` to `bloom`), physical hitboxes remain invariant. An adult oak tree retains the physical footprint of a sapling, and a harvested crop or stump blocks navigation identically to a mature plant. Furthermore, fallback hitbox logic treats empty hitbox declarations (`[]`) as falsy, forcing passable juvenile stages to obstruct characters with full-canopy bounding boxes.
 
-This phase integrates dynamic, stage-indexed hitbox evaluation into the ECS pipeline, ensuring physical collision boundaries reflect biological lifecycle progression without violating static property caching.
+This phase refactors hitbox resolution into an explicit, decoupled ECS behavior component (`HitboxBehavior`), mirroring the architecture of `Frame` and `Animation`. Asset recipes declare their hitbox schema, and `Factory.hitbox()` injects pre-instantiated, zero-allocation behavior singletons into all hydrated assets. Dynamic biological lifecycle stages resolve collision bounds in $O(1)$ time while maintaining immutable property caching and contract invariance across all game mechanics.
 
-##### Architectural Analysis
+##### Architectural Analysis I
 
 ###### 1. The Conflict with Static Hitbox Architecture
 
@@ -60,18 +60,446 @@ if isinstance(hbs, dict):
 
 * Because `ResourceProperties` is pre-instantiated at boot, indexing `hbs[stage]` returns a cached `List[Hitbox]` in $O(1)$ time with zero heap allocation. When `SeasonMechanics` mutates `resource.state.stage`, the active collision footprint updates on the following frame.
 
-###### 4. Cythonization Candidates
+##### User Review I
 
-| Target Subsystem | Current Implementation | Bottleneck / Friction | Proposed Cython Architecture |
-| --- | --- | --- | --- |
-| **`MoistureField.evaluate`** | `app.game.board.fields.MoistureField` (Pure Python) | Iterates Python `StreamSegment` and `PoolSource` dataclasses, executing `math.hypot` and `math.exp`. Fine for static resources, but bottlenecks dynamic raster grids or moving entities. | Implement `cdef class MoistureField` in `libs/core/math/fields.pyx`. Store flat C structs (`CStreamSegment`, `CPoolSource`) in contiguous buffers; evaluate distance attenuation with `hypotf` and `expf` under `nogil`. |
-| **Contour Sweeps & Margin Descriptors** | `Cartographer._collect_water_rectangles` & `_coalesce_segments` (Python) | Unpacks fluid states into Python lists of integer tuples; performs boundary step probes with Python dataclasses. | Ingest raw `FluidState` AABB buffers directly in Cython `geometry.contours()`, emitting coalesced shoreline descriptors as flat C structs directly to Python. |
+Not a fan of what `Asset.hitboxes` is turning into; It's slowly morphing into a nightmare of hyper-specific logic and filtering edge cases, making it hard to parse what exactly is going on or what the intention is. It requires one to know that hitboxes can be found along different property or state nodes in the Asset's field of attributes. It's not an utter monstrosity yet, but it soon will be at this rate.  The basic Asset class should be simple.
 
-##### Specifications
+Change of direction. Asset Recipes are shown below,
 
-###### Hitbox Mapping Schema
+```yaml
+recipes:
+  tiles:
+    back:
+      frame: seasonal
+      animation: none
+    fore:
+      frame: single
+      animation: none
+  crafts:
+    bridges:
+      frame: oriented
+      animation: none
+    struts:
+      frame: single
+      animation: none
+  cursors:
+    expressions:
+      frame: index
+      animation: none
+    projectiles:
+      frame: single
+      animation: none
+  geography:
+    shorelines:
+      frame: cardinal
+      animation: none
+  effects:
+    collectables:
+      frame: iterable
+      animation: lifecycle
+    reactables:
+      frame: iterable
+      animation: lifecycle
+    hazards:
+      frame: iterable
+      animation: lifecycle
+    passive:
+      frame: iterable
+      animation: lifecycle
+    fluids:
+      frame: fluid
+      animation: lifecycle
+  objects:
+    chests:
+      frame: iterable
+      animation: binary
+    crates:
+      frame: single
+      animation: none
+    doors:
+      frame: single
+      animation: none
+    gates: 
+      frame: iterable
+      animation: binary
+    obstacles:
+      frame: single
+      animation: none
+    plates:
+      frame: iterable
+      animation: binary
+    signs:
+      frame: single
+      animation: none
+    rafts:
+      frame: single
+      animation: none
+  resources:
+    crops:
+      frame: stage
+      animation: none
+    ore: 
+      frame: stage
+      animation: none
+    trees:
+      frame: stage
+      animation: none
+  sheets:
+    players:
+      frame: sprite
+      animation: sprite
+    pixies:
+      frame: state
+      animation: state
+    sprites:
+      frame: sprite
+      animation: sprite
+    armor:
+      frame: state
+      animation: none
+    tools:
+      frame: state
+      animation: none
+    shields:
+      frame: state
+      animation: none
+    utilities:
+      frame: state
+      animation: none
+    weapons:
+      frame: state
+      animation: none
+  widgets:
+    buttons:
+      frame: traversal
+      animation: traversal
+    icons:
+      frame: index
+      animation: none
+    meters:
+      frame: meter
+      animation: meter
+    pages:
+      frame: single
+      animation: none
+    panes:
+      frame: single
+      animation: none
+```
 
-In `/src/assets/resources/main.yaml`, `hitboxes` accepts stage-keyed dictionary mappings:
+Proposal: Recipes add a Hitbox schema.
+
+- `static`: Static, property-based hitboxes
+- `dynamic`: Dynamic, state-based hitboxes
+- `attack`:  Attack-based hitboxes (used for Equipment)
+- `stage`: Stage-based hitboxes
+
+Equipment will require special care, as it is handled a bit differently. Currently Equipment looks at an optional field on the Sheet Properties, `attackboxes`, so the current refactor can proceed without altering combat mechanicS,  i.e. Equipment hitboxes are not accessed through the `Asset.hitboxes` interface at all. However, Equipment will eventually need to be brought into the new paradigm. This will require refining how Equipment is handled by Orchestration, which doesn't instantiate Equipment Asset, but instead passes Equipment properties through the Board, i.e. Equipment is treated like a stateless Asset (actually, a virtual Asset is more accurate, since Equipment is not instantiated at all, only its properties are referenced in the code)
+
+First, hitbox is registered in the recipe, e.g.
+
+```yaml
+recipes:
+  resources: 
+    trees:
+      frame: stage
+      animation: none
+      hitbox: stage
+```
+
+Do so for all existing Assets. Then, Hitbox is abstracted into a class,
+
+```python
+class PhysicalHitbox:
+  def __init__(self, schema):
+    self.schema = schema
+
+  def get(
+    id: str,
+    properties: AssetProperties, 
+    state: AssetState, 
+    frame: Frame
+  ):
+    if schema == HitboxSchemas.STATIC.value:
+      return properties.hitboxes
+
+    if schema == HitboxSchemas.DYNAMIC.value:
+      return state.hitboxes
+
+    if schema == HitboxSchemas.ATTACK.value:
+      key = next(frame.keys(id, state))
+      if key:
+        return properties.attackboxes[key]
+
+    if schema == HitboxSchemas.STAGE.value:
+      return properties.hitboxes[state.stage]
+```
+
+In other words, abstract the schema for accessing the hitbox into a well-defined interface.
+
+This block in the Migrator is then changed to accomodate,
+
+```python 
+asset = Asset(
+  taxonomy        = Factory.taxonomy(
+      id          = asset_id, 
+      name        = asset_name, 
+      category    = category_key, 
+      instance    = instance_key
+  ),
+  properties      = props,
+  state           = state_obj,
+  frame           = Factory.frame(recipe.frame),
+  animation       = Factory.animation(recipe.animation),
+  hitbox          = Factory.hitbox(recipe.hitbox)
+)
+```
+
+Then the base becomes
+
+```python
+class Asset:
+# ...
+  def __init__(self,
+    taxonomy: Taxonomy,
+    properties: AssetProperties, 
+    state: AssetState, 
+    frame: Frame=None, 
+    animation: Animation=None,
+    hitbox: PhysicalHitbox=None,
+  ):
+    self.taxonomy = taxonomy
+    self.properties = properties
+    self.state = state
+    self.frame = frame
+    self.animation = animation
+    self.hitbox = hitbox
+
+  @property
+  def hitboxes(self) -> List[Hitbox]:
+    return self.hitbox.get(self.properties, self.state, self.frame)
+```
+
+Then, different hitbox implementations can be easily added. 
+
+**IMPORTANT**: `Asset.hitboxes()` is a core interface for many mechanics, i.e. CollisionMechanics, CombatMechanics, InteractionMechanics. To avoid a substantial refactor, it is important whatever changes are made to the interface are purely internal and do not alter the contract the interface has with the rest of the application.
+
+Evaluate this approach and update phase accordingly.
+
+##### Architectural Analysis II
+
+Elevating the Hitbox resolution mechanism to a first-class Entity-Component-System (ECS) behavior component—joining **Properties**, **State**, **Frame**, and **Animation**—directly aligns with Ontology's design philosophy.
+
+However, implementing this via a single monolithic `PhysicalHitbox` class containing an internal `if/elif self.schema == ...` switch statement merely transposes the procedural branch from `Asset` into a helper class. A cleaner architecture that adheres strictly to the existing patterns in `app.assets.frames` and `app.assets.animations` is a polymorphic strategy hierarchy:
+
+```
+                  ┌──────────────────────┐
+                  │  HitboxBehavior (ABC) │
+                  └──────────┬───────────┘
+                             │
+     ┌───────────────────────┼───────────────────────┬──────────────────────┐
+     │                       │                       │                      │
+┌────┴────────────┐   ┌──────┴────────────┐   ┌──────┴───────────┐   ┌──────┴──────────┐
+│  StaticHitbox   │   │   DynamicHitbox   │   │   StageHitbox    │   │   NullHitbox    │
+└─────────────────┘   └───────────────────┘   └──────────────────┘   └─────────────────┘
+
+```
+
+###### Advantages of the Polymorphic Strategy:
+
+1. **Zero Inner-Loop Branching Overhead**: Polymorphic dispatch avoids evaluating a cascade of string/enum equality comparisons on every collision query or 60 Hz spatial check.
+2. **Flyweight / Zero Allocation**: Because these behaviors operate as pure, stateless strategies on `(properties, state, frame)`, they can be pre-instantiated as singletons within `Factory` (e.g., `_STATIC = StaticHitbox()`). `Factory.hitbox(recipe.hitbox)` returns these cached singletons in $O(1)$ time, guaranteeing zero heap allocation during hydration.
+3. **Open-Closed Extensibility**: Introducing new spatial schemas (such as rotational hitboxes or composite sensor hulls) requires only authoring a new subclass and registering it in `Factory.hitbox()`, leaving existing components untouched.
+4. **Contract Invariance**: `Asset.hitboxes` remains an immutable `@property` returning `List[Hitbox]`. Downstream consumers (`CollisionMechanics`, `CombatMechanics`, `NavigationMechanics`, and Cython broad/narrow-phase pipelines) interact with the exact same interface without refactoring.
+
+###### Cross-System Dependencies & Trace Analysis
+
+Introducing a `hitbox` recipe parameter ripples across several subsystems:
+
+```
+┌─────────────────────────────────┐
+│ src/data/config/recipes/*.yaml  │ ──► RecipeConfiguration (Pydantic / Dataclass)
+└────────────────┬────────────────┘
+                 │
+                 ▼
+     ┌───────────────────────┐
+     │ Factory.hitbox(...)   │ ──► HitboxBehavior Singleton (Flyweight)
+     └───────────┬───────────┘
+                 │
+       ┌─────────┴─────────┐
+       ▼                   ▼
+┌──────────────┐   ┌──────────────┐
+│   Migrator   │   │  Decomposer  │ ──► Asset(..., hitbox=Factory.hitbox(recipe.hitbox))
+└──────────────┘   └──────────────┘
+                           │
+                           ▼
+                 ┌───────────────────┐
+                 │  Asset.hitboxes   │ ──► HitboxBehavior.resolve(properties, state, frame)
+                 └─────────┬─────────┘
+                           │
+       ┌───────────────────┼───────────────────┐
+       ▼                   ▼                   ▼
+┌──────────────┐   ┌──────────────┐   ┌─────────────────┐
+│  Collision   │   │  Navigation  │   │     Screen      │
+│  Mechanics   │   │  Mechanics   │   │ (Depth/Height)  │
+└──────────────┘   └──────────────┘   └─────────────────┘
+
+```
+
+1. **Recipe Declarations & Enumerations**: Every entry across `src/data/config/recipes/main.yaml` requires an explicit `hitbox` field. To respect the constraint banning string literals, declare `HitboxRecipe` within `app.config.enums` as a `StringEnum` (e.g., `STATIC = "static"`, `DYNAMIC = "dynamic"`, `STAGE = "stage"`, `ATTACK = "attack"`, `NONE = "none"`).
+2. **The Decomposer Impact**: While `Migrator` unpacks discrete assets from YAML state files, `Decomposer` programmatically synthesizes child assets for `Compositions` and `Bridges`. Both instantiation pipelines must query `Factory.hitbox(recipe.hitbox)` to avoid leaving `asset.hitbox` unbound or falling back to `None`.
+3. **Passable Entity Falsy Bug**: In `app.assets.base`, `if not hbs and self.dimensions` treats empty lists (`hbs = []`) as falsy, immediately overwriting passable entities (such as juvenile saplings, fluid sensors, or open passages) with full bounding-box obstacles. This must be corrected to strictly evaluate `if hbs is None and self.dimensions`.
+4. **Equipment Segregation**: Equipment remains virtual and stateless, referenced via `board.equipment` rather than instantiated into the board as standard `Asset` instances. `CombatMechanics` continues to query `CombatMap.attackboxes`. Adding `ATTACK` to `HitboxRecipe` establishes the schema for future equipment refactoring without disrupting combat resolution today.
+
+###### Implementation Outline
+
+**0. Data Models (`app.models.properties` and `app.models.config.recipes`)**
+
+```python
+# ResourceProperties model expansion
+@dataclass(slots=True)
+class ResourceProperties(AssetProperties):
+    dimensions: Dimensions
+    loot: str
+    lifespan: Lifespans
+    mass: int = 0
+    hitboxes: Optional[Union[List[Hitbox], Dict[str, List[Hitbox]]]] = field(default_factory=dict)
+
+# Recipe dataclass expansion
+@dataclass(slots=True, frozen=True)
+class Recipe:
+    frame: FrameRecipe = None
+    animation: AnimationRecipe = None
+    hitbox: HitboxRecipe = None
+
+```
+
+**1. Polymorphic Behavior Component Hierarchy**
+
+Rather than routing through branching logic within `Asset.hitboxes`, hitbox retrieval is delegated to an abstract `HitboxBehavior` interface residing in `app.assets.hitboxes.base`:
+
+```python
+class HitboxBehavior(ABC):
+    @abstractmethod
+    def resolve(
+        self,
+        properties: AssetProperties,
+        state: AssetState,
+        frame: Optional[Frame] = None
+    ) -> List[Hitbox]:
+        pass
+
+```
+
+The concrete strategies partition responsibilities cleanly:
+
+* **`StaticHitbox`**: Evaluates static `properties.hitboxes`. If explicitly `None` and dimensions exist, applies the fallback bounding box. If empty list `[]`, returns `[]` without triggering bounding box substitution.
+* **`DynamicHitbox`**: Checks `getattr(state, "hitboxes", None)`. Used by procedural geography (`Shorelines`) and hydraulic grids (`Fluids`) where boundary hulls update during world execution. Falls back to static hitboxes if `state.hitboxes` is absent.
+* **`StageHitbox`**: Resolves stage-indexed dictionaries on `ResourceProperties`. Queries `properties.hitboxes.get(state.stage, properties.hitboxes.get("default", []))` in $O(1)$ time without runtime list re-allocation.
+* **`NullHitbox`**: Emits an empty list `[]` unconditionally for passable background/foreground tiles, passive effects, and screen overlays.
+* **`AttackHitbox`**: Resolves directional and action-keyed hitboxes (reserved for equipment integration).
+
+**2. Zero-Allocation Singleton Pattern**
+
+Strategy instances carry zero mutable state. `Factory` instantiates each behavior singleton once during application bootstrapping:
+
+```python
+class Factory:
+    _HITBOX_STRATEGIES = {
+        HitboxRecipe.STATIC: StaticHitbox(),
+        HitboxRecipe.DYNAMIC: DynamicHitbox(),
+        HitboxRecipe.STAGE: StageHitbox(),
+        HitboxRecipe.NONE: NullHitbox(),
+        HitboxRecipe.ATTACK: AttackHitbox(),
+    }
+
+    @classmethod
+    def hitbox(cls, recipe_key: Optional[HitboxRecipe]) -> HitboxBehavior:
+        return cls._HITBOX_STRATEGIES.get(recipe_key, cls._HITBOX_STRATEGIES[HitboxRecipe.STATIC])
+
+```
+
+**3. Base Asset Contract Preservation**
+
+`Asset` receives the injected strategy during instantiation:
+
+```python
+class Asset:
+    taxonomy: Taxonomy
+    properties: AssetProperties
+    state: AssetState
+    frame: Frame
+    animation: Animation
+    hitbox: HitboxBehavior
+
+    def __init__(
+        self,
+        taxonomy: Taxonomy,
+        properties: AssetProperties,
+        state: AssetState,
+        frame: Optional[Frame] = None,
+        animation: Optional[Animation] = None,
+        hitbox: Optional[HitboxBehavior] = None,
+    ):
+        self.taxonomy = taxonomy
+        self.properties = properties
+        self.state = state
+        self.frame = frame
+        self.animation = animation
+        self.hitbox = hitbox or StaticHitbox()
+
+    @property
+    def hitboxes(self) -> List[Hitbox]:
+        return self.hitbox.resolve(self.properties, self.state, self.frame)
+
+```
+
+##### Specification
+
+###### 1. Recipe Configuration Schema (`src/data/config/recipes/main.yaml`)
+
+```yaml
+recipes:
+  resources:
+    crops:
+      frame: stage
+      animation: none
+      hitbox: stage
+    ore:
+      frame: stage
+      animation: none
+      hitbox: stage
+    trees:
+      frame: stage
+      animation: none
+      hitbox: stage
+  geography:
+    shorelines:
+      frame: cardinal
+      animation: none
+      hitbox: dynamic
+  effects:
+    fluids:
+      frame: fluid
+      animation: lifecycle
+      hitbox: dynamic
+    passive:
+      frame: iterable
+      animation: lifecycle
+      hitbox: none
+  tiles:
+    back:
+      frame: seasonal
+      animation: none
+      hitbox: none
+    fore:
+      frame: single
+      animation: none
+      hitbox: none
+
+```
+
+###### 2. Resource Hitbox Configuration (`src/assets/resources/main.yaml`)
 
 ```yaml
 resources:
@@ -117,290 +545,141 @@ resources:
         stump:
           - position: { x: 30, y: 115 }
             dimensions: { w: 34, l: 18 }
-
 ```
-
-###### Fallback Correction
-
-In `Asset.hitboxes`, the condition `if not hbs and self.dimensions:` erroneously converts intentional empty hitboxes (`hitboxes: []` or `hitboxes: { sapling: [] }`) into full-dimension obstacles. The fallback must only trigger when `hbs is None`.
-
-###### Zero-Allocation Resolution in Inner Loops
-
-`CollisionMechanics` and `NavigationMechanics` query `asset.hitboxes` and `asset.primitive()` at 60 Hz.
-
-By compiling the stage dictionary into static Pydantic/Cython `Hitbox` model instances during boot-time YAML loading, querying `hbs[resource.state.stage]` is an $O(1)$ reference lookup returning an existing immutable list.
-
-```
-Frame Loop (60 Hz)
-  │
-  ├─► CollisionMechanics / NavigationMechanics:
-  │     Query asset.hitboxes
-  │       │
-  │       ├─► 1. Check state.hitboxes (Dynamic overrides: fluids, shorelines)
-  │       │
-  │       ├─► 2. Check properties.hitboxes:
-  │       │     ├─► Is dict: Return properties.hitboxes.get(state.stage, default)
-  │       │     └─► Is list: Return properties.hitboxes
-  │       │
-  │       └─► 3. Fallback: If hbs is None, return [Hitbox(0, 0, dimensions)]
-
-```
-
-###### Decoupling from SeasonMechanics
-
-Because `Asset.hitboxes` references `state.stage` directly, `SeasonMechanics` does not need to synchronize hitboxes or dispatch collision invalidation events upon stage transitions. Updating `resource.state.stage` instantly changes the spatial boundary seen by all spatial queries on the subsequent frame.
 
 ##### Goals
 
-##### Goal: Declarative Stage Hitbox Indexing & Dynamic State Resolution
+###### Goal: Hitbox Component Abstraction & Recipe Pipeline
 
-Allow `ResourceProperties` to declare hitboxes partitioned by stage key. Resolve active physical boundaries dynamically in `Asset.hitboxes` via `state.stage`.
+Elevate hitbox resolution into a first-class, stateless behavior strategy. Integrate `HitboxRecipe` into recipe configurations, instantiate behavior singletons in `Factory`, and inject them into `Asset` across `Migrator` and `Decomposer`.
 
-```python
-# Schema design for ResourceProperties:
-@dataclass(slots=True)
-class ResourceProperties(AssetProperties):
-    dimensions: Dimensions
-    loot: str
-    lifespan: Lifespans
-    mass: int = 0
-    hitboxes: Optional[Dict[str, List[Hitbox]]] = field(default_factory=dict)
+###### Goal: Declarative Stage Hitboxes & Model Extension
 
-```
-
-In `Asset.hitboxes`:
-
-```python
-@property
-def hitboxes(self) -> List[Hitbox]:
-    state_hbs = getattr(self.state, "hitboxes", None)
-    if state_hbs is not None:
-        return state_hbs
-
-    if isinstance(self.properties.hitboxes, dict):
-        stage = getattr(self.state, "stage", None)
-        if stage and stage in self.properties.hitboxes:
-            return self.properties.hitboxes[stage]
-
-    return self.properties.hitboxes or [Hitbox(Position(0, 0), self.dimensions)]
-
-```
+Support stage-partitioned hitbox dictionaries in `ResourceProperties` and Pydantic validators. Ensure mature trees collide exclusively at trunk bounds and juvenile stages remain freely traversable without canopy obstruction.
 
 ##### Tasks
 
-**1. Task: Resource Hitbox Schema & Model Extension**
+**1. Task: Enum & Recipe Configuration Schema Expansion**
 
-*Objective*: Support stage-indexed hitbox dictionaries across data models and YAML schemas.
+*Objective*: Define `HitboxRecipe` enumerations and integrate `hitbox` fields across recipe configuration schemas.
+
+* [ ] Subtask: Define `HitboxRecipe(StringEnum)` in `app.config.enums` with values `static`, `dynamic`, `stage`, `attack`, and `none`.
+* [ ] Subtask: Update `Recipe` in `app.models.config.recipes` to include `hitbox: Optional[HitboxRecipe] = HitboxRecipe.STATIC`.
+* [ ] Subtask: Populate `hitbox` definitions across all category blocks in `src/data/config/recipes/main.yaml` (`resources.*: stage`, `geography.shorelines: dynamic`, `effects.fluids: dynamic`, `tiles.*: none`, `effects.passive: none`, objects/crafts/sheets: `static`).
+
+**2. Task: Hitbox Behavior Strategy Hierarchy**
+
+*Objective*: Implement polymorphic `HitboxBehavior` strategies with zero runtime heap allocation.
+
+* [ ] Subtask: Create `app.assets.hitboxes.base` declaring abstract interface `HitboxBehavior(ABC)` with method `resolve(properties, state, frame) -> List[Hitbox]`.
+* [ ] Subtask: Implement `StaticHitbox`, `DynamicHitbox`, `StageHitbox`, `NullHitbox`, and `AttackHitbox` in `app.assets.hitboxes.strategies`.
+* [ ] Subtask: Fix the falsy hitbox bug by replacing `if not hbs and self.dimensions` with `if hbs is None and self.dimensions` across static fallbacks to preserve explicit `[]` passable declarations.
+* [ ] Subtask: Register pre-instantiated singletons in `Factory.hitbox()` within `app.services.generators.game.factory`.
+
+**3. Task: Resource Properties Model Extension & YAML Configuration**
+
+*Objective*: Support stage-indexed hitbox dictionaries in data models and author deciduous tree collision bounds.
 
 * [ ] Subtask: Update `ResourceProperties` in `app.models.properties` to type `hitboxes: Optional[Union[List[Hitbox], Dict[str, List[Hitbox]]]]`.
-* [ ] Subtask: Verify Pydantic adapter validation in `app.models.adapters` for stage-keyed dictionary structures.
-* [ ] Subtask: Configure stage hitboxes for `trees.deciduous` in `/src/assets/resources/main.yaml` constraining adult collision to trunk bounds (`(36, 110, 22, 24)`).
-* [ ] Subtask: Configure passable hitboxes (`null` or `[]`) for juvenile stages and crops in `/src/assets/resources/main.yaml`.
+* [ ] Subtask: Update `PydanticHitbox` adapters in `app.models.adapters` to validate stage-keyed dictionary structures.
+* [ ] Subtask: Configure stage hitboxes for `trees.deciduous` in `src/assets/resources/main.yaml` constraining adult collision to trunk bounds (`x=36, y=110, w=22, l=24`) and stump bounds (`x=30, y=115, w=34, l=18`).
+* [ ] Subtask: Configure passable/empty hitboxes (`[]`) for juvenile crop stages in `src/assets/resources/main.yaml`.
 
-**2. Task: Asset Hitbox Retrieval Refactoring**
+**4. Task: ECS Injection in Migrator and Decomposer**
 
-*Objective*: Update `Asset.hitboxes` to dynamically resolve stage hitboxes with zero allocations.
+*Objective*: Update asset instantiation pipelines to inject `HitboxBehavior` into `Asset` constructors.
 
-* [ ] Subtask: Update `Asset.hitboxes` in `app.assets.base` to check `isinstance(self.properties.hitboxes, dict)` and return `self.properties.hitboxes.get(self.state.stage, [])`.
-* [ ] Subtask: Replace `if not hbs and self.dimensions` with `if hbs is None and self.dimensions` to prevent converting empty lists into full bounding boxes.
-* [ ] Subtask: Ensure `Asset.primitive()` cleanly passes the resolved stage hitboxes into Cython spatial collision arrays.
+* [ ] Subtask: Update `Asset.__init__` in `app.assets.base` to accept `hitbox: Optional[HitboxBehavior] = None` and delegate `@property def hitboxes` to `self.hitbox.resolve(self.properties, self.state, self.frame)`.
+* [ ] Subtask: Update `Migrator._build_generator` in `app.services.orchestration.migrator` to pass `hitbox=Factory.hitbox(recipe.hitbox)` to `Asset`.
+* [ ] Subtask: Update `Decomposer.unpack` and `Decomposer.bridge` in `app.services.generators.game.decomposer` to inject `Factory.hitbox(recipe.hitbox)` into generated constituent assets.
 
-**3. Task: State Dump Serialization & Verification**
+**5. Task: State Dump Serialization & Verification**
 
-*Objective*: Support stage hitbox dictionaries in diagnostic dumping tools and test suites.
+*Objective*: Verify dynamic stage collision resolution and test suite compatibility.
 
-* [ ] Subtask: Update `/src/data/templates/state.md` to handle `props.hitboxes` when structured as a stage dictionary.
-* [ ] Subtask: Write unit tests verifying that `tree.hitboxes` reflects trunk dimensions when `stage = "adult"` and stump dimensions when `stage = "stump"`.
-* [ ] Subtask: Execute live verification via `python src/cli.py --dump-state start` ensuring character navigation walks behind tree canopies without collision stalls.
-
-
-
-
-
-
-
-
-# Architectural Review & Synthesis: Post-Phase 10.02
-
-## 2. Code Review & Systemic Refactoring Candidates
-
-### A. Leaky Orchestration in `Actuator.propagate()` vs. `FluidMechanics`
-
-In `src/app/services/generators/game/actuator.py`:
-
-```python
-# Actuator.propagate():
-# 4. Compile and assign continuous hydrological superposition field to Board
-moisture_field = self.compile_moisture_field(layer, board)
-board.set_moisture_field(layer, moisture_field)
-
-```
-
-`Actuator` is architecturally defined as a **stateless geometry generator** operating on an individual `Fluid` asset. However, `propagate()` currently takes ownership of layer-wide field compilation:
-
-1. **Redundant Layer Sweeps**: When a layer contains $K$ fluid emitters (e.g., multiple mountain springs), `FluidMechanics.update()` calls `self.actuator.propagate(f, board)` in a loop. Consequently, `compile_moisture_field()` and `board.set_moisture_field()` are invoked $K$ times in the same tick.
-2. **Intermediate Stale States**: For emitter $i < K$, emitters $i+1 \dots K$ have not yet updated their truncated lengths, annular pools, or child branches. The field compiled on iteration $i$ is calculated using a mix of updated and stale geometry, causing intermediate inaccurate flux values to be assigned to resources until emitter $K$ concludes.
-
-**Remediation**: Hoist `compile_moisture_field()` and `board.set_moisture_field()` out of `Actuator.propagate()` and place them exclusively in `FluidMechanics.update()`, executing once per invalidated layer after all layer fluids have finished propagating.
-
-### B. Persistent Heap Allocations in `predicates.in_stream()`
-
-In `src/app/game/board/predicates.py`:
-
-```python
-def in_stream(position: Position, fluid: Asset) -> bool:
-    ...
-    aabbs: List[Tuple[int, int, int, int]] = []
-    if slen > 0:
-        ...
-        aabbs.append((...))
-    if fluid.state.branches:
-        for branch in fluid.state.branches:
-            ...
-            aabbs.append((...))
-    return geometry.inside(px, py, aabbs)
-
-```
-
-Although `SeasonMechanics` no longer calls `predicates.in_stream()`, other systems—such as `board.fluid()`, character locomotion checks, and `Cartographer._resolve_fluid_id()`—still route through it. Instantiating a `list` and multiple 4-tuples on every call remains a hotspot when characters traverse waterways.
-Pre-compiling these bounding boxes onto `FluidState._aabbs: List[Tuple[int, int, int, int]]` during `Actuator.propagate()` will reduce `in_stream()` to a zero-allocation pass-through into Cython `geometry.inside()`.
-
-### C. State Coupling in Biome Shoreline Replacement
-
-In `src/app/game/menus/handlers.py`, `SeasonEventHandler.handle()` synchronizes shoreline seasons:
-
-```python
-for shore in context.board.shorelines():
-    shore.state.season = event.season
-    shore.state._keys = None
-
-```
-
-For standard multi-season atlases ($4w \times 4l$), this $O(N)$ cache wipe is optimal. However, if a biome defines distinct asset substitutions across seasons (e.g., substituting `grassy-shore` with `frozen-shelf-shore`), `SeasonEventHandler` cannot evaluate `ShorelineIndex.resolve(tile_id, fluid_id, season)` because `ShorelineState` does not persist the underlying `tile_id` or `fluid_id` that birthed it. To support asset-level biome substitutions without full cartographic contour re-sweeps, `ShorelineState` must record its relational origin keys.
+* [ ] Subtask: Update `src/data/templates/state.md` to format `props.hitboxes` cleanly when configured as a stage dictionary.
+* [ ] Subtask: Author unit tests in `tests/unit/app/assets/test_hitboxes.py` verifying that `tree.hitboxes` matches trunk dimensions when `stage = "adult"`, stump dimensions when `stage = "stump"`, and passes through canopy coordinates without collision.
+* [ ] Subtask: Execute live verification via `python src/cli.py --dump-state start` ensuring characters navigate freely behind deciduous tree canopies.
 
 ---
 
+### Documentation Proposals
 
+#### Draft: Hitbox Behavior Component Architecture
+
+* **Page**: `docs/01-assets.md`
+* **Heading**: Asset Architecture
+
+##### Drift
+
+The existing documentation outlines four core components of an Asset: Model Properties, Model State, Behavior Animation, and Behavior Frame. Hitboxes are described as static properties on `AssetProperties`. With the introduction of stage-indexed biological lifecycles, dynamic fluid hulls, and weapon reach mappings, hitboxes are now resolved through an injected `HitboxBehavior` component strategy.
+
+##### Update
+
+```markdown
+### Asset Architecture
+
+Every physical entity in the game is an instance of the unified Asset class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. Behaviors are decoupled from Assets and managed entirely by *Mechanic* classes that iterate over the Board Assets. See [Mechanics documentation](./05-mechanics.md) for more information.
+
+The Recipe for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in the [Recipe](./appendices/01-schemas.md#configuration-recipes) configuration file. The components of each Asset are enumerated below:
+
+1. **Model: Properties:** A model defining immutable data (e.g., `TileProperties`, `ObjectProperties`, `ResourceProperties`).
+2. **Model: State:** A model defining mutable data (e.g., `ContainerState`, `PositionalState`, `ResourceState`).
+3. **Behavior: Animation:** Stateless strategies (e.g., `BinaryAnimation`, `LifecycleAnimation`, `StateAnimation`) injected into the Asset containing logic for cycling animation frames.
+    - `animate(state, properties)`: Interface for applying animation logic to Asset state.
+4. **Behavior: Frame:** A static schema calculation used by the renderer to determine texture string keys and memory indexing.
+    - `keys(id: str, state: AssetState) -> List[Tuple[str, int, int]]`: Reflexive intrinsic state projection for dynamic 60 Hz draw passes.
+    - `index(id: str, properties: AssetProperties) -> Dict[str, Tuple[int, int, int, int]]`: Interface for indexing Asset frames in Registry.
+    - `eras(id: str, calendar: CalendarState) -> List[Tuple[str, int, int]]`: Macro-temporal epochal projection for static pre-rendered canvas baking.
+    - `channels(id: str, state: AssetState, properties: AssetProperties) -> List[Tuple]`: Emits auxiliary shader and texture modulation directives.
+5. **Behavior: Hitbox:** Stateless collision boundary resolution strategies injected via Recipes. Resolves active physical obstacles dynamically without mutating cached properties:
+    - `resolve(properties: AssetProperties, state: AssetState, frame: Optional[Frame]) -> List[Hitbox]`: Emits the active physical collision footprint for spatial broad-phase and narrow-phase physics.
+
+```
 
 ---
 
-## 5. Bug Reports
+### Bug Reports
 
-##### Bug B016: Premature Layer MoistureField Compilation in Actuator.propagate()
+##### Bug B014: Falsy Hitbox Fallback Overrides Explicit Passable Entities
 
 **STATUS**: OPEN
-**SEVERITY**: Medium
+**SEVERITY**: High
 
 **Description**
 
-`Actuator.propagate()` currently invokes `self.compile_moisture_field(layer, board)` and `board.set_moisture_field(layer, moisture_field)` at the end of each individual fluid's propagation pass. In a multi-fluid layer, this causes redundant recalculations ($K$ field compilations for $K$ fluids). More critically, on intermediate iterations, the field is compiled using unpropagated geometry from subsequent fluids, resulting in premature and inaccurate resource moisture fluxes until the final fluid finishes propagating.
+In `src/app/assets/base.py`, property hitbox resolution evaluates as follows:
 
-**Steps to Replicate**
-
-1. Set up a layer with two fluid emitters (`fluid_1` and `fluid_2`) positioned near separate crops.
-2. Trigger gate invalidation affecting both fluids simultaneously.
-3. Observe that after `fluid_1` propagates, `board.set_moisture_field()` is called immediately while `fluid_2` still holds pre-invalidation stream lengths and pool dimensions.
-
-**Proposed Remediation**
-
-Remove field compilation from `Actuator.propagate()`. Move `compile_moisture_field()` and `board.set_moisture_field()` into `FluidMechanics.update()`, invoking it once per dirty layer after all layer fluids have completed propagation.
-
----
-
-##### Bug B017: Ephemeral AABB Allocation in predicates.in_stream()
-
-**STATUS**: OPEN
-**SEVERITY**: Low
-
-**Description**
-
-`predicates.in_stream()` dynamically instantiates a new Python `list` and multiple 4-tuples on every call to construct corridor bounding boxes for `geometry.inside()`. While `SeasonMechanics` no longer calls `in_stream()`, queries from `board.fluid()`, entity locomotion, and `Cartographer._resolve_fluid_id()` continue to incur transient heap allocations during high-frequency execution.
-
-**Steps to Replicate**
-
-1. Query `board.fluid(layer, pos)` repeatedly at 60 Hz over an active branched fluid corridor.
-2. Profile Python heap allocations; observe ephemeral lists and tuples generated by `in_stream()`.
-
-**Proposed Remediation**
-
-Pre-compile stream and branch AABBs onto `FluidState._aabbs` in `Actuator.propagate()`. Update `predicates.in_stream()` to pass `fluid.state._aabbs` directly to `geometry.inside()`.
-
----
-
-
-
-##### Tasks
-
-**1. Task: Schema Migration for Stage Hitboxes**
-
-*Objective*: Extend resource property schema and Pydantic adapters to support stage-keyed hitbox dictionaries.
-
-* [ ] Subtask: Update `ResourceProperties` in `app.models.properties` to support `hitboxes: Union[List[Hitbox], Dict[str, List[Hitbox]]]`.
-* [ ] Subtask: Update `src/assets/resources/main.yaml` to configure distinct hitboxes for `sapling`, `adult`, and `stump` stages.
-
-**2. Task: Dynamic Asset Hitbox Stage Resolution**
-
-*Objective*: Update `Asset.hitboxes` property to extract stage-specific hitboxes when present.
-
-* [ ] Subtask: Refactor `Asset.hitboxes` in `app.assets.base` to inspect `state.stage` against `properties.hitboxes`.
-* [ ] Subtask: Update `BoardCaches.rebuild_weights()` and `BoardCaches.rebuild_obstacles()` to invalidate spatial caches when a resource stage changes.
-
----
-
-#### Backlog: Cython Acceleration of Environmental Potential Fields
-
-**Overview**
-
-While static resources ($m = 0$) evaluate environmental moisture fields once during fluid invalidation, future mechanics—such as dynamic crop planting, entity wading resistance, and fluid-to-tile moisture percolation—require high-frequency sampling across dynamic coordinates. Migrating `MoistureField` and distance attenuation math to a Cython extension type will eliminate Python interpreter overhead and allow non-blocking evaluation across the GIL boundary.
-
-##### Goal: C-Level Potential Field Evaluator
-
-Implement `libs/core/math/fields.pyx` providing contiguous C memory buffers for linear and disk potential sources with `nogil` sampling.
-
-```cython
-cdef struct CStreamSegment:
-    float x1, y1, x2, y2
-    int flow
-
-cdef struct CPoolSource:
-    float cx, cy, radius
-    int flow
-
-cdef class CMoistureField:
-    cdef CStreamSegment* streams
-    cdef int stream_count
-    cdef CPoolSource* pools
-    cdef int pool_count
-    cdef float sigma, phi_0
-
-    cpdef float evaluate(self, float x, float y) noexcept nogil:
-        # Vectorized Euclidean line segment projection and exponential decay
-        ...
+```python
+hbs = self.properties.hitboxes
+if not hbs and self.dimensions:
+    hbs = [Hitbox(Position(0, 0), self.dimensions)]
+return hbs
 
 ```
 
-##### Tasks
+When an entity explicitly declares an empty list of hitboxes (`hitboxes: []`) to indicate that it is passable (such as a juvenile crop sprout, a submerged fluid current sensor, or a decorative craft), Python's `not hbs` condition evaluates to `True`. The fallback overrides the empty list and assigns a hitbox matching the entire bounding box of the asset (`(0, 0, dimensions.w, dimensions.l)`). This makes intended passable entities completely impassable to characters and projectiles.
 
-**1. Task: Cython MoistureField Implementation**
+**Steps to Replicate**
 
-*Objective*: Create `libs/core/math/fields.pyx` and register with `setup.py`.
+1. Configure an asset with explicit dimensions `w: 32, l: 32` and an empty hitbox list `hitboxes: []`.
+2. Instantiate the asset and query `asset.hitboxes`.
+3. Observe that `asset.hitboxes` returns `[Hitbox(Position(0, 0), Dimensions(32, 32))]` instead of `[]`.
 
-* [ ] Subtask: Implement `CStreamSegment` and `CPoolSource` structs with dynamic memory allocation in `__cinit__` and `__dealloc__`.
-* [ ] Subtask: Implement `evaluate(x, y)` in pure C with `noexcept nogil`.
-* [ ] Subtask: Bind Python-accessible wrapper methods in `libs.core.math.fields`.
+**Proposed Remediation**
 
----
+Evaluate explicit `None` rather than falsiness:
 
-## 7. Synthesis & Next Horizons
+```python
+hbs = self.properties.hitboxes
+if hbs is None and self.dimensions:
+    return [Hitbox(Position(0, 0), self.dimensions)]
+return hbs or []
 
-With Phase 10.02 closed, the simulation achieves a decoupled equilibrium across spatial and temporal dimensions:
+```
 
-* **Geometry**: Procedural shoreline generation is isolated to geometric shift events (`pre_sig != post_sig`).
-* **Macro-Temporal Cycles**: Calendar progression and seasonal palette swaps invalidate frame keys via `SeasonEvent` without touching geometric contour boundaries.
-* **Hydrology**: Fluid networks inject into a continuous potential field, eliminating per-frame spatial broad-phase lookups and GC allocations.
 
-The immediate priorities on the horizon are:
 
-1. **Closing Patch B013**: Implementing the target clear pass in `Screen.reconstruct()` to prevent transparency bleed on foreground seasonal canopies.
-2. **Phase 10.01 (Stage Hitboxes)**: Aligning physical obstacle geometry with biological growth stages.
-3. **Hydrodynamic Immersion (Goal 09)**: Unifying character current drift, buoyancy, and submerged split shaders.
+
+
+

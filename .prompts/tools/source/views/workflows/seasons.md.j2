@@ -18,17 +18,21 @@
 
 ##### app.assets.frames
 
+{# 
 **src/app/assets/frames/core.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/assets/frames/core.py') }}
-```
+``` 
+#}
 
+{# 
 **src/app/assets/frames/tiles.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/assets/frames/tiles.py') }}
-```
+``` 
+#}
 
 **src/app/assets/frames/resources.py**
 
@@ -42,12 +46,6 @@
 
 ```python
 {{ file(properties.paths.root + 'src/app/game/engine.py') }}
-```
-
-**src/app/game/screen.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/game/screen.py') }}
 ```
 
 ##### app.game.board
@@ -106,6 +104,12 @@
 {{ file(properties.paths.root + 'src/app/models/config/mechanics.py') }}
 ```
 
+**src/app/models/config/recipes.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/config/recipes.py') }}
+```
+
 ##### app.models.state 
 
 **src/app/models/state/core.py**
@@ -116,11 +120,13 @@
 
 ###### app.models.state.assets
 
+{# 
 **src/app/models/state/assets/tiles.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/models/state/assets/tiles.py') }}
-```
+``` 
+#}
 
 **src/app/models/state/assets/resources.py**
 
@@ -129,6 +135,22 @@
 ```
 
 #### app.services
+
+##### app.services.generators.game 
+
+**src/app/services/generators/game/factory.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/generators/game/factory.py') }}
+```
+
+##### app.services.orchestration
+
+**src/app/services/orchestration/migrator.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/orchestration/migrator.py') }}
+```
 
 ##### app.services.translators
 

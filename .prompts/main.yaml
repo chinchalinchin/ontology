@@ -37,10 +37,10 @@ task:
   # template: console/debug.md.j2
   # ---------------------------------- ITERATION CYCLE
   # template: iterate/documentation.md.j2
-  # template: iterate/grooming.md.j2
+  template: iterate/grooming.md.j2
   # template: iterate/implementation.md.j2
   # template: iterate/coverage.md.j2
-  template: iterate/conclusion.md.j2
+  # template: iterate/conclusion.md.j2
   # ------------------------------------- DESIGN TASKS
   # template: design/menu.md.j2
   # template: diagram/hierarchy.md.j2
@@ -77,7 +77,7 @@ tools:
   parameters:
     manager:
       board:
-        phase: '10-02'
+        phase: '10-01'
         action: refactor
       docs:
         exclude:
@@ -96,7 +96,7 @@ tools:
           # - 11-architecture.md
       specs: []
     source:
-      workflow: ecology
+      workflow: seasons
     shell:
       directory: |
         tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
