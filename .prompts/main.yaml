@@ -39,8 +39,8 @@ task:
   # template: iterate/documentation.md.j2
   # template: iterate/grooming.md.j2
   # template: iterate/implementation.md.j2
-  template: iterate/coverage.md.j2
-  # template: iterate/conclusion.md.j2
+  # template: iterate/coverage.md.j2
+  template: iterate/conclusion.md.j2
   # ------------------------------------- DESIGN TASKS
   # template: design/menu.md.j2
   # template: diagram/hierarchy.md.j2
@@ -69,10 +69,10 @@ tools:
       directory: true
       commands: false
     tests:  
-      pipeline: true
-      fixtures: true
+      pipeline: false
+      fixtures: false
       session: false
-      workflow: true
+      workflow: false
 # ----------------------------------------------------
   parameters:
     manager:
@@ -87,7 +87,7 @@ tools:
           - 02-sprites.md
           - 03-compositions.md
           - 04-intentions.md
-          - 05-mechanics.md
+          # - 05-mechanics.md
           - 06-widgets.md
           - 07-sounds.md
           - 08-plots.md

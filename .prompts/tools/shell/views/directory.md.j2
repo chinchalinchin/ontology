@@ -3,5 +3,5 @@
 ```bash
 {{ properties.user.username }}@{{ properties.user.hostname }}% {{ tools.parameters.shell.directory }} {{ properties.paths.root }}
 
-{{ command(tools.parameters.shell.directory + " " + properties.paths.root) }}
+{{ command((tools.parameters.shell.directory | trim) ~ ' ' ~ properties.paths.root) }}
 ```

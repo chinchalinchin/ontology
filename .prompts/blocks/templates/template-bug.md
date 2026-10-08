@@ -1,8 +1,9 @@
-##### Template: Bug Report
+### Template: Bug Report
 
 For ancillary or tangential bugs detected, use the following template to open new reports,
 
 ```jinja2
+{% raw %}
 {% for bug in bugs %}
 ##### Bug {{ bug.id }}: {{ bug.title }}
 
@@ -24,4 +25,6 @@ For ancillary or tangential bugs detected, use the following template to open ne
 {{ remediation }}
 
 {% endfor %}
+{% endraw %}
 ```
+

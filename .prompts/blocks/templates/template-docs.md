@@ -1,8 +1,9 @@
-##### Template: Documentation
+#### Template: Documentation
 
 For documentation divergences detected, use the following template,
 
-```
+```jinja2
+{% raw %}
 #### Draft: {{ title }}
 
 - **Page**: {{ page.file }}
@@ -15,4 +16,6 @@ For documentation divergences detected, use the following template,
 ##### Update
 
 {{ update.description | markdown }}
+{% endraw %}
 ```
+
