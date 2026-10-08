@@ -17,7 +17,6 @@ from app.config.enums import (
     AssetCategories,
     Seasons,
     Cycles,
-    Shortcuts
 )
 from app.game.logic.mechanics.base import Mechanic
 from app.game.menus.events import SeasonEvent

@@ -139,6 +139,7 @@ The Board exposes interfaces for querying the game state:
 * Environment Queries
     1. `board.tile(layer, position, instance)`: Retrieves background or foreground [Tiles](./01-assets.md#tiles) via $O(1)$ spatial hash lookup.
     2. `board.shorelines(layer=None)`: Retrieves active procedural shoreline assets for a specific layer or across all layers.
+    1. `board.moisture(layer, x, y)`: Queries scalar soil moisture potential $\Phi(x, y)$ from the layer's compiled `MoistureField`.
 
 **Interface: Predicates**
 

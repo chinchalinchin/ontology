@@ -228,8 +228,6 @@ FluidMechanics governs fluid emission, recursive bifurcation, and procedural sho
 
 #### SeasonMechanics
 
-#### SeasonMechanics
-
 `SeasonMechanics` executes within the `world` mechanics pipeline, driving global time, soil hydrology, and biological resource lifecycles:
 
 1. **Temporal Integration**: Accumulates frame $\Delta t$ into `board.calendar.elapsed`. When elapsed time reaches `settings.PERIOD_DURATION_SECONDS`, the mechanic advances `period` (0..2), `cycle` (`onset`, `peak`, `decline`), `season` (`spring`, `summer`, `autumn`, `winter`), and `year`, appending a `SeasonEvent` to the engine bus.
