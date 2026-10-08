@@ -4,13 +4,14 @@
 Models for typing the configuration attributes of Asset Recipes. 
 """
 # Standard Libraries
-
 from dataclasses import dataclass
+from typing import Optional
 
 # Application Libraries
 from app.config.enums import (
     FrameRecipe, 
-    AnimationRecipe
+    AnimationRecipe,
+    HitboxRecipe
 )
 from app.models.config.core import Configuration
 
@@ -22,6 +23,7 @@ from app.models.config.core import Configuration
 class Recipe:
     frame: FrameRecipe = None
     animation: AnimationRecipe = None
+    hitbox: Optional[HitboxRecipe] = HitboxRecipe.STATIC.value
 
 @dataclass(slots=True, frozen=True)
 class TileRecipe:

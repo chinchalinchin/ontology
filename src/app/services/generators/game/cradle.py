@@ -124,6 +124,7 @@ class Cradle:
         
         frame = Factory.frame(recipe.frame)
         animation = Factory.animation(recipe.animation)
+        hitbox = Factory.hitbox(recipe.hitbox)
         taxonomy = Factory.taxonomy(
             id = id, 
             name = name, 
@@ -131,7 +132,7 @@ class Cradle:
             instance = AssetInstances.PROJECTILES.value
         )
         
-        return Asset(taxonomy, properties, state, frame, animation)
+        return Asset(taxonomy, properties, state, frame, animation, hitbox)
 
 
     def spawn_collectable(self, 
@@ -153,13 +154,14 @@ class Cradle:
         )
         frame = Factory.frame(recipe.frame)
         animation = Factory.animation(recipe.animation)
+        hitbox = Factory.hitbox(recipe.hitbox)
         taxonomy = Factory.taxonomy(
             id=id,
             name=name,
             category=AssetCategories.EFFECTS.value,
             instance=AssetInstances.COLLECTABLES.value
         )
-        return Asset(taxonomy, properties, state, frame, animation)
+        return Asset(taxonomy, properties, state, frame, animation, hitbox)
 
 
     def spawn_hazard(self, 
@@ -181,13 +183,14 @@ class Cradle:
         )
         frame = Factory.frame(recipe.frame)
         animation = Factory.animation(recipe.animation)
+        hitbox = Factory.hitbox(recipe.hitbox)
         taxonomy = Factory.taxonomy(
             id=id,
             name=name,
             category=AssetCategories.EFFECTS.value,
             instance=AssetInstances.HAZARDS.value
         )
-        return Asset(taxonomy, properties, state, frame, animation)
+        return Asset(taxonomy, properties, state, frame, animation, hitbox)
 
 
     def spawn_passive(self, id: str, layer: str, position: Position) -> Asset:
@@ -204,13 +207,14 @@ class Cradle:
         )
         frame = Factory.frame(recipe.frame)
         animation = Factory.animation(recipe.animation)
+        hitbox = Factory.hitbox(recipe.hitbox)
         taxonomy = Factory.taxonomy(
             id=id,
             name=name,
             category=AssetCategories.EFFECTS.value,
             instance=AssetInstances.PASSIVE.value
         )
-        return Asset(taxonomy, properties, state, frame, animation)
+        return Asset(taxonomy, properties, state, frame, animation, hitbox)
 
 
     def spawn_strut(self, 
@@ -232,6 +236,7 @@ class Cradle:
         )
         frame = Factory.frame(recipe.frame)
         animation = Factory.animation(recipe.animation)
+        hitbox = Factory.hitbox(recipe.hitbox)
         taxonomy = Factory.taxonomy(
             id          = id, 
             name        = name, 
@@ -239,7 +244,7 @@ class Cradle:
             instance    = AssetInstances.STRUTS.value
         )
         
-        return Asset(taxonomy, properties, state, frame, animation)
+        return Asset(taxonomy, properties, state, frame, animation, hitbox)
 
 
     def spawn_shoreline(self,
@@ -272,13 +277,14 @@ class Cradle:
         )
         frame = Factory.frame(recipe.frame)
         animation = Factory.animation(recipe.animation)
+        hitbox = Factory.hitbox(recipe.hitbox)
         taxonomy = Factory.taxonomy(
             id=id,
             name=name,
             category=AssetCategories.GEOGRAPHY.value,
             instance=AssetInstances.SHORELINES.value
         )
-        return Asset(taxonomy, properties, state, frame, animation)
+        return Asset(taxonomy, properties, state, frame, animation, hitbox)
 
     def spawn_composition(self, 
         id: str, 

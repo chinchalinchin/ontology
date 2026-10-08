@@ -208,8 +208,9 @@ class Decomposer:
         taxonomy = Factory.taxonomy(state_obj.id, state_obj.name, cat_key, inst_key)
         frame = Factory.frame(recipe.frame)
         animation = Factory.animation(recipe.animation)
+        hitbox = Factory.hitbox(recipe.hitbox)
         
-        return Asset(taxonomy, props, state_obj, frame, animation)
+        return Asset(taxonomy, props, state_obj, frame, animation, hitbox)
 
     # ---------------------------------------------------------
     # ------------------------------------- EXPANSION UTILITIES
@@ -390,7 +391,8 @@ class Decomposer:
                 properties=props,
                 state=unit_state,
                 frame=Factory.frame(recipe.frame),
-                animation=Factory.animation(recipe.animation)
+                animation=Factory.animation(recipe.animation),
+                hitbox=Factory.hitbox(recipe.hitbox)
             )
             unit_assets.append(unit_asset)
 

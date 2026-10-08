@@ -115,7 +115,7 @@ class HitboxSchema(ABC):
     """
 
     @abstractmethod
-    def resolve(self,
+    def get(self,
         state: AssetState,
         properties: AssetProperties,
         frame: Frame
@@ -142,13 +142,14 @@ class Asset:
         state: AssetState, 
         frame: Frame=None, 
         animation: Animation=None,
-        hitbox: Optional[HitboxSchema]=None,
+        hitbox: HitboxSchema=None,
     ):
         self.taxonomy = taxonomy
         self.properties = properties
         self.state = state
         self.frame = frame
         self.animation = animation
+        self.hitbox = hitbox
 
     @property
     def id(self) -> str: 
@@ -173,19 +174,8 @@ class Asset:
 
     @property
     def hitboxes(self) -> List[Hitbox]:
-        """
-        Unified hitbox retrieval. Prefers dynamic state hitboxes if present,
-        falling back to static property definitions.
-        """
-        state_hbs = getattr(self.state, "hitboxes", None)
-        if state_hbs is not None:
-            return state_hbs
-
-        hbs = self.properties.hitboxes
-        if not hbs and self.dimensions:
-            hbs = [Hitbox(Position(0, 0), self.dimensions)]
-            
-        return hbs
+        """Unified physical boundary retrieval delegated entirely to HitboxSchema."""
+        return self.hitbox.get(self.properties, self.state, self.frame)
 
     def primitive(self, index: int = 0, hitboxes: List[Hitbox] = None) -> Tuple:
         """

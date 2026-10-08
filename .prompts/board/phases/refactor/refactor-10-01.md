@@ -6,6 +6,44 @@ Presently, `Resource` entities maintain static hitboxes declared on immutable `R
 
 This phase refactors hitbox resolution into an explicit, decoupled ECS behavior component (`HitboxSchema`), mirroring the architecture of `Frame` and `Animation`. Asset recipes declare their hitbox schema, and `Factory.hitbox()` injects pre-instantiated, zero-allocation behavior singletons into all hydrated assets. Dynamic biological lifecycle stages resolve collision bounds in $O(1)$ time while maintaining immutable property caching and contract invariance across all game mechanics.
 
+##### Bug Reports
+
+###### Bug B014: Falsy Hitbox Fallback Overrides Explicit Passable Entities
+
+**STATUS**: OPEN
+**SEVERITY**: High
+
+**Description**
+
+In `src/app/assets/base.py`, property hitbox resolution evaluates as follows:
+
+```python
+hbs = self.properties.hitboxes
+if not hbs and self.dimensions:
+    hbs = [Hitbox(Position(0, 0), self.dimensions)]
+return hbs
+
+```
+
+When an entity explicitly declares an empty list of hitboxes (`hitboxes: []`) to indicate that it is passable (such as a juvenile crop sprout, a submerged fluid current sensor, or a decorative craft), Python's `not hbs` condition evaluates to `True`. The fallback overrides the empty list and assigns a hitbox matching the entire bounding box of the asset (`(0, 0, dimensions.w, dimensions.l)`). This makes intended passable entities completely impassable to characters and projectiles.
+
+**Steps to Replicate**
+
+1. Configure an asset with explicit dimensions `w: 32, l: 32` and an empty hitbox list `hitboxes: []`.
+2. Instantiate the asset and query `asset.hitboxes`.
+3. Observe that `asset.hitboxes` returns `[Hitbox(Position(0, 0), Dimensions(32, 32))]` instead of `[]`.
+
+**Proposed Remediation**
+
+Evaluate explicit `None` rather than falsiness:
+
+```python
+hbs = self.properties.hitboxes
+if hbs is None and self.dimensions:
+    return [Hitbox(Position(0, 0), self.dimensions)]
+return hbs or []
+```
+
 ##### Architectural Analysis I
 
 ###### 1. The Conflict with Static Hitbox Architecture
@@ -564,15 +602,15 @@ Support stage-partitioned hitbox dictionaries in `ResourceProperties` and Pydant
 *Objective*: Define `HitboxRecipe` enumerations and integrate `hitbox` fields across recipe configuration schemas.
 
 * [x] Subtask: Define `HitboxRecipe(StringEnum)` in `app.config.enums` with values `static`, `dynamic`, `stage`, `attack`, and `none`.
-* [ ] Subtask: Update `Recipe` in `app.models.config.recipes` to include `hitbox: Optional[HitboxRecipe] = HitboxRecipe.STATIC`.
-* [ ] Subtask: Populate `hitbox` definitions across all category blocks in `src/data/config/recipes/main.yaml` (`resources.*: stage`, `geography.shorelines: dynamic`, `effects.fluids: dynamic`, `tiles.*: none`, `effects.passive: none`, objects/crafts/sheets: `static`).
+* [x] Subtask: Update `Recipe` in `app.models.config.recipes` to include `hitbox: Optional[HitboxRecipe] = HitboxRecipe.STATIC`.
+* [x] Subtask: Populate `hitbox` definitions across all category blocks in `src/data/config/recipes/main.yaml` (`resources.*: stage`, `geography.shorelines: dynamic`, `effects.fluids: dynamic`, `tiles.*: none`, `effects.passive: none`, objects/crafts/sheets: `static`).
 
 **2. Task: Hitbox Behavior Strategy Hierarchy**
 
 *Objective*: Implement polymorphic `HitboxSchema` strategies with zero runtime heap allocation.
 
 * [x] Subtask: Create `app.assets.base` declaring abstract interface `HitboxSchema(ABC)` with method `resolve(properties, state, frame) -> List[Hitbox]`.
-* [~] Subtask: Implement `StaticHitbox`, `DynamicHitbox`, `StageHitbox`, `NullHitbox`, and `AttackHitbox` in `app.assets.hitboxes`.
+* [ ] Subtask: Implement `StaticHitbox`, `DynamicHitbox`, `StageHitbox`, `NoHitbox`, and `AttackHitbox` in `app.assets.hitboxes`.
 * [ ] Subtask: Fix the falsy hitbox bug by replacing `if not hbs and self.dimensions` with `if hbs is None and self.dimensions` across static fallbacks to preserve explicit `[]` passable declarations.
 * [x] Subtask: Register pre-instantiated singletons in `Factory.hitbox()` within `app.services.generators.game.factory`.
 
@@ -580,107 +618,23 @@ Support stage-partitioned hitbox dictionaries in `ResourceProperties` and Pydant
 
 *Objective*: Support stage-indexed hitbox dictionaries in data models and author deciduous tree collision bounds.
 
-* [ ] Subtask: Update `ResourceProperties` in `app.models.properties` to type `hitboxes: Optional[Union[List[Hitbox], Dict[str, List[Hitbox]]]]`.
-* [ ] Subtask: Update `PydanticHitbox` adapters in `app.models.adapters` to validate stage-keyed dictionary structures.
-* [ ] Subtask: Configure stage hitboxes for `trees.deciduous` in `src/assets/resources/main.yaml` constraining adult collision to trunk bounds (`x=36, y=110, w=22, l=24`) and stump bounds (`x=30, y=115, w=34, l=18`).
-* [ ] Subtask: Configure passable/empty hitboxes (`[]`) for juvenile crop stages in `src/assets/resources/main.yaml`.
+* [x] Subtask: Update `ResourceProperties` in `app.models.properties` to type `hitboxes: Optional[Dict[str, List[Hitbox]]]`.
+* [x] Subtask: Configure stage hitboxes for `trees.deciduous` in `src/assets/resources/main.yaml` constraining adult collision to trunk bounds (`x=36, y=110, w=22, l=24`) and stump bounds (`x=30, y=115, w=34, l=18`).
+* [x] Subtask: Configure passable/empty hitboxes (`[]`) for juvenile crop stages in `src/assets/resources/main.yaml`.
 
 **4. Task: ECS Injection in Migrator and Decomposer**
 
 *Objective*: Update asset instantiation pipelines to inject `HitboxSchema` into `Asset` constructors.
 
 * [~] Subtask: Update `Asset.__init__` in `app.assets.base` to accept `hitbox: Optional[HitboxSchema] = None` and delegate `@property def hitboxes` to `self.hitbox.resolve(self.properties, self.state, self.frame)`.
-* [ ] Subtask: Update `Migrator._build_generator` in `app.services.orchestration.migrator` to pass `hitbox=Factory.hitbox(recipe.hitbox)` to `Asset`.
-* [ ] Subtask: Update `Decomposer.unpack` and `Decomposer.bridge` in `app.services.generators.game.decomposer` to inject `Factory.hitbox(recipe.hitbox)` into generated constituent assets.
-* [ ] Subtack: Update `Cradle`.
+* [x] Subtask: Update `Migrator._build_generator` in `app.services.orchestration.migrator` to pass `hitbox=Factory.hitbox(recipe.hitbox)` to `Asset`.
+* [x] Subtask: Update `Decomposer.unpack` and `Decomposer.bridge` in `app.services.generators.game.decomposer` to inject `Factory.hitbox(recipe.hitbox)` into generated constituent assets.
+* [x] Subtack: Update `Cradle` instantiation methods to inject `Factory.hitbox(recipe.hitbox)`.
 
 **5. Task: State Dump Serialization & Verification**
 
 *Objective*: Verify dynamic stage collision resolution and test suite compatibility.
 
-* [ ] Subtask: Update `src/data/templates/state.md` to format `props.hitboxes` cleanly when configured as a stage dictionary.
-* [ ] Subtask: Author unit tests in `tests/unit/app/assets/test_hitboxes.py` verifying that `tree.hitboxes` matches trunk dimensions when `stage = "adult"`, stump dimensions when `stage = "stump"`, and passes through canopy coordinates without collision.
-* [ ] Subtask: Execute live verification via `python src/cli.py --dump-state start` ensuring characters navigate freely behind deciduous tree canopies.
-
----
-
-### Documentation Proposals
-
-#### Draft: Hitbox Behavior Component Architecture
-
-* **Page**: `docs/01-assets.md`
-* **Heading**: Asset Architecture
-
-##### Drift
-
-The existing documentation outlines four core components of an Asset: Model Properties, Model State, Behavior Animation, and Behavior Frame. Hitboxes are described as static properties on `AssetProperties`. With the introduction of stage-indexed biological lifecycles, dynamic fluid hulls, and weapon reach mappings, hitboxes are now resolved through an injected `HitboxSchema` component strategy.
-
-##### Update
-
-```markdown
-### Asset Architecture
-
-Every physical entity in the game is an instance of the unified Asset class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. Behaviors are decoupled from Assets and managed entirely by *Mechanic* classes that iterate over the Board Assets. See [Mechanics documentation](./05-mechanics.md) for more information.
-
-The Recipe for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in the [Recipe](./appendices/01-schemas.md#configuration-recipes) configuration file. The components of each Asset are enumerated below:
-
-1. **Model: Properties:** A model defining immutable data (e.g., `TileProperties`, `ObjectProperties`, `ResourceProperties`).
-2. **Model: State:** A model defining mutable data (e.g., `ContainerState`, `PositionalState`, `ResourceState`).
-3. **Behavior: Animation:** Stateless strategies (e.g., `BinaryAnimation`, `LifecycleAnimation`, `StateAnimation`) injected into the Asset containing logic for cycling animation frames.
-    - `animate(state, properties)`: Interface for applying animation logic to Asset state.
-4. **Behavior: Frame:** A static schema calculation used by the renderer to determine texture string keys and memory indexing.
-    - `keys(id: str, state: AssetState) -> List[Tuple[str, int, int]]`: Reflexive intrinsic state projection for dynamic 60 Hz draw passes.
-    - `index(id: str, properties: AssetProperties) -> Dict[str, Tuple[int, int, int, int]]`: Interface for indexing Asset frames in Registry.
-    - `eras(id: str, calendar: CalendarState) -> List[Tuple[str, int, int]]`: Macro-temporal epochal projection for static pre-rendered canvas baking.
-    - `channels(id: str, state: AssetState, properties: AssetProperties) -> List[Tuple]`: Emits auxiliary shader and texture modulation directives.
-5. **Behavior: Hitbox:** Stateless collision boundary resolution strategies injected via Recipes. Resolves active physical obstacles dynamically without mutating cached properties:
-    - `resolve(properties: AssetProperties, state: AssetState, frame: Optional[Frame]) -> List[Hitbox]`: Emits the active physical collision footprint for spatial broad-phase and narrow-phase physics.
-
-```
-
----
-
-### Bug Reports
-
-##### Bug B014: Falsy Hitbox Fallback Overrides Explicit Passable Entities
-
-**STATUS**: OPEN
-**SEVERITY**: High
-
-**Description**
-
-In `src/app/assets/base.py`, property hitbox resolution evaluates as follows:
-
-```python
-hbs = self.properties.hitboxes
-if not hbs and self.dimensions:
-    hbs = [Hitbox(Position(0, 0), self.dimensions)]
-return hbs
-
-```
-
-When an entity explicitly declares an empty list of hitboxes (`hitboxes: []`) to indicate that it is passable (such as a juvenile crop sprout, a submerged fluid current sensor, or a decorative craft), Python's `not hbs` condition evaluates to `True`. The fallback overrides the empty list and assigns a hitbox matching the entire bounding box of the asset (`(0, 0, dimensions.w, dimensions.l)`). This makes intended passable entities completely impassable to characters and projectiles.
-
-**Steps to Replicate**
-
-1. Configure an asset with explicit dimensions `w: 32, l: 32` and an empty hitbox list `hitboxes: []`.
-2. Instantiate the asset and query `asset.hitboxes`.
-3. Observe that `asset.hitboxes` returns `[Hitbox(Position(0, 0), Dimensions(32, 32))]` instead of `[]`.
-
-**Proposed Remediation**
-
-Evaluate explicit `None` rather than falsiness:
-
-```python
-hbs = self.properties.hitboxes
-if hbs is None and self.dimensions:
-    return [Hitbox(Position(0, 0), self.dimensions)]
-return hbs or []
-
-```
-
-
-
-
-
-
+* [!] Subtask: Update `src/data/templates/state.md` to format `props.hitboxes` cleanly when configured as a stage dictionary.
+* [!] Subtask: Author unit tests in `tests/unit/app/assets/test_hitboxes.py` verifying that `tree.hitboxes` matches trunk dimensions when `stage = "adult"`, stump dimensions when `stage = "stump"`, and passes through canopy coordinates without collision.
+* [!] Subtask: Execute live verification via `python src/cli.py --dump-state start` ensuring characters navigate freely behind deciduous tree canopies.

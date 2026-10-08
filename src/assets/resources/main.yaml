@@ -7,7 +7,84 @@ resources:
       lifespan: perennial
       loot: wood
       mass: 0
-      hitboxes: null
+      hitboxes:
+        sapling:
+          - position:
+              x: 42
+              y: 122
+            dimensions:
+              w: 10
+              l: 12
+        bush:
+          - position:
+              x: 36
+              y: 114
+            dimensions:
+              w: 22
+              l: 20
+        branch:
+          - position:
+              x: 36
+              y: 110
+            dimensions:
+              w: 22
+              l: 24
+        adult:
+          - position:
+              x: 36
+              y: 110
+            dimensions:
+              w: 22
+              l: 24
+        vibrant:
+          - position:
+              x: 36
+              y: 110
+            dimensions:
+              w: 22
+              l: 24
+        healthy:
+          - position:
+              x: 36
+              y: 110
+            dimensions:
+              w: 22
+              l: 24
+        abscise:
+          - position:
+              x: 36
+              y: 110
+            dimensions:
+              w: 22
+              l: 24
+        snowcapt:
+          - position:
+              x: 36
+              y: 110
+            dimensions:
+              w: 22
+              l: 24
+        dying:
+          - position:
+              x: 36
+              y: 110
+            dimensions:
+              w: 22
+              l: 24
+        dead:
+          - position:
+              x: 36
+              y: 110
+            dimensions:
+              w: 22
+              l: 24
+        stump:
+          - position:
+              x: 36
+              y: 110
+            dimensions:
+              w: 22
+              l: 24
   crops:
     lettuce:
       dimensions:
@@ -16,7 +93,12 @@ resources:
       lifespan: annual
       loot: lettuce
       mass: 0
-      hitboxes: null
+      hitboxes:
+        sprout: null
+        growth: null
+        stalk: null
+        bloom: null
+        stump: null
     maize:
       dimensions:
         w: 32
@@ -24,7 +106,12 @@ resources:
       lifespan: annual
       loot: maize
       mass: 0
-      hitboxes: null
+      hitboxes:
+        sprout: null
+        growth: null
+        stalk: null
+        bloom: null
+        stump: null
   ore:
     gold:
       dimensions:
@@ -33,4 +120,9 @@ resources:
       lifespan: centennial
       loot: gold-ore
       mass: 0
-      hitboxes: null
+      hitboxes:
+        trace: null
+        deposit: null
+        nugget: null
+        vein: null
+        crystal: null

@@ -151,7 +151,8 @@ class Migrator:
                     properties      = props,
                     state           = state_obj,
                     frame           = Factory.frame(recipe.frame),
-                    animation       = Factory.animation(recipe.animation) 
+                    animation       = Factory.animation(recipe.animation),
+                    hitbox          = Factory.hitbox(recipe.hitbox)
                 )
                 self.board.add([asset])
             

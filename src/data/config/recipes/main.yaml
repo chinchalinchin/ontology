@@ -3,116 +3,152 @@ recipes:
     back:
       frame: seasonal
       animation: none
+      hitbox: none
     fore:
       frame: single
       animation: none
+      hitbox: none
   crafts:
     bridges:
       frame: oriented
       animation: none
+      hitbox: static
     struts:
       frame: single
       animation: none
+      hitbox: static
   cursors:
     expressions:
       frame: index
       animation: none
+      hitbox: none
     projectiles:
       frame: single
       animation: none
+      hitbox: static
   geography:
     shorelines:
       frame: cardinal
       animation: none
+      hitbox: dynamic
   effects:
     collectables:
       frame: iterable
       animation: lifecycle
+      hitbox: static
     reactables:
       frame: iterable
       animation: lifecycle
+      hitbox: static
     hazards:
       frame: iterable
       animation: lifecycle
+      hitbox: static
     passive:
       frame: iterable
       animation: lifecycle
+      hitbox: none
     fluids:
       frame: fluid
       animation: lifecycle
+      hitbox: dynamic
   objects:
     chests:
       frame: iterable
       animation: binary
+      hitbox: static
     crates:
       frame: single
       animation: none
+      hitbox: static
     doors:
       frame: single
       animation: none
+      hitbox: static
     gates: 
       frame: iterable
       animation: binary
+      hitbox: static
     obstacles:
       frame: single
       animation: none
+      hitbox: static
     plates:
       frame: iterable
       animation: binary
+      hitbox: static
     signs:
       frame: single
       animation: none
+      hitbox: static
     rafts:
       frame: single
       animation: none
+      hitbox: static
   resources:
     crops:
       frame: stage
       animation: none
+      hitbox: stage
     ore: 
       frame: stage
       animation: none
+      hitbox: stage
     trees:
       frame: stage
       animation: none
+      hitbox: stage
   sheets:
     players:
       frame: sprite
       animation: sprite
+      hitbox: static
     pixies:
       frame: state
       animation: state
+      hitbox: static
     sprites:
       frame: sprite
       animation: sprite
+      hitbox: static
     armor:
       frame: state
       animation: none
+      hitbox: none
     tools:
       frame: state
       animation: none
+      hitbox: none
     shields:
       frame: state
       animation: none
+      hitbox: none
     utilities:
       frame: state
       animation: none
+      hitbox: none
     weapons:
       frame: state
       animation: none
+      hitbox: attack
   widgets:
     buttons:
       frame: traversal
       animation: traversal
+      hitbox: none
     icons:
       frame: index
       animation: none
+      hitbox: none
     meters:
       frame: meter
       animation: meter
+      hitbox: none
     pages:
       frame: single
       animation: none
+      hitbox: none
     panes:
       frame: single
       animation: none
+      hitbox: none

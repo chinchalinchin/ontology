@@ -113,7 +113,7 @@ class ResourceProperties(AssetProperties):
     loot: str
     lifespan: Lifespans
     mass: int = 0
-    hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
+    hitboxes: Dict[str, Optional[List[Hitbox]]] = field(default_factory=dict) # type: ignore
 
 @dataclass(slots=True)
 class GeographyProperties(AssetProperties):

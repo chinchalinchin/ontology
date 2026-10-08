@@ -22,14 +22,6 @@ Fluids are directional Effects that project along a `source` Direction until obs
 
 Fluids declare an explicit `height: 0` and `depth: -1`. This ensures the [rendering pipeline](./11-architecture.md#graphics) sorts the resulting stream above Tiles but underneath other mutable Assets.
 
-**Branch Model**
-
-* `position: Position`: Absolute origin of the branch corridor.
-* `source: str`: Flow direction vector matching or orthogonal to parent stream.
-* `flow: int`: Attenuated flow intensity ($flow_{\text{parent}} - 1$).
-* `length: int`: Raycast truncation distance.
-* `hitboxes: List[Hitbox]`: Compound hitboxes covering the secondary stream corridor.
-
 **Frame: FluidFrame**
 
 * `keys(id, state): returns [ ("{id}-{state.animation.frame}-{slices(state.pool, state.length)}", 0, 0)]` 
@@ -49,6 +41,14 @@ Fluids declare an explicit `height: 0` and `depth: -1`. This ensures the [render
 * `height: Optional[int] = 0`
 * `depth: int = -1`
 * `_keys: Dict[int, List[Tuple[str, int, int]]] = field(default_factory=dict)` (*Cache for pre-computing fluid keys*)
+
+**Model: Branch**
+
+* `position: Position`: Absolute origin of the branch corridor.
+* `source: str`: Flow direction vector matching or orthogonal to parent stream.
+* `flow: int`: Attenuated flow intensity ($flow_{\text{parent}} - 1$).
+* `length: int`: Raycast truncation distance.
+* `hitboxes: List[Hitbox]`: Compound hitboxes covering the secondary stream corridor.
 
 ### Category: Geography
 
@@ -109,7 +109,7 @@ Trees are perennial biological resources that cycle through three life phases (G
 
 **Epicycles**
 
-A natural feature of Tree Stage Transitions is the cyclic topology of a finite automata embodying perennial epicycles, i.e. Trees changing colors during the progression of Seasons or possibly dying due to environmental circumstances. Based on the conditions defined in the [Stage Configuration](./appendices/01-schemas.md#configuration-stage), the Tree life cycle is composed of three distinct *epicycles*,
+A natural feature of Tree Stage Transitions is the cyclic topology of a finite automata embodying a perennial lifespans, i.e. Trees changing colors during the progression of Seasons or possibly dying due to environmental circumstances. Based on the conditions defined in the [Stage Configuration](./appendices/01-schemas.md#configuration-stage), the Tree life cycle is composed of three distinct *epicycles*,
 
 - Genesis
 - Homeostasis
