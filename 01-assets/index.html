@@ -2221,12 +2221,22 @@
 <tr>
 <td>Resource</td>
 <td>Crop</td>
-<td>Base, Season</td>
+<td>Base, Stage, Retention, Moisture, Harvested</td>
+</tr>
+<tr>
+<td>Resource</td>
+<td>Flower</td>
+<td>Base, Stage, Retention, Moisture, Harvested</td>
 </tr>
 <tr>
 <td>Resource</td>
 <td>Ore</td>
-<td>Base, Vein</td>
+<td>Base, Stage, Retention, Moisture, Harvested</td>
+</tr>
+<tr>
+<td>Resource</td>
+<td>Tree</td>
+<td>Base, Stage, Retention, Moisture, Harvested</td>
 </tr>
 <tr>
 <td>Cursor</td>
@@ -2241,7 +2251,7 @@
 <tr>
 <td>Geography</td>
 <td>Shoreline</td>
-<td>Base, TODO</td>
+<td>Base, Orientation, Length, Thickness</td>
 </tr>
 <tr>
 <td>Effect</td>
@@ -2323,7 +2333,11 @@
 <li><code>keys(id: str, state: AssetState) -&gt; List[Tuple[str, int, int]]</code>: Reflexive intrinsic state projection for dynamic 60 Hz draw passes.</li>
 <li><code>index(id: str, properties: AssetProperties) -&gt; Dict[str, Tuple[int, int, int, int]]</code>: Interface for indexing Asset frames in Registry.</li>
 <li><code>eras(id: str, calendar: CalendarState) -&gt; List[Tuple[str, int, int]]</code>: Macro-temporal epochal projection for static pre-rendered canvas baking.</li>
-<li><code>channels(id: str, state: AssetState, properties: AssetProperties) -&gt; List[Tuple]</code>: Emits auxiliary shader and texture modulation directives (e.g., submersion splits).</li>
+<li><code>channels(id: str, state: AssetState, properties: AssetProperties) -&gt; List[Tuple]</code>: Emits auxiliary shader and texture modulation directives.</li>
+</ul>
+</li>
+<li><strong>Behavior: Hitbox:</strong> Stateless collision boundary resolution strategies injected via Recipes. Resolves active physical obstacles dynamically without mutating cached properties:<ul>
+<li><code>resolve(properties: AssetProperties, state: AssetState, frame: Optional[Frame]) -&gt; List[Hitbox]</code>: Emits the active physical collision footprint for spatial broad-phase and narrow-phase physics.</li>
 </ul>
 </li>
 </ol>
