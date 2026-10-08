@@ -98,31 +98,25 @@ def test_season_mechanics_temporal_season_year_rollover(
 def test_season_mechanics_hydrological_diffusion_near_water(
     mock_board,
     mock_crop_resource,
-    mock_fluid,
     mock_bus
 ):
     """
-    Verify resources adjacent to active fluid channels absorb moisture
+    Verify resources with positive moisture flux absorb moisture
     up to the configured saturation ceiling.
     """
     mechanic = SeasonMechanics()
 
-    # Position fluid at (100, 100) with 32x32 stream hitbox; crop adjacent at (100, 132)
-    mock_fluid.state.position = Position(100, 100)
-    mock_fluid.state.layer = "0"
-    mock_fluid.state.length = 32
-    mock_fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(32, 32))]
-
     mock_crop_resource.state.position = Position(100, 132)
     mock_crop_resource.state.layer = "0"
     mock_crop_resource.state.retention = 5.0
+    mock_crop_resource.state.moisture_flux = 1.0
 
     mock_board.clear()
-    mock_board.add([mock_fluid, mock_crop_resource])
+    mock_board.add([mock_crop_resource])
 
     mechanic.update(mock_board, delta=1.0, bus=mock_bus, payload=None)
 
-    # 5.0 initial + (10.0 diffusion_rate * 1.0 delta) = 15.0
+    # 5.0 initial + (1.0 flux * 10.0 diffusion_rate * 1.0 delta) = 15.0
     assert mock_crop_resource.state.retention == pytest.approx(15.0, rel=1e-3)
 
 
@@ -356,3 +350,45 @@ def test_season_event_handler_reconstructs_screens(
     assert captured["calendar"].season == Seasons.AUTUMN.value
     assert captured["calendar"].cycle == Cycles.PEAK.value
     assert captured["calendar"].period == 1
+
+@pytest.mark.seasons
+@pytest.mark.ecology
+def test_season_mechanics_stage_evaluation_throttling(
+    mock_board,
+    mock_crop_resource,
+    mock_lambda_executors,
+    mock_bus
+):
+    """
+    Verify biological stage evaluation executes on frame 0, throttles on
+    sub-second ticks, and re-evaluates once the accumulator reaches 1.0s.
+    """
+    mechanic = SeasonMechanics()
+    mechanic.executors = mock_lambda_executors
+
+    mock_board.calendar = CalendarState(
+        season=Seasons.SPRING.value,
+        cycle=Cycles.ONSET.value,
+        period=0
+    )
+
+    mock_crop_resource.state.stage = AnnualStages.SPROUT.value
+    mock_crop_resource.state.retention = 25.0
+
+    mock_board.clear()
+    mock_board.add([mock_crop_resource])
+
+    # Tick 1: Evaluates immediately on tick 0
+    mechanic.update(mock_board, delta=0.1, bus=mock_bus, payload=None)
+    assert mock_crop_resource.state.stage == AnnualStages.GROWTH.value
+
+    # Reset stage manually to verify throttling skips immediate re-evaluation
+    mock_crop_resource.state.stage = AnnualStages.SPROUT.value
+
+    # Tick 2: delta=0.1 -> accumulator=0.1 < 1.0 -> throttled, stage unchanged
+    mechanic.update(mock_board, delta=0.1, bus=mock_bus, payload=None)
+    assert mock_crop_resource.state.stage == AnnualStages.SPROUT.value
+
+    # Tick 3: delta=0.9 -> accumulator=1.0 >= 1.0 -> evaluates again
+    mechanic.update(mock_board, delta=0.9, bus=mock_bus, payload=None)
+    assert mock_crop_resource.state.stage == AnnualStages.GROWTH.value

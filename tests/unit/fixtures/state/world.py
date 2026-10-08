@@ -4,6 +4,7 @@ import pytest
 # Application Libraries
 from app.config.enums import ( 
     Directions,
+    Seasons
 
 )
 from app.models.state import (
@@ -59,6 +60,7 @@ def mock_shoreline_state() -> ShorelineState:
         height=0,
         depth=0,
         orientation=Directions.LEFT.value,
+        season=Seasons.SPRING.value,
         length=32,
         thickness=8,
         bidirectional=True,

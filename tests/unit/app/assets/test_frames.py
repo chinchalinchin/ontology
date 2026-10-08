@@ -392,7 +392,8 @@ def test_sprite_frame_channels_submerged():
 @pytest.mark.ecology
 def test_shoreline_frame_indexing():
     """
-    Verify CardinalFrame indexes 4 cardinal rows and forward fractional remainder slices.
+    Verify CardinalFrame indexes 4 cardinal rows across 4 calendar seasons
+    and forward fractional remainder slices.
     """
     frame = CardinalFrame()
     props = GeographyProperties(
@@ -403,19 +404,27 @@ def test_shoreline_frame_indexing():
     )
     crops = frame.index("grassy-shore", props)
 
-    # 1. Base full cardinal tile keys at row offsets
-    assert crops[f"grassy-shore{SEPARATOR}up"] == (0, 0, 32, 32)      # Row 0 (UP)
-    assert crops[f"grassy-shore{SEPARATOR}left"] == (0, 32, 32, 32)   # Row 1 (LEFT)
-    assert crops[f"grassy-shore{SEPARATOR}down"] == (0, 64, 32, 32)   # Row 2 (DOWN)
-    assert crops[f"grassy-shore{SEPARATOR}right"] == (0, 96, 32, 32)  # Row 3 (RIGHT)
+    # 1. Base full cardinal tile keys across seasons and cardinal rows
+    # Columns: spring (0), summer (1), autumn (2), winter (3)
+    # Rows: up (0), left (1), down (2), right (3)
+    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}up"] == (0, 0, 32, 32)
+    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}left"] == (0, 32, 32, 32)
+    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}down"] == (0, 64, 32, 32)
+    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}right"] == (0, 96, 32, 32)
+
+    assert crops[f"grassy-shore{SEPARATOR}summer{SEPARATOR}up"] == (32, 0, 32, 32)
+    assert crops[f"grassy-shore{SEPARATOR}autumn{SEPARATOR}up"] == (64, 0, 32, 32)
+    assert crops[f"grassy-shore{SEPARATOR}winter{SEPARATOR}up"] == (96, 0, 32, 32)
 
     # 2. Horizontal remainder slices across width (UP and DOWN)
-    assert crops[f"grassy-shore{SEPARATOR}up{SEPARATOR}16"] == (0, 0, 16, 32)
-    assert crops[f"grassy-shore{SEPARATOR}down{SEPARATOR}16"] == (0, 64, 16, 32)
+    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}up{SEPARATOR}16"] == (0, 0, 16, 32)
+    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}down{SEPARATOR}16"] == (0, 64, 16, 32)
+    assert crops[f"grassy-shore{SEPARATOR}summer{SEPARATOR}up{SEPARATOR}16"] == (32, 0, 16, 32)
 
     # 3. Vertical remainder slices across length (LEFT and RIGHT)
-    assert crops[f"grassy-shore{SEPARATOR}left{SEPARATOR}16"] == (0, 32, 32, 16)
-    assert crops[f"grassy-shore{SEPARATOR}right{SEPARATOR}16"] == (0, 96, 32, 16)
+    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}left{SEPARATOR}16"] == (0, 32, 32, 16)
+    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}right{SEPARATOR}16"] == (0, 96, 32, 16)
+    assert crops[f"grassy-shore{SEPARATOR}winter{SEPARATOR}right{SEPARATOR}16"] == (96, 96, 32, 16)
 
 
 @pytest.mark.frames
@@ -430,14 +439,15 @@ def test_shoreline_frame_keys_horizontal_full_and_slice():
     state = ShorelineState(
         id="grassy-shore",
         orientation=Directions.UP.value,
+        season=Seasons.SPRING.value,
         length=80  # 32 + 32 + 16
     )
     keys = frame.keys("grassy-shore", state)
 
     assert len(keys) == 3
-    assert keys[0] == (f"grassy-shore{SEPARATOR}up", 0, 0)
-    assert keys[1] == (f"grassy-shore{SEPARATOR}up", 32, 0)
-    assert keys[2] == (f"grassy-shore{SEPARATOR}up{SEPARATOR}16", 64, 0)
+    assert keys[0] == (f"grassy-shore{SEPARATOR}spring{SEPARATOR}up", 0, 0)
+    assert keys[1] == (f"grassy-shore{SEPARATOR}spring{SEPARATOR}up", 32, 0)
+    assert keys[2] == (f"grassy-shore{SEPARATOR}spring{SEPARATOR}up{SEPARATOR}16", 64, 0)
 
 
 @pytest.mark.frames
@@ -452,15 +462,16 @@ def test_shoreline_frame_keys_vertical_full_and_slice():
     state = ShorelineState(
         id="grassy-shore",
         orientation=Directions.LEFT.value,
+        season=Seasons.SPRING.value,
         length=80  # 32 + 32 + 16
     )
     keys = frame.keys("grassy-shore", state)
 
     assert len(keys) == 3
-    assert keys[0] == (f"grassy-shore{SEPARATOR}left", 0, 0)
-    assert keys[1] == (f"grassy-shore{SEPARATOR}left", 0, 32)
-    assert keys[2] == (f"grassy-shore{SEPARATOR}left{SEPARATOR}16", 0, 64)
-
+    assert keys[0] == (f"grassy-shore{SEPARATOR}spring{SEPARATOR}left", 0, 0)
+    assert keys[1] == (f"grassy-shore{SEPARATOR}spring{SEPARATOR}left", 0, 32)
+    assert keys[2] == (f"grassy-shore{SEPARATOR}spring{SEPARATOR}left{SEPARATOR}16", 0, 64)
+    
 
 @pytest.mark.frames
 @pytest.mark.geology

@@ -31,7 +31,8 @@ def mock_tree_state() -> ResourceState:
         layer="0", 
         position=Position(x=670, y=206),
         stage=PerennialStages.SAPLING.value,
-        retention=0.0
+        retention=0.0,
+        moisture_flux=0.0
     )
 
 @pytest.fixture
@@ -42,5 +43,6 @@ def mock_crop_state() -> ResourceState:
         layer="0",
         position=Position(x=415, y=390),
         stage=AnnualStages.SPROUT.value,
-        retention=0.0
+        retention=0.0,
+        moisture_flux=0.0
     )
