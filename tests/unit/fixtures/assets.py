@@ -513,7 +513,7 @@ def mock_plate(
 
 
 @pytest.fixture
-def mock_reactable(
+def mock_reactable( 
     mock_effect_properties,
     mock_reactable_state
 ) -> Asset:
@@ -530,7 +530,6 @@ def mock_reactable(
         animation=LifecycleAnimation(),
         hitbox = StaticHitbox()
     )
-
 
 @pytest.fixture
 def mock_assets(
@@ -550,24 +549,28 @@ def mock_assets(
     mock_strut_alt,
     mock_strut_alt2,
     mock_raft,
-    mock_bridge
-):
-    return [
-        mock_back_tile,
-        mock_sprite, 
-        mock_sprite_alt,
-        mock_player,
-        mock_fluid,
-        mock_fluid_alt,
-        mock_reactable,
-        mock_door,
-        mock_chest,
-        mock_plate,
-        mock_gate,
-        mock_crate,
-        mock_strut,
-        mock_strut_alt,
-        mock_strut_alt2,
-        mock_raft,
-        mock_bridge
-    ]
+    mock_bridge,
+    mock_tree_resource,
+    mock_crop_resource,
+) -> list[Asset]:
+  return [
+      mock_back_tile,
+      mock_sprite,
+      mock_sprite_alt,
+      mock_player,
+      mock_fluid,
+      mock_fluid_alt,
+      mock_reactable,
+      mock_door,
+      mock_chest,
+      mock_plate,
+      mock_gate,
+      mock_crate,
+      mock_strut,
+      mock_strut_alt,
+      mock_strut_alt2,
+      mock_raft,
+      mock_bridge,
+      mock_tree_resource,
+      mock_crop_resource,
+  ]
