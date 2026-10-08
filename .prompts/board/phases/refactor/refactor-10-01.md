@@ -4,7 +4,7 @@
 
 Presently, `Resource` entities maintain static hitboxes declared on immutable `ResourceProperties` (`properties.hitboxes`). When `SeasonMechanics` transitions a resource across biological stages (e.g., from `sapling` to `adult` to `stump`, or `sprout` to `bloom`), physical hitboxes remain invariant. An adult oak tree retains the physical footprint of a sapling, and a harvested crop or stump blocks navigation identically to a mature plant. Furthermore, fallback hitbox logic treats empty hitbox declarations (`[]`) as falsy, forcing passable juvenile stages to obstruct characters with full-canopy bounding boxes.
 
-This phase refactors hitbox resolution into an explicit, decoupled ECS behavior component (`HitboxBehavior`), mirroring the architecture of `Frame` and `Animation`. Asset recipes declare their hitbox schema, and `Factory.hitbox()` injects pre-instantiated, zero-allocation behavior singletons into all hydrated assets. Dynamic biological lifecycle stages resolve collision bounds in $O(1)$ time while maintaining immutable property caching and contract invariance across all game mechanics.
+This phase refactors hitbox resolution into an explicit, decoupled ECS behavior component (`HitboxSchema`), mirroring the architecture of `Frame` and `Animation`. Asset recipes declare their hitbox schema, and `Factory.hitbox()` injects pre-instantiated, zero-allocation behavior singletons into all hydrated assets. Dynamic biological lifecycle stages resolve collision bounds in $O(1)$ time while maintaining immutable property caching and contract invariance across all game mechanics.
 
 ##### Architectural Analysis I
 
@@ -294,7 +294,7 @@ However, implementing this via a single monolithic `PhysicalHitbox` class contai
 
 ```
                   ┌──────────────────────┐
-                  │  HitboxBehavior (ABC) │
+                  │  HitboxSchema (ABC) │
                   └──────────┬───────────┘
                              │
      ┌───────────────────────┼───────────────────────┬──────────────────────┐
@@ -323,7 +323,7 @@ Introducing a `hitbox` recipe parameter ripples across several subsystems:
                  │
                  ▼
      ┌───────────────────────┐
-     │ Factory.hitbox(...)   │ ──► HitboxBehavior Singleton (Flyweight)
+     │ Factory.hitbox(...)   │ ──► HitboxSchema Singleton (Flyweight)
      └───────────┬───────────┘
                  │
        ┌─────────┴─────────┐
@@ -334,7 +334,7 @@ Introducing a `hitbox` recipe parameter ripples across several subsystems:
                            │
                            ▼
                  ┌───────────────────┐
-                 │  Asset.hitboxes   │ ──► HitboxBehavior.resolve(properties, state, frame)
+                 │  Asset.hitboxes   │ ──► HitboxSchema.resolve(properties, state, frame)
                  └─────────┬─────────┘
                            │
        ┌───────────────────┼───────────────────┐
@@ -376,10 +376,10 @@ class Recipe:
 
 **1. Polymorphic Behavior Component Hierarchy**
 
-Rather than routing through branching logic within `Asset.hitboxes`, hitbox retrieval is delegated to an abstract `HitboxBehavior` interface residing in `app.assets.hitboxes.base`:
+Rather than routing through branching logic within `Asset.hitboxes`, hitbox retrieval is delegated to an abstract `HitboxSchema` interface residing in `app.assets.hitboxes.base`:
 
 ```python
-class HitboxBehavior(ABC):
+class HitboxSchema(ABC):
     @abstractmethod
     def resolve(
         self,
@@ -414,7 +414,7 @@ class Factory:
     }
 
     @classmethod
-    def hitbox(cls, recipe_key: Optional[HitboxRecipe]) -> HitboxBehavior:
+    def hitbox(cls, recipe_key: Optional[HitboxRecipe]) -> HitboxSchema:
         return cls._HITBOX_STRATEGIES.get(recipe_key, cls._HITBOX_STRATEGIES[HitboxRecipe.STATIC])
 
 ```
@@ -430,7 +430,7 @@ class Asset:
     state: AssetState
     frame: Frame
     animation: Animation
-    hitbox: HitboxBehavior
+    hitbox: HitboxSchema
 
     def __init__(
         self,
@@ -439,7 +439,7 @@ class Asset:
         state: AssetState,
         frame: Optional[Frame] = None,
         animation: Optional[Animation] = None,
-        hitbox: Optional[HitboxBehavior] = None,
+        hitbox: Optional[HitboxSchema] = None,
     ):
         self.taxonomy = taxonomy
         self.properties = properties
@@ -563,18 +563,18 @@ Support stage-partitioned hitbox dictionaries in `ResourceProperties` and Pydant
 
 *Objective*: Define `HitboxRecipe` enumerations and integrate `hitbox` fields across recipe configuration schemas.
 
-* [ ] Subtask: Define `HitboxRecipe(StringEnum)` in `app.config.enums` with values `static`, `dynamic`, `stage`, `attack`, and `none`.
+* [x] Subtask: Define `HitboxRecipe(StringEnum)` in `app.config.enums` with values `static`, `dynamic`, `stage`, `attack`, and `none`.
 * [ ] Subtask: Update `Recipe` in `app.models.config.recipes` to include `hitbox: Optional[HitboxRecipe] = HitboxRecipe.STATIC`.
 * [ ] Subtask: Populate `hitbox` definitions across all category blocks in `src/data/config/recipes/main.yaml` (`resources.*: stage`, `geography.shorelines: dynamic`, `effects.fluids: dynamic`, `tiles.*: none`, `effects.passive: none`, objects/crafts/sheets: `static`).
 
 **2. Task: Hitbox Behavior Strategy Hierarchy**
 
-*Objective*: Implement polymorphic `HitboxBehavior` strategies with zero runtime heap allocation.
+*Objective*: Implement polymorphic `HitboxSchema` strategies with zero runtime heap allocation.
 
-* [ ] Subtask: Create `app.assets.hitboxes.base` declaring abstract interface `HitboxBehavior(ABC)` with method `resolve(properties, state, frame) -> List[Hitbox]`.
-* [ ] Subtask: Implement `StaticHitbox`, `DynamicHitbox`, `StageHitbox`, `NullHitbox`, and `AttackHitbox` in `app.assets.hitboxes.strategies`.
+* [x] Subtask: Create `app.assets.base` declaring abstract interface `HitboxSchema(ABC)` with method `resolve(properties, state, frame) -> List[Hitbox]`.
+* [~] Subtask: Implement `StaticHitbox`, `DynamicHitbox`, `StageHitbox`, `NullHitbox`, and `AttackHitbox` in `app.assets.hitboxes`.
 * [ ] Subtask: Fix the falsy hitbox bug by replacing `if not hbs and self.dimensions` with `if hbs is None and self.dimensions` across static fallbacks to preserve explicit `[]` passable declarations.
-* [ ] Subtask: Register pre-instantiated singletons in `Factory.hitbox()` within `app.services.generators.game.factory`.
+* [x] Subtask: Register pre-instantiated singletons in `Factory.hitbox()` within `app.services.generators.game.factory`.
 
 **3. Task: Resource Properties Model Extension & YAML Configuration**
 
@@ -587,11 +587,12 @@ Support stage-partitioned hitbox dictionaries in `ResourceProperties` and Pydant
 
 **4. Task: ECS Injection in Migrator and Decomposer**
 
-*Objective*: Update asset instantiation pipelines to inject `HitboxBehavior` into `Asset` constructors.
+*Objective*: Update asset instantiation pipelines to inject `HitboxSchema` into `Asset` constructors.
 
-* [ ] Subtask: Update `Asset.__init__` in `app.assets.base` to accept `hitbox: Optional[HitboxBehavior] = None` and delegate `@property def hitboxes` to `self.hitbox.resolve(self.properties, self.state, self.frame)`.
+* [~] Subtask: Update `Asset.__init__` in `app.assets.base` to accept `hitbox: Optional[HitboxSchema] = None` and delegate `@property def hitboxes` to `self.hitbox.resolve(self.properties, self.state, self.frame)`.
 * [ ] Subtask: Update `Migrator._build_generator` in `app.services.orchestration.migrator` to pass `hitbox=Factory.hitbox(recipe.hitbox)` to `Asset`.
 * [ ] Subtask: Update `Decomposer.unpack` and `Decomposer.bridge` in `app.services.generators.game.decomposer` to inject `Factory.hitbox(recipe.hitbox)` into generated constituent assets.
+* [ ] Subtack: Update `Cradle`.
 
 **5. Task: State Dump Serialization & Verification**
 
@@ -612,7 +613,7 @@ Support stage-partitioned hitbox dictionaries in `ResourceProperties` and Pydant
 
 ##### Drift
 
-The existing documentation outlines four core components of an Asset: Model Properties, Model State, Behavior Animation, and Behavior Frame. Hitboxes are described as static properties on `AssetProperties`. With the introduction of stage-indexed biological lifecycles, dynamic fluid hulls, and weapon reach mappings, hitboxes are now resolved through an injected `HitboxBehavior` component strategy.
+The existing documentation outlines four core components of an Asset: Model Properties, Model State, Behavior Animation, and Behavior Frame. Hitboxes are described as static properties on `AssetProperties`. With the introduction of stage-indexed biological lifecycles, dynamic fluid hulls, and weapon reach mappings, hitboxes are now resolved through an injected `HitboxSchema` component strategy.
 
 ##### Update
 

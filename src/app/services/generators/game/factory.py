@@ -19,7 +19,15 @@ from app.assets.animations import (
 from app.assets.base import (
     Taxonomy,
     Frame,
-    Animation
+    Animation,
+    HitboxSchema
+)
+from app.assets.hitboxes import (
+    StaticHitbox,
+    StageHitbox,
+    DynamicHitbox,
+    AttackHitbox,
+    NoHitbox
 )
 from app.assets.frames import (
     SingleFrame, 
@@ -39,6 +47,7 @@ from app.assets.frames import (
 from app.config.enums import (
     AnimationRecipe, 
     FrameRecipe, 
+    HitboxRecipe,
     Devices, 
     Mechanics,
     Controllers,
@@ -112,6 +121,14 @@ class Factory:
         AnimationRecipe.TRAVERSAL.value: TraversalAnimation,
         AnimationRecipe.METER.value: MeterAnimation,
         AnimationRecipe.NONE.value: NoAnimation
+    }
+
+    HITBOX_MAP = {
+        HitboxRecipe.STATIC.value: StaticHitbox,
+        HitboxRecipe.DYNAMIC.value: DynamicHitbox,
+        HitboxRecipe.STAGE.value: StageHitbox,
+        HitboxRecipe.ATTACK.value: AttackHitbox,
+        HitboxRecipe.NONE.value: NoHitbox
     }
 
     DEVICE_MAP = {
@@ -259,6 +276,11 @@ class Factory:
         target_cls = Factory.TRANSLATOR_MAP.get(translation, LambdaTranslator)
         return target_cls()
 
+    @staticmethod
+    def hitbox(schema: str):
+        target_cls = Factory.HITBOX_MAP.get(schema, StaticHitbox)
+        return target_cls()
+    
     @staticmethod
     def context(menu: str, **kwargs):
         # TODO

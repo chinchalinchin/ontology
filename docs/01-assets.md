@@ -137,11 +137,13 @@ These attributes are part of the base class from which all other states inherit.
 | Craft | Decor | Base, Owner |
 | Craft | Forge | Base, TODO |
 | Craft | Device | Base, TODO |
-| Resource | Crop | Base, Season |
-| Resource | Ore | Base, Vein |
+| Resource | Crop | Base, Stage, Retention, Moisture, Harvested |
+| Resource | Flower | Base, Stage, Retention, Moisture, Harvested |
+| Resource | Ore | Base, Stage, Retention, Moisture, Harvested |
+| Resource | Tree | Base, Stage, Retention, Moisture, Harvested |
 | Cursor | Expression | Base, Attachment |
 | Cursor | Projectile | Base, Initial, Velocity |
-| Geography | Shoreline | Base, TODO |
+| Geography | Shoreline | Base, Orientation, Length, Thickness |
 | Effect | Passive | Base, Animation |
 | Effect | Hazard | Base, Animation, Damage |
 | Effect | Collectable | Base, Animation, Lot |
@@ -172,7 +174,9 @@ The Recipe for an Asset, i.e. the list of components which go into a particular 
     - `keys(id: str, state: AssetState) -> List[Tuple[str, int, int]]`: Reflexive intrinsic state projection for dynamic 60 Hz draw passes.
     - `index(id: str, properties: AssetProperties) -> Dict[str, Tuple[int, int, int, int]]`: Interface for indexing Asset frames in Registry.
     - `eras(id: str, calendar: CalendarState) -> List[Tuple[str, int, int]]`: Macro-temporal epochal projection for static pre-rendered canvas baking.
-    - `channels(id: str, state: AssetState, properties: AssetProperties) -> List[Tuple]`: Emits auxiliary shader and texture modulation directives (e.g., submersion splits).
+    - `channels(id: str, state: AssetState, properties: AssetProperties) -> List[Tuple]`: Emits auxiliary shader and texture modulation directives.
+5. **Behavior: Hitbox:** Stateless collision boundary resolution strategies injected via Recipes. Resolves active physical obstacles dynamically without mutating cached properties:
+    - `resolve(properties: AssetProperties, state: AssetState, frame: Optional[Frame]) -> List[Hitbox]`: Emits the active physical collision footprint for spatial broad-phase and narrow-phase physics.
 
 
 !!! note

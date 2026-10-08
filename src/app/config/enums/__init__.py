@@ -60,7 +60,8 @@ from app.config.enums.menus import (
 )
 from app.config.enums.recipes import (
     FrameRecipe,
-    AnimationRecipe
+    AnimationRecipe,
+    HitboxRecipe
 )
 from app.config.enums.sprites import (
     Intentions,
@@ -79,6 +80,7 @@ from app.config.enums.sprites import (
 __all__ = [
     'FrameRecipe',
     'AnimationRecipe',
+    'HitboxRecipe',
     # -------
     'AssetCategories',
     'AssetInstances',

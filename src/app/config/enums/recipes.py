@@ -33,3 +33,10 @@ class AnimationRecipe(str, Enum):
     METER           = "meter"
     TRAVERSAL       = "traversal"
     LIFECYCLE       = "lifecycle"
+
+class HitboxRecipe(str, Enum):
+    STATIC          = "static"
+    DYNAMIC         = "dynamic"
+    STAGE           = "stage"
+    ATTACK          = "attack"
+    NONE            = "none"

@@ -4,12 +4,16 @@
 Package for foundational Asset classes and interfaces.
 """
 # Standard Libraries
-from abc import ABC, abstractmethod
+from abc import (
+    ABC, 
+    abstractmethod
+)
 from dataclasses import dataclass
 from typing import (
     Dict,
     List, 
-    Tuple
+    Tuple,
+    Optional
 )
 
 # Application Libraries
@@ -105,6 +109,23 @@ class Animation(ABC):
         pass
 
 
+class HitboxSchema(ABC):
+    """
+    Foundational interface for Assets that participate in collisions and interactions.
+    """
+
+    @abstractmethod
+    def resolve(self,
+        state: AssetState,
+        properties: AssetProperties,
+        frame: Frame
+    ) -> List[Hitbox]:
+        """
+        Abstract method for resolving Asset's hitboxes.
+        """
+        pass
+
+
 class Asset:
     """
     Foundational class for all game Assets.
@@ -120,7 +141,8 @@ class Asset:
         properties: AssetProperties, 
         state: AssetState, 
         frame: Frame=None, 
-        animation: Animation=None
+        animation: Animation=None,
+        hitbox: Optional[HitboxSchema]=None,
     ):
         self.taxonomy = taxonomy
         self.properties = properties
