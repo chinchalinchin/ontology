@@ -1536,14 +1536,6 @@
 </div>
 <p><strong>Z-Ordering &amp; Sorting</strong></p>
 <p>Fluids declare an explicit <code>height: 0</code> and <code>depth: -1</code>. This ensures the <a href="../11-architecture/#graphics">rendering pipeline</a> sorts the resulting stream above Tiles but underneath other mutable Assets.</p>
-<p><strong>Branch Model</strong></p>
-<ul>
-<li><code>position: Position</code>: Absolute origin of the branch corridor.</li>
-<li><code>source: str</code>: Flow direction vector matching or orthogonal to parent stream.</li>
-<li><code>flow: int</code>: Attenuated flow intensity (<span class="arithmatex">\(flow_{\text{parent}} - 1\)</span>).</li>
-<li><code>length: int</code>: Raycast truncation distance.</li>
-<li><code>hitboxes: List[Hitbox]</code>: Compound hitboxes covering the secondary stream corridor.</li>
-</ul>
 <p><strong>Frame: FluidFrame</strong></p>
 <ul>
 <li><code>keys(id, state): returns [ ("{id}-{state.animation.frame}-{slices(state.pool, state.length)}", 0, 0)]</code> </li>
@@ -1563,6 +1555,14 @@
 <li><code>height: Optional[int] = 0</code></li>
 <li><code>depth: int = -1</code></li>
 <li><code>_keys: Dict[int, List[Tuple[str, int, int]]] = field(default_factory=dict)</code> (<em>Cache for pre-computing fluid keys</em>)</li>
+</ul>
+<p><strong>Model: Branch</strong></p>
+<ul>
+<li><code>position: Position</code>: Absolute origin of the branch corridor.</li>
+<li><code>source: str</code>: Flow direction vector matching or orthogonal to parent stream.</li>
+<li><code>flow: int</code>: Attenuated flow intensity (<span class="arithmatex">\(flow_{\text{parent}} - 1\)</span>).</li>
+<li><code>length: int</code>: Raycast truncation distance.</li>
+<li><code>hitboxes: List[Hitbox]</code>: Compound hitboxes covering the secondary stream corridor.</li>
 </ul>
 <h3 id="category-geography">Category: Geography</h3>
 <h4 id="instance-shorelines">Instance: Shorelines</h4>
@@ -1615,7 +1615,7 @@
 <li>Tree Stages: <code>sapling</code>, <code>bush</code>, <code>branch</code>, <code>adult</code>, <code>vibrant</code>, <code>healthy</code>, <code>abscise</code>, <code>snowcapt</code>, <code>dying</code>, <code>dead</code>, <code>stump</code></li>
 </ul>
 <p><strong>Epicycles</strong></p>
-<p>A natural feature of Tree Stage Transitions is the cyclic topology of a finite automata embodying perennial epicycles, i.e. Trees changing colors during the progression of Seasons or possibly dying due to environmental circumstances. Based on the conditions defined in the <a href="../appendices/01-schemas/#configuration-stage">Stage Configuration</a>, the Tree life cycle is composed of three distinct <em>epicycles</em>,</p>
+<p>A natural feature of Tree Stage Transitions is the cyclic topology of a finite automata embodying a perennial lifespans, i.e. Trees changing colors during the progression of Seasons or possibly dying due to environmental circumstances. Based on the conditions defined in the <a href="../appendices/01-schemas/#configuration-stage">Stage Configuration</a>, the Tree life cycle is composed of three distinct <em>epicycles</em>,</p>
 <ul>
 <li>Genesis</li>
 <li>Homeostasis</li>
