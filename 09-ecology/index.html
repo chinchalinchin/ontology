@@ -704,6 +704,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Fluid Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#moisture-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Moisture Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1425,6 +1442,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Fluid Flow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#moisture-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Moisture Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1566,6 +1600,7 @@
 <li><code>height: Optional[int] = None</code>: Geometric height override.</li>
 <li><code>stage: str</code>: Active biological or geological stage key.</li>
 <li><code>retention: float = 0.0</code>: Cumulative moisture level absorbed from adjacent fluid channels.</li>
+<li><code>moisture_flux: float = 0.0</code>: Precomputed scalar flux evaluated from the layer's environmental <code>MoistureField</code>.</li>
 <li><code>harvested: bool = False</code>: Flag indicating whether the bloom stage has been harvested.</li>
 </ul>
 <p>Stage transitions are evaluated through discrete <code>Executor</code> instances mapped to the asset's immutable <code>properties.lifespan</code> (<code>annual</code>, <code>perennial</code>, <code>centennial</code>).</p>
@@ -1615,10 +1650,52 @@
 <li>
 <p>(<strong>Source</strong>) A Fluid has a <code>source</code>. A <code>source</code> is a Direction. Fluid flows in the Direction of its <code>source</code>. </p>
 </li>
-<li>(<strong>Obstruction</strong>) Fluids are obstructed by obstacles. Fluids form Pools around obstacles, determined by their <code>flow</code> rate.</li>
+<li>(<strong>Obstruction</strong>) Fluids are obstructed by obstacles. Fluids form Annular Pools around obstacles, determined by their <code>flow</code> rate.</li>
 <li>(<strong>Bifurication</strong>) When a Fluid meets an obstacle, it bifuricates across its orthogonal axes (e.g., a <code>down</code> flowing Fluid bifuricates in the <code>left</code> and <code>right</code> directions) and then continues flowing in its original <code>source</code> Direction (e.g. <code>down</code>). The number of times a Fluid may bifuricate is equal to its <code>flow</code>, e.g. a <code>flow = 3</code> means the Fluid may bifuricate three times. In other words, everytime a Fluid bifuricates, its <code>flow</code> decreases by 1.</li>
 <li>(<strong>Fields</strong>) When dynamic Assets (Sprites, Crates, etc.) intersect a Fluid, they acquire a Velocity in the Direction of <code>source</code>, getting "swept" away. The speed imparted to an Asset by a Fluid is proportional to its <code>flow</code>, i.e. the higher the <code>flow</code>, the faster the resulting speed of the "swept" Asset.</li>
 </ul>
+<h4 id="moisture-fields">Moisture Fields</h4>
+<p>In continuous 2D soil hydrology with uniform transmissivity <span class="arithmatex">\(D\)</span> and surface evaporation/sink rate <span class="arithmatex">\(\gamma\)</span>, the steady-state moisture concentration <span class="arithmatex">\(\Phi(\mathbf{x})\)</span> outside active bodies satisfies the screened Poisson equation:</p>
+<div class="arithmatex">\[
+\nabla^2 \Phi(\mathbf{x}) - \kappa^2 \Phi(\mathbf{x}) = -S(\mathbf{x})
+\]</div>
+<p>where <span class="arithmatex">\(\kappa = \sqrt{\gamma / D}\)</span> is the inverse diffusion length and <span class="arithmatex">\(S(\mathbf{x})\)</span> represents fluid injection sources.</p>
+<div class="highlight"><pre><span></span><code>       Linear Stream Source (S_i)           Annular Pool Source (P_j)
+      [============================]                 /-----\
+                     \                             |   Q_j   |
+                      \ d(x, segment)               \-----/
+                       \                               /
+                        \                             / d(x, pool)
+                         v                           v
+                     Resource Coordinate x: Phi(x) = Sum Phi_i(x)
+</code></pre></div>
+<p><strong>Linear Stream Corridors (Finite Line Segments)</strong></p>
+<p>A fluid stream or branch corridor with source direction <span class="arithmatex">\(\hat{u}\)</span>, width <span class="arithmatex">\(w\)</span>, flow intensity <span class="arithmatex">\(f\)</span>, and length <span class="arithmatex">\(L\)</span> acts as a uniform line source segment between endpoints <span class="arithmatex">\(\mathbf{a}\)</span> and <span class="arithmatex">\(\mathbf{b} = \mathbf{a} + L\hat{u}\)</span> with linear flux density <span class="arithmatex">\(\lambda = \lambda_0 \cdot f\)</span>.</p>
+<p>In classical potential theory, the field generated by a finite uniform line segment at target point <span class="arithmatex">\(\mathbf{x} = (x, y)\)</span> can be evaluated either via exact line integration or via orthogonal distance to the segment:</p>
+<p><strong>Exact 3D Potential Projection (Finite Bar)</strong>:</p>
+<p>Mapping the corridor to a bar spanning <span class="arithmatex">\(z \in [0, L]\)</span> with transverse offset <span class="arithmatex">\(r = d_{\perp}(\mathbf{x}, \text{axis})\)</span>:</p>
+<div class="arithmatex">\[
+\Phi_{\text{bar}}(\mathbf{x}) = \lambda \int_0^L \frac{dz'}{\sqrt{r^2 + (z - z')^2}} = \lambda \ln \left( \frac{(L - z) + \sqrt{r^2 + (L - z)^2}}{-z + \sqrt{r^2 + z^2}} \right)
+\]</div>
+<p><strong>Screened Euclidean Distance Approximation (Piecewise or Exponential Decay)</strong>:</p>
+<p>For 2D terrain diffusion with a maximum hydrological cutoff radius <span class="arithmatex">\(R_{\max} = \sigma \cdot f\)</span>, the field contribution simplifies to a function of the minimum Euclidean distance <span class="arithmatex">\(d_i(\mathbf{x})\)</span> from <span class="arithmatex">\(\mathbf{x}\)</span> to segment <span class="arithmatex">\([\mathbf{a}_i, \mathbf{b}_i]\)</span>:</p>
+<div class="arithmatex">\[
+\Phi_i(\mathbf{x}) = \Phi_0 \cdot f_i \cdot \exp\left( -\frac{d_i(\mathbf{x})}{\sigma} \right) \quad \text{for } d_i(\mathbf{x}) \le R_{\max}
+\]</div>
+<p>where the distance <span class="arithmatex">\(d_i(\mathbf{x})\)</span> to the segment is computed without square roots outside the radius:</p>
+<div class="arithmatex">\[
+t = \text{clamp}\left( \frac{(\mathbf{x} - \mathbf{a}_i) \cdot (\mathbf{b}_i - \mathbf{a}_i)}{\Vert{}\mathbf{b}_i - \mathbf{a}_i\Vert{}^2}, 0, 1 \right), \quad d_i(\mathbf{x}) = \Vert{}\mathbf{x} - (\mathbf{a}_i + t(\mathbf{b}_i - \mathbf{a}_i))\Vert{}
+\]</div>
+<p><strong>Annular Pools (Disk Sources)</strong></p>
+<p>A pool centered at <span class="arithmatex">\(\mathbf{c}_j\)</span> with effective radius <span class="arithmatex">\(R_j = \frac{1}{2}\sqrt{w_{\text{pool}}^2 + l_{\text{pool}}^2}\)</span> acts as an isotropic source of intensity <span class="arithmatex">\(Q_j \propto f\)</span>:</p>
+<div class="arithmatex">\[
+\Phi_j(\mathbf{x}) = Q_j \cdot \exp\left( -\frac{\max(0, \Vert{}\mathbf{x} - \mathbf{c}_j\Vert{} - R_j)}{\sigma} \right)
+\]</div>
+<p><strong>Superposition Field</strong></p>
+<p>By the principle of superposition, the total soil moisture potential at any point <span class="arithmatex">\(\mathbf{x}\)</span> on layer <span class="arithmatex">\(L\)</span> is:</p>
+<div class="arithmatex">\[
+\Phi(\mathbf{x}) = \sum_{i \in \text{Streams}} \Phi_i(\mathbf{x}) + \sum_{j \in \text{Pools}} \Phi_j(\mathbf{x})
+\]</div>
 <h3 id="crop-growth">Crop Growth</h3>
 <ul>
 <li>

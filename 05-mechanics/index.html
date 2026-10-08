@@ -626,17 +626,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#seasonmechanics_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        SeasonMechanics
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1505,17 +1494,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#seasonmechanics_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        SeasonMechanics
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1879,7 +1857,6 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <li><strong>Pass 2 (Geometric Shift Detection &amp; Shoreline Synthesis)</strong>: Compares the pre- and post-propagation geometric signature (<code>_fluid_signature</code>: stream lengths, pool bounds, branch positions). If water geometry is invariant, shoreline regeneration is bypassed. If geometry shifted (or during hydration), <code>Cartographer.purge()</code> and <code>Cartographer.generate()</code> synthesize updated boundary contours.</li>
 </ol>
 <h4 id="seasonmechanics">SeasonMechanics</h4>
-<h4 id="seasonmechanics_1">SeasonMechanics</h4>
 <p><code>SeasonMechanics</code> executes within the <code>world</code> mechanics pipeline, driving global time, soil hydrology, and biological resource lifecycles:</p>
 <ol>
 <li><strong>Temporal Integration</strong>: Accumulates frame <span class="arithmatex">\(\Delta t\)</span> into <code>board.calendar.elapsed</code>. When elapsed time reaches <code>settings.PERIOD_DURATION_SECONDS</code>, the mechanic advances <code>period</code> (0..2), <code>cycle</code> (<code>onset</code>, <code>peak</code>, <code>decline</code>), <code>season</code> (<code>spring</code>, <code>summer</code>, <code>autumn</code>, <code>winter</code>), and <code>year</code>, appending a <code>SeasonEvent</code> to the engine bus.</li>

@@ -1548,6 +1548,7 @@
 <li>Environment Queries<ol>
 <li><code>board.tile(layer, position, instance)</code>: Retrieves background or foreground <a href="../01-assets/#tiles">Tiles</a> via <span class="arithmatex">\(O(1)\)</span> spatial hash lookup.</li>
 <li><code>board.shorelines(layer=None)</code>: Retrieves active procedural shoreline assets for a specific layer or across all layers.</li>
+<li><code>board.moisture(layer, x, y)</code>: Queries scalar soil moisture potential <span class="arithmatex">\(\Phi(x, y)\)</span> from the layer's compiled <code>MoistureField</code>.</li>
 </ol>
 </li>
 </ul>
