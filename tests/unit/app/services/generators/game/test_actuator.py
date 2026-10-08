@@ -14,6 +14,7 @@ from libs.core.models import Position
 
 @pytest.mark.fluids
 @pytest.mark.services
+@pytest.mark.ecology
 def test_actuator_pump_down_to_boundary(mock_board, mock_actuator):
     """
     Verify downward propagation truncates at boundary wall and does not pool.
@@ -34,6 +35,7 @@ def test_actuator_pump_down_to_boundary(mock_board, mock_actuator):
 
 @pytest.mark.fluids
 @pytest.mark.services
+@pytest.mark.ecology
 def test_actuator_upstream_obstacles_ignored(mock_board, mock_actuator):
     """
     Verify obstacles positioned at or behind emitter origin are not struck.
@@ -123,6 +125,7 @@ def test_actuator_dynamic_bodies_ignored_as_obstacles(mock_board, mock_crate, mo
 
 @pytest.mark.fluids
 @pytest.mark.services
+@pytest.mark.ecology
 def test_actuator_pump_down_to_obstacle_with_pool(mock_board, mock_actuator):
     """
     Verify single-intensity fluid (flow=1) striking a static obstacle truncates at
@@ -160,6 +163,7 @@ def test_actuator_pump_down_to_obstacle_with_pool(mock_board, mock_actuator):
 
 @pytest.mark.fluids
 @pytest.mark.services
+@pytest.mark.ecology
 def test_actuator_bifurcation_downstream_flanks(mock_board, mock_actuator):
     """
     Verify multi-intensity fluid (flow=2) striking a static obstacle forms an annular pool,
@@ -303,6 +307,7 @@ def test_actuator_pump_left_to_obstacle_with_pool(mock_board, mock_actuator):
 
 @pytest.mark.fluids
 @pytest.mark.services
+@pytest.mark.ecology
 def test_actuator_pump_up_to_obstacle_with_pool(mock_board, mock_actuator):
     """
     Verify northward propagation truncates stream length at South pool margin.

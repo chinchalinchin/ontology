@@ -21,6 +21,7 @@ from libs.core.models import Position
 
 @pytest.mark.fluids
 @pytest.mark.services
+@pytest.mark.ecology
 def test_cartographer_collect_water_rectangles(mock_board):
     """
     Verify active stream corridors and annular pools are correctly extracted
@@ -42,6 +43,7 @@ def test_cartographer_collect_water_rectangles(mock_board):
 
 @pytest.mark.fluids
 @pytest.mark.services
+@pytest.mark.ecology
 def test_cartographer_generate_and_coalesce_shorelines(
     mock_board, 
     mock_shoreline_index, 
@@ -71,6 +73,7 @@ def test_cartographer_generate_and_coalesce_shorelines(
 
 @pytest.mark.fluids
 @pytest.mark.services
+@pytest.mark.ecology
 def test_cartographer_purge_clears_layer_shorelines(
     mock_board, 
     mock_shoreline_index, 
@@ -219,6 +222,7 @@ def test_cartographer_board_shoreline_lifecycle(mock_board, mock_shoreline):
 
 @pytest.mark.fluids
 @pytest.mark.services
+@pytest.mark.ecology
 def test_cartographer_collects_active_branch_rectangles(mock_board):
     """
     Verify Cartographer._collect_water_rectangles compiles bounding boxes for

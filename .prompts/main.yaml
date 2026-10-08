@@ -38,8 +38,8 @@ task:
   # ---------------------------------- ITERATION CYCLE
   # template: iterate/documentation.md.j2
   # template: iterate/grooming.md.j2
-  template: iterate/implementation.md.j2
-  # template: iterate/coverage.md.j2
+  # template: iterate/implementation.md.j2
+  template: iterate/coverage.md.j2
   # template: iterate/conclusion.md.j2
   # ------------------------------------- DESIGN TASKS
   # template: design/menu.md.j2
@@ -60,19 +60,19 @@ tools:
 # ----------------------------------------------------
   views:
     manager:
-      board: true
+      board: false
       specs: false
-      docs: true
+      docs: false
     source:
-      workflow: true
+      workflow: false
     shell:
-      directory: true
+      directory: false
       commands: false
     tests:  
-      pipeline: false
-      fixtures: false
+      pipeline: true
+      fixtures: true
       session: false
-      workflow: false
+      workflow: true
 # ----------------------------------------------------
   parameters:
     manager:
@@ -104,20 +104,20 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: seasons
+        marker: ecology
       fixtures:
         # ----------------------------
         # - configuration/compositions
         # - configuration/groups
         # - configuration/recipes
-        - configuration/transitions
-        - configuration/schemas
+        # - configuration/transitions
+        # - configuration/schemas
         # ----------------------------
         # - properties/crafts
         # - properties/cursors
         - properties/effects
         # - properties/fonts
-        # - properties/geography
+        - properties/geography
         # - properties/objects
         - properties/resources
         # - properites/sheets
@@ -135,9 +135,9 @@ tools:
         - assets
         - components
         # - menus
-        # - services
-        # - structures
-      workflow: seasons
+        - services
+        - structures
+      workflow: ecology
       session:
         description: null
         conditions:

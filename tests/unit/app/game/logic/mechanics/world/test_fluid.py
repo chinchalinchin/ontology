@@ -165,6 +165,7 @@ def test_fluid_mechanics_debounce_window(mock_board, mock_bus, monkeypatch):
 
 
 @pytest.mark.fluids
+@pytest.mark.ecology
 def test_fluid_mechanics_geometric_shift_detection_skips_regeneration(
     mock_board,
     mock_bus,
@@ -191,6 +192,7 @@ def test_fluid_mechanics_geometric_shift_detection_skips_regeneration(
 
 
 @pytest.mark.fluids
+@pytest.mark.ecology
 def test_fluid_mechanics_cross_layer_isolation(mock_board, mock_bus):
     """
     Verify obstacle movements on layer 1 do not invalidate fluids on layer 0.
@@ -214,6 +216,7 @@ def test_fluid_mechanics_cross_layer_isolation(mock_board, mock_bus):
 
 
 @pytest.mark.fluids
+@pytest.mark.ecology
 def test_fluid_mechanics_two_pass_layer_shorelines(
     mock_board, 
     mock_bus, 
@@ -237,6 +240,7 @@ def test_fluid_mechanics_two_pass_layer_shorelines(
 
 
 @pytest.mark.fluids
+@pytest.mark.ecology
 def test_board_fluid_subtile_precision(mock_board):
     """
     Verify Board.fluid broad/narrow spatial hash returns False for coordinates
@@ -260,6 +264,7 @@ def test_board_fluid_subtile_precision(mock_board):
 
 
 @pytest.mark.fluids
+@pytest.mark.ecology
 def test_board_fluid_spatial_hash_indexes_child_branches(mock_board):
     """
     Verify Board broad/narrow spatial fluid checking detects Cartesian points

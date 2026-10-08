@@ -9,9 +9,7 @@ from __future__ import annotations
 # Standard Libraries
 import collections
 import logging
-from typing import (
-    TYPE_CHECKING
-)
+from typing import TYPE_CHECKING
 
 # Application Libraries
 import app.config.settings as settings
@@ -41,13 +39,12 @@ class SeasonMechanics(Mechanic):
 
     def __init__(self):
         super().__init__()
-        self._transition_accumulator = 0.0
-
+        # Initialized to threshold so the initial update tick evaluates immediately
+        self._transition_accumulator = 1.0
 
     @property
     def period(self) -> float:
         return settings.SEASON_DURATION_SECONDS / 9.0
-
 
     def _advance_calendar(self, calendar: CalendarState) -> None:
         """
@@ -119,7 +116,7 @@ class SeasonMechanics(Mechanic):
         if not resources:
             return
 
-        # 2. Continuous Environmental Moisture Integration
+        # 2. Continuous Environmental Moisture Integration (Zero Inner-Loop Allocations)
         evap_modifier = settings.SEASON_EVAPORATION_MODIFIERS.get(board.calendar.season, 1.0)
         evaporation_step = delta * settings.EVAPORATION_RATE * evap_modifier
         diffusion_step = settings.DIFFUSION_RATE * delta
@@ -145,13 +142,19 @@ class SeasonMechanics(Mechanic):
             self._transition_accumulator = 0.0
 
             for resource in resources:
-                executor = self.executors.get(resource.properties.lifespan)
+                lifespan_prop = resource.properties.lifespan
+                lifespan_key = lifespan_prop.value if hasattr(lifespan_prop, "value") else str(lifespan_prop)
+                executor = self.executors.get(lifespan_key)
                 if not executor:
                     continue
 
                 locals_map = {
-                    AssetCategories.RESOURCES.value: resource.state,
-                    Shortcuts.CALENDAR.value: board.calendar
+                    "resource": resource.state,
+                    "calendar": board.calendar,
+                    "board": board,
+                    "crop": resource.state,
+                    "tree": resource.state,
+                    resource.instance: resource.state
                 }
 
                 next_stage = executor.evaluate(resource.state.stage, locals_map)

@@ -28,6 +28,7 @@ from libs.core.models import (
 )
 
 @pytest.mark.seasons
+@pytest.mark.ecology
 def test_season_mechanics_temporal_period_cycle_advancement(
     mock_board,
     mock_bus
@@ -64,6 +65,7 @@ def test_season_mechanics_temporal_period_cycle_advancement(
 
 
 @pytest.mark.seasons
+@pytest.mark.ecology
 def test_season_mechanics_temporal_season_year_rollover(
     mock_board,
     mock_bus
@@ -92,6 +94,7 @@ def test_season_mechanics_temporal_season_year_rollover(
 
 
 @pytest.mark.seasons
+@pytest.mark.ecology
 def test_season_mechanics_hydrological_diffusion_near_water(
     mock_board,
     mock_crop_resource,
@@ -124,6 +127,7 @@ def test_season_mechanics_hydrological_diffusion_near_water(
 
 
 @pytest.mark.seasons
+@pytest.mark.ecology
 def test_season_mechanics_hydrological_evaporation_dry_soil(
     mock_board,
     mock_crop_resource,
@@ -150,6 +154,7 @@ def test_season_mechanics_hydrological_evaporation_dry_soil(
 
 
 @pytest.mark.seasons
+@pytest.mark.ecology
 def test_season_mechanics_annual_crop_stage_transition(
     mock_board,
     mock_crop_resource,
@@ -182,6 +187,7 @@ def test_season_mechanics_annual_crop_stage_transition(
 
 
 @pytest.mark.seasons
+@pytest.mark.ecology
 def test_season_mechanics_annual_crop_winter_decay(
     mock_board,
     mock_crop_resource,
@@ -212,6 +218,7 @@ def test_season_mechanics_annual_crop_winter_decay(
 
 
 @pytest.mark.seasons
+@pytest.mark.ecology
 def test_season_mechanics_perennial_tree_genesis_progression(
     mock_board,
     mock_tree_resource,
@@ -243,6 +250,7 @@ def test_season_mechanics_perennial_tree_genesis_progression(
 
 
 @pytest.mark.seasons
+@pytest.mark.ecology
 def test_season_mechanics_perennial_tree_homeostasis_apoptosis(
     mock_board,
     mock_tree_resource,
@@ -272,6 +280,7 @@ def test_season_mechanics_perennial_tree_homeostasis_apoptosis(
 
 
 @pytest.mark.seasons
+@pytest.mark.ecology
 def test_season_mechanics_perennial_tree_apoptosis_recovery(
     mock_board,
     mock_tree_resource,

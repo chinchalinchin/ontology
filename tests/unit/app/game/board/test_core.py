@@ -142,6 +142,8 @@ def test_board_predicates_classification(mock_crate, mock_shoreline, mock_gate):
 
 
 @pytest.mark.main
+@pytest.mark.fluids
+@pytest.mark.ecology
 def test_board_predicates_fluid_containment(mock_fluid):
     """
     Tests pure stream and pool containment predicates without referencing Board.
@@ -165,6 +167,8 @@ def test_board_predicates_fluid_containment(mock_fluid):
 
 
 @pytest.mark.main
+@pytest.mark.fluids
+@pytest.mark.ecology
 def test_board_fluid_spatial_query(mock_board, mock_fluid):
     """
     Tests O(1) broad-phase spatial hash lookups on Board for fluid intersection.

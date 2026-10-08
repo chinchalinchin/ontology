@@ -14,7 +14,9 @@ from app.assets.frames import (
     SpriteFrame,
     IndexFrame,
     FluidFrame,
-    CardinalFrame
+    CardinalFrame,
+    SeasonalFrame,
+    StageFrame
 )
 from app.models.properties import (
     ObjectProperties,
@@ -22,6 +24,7 @@ from app.models.properties import (
     SheetProperties,
     WidgetProperties,
     EffectProperties,
+    ResourceProperties,
     GeographyProperties,
     Action,
     Direction
@@ -34,6 +37,8 @@ from app.models.state import (
     Psyche,
     IconState,
     AttachmentState,
+    CalendarState,
+    ResourceState,
     FluidState, 
     ShorelineState,
     Pool
@@ -42,7 +47,12 @@ from app.config.enums import (
     Directions,
     RequiredAssets,
     ExpressionsPalette,
-    ChannelTypes
+    ChannelTypes,
+    Seasons,
+    Cycles,
+    Lifespans,
+    AnnualStages,
+    PerennialStages
 )
 
 # Cython Libraries
@@ -216,6 +226,7 @@ def test_sprite_frame_no_equipment():
 
 @pytest.mark.frames
 @pytest.mark.fluids
+@pytest.mark.ecology
 def test_fluid_frame_indexing():
     """
     Verify FluidFrame generates full tile keys and directional forward/reverse
@@ -248,6 +259,7 @@ def test_fluid_frame_indexing():
 
 @pytest.mark.frames
 @pytest.mark.fluids
+@pytest.mark.ecology
 def test_fluid_frame_keys_downward_stream():
     """
     Verify downward stream emits full tile keys plus fractional terminal slice.
@@ -267,6 +279,7 @@ def test_fluid_frame_keys_downward_stream():
 
 @pytest.mark.frames
 @pytest.mark.fluids
+@pytest.mark.ecology
 def test_fluid_frame_keys_upward_stream():
     """
     Verify upward stream emits negative Y-coordinate offsets and reverse slice keys.
@@ -286,6 +299,7 @@ def test_fluid_frame_keys_upward_stream():
 
 @pytest.mark.frames
 @pytest.mark.fluids
+@pytest.mark.ecology
 def test_fluid_frame_keys_lateral_streams():
     """
     Verify lateral streams emit X-axis offsets for right and left flow vectors.
@@ -307,6 +321,7 @@ def test_fluid_frame_keys_lateral_streams():
 
 @pytest.mark.frames
 @pytest.mark.fluids
+@pytest.mark.ecology
 def test_fluid_frame_keys_with_annular_pool():
     """
     Verify annular pool hitboxes translate to grid-spaced frame key offsets.
@@ -336,6 +351,7 @@ def test_fluid_frame_keys_with_annular_pool():
 
 @pytest.mark.frames
 @pytest.mark.fluids
+@pytest.mark.ecology
 def test_sprite_frame_channels_dry():
     """
     Verify SpriteFrame.channels returns an empty list when sprite is not submerged.
@@ -351,6 +367,7 @@ def test_sprite_frame_channels_dry():
 
 @pytest.mark.frames
 @pytest.mark.fluids
+@pytest.mark.ecology
 def test_sprite_frame_channels_submerged():
     """
     Verify SpriteFrame.channels emits SUBMERGE directive with half-length split
@@ -372,6 +389,7 @@ def test_sprite_frame_channels_submerged():
 @pytest.mark.frames
 @pytest.mark.geology
 @pytest.mark.fluids
+@pytest.mark.ecology
 def test_shoreline_frame_indexing():
     """
     Verify CardinalFrame indexes 4 cardinal rows and forward fractional remainder slices.
@@ -403,6 +421,7 @@ def test_shoreline_frame_indexing():
 @pytest.mark.frames
 @pytest.mark.geology
 @pytest.mark.fluids
+@pytest.mark.ecology
 def test_shoreline_frame_keys_horizontal_full_and_slice():
     """
     Verify horizontal banks (UP/DOWN) emit full-tile keys along width and a terminal remainder.
@@ -424,6 +443,7 @@ def test_shoreline_frame_keys_horizontal_full_and_slice():
 @pytest.mark.frames
 @pytest.mark.geology
 @pytest.mark.fluids
+@pytest.mark.ecology
 def test_shoreline_frame_keys_vertical_full_and_slice():
     """
     Verify vertical banks (LEFT/RIGHT) emit full-tile keys along length and a terminal remainder.
@@ -445,6 +465,7 @@ def test_shoreline_frame_keys_vertical_full_and_slice():
 @pytest.mark.frames
 @pytest.mark.geology
 @pytest.mark.fluids
+@pytest.mark.ecology
 def test_shoreline_frame_keys_zero_length():
     frame = CardinalFrame()
     state = ShorelineState(id="grassy-shore", length=0)
@@ -454,6 +475,7 @@ def test_shoreline_frame_keys_zero_length():
 @pytest.mark.frames
 @pytest.mark.geology
 @pytest.mark.fluids
+@pytest.mark.ecology
 def test_shoreline_frame_channels():
     """
     Verify CardinalFrame inherits universal Frame.channels behavior.
@@ -475,27 +497,6 @@ def test_shoreline_frame_channels():
     assert frame.channels("grassy-shore", state, props) == [
         (ChannelTypes.SUBMERGE.value, (16, 40, 110, 180, 170))
     ]
-
-
-from app.assets.frames import (
-    SeasonalFrame,
-    StageFrame
-)
-from app.config.enums import (
-    Seasons,
-    Cycles,
-    Lifespans,
-    AnnualStages,
-    PerennialStages
-)
-from app.models.properties import (
-    TileProperties,
-    ResourceProperties
-)
-from app.models.state import (
-    CalendarState,
-    ResourceState
-)
 
 
 @pytest.mark.frames
