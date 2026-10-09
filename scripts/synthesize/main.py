@@ -29,22 +29,40 @@ def main():
     score_validated = ScoreRoot.model_validate(load_yaml(args.score))
 
     for score_name, score_entry in score_validated.score.items():
-        print(f"Synthesizing polyphonic score '{score_name}' at {score_entry.bpm} BPM...")
+        print(f"Synthesizing '{score_name}' at {score_entry.bpm} BPM...")
         quarter_duration = 60.0 / score_entry.bpm
         whole_duration = quarter_duration * 4.0
 
-        resolved_chords = []
-        for item in score_entry.notes:
-            freqs = []
-            for n_name in item.notes:
-                if n_name not in note_map:
-                    raise ValueError(f"Note '{n_name}' not declared in {args.sounds}")
-                freqs.append(note_map[n_name])
+        events = []
 
-            duration = beat_map[item.beat] * whole_duration
-            resolved_chords.append((freqs, duration))
+        if score_entry.tracks:
+            # Independent multi-track timeline compilation
+            for track_name, track_notes in score_entry.tracks.items():
+                track_time = 0.0
+                for item in track_notes:
+                    if item.beat not in beat_map:
+                        raise ValueError(f"Beat '{item.beat}' not declared in {args.sounds}")
+                    duration = beat_map[item.beat] * whole_duration
+                    for n_name in item.notes:
+                        if n_name not in note_map:
+                            raise ValueError(f"Note '{n_name}' not declared in {args.sounds}")
+                        freq = note_map[n_name]
+                        events.append((track_time, freq, duration))
+                    track_time += duration
+        else:
+            # Single-stream synchronous compilation fallback
+            curr_time = 0.0
+            for item in score_entry.notes:
+                duration = beat_map[item.beat] * whole_duration
+                for n_name in item.notes:
+                    freq = note_map[n_name]
+                    events.append((curr_time, freq, duration))
+                curr_time += duration
 
-        sound.play(resolved_chords)
+        # Sort all global note events by chronological start timestamp
+        events.sort(key=lambda e: e[0])
+
+        sound.play(events)
 
 
 if __name__ == "__main__":

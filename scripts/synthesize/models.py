@@ -29,7 +29,6 @@ class SoundsRoot(BaseModel):
 
 
 class ScoreNote(BaseModel):
-    # Accepts either note: "A4" or notes: ["A2", "E3", "C4", "A4"]
     note: Optional[Union[str, List[str]]] = None
     notes: Optional[List[str]] = None
     beat: str
@@ -49,7 +48,14 @@ class ScoreNote(BaseModel):
 class ScoreEntry(BaseModel):
     signature: str
     bpm: float = Field(default=120.0, gt=0.0)
-    notes: List[ScoreNote]
+    notes: Optional[List[ScoreNote]] = None
+    tracks: Optional[Dict[str, List[ScoreNote]]] = None
+
+    @model_validator(mode="after")
+    def validate_content(self):
+        if not self.notes and not self.tracks:
+            raise ValueError("Score must specify either 'notes' or 'tracks'")
+        return self
 
 
 class ScoreRoot(BaseModel):
