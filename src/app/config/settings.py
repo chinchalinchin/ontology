@@ -54,7 +54,7 @@ BASE_FLOW_SPEED: Final[int] = 20
 FLUID_INVALIDATION_DEBOUNCE_TICKS: Final[int] = 2
 """Number of ticks before Fluid invalidation retries."""
 
-SEASON_DURATION_SECONDS: Final[int] = 300
+SEASON_DURATION_SECONDS: Final[int] = 30
 """Length of a Season in seconds."""
 
 SEASON_EVAPORATION_MODIFIERS: Final[dict[str, float]] = {
