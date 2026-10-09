@@ -636,6 +636,6 @@ Support stage-partitioned hitbox dictionaries in `ResourceProperties` and Pydant
 *Objective*: Verify dynamic stage collision resolution and test suite compatibility.
 
 * [!] Subtask: Update `src/data/templates/state.md` to format `props.hitboxes` cleanly when configured as a stage dictionary.
-* [!] Subtask: Author unit tests in `tests/unit/app/assets/test_hitboxes.py` verifying that `tree.hitboxes` matches trunk dimensions when `stage = "adult"`, stump dimensions when `stage = "stump"`, and passes through canopy coordinates without collision.
-* [ ] Subtask: Update `fluids` workflow unit tests to align with refactor.
-* [!] Subtask: Execute live verification via `python src/cli.py --dump-state start` ensuring characters navigate freely behind deciduous tree canopies.
+* [x] Subtask: Author unit tests in `tests/unit/app/assets/test_hitboxes.py` verifying that `tree.hitboxes` matches trunk dimensions when `stage = "adult"`, stump dimensions when `stage = "stump"`, and passes through canopy coordinates without collision.
+* [x] Subtask: Update `fluids` workflow unit tests to align with refactor.
+* [x] Subtask: Execute live verification via `python src/cli.py --dump-state start` ensuring characters navigate freely behind deciduous tree canopies.
