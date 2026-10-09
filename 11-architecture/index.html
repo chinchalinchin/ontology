@@ -1491,7 +1491,7 @@
 <h3 id="depth-height">Depth &amp; Height</h3>
 <p>To accurately render perspective, the Screen <code>draw()</code> loop applies Painter's Algorithm sorting to all active assets before translating them to Cython primitives.</p>
 <ol>
-<li><strong>Primary Key (Height)</strong>: Evaluates dynamic geometric height (<span class="arithmatex">\(y + l\)</span>). If an explicit <code>state.height</code> is present, it is coerced to an integer (<code>int(asset.state.height)</code>). Coercion prevents <code>TypeError</code> when late-binding compositions assign string tokens alongside integer positions (Bug B003).</li>
+<li><strong>Primary Key (Height)</strong>: Evaluates dynamic geometric height (<span class="arithmatex">\(y + l\)</span>). If an explicit <code>state.height</code> is present, it is coerced to an integer (<code>int(asset.state.height)</code>). Coercion prevents <code>TypeError</code> when late-binding compositions assign string tokens alongside integer positions.</li>
 <li><strong>Secondary Key (Depth)</strong>: Serves as a tie-breaker when assets share identical heights. Fluids declare <code>depth: -1</code>, Shorelines declare <code>depth: 0</code>, Bridges declare <code>depth: 1</code>, and standard entities default to <code>depth: 0</code>.</li>
 <li><strong>Allocation Optimization</strong>: Replacing per-frame <code>lambda</code> closures with <code>_sort</code> eliminates millions of transient function objects and reduces draw overhead across expanded entity sets.</li>
 </ol>
