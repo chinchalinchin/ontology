@@ -2,7 +2,7 @@ sheets:
   sprites: 
     - id: jasilynn
       name: evil-empress-jasilynn
-      layer: brick-house-compose-layer
+      layer: brick-house-compose-layer-1
       depth: 0
       position:
         x: 175

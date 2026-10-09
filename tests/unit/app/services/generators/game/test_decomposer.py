@@ -172,12 +172,12 @@ def test_decomposer_cross_layer_origin_decoupling(mock_decomposer):
     assert root_strut.state.position.y == 750
 
     # Branch strut transitions to independent layer; position anchors to layer origin
-    assert interior_wall.state.layer == "brick-house-compose-layer"
+    assert interior_wall.state.layer == "brick-house-compose-layer-1"
     assert interior_wall.state.position.x == 0
     assert interior_wall.state.position.y == 0
 
     # Branch component offsets relative to local branch strut origin
-    assert interior_floor.state.layer == "brick-house-compose-layer"
+    assert interior_floor.state.layer == "brick-house-compose-layer-1"
     assert interior_floor.state.position.x == 0
     assert interior_floor.state.position.y == 96
 
@@ -201,12 +201,12 @@ def test_decomposer_cross_layer_door_out_resolution(mock_decomposer):
 
     # Entrance door: target is foreign interior layer; out coordinate remains local
     assert entrance_door.state.layer == "0"
-    assert entrance_door.state.outlayer == "brick-house-compose-layer"
+    assert entrance_door.state.outlayer == "brick-house-compose-layer-1"
     assert entrance_door.state.out.x == 82
     assert entrance_door.state.out.y == 143
 
     # Exit door: target matches root context layer; out coordinate offsets by deployed root position
-    assert exit_door.state.layer == "brick-house-compose-layer"
+    assert exit_door.state.layer == "brick-house-compose-layer-1"
     assert exit_door.state.outlayer == "0"
     assert exit_door.state.out.x == 193  # 150 + 43
     assert exit_door.state.out.y == 913  # 750 + 163

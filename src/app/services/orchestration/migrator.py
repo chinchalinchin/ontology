@@ -47,15 +47,20 @@ class Migrator:
         board: Board, 
         properties: PropertiesSchema, 
         configurations: ConfigurationSchema,
-        actuator: Optional[Actuator] = None
+        actuator: Optional[Actuator] = None,
+        decomposer: Optional[Decomposer] = None
     ):
         self.board = board
         self.properties = properties
         self.configurations = configurations
         self.actuator = actuator or Actuator()
+        self.decomposer = decomposer or Decomposer(
+            compositions=self.configurations.compositions,
+            properties=self.properties,
+            recipes=self.configurations.recipes
+        )
         self.target: Optional[str] = None
         self.state = None
-        self.decomposer = None
         self._generator = None
         
         # Track counts to bind to Loading Menu Meters
@@ -65,12 +70,6 @@ class Migrator:
     def _build_generator(self):
         logger.info(f"Migrator starting hydration for target state: {self.target}")
         self.state = Loader.load_state(self.target)
-        
-        self.decomposer = Decomposer(
-            compositions=self.configurations.compositions,
-            properties=self.properties,
-            recipes=self.configurations.recipes
-        )
         
         # 1. Compile the manifest of objects to generate
         tasks = []

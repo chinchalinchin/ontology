@@ -1,5 +1,5 @@
 """
-# Ontology: app.services.orchestration.factory
+# Ontology: app.services.generators.game.factory
 
 Package for instantiating Asset classes and their components.
 """

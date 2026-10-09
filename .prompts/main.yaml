@@ -5,8 +5,8 @@ properties:
     mkdocs: mkdocs.yml
   paths:
     # ---------------------------------------
-    root: /Users/gmoore/Home/projects/ontology/
-    # root: /home/grant/Projects/ontology/
+    # root: /Users/gmoore/Home/projects/ontology/
+    root: /home/grant/Projects/ontology/
     # ---------------------------------------
     actions: .githubs/workflows/
     # ---------------------------------------
@@ -34,13 +34,14 @@ properties:
 task:
 # ----------------------------------------------------
   # -------------------------------------- MAINTENANCE
-  # template: console/debug.md.j2
+  template: console/patch.md.j2
+  # template: console/session.md.j2
   # ---------------------------------- ITERATION CYCLE
   # template: iterate/documentation.md.j2
   # template: iterate/grooming.md.j2
   # template: iterate/implementation.md.j2
   # template: iterate/coverage.md.j2
-  template: iterate/conclusion.md.j2
+  # template: iterate/conclusion.md.j2
   # ------------------------------------- DESIGN TASKS
   # template: design/menu.md.j2
   # template: diagram/hierarchy.md.j2
@@ -77,26 +78,26 @@ tools:
   parameters:
     manager:
       board:
-        phase: '10-01'
-        action: refactor
+        phase: 'b012'
+        action: patch
       docs:
         exclude:
           - index.md
           # - 00-overview.md
           # - 01-assets.md
           - 02-sprites.md
-          - 03-compositions.md
+          # - 03-compositions.md
           - 04-intentions.md
-          # - 05-mechanics.md
+          - 05-mechanics.md
           - 06-widgets.md
           - 07-sounds.md
           - 08-plots.md
-          # - 09-ecology.md
+          - 09-ecology.md
           - 10-emergence.md
           # - 11-architecture.md
       specs: []
     source:
-      workflow: seasons
+      workflow: compositions
     shell:
       directory: |
         tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"

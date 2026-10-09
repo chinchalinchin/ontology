@@ -30,11 +30,11 @@ compositions:
               height: bind(root.height)
               position:
                 x: 0
-                y: 0
+                y: -33
             - id: turret-stone
               name: castle-dawn-turret-00
               owner: bind(root.owner)
-              depth: 1
+              depth: 2
               height: bind(root.height)
               position:
                 x: -66
@@ -42,7 +42,7 @@ compositions:
             - id: turret-stone
               name: castle-dawn-turret-01
               owner: bind(root.owner)
-              depth: 1
+              depth: 2
               height: bind(root.height)
               position:
                 x: 188
@@ -80,7 +80,7 @@ compositions:
                 x: -65
                 y: -219
             - id: tower-stone
-              name: castle-dawn-tower-00
+              name: castle-dawn-tower-01
               owner: bind(root.owner)
               depth: 1
               height: bind(root.height)
@@ -88,10 +88,10 @@ compositions:
                 x: 220
                 y: -219
             - id: floor-stone
-              name: castle-dawn-tower-00
+              name: castle-dawn-flatroof-00
               owner: bind(root.owner)
               depth: 0
-              height: -100 # FORCE TO BOTTOM: Always render behind the player
+              height: -100
               position:
                 x: -49
                 y: -82          
@@ -102,7 +102,7 @@ compositions:
               position:
                 x: 143
                 y: 3
-              depth: 1
+              depth: 2
               height: bind(root.height)
             - id: torch
               name: torch-02
@@ -111,14 +111,14 @@ compositions:
                 y: 3
               animation:
                 frame: 4
-              depth: 1
+              depth: 2
               height: bind(root.height)
         objects:
           gates:
             - id: castle-gate
               name: castle-entrance
               link: castle-gate-link
-              depth: 1
+              depth: 2
               height: bind(root.height)
               position:
                 x: 62
@@ -136,8 +136,24 @@ compositions:
             - id: door-castle-open
               name: castle-entrance-open
               height: bind(root.height)
-              depth: 1
+              depth: 2
               position:
                 x: 62
                 y: 16
+              outlayer: castle-compose-layer
+            - id: door-mansion
+              name: castle-dawn-roof-door-left
+              height: bind(root.height)
+              depth: 2
+              position:
+                x: 6
+                y: -130
+              outlayer: castle-compose-layer
+            - id: door-mansion
+              name: castle-dawn-roof-door-right
+              height: bind(root.height)
+              depth: 2
+              position:
+                x: 150
+                y: -130
               outlayer: castle-compose-layer

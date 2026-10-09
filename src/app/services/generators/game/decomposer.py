@@ -1,5 +1,5 @@
 """
-# Ontology: app.services.generators.decomposer
+# Ontology: app.services.generators.game.decomposer
 
 Package for decomposing Compositions into their constituent Assets. 
 """
@@ -10,7 +10,8 @@ import logging
 from typing import (
     Dict, 
     List, 
-    Any
+    Any,
+    Optional
 )
 
 # Application Libraries
@@ -106,6 +107,28 @@ class Decomposer:
     # ---------------------------------------------------------
     # ------------------------------------- HYDRATION UTILITIES
 
+    def _resolve_layer(self, 
+        layer: Optional[str], 
+        root_layer: Optional[str], 
+        inc: int, 
+        layer_map: Dict[str, str]
+    ) -> Optional[str]:
+        """
+        Namespaces composition pseudo-layers with the deployment increment while
+        preserving references to the deployed root layer.
+        """
+        if layer is None or str(layer) == str(root_layer):
+            return layer
+
+        layer_str = str(layer)
+        if layer_str in layer_map.values():
+            return layer_str
+
+        if layer_str not in layer_map:
+            layer_map[layer_str] = settings.SEPARATOR.join([layer_str, str(inc)])
+
+        return layer_map[layer_str]
+    
     def _resolve_bind(self, 
         val: Any, 
         root_context: Dict[str, Any], 
@@ -138,20 +161,35 @@ class Decomposer:
         parent_context: Dict[str, Any], 
         inc: int, 
         inst_key: str, 
-        is_strut: bool = False
+        is_strut: bool = False,
+        layer_map: Optional[Dict[str, str]] = None
     ) -> AssetState:
+        if layer_map is None:
+            layer_map = root_context.setdefault('_layer_map', {})
+
         kwargs = {}
         for f in dataclasses.fields(state_obj):
             val = getattr(state_obj, f.name, None)
             kwargs[f.name] = self._resolve_bind(val, root_context, parent_context)
         
-        if 'layer' in kwargs and not kwargs['layer']:
-            kwargs['layer'] = parent_context['layer']
+        root_layer = root_context.get('layer')
+
+        # 1. Resolve Layer Namespacing
+        if 'layer' in kwargs:
+            if kwargs['layer']:
+                kwargs['layer'] = self._resolve_layer(kwargs['layer'], root_layer, inc, layer_map)
+            else:
+                kwargs['layer'] = parent_context['layer']
+
         if 'owner' in kwargs and not kwargs['owner']:
             kwargs['owner'] = parent_context['owner']
 
+        # 2. Resolve Outlayer for Doors/Portals
+        if 'outlayer' in kwargs and kwargs['outlayer']:
+            kwargs['outlayer'] = self._resolve_layer(kwargs['outlayer'], root_layer, inc, layer_map)
+
         # Layer Transition Boundary: If moving to an independent layer, reset local origin
-        is_cross_layer = kwargs.get('layer') != parent_context.get('layer')
+        is_cross_layer = str(kwargs.get('layer')) != str(parent_context.get('layer'))
         base_pos = Position(0, 0) if is_cross_layer else parent_context['position']
 
         pseudo_pos = kwargs.get('position')
@@ -168,7 +206,7 @@ class Decomposer:
         if pseudo_out:
             outlayer = kwargs.get('outlayer')
             # If returning to root layer, offset by deployed root position
-            if outlayer == root_context.get('layer'):
+            if str(outlayer) == str(root_layer):                
                 kwargs['out'] = Position(
                     x=root_context['position'].x + pseudo_out.x,
                     y=root_context['position'].y + pseudo_out.y
@@ -177,6 +215,7 @@ class Decomposer:
                 # Target is an interior layer; coordinates are local to that layer
                 kwargs['out'] = Position(pseudo_out.x, pseudo_out.y)
 
+        # TODO: what is this?
         base_inst = inst_key[:-1] if inst_key.endswith('s') else inst_key
         
         if is_strut:
@@ -223,14 +262,16 @@ class Decomposer:
         is_root: bool = False
     ) -> List[Asset]:
         assets = []
-        
+        layer_map = root_context.setdefault('_layer_map', {})
+
         strut_state = self._hydrate_state(
             node.strut,
             root_context,
             parent_context,
             inc,
             AssetInstances.STRUTS.value,
-            is_strut=True
+            is_strut=True,
+            layer_map=layer_map
         )
         strut_asset = self._create_asset(
             AssetCategories.CRAFTS.value, 
@@ -268,7 +309,9 @@ class Decomposer:
     ) -> None:
         if not components: 
             return
-            
+
+        layer_map = root_context.setdefault('_layer_map', {})
+        
         for cat_field in dataclasses.fields(components):
             cat_key = cat_field.name
             if cat_key in Shortcuts:
@@ -291,7 +334,8 @@ class Decomposer:
                         parent_context,
                         inc,
                         inst_key,
-                        is_strut=False
+                        is_strut=False,
+                        layer_map=layer_map
                     )
                     assets.append(self._create_asset(cat_key, inst_key, new_state))
 
@@ -314,7 +358,8 @@ class Decomposer:
             "name": getattr(deployed_state, 'name', ''),
             "layer": getattr(deployed_state, 'layer', ''),
             "owner": getattr(deployed_state, 'owner', None),
-            "position": getattr(deployed_state, 'position', Position(0,0))
+            "position": getattr(deployed_state, 'position', Position(0,0)),
+            "_layer_map": {}
         }
 
         # Unpack Root node first, explicitly flagging it as the root

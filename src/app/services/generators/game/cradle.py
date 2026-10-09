@@ -1,5 +1,5 @@
 """
-# Ontology: app.services.generators.cradle
+# Ontology: app.services.generators.game.cradle
 
 Package for ingame Asset instantiation.
 """
@@ -37,6 +37,7 @@ from app.models.state import (
     Damage,
     Lot
 )
+
 if TYPE_CHECKING:
     from app.services.generators.game.decomposer import Decomposer
     from app.models.properties import Cost
@@ -47,6 +48,7 @@ from libs.core.models import (
     Multiple
 )
 
+# Application Library
 logger = logging.getLogger(__name__)
 
 SPAWN = "spawn"
