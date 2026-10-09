@@ -19,6 +19,7 @@ from libs.core.models import (
 
 
 @pytest.mark.services
+@pytest.mark.compositions
 def test_decomposer_cost_aggregation(mock_decomposer):
     costs = mock_decomposer.cost("test-house")
     cost_dict = {c.item: c.quantity for c in costs}
@@ -28,6 +29,7 @@ def test_decomposer_cost_aggregation(mock_decomposer):
 
 
 @pytest.mark.services
+@pytest.mark.compositions
 def test_decomposer_spatial_superposition(mock_decomposer):
     deployed = PropertyState(
         id="test-house",
@@ -58,6 +60,7 @@ def test_decomposer_spatial_superposition(mock_decomposer):
 
 
 @pytest.mark.services
+@pytest.mark.compositions
 def test_decomposer_late_binding(mock_decomposer):
     deployed = PropertyState(
         id="test-house",
@@ -76,6 +79,7 @@ def test_decomposer_late_binding(mock_decomposer):
 
 
 @pytest.mark.services
+@pytest.mark.compositions
 def test_decomposer_nomenclature_generation(mock_decomposer):
     deployed1 = PropertyState(
         id="test-house",
@@ -107,6 +111,7 @@ def test_decomposer_nomenclature_generation(mock_decomposer):
 
 
 @pytest.mark.services
+@pytest.mark.compositions
 def test_decomposer_unmapped_composition(mock_decomposer):
     """
     Ensure non-existent composition keys yield empty lists without throwing exceptions.
@@ -122,6 +127,7 @@ def test_decomposer_unmapped_composition(mock_decomposer):
 
 
 @pytest.mark.services
+@pytest.mark.compositions
 def test_decomposer_resolve_bind_patterns(mock_decomposer):
     """
     Validate bind parsing logic across explicit parent, explicit root, and legacy syntax.
@@ -149,6 +155,7 @@ def test_decomposer_resolve_bind_patterns(mock_decomposer):
 
 
 @pytest.mark.services
+@pytest.mark.compositions
 def test_decomposer_cross_layer_origin_decoupling(mock_decomposer):
     """
     Verify branches on foreign layers decouple from parent layer coordinates and bind to (0, 0).
@@ -183,6 +190,7 @@ def test_decomposer_cross_layer_origin_decoupling(mock_decomposer):
 
 
 @pytest.mark.services
+@pytest.mark.compositions
 def test_decomposer_cross_layer_door_out_resolution(mock_decomposer):
     """
     Ensure entrance doors output to local interior coordinates while exit doors offset by root position.
@@ -214,6 +222,7 @@ def test_decomposer_cross_layer_door_out_resolution(mock_decomposer):
 
 @pytest.mark.fluids
 @pytest.mark.services
+@pytest.mark.compositions
 def test_decomposer_bridge_horizontal_expansion(mock_decomposer):
     """
     Verify Decomposer expands horizontal bridge multiplier into discrete unit assets
@@ -248,6 +257,7 @@ def test_decomposer_bridge_horizontal_expansion(mock_decomposer):
 
 @pytest.mark.fluids
 @pytest.mark.services
+@pytest.mark.compositions
 def test_decomposer_bridge_vertical_expansion(mock_decomposer):
     """
     Verify Decomposer expands vertical bridge multiplier along +Y axis.
@@ -272,6 +282,7 @@ def test_decomposer_bridge_vertical_expansion(mock_decomposer):
 
 @pytest.mark.fluids
 @pytest.mark.services
+@pytest.mark.compositions
 def test_decomposer_bridge_linear_cost(mock_decomposer):
     """
     Verify bridge construction cost scales linearly with span length (N * cost).
