@@ -107,7 +107,6 @@ class Actuator:
             if hasattr(asset.properties, "mass") and asset.properties.mass != 0:
                 continue
 
-            logger.info(asset.id)
             for hb in asset.hitboxes:
                 ox = asset.state.position.x + hb.position.x
                 oy = asset.state.position.y + hb.position.y

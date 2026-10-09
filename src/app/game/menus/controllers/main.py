@@ -54,5 +54,4 @@ class MainController(MenuController):
             bus.append(StateEvent(id=settings.NEW_BOARD))
 
         elif selection == Selections.MENU.value:
-            logger.info(selector)
             bus.append(MenuEvent(id=selector, context=menu.context))
