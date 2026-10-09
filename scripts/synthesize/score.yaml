@@ -1,7 +1,7 @@
 score:
-  chopin_nocturne_op9_no2:
-    signature: "twelve-eight"
-    bpm: 66.0
+  fur_elise:
+    signature: "three-eight"
+    bpm: 132.0
     tracks:
       left_hand:
         # ==========================================
@@ -11,256 +11,192 @@ score:
           beat: "eighth"
 
         # ==========================================
-        # MEASURE 1: Eb -> Eb -> Cm -> Bb7
+        # MEASURE 1: RH Theme Solo
         # ==========================================
-        # Beat 1: Eb major (Bass + 2 chords)
-        - note: "D#3"
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-
-        # Beat 2: Eb major
-        - note: "D#3"
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-
-        # Beat 3: C minor
-        - note: "C3"
-          beat: "eighth"
-        - notes: ["G3", "C4", "D#4"]
-          beat: "eighth"
-        - notes: ["G3", "C4", "D#4"]
-          beat: "eighth"
-
-        # Beat 4: Bb7 dominant
-        - note: "A#2"
-          beat: "eighth"
-        - notes: ["F3", "G#3", "D4"]
-          beat: "eighth"
-        - notes: ["F3", "G#3", "D4"]
-          beat: "eighth"
+        - note: "REST"
+          beat: "dotted_quarter"
 
         # ==========================================
-        # MEASURE 2: Eb -> Ab -> Eb/Bb -> Bb7
+        # MEASURE 2: A Minor Arpeggio
         # ==========================================
-        # Beat 1: Eb major
-        - note: "D#3"
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-
-        # Beat 2: Ab major
-        - note: "G#2"
-          beat: "eighth"
-        - notes: ["G#3", "C4", "D#4"]
-          beat: "eighth"
-        - notes: ["G#3", "C4", "D#4"]
-          beat: "eighth"
-
-        # Beat 3: Eb/Bb
-        - note: "A#2"
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-
-        # Beat 4: Bb7 dominant
-        - note: "A#2"
-          beat: "eighth"
-        - notes: ["F3", "G#3", "D4"]
-          beat: "eighth"
-        - notes: ["F3", "G#3", "D4"]
-          beat: "eighth"
+        - note: "A2"
+          beat: "sixteenth"
+        - note: "E3"
+          beat: "sixteenth"
+        - note: "A3"
+          beat: "quarter"
 
         # ==========================================
-        # MEASURE 3: Eb -> F7 -> Eb/Bb -> Bb7
+        # MEASURE 3: E Major Arpeggio
         # ==========================================
-        # Beat 1: Eb major
-        - note: "D#3"
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-
-        # Beat 2: F7 secondary dominant
-        - note: "F2"
-          beat: "eighth"
-        - notes: ["A3", "C4", "D#4"]
-          beat: "eighth"
-        - notes: ["A3", "C4", "D#4"]
-          beat: "eighth"
-
-        # Beat 3: Eb/Bb cadential 6/4
-        - note: "A#2"
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-
-        # Beat 4: Bb7 dominant
-        - note: "A#2"
-          beat: "eighth"
-        - notes: ["F3", "G#3", "D4"]
-          beat: "eighth"
-        - notes: ["F3", "G#3", "D4"]
-          beat: "eighth"
+        - note: "E2"
+          beat: "sixteenth"
+        - note: "E3"
+          beat: "sixteenth"
+        - note: "G#3"
+          beat: "quarter"
 
         # ==========================================
-        # MEASURE 4: Eb -> Bb7 -> Eb Cadence
+        # MEASURE 4: A Minor Arpeggio
         # ==========================================
-        # Beat 1: Eb major
-        - note: "D#3"
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
+        - note: "A2"
+          beat: "sixteenth"
+        - note: "E3"
+          beat: "sixteenth"
+        - note: "A3"
+          beat: "quarter"
 
-        # Beat 2: Bb7 dominant
-        - note: "A#2"
-          beat: "eighth"
-        - notes: ["F3", "G#3", "D4"]
-          beat: "eighth"
-        - notes: ["F3", "G#3", "D4"]
-          beat: "eighth"
+        # ==========================================
+        # MEASURE 5: RH Motif Interlude
+        # ==========================================
+        - note: "REST"
+          beat: "dotted_quarter"
 
-        # Beat 3: Eb major
-        - note: "D#3"
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
+        # ==========================================
+        # MEASURE 6: A Minor Arpeggio
+        # ==========================================
+        - note: "A2"
+          beat: "sixteenth"
+        - note: "E3"
+          beat: "sixteenth"
+        - note: "A3"
+          beat: "quarter"
 
-        # Beat 4: Low tonic octave arrival
-        - notes: ["D#2", "D#3"]
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
+        # ==========================================
+        # MEASURE 7: E Major Arpeggio
+        # ==========================================
+        - note: "E2"
+          beat: "sixteenth"
+        - note: "E3"
+          beat: "sixteenth"
+        - note: "G#3"
+          beat: "quarter"
+
+        # ==========================================
+        # MEASURE 8: Cadential Resolution on A Minor
+        # ==========================================
+        - note: "A2"
+          beat: "sixteenth"
+        - note: "E3"
+          beat: "sixteenth"
+        - notes: ["A3", "C4"]
           beat: "quarter"
 
       right_hand:
         # ==========================================
         # PICKUP (Measure 0)
         # ==========================================
-        - note: "A#4"
-          beat: "eighth"
-
-        # ==========================================
-        # MEASURE 1: Antecedent Motif
-        # ==========================================
-        # Beat 1: Melody sustains over all 3 LH eighth-note pulses
-        - note: "G5"
-          beat: "dotted_quarter"
-
-        # Beat 2: F5 with ornamental turn (Eb5 -> D5 -> Eb5)
-        - note: "F5"
-          beat: "eighth"
+        - note: "E5"
+          beat: "sixteenth"
         - note: "D#5"
+          beat: "sixteenth"
+
+        # ==========================================
+        # MEASURE 1: Main Antecedent Motif
+        # ==========================================
+        - note: "E5"
+          beat: "sixteenth"
+        - note: "D#5"
+          beat: "sixteenth"
+        - note: "E5"
+          beat: "sixteenth"
+        - note: "B4"
           beat: "sixteenth"
         - note: "D5"
           beat: "sixteenth"
-        - note: "D#5"
-          beat: "eighth"
-
-        # Beat 3: F5 held -> descent to Bb4
-        - note: "F5"
-          beat: "quarter"
-        - note: "A#4"
-          beat: "eighth"
-
-        # Beat 4: Cantabile return to G5
-        - note: "G5"
-          beat: "dotted_quarter"
-
-        # ==========================================
-        # MEASURE 2: Consequent Phrase & Resolution
-        # ==========================================
-        # Beat 1: Turn motif repeated
-        - note: "F5"
-          beat: "eighth"
-        - note: "D#5"
-          beat: "sixteenth"
-        - note: "D5"
-          beat: "sixteenth"
-        - note: "D#5"
-          beat: "eighth"
-
-        # Beat 2: Leap to C5 (sustains over Ab chord)
         - note: "C5"
-          beat: "dotted_quarter"
+          beat: "sixteenth"
 
-        # Beat 3: Bb4 held + brief breath rest
-        - note: "A#4"
+        # ==========================================
+        # MEASURE 2: Descent to A4 and Ascending Pickup
+        # ==========================================
+        - note: "A4"
+          beat: "eighth"
+        - note: "REST"
+          beat: "sixteenth"
+        - note: "C4"
+          beat: "sixteenth"
+        - note: "E4"
+          beat: "sixteenth"
+        - note: "A4"
+          beat: "sixteenth"
+
+        # ==========================================
+        # MEASURE 3: Descent to B4 and Ascending Pickup
+        # ==========================================
+        - note: "B4"
+          beat: "eighth"
+        - note: "REST"
+          beat: "sixteenth"
+        - note: "E4"
+          beat: "sixteenth"
+        - note: "G#4"
+          beat: "sixteenth"
+        - note: "B4"
+          beat: "sixteenth"
+
+        # ==========================================
+        # MEASURE 4: Arrival at C5 and Motif Return
+        # ==========================================
+        - note: "C5"
+          beat: "eighth"
+        - note: "REST"
+          beat: "sixteenth"
+        - note: "E4"
+          beat: "sixteenth"
+        - note: "E5"
+          beat: "sixteenth"
+        - note: "D#5"
+          beat: "sixteenth"
+
+        # ==========================================
+        # MEASURE 5: Recapitulation of Antecedent Motif
+        # ==========================================
+        - note: "E5"
+          beat: "sixteenth"
+        - note: "D#5"
+          beat: "sixteenth"
+        - note: "E5"
+          beat: "sixteenth"
+        - note: "B4"
+          beat: "sixteenth"
+        - note: "D5"
+          beat: "sixteenth"
+        - note: "C5"
+          beat: "sixteenth"
+
+        # ==========================================
+        # MEASURE 6: Descent to A4 and Ascending Pickup
+        # ==========================================
+        - note: "A4"
+          beat: "eighth"
+        - note: "REST"
+          beat: "sixteenth"
+        - note: "C4"
+          beat: "sixteenth"
+        - note: "E4"
+          beat: "sixteenth"
+        - note: "A4"
+          beat: "sixteenth"
+
+        # ==========================================
+        # MEASURE 7: Descent to B4 and Cadential Turn
+        # ==========================================
+        - note: "B4"
+          beat: "eighth"
+        - note: "REST"
+          beat: "sixteenth"
+        - note: "E4"
+          beat: "sixteenth"
+        - note: "C5"
+          beat: "sixteenth"
+        - note: "B4"
+          beat: "sixteenth"
+
+        # ==========================================
+        # MEASURE 8: Final Tonic Resolution
+        # ==========================================
+        - note: "A4"
           beat: "quarter"
         - note: "REST"
           beat: "eighth"
-
-        # Beat 4: Scalar approach to the climax
-        - note: "C5"
-          beat: "eighth"
-        - note: "D5"
-          beat: "eighth"
-        - note: "D#5"
-          beat: "eighth"
-
-        # ==========================================
-        # MEASURE 3: Scalar Ascent to High C6
-        # ==========================================
-        # Beat 1: Rising scale
-        - note: "F5"
-          beat: "eighth"
-        - note: "G5"
-          beat: "eighth"
-        - note: "G#5"
-          beat: "eighth"
-
-        # Beat 2: Bb5 -> Apex C6
-        - note: "A#5"
-          beat: "eighth"
-        - note: "C6"
-          beat: "quarter"
-
-        # Beat 3: Expressive downward arc
-        - note: "A#5"
-          beat: "eighth"
-        - note: "G#5"
-          beat: "eighth"
-        - note: "G5"
-          beat: "eighth"
-
-        # Beat 4: Fall to Eb5
-        - note: "F5"
-          beat: "quarter"
-        - note: "D#5"
-          beat: "eighth"
-
-        # ==========================================
-        # MEASURE 4: Final Cadential Descent
-        # ==========================================
-        # Beat 1: Leading tone D5 to tonic Eb5
-        - note: "D5"
-          beat: "quarter"
-        - note: "D#5"
-          beat: "eighth"
-
-        # Beat 2: Dominant pause on F5
-        - note: "F5"
-          beat: "dotted_quarter"
-
-        # Beat 3: Resolution to Eb5
-        - note: "D#5"
-          beat: "dotted_quarter"
-
-        # Beat 4: Final tonic resolution ringing out
-        - note: "D#5"
-          beat: "dotted_quarter"

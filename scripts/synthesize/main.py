@@ -13,9 +13,9 @@ def load_yaml(path: str) -> dict:
 
 
 def main():
-    cwd = os.getcwd()
-    default_score = os.path.join(cwd, "score.yaml")
-    default_sounds = os.path.join(cwd, "sounds.yaml")
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    default_score = os.path.join(script_dir, "score.yaml")
+    default_sounds = os.path.join(script_dir, "sounds.yaml")
 
     parser = argparse.ArgumentParser(description="SDL2 Procedural Piano Audio Synthesizer")
     parser.add_argument("--score", default=default_score, help="Path to score YAML file")
