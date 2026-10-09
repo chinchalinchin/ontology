@@ -1,2 +1,95 @@
+{% set crafts = properties.paths.root + 'src/assets/crafts' %}
+{% set objects = properties.paths.root + 'src/assets/objects'%}
+{# ------------------------------------------------------------- #}
+{% set compositions = properties.paths.root + 'src/data/config/compositions/' %}
+# Tool: Composition Palette
+
+## Views
+
+### View: Craft Palette
+
+#### Palette: Struts
+
+```bash
+{{ command('tree -L 3 ' + crafts)}}
+``` 
+
+##### Floors
+
+```yaml
+{{ file(crafts + '/struts/floors.yaml') }}
+```
+
+##### Frames
+
+```yaml
+{{ file(crafts + '/struts/frames.yaml') }}
+```
+
+##### Railings
+
+```yaml
+{{ file(crafts + '/struts/railings.yaml') }}
+```
+
+##### Roofs
+
+```yaml
+{{ file(crafts + '/struts/roofs.yaml') }}
+```
+
+##### Stairs
+
+```yaml
+{{ file(crafts + '/struts/stairs.yaml') }}
+```
+
+##### Structures
+
+```yaml
+{{ file(crafts + '/struts/structures.yaml') }}
+```
+
+##### Walls
+
+```yaml
+{{ file(crafts + '/struts/walls.yaml') }}
+```
+
+##### Windows
+
+```yaml
+{{ file(crafts + '/struts/windows.yaml') }}
+```
+
+### View: Object Palette
+
+#### Doors
+
+```yaml
+{{ file(objects + '/doors/main.yaml')}}
+```
+
 # Task: Design Composition
 
+**Priorities**
+
+- All coordinates in the `castle-atrium-floor` were measured in GIMP are relative to the top-left corner (0,0). They need to be made relative to the `castle-atrium-floor` position and the the `castle-atrium-floor` should be zeroed out. Unless there is a better way of synchronizing the coordinates. Ensure the configuration aligns with the expectations of the Decomposer.
+- Ensure the composition in [Current Draft](#current-draft) is functional, meets the specifications and renders in the correct order.
+
+**Specifications**
+
+- All Asset in the `castle-atrium-floor` branch should be on the same layer should be the same
+- `castle-roof-exit-*` on the `castle-atrium-floor` should lead to the `castle-dawn-roof-door-*` on the root layer.
+- `throne-room-entrance` should lead to another layer where the throne room will be.
+- `atrium-exit` should lead back to the original layer.
+
+**Guidelines**
+
+- To prevent infinite interaction loops, the out position of a Door should not intersect the dimensions of a Door on the layer into which is teleporting. 
+
+## Current Draft
+
+```yaml
+{{ file(compositions + task.parameters.composition + '.yaml') }}
+```

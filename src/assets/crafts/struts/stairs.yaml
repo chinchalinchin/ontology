@@ -1,0 +1,29 @@
+crafts:
+  struts:
+    stairs-left-stone:
+      dimensions:
+        w: 64
+        l: 64
+      mass: 0
+      hitboxes: null
+      cost:
+        - item: stone
+          quantity: 12
+    stairs-right-stone:
+      dimensions:
+        w: 64
+        l: 65
+      mass: 0
+      hitboxes: null
+      cost:
+        - item: stone
+          quantity: 12
+    stairs-up-stone:
+      dimensions:
+        w: 32
+        l: 96
+      mass: 0
+      hitboxes: null
+      cost:
+        - item: stone
+          quantity: 12

@@ -2,7 +2,7 @@ compositions:
   castle-dawn:
     root:
       strut: 
-        id: wall-stone
+        id: wall-up-stone
         name: castle-dawn-exterior
       components:
         crafts: 
@@ -47,7 +47,7 @@ compositions:
               position:
                 x: 188
                 y: -33
-            - id: railing-stone-down
+            - id: railing-up-stone
               name: castle-dawn-railing-00
               owner: bind(root.owner)
               depth: 1
@@ -55,7 +55,7 @@ compositions:
               position:
                 x: -10
                 y: -48
-            - id: railing-stone-right
+            - id: railing-right-stone
               name: castle-dawn-railing-01
               owner: bind(root.owner)
               depth: 1
@@ -63,7 +63,7 @@ compositions:
               position:
                 x: 235
                 y: -82
-            - id: railing-stone-left
+            - id: railing-left-stone
               name: castle-dawn-railing-02
               owner: bind(root.owner)
               depth: 1
@@ -87,7 +87,7 @@ compositions:
               position:
                 x: 220
                 y: -219
-            - id: floor-stone
+            - id: floor-horizontal-stone
               name: castle-dawn-flatroof-00
               owner: bind(root.owner)
               depth: 0
@@ -98,14 +98,14 @@ compositions:
         effects:
           passive:
             - id: torch
-              name: torch-01
+              name: exterior-torch-01
               position:
                 x: 143
                 y: 3
               depth: 2
               height: bind(root.height)
             - id: torch
-              name: torch-02
+              name: exterior-torch-02
               position:
                 x: 11
                 y: 3
@@ -140,7 +140,10 @@ compositions:
               position:
                 x: 62
                 y: 16
-              outlayer: castle-compose-layer
+              outlayer: castle-atrium-layer
+              out:
+                x: 160
+                y: 320
             - id: door-mansion
               name: castle-dawn-roof-door-left
               height: bind(root.height)
@@ -148,7 +151,10 @@ compositions:
               position:
                 x: 6
                 y: -130
-              outlayer: castle-compose-layer
+              outlayer: castle-atrium-layer
+              out:
+                x: 16
+                y: 140
             - id: door-mansion
               name: castle-dawn-roof-door-right
               height: bind(root.height)
@@ -156,4 +162,198 @@ compositions:
               position:
                 x: 150
                 y: -130
-              outlayer: castle-compose-layer
+              outlayer: castle-atrium-layer
+              out:
+                x: 303
+                y: 140
+    branches:
+      - strut: 
+          id: floor-area-marble-checkered
+          name: castle-atrium-floor
+          owner: bind(root.owner)
+          layer: castle-atrium-layer
+          depth: 0 
+          height: -100
+          position:
+            x: 0
+            y: 0
+        components:
+          crafts: 
+            struts:
+              # --------------- FLOORS
+              - id: floor-area-marble-checkered
+                name: castle-dawn-floor-02
+                owner: bind(root.owner)
+                depth: 0
+                height: -100
+                position:
+                  x: 23
+                  y: 213
+              - id: floor-area-marble-checkered
+                name: castle-dawn-floor-03
+                owner: bind(root.owner)
+                depth: 0
+                height: -100
+                position:
+                  x: 23
+                  y: 81   
+              - id: floor-area-carpet-palace
+                name: castle-dawn-floor-01
+                owner: bind(root.owner)
+                depth: 1
+                height: -100
+                position:
+                  x: 75
+                  y: 219  
+              - id: floor-vertical-marble-diamonds
+                name: castle-dawn-floor-04
+                owner: bind(root.owner)
+                depth: 1
+                height: -100
+                position:
+                  x: 252
+                  y: 187  
+              - id: floor-vertical-marble-diamonds
+                name: castle-dawn-floor-05
+                owner: bind(root.owner)
+                depth: 1
+                height: -100
+                position:
+                  x: 0
+                  y: 187  
+              # --------------- WALLS
+              - id: wall-slant-left-down-palace
+                name: castle-dawn-wall-04
+                owner: bind(root.owner)
+                depth: 1
+                position:
+                  x: -16
+                  y: -2
+              - id: wall-up-palace
+                name: castle-dawn-wall-05
+                owner: bind(root.owner)
+                depth: 1
+                position:
+                  x: 96
+                  y: -2
+              - id: wall-slant-right-down-palace
+                name: castle-dawn-wall-03
+                owner: bind(root.owner)
+                depth: 1
+                position:
+                  x: 222
+                  y: -2
+              - id: wall-up-stone-gold-plated
+                name: castle-dawn-wall-01
+                owner: bind(root.owner)
+                depth: 1
+                position:
+                  x: -42
+                  y: 54
+              - id: wall-up-stone-gold-plated
+                name: castle-dawn-wall-02
+                owner: bind(root.owner)
+                depth: 1
+                position:
+                  x: 267
+                  y: 54
+              # --------------- PILLARS
+              - id: pillar-marble
+                name: castle-dawn-pillar-01
+                owner: bind(root.owner)
+                depth: 2
+                position:
+                  x: 32
+                  y: 54
+              - id: pillar-marble
+                name: castle-dawn-pillar-02
+                owner: bind(root.owner)
+                depth: 2
+                position:
+                  x: 267
+                  y: 54
+              # --------------- PLATFORMS & STAIRS
+              - id: platform-marble
+                name: castle-dawn-platform-01
+                owner: bind(root.owner)
+                depth: 1
+                position:
+                  x: 0
+                  y: 136
+              - id: platform-marble
+                name: castle-dawn-platform-02
+                owner: bind(root.owner)
+                depth: 1
+                position:
+                  x: 22
+                  y: 136
+              - id: stairs-up-stone
+                name: castle-dawn-stairs-01
+                owner: bind(root.owner)
+                depth: 1
+                position:
+                  x: 0
+                  y: 216
+              - id: stairs-up-stone
+                name: castle-dawn-stairs-02
+                owner: bind(root.owner)
+                depth: 1
+                position:
+                  x: 286
+                  y: 216
+          effects:
+            passive:
+              - id: torch
+                name: interior-torch-01
+                position:
+                  x: 185
+                  y: 2
+                depth: 2
+              - id: torch
+                name: interior-torch-02
+                position:
+                  x: 102
+                  y: 2
+                depth: 2
+          objects:
+            doors:
+              - id: door-double
+                name: throne-room-entrance
+                depth: 2
+                position:
+                  x: 127
+                  y: 29
+                outlayer: throne-room-layer
+                out:
+                  x: 0
+                  y: 0
+              - id: door-shadow-double
+                name: atrium-exit
+                depth: 2
+                position:
+                  x: 127
+                  y: 350
+                outlayer: bind(root.layer)
+                out:
+                  x: 94
+                  y: 95
+              - id: door-mansion
+                name: castle-roof-exit-00
+                depth: 2
+                position:
+                  x: 0
+                  y: 88
+                outlayer: bind(root.layer)
+                out:
+                  x: 22
+                  y: -75
+              - id: door-mansion
+                name: castle-roof-exit-01
+                depth: 2
+                position:
+                  x: 287
+                  y: 88
+                outlayer: bind(root.layer)
+                out:
+                  x: 166
+                  y: -75

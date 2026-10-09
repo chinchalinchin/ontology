@@ -14,7 +14,7 @@ crafts:
             l: 160
       cost:
         - item: clay
-          quantity: 10
+          quantity: 15
     frame-brick:
       dimensions:
         w: 96
@@ -29,4 +29,4 @@ crafts:
             l: 144
       cost:
         - item: stone
-          quantity: 10
+          quantity: 18

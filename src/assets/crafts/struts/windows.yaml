@@ -14,4 +14,4 @@ crafts:
             l: 90
       cost:
         - item: stone
-          quantity: 100
+          quantity: 14

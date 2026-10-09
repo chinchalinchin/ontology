@@ -1,19 +1,46 @@
 crafts:
   struts:
-    floor-wood:
+    # ---------------------- RECTANGULAR AREAS
+    floor-area-carpet-palace:
+      dimensions:
+        w: 161
+        l: 160
+      mass: -1
+      cost:
+        - item: cotton
+          quantity: 38
+    floor-area-marble-checkered:
+      dimensions: 
+        w: 265
+        l: 166
+      mass: -1
+      cost:
+        - item: marble
+          quantity: 64
+    floor-area-wood:
       dimensions:
         w: 128
         l: 96
       mass: -1
       cost: 
         - item: wood
-          quantity: 10
-    floor-stone:
+          quantity: 12
+    # --------------------- HORIZONTAL AREAS
+    floor-horizontal-stone:
       dimensions:
         w: 289
         l: 81
       mass: -1
       cost:
         - item: stone
-          quantity: 10
+          quantity: 23
+    # --------------------- VERTICAL AREAS
+    floor-vertical-marble-diamonds:
+      dimensions:
+        w: 66
+        l: 192
+      mass: -1
+      cost:
+        - item: marble
+          quantity: 19
     

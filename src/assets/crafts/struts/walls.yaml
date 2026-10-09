@@ -1,13 +1,16 @@
 crafts:
   struts:
-    wall-blue:
+    # ---------------- DIRECTED WALLS
+    # -------------------------------
+    # ---------------- UP WALLS
+    wall-up-blue:
       dimensions:
         w: 128
         l: 96
       mass: 0
       cost: 
         - item: wood
-          quantity: 10
+          quantity: 12
       hitboxes:
         - position:
             x: 6
@@ -15,14 +18,23 @@ crafts:
           dimensions:
             w: 116
             l: 54
-    wall-stone:
+    wall-up-palace:
+      dimensions:
+        w: 128
+        l: 96
+      mass: 0
+      cost: 
+        - item: stone
+          quantity: 12
+      hitboxes: null
+    wall-up-stone:
       dimensions: 
         w: 188
         l: 80
       mass: 0
       cost: 
         - item: stone
-          quantity: 100
+          quantity: 15
       hitboxes:
         - position:
             x: 8
@@ -30,14 +42,14 @@ crafts:
           dimensions:
             w: 150
             l: 40
-    wall-castle:
+    wall-up-stone-turret:
       dimensions:
         w: 222
         l: 133
       mass: 0
       cost: 
         - item: stone
-          quantity: 100
+          quantity: 36
       hitboxes:
         - position:
             x: 178
@@ -57,3 +69,36 @@ crafts:
           dimensions:
             w: 203
             l: 63
+    wall-up-stone-gold-plated:
+      dimensions:
+        w: 196
+        l: 96
+      mass: 0
+      cost: 
+        - item: stone
+          quantity: 18
+        - item: gold
+          quantity: 4
+      hitboxes: null
+    # ---------------- SLANT WALLS
+    # -------------------------------
+    # ---------------- LEFT-DOWN WALLS
+    wall-slant-left-down-palace:
+      dimensions: 
+        w: 112
+        l: 151
+      mass: 0
+      cost: 
+        - item: stone
+          quantity: 17
+      hitboxes: null
+    # ---------------- RIGHT-DOWN WALLS
+    wall-slant-right-down-palace:
+      dimensions: 
+        w: 112
+        l: 151
+      mass: 0
+      cost: 
+        - item: stone
+          quantity: 17
+      hitboxes: null

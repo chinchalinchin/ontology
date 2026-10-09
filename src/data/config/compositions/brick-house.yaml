@@ -20,7 +20,7 @@ compositions:
                 y: 143
     branches:
       - strut: 
-          id: wall-blue
+          id: wall-up-blue
           name: house-interior
           owner: bind(root.owner)
           layer: brick-house-compose-layer
@@ -61,7 +61,7 @@ compositions:
                   y: 44
           crafts: 
             struts:
-              - id: floor-wood
+              - id: floor-area-wood
                 name: house-floor
                 layer: brick-house-compose-layer
                 owner: bind(root.owner)

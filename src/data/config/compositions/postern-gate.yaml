@@ -2,20 +2,20 @@ compositions:
   postern-gate:
     root:
       strut: 
-        id: wall-castle
-        name: castle-exterior
+        id: wall-stone-turret
+        name: guarded-entrance
       components:
         effects:
           passive:
             - id: torch
-              name: torch-01
+              name: entrance-torch-01
               position:
                 x: 15
                 y: 58
               depth: 1
               height: bind(root.height)
             - id: torch
-              name: torch-02
+              name: entrance-torch-02
               position:
                 x: 174
                 y: 58
@@ -26,8 +26,8 @@ compositions:
         objects:
           gates:
             - id: castle-gate
-              name: castle-entrance
-              link: castle-gate-link
+              name: entrance-gate
+              link: gate-link
               depth: 1
               height: bind(root.height)
               position:
@@ -35,8 +35,8 @@ compositions:
                 y: 49
           plates:
             - id: stone-switch
-              name: castle-entrance-switch
-              link: castle-gate-link
+              name: entrance-switch
+              link: gate-link
               depth: 1
               height: bind(root.height)
               position:
@@ -44,10 +44,10 @@ compositions:
                 y: 145
           doors: 
             - id: door-castle-open
-              name: castle-entrance-open
+              name: entrance-open
               height: bind(root.height)
               depth: 0
               position:
                 x: 81
                 y: 49
-              outlayer: castle-compose-layer
+              outlayer: gate-compose-layer

@@ -34,7 +34,7 @@ properties:
 task:
 # ----------------------------------------------------
   # -------------------------------------- MAINTENANCE
-  template: console/patch.md.j2
+  # template: console/patch.md.j2
   # template: console/session.md.j2
   # ---------------------------------- ITERATION CYCLE
   # template: iterate/documentation.md.j2
@@ -44,6 +44,7 @@ task:
   # template: iterate/conclusion.md.j2
   # ------------------------------------- DESIGN TASKS
   # template: design/menu.md.j2
+  template: design/composition.md.j2
   # template: diagram/hierarchy.md.j2
   # template: diagram/automata.md.j2
   # template: diagram/stages.md.j2
@@ -54,6 +55,7 @@ task:
   # PLACEHOLDER UNTIL STRUCTURE EMERGES FOR TOOL
   parameters:
     automata: stages 
+    composition: castle-dawn
     diagram: executor-centennial-transitions.mmd
     table: executor-centennial-transitions.md
 # ----------------------------------------------------
@@ -61,13 +63,13 @@ tools:
 # ----------------------------------------------------
   views:
     manager:
-      board: true
+      board: false
       specs: false
-      docs: true
+      docs: false
     source:
-      workflow: true
+      workflow: false
     shell:
-      directory: true
+      directory: false
       commands: false
     tests:  
       pipeline: false

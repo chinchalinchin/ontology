@@ -60,16 +60,14 @@ markdown_extensions:
       base_path: docs
 
 exclude:
-  - '**/.board/**'
-  - '**/.prompts/**'
-  - '**/.assets/**'
   - '**/.*.md'
+  - '**/.drafts/**'
+  - 'static/assets/**'
 
 exclude_docs: |
-  .board/**
-  .prompts/**
-  .assets/**
   **/.*.md
+  **/.drafts/**
+  static/assets/**
   
 extra_javascript:
   - static/js/mathjax.js

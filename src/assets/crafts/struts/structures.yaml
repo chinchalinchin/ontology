@@ -14,7 +14,7 @@ crafts:
             l: 20
       cost:
         - item: stone
-          quantity: 50
+          quantity: 9
     tower-stone:
       dimensions:
         w: 32
@@ -29,7 +29,7 @@ crafts:
             l: 110
       cost:
         - item: stone
-          quantity: 250
+          quantity: 7
     turret-stone:
       dimensions:
         w: 66
@@ -44,4 +44,22 @@ crafts:
             l: 100
       cost:
         - item: stone
-          quantity: 250
+          quantity: 13
+    pillar-marble:
+      dimensions:
+        w: 20
+        l: 96
+      mass: 0
+      hitboxes: null
+      cost:
+        - item: marble
+          quantity: 4
+    platform-marble:
+      dimensions:
+        w: 96
+        l: 111
+      mass: 0
+      hitboxes: null 
+      cost:
+        - item: marble
+          quantity: 23

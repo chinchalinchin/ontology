@@ -279,7 +279,6 @@ class Decomposer:
             strut_state
         )
         assets.append(strut_asset)
-
         # 1. Calculate the physical bottom edge (height) of the instantiated Strut
         node_height = strut_state.position.y + (strut_asset.dimensions.l if strut_asset.dimensions else 0)
 
