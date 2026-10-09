@@ -5,19 +5,19 @@ resources:
       layer: '0'
       position: 
         x: 670
-        y: 206
+        y: 15
       stage: sapling
     - id: deciduous
       name: the-mighty-oak
       layer: '0'
       position: 
         x: 690
-        y: 305
+        y: 105
       stage: bush
     - id: deciduous
       name: the-mighty-oak
       layer: '0'
       position: 
         x: 685
-        y: 110
+        y: -50
       stage: bush

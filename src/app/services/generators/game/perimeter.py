@@ -56,6 +56,7 @@ class Perimeter:
         crafts = board.categories(AssetCategories.CRAFTS.value, layer)
         space = objects + crafts
         for obj in space:
+            print(obj.id)
             x1 = int(obj.state.position.x)
             y1 = int(obj.state.position.y)
             rects.append((x1, y1, x1 + obj.dimensions.w, y1 + obj.dimensions.l))

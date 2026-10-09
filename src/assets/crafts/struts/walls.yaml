@@ -1,0 +1,59 @@
+crafts:
+  struts:
+    wall-blue:
+      dimensions:
+        w: 128
+        l: 96
+      mass: 0
+      cost: 
+        - item: wood
+          quantity: 10
+      hitboxes:
+        - position:
+            x: 6
+            y: 17
+          dimensions:
+            w: 116
+            l: 54
+    wall-stone:
+      dimensions: 
+        w: 188
+        l: 80
+      mass: 0
+      cost: 
+        - item: stone
+          quantity: 100
+      hitboxes:
+        - position:
+            x: 8
+            y: 15
+          dimensions:
+            w: 150
+            l: 40
+    wall-castle:
+      dimensions:
+        w: 222
+        l: 133
+      mass: 0
+      cost: 
+        - item: stone
+          quantity: 100
+      hitboxes:
+        - position:
+            x: 178
+            y: 102
+          dimensions:
+            w: 25
+            l: 12
+        - position: 
+            x: 17
+            y: 102
+          dimensions:
+            w: 25
+            l: 12
+        - position:
+            x: 5
+            y: 39
+          dimensions:
+            w: 203
+            l: 63

@@ -1,0 +1,143 @@
+compositions:
+  castle-dawn:
+    root:
+      strut: 
+        id: wall-stone
+        name: castle-dawn-exterior
+      components:
+        crafts: 
+          struts:
+            - id: roof-slate
+              name: castle-dawn-roof
+              owner: bind(root.owner)
+              depth: 1
+              height: bind(root.height)
+              position:
+                x: -34
+                y: -255
+            - id: window-stone
+              name: castle-dawn-window
+              owner: bind(root.owner)
+              depth: 1
+              height: bind(root.height)
+              position:
+                x: -33
+                y: -194
+            - id: buttress-stone
+              name: castle-dawn-buttress
+              owner: bind(root.owner)
+              depth: 1
+              height: bind(root.height)
+              position:
+                x: 0
+                y: 0
+            - id: turret-stone
+              name: castle-dawn-turret-00
+              owner: bind(root.owner)
+              depth: 1
+              height: bind(root.height)
+              position:
+                x: -66
+                y: -33
+            - id: turret-stone
+              name: castle-dawn-turret-01
+              owner: bind(root.owner)
+              depth: 1
+              height: bind(root.height)
+              position:
+                x: 188
+                y: -33
+            - id: railing-stone-down
+              name: castle-dawn-railing-00
+              owner: bind(root.owner)
+              depth: 1
+              height: bind(root.height)
+              position:
+                x: -10
+                y: -48
+            - id: railing-stone-right
+              name: castle-dawn-railing-01
+              owner: bind(root.owner)
+              depth: 1
+              height: bind(root.height)
+              position:
+                x: 235
+                y: -82
+            - id: railing-stone-left
+              name: castle-dawn-railing-02
+              owner: bind(root.owner)
+              depth: 1
+              height: bind(root.height)
+              position:
+                x: -65
+                y: -85
+            - id: tower-stone
+              name: castle-dawn-tower-00
+              owner: bind(root.owner)
+              depth: 1
+              height: bind(root.height)
+              position:
+                x: -65
+                y: -219
+            - id: tower-stone
+              name: castle-dawn-tower-00
+              owner: bind(root.owner)
+              depth: 1
+              height: bind(root.height)
+              position:
+                x: 220
+                y: -219
+            - id: floor-stone
+              name: castle-dawn-tower-00
+              owner: bind(root.owner)
+              depth: 0
+              height: -100 # FORCE TO BOTTOM: Always render behind the player
+              position:
+                x: -49
+                y: -82          
+        effects:
+          passive:
+            - id: torch
+              name: torch-01
+              position:
+                x: 143
+                y: 3
+              depth: 1
+              height: bind(root.height)
+            - id: torch
+              name: torch-02
+              position:
+                x: 11
+                y: 3
+              animation:
+                frame: 4
+              depth: 1
+              height: bind(root.height)
+        objects:
+          gates:
+            - id: castle-gate
+              name: castle-entrance
+              link: castle-gate-link
+              depth: 1
+              height: bind(root.height)
+              position:
+                x: 62
+                y: 16
+          plates:
+            - id: stone-switch
+              name: castle-entrance-switch
+              link: castle-gate-link
+              depth: 1
+              height: bind(root.height)
+              position:
+                x: -47
+                y: 111
+          doors: 
+            - id: door-castle-open
+              name: castle-entrance-open
+              height: bind(root.height)
+              depth: 1
+              position:
+                x: 62
+                y: 16
+              outlayer: castle-compose-layer

@@ -14,7 +14,7 @@ objects:
       lexicon: spring
       position:
         x: 430
-        y: 370
+        y: 330
   obstacles:
     - id: gray-rock-00
       name: jasilynns-rock

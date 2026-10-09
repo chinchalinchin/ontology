@@ -4,7 +4,7 @@ effects:
       name: test-dummy
       layer: '0'
       position:
-        x: 500
-        y: 312
+        x: 999
+        y: 885
       intention: attack
       cooldown: 30

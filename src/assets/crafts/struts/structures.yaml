@@ -1,0 +1,47 @@
+crafts:
+  struts:
+    buttress-stone:
+      dimensions:
+        w: 190
+        l: 33
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 10
+            y: 05
+          dimensions:
+            w: 160
+            l: 20
+      cost:
+        - item: stone
+          quantity: 50
+    tower-stone:
+      dimensions:
+        w: 32
+        l: 143
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 04
+            y: 05
+          dimensions:
+            w: 20
+            l: 110
+      cost:
+        - item: stone
+          quantity: 250
+    turret-stone:
+      dimensions:
+        w: 66
+        l: 131
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 10
+            y: 15
+          dimensions:
+            w: 40
+            l: 100
+      cost:
+        - item: stone
+          quantity: 250

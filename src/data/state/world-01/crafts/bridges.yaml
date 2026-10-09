@@ -4,7 +4,7 @@ crafts:
       name: the-bridge-of-tears-left
       position:
         x: 50
-        y: 90
+        y: 280
       multiple:
         nx: 1
         ny: 0
@@ -14,7 +14,7 @@ crafts:
       name: the-bridge-of-tears-right
       position:
         x: 550
-        y: 70
+        y: 280
       multiple:
         nx: 1
         ny: 0

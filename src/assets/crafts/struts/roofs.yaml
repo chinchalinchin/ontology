@@ -1,0 +1,17 @@
+crafts:
+  struts:
+    roof-slate:
+      dimensions:
+        w: 256
+        l: 127
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 10
+            y: 10
+          dimensions:
+            w: 230
+            l: 100
+      cost:
+        - item: stone
+          quantity: 100

@@ -111,7 +111,7 @@ When asserting fluid immersion (`board.fluid(layer, position)`), the engine quer
 
 To accurately render perspective, the Screen `draw()` loop applies Painter's Algorithm sorting to all active assets before translating them to Cython primitives.
 
-1. **Primary Key (Height)**: Evaluates dynamic geometric height ($y + l$). If an explicit `state.height` is present, it is coerced to an integer (`int(asset.state.height)`). Coercion prevents `TypeError` when late-binding compositions assign string tokens alongside integer positions (Bug B003).
+1. **Primary Key (Height)**: Evaluates dynamic geometric height ($y + l$). If an explicit `state.height` is present, it is coerced to an integer (`int(asset.state.height)`). Coercion prevents `TypeError` when late-binding compositions assign string tokens alongside integer positions.
 2. **Secondary Key (Depth)**: Serves as a tie-breaker when assets share identical heights. Fluids declare `depth: -1`, Shorelines declare `depth: 0`, Bridges declare `depth: 1`, and standard entities default to `depth: 0`.
 3. **Allocation Optimization**: Replacing per-frame `lambda` closures with `_sort` eliminates millions of transient function objects and reduces draw overhead across expanded entity sets.
 

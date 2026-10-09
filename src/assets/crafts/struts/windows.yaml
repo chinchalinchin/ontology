@@ -1,0 +1,17 @@
+crafts:
+  struts:
+    window-stone:
+      dimensions:
+        w: 254
+        l: 112
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 10
+            y: 10
+          dimensions:
+            w: 220
+            l: 90
+      cost:
+        - item: stone
+          quantity: 100

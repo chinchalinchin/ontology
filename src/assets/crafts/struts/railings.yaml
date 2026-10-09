@@ -1,0 +1,77 @@
+crafts:
+  struts:
+    fence-horizontal:
+      dimensions:
+        w: 72
+        l: 73
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 0
+            y: 0
+          dimensions:
+            w: 72
+            l: 73
+      cost:
+        - item: wood
+          quantity: 10
+    fence-vertical:
+      dimensions:
+        w: 8 
+        l: 87
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 0
+            y: 0
+          dimensions:
+            w: 8
+            l: 87
+      cost:
+        - item: wood
+          quantity: 10
+    railing-stone-down:
+      dimensions:
+        w: 206
+        l: 17
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 0
+            y: 0
+          dimensions:
+            w: 206
+            l: 17
+      cost:
+        - item: stone
+          quantity: 10
+    railing-stone-left:
+      dimensions:
+        w: 17
+        l: 81
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 0
+            y: 0
+          dimensions:
+            w: 17
+            l: 81
+      cost:
+        - item: stone
+          quantity: 10
+    railing-stone-right:
+      dimensions:
+        w: 17
+        l: 81
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 0
+            y: 0
+          dimensions:
+            w: 17
+            l: 81
+      cost:
+        - item: stone
+          quantity: 10

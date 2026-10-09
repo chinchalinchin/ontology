@@ -159,7 +159,6 @@ The Decomposer is the package of the application responsible for translating Com
 
 For every child node (whether it is a component of the root, or a branching Strut), apply the following logic:
 
-
 * **Layer Parity Check:** Compare the child's resolved `layer` against `parent_context['layer']`.
 * **Coordinate Translation:**
     * If layers match: `Child Absolute Position = Parent Absolute Position + Child Pseudo Position`.

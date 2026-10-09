@@ -13,10 +13,10 @@ compositions:
     position:
       x: 400
       y: 750
-  - id: postern-gate
-    name: gate-test
+  - id: castle-dawn
+    name: castle-dawn
     owner: the-government
     layer: '0'
     position:
-      x: 250
+      x: 275
       y: 250

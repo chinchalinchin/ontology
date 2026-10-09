@@ -1,0 +1,19 @@
+crafts:
+  struts:
+    floor-wood:
+      dimensions:
+        w: 128
+        l: 96
+      mass: -1
+      cost: 
+        - item: wood
+          quantity: 10
+    floor-stone:
+      dimensions:
+        w: 289
+        l: 81
+      mass: -1
+      cost:
+        - item: stone
+          quantity: 10
+    
