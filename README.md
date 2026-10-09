@@ -166,6 +166,7 @@ Batch scripts.
 * `/scripts/transpose`: Pillow script to transpose a vertical column of frames into a horizontal row of frames.
 * `/scripts/unpack`: Pillow script to unpack a grid of frames into a horizontal row of grames.
 * `/scripts/dependencies`: BASH script for generating `pydeps` dependency tree graphs.
+* `/scripts/synthesize`: Cython script for synthesizing musical scores from YAML. See [README](./scripts/synthesize/README.md) for more information.
 
 ### /src
 

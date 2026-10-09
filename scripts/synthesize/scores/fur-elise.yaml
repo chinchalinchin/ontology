@@ -1,0 +1,76 @@
+score:
+  fur_elise_polyphonic:
+    signature: "three-eight"
+    bpm: 132.0
+    notes:
+      # Measures 1-8: Solo Right Hand Motif
+      - note: "E5"
+        beat: "sixteenth"
+      - note: "D#5"
+        beat: "sixteenth"
+      - note: "E5"
+        beat: "sixteenth"
+      - note: "D#5"
+        beat: "sixteenth"
+      - note: "E5"
+        beat: "sixteenth"
+      - note: "B4"
+        beat: "sixteenth"
+      - note: "D5"
+        beat: "sixteenth"
+      - note: "C5"
+        beat: "sixteenth"
+
+      # Measure 9: Left Hand A Minor Entry + Melody A4
+      - notes: ["A2", "E3", "C4", "A4"]
+        beat: "eighth"
+      - note: "REST"
+        beat: "sixteenth"
+      - note: "C4"
+        beat: "sixteenth"
+      - note: "E4"
+        beat: "sixteenth"
+      - note: "A4"
+        beat: "sixteenth"
+
+      # Measure 11: Left Hand E Major Entry + Melody B4
+      - notes: ["E2", "G#3", "B3", "B4"]
+        beat: "eighth"
+      - note: "REST"
+        beat: "sixteenth"
+      - note: "E4"
+        beat: "sixteenth"
+      - note: "G#4"
+        beat: "sixteenth"
+      - note: "B4"
+        beat: "sixteenth"
+
+      # Measure 13: Left Hand A Minor Entry + Melody C5
+      - notes: ["A2", "E3", "C4", "C5"]
+        beat: "eighth"
+      - note: "REST"
+        beat: "sixteenth"
+      - note: "E4"
+        beat: "sixteenth"
+
+      # Measures 14-17: Recapitulation Motif
+      - note: "E5"
+        beat: "sixteenth"
+      - note: "D#5"
+        beat: "sixteenth"
+      - note: "E5"
+        beat: "sixteenth"
+      - note: "D#5"
+        beat: "sixteenth"
+      - note: "E5"
+        beat: "sixteenth"
+      - note: "B4"
+        beat: "sixteenth"
+      - note: "D5"
+        beat: "sixteenth"
+      - note: "C5"
+        beat: "sixteenth"
+
+      # Measure 18: Resolution on A Minor Cadence
+      - notes: ["A2", "E3", "A3", "C4", "A4"]
+        beat: "quarter"
