@@ -13,7 +13,9 @@ from typing import (
     Dict,
     List, 
     Tuple,
-    Optional
+    Optional,
+    Type,
+    Any,
 )
 
 # Application Libraries
@@ -31,7 +33,15 @@ from libs.core.models import (
     Position
 )
 
+class Singleton(ABC):
+    _instances: Dict[Type[Any], Any] = {}
 
+    def __new__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super().__new__(cls)
+        return cls._instances[cls]
+
+    
 @dataclass(slots=True)
 class Taxonomy:
     id: str
@@ -40,7 +50,7 @@ class Taxonomy:
     instance: str
 
 
-class Frame(ABC):
+class Frame(Singleton):
     """
     Foundational interface for Assets.
     """
@@ -93,7 +103,7 @@ class Frame(ABC):
         return self.keys(id, None)
 
     
-class Animation(ABC):
+class Animation(Singleton):
     """
     Foundational interface for Assets with animate states.
     """
@@ -109,7 +119,7 @@ class Animation(ABC):
         pass
 
 
-class HitboxSchema(ABC):
+class HitboxSchema(Singleton):
     """
     Foundational interface for Assets that participate in collisions and interactions.
     """

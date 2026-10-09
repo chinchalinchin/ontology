@@ -3,12 +3,13 @@
 """
 # Standard Libraries
 import collections
-from unittest.mock import MagicMock
+from unittest.mock import patch, call, MagicMock
 
 # External Libraries
 import pytest
 
 # Application Libraries
+from app.assets.animations import SpriteAnimation, BinaryAnimation
 from app.game.logic.mechanics import AnimationMechanics
 from app.config.enums import AssetCategories, AssetInstances
 from app.models.state import DevicePayload
@@ -26,38 +27,48 @@ def test_animation_mechanics_update(mock_board):
 
     mock_board.paused = False
 
-    # Gather target assets directly via the exact Board query methods AnimationMechanics uses
-    effects = mock_board.categories(AssetCategories.EFFECTS)
     sheets = mock_board.categories(AssetCategories.SHEETS)
     chests = mock_board.instances(AssetInstances.CHESTS)
     gates = mock_board.instances(AssetInstances.GATES)
     plates = mock_board.instances(AssetInstances.PLATES)
     reactables = mock_board.instances(AssetInstances.REACTABLES.value)
 
-    # Verify our testbed successfully hydrated these specific fixture categories
-    assert len(effects) > 0, "No Effect fixtures found on the board."
-    assert len(sheets) > 0, "No Sheet fixtures found on the board."
-    assert len(chests) > 0, "No Chest fixtures found on the board."
-    assert len(gates) > 0, "No Gate fixtures found on the board."
-    assert len(plates) > 0, "No Plate fixtures found on the board."
-    assert len(reactables) > 0, "No Reactable fixtures found on the board."
+    assert len(sheets) > 0
+    assert len(chests) > 0
+    assert len(gates) > 0
+    assert len(plates) > 0
+    assert len(reactables) > 0
 
-    # Spy on the animation methods to verify execution without stubbing the entire object
-    all_animating_assets = effects + sheets + chests + gates + plates
-    for asset in all_animating_assets:
-        asset.animation.animate = MagicMock()
-        
     for effect in reactables:
-        # Force active to True to trigger the cooldown path 
         effect.state.active = True
-        effect.animation.cooldown = MagicMock()
 
-    # Execute Mechanics
-    mechanic.update(mock_board, 0.016, collections.deque(), payload)
+    binary_assets = chests + gates + plates
+    reactable_anim_cls = type(reactables[0].animation)
 
-    # Assert calls
-    for asset in all_animating_assets:
-        asset.animation.animate.assert_called_once_with(asset.state, asset.properties)
+    with patch.object(SpriteAnimation, "animate") as mock_sprite_anim, \
+         patch.object(BinaryAnimation, "animate") as mock_binary_anim, \
+         patch.object(reactable_anim_cls, "cooldown") as mock_cooldown:
 
-    for effect in reactables:
-        effect.animation.cooldown.assert_called_once_with(effect.state, effect.properties)
+        # Execute Mechanics
+        mechanic.update(mock_board, 0.016, collections.deque(), payload)
+
+        # Assert SpriteAnimation calls
+        assert mock_sprite_anim.call_count == len(sheets)
+        mock_sprite_anim.assert_has_calls(
+            [call(sheet.state, sheet.properties) for sheet in sheets],
+            any_order=True
+        )
+
+        # Assert BinaryAnimation calls across chests, gates, and plates
+        assert mock_binary_anim.call_count == len(binary_assets)
+        mock_binary_anim.assert_has_calls(
+            [call(asset.state, asset.properties) for asset in binary_assets],
+            any_order=True
+        )
+
+        # Assert Cooldown calls for Reactables
+        assert mock_cooldown.call_count == len(reactables)
+        mock_cooldown.assert_has_calls(
+            [call(effect.state, effect.properties) for effect in reactables],
+            any_order=True
+        )
