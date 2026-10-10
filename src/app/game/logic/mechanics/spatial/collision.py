@@ -37,6 +37,12 @@ class CollisionMechanics(SpatialMechanic):
         Delegates Asset vs Boundary interaction to the specialized Cython constraint solver.
         """
         is_kinematic = asset.taxonomy.instance == AssetInstances.PLAYERS.value
+        mass = getattr(asset.properties, 'mass', 0)
+
+        # Static environment architecture (m == 0) cannot be shifted by boundary hulls
+        if mass == 0 and not is_kinematic:
+            return
+
         vel = getattr(asset.state, 'velocity', None)
         
         intersection = geometry.bounded(
@@ -63,7 +69,6 @@ class CollisionMechanics(SpatialMechanic):
             boundary.dimensions.w, 
             boundary.dimensions.l
         )
-
 
     def _resolve(self, asset_a: Asset, asset_b: Asset):
         """

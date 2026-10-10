@@ -27,6 +27,7 @@ def test_spatial_mechanic_center():
 
 
 @pytest.mark.physics
+@pytest.mark.collisions
 def test_spatial_mechanic_collisions(mock_crate, mock_crate_alt, mock_strut):
     """
     Verifies Space broad-phase hashing and narrow-phase filtering with real fixtures.
@@ -45,6 +46,7 @@ def test_spatial_mechanic_collisions(mock_crate, mock_crate_alt, mock_strut):
 
 
 @pytest.mark.physics
+@pytest.mark.collisions
 def test_spatial_mechanic_intersections(mock_crate, mock_chest):
     """
     Verifies virtual full-dimension hitbox generation for post-separation interaction checks.

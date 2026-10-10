@@ -52,18 +52,45 @@ sounds:
       value: 0.16666666666666666
     - name: "triplet_sixteenth"
       value: 0.041666666666666664
-      
+
+  dynamics:
+    ppp: 0.15
+    pp:  0.30
+    p:   0.45
+    mp:  0.60
+    mf:  0.75
+    f:   0.88
+    ff:  0.96
+    fff: 1.00
+
+  timbres:
+    piano:
+      harmonics: [1.0, 0.35, 0.10, 0.02]
+      attack: 0.005
+      decay: 2.2
+    soft_piano:
+      harmonics: [1.0, 0.20, 0.05]
+      attack: 0.010
+      decay: 2.5
+    reed:
+      harmonics: [1.0, 0.0, 0.6, 0.0, 0.3, 0.0, 0.1]
+      attack: 0.020
+      decay: 1.5
+    bell:
+      harmonics: [1.0, 0.4, 0.2, 0.5, 0.1, 0.3]
+      attack: 0.002
+      decay: 3.5
+
   notes:
     - name: "REST"
       frequency: 0.0
-    # Octave 0
+    # Octave 0 through Octave 8 definitions remain unchanged
     - name: "A0"
       frequency: 27.50
     - name: "A#0"
       frequency: 29.14
     - name: "B0"
       frequency: 30.87
-    # Octave 1
     - name: "C1"
       frequency: 32.70
     - name: "C#1"
@@ -88,7 +115,6 @@ sounds:
       frequency: 58.27
     - name: "B1"
       frequency: 61.74
-    # Octave 2
     - name: "C2"
       frequency: 65.41
     - name: "C#2"
@@ -113,7 +139,6 @@ sounds:
       frequency: 116.54
     - name: "B2"
       frequency: 123.47
-    # Octave 3
     - name: "C3"
       frequency: 130.81
     - name: "C#3"
@@ -138,7 +163,6 @@ sounds:
       frequency: 233.08
     - name: "B3"
       frequency: 246.94
-    # Octave 4
     - name: "C4"
       frequency: 261.63
     - name: "C#4"
@@ -163,7 +187,6 @@ sounds:
       frequency: 466.16
     - name: "B4"
       frequency: 493.88
-    # Octave 5
     - name: "C5"
       frequency: 523.25
     - name: "C#5"
@@ -188,7 +211,6 @@ sounds:
       frequency: 932.33
     - name: "B5"
       frequency: 987.77
-    # Octave 6
     - name: "C6"
       frequency: 1046.50
     - name: "C#6"
@@ -213,7 +235,6 @@ sounds:
       frequency: 1864.66
     - name: "B6"
       frequency: 1975.53
-    # Octave 7
     - name: "C7"
       frequency: 2093.00
     - name: "C#7"
@@ -238,6 +259,5 @@ sounds:
       frequency: 3729.31
     - name: "B7"
       frequency: 3951.07
-    # Octave 8
     - name: "C8"
       frequency: 4186.01

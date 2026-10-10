@@ -4,263 +4,289 @@ score:
     bpm: 66.0
     tracks:
       left_hand:
-        # ==========================================
-        # PICKUP (Measure 0)
-        # ==========================================
-        - note: "REST"
-          beat: "eighth"
+        timbre: "soft_piano"
+        default_dynamic: "pp"
+        notes:
+          # ==========================================
+          # PICKUP (Measure 0)
+          # ==========================================
+          - note: "REST"
+            beat: "eighth"
 
-        # ==========================================
-        # MEASURE 1: Eb -> Eb -> Cm -> Bb7
-        # ==========================================
-        # Beat 1: Eb major (Bass + 2 chords)
-        - note: "D#3"
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
+          # ==========================================
+          # MEASURE 1: Eb -> Eb -> Cm -> Bb7
+          # ==========================================
+          # Beat 1: Eb major (Bass + 2 chords)
+          - note: "D#3"
+            beat: "eighth"
+          - notes: ["G3", "A#3", "D#4"]
+            beat: "eighth"
+          - notes: ["G3", "A#3", "D#4"]
+            beat: "eighth"
 
-        # Beat 2: Eb major
-        - note: "D#3"
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
+          # Beat 2: Eb major
+          - note: "D#3"
+            beat: "eighth"
+          - notes: ["G3", "A#3", "D#4"]
+            beat: "eighth"
+          - notes: ["G3", "A#3", "D#4"]
+            beat: "eighth"
 
-        # Beat 3: C minor
-        - note: "C3"
-          beat: "eighth"
-        - notes: ["G3", "C4", "D#4"]
-          beat: "eighth"
-        - notes: ["G3", "C4", "D#4"]
-          beat: "eighth"
+          # Beat 3: C minor
+          - note: "C3"
+            beat: "eighth"
+          - notes: ["G3", "C4", "D#4"]
+            beat: "eighth"
+          - notes: ["G3", "C4", "D#4"]
+            beat: "eighth"
 
-        # Beat 4: Bb7 dominant
-        - note: "A#2"
-          beat: "eighth"
-        - notes: ["F3", "G#3", "D4"]
-          beat: "eighth"
-        - notes: ["F3", "G#3", "D4"]
-          beat: "eighth"
+          # Beat 4: Bb7 dominant
+          - note: "A#2"
+            beat: "eighth"
+          - notes: ["F3", "G#3", "D4"]
+            beat: "eighth"
+          - notes: ["F3", "G#3", "D4"]
+            beat: "eighth"
 
-        # ==========================================
-        # MEASURE 2: Eb -> Ab -> Eb/Bb -> Bb7
-        # ==========================================
-        # Beat 1: Eb major
-        - note: "D#3"
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
+          # ==========================================
+          # MEASURE 2: Eb -> Ab -> Eb/Bb -> Bb7
+          # ==========================================
+          # Beat 1: Eb major
+          - note: "D#3"
+            beat: "eighth"
+          - notes: ["G3", "A#3", "D#4"]
+            beat: "eighth"
+          - notes: ["G3", "A#3", "D#4"]
+            beat: "eighth"
 
-        # Beat 2: Ab major
-        - note: "G#2"
-          beat: "eighth"
-        - notes: ["G#3", "C4", "D#4"]
-          beat: "eighth"
-        - notes: ["G#3", "C4", "D#4"]
-          beat: "eighth"
+          # Beat 2: Ab major
+          - note: "G#2"
+            beat: "eighth"
+          - notes: ["G#3", "C4", "D#4"]
+            beat: "eighth"
+          - notes: ["G#3", "C4", "D#4"]
+            beat: "eighth"
 
-        # Beat 3: Eb/Bb
-        - note: "A#2"
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
+          # Beat 3: Eb/Bb cadential 6/4
+          - note: "A#2"
+            beat: "eighth"
+          - notes: ["G3", "A#3", "D#4"]
+            beat: "eighth"
+          - notes: ["G3", "A#3", "D#4"]
+            beat: "eighth"
 
-        # Beat 4: Bb7 dominant
-        - note: "A#2"
-          beat: "eighth"
-        - notes: ["F3", "G#3", "D4"]
-          beat: "eighth"
-        - notes: ["F3", "G#3", "D4"]
-          beat: "eighth"
+          # Beat 4: Bb7 dominant
+          - note: "A#2"
+            beat: "eighth"
+          - notes: ["F3", "G#3", "D4"]
+            beat: "eighth"
+          - notes: ["F3", "G#3", "D4"]
+            beat: "eighth"
 
-        # ==========================================
-        # MEASURE 3: Eb -> F7 -> Eb/Bb -> Bb7
-        # ==========================================
-        # Beat 1: Eb major
-        - note: "D#3"
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
+          # ==========================================
+          # MEASURE 3: Eb -> F7 -> Eb/Bb -> Bb7
+          # ==========================================
+          # Beat 1: Eb major
+          - note: "D#3"
+            beat: "eighth"
+          - notes: ["G3", "A#3", "D#4"]
+            beat: "eighth"
+          - notes: ["G3", "A#3", "D#4"]
+            beat: "eighth"
 
-        # Beat 2: F7 secondary dominant
-        - note: "F2"
-          beat: "eighth"
-        - notes: ["A3", "C4", "D#4"]
-          beat: "eighth"
-        - notes: ["A3", "C4", "D#4"]
-          beat: "eighth"
+          # Beat 2: F7 secondary dominant
+          - note: "F2"
+            beat: "eighth"
+            dynamic: "p"
+          - notes: ["A3", "C4", "D#4"]
+            beat: "eighth"
+          - notes: ["A3", "C4", "D#4"]
+            beat: "eighth"
 
-        # Beat 3: Eb/Bb cadential 6/4
-        - note: "A#2"
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
+          # Beat 3: Eb/Bb cadential 6/4
+          - note: "A#2"
+            beat: "eighth"
+          - notes: ["G3", "A#3", "D#4"]
+            beat: "eighth"
+          - notes: ["G3", "A#3", "D#4"]
+            beat: "eighth"
 
-        # Beat 4: Bb7 dominant
-        - note: "A#2"
-          beat: "eighth"
-        - notes: ["F3", "G#3", "D4"]
-          beat: "eighth"
-        - notes: ["F3", "G#3", "D4"]
-          beat: "eighth"
+          # Beat 4: Bb7 dominant
+          - note: "A#2"
+            beat: "eighth"
+          - notes: ["F3", "G#3", "D4"]
+            beat: "eighth"
+          - notes: ["F3", "G#3", "D4"]
+            beat: "eighth"
 
-        # ==========================================
-        # MEASURE 4: Eb -> Bb7 -> Eb Cadence
-        # ==========================================
-        # Beat 1: Eb major
-        - note: "D#3"
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
+          # ==========================================
+          # MEASURE 4: Eb -> Bb7 -> Eb Cadence
+          # ==========================================
+          # Beat 1: Eb major
+          - note: "D#3"
+            beat: "eighth"
+          - notes: ["G3", "A#3", "D#4"]
+            beat: "eighth"
+          - notes: ["G3", "A#3", "D#4"]
+            beat: "eighth"
 
-        # Beat 2: Bb7 dominant
-        - note: "A#2"
-          beat: "eighth"
-        - notes: ["F3", "G#3", "D4"]
-          beat: "eighth"
-        - notes: ["F3", "G#3", "D4"]
-          beat: "eighth"
+          # Beat 2: Bb7 dominant
+          - note: "A#2"
+            beat: "eighth"
+          - notes: ["F3", "G#3", "D4"]
+            beat: "eighth"
+          - notes: ["F3", "G#3", "D4"]
+            beat: "eighth"
 
-        # Beat 3: Eb major
-        - note: "D#3"
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "eighth"
+          # Beat 3: Eb major
+          - note: "D#3"
+            beat: "eighth"
+          - notes: ["G3", "A#3", "D#4"]
+            beat: "eighth"
+          - notes: ["G3", "A#3", "D#4"]
+            beat: "eighth"
 
-        # Beat 4: Low tonic octave arrival
-        - notes: ["D#2", "D#3"]
-          beat: "eighth"
-        - notes: ["G3", "A#3", "D#4"]
-          beat: "quarter"
+          # Beat 4: Low tonic octave arrival
+          - notes: ["D#2", "D#3"]
+            beat: "eighth"
+            dynamic: "pp"
+          - notes: ["G3", "A#3", "D#4"]
+            beat: "quarter"
 
       right_hand:
-        # ==========================================
-        # PICKUP (Measure 0)
-        # ==========================================
-        - note: "A#4"
-          beat: "eighth"
+        timbre: "piano"
+        default_dynamic: "p"
+        notes:
+          # ==========================================
+          # PICKUP (Measure 0)
+          # ==========================================
+          - note: "A#4"
+            beat: "eighth"
+            dynamic: "p"
 
-        # ==========================================
-        # MEASURE 1: Antecedent Motif
-        # ==========================================
-        # Beat 1: Melody sustains over all 3 LH eighth-note pulses
-        - note: "G5"
-          beat: "dotted_quarter"
+          # ==========================================
+          # MEASURE 1: Antecedent Motif
+          # ==========================================
+          # Beat 1: Singing melody statement
+          - note: "G5"
+            beat: "dotted_quarter"
+            dynamic: "mp"
 
-        # Beat 2: F5 with ornamental turn (Eb5 -> D5 -> Eb5)
-        - note: "F5"
-          beat: "eighth"
-        - note: "D#5"
-          beat: "sixteenth"
-        - note: "D5"
-          beat: "sixteenth"
-        - note: "D#5"
-          beat: "eighth"
+          # Beat 2: Turn ornament (F5 -> Eb5 -> D5 -> Eb5)
+          - note: "F5"
+            beat: "eighth"
+            dynamic: "p"
+          - note: "D#5"
+            beat: "sixteenth"
+          - note: "D5"
+            beat: "sixteenth"
+          - note: "D#5"
+            beat: "eighth"
 
-        # Beat 3: F5 held -> descent to Bb4
-        - note: "F5"
-          beat: "quarter"
-        - note: "A#4"
-          beat: "eighth"
+          # Beat 3: F5 held -> descent to Bb4
+          - note: "F5"
+            beat: "quarter"
+            dynamic: "p"
+          - note: "A#4"
+            beat: "eighth"
 
-        # Beat 4: Cantabile return to G5
-        - note: "G5"
-          beat: "dotted_quarter"
+          # Beat 4: Return to G5
+          - note: "G5"
+            beat: "dotted_quarter"
+            dynamic: "mp"
 
-        # ==========================================
-        # MEASURE 2: Consequent Phrase & Resolution
-        # ==========================================
-        # Beat 1: Turn motif repeated
-        - note: "F5"
-          beat: "eighth"
-        - note: "D#5"
-          beat: "sixteenth"
-        - note: "D5"
-          beat: "sixteenth"
-        - note: "D#5"
-          beat: "eighth"
+          # ==========================================
+          # MEASURE 2: Consequent Phrase & Resolution
+          # ==========================================
+          # Beat 1: Turn motif repeated
+          - note: "F5"
+            beat: "eighth"
+            dynamic: "p"
+          - note: "D#5"
+            beat: "sixteenth"
+          - note: "D5"
+            beat: "sixteenth"
+          - note: "D#5"
+            beat: "eighth"
 
-        # Beat 2: Leap to C5 (sustains over Ab chord)
-        - note: "C5"
-          beat: "dotted_quarter"
+          # Beat 2: Leap to C5 over Ab major
+          - note: "C5"
+            beat: "dotted_quarter"
+            dynamic: "mp"
 
-        # Beat 3: Bb4 held + brief breath rest
-        - note: "A#4"
-          beat: "quarter"
-        - note: "REST"
-          beat: "eighth"
+          # Beat 3: Bb4 held + vocal breath rest
+          - note: "A#4"
+            beat: "quarter"
+            dynamic: "p"
+          - note: "REST"
+            beat: "eighth"
 
-        # Beat 4: Scalar approach to the climax
-        - note: "C5"
-          beat: "eighth"
-        - note: "D5"
-          beat: "eighth"
-        - note: "D#5"
-          beat: "eighth"
+          # Beat 4: Beginning of crescendo scalar approach
+          - note: "C5"
+            beat: "eighth"
+            dynamic: "p"
+          - note: "D5"
+            beat: "eighth"
+          - note: "D#5"
+            beat: "eighth"
 
-        # ==========================================
-        # MEASURE 3: Scalar Ascent to High C6
-        # ==========================================
-        # Beat 1: Rising scale
-        - note: "F5"
-          beat: "eighth"
-        - note: "G5"
-          beat: "eighth"
-        - note: "G#5"
-          beat: "eighth"
+          # ==========================================
+          # MEASURE 3: Scalar Ascent to Apex C6
+          # ==========================================
+          # Beat 1: Rising scale crescendo
+          - note: "F5"
+            beat: "eighth"
+            dynamic: "mf"
+          - note: "G5"
+            beat: "eighth"
+          - note: "G#5"
+            beat: "eighth"
 
-        # Beat 2: Bb5 -> Apex C6
-        - note: "A#5"
-          beat: "eighth"
-        - note: "C6"
-          beat: "quarter"
+          # Beat 2: Climax arrival on C6
+          - note: "A#5"
+            beat: "eighth"
+            dynamic: "mf"
+          - note: "C6"
+            beat: "quarter"
+            dynamic: "f"
 
-        # Beat 3: Expressive downward arc
-        - note: "A#5"
-          beat: "eighth"
-        - note: "G#5"
-          beat: "eighth"
-        - note: "G5"
-          beat: "eighth"
+          # Beat 3: Expressive downward arc
+          - note: "A#5"
+            beat: "eighth"
+            dynamic: "mf"
+          - note: "G#5"
+            beat: "eighth"
+          - note: "G5"
+            beat: "eighth"
 
-        # Beat 4: Fall to Eb5
-        - note: "F5"
-          beat: "quarter"
-        - note: "D#5"
-          beat: "eighth"
+          # Beat 4: Fall to Eb5
+          - note: "F5"
+            beat: "quarter"
+            dynamic: "mp"
+          - note: "D#5"
+            beat: "eighth"
 
-        # ==========================================
-        # MEASURE 4: Final Cadential Descent
-        # ==========================================
-        # Beat 1: Leading tone D5 to tonic Eb5
-        - note: "D5"
-          beat: "quarter"
-        - note: "D#5"
-          beat: "eighth"
+          # ==========================================
+          # MEASURE 4: Final Cadential Descent
+          # ==========================================
+          # Beat 1: Leading tone D5 to tonic Eb5
+          - note: "D5"
+            beat: "quarter"
+            dynamic: "p"
+          - note: "D#5"
+            beat: "eighth"
 
-        # Beat 2: Dominant pause on F5
-        - note: "F5"
-          beat: "dotted_quarter"
+          # Beat 2: Dominant plateau on F5
+          - note: "F5"
+            beat: "dotted_quarter"
+            dynamic: "p"
 
-        # Beat 3: Resolution to Eb5
-        - note: "D#5"
-          beat: "dotted_quarter"
+          # Beat 3: Tonic resolution arrival
+          - note: "D#5"
+            beat: "dotted_quarter"
+            dynamic: "pp"
 
-        # Beat 4: Final tonic resolution ringing out
-        - note: "D#5"
-          beat: "dotted_quarter"
+          # Beat 4: Final tonic ringing decay
+          - note: "D#5"
+            beat: "dotted_quarter"
+            dynamic: "ppp"
