@@ -31,3 +31,18 @@ Pass a custom score file:
 ```bash
 python main.py --score /path/to/custom_score.yaml
 ```
+
+## External Source
+
+### music21 catalogue
+
+```python
+from music21 import corpus
+
+# Search local corpus for specific composers
+for composer in ["chopin", "beethoven", "bach", "joplin"]:
+    results = corpus.search(composer)
+    print(f"\n--- {composer.upper()} ({len(results)} works found) ---")
+    for r in results[:5]:
+        print(f"  {r.sourcePath}")
+```

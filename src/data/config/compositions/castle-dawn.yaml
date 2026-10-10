@@ -180,7 +180,7 @@ compositions:
         components:
           crafts: 
             struts:
-              # --------------- FLOORS
+              # --------------- FLOORS (height: -100)
               - id: floor-area-marble-checkered
                 name: castle-dawn-floor-02
                 owner: bind(root.owner)
@@ -221,11 +221,12 @@ compositions:
                 position:
                   x: 0
                   y: 187  
-              # --------------- WALLS
+              # --------------- BACK WALL FACADES (height: 94)
               - id: wall-slant-left-down-palace
                 name: castle-dawn-wall-04
                 owner: bind(root.owner)
                 depth: 1
+                height: 94
                 position:
                   x: -16
                   y: -2
@@ -233,6 +234,7 @@ compositions:
                 name: castle-dawn-wall-05
                 owner: bind(root.owner)
                 depth: 1
+                height: 94
                 position:
                   x: 96
                   y: -2
@@ -240,39 +242,43 @@ compositions:
                 name: castle-dawn-wall-03
                 owner: bind(root.owner)
                 depth: 1
+                height: 94
                 position:
                   x: 222
                   y: -2
+              # --------------- BALCONY WALL FACADES (height: 135)
               - id: wall-up-stone-gold-plated
                 name: castle-dawn-wall-01
                 owner: bind(root.owner)
                 depth: 1
+                height: 135
                 position:
-                  x: -42
-                  y: 54
+                  x: 0
+                  y: 39
               - id: wall-up-stone-gold-plated
                 name: castle-dawn-wall-02
                 owner: bind(root.owner)
                 depth: 1
+                height: 135
                 position:
-                  x: 267
-                  y: 54
-              # --------------- PILLARS
+                  x: 222
+                  y: 39
+              # --------------- PILLARS (dynamic height: 215)
               - id: pillar-marble
                 name: castle-dawn-pillar-01
                 owner: bind(root.owner)
                 depth: 2
                 position:
-                  x: 32
-                  y: 54
+                  x: 76
+                  y: 119
               - id: pillar-marble
                 name: castle-dawn-pillar-02
                 owner: bind(root.owner)
                 depth: 2
                 position:
-                  x: 267
-                  y: 54
-              # --------------- PLATFORMS & STAIRS
+                  x: 223
+                  y: 119
+              # --------------- PLATFORMS (dynamic height: 247)
               - id: platform-marble
                 name: castle-dawn-platform-01
                 owner: bind(root.owner)
@@ -285,8 +291,9 @@ compositions:
                 owner: bind(root.owner)
                 depth: 1
                 position:
-                  x: 22
+                  x: 222
                   y: 136
+              # --------------- STAIRS (dynamic height: 312)
               - id: stairs-up-stone
                 name: castle-dawn-stairs-01
                 owner: bind(root.owner)
@@ -303,43 +310,40 @@ compositions:
                   y: 216
           effects:
             passive:
-              - id: torch
-                name: interior-torch-01
-                position:
-                  x: 185
-                  y: 2
-                depth: 2
+              # --------------- BACK WALL FIXTURES (height: 94, depth: 2)
               - id: torch
                 name: interior-torch-02
-                position:
-                  x: 102
-                  y: 2
                 depth: 2
+                height: 94
+                position:
+                  x: 96
+                  y: 2
+              - id: torch
+                name: interior-torch-01
+                depth: 2
+                height: 94
+                position:
+                  x: 192
+                  y: 2
           objects:
             doors:
+              # --------------- BACK WALL PORTAL (height: 94, depth: 2)
               - id: door-double
                 name: throne-room-entrance
                 depth: 2
+                height: 94
                 position:
-                  x: 127
+                  x: 128
                   y: 29
                 outlayer: throne-room-layer
                 out:
                   x: 0
                   y: 0
-              - id: door-shadow-double
-                name: atrium-exit
-                depth: 2
-                position:
-                  x: 127
-                  y: 350
-                outlayer: bind(root.layer)
-                out:
-                  x: 94
-                  y: 95
+              # --------------- BALCONY WALL PORTALS (height: 135, depth: 2)
               - id: door-mansion
                 name: castle-roof-exit-00
                 depth: 2
+                height: 135
                 position:
                   x: 0
                   y: 88
@@ -350,6 +354,7 @@ compositions:
               - id: door-mansion
                 name: castle-roof-exit-01
                 depth: 2
+                height: 135
                 position:
                   x: 287
                   y: 88
@@ -357,3 +362,14 @@ compositions:
                 out:
                   x: 166
                   y: -75
+              # --------------- FORE PORTAL (dynamic height: 414, depth: 2)
+              - id: door-shadow-double
+                name: atrium-exit
+                depth: 2
+                position:
+                  x: 127
+                  y: 350
+                outlayer: bind(root.layer)
+                out:
+                  x: 94
+                  y: 95

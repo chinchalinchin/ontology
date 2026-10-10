@@ -63,12 +63,15 @@ task:
 tools:
 # ----------------------------------------------------
   views:
+    designer:
+      palettes: false
     manager:
       board: false
       specs: false
       docs: false
     source:
       workflow: true
+      script: false
     shell:
       directory: false
       commands: false
@@ -79,6 +82,13 @@ tools:
       workflow: false
 # ----------------------------------------------------
   parameters:
+    designer:
+      palettes:
+        - crafts
+        - effects
+        - objects
+        - resources
+        - tiles
     manager:
       board:
         phase: 'b012'
@@ -100,7 +110,8 @@ tools:
           # - 11-architecture.md
       specs: []
     source:
-      workflow: synthesizer
+      workflow: compositions
+      script: synthesize
     shell:
       directory: |
         tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"

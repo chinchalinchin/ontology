@@ -62,23 +62,23 @@ def main():
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # ------------------------------------------------------------------------
-    # Subcommand: yaml
+    # Subcommand: synthesize
     # ------------------------------------------------------------------------
-    yaml_parser = subparsers.add_parser("yaml", help="Synthesize from a local declarative YAML score")
+    yaml_parser = subparsers.add_parser("synthesize", help="Synthesize from a local declarative YAML score")
     yaml_parser.add_argument("--score", default="score.yaml", help="Path to score.yaml")
     yaml_parser.add_argument("--sounds", default="sounds.yaml", help="Path to sounds.yaml")
 
     # ------------------------------------------------------------------------
-    # Subcommand: corpus
+    # Subcommand: ingest
     # ------------------------------------------------------------------------
-    corpus_parser = subparsers.add_parser("corpus", help="Load and synthesize scores via music21")
+    corpus_parser = subparsers.add_parser("ingest", help="Load and synthesize scores via music21")
     corpus_parser.add_argument("--name", choices=list(FAMOUS_SCORES.keys()), help="Name of famous piano score")
     corpus_parser.add_argument("--list", action="store_true", help="List available scores in the lookup catalog")
     corpus_parser.add_argument("--bpm", type=float, help="Override playback tempo (BPM)")
     corpus_parser.add_argument("--max-measures", type=int, help="Limit number of measures to process")
 
     # ------------------------------------------------------------------------
-    # Subcommand: url
+    # Subcommand: download
     # ------------------------------------------------------------------------
     url_parser = subparsers.add_parser("url", help="Fetch and synthesize an unauthenticated public-domain score URL")
     url_parser.add_argument("score_url", help="URL to MusicXML (.mxl, .xml) or Humdrum (.krn)")
@@ -87,8 +87,8 @@ def main():
 
     args = parser.parse_args()
 
-    # Route: YAML
-    if args.command == "yaml":
+    # Route: Synthesize
+    if args.command == "synthesize":
         sounds = SoundsRoot.model_validate(load_yaml(args.sounds))
         scores = ScoreRoot.model_validate(load_yaml(args.score))
 
@@ -97,8 +97,8 @@ def main():
             compiled = compile_yaml_score(score_entry, sounds, score_name)
             sound.play(compiled.to_event_tuples())
 
-    # Route: Corpus Catalog
-    elif args.command == "corpus":
+    # Route: Ingest
+    elif args.command == "ingest":
         if args.list:
             print("\nAvailable Piano Works in Lookup Catalog:")
             for key, info in FAMOUS_SCORES.items():

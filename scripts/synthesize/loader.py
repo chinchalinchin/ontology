@@ -9,58 +9,7 @@ from models import CompiledScoreDTO, NoteEventDTO, ScoreMetadataDTO
 
 
 FAMOUS_SCORES: Dict[str, dict] = {
-    "fur_elise": {
-        "title": "Bagatelle in A minor, WoO 59 ('Für Elise')",
-        "composer": "Ludwig van Beethoven",
-        "sources": [
-            "http://kern.ccarh.org/cgi-bin/ksdata?file=bagat59.krn&l=beethoven/piano",
-            "https://raw.githubusercontent.com/craigsapp/beethoven-piano/master/kern/bagat59.krn",
-        ],
-        "format": "humdrum",
-        "default_bpm": 132.0,
-        "is_corpus": False,
-    },
-    "chopin_nocturne_op9_no2": {
-        "title": "Nocturne in E-flat major, Op. 9 No. 2",
-        "composer": "Frédéric Chopin",
-        "sources": [
-            "http://kern.ccarh.org/cgi-bin/ksdata?file=noct0902.krn&l=chopin/nocturnes",
-            "https://raw.githubusercontent.com/craigsapp/chopin-nocturnes/master/kern/noct0902.krn",
-        ],
-        "format": "humdrum",
-        "default_bpm": 66.0,
-        "is_corpus": False,
-    },
-    "chopin_fantaisie_impromptu": {
-        "title": "Fantaisie-Impromptu in C-sharp minor, Op. 66",
-        "composer": "Frédéric Chopin",
-        "sources": [
-            "http://kern.ccarh.org/cgi-bin/ksdata?file=fant66.krn&l=chopin/various",
-            "https://raw.githubusercontent.com/craigsapp/chopin-various/master/kern/fant66.krn",
-        ],
-        "format": "humdrum",
-        "default_bpm": 160.0,
-        "is_corpus": False,
-    },
-    "moonlight_sonata": {
-        "title": "Piano Sonata No. 14, Op. 27 No. 2 'Moonlight' (1st Mvt)",
-        "composer": "Ludwig van Beethoven",
-        "sources": [
-            "http://kern.ccarh.org/cgi-bin/ksdata?file=sonata14-1.krn&l=beethoven/sonatas",
-            "https://raw.githubusercontent.com/craigsapp/beethoven-piano-sonatas/master/kern/sonata14-1.krn",
-        ],
-        "format": "humdrum",
-        "default_bpm": 54.0,
-        "is_corpus": False,
-    },
-    "maple_leaf_rag": {
-        "title": "Maple Leaf Rag",
-        "composer": "Scott Joplin",
-        "sources": ["joplin/maple_leaf_rag.mxl"],
-        "format": "musicxml",
-        "default_bpm": 100.0,
-        "is_corpus": True,
-    },
+    # --- CHOPIN ---
     "chopin_mazurka_op6_no2": {
         "title": "Mazurka in C-sharp minor, Op. 6 No. 2",
         "composer": "Frédéric Chopin",
@@ -69,30 +18,81 @@ FAMOUS_SCORES: Dict[str, dict] = {
         "default_bpm": 132.0,
         "is_corpus": True,
     },
-    "bach_prelude_c_major": {
-        "title": "WTC I: Prelude No. 1 in C Major (BWV 846)",
-        "composer": "Johann Sebastian Bach",
-        "sources": [
-            "http://kern.ccarh.org/cgi-bin/ksdata?file=wtc1p01.krn&l=bach/wtc",
-            "https://raw.githubusercontent.com/craigsapp/bach-wtc/master/kern/wtc1p01.krn",
-        ],
+    # --- BEETHOVEN ---
+    "beethoven_quartet_op18_no1_mvt1": {
+        "title": "String Quartet No. 1 in F major, Op. 18 No. 1 (Mvt 1 - Allegro)",
+        "composer": "Ludwig van Beethoven",
+        "sources": ["beethoven/opus18no1/movement1.krn"],
         "format": "humdrum",
-        "default_bpm": 80.0,
-        "is_corpus": False,
+        "default_bpm": 120.0,
+        "is_corpus": True,
     },
-    "bach_chorale_66_6": {
-        "title": "Chorale BWV 66.6",
+    "beethoven_quartet_op18_no1_mvt2": {
+        "title": "String Quartet No. 1 in F major, Op. 18 No. 1 (Mvt 2 - Adagio)",
+        "composer": "Ludwig van Beethoven",
+        "sources": ["beethoven/opus18no1/movement2.krn"],
+        "format": "humdrum",
+        "default_bpm": 56.0,
+        "is_corpus": True,
+    },
+    "beethoven_quartet_op18_no1_mvt3": {
+        "title": "String Quartet No. 1 in F major, Op. 18 No. 1 (Mvt 3 - Scherzo)",
+        "composer": "Ludwig van Beethoven",
+        "sources": ["beethoven/opus18no1/movement3.krn"],
+        "format": "humdrum",
+        "default_bpm": 138.0,
+        "is_corpus": True,
+    },
+    "beethoven_quartet_op18_no1_mvt4": {
+        "title": "String Quartet No. 1 in F major, Op. 18 No. 1 (Mvt 4 - Allegro)",
+        "composer": "Ludwig van Beethoven",
+        "sources": ["beethoven/opus18no1/movement4.krn"],
+        "format": "humdrum",
+        "default_bpm": 144.0,
+        "is_corpus": True,
+    },
+    "beethoven_grosse_fuge_op133": {
+        "title": "Große Fuge in B-flat major, Op. 133",
+        "composer": "Ludwig van Beethoven",
+        "sources": ["beethoven/opus133.mxl"],
+        "format": "musicxml",
+        "default_bpm": 112.0,
+        "is_corpus": True,
+    },
+    # --- BACH ---
+    "bach_chorale_bwv66_6": {
+        "title": "Chorale BWV 66.6 ('Christ lag in Todesbanden')",
         "composer": "Johann Sebastian Bach",
         "sources": ["bach/bwv66.6"],
         "format": "humdrum",
         "default_bpm": 72.0,
         "is_corpus": True,
     },
+    "bach_chorale_bwv269": {
+        "title": "Chorale BWV 269 ('Aus meines Herzens Grunde')",
+        "composer": "Johann Sebastian Bach",
+        "sources": ["bach/bwv269.mxl"],
+        "format": "musicxml",
+        "default_bpm": 80.0,
+        "is_corpus": True,
+    },
+    "bach_chorale_bwv1_6": {
+        "title": "Chorale BWV 1.6 ('Wie schön leuchtet der Morgenstern')",
+        "composer": "Johann Sebastian Bach",
+        "sources": ["bach/bwv1.6.mxl"],
+        "format": "musicxml",
+        "default_bpm": 84.0,
+        "is_corpus": True,
+    },
+    "bach_chorale_bwv10_7": {
+        "title": "Chorale BWV 10.7 ('Meine Seel erhebt den Herren')",
+        "composer": "Johann Sebastian Bach",
+        "sources": ["bach/bwv10.7.mxl"],
+        "format": "musicxml",
+        "default_bpm": 76.0,
+        "is_corpus": True,
+    },
 }
-
-# Preserve backward-compatibility for scripts inspecting cfg["source"]
-for entry in FAMOUS_SCORES.values():
-    entry["source"] = entry["sources"][0]
 
 
 def detect_format(source: str) -> Optional[str]:

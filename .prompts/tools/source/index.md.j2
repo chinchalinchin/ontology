@@ -3,13 +3,18 @@
 
 The **Source Tool** provides **Views** into the application codebase. 
 
-!!! note
-    [{{ properties.urls.github }}](https://{{ properties.urls.github }}) is the version control for the environment.
+**Context**
+
+- [{{ properties.urls.github }}](https://{{ properties.urls.github }}) is the version control for the environment.
 
 ## Views
 
 {% if tools.views.source.workflow %}
 {% include 'tools/source/views/workflows/' ~ tools.parameters.source.workflow ~ '.md.j2' %}
+{% endif %}
+
+{% if tools.views.source.script %}
+{% include 'tools/source/views/scripts/' ~ tools.parameters.source.script ~ '.md.j2' %}
 {% endif %}
 
 {% endif %}

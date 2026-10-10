@@ -71,7 +71,7 @@ crafts:
             l: 63
     wall-up-stone-gold-plated:
       dimensions:
-        w: 196
+        w: 96
         l: 96
       mass: 0
       cost: 

@@ -1,4 +1,18 @@
-### View: Workflow - Synthesize Script
+### View: Scripts - Synthesize
+
+#### README
+
+```markdown
+{{ file(properties.paths.root + 'scripts/synthesize/README.md') }}
+```
+
+#### score
+
+**scripts/synthesize/score.ymal**
+
+```yaml
+{{ file(properties.paths.root + 'scripts/synthesize/score.yaml')}}
+```
 
 #### configuration
 
@@ -6,12 +20,6 @@
 
 ```yaml
 {{ file(properties.paths.root + 'scripts/synthesize/sounds.yaml')}}
-```
-
-**scripts/synthesize/score.ymal**
-
-```yaml
-{{ file(properties.paths.root + 'scripts/synthesize/score.yaml')}}
 ```
 
 #### application
