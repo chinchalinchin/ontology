@@ -58,6 +58,32 @@ class DynamicHitbox(HitboxSchema):
         return state.hitboxes
 
 
+class OrientedHitbox(HitboxSchema):
+    """
+    """
+
+    def get(
+        self,
+        properties: AssetProperties,
+        state: AssetState,
+        frame: Optional[Frame] = None
+    ) -> List[Hitbox]:
+        return properties.hitboxes.get(state.orientation, []) or []
+
+
+class DirectedHitbox(HitboxSchema):
+    """
+    """
+
+    def get(
+        self,
+        properties: AssetProperties,
+        state: AssetState,
+        frame: Optional[Frame] = None
+    ) -> List[Hitbox]:
+        return properties.hitboxes.get(state.direction, []) or []
+
+    
 class NoHitbox(HitboxSchema):
     """
     Null strategy for passable assets (tiles, passive effects, overlays).

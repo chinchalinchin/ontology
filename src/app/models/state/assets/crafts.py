@@ -13,7 +13,8 @@ from dataclasses import (
 
 # Application Libraries
 from app.config.enums import (
-    Orientations
+    Orientations,
+    Directions
 )
 from app.models.adapters import (
     PydanticPosition as Position, 
@@ -42,4 +43,15 @@ class BridgeState(AssetState):
     position: Optional[Position] = None # type: ignore
     orientation: str = Orientations.HORIZONTAL.value
     multiple: Optional[Multiple] = None # type: ignore
+    owner: Optional[str] = None
+
+@dataclass(slots=True)
+class StairState(AssetState):
+    """
+    State representation for walkable incline transitions.
+    """
+    position: Position # type: ignore
+    direction: str = Directions.UP.value
+    elevation: int = 0                     
+    delta: int = 1                         
     owner: Optional[str] = None

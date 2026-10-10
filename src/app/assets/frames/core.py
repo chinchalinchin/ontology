@@ -20,7 +20,10 @@ import logging
 
 # Application Libraries
 import app.config.settings as settings
-from app.config.enums import Orientations
+from app.config.enums import (
+    Orientations,
+    Directions
+)
 from app.assets.base import Frame
 from app.models.state import AssetState
 from app.models.properties import AssetProperties
@@ -124,6 +127,35 @@ class OrientedFrame(Frame):
         key = settings.SEPARATOR.join([
             id, 
             state.orientation
+        ])
+        return [(key, 0, 0)]
+
+# -------------------------------------------------------------------------------------
+
+class DirectedFrame(Frame):
+    """
+    Indexes 2-axis horizontal atlas frames (Horizontal, Vertical) and emits
+    the corresponding orientation frame key.
+    """
+
+    def index(self, id: str, properties: AssetProperties) -> Dict[str, Tuple[int, int, int, int]]:
+        w = properties.dimensions.w
+        l = properties.dimensions.l
+        crops: Dict[str, Tuple[int, int, int, int]] = {}
+
+        for i, orientation in enumerate(Directions):
+            key = settings.SEPARATOR.join([
+                id, 
+                orientation
+            ])
+            crops[key] = (i * w, 0, w, l)
+
+        return crops
+
+    def keys(self, id: str, state: AssetState) -> List[Tuple[str, int, int]]:
+        key = settings.SEPARATOR.join([
+            id, 
+            state.direction
         ])
         return [(key, 0, 0)]
 

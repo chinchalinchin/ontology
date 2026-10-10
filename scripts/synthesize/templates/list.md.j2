@@ -3,5 +3,5 @@
 | Identifier | Composer | Title | Source Type | Default BPM |
 | :--- | :--- | :--- | :--- | :--- |
 {% for key, info in scores.items() %}
-| `{{ key }}` | {{ info.composer }} | {{ info.title }} | {{ "Built-in music21 Corpus" if info.is_corpus else "Local / External" }} | {{ "%.1f"|format(info.default_bpm) }} |
+| {{ key }} | {{ info.composer }} | {{ info.title }} | {{ "Built-in music21 Corpus" if info.is_corpus else "Local / External" }} | {{ "%.1f"|format(info.default_bpm) }} |
 {% endfor %}

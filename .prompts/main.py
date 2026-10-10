@@ -7,8 +7,8 @@ Usage:
     python task.py [template_file] [--output output_file] [--vars vars_file]
 
 Dependencies:
-    - jinja2
-    - pyyaml
+- jinja2
+- pyyaml
 
 Security Warning:
     This script enables Arbitrary Code Execution (ACE) via the `command` function. Only render templates from trusted sources.
@@ -330,6 +330,35 @@ def now(kind: str = None):
     return dt.strftime("%Y-%m-%d %H:%M:%S")
 
 
+def check_rendered_output(content: str, output_path: str = "") -> list[tuple[int, str]]:
+    """
+    Scans rendered output for missing file errors enclosed in triple tick marks (```).
+
+    Args:
+        content (str): The rendered markdown text.
+        output_path (str, optional): Target output path for reporting location.
+
+    Returns:
+        list[tuple[int, str]]: Found occurrences as (line_number, error_message).
+    """
+    block_pattern = re.compile(r"```([\s\S]*?)```")
+    error_pattern = re.compile(r"Error: File not found at [^\n`]+")
+
+    errors = []
+    for block_match in block_pattern.finditer(content):
+        block_text = block_match.group(1)
+        for err_match in error_pattern.finditer(block_text):
+            char_pos = block_match.start(1) + err_match.start()
+            line_no = content[:char_pos].count('\n') + 1
+            err_msg = err_match.group(0).strip()
+            errors.append((line_no, err_msg))
+
+            location = f" in '{output_path}'" if output_path else ""
+            print(f"Error at line {line_no}{location}: {err_msg}")
+
+    return errors
+
+
 def render(template_path: str, output_path: str, vars_path: str) -> None:
     """
     Orchestrates the Jinja2 rendering workflow.
@@ -383,6 +412,9 @@ def render(template_path: str, output_path: str, vars_path: str) -> None:
             f.write(rendered_output)
 
         print(f"Successfully rendered '{template_path}' to '{output_path}'.")
+
+        # Validation stage: check rendered output for missing file errors
+        check_rendered_output(rendered_output, output_path)
 
     except jinja2.TemplateNotFound as e:
         print(f"Error: Could not find template '{e.name}' (called during render of '{template_path}').")

@@ -123,7 +123,6 @@ class Screen:
         Module-level Painter's Algorithm sort key function.
         Primary Key: Explicit Height (coerced to integer) OR geometric height (Y + Length).
         Secondary Key: Depth tie-breaker.
-        Resolves Bug B003 by coercing state.height to int.
         """
         height = int(asset.state.height) if asset.state.height is not None else (
             (asset.state.position.y + (asset.dimensions.l if asset.dimensions else 0))

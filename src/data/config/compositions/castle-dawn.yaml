@@ -222,30 +222,13 @@ compositions:
                   x: 0
                   y: 187  
               # --------------- BACK WALL FACADES
-              # Slant wings set to depth: 0 to eliminate tie-break jitter with center wall (depth: 1)
-              - id: wall-slant-left-down-palace
-                name: castle-dawn-wall-04
-                owner: bind(root.owner)
-                depth: 0
-                height: 94
-                position:
-                  x: -16
-                  y: -2
               - id: wall-up-palace
-                name: castle-dawn-wall-05
+                name: castle-dawn-wall-00
                 owner: bind(root.owner)
                 depth: 1
                 height: 94
                 position:
                   x: 96
-                  y: -2
-              - id: wall-slant-right-down-palace
-                name: castle-dawn-wall-03
-                owner: bind(root.owner)
-                depth: 0
-                height: 94
-                position:
-                  x: 224 # Shifted from 222 to eliminate 2px overlap with wall-up-palace (96 + 128 = 224)
                   y: -2
               # --------------- BALCONY WALL FACADES (height: 135)
               - id: wall-up-stone-gold-plated
@@ -265,10 +248,12 @@ compositions:
                   x: 222
                   y: 41
               # --------------- PLATFORMS (dynamic height: 247, depth: 1)
+              # Clamped to height: 135 so characters walking across the deck sort on top
               - id: platform-marble
                 name: castle-dawn-platform-01
                 owner: bind(root.owner)
                 depth: 1
+                height: 135
                 position:
                   x: 0
                   y: 136
@@ -276,6 +261,7 @@ compositions:
                 name: castle-dawn-platform-02
                 owner: bind(root.owner)
                 depth: 1
+                height: 135
                 position:
                   x: 222
                   y: 136
@@ -293,7 +279,8 @@ compositions:
                 position:
                   x: 0
                   y: 0
-              # --------------- PILLARS (height: 247, depth: 2 to render over platforms)
+              # --------------- PILLARS
+              # height: 247, depth: 2 ensures pillar bases stamp over the platform edge
               - id: pillar-marble
                 name: castle-dawn-pillar-01
                 owner: bind(root.owner)
@@ -310,11 +297,13 @@ compositions:
                 position:
                   x: 223
                   y: 119
-              # --------------- STAIRS (dynamic height: 312)
+              # --------------- STAIRS
+              # Clamped to top tread (height: 216) so ascending characters (y + l >= 240) render on top
               - id: stairs-up-stone
                 name: castle-dawn-stairs-01
                 owner: bind(root.owner)
                 depth: 1
+                height: 216
                 position:
                   x: 0
                   y: 216
@@ -322,6 +311,7 @@ compositions:
                 name: castle-dawn-stairs-02
                 owner: bind(root.owner)
                 depth: 1
+                height: 216
                 position:
                   x: 286
                   y: 216

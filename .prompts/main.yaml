@@ -5,8 +5,8 @@ properties:
     mkdocs: mkdocs.yml
   paths:
     # ---------------------------------------
-    root: /Users/gmoore/Home/projects/ontology/
-    # root: /home/grant/Projects/ontology/
+    # root: /Users/gmoore/Home/projects/ontology/
+    root: /home/grant/Projects/ontology/
     # ---------------------------------------
     actions: .githubs/workflows/
     # ---------------------------------------
@@ -67,14 +67,14 @@ tools:
     designer:
       palettes: false
     manager:
-      board: false
+      board: true
       specs: false
-      docs: false
+      docs: true
     source:
-      workflow: false
+      workflow: true
       script: true
     shell:
-      directory: false
+      directory: true
       commands: false
     tests:  
       pipeline: false
@@ -92,8 +92,8 @@ tools:
         - tiles
     manager:
       board:
-        phase: 'b012'
-        action: patch
+        phase: 'n-1'
+        action: implement
       docs:
         exclude:
           - index.md
@@ -102,16 +102,16 @@ tools:
           - 02-sprites.md
           # - 03-compositions.md
           - 04-intentions.md
-          - 05-mechanics.md
+          # - 05-mechanics.md
           - 06-widgets.md
-          - 07-sounds.md
+          # - 07-sounds.md
           - 08-plots.md
           - 09-ecology.md
           - 10-emergence.md
           # - 11-architecture.md
       specs: []
     source:
-      workflow: compositions
+      workflow: main
       script: synthesize
     shell:
       directory: |

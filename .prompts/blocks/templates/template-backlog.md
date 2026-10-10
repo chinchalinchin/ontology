@@ -19,7 +19,7 @@ To add new Tasks to the backlog, use the following template,
 {% endif %}
 
 {% if grooming %}
-##### Architectural Analysis {{ grooming.iteration }}
+##### Architectural Analysis {{ grooming.iteration | roman_numerals }}
 
 {{ grooming.analysis }}
 
@@ -27,7 +27,7 @@ To add new Tasks to the backlog, use the following template,
 
 {% if user %}
 {# Reserved Block for User #}
-##### User Review {{ user.iteration }}
+##### User Review {{ user.iteration | roman_numerals }}
 
 {{ user.alignment or user.constraints or user.notes }}
 

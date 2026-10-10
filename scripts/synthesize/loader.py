@@ -99,10 +99,6 @@ FAMOUS_SCORES: Dict[str, dict] = {
     },
 }
 
-# Preserve backward-compatibility for scripts inspecting cfg["source"]
-for entry in FAMOUS_SCORES.values():
-    entry["source"] = entry["sources"][0]
-
 def detect(source: str) -> Optional[str]:
     """Infer file or score representation format from extension or name."""
     lowered = source.lower()

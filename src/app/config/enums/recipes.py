@@ -35,8 +35,10 @@ class AnimationRecipe(str, Enum):
     LIFECYCLE       = "lifecycle"
 
 class HitboxRecipe(str, Enum):
-    STATIC          = "static"
-    DYNAMIC         = "dynamic"
-    STAGE           = "stage"
     ATTACK          = "attack"
+    DIRECTED        = "directed"
+    DYNAMIC         = "dynamic"
     NONE            = "none"
+    ORIENTED        = "oriented"
+    STAGE           = "stage"
+    STATIC          = "static"

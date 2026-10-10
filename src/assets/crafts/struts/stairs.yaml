@@ -23,7 +23,19 @@ crafts:
         w: 32
         l: 96
       mass: 0
-      hitboxes: null
+      hitboxes: 
+        - position:
+            x: 0
+            y: 27
+          dimensions:
+            w: 1
+            l: 53
+        - position:
+            x: 31
+            y: 27
+          dimensions:
+            w: 1
+            l: 53
       cost:
         - item: stone
           quantity: 12
