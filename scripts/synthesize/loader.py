@@ -94,6 +94,9 @@ FAMOUS_SCORES: Dict[str, dict] = {
     },
 }
 
+# Preserve backward-compatibility for scripts inspecting cfg["source"]
+for entry in FAMOUS_SCORES.values():
+    entry["source"] = entry["sources"][0]
 
 def detect_format(source: str) -> Optional[str]:
     lowered = source.lower()
