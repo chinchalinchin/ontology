@@ -903,7 +903,9 @@ Sprites are Sheets over multiple rows of frames, where each row may have a varia
 
 Sprite States are covered in more detail in the [Sprites documentation](./02-sprites.md).
 
-### Equipment (Weapons, Utilities, Tools, Armor, Shields)
+### Equipment 
+
+- Equipment: Weapons, Utilities, Tools, Armor, Shields
 
 Equipment is a group of Asset Instances within the Category of Sheets (known as the Equipment Instance Group). They are closely tied to Sprites Animations. Equipment Assets are rendered on top of a Sprite when those pieces of Equipment are active in the Sprite's inventory. Because of this relationship between the Assets,  i.e. Equipment rendering is dependent on Sprite state, Equipment does not possess its own state, frame or animation implementation. Equipment only has properties.
 
