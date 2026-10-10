@@ -1,0 +1,514 @@
+score:
+  enya_caribbean_blue:
+    signature: "three-four"
+    bpm: 164.0
+    tracks:
+      left_hand:
+        # ==========================================
+        # INTRO: Measures 1-4 (Waltz accompaniment)
+        # ==========================================
+        # Measure 1: F major
+        - note: "F3"
+          beat: "quarter"
+        - notes: ["A3", "C4"]
+          beat: "quarter"
+        - notes: ["A3", "C4"]
+          beat: "quarter"
+
+        # Measure 2: D minor
+        - note: "D3"
+          beat: "quarter"
+        - notes: ["F3", "A3", "D4"]
+          beat: "quarter"
+        - notes: ["F3", "A3", "D4"]
+          beat: "quarter"
+
+        # Measure 3: Bb major
+        - note: "A#2"
+          beat: "quarter"
+        - notes: ["F3", "A#3", "D4"]
+          beat: "quarter"
+        - notes: ["F3", "A#3", "D4"]
+          beat: "quarter"
+
+        # Measure 4: C major
+        - note: "C3"
+          beat: "quarter"
+        - notes: ["E3", "G3", "C4"]
+          beat: "quarter"
+        - notes: ["E3", "G3", "C4"]
+          beat: "quarter"
+
+        # ==========================================
+        # INTRO THEME: Measures 5-8
+        # ==========================================
+        # Measure 5: F major
+        - note: "F3"
+          beat: "quarter"
+        - notes: ["A3", "C4"]
+          beat: "quarter"
+        - notes: ["A3", "C4"]
+          beat: "quarter"
+
+        # Measure 6: D minor
+        - note: "D3"
+          beat: "quarter"
+        - notes: ["F3", "A3", "D4"]
+          beat: "quarter"
+        - notes: ["F3", "A3", "D4"]
+          beat: "quarter"
+
+        # Measure 7: Bb major
+        - note: "A#2"
+          beat: "quarter"
+        - notes: ["F3", "A#3", "D4"]
+          beat: "quarter"
+        - notes: ["F3", "A#3", "D4"]
+          beat: "quarter"
+
+        # Measure 8: C major
+        - note: "C3"
+          beat: "quarter"
+        - notes: ["E3", "G3", "C4"]
+          beat: "quarter"
+        - notes: ["E3", "G3", "C4"]
+          beat: "quarter"
+
+        # ==========================================
+        # VERSE 1: Measures 9-16 ("Eurus...")
+        # ==========================================
+        # Measure 9: F major
+        - note: "F3"
+          beat: "quarter"
+        - notes: ["A3", "C4"]
+          beat: "quarter"
+        - notes: ["A3", "C4"]
+          beat: "quarter"
+
+        # Measure 10: D minor
+        - note: "D3"
+          beat: "quarter"
+        - notes: ["F3", "A3", "D4"]
+          beat: "quarter"
+        - notes: ["F3", "A3", "D4"]
+          beat: "quarter"
+
+        # Measure 11: Bb major
+        - note: "A#2"
+          beat: "quarter"
+        - notes: ["F3", "A#3", "D4"]
+          beat: "quarter"
+        - notes: ["F3", "A#3", "D4"]
+          beat: "quarter"
+
+        # Measure 12: C major
+        - note: "C3"
+          beat: "quarter"
+        - notes: ["E3", "G3", "C4"]
+          beat: "quarter"
+        - notes: ["E3", "G3", "C4"]
+          beat: "quarter"
+
+        # Measure 13: F major
+        - note: "F3"
+          beat: "quarter"
+        - notes: ["A3", "C4"]
+          beat: "quarter"
+        - notes: ["A3", "C4"]
+          beat: "quarter"
+
+        # Measure 14: D minor
+        - note: "D3"
+          beat: "quarter"
+        - notes: ["F3", "A3", "D4"]
+          beat: "quarter"
+        - notes: ["F3", "A3", "D4"]
+          beat: "quarter"
+
+        # Measure 15: Bb major
+        - note: "A#2"
+          beat: "quarter"
+        - notes: ["F3", "A#3", "D4"]
+          beat: "quarter"
+        - notes: ["F3", "A#3", "D4"]
+          beat: "quarter"
+
+        # Measure 16: C major
+        - note: "C3"
+          beat: "quarter"
+        - notes: ["E3", "G3", "C4"]
+          beat: "quarter"
+        - notes: ["E3", "G3", "C4"]
+          beat: "quarter"
+
+        # ==========================================
+        # CHORUS: Measures 17-24 ("If all I told...")
+        # ==========================================
+        # Measure 17: Bb major
+        - note: "A#2"
+          beat: "quarter"
+        - notes: ["F3", "A#3", "D4"]
+          beat: "quarter"
+        - notes: ["F3", "A#3", "D4"]
+          beat: "quarter"
+
+        # Measure 18: F major
+        - note: "F3"
+          beat: "quarter"
+        - notes: ["A3", "C4", "F4"]
+          beat: "quarter"
+        - notes: ["A3", "C4", "F4"]
+          beat: "quarter"
+
+        # Measure 19: C major
+        - note: "C3"
+          beat: "quarter"
+        - notes: ["E3", "G3", "C4"]
+          beat: "quarter"
+        - notes: ["E3", "G3", "C4"]
+          beat: "quarter"
+
+        # Measure 20: D minor
+        - note: "D3"
+          beat: "quarter"
+        - notes: ["F3", "A3", "D4"]
+          beat: "quarter"
+        - notes: ["F3", "A3", "D4"]
+          beat: "quarter"
+
+        # Measure 21: Bb major
+        - note: "A#2"
+          beat: "quarter"
+        - notes: ["F3", "A#3", "D4"]
+          beat: "quarter"
+        - notes: ["F3", "A#3", "D4"]
+          beat: "quarter"
+
+        # Measure 22: F major
+        - note: "F3"
+          beat: "quarter"
+        - notes: ["A3", "C4", "F4"]
+          beat: "quarter"
+        - notes: ["A3", "C4", "F4"]
+          beat: "quarter"
+
+        # Measure 23: C major
+        - note: "C3"
+          beat: "quarter"
+        - notes: ["E3", "G3", "C4"]
+          beat: "quarter"
+        - notes: ["E3", "G3", "C4"]
+          beat: "quarter"
+
+        # Measure 24: F major
+        - note: "F3"
+          beat: "quarter"
+        - notes: ["A3", "C4", "F4"]
+          beat: "quarter"
+        - notes: ["A3", "C4", "F4"]
+          beat: "quarter"
+
+        # ==========================================
+        # CHORUS CODA / CADENCE: Measures 25-32
+        # ==========================================
+        # Measure 25: Bb major
+        - note: "A#2"
+          beat: "quarter"
+        - notes: ["F3", "A#3", "D4"]
+          beat: "quarter"
+        - notes: ["F3", "A#3", "D4"]
+          beat: "quarter"
+
+        # Measure 26: F major
+        - note: "F3"
+          beat: "quarter"
+        - notes: ["A3", "C4", "F4"]
+          beat: "quarter"
+        - notes: ["A3", "C4", "F4"]
+          beat: "quarter"
+
+        # Measure 27: C major
+        - note: "C3"
+          beat: "quarter"
+        - notes: ["E3", "G3", "C4"]
+          beat: "quarter"
+        - notes: ["E3", "G3", "C4"]
+          beat: "quarter"
+
+        # Measure 28: D minor
+        - note: "D3"
+          beat: "quarter"
+        - notes: ["F3", "A3", "D4"]
+          beat: "quarter"
+        - notes: ["F3", "A3", "D4"]
+          beat: "quarter"
+
+        # Measure 29: Bb major
+        - note: "A#2"
+          beat: "quarter"
+        - notes: ["F3", "A#3", "D4"]
+          beat: "quarter"
+        - notes: ["F3", "A#3", "D4"]
+          beat: "quarter"
+
+        # Measure 30: C major
+        - note: "C3"
+          beat: "quarter"
+        - notes: ["E3", "G3", "C4"]
+          beat: "quarter"
+        - notes: ["E3", "G3", "C4"]
+          beat: "quarter"
+
+        # Measure 31: F major
+        - note: "F3"
+          beat: "quarter"
+        - notes: ["A3", "C4", "F4"]
+          beat: "quarter"
+        - notes: ["A3", "C4", "F4"]
+          beat: "quarter"
+
+        # Measure 32: Final tonic resolution
+        - notes: ["F2", "F3"]
+          beat: "quarter"
+        - notes: ["A3", "C4", "F4"]
+          beat: "half"
+
+      right_hand:
+        # ==========================================
+        # INTRO: Measures 1-4 (Celesta / harp arpeggios)
+        # ==========================================
+        # Measure 1: F arpeggio
+        - note: "F4"
+          beat: "eighth"
+        - note: "A4"
+          beat: "eighth"
+        - note: "C5"
+          beat: "eighth"
+        - note: "F5"
+          beat: "eighth"
+        - note: "C5"
+          beat: "eighth"
+        - note: "A4"
+          beat: "eighth"
+
+        # Measure 2: Dm arpeggio
+        - note: "D4"
+          beat: "eighth"
+        - note: "F4"
+          beat: "eighth"
+        - note: "A4"
+          beat: "eighth"
+        - note: "D5"
+          beat: "eighth"
+        - note: "A4"
+          beat: "eighth"
+        - note: "F4"
+          beat: "eighth"
+
+        # Measure 3: Bb arpeggio
+        - note: "D4"
+          beat: "eighth"
+        - note: "F4"
+          beat: "eighth"
+        - note: "A#4"
+          beat: "eighth"
+        - note: "D5"
+          beat: "eighth"
+        - note: "A#4"
+          beat: "eighth"
+        - note: "F4"
+          beat: "eighth"
+
+        # Measure 4: C arpeggio
+        - note: "C4"
+          beat: "eighth"
+        - note: "E4"
+          beat: "eighth"
+        - note: "G4"
+          beat: "eighth"
+        - note: "C5"
+          beat: "eighth"
+        - note: "G4"
+          beat: "eighth"
+        - note: "E4"
+          beat: "eighth"
+
+        # ==========================================
+        # INTRO THEME: Measures 5-8 (Soaring motif)
+        # ==========================================
+        # Measure 5
+        - note: "C5"
+          beat: "quarter"
+        - note: "D5"
+          beat: "quarter"
+        - note: "F5"
+          beat: "quarter"
+
+        # Measure 6
+        - note: "A5"
+          beat: "half"
+        - note: "G5"
+          beat: "quarter"
+
+        # Measure 7
+        - note: "F5"
+          beat: "half"
+        - note: "D5"
+          beat: "quarter"
+
+        # Measure 8
+        - note: "C5"
+          beat: "dotted_half"
+
+        # ==========================================
+        # VERSE 1: Measures 9-16 ("Eurus...")
+        # ==========================================
+        # Measure 9: "Eu - rus"
+        - note: "C5"
+          beat: "dotted_quarter"
+        - note: "A4"
+          beat: "eighth"
+        - note: "C5"
+          beat: "quarter"
+
+        # Measure 10: "Afer Ventus"
+        - note: "D5"
+          beat: "half"
+        - note: "F5"
+          beat: "quarter"
+
+        # Measure 11: "Boreas"
+        - note: "D5"
+          beat: "half"
+        - note: "C5"
+          beat: "quarter"
+
+        # Measure 12: "Zephyrus"
+        - note: "A#4"
+          beat: "quarter"
+        - note: "A4"
+          beat: "quarter"
+        - note: "G4"
+          beat: "quarter"
+
+        # Measure 13: "Africus"
+        - note: "F4"
+          beat: "quarter"
+        - note: "A4"
+          beat: "quarter"
+        - note: "C5"
+          beat: "quarter"
+
+        # Measure 14
+        - note: "F5"
+          beat: "half"
+        - note: "E5"
+          beat: "quarter"
+
+        # Measure 15
+        - note: "D5"
+          beat: "half"
+        - note: "F5"
+          beat: "quarter"
+
+        # Measure 16: Transition
+        - note: "G5"
+          beat: "dotted_half"
+
+        # ==========================================
+        # CHORUS: Measures 17-24 ("If all I told...")
+        # ==========================================
+        # Measure 17: "If all I told"
+        - note: "F5"
+          beat: "half"
+        - note: "E5"
+          beat: "quarter"
+
+        # Measure 18: "was turned to gold"
+        - note: "D5"
+          beat: "quarter"
+        - note: "C5"
+          beat: "half"
+
+        # Measure 19: "If all the"
+        - note: "D5"
+          beat: "half"
+        - note: "C5"
+          beat: "quarter"
+
+        # Measure 20: "fantasy were real"
+        - note: "A#4"
+          beat: "quarter"
+        - note: "A4"
+          beat: "half"
+
+        # Measure 21: "Fallin' in"
+        - note: "A#4"
+          beat: "quarter"
+        - note: "C5"
+          beat: "quarter"
+        - note: "D5"
+          beat: "quarter"
+
+        # Measure 22: "love with"
+        - note: "C5"
+          beat: "quarter"
+        - note: "A4"
+          beat: "quarter"
+        - note: "F4"
+          beat: "quarter"
+
+        # Measure 23: "all I"
+        - note: "G4"
+          beat: "dotted_half"
+
+        # Measure 24: "feel..."
+        - note: "F4"
+          beat: "dotted_half"
+
+        # ==========================================
+        # CHORUS CODA / CADENCE: Measures 25-32
+        # ==========================================
+        # Measure 25: "One world"
+        - note: "F5"
+          beat: "half"
+        - note: "E5"
+          beat: "quarter"
+
+        # Measure 26: "one love"
+        - note: "D5"
+          beat: "quarter"
+        - note: "C5"
+          beat: "half"
+
+        # Measure 27
+        - note: "D5"
+          beat: "half"
+        - note: "E5"
+          beat: "quarter"
+
+        # Measure 28: Climax
+        - note: "F5"
+          beat: "dotted_half"
+
+        # Measure 29: Descent
+        - note: "D5"
+          beat: "quarter"
+        - note: "C5"
+          beat: "quarter"
+        - note: "A#4"
+          beat: "quarter"
+
+        # Measure 30: Leading tone
+        - note: "C5"
+          beat: "half"
+        - note: "E5"
+          beat: "quarter"
+
+        # Measure 31: Resolution
+        - note: "F5"
+          beat: "dotted_half"
+
+        # Measure 32: Sustained tonic chord
+        - notes: ["A4", "C5", "F5"]
+          beat: "dotted_half"

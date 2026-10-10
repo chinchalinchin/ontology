@@ -5,11 +5,13 @@
 **scripts/synthesize/sounds.yaml**
 
 ```yaml
+{{ file(properties.paths.root + 'scripts/synthesize/sounds.yaml')}}
 ```
 
 **scripts/synthesize/score.ymal**
 
 ```yaml
+{{ file(properties.paths.root + 'scripts/synthesize/score.yaml')}}
 ```
 
 #### application
@@ -17,21 +19,25 @@
 **scripts/synthesize/setup.py**
 
 ```python
+{{ file(properties.paths.root + 'scripts/synthesize/setup.py')}}
 ```
 
 **scripts/synthesize/main.py**
 
 ```python
+{{ file(properties.paths.root + 'scripts/synthesize/main.py')}}
 ```
 
 **scripts/synthesize/loader.py**
 
 ```python
+{{ file(properties.paths.root + 'scripts/synthesize/loader.py')}}
 ```
 
 **scripts/synthesize/models.py**
 
 ```python
+{{ file(properties.paths.root + 'scripts/synthesize/models.py')}}
 ```
 
 #### library
@@ -39,4 +45,5 @@
 **scripts/synthesize/sound.pyx**
 
 ```cython
+{{ file(properties.paths.root + 'scripts/synthesize/sound.pyx')}}
 ```

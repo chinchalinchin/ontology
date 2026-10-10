@@ -44,7 +44,8 @@ task:
   # template: iterate/conclusion.md.j2
   # ------------------------------------- DESIGN TASKS
   # template: design/menu.md.j2
-  template: design/composition.md.j2
+  # template: design/composition.md.j2
+  template: design/score.md.j2
   # template: diagram/hierarchy.md.j2
   # template: diagram/automata.md.j2
   # template: diagram/stages.md.j2
@@ -67,7 +68,7 @@ tools:
       specs: false
       docs: false
     source:
-      workflow: false
+      workflow: true
     shell:
       directory: false
       commands: false
@@ -99,7 +100,7 @@ tools:
           # - 11-architecture.md
       specs: []
     source:
-      workflow: compositions
+      workflow: synthesizer
     shell:
       directory: |
         tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"

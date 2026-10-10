@@ -1,0 +1,745 @@
+score:
+  smashing_pumpkins_ava_adore:
+    signature: "four-four"
+    bpm: 86.0
+    tracks:
+      bass:
+        # ==========================================
+        # INTRO: Measures 1-4 (Industrial C minor riff)
+        # ==========================================
+        # Measure 1: Cm groove
+        - note: "C2"
+          beat: "quarter"
+        - note: "C2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+        - note: "F2"
+          beat: "eighth"
+        - note: "F#2"
+          beat: "eighth"
+        - note: "F2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+
+        # Measure 2: Cm groove variation
+        - note: "C2"
+          beat: "quarter"
+        - note: "C2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+        - note: "F2"
+          beat: "eighth"
+        - note: "F#2"
+          beat: "eighth"
+        - note: "G2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+
+        # Measure 3: G# - A# passing movement
+        - note: "G#1"
+          beat: "quarter"
+        - note: "G#1"
+          beat: "eighth"
+        - note: "C2"
+          beat: "eighth"
+        - note: "A#1"
+          beat: "quarter"
+        - note: "A#1"
+          beat: "eighth"
+        - note: "D2"
+          beat: "eighth"
+
+        # Measure 4: Turnaround to C
+        - note: "C2"
+          beat: "quarter"
+        - note: "C2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+        - note: "F2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+        - note: "C2"
+          beat: "quarter"
+
+        # ==========================================
+        # VERSE 1: Measures 5-12 ("It's you that I adore...")
+        # ==========================================
+        # Measure 5: Cm ("It's you that I adore")
+        - note: "C2"
+          beat: "quarter"
+        - note: "C2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+        - note: "F2"
+          beat: "eighth"
+        - note: "F#2"
+          beat: "eighth"
+        - note: "F2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+
+        # Measure 6: Cm ("You'll always be my whore")
+        - note: "C2"
+          beat: "quarter"
+        - note: "C2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+        - note: "F2"
+          beat: "eighth"
+        - note: "F#2"
+          beat: "eighth"
+        - note: "G2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+
+        # Measure 7: G# - A# ("You'll be a mother to my child")
+        - note: "G#1"
+          beat: "quarter"
+        - note: "G#1"
+          beat: "eighth"
+        - note: "C2"
+          beat: "eighth"
+        - note: "A#1"
+          beat: "quarter"
+        - note: "A#1"
+          beat: "eighth"
+        - note: "D2"
+          beat: "eighth"
+
+        # Measure 8: Cm ("And a child to my sick soul")
+        - note: "C2"
+          beat: "quarter"
+        - note: "C2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+        - note: "F2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+        - note: "C2"
+          beat: "quarter"
+
+        # Measure 9: Cm ("Be my lover, be my friend")
+        - note: "C2"
+          beat: "quarter"
+        - note: "C2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+        - note: "F2"
+          beat: "eighth"
+        - note: "F#2"
+          beat: "eighth"
+        - note: "F2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+
+        # Measure 10: Cm ("Be my prison, be my end")
+        - note: "C2"
+          beat: "quarter"
+        - note: "C2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+        - note: "F2"
+          beat: "eighth"
+        - note: "F#2"
+          beat: "eighth"
+        - note: "G2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+
+        # Measure 11: G# - A# ("Be each color I could dream")
+        - note: "G#1"
+          beat: "quarter"
+        - note: "G#1"
+          beat: "eighth"
+        - note: "C2"
+          beat: "eighth"
+        - note: "A#1"
+          beat: "quarter"
+        - note: "A#1"
+          beat: "eighth"
+        - note: "D2"
+          beat: "eighth"
+
+        # Measure 12: G dominant cadence ("In the shadow of a dream")
+        - note: "G1"
+          beat: "quarter"
+        - note: "G1"
+          beat: "eighth"
+        - note: "B1"
+          beat: "eighth"
+        - note: "D2"
+          beat: "quarter"
+        - note: "F2"
+          beat: "eighth"
+        - note: "G2"
+          beat: "eighth"
+
+        # ==========================================
+        # CHORUS: Measures 13-20 ("We must never be apart...")
+        # ==========================================
+        # Measure 13: Fm ("We must never be apart")
+        - note: "F2"
+          beat: "quarter"
+        - note: "F2"
+          beat: "eighth"
+        - note: "G#2"
+          beat: "eighth"
+        - note: "C3"
+          beat: "quarter"
+        - note: "G#2"
+          beat: "eighth"
+        - note: "F2"
+          beat: "eighth"
+
+        # Measure 14: Cm
+        - note: "C2"
+          beat: "quarter"
+        - note: "C2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+        - note: "G2"
+          beat: "quarter"
+        - note: "D#2"
+          beat: "eighth"
+        - note: "C2"
+          beat: "eighth"
+
+        # Measure 15: Fm ("We must never be apart")
+        - note: "F2"
+          beat: "quarter"
+        - note: "F2"
+          beat: "eighth"
+        - note: "G#2"
+          beat: "eighth"
+        - note: "C3"
+          beat: "quarter"
+        - note: "G#2"
+          beat: "eighth"
+        - note: "F2"
+          beat: "eighth"
+
+        # Measure 16: Cm
+        - note: "C2"
+          beat: "quarter"
+        - note: "C2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+        - note: "G2"
+          beat: "quarter"
+        - note: "D#2"
+          beat: "eighth"
+        - note: "C2"
+          beat: "eighth"
+
+        # Measure 17: G# ("Lovely girl, you're the...")
+        - note: "G#1"
+          beat: "quarter"
+        - note: "G#1"
+          beat: "eighth"
+        - note: "C2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "quarter"
+        - note: "C2"
+          beat: "quarter"
+
+        # Measure 18: A# ("...murder in my world")
+        - note: "A#1"
+          beat: "quarter"
+        - note: "A#1"
+          beat: "eighth"
+        - note: "D2"
+          beat: "eighth"
+        - note: "F2"
+          beat: "quarter"
+        - note: "D2"
+          beat: "quarter"
+
+        # Measure 19: G# - A# ("Dressing me up like your...")
+        - note: "G#1"
+          beat: "half"
+        - note: "A#1"
+          beat: "half"
+
+        # Measure 20: G7 dominant climax ("...doll")
+        - note: "G1"
+          beat: "quarter"
+        - note: "G1"
+          beat: "eighth"
+        - note: "B1"
+          beat: "eighth"
+        - note: "D2"
+          beat: "quarter"
+        - note: "F2"
+          beat: "quarter"
+
+        # ==========================================
+        # OUTRO: Measures 21-24 (Cadence & Resolution)
+        # ==========================================
+        # Measure 21: Cm riff return
+        - note: "C2"
+          beat: "quarter"
+        - note: "C2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+        - note: "F2"
+          beat: "eighth"
+        - note: "F#2"
+          beat: "eighth"
+        - note: "F2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+
+        # Measure 22: Cm riff continuation
+        - note: "C2"
+          beat: "quarter"
+        - note: "C2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+        - note: "F2"
+          beat: "eighth"
+        - note: "F#2"
+          beat: "eighth"
+        - note: "G2"
+          beat: "eighth"
+        - note: "D#2"
+          beat: "eighth"
+
+        # Measure 23: G# - A# drive
+        - note: "G#1"
+          beat: "quarter"
+        - note: "D#2"
+          beat: "quarter"
+        - note: "A#1"
+          beat: "quarter"
+        - note: "F2"
+          beat: "quarter"
+
+        # Measure 24: Final low tonic resolution
+        - note: "C2"
+          beat: "quarter"
+        - note: "C1"
+          beat: "dotted_half"
+
+      harmony:
+        # ==========================================
+        # INTRO: Measures 1-4
+        # ==========================================
+        # Measure 1: Cm
+        - notes: ["C3", "G3", "D#4"]
+          beat: "whole"
+
+        # Measure 2: Cm
+        - notes: ["C3", "G3", "D#4"]
+          beat: "whole"
+
+        # Measure 3: G# - A#
+        - notes: ["G#2", "D#3", "C4"]
+          beat: "half"
+        - notes: ["A#2", "F3", "D4"]
+          beat: "half"
+
+        # Measure 4: Cm
+        - notes: ["C3", "G3", "D#4"]
+          beat: "whole"
+
+        # ==========================================
+        # VERSE 1: Measures 5-12
+        # ==========================================
+        # Measure 5: Cm
+        - notes: ["C3", "G3", "D#4"]
+          beat: "whole"
+
+        # Measure 6: Cm
+        - notes: ["C3", "G3", "D#4"]
+          beat: "whole"
+
+        # Measure 7: G# - A#
+        - notes: ["G#2", "D#3", "C4"]
+          beat: "half"
+        - notes: ["A#2", "F3", "D4"]
+          beat: "half"
+
+        # Measure 8: Cm
+        - notes: ["C3", "G3", "D#4"]
+          beat: "whole"
+
+        # Measure 9: Cm
+        - notes: ["C3", "G3", "D#4"]
+          beat: "whole"
+
+        # Measure 10: Cm
+        - notes: ["C3", "G3", "D#4"]
+          beat: "whole"
+
+        # Measure 11: G# - A#
+        - notes: ["G#2", "D#3", "C4"]
+          beat: "half"
+        - notes: ["A#2", "F3", "D4"]
+          beat: "half"
+
+        # Measure 12: G7
+        - notes: ["G2", "D3", "B3", "F4"]
+          beat: "whole"
+
+        # ==========================================
+        # CHORUS: Measures 13-20
+        # ==========================================
+        # Measure 13: Fm
+        - notes: ["F2", "C3", "G#3", "C4"]
+          beat: "whole"
+
+        # Measure 14: Cm
+        - notes: ["C3", "G3", "D#4"]
+          beat: "whole"
+
+        # Measure 15: Fm
+        - notes: ["F2", "C3", "G#3", "C4"]
+          beat: "whole"
+
+        # Measure 16: Cm
+        - notes: ["C3", "G3", "D#4"]
+          beat: "whole"
+
+        # Measure 17: G#
+        - notes: ["G#2", "D#3", "C4"]
+          beat: "whole"
+
+        # Measure 18: A#
+        - notes: ["A#2", "F3", "D4"]
+          beat: "whole"
+
+        # Measure 19: G# - A#
+        - notes: ["G#2", "D#3", "C4"]
+          beat: "half"
+        - notes: ["A#2", "F3", "D4"]
+          beat: "half"
+
+        # Measure 20: G7
+        - notes: ["G2", "D3", "B3", "F4"]
+          beat: "whole"
+
+        # ==========================================
+        # OUTRO: Measures 21-24
+        # ==========================================
+        # Measure 21: Cm
+        - notes: ["C3", "G3", "D#4"]
+          beat: "whole"
+
+        # Measure 22: Cm
+        - notes: ["C3", "G3", "D#4"]
+          beat: "whole"
+
+        # Measure 23: G# - A#
+        - notes: ["G#2", "D#3", "C4"]
+          beat: "half"
+        - notes: ["A#2", "F3", "D4"]
+          beat: "half"
+
+        # Measure 24: Sustained Cm tonic chord
+        - notes: ["C3", "G3", "C4", "D#4"]
+          beat: "whole"
+
+      melody:
+        # ==========================================
+        # INTRO: Measures 1-4 (Gothic lead hook)
+        # ==========================================
+        # Measure 1
+        - note: "REST"
+          beat: "half"
+        - note: "G4"
+          beat: "quarter"
+        - note: "C5"
+          beat: "quarter"
+
+        # Measure 2
+        - note: "D#5"
+          beat: "half"
+        - note: "D5"
+          beat: "quarter"
+        - note: "C5"
+          beat: "quarter"
+
+        # Measure 3
+        - note: "G#4"
+          beat: "half"
+        - note: "A#4"
+          beat: "quarter"
+        - note: "D5"
+          beat: "quarter"
+
+        # Measure 4
+        - note: "C5"
+          beat: "dotted_half"
+        - note: "REST"
+          beat: "quarter"
+
+        # ==========================================
+        # VERSE 1: Measures 5-12 (Vocal melody)
+        # ==========================================
+        # Measure 5: "It's you that I adore"
+        - note: "C4"
+          beat: "eighth"
+        - note: "C4"
+          beat: "quarter"
+        - note: "D#4"
+          beat: "eighth"
+        - note: "F4"
+          beat: "eighth"
+        - note: "D#4"
+          beat: "eighth"
+        - note: "C4"
+          beat: "quarter"
+
+        # Measure 6: "You'll always be my whore"
+        - note: "C4"
+          beat: "eighth"
+        - note: "C4"
+          beat: "eighth"
+        - note: "D#4"
+          beat: "eighth"
+        - note: "F4"
+          beat: "eighth"
+        - note: "G4"
+          beat: "quarter"
+        - note: "F4"
+          beat: "quarter"
+
+        # Measure 7: "You'll be a mother to my child"
+        - note: "C4"
+          beat: "eighth"
+        - note: "C4"
+          beat: "eighth"
+        - note: "D#4"
+          beat: "eighth"
+        - note: "F4"
+          beat: "eighth"
+        - note: "D#4"
+          beat: "eighth"
+        - note: "C4"
+          beat: "eighth"
+        - note: "A#3"
+          beat: "eighth"
+        - note: "C4"
+          beat: "eighth"
+
+        # Measure 8: "And a child to my sick soul"
+        - note: "C4"
+          beat: "eighth"
+        - note: "D#4"
+          beat: "eighth"
+        - note: "F4"
+          beat: "eighth"
+        - note: "G4"
+          beat: "eighth"
+        - note: "F4"
+          beat: "eighth"
+        - note: "D#4"
+          beat: "eighth"
+        - note: "C4"
+          beat: "quarter"
+
+        # Measure 9: "Be my lover, be my friend"
+        - note: "C4"
+          beat: "eighth"
+        - note: "C4"
+          beat: "quarter"
+        - note: "D#4"
+          beat: "eighth"
+        - note: "C4"
+          beat: "eighth"
+        - note: "D#4"
+          beat: "eighth"
+        - note: "F4"
+          beat: "eighth"
+        - note: "D#4"
+          beat: "eighth"
+
+        # Measure 10: "Be my prison, be my end"
+        - note: "C4"
+          beat: "eighth"
+        - note: "C4"
+          beat: "quarter"
+        - note: "D#4"
+          beat: "eighth"
+        - note: "F4"
+          beat: "eighth"
+        - note: "G4"
+          beat: "eighth"
+        - note: "F4"
+          beat: "eighth"
+        - note: "D#4"
+          beat: "eighth"
+
+        # Measure 11: "Be each color I could dream"
+        - note: "C4"
+          beat: "eighth"
+        - note: "D#4"
+          beat: "eighth"
+        - note: "F4"
+          beat: "eighth"
+        - note: "G4"
+          beat: "eighth"
+        - note: "G#4"
+          beat: "eighth"
+        - note: "G4"
+          beat: "eighth"
+        - note: "F4"
+          beat: "quarter"
+
+        # Measure 12: "In the shadow of a dream"
+        - note: "D#4"
+          beat: "eighth"
+        - note: "F4"
+          beat: "eighth"
+        - note: "D4"
+          beat: "eighth"
+        - note: "D#4"
+          beat: "eighth"
+        - note: "C4"
+          beat: "eighth"
+        - note: "D4"
+          beat: "eighth"
+        - note: "B3"
+          beat: "quarter"
+
+        # ==========================================
+        # CHORUS: Measures 13-20
+        # ==========================================
+        # Measure 13: "We must never be apart"
+        - note: "C4"
+          beat: "quarter"
+        - note: "D#4"
+          beat: "quarter"
+        - note: "G4"
+          beat: "eighth"
+        - note: "F4"
+          beat: "eighth"
+        - note: "D#4"
+          beat: "quarter"
+
+        # Measure 14: Vocal resolution
+        - note: "C4"
+          beat: "dotted_half"
+        - note: "REST"
+          beat: "quarter"
+
+        # Measure 15: "We must never be apart"
+        - note: "C4"
+          beat: "quarter"
+        - note: "D#4"
+          beat: "quarter"
+        - note: "G4"
+          beat: "eighth"
+        - note: "F4"
+          beat: "eighth"
+        - note: "G#4"
+          beat: "quarter"
+
+        # Measure 16: Soaring melodic line
+        - note: "G4"
+          beat: "half"
+        - note: "D#4"
+          beat: "quarter"
+        - note: "C4"
+          beat: "quarter"
+
+        # Measure 17: "Lovely girl, you're the"
+        - note: "G#4"
+          beat: "quarter"
+        - note: "G4"
+          beat: "quarter"
+        - note: "F4"
+          beat: "quarter"
+        - note: "D#4"
+          beat: "eighth"
+        - note: "F4"
+          beat: "eighth"
+
+        # Measure 18: "murder in my world"
+        - note: "G4"
+          beat: "quarter"
+        - note: "F4"
+          beat: "quarter"
+        - note: "D#4"
+          beat: "eighth"
+        - note: "D4"
+          beat: "eighth"
+        - note: "C4"
+          beat: "quarter"
+
+        # Measure 19: "Dressing me up like your"
+        - note: "G#4"
+          beat: "quarter"
+        - note: "G4"
+          beat: "quarter"
+        - note: "F4"
+          beat: "eighth"
+        - note: "D#4"
+          beat: "eighth"
+        - note: "F4"
+          beat: "eighth"
+        - note: "D#4"
+          beat: "eighth"
+
+        # Measure 20: "...doll"
+        - note: "D4"
+          beat: "quarter"
+        - note: "B3"
+          beat: "dotted_half"
+
+        # ==========================================
+        # OUTRO: Measures 21-24
+        # ==========================================
+        # Measure 21: High octave hook
+        - note: "C5"
+          beat: "quarter"
+        - note: "D#5"
+          beat: "quarter"
+        - note: "F5"
+          beat: "eighth"
+        - note: "F#5"
+          beat: "eighth"
+        - note: "F5"
+          beat: "eighth"
+        - note: "D#5"
+          beat: "eighth"
+
+        # Measure 22
+        - note: "C5"
+          beat: "quarter"
+        - note: "D#5"
+          beat: "quarter"
+        - note: "G5"
+          beat: "half"
+
+        # Measure 23: Pre-cadential climax
+        - note: "G#5"
+          beat: "half"
+        - note: "A#5"
+          beat: "half"
+
+        # Measure 24: Final resolution chord
+        - notes: ["D#5", "G5", "C6"]
+          beat: "whole"
