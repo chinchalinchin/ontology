@@ -255,7 +255,7 @@ compositions:
                 height: 135
                 position:
                   x: 0
-                  y: 39
+                  y: 41
               - id: wall-up-stone-gold-plated
                 name: castle-dawn-wall-02
                 owner: bind(root.owner)
@@ -263,7 +263,7 @@ compositions:
                 height: 135
                 position:
                   x: 222
-                  y: 39
+                  y: 41
               # --------------- PLATFORMS (dynamic height: 247, depth: 1)
               - id: platform-marble
                 name: castle-dawn-platform-01
