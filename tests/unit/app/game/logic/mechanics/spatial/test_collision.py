@@ -77,7 +77,7 @@ def test_collision_mechanics_resolve_no_collision(mock_player, mock_crate):
     mechanic = CollisionMechanics()
 
     mock_player.state.position = Position(10, 10)
-    mock_crate.state.position = Position(20, 20)
+    mock_crate.state.position = Position(200, 200)
 
     initial_x = mock_crate.state.position.x
     initial_y = mock_crate.state.position.y
@@ -132,7 +132,6 @@ def test_collision_mechanics_resolve_boundary_static_mass_zero_ignored(mock_stru
     """
     mechanic = CollisionMechanics()
 
-    # Position static strut (m = 0) intersecting the environmental boundary
     mock_strut.state.position = Position(10, 0)
     boundary = Boundary(Position(0, 0), Dimensions(100, 10))
 
@@ -154,9 +153,10 @@ def test_collision_mechanics_resolve_boundary_kinematic_player(mock_player):
     """
     mechanic = CollisionMechanics()
 
+    # Bounding box of 50px accounts for LPC feet hitbox offset (y ~ 23..44)
     mock_player.state.position = Position(10, 0)
     mock_player.state.velocity = Velocity(0.0, -10.0)
-    boundary = Boundary(Position(0, 0), Dimensions(100, 10))
+    boundary = Boundary(Position(0, 0), Dimensions(100, 50))
 
     mechanic._boundary(mock_player, boundary)
 
@@ -174,23 +174,31 @@ def test_collision_mechanics_update_static_vs_dynamic_boundary_filtering(mock_bo
     bus = collections.deque()
     payload = mock_board.device.poll() if mock_board.device else None
 
-    # Static strut (m = 0) placed intersecting western perimeter boundary (x = 0)
+    # Clear open space by isolating characters away from the perimeter test coordinates
+    player = mock_board.player()
+    if player:
+        player.state.position = Position(200, 200)
+    npc = mock_board.asset("npc")
+    if npc:
+        npc.state.position = Position(200, 200)
+
+    # Static strut (m = 0, w = 222, l = 133) intersecting northern perimeter at (100, 0)
     strut = mock_board.asset("castle")
-    strut.state.position = Position(0, 50)
+    strut.state.position = Position(100, 0)
     strut_initial_x = strut.state.position.x
     strut_initial_y = strut.state.position.y
 
-    # Dynamic crate (m = 5) placed intersecting western perimeter boundary with incoming velocity
+    # Dynamic crate (m = 5, w = 32, l = 32) intersecting western perimeter at (0, 50)
     crate = mock_board.asset("box")
-    crate.state.position = Position(0, 100)
+    crate.state.position = Position(0, 50)
     crate.state.velocity = Velocity(-10.0, 0.0)
 
     mechanic.update(mock_board, 0.016, bus, payload)
 
-    # Static architecture must remain completely immutable
+    # Static architecture remains completely immutable
     assert strut.state.position.x == strut_initial_x
     assert strut.state.position.y == strut_initial_y
 
-    # Dynamic body must be displaced out of the boundary with inverted velocity
+    # Dynamic body displaced out of the western boundary with inverted velocity
     assert crate.state.position.x > 0
     assert crate.state.velocity.vx == 10.0
