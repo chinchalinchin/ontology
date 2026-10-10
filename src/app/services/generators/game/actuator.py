@@ -57,12 +57,13 @@ class Actuator:
         origin_y: Optional[int] = None
     ) -> List[Tuple]:
         layer = fluid.state.layer
+        elevation = fluid.state.elevation
         fx = origin_x if origin_x is not None else fluid.state.position.x
         fy = origin_y if origin_y is not None else fluid.state.position.y
         obstacle_tuples: List[Tuple] = []
 
-        # 1. Map boundaries from procedural perimeter sweep
-        perimeters = board.perimeters.get(layer, [])
+        # 1. Map boundaries from procedural perimeter sweep for current elevation tier
+        perimeters = board.perimeters.get(layer, {}).get(elevation, [])
         for b in perimeters:
             if direction == Directions.DOWN.value and (
                 b.position.y <= fy
@@ -86,8 +87,8 @@ class Actuator:
             ))
 
         # 2. Environmental physical assets strictly restricted to immovable static bodies (mass == 0)
-        candidates = set(board.weights(layer))
-        candidates.update(board.obstacles(layer))
+        candidates = set(board.weights(layer, elevation=elevation))
+        candidates.update(board.obstacles(layer, elevation=elevation))
 
         for asset in candidates:
             if asset is fluid: continue
@@ -103,7 +104,6 @@ class Actuator:
                 asset.state.switch
             ): continue
 
-            # Exclude dynamic bodies (mass > 0) and sensors (mass < 0) from fluid occlusion
             if hasattr(asset.properties, "mass") and asset.properties.mass != 0:
                 continue
 

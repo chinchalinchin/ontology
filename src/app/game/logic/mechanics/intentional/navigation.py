@@ -63,13 +63,19 @@ class NavigationMechanics(Mechanic):
 
 
     @staticmethod
-    def obstacles(layer: str, board: Board, exclude: list) -> list:
+    def obstacles(
+        layer: str, 
+        board: Board, 
+        exclude: list, 
+        elevation: int = 0
+    ) -> list:
         """
-        Transforms board weights and perimeters into flat C-primitive tuples.
+        Transforms board weights and perimeters for the specified elevation tier
+        into flat C-primitive tuples.
         """
         obstacles = []
 
-        for asset in board.weights(layer):
+        for asset in board.weights(layer, elevation=elevation):
             if asset.name in exclude:
                 continue
             for hb in asset.hitboxes:
@@ -80,7 +86,7 @@ class NavigationMechanics(Mechanic):
                     float(hb.dimensions.l),
                 ))
 
-        for bound in board.perimeters.get(layer, []):
+        for bound in board.perimeters.get(layer, {}).get(elevation, []):
             obstacles.append((
                 float(bound.position.x),
                 float(bound.position.y),
@@ -200,7 +206,12 @@ class NavigationMechanics(Mechanic):
         if sprite.state.goal.name:
             exclude.append(sprite.state.goal.name)
 
-        obstacles = self.obstacles(sprite.state.layer, board, exclude=exclude)
+        obstacles = self.obstacles(
+            sprite.state.layer, 
+            board, 
+            exclude=exclude, 
+            elevation=sprite.state.elevation
+        )
 
         planned = False
 

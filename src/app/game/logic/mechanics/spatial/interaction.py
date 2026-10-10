@@ -27,6 +27,7 @@ class InteractionMechanics(SpatialMechanic):
     def __init__(self):
         super().__init__(max_entities=2000)
 
+
     def update(self, 
         board: Board, 
         delta: float, 

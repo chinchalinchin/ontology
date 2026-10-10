@@ -35,15 +35,11 @@ class PropertyState(AssetState):
 
 @dataclass(slots=True)
 class BridgeState(AssetState):
-    # Overrides to enforce Z-ordering: 
-    #       Fluid (-1) < Shoreline (0) < Bridge (1) < Entities (>1)
-    height: Optional[int] = 0
-    depth: int = 1
-    # Bridge Fields
     position: Optional[Position] = None # type: ignore
     orientation: str = Orientations.HORIZONTAL.value
     multiple: Optional[Multiple] = None # type: ignore
     owner: Optional[str] = None
+    elevation: int = 0
 
 @dataclass(slots=True)
 class StairState(AssetState):

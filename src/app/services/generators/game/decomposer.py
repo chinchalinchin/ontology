@@ -10,7 +10,7 @@ import logging
 from typing import (
     Dict, 
     List, 
-    Any,
+    Any, 
     Optional
 )
 
@@ -19,8 +19,8 @@ import app.config.settings as settings
 from app.assets.base import Asset
 from app.config.enums import (
     AssetCategories, 
-    AssetInstances,
-    Orientations,
+    AssetInstances, 
+    Orientations, 
     Shortcuts
 )
 from app.services.generators.game.factory import Factory
@@ -33,14 +33,14 @@ from app.models.properties import (
     Cost
 )
 from app.models.state import (
-    PropertyState,
+    PropertyState, 
     BridgeState, 
-    AssetState,
+    AssetState
 )
 
 # Cython Libraries
 from libs.core.models import (
-    Position,
+    Position, 
     Multiple
 )
 
@@ -74,9 +74,9 @@ class Decomposer:
         if cat == AssetCategories.CRAFTS.value:
             cat_props = getattr(self.properties.crafts, inst, {})
             props = cat_props.get(asset_id)
-            for c in props.cost:
-                cost_map[c.item] = cost_map.get(c.item, 0) + c.quantity
-
+            if props and props.cost:
+                for c in props.cost:
+                    cost_map[c.item] = cost_map.get(c.item, 0) + c.quantity
 
     def _aggregate_components_cost(self, 
         components: Any, 
@@ -140,13 +140,11 @@ class Decomposer:
         if not isinstance(val, str):
             return val
             
-        # Prioritize explicit parent bindings
         match_parent = re.match(r"^bind\(parent\.(.*?)\)$", val)
         if match_parent:
             key = match_parent.group(1)
             return parent_context.get(key, val)
             
-        # Support root bindings (and legacy bindings without a prefix)
         match_root = re.match(r"^bind\((?:root\.)?(.*?)\)$", val)
         if match_root:
             key = match_root.group(1)
@@ -154,14 +152,13 @@ class Decomposer:
             
         return val
 
-
     def _hydrate_state(self, 
         state_obj: AssetState, 
         root_context: Dict[str, Any], 
         parent_context: Dict[str, Any], 
         inc: int, 
         inst_key: str, 
-        is_strut: bool = False,
+        is_strut: bool = False, 
         layer_map: Optional[Dict[str, str]] = None
     ) -> AssetState:
         if layer_map is None:
@@ -205,27 +202,23 @@ class Decomposer:
         pseudo_out = kwargs.get('out')
         if pseudo_out:
             outlayer = kwargs.get('outlayer')
-            # If returning to root layer, offset by deployed root position
             if str(outlayer) == str(root_layer):                
                 kwargs['out'] = Position(
                     x=root_context['position'].x + pseudo_out.x,
                     y=root_context['position'].y + pseudo_out.y
                 )
             else:
-                # Target is an interior layer; coordinates are local to that layer
                 kwargs['out'] = Position(pseudo_out.x, pseudo_out.y)
 
-        # TODO: what is this?
         base_inst = inst_key[:-1] if inst_key.endswith('s') else inst_key
         
         if is_strut:
             b_name = kwargs.get('name') or root_context['name']
-            kwargs['name'] = '-'.join([base_inst, b_name, str(inc)])
+            kwargs['name'] = settings.SEPARATOR.join([base_inst, b_name, str(inc)])
         else:
-            kwargs['name'] = '-'.join([base_inst, parent_context['name'], str(inc)])
+            kwargs['name'] = settings.SEPARATOR.join([base_inst, parent_context['name'], str(inc)])
         
         return type(state_obj)(**kwargs)
-    
 
     def _create_asset(self, 
         cat_key: str, 
@@ -279,25 +272,20 @@ class Decomposer:
             strut_state
         )
         assets.append(strut_asset)
-        # 1. Calculate the physical bottom edge (height) of the instantiated Strut
-        node_height = strut_state.position.y + (strut_asset.dimensions.l if strut_asset.dimensions else 0)
 
-        # 2. Inject it into the context dictionary for child components to reference
         node_context = {
             "position": strut_state.position,
             "layer": strut_state.layer,
             "owner": getattr(strut_state, 'owner', None),
             "name": strut_state.name,
-            "height": node_height
+            "elevation": strut_state.elevation
         }
         
-        # 3. If this is the root strut, its height becomes the root height
         if is_root:
-            root_context["height"] = node_height
+            root_context["elevation"] = strut_state.elevation
 
         self._unpack_components(node.components, root_context, node_context, inc, assets)
         return assets
-
 
     def _unpack_components(self, 
         components: Any, 
@@ -341,7 +329,6 @@ class Decomposer:
     # ---------------------------------------------------------
     # ------------------------------------------ PUBLIC METHODS
 
-
     def unpack(self, deployed_state: PropertyState) -> List[Asset]:
         """Flattens a Composition configuration into a native 1D list of fully hydrated Assets."""
         assets = []
@@ -358,10 +345,10 @@ class Decomposer:
             "layer": getattr(deployed_state, 'layer', ''),
             "owner": getattr(deployed_state, 'owner', None),
             "position": getattr(deployed_state, 'position', Position(0,0)),
+            "elevation": getattr(deployed_state, 'elevation', 0),
             "_layer_map": {}
         }
 
-        # Unpack Root node first, explicitly flagging it as the root
         assets.extend(self._unpack_node(comp_config.root, root_context, root_context, inc, is_root=True))
 
         if comp_config.branches:
@@ -369,7 +356,6 @@ class Decomposer:
                 assets.extend(self._unpack_node(branch, root_context, root_context, inc, is_root=False))
 
         return assets
-
 
     def bridge(self, deployed_state: BridgeState) -> List[Asset]:
         """
@@ -421,8 +407,7 @@ class Decomposer:
                 orientation=orientation,
                 multiple=Multiple(1, 1),
                 owner=deployed_state.owner,
-                depth=deployed_state.depth,
-                height=deployed_state.height
+                elevation=deployed_state.elevation
             )
 
             unit_asset = Asset(
@@ -442,7 +427,6 @@ class Decomposer:
 
         return unit_assets
 
-    
     def cost(self, comp_id: str) -> List[Cost]:
         """Calculates the aggregate cost of an entire Composition tree."""
         config = self.compositions.get(comp_id)
@@ -451,7 +435,6 @@ class Decomposer:
         
         cost_map = {}
         
-        # Traverse Root
         self._accumulate_cost(
             AssetCategories.CRAFTS.value, 
             AssetInstances.STRUTS.value, 
@@ -460,7 +443,6 @@ class Decomposer:
         )
         self._aggregate_components_cost(config.root.components, cost_map)
         
-        # Traverse Branches
         if config.branches:
             for branch in config.branches:
                 self._accumulate_cost(
@@ -472,7 +454,6 @@ class Decomposer:
                 self._aggregate_components_cost(branch.components, cost_map)
                 
         return [Cost(item=k, quantity=v) for k, v in cost_map.items()]
-
 
     def bridge_cost(self, id: str, multiple: Multiple, orientation: str) -> List[Cost]:
         """

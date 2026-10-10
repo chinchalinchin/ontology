@@ -57,7 +57,6 @@ class Mutators:
 # -------------------------------------------------------------------- CORE ASSET STATES
 # ---------------------------------------------------------------------------------------
 
-
 class NoState:
     pass
 
@@ -66,8 +65,7 @@ class AssetState:
     id: str
     name: Optional[str] = None
     layer: Optional[str] = None
-    depth: int = 0
-    height: Optional[Union[int, str]] = None
+    elevation: int = 0
     mutators: Mutators = field(default_factory=Mutators)
 
 @dataclass(slots=True)

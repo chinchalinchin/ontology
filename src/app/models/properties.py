@@ -105,7 +105,7 @@ class CraftProperties(AssetProperties):
     dimensions: Dimensions # type: ignore
     cost: List[Cost]
     mass: int = 0
-    hitboxes: Optional[List[Hitbox]] = None # type: ignore
+    hitboxes: Optional[Union[Dict[str, Optional[List[Hitbox]]], List[Hitbox]]] = None # type: ignore
 
 @dataclass(slots=True)
 class ResourceProperties(AssetProperties):
@@ -173,6 +173,7 @@ class ObjectPropertyInstances:
 class CraftPropertyInstances:
     struts: Dict[str, CraftProperties] = field(default_factory=dict)
     bridges: Dict[str, CraftProperties] = field(default_factory=dict)
+    stairs: Dict[str, CraftProperties] = field(default_factory=dict)
 
 @dataclass(slots=True)
 class ResourcePropertyInstances:

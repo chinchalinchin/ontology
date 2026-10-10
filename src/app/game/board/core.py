@@ -223,16 +223,27 @@ class Board:
             return self._assets
         return self._cache.get_layer_assets(layer)
 
-    def weights(self, layer: Optional[str] = None) -> List[Asset]:
-        """Returns physical weight assets (m >= 0) on the layer."""
+    def weights(self, layer: Optional[str] = None, elevation: Optional[int] = None) -> List[Asset]:
+        """Returns physical weight assets (m >= 0) on the layer, optionally filtered by elevation."""
         if layer is None:
-            return [asset for asset in self._assets if predicates.is_weight(asset)]
-        return self._cache.get_weights(layer)
+            weights = [asset for asset in self._assets if predicates.is_weight(asset)]
+        else:
+            weights = self._cache.get_weights(layer)
 
-    def obstacles(self, layer: Optional[str] = None) -> List[Asset]:
+        if elevation is not None:
+            return [w for w in weights if w.state.elevation == elevation]
+        return weights
+
+    def obstacles(self, layer: Optional[str] = None, elevation: Optional[int] = None) -> List[Asset]:
+        """Returns physical obstacle assets on the layer, optionally filtered by elevation."""
         if layer is None:
-            return []
-        return self._cache.get_obstacles(layer)
+            obstacles = []
+        else:
+            obstacles = self._cache.get_obstacles(layer)
+
+        if elevation is not None:
+            return [o for o in obstacles if o.state.elevation == elevation]
+        return obstacles
 
     def bridges(self, layer: Optional[str] = None) -> List[Asset]:
         """Retrieves static sensor bridge assets for a specific layer or across all layers."""

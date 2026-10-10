@@ -121,13 +121,12 @@ class Screen:
     def _sort(asset: Asset) -> tuple[int, int]:
         """
         Module-level Painter's Algorithm sort key function.
-        Primary Key: Explicit Height (coerced to integer) OR geometric height (Y + Length).
-        Secondary Key: Depth tie-breaker.
+        Primary Key: Discrete integer Z-plane elevation tier.
+        Secondary Key: Continuous in-tier geometric ground perspective (Y + Length).
         """
-        height = int(asset.state.height) if asset.state.height is not None else (
-            (asset.state.position.y + (asset.dimensions.l if asset.dimensions else 0))
-        )
-        return (height, asset.state.depth)
+        ground_y = int(asset.state.position.y + asset.dimensions.l) \
+                    if asset.dimensions else int(asset.state.position.y)
+        return (asset.state.elevation, ground_y)
 
 
     def _widgets(self, menus: List[Menu]) -> None:

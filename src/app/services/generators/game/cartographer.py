@@ -150,7 +150,7 @@ class Cartographer:
             return Hitbox(Position(32 - thickness, 0), Dimensions(thickness, length))
         return Hitbox(Position(0, 0), Dimensions(length, thickness))
 
-
+    
     @classmethod
     def is_step_fluid(
         cls,
@@ -183,11 +183,12 @@ class Cartographer:
         l: int, 
         layer: str, 
         board: Board,
-        axis: Optional[str] = None
+        axis: Optional[str] = None,
+        elevation: int = 0
     ) -> bool:
         """
         Validates whether the substrate bordering the water is occluded by
-        map boundaries or immovable static obstacles (mass == 0).
+        map boundaries or immovable static obstacles (mass == 0) on the specified elevation tier.
         """
         sizes = board.size(layer)
         layer_size = sizes[0] if sizes else None
@@ -195,7 +196,8 @@ class Cartographer:
             if x < 0 or y < 0 or (x + w) > layer_size.w or (y + l) > layer_size.l:
                 return True
 
-        perimeters = board.perimeters.get(layer, [])
+        # Extract boundaries strictly for the specified elevation tier (defaults to 0 for substrate shorelines)
+        perimeters = board.perimeters.get(layer, {}).get(elevation, [])
         perim_obstacles: List[Tuple[int, int, int, int]] = []
         for b in perimeters:
             bx = b.position.x
@@ -213,8 +215,9 @@ class Cartographer:
         if perim_obstacles and geometry.occluded(x, y, w, l, perim_obstacles):
             return True
 
-        candidates = set(board.weights(layer))
-        candidates.update(board.obstacles(layer))
+        # Extract static obstacles strictly belonging to the target elevation tier
+        candidates = set(board.weights(layer, elevation=elevation))
+        candidates.update(board.obstacles(layer, elevation=elevation))
         candidate_obstacles: List[Tuple[int, int, int, int]] = []
 
         for asset in candidates:
@@ -244,7 +247,6 @@ class Cartographer:
             return True
 
         return False
-
 
     @classmethod
     def _coalesce_segments(
