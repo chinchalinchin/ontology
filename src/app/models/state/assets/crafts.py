@@ -50,7 +50,7 @@ class StairState(AssetState):
     """
     State representation for walkable incline transitions.
     """
-    position: Position # type: ignore
+    position: Optional[Position] = None # type: ignore
     direction: str = Directions.UP.value
     elevation: int = 0                     
     delta: int = 1                         
