@@ -16,6 +16,7 @@ site/**
 TODOS.md
 **/*.pstats
 engine-run.svg
+**/*.0
 
 !**/.gitkeep
 !**/templates/*-dump.md

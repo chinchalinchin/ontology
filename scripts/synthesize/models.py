@@ -1,3 +1,5 @@
+"""Data models and serialization DTOs for the audio synthesis pipeline."""
+
 from typing import Dict, List, Optional, Tuple, Union
 from pydantic import BaseModel, Field, model_validator
 
@@ -22,10 +24,18 @@ class NoteFrequencyModel(BaseModel):
     frequency: float = Field(ge=0.0)
 
 
+class TimbreModel(BaseModel):
+    harmonics: List[float] = Field(default_factory=lambda: [1.0, 0.35, 0.10, 0.02])
+    attack: float = Field(default=0.005, ge=0.0)
+    decay: float = Field(default=2.2, gt=0.0)
+
+
 class SoundConfig(BaseModel):
     signatures: List[SignatureModel]
     beats: List[BeatModel]
     notes: List[NoteFrequencyModel]
+    dynamics: Dict[str, float] = Field(default_factory=dict)
+    timbres: Dict[str, TimbreModel] = Field(default_factory=dict)
 
 
 class SoundsRoot(BaseModel):
@@ -40,6 +50,8 @@ class ScoreNote(BaseModel):
     note: Optional[Union[str, List[str]]] = None
     notes: Optional[List[str]] = None
     beat: str
+    dynamic: Optional[str] = None
+    timbre: Optional[str] = None
 
     @model_validator(mode="after")
     def normalize_chord(self):
@@ -53,11 +65,17 @@ class ScoreNote(BaseModel):
         return self
 
 
+class TrackEntry(BaseModel):
+    timbre: Optional[str] = None
+    default_dynamic: Optional[str] = None
+    notes: List[ScoreNote]
+
+
 class ScoreEntry(BaseModel):
     signature: str
     bpm: float = Field(default=120.0, gt=0.0)
     notes: Optional[List[ScoreNote]] = None
-    tracks: Optional[Dict[str, List[ScoreNote]]] = None
+    tracks: Optional[Dict[str, Union[TrackEntry, List[ScoreNote]]]] = None
 
     @model_validator(mode="after")
     def validate_content(self):
@@ -80,7 +98,13 @@ class NoteEventDTO(BaseModel):
     frequency: float = Field(ge=0.0, description="Fundamental frequency in Hz (0.0 = rest)")
     duration: float = Field(gt=0.0, description="Sounding duration in seconds")
     pitch_name: Optional[str] = Field(default=None, description="Scientific pitch name (e.g. C#4)")
-    velocity: float = Field(default=1.0, ge=0.0, le=1.0, description="Normalized velocity scalar")
+    velocity: float = Field(default=0.75, ge=0.0, le=1.0, description="Normalized velocity scalar [0.0, 1.0]")
+    attack: float = Field(default=0.005, ge=0.0, description="Linear attack ramp duration in seconds")
+    decay: float = Field(default=2.2, gt=0.0, description="Exponential decay coefficient")
+    harmonics: List[float] = Field(
+        default_factory=lambda: [1.0, 0.35, 0.10, 0.02],
+        description="Overtone series weighting factors",
+    )
 
 
 class ScoreMetadataDTO(BaseModel):
@@ -95,6 +119,17 @@ class CompiledScoreDTO(BaseModel):
     metadata: ScoreMetadataDTO
     events: List[NoteEventDTO]
 
-    def to_event_tuples(self) -> List[Tuple[float, float, float]]:
-        """Converts events to (start_time, frequency, duration) tuples for test.pyx."""
-        return [(e.start_time, e.frequency, e.duration) for e in self.events]
+    def to_event_tuples(self) -> List[Tuple[float, float, float, float, float, float, List[float]]]:
+        """Convert events to (start_time, frequency, duration, velocity, attack, decay, harmonics) tuples."""
+        return [
+            (
+                e.start_time,
+                e.frequency,
+                e.duration,
+                e.velocity,
+                e.attack,
+                e.decay,
+                e.harmonics,
+            )
+            for e in self.events
+        ]

@@ -1,0 +1,150 @@
+# Task: Script Maintainence
+
+## Primary Goal
+
+- Remove print statements and replace with logging.
+- The default location of `score.yaml` and `sounds.yaml` should be the same directory as the script.
+    - When `--score` or `--sounds` are passed in, they should do the following:
+        - Check if absolute path exists.
+        - Check if path relative to current working directory exists.
+        - Check is path relative to script directory exists.
+    - If any of the locations contain the required YAML, then load it. Otherwise, throw an error.
+    - Remove the `url` command and functionality.
+    - All function names in `loader` should be single verbs with no underscores, e.g. `parse`, `resolve`, `detect`, etc.
+- Move the `compile` function to `compile` module, name the function `score`, ensure everything is properly typed and comments.
+- Move the file access to a `files` module. The PydanticModel validation should occur here. 
+- Add a jinja2 template for `list.md.j2` to format the catalogue for `ingest --list`. Add it to `templates/` and register that directory with the Jinja2 loader. Use this template to render the output.
+
+## Analysis
+
+Evaluate this proposal. If feasible, propose a task list for its implementation, but do not implement until user approval is given.
+
+### Codifying Loudness (Dynamics)
+
+In music theory, dynamics (*pianissimo*, *forte*) dictate sound pressure level (SPL). Translating these to digital audio requires accounting for the human ear's non-linear, logarithmic perception of loudness.
+
+#### Dynamic Scale Mapping
+
+Standard dynamic markings can be normalized to a $[0.0, 1.0]$ velocity scale:
+
+| Marking | Name | Normalized Velocity ($v$) | Typical Decibel Attenuation |
+| --- | --- | --- | --- |
+| `ppp` | Pianississimo | $0.15$ | $-24\text{ dB}$ |
+| `pp` | Pianissimo | $0.30$ | $-18\text{ dB}$ |
+| `p` | Piano | $0.45$ | $-12\text{ dB}$ |
+| `mp` | Mezzo-piano | $0.60$ | $-8\text{ dB}$ |
+| `mf` | Mezzo-forte | $0.75$ | $-4\text{ dB}$ |
+| `f` | Forte | $0.88$ | $-1.5\text{ dB}$ |
+| `ff` | Fortissimo | $0.96$ | $0\text{ dB}$ |
+| `fff` | Fortississimo | $1.00$ | $+2\text{ dB}$ |
+
+#### The Perceptual Scaling Curve
+
+Scaling amplitude linearly with velocity ($A = v$) makes quiet dynamics (`p`, `pp`) sound unnatural because human hearing follows Stevens' Power Law for loudness. Amplitude must be scaled using a power curve:
+
+$$A(v) = v^\gamma \quad (\text{where } \gamma \approx 1.5\text{ to }2.0)$$
+
+or mapped to decibels ($0\text{ dBFS}$ reference):
+
+$$A(\text{dB}) = 10^{\frac{\text{dB}}{20}}$$
+
+### Codifying Timbre (Without Physical Modeling)
+
+Timbre is the psychoacoustic attribute that distinguishes two sounds of identical pitch and loudness. It is governed by three abstract dimensions:
+
+1. **Harmonic Spectrum (Static Shape):** The number and relative amplitude weights of overtones.
+2. **Temporal Envelope (ADSR):** How overall amplitude changes across time (Attack, Decay, Sustain, Release).
+3. **Dynamic Spectrum (Spectral Centroid):** How the harmonic spectrum shifts with loudness—louder notes generate more high-frequency energy.
+
+```
+Harmonic Weights        ADSR Envelope            Dynamic Brightness
+ [1.0, 0.5, 0.25]    x   (Attack -> Decay)   x   (Velocity scales cutoff)  =  Timbre
+```
+
+By abstracting these three parameters, timbre can be codified as generic synthesizer "patches" without physical modeling equations:
+
+* **Warm / Pure (Flute, Soft Rhodes):** Energy concentrated in partials 1 and 2; slow attack ($\approx 20\text{ ms}$).
+* **Bright / Hollow (Clarinet, Square Wave):** Strong odd harmonics ($1f, 3f, 5f$); fast attack ($\approx 5\text{ ms}$).
+* **Plucked / Percussive (Harpsichord, Plucked String):** Dense initial harmonic series that collapses rapidly into the fundamental.
+
+### Updating the Schema for Loudness and Timbre
+
+#### Schema Definition (`sounds.yaml`)
+
+Define reusable dynamic levels and timbre presets alongside notes and beats:
+
+```yaml
+sounds:
+  dynamics:
+    ppp: 0.15
+    pp:  0.30
+    p:   0.45
+    mp:  0.60
+    mf:  0.75
+    f:   0.88
+    ff:  0.96
+    fff: 1.00
+
+  timbres:
+    bell:
+      harmonics: [1.0, 0.4, 0.2, 0.5, 0.1, 0.3]
+      attack: 0.002
+      decay: 3.5
+    piano:
+      harmonics: [1.0, 0.35, 0.10, 0.02]
+      attack: 0.005
+      decay: 2.2
+    reed:
+      harmonics: [1.0, 0.0, 0.6, 0.0, 0.3, 0.0, 0.1] # Odd harmonics dominate
+      attack: 0.020
+      decay: 1.5
+```
+
+#### Score Definition (`score.yaml`)
+
+Dynamic levels and timbre selections can be assigned per track or overridden per note:
+
+```yaml
+score:
+  fur_elise_expressive:
+    signature: "three-eight"
+    bpm: 132.0
+    tracks:
+      right_hand:
+        timbre: "soft_piano"
+        default_dynamic: "p"
+        notes:
+          - note: "E5"
+            beat: "sixteenth"
+            dynamic: "mf"    # Explicit accent
+          - note: "D#5"
+            beat: "sixteenth"
+            dynamic: "p"
+          - note: "E5"
+            beat: "sixteenth"
+            dynamic: "p"
+```
+
+### Implementation in the Cython Callback
+
+In `test.pyx`, each active voice stores an amplitude scalar $A$ and harmonic weights $w_n$.
+
+To link loudness with timbre (so louder notes sound brighter), scale the higher harmonics by velocity:
+
+```c
+// Calculate non-linear perceptual amplitude
+float amp = powf(voice.velocity, 1.8f);
+
+// Higher harmonics scale faster with velocity, simulating physical acoustic excitation
+float harmonic_brightness = powf(voice.velocity, 0.5f);
+
+sample = 0.0f;
+for (int n = 0; n < NUM_HARMONICS; n++) {
+    float h_weight = voice.harmonics[n] * powf(harmonic_brightness, (float)n);
+    sample += h_weight * sin(voice.phases[n]);
+}
+sample *= (amp * env);
+
+```
+
+This separates sound design from low-level audio delivery: SDL continues to receive standard PCM buffers, while dynamics and timbre are governed declaratively in YAML.

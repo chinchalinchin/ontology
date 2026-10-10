@@ -1,9 +1,10 @@
 # cython: language_level=3
 from libc.stdint cimport uint8_t, uint16_t, uint32_t
-from libc.math cimport sin, exp, M_PI
+from libc.math cimport sin, exp, powf, M_PI
 from libc.stdlib cimport malloc, free
 
 DEF MAX_VOICES = 32
+DEF MAX_HARMONICS = 8
 
 cdef extern from "SDL2/SDL.h" nogil:
     ctypedef uint32_t Uint32
@@ -45,15 +46,23 @@ cdef struct NoteEvent:
     int start_sample
     int total_samples
     float freq
+    float velocity
+    float attack
+    float decay
+    int num_harmonics
+    float harmonics[MAX_HARMONICS]
 
 cdef struct Voice:
     int active
     float freq
     int sample_pos
     int total_samples
-    double phase1
-    double phase2
-    double phase3
+    float base_amp
+    float attack_samples
+    float decay_coeff
+    int num_harmonics
+    float harmonics[MAX_HARMONICS]
+    double phases[MAX_HARMONICS]
 
 cdef struct SynthState:
     int sample_rate
@@ -68,12 +77,12 @@ cdef void audio_callback(void *userdata, Uint8 *stream, int len) noexcept nogil:
     cdef SynthState *synth = <SynthState *>userdata
     cdef float *buffer = <float *>stream
     cdef int num_samples = len // sizeof(float)
-    cdef int i, v, slot
-    cdef float freq, t, env, v_sample, mix_sample
+    cdef int i, v, slot, h, nh
+    cdef float freq, env, v_sample, mix_sample, vel, base_amp, brightness
     cdef int active_count
 
     for i in range(num_samples):
-        # Spawn pending note events that match the current sample
+        # Dispatch pending note events scheduled for the current sample
         while synth.next_event_idx < synth.total_events and synth.events[synth.next_event_idx].start_sample <= synth.current_sample:
             if synth.events[synth.next_event_idx].freq > 0.0:
                 slot = -1
@@ -82,55 +91,69 @@ cdef void audio_callback(void *userdata, Uint8 *stream, int len) noexcept nogil:
                         slot = v
                         break
                 if slot != -1:
+                    vel = synth.events[synth.next_event_idx].velocity
+                    if vel < 0.01:
+                        vel = 0.01
+                    elif vel > 1.0:
+                        vel = 1.0
+
+                    # Stevens' power law amplitude: A = v^1.8
+                    base_amp = powf(vel, 1.8)
+                    # Dynamic brightness factor: higher harmonics scale with velocity
+                    brightness = powf(vel, 0.5)
+
                     synth.voices[slot].active = 1
                     synth.voices[slot].freq = synth.events[synth.next_event_idx].freq
                     synth.voices[slot].sample_pos = 0
                     synth.voices[slot].total_samples = synth.events[synth.next_event_idx].total_samples
-                    synth.voices[slot].phase1 = 0.0
-                    synth.voices[slot].phase2 = 0.0
-                    synth.voices[slot].phase3 = 0.0
+                    synth.voices[slot].base_amp = base_amp
+                    synth.voices[slot].attack_samples = synth.events[synth.next_event_idx].attack * <float>synth.sample_rate
+                    if synth.voices[slot].attack_samples < 1.0:
+                        synth.voices[slot].attack_samples = 1.0
+                    synth.voices[slot].decay_coeff = synth.events[synth.next_event_idx].decay
+
+                    nh = synth.events[synth.next_event_idx].num_harmonics
+                    synth.voices[slot].num_harmonics = nh
+                    for h in range(nh):
+                        # Precalculate scaled harmonic weights w_h * (v^0.5)^h
+                        synth.voices[slot].harmonics[h] = synth.events[synth.next_event_idx].harmonics[h] * powf(brightness, <float>h)
+                        synth.voices[slot].phases[h] = 0.0
+
             synth.next_event_idx += 1
 
         mix_sample = 0.0
         active_count = 0
 
-        # Synthesize and accumulate all active voices
+        # Accumulate and synthesize active voices
         for v in range(MAX_VOICES):
             if not synth.voices[v].active:
                 continue
 
             active_count += 1
             freq = synth.voices[v].freq
-            t = <float>synth.voices[v].sample_pos / <float>synth.sample_rate
 
-            # 4ms attack ramp + exponential release
-            if t < 0.004:
-                env = t / 0.004
+            # Envelope evaluation (linear attack ramp + exponential decay)
+            if <float>synth.voices[v].sample_pos < synth.voices[v].attack_samples:
+                env = <float>synth.voices[v].sample_pos / synth.voices[v].attack_samples
             else:
-                env = exp(-2.8 * (t / (<float>synth.voices[v].total_samples / <float>synth.sample_rate)))
+                env = exp(-synth.voices[v].decay_coeff * (<float>synth.voices[v].sample_pos / <float>synth.voices[v].total_samples))
 
-            synth.voices[v].phase1 += (2.0 * M_PI * freq) / synth.sample_rate
-            if synth.voices[v].phase1 > 2.0 * M_PI:
-                synth.voices[v].phase1 -= 2.0 * M_PI
+            v_sample = 0.0
+            for h in range(synth.voices[v].num_harmonics):
+                # Update phase for each overtone partial
+                synth.voices[v].phases[h] += (2.0 * M_PI * (freq * <float>(h + 1))) / synth.sample_rate
+                if synth.voices[v].phases[h] > 2.0 * M_PI:
+                    synth.voices[v].phases[h] -= 2.0 * M_PI
+                v_sample += synth.voices[v].harmonics[h] * sin(synth.voices[v].phases[h])
 
-            synth.voices[v].phase2 += (2.0 * M_PI * (freq * 2.0)) / synth.sample_rate
-            if synth.voices[v].phase2 > 2.0 * M_PI:
-                synth.voices[v].phase2 -= 2.0 * M_PI
-
-            synth.voices[v].phase3 += (2.0 * M_PI * (freq * 3.0)) / synth.sample_rate
-            if synth.voices[v].phase3 > 2.0 * M_PI:
-                synth.voices[v].phase3 -= 2.0 * M_PI
-
-            v_sample = (0.70 * sin(synth.voices[v].phase1) +
-                        0.22 * sin(synth.voices[v].phase2) +
-                        0.08 * sin(synth.voices[v].phase3)) * env
+            v_sample *= (synth.voices[v].base_amp * env)
             mix_sample += v_sample
 
             synth.voices[v].sample_pos += 1
             if synth.voices[v].sample_pos >= synth.voices[v].total_samples:
                 synth.voices[v].active = 0
 
-        # Soft compression headroom scaling
+        # Headroom scaling to prevent distortion across polyphony
         if active_count > 1:
             mix_sample *= (0.35 / (1.0 + 0.35 * (active_count - 1)))
         else:
@@ -143,6 +166,7 @@ cdef void audio_callback(void *userdata, Uint8 *stream, int len) noexcept nogil:
         synth.finished = 1
 
 def play(list event_seq):
+    """Play a sequence of note events using SDL2 streaming audio."""
     cdef int total = len(event_seq)
     if total == 0:
         return
@@ -151,12 +175,27 @@ def play(list event_seq):
     if event_buf == NULL:
         raise MemoryError("Failed to allocate event buffer.")
 
-    cdef int i
+    cdef int i, h, nh
     cdef int sample_rate = 48000
+    cdef tuple tup
+    cdef list harm_list
+
     for i in range(total):
-        event_buf[i].start_sample = <int>(event_seq[i][0] * sample_rate)
-        event_buf[i].freq = <float>event_seq[i][1]
-        event_buf[i].total_samples = <int>(event_seq[i][2] * sample_rate)
+        tup = <tuple>event_seq[i]
+        event_buf[i].start_sample = <int>(<float>tup[0] * sample_rate)
+        event_buf[i].freq = <float>tup[1]
+        event_buf[i].total_samples = <int>(<float>tup[2] * sample_rate)
+        event_buf[i].velocity = <float>tup[3]
+        event_buf[i].attack = <float>tup[4]
+        event_buf[i].decay = <float>tup[5]
+
+        harm_list = <list>tup[6]
+        nh = len(harm_list)
+        if nh > MAX_HARMONICS:
+            nh = MAX_HARMONICS
+        event_buf[i].num_harmonics = nh
+        for h in range(nh):
+            event_buf[i].harmonics[h] = <float>harm_list[h]
 
     if SDL_Init(SDL_INIT_AUDIO) < 0:
         free(event_buf)

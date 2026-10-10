@@ -5,8 +5,8 @@ properties:
     mkdocs: mkdocs.yml
   paths:
     # ---------------------------------------
-    # root: /Users/gmoore/Home/projects/ontology/
-    root: /home/grant/Projects/ontology/
+    root: /Users/gmoore/Home/projects/ontology/
+    # root: /home/grant/Projects/ontology/
     # ---------------------------------------
     actions: .githubs/workflows/
     # ---------------------------------------
@@ -45,10 +45,11 @@ task:
   # ------------------------------------- DESIGN TASKS
   # template: design/menu.md.j2
   # template: design/composition.md.j2
-  template: design/score.md.j2
+  # template: design/score.md.j2
   # template: diagram/hierarchy.md.j2
   # template: diagram/automata.md.j2
   # template: diagram/stages.md.j2
+  template: maintain/script.md.j2
   # template: output/menus.md.j2
   # template: output/state.md.j2
   # template: style/mermaid.md.j2
@@ -70,8 +71,8 @@ tools:
       specs: false
       docs: false
     source:
-      workflow: true
-      script: false
+      workflow: false
+      script: true
     shell:
       directory: false
       commands: false
@@ -119,31 +120,32 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: seasons
+        marker: collisions
       fixtures:
         # ----------------------------
-        # - configuration/compositions
+        - configuration/compositions
         # - configuration/groups
         # - configuration/recipes
         # - configuration/transitions
         # - configuration/schemas
         # ----------------------------
-        # - properties/crafts
+        - properties/crafts
         # - properties/cursors
-        - properties/effects
+        # - properties/effects
         # - properties/fonts
         # - properties/geography
-        # - properties/objects
-        - properties/resources
+        - properties/objects
+        # - properties/resources
         # - properites/sheets
-        - properties/tiles
+        # - properties/tiles
         # - properties/widgets
         - properties/schemas
         # ----------------------------
-        # - state/crafts
-        - state/effects
-        # - state/objects
-        - state/resources
+        - state/crafts
+        # - state/effects
+        - state/objects
+        # - state/resources
+        - state/sheets
         - state/world
         - state/schemas
         # ----------------------------
@@ -151,8 +153,8 @@ tools:
         - components
         # - menus
         # - services
-        - structures
-      workflow: seasons
+        # - structures
+      workflow: collisions
       session:
         description: null
         conditions:

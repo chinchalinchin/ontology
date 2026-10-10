@@ -28,7 +28,8 @@ from libs.core.models import (
 def mock_property_state() -> PropertyState:
     return PropertyState(
         id="strut-castle", 
-        name="castle", layer="0", 
+        name="castle", 
+        layer="0", 
         position=Position(x=250, y=250)
     )
 

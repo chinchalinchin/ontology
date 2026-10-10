@@ -296,3 +296,48 @@ def test_decomposer_bridge_linear_cost(mock_decomposer):
     assert len(costs) == 1
     assert costs[0].item == "wood"
     assert costs[0].quantity == 8  # 4 * 2
+
+
+@pytest.mark.services
+@pytest.mark.compositions
+def test_decomposer_multi_deployment_layer_namespacing(mock_decomposer):
+    """
+    Verify multi-deployment of identical compositions generates isolated, namespaced
+    pseudo-layers across instances (Bug B012 regression prevention).
+    """
+    deployed1 = PropertyState(
+        id="brick-house",
+        name="suburbs-00",
+        layer="0",
+        position=Position(x=100, y=100)
+    )
+    deployed2 = PropertyState(
+        id="brick-house",
+        name="suburbs-01",
+        layer="0",
+        position=Position(x=300, y=100)
+    )
+
+    assets1 = mock_decomposer.unpack(deployed1)
+    assets2 = mock_decomposer.unpack(deployed2)
+
+    door1_entrance = next(a for a in assets1 if a.id == "door-house")
+    door2_entrance = next(a for a in assets2 if a.id == "door-house")
+    interior1_wall = next(a for a in assets1 if a.id == "wall-blue")
+    interior2_wall = next(a for a in assets2 if a.id == "wall-blue")
+    door1_exit = next(a for a in assets1 if a.id == "door-shadow")
+    door2_exit = next(a for a in assets2 if a.id == "door-shadow")
+
+    # Each deployment isolates its internal pseudo-layer using the instance increment
+    assert door1_entrance.state.outlayer == "brick-house-compose-layer-1"
+    assert door2_entrance.state.outlayer == "brick-house-compose-layer-2"
+
+    assert interior1_wall.state.layer == "brick-house-compose-layer-1"
+    assert interior2_wall.state.layer == "brick-house-compose-layer-2"
+
+    assert door1_exit.state.layer == "brick-house-compose-layer-1"
+    assert door2_exit.state.layer == "brick-house-compose-layer-2"
+
+    # Both interior exit doors route back to root layer '0'
+    assert door1_exit.state.outlayer == "0"
+    assert door2_exit.state.outlayer == "0"
