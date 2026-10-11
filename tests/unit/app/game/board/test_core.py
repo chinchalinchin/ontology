@@ -25,7 +25,7 @@ def test_board_initial_caching(mock_board):
     
     # Layer Indexing
     assets_layer_0 = mock_board.assets('0')
-    assert len(assets_layer_0) == 15
+    assert len(assets_layer_0) == 16
     
     sprites = mock_board.categories(AssetCategories.SHEETS.value, '0')
     tiles = mock_board.categories(AssetCategories.TILES.value, '0')

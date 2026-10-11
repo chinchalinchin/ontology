@@ -219,7 +219,11 @@ class Board:
         return next((a for a in search_list if a.name == name), None)
 
     def assets(self, layer: Optional[str] = None, elevation: Optional[int] = None) -> List[Asset]:
-        target_assets = self.renderables(layer) if layer else self._assets
+        if layer is not None:
+            target_assets = self._cache.get_layer_assets(layer)
+        else:
+            target_assets = self._assets
+
         if elevation is not None:
             return [a for a in target_assets if a.elevation == elevation]
         return target_assets
