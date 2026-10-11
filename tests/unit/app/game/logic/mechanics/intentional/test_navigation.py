@@ -162,20 +162,57 @@ def test_navigation_obstacles_offset_hitbox(mock_board, mock_offset_hitbox_asset
 @pytest.mark.pathfinding
 def test_navigation_obstacles_exclusion_and_perimeters(mock_board, mock_offset_hitbox_asset):
     mock_board.add([mock_offset_hitbox_asset])
-    mock_board.perimeters["brick-house-compose-layer"] = [
-        Boundary(Position(0, 0), Dimensions(10, 20))
-    ]
+    mock_board.perimeters["brick-house-compose-layer"] = {
+        0: [Boundary(Position(0, 0), Dimensions(10, 20))]
+    }
 
     obs = NavigationMechanics.obstacles(
         layer="brick-house-compose-layer",
         board=mock_board,
-        exclude=[mock_offset_hitbox_asset.name]
+        exclude=[mock_offset_hitbox_asset.name],
+        elevation=0
     )
 
     assert (156.0, 167.0, 116.0, 54.0) not in obs
     assert (0.0, 0.0, 10.0, 20.0) in obs
 
 
+@pytest.mark.intentions
+@pytest.mark.pathfinding
+def test_navigation_obstacles_elevation_partitioning(mock_board, mock_offset_hitbox_asset):
+    """
+    Verifies NavigationMechanics.obstacles extracts obstacles and perimeters strictly
+    matching the requested elevation tier.
+    """
+    mock_offset_hitbox_asset.elevation = 1
+    mock_board.add([mock_offset_hitbox_asset])
+    mock_board.perimeters["brick-house-compose-layer"] = {
+        0: [Boundary(Position(0, 0), Dimensions(10, 20))],
+        1: [Boundary(Position(50, 50), Dimensions(30, 40))]
+    }
+
+    # Tier 0 obstacles query
+    obs_tier0 = NavigationMechanics.obstacles(
+        layer="brick-house-compose-layer",
+        board=mock_board,
+        exclude=[],
+        elevation=0
+    )
+    assert (156.0, 167.0, 116.0, 54.0) not in obs_tier0
+    assert (0.0, 0.0, 10.0, 20.0) in obs_tier0
+    assert (50.0, 50.0, 30.0, 40.0) not in obs_tier0
+
+    # Tier 1 obstacles query
+    obs_tier1 = NavigationMechanics.obstacles(
+        layer="brick-house-compose-layer",
+        board=mock_board,
+        exclude=[],
+        elevation=1
+    )
+    assert (156.0, 167.0, 116.0, 54.0) in obs_tier1
+    assert (0.0, 0.0, 10.0, 20.0) not in obs_tier1
+    assert (50.0, 50.0, 30.0, 40.0) in obs_tier1
+    
 # ---------------------------------------------------------------------------
 # STATE & TARGET ANCHOR TESTS
 # ---------------------------------------------------------------------------
