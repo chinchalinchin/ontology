@@ -43,7 +43,7 @@ task:
   # template: iterate/documentation.md.j2
   # template: iterate/grooming.md.j2
   # template: iterate/implementation.md.j2
-  # template: iterate/coverage.md.j2
+  template: iterate/coverage.md.j2
   # template: iterate/review.md.j2
   # template: iterate/conclusion.md.j2
   # ------------------------------------- DESIGN TASKS
@@ -71,7 +71,7 @@ tools:
     manager:
       board: false
       specs: false
-      docs: true
+      docs: false
     source:
       workflow: false
       script: false
@@ -79,10 +79,10 @@ tools:
       directory: false
       commands: false
     tests:  
-      pipeline: false
-      fixtures: false
+      pipeline: true
+      fixtures: true
       session: false
-      workflow: false
+      workflow: true
 # ----------------------------------------------------
   parameters:
     designer:
@@ -122,33 +122,33 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: collisions
+        marker: cli
       fixtures:
         # ----------------------------
-        - configuration/compositions
+        # - configuration/compositions
         # - configuration/groups
-        - configuration/recipes
+        # - configuration/recipes
         # - configuration/transitions
         # - configuration/schemas
         # ----------------------------
-        - properties/crafts
+        # - properties/crafts
         # - properties/cursors
         # - properties/effects
         # - properties/fonts
         # - properties/geography
-        - properties/objects
+        # - properties/objects
         # - properties/resources
         # - properites/sheets
         # - properties/tiles
         # - properties/widgets
         - properties/schemas
         # ----------------------------
-        - state/crafts
+        # - state/crafts
         # - state/effects
-        - state/objects
+        # - state/objects
         # - state/resources
-        - state/sheets
-        - state/world
+        # - state/sheets
+        # - state/world
         - state/schemas
         # ----------------------------
         - assets
@@ -156,7 +156,7 @@ tools:
         # - menus
         - services
         # - structures
-      workflow: collisions
+      workflow: cli
       session:
         description: null
         conditions:

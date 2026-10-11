@@ -71,13 +71,18 @@ Some Asset Categories have a Mass property. Only Assets with Mass can participat
 
 See [Mechanics](./05-mechanics.md#spatial) for more information.
 
-**Depth & Height**
+### Elevation, Perspective & Priority
 
-All Assets have a `depth` state attribute. This attribute controls the Z-ordering of the Asset being rendered. Most of the time, it can be ignored, since it defaults to `0`. `depth` is important in the context of [Compositions](./03-compositions.md), where multiple Assets need to be superimposed and rendered on top of one another.
+World rendering evaluates spatial geometry using discrete topological elevation tiers and continuous ground perspective. The engine deprecates legacy manual height overrides in favor of a deterministic 3-key lexicographical Painter's Algorithm in `Screen._sort`:
 
-All Assets have an optional `height` state attribute. This attribute also modulates the Z-ordering, but the relationship is more complex than `depth`, relating to the application of the Painter's Algorithm. `height` is only a factor when dealing with [Compositions](./03-compositions.md). 
+$$\text{sort\_key}(A) = \Big(A.\text{elevation},\; \text{ground\_y}(A),\; A.\text{properties.priority}\Big)$$
 
-See [Rendering documentation](./11-architecture.md#rendering) for a complete overview of `depth` and `height`.
+1. **Primary Key (`A.elevation` $\in \mathbb{Z}$)**: Discrete spatial $Z$-plane elevation tier. Substrates declare negative integer tiers via `settings.SUBSTRATES` (`back: -4`, `fluids: -3`, `shorelines: -2`, `bridges: -1`). Standard entities default to `elevation = 0`, and elevated structures occupy $E \ge 1$. Entities on higher elevation tiers render strictly on top of lower tiers, preventing cross-tier Z-fighting.
+2. **Secondary Key (`ground_y` $\in \mathbb{R}$)**: Continuous elevation-dependent geometric ground perspective: $\text{ground\_y} = \text{int}(A.\text{state.position.y} + A.\text{dimensions.l} + A.\text{state.anchor})$. `state.anchor` is a compiled integer offset that aligns wall-mounted fixtures (doors, torches, windows) with their parent facade's ground baseline.
+3. **Tertiary Key (`priority` $\in \mathbb{Z}$)**: Elevation-matching coplanar tie-breaker declared on immutable `AssetProperties`:
+   - Substrates (rugs, floorboards): `priority = -1`
+   - Upright entities (walls, characters, obstacles): `priority = 0`
+   - Wall fixtures and decals (doors, wall torches): `priority = 1`
 
 ### Asset Hierarchy
 
@@ -110,14 +115,17 @@ Asset *Categories* form the top layer of the hierarchy. Each Asset Category is d
 
 Each Category has Instances. Asset *Instances* form the bottom layer of the hierarchy. Each Asset Instance is defined by its dynamic state; an Asset's Instance determines what type of state it will parse from the state files and inject into its deployment. 
 
-Each AssetState has, at bare minimum,
+Each AssetState has, at bare minimum:
 
-- Position
-- Layer
-- Depth 
-- Height
+- `position: Position`
+- `layer: str`
+- `elevation: Optional[int] = None`
+- `anchor: Union[int, str] = 0`
+- `mutators: Mutators`
 
-These attributes are part of the base class from which all other states inherit. The following table details the *unique* state attributes of each Asset Instance (with the four attribute identified above labeled with the catchall "Base"),
+These attributes belong to the base class from which all other state dataclasses inherit. Negative elevations resolve substrate draw order, while non-negative values ($E \ge 0$) partition physical collisions and perimeter boundary constraints.
+
+The following table details the *unique* state attributes of each Asset Instance (with the attributes identified above labeled with the catchall "Base"),
 
 | Asset Category | Asset Instance | State |
 | - | - | - | 

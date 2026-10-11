@@ -16,6 +16,7 @@ import cli
 # ARGUMENT PARSING TESTS
 # ---------------------------------------------------------
 
+@pytest.mark.cli
 def test_arguments_start_defaults():
     test_args = ["cli.py", "start", "level_01"]
     
@@ -33,7 +34,30 @@ def test_arguments_start_defaults():
         assert args.dump_sdl is False
         assert args.dump_registry is False
         assert args.software is False
+        assert args.instances is None
+        assert args.categories is None
+        assert args.ids is None
+        assert args.names is None
 
+
+@pytest.mark.cli
+def test_arguments_filter_flags():
+    test_args = [
+        "cli.py", "--instances", "sprites,player", "--categories", "sheets,objects",
+        "--ids", "jasilynn", "--names", "evil-.*",
+        "start", "level_01"
+    ]
+    
+    with patch.object(sys, "argv", test_args):
+        args = cli.arguments()
+        
+        assert args.instances == "sprites,player"
+        assert args.categories == "sheets,objects"
+        assert args.ids == "jasilynn"
+        assert args.names == "evil-.*"
+
+
+@pytest.mark.cli
 def test_arguments_prerender_flags():
     test_args = [
         "cli.py", "--log-level", "DEBUG", "--software", 
@@ -49,6 +73,8 @@ def test_arguments_prerender_flags():
         assert args.out == "./out"
         assert args.layer == "background"
 
+
+@pytest.mark.cli
 def test_arguments_map():
     test_args = ["cli.py", "map", "level_01", "--out", "./out", "--layer", "background"]
     
@@ -59,6 +85,8 @@ def test_arguments_map():
         assert args.out == "./out"
         assert args.layer == "background"
 
+
+@pytest.mark.cli
 def test_arguments_missing_required():
     test_args = ["cli.py", "render", "level_01"]  # Missing --out and --layer
     
@@ -68,20 +96,87 @@ def test_arguments_missing_required():
         assert exc_info.value.code == 2
 
 # ---------------------------------------------------------
+# ASSET FILTERING TESTS
+# ---------------------------------------------------------
+
+@pytest.mark.cli
+def test_filter_assets_excludes_widgets(mock_assets, mock_widget):
+    mixed_assets = mock_assets + [mock_widget]
+    result = cli.filter_assets(mixed_assets)
+    
+    assert mock_widget not in result
+    assert len(result) == len(mock_assets)
+
+
+@pytest.mark.cli
+def test_filter_assets_by_instance(mock_assets):
+    # Single instance pattern
+    sprites = cli.filter_assets(mock_assets, {"instances": "sprites"})
+    assert len(sprites) > 0
+    assert all(a.instance == "sprites" for a in sprites)
+    
+    # Comma-separated instances
+    sprites_and_crates = cli.filter_assets(mock_assets, {"instances": "sprites,crates"})
+    assert all(a.instance in ("sprites", "crates") for a in sprites_and_crates)
+    assert any(a.instance == "sprites" for a in sprites_and_crates)
+    assert any(a.instance == "crates" for a in sprites_and_crates)
+    
+    # Regex matching
+    cr_instances = cli.filter_assets(mock_assets, {"instances": "^cr.*"})
+    assert all(a.instance in ("crates", "crops") for a in cr_instances)
+
+
+@pytest.mark.cli
+def test_filter_assets_by_category(mock_assets):
+    sheets = cli.filter_assets(mock_assets, {"categories": "sheets"})
+    assert len(sheets) > 0
+    assert all(a.category == "sheets" for a in sheets)
+
+
+@pytest.mark.cli
+def test_filter_assets_by_id_and_name(mock_assets):
+    # Match ID
+    jasilynn = cli.filter_assets(mock_assets, {"ids": "jasilynn"})
+    assert len(jasilynn) == 1
+    assert jasilynn[0].id == "jasilynn"
+    
+    # Match Name regex
+    npc = cli.filter_assets(mock_assets, {"names": "evil-empress-.*"})
+    assert len(npc) == 1
+    assert npc[0].name == "evil-empress-jasilynn"
+
+
+@pytest.mark.cli
+def test_filter_assets_conjunction(mock_assets):
+    # Conjunction of category and instance
+    matched = cli.filter_assets(mock_assets, {"categories": "sheets", "instances": "players"})
+    assert len(matched) == 1
+    assert matched[0].instance == "players"
+    assert matched[0].category == "sheets"
+    
+    # Non-intersecting criteria yields empty result
+    no_match = cli.filter_assets(mock_assets, {"categories": "objects", "instances": "players"})
+    assert len(no_match) == 0
+
+
+@pytest.mark.cli
+def test_filter_assets_no_match(mock_assets):
+    result = cli.filter_assets(mock_assets, {"ids": "non_existent_key_12345"})
+    assert result == []
+
+# ---------------------------------------------------------
 # DUMP FUNCTION TESTS
 # ---------------------------------------------------------
 
+@pytest.mark.cli
 @patch("cli.datetime")
 @patch("cli.settings")
-def test_dump_state_success(mock_settings, mock_datetime):
+def test_dump_state_success(mock_settings, mock_datetime, mock_board):
     mock_datetime.datetime.now.return_value.strftime.return_value = "20260101_120000"
     mock_settings.TEMPLATE_DIR = Path("/mock/dir")
     mock_settings.DUMP_TEMPLATES = {"state": "state_template.md"}
+    mock_settings.DUMP_DIR = Path("/mock/dump")
     
-    mock_board = MagicMock()
-    mock_board.assets.return_value = ["asset1", "asset2"]
-    mock_board.perimeters.return_value = {"layer_0": [{"mock": "bounds"}]}
-
     mock_template_str = "Template: {{ board_key }} {{ timestamp }}"
     
     with patch("pathlib.Path.exists", return_value=True), \
@@ -93,20 +188,56 @@ def test_dump_state_success(mock_settings, mock_datetime):
         mock_render.assert_called_once_with(
             board_key="level_01", 
             timestamp="20260101_120000",
-            assets=["asset1", "asset2"],
-            perimeters={"layer_0": [{"mock": "bounds"}]}
+            assets=mock_board.assets(),
+            perimeters=mock_board.perimeters,
+            calendar=mock_board.calendar,
+            plot=mock_board.plot
         )
         assert mocked_file.call_count == 2
         mocked_file().write.assert_called_once_with("Rendered Output")
 
+
+@pytest.mark.cli
 @patch("cli.datetime")
 @patch("cli.settings")
-def test_dump_menus_success(mock_settings, mock_datetime):
+def test_dump_state_with_filters(mock_settings, mock_datetime, mock_board):
+    mock_datetime.datetime.now.return_value.strftime.return_value = "20260101_120000"
+    mock_settings.TEMPLATE_DIR = Path("/mock/dir")
+    mock_settings.DUMP_TEMPLATES = {"state": "state_template.md"}
+    mock_settings.DUMP_DIR = Path("/mock/dump")
+    
+    mock_template_str = "Template: {{ board_key }} {{ timestamp }}"
+    filters = {"categories": "sheets", "instances": "players"}
+    
+    with patch("pathlib.Path.exists", return_value=True), \
+         patch("builtins.open", mock_open(read_data=mock_template_str)), \
+         patch("cli.jinja2.Template.render", return_value="Rendered Output") as mock_render:
+         
+        cli.dump("level_01", mock_board, "state", filters=filters)
+        
+        expected_assets = [
+            a for a in mock_board.assets() 
+            if a.category == "sheets" and a.instance == "players"
+        ]
+        mock_render.assert_called_once_with(
+            board_key="level_01", 
+            timestamp="20260101_120000",
+            assets=expected_assets,
+            perimeters=mock_board.perimeters,
+            calendar=mock_board.calendar,
+            plot=mock_board.plot
+        )
+
+
+@pytest.mark.cli
+@patch("cli.datetime")
+@patch("cli.settings")
+def test_dump_menus_success(mock_settings, mock_datetime, mock_board):
     mock_datetime.datetime.now.return_value.strftime.return_value = "20260101_120000"
     mock_settings.TEMPLATE_DIR = Path("/mock/dir")
     mock_settings.DUMP_TEMPLATES = {"menus": "menus_template.md"}
+    mock_settings.DUMP_DIR = Path("/mock/dump")
     
-    mock_board = MagicMock()
     mock_board.menus = ["menu1"]
     mock_board.overlays = ["overlay1"]
 
@@ -127,15 +258,17 @@ def test_dump_menus_success(mock_settings, mock_datetime):
         assert mocked_file.call_count == 2
         mocked_file().write.assert_called_once_with("Rendered Output")
 
+
+@pytest.mark.cli
 @patch("cli.datetime")
 @patch("cli.settings")
 @patch("cli.get_system_info")
-def test_dump_sdl_success(mock_sys_info, mock_settings, mock_datetime):
+def test_dump_sdl_success(mock_sys_info, mock_settings, mock_datetime, mock_board):
     mock_datetime.datetime.now.return_value.strftime.return_value = "20260101_120000"
     mock_settings.TEMPLATE_DIR = Path("/mock/dir")
+    mock_settings.DUMP_TEMPLATES = {"sdl": "sdl_template.md"}
+    mock_settings.DUMP_DIR = Path("/mock/dump")
     mock_sys_info.return_value = {"os": "Linux", "renderer": "opengl"}
-    
-    mock_board = MagicMock()
     
     with patch("pathlib.Path.exists", return_value=True), \
          patch("builtins.open", mock_open(read_data="")) as mocked_file, \
@@ -149,11 +282,15 @@ def test_dump_sdl_success(mock_sys_info, mock_settings, mock_datetime):
             sys_info={"os": "Linux", "renderer": "opengl"}
         )
 
+
+@pytest.mark.cli
 @patch("cli.datetime")
 @patch("cli.settings")
 def test_dump_registry_success(mock_settings, mock_datetime):
     mock_datetime.datetime.now.return_value.strftime.return_value = "20260101_120000"
     mock_settings.TEMPLATE_DIR = Path("/mock/dir")
+    mock_settings.DUMP_TEMPLATES = {"registry": "registry_template.md"}
+    mock_settings.DUMP_DIR = Path("/mock/dump")
     
     mock_screen = MagicMock()
     mock_screen.registry._frames = {"frame_1": ("item_1", 0, 0, 32, 32)}
@@ -175,19 +312,22 @@ def test_dump_registry_success(mock_settings, mock_datetime):
             frames={"frame_1": {"item_id": "item_1", "crop_x": 0, "crop_y": 0, "crop_w": 32, "crop_l": 32}}
         )
 
+
+@pytest.mark.cli
 @patch("cli.settings")
-def test_dump_missing_template(mock_settings, caplog):
+def test_dump_missing_template(mock_settings, mock_board, caplog):
     mock_settings.TEMPLATE_DIR = Path("/mock/dir")
     mock_settings.DUMP_TEMPLATES = {"state": "state_template.md"}
     
     with patch("pathlib.Path.exists", return_value=False):
-        cli.dump("level_01", MagicMock(), "state")
+        cli.dump("level_01", mock_board, "state")
         assert "Dump template not found" in caplog.text
 
 # ---------------------------------------------------------
 # HYDRATION TESTS
 # ---------------------------------------------------------
 
+@pytest.mark.cli
 @patch("cli.Screen")
 def test_force_hydration(mock_screen_class):
     mock_engine = MagicMock()
@@ -218,21 +358,19 @@ def test_force_hydration(mock_screen_class):
     assert mock_migrator.step.call_count == 3
     assert mock_registry.prewarm.call_count == 2
     
-    # Assert layer_0 was salvaged and rebaked
     mock_old_screen.rebake.assert_called_once()
     assert mock_engine.screens["layer_0"] == mock_old_screen
     
-    # Assert layer_1 forced a new Screen instantiation
     mock_screen_class.assert_called_once()
     assert mock_engine.screens["layer_1"] == mock_screen_class.return_value
     
-    # Assert state flags
     assert mock_engine.board.loaded is True
 
 # ---------------------------------------------------------
 # HANDLER TESTS
 # ---------------------------------------------------------
 
+@pytest.mark.cli
 @patch("cli.hydrate")
 def test_handle_prerender_success(mock_force_hydration):
     args = MagicMock(board_key="level_01", device="keyboard", layer="bg", out="/tmp/out")
@@ -254,6 +392,8 @@ def test_handle_prerender_success(mock_force_hydration):
         
         assert engine == mock_engine
 
+
+@pytest.mark.cli
 @patch("cli.hydrate")
 def test_handle_render_success(mock_force_hydration):
     args = MagicMock(board_key="level_01", device="keyboard", layer="bg", out="/tmp/out")
@@ -286,6 +426,8 @@ def test_handle_render_success(mock_force_hydration):
         )
         assert engine == mock_engine
 
+
+@pytest.mark.cli
 @patch("cli.hydrate")
 def test_handle_render_full_success(mock_force_hydration):
     args = MagicMock(board_key="level_01", device="keyboard", layer="bg", out="/tmp/out")
@@ -311,6 +453,8 @@ def test_handle_render_full_success(mock_force_hydration):
         )
         assert engine == mock_engine
 
+
+@pytest.mark.cli
 @patch("cli.hydrate")
 def test_handle_render_missing_layer(mock_force_hydration, caplog):
     args = MagicMock(board_key="level_01", device="keyboard", layer="invalid_layer", out="/tmp/out")
@@ -319,13 +463,15 @@ def test_handle_render_missing_layer(mock_force_hydration, caplog):
     mock_orchestrator = MagicMock()
     mock_engine = MagicMock()
     mock_orchestrator.orchestrate.return_value = mock_engine
-    mock_engine.screens = {"bg": MagicMock()} # "invalid_layer" is missing
+    mock_engine.screens = {"bg": MagicMock()}
     
     engine = cli.handle_render(args, mock_orchestrator, screensize)
     
     assert "Layer 'invalid_layer' not found" in caplog.text
     assert engine == mock_engine
 
+
+@pytest.mark.cli
 def test_handle_start_keyboard_interrupt(caplog):
     caplog.set_level(logging.INFO)
     
@@ -336,7 +482,6 @@ def test_handle_start_keyboard_interrupt(caplog):
     mock_engine = MagicMock()
     mock_orchestrator.orchestrate.return_value = mock_engine
     
-    # Simulate user pressing Ctrl+C during the game loop
     mock_engine.start.side_effect = KeyboardInterrupt()
     
     engine = cli.handle_start(args, mock_orchestrator, screensize)
@@ -348,6 +493,7 @@ def test_handle_start_keyboard_interrupt(caplog):
 # MAIN EXECUTION TESTS
 # ---------------------------------------------------------
 
+@pytest.mark.cli
 @patch("cli.Orchestrator")
 @patch("cli.quit_sdl")
 @patch("cli.gc.collect")
@@ -362,16 +508,13 @@ def test_main_software_flag(mock_gc, mock_quit_sdl, mock_orchestrator_class):
         
         cli.main()
         
-        # Verify SDL environment variable was injected
         assert os.environ.get("SDL_RENDER_DRIVER") == "software"
-        
-        # Verify dispatcher routing
         mock_handler.assert_called_once()
-        
-        # Verify cleanup routine
         mock_gc.assert_called_once()
         mock_quit_sdl.assert_called_once()
 
+
+@pytest.mark.cli
 @patch("cli.Orchestrator")
 @patch("cli.quit_sdl")
 def test_main_dump_flags(mock_quit, mock_orchestrator):
@@ -388,21 +531,52 @@ def test_main_dump_flags(mock_quit, mock_orchestrator):
         
         cli.main()
         
-        # Verify all types of dumps were requested post-execution 
         assert mock_dump.call_count == 4
         
-        # Extract engine to assert context routing
         mock_engine = mock_handler.return_value
+        expected_filters = {
+            "instances": None,
+            "categories": None,
+            "ids": None,
+            "names": None
+        }
         
-        mock_dump.assert_any_call("level_01", mock_engine.board, 'state')
-        mock_dump.assert_any_call("level_01", mock_engine.board, 'menus')
-        mock_dump.assert_any_call("level_01", mock_engine.board, 'sdl')
-        mock_dump.assert_any_call("level_01", mock_engine, 'registry')
+        mock_dump.assert_any_call("level_01", mock_engine.board, "state", filters=expected_filters)
+        mock_dump.assert_any_call("level_01", mock_engine.board, "menus")
+        mock_dump.assert_any_call("level_01", mock_engine.board, "sdl")
 
+
+@pytest.mark.cli
+@patch("cli.Orchestrator")
+@patch("cli.quit_sdl")
+def test_main_dump_with_filter_flags(mock_quit, mock_orchestrator):
+    test_args = [
+        "cli.py", "--dump-state", "--instances", "sprites,player", "--categories", "sheets",
+        "prerender", "level_01", "--out", "./out", "--layer", "bg"
+    ]
+    
+    mock_handler = MagicMock()
+    
+    with patch.object(sys, "argv", test_args), \
+         patch.dict("cli.COMMAND_REGISTRY", {"prerender": mock_handler}), \
+         patch("cli.dump") as mock_dump:
+        
+        cli.main()
+        
+        mock_engine = mock_handler.return_value
+        expected_filters = {
+            "instances": "sprites,player",
+            "categories": "sheets",
+            "ids": None,
+            "names": None
+        }
+        mock_dump.assert_called_once_with("level_01", mock_engine.board, "state", filters=expected_filters)
+
+
+@pytest.mark.cli
 @patch("cli.configure_logging")
 @patch("cli.arguments")
 def test_main_unknown_command(mock_arguments, mock_configure_logging, caplog):
-    # Simulate an argument parse that somehow bypasses argparse choices
     mock_args = MagicMock(command="invalid_cmd", log_level="INFO", software=False)
     mock_arguments.return_value = mock_args
     

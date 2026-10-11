@@ -553,6 +553,27 @@ def mock_reactable(
         hitbox = StaticHitbox()
     )
 
+# Append to tests/unit/fixtures/assets.py
+
+@pytest.fixture
+def mock_widget(mock_widget_properties) -> Asset:
+    """
+    Mock UI Widget asset fixture for UI exclusion and category validation tests.
+    """
+    return Asset(
+        taxonomy=Taxonomy(
+            id="button-ok",
+            name="ok-btn",
+            category=AssetCategories.WIDGETS.value,
+            instance="buttons",
+        ),
+        properties=mock_widget_properties.buttons.get("test-btn"),
+        state=None,
+        frame=SingleFrame(),
+        animation=NoAnimation(),
+        hitbox=NoHitbox(),
+    )
+
 @pytest.fixture
 def mock_assets(
     mock_back_tile,

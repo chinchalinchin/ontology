@@ -64,7 +64,9 @@ class Perimeter:
             if mass > 0 or obj.taxonomy.instance in (
                 AssetInstances.CRATES.value,
                 AssetInstances.CHESTS.value,
-                AssetInstances.RAFTS.value
+                AssetInstances.RAFTS.value,
+                AssetInstances.STAIRS.value,
+                AssetInstances.BRIDGES.value
             ):
                 continue
 
