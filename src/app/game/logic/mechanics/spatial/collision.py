@@ -208,8 +208,7 @@ class CollisionMechanics(SpatialMechanic):
             if stairs:
                 movers = [
                     w for w in board.weights(layer)
-                    if getattr(w.properties, 'mass', 0) > 0 
-                    or w.taxonomy.instance == AssetInstances.PLAYERS.value
+                    if getattr(w.properties, 'mass', 0) > 0
                 ]
                 for stair in stairs:
                     # Spatial intersection check between dynamic characters and stair sensors
@@ -239,7 +238,6 @@ class CollisionMechanics(SpatialMechanic):
                     dynamics = [
                         w for w in tier_weights
                         if getattr(w.properties, 'mass', 0) > 0
-                        or w.taxonomy.instance == AssetInstances.PLAYERS.value
                     ]
                     for asset, boundary in self.constrain(dynamics, perimeters):
                         self._boundary(asset, boundary)
