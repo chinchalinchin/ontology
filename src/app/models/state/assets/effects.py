@@ -84,9 +84,7 @@ class CollectableState(EffectState):
 
 @dataclass(slots=True)
 class FluidState(EffectState):
-    # Overrides
-    height: Optional[int] = 0
-    depth: int = -1
+    elevation: int = 0
     # Fluid Fields
     length: int = 0
     pool: Optional[Pool] = None

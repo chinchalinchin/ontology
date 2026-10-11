@@ -57,8 +57,6 @@ def mock_shoreline_state() -> ShorelineState:
         name="shoreline-1",
         layer="0",
         position=Position(x=70, y=0),
-        height=0,
-        depth=0,
         orientation=Directions.LEFT.value,
         season=Seasons.SPRING.value,
         length=32,

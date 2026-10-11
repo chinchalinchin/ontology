@@ -117,16 +117,45 @@ class Screen:
         return back_tiles, fore_tiles
 
 
+    # src/app/game/screen.py
+
     @staticmethod
     def _sort(asset: Asset) -> tuple[int, int]:
         """
         Module-level Painter's Algorithm sort key function.
         Primary Key: Discrete integer Z-plane elevation tier.
-        Secondary Key: Continuous in-tier geometric ground perspective (Y + Length).
+        Secondary Key: Continuous in-tier geometric perspective.
+        - Fluids sort at the substrate bottom (-2).
+        - Shorelines sort above fluids but beneath entities (-1).
+        - Walkable bridges anchor to entry baseline (position.y).
+        - Dynamic entities and upright obstacles sort via ground perspective (y + l).
         """
-        ground_y = int(asset.state.position.y + asset.dimensions.l) \
-                    if asset.dimensions else int(asset.state.position.y)
+        inst = asset.taxonomy.instance
+        cat = asset.taxonomy.category
+
+        if inst == AssetInstances.FLUIDS.value:
+            ground_y = -2
+        elif cat == AssetCategories.GEOGRAPHY.value or inst == AssetInstances.SHORELINES.value:
+            ground_y = -1
+        elif inst == AssetInstances.BRIDGES.value:
+            ground_y = int(asset.state.position.y)
+        else:
+            ground_y = (
+                int(asset.state.position.y + asset.dimensions.l)
+                if asset.dimensions else int(asset.state.position.y)
+            )
         return (asset.state.elevation, ground_y)
+
+    # @staticmethod
+    # def _sort(asset: Asset) -> tuple[int, int]:
+    #     """
+    #     Module-level Painter's Algorithm sort key function.
+    #     Primary Key: Discrete integer Z-plane elevation tier.
+    #     Secondary Key: Continuous in-tier geometric ground perspective (Y + Length).
+    #     """
+    #     ground_y = int(asset.state.position.y + asset.dimensions.l) \
+    #                 if asset.dimensions else int(asset.state.position.y)
+    #     return (asset.state.elevation, ground_y)
 
 
     def _widgets(self, menus: List[Menu]) -> None:

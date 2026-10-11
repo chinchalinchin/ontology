@@ -4,122 +4,111 @@ compositions:
       strut: 
         id: wall-up-stone
         name: castle-dawn-exterior
+        elevation: 0
       components:
         crafts: 
           struts:
+            # Overhang canopy / high roof
             - id: roof-slate
               name: castle-dawn-roof
               owner: bind(root.owner)
-              depth: 1
-              height: bind(root.height)
+              elevation: 1
               position:
                 x: -34
                 y: -255
             - id: window-stone
               name: castle-dawn-window
               owner: bind(root.owner)
-              depth: 1
-              height: bind(root.height)
+              elevation: 1
               position:
                 x: -33
                 y: -194
             - id: buttress-stone
               name: castle-dawn-buttress
               owner: bind(root.owner)
-              depth: 1
-              height: bind(root.height)
+              elevation: 1
               position:
                 x: 0
                 y: -33
             - id: turret-stone
               name: castle-dawn-turret-00
               owner: bind(root.owner)
-              depth: 2
-              height: bind(root.height)
+              elevation: 1
               position:
                 x: -66
                 y: -33
             - id: turret-stone
               name: castle-dawn-turret-01
               owner: bind(root.owner)
-              depth: 2
-              height: bind(root.height)
+              elevation: 1
               position:
                 x: 188
                 y: -33
-            - id: railing-up-stone
-              name: castle-dawn-railing-00
-              owner: bind(root.owner)
-              depth: 1
-              height: bind(root.height)
-              position:
-                x: -10
-                y: -48
-            - id: railing-right-stone
-              name: castle-dawn-railing-01
-              owner: bind(root.owner)
-              depth: 1
-              height: bind(root.height)
-              position:
-                x: 235
-                y: -82
-            - id: railing-left-stone
-              name: castle-dawn-railing-02
-              owner: bind(root.owner)
-              depth: 1
-              height: bind(root.height)
-              position:
-                x: -65
-                y: -85
             - id: tower-stone
               name: castle-dawn-tower-00
               owner: bind(root.owner)
-              depth: 1
-              height: bind(root.height)
+              elevation: 1
               position:
                 x: -65
                 y: -219
             - id: tower-stone
               name: castle-dawn-tower-01
               owner: bind(root.owner)
-              depth: 1
-              height: bind(root.height)
+              elevation: 1
               position:
                 x: 220
                 y: -219
+            # Exterior upper walkway deck (elevation: 1)
             - id: floor-horizontal-stone
               name: castle-dawn-flatroof-00
               owner: bind(root.owner)
-              depth: 0
-              height: -100
+              elevation: 1
               position:
                 x: -49
-                y: -82          
+                y: -82
+            - id: railing-up-stone
+              name: castle-dawn-railing-00
+              owner: bind(root.owner)
+              elevation: 1
+              position:
+                x: -10
+                y: -48
+            - id: railing-right-stone
+              name: castle-dawn-railing-01
+              owner: bind(root.owner)
+              elevation: 1
+              position:
+                x: 235
+                y: -82
+            - id: railing-left-stone
+              name: castle-dawn-railing-02
+              owner: bind(root.owner)
+              elevation: 1
+              position:
+                x: -65
+                y: -85
         effects:
           passive:
             - id: torch
               name: exterior-torch-01
+              elevation: 1
               position:
                 x: 143
                 y: 3
-              depth: 2
-              height: bind(root.height)
             - id: torch
               name: exterior-torch-02
+              elevation: 1
               position:
                 x: 11
                 y: 3
               animation:
                 frame: 4
-              depth: 2
-              height: bind(root.height)
         objects:
           gates:
             - id: castle-gate
               name: castle-entrance
               link: castle-gate-link
-              depth: 2
-              height: bind(root.height)
+              elevation: 0
               position:
                 x: 62
                 y: 16
@@ -127,16 +116,14 @@ compositions:
             - id: stone-switch
               name: castle-entrance-switch
               link: castle-gate-link
-              depth: 1
-              height: bind(root.height)
+              elevation: 0
               position:
                 x: -47
                 y: 111
           doors: 
             - id: door-castle-open
               name: castle-entrance-open
-              height: bind(root.height)
-              depth: 2
+              elevation: 0
               position:
                 x: 62
                 y: 16
@@ -144,10 +131,10 @@ compositions:
               out:
                 x: 160
                 y: 320
+            # Walkway doors on upper deck (elevation: 1)
             - id: door-mansion
               name: castle-dawn-roof-door-left
-              height: bind(root.height)
-              depth: 2
+              elevation: 1
               position:
                 x: 6
                 y: -130
@@ -157,8 +144,7 @@ compositions:
                 y: 140
             - id: door-mansion
               name: castle-dawn-roof-door-right
-              height: bind(root.height)
-              depth: 2
+              elevation: 1
               position:
                 x: 150
                 y: -130
@@ -172,173 +158,155 @@ compositions:
           name: castle-atrium-floor
           owner: bind(root.owner)
           layer: castle-atrium-layer
-          depth: 0 
-          height: -100
+          elevation: -1
           position:
             x: 0
             y: 0
         components:
           crafts: 
             struts:
-              # --------------- FLOORS (height: -100)
+              # --------------- SUBSTRATE FLOORS (elevation: -1)
               - id: floor-area-marble-checkered
                 name: castle-dawn-floor-02
                 owner: bind(root.owner)
-                depth: 0
-                height: -100
+                elevation: -1
                 position:
                   x: 23
                   y: 213
               - id: floor-area-marble-checkered
                 name: castle-dawn-floor-03
                 owner: bind(root.owner)
-                depth: 0
-                height: -100
+                elevation: -1
                 position:
                   x: 23
                   y: 81   
               - id: floor-area-carpet-palace
                 name: castle-dawn-floor-01
                 owner: bind(root.owner)
-                depth: 1
-                height: -100
+                elevation: -1
                 position:
                   x: 75
                   y: 219  
               - id: floor-vertical-marble-diamonds
                 name: castle-dawn-floor-04
                 owner: bind(root.owner)
-                depth: 1
-                height: -100
+                elevation: -1
                 position:
                   x: 252
                   y: 187  
               - id: floor-vertical-marble-diamonds
                 name: castle-dawn-floor-05
                 owner: bind(root.owner)
-                depth: 1
-                height: -100
+                elevation: -1
                 position:
                   x: 0
                   y: 187  
-              # --------------- BACK WALL FACADES
+              # --------------- GROUND WALL FACADES (elevation: 0)
               - id: wall-up-palace
                 name: castle-dawn-wall-00
                 owner: bind(root.owner)
-                depth: 1
-                height: 94
+                elevation: 0
                 position:
                   x: 96
                   y: -2
-              # --------------- BALCONY WALL FACADES (height: 135)
               - id: wall-up-stone-gold-plated
                 name: castle-dawn-wall-01
                 owner: bind(root.owner)
-                depth: 1
-                height: 135
+                elevation: 0
                 position:
                   x: 0
                   y: 41
               - id: wall-up-stone-gold-plated
                 name: castle-dawn-wall-02
                 owner: bind(root.owner)
-                depth: 1
-                height: 135
+                elevation: 0
                 position:
                   x: 222
                   y: 41
-              # --------------- PLATFORMS (dynamic height: 247, depth: 1)
-              # Clamped to height: 135 so characters walking across the deck sort on top
+              # --------------- ELEVATED BALCONY DECKS (elevation: 1)
               - id: platform-marble
                 name: castle-dawn-platform-01
                 owner: bind(root.owner)
-                depth: 1
-                height: 135
+                elevation: 1
                 position:
                   x: 0
                   y: 136
               - id: platform-marble
                 name: castle-dawn-platform-02
                 owner: bind(root.owner)
-                depth: 1
-                height: 135
+                elevation: 1
                 position:
                   x: 222
                   y: 136
               - id: platform-marble
                 name: castle-dawn-platform-03
                 owner: bind(root.owner)
-                depth: 1
+                elevation: 1
                 position:
                   x: 222
                   y: 0
               - id: platform-marble
-                name: castle-dawn-platform-03
+                name: castle-dawn-platform-04
                 owner: bind(root.owner)
-                depth: 1
+                elevation: 1
                 position:
                   x: 0
                   y: 0
-              # --------------- PILLARS
-              # height: 247, depth: 2 ensures pillar bases stamp over the platform edge
+              # --------------- PILLARS (elevation: 1)
               - id: pillar-marble
                 name: castle-dawn-pillar-01
                 owner: bind(root.owner)
-                depth: 2
-                height: 247
+                elevation: 1
                 position:
                   x: 76
                   y: 119
               - id: pillar-marble
                 name: castle-dawn-pillar-02
                 owner: bind(root.owner)
-                depth: 2
-                height: 247
+                elevation: 1
                 position:
                   x: 223
                   y: 119
-              # --------------- STAIRS
-              # Clamped to top tread (height: 216) so ascending characters (y + l >= 240) render on top
+            # --------------- FIRST-CLASS STAIR CRAFTS
+            stairs:
               - id: stairs-up-stone
                 name: castle-dawn-stairs-01
                 owner: bind(root.owner)
-                depth: 1
-                height: 216
+                direction: up
+                elevation: 0
+                delta: 1
                 position:
                   x: 0
                   y: 216
               - id: stairs-up-stone
                 name: castle-dawn-stairs-02
                 owner: bind(root.owner)
-                depth: 1
-                height: 216
+                direction: up
+                elevation: 0
+                delta: 1
                 position:
                   x: 286
                   y: 216
           effects:
             passive:
-              # --------------- BACK WALL FIXTURES (height: 94, depth: 2)
               - id: torch
                 name: interior-torch-02
-                depth: 2
-                height: 94
+                elevation: 0
                 position:
                   x: 96
                   y: 2
               - id: torch
                 name: interior-torch-01
-                depth: 2
-                height: 94
+                elevation: 0
                 position:
                   x: 192
                   y: 2
           objects:
             doors:
-              # --------------- BACK WALL PORTAL (height: 94, depth: 2)
+              # Lower exits/entrances on ground tier (elevation: 0)
               - id: door-double
                 name: throne-room-entrance
-                depth: 2
-                height: 94
+                elevation: 0
                 position:
                   x: 128
                   y: 29
@@ -346,11 +314,20 @@ compositions:
                 out:
                   x: 0
                   y: 0
-              # --------------- BALCONY WALL PORTALS (height: 135, depth: 2)
+              - id: door-shadow-double
+                name: atrium-exit
+                elevation: 0
+                position:
+                  x: 127
+                  y: 350
+                outlayer: bind(root.layer)
+                out:
+                  x: 94
+                  y: 95
+              # Balcony exits on upper deck (elevation: 1)
               - id: door-mansion
                 name: castle-roof-exit-00
-                depth: 2
-                height: 135
+                elevation: 1
                 position:
                   x: 0
                   y: 88
@@ -360,8 +337,7 @@ compositions:
                   y: -75
               - id: door-mansion
                 name: castle-roof-exit-01
-                depth: 2
-                height: 135
+                elevation: 1
                 position:
                   x: 287
                   y: 88
@@ -369,60 +345,3 @@ compositions:
                 out:
                   x: 166
                   y: -75
-              # --------------- FORE PORTAL (dynamic height: 414, depth: 2)
-              - id: door-shadow-double
-                name: atrium-exit
-                depth: 2
-                position:
-                  x: 127
-                  y: 350
-                outlayer: bind(root.layer)
-                out:
-                  x: 94
-                  y: 95
-              # --------------- BACK WALL PORTAL (height: 94, depth: 2)
-              - id: door-double
-                name: throne-room-entrance
-                depth: 2
-                height: 94
-                position:
-                  x: 128
-                  y: 29
-                outlayer: throne-room-layer
-                out:
-                  x: 0
-                  y: 0
-              # --------------- BALCONY WALL PORTALS (height: 135, depth: 2)
-              - id: door-mansion
-                name: castle-roof-exit-00
-                depth: 2
-                height: 135
-                position:
-                  x: 0
-                  y: 88
-                outlayer: bind(root.layer)
-                out:
-                  x: 22
-                  y: -75
-              - id: door-mansion
-                name: castle-roof-exit-01
-                depth: 2
-                height: 135
-                position:
-                  x: 287
-                  y: 88
-                outlayer: bind(root.layer)
-                out:
-                  x: 166
-                  y: -75
-              # --------------- FORE PORTAL (dynamic height: 414, depth: 2)
-              - id: door-shadow-double
-                name: atrium-exit
-                depth: 2
-                position:
-                  x: 127
-                  y: 350
-                outlayer: bind(root.layer)
-                out:
-                  x: 94
-                  y: 95

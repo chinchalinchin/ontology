@@ -84,8 +84,6 @@ def mock_switch_state_alt() -> SwitchState:
     return SwitchState(
         id="pressure-plate",
         layer="0",
-        depth=0,
-        height=None,
         position=Position(x=30, y=30),
         switch=False,
         link="castle-gate"
@@ -96,8 +94,6 @@ def mock_container_state() -> ContainerState:
     return ContainerState(
         id="wood-chest",
         layer="brick-house-compose-layer",
-        depth=0,
-        height=None,
         position=Position(x=100, y=100),
         switch=False,
         content=["gold-coin"]

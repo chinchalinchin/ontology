@@ -29,9 +29,7 @@ from app.models.state.core import (
 
 @dataclass(slots=True)
 class ShorelineState(AssetState):
-    # Overrides to enforce Z-ordering: Fluid (-1) < Shoreline (0) < Entities (>0)
-    height: Optional[Union[int, str]] = 0
-    depth: int = 0
+    elevation: int = 0
     # Shoreline fields
     position: Optional[Position] = None  # type: ignore
     orientation: str = Directions.DOWN.value

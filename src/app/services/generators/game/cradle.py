@@ -269,8 +269,6 @@ class Cradle:
             name=name,
             layer=layer,
             position=position,
-            height=0,
-            depth=0,
             orientation=orientation,
             length=length,
             thickness=thickness,
@@ -328,9 +326,7 @@ class Cradle:
             position=position,
             orientation=orientation,
             multiple=multiple,
-            owner=owner,
-            depth=1,
-            height=0
+            owner=owner
         )
         return self.decomposer.bridge(bridge_state)
 

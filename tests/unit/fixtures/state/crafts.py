@@ -66,7 +66,5 @@ def mock_bridge_state() -> BridgeState:
         position=Position(x=200, y=250),
         orientation=Orientations.HORIZONTAL.value,
         multiple=Multiple(nx=1, ny=1),
-        owner="player",
-        depth=1,
-        height=0
+        owner="player"
     )

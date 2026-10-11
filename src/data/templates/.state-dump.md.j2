@@ -568,17 +568,24 @@
 
 # Perimeters
 
-{% for layer, bounds in perimeters.items() %}
+{% for layer, tiers in perimeters.items() %}
 
 ## Layer: {{ layer }}
 
+{% if tiers -%}
+{% for elevation, bounds in tiers.items() %}
+### Elevation: {{ elevation }}
+
 {% if bounds -%}
 {% for b in bounds -%}
-
-* Position: ({{ b.position.x }}, {{ b.position.y }}) | Dimensions: w: {{ b.dimensions.w }}, l: {{ b.dimensions.l }}
+- Position: ({{ b.position.x }}, {{ b.position.y }}) | Dimensions: w: {{ b.dimensions.w }}, l: {{ b.dimensions.l }}
 {% endfor -%}
 {% else -%}
-* *No boundaries derived for this layer.*
+- *No boundaries derived for this elevation tier.*
+{% endif %}
+{% endfor -%}
+{% else -%}
+- *No boundaries derived for this layer.*
 {% endif %}
 {% endfor %}
 {% endif %}

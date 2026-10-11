@@ -77,8 +77,6 @@ def mock_reactable_state() -> ReactableState:
     return ReactableState(
         id="reactable-1",
         layer="0",
-        depth=0,
-        height=None,
         position=Position(x=200, y=200),
         animation=AnimationState(),
         intention=Intentions.ATTACK.value,
