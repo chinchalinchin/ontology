@@ -117,10 +117,17 @@ def test_frame_keys_generation():
 
 
 @pytest.mark.rendering
-def test_screen_draw_culling_and_sorting(mock_screen, monkeypatch):
-    """Test that Screen.draw correctly culls out-of-bounds assets and sorts by height/depth."""
-    # TODO: this should be using fixtures.
-    
+def test_screen_draw_culling_and_sorting(
+    mock_screen,
+    mock_crate,
+    mock_crate_alt,
+    mock_chest,
+    monkeypatch
+):
+    """
+    Test that Screen.draw correctly culls out-of-bounds assets and sorts visible
+    assets by the 3-key Painter's Algorithm (elevation, ground_y, priority).
+    """
     mock_screen.screensize = Dimensions(w=800, l=600)
     mock_screen.boardsize = Dimensions(w=1600, l=1200)
 
@@ -131,50 +138,30 @@ def test_screen_draw_culling_and_sorting(mock_screen, monkeypatch):
     )
 
     # Asset 1: Inside camera view (cam is 0,0 to 800,600)
-    asset1 = MagicMock()
-    asset1.category = AssetCategories.OBJECTS
-    asset1.id = "obj1"
-    asset1.state = MagicMock()
-    asset1.state.position = Position(x=100, y=100)
-    asset1.state.height = 100
-    asset1.state.depth = 0
-    asset1.dimensions = Dimensions(w=32, l=32)
-    asset1.frame.keys.return_value = [("obj1-key", 0, 0)]
+    mock_crate.elevation = 0
+    mock_crate.state.position = Position(x=100, y=100)
 
     # Asset 2: Outside camera view (culled)
-    asset2 = MagicMock()
-    asset2.category = AssetCategories.OBJECTS
-    asset2.id = "obj2"
-    asset2.state = MagicMock()
-    asset2.state.position = Position(x=1000, y=1000)
-    asset2.state.height = 1000
-    asset2.state.depth = 0
-    asset2.dimensions = Dimensions(w=32, l=32)
-    asset2.frame.keys.return_value = [("obj2-key", 0, 0)]
+    mock_crate_alt.elevation = 0
+    mock_crate_alt.state.position = Position(x=1000, y=1000)
 
-    # Asset 3: Inside view, but should render ON TOP of Asset 1 (higher height)
-    asset3 = MagicMock()
-    asset3.category = AssetCategories.OBJECTS
-    asset3.id = "obj3"
-    asset3.state = MagicMock()
-    asset3.state.position = Position(x=100, y=120)
-    asset3.state.height = 120
-    asset3.state.depth = 1
-    asset3.dimensions = Dimensions(w=32, l=32)
-    asset3.frame.keys.return_value = [("obj3-key", 0, 0)]
+    # Asset 3: Inside view, but renders on top of Asset 1 (higher ground_y)
+    mock_chest.elevation = 0
+    mock_chest.state.position = Position(x=100, y=120)
 
-    assets = [asset3, asset2, asset1]
+    # Pass in reverse-sorted order
+    assets = [mock_chest, mock_crate_alt, mock_crate]
 
     mock_screen.draw(assets, focus=Position(x=0, y=0), dim=Dimensions(w=32, l=32))
 
-    # Only asset1 and asset3 should be passed to render (asset2 is culled)
+    # Only mock_crate and mock_chest should be passed to render (mock_crate_alt is culled)
     assert len(rendered_assets) == 2
 
-    # asset1 (height 100) drawn BEFORE asset3 (height 120)
-    assert rendered_assets[0][5] == 100  # asset1 dx
-    assert rendered_assets[0][6] == 100  # asset1 dy
-    assert rendered_assets[1][5] == 100  # asset3 dx
-    assert rendered_assets[1][6] == 120  # asset3 dy
+    # mock_crate (y=100, ground_y=132) drawn BEFORE mock_chest (y=120, ground_y=152)
+    assert rendered_assets[0][5] == 100  # mock_crate dx
+    assert rendered_assets[0][6] == 100  # mock_crate dy
+    assert rendered_assets[1][5] == 100  # mock_chest dx
+    assert rendered_assets[1][6] == 120  # mock_chest dy
 
 
 @pytest.mark.rendering
@@ -288,38 +275,164 @@ def test_screen_draw_submerge_channel_splitting(
     assert lower[9:] == (40, 110, 180, 170)
 
 
+# tests/unit/app/game/test_screen.py
+
 @pytest.mark.rendering
-def test_screen_sort_integer_height_coercion(mock_crate, mock_strut):
+def test_screen_draw_culling_and_sorting(
+    mock_screen,
+    mock_crate,
+    mock_crate_alt,
+    mock_chest,
+    monkeypatch
+):
     """
-    Verify _sort coerces string heights to integer, preventing TypeError during
-    Painter's Algorithm Timsort passes (Bug B003).
+    Test that Screen.draw correctly culls out-of-bounds assets and sorts visible
+    assets by the 3-key Painter's Algorithm (elevation, ground_y, priority).
     """
-    mock_crate.state.height = "150"
-    mock_crate.state.depth = 1
+    mock_screen.screensize = Dimensions(w=800, l=600)
+    mock_screen.boardsize = Dimensions(w=1600, l=1200)
 
-    mock_strut.state.height = 100
-    mock_strut.state.depth = 0
+    rendered_assets = []
+    monkeypatch.setattr(
+        "app.game.screen.render.render",
+        lambda bg, fg, assets, px, py, sw, sl, target=None: rendered_assets.extend(assets)
+    )
 
-    assert Screen._sort(mock_crate) == (150, 1)
-    assert Screen._sort(mock_strut) == (100, 0)
+    # Asset 1: Inside camera view (cam is 0,0 to 800,600)
+    mock_crate.elevation = 0
+    mock_crate.state.position = Position(x=100, y=100)
+
+    # Asset 2: Outside camera view (culled)
+    mock_crate_alt.elevation = 0
+    mock_crate_alt.state.position = Position(x=1000, y=1000)
+
+    # Asset 3: Inside view, but renders on top of Asset 1 (higher ground_y)
+    mock_chest.elevation = 0
+    mock_chest.state.position = Position(x=100, y=120)
+
+    # Pass in reverse-sorted order
+    assets = [mock_chest, mock_crate_alt, mock_crate]
+
+    mock_screen.draw(assets, focus=Position(x=0, y=0), dim=Dimensions(w=32, l=32))
+
+    # Only mock_crate and mock_chest should be passed to render (mock_crate_alt is culled)
+    assert len(rendered_assets) == 2
+
+    # mock_crate (y=100, ground_y=132) drawn BEFORE mock_chest (y=120, ground_y=152)
+    assert rendered_assets[0][5] == 100  # mock_crate dx
+    assert rendered_assets[0][6] == 100  # mock_crate dy
+    assert rendered_assets[1][5] == 100  # mock_chest dx
+    assert rendered_assets[1][6] == 120  # mock_chest dy
+
+
+@pytest.mark.rendering
+def test_screen_sort_elevation_precedence(mock_crate, mock_strut):
+    """
+    Verify _sort enforces primary elevation tier ordering: higher elevation assets
+    sort after lower elevation assets regardless of lower y + l values.
+    """
+    # mock_crate: l=32, y=200 -> ground_y = 232, elevation = 0
+    mock_crate.elevation = 0
+    mock_crate.state.position = Position(x=0, y=200)
+
+    # mock_strut: l=133, y=10 -> ground_y = 143, elevation = 1
+    mock_strut.elevation = 1
+    mock_strut.state.position = Position(x=0, y=10)
+
+    assert Screen._sort(mock_crate) == (0, 232, 0)
+    assert Screen._sort(mock_strut) == (1, 143, 0)
+
+    assets = [mock_strut, mock_crate]
+    assets.sort(key=Screen._sort)
+
+    # mock_crate (elevation 0) must render before mock_strut (elevation 1)
+    assert assets[0] is mock_crate
+    assert assets[1] is mock_strut
+
+
+@pytest.mark.rendering
+def test_screen_sort_ground_perspective_and_anchor(mock_crate, mock_strut):
+    """
+    Verify _sort evaluates secondary ground perspective (y + l + anchor) and tertiary
+    properties.priority as a coplanar surface tie-breaker.
+    """
+    # Same elevation tier
+    mock_crate.elevation = 0
+    mock_crate.state.position = Position(x=0, y=50)  # l=32 -> 50 + 32 = 82
+    mock_crate.state.anchor = 10                     # ground_y = 82 + 10 = 92
+    mock_crate.properties.priority = 1
+
+    mock_strut.elevation = 0
+    mock_strut.state.position = Position(x=0, y=0)   # l=133 -> ground_y = 133
+    mock_strut.state.anchor = 0
+    mock_strut.properties.priority = 0
+
+    assert Screen._sort(mock_crate) == (0, 92, 1)
+    assert Screen._sort(mock_strut) == (0, 133, 0)
+
+    assets = [mock_strut, mock_crate]
+    assets.sort(key=Screen._sort)
+
+    assert assets[0] is mock_crate
+    assert assets[1] is mock_strut
+
+
+@pytest.mark.rendering
+def test_screen_sort_coplanar_priority_tie_breaker(mock_crate, mock_strut):
+    """
+    Verify _sort uses properties.priority to resolve tie-breakers between
+    coplanar assets sharing identical elevation and ground contact baselines.
+    """
+    # Identical elevation and ground_y = 100
+    mock_crate.elevation = 0
+    mock_crate.state.position = Position(x=0, y=68)   # 68 + 32 = 100
+    mock_crate.state.anchor = 0
+    mock_crate.properties.priority = 1                # Decal / fixture
+
+    mock_strut.elevation = 0
+    mock_strut.state.position = Position(x=0, y=-33)  # -33 + 133 = 100
+    mock_strut.state.anchor = 0
+    mock_strut.properties.priority = 0                # Wall facade
+
+    assert Screen._sort(mock_crate) == (0, 100, 1)
+    assert Screen._sort(mock_strut) == (0, 100, 0)
 
     assets = [mock_crate, mock_strut]
     assets.sort(key=Screen._sort)
 
+    # Priority 0 (wall) renders before Priority 1 (decal on top)
     assert assets[0] is mock_strut
     assert assets[1] is mock_crate
 
 
 @pytest.mark.rendering
-def test_screen_sort_geometric_height_fallback(mock_crate):
+def test_screen_sort_substrate_hierarchy(
+    mock_back_tile,
+    mock_fluid,
+    mock_shoreline,
+    mock_bridge,
+    mock_crate
+):
     """
-    Verify _sort falls back to Y + Length when state.height is None.
+    Verify _sort lazily resolves negative substrate tiers when elevation is None,
+    enforcing global substrate draw ordering underneath physical entities.
     """
-    mock_crate.state.height = None
-    mock_crate.state.position.y = 50
-    mock_crate.state.depth = 2
+    # Verify default substrate tier resolution via settings.SUBSTRATES
+    assert mock_back_tile.elevation == -4
+    assert mock_fluid.elevation == -3
+    assert mock_shoreline.elevation == -2
+    assert mock_bridge.elevation == -1
+    assert mock_crate.elevation == 0
 
-    assert Screen._sort(mock_crate) == (82, 2)
+    assets = [mock_crate, mock_bridge, mock_shoreline, mock_fluid, mock_back_tile]
+    print([ (asset.id, asset.name, asset.category, asset.instance, getattr(asset, 'dimensions', None)) for asset in assets ])
+    assets.sort(key=Screen._sort)
+
+    assert assets[0] is mock_back_tile  # elevation -4
+    assert assets[1] is mock_fluid      # elevation -3
+    assert assets[2] is mock_shoreline  # elevation -2
+    assert assets[3] is mock_bridge     # elevation -1
+    assert assets[4] is mock_crate      # elevation 0
 
 
 @pytest.mark.rendering

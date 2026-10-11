@@ -53,7 +53,7 @@ def mock_multiplier_state() -> MultiplierState:
 @pytest.fixture
 def mock_shoreline_state() -> ShorelineState:
     return ShorelineState(
-        id="grassy-shore",
+        id="temperate-banks",
         name="shoreline-1",
         layer="0",
         position=Position(x=70, y=0),

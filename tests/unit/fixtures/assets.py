@@ -133,12 +133,12 @@ def mock_shoreline(
     """Shoreline sensor asset fixture."""
     return Asset(
         taxonomy = Taxonomy(
-            id = "grassy-shore",
+            id = "temperate-banks",
             name = "shoreline-1",
             category = AssetCategories.GEOGRAPHY.value,
             instance = AssetInstances.SHORELINES.value
         ), 
-        properties = mock_geography_properties.shorelines.get('grassy-shore'), 
+        properties = mock_geography_properties.shorelines.get('temperate-banks'), 
         state = mock_shoreline_state, 
         frame = CardinalFrame(tile_w=32, tile_l=32),
         animation = NoAnimation(),
