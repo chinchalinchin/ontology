@@ -1,0 +1,120 @@
+# Tool: State Dumps
+
+## Views
+
+### View: CLI
+
+```python
+{{ file(properties.paths.root + '/src/cli.py') }}
+```
+
+### View: Board
+
+```python
+{{ file(properties.paths.root + '/src/app/game/board/core.py') }}
+```
+
+### View: Latest Models
+
+### Base
+
+```python
+{{ file(properties.paths.root + '/src/app/assets/base.py') }}
+```
+
+#### Properties
+
+```python
+{{ file(properties.paths.root + '/src/app/models/properties.py') }}
+```
+
+#### State
+
+```python
+{{ file(properties.paths.root + '/src/app/models/state/core.py') }}
+```
+
+##### Schema
+
+```python
+{{ file(properties.paths.root + 'src/app/models/state/schemas.py') }}
+```
+
+##### Assets
+
+```python
+{{ file(properties.paths.root + '/src/app/models/state/assets/sprites.py') }}
+```
+
+```python
+{{ file(properties.paths.root + '/src/app/models/state/assets/crafts.py') }}
+```
+
+```python
+{{ file(properties.paths.root + '/src/app/models/state/assets/cursors.py') }}
+```
+
+```python
+{{ file(properties.paths.root + '/src/app/models/state/assets/geography.py') }}
+```
+
+```python
+{{ file(properties.paths.root + '/src/app/models/state/assets/objects.py') }}
+```
+
+```python
+{{ file(properties.paths.root + '/src/app/models/state/assets/resources.py') }}
+```
+
+```python
+{{ file(properties.paths.root + '/src/app/models/state/assets/tiles.py') }}
+```
+
+### View: State Dump Template
+
+```jinja2
+{{ file(properties.paths.root + '/src/data/templates/.state-dump.md.j2') }}
+```
+
+# Task: iterate(/templates/.state-dump.md.j2)
+
+The dump template is used to dump game state at the end of a CLI session through the command,
+
+```bash
+python main.py --dump-state start
+```
+
+**Guidelines**
+
+- Update the template to match the latest models.
+- Ensure all whitespace in the Jinja2 template is properly handled.
+- Enumerate all Asset fields. 
+- Ensure Optional fields are handled appriopriately.
+- Ensure there are new lines between the end of sections and the next heading.
+- Ensure all attribute appear as nested markdown lists, "-".
+
+!!! note
+  Widgets are Menu components and are not included in the State Dump.
+
+## Secondary Priority: Template Update
+
+Ensure template matches the latest state models.
+
+## Main Priority: State Queries
+
+Introduce optional queries to filter the state dump output.
+
+### CLI Arguments
+
+- `--instances <inst1>,<inst2>,...`
+- `--categories <cat1>,<cat2>,...`
+- `--ids <id1>,<id2>,...`
+- `--names <name1>,<name2>`
+
+Each listed parameters `<>` can be a regex string that is used to match the corresponding field value in the state dump.
+
+### Proposal: Telemetry Module
+
+Use the [Backlog Template](#template-backlog) to put together a proposal for constructing a `app.telemetry` module that queries the Board interface.
+
+{% include 'blocks/templates/template-backlog.md' %}
