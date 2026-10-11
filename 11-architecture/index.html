@@ -694,10 +694,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#depth-height" class="md-nav__link">
+  <a href="#elevation-perspective-priority" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Depth &amp; Height
+        Elevation, Perspective &amp; Priority
       
     </span>
   </a>
@@ -1322,10 +1322,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#depth-height" class="md-nav__link">
+  <a href="#elevation-perspective-priority" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Depth &amp; Height
+        Elevation, Perspective &amp; Priority
       
     </span>
   </a>
@@ -1480,7 +1480,7 @@
 \text{tilemap}[\text{layer}][\text{instance}][(c_x, c_y)] \to \text{Asset}
 \]</div>
 <ol>
-<li><strong>Hydrological Broad-Phase Grid (<code>watermap</code>)</strong>:</li>
+<li><strong>Hydrological Broad-Phase Grid (<code>fluidmap</code>)</strong>:</li>
 </ol>
 <p>Indexes active fluid streams, annular pools, and branching corridors into spatial buckets of size <code>TILE_HASH_SIZE = 32</code>. Each bucket stores references to overlapping fluid entities:</p>
 <div class="arithmatex">\[
@@ -1488,13 +1488,28 @@
 \]</div>
 <p>When asserting fluid immersion (<code>board.fluid(layer, position)</code>), the engine queries the bucket corresponding to the coordinate in <span class="arithmatex">\(O(1)\)</span> time, then delegates to narrow-phase AABB segment validation via <code>app.game.board.predicates.in_fluid()</code>.</p>
 <h2 id="rendering">Rendering</h2>
-<h3 id="depth-height">Depth &amp; Height</h3>
-<p>To accurately render perspective, the Screen <code>draw()</code> loop applies Painter's Algorithm sorting to all active assets before translating them to Cython primitives.</p>
+<h3 id="elevation-perspective-priority">Elevation, Perspective &amp; Priority</h3>
+<p>To accurately render perspective across multi-tiered 2.5D geometry, the Screen <code>draw()</code> loop applies Painter's Algorithm sorting to all active assets before translating them to Cython primitives.</p>
+<p>Sorting evaluates a deterministic 3-key lexicographical tuple:</p>
+<div class="arithmatex">\[\text{sort\_key}(A) = \Big(A.\text{elevation},\; \text{ground\_y}(A),\; A.\text{properties.priority}\Big)\]</div>
 <ol>
-<li><strong>Primary Key (Height)</strong>: Evaluates dynamic geometric height (<span class="arithmatex">\(y + l\)</span>). If an explicit <code>state.height</code> is present, it is coerced to an integer (<code>int(asset.state.height)</code>). Coercion prevents <code>TypeError</code> when late-binding compositions assign string tokens alongside integer positions.</li>
-<li><strong>Secondary Key (Depth)</strong>: Serves as a tie-breaker when assets share identical heights. Fluids declare <code>depth: -1</code>, Shorelines declare <code>depth: 0</code>, Bridges declare <code>depth: 1</code>, and standard entities default to <code>depth: 0</code>.</li>
-<li><strong>Allocation Optimization</strong>: Replacing per-frame <code>lambda</code> closures with <code>_sort</code> eliminates millions of transient function objects and reduces draw overhead across expanded entity sets.</li>
+<li><strong>Primary Key (<code>A.elevation</code> <span class="arithmatex">\(\in \mathbb{Z}\)</span>)</strong>: Discrete spatial <span class="arithmatex">\(Z\)</span>-plane elevation tier resolved via <code>Asset.elevation</code>. If an entity does not define an explicit <code>state.elevation</code>, it lazily falls back to <code>settings.SUBSTRATES</code>:</li>
+<li><code>tiles.back</code>: <code>elevation = -4</code></li>
+<li><code>effects.fluids</code>: <code>elevation = -3</code></li>
+<li><code>geography.shorelines</code>: <code>elevation = -2</code></li>
+<li><code>crafts.bridges</code>: <code>elevation = -1</code></li>
+<li>Standard entities (walls, entities, characters): <code>elevation = 0</code></li>
+<li>Elevated tiers (balconies, terraces, canopies): <code>elevation \ge 1</code></li>
 </ol>
+<p>Enforces strict global partitioning: assets on higher elevation tiers render strictly on top of assets on lower tiers, preventing cross-tier Z-fighting and substrate overdraw.
+2. <strong>Secondary Key (<code>ground_y</code> <span class="arithmatex">\(\in \mathbb{R}\)</span>)</strong>: Continuous in-tier geometric perspective. For upright physical entities, ground depth evaluates physical ground contact:</p>
+<p>$<span class="arithmatex">\(\text{ground\_y} = \text{int}(A.\text{state.position.y} + A.\text{dimensions.l} + A.\text{state.anchor})\)</span>$</p>
+<p><code>state.anchor</code> provides a dynamic deployment-specific scalar offset to align wall-mounted fixtures (doors, windows, torches) with their host facade's ground baseline.
+3. <strong>Tertiary Key (<code>priority</code> <span class="arithmatex">\(\in \mathbb{Z}\)</span>)</strong>: In-tier coplanar surface tie-breaker. When two assets share an identical ground perspective baseline (<span class="arithmatex">\(\text{ground\_y}_A = \text{ground\_y}_B\)</span>), <code>priority</code> declared on immutable <code>AssetProperties</code> resolves draw order:
+   - Substrates (floorboards, carpets): <code>priority = -1</code>
+   - Upright entities (walls, characters, obstacles): <code>priority = 0</code>
+   - Surface decals &amp; apertures (doors, wall torches): <code>priority = 1</code>
+4. <strong>Allocation Optimization</strong>: Replacing per-frame <code>lambda</code> closures with a static module-level <code>_sort</code> method eliminates millions of transient function objects and reduces draw overhead across expanded entity sets.</p>
 <h2 id="cython">Cython</h2>
 <p>While Python objects are fast enough for general logic, calculating collisions and processing rendering instructions for thousands of entities requires maximum performance. The engine strategically uses Cython to bridge this gap, adhering to a strict <strong>"Zero Heap Allocation in the Inner Loop"</strong> philosophy to prevent frame stutters caused by the Python Garbage Collector.</p>
 <div class="admonition important">

@@ -1746,6 +1746,8 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 </li>
 <li><strong>Phase 2 - Momentum Transfer:</strong> Bypass the 1D elastic collision calculation <em>only</em> for the Player.</li>
 </ul>
+<p>CollisionMechanics partitions active weights by discrete elevation tiers (<code>tier = max(0, w.elevation)</code>), isolating Phase 1 boundary constraint solving and Phase 2 elastic momentum resolution.</p>
+<p>Incline transitions (<code>_traverse_stairs</code>) execute in Phase 0 of <code>CollisionMechanics</code> strictly prior to tier partitioning, ensuring elevation mutations take effect within the current frame's broad-phase spatial hash.</p>
 <h4 id="combatmechanics">CombatMechanics</h4>
 <pre class="mermaid"><code>flowchart TD
     subgraph Input ["Intention &amp; Action Resolution"]

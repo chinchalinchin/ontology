@@ -329,6 +329,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#elevation-perspective-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Elevation, Perspective &amp; Priority
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#asset-hierarchy" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -538,6 +549,28 @@
     <span class="md-ellipsis">
       
         Struts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stairs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stairs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#platforms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Platforms
       
     </span>
   </a>
@@ -1492,6 +1525,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#elevation-perspective-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Elevation, Perspective &amp; Priority
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#asset-hierarchy" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1701,6 +1745,28 @@
     <span class="md-ellipsis">
       
         Struts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stairs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stairs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#platforms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Platforms
       
     </span>
   </a>
@@ -1995,10 +2061,17 @@
 <li><span class="arithmatex">\(m = -1\)</span>: <strong>Sensor</strong>. The engine detects the spatial intersection for game logic (like SwitchMechanics or DoorMechanics), but CollisionMechanics bypasses it completely during the overlap resolution phase.</li>
 </ul>
 <p>See <a href="../05-mechanics/#spatial">Mechanics</a> for more information.</p>
-<p><strong>Depth &amp; Height</strong></p>
-<p>All Assets have a <code>depth</code> state attribute. This attribute controls the Z-ordering of the Asset being rendered. Most of the time, it can be ignored, since it defaults to <code>0</code>. <code>depth</code> is important in the context of <a href="../03-compositions/">Compositions</a>, where multiple Assets need to be superimposed and rendered on top of one another.</p>
-<p>All Assets have an optional <code>height</code> state attribute. This attribute also modulates the Z-ordering, but the relationship is more complex than <code>depth</code>, relating to the application of the Painter's Algorithm. <code>height</code> is only a factor when dealing with <a href="../03-compositions/">Compositions</a>. </p>
-<p>See <a href="../11-architecture/#rendering">Rendering documentation</a> for a complete overview of <code>depth</code> and <code>height</code>.</p>
+<h3 id="elevation-perspective-priority">Elevation, Perspective &amp; Priority</h3>
+<p>World rendering evaluates spatial geometry using discrete topological elevation tiers and continuous ground perspective. The engine deprecates legacy manual height overrides in favor of a deterministic 3-key lexicographical Painter's Algorithm in <code>Screen._sort</code>:</p>
+<div class="arithmatex">\[\text{sort\_key}(A) = \Big(A.\text{elevation},\; \text{ground\_y}(A),\; A.\text{properties.priority}\Big)\]</div>
+<ol>
+<li><strong>Primary Key (<code>A.elevation</code> <span class="arithmatex">\(\in \mathbb{Z}\)</span>)</strong>: Discrete spatial <span class="arithmatex">\(Z\)</span>-plane elevation tier. Substrates declare negative integer tiers via <code>settings.SUBSTRATES</code> (<code>back: -4</code>, <code>fluids: -3</code>, <code>shorelines: -2</code>, <code>bridges: -1</code>). Standard entities default to <code>elevation = 0</code>, and elevated structures occupy <span class="arithmatex">\(E \ge 1\)</span>. Entities on higher elevation tiers render strictly on top of lower tiers, preventing cross-tier Z-fighting.</li>
+<li><strong>Secondary Key (<code>ground_y</code> <span class="arithmatex">\(\in \mathbb{R}\)</span>)</strong>: Continuous elevation-dependent geometric ground perspective: <span class="arithmatex">\(\text{ground\_y} = \text{int}(A.\text{state.position.y} + A.\text{dimensions.l} + A.\text{state.anchor})\)</span>. <code>state.anchor</code> is a compiled integer offset that aligns wall-mounted fixtures (doors, torches, windows) with their parent facade's ground baseline.</li>
+<li><strong>Tertiary Key (<code>priority</code> <span class="arithmatex">\(\in \mathbb{Z}\)</span>)</strong>: Elevation-matching coplanar tie-breaker declared on immutable <code>AssetProperties</code>:</li>
+<li>Substrates (rugs, floorboards): <code>priority = -1</code></li>
+<li>Upright entities (walls, characters, obstacles): <code>priority = 0</code></li>
+<li>Wall fixtures and decals (doors, wall torches): <code>priority = 1</code></li>
+</ol>
 <h3 id="asset-hierarchy">Asset Hierarchy</h3>
 <p>While Assets are instantiated by injecting a common root class with component behaviors (see <a href="#asset-architecture">next section</a>), the Assets which result from the Entity-Component-System (ECS) injection still conform to a strict hierarchy of Categories and Instances. The property and state <a href="../appendices/01-schemas/">schemas</a> encode Asset Categories and Instances into the top-level keys.</p>
 <pre class="mermaid"><code>graph LR
@@ -2121,14 +2194,16 @@
 </table>
 <p><strong>Instances</strong></p>
 <p>Each Category has Instances. Asset <em>Instances</em> form the bottom layer of the hierarchy. Each Asset Instance is defined by its dynamic state; an Asset's Instance determines what type of state it will parse from the state files and inject into its deployment. </p>
-<p>Each AssetState has, at bare minimum,</p>
+<p>Each AssetState has, at bare minimum:</p>
 <ul>
-<li>Position</li>
-<li>Layer</li>
-<li>Depth </li>
-<li>Height</li>
+<li><code>position: Position</code></li>
+<li><code>layer: str</code></li>
+<li><code>elevation: Optional[int] = None</code></li>
+<li><code>anchor: Union[int, str] = 0</code></li>
+<li><code>mutators: Mutators</code></li>
 </ul>
-<p>These attributes are part of the base class from which all other states inherit. The following table details the <em>unique</em> state attributes of each Asset Instance (with the four attribute identified above labeled with the catchall "Base"),</p>
+<p>These attributes belong to the base class from which all other state dataclasses inherit. Negative elevations resolve substrate draw order, while non-negative values (<span class="arithmatex">\(E \ge 0\)</span>) partition physical collisions and perimeter boundary constraints.</p>
+<p>The following table details the <em>unique</em> state attributes of each Asset Instance (with the attributes identified above labeled with the catchall "Base"),</p>
 <table>
 <thead>
 <tr>
@@ -2658,6 +2733,35 @@
 <li><code>position: Position</code></li>
 <li><code>owner: str</code></li>
 </ul>
+<h3 id="stairs">Stairs</h3>
+<p>Stairs are static Crafts sensors (<span class="arithmatex">\(m = -1\)</span>) that provide continuous elevation transitions across discrete <span class="arithmatex">\(Z\)</span>-plane tiers (<span class="arithmatex">\(E \to E + \delta\)</span>).</p>
+<p><strong>Hitbox: DirectedHitbox</strong></p>
+<ul>
+<li><code>properties.hitboxes[state.direction]</code></li>
+</ul>
+<p><strong>Frame: DirectedFrame</strong></p>
+<ul>
+<li><code>keys(id, state)</code>: returns <code>[(f"{id}-{state.direction}", 0, 0)]</code></li>
+<li><code>index(id, properties)</code>: returns <code>{f"{id}-{Directions.*}": (0, 0, w, l)}</code></li>
+</ul>
+<p><strong>State: StairState</strong></p>
+<ul>
+<li><code>layer: str</code></li>
+<li><code>position: Position</code></li>
+<li><code>elevation: int = 0</code></li>
+<li><code>direction: str</code> (<code>up</code>, <code>down</code>, <code>left</code>, <code>right</code>)</li>
+<li><code>delta: int = 1</code></li>
+<li><code>owner: Optional[str] = None</code></li>
+</ul>
+<h3 id="platforms">Platforms</h3>
+<p>Platforms are inanimate, immutable Assets that model elevated surfaces. In order to be traversed, the Asset traversing must be on the same elevation as the Platform. </p>
+<p>Platforms have two kinds of hitboxes: baseline hitboxes and elevated hitboxes, where the former determines the Platform's collision physics on the ground level (<code>elevation = 0</code>) and the latter determines the Platform's collision physics on the elevated level (<code>elevation = platform.elevation</code>)</p>
+<p>TODO</p>
+<p><strong>Frame: SingleFrame</strong></p>
+<p>TODO</p>
+<p><strong>State: PlatformState</strong></p>
+<p>TODO</p>
+<p><strong>Hitbox: ElevatedHitbox</strong></p>
 <h2 id="cursors">Cursors</h2>
 <ul>
 <li>Property File: <code>/src/assets/cursors/main.yaml</code></li>
