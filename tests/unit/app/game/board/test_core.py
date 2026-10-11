@@ -34,7 +34,7 @@ def test_board_initial_caching(mock_board):
     
     # Inner Render Loop Indexing (Tiles bypassed)
     renderables = mock_board.renderables('0')
-    assert len(renderables) == 14
+    assert len(renderables) == 15
     assert renderables[0].category == AssetCategories.SHEETS.value
     
     # Physics Caching

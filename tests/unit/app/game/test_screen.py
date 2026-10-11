@@ -77,6 +77,7 @@ def test_screen_camera_clamping(mock_screen):
 @pytest.mark.frames
 def test_frame_keys_generation():
     """Ensure keys() methods calculate correctly for all possible Frame implementations."""
+    # TODO: use fixtures
     state = EffectState(id="base_id")
 
     anim_state = EffectState(id="anim_id")
@@ -118,6 +119,8 @@ def test_frame_keys_generation():
 @pytest.mark.rendering
 def test_screen_draw_culling_and_sorting(mock_screen, monkeypatch):
     """Test that Screen.draw correctly culls out-of-bounds assets and sorts by height/depth."""
+    # TODO: this should be using fixtures.
+    
     mock_screen.screensize = Dimensions(w=800, l=600)
     mock_screen.boardsize = Dimensions(w=1600, l=1200)
 
@@ -206,6 +209,7 @@ def test_screen_boardsize_preservation_and_canvas_allocation(mock_screen, monkey
     Ensure Screen retains unpadded board dimensions while allocating canvas textures to viewport bounds.
     """
     canvas_calls = []
+    # TODO: is this not already patched in the fixtures?
     monkeypatch.setattr(
         "app.game.screen.render.canvas",
         lambda w, l, opaque=False: canvas_calls.append((w, l, opaque)) or MagicMock()
@@ -240,11 +244,13 @@ def test_screen_draw_submerge_channel_splitting(
     mock_registry.image.side_effect = lambda key: (MagicMock(), 0, 0, 64, 64)
 
     captured_renders = []
+    # TODO: not needed
     monkeypatch.setattr(
         "app.game.screen.render.render",
         lambda bg, fg, assets, px, py, sw, sl, target=None: captured_renders.append(assets)
     )
 
+    # TODO: USE FIXTURES!
     sprite_asset = MagicMock()
     sprite_asset.category = AssetCategories.SHEETS
     sprite_asset.id = "player"
@@ -323,6 +329,7 @@ def test_screen_initialization_with_calendar(mock_registry, monkeypatch):
     Ensure Screen compiles initial tile canvases with the provided CalendarState.
     """
     construct_calls = []
+    # WHY!?
     monkeypatch.setattr("app.game.screen.render.canvas", lambda w, l, opaque=False: MagicMock())
     monkeypatch.setattr(
         "app.game.screen.render.construct",
@@ -334,6 +341,7 @@ def test_screen_initialization_with_calendar(mock_registry, monkeypatch):
         cycle=Cycles.PEAK.value,
         period=1
     )
+    # WHY?
     tile = MagicMock()
     tile.id = "temperate"
     tile.taxonomy.instance = "back"
@@ -369,6 +377,7 @@ def test_screen_reconstruct_updates_canvases_without_reallocating(
     reconstruct_calls = []
     realloc_calls = []
 
+    # WHY!!!!?
     monkeypatch.setattr(
         "app.game.screen.render.construct",
         lambda canvas, tiles: reconstruct_calls.append((canvas, tiles))

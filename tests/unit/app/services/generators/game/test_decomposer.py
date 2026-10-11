@@ -10,6 +10,16 @@ from app.models.state import (
     BridgeState,
     PropertyState
 )
+from app.models.config import (
+    CompositionConfiguration, 
+    CompositionPseudoState
+)
+from app.models.state import (
+    StateSchema, 
+    ObjectStateInstances, 
+    CraftStateInstances, 
+    DoorState
+)
 
 # Cython Libraries
 from libs.core.models import (
@@ -85,13 +95,13 @@ def test_decomposer_nomenclature_generation(mock_decomposer):
         id="test-house",
         name="home", 
         layer="0", 
-        position=Position(0,0)
+        position=Position(0, 0)
     )
     deployed2 = PropertyState(
         id="test-house",
         name="home", 
         layer="0", 
-        position=Position(0,0)
+        position=Position(0, 0)
     )
     
     assets1 = mock_decomposer.unpack(deployed1)
@@ -105,9 +115,9 @@ def test_decomposer_nomenclature_generation(mock_decomposer):
     assert root1.name == "strut-base_house-1"
     assert root2.name == "strut-base_house-2"
     
-    # The component appends its instance and the new increment to the fully hydrated parent name
-    assert door1.name == "door-strut-base_house-1-1"
-    assert door2.name == "door-strut-base_house-2-2"
+    # Preserves component configuration name: <instance>-<parent_name>-<comp_name>-<increment>
+    assert door1.name == "door-strut-base_house-1-entrance-1"
+    assert door2.name == "door-strut-base_house-2-entrance-2"
 
 
 @pytest.mark.services
@@ -243,8 +253,9 @@ def test_decomposer_bridge_horizontal_expansion(mock_decomposer):
     assert units[0].name == "river-crossing-0"
     assert units[0].state.position.x == 100
     assert units[0].state.position.y == 50
-    assert units[0].state.depth == 1
-    assert units[0].state.height == 0
+    # Phase 07.01: depth and height migrated to elevation and substrate resolution
+    assert units[0].state.elevation is None
+    assert units[0].elevation == -1
 
     assert units[1].name == "river-crossing-1"
     assert units[1].state.position.x == 132  # 100 + 32
@@ -341,3 +352,67 @@ def test_decomposer_multi_deployment_layer_namespacing(mock_decomposer):
     # Both interior exit doors route back to root layer '0'
     assert door1_exit.state.outlayer == "0"
     assert door2_exit.state.outlayer == "0"
+
+@pytest.mark.services
+@pytest.mark.compositions
+def test_decomposer_anchor_macro_resolution(mock_decomposer):
+    """
+    Verify two-pass anchor macro evaluation resolves ground baseline offsets:
+    anchor = (target.y + target.l) - (self.y + self.l)
+    """
+    # Configure a test composition with parent and sibling anchor macros
+    # Root: frame-wood (w=100, l=100, y=0) -> baseline = 100
+    # Sibling 1: strut-wall (w=128, l=96, y=20) -> baseline = 116
+    # Sibling 2: door-front (w=32, l=32, y=10, anchor="anchor(test-wall)")
+    # Expected Sibling 2 anchor: (20 + 96) - (10 + 32) = 116 - 42 = 74
+    # Sibling 3: door-front (w=32, l=32, y=10, anchor="anchor(parent)")
+    # Expected Sibling 3 anchor: (0 + 100) - (10 + 32) = 100 - 42 = 58
+    mock_decomposer.compositions["anchor-house"] = CompositionConfiguration(
+        root=CompositionPseudoState(
+            strut=PropertyState(id="frame-wood", name="main-strut"),
+            components=StateSchema(
+                crafts=CraftStateInstances(
+                    struts=[
+                        PropertyState(
+                            id="strut-wall",
+                            name="test-wall",
+                            position=Position(x=0, y=20)
+                        )
+                    ]
+                ),
+                objects=ObjectStateInstances(
+                    doors=[
+                        DoorState(
+                            id="door-front",
+                            name="sibling-anchored-door",
+                            position=Position(x=10, y=10),
+                            anchor="anchor(test-wall)"
+                        ),
+                        DoorState(
+                            id="door-front",
+                            name="parent-anchored-door",
+                            position=Position(x=50, y=10),
+                            anchor="anchor(parent)"
+                        )
+                    ]
+                )
+            )
+        )
+    )
+
+    deployed = PropertyState(
+        id="anchor-house",
+        name="test-instance",
+        layer="0",
+        position=Position(x=0, y=0)
+    )
+
+    assets = mock_decomposer.unpack(deployed)
+    door_sibling = next(a for a in assets if "sibling-anchored-door" in a.name)
+    door_parent = next(a for a in assets if "parent-anchored-door" in a.name)
+
+    assert isinstance(door_sibling.state.anchor, int)
+    assert door_sibling.state.anchor == 74
+
+    assert isinstance(door_parent.state.anchor, int)
+    assert door_parent.state.anchor == 58
