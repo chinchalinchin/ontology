@@ -31,6 +31,7 @@ EXPRESSION_TTL: Final[int] = 120
 LOG_LEVEL: Final[str] = "INFO"
 """Application logging verbosity level."""
 
+SOCKET: Final[str] = "/tmp/ontology.sock"
 # ---------------------------------------------------
 # ENGINE CONSTANTS
 # ---------------------------------------------------

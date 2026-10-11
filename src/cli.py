@@ -8,7 +8,9 @@ import sys
 import argparse
 import logging
 import gc
+import json
 import os
+import socket
 import signal
 import faulthandler
 import datetime
@@ -366,11 +368,35 @@ def handle_start(args, orchestrator, screensize):
     return engine
 
 
+def handle_telemetry(args):
+    client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    try:
+        client.connect("/tmp/ontology.sock")
+    except FileNotFoundError:
+        logger.error("Ontology instance is not currently running with telemetry enabled.")
+        return
+
+    payload = json.dumps({
+        "query": "assets",
+        "params": {
+            "instances": args.instances,
+            "categories": args.categories,
+            "ids": args.ids,
+            "names": args.names
+        }
+    }).encode("utf-8")
+
+    client.sendall(payload)
+    response = client.recv(65536)
+    print(json.dumps(json.loads(response.decode("utf-8")), indent=2))
+    client.close()
+
 COMMAND_REGISTRY = {
     "prerender": handle_prerender,
     "render": handle_render,
     "map": handle_map,
-    "start": handle_start
+    "start": handle_start,
+    "telemetry": handle_telemetry
 }
 
 # ---------------------------------------------------------

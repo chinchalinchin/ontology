@@ -11,31 +11,35 @@ This proposal defines `app.telemetry`: an asynchronous, non-blocking telemetry a
 `app.telemetry` operates via a lightweight IPC/socket probe and a dedicated `CoreMechanic` pipeline:
 
 1. **Architecture & Threading Model**:
+
 * `TelemetryServer`: Operates on an independent daemon thread, serving queries via an IPC domain socket (`/tmp/ontology-telemetry.sock`) or loopback TCP (`127.0.0.1:9229`).
 * `TelemetryMechanic` (`app.mechanics.core.telemetry`): Registered in `Engine.core`. Executes on every engine tick at the boundary between physics integration and Screen rasterization. It consumes inbound probe requests, executes deterministic queries against the `Board`, and dispatches structured serialization payloads across a thread-safe lock-free buffer (`queue.SimpleQueue`).
 * Concurrency Safety: Python GIL locking during frame mutation is avoided by constraining Board queries strictly to the synchronous execution of `TelemetryMechanic.update()`. The background thread handles network I/O and payload serialization exclusively.
 
-
 2. **Query Grammar**:
+
 * `GET /assets?category=<regex>&instance=<regex>&id=<regex>&name=<regex>&layer=<str>&elevation=<int>`
 * `GET /metrics`: Fixed-tick delta, FPS, entity count per bucket, spatial grid occupancy, and active RRT node allocations.
 * `GET /hydrology?layer=<str>&x=<int>&y=<int>`: Live evaluation of `board.moisture(layer, x, y)` and `board.fluid(layer, Position(x, y))`.
 * `GET /character/<name>`: Focused telemetry stream of NPC Psyche, Goal, Trajectory, and Intention vectors.
 
-
 3. **Output Transports**:
+
 * Compact binary/JSON payloads for high-frequency consumption.
 * Streaming CLI subcommands (`python main.py telemetry --stream --instances sprites`).
-
-
 
 ##### Architectural Analysis I
 
 1. **State Isolation & GIL Contention**:
+
 Querying the `Board` directly from an external socket thread introduces race conditions against Cython pointer dereferencing and state mutations in `physics.pyx`. Executing queries through a `CoreMechanic` guarantees tick-boundary serialization where asset positions, velocities, and bounding boxes are static.
+
 2. **Allocation Overhead**:
+
 Continuous polling must not cause GC frame stutter. The telemetry pipeline utilizes pre-allocated primitive dictionaries and Cython-to-primitive conversions (`Asset.primitive()`) for spatial queries, delegating JSON serialization to the background worker thread.
+
 3. **Live Engine Debugging**:
+
 Enables attaching headless observer terminals or curses monitors to a running engine session, recording anomalous NPC oscillations, tracking RRT path generation retries (`trajectory.stalled`), and validating moisture fields on demand.
 
 ##### Goals
