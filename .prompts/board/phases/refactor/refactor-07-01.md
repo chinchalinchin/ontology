@@ -268,10 +268,10 @@ def _traverse_stairs(self, sprite: Asset, stairs: Asset) -> None:
 
 *Objective*: Update existing test fixtures and verify multi-tier rendering and collisions.
 
-* [!: Conditional on **User Acceptance** of previous task] Subtask: Migrate all mock fixtures in `tests/unit/fixtures/` from `depth` to `elevation`.
-* [!: Conditional on **User Acceptance** of previous task] Subtask: Add unit tests in `test_collision.py` asserting bodies at different elevations bypass Phase 1 constraints and Phase 2 overlap resolution.
-*[!: Conditional on **User Acceptance** of previous task] Subtask: Add unit tests in `test_screen.py` asserting assets with higher elevation render on top of lower elevation assets regardless of lower $y + l$ values.
-* [!: Conditional on **User Acceptance** of previous task] Subtask: Add integration tests verifying stair traversal correctly increments and decrements player elevation.
+* [x] Subtask: Migrate all mock fixtures in `tests/unit/fixtures/` from `depth` to `elevation`.
+* [x] Subtask: Add unit tests in `test_collision.py` asserting bodies at different elevations bypass Phase 1 constraints and Phase 2 overlap resolution.
+* [x] Subtask: Add unit tests in `test_screen.py` asserting assets with higher elevation render on top of lower elevation assets regardless of lower $y + l$ values.
+* [x] Subtask: Add integration tests verifying stair traversal correctly increments and decrements player elevation.
 
 ##### Debugging
 

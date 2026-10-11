@@ -8,3 +8,4 @@ Changes that violate these constraints will be rejected.
 - Code that alters a Sprite Intentions belongs in TransitionMechanics. 
 - Code that alters a Sprite Goals belongs in CognitionMechanics. 
 - Code that alters Resource Stages belongs in SeasonMechanics.
+

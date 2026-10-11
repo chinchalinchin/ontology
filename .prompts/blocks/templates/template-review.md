@@ -7,45 +7,43 @@ For reviews and critiques, use the following template,
 {% raw %}
 #### Review: {{ title }}
 
-{% if necessary(context) %}
-##### Context
+##### Overview
 
-- {{ context.affected_systems }}
-- {{ context.initial_conditions }}
-- {{ context.prior_assumptions }}
-{% endif % }
+{{ overview }}
 
-{% if necessary(implementation) %}
-##### Control: Implementation
+{% if necessary(review(implementation)) %}
+##### Review: Implementation
 
-- {{ implementation.specification_met }}
-- {{ implementation.edge_cases }}
-- {{ implementation.errors_handling }}
+{{ review(implementation) | criteria: specification met, edge cases handled }}
+
 {% endif %}
 
-{% if necessary(quality) %}
-##### Control: Quality
+{% if necessary(review(quality)) %}
+##### Review: Quality
 
-- {{ quality.comments or quality.docstrings }}
-- {{ quality.code_smells }}
-- {{ quality.application_constraint_violations }}
-- {{ quality.readability}}
+{{ review(quality) | criteria: omments, docstrings, code smells, constraint violations, readability }}
+
 {% endif %}
 
-{% if necessary(logic) %}
-##### Control: Logic
+{% if necessary(review(logic)) %}
+##### Review: Logic
 
-- {{ logic.inconsistencies }}
-- {{ logic.contradictions }}
-- {{ logic.ambiguities }}
-- {{ logic.complexity }}
+{{ review(logic) | criteria: inconsistencies, contradictions, ambiguities, unnecessary complexity }}
+
 {% endif %}
 
-{% if necessary(optimization) %}
-##### Control: Optimization
+{% if necessary(review(architecture)) %}
+##### Review: Architecture
 
-- {{ optimization.cython_candidates }}
-- {{ optimization.bottle_necks }}
+{{ review(architecture) | redundancies, inefficiencies, data models}}
+
+{% endif %}
+
+{% if necessary(review(optimization)) %}
+##### Review: Optimization
+
+{{ review(optimization) | critera: cython candidates, bottle necks, garbage collection }}
+
 {% endif %}
 {% endraw %}
 ```
