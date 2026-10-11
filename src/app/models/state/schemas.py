@@ -60,7 +60,9 @@ class CraftStateInstances:
     struts: List[PropertyState] = field(default_factory=list)
     decors: List[PropertyState] = field(default_factory=list)
     bridges: List[BridgeState] = field(default_factory=list)
-
+    # TODO: phase 07-02
+    # platforms: List[PlatformState] = field(default_factory=list)
+    
 @dataclass(slots=True)
 class ResourceStateInstances:
     crops: List[ResourceState] = field(default_factory=list)

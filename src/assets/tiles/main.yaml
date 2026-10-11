@@ -11,6 +11,7 @@
           l: 32
     back:
       temperate:
+        priority: -4
         dimensions:
           w: 32
           l: 32

@@ -3,7 +3,8 @@ from app.assets.frames.core import (
     SingleFrame,
     IterableFrame,
     IndexFrame,
-    OrientedFrame
+    OrientedFrame,
+    DirectedFrame
 )
 from app.assets.frames.effects import (
     FluidFrame
@@ -37,6 +38,7 @@ __all__ = [
     'MeterFrame',
     'IndexFrame',
     'OrientedFrame',
+    'DirectedFrame',
     'StageFrame',
     'SeasonalFrame'
 ]

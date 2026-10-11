@@ -6,6 +6,7 @@ crafts:
         w: 161
         l: 160
       mass: -1
+      priority: -1
       cost:
         - item: cotton
           quantity: 38
@@ -14,6 +15,7 @@ crafts:
         w: 265
         l: 166
       mass: -1
+      priority: -1
       cost:
         - item: marble
           quantity: 64
@@ -22,6 +24,7 @@ crafts:
         w: 128
         l: 96
       mass: -1
+      priority: -1
       cost: 
         - item: wood
           quantity: 12

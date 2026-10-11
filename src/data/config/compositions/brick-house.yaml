@@ -15,6 +15,7 @@ compositions:
               position:
                 x: 32
                 y: 118
+              anchor: 24
               out:
                 x: 82
                 y: 143
@@ -31,7 +32,6 @@ compositions:
         components:
           crafts: 
             struts:
-              # Substrate floor isolated to elevation: -1
               - id: floor-area-wood
                 name: house-floor
                 layer: brick-house-compose-layer
@@ -44,11 +44,11 @@ compositions:
             passive:
               - id: grandfather-clock
                 name: grandfather-clock-00 
+                layer: brick-house-compose-layer
+                elevation: 0
                 position:
                   x: -4
                   y: 30
-                layer: brick-house-compose-layer                
-                elevation: 0
           objects:
             doors:
               - id: door-shadow

@@ -158,6 +158,10 @@ The [Player](./02-sprites.md#player) does not observe momentum transfers. Instea
     * **Player vs. Crate ($m=5$):** Both absorb the spatial shift proportional to their inverse mass. The Player pushes the Crate out of the way.
 * **Phase 2 - Momentum Transfer:** Bypass the 1D elastic collision calculation *only* for the Player.
 
+CollisionMechanics partitions active weights by discrete elevation tiers (`tier = max(0, w.elevation)`), isolating Phase 1 boundary constraint solving and Phase 2 elastic momentum resolution.
+
+Incline transitions (`_traverse_stairs`) execute in Phase 0 of `CollisionMechanics` strictly prior to tier partitioning, ensuring elevation mutations take effect within the current frame's broad-phase spatial hash.
+
 #### CombatMechanics
 
 ```mermaid

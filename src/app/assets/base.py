@@ -19,7 +19,10 @@ from typing import (
 )
 
 # Application Libraries
-from app.config.enums import ChannelTypes
+import app.config.settings as settings
+from app.config.enums import (
+    ChannelTypes,
+)
 from app.models.properties import AssetProperties
 from app.models.state import (
     AssetState,
@@ -186,6 +189,16 @@ class Asset:
     def hitboxes(self) -> List[Hitbox]:
         """Unified physical boundary retrieval delegated entirely to HitboxSchema."""
         return self.hitbox.get(self.properties, self.state, self.frame)
+
+    @property
+    def elevation(self) -> int:
+        if self.state.elevation is not None:
+            return self.state.elevation
+        return settings.SUBSTRATES.get(self.taxonomy.instance, 0)
+
+    @elevation.setter
+    def elevation(self, value: Optional[int]) -> None:
+        self.state.elevation = value
 
     def primitive(self, index: int = 0, hitboxes: List[Hitbox] = None) -> Tuple:
         """

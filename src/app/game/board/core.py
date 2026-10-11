@@ -218,31 +218,29 @@ class Board:
         search_list = self.renderables(layer) if layer else self._assets
         return next((a for a in search_list if a.name == name), None)
 
-    def assets(self, layer: Optional[str] = None) -> List[Asset]:
-        if layer is None:
-            return self._assets
-        return self._cache.get_layer_assets(layer)
+    def assets(self, layer: Optional[str] = None, elevation: Optional[int] = None) -> List[Asset]:
+        target_assets = self.renderables(layer) if layer else self._assets
+        if elevation is not None:
+            return [a for a in target_assets if a.elevation == elevation]
+        return target_assets
 
     def weights(self, layer: Optional[str] = None, elevation: Optional[int] = None) -> List[Asset]:
-        """Returns physical weight assets (m >= 0) on the layer, optionally filtered by elevation."""
-        if layer is None:
-            weights = [asset for asset in self._assets if predicates.is_weight(asset)]
-        else:
-            weights = self._cache.get_weights(layer)
-
+        weights = self._cache.get_weights(layer) if layer is not None else [
+            a for a in self._assets if predicates.is_weight(a)
+        ]
         if elevation is not None:
-            return [w for w in weights if w.state.elevation == elevation]
+            if elevation == 0:
+                return [w for w in weights if w.elevation <= 0]
+            return [w for w in weights if w.elevation == elevation]
         return weights
+    
 
     def obstacles(self, layer: Optional[str] = None, elevation: Optional[int] = None) -> List[Asset]:
-        """Returns physical obstacle assets on the layer, optionally filtered by elevation."""
-        if layer is None:
-            obstacles = []
-        else:
-            obstacles = self._cache.get_obstacles(layer)
-
+        obstacles = self._cache.get_obstacles(layer) if layer is not None else []
         if elevation is not None:
-            return [o for o in obstacles if o.state.elevation == elevation]
+            if elevation == 0:
+                return [o for o in obstacles if o.elevation <= 0]
+            return [o for o in obstacles if o.elevation == elevation]
         return obstacles
 
     def bridges(self, layer: Optional[str] = None) -> List[Asset]:
@@ -252,11 +250,17 @@ class Board:
     def layers(self) -> List[str]:
         return self._cache.get_layers()
 
-    def categories(self, category: str, layer: Optional[str] = None) -> List[Asset]:
-        return self._cache.get_categories(category, layer)
-
-    def instances(self, instance: str, layer: Optional[str] = None) -> List[Asset]:
-        return self._cache.get_instances(instance, layer)
+    def categories(self, category: str, layer: Optional[str] = None, elevation: Optional[int] = None) -> List[Asset]:
+        cat_assets = self._cache.get_categories(category, layer)
+        if elevation is not None:
+            return [a for a in cat_assets if a.elevation == elevation]
+        return cat_assets
+    
+    def instances(self, instance: str, layer: Optional[str] = None, elevation: Optional[int] = None) -> List[Asset]:
+        inst_assets = self._cache.get_instances(instance, layer)
+        if elevation is not None:
+            return [a for a in inst_assets if a.elevation == elevation]
+        return inst_assets
 
     def renderables(self, layer: Optional[str] = None) -> List[Asset]:
         if layer is None:

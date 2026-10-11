@@ -54,6 +54,12 @@ class Shortcuts(str, Enum):
     GIZMOS          = "gizmos"
     PLOTS           = "plots"
 
+class Substrates(int, Enum):
+    BACK            = -4 
+    FLUIDS          = -3
+    GEOGRAPHY       = -2
+    BRIDGES         = -1
+    
 # -------------------------------- MECHANIC ENUMERATIONS
 
 class Reactions(str, Enum):

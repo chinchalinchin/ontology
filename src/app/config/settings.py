@@ -8,8 +8,10 @@ from pathlib import Path
 from typing import Final
 
 # Application Libraries
-from app.config.enums import Seasons
-
+from app.config.enums import (
+    AssetInstances,
+    Seasons
+)
 # ---------------------------------------------------
 # APPLICATION SETTINGS
 # ---------------------------------------------------
@@ -73,6 +75,14 @@ DIFFUSION_RATE: Final[float] = 10.0
 
 EVAPORATION_RATE: Final[float] = 1.0
 """Multiplicative factor that scales the moisture evaporation rate"""
+
+SUBSTRATES: Final[dict[str, int]] = {
+    AssetInstances.BACK.value: -4,
+    AssetInstances.FLUIDS.value: -3,
+    AssetInstances.SHORELINES.value: -2,
+    AssetInstances.BRIDGES.value: -1
+}
+"""Instance-keyed map of substrate elevations."""
 
 # ---------------------------------------------------
 # DIRECTORY SETTINGS

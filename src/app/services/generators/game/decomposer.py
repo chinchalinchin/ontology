@@ -216,8 +216,9 @@ class Decomposer:
             b_name = kwargs.get('name') or root_context['name']
             kwargs['name'] = settings.SEPARATOR.join([base_inst, b_name, str(inc)])
         else:
-            kwargs['name'] = settings.SEPARATOR.join([base_inst, parent_context['name'], str(inc)])
-        
+            comp_name = kwargs.get('name') or 'comp'
+            kwargs['name'] = settings.SEPARATOR.join([base_inst, parent_context['name'], comp_name, str(inc)])
+                
         return type(state_obj)(**kwargs)
 
     def _create_asset(self, 

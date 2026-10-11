@@ -27,6 +27,8 @@ from app.assets.hitboxes import (
     StageHitbox,
     DynamicHitbox,
     AttackHitbox,
+    DirectedHitbox,
+    OrientedHitbox,
     NoHitbox
 )
 from app.assets.frames import (
@@ -39,6 +41,7 @@ from app.assets.frames import (
     TraversalFrame,
     MeterFrame,
     IndexFrame,
+    DirectedFrame,
     OrientedFrame,
     StageFrame,
     SeasonalFrame,
@@ -100,6 +103,7 @@ class Factory:
     # ----------- FLYWEIGHT COMPONENTS
     _FRAMES = {
         FrameRecipe.CARDINAL.value: CardinalFrame(),
+        FrameRecipe.DIRECTED.value: DirectedFrame(),
         FrameRecipe.INDEX.value: IndexFrame(),
         FrameRecipe.ITERABLE.value: IterableFrame(),
         FrameRecipe.FLUID.value: FluidFrame(),
@@ -125,10 +129,12 @@ class Factory:
     }
 
     _HITBOXES = {
-        HitboxRecipe.STATIC.value: StaticHitbox(),
-        HitboxRecipe.DYNAMIC.value: DynamicHitbox(),
-        HitboxRecipe.STAGE.value: StageHitbox(),
         HitboxRecipe.ATTACK.value: AttackHitbox(),
+        HitboxRecipe.DIRECTED.value: DirectedHitbox(),
+        HitboxRecipe.DYNAMIC.value: DynamicHitbox(),
+        HitboxRecipe.ORIENTED.value: OrientedHitbox(),
+        HitboxRecipe.STAGE.value: StageHitbox(),
+        HitboxRecipe.STATIC.value: StaticHitbox(),
         HitboxRecipe.NONE.value: NoHitbox()
     }
 

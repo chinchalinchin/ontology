@@ -84,7 +84,6 @@ class CollectableState(EffectState):
 
 @dataclass(slots=True)
 class FluidState(EffectState):
-    elevation: int = 0
     # Fluid Fields
     length: int = 0
     pool: Optional[Pool] = None

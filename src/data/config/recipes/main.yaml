@@ -17,6 +17,14 @@ recipes:
       frame: single
       animation: none
       hitbox: static
+    stairs:
+      frame: directed
+      animation: none
+      hitbox: directed
+    platforms: 
+      frame: single
+      animation: none
+      hitbox: static
   cursors:
     expressions:
       frame: index

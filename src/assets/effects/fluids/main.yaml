@@ -10,4 +10,5 @@ effects:
         delay: 20
       count: 5
       hitboxes: null
+      priority: -3
       mass: -1

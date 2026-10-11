@@ -45,7 +45,8 @@ from app.config.enums.engine import (
     Executors,
     Translators,
     ChannelTypes,
-    Fonts
+    Fonts,
+    Substrates
 )
 from app.config.enums.menus import (
     Controllers,
@@ -138,6 +139,7 @@ __all__ = [
     'Executors',
     'Translators',
     'ChannelTypes',
+    'Substrates',
     'Fonts',
     # ------
     'Controllers',

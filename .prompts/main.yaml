@@ -5,8 +5,8 @@ properties:
     mkdocs: mkdocs.yml
   paths:
     # ---------------------------------------
-    # root: /Users/gmoore/Home/projects/ontology/
-    root: /home/grant/Projects/ontology/
+    root: /Users/gmoore/Home/projects/ontology/
+    # root: /home/grant/Projects/ontology/
     # ---------------------------------------
     actions: .githubs/workflows/
     # ---------------------------------------
@@ -41,6 +41,7 @@ task:
   # template: iterate/grooming.md.j2
   # template: iterate/implementation.md.j2
   # template: iterate/coverage.md.j2
+  template: iterate/review.md.j2
   # template: iterate/conclusion.md.j2
   # ------------------------------------- DESIGN TASKS
   # template: design/menu.md.j2
@@ -49,7 +50,7 @@ task:
   # template: diagram/hierarchy.md.j2
   # template: diagram/automata.md.j2
   # template: diagram/stages.md.j2
-  template: maintain/script.md.j2
+  # template: maintain/script.md.j2
   # template: output/menus.md.j2
   # template: output/state.md.j2
   # template: style/mermaid.md.j2
@@ -72,7 +73,7 @@ tools:
       docs: true
     source:
       workflow: true
-      script: true
+      script: false
     shell:
       directory: true
       commands: false
@@ -92,8 +93,8 @@ tools:
         - tiles
     manager:
       board:
-        phase: 'n-1'
-        action: implement
+        phase: '07-01'
+        action: refactor
       docs:
         exclude:
           - index.md
@@ -104,14 +105,14 @@ tools:
           - 04-intentions.md
           # - 05-mechanics.md
           - 06-widgets.md
-          # - 07-sounds.md
+          - 07-sounds.md
           - 08-plots.md
-          - 09-ecology.md
+          # - 09-ecology.md
           - 10-emergence.md
           # - 11-architecture.md
       specs: []
     source:
-      workflow: main
+      workflow: collisions
       script: synthesize
     shell:
       directory: |

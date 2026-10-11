@@ -39,7 +39,6 @@ class BridgeState(AssetState):
     orientation: str = Orientations.HORIZONTAL.value
     multiple: Optional[Multiple] = None # type: ignore
     owner: Optional[str] = None
-    elevation: int = 0
 
 @dataclass(slots=True)
 class StairState(AssetState):
@@ -48,6 +47,10 @@ class StairState(AssetState):
     """
     position: Optional[Position] = None # type: ignore
     direction: str = Directions.UP.value
-    elevation: int = 0                     
     delta: int = 1                         
     owner: Optional[str] = None
+
+@dataclass(slots=True)
+class PlatformState(AssetState):
+    # TODO: phase 07-02
+    pass

@@ -8,4 +8,6 @@ geography:
         l: 41
       thickness: 22
       mass: -1
+      priority: -2
+
       hitboxes: null

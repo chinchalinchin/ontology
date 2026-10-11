@@ -210,7 +210,7 @@ class NavigationMechanics(Mechanic):
             sprite.state.layer, 
             board, 
             exclude=exclude, 
-            elevation=sprite.state.elevation
+            elevation=sprite.elevation
         )
 
         planned = False

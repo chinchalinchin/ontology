@@ -16,7 +16,7 @@ For reviews and critiques, use the following template,
 {% endif % }
 
 {% if necessary(implementation) %}
-##### Implementation Control
+##### Control: Implementation
 
 - {{ implementation.specification_met }}
 - {{ implementation.edge_cases }}
@@ -24,7 +24,7 @@ For reviews and critiques, use the following template,
 {% endif %}
 
 {% if necessary(quality) %}
-##### Quality Control
+##### Control: Quality
 
 - {{ quality.comments or quality.docstrings }}
 - {{ quality.code_smells }}
@@ -32,12 +32,20 @@ For reviews and critiques, use the following template,
 - {{ quality.readability}}
 {% endif %}
 
+{% if necessary(logic) %}
+##### Control: Logic
+
+- {{ logic.inconsistencies }}
+- {{ logic.contradictions }}
+- {{ logic.ambiguities }}
+- {{ logic.complexity }}
+{% endif %}
+
 {% if necessary(optimization) %}
-##### Optimization Control
+##### Control: Optimization
 
 - {{ optimization.cython_candidates }}
 - {{ optimization.bottle_necks }}
-- {{ }}
 {% endif %}
 {% endraw %}
 ```

@@ -29,7 +29,6 @@ from app.models.state.core import (
 
 @dataclass(slots=True)
 class ShorelineState(AssetState):
-    elevation: int = 0
     # Shoreline fields
     position: Optional[Position] = None  # type: ignore
     orientation: str = Directions.DOWN.value

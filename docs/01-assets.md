@@ -557,6 +557,47 @@ N/A
 * `position: Position`
 * `owner: str`
 
+### Stairs
+
+Stairs are static Crafts sensors ($m = -1$) that provide continuous elevation transitions across discrete $Z$-plane tiers ($E \to E + \delta$).
+
+**Hitbox: DirectedHitbox**
+
+- `properties.hitboxes[state.direction]`
+
+**Frame: DirectedFrame**
+
+- `keys(id, state)`: returns `[(f"{id}-{state.direction}", 0, 0)]`
+- `index(id, properties)`: returns `{f"{id}-{Directions.*}": (0, 0, w, l)}`
+
+**State: StairState**
+
+- `layer: str`
+- `position: Position`
+- `elevation: int = 0`
+- `direction: str` (`up`, `down`, `left`, `right`)
+- `delta: int = 1`
+- `owner: Optional[str] = None`
+
+
+### Platforms
+
+Platforms are inanimate, immutable Assets that model elevated surfaces. In order to be traversed, the Asset traversing must be on the same elevation as the Platform. 
+
+Platforms have two kinds of hitboxes: baseline hitboxes and elevated hitboxes, where the former determines the Platform's collision physics on the ground level (`elevation = 0`) and the latter determines the Platform's collision physics on the elevated level (`elevation = platform.elevation`)
+
+TODO
+
+**Frame: SingleFrame**
+
+TODO
+
+**State: PlatformState**
+
+TODO
+
+**Hitbox: ElevatedHitbox**
+
 ## Cursors
 
 * Property File: `/src/assets/cursors/main.yaml`

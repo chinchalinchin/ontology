@@ -45,7 +45,8 @@ class Lifecycle:
 
 @dataclass(slots=True)
 class AssetProperties:
-    pass 
+    dimensions: Dimensions # type: ignore
+    priority: int = 0
 
 # ---------------------------------------------------------------------------------------
 
@@ -77,48 +78,41 @@ class FontProperties:
 
 @dataclass(slots=True)
 class CursorProperties(AssetProperties):
-    dimensions: Dimensions # type: ignore
     frames: List[str] = field(default_factory=list)
 
 @dataclass(slots=True)
 class EffectProperties(AssetProperties):
-    dimensions: Dimensions # type: ignore
-    count: int
+    count: int = 1
     lifecycle: Lifecycle = field(default_factory=Lifecycle)
     mass: int = -1
     hitboxes: Optional[List[Hitbox]] = None # type: ignore
 
 @dataclass(slots=True)
 class ObjectProperties(AssetProperties):
-    dimensions: Dimensions # type: ignore
     mass: int = 0
     count: int = 1
     hitboxes: Optional[List[Hitbox]] = None # type: ignore
 
 @dataclass(slots=True)
 class TileProperties(AssetProperties):
-    dimensions: Dimensions # type: ignore
     friction: float = 0.0
 
 @dataclass(slots=True)
 class CraftProperties(AssetProperties):
-    dimensions: Dimensions # type: ignore
-    cost: List[Cost]
+    cost: List[Cost] = field(default_factory = [])
     mass: int = 0
     hitboxes: Optional[Union[Dict[str, Optional[List[Hitbox]]], List[Hitbox]]] = None # type: ignore
 
 @dataclass(slots=True)
 class ResourceProperties(AssetProperties):
-    dimensions: Dimensions # type: ignore
-    loot: str
-    lifespan: Lifespans
+    loot: str = None
+    lifespan: Lifespans = Lifespans.ANNUAL.value
     mass: int = 0
     hitboxes: Dict[str, Optional[List[Hitbox]]] = None # type: ignore
 
 @dataclass(slots=True)
 class GeographyProperties(AssetProperties):
-    dimensions: Dimensions # type: ignore
-    tile: str
+    tile: str = None
     hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
     fluid: Optional[str] = None
     thickness: int = 8
@@ -126,16 +120,14 @@ class GeographyProperties(AssetProperties):
 
 @dataclass(slots=True)
 class SheetProperties(AssetProperties):
-    dimensions: Dimensions # type: ignore
     stack: List[str] = field(default_factory=list)
-    mass: int = 0
+    mass: int = 1
     hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
     actions: Union[str, Dict[Actions, Action]] = field(default_factory=dict)
     attackboxes: Optional[Dict[str, List[Hitbox]]] = field(default_factory=dict) # type: ignore
     
 @dataclass(slots=True)
 class WidgetProperties(AssetProperties):
-    dimensions: Dimensions # type: ignore
     frames: Optional[List[str]] = field(default_factory=list)
 
 # ---------------------------------------------------------------------------------------
@@ -173,6 +165,7 @@ class ObjectPropertyInstances:
 class CraftPropertyInstances:
     struts: Dict[str, CraftProperties] = field(default_factory=dict)
     bridges: Dict[str, CraftProperties] = field(default_factory=dict)
+    platforms: Dict[str, CraftProperties] = field(default_factory=dict)
     stairs: Dict[str, CraftProperties] = field(default_factory=dict)
 
 @dataclass(slots=True)

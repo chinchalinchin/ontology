@@ -181,11 +181,8 @@
 {% if asset.state.layer is defined and asset.state.layer is not none -%}
   - Layer: `{{ asset.state.layer }}`
 {% endif -%}
-{% if asset.state.depth is defined and asset.state.depth is not none -%}
-  - Depth: {{ asset.state.depth }}
-{% endif -%}
-{% if asset.state.height is defined and asset.state.height is not none -%}
-  - Height: {{ asset.state.height }}
+{% if asset.elevation is defined and asset.elevation is not none -%}
+  - Elevation: {{ asset.elevation }}
 {% endif -%}
 {% if asset.state.position is defined and asset.state.position is not none -%}
   - Position: ({{ asset.state.position.x }}, {{ asset.state.position.y }})

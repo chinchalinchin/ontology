@@ -12,6 +12,7 @@ from enum import Enum
 
 class FrameRecipe(str, Enum):
     CARDINAL        = "cardinal"
+    DIRECTED        = "directed"
     FLUID           = "fluid"
     INDEX           = "index"
     ITERABLE        = "iterable"

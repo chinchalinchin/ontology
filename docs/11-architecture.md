@@ -95,7 +95,7 @@ $$
 \text{tilemap}[\text{layer}][\text{instance}][(c_x, c_y)] \to \text{Asset}
 $$
 
-2. **Hydrological Broad-Phase Grid (`watermap`)**:
+2. **Hydrological Broad-Phase Grid (`fluidmap`)**:
 
 Indexes active fluid streams, annular pools, and branching corridors into spatial buckets of size `TILE_HASH_SIZE = 32`. Each bucket stores references to overlapping fluid entities:
 
@@ -107,13 +107,33 @@ When asserting fluid immersion (`board.fluid(layer, position)`), the engine quer
 
 ## Rendering
 
-### Depth & Height
+### Elevation, Perspective & Priority
 
-To accurately render perspective, the Screen `draw()` loop applies Painter's Algorithm sorting to all active assets before translating them to Cython primitives.
+To accurately render perspective across multi-tiered 2.5D geometry, the Screen `draw()` loop applies Painter's Algorithm sorting to all active assets before translating them to Cython primitives.
 
-1. **Primary Key (Height)**: Evaluates dynamic geometric height ($y + l$). If an explicit `state.height` is present, it is coerced to an integer (`int(asset.state.height)`). Coercion prevents `TypeError` when late-binding compositions assign string tokens alongside integer positions.
-2. **Secondary Key (Depth)**: Serves as a tie-breaker when assets share identical heights. Fluids declare `depth: -1`, Shorelines declare `depth: 0`, Bridges declare `depth: 1`, and standard entities default to `depth: 0`.
-3. **Allocation Optimization**: Replacing per-frame `lambda` closures with `_sort` eliminates millions of transient function objects and reduces draw overhead across expanded entity sets.
+Sorting evaluates a deterministic 3-key lexicographical tuple:
+
+$$\text{sort\_key}(A) = \Big(A.\text{elevation},\; \text{ground\_y}(A),\; A.\text{properties.priority}\Big)$$
+
+1. **Primary Key (`A.elevation` $\in \mathbb{Z}$)**: Discrete spatial $Z$-plane elevation tier resolved via `Asset.elevation`. If an entity does not define an explicit `state.elevation`, it lazily falls back to `settings.SUBSTRATES`:
+   - `tiles.back`: `elevation = -4`
+   - `effects.fluids`: `elevation = -3`
+   - `geography.shorelines`: `elevation = -2`
+   - `crafts.bridges`: `elevation = -1`
+   - Standard entities (walls, entities, characters): `elevation = 0`
+   - Elevated tiers (balconies, terraces, canopies): `elevation \ge 1`
+   
+   Enforces strict global partitioning: assets on higher elevation tiers render strictly on top of assets on lower tiers, preventing cross-tier Z-fighting and substrate overdraw.
+2. **Secondary Key (`ground_y` $\in \mathbb{R}$)**: Continuous in-tier geometric perspective. For upright physical entities, ground depth evaluates physical ground contact:
+
+   $$\text{ground\_y} = \text{int}(A.\text{state.position.y} + A.\text{dimensions.l} + A.\text{state.anchor})$$
+
+   `state.anchor` provides a dynamic deployment-specific scalar offset to align wall-mounted fixtures (doors, windows, torches) with their host facade's ground baseline.
+3. **Tertiary Key (`priority` $\in \mathbb{Z}$)**: In-tier coplanar surface tie-breaker. When two assets share an identical ground perspective baseline ($\text{ground\_y}_A = \text{ground\_y}_B$), `priority` declared on immutable `AssetProperties` resolves draw order:
+   - Substrates (floorboards, carpets): `priority = -1`
+   - Upright entities (walls, characters, obstacles): `priority = 0`
+   - Surface decals & apertures (doors, wall torches): `priority = 1`
+4. **Allocation Optimization**: Replacing per-frame `lambda` closures with a static module-level `_sort` method eliminates millions of transient function objects and reduces draw overhead across expanded entity sets.
 
 ## Cython
 

@@ -57,7 +57,7 @@ class Actuator:
         origin_y: Optional[int] = None
     ) -> List[Tuple]:
         layer = fluid.state.layer
-        elevation = fluid.state.elevation
+        elevation = fluid.elevation if fluid.elevation > 0 else 0
         fx = origin_x if origin_x is not None else fluid.state.position.x
         fy = origin_y if origin_y is not None else fluid.state.position.y
         obstacle_tuples: List[Tuple] = []

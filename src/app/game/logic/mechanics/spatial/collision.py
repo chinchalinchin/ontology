@@ -37,53 +37,79 @@ class CollisionMechanics(SpatialMechanic):
     def _traverse_stairs(self, sprite: Asset, stairs: Asset) -> None:
         """
         Evaluates dynamic body progression across stair tread bounds and shifts elevation.
-        Restricted to entities currently at either base or summit tier to prevent cross-tier jumping.
+        Combines normalized sensory foot-anchor positioning with directional velocity
+        gating to prevent premature tier transitions and boundary snapping.
         """
-        e_base = stairs.state.elevation
+        e_base = stairs.elevation
         e_top = e_base + stairs.state.delta
-        curr_e = sprite.state.elevation
+        curr_e = sprite.elevation
 
-        # Entity must be on either the bottom or top tier of the stair incline
+        # Entity must be on either the base or summit tier of the stair incline
         if curr_e != e_base and curr_e != e_top:
             return
 
         direction = stairs.state.direction
         direction_val = direction.value if hasattr(direction, "value") else str(direction)
 
+        vel = getattr(sprite.state, "velocity", None)
+        vx = vel.vx if vel is not None else 0.0
+        vy = vel.vy if vel is not None else 0.0
+
+        dim_w = sprite.dimensions.w if sprite.dimensions else 0
+        dim_l = sprite.dimensions.l if sprite.dimensions else 0
+
+        # Calculate sensory ground contact point (center-x, bottom-y)
+        foot_x = sprite.state.position.x + (dim_w // 2)
+        foot_y = sprite.state.position.y + dim_l
+
+        # -----------------------------------------------------------------
+        # VERTICAL STAIRS (UP / DOWN)
+        # -----------------------------------------------------------------
         if direction_val in (Directions.UP.value, Directions.DOWN.value):
-            stair_top = stairs.state.position.y
-            stair_len = stairs.dimensions.l
-            sprite_bottom = sprite.state.position.y + (sprite.dimensions.l if sprite.dimensions else 0)
-            tread_progress = (sprite_bottom - stair_top) / stair_len
+            stair_l = stairs.dimensions.l
+            if stair_l == 0:
+                return
+
+            tread_progress = (foot_y - stairs.state.position.y) / stair_l
 
             if direction_val == Directions.UP.value:
-                if tread_progress <= 0.2:
-                    sprite.state.elevation = e_top
-                elif tread_progress >= 0.8:
-                    sprite.state.elevation = e_base
-            else:
-                if tread_progress <= 0.2:
-                    sprite.state.elevation = e_base
-                elif tread_progress >= 0.8:
-                    sprite.state.elevation = e_top
+                # Ascent moves North (vy < 0); Descent moves South (vy > 0)
+                if tread_progress <= 0.2 and vy < 0:
+                    sprite.elevation = e_top
+                elif tread_progress >= 0.8 and vy > 0:
+                    sprite.elevation = e_base
 
+            elif direction_val == Directions.DOWN.value:
+                # Ascent moves South (vy > 0); Descent moves North (vy < 0)
+                if tread_progress >= 0.8 and vy > 0:
+                    sprite.elevation = e_top
+                elif tread_progress <= 0.2 and vy < 0:
+                    sprite.elevation = e_base
+
+        # -----------------------------------------------------------------
+        # HORIZONTAL STAIRS (LEFT / RIGHT)
+        # -----------------------------------------------------------------
         elif direction_val in (Directions.LEFT.value, Directions.RIGHT.value):
-            stair_left = stairs.state.position.x
             stair_w = stairs.dimensions.w
-            sprite_right = sprite.state.position.x + (sprite.dimensions.w if sprite.dimensions else 0)
-            tread_progress = (sprite_right - stair_left) / stair_w
+            if stair_w == 0:
+                return
+
+            tread_progress = (foot_x - stairs.state.position.x) / stair_w
 
             if direction_val == Directions.RIGHT.value:
-                if tread_progress >= 0.8:
-                    sprite.state.elevation = e_top
-                elif tread_progress <= 0.2:
-                    sprite.state.elevation = e_base
-            else:
-                if tread_progress <= 0.2:
-                    sprite.state.elevation = e_top
-                elif tread_progress >= 0.8:
-                    sprite.state.elevation = e_base
+                # Ascent moves East (vx > 0); Descent moves West (vx < 0)
+                if tread_progress >= 0.8 and vx > 0:
+                    sprite.elevation = e_top
+                elif tread_progress <= 0.2 and vx < 0:
+                    sprite.elevation = e_base
 
+            elif direction_val == Directions.LEFT.value:
+                # Ascent moves West (vx < 0); Descent moves East (vx > 0)
+                if tread_progress <= 0.2 and vx < 0:
+                    sprite.elevation = e_top
+                elif tread_progress >= 0.8 and vx > 0:
+                    sprite.elevation = e_base
+                    
     def _boundary(self, asset: Asset, boundary: Boundary):
         """
         Delegates Asset vs Boundary interaction to the specialized Cython constraint solver.
@@ -203,26 +229,21 @@ class CollisionMechanics(SpatialMechanic):
             weights = board.weights(layer)
             weights_by_elevation = collections.defaultdict(list)
             for w in weights:
-                weights_by_elevation[w.state.elevation].append(w)
+                tier = max(0, w.elevation)
+                weights_by_elevation[tier].append(w)
 
             for elevation, tier_weights in weights_by_elevation.items():
-                # ---------------------------------------------------------
-                # PHASE 1: Environmental Constraints
-                # ---------------------------------------------------------
+                # Phase 1: Boundary Constraints
                 perimeters = board.perimeters.get(layer, {}).get(elevation, [])
                 if perimeters:
                     dynamics = [
-                        w for w in tier_weights 
-                        if getattr(w.properties, 'mass', 0) > 0 
+                        w for w in tier_weights
+                        if getattr(w.properties, 'mass', 0) > 0
                         or w.taxonomy.instance == AssetInstances.PLAYERS.value
                     ]
-                    boundary_collisions = self.constrain(dynamics, perimeters)
-                    for asset, boundary in boundary_collisions:
+                    for asset, boundary in self.constrain(dynamics, perimeters):
                         self._boundary(asset, boundary)
-                        
-                # ---------------------------------------------------------
-                # PHASE 2: Dynamic Collisions
-                # ---------------------------------------------------------
-                colliding_pairs = self.collisions(tier_weights)
-                for asset_a, asset_b in colliding_pairs:
+
+                # Phase 2: Dynamic Collisions
+                for asset_a, asset_b in self.collisions(tier_weights):
                     self._resolve(asset_a, asset_b)

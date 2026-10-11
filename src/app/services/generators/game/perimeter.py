@@ -38,34 +38,44 @@ class Perimeter:
     Derives simply-connected outer hulls of an environment partitioned by layer and elevation tier.
     """
     def extract(self, board: Board, layer: str, elevation: Optional[int] = None) -> List[tuple[int, int, int, int]]:
-        """
-        Translates physical footprints for a specific elevation tier into raw mathematical primitives.
-        """
         rects = []
         
-        # 1. Map Tiles (Substrate floors bound to base elevation 0)
+        # 1. Map Tiles (Substrates belong to Tier 0)
         if elevation is None or elevation == 0:
             tiles = board.categories(AssetCategories.TILES.value, layer)
             for tile in tiles:
                 if tile.taxonomy.instance not in (AssetInstances.BACK.value, AssetInstances.FORE.value):
                     continue
-                    
                 w = tile.properties.dimensions.w
                 l = tile.properties.dimensions.l
                 nx = tile.state.multiple.nx
                 ny = tile.state.multiple.ny
-                
                 x1 = int(tile.state.position.x)
                 y1 = int(tile.state.position.y)
                 rects.append((x1, y1, x1 + (nx * w), y1 + (ny * l)))
             
-        # 2. Map Game Space matching elevation tier
+        # 2. Map Static Architecture
         objects = board.categories(AssetCategories.OBJECTS.value, layer)
         crafts = board.categories(AssetCategories.CRAFTS.value, layer)
         space = objects + crafts
         for obj in space:
-            if elevation is not None and obj.state.elevation != elevation:
+            # Exclude movable bodies from boundary hulls
+            mass = getattr(obj.properties, 'mass', 0)
+            if mass > 0 or obj.taxonomy.instance in (
+                AssetInstances.CRATES.value,
+                AssetInstances.CHESTS.value,
+                AssetInstances.RAFTS.value
+            ):
                 continue
+
+            # Elevation Partitioning: collapse <= 0 to Tier 0
+            if elevation is None or elevation == 0:
+                if obj.elevation > 0:
+                    continue
+            else:
+                if obj.elevation != elevation:
+                    continue
+
             x1 = int(obj.state.position.x)
             y1 = int(obj.state.position.y)
             rects.append((x1, y1, x1 + obj.dimensions.w, y1 + obj.dimensions.l))
@@ -73,16 +83,9 @@ class Perimeter:
         return rects
 
     def generate(self, board: Board, layer: str) -> Dict[int, List[Boundary]]:
-        """
-        Master orchestrator for the Perimeter Generator pipeline.
-        Derives boundaries independently for each active elevation tier on the layer.
-        """
-        logger.info(
-            f"Calculating dynamic perimeter boundaries for layer: {layer}"
-        )
-        
         weights = board.weights(layer)
-        elevations = {w.state.elevation for w in weights} | {0}
+        # Collapse all non-positive elevations to Tier 0
+        elevations = {max(0, w.elevation) for w in weights} | {0}
         perimeters_by_tier: Dict[int, List[Boundary]] = {}
 
         for elevation in elevations:
@@ -91,13 +94,8 @@ class Perimeter:
                 continue
                 
             raw_contours = geometry.contours(rects)
-            perimeter = [
+            perimeters_by_tier[elevation] = [
                 Boundary(Position(x, y), Dimensions(w, l))
                 for x, y, w, l, *_ in raw_contours
             ]
-            perimeters_by_tier[elevation] = perimeter
-            logger.info(
-                f"Derived tier={elevation} hull containing {len(perimeter)} edges."
-            )
-
         return perimeters_by_tier

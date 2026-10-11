@@ -12,49 +12,49 @@ compositions:
             - id: roof-slate
               name: castle-dawn-roof
               owner: bind(root.owner)
-              elevation: 1
+              elevation: 0
               position:
                 x: -34
                 y: -255
             - id: window-stone
               name: castle-dawn-window
               owner: bind(root.owner)
-              elevation: 1
+              elevation: 0
               position:
                 x: -33
                 y: -194
             - id: buttress-stone
               name: castle-dawn-buttress
               owner: bind(root.owner)
-              elevation: 1
+              elevation: 0
               position:
                 x: 0
                 y: -33
             - id: turret-stone
               name: castle-dawn-turret-00
               owner: bind(root.owner)
-              elevation: 1
+              elevation: 0
               position:
                 x: -66
                 y: -33
             - id: turret-stone
               name: castle-dawn-turret-01
               owner: bind(root.owner)
-              elevation: 1
+              elevation: 0
               position:
                 x: 188
                 y: -33
             - id: tower-stone
               name: castle-dawn-tower-00
               owner: bind(root.owner)
-              elevation: 1
+              elevation: 0
               position:
                 x: -65
                 y: -219
             - id: tower-stone
               name: castle-dawn-tower-01
               owner: bind(root.owner)
-              elevation: 1
+              elevation: 0
               position:
                 x: 220
                 y: -219
@@ -91,13 +91,13 @@ compositions:
           passive:
             - id: torch
               name: exterior-torch-01
-              elevation: 1
+              elevation: 0
               position:
                 x: 143
                 y: 3
             - id: torch
               name: exterior-torch-02
-              elevation: 1
+              elevation: 0
               position:
                 x: 11
                 y: 3

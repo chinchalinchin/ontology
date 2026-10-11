@@ -219,18 +219,18 @@ def _traverse_stairs(self, sprite: Asset, stairs: Asset) -> None:
 
 *Objective*: Deprecate `height`, rename `depth` to `elevation`, and update data structures.
 
-* [ ] Subtask: Remove `height` and rename `depth` to `elevation` in `AssetState`, `BridgeState`, and related state dataclasses in `app.models.state`.
-* [ ] Subtask: Update Cython extension types in `libs/core/models.pyx` and pxd declarations to reflect `elevation`.
-* [ ] Subtask: Refactor `PropertiesSchema` and state loader definitions to migrate existing YAML property files from `depth` to `elevation`.
-* [ ] Subtask: Remove `node_height` tracking and `bind(root.height)` / `bind(parent.height)` parsing routines from `Decomposer`.
+* [x] Subtask: Remove `height` and rename `depth` to `elevation` in `AssetState`, `BridgeState`, and related state dataclasses in `app.models.state`.
+* [x] Subtask: Update Cython extension types in `libs/core/models.pyx` and pxd declarations to reflect `elevation`.
+* [x] Subtask: Refactor `PropertiesSchema` and state loader definitions to migrate existing YAML property files from `depth` to `elevation`.
+* [x] Subtask: Remove `node_height` tracking and `bind(root.height)` / `bind(parent.height)` parsing routines from `Decomposer`.
 
 **2. Task: Screen Painter's Algorithm Sorting**
 
 *Objective*: Refactor screen draw sorting to use primary elevation tiers and secondary $y + l$ perspective.
 
-* [ ] Subtask: Refactor `Screen._sort()` in `src/app/game/screen.py` to evaluate `(asset.state.elevation, asset.state.position.y + asset.dimensions.l)`.
-* [ ] Subtask: Remove string-to-integer height coercion and fallback branches in `Screen.draw()`.
-* [ ] Subtask: Audit `Screen.draw()` AABB culling to ensure high-elevation overlays are not prematurely culled.
+* [x] Subtask: Refactor `Screen._sort()` in `src/app/game/screen.py` to evaluate `(asset.state.elevation, asset.state.position.y + asset.dimensions.l)`.
+* [x] Subtask: Remove string-to-integer height coercion and fallback branches in `Screen.draw()`.
+* [x] Subtask: Audit `Screen.draw()` AABB culling to ensure high-elevation overlays are not prematurely culled.
 
 **3. Task: Crafts Stairs Instance Registration**
 
@@ -241,7 +241,7 @@ def _traverse_stairs(self, sprite: Asset, stairs: Asset) -> None:
 * [x] Subtask: Configure recipe mapping in `recipes.yaml` binding `stairs` to `DirectedFrame`, `NoAnimation`, and `DirectedHitboxed.
 * [x] Subtack: Implement StairState.
 * [x] Subtack: Implement DirectedFrame and DirectedHitbox.
-* [ ] Subtask: Register `crafts.stairs` in `PropertiesSchema`, `StateSchema`, and `Decomposer._accumulate_cost`.
+* [x] Subtask: Register `crafts.stairs` in `PropertiesSchema`, `StateSchema`, and `Decomposer._accumulate_cost`.
 
 *Notes*
 
@@ -251,18 +251,18 @@ def _traverse_stairs(self, sprite: Asset, stairs: Asset) -> None:
 
 *Objective*: Enforce elevation-isolated collision detection and perimeter constraints.
 
-* [ ] Subtask: Update `Board.weights(layer, elevation=None)` and `Board.obstacles(layer, elevation=None)` to support elevation filtering.
-* [ ] Subtask: Refactor `Perimeter.generate()` to bucket boundary hulls by `(layer, elevation)`.
-* [ ] Subtask: Update `CollisionMechanics.update()` to group active physical bodies by elevation before delegating to `self.collisions()` and `self.constrain()`.
-* [ ] Subtask: Ensure sensor collisions (plates, doors, stairs) conditionally match trigger elevation.
+* [x] Subtask: Update `Board.weights(layer, elevation=None)` and `Board.obstacles(layer, elevation=None)` to support elevation filtering.
+* [x] Subtask: Refactor `Perimeter.generate()` to bucket boundary hulls by `(layer, elevation)`.
+* [x] Subtask: Update `CollisionMechanics.update()` to group active physical bodies by elevation before delegating to `self.collisions()` and `self.constrain()`.
+* [x] Subtask: Ensure sensor collisions (plates, doors, stairs) conditionally match trigger elevation.
 
 **5. Task: Stairway Traversal & State Mutation**
 
 *Objective*: Enable smooth elevation transitions when crossing stair entities.
 
-* [ ] Subtask: Implement `InteractionMechanics._stairs()` to evaluate character spatial progress across stair incline footprints.
-* [ ] Subtask: Mutate character `state.elevation` dynamically upon crossing the upper/lower boundary thresholds.
-* [ ] Subtask: Add directional alignment validation to prevent side-entry elevation exploits.
+* [x] Subtask: Implement `InteractionMechanics._stairs()` to evaluate character spatial progress across stair incline footprints.
+* [x] Subtask: Mutate character `state.elevation` dynamically upon crossing the upper/lower boundary thresholds.
+* [x] Subtask: Add directional alignment validation to prevent side-entry elevation exploits.
 
 **6. Task: Test Bed Migration & Regression Suite**
 
@@ -272,3 +272,58 @@ def _traverse_stairs(self, sprite: Asset, stairs: Asset) -> None:
 * [!: Conditional on **User Acceptance** of previous task] Subtask: Add unit tests in `test_collision.py` asserting bodies at different elevations bypass Phase 1 constraints and Phase 2 overlap resolution.
 *[!: Conditional on **User Acceptance** of previous task] Subtask: Add unit tests in `test_screen.py` asserting assets with higher elevation render on top of lower elevation assets regardless of lower $y + l$ values.
 * [!: Conditional on **User Acceptance** of previous task] Subtask: Add integration tests verifying stair traversal correctly increments and decrements player elevation.
+
+##### Debugging Sessions
+
+Original session omitted for brevity. Below is the comprehensive audit of architectural and implementation changes introduced during this session.
+
+###### 1. The Substrate Hierarchy Registry & Dynamic Elevation Fallback
+
+* **Original Spec**: `elevation` was conceived as a static integer field (`elevation: int = 0`) on `AssetState` replacing `depth` and `height`. All substrates and ground entities defaulted to `0`.
+
+* **Added / Changed**:
+  * Created `settings.SUBSTRATES` as a canonical instance-keyed mapping assigning negative integer tiers to terrain substrates (`back: -4`, `fluids: -3`, `shorelines: -2`, `bridges: -1`).
+  * Updated `AssetState.elevation` to `Optional[int] = None`.
+  * Added dynamic `@property` and `@elevation.setter` on `Asset` to lazily resolve substrate defaults when unset, while preserving explicit state overrides for upper-tier bridges or custom elevations.
+
+###### 2. Three-Key Lexicographical Painter's Algorithm (`elevation`, `ground_y`, `priority`)
+
+* **Original Spec**: `Screen._sort` evaluated a 2-tuple:
+
+$$
+\text{sort\_key}(A) = (A.\text{state.elevation},\; \text{int}(A.\text{state.position.y} + A.\text{dimensions.l}))
+$$
+
+
+* **Added / Changed**:
+  * Proved that a 2-tuple cannot distinguish inset wall fixtures from objects standing behind buildings.
+  * Added `priority: int = 0` to `AssetProperties` as an archetype-level surface tie-breaker.
+  * Added `anchor: int = 0` to `AssetState` to allow wall fixtures to align with their host facade's ground contact line.
+  * Expanded `Screen._sort` to evaluate `(asset.elevation, ground_y, asset.properties.priority)` with $\text{ground\_y} = \text{int}(\text{pos.y} + l + \text{anchor})$.
+
+###### 3. Sanitation of `Perimeter` Boundary Extraction & Dynamic Body Exclusion
+
+* **Original Spec**: `Perimeter.extract()` partitioned hulls by `(layer, elevation)` matching static architecture to `elevation`.
+
+* **Added / Changed**:
+  * Identified that `Perimeter.extract()` was naively pulling dynamic bodies (`mass > 0`, `crates`, `chests`) into the mathematical obstacle hull, baking initial coordinates of movable furniture (like `wood-bookshelf`) into boundary perimeters and triggering recursive collision jitter loops in `physics.constrain`.
+  * Added an explicit static filter in `Perimeter.extract()` excluding all movable bodies and dynamic containers.
+  * Added substrate floor inclusion for Tier 0: ensured room floorboards (`elevation <= 0` with $m = -1$) are included in boundary synthesis so interior spaces do not generate inverted perimeter edges around furniture footprints.
+
+###### 4. Non-Positive Elevation Clamping for Physics & Hydrology
+
+* **Original Spec**: Broad-phase and narrow-phase collision mechanics partitioned purely by matching discrete elevation integers ($E_A == E_B$).
+
+* **Added / Changed**:
+  * With substrates assigned negative elevations (`-4` to `-1`), physical partitioning risked fragmenting ground-level interactions.
+  * Updated `CollisionMechanics.update()` to map non-positive elevations to Tier 0 (`max(0, w.elevation)`), unifying ground entities while preserving isolation for upper tiers ($E \ge 1$).
+  * Updated `Actuator._collect_obstacles()` to clamp non-positive fluid elevations to 0 (`fluid.elevation if fluid.elevation > 0 else 0`), ensuring fluid stream raycasts interact with ground-level obstacle hulls correctly.
+  * Updated `Board.weights()` and `Board.obstacles()` queries to treat `elevation == 0` as matching all entities where `elevation <= 0`.
+
+###### 5. Decomposer Unique Nomenclature Generation (Preexisting Defect Resolution)
+
+* **Original Spec**: Only called for removing `node_height` tracking and `bind(root.height)` parsing from `Decomposer`.
+
+* **Added / Changed**:
+  * Discovered that `Decomposer._hydrate_state()` discarded `kwargs.get('name')` for non-strut child components, assigning identical generated names to sibling entities under the same parent strut (e.g., 3 doors named `door-strut-castle-dawn-exterior-3-3`, 4 interior doors named `door-strut-castle-atrium-floor-3-3`).
+  * Fixed nomenclature generation to preserve the component's unique configuration name: `<instance>-<parent_name>-<comp_name>-<increment>`.

@@ -1,7 +1,9 @@
 from app.assets.hitboxes.core import (
     StaticHitbox,
     NoHitbox,
-    DynamicHitbox
+    DynamicHitbox,
+    OrientedHitbox,
+    DirectedHitbox,
 )
 from app.assets.hitboxes.sheets import (
     AttackHitbox
@@ -15,5 +17,7 @@ __all__ = [
     "NoHitbox",
     "DynamicHitbox",
     "AttackHitbox",
-    "StageHitbox"
+    "StageHitbox",
+    "OrientedHitbox",
+    "DirectedHitbox"
 ]
