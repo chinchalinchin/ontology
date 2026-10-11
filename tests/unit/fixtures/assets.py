@@ -18,6 +18,7 @@ from app.assets.frames import (
     SingleFrame,
     SpriteFrame,
     OrientedFrame,
+    DirectedFrame,
     SeasonalFrame,
     StageFrame
 )
@@ -26,6 +27,7 @@ from app.assets.hitboxes import (
     DynamicHitbox,
     StageHitbox,
     AttackHitbox,
+    DirectedHitbox,
     NoHitbox
 )
 from app.assets.animations import (
@@ -42,6 +44,26 @@ from app.config.enums import (
 # --------------------------------------------------------------------------
 # -------------------------------------------------------------- MOCK ASSETS
 # --------------------------------------------------------------------------
+
+@pytest.fixture
+def mock_stairs(
+    mock_craft_properties,
+    mock_stair_state
+) -> Asset:
+    return Asset(
+        taxonomy=Taxonomy(
+            id="stairs-stone",
+            name="stairs-main",
+            category=AssetCategories.CRAFTS.value,
+            instance=AssetInstances.STAIRS.value
+        ),
+        properties=mock_craft_properties.stairs.get("stairs-stone"),
+        state=mock_stair_state,
+        frame=DirectedFrame(),
+        animation=NoAnimation(),
+        hitbox=DirectedHitbox()
+    )
+
 
 @pytest.fixture
 def mock_tree_resource(
@@ -550,6 +572,7 @@ def mock_assets(
     mock_strut_alt2,
     mock_raft,
     mock_bridge,
+    mock_stairs,
     mock_tree_resource,
     mock_crop_resource,
 ) -> list[Asset]:
@@ -571,6 +594,7 @@ def mock_assets(
       mock_strut_alt2,
       mock_raft,
       mock_bridge,
+      mock_stairs,
       mock_tree_resource,
       mock_crop_resource,
   ]

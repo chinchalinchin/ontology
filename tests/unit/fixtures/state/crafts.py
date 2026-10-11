@@ -9,11 +9,13 @@ import pytest
 # Application Libraries
 
 from app.config.enums import ( 
-    Orientations
+    Orientations,
+    Directions
 )
 from app.models.state import (
     PropertyState,
     BridgeState,
+    StairState
 )
 
 # Cython Libraries
@@ -67,4 +69,16 @@ def mock_bridge_state() -> BridgeState:
         orientation=Orientations.HORIZONTAL.value,
         multiple=Multiple(nx=1, ny=1),
         owner="player"
+    )
+
+@pytest.fixture
+def mock_stair_state() -> StairState:
+    return StairState(
+        id="stairs-stone",
+        name="stairs-main",
+        layer="0",
+        position=Position(x=100, y=100),
+        direction=Directions.UP.value,
+        delta=1,
+        elevation=0
     )

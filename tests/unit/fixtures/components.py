@@ -132,16 +132,17 @@ def mock_board(
         configurations=mock_configurations, 
         equipment=mock_equipment
     )
-    board.perimeters["0"] = [
-        Boundary(Position(0, 0), Dimensions(320, 1)),
-        Boundary(Position(0, 319), Dimensions(320, 1)),
-        Boundary(Position(0, 0), Dimensions(1, 320)),
-        Boundary(Position(319, 0), Dimensions(1, 320))
-    ]
+    board.perimeters["0"] = {
+        0: [
+            Boundary(Position(0, 0), Dimensions(320, 1)),
+            Boundary(Position(0, 319), Dimensions(320, 1)),
+            Boundary(Position(0, 0), Dimensions(1, 320)),
+            Boundary(Position(319, 0), Dimensions(1, 320))
+        ]
+    }
     board.set_cradle(mock_cradle)
     board.set_device(mock_keyboard)
     return board
-
 
 @pytest.fixture
 def mock_keyboard(

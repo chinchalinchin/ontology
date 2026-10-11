@@ -202,3 +202,54 @@ def test_collision_mechanics_update_static_vs_dynamic_boundary_filtering(mock_bo
     # Dynamic body displaced out of the western boundary with inverted velocity
     assert crate.state.position.x > 0
     assert crate.state.velocity.vx == 10.0
+
+@pytest.mark.physics
+@pytest.mark.collisions
+def test_collision_mechanics_elevation_tier_isolation(mock_board):
+    """
+    Verifies dynamic entities on different elevation tiers bypass overlap resolution.
+    """
+    mechanic = CollisionMechanics()
+    bus = collections.deque()
+    payload = mock_board.device.poll() if mock_board.device else None
+
+    player = mock_board.player()
+    crate = mock_board.asset("box")
+
+    # Stack entities at identical (x, y) coordinates but different elevation tiers
+    player.elevation = 0
+    player.state.position = Position(100, 100)
+
+    crate.elevation = 1
+    crate.state.position = Position(100, 100)
+
+    mechanic.update(mock_board, 0.016, bus, payload)
+
+    # Neither entity should be displaced
+    assert player.state.position.x == 100
+    assert player.state.position.y == 100
+    assert crate.state.position.x == 100
+    assert crate.state.position.y == 100
+
+
+@pytest.mark.physics
+@pytest.mark.collisions
+def test_collision_mechanics_boundary_elevation_isolation(mock_board):
+    """
+    Verifies dynamic entities with elevation >= 1 do not interact with Tier 0 perimeters.
+    """
+    mechanic = CollisionMechanics()
+    bus = collections.deque()
+    payload = mock_board.device.poll() if mock_board.device else None
+
+    crate = mock_board.asset("box")
+    # Position crate intersecting Tier 0 western boundary at x=0 with incoming velocity
+    crate.elevation = 1
+    crate.state.position = Position(0, 50)
+    crate.state.velocity = Velocity(-10.0, 0.0)
+
+    mechanic.update(mock_board, 0.016, bus, payload)
+
+    # Elevation 1 body ignores Tier 0 perimeter
+    assert crate.state.position.x == 0
+    assert crate.state.velocity.vx == -10.0

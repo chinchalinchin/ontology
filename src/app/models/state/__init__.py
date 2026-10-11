@@ -16,6 +16,8 @@ from app.models.state.assets import (
     # ---- CRAFT STATES
     PropertyState,
     BridgeState,
+    PlatformState,
+    StairState,
     # ---- CURSOR STATES
     MotorState,
     AttachmentState,
@@ -100,6 +102,8 @@ __all__ = [
     # CRAFT STATES
     'PropertyState',
     'BridgeState',
+    'StairState',
+    'PlatformState',
     # CURSOR STATES
     'MotorState',
     'AttachmentState',

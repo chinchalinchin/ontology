@@ -387,7 +387,6 @@ $$
 \text{anchor} = (y_{\text{target}} + l_{\text{target}}) - (y_{\text{self}} + l_{\text{self}})
 $$
 
-
 * Supported targets:
   * `anchor(parent)`: Anchors to the immediate parent strut's baseline.
   * `anchor(root)`: Anchors to the root strut's baseline.

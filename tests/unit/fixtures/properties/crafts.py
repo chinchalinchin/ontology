@@ -7,6 +7,9 @@ Mock Asset Property fixtures.
 import pytest
 
 # Application Libraries
+from app.config.enums import (
+    Directions
+)
 from app.models.properties import (
     Cost,
     CraftProperties,
@@ -76,5 +79,30 @@ def mock_craft_properties() -> CraftPropertyInstances:
                 mass=-1,
                 hitboxes=[Hitbox(Position(0, 8), Dimensions(32, 16))]
             ),
+        },
+        stairs={
+            'stairs-stone': CraftProperties(
+                dimensions=Dimensions(w=32, l=96),
+                cost=[Cost(item="stone", quantity=12)],
+                mass=-1,
+                hitboxes={
+                    Directions.UP.value: [
+                        Hitbox(Position(0, 27), Dimensions(1, 53)),
+                        Hitbox(Position(31, 27), Dimensions(1, 53))
+                    ],
+                    Directions.DOWN.value: [
+                        Hitbox(Position(0, 16), Dimensions(1, 53)),
+                        Hitbox(Position(31, 16), Dimensions(1, 53))
+                    ],
+                    Directions.LEFT.value: [
+                        Hitbox(Position(16, 0), Dimensions(53, 1)),
+                        Hitbox(Position(16, 31), Dimensions(53, 1))
+                    ],
+                    Directions.RIGHT.value: [
+                        Hitbox(Position(27, 0), Dimensions(53, 1)),
+                        Hitbox(Position(27, 31), Dimensions(53, 1))
+                    ]
+                }
+            )
         }
     )

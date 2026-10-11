@@ -68,20 +68,20 @@ tools:
     designer:
       palettes: false
     manager:
-      board: true
+      board: false
       specs: false
-      docs: true
+      docs: false
     source:
-      workflow: true
+      workflow: false
       script: false
     shell:
-      directory: true
+      directory: false
       commands: false
     tests:  
-      pipeline: false
-      fixtures: false
+      pipeline: true
+      fixtures: true
       session: false
-      workflow: false
+      workflow: true
 # ----------------------------------------------------
   parameters:
     designer:
@@ -126,7 +126,7 @@ tools:
         # ----------------------------
         - configuration/compositions
         # - configuration/groups
-        # - configuration/recipes
+        - configuration/recipes
         # - configuration/transitions
         # - configuration/schemas
         # ----------------------------
@@ -153,7 +153,7 @@ tools:
         - assets
         - components
         # - menus
-        # - services
+        - services
         # - structures
       workflow: collisions
       session:
