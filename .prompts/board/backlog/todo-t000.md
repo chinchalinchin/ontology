@@ -1,47 +1,100 @@
-### Backlog: Telemetry Menu
+#### Backlog: TODO T000 - Telemetry Module
 
-**Overview**: Implement a real-time diagnostic overlay capable of tracking core loop execution times without degrading the performance it aims to measure. The HUD will be conditionally injected into the render pipeline via a CLI flag and update at a staggered frequency to prevent string-allocation GC spikes.
+**Overview**
 
-**Goal**: Establish the CLI boundary, profile the inner engine loops, configure the Widget schemas, and route the formatted data to the Cython rendering canvases.
+The current debugging architecture relies on static post-mortem state dumps written during process teardown. This prevents developers from inspecting transient state transformations during active execution, such as Symplectic Euler velocity integration, RRT trajectory convergence, dynamic hydrological moisture diffusion, and Intention Finite Automata state transitions.
 
-#### Task 1: The Input Boundary (CLI & Orchestrator)
+This proposal defines `app.telemetry`: an asynchronous, non-blocking telemetry and state introspection daemon embedded into the game engine lifecycle. It provides an interface to query the `Board` database in real time during live 60 Hz simulation without disrupting frame pacing or violating the zero-heap allocation design principles of the inner loop.
 
-*Objective*: Allow developers to conditionally trigger the telemetry overlay at runtime without altering static board configuration files.
+##### Specification
 
-* [ ] **Subtask**: Update `src/cli.py` to include a `--telemetry` (or `-t`) boolean flag under the `start` command group using your CLI parsing library (e.g., `argparse` or `click`).
-* [ ] **Subtask**: Pass the telemetry flag down through `Orchestrator.orchestrate(...)`.
-* [ ] **Subtask**: Update the `Context` dataclass in `app.services.constructors` to accept `telemetry: bool = False`.
+`app.telemetry` operates via a lightweight IPC/socket probe and a dedicated `CoreMechanic` pipeline:
 
-#### Task 2: The Engine Profiling Layer
+1. **Architecture & Threading Model**:
+* `TelemetryServer`: Operates on an independent daemon thread, serving queries via an IPC domain socket (`/tmp/ontology-telemetry.sock`) or loopback TCP (`127.0.0.1:9229`).
+* `TelemetryMechanic` (`app.mechanics.core.telemetry`): Registered in `Engine.core`. Executes on every engine tick at the boundary between physics integration and Screen rasterization. It consumes inbound probe requests, executes deterministic queries against the `Board`, and dispatches structured serialization payloads across a thread-safe lock-free buffer (`queue.SimpleQueue`).
+* Concurrency Safety: Python GIL locking during frame mutation is avoided by constraining Board queries strictly to the synchronous execution of `TelemetryMechanic.update()`. The background thread handles network I/O and payload serialization exclusively.
 
-*Objective*: Capture high-precision execution timings of the `core` and `world` mechanics, alongside the Cython `draw` pipeline, without blocking the loop.
 
-* [ ] **Subtask**: Create a `Diagnostics` or `TelemetryState` dataclass to hold rolling averages (e.g., `update_ms`, `render_ms`, `fps`, `ups`). Attach this to the `Board` (e.g., `board.diagnostics`) so it is globally queryable by Controllers.
-* [ ] **Subtask**: In `Engine.start()`, wrap the `self._play(delta)` and `self._drain()` calls with `time.perf_counter_ns()` to calculate the exact millisecond duration of the logic tick.
-* [ ] **Subtask**: In `Engine.start()`, wrap the `self._render()` call with `time.perf_counter_ns()` to calculate the millisecond duration of the Cython draw step.
-* [ ] **Subtask**: Update the internal telemetry accumulator to write these calculated values to `board.diagnostics`.
+2. **Query Grammar**:
+* `GET /assets?category=<regex>&instance=<regex>&id=<regex>&name=<regex>&layer=<str>&elevation=<int>`
+* `GET /metrics`: Fixed-tick delta, FPS, entity count per bucket, spatial grid occupancy, and active RRT node allocations.
+* `GET /hydrology?layer=<str>&x=<int>&y=<int>`: Live evaluation of `board.moisture(layer, x, y)` and `board.fluid(layer, Position(x, y))`.
+* `GET /character/<name>`: Focused telemetry stream of NPC Psyche, Goal, Trajectory, and Intention vectors.
 
-#### Task 3: The UI Layer (Widget Configuration)
 
-*Objective*: Define the visual layout of the telemetry HUD using the engine's existing `Widget` architecture.
+3. **Output Transports**:
+* Compact binary/JSON payloads for high-frequency consumption.
+* Streaming CLI subcommands (`python main.py telemetry --stream --instances sprites`).
 
-* [ ] **Subtask**: In `/src/data/config/menus/main.yaml`, define a new menu block for `telemetry` (utilizing a transparent `Pane` aligned to the top-left or top-right).
-* [ ] **Subtask**: Define text `Widget` properties (e.g., `WidgetRecipe.METER` or `SINGLE` with a designated `dialogue` font) to represent the lines for FPS, UPS, Update Time, and Render Time.
-* [ ] **Subtask**: Update the `Menus` Enum in `app.config.enums` to include `TELEMETRY`.
 
-#### Task 4: Injection & Rendering (Controller & Event Bus)
 
-*Objective*: Safely push the diagnostic text to the Cython canvas utilizing the `Screen.stamp` interface.
+##### Architectural Analysis I
 
-* [ ] **Subtask**: Create a `TelemetryController` (inheriting from your Menu controller base).
-* [ ] **Subtask**: Implement `TelemetryController.update()`. To adhere to the "Zero Heap Allocation" philosophy, implement a modulo gate (e.g., `if board.diagnostics.frames % 15 == 0:`) so the controller only generates new Python strings (`f"FPS: {fps}"`) four times a second, rather than every frame.
-* [ ] **Subtask**: Inside the gated update, push `UpdateEvent(widget, new_string)` to the engine `bus` for each telemetry widget.
-* [ ] **Subtask**: In `Engine._drain()`, intercept the `TerminalEvent` generated by the load screen. If `self.board.configurations.settings.telemetry` (or the passed CLI flag) is `True`, instruct the `Provider` to unpack the `TELEMETRY` menu and append it to `board.overlays` right next to the `VIEW` (HUD) menu.
+1. **State Isolation & GIL Contention**:
+Querying the `Board` directly from an external socket thread introduces race conditions against Cython pointer dereferencing and state mutations in `physics.pyx`. Executing queries through a `CoreMechanic` guarantees tick-boundary serialization where asset positions, velocities, and bounding boxes are static.
+2. **Allocation Overhead**:
+Continuous polling must not cause GC frame stutter. The telemetry pipeline utilizes pre-allocated primitive dictionaries and Cython-to-primitive conversions (`Asset.primitive()`) for spatial queries, delegating JSON serialization to the background worker thread.
+3. **Live Engine Debugging**:
+Enables attaching headless observer terminals or curses monitors to a running engine session, recording anomalous NPC oscillations, tracking RRT path generation retries (`trajectory.stalled`), and validating moisture fields on demand.
 
-#### Task 5: Coverage & Documentation
+##### Goals
 
-*Objective*: Ensure the new diagnostic tooling is tested and documented for future phases.
+###### Goal: Non-Blocking Tick Boundary Querying
 
-* [ ] **Subtask**: Write unit tests in `test_app_game_engine.py` asserting that `_play` and `_render` correctly populate `board.diagnostics`.
-* [ ] **Subtask**: Write unit tests verifying the CLI flag successfully flags the `Context` and results in the `TELEMETRY` menu being appended to the `overlays` stack.
-* [ ] **Subtask**: Update `/docs/06-widgets.md` to document the existence and schema of the Telemetry HUD.
+Implement `TelemetryMechanic` within `app.mechanics.core` to process queued query commands synchronously at tick completion:
+
+```python
+class TelemetryMechanic(Mechanic):
+    def update(self, board: Board, delta: float, bus: Bus) -> None:
+        while not self.inbound_queue.empty():
+            query = self.inbound_queue.get_nowait()
+            result = self.evaluate_query(board, query)
+            self.outbound_queue.put_nowait(result)
+
+```
+
+###### Goal: Daemon IPC Server
+
+Construct `TelemetryServer` in `app.telemetry.server` managing socket connections and serializing query responses asynchronously.
+
+###### Goal: Live CLI Client Integration
+
+Expose a new `telemetry` subcommand in `main.py` allowing developers to inspect a live engine process:
+
+```bash
+python main.py telemetry --instances sprites --names npc_merchant
+
+```
+
+##### Tasks
+
+**1. Task: Protocol Definition and Data Models**
+
+*Objective*: Design internal request/response schemas for live engine queries in `app.telemetry.models`.
+
+* [ ] Subtask: Define `TelemetryRequest` and `TelemetryResponse` dataclasses supporting regex filtering parameters.
+* [ ] Subtask: Implement zero-copy primitive serialization wrappers for `Board` state entities.
+
+**2. Task: Telemetry Mechanic Implementation**
+
+*Objective*: Integrate telemetry query resolution into the engine loop via `app.mechanics.core.telemetry`.
+
+* [ ] Subtask: Construct `TelemetryMechanic` inheriting from base `Mechanic`.
+* [ ] Subtask: Integrate `board.instances()`, `board.categories()`, and `predicates` query filters into the execution loop.
+* [ ] Subtask: Register `TelemetryMechanic` in `MechanicsFactory` under core mechanics pipelines.
+
+**3. Task: IPC Transport Daemon**
+
+*Objective*: Build the asynchronous IPC server in `app.telemetry.server`.
+
+* [ ] Subtask: Implement non-blocking domain socket and loopback socket listener.
+* [ ] Subtask: Implement queue synchronizer communicating with `TelemetryMechanic`.
+* [ ] Subtask: Wire daemon initialization into `Orchestrator.orchestrate()`.
+
+**4. Task: CLI Telemetry Command**
+
+*Objective*: Add client-side inspection tooling in `cli.py`.
+
+* [ ] Subtask: Add `telemetry` subparser with filter arguments mirroring the state dump options.
+* [ ] Subtask: Implement continuous terminal streaming and single-shot query output formatters.

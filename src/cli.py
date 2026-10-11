@@ -12,7 +12,9 @@ import os
 import signal
 import faulthandler
 import datetime
+import re
 from pathlib import Path
+from typing import Dict, List, Optional, Any
 
 # External Libraries
 import jinja2
@@ -52,11 +54,22 @@ def arguments():
     parser = argparse.ArgumentParser(description="Ontology CLI Tools")
     parser.add_argument("--log-level", type=str, default="INFO", 
                         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
-    parser.add_argument("--dump-state", action="store_true", default=False)
+    parser.add_argument("--dump-state", action="store_true", default=False,
+                        help="Export state dump upon execution termination.")
     parser.add_argument("--dump-menus", action="store_true", default=False)
     parser.add_argument("--dump-sdl", action="store_true", default=False)
     parser.add_argument("--dump-registry", action="store_true", default=False)
     parser.add_argument("--software", action="store_true", default=False)
+
+    # State Dump Filter Arguments (Regex enabled, comma-delimited)
+    parser.add_argument("--instances", type=str, default=None,
+                        help="Comma-separated regex patterns to filter asset instances (e.g. 'sprites,crate.*').")
+    parser.add_argument("--categories", type=str, default=None,
+                        help="Comma-separated regex patterns to filter asset categories (e.g. 'sheets,objects').")
+    parser.add_argument("--ids", type=str, default=None,
+                        help="Comma-separated regex patterns to filter asset IDs.")
+    parser.add_argument("--names", type=str, default=None,
+                        help="Comma-separated regex patterns to filter asset names.")
 
     subparsers = parser.add_subparsers(dest="command", required=True)
     
@@ -84,10 +97,56 @@ def arguments():
 # COMMAND HELPERS
 # ---------------------------------------------------------
 
-def dump(board_key, context, temp='state'):
+def filter_assets(assets: List[Any], filters: Optional[Dict[str, Optional[str]]] = None) -> List[Any]:
+    """
+    Applies regex filtering to the Asset sequence across instances, categories, ids, and names.
+    Excludes Widgets unconditionally.
+    """
+    # 1. Filter out Widgets
+    non_widgets = [
+        a for a in assets 
+        if getattr(a, "category", None) != AssetCategories.WIDGETS.value
+    ]
+    if not filters:
+        return non_widgets
+
+    # 2. Compile active regex pattern sequences
+    active_filters: Dict[str, List[re.Pattern]] = {}
+    attr_map = {
+        "instances": "instance",
+        "categories": "category",
+        "ids": "id",
+        "names": "name",
+    }
+
+    for filter_key, attr_name in attr_map.items():
+        raw_val = filters.get(filter_key)
+        if raw_val:
+            patterns = [p.strip() for p in raw_val.split(",") if p.strip()]
+            active_filters[attr_name] = [re.compile(p) for p in patterns]
+
+    if not active_filters:
+        return non_widgets
+
+    # 3. Predicate evaluation (conjunction of filters, disjunction of patterns per filter)
+    matched_assets = []
+    for asset in non_widgets:
+        include = True
+        for attr_name, compiled_list in active_filters.items():
+            val = getattr(asset, attr_name, "") or ""
+            if not any(regex.search(str(val)) for regex in compiled_list):
+                include = False
+                break
+        if include:
+            matched_assets.append(asset)
+
+    return matched_assets
+
+
+def dump(board_key: Optional[str], context: Any, temp: str = "state", filters: Optional[Dict[str, Optional[str]]] = None):
     logger.info(f"Generating {temp} dump...")
     
-    template_filename = getattr(settings, 'DUMP_TEMPLATES', {}).get(temp, f"{temp}.md")
+    template_filename = getattr(settings, "DUMP_TEMPLATES", {}).get(temp, f"{temp}.md")
     template_path = settings.TEMPLATE_DIR / template_filename
     
     if not template_path.exists():
@@ -100,24 +159,29 @@ def dump(board_key, context, temp='state'):
     template = jinja2.Template(template_str)
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    args = {
-        'board_key': board_key or "default",
-        'timestamp': timestamp
+    args: Dict[str, Any] = {
+        "board_key": board_key or "default",
+        "timestamp": timestamp
     }
 
-    if temp == 'state':
-        args['assets'] = context.assets()
-        if hasattr(context, 'perimeters'):
-            args['perimeters'] = context.perimeters() if callable(context.perimeters) else context.perimeters
+    if temp == "state":
+        raw_assets = context.assets() if hasattr(context, "assets") else []
+        args["assets"] = filter_assets(raw_assets, filters)
+        if hasattr(context, "perimeters"):
+            args["perimeters"] = context.perimeters() if callable(context.perimeters) else context.perimeters
+        if hasattr(context, "calendar"):
+            args["calendar"] = context.calendar
+        if hasattr(context, "plot"):
+            args["plot"] = context.plot
 
-    elif temp == 'menus':
-        args['menus'] = context.menus
-        args['overlays'] = context.overlays
+    elif temp == "menus":
+        args["menus"] = context.menus
+        args["overlays"] = context.overlays
         
-    elif temp == 'sdl':
-        args['sys_info'] = get_system_info()
+    elif temp == "sdl":
+        args["sys_info"] = get_system_info()
         
-    elif temp == 'registry':
+    elif temp == "registry":
         screen = next(iter(context.screens.values()))
         
         frames = {}
@@ -131,8 +195,8 @@ def dump(board_key, context, temp='state'):
                 "crop_l": cl
             }
             
-        args['textures'] = list(screen.registry._textures.keys())
-        args['frames'] = frames
+        args["textures"] = list(screen.registry._textures.keys())
+        args["frames"] = frames
 
     dump_str = template.render(**args)
     dump_out_path = settings.DUMP_DIR / f"{timestamp}.{temp}-dump.md"
@@ -305,7 +369,7 @@ def handle_start(args, orchestrator, screensize):
 COMMAND_REGISTRY = {
     "prerender": handle_prerender,
     "render": handle_render,
-    'map': handle_map,
+    "map": handle_map,
     "start": handle_start
 }
 
@@ -314,7 +378,6 @@ COMMAND_REGISTRY = {
 # ---------------------------------------------------------
 
 def main():
-    # Diagnostic Instrumentation: dump C-level tracebacks on unexpected SIGSEGV
     faulthandler.enable()
 
     args = arguments()
@@ -336,21 +399,29 @@ def main():
 
     engine = handler(args, orchestrator, screensize)
 
+    # State Query Filter Configuration
+    state_filters = {
+        "instances": args.instances,
+        "categories": args.categories,
+        "ids": args.ids,
+        "names": args.names
+    }
+
     # Deferred Dumps Execution
     if args.dump_state:
-        dump(args.board_key, engine.board, 'state')
+        dump(args.board_key, engine.board, "state", filters=state_filters)
 
     if args.dump_menus:
-        dump(args.board_key, engine.board, 'menus')
+        dump(args.board_key, engine.board, "menus")
         
     if args.dump_sdl:
-        dump(args.board_key, engine.board, 'sdl')
+        dump(args.board_key, engine.board, "sdl")
         
     if args.dump_registry:
-        dump(args.board_key, engine, 'registry')
+        dump(args.board_key, engine, "registry")
     
     # Strictly ordered teardown to prevent post-SDL_Quit use-after-free
-    if 'engine' in locals() and engine is not None:
+    if "engine" in locals() and engine is not None:
         engine.stop()
         del engine
         

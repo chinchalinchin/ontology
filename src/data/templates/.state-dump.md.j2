@@ -5,12 +5,23 @@
 {% if calendar is defined and calendar is not none -%}
 - **Calendar:**
   - Year: {{ calendar.year }}
-  - Season: `{{ calendar.season }}`
-  - Cycle: `{{ calendar.cycle }}`
+  - Season: `{{ calendar.season.value if calendar.season.value is defined else calendar.season }}`
+  - Cycle: `{{ calendar.cycle.value if calendar.cycle.value is defined else calendar.cycle }}`
   - Period: {{ calendar.period }}
   - Elapsed: {{ calendar.elapsed }}
 {% endif -%}
+{% if plot is defined and plot is not none -%}
+- **Plot:**
+  - Current: `{{ plot.current if plot.current is defined else plot }}`
+{% if plot.previous is defined and plot.previous -%}
+  - Previous:
+{% for prev_plot in plot.previous -%}
+    - `{{ prev_plot }}`
+{% endfor -%}
+{% endif -%}
+{% endif %}
 {% for asset in assets %}
+{% if asset.category != "widgets" %}
 
 ## {{ asset.name | default(asset.state.name if (asset.state is defined and asset.state.name is defined) else none, true) | default(asset.id, true) }}
 
@@ -20,16 +31,20 @@
   - ID: `{{ asset.id }}`
   - Name: `{{ asset.name }}`
 - **Components:**
-  - Animation: `{{ asset.animation.__class__ }}`
-  - Frame: `{{ asset.frame.__class__ }}`
+  - Animation: `{{ asset.animation.__class__.__name__ if asset.animation else "None" }}`
+  - Frame: `{{ asset.frame.__class__.__name__ if asset.frame else "None" }}`
+  - Hitbox: `{{ asset.hitbox.__class__.__name__ if asset.hitbox else "None" }}`
 {% set props = asset.properties if (asset.properties is defined and asset.properties is not none) else asset -%}
 {% set dims = props.dimensions if (props.dimensions is defined and props.dimensions is not none) else (asset.dimensions if (asset.dimensions is defined and asset.dimensions is not none) else none) -%}
-{% if dims or (props.mass is defined and props.mass is not none) or (props.loot is defined and props.loot is not none) or (props.lifespan is defined and props.lifespan is not none) or (props.count is defined and props.count is not none) or (props.friction is defined and props.friction is not none) or (props.cost is defined and props.cost) or (props.stack is defined and props.stack) or (props.hitboxes is defined and props.hitboxes) or (props.attackboxes is defined and props.attackboxes) or (props.actions is defined and props.actions) or (props.frames is defined and props.frames) or (props.lifecycle is defined and props.lifecycle is not none) or (props.tile is defined and props.tile is not none) or (props.fluid is defined and props.fluid is not none) or (props.thickness is defined and props.thickness is not none) or (props.font is defined and props.font is not none) or (props.alignment is defined and props.alignment is not none) or (props.color is defined and props.color is not none) or (props.size is defined and props.size is not none) -%}
+{% if dims or (props.priority is defined and props.priority is not none) or (props.mass is defined and props.mass is not none) or (props.loot is defined and props.loot is not none) or (props.lifespan is defined and props.lifespan is not none) or (props.count is defined and props.count is not none) or (props.friction is defined and props.friction is not none) or (props.cost is defined and props.cost) or (props.stack is defined and props.stack) or (props.hitboxes is defined and props.hitboxes) or (props.attackboxes is defined and props.attackboxes) or (props.actions is defined and props.actions) or (props.frames is defined and props.frames) or (props.lifecycle is defined and props.lifecycle is not none) or (props.tile is defined and props.tile is not none) or (props.fluid is defined and props.fluid is not none) or (props.thickness is defined and props.thickness is not none) or (props.alignment is defined or props.color is defined or props.size is defined) -%}
 - **Properties:**
 {% if dims -%}
   - Dimensions:
     - Width: {{ dims.w }}
     - Length: {{ dims.l }}
+{% endif -%}
+{% if props.priority is defined and props.priority is not none -%}
+  - Priority: {{ props.priority }}
 {% endif -%}
 {% if props.mass is defined and props.mass is not none -%}
   - Mass: {{ props.mass }}
@@ -87,28 +102,27 @@
 {% endif -%}
 {% if props.hitboxes is defined and props.hitboxes -%}
   - Hitboxes:
-{% for hb in props.hitboxes -%}
-{% if hb.position is defined and hb.dimensions is defined -%}
-    - Position: ({{ hb.position.x }}, {{ hb.position.y }}) | Dimensions: w: {{ hb.dimensions.w }}, l: {{ hb.dimensions.l }}
-{% elif hb.x is defined and hb.y is defined -%}
-    - Position: ({{ hb.x }}, {{ hb.y }}) | Dimensions: w: {{ hb.w | default(hb.width, true) }}, l: {{ hb.l | default(hb.length, true) }}
-{% else -%}
-    - {{ hb }}
+{% if props.hitboxes is mapping -%}
+{% for hb_key, hb_list in props.hitboxes.items() -%}
+    - `{{ hb_key }}`:
+{% if hb_list -%}
+{% for hb in hb_list -%}
+      - Position: ({{ hb.position.x }}, {{ hb.position.y }}) | Dimensions: w: {{ hb.dimensions.w }}, l: {{ hb.dimensions.l }}
+{% endfor -%}
 {% endif -%}
 {% endfor -%}
+{% else -%}
+{% for hb in props.hitboxes -%}
+    - Position: ({{ hb.position.x }}, {{ hb.position.y }}) | Dimensions: w: {{ hb.dimensions.w }}, l: {{ hb.dimensions.l }}
+{% endfor -%}
+{% endif -%}
 {% endif -%}
 {% if props.attackboxes is defined and props.attackboxes -%}
   - Attackboxes:
 {% for ab_key, ab_list in props.attackboxes.items() -%}
     - `{{ ab_key }}`:
 {% for hb in ab_list -%}
-{% if hb.position is defined and hb.dimensions is defined -%}
       - Position: ({{ hb.position.x }}, {{ hb.position.y }}) | Dimensions: w: {{ hb.dimensions.w }}, l: {{ hb.dimensions.l }}
-{% elif hb.x is defined and hb.y is defined -%}
-      - Position: ({{ hb.x }}, {{ hb.y }}) | Dimensions: w: {{ hb.w | default(hb.width, true) }}, l: {{ hb.l | default(hb.length, true) }}
-{% else -%}
-      - {{ hb }}
-{% endif -%}
 {% endfor -%}
 {% endfor -%}
 {% endif -%}
@@ -140,39 +154,38 @@
     - `{{ f }}`
 {% endfor -%}
 {% endif -%}
-{% set font_obj = props.font if (props.font is defined and props.font is not none) else (props if (props.alignment is defined or props.color is defined or props.size is defined) else none) -%}
-{% if font_obj -%}
+{% if props.alignment is defined or props.color is defined or props.size is defined -%}
   - Font:
-{% if font_obj.alignment is defined and font_obj.alignment is not none -%}
-    - Alignment: `{{ font_obj.alignment.value if font_obj.alignment.value is defined else font_obj.alignment }}`
+{% if props.alignment is defined and props.alignment is not none -%}
+    - Alignment: `{{ props.alignment.value if props.alignment.value is defined else props.alignment }}`
 {% endif -%}
-{% if font_obj.size is defined and font_obj.size is not none -%}
-    - Size: {{ font_obj.size }}
+{% if props.size is defined and props.size is not none -%}
+    - Size: {{ props.size }}
 {% endif -%}
-{% if font_obj.color is defined and font_obj.color is not none -%}
-    - Color: rgba({{ font_obj.color.r }}, {{ font_obj.color.g }}, {{ font_obj.color.b }}, {{ font_obj.color.a }})
+{% if props.color is defined and props.color is not none -%}
+    - Color: rgba({{ props.color.r }}, {{ props.color.g }}, {{ props.color.b }}, {{ props.color.a }})
 {% endif -%}
-{% if font_obj.outline is defined and font_obj.outline is not none -%}
+{% if props.outline is defined and props.outline is not none -%}
     - Outline:
-      - Width: {{ font_obj.outline.width }}
-{% if font_obj.outline.color is defined and font_obj.outline.color is not none -%}
-      - Color: rgba({{ font_obj.outline.color.r }}, {{ font_obj.outline.color.g }}, {{ font_obj.outline.color.b }}, {{ font_obj.outline.color.a }})
+      - Width: {{ props.outline.width }}
+{% if props.outline.color is defined and props.outline.color is not none -%}
+      - Color: rgba({{ props.outline.color.r }}, {{ props.outline.color.g }}, {{ props.outline.color.b }}, {{ props.outline.color.a }})
 {% endif -%}
 {% endif -%}
-{% if font_obj.bold is defined and font_obj.bold is not none -%}
-    - Bold: {{ font_obj.bold }}
+{% if props.bold is defined and props.bold is not none -%}
+    - Bold: {{ props.bold }}
 {% endif -%}
-{% if font_obj.italics is defined and font_obj.italics is not none -%}
-    - Italics: {{ font_obj.italics }}
+{% if props.italics is defined and props.italics is not none -%}
+    - Italics: {{ props.italics }}
 {% endif -%}
-{% if font_obj.underline is defined and font_obj.underline is not none -%}
-    - Underline: {{ font_obj.underline }}
+{% if props.underline is defined and props.underline is not none -%}
+    - Underline: {{ props.underline }}
 {% endif -%}
-{% if font_obj.strikethrough is defined and font_obj.strikethrough is not none -%}
-    - Strikethrough: {{ font_obj.strikethrough }}
+{% if props.strikethrough is defined and props.strikethrough is not none -%}
+    - Strikethrough: {{ props.strikethrough }}
 {% endif -%}
-{% if font_obj.margins is defined and font_obj.margins is not none -%}
-    - Margins: {{ font_obj.margins }}
+{% if props.margins is defined and props.margins is not none -%}
+    - Margins: {{ props.margins }}
 {% endif -%}
 {% endif -%}
 {% endif -%}
@@ -183,6 +196,9 @@
 {% endif -%}
 {% if asset.elevation is defined and asset.elevation is not none -%}
   - Elevation: {{ asset.elevation }}
+{% endif -%}
+{% if asset.state.anchor is defined and asset.state.anchor is not none -%}
+  - Anchor: {{ asset.state.anchor }}
 {% endif -%}
 {% if asset.state.position is defined and asset.state.position is not none -%}
   - Position: ({{ asset.state.position.x }}, {{ asset.state.position.y }})
@@ -202,6 +218,9 @@
 {% if asset.state.orientation is defined and asset.state.orientation is not none -%}
   - Orientation: `{{ asset.state.orientation.value if asset.state.orientation.value is defined else asset.state.orientation }}`
 {% endif -%}
+{% if asset.state.delta is defined and asset.state.delta is not none -%}
+  - Delta: {{ asset.state.delta }}
+{% endif -%}
 {% if asset.state.season is defined and asset.state.season is not none -%}
   - Season: `{{ asset.state.season.value if asset.state.season.value is defined else asset.state.season }}`
 {% endif -%}
@@ -210,9 +229,6 @@
 {% endif -%}
 {% if asset.state.bidirectional is defined and asset.state.bidirectional is not none -%}
   - Bidirectional: {{ asset.state.bidirectional }}
-{% endif -%}
-{% if asset.state.parent_fluid is defined and asset.state.parent_fluid is not none -%}
-  - Parent Fluid: `{{ asset.state.parent_fluid }}`
 {% endif -%}
 {% if asset.state.multiple is defined and asset.state.multiple is not none -%}
   - Multiple:
@@ -230,15 +246,6 @@
 {% endif -%}
 {% if asset.state.harvested is defined and asset.state.harvested is not none -%}
   - Harvested: {{ asset.state.harvested }}
-{% endif -%}
-{% if asset.state.phase is defined and asset.state.phase is not none -%}
-  - Phase: `{{ asset.state.phase }}`
-{% endif -%}
-{% if asset.state.active is defined and asset.state.active is not none -%}
-  - Active: {{ asset.state.active }}
-{% endif -%}
-{% if asset.state.cooldown is defined and asset.state.cooldown is not none -%}
-  - Cooldown: {{ asset.state.cooldown }}
 {% endif -%}
 {% if asset.state.animation is defined and asset.state.animation is not none -%}
   - Animation:
@@ -270,22 +277,10 @@
     - Position: ({{ b.position.x }}, {{ b.position.y }}) | Source: `{{ b.source.value if b.source.value is defined else b.source }}` | Flow: {{ b.flow }} | Length: {{ b.length }}
 {% endfor -%}
 {% endif -%}
-{% if asset.state.shorelines is defined and asset.state.shorelines -%}
-  - Shorelines:
-{% for s in asset.state.shorelines -%}
-    - `{{ s }}`
-{% endfor -%}
-{% endif -%}
 {% if asset.state.hitboxes is defined and asset.state.hitboxes -%}
   - Hitboxes:
 {% for hb in asset.state.hitboxes -%}
-{% if hb.position is defined and hb.dimensions is defined -%}
     - Position: ({{ hb.position.x }}, {{ hb.position.y }}) | Dimensions: w: {{ hb.dimensions.w }}, l: {{ hb.dimensions.l }}
-{% elif hb.x is defined and hb.y is defined -%}
-    - Position: ({{ hb.x }}, {{ hb.y }}) | Dimensions: w: {{ hb.w | default(hb.width, true) }}, l: {{ hb.l | default(hb.length, true) }}
-{% else -%}
-    - {{ hb }}
-{% endif -%}
 {% endfor -%}
 {% endif -%}
 {% if asset.state.damage is defined and asset.state.damage is not none -%}
@@ -299,18 +294,6 @@
     - Inventory: `{{ asset.state.lot.inventory }}`
     - Item: `{{ asset.state.lot.item }}`
     - Quantity: {{ asset.state.lot.quantity }}
-{% endif -%}
-{% if asset.state.plot is defined and asset.state.plot is not none -%}
-  - Plot:
-{% if asset.state.plot.current is defined and asset.state.plot.current is not none -%}
-    - Current: `{{ asset.state.plot.current }}`
-{% endif -%}
-{% if asset.state.plot.previous is defined and asset.state.plot.previous -%}
-    - Previous:
-{% for prev_plot in asset.state.plot.previous -%}
-      - `{{ prev_plot }}`
-{% endfor -%}
-{% endif -%}
 {% endif -%}
 {% if asset.state.switch is defined and asset.state.switch is not none -%}
   - Switch: {{ asset.state.switch }}
@@ -373,6 +356,18 @@
 {% if asset.state.inventory is defined and asset.state.inventory is not none -%}
   - Inventory:
     - Wallet: {{ asset.state.inventory.wallet }}
+{% if asset.state.inventory.pack -%}
+    - Pack:
+{% for item_id, qty in asset.state.inventory.pack.items() -%}
+      - `{{ item_id }}`: {{ qty }}
+{% endfor -%}
+{% endif -%}
+{% if asset.state.inventory.pouch -%}
+    - Pouch:
+{% for item_id, qty in asset.state.inventory.pouch.items() -%}
+      - `{{ item_id }}`: {{ qty }}
+{% endfor -%}
+{% endif -%}
 {% if asset.state.inventory.loot -%}
     - Loot:
 {% for item_id, qty in asset.state.inventory.loot.items() -%}
@@ -536,7 +531,7 @@
 {% if asset.state.psyche.expression.icon is not none -%}
       - Icon: `{{ asset.state.psyche.expression.icon }}`
 {% endif -%}
-{% if asset.state.psyche.expression.ttl is not none -%}
+{% if asset.state.psyche.ttl is not none -%}
       - TTL: {{ asset.state.psyche.expression.ttl }}
 {% endif -%}
 {% if asset.state.psyche.expression.offset is not none -%}
@@ -547,17 +542,11 @@
 {% if asset.state.intention is defined and asset.state.intention is not none -%}
   - Intention: `{{ asset.state.intention.value if asset.state.intention.value is defined else asset.state.intention }}`
 {% endif -%}
-{% if asset.state.status is defined and asset.state.status is not none -%}
-  - Status: `{{ asset.state.status }}`
-{% endif -%}
-{% if asset.state.reading is defined and asset.state.reading is not none -%}
-  - Reading: {{ asset.state.reading }}
-{% endif -%}
-{% if asset.state.unit is defined and asset.state.unit is not none -%}
-  - Unit: `{{ asset.state.unit }}`
+{% if asset.state.cooldown is defined and asset.state.cooldown is not none -%}
+  - Cooldown: {{ asset.state.cooldown }}
 {% endif -%}
 {% endif %}
-
+{% endif %}
 {% endfor %}
 {% if perimeters -%}
 

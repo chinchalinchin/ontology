@@ -1,93 +1,47 @@
-Backlog: Buoyancy
+#### Backlog: TODO T001 - Telemetry Menu
 
-**0verview**
+**Overview**: Implement a real-time diagnostic overlay capable of tracking core loop execution times without degrading the performance it aims to measure. The HUD will be conditionally injected into the render pipeline via a CLI flag and update at a staggered frequency to prevent string-allocation GC spikes.
 
-Generalize hydrodynamic flotation across dynamic objects using declarative `buoyant` properties while decoupling generator services from database cache mutation.
+**Goal**: Establish the CLI boundary, profile the inner engine loops, configure the Widget schemas, and route the formatted data to the Cython rendering canvases.
 
-##### Architectural Analysis
+##### Task 1: The Input Boundary (CLI & Orchestrator)
 
-###### Property-Driven Dynamic Buoyancy
+*Objective*: Allow developers to conditionally trigger the telemetry overlay at runtime without altering static board configuration files.
 
-Currently, `fields.py` explicitly whitelists crates (`asset.instance == AssetInstances.CRATES.value`) when applying current velocity and maintaining buoyancy.
+* [ ] **Subtask**: Update `src/cli.py` to include a `--telemetry` (or `-t`) boolean flag under the `start` command group using your CLI parsing library (e.g., `argparse` or `click`).
+* [ ] **Subtask**: Pass the telemetry flag down through `Orchestrator.orchestrate(...)`.
+* [ ] **Subtask**: Update the `Context` dataclass in `app.services.constructors` to accept `telemetry: bool = False`.
 
-**Proposal**:
+##### Task 2: The Engine Profiling Layer
 
-* Add `buoyant: bool = False` to `ObjectProperties` in `src/app/models/properties.py`.
-* In `fields.update()`, replace instance string matching with property inspection:
+*Objective*: Capture high-precision execution timings of the `core` and `world` mechanics, alongside the Cython `draw` pipeline, without blocking the loop.
 
-```python
-if in_fluid:
-    if getattr(asset.properties, "buoyant", False):
-        asset.state.velocity.vx = flow_vx
-        asset.state.velocity.vy = flow_vy
-```
+* [ ] **Subtask**: Create a `Diagnostics` or `TelemetryState` dataclass to hold rolling averages (e.g., `update_ms`, `render_ms`, `fps`, `ups`). Attach this to the `Board` (e.g., `board.diagnostics`) so it is globally queryable by Controllers.
+* [ ] **Subtask**: In `Engine.start()`, wrap the `self._play(delta)` and `self._drain()` calls with `time.perf_counter_ns()` to calculate the exact millisecond duration of the logic tick.
+* [ ] **Subtask**: In `Engine.start()`, wrap the `self._render()` call with `time.perf_counter_ns()` to calculate the millisecond duration of the Cython draw step.
+* [ ] **Subtask**: Update the internal telemetry accumulator to write these calculated values to `board.diagnostics`.
 
-* Dynamic objects ($m > 0$) with `buoyant = True` (crates, barrels, wooden chests) float and drift with current flow, while non-buoyant dynamic objects (heavy stone blocks, metal iron crates) sink, maintain friction, and resist drift.
+##### Task 3: The UI Layer (Widget Configuration)
 
-###### Data Model Updates
+*Objective*: Define the visual layout of the telemetry HUD using the engine's existing `Widget` architecture.
 
-```python
-# src/app/models/properties.py
-@dataclass(slots=True)
-class ObjectProperties(AssetProperties):
-    dimensions: Dimensions
-    mass: int = 0
-    count: int = 1
-    hitboxes: Optional[List[Hitbox]] = field(default_factory=list)
-    buoyant: bool = False
-```
+* [ ] **Subtask**: In `/src/data/config/menus/main.yaml`, define a new menu block for `telemetry` (utilizing a transparent `Pane` aligned to the top-left or top-right).
+* [ ] **Subtask**: Define text `Widget` properties (e.g., `WidgetRecipe.METER` or `SINGLE` with a designated `dialogue` font) to represent the lines for FPS, UPS, Update Time, and Render Time.
+* [ ] **Subtask**: Update the `Menus` Enum in `app.config.enums` to include `TELEMETRY`.
 
-###### Field Interception
+##### Task 4: Injection & Rendering (Controller & Event Bus)
 
-```python
-# src/app/game/logic/modules/motion/fields.py
-def update(assets: List[Asset], board: Board, delta: float) -> None:
-    rafts = [
-        a for a in assets 
-        if a.instance == AssetInstances.RAFTS.value
-    ]
-    _update_rafts(rafts, board)
+*Objective*: Safely push the diagnostic text to the Cython canvas utilizing the `Screen.stamp` interface.
 
-    for asset in assets:
-        if asset.instance in (AssetInstances.RAFTS.value, AssetInstances.PROJECTILES.value):
-            continue
+* [ ] **Subtask**: Create a `TelemetryController` (inheriting from your Menu controller base).
+* [ ] **Subtask**: Implement `TelemetryController.update()`. To adhere to the "Zero Heap Allocation" philosophy, implement a modulo gate (e.g., `if board.diagnostics.frames % 15 == 0:`) so the controller only generates new Python strings (`f"FPS: {fps}"`) four times a second, rather than every frame.
+* [ ] **Subtask**: Inside the gated update, push `UpdateEvent(widget, new_string)` to the engine `bus` for each telemetry widget.
+* [ ] **Subtask**: In `Engine._drain()`, intercept the `TerminalEvent` generated by the load screen. If `self.board.configurations.settings.telemetry` (or the passed CLI flag) is `True`, instruct the `Provider` to unpack the `TELEMETRY` menu and append it to `board.overlays` right next to the `VIEW` (HUD) menu.
 
-        layer = asset.state.layer
+##### Task 5: Coverage & Documentation
 
-        # -------------------------------------------------------------
-        # 1. SURFACE HIERARCHY INTERCEPTION (BRIDGES & RAFTS)
-        # -------------------------------------------------------------
-        # ...
+*Objective*: Ensure the new diagnostic tooling is tested and documented for future phases.
 
-        # -------------------------------------------------------------
-        # 2. VIRTUAL EDGE CROSSING (SHORELINES)
-        # -------------------------------------------------------------
-        # ...
-
-        # -------------------------------------------------------------
-        # 3. DIRECT ENVIRONMENTAL FLUID IMMERSION (BUOYANCY)
-        # -------------------------------------------------------------
-        # ...
-        if in_fluid:
-            if asset.properties.buoyant:
-                asset.state.velocity.vx = flow_vx
-                asset.state.velocity.vy = flow_vy
-            else:
-                asset.state.velocity.vx += flow_vx
-                asset.state.velocity.vy += flow_vy
-```
-
-##### Goal: Property-Driven Buoyancy & Frictional Decoupling
-
-Incorporate `buoyant: bool = False` into `ObjectProperties`. Update `fields.py` to drive current drift based on property inspection rather than instance matching. Update `frictive.py` to suspend linear friction only for submerged, buoyant assets, allowing non-buoyant dynamic objects to sink, rest on the substrate, and resist water current. Decouple `Actuator` from `Board` cache mutation.
-
-##### Tasks
-
-**1. Task: Property-Driven Buoyancy & Friction Interplay**
-
-*Objective*: Generalize hydrodynamic flotation across dynamic bodies and decouple friction decay based on buoyancy properties.
-
-* [ ] Subtask: Add `buoyant: bool = False` to `ObjectProperties` in `src/app/models/properties.py`.
-* [ ] Subtask: Update object configurations in `/src/assets/objects/main.yaml` (`wood-crate`, `wood-barrel` to `buoyant: True`; `iron-crate`, `stone-block` to `buoyant: False`).
-* [ ] Subtask: Refactor `fields.py` to inspect `asset.properties.buoyant` on objects, applying current matching only to buoyant entities while sinking non-buoyant objects without current acceleration.
-* [ ] Subtask: Refactor `frictive.py` to condition friction suspension on `asset.state.mutators.triggers.submerged and getattr(asset.properties, "buoyant", False)`.
+* [ ] **Subtask**: Write unit tests in `test_app_game_engine.py` asserting that `_play` and `_render` correctly populate `board.diagnostics`.
+* [ ] **Subtask**: Write unit tests verifying the CLI flag successfully flags the `Context` and results in the `TELEMETRY` menu being appended to the `overlays` stack.
+* [ ] **Subtask**: Update `/docs/06-widgets.md` to document the existence and schema of the Telemetry HUD.
