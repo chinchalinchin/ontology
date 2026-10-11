@@ -273,11 +273,13 @@ def _traverse_stairs(self, sprite: Asset, stairs: Asset) -> None:
 *[!: Conditional on **User Acceptance** of previous task] Subtask: Add unit tests in `test_screen.py` asserting assets with higher elevation render on top of lower elevation assets regardless of lower $y + l$ values.
 * [!: Conditional on **User Acceptance** of previous task] Subtask: Add integration tests verifying stair traversal correctly increments and decrements player elevation.
 
-##### Debugging Sessions
+##### Debugging
 
-Original session omitted for brevity. Below is the comprehensive audit of architectural and implementation changes introduced during this session.
+Original sessions omitted for brevity. Below is the comprehensive audit of architectural and implementation changes introduced during this session.
 
-###### 1. The Substrate Hierarchy Registry & Dynamic Elevation Fallback
+###### Session I
+
+**1. The Substrate Hierarchy Registry & Dynamic Elevation Fallback**
 
 * **Original Spec**: `elevation` was conceived as a static integer field (`elevation: int = 0`) on `AssetState` replacing `depth` and `height`. All substrates and ground entities defaulted to `0`.
 
@@ -286,7 +288,7 @@ Original session omitted for brevity. Below is the comprehensive audit of archit
   * Updated `AssetState.elevation` to `Optional[int] = None`.
   * Added dynamic `@property` and `@elevation.setter` on `Asset` to lazily resolve substrate defaults when unset, while preserving explicit state overrides for upper-tier bridges or custom elevations.
 
-###### 2. Three-Key Lexicographical Painter's Algorithm (`elevation`, `ground_y`, `priority`)
+**2. Three-Key Lexicographical Painter's Algorithm (`elevation`, `ground_y`, `priority`)**
 
 * **Original Spec**: `Screen._sort` evaluated a 2-tuple:
 
@@ -301,7 +303,7 @@ $$
   * Added `anchor: int = 0` to `AssetState` to allow wall fixtures to align with their host facade's ground contact line.
   * Expanded `Screen._sort` to evaluate `(asset.elevation, ground_y, asset.properties.priority)` with $\text{ground\_y} = \text{int}(\text{pos.y} + l + \text{anchor})$.
 
-###### 3. Sanitation of `Perimeter` Boundary Extraction & Dynamic Body Exclusion
+**3. Sanitation of `Perimeter` Boundary Extraction & Dynamic Body Exclusion**
 
 * **Original Spec**: `Perimeter.extract()` partitioned hulls by `(layer, elevation)` matching static architecture to `elevation`.
 
@@ -310,7 +312,7 @@ $$
   * Added an explicit static filter in `Perimeter.extract()` excluding all movable bodies and dynamic containers.
   * Added substrate floor inclusion for Tier 0: ensured room floorboards (`elevation <= 0` with $m = -1$) are included in boundary synthesis so interior spaces do not generate inverted perimeter edges around furniture footprints.
 
-###### 4. Non-Positive Elevation Clamping for Physics & Hydrology
+**4. Non-Positive Elevation Clamping for Physics & Hydrology**
 
 * **Original Spec**: Broad-phase and narrow-phase collision mechanics partitioned purely by matching discrete elevation integers ($E_A == E_B$).
 
@@ -320,10 +322,79 @@ $$
   * Updated `Actuator._collect_obstacles()` to clamp non-positive fluid elevations to 0 (`fluid.elevation if fluid.elevation > 0 else 0`), ensuring fluid stream raycasts interact with ground-level obstacle hulls correctly.
   * Updated `Board.weights()` and `Board.obstacles()` queries to treat `elevation == 0` as matching all entities where `elevation <= 0`.
 
-###### 5. Decomposer Unique Nomenclature Generation (Preexisting Defect Resolution)
+**5. Decomposer Unique Nomenclature Generation (Preexisting Defect Resolution)**
 
 * **Original Spec**: Only called for removing `node_height` tracking and `bind(root.height)` parsing from `Decomposer`.
 
 * **Added / Changed**:
   * Discovered that `Decomposer._hydrate_state()` discarded `kwargs.get('name')` for non-strut child components, assigning identical generated names to sibling entities under the same parent strut (e.g., 3 doors named `door-strut-castle-dawn-exterior-3-3`, 4 interior doors named `door-strut-castle-atrium-floor-3-3`).
   * Fixed nomenclature generation to preserve the component's unique configuration name: `<instance>-<parent_name>-<comp_name>-<increment>`.
+
+###### Session II
+
+**1. Entity Physics & Mass Normalization**
+
+* **Model Default Update (`app.models.properties.SheetProperties`)**:
+  * Set `mass: int = 1` by default (previously `0`) across all sheet entities.
+* **ECS Decoupling**:
+  * Eliminated categorical taxonomy checks (`taxonomy.instance == AssetInstances.PLAYERS.value`) in favor of physics-driven predicates (`getattr(properties, 'mass', 0) > 0`).
+  * NPC `sprites` are now dynamically recognized as movable bodies, enabling them to naturally collide, be pushed by kinematic players, obey perimeter boundaries, and traverse stairs without taxonomy branch exceptions.
+
+**2. Incline Traversal & Kinematic Foot-Anchor Gating**
+
+* **Sensory Foot-Anchor Projection (`CollisionMechanics._traverse_stairs`)**:
+
+* Replaced bounding box leading edge evaluations (`pos.x + w`, `pos.y + l`) with centered ground contact coordinates:
+
+$$
+f_x = \text{pos.x} + \left\lfloor\frac{w}{2}\right\rfloor, \quad f_y = \text{pos.y} + l
+$$
+
+* Normalized spatial progress across stair dimensions:
+
+$$
+\text{tread\_progress}_y = \frac{f_y - \text{stair.y}}{\text{stair.l}}, \quad \text{tread\_progress}_x = \frac{f_x - \text{stair.x}}{\text{stair.w}}
+$$
+
+* Resolved bounding-box saturation where sprites with $w \ge 0.2 \cdot \text{stair.w}$ prematurely clamped to $1.0$ upon first contact.
+
+* **Velocity Hysteresis & Inversion Fixes**:
+
+* Tied tier switching to directional velocity gating ($v_y < 0$ / $v_y > 0$, $v_x < 0$ / $v_x > 0$), preventing premature snapping when grazing stair edges.
+* Corrected threshold target inversion on south-facing stairs (`Directions.DOWN.value`), mapping summit landings ($u \le 0.2, v_y < 0$) to $E_{\text{base}}$ and base landings ($u \ge 0.8, v_y > 0$) to $E_{\text{top}}$.
+
+**3. Stair Sensor Classification**
+
+* **Asset Configuration (`src/assets/crafts/struts/stairs.yaml`)**:
+  * Reclassified `stairs-stone` mass to `mass: -1` (sensor body).
+* **Physics Collision Bypass**:
+  * Excluded stair entities from `Board.weights()` and `Board.obstacles()`, eliminating infinite-mass static body collision blocks and physics jitter during incline climbs while preserving spatial trigger detection.
+
+**4. Declarative Anchor Macro Compilation (`anchor(target)`)**
+
+* **State Model Schema Typing (`app.models.state.core.AssetState`)**:
+
+* Updated attribute typing to `anchor: Union[int, str] = 0`.
+* Allows Pydantic's `TypeAdapter(ConfigurationSchema).validate_python()` to parse declarative macro strings in YAML without `int_parsing` validation errors.
+
+* **Two-Pass Macro Resolution Compiler (`app.services.generators.game.decomposer.Decomposer`)**:
+
+* **Pass 1 (Scope Indexing)**: Scans node/branch components into `scope_lookup: Dict[str, Tuple[AssetState, str, str]]`, recording local sibling names alongside their Category, Instance, and Asset ID.
+
+* **Pass 2 (Evaluation & Downcasting)**: Compiles `anchor(...)` directives into concrete ground-alignment offsets before ECS asset instantiation:
+
+$$
+\text{anchor} = (y_{\text{target}} + l_{\text{target}}) - (y_{\text{self}} + l_{\text{self}})
+$$
+
+
+* Supported targets:
+  * `anchor(parent)`: Anchors to the immediate parent strut's baseline.
+  * `anchor(root)`: Anchors to the root strut's baseline.
+  * `anchor(<sibling_name>)`: Anchors to a named sibling defined within the same branch.
+
+* **Runtime Invariant**: Enforces `kwargs['anchor'] = int(...)`, ensuring `Screen._sort` receives a strictly typed `int` for Painter's Algorithm ground-depth calculations (`ground_y = int(pos.y + dim_l + anchor)`).
+
+**5. Architectural Backlog Status**
+
+* **Bug B014 (Pinned)**: Evaluating zero-allocation broad-phase sensor queries in Cython (`libs.core.math.geometry`) or pre-cached static sensor hitboxes on `StairProperties` to prevent per-frame `Hitbox` heap allocations during stair detection.

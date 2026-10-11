@@ -91,6 +91,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Bug B011: Stream and Annular Pool Texture Overdraw](./phases/patch/bug-b011.md)
     - [x]: [Bug B012: Composition Duplication](./phases/patch/bug-b012.md)
     - [ ]: [Bug B013: Canvas Bleed on Fore Tiles](./phases/patch/bug-b013.md)
+    - [ ]: [Bug B014: Stair Railing Hitbox Traversal Block](./phases/patch/bug-b014.md)
   - Achieve:
     - [x]: [Goal 01: Boundaries](./phases/achieve/goal-01.md)
     - [x]: [Goal 02: ScrollController, Library & Plots](./phases/achieve/goal-02)
