@@ -11,7 +11,8 @@ from typing import (
     Dict, 
     List, 
     Any, 
-    Optional
+    Optional,
+    Tuple
 )
 
 # Application Libraries
@@ -61,6 +62,69 @@ class Decomposer:
         self.properties = properties
         self.recipes = recipes
         self._increment = 0
+
+    # ---------------------------------------------------------
+    # ---------------------------------------- HELPER UTILITIES
+
+    def _get_length(self, cat_key: str, inst_key: str, asset_id: str) -> int:
+        """Retrieves static length (l) property for an asset ID."""
+        cat_props = getattr(self.properties, cat_key, None)
+        if not cat_props:
+            return 0
+        inst_props = getattr(cat_props, inst_key, {})
+        props = inst_props.get(asset_id)
+        return props.dimensions.l if props and props.dimensions else 0
+
+    def _resolve_anchor(
+        self,
+        anchor_val: Any,
+        self_state: AssetState,
+        self_cat: str,
+        self_inst: str,
+        scope_lookup: Dict[str, Tuple[AssetState, str, str]],
+        parent_context: Dict[str, Any],
+        root_context: Dict[str, Any]
+    ) -> int:
+        """
+        Evaluates anchor(target) macros:
+            anchor = (target.y + target.l) - (self.y + self.l)
+        Guarantees return value is always a concrete int.
+        """
+        if not isinstance(anchor_val, str):
+            return int(anchor_val) if anchor_val is not None else 0
+
+        match = re.match(r"^anchor\((.*?)\)$", anchor_val.strip())
+        if not match:
+            try:
+                return int(anchor_val)
+            except ValueError:
+                return 0
+
+        target_ref = match.group(1).strip()
+        self_y = self_state.position.y if self_state.position else 0
+        self_l = self._get_length(self_cat, self_inst, self_state.id)
+
+        target_y = 0
+        target_l = 0
+
+        if target_ref == "parent":
+            target_y = parent_context.get("pseudo_y", 0)
+            target_l = parent_context.get("length", 0)
+        elif target_ref == "root":
+            target_y = 0
+            target_l = root_context.get("length", 0)
+        elif target_ref in scope_lookup:
+            target_state, target_cat, target_inst = scope_lookup[target_ref]
+            target_y = target_state.position.y if target_state.position else 0
+            target_l = self._get_length(target_cat, target_inst, target_state.id)
+        else:
+            logger.warning(
+                f"Decomposer: Unable to resolve anchor target '{target_ref}' "
+                f"on component '{self_state.name}'. Defaulting to anchor=0."
+            )
+            return 0
+
+        return int((target_y + target_l) - (self_y + self_l))
 
     # ---------------------------------------------------------
     # ------------------------------------------ COST UTILITIES
@@ -113,10 +177,6 @@ class Decomposer:
         inc: int, 
         layer_map: Dict[str, str]
     ) -> Optional[str]:
-        """
-        Namespaces composition pseudo-layers with the deployment increment while
-        preserving references to the deployed root layer.
-        """
         if layer is None or str(layer) == str(root_layer):
             return layer
 
@@ -134,9 +194,6 @@ class Decomposer:
         root_context: Dict[str, Any], 
         parent_context: Dict[str, Any]
     ) -> Any:
-        """
-        Map Composition `bind(root|parent.(.*))` binding to context.
-        """
         if not isinstance(val, str):
             return val
             
@@ -157,9 +214,11 @@ class Decomposer:
         root_context: Dict[str, Any], 
         parent_context: Dict[str, Any], 
         inc: int, 
+        cat_key: str,
         inst_key: str, 
         is_strut: bool = False, 
-        layer_map: Optional[Dict[str, str]] = None
+        layer_map: Optional[Dict[str, str]] = None,
+        scope_lookup: Optional[Dict[str, Tuple[AssetState, str, str]]] = None
     ) -> AssetState:
         if layer_map is None:
             layer_map = root_context.setdefault('_layer_map', {})
@@ -185,7 +244,7 @@ class Decomposer:
         if 'outlayer' in kwargs and kwargs['outlayer']:
             kwargs['outlayer'] = self._resolve_layer(kwargs['outlayer'], root_layer, inc, layer_map)
 
-        # Layer Transition Boundary: If moving to an independent layer, reset local origin
+        # 3. Layer Transition Boundary: If moving to an independent layer, reset local origin
         is_cross_layer = str(kwargs.get('layer')) != str(parent_context.get('layer'))
         base_pos = Position(0, 0) if is_cross_layer else parent_context['position']
 
@@ -198,7 +257,7 @@ class Decomposer:
         else:
             kwargs['position'] = Position(base_pos.x, base_pos.y)
 
-        # Teleport destination coordinate mapping
+        # 4. Teleport destination coordinate mapping
         pseudo_out = kwargs.get('out')
         if pseudo_out:
             outlayer = kwargs.get('outlayer')
@@ -209,6 +268,18 @@ class Decomposer:
                 )
             else:
                 kwargs['out'] = Position(pseudo_out.x, pseudo_out.y)
+
+        # 5. Resolve Anchor Macro (guarantees integer downcast)
+        raw_anchor = kwargs.get('anchor', 0)
+        kwargs['anchor'] = self._resolve_anchor(
+            raw_anchor,
+            state_obj,
+            cat_key,
+            inst_key,
+            scope_lookup or {},
+            parent_context,
+            root_context
+        )
 
         base_inst = inst_key[:-1] if inst_key.endswith('s') else inst_key
         
@@ -263,9 +334,11 @@ class Decomposer:
             root_context,
             parent_context,
             inc,
+            AssetCategories.CRAFTS.value,
             AssetInstances.STRUTS.value,
             is_strut=True,
-            layer_map=layer_map
+            layer_map=layer_map,
+            scope_lookup={}
         )
         strut_asset = self._create_asset(
             AssetCategories.CRAFTS.value, 
@@ -274,8 +347,16 @@ class Decomposer:
         )
         assets.append(strut_asset)
 
+        strut_len = self._get_length(
+            AssetCategories.CRAFTS.value, 
+            AssetInstances.STRUTS.value, 
+            node.strut.id
+        )
+
         node_context = {
             "position": strut_state.position,
+            "pseudo_y": node.strut.position.y if getattr(node.strut, 'position', None) else 0,
+            "length": strut_len,
             "layer": strut_state.layer,
             "owner": getattr(strut_state, 'owner', None),
             "name": strut_state.name,
@@ -284,6 +365,7 @@ class Decomposer:
         
         if is_root:
             root_context["elevation"] = strut_state.elevation
+            root_context["length"] = strut_len
 
         self._unpack_components(node.components, root_context, node_context, inc, assets)
         return assets
@@ -299,7 +381,34 @@ class Decomposer:
             return
 
         layer_map = root_context.setdefault('_layer_map', {})
-        
+
+        # ---------------------------------------------------------
+        # PASS 1: Scope Indexing (collect all named siblings)
+        # ---------------------------------------------------------
+        scope_lookup: Dict[str, Tuple[AssetState, str, str]] = {}
+
+        for cat_field in dataclasses.fields(components):
+            cat_key = cat_field.name
+            if cat_key in Shortcuts:
+                continue
+
+            cat_data = getattr(components, cat_key)
+            if not cat_data:
+                continue
+
+            for inst_field in dataclasses.fields(cat_data):
+                inst_key = inst_field.name
+                inst_list = getattr(cat_data, inst_key)
+                if not inst_list:
+                    continue
+
+                for pseudo_state in inst_list:
+                    if getattr(pseudo_state, "name", None):
+                        scope_lookup[pseudo_state.name] = (pseudo_state, cat_key, inst_key)
+
+        # ---------------------------------------------------------
+        # PASS 2: Hydration with Anchor Resolution
+        # ---------------------------------------------------------
         for cat_field in dataclasses.fields(components):
             cat_key = cat_field.name
             if cat_key in Shortcuts:
@@ -321,9 +430,11 @@ class Decomposer:
                         root_context,
                         parent_context,
                         inc,
+                        cat_key,
                         inst_key,
                         is_strut=False,
-                        layer_map=layer_map
+                        layer_map=layer_map,
+                        scope_lookup=scope_lookup
                     )
                     assets.append(self._create_asset(cat_key, inst_key, new_state))
 
@@ -331,7 +442,6 @@ class Decomposer:
     # ------------------------------------------ PUBLIC METHODS
 
     def unpack(self, deployed_state: PropertyState) -> List[Asset]:
-        """Flattens a Composition configuration into a native 1D list of fully hydrated Assets."""
         assets = []
         comp_config = self.compositions.get(deployed_state.id)
         if not comp_config:
@@ -345,7 +455,7 @@ class Decomposer:
             "name": getattr(deployed_state, 'name', ''),
             "layer": getattr(deployed_state, 'layer', ''),
             "owner": getattr(deployed_state, 'owner', None),
-            "position": getattr(deployed_state, 'position', Position(0,0)),
+            "position": getattr(deployed_state, 'position', Position(0, 0)),
             "elevation": getattr(deployed_state, 'elevation', 0),
             "_layer_map": {}
         }
@@ -359,10 +469,6 @@ class Decomposer:
         return assets
 
     def bridge(self, deployed_state: BridgeState) -> List[Asset]:
-        """
-        Expands a BridgeState with a structural multiplier into constituent unit
-        Asset instances with sequential names, offset positions, and static hitboxes.
-        """
         props = self.properties.crafts.bridges.get(deployed_state.id)
         if not props:
             logger.error(
@@ -429,7 +535,6 @@ class Decomposer:
         return unit_assets
 
     def cost(self, comp_id: str) -> List[Cost]:
-        """Calculates the aggregate cost of an entire Composition tree."""
         config = self.compositions.get(comp_id)
         if not config: 
             return []
@@ -457,9 +562,6 @@ class Decomposer:
         return [Cost(item=k, quantity=v) for k, v in cost_map.items()]
 
     def bridge_cost(self, id: str, multiple: Multiple, orientation: str) -> List[Cost]:
-        """
-        Calculates linear resource requirements (N * Cost) for a directional bridge.
-        """
         props = self.properties.crafts.bridges.get(id)
         if not props:
             return []
