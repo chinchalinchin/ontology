@@ -42,19 +42,9 @@
     'features': [ 'feet', 'hair', 'head', 'legs', 'torso' ]
 } %}
 {# ------------------------------------------------------------- #}
-{% set configuration = {
-    'compositions': properties.paths.root + 'src/data/config/compositions/'
-} %}
-{# ------------------------------------------------------------- #}
-{% set state = { 
-
-} %}
-{# ------------------------------------------------------------- #}
-### View: Data
-
 {# - 1. START: parameter loop - #}
 {% for p in tools.parameters.source.data.properties %}
-#### Property Index: {{ p | capitalize }}
+#### Properties: {{ p | capitalize }}
 
 - Location: {{ property_indices.get(p) }}
 

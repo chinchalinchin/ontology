@@ -1,0 +1,10 @@
+{# ------------------------------------------------------------- #}
+{% set state = {
+
+} %}
+{# ------------------------------------------------------------- #}
+{# - 1. START: parameter loop - #}
+{% for s in tools.parameters.source.data.state %}
+#### State: {{ s | capitalize }}
+
+{% endfor %}

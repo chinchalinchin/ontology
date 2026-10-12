@@ -1,0 +1,10 @@
+{# ------------------------------------------------------------- #}
+{% set configuration = {
+    'compositions': properties.paths.root + 'src/data/config/compositions/'
+} %}
+{# ------------------------------------------------------------- #}
+{# - 1. START: parameter loop - #}
+{% for c in tools.parameters.source.data.configurations %}
+#### Configuration: {{ c | capitalize }}
+
+{% endfor %}

@@ -141,16 +141,35 @@ tools:
       data: 
         properties:
           - crafts
+          - cursors
           - effects
+          - fonts
+          - geography
           - objects
           - resources
+          - sheets
+          - sounds
           - tiles
+          - widgets
         state:
           - crafts
           - effects
           - objects
           - resources
+          - sheets
           - tiles
+          - world
+        configuration:
+          - actions
+          - compositions
+          - intentions
+          - library
+          - mappings
+          - mechanics
+          - menus
+          - plots
+          - recipes
+          - stages
       workflow: collisions
       script: synthesize
     # --------------------------------------------
@@ -203,17 +222,3 @@ tools:
         # - structures
       session:
         description: null
-        conditions:
-          ## ------------------- PROPERTIES
-          # - src/assets/crafts/bridges.yaml
-          # - src/assets/effects/fluids/main.yaml
-          # - src/assets/geography/main.yaml
-          - src/assets/resources/main.yaml
-          - src/assets/tiles/main.yaml
-          ## ------------------- STATE
-          # - src/data/state/world-01/crafts/bridges.yaml
-          # - src/data/state/world-01/effects/fluids.yaml
-          - src/data/state/world-01/resources/crops.yaml
-          - src/data/state/world-01/resources/trees.yaml
-          ## -------------------- CONFIGURATION
-          - src/data/config/stages/main.yaml

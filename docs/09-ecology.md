@@ -1,6 +1,6 @@
 # Ontology: Ecology
 
-The Ecology of the Board is a collection of interacting systems. Assets form the "particles" of this system, while Mechanics play the role of "natural laws". 
+The Ecology of the [Board](./00-overview.md#board) is a collection of interacting systems. [Assets](./01-assets.md) form the "particles" of this system, while [Mechanics](./05-mechanics.md) play the role of "natural laws". 
 
 **References**
 
@@ -157,16 +157,18 @@ Ores are mineral resources that transition through structural stages when acted 
 
 This section contains the Ecological Principles of the game engine.
 
-### Seasons
+### Seasonality
 
-Tiles undergo Seasons. The Season of a Tile has ripple effects on surrounding Assets. 
+Environ Tiles undergo Seasons. 
 
 1. The Board accumulates the passage of time. 
 2. A Season is approximately one hour in realtime. This can be adjusted in `app.config.settings`.
 3. Seasons iterate continuously through `spring`, `summer`, `autumn` and `winter`. 
 4. Each Season has a Cycle: `onset`, `peak`, `decline`.
 5. Each Cycle has an Period. A Period is three frames.
-6. The Tile frame that is rendered is dependent on the Season, Cycle and Period.
+6. The Environ Tile frame that is rendered is dependent on the Season, Cycle and Period.
+
+The Season imposed on a Envion Tile has ripple effects on surrounding Assets. 
 
 ### Fluid Flow
 

@@ -58,7 +58,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 06.01: Expressions](./phases/refactor/refactor-06-01.md)
     - Phase 07:
       - [x]: [Phase 07.01: Elevation Sorting](./phases/refactor/refactor-07-01.md)
-      - [ ]: [Phase 07.02: Platforms & Elevated Hitbox](./phases/refactor/refactor-07-02.md)
+      - [ ]: [Phase 07.02: Platforms & Elevated Hitboxes](./phases/refactor/refactor-07-02.md)
     - Phase 08:
       - [x]: [Phase 08.01: Obstable Geometry](./phases/refactor/refactor-08-01.md)
       - [x]: [Phase 08.02: NavigationMechanics](./phases/refactor/refactor-08-02.md)
