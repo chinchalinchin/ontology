@@ -1,15 +1,23 @@
 """
 # Ontology: app.game.logic.mechanics.core.telemetry
 """
+from __future__ import annotations
+
 # Standard Libraries
 import re
-from typing import Dict, Any, List
+from typing import (
+    Dict, 
+    Any, 
+    List,
+    TYPE_CHECKING
+)
 
 # Application Libraries
 from app.assets.base import Asset
-from app.game.board import Board
 from app.game.logic.mechanics.base import Mechanic
 
+if TYPE_CHECKING:
+    from app.game.board import Board
 
 class TelemetryMechanics(Mechanic):
     def __init__(self, inbound_queue):

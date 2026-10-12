@@ -62,7 +62,7 @@ compositions:
             - id: floor-horizontal-stone
               name: castle-dawn-flatroof-00
               owner: bind(root.owner)
-              elevation: 1
+              elevation: -1
               position:
                 x: -49
                 y: -82
