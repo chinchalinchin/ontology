@@ -84,15 +84,15 @@ python main.py telemetry --instances sprites --names npc_merchant
 
 *Objective*: Integrate telemetry query resolution into the engine loop via `app.mechanics.core.telemetry`.
 
-* [ ] Subtask: Construct `TelemetryMechanic` inheriting from base `Mechanic`.
-* [ ] Subtask: Integrate `board.instances()`, `board.categories()`, and `predicates` query filters into the execution loop.
-* [ ] Subtask: Register `TelemetryMechanic` in `MechanicsFactory` under core mechanics pipelines.
+* [x] Subtask: Construct `TelemetryMechanic` inheriting from base `Mechanic`.
+* [x] Subtask: Integrate `board.instances()`, `board.categories()`, and `predicates` query filters into the execution loop.
+* [x] Subtask: Register `TelemetryMechanic` in `MechanicsFactory` under core mechanics pipelines.
 
 **3. Task: IPC Transport Daemon**
 
 *Objective*: Build the asynchronous IPC server in `app.telemetry.server`.
 
-* [ ] Subtask: Implement non-blocking domain socket and loopback socket listener.
+* [~] Subtask: Implement non-blocking domain socket and loopback socket listener.
 * [ ] Subtask: Implement queue synchronizer communicating with `TelemetryMechanic`.
 * [ ] Subtask: Wire daemon initialization into `Orchestrator.orchestrate()`.
 

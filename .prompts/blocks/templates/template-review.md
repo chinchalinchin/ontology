@@ -5,42 +5,42 @@ For reviews and critiques, use the following template,
 
 ```jinja2
 {% raw %}
-#### Review: {{ title }}
+##### Review: {{ title }}
 
-##### Overview
+###### Overview
 
 {{ overview }}
 
 {% if necessary(review(implementation)) %}
-##### Review: Implementation
+###### Review: Implementation
 
 {{ review(implementation) | criteria: specification met, edge cases handled }}
 
 {% endif %}
 
 {% if necessary(review(quality)) %}
-##### Review: Quality
+###### Review: Quality
 
-{{ review(quality) | criteria: omments, docstrings, code smells, constraint violations, readability }}
+{{ review(quality) | criteria: comments, docstrings, code smells, constraint violations, readability }}
 
 {% endif %}
 
 {% if necessary(review(logic)) %}
-##### Review: Logic
+###### Review: Logic
 
 {{ review(logic) | criteria: inconsistencies, contradictions, ambiguities, unnecessary complexity }}
 
 {% endif %}
 
 {% if necessary(review(architecture)) %}
-##### Review: Architecture
+###### Review: Architecture
 
 {{ review(architecture) | redundancies, inefficiencies, data models}}
 
 {% endif %}
 
 {% if necessary(review(optimization)) %}
-##### Review: Optimization
+###### Review: Optimization
 
 {{ review(optimization) | critera: cython candidates, bottle necks, garbage collection }}
 

@@ -11,7 +11,7 @@ from app.game.board import Board
 from app.game.logic.mechanics.base import Mechanic
 
 
-class TelemetryMechanic(Mechanic):
+class TelemetryMechanics(Mechanic):
     def __init__(self, inbound_queue):
         self.inbound_queue = inbound_queue
 

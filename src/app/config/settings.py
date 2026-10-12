@@ -32,6 +32,7 @@ LOG_LEVEL: Final[str] = "INFO"
 """Application logging verbosity level."""
 
 SOCKET: Final[str] = "/tmp/ontology.sock"
+"""TCP Socket for application telemetry."""
 # ---------------------------------------------------
 # ENGINE CONSTANTS
 # ---------------------------------------------------

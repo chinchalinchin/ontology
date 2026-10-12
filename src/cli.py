@@ -107,7 +107,7 @@ def filter_assets(assets: List[Any], filters: Optional[Dict[str, Optional[str]]]
     # 1. Filter out Widgets
     non_widgets = [
         a for a in assets 
-        if getattr(a, "category", None) != AssetCategories.WIDGETS.value
+        if a.category != AssetCategories.WIDGETS.value
     ]
     if not filters:
         return non_widgets

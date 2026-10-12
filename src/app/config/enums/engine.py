@@ -24,6 +24,7 @@ class Mechanics(str, Enum):
     SEASON          = "season"
     SOCIAL          = "social"
     SWITCH          = "switch"
+    TELEMETRY       = "telemetry"
     TRANSITION      = "transition"
 
 class Configurations(str, Enum):

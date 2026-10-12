@@ -3,7 +3,8 @@ from app.game.logic.mechanics.core import (
     AnimationMechanics,
     RemoveMechanics,
     MotionMechanics,
-    MenuMechanics
+    MenuMechanics,
+    TelemetryMechanics
 )
 from app.game.logic.mechanics.spatial import (
     SwitchMechanics,
@@ -32,6 +33,7 @@ __all__ = [
     'RemoveMechanics',
     'MotionMechanics',
     'MenuMechanics',
+    'TelemetryMechanics',
     'Mechanic',
     #
     'SwitchMechanics', 

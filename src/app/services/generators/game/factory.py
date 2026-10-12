@@ -74,6 +74,7 @@ from app.game.logic.mechanics import (
     NavigationMechanics,
     FluidMechanics,
     SeasonMechanics,
+    TelemetryMechanics,
     Mechanic
 )
 from app.game.menus.controllers import (
@@ -162,6 +163,7 @@ class Factory:
         Mechanics.SOCIAL.value: SocialMechanics,
         Mechanics.SWITCH.value: SwitchMechanics,
         Mechanics.TRANSITION.value: TransitionMechanics,
+        Mechanics.TELEMETRY.value: TelemetryMechanics,
     }
 
     CONTROLLER_MAP  = {

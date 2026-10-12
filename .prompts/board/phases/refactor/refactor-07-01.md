@@ -397,3 +397,70 @@ $$
 **5. Architectural Backlog Status**
 
 * **Bug B014 (Pinned)**: Evaluating zero-allocation broad-phase sensor queries in Cython (`libs.core.math.geometry`) or pre-cached static sensor hitboxes on `StairProperties` to prevent per-frame `Hitbox` heap allocations during stair detection.
+
+
+##### Review: Phase 07.01 - Elevation Sorting
+
+###### Overview
+
+Phase 07.01 deprecated the legacy `height` attribute, renamed `depth` to `elevation`, established discrete negative integer tiers for terrain substrates, expanded the Painter's Algorithm to a 3-key lexicographical sort $(E, \text{ground\_y}, \text{priority})$, registered `crafts.stairs` as an inclined sensor entity, and partitioned broad/narrow-phase physical collisions by discrete elevation tiers.
+
+###### Review: Implementation
+
+* **Topological Incline Traversal**: `CollisionMechanics._traverse_stairs` successfully replaces naive bounding-box leading edges with centered foot-anchor projection ($f_x = x + \lfloor w/2 \rfloor, f_y = y + l$). Normalizing tread progress and gating elevation mutation on directional velocity vectors ($v_y < 0 / v_y > 0, v_x < 0 / v_x > 0$) prevents premature tier switching when an entity grazes stair edges.
+
+* **Lexicographical Screen Sorting**: `Screen._sort` evaluates `(asset.elevation, ground_y, asset.properties.priority)`. Upright entities, substrate layers, and surface apertures sort deterministically without runtime string coercion or fallback branches.
+
+* **Two-Pass Macro Resolution**: `Decomposer` introduces scope indexing to resolve `anchor(target)` directives down to concrete integer offsets before ECS instantiation, allowing wall fixtures to align with host facade baselines without manual asset offset tuning.
+
+##### Review: Quality
+
+* **Docstring Drift in Hitbox Schemas**: `app.assets.hitboxes.crafts.ElevatedHitbox` contains a copy-paste docstring from `StageHitbox` referencing *"biological/geological stage-indexed hitboxes from ResourceProperties"*. Furthermore, `OrientedHitbox` and `DirectedHitbox` in `app.assets.hitboxes.core` possess empty docstrings.
+
+* **Redundant Taxonomy Predicates**: In `CollisionMechanics.update`, dynamic body filtering retains redundant checks:
+
+```python
+if getattr(w.properties, 'mass', 0) > 0 or w.taxonomy.instance == AssetInstances.PLAYERS.value:
+```
+
+Since `SheetProperties` defaults to `mass: int = 1` and the player is configured as a dynamic body ($m > 0$), checking `taxonomy.instance == AssetInstances.PLAYERS.value` violates the ECS principle of decoupling behavior from categorical taxonomy.
+
+* **Enum Equality Style Discrepancy**: In `CollisionMechanics._resolve`, lines 144–145 compare `asset_a.taxonomy.instance == AssetInstances.PLAYERS` directly against the enum rather than using `.value`, whereas line 118 in `_boundary` uses `AssetInstances.PLAYERS.value`.
+
+###### Review: Logic
+
+* **Sensor Body Boundary Ingestion Defect**: In `Perimeter.extract`, static architecture is filtered using:
+```python
+mass = getattr(obj.properties, 'mass', 0)
+if mass > 0 or obj.taxonomy.instance in (
+    AssetInstances.CRATES.value,
+    AssetInstances.CHESTS.value,
+    AssetInstances.RAFTS.value
+):
+    continue
+```
+
+Sensor entities (such as stairs, pressure plates, and bridges) define `mass: int = -1`. The condition `mass > 0` evaluates to `False`, causing `Perimeter.extract` to treat sensor bodies as static architecture ($m = 0$) and appending their outer dimensions to `rects`. Consequently, `geometry.contours` bakes the entire bounding box of stair treads and floor switches into the impassable perimeter hull, physically locking characters out of incline traversal (the underlying cause of Bug B014).
+
+* **Zero-Velocity Incline Stalling**: In `_traverse_stairs`, elevation mutation requires non-zero directional velocity (`vy < 0`, `vy > 0`, etc.). If an entity is pushed onto a stair sensor or comes to a complete rest ($v = 0$) within the transition threshold before switching tiers, their elevation remains unchanged. While this prevents edge grazing jitter, voluntary locomotion must be resumed in the original direction to trigger the shift.
+
+* **Substrate Elevation Query Parity**: `Board.weights` and `Board.obstacles` map negative substrate elevations ($\le 0$) to Tier 0. However, `Board.categories` and `Board.instances` evaluate strict equality (`a.elevation == elevation`). Querying `board.categories('crafts', layer, elevation=0)` excludes default bridges because their substrate elevation is `-1`.
+
+##### Review: Architecture
+
+* **Pathfinding Disconnect on Multi-Tier Networks**: `CollisionMechanics` partitions physical collisions by elevation, but `NavigationMechanics` (RRT pathfinding) still extracts obstacle hitboxes in 2D space without elevation filtering. An NPC pathfinding on elevation 1 currently treats ground-level obstacles at elevation 0 as obstructions if they share screen coordinates $(x, y)$. Path planning must become elevation-aware.
+
+* **Two-Pass Macro Scope Limits**: `Decomposer._resolve_anchor` indexes sibling components within the same strut branch. However, forward references across separate branches of the same composition macro cannot be resolved if the target branch is traversed later in the tree.
+
+###### Review: Optimization
+
+* **Unindexed Stair Sensor Checks**: In `CollisionMechanics.update`, stair detection executes an unindexed nested loop across all stairs and dynamic movers:
+```python
+for stair in stairs:
+    for mover in movers:
+        if geometry.intersects(...): self._traverse_stairs(mover, stair)
+```
+
+This incurs an $O(S \times M)$ overhead in Python and invokes the `stair.hitboxes` property repeatedly every frame. Sensor candidate evaluation should be offloaded to `SpatialMechanic.grid` (`Space.query`) or Cython `physics.environment`.
+
+* **Per-Frame Sorting Allocations**: In `Screen.draw()`, `assets.sort(key=self._sort)` creates a 3-tuple `(elevation, ground_y, priority)` for every rendered asset on every frame at 60 Hz. Moving the sorting comparator into a Cython sort key or maintaining an insertion-sorted linked list in `BoardCache` will reduce inner-loop garbage collection pressure.
