@@ -75,14 +75,26 @@ See [Mechanics](./05-mechanics.md#spatial) for more information.
 
 World rendering evaluates spatial geometry using discrete topological elevation tiers and continuous ground perspective. The engine deprecates legacy manual height overrides in favor of a deterministic 3-key lexicographical Painter's Algorithm in `Screen._sort`:
 
-$$\text{sort\_key}(A) = \Big(A.\text{elevation},\; \text{ground\_y}(A),\; A.\text{properties.priority}\Big)$$
+$$\text{sort}(x) = \Big(x.\text{elevation},\; \text{ground}(x),\; x.\text{properties.priority}\Big)$$
 
-1. **Primary Key (`A.elevation` $\in \mathbb{Z}$)**: Discrete spatial $Z$-plane elevation tier. Substrates declare negative integer tiers via `settings.SUBSTRATES` (`back: -4`, `fluids: -3`, `shorelines: -2`, `bridges: -1`). Standard entities default to `elevation = 0`, and elevated structures occupy $E \ge 1$. Entities on higher elevation tiers render strictly on top of lower tiers, preventing cross-tier Z-fighting.
-2. **Secondary Key (`ground_y` $\in \mathbb{R}$)**: Continuous elevation-dependent geometric ground perspective: $\text{ground\_y} = \text{int}(A.\text{state.position.y} + A.\text{dimensions.l} + A.\text{state.anchor})$. `state.anchor` is a compiled integer offset that aligns wall-mounted fixtures (doors, torches, windows) with their parent facade's ground baseline.
-3. **Tertiary Key (`priority` $\in \mathbb{Z}$)**: Elevation-matching coplanar tie-breaker declared on immutable `AssetProperties`:
+1. **Primary Key (`x.elevation` $\in \mathbb{Z}$)**: Discrete spatial $Z$-plane elevation tier. Standard Assets default to `elevation = 0`; elevated structures occupy $\text{elevation} \ge 1$. Entities on higher elevations render strictly on top of lower elevations.
+2. **Secondary Key (`ground` $\in \mathbb{R}$)**: Elevation-dependent geometric ground perspective: $\text{ground} = \text{int}(x.\text{state.position.y} + x.\text{dimensions.l} + x.\text{state.anchor})$. `state.anchor` is a compiled integer offset that aligns wall-mounted fixtures (doors, torches, windows) with their parent's ground baseline.
+3. **Tertiary Key (`priority` $\in \mathbb{Z}$)**: Elevation-matching coplanar tie-breaker declared as an immutable property:
    - Substrates (rugs, floorboards): `priority = -1`
    - Upright entities (walls, characters, obstacles): `priority = 0`
    - Wall fixtures and decals (doors, wall torches): `priority = 1`
+
+**Substrates**
+
+Certain Assets have dedicated Substrate elevations to preserve the fidelity of their rendering order.
+
+| Category/Instance | Dedicated Elevation Substrate |
+| Environ | -4 | 
+| Fluids  | -3 | 
+| Geography | -2 |
+| Bridges | -1 |
+
+During [CollisionMechanics](./05-mechanics.md#collisionmechanics) and Perimeter generation, these Substrates are collapsed into `elevation = 0`, i.e. $\text{elevation} \in [-\infty, 0] \to \text{elevation} = 0$, in order that all Assets on these substrates may participate in collisions at `elevation = 0`.
 
 ### Asset Hierarchy
 
@@ -99,17 +111,26 @@ While Assets are instantiated by injecting a common root class with component be
 
 Asset *Categories* form the top layer of the hierarchy. Each Asset Category is defined by its static properties; an Asset's Category determines what type of properties it will parse from the property files and inject into its deployment. 
 
+Each AssetProperties has, at bare minimum:
+
+- `dimension: Dimension`
+- `priority: int`
+
+These attributes belong to the base class from which all other state dataclasses inherit.
+
+The following table details the *unique* property attributes of each Asset Instance (with the attributes identified above labeled with the catchall "Base"),
+
 | Asset Category | Properties |
 | - | - |
-| Tiles | Dimensions, Friction |
-| Cursors | Dimensions |
-| Objects | Dimensions, Hitboxes, Mass |
-| Effects | Dimensions, Hitboxes, Lifecycle, Count, Mass |
-| Geography | Dimensions, Hitboxes, TODO | 
-| Resources | Dimensions, Hitboxes, TODO |
-| Crafts | Dimensions, Hitboxes, Mass, Cost |
-| Sheets | Dimensions, Hitboxes, Mass, Stack, Actions |
-| Widgets | Dimensions, Frames |
+| Tiles | Base, Friction |
+| Cursors | Base |
+| Objects | Base, Hitboxes, Mass |
+| Effects | Base, Hitboxes, Lifecycle, Count, Mass |
+| Geography | Base, Hitboxes, Tile ID, Fluid ID, Thickness | 
+| Resources | Base, Hitboxes, TODO |
+| Crafts | Base, Hitboxes, Mass, Cost |
+| Sheets | Base, Hitboxes, Mass, Stack, Actions |
+| Widgets | Base, Frames |
 
 **Instances**
 
@@ -129,8 +150,8 @@ The following table details the *unique* state attributes of each Asset Instance
 
 | Asset Category | Asset Instance | State |
 | - | - | - | 
-| Tile | Back | Base |
-| Tile | Fore | Base |
+| Tile | Environ | Base |
+| Tile | Canopy | Base |
 | Tile | Grid | Base |
 | Object | Crate | Base, Velocity |
 | Object | Obstacle | Base, Velocity |
@@ -188,13 +209,12 @@ The Recipe for an Asset, i.e. the list of components which go into a particular 
 5. **Behavior: Hitbox:** Stateless collision boundary resolution strategies injected via Recipes. Resolves active physical obstacles dynamically without mutating cached properties:
     - `resolve(properties: AssetProperties, state: AssetState, frame: Optional[Frame]) -> List[Hitbox]`: Emits the active physical collision footprint for spatial broad-phase and narrow-phase physics.
 
-
 !!! note
-    The state model can be calculated from (Category, Instance), but (Animation, Frame) is independent of the state assigned to an Asset through the Asset Hierarchy. It must be specified through a Recipe.
+    The state model can be calculated from (Category, Instance), but (Animation, Frame, Hitbox) is independent of the state assigned to an Asset through the Asset Hierarchy. It must be specified through a Recipe.
 
 ### Asset Taxonomy
 
-An Asset's position in the Asset Hierarchy is encoded into its Taxonomy. These attributes exist on every Asset instantiated within the game. A Taxonomy is neither state, configuration or properties.
+An Asset's order in the Asset Hierarchy is encoded into its Taxonomy. These attributes exist on every Asset instantiated within the game. A Taxonomy is neither state, configuration or properties. Taxonomy represents the full, unambiguous identity of Asset,
 
 - `id: str`
 - `category: str`
@@ -205,17 +225,17 @@ An Asset's position in the Asset Hierarchy is encoded into its Taxonomy. These a
 
 `category` determines what property model is employed by the Asset. The category must be configured by a `src/assets/<category>/**/*.yaml` property index file.
 
-`instance` determines what state model is employed by the Asset. An Asset's state is hydrated from the `data/state/<board>/*` directory.
+`instance` determines what state model is employed by the Asset. An Asset's state is hydrated from the `data/state/<board>/**/*.yaml` directory.
 
 `name` is the physical deployment of the Asset. Every Asset Instance deployed onto a Board has a unique `name`.
 
-`(category, instance)` collectively determine the components `(frame, animation, properties, state)` injected into an Asset class during the [Initialization](./11-architecture.md#initialization). More specifically, category determines properties (`category -> properties`), and instance determines everything else (`instance -> (frame, animation, state)`).
+`(category, instance)` collectively map to the components `(frame, animation, hitbox, properties, state)` injected into an Asset class during the [Initialization](./11-architecture.md#initialization). More specifically, category maps to properties (`category -> properties`), and instance maps to everything else (`instance -> (frame, animation, hitbox, state)`).
 
 ## Tiles
 
 * Property File: `/src/assets/tiles/**/*.yaml`
 
-Tiles are static, frictive Assets that form the terrain substrate. Tiles are arranged into continuous background (`environ`) and foreground (`canopy`) canvases.
+Tiles are static, frictive Assets that form the terrain Substrate. Tiles are arranged into continuous background (`environ`) and foreground (`canopy`) canvases.
 
 Tiles Instances have their dimensions fixed by their properties. These dimensions are configurable in the property file, but they apply to all Tiles of a particular instance universally. When a Tile is drawn, it is rendered as a `multiple` of the unit Tile configured in the Asset directory.
 
@@ -235,37 +255,30 @@ Tiles have coefficients of friction. These coefficient are used by [MotionMechan
 
 **Animation: None**
 
+N/A
+
 **Hitbox: StaticHitbox**
 
 * `get(properties, state, frame): returns properties.hitboxes`
 
+**State: MultiplerState**
+
+* `layer: str`
+* `elvation: int`
+* `position: Position`
+* `multiple: Multiple`
+
 ### Environ
 
-A Environ Tile is the first Asset rendered on screen. It has the lowest Z coordinate of all Assets; Environ Tiles will *always* be rendered *under* all of the other Assets, regardless of their `depth` or `height`.
+A Environ Tile is the first Asset rendered on screen. It has the lowest Z coordinate of all Assets; Environ Tiles will *always* be rendered *under* all of the other Assets, regardless of their `elevation` or `priority`.
 
 **Event Driven Animation**
 
-Tiles are not animated per-frame in `Screen.draw()`. Instead, multi-season tiles leverage `SeasonalFrame` and event-driven canvas reconstruction. See [Ecology documentation](./09-ecology.md) for more information.
+Environ Tiles are not animated per-frame in `Screen.draw()`. Instead, multi-season tiles leverage `SeasonalFrame` and event-driven canvas reconstruction. See [Ecology documentation](./09-ecology.md) for more information.
 
-**State: MultiplerState**
+### Canopy
 
-* `layer: str`
-* `depth: int`
-* `height: int`
-* `position: Position`
-* `multiple: Multiple`
-
-### Fore
-
-A Fore Tile is the last Asset rendered on screen. It has the highest Z coordinate of all Assets. Fore Tiles will always be rendered on top of all of other Assets, regardless of their `depth` or `height`. The *one* exception to this rule is Widgets. Fore Tiles are an "in-world" Asset, and thus their Z-ordering is superseded by Widgets.
-
-**State: MultiplerState**
-
-* `layer: str`
-* `depth: int`
-* `height: int`
-* `position: Position`
-* `multiple: Multiple`
+A Canopy Tile is the last Asset rendered on screen. It has the highest Z coordinate of all Assets. Canopy Tiles will always be rendered on top of all of other Assets, regardless of their `elevation` or `priority`. The *one* exception to this rule is Widgets. Fore Tiles are an "in-world" Asset, and thus their Z-ordering is superseded by Widgets.
 
 ### Grid
 
@@ -275,14 +288,6 @@ There must be precisely *two* Grid tiles:
 
 - `focus`: A Grid Tile to represent active selections.
 - `cell`: A Grid Tile to represent idle selections.
-
-**State: MultiplerState**
-
-* `layer: str`
-* `depth: int`
-* `height: int`
-* `position: Position`
-* `multiple: Multiple`
 
 ## Objects
 
@@ -330,8 +335,7 @@ When *interacting* with a Chest, the [Player](./02-sprites.md#player) is shown t
 **State: ContainerState**
 
 * `layer: str`
-* `depth: int`
-* `height: int`
+* `elevation: int`
 * `position: Position`
 * `switch: bool`
 * `content: List[str]`
@@ -343,8 +347,7 @@ Crates are Objects who state can be altered by in-game physics. For example, whe
 **State: PositionalState**
 
 * `layer: str`
-* `depth: int`
-* `height: int`
+* `elevation: int`
 * `position: Position`
 * `velocity: Velocity`
 
@@ -360,8 +363,7 @@ Doors are Objects that alter a Sprite's `sprite.state.layer`. When a Sprite ente
 **State: DoorState**
 
 * `layer: str`
-* `depth: int`
-* `height: int`
+* `elevation: int`
 * `outlayer: str`
 * `position: Position`
 * `out: Position`
@@ -388,8 +390,7 @@ Gates are Binary Objects whose state is connected to Plates. When a Gate is on (
 **State: SwitchState**
 
 * `layer: str`
-* `depth: int`
-* `height: int`
+* `elevation: int`
 * `link: str`
 * `position: Position`
 * `switch: bool`
@@ -414,8 +415,7 @@ Plates are Binary Objects whose state can be changed by intersection, e.g. when 
 **State: SwitchState**
 
 * `layer: str`
-* `depth: int`
-* `height: int`
+* `elevation: int`
 * `link: str`
 * `position: Position`
 * `switch: bool`
@@ -441,8 +441,7 @@ Rafts are mutable, inanimate Objects that allow Sprites and Players to traverse 
 * `layer: str`
 * `position: Position`
 * `velocity: Velocity`
-* `depth: int = 0`
-* `height: Optional[int] = None`
+* `elevation: int`
 
 ### Signs
 
@@ -498,23 +497,22 @@ The `key` referenced in the `cost` depends on the Instance type of the Craft. Fo
 
 Bridges are static, passable Crafts that elevate characters and dynamic items over Fluid corridors, annular pools, and Shoreline margins without entering the `submerged` state.
 
-**Oriented Frame Atlas**
+**Oriented Specifcation**
 
 A Bridge image file embeds both horizontal and vertical Frames spans in a single horizontal row:
 
 * Cell 0: `horizontal` Frame (runs East-West to cross North-South streams).
 * Cell 1: `vertical` FRame (runs North-South to cross East-West streams).
 
-During bootstrap, `OrientedFrame` indexes these into discrete crop keys: `{id}-horizontal` and `{id}-vertical`. At runtime, `OrientedFrame.keys()` emits the key corresponding to `state.orientation`.
-
 **Decomposition & Structural Multipliers**
 
 Bridges are deployed via a 1D structural multiplier (`multiple.nx` for horizontal spans, `multiple.ny` for vertical spans).
 
 During world hydration or dynamic execution of the `build` Intention, the `Decomposer` unpacks a `BridgeState` into a contiguous series of $N$ unit `Asset` instances:
-* Each constituent segment receives an independent, absolute `Position` offset along the primary span axis.
-* Each constituent segment references the base unit's static `CraftProperties`, preserving immutable dimensions and relative hitboxes.
-* Construction cost scales linearly with span length ($N \times \text{Cost}$).
+
+* Each segment receives an independent, absolute `Position` offset along the primary axis.
+* Each segment references the base unit's static `CraftProperties`, preserving immutable dimensions and relative hitboxes.
+* Construction cost scales linearly with span ($N \times \text{Cost}$).
 
 **Dynamics & Environmental Interception**
 
@@ -527,7 +525,7 @@ During world hydration or dynamic execution of the `build` Intention, the `Decom
 
 **Z-Ordering & Perspective**
 
-Bridges declare an explicit `height: 0` and `depth: 1`. This guarantees that Bridge decks render above background Tiles, Fluids (`depth: -1`), and Shorelines (`depth: 0`), while allowing entities crossing the deck to sort above the Bridge via dynamic geometric height ($y + l$).
+Bridges belong to a dedicated Substrate, `elevation = -1`. This guarantees that Bridge decks render above background Tiles, Fluids (`elevation: -3`), and Shorelines (`elevation = -2`), while allowing dynamics Asset crossing its area to sort above the Bridge via their baseline footprint ($y + l$) and [the Painter's Algorithm](./11-architecture.md#rendering).
 
 **Frame: OrientedFrame**
 
@@ -723,8 +721,7 @@ Due to dependencies on other Assets and Mechanics, the following Passive Effects
 **State: AnimatorState**
 
 * `layer: str`
-* `depth: int`
-* `height: int`
+* `elvation: int`
 * `position: Position`
 * `animation: Animation`
 
@@ -737,8 +734,7 @@ Hazard Effects deal damage to overlapping dynamic entities (e.g., lava, floor sp
 **State: HazardState**
 
 * `layer: str`
-* `depth: int`
-* `height: int`
+* `elevation: int`
 * `position: Position`
 * `animation: Animation`
 * `damage: Damage`
@@ -757,8 +753,7 @@ Collectables are Effects that transfer loot keys into a Sprite's or Player's inv
 **State: CollectableState**
 
 * `layer: str`
-* `depth: int`
-* `height: int`
+* `elevation: int`
 * `position: Position`
 * `animation: Animation`
 * `lot: Lot`
@@ -778,7 +773,7 @@ Reactables Effects react to the [Intentional](./04-intentions.md) states of [Spr
 **State: ReactableState**
 
 * `layer: str`
-* `depth: int`
+* `elevation: int`
 * `height: int`
 * `position: Position`
 * `animation: Animation`
@@ -803,8 +798,7 @@ Fluids are directional Effects that project along a `source` Direction until obs
 * `branches: List[Branch]`
 * `hitboxes: List[Hitbox]`
 * `dirty: bool = True`
-* `height: Optional[int] = 0`
-* `depth: int = -1`
+* `elevation: int`
 
 
 **Hitbox: DynamicHitbox**
@@ -823,12 +817,12 @@ Geography Assets represent inanimate, immutable structural and topographical lan
    - Columns (0..3): `spring`, `summer`, `autumn`, `winter`
    - Rows (0..3): `0: up`, `1: left`, `2: down`, `3: right`
 2. **Keying**: Uses `Seasons` and `Directions`. Keys follow `{id}-{season}-{direction}` with fractional slices keyed as `{id}-{season}-{direction}-{rem}`.
-3. **Z-Ordering**: Shorelines declare an explicit `height: 0` and `depth: 0`. This guarantees shorelines render above Fluid corridors (`depth: -1`) but sort underneath physical entities (`height: y + l`).
+3. **Z-Ordering**: Shorelines below to a dedicated Substrate, `elevation = -3`, to guarantee the correct ordering.
 4. **Lifecycle & Caching**: Shorelines are procedural entities generated via `Cartographer`. Frame keys are computed via `CardinalFrame.keys()` and cached on `state._keys`. When `SeasonMechanics` emits a `SeasonEvent`, active shoreline state seasons are synchronized and frame caches invalidated (`state._keys = None`) without triggering geometric regeneration.
 
 **Relational Secondary Keys**
 
-Geography assets act as relational bridges across environmental categories. Specifically, Shorelines declare secondary keys referencing the background `Tile` (and optionally `Fluid`) assets they border:
+Geography Assets act as relational bridges across environmental categories. Specifically, Shorelines declare secondary keys referencing the background `Tile` (and optionally `Fluid`) Assets they border:
 
 * `tile: str`: Asset ID of the terrain tile to which this geography margin binds.
 * `fluid: Optional[str]`: Optional asset ID of the fluid type required to activate this margin.
