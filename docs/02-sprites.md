@@ -83,11 +83,14 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
 - `if state.animation.frame >= properties.actions[state.animation.action].count: state.animation.frame = 0`
 - `state.psyche.expression.ttl -= 1` (Nullifies expression on expiration)
 
-
 **Frame: SpriteFrame**
 
 * `keys(id, state): returns [ ("{id}-{state.animation.action}-{state.animation.direction}-{animation.frame}", 0, 0) ] + [ (<equipment-frames>, 0, 0) ] + [ (<expression-frames>, offset.x, offset.y) ]`
 * `index(self, id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
+
+**Hitbox: StaticHitbox**
+
+* `get(properties, state, frame): returns properties.hitboxes`
 
 ### Intentions
 

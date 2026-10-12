@@ -8,26 +8,27 @@ Composition Configuration can be found in `/src/data/config/compositions/main.ym
 
 From the perspective of the [state files](./00-overview.md#state), Compositions are another type of Asset that can be deployed onto the Board. Similar to the [Player](./02-sprites.md#player), they are a "*virtual*" Asset composed of other Assets, i.e. they do not have properties of their own. Unlike the Player, which is a special type of Sprite, Compositions are collections of multiple Assets. When a Composition is deployed onto the Board, its individual Assets are added to the appropriate (Category, Instance)-nodes in the [Asset Hierarchy](./01-assets.md#asset-hierarchy)
 
-Compositions are organized around [Struts](./01-assets.md#struts). They serve as abstract containers (or wrappers) for Struts. Compositions, in a sense, are the *realization* of a Strut. While Struts can be deployed individually onto the Board, their true purpose is to provide a "root" for other Assets.
-
 A Composition is a way to reuse common Asset configurations in the state without having to specify their individual components each time they are deployed. Functionally, Compositions serve no purpose from the Board's perspective. They only serve to simplify the amount of state specification that is required to fully declare a complex, high-level game Board.
+
+Compositions are organized around [Struts](./01-assets.md#struts). They serve as abstract containers (or wrappers) for Struts. Compositions, in a sense, are the *realization* of a Strut. While Struts can be deployed individually onto the Board, their true purpose is to provide a "root" for other Assets.
 
 To achieve this, Compositions have a *Pseudo State* and a *Deployed State*. A Composition Pseudo State is a formula for constructing the game state of its component Assets from its Deployed State. The Pseudo State of a Composition is configured in the composition directory, whereas the Deployed State is set in the state directory, alongside the other Asset states.
 
 **Pseudo State: CompositionPseudoState**
 
-- `root`
-    - `strut: PropertyState`
-    - `components: StateSchema`
-- `branches`
-    - `strut: PropertyState`
-    - `components: StateSchema`
+* `root`
+    * `strut: PropertyState`
+    * `components: StateSchema`
+* `branches`
+    * `strut: PropertyState`
+    * `components: StateSchema`
 
 **Deployed State: PropertyState**
 
-- `layer: str`
-- `position: Position`
-- `owner: str`
+* `layer: str`
+* `position: Position`
+* `elevation: int`
+* `owner: str`
 
 ### Root Struts
 
@@ -35,13 +36,15 @@ Every Composition has atleast one [Strut](./01-assets.md#struts), known as the r
 
 A Composition contains other Assets in predefined configurations, known as the Composition components. Each Strut in a Composition has components.
 
-For example, a `brick-house` Composition might contain a `frame-brick` Strut as its root Strut and then a `mansion` Door as a component Asset. The Composition specifies the relative position of the `mansion` Door with respect to the origin of the `frame-brick` Strut, i.e. all component Assets in a Composition have their positions unpacked relative to the root Strut's deployed position. 
+For example, a `brick-house` Composition might contain a `frame-brick` Strut as its root Strut and then a `door-mansion` Door as a component Asset. The Composition specifies the relative position of the `door-mansion` Door with respect to the origin of the `frame-brick` Strut, i.e. all component Assets in a Composition have their positions unpacked relative to the root Strut's deployed position. 
+
+In other words, Struts provided a *frame of reference* for their components.
 
 ### Pseudo State
 
 The state files specify Compositions to deploy. The game converts these Compositions into ingame Assets that belong to the [Asset Hierarchy](./01-assets.md#asset-hierarchy). When Compositions are unpacked by the [Orchestrator](./00-overview.md#orchestrator) during the [bootstrapping](./11-architecture.md#initialization), each Asset in a Composition is appended to the [Board](./00-overview.md#board) state dynamically. In other words, the Assets in Compositions, once unpacked, are treated separately by the Engine, as if they had been specified in the state directory individually.
 
-Components of Compositions have a Pseud State. During the [application bootstrap](./11-architecture.md#initialization), each component's Pseud State is hydrated into an actual Asset State and injected into the Board.
+Components of Compositions have a [Pseudo State](#pseudo-state). During the [application bootstrap](./11-architecture.md#initialization), each component's Pseudo State is hydrated into an actual Asset State and injected into the [Board](./00-overview.md#board).
 
 For example, consider the following Composition configuration,
 
@@ -57,7 +60,7 @@ compositions:
                     doors:
                         -   id: mansion
                             name: house-door
-                            depth: 1
+                            anchor: anchor(house-exterior)
                             outlayer: 'compose-layer'
                             position:
                                 x: 20
@@ -80,7 +83,7 @@ compositions:
                             -   id: door-shadow
                                 name: door-frame
                                 layer: 'compose-layer'
-                                depth: 1
+                                anchor: anchor(wall-blue)
                                 outlayer: bind(root.layer)
                                 position:
                                     x: 20
@@ -90,15 +93,17 @@ compositions:
                                     y: 10
 ```
 
-!!! note
+!!! note "Pseudo State"
     `components` is an [Asset State](./00-overview.md#state) schema, identical to a state file.
 
-!!! note
-    The Doors in this Configuration utilize the `depth` attribute to ensure they are rendered on top of their parent Struts.
+!!! note "anchor() Macro"
+    The Doors in this Configuration utilize the `anchor` macro to ensure they are rendered on top of their parent Struts. The `anchor` macro applies the formula, `anchor(self, target) = (target.y - target.l) - (self.y + self.l)` to dynamically calculate the rendering order, i.e. ensure the Door is rendered on top of the parent Strut. 
+
+    See [Rendering](./11-architecture.md#rendering) for more information on rendering order.
     
 This is a formula for a `brick-house` composed of two Struts on different [Layers](./00-overview.md#layers), each of which have their own [Door](./01-assets.md#doors), each Door being linked to one another through a circuit (`'compose-layer' <-> bind(root.layer)`). In this way, the "inside" of Assets can be traversed. In other words, each Composition may be composed of separate, independent Layers. 
 
-!!! note
+!!! note "Pseudo State Overrides"
     Except for Position (see immediately below), the Pseudo State of the components of a Composition overrides the deployed state of the root Strut. In this example, the `state.layer` of `door-frame` would be `compose-layer`, regardless of the `layer` passed to the root Strut when deployed. 
 
 The root Strut (`brick-house.root`) does not have a Position, where as the `brick-house.branches` Strut does; this is the defining feature of Composition Pseudo State. The Composition configuration leaves the root Strut Position state and layer "empty", so that it can be injected by the state file during deployment. Component Assets and branching Struts define Pseudo States relative to their hierarchical contexts. Consider deploying the above Composition onto a Board, e.g. with the following YAML in the state directory,
@@ -114,7 +119,7 @@ compositions:
         y: 100
 ```
 
-Compositions are not processed by the same hydration algorithm as the other Assets in the state file. A special Decomposer class is used to process the Composition's Deployed State into its component Asset states. 
+Compositions are not processed by the same hydration algorithm as the other Assets in the state file. A special Decomposer service is used to process the Composition's Deployed State into its component Asset states. 
 
 In the current example, the branch of the Composition has its Strut position calculated relative to the root Strut. The components of each Strut are then calculated relative to its parent Strut.
 
@@ -134,19 +139,20 @@ Hydration uses the following rules:
 
 Other than Position, which is calculated according to the above formula, any state attribute *not* specified in a component Asset Pseudo State automatically inherits the root Strut's Deployed State, if those attributes exist on the root Strut. 
 
+#### Bindings
+
 The Pseudo State of component Assets (and branching Struts) can be bound to the root Struts Deployed State as well, to allow for the parameterization of relationships. In this example, the Deployed State `layer` is passed down as a reference to the component `door-frame` Asset, which then uses it to specify its (Pseudo State) attribute for `outlayer` through the use of `bind(root.layer)`; This is how the interior Door leads back to the deployed layer, allowing the Player to return from whence they came. In other words, a binding is a formal constraints between Asset states that makes component Asset states dependent on the root Strut state. This constraint is realized during the Composition unpacking and Pseudo State hydration.
 
 All component Assets can `bind()` to a root Strut state attribute injected into the Composition from the state directory files. When component Asset reference `bind(root.layer)` this is a reference to the root Strut's layer. Only state attributes defined on the root Strut can be bound.
 
 * **Contextual Bindings:** Component Pseudo States can bind attributes to either their immediate parent or the root strut context via regex evaluation:
-* `bind(parent.)`: Queries the immediate parent node context (e.g., `owner: bind(parent.owner)` or `height: bind(parent.height)`).
-* `bind(root.)` or `bind()`: Queries the root deployment context (e.g., `outlayer: bind(root.layer)`).
+    * `bind(root.)` or `bind()`: Queries the root deployment context (e.g., `outlayer: bind(root.layer)`).
 
 In addition, unique names are generated for each component Asset of a Composition according to the schema: `<instance.name>-<strut.name>-<component.name>-<increment>`, where `<increment>` is an index to track the number of unique Compositions deployed on the Board to ensure each has a correspondingly unique name.
 
 ## Decomposer
 
-The Decomposer is the package of the application responsible for translating Composition Configuration into Assets. Taking the example from the previous section, the algorithm for the expansion (decomposition) logic can be modeled as a tree traversal (like Depth-First Search), where spatial data and inherited state propagate downward from parent to child.
+The Decomposer is the service module of the application responsible for translating Composition Configuration into Assets. Taking the example from the previous section, the algorithm for the expansion (decomposition) logic can be modeled as a tree traversal (like Depth-First Search), where spatial data and inherited state propagate downward from parent to child.
 
 ### Decomposition 
 
@@ -191,36 +197,188 @@ For every child node (whether it is a component of the root, or a branching Stru
 
 ### Application Flow
 
-The Decomposer is a standalone service instantiated *before* the Board and Cradle; it is used during the initial Asset hydration phase of the bootstrapping **and** it is employed ingame by [Mechanics](./05-mechanics.md) through the Board interface of the Cradle to instantiate Compositions through the [`build` Intention](./04-intentions.md).
+The Decomposer is a standalone service instantiated *before* the Board and Cradle; it is used during the initial Asset hydration phase of the bootstrapping **and** it is employed ingame by [Mechanics](./05-mechanics.md) through the [Board's Cradle interface](./00-overview.md#board) to instantiate Compositions through the [`build` Intention](./04-intentions.md).
 
-Because the Decomposer inherently generates `Asset` instances, it acts as a higher-level orchestrator of the `Factory`. To do this, it needs access to the global [Asset properties](./00-overview.md#assets), [Recipes](./appendices/01-schemas.md#configuration-recipes) and Composition configuraiton.
+Because the Decomposer inherently generates Asset instances, it acts as a higher-level orchestrator of the Factory. To do this, it needs access to the global [Asset properties](./00-overview.md#assets), [Recipes](./appendices/01-schemas.md#configuration-recipes) and Composition configuraiton.
 
 **1. Initialization (The Setup)**
 
-The Decomposer must be instantiated inside the `Orchestrator`, immediately after the YAML files are loaded and validated, but *before* `migrate()` is called.
+The Decomposer must be instantiated inside the Orchestrator, immediately after the YAML files are loaded and validated, but *before* `migrate()` is called.
 
 * **Dependencies:** The Orchestrator passes the `configurations.compositions` (the macro blueprints), the `properties` (for hitbox/dimension lookups), and the `configurations.recipes` into the Decomposer's constructor.
 * **Statefulness:** Because it is instantiated once as a singleton-like service for the session, its internal `increment` counter starts at 0 and safely scales upwards, guaranteeing unique names whether a Composition is spawned at boot or 10 hours into the game.
 
 **2. Bootstrap Hydration (The Orchestrator Flow)**
 
-During `Orchestrator.migrate()`, the application parses the `state` directory.
+During `Orchestrator.migrate()`, the application parses the state directory.
 
 * **Interception:** When the Orchestrator loop encounters the `self.state.compositions` list (the Compositions placed manually in the YAML state files), it does not try to process them natively.
 * **Execution:** Instead, it passes each deployed state object directly to `Decomposer.unpack(deployed_state)`.
-* **Flattening:** The Decomposer returns a flat `List[Asset]`. The Orchestrator simply calls `.extend()` to append these to the master `assets` list being compiled for the `Board`. The Board boots up completely unaware that these assets originated from a macro.
+* **Flattening:** The Decomposer returns a flat list of Assets. The Orchestrator appends these to the master Asset list being compiled for the Board. The Board boots up completely unaware that these assets originated from a macro.
 
 **3. Runtime Injection (The Cradle Flow)**
 
-During `Orchestrator.inject()`, when the `Cradle` is instantiated, the Orchestrator passes the *exact same Decomposer instance* into the Cradle's constructor.
+During orchestrationg, when the Cradle is instantiated, the Orchestrator passes the *exact same Decomposer instance* into the Cradle's constructor.
 
 * **The Interface:** The Cradle exposes a new method: `spawn_composition(id, position, layer, owner)`.
-* **Execution:** When a Mechanic (like `IndustryMechanics` processing a `build` Intention) requests a Composition, it calls this Cradle method. The Cradle creates a temporary pseudo-state from the arguments and passes it to its internal `Decomposer.unpack()`.
-* **The Return:** The Decomposer applies the exact same relative positioning, string binding, and unique incrementing as it did at boot, returning the flat `List[Asset]`.
-* **Board Integration:** The Mechanic receives the list and pushes it directly into the game loop via `Board.add()`.
+* **Execution:** When a Mechanic requests a Composition, it calls this Cradle method. The Cradle creates a temporary pseudo-state from the arguments and passes it to its internal Decomposer.
+* **The Return:** The Decomposer applies the same relative positioning, string binding, and name incrementing as it did at boot, returning the flat list of Assets.
+* **Board Integration:** The Mechanic receives the list and pushes it directly into the game loop via the Board.
 
-**Result**
+## Asset Specification: Crafts
 
-1. **Single Source of Truth:** Whether a house is placed in a YAML file or built by an NPC Sprite dynamically, the exact same mathematical superposition and binding logic executes.
-2. **State Safety:** The global increment tracker lives safely inside the Decomposer. Because both the Orchestrator and the Cradle share the exact same Decomposer instance in memory, `house-door-1` at boot ensures that the first runtime built door becomes `house-door-2`.
-3. **Strict Boundaries:** The `Board` remains a dumb database. It never knows what a "Composition" is; it just holds the resulting tiles, doors, and struts.
+Because Compositions are used to formalize Asset relationships for reuse, [Crafts](./01-assets.md#crafts) are an essential component of Compositions. The following section provides an in-depth description of each Craft Instance.
+
+**Properties: CraftProperties**
+
+* `dimensions: Dimensions`
+* `hitboxes: List[Hitbox]`
+* `cost: Cost`
+* `mass: int`
+* `priority: int`
+
+### Bridges
+
+Bridges are immutable, inanimate Crafts that elevate characters and dynamic items over Fluid corridors, annular pools, and Shoreline margins without entering the `submerged` state.
+
+**Oriented Specification**
+
+A Bridge image file embeds both horizontal and vertical Frames in a single horizontal row:
+
+* Cell 0: `horizontal` Frame (runs East-West to cross North-South streams).
+* Cell 1: `vertical` Frame (runs North-South to cross East-West streams).
+
+**Decomposition & Structural Multipliers**
+
+Bridges are deployed via a 1D structural multiplier (`multiple.nx` for horizontal spans, `multiple.ny` for vertical spans).
+
+During world hydration or dynamic execution of the `build` Intention, the Decomposer unpacks a BridgeState into a contiguous series of $N$ unit Asset instances:
+
+* Each segment receives an absolute Position offset along the primary axis.
+* Each segment references the base unit's static properties, preserving immutable dimensions and relative hitboxes.
+* Construction cost scales linearly with span ($N \times \text{Cost}$).
+
+**Dynamics & Environmental Interception**
+
+* Bridges are registered as Sensors ($m = -1$). They do not participate in momentum transfer or collision overlap resolution.
+* Bridges are excluded from the [Boards Physics Queries](./00-overview.md#board), allowing mechanics to pathfind across river crossings.
+* In [MotionMechanics](./05-mechanics.md#motionmechanics), intersecting a Bridge marks the Asset as being on a surface:
+  * Fluid immersion and current velocity drift are suppressed ($\vec{v}_{\text{drift}} = \vec{0}$).
+  * Shoreline step-down nudges, ledge constraints, and splash particle emissions are bypassed.
+  * `mutators.triggers.submerged` is cleared to `False`.
+
+**Ordering & Perspective**
+
+Bridges belong to a dedicated Substrate, `elevation = -1`. This guarantees that Bridge area renders above background Tiles, Fluids, and Shorelines, while allowing dynamic Assets crossing its area to render above the Bridge via their baseline footprint ($y + l$) and [the Painter's Algorithm](./11-architecture.md#rendering).
+
+**Frame: OrientedFrame**
+
+* `keys(id, state): returns [(f"{id}-{state.orientation}", 0, 0)]`
+* `index(id, properties): returns {f"{id}-{Orientations.*}": (0, 0, w, l)}`
+
+**State: BridgeState**
+
+* `id: str`
+* `name: Optional[str]`
+* `layer: str`
+* `position: Position`
+* `orientation: str` (`horizontal`, `vertical`)
+* `multiple: Multiple` (`nx > 1` or `ny > 1`)
+* `owner: Optional[str]`
+* `elevation: int`
+
+**Hitbox: StaticHitbox**
+
+* `get(properties, state, frame): returns properties.hitboxes`
+
+### Struts 
+
+*Struts* are inanimate, immutable Assets. Struts are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. In other words, they possess an `owner`. 
+
+Struts may be placed on the Board through the state files manually, but they are generally instantiated ingame through the `build` [Intention](./04-intentions.md). 
+
+Struts are closely related to [Asset Compositions](./03-compositions.md), as they provide a "foundation" upon which configurations of Assets can be built. In other words, a Strut's main purpose is to provide a coordinate system for the relative positioning of reusable Asset configurations. 
+
+**Animation: None**
+
+N/A
+
+**Frame: SingleFrame**
+
+* `keys(id, state): returns [ (id, 0, 0) ]`
+* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+
+**State: PropertyState**
+
+* `layer: str`
+* `elevaiton: int`
+* `position: Position`
+* `owner: str`
+
+**Hitbox: StaticHitbox**
+
+* `get(properties, state, frame): returns properties.hitboxes`
+
+### Stairs
+
+Stairs are static Crafts sensors ($m = -1$) that provide elevation transitions when traversed. 
+
+**Directed Specification**
+
+- `right`: Stair starts in lower right corner and ends in upper left corner.
+- `left`: Stair starts in lower left corner and ends in upper right corner.
+- `up`: Stairs start along bottom edge and end along top edge.
+- `down`: Stairs start along top edge and end along top edge.
+
+!!! important
+    Due to the nature of top-down two-dimensionsal graphics, to preserve perspective, the `down` direction frame must be truncated, i.e. this direction does not fill the full dimensions of the Stair frame.
+
+**Elevation Transitions**
+
+The direction of the elevation transition calculation is dependent on the direction of the transitioning Asset's velocity. For example, once an Asset intersects a Stair, the following conditions are elevated,
+
+- `stairs.state.direction == 'right' and asset.state.velocity.vx < 0: asset.state.elevation += stairs.state.delta`
+- `stairs.state.direction == 'right' and asset.state.velocity.vx > 0: asset.state.elevation -= stairs.state.delta`
+- `stairs.state.direction == 'left' and asset.state.velocity.vx < 0: asset.state.elevation -= stairs.state.delta`
+- `stairs.state.direction == 'left' and asset.state.velocity.vx > 0: asset.state.elevation += stairs.state.delta`
+- `stairs.state.direction == 'up' and asset.state.velocity.vy < 0: asset.state.elevation += stairs.state.delta`
+- `stairs.state.direction == 'up' and asset.state.velocity.vx > 0: asset.state.elevation -= stairs.state.delta`
+- `stairs.state.direction == 'down' and asset.state.velocity.vy > 0: asset.state.elevation += stairs.state.delta`
+- `stairs.state.direction == 'down' and asset.state.velocity.vx < 0: asset.state.elevation -= stairs.state.delta`
+
+**Frame: DirectedFrame**
+
+* `keys(id, state)`: returns `[(f"{id}-{state.direction}", 0, 0)]`
+* `index(id, properties)`: returns `{f"{id}-{Directions.*}": (0, 0, w, l)}`
+
+**State: StairState**
+
+* `layer: str`
+* `position: Position`
+* `elevation: int = 0`
+* `direction: str` (`up`, `down`, `left`, `right`)
+* `delta: int = 1`
+* `owner: Optional[str] = None`
+
+**Hitbox: DirectedHitbox**
+
+* `get(state, properties, frame): returns properties.hitboxes[state.direction]`
+
+### Platforms
+
+Platforms are inanimate, immutable Assets that model elevated surfaces. In order to be traversed, the Asset traversing must be on the same elevation as the Platform. 
+
+Platforms have two kinds of hitboxes: baseline hitboxes and elevated hitboxes, where the former determines the Platform's collision physics on the ground level (`elevation = 0`) and the latter determines the Platform's collision physics on the elevated level (`elevation = platform.elevation`)
+
+**Frame: SingleFrame**
+
+* `keys(id, state): returns [ (id, 0, 0) ]`
+* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+
+**State: PlatformState**
+
+TODO
+
+**Hitbox: ElevatedHitbox**
+
+* `get(properties, state, frame): returns 'TBD'`

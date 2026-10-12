@@ -1,8 +1,5 @@
 # Ontology: Mechanics
 
-!!! note
-    Mechanics are listed below using `key: class`, where `key` is the unique string identifier for the associated Mechanic implementation class. This `key` is used in the [Mechanics Configuration](#configuration) to specify the order of execution.
-
 A Mechanic is an implementation of an abstract interface the engine calls during the game loop; All Mechanics must implement an `update(board: Board, delta: float, bus: collections.deque, payload: DevicePayload)` method. The arguments of this interface are the [Board](./00-overview.md#board), a game loop time delta, an [Event Bus](./06-widgets.md#events) for storing Menu Events and the current [Device](./02-sprites.md#devices) Payload. These arguments are injected from above by the [Engine](./00-overview.md#engine)
 
 ## Overview
@@ -21,9 +18,9 @@ Mechanics, [Intentions and Goals](./04-intentions.md) are the "foundation" of th
 
 **Sprite AI**
 
-As should already be obvious, much of the logic in Mechanics is in support of Sprite AI, via the management of [Goals & Intentions](./04-intentions.md). NPC behavior is distributed across four sequential Mechanics in the `world` pipeline:
+Much of the logic in Mechanics is in support of Sprite AI, via the management of [Goals & Intentions](./04-intentions.md). NPC behavior is distributed across four sequential Mechanics in the `world` pipeline:
 
-- **CognitionMechanics ("The Brain")**: Manages high-level strategic `Goal` models (target entity tracking, cross-layer door subsumption, autonomous wander sampling).
+- **CognitionMechanics ("The Brain")**: Manages high-level strategic `Goal` models (target entity tracking, cross-layer door subsumption, autonomous wander sampling, etc.).
 - **TransitionMechanics ("The Instinct")**: Evaluates the [ISL Transition Matrix](./04-intentions.md#transition-matrix) to transition `Intention` states and map animation actions.
 - **NavigationMechanics ("The Navigator")**: Manages tactical spatial steering. Validates line-of-sight, extracts obstacle hitboxes, executes RRT avoidance paths, and populates `sprite.state.trajectory`.
 - **MotionMechanics ("The Muscle")**: Steers velocity vectors toward `sprite.state.trajectory.target` and integrates physics.
@@ -36,16 +33,20 @@ To visualize how this all ties together for a [Sprite](./02-sprites.md) in a sin
 
 ### Core
 
+!!! note
+    Mechanics are listed below using `key: class`, where `key` is the unique string identifier for the associated Mechanic implementation class. This `key` is used in the [Mechanics Configuration](#configuration) to specify the order of execution.
+
 These Mechanics handle the core engine logic.
 
 - `animation AnimationMechanics`: Translates current states into FrameKeys for the renderer.
 - `remove: RemoveMechanics`: General garbage collection for Assets whose lifespan has expired.
 - `motion: MotionMechanics`: Applies acceleration and velocity integrations to Assets to arrive at their next position.
 - `menu: MenuMechanics`: Handles Menu and Widget interactions.
+- `telemetry: TelemetryMechanics`: Manages TCP socket queries for game state requests.
 
-### MotionMechanics
+#### MotionMechanics
 
-#### Dynamics
+##### Dynamics
 
 Assets with Mass are divided into Kinematic, Motive, Inert, and Frictive Assets.
 
@@ -69,9 +70,9 @@ The engine updates the velocity magnitude $v$ via Symplectic Euler Integration:
 
 $$v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)$$
 
-#### Fields
+##### Fields
 
-##### Fluids
+###### Fluids
 
 Dynamic bodies ($m > 0$) interacting with active Fluid streams and pools evaluate hydrodynamic buoyancy via `properties.buoyant`:
 
@@ -98,7 +99,7 @@ $$
 \vec{v}_{\text{final}} = \vec{v}_{\text{locomotion}} + \vec{v}_{\text{current}}
 $$
 
-### MenuMechanics
+#### MenuMechanics
 
 !!! note
     In the event of multiple Menus (e.g. a dialogue modal over a trade menu), MenuMechanics is constrained to interact with the top of the Menu stack (`board.menus[-1]`).
@@ -132,13 +133,15 @@ These Mechanics handle spatial interactions and collisions between Assets.
     `|` is used as a quantifier in the following.
 
 - Source: `source = sprite | sprite.state.intention = 'interact'`
-- Target: `target = asset | intersects(sprite, asset)`
+- Target: `target = asset | intersects(source, asset)`
 - Logic:
     - `if source.instance == 'sprites'`:
         - `if target.instance == 'chests': TODO`
         - `if target.instance == 'doors': source.state.layer = door.state.outlayer` 
+        - `if target.instance == 'plate': gates[plate.state.link].state.switch = plate.state.switch`
     - `if source.instance == 'players':`
         - `if target.instance == 'chests': bus.append(MenuEvent('inventory', { 'context': player.state})` 
+        - `if target.instance == 'plate': gates[plate.state.link].state.switch = plate.state.switch`
         - `if target.instance == 'doors': source.state.layer = door.state.outlayer` 
         - `if target.instance == 'signs': bus.append(MenuEvent('dialogue', { 'object': sign.state, 'plot': plot.state}))`
 
@@ -266,15 +269,14 @@ Mechanics are divided into `world` Mechanics and `core` Mechanics. `core` Mechan
 
 ### Executors
 
-Mechanics Executors are services made available to the request Mechanics. Available Executors are enumerated below.
+Mechanics Executors are services made available to the requesting Mechanics. Available Executors are enumerated below.
 
 - `plot`: Executor for evaluating the conditions for [Plot Transitions](./08-plots.md).
 - `intention`: Executor for evaluating the conditions for [Intention Transitions](./04-intentions.md)
 - `actuator`: Executor for generating [Fluid](./01-assets.md#fluids) and [Shoreline](./01-assets.md#shorelines) Assets.
-- `annual`: ISL executor evaluating stage transitions for annual vegetation (crops).
-- `perennial`: ISL executor evaluating stage transitions for perennial flora (trees).
-- `centennial`: ISL executor evaluating geological progression (ores).
-
+- `annual`: Executor evaluating [Resource Stage](./01-assets.md#resources) transitions for annual lifespans.
+- `perennial`: Executor evaluating [Resource Stage](./01-assets.md#resources)transitions for perennial lifespans.
+- `centennial`: Executor evalutating [Resource Stage](./01-assets.md#resources) transitions for centennial lifespans.
 
 ### Relations
 

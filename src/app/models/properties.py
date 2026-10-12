@@ -112,8 +112,8 @@ class ResourceProperties(AssetProperties):
 
 @dataclass(slots=True)
 class GeographyProperties(AssetProperties):
-    tile: str = None
     hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
+    tile: str = None
     fluid: Optional[str] = None
     thickness: int = 8
     mass: int = -1

@@ -241,6 +241,7 @@ Tiles have coefficients of friction. These coefficient are used by [MotionMechan
 **Properties: TileProperties**
 
 * `dimensions: Dimensions`
+* `priority: int`
 * `friction: float`
 
 **Frame: SingleFrame**
@@ -304,6 +305,7 @@ Binary Objects have a `count` of 2, where as all other Objects are initialized w
 **Properties: ObjectProperties**
 
 * `dimensions: Dimensions`
+* `priority: int`
 * `hitboxes: List[Hitbox]` 
 * `count: int = 1`
 * `mass: int`
@@ -535,149 +537,12 @@ The `<key>` in the `cost` is a reference to [Inventory Loot](./02-sprites.md#inv
 **Properties: CraftProperties**
 
 * `dimensions: Dimensions`
+* `priority: int`
 * `hitboxes: List[Hitbox]`
 * `cost: Cost`
 * `mass: int`
 
-### Bridges
-
-Bridges are immutable, inanimate Crafts that elevate characters and dynamic items over Fluid corridors, annular pools, and Shoreline margins without entering the `submerged` state.
-
-**Oriented Specifcation**
-
-A Bridge image file embeds both horizontal and vertical Frames in a single horizontal row:
-
-* Cell 0: `horizontal` Frame (runs East-West to cross North-South streams).
-* Cell 1: `vertical` Frame (runs North-South to cross East-West streams).
-
-**Decomposition & Structural Multipliers**
-
-Bridges are deployed via a 1D structural multiplier (`multiple.nx` for horizontal spans, `multiple.ny` for vertical spans).
-
-During world hydration or dynamic execution of the `build` Intention, the Decomposer unpacks a BridgeState into a contiguous series of $N$ unit Asset instances:
-
-* Each segment receives an absolute Position offset along the primary axis.
-* Each segment references the base unit's static properties, preserving immutable dimensions and relative hitboxes.
-* Construction cost scales linearly with span ($N \times \text{Cost}$).
-
-**Dynamics & Environmental Interception**
-
-* Bridges are registered as Sensors ($m = -1$). They do not participate in momentum transfer or collision overlap resolution.
-* Bridges are excluded from the [Boards Physics Queries](./00-overview.md#board), allowing mechanics to pathfind across river crossings.
-* In [MotionMechanics](./05-mechanics.md#motionmechanics), intersecting a Bridge marks the Asset as being on a surface:
-  * Fluid immersion and current velocity drift are suppressed ($\vec{v}_{\text{drift}} = \vec{0}$).
-  * Shoreline step-down nudges, ledge constraints, and splash particle emissions are bypassed.
-  * `mutators.triggers.submerged` is cleared to `False`.
-
-**Ordering & Perspective**
-
-Bridges belong to a dedicated Substrate, `elevation = -1`. This guarantees that Bridge area renders above background Tiles, Fluids, and Shorelines, while allowing dynamic Assets crossing its area to render above the Bridge via their baseline footprint ($y + l$) and [the Painter's Algorithm](./11-architecture.md#rendering).
-
-**Frame: OrientedFrame**
-
-* `keys(id, state): returns [(f"{id}-{state.orientation}", 0, 0)]`
-* `index(id, properties): returns {f"{id}-{Orientations.*}": (0, 0, w, l)}`
-
-**State: BridgeState**
-
-* `id: str`
-* `name: Optional[str]`
-* `layer: str`
-* `position: Position`
-* `orientation: str` (`horizontal`, `vertical`)
-* `multiple: Multiple` (`nx > 1` or `ny > 1`)
-* `owner: Optional[str]`
-* `depth: int = 1`
-* `height: Optional[int] = 0`
-
-### Struts 
-
-*Struts* are inanimate, immutable Assets. Struts are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. In other words, they possess an `owner`. 
-
-Struts may be placed on the Board through the state files manually, but they are generally instantiated ingame through the `build` [Intention](./04-intentions.md). 
-
-Struts are closely related to [Asset Compositions](./03-compositions.md), as they provide a "foundation" upon which configurations of Assets can be built. In other words, a Strut's main purpose is to provide a coordinate system for the relative positioning of reusable Asset configurations. See [Composition documentation](./03-compositions.md) for more information.
-
-**Animation: None**
-
-N/A
-
-**Frame: SingleFrame**
-
-* `keys(id, state): returns [ (id, 0, 0) ]`
-* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
-
-**State: PropertyState**
-
-* `layer: str`
-* `depth: int`
-* `height: int`
-* `position: Position`
-* `owner: str`
-
-### Stairs
-
-Stairs are static Crafts sensors ($m = -1$) that provide elevation transitions when traversed. 
-
-**Directed Specification**
-
-- `right`: Stair starts in lower right corner and ends in upper left corner.
-- `left`: Stair starts in lower left corner and ends in upper right corner.
-- `up`: Stairs start along bottom edge and end along top edge.
-- `down`: Stairs start along top edge and end along top edge.
-
-!!! important
-    Due to the nature of top-down two-dimensionsal graphics, to preserve perspective, the `down` direction frame must be truncated, i.e. this direction does not fill the full dimensions of the Stair frame.
-
-**Elevation Transitions**
-
-The direction of the elevation transition calculation is dependent on the direction of the transitioning Asset's velocity. For example, once an Asset intersects a Stair, the following conditions are elevated,
-
-- `stairs.state.direction == 'right' and asset.state.velocity.vx < 0: asset.state.elevation += stairs.state.delta`
-- `stairs.state.direction == 'right' and asset.state.velocity.vx > 0: asset.state.elevation -= stairs.state.delta`
-- `stairs.state.direction == 'left' and asset.state.velocity.vx < 0: asset.state.elevation -= stairs.state.delta`
-- `stairs.state.direction == 'left' and asset.state.velocity.vx > 0: asset.state.elevation += stairs.state.delta`
-- `stairs.state.direction == 'up' and asset.state.velocity.vy < 0: asset.state.elevation += stairs.state.delta`
-- `stairs.state.direction == 'up' and asset.state.velocity.vx > 0: asset.state.elevation -= stairs.state.delta`
-- `stairs.state.direction == 'down' and asset.state.velocity.vy > 0: asset.state.elevation += stairs.state.delta`
-- `stairs.state.direction == 'down' and asset.state.velocity.vx < 0: asset.state.elevation -= stairs.state.delta`
-
-**Frame: DirectedFrame**
-
-* `keys(id, state)`: returns `[(f"{id}-{state.direction}", 0, 0)]`
-* `index(id, properties)`: returns `{f"{id}-{Directions.*}": (0, 0, w, l)}`
-
-**State: StairState**
-
-* `layer: str`
-* `position: Position`
-* `elevation: int = 0`
-* `direction: str` (`up`, `down`, `left`, `right`)
-* `delta: int = 1`
-* `owner: Optional[str] = None`
-
-**Hitbox: DirectedHitbox**
-
-* `get(state, properties, frame): returns properties.hitboxes[state.direction]`
-
-### Platforms
-
-Platforms are inanimate, immutable Assets that model elevated surfaces. In order to be traversed, the Asset traversing must be on the same elevation as the Platform. 
-
-Platforms have two kinds of hitboxes: baseline hitboxes and elevated hitboxes, where the former determines the Platform's collision physics on the ground level (`elevation = 0`) and the latter determines the Platform's collision physics on the elevated level (`elevation = platform.elevation`)
-
-**Frame: SingleFrame**
-
-* `keys(id, state): returns [ (id, 0, 0) ]`
-* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
-
-**State: PlatformState**
-
-TODO
-
-**Hitbox: ElevatedHitbox**
-
-* `get(properties, state, frame): returns 'TBD'`
+Crafts are inherently bound to the process of [Composition](./03-compositions.md). Their specifications (Struts, Bridges, Stairs, Platforms) are covered in more detail in the [Composition documentation](./03-compositions.md#asset-specifications)
 
 ## Cursors
 
@@ -688,6 +553,7 @@ Cursors are inanimate, mutable Assets. Cursors track positions and trajectories.
 **Properties: ObjectProperties**
 
 * `dimensions: Dimensions`
+* `priority: int`
 
 ### Expressions
 
@@ -911,10 +777,9 @@ $
 
 **Properties: GeographyProperties**
 
-* `layer: str`
-* `position: Position`
-* `orientation: str`
-* `length: int`
+* `dimensions: Dimensions`
+* `priority: int`
+* `mass: int`
 * `thickness: int`
 * `hitboxes: List[Hitbox]`
 * `tile: str` (Primary key)
@@ -1092,36 +957,4 @@ Widgets are covered in their own section, [Widgets](./06-widgets.md).
 
 Fonts are stateless Assets initialized at [runtime](./11-architecture.md#initialization). Rather than being deployed onto the Board, Fonts are loaded into the [Registry](./00-overview.md#registry) and utilized by the [Screen](./00-overview.md#screen) to rasterize text canvases for Widgets and dialogue modals.
 
-A Font configuration pairs a `.ttf` file with styling rules. During bootstrap, the Registry ingests each font declared in `/src/assets/fonts/main.yaml` alongside its configuration, storing them as styled Cython `TTFFont` wrappers. When `outline` is specified, the Registry instantiates a secondary internal outline pointer configured via `TTF_SetFontOutline`, enabling `render.write()` to execute two-pass blended rendering (outline pass followed by foreground fill) without runtime glyph cache invalidation.
-
-In Menu hierarchies, fonts are scoped lexically at the `MenuPane` level: any `font` declared on a parent pane cascades down to all child panes and `Page` widgets unless explicitly shadowed by a nested pane.
-
-See [Graphics Architecture documentation](./11-architecture.md#graphics) for technical implementation details.
-
-**Properties: FontProperties**
-
-* `size: int`: Point size used during glyph rasterization (defaults to `24`).
-* `alignment: str`: Text alignment within the bounding box (`left`, `center`, `right`).
-* `bold: bool`: Toggles `TTF_STYLE_BOLD`.
-* `italics: bool`: Toggles `TTF_STYLE_ITALIC`.
-* `underline: bool`: Toggles `TTF_STYLE_UNDERLINE`.
-* `strikethrough: bool`: Toggles `TTF_STYLE_STRIKETHROUGH`.
-* `margins: float`: Fractional padding applied to the target canvas bounds before wrapping (e.g., `0.05` for 5%).
-* `color`: Primary glyph fill color.
-    * `r: int` (0–255)
-    * `g: int` (0–255)
-    * `b: int` (0–255)
-    * `a: int` (0–255)
-* `outline`: (*Optional*) Border styling configuration.
-    * `width: int`: Perimeter thickness in pixels (`outline > 0` enables two-pass rendering).
-    * `color`:
-        * `r: int` (0–255)
-        * `g: int` (0–255)
-        * `b: int` (0–255)
-        * `a: int` (0–255)
-
-**Required Fonts**
-
-* `dialogue`: Standard proportional font used to render NPC conversations and narrative logs.
-* `menu`: High-contrast, styled font used for interactive UI controls and button labels.
-* `title`: Large-format font used for menu headers and screen titles.
+See [Fonts documentation](./11-architecture.md#fonts) for more information.

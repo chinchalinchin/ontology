@@ -124,13 +124,13 @@ tools:
           # - 00-overview.md
           # - 01-assets.md
           - 02-sprites.md
-          - 03-compositions.md
+          # - 03-compositions.md
           - 04-intentions.md
           # - 05-mechanics.md
           - 06-widgets.md
           - 07-sounds.md
           - 08-plots.md
-          # - 09-ecology.md
+          - 09-ecology.md
           - 10-emergence.md
           # - 11-architecture.md
       specs: []

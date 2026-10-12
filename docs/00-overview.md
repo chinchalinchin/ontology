@@ -166,7 +166,9 @@ The Screen acts as a high-level container for a Cythonized SDL rendering interfa
 
 ### Hitboxes
 
-Many Assets have Hitboxes. Hitboxes definitions are specified as *properties*, i.e., they are static and do not change. Hitboxes have positions and dimensions. To ensures Hitboxes remain static, Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. Hitbox dimensions are always absolute. The following snippet shows the hitbox schema for an LPC Sprite Frame, with the image below showing how the hitbox translates into the physical image with a blue rectangle,
+Many Assets have Hitboxes. Hitboxes definitions are specified as *properties*, i.e., they are static and read before the execution of the game engine. Hitboxes have positions and dimensions. 
+
+To ensures Hitboxes remain statically configured, Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. Hitbox dimensions are always absolute. The following snippet shows the hitbox schema for an LPC Sprite Frame, with the image below showing how the hitbox translates into the physical image with a blue rectangle,
 
 ```yaml
 position:
@@ -182,7 +184,7 @@ dimensions:
 LPC Sprite Hitbox in (Walk, Down, 0) State
 ///
 
-While hitboxes are statically confitured, this does not necessarily mean hitboxes in game are statically accessed. See [Asset Component Architecture](./01-assets.md#asset-architecture) for more information.
+While hitboxes are statically confitured, this does not necessarily mean hitboxes are statically accessed. See [Asset Component Architecture](./01-assets.md#asset-architecture) for more information.
 
 ### Layers
 

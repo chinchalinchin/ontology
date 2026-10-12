@@ -135,6 +135,42 @@ $$\text{sort\_key}(A) = \Big(A.\text{elevation},\; \text{ground\_y}(A),\; A.\tex
    - Surface decals & apertures (doors, wall torches): `priority = 1`
 4. **Allocation Optimization**: Replacing per-frame `lambda` closures with a static module-level `_sort` method eliminates millions of transient function objects and reduces draw overhead across expanded entity sets.
 
+### Fonts
+
+A Font configuration pairs a `.ttf` file with styling rules. During bootstrap, the Registry ingests each font declared in `/src/assets/fonts/main.yaml` alongside its configuration, storing them as styled Cython `TTFFont` wrappers. When `outline` is specified, the Registry instantiates a secondary internal outline pointer configured via `TTF_SetFontOutline`, enabling `render.write()` to execute two-pass blended rendering (outline pass followed by foreground fill) without runtime glyph cache invalidation.
+
+In Menu hierarchies, fonts are scoped lexically at the `MenuPane` level: any `font` declared on a parent pane cascades down to all child panes and `Page` widgets unless explicitly shadowed by a nested pane.
+
+See [Graphics Architecture documentation](./11-architecture.md#graphics) for technical implementation details.
+
+**Properties: FontProperties**
+
+* `size: int`: Point size used during glyph rasterization (defaults to `24`).
+* `alignment: str`: Text alignment within the bounding box (`left`, `center`, `right`).
+* `bold: bool`: Toggles `TTF_STYLE_BOLD`.
+* `italics: bool`: Toggles `TTF_STYLE_ITALIC`.
+* `underline: bool`: Toggles `TTF_STYLE_UNDERLINE`.
+* `strikethrough: bool`: Toggles `TTF_STYLE_STRIKETHROUGH`.
+* `margins: float`: Fractional padding applied to the target canvas bounds before wrapping (e.g., `0.05` for 5%).
+* `color`: Primary glyph fill color.
+    * `r: int` (0–255)
+    * `g: int` (0–255)
+    * `b: int` (0–255)
+    * `a: int` (0–255)
+* `outline`: (*Optional*) Border styling configuration.
+    * `width: int`: Perimeter thickness in pixels (`outline > 0` enables two-pass rendering).
+    * `color`:
+        * `r: int` (0–255)
+        * `g: int` (0–255)
+        * `b: int` (0–255)
+        * `a: int` (0–255)
+
+**Required Fonts**
+
+* `dialogue`: Standard proportional font used to render NPC conversations and narrative logs.
+* `menu`: High-contrast, styled font used for interactive UI controls and button labels.
+* `title`: Large-format font used for menu headers and screen titles.
+
 ## Cython
 
 While Python objects are fast enough for general logic, calculating collisions and processing rendering instructions for thousands of entities requires maximum performance. The engine strategically uses Cython to bridge this gap, adhering to a strict **"Zero Heap Allocation in the Inner Loop"** philosophy to prevent frame stutters caused by the Python Garbage Collector.
