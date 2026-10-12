@@ -44,7 +44,10 @@ class Perimeter:
         if elevation is None or elevation == 0:
             tiles = board.categories(AssetCategories.TILES.value, layer)
             for tile in tiles:
-                if tile.taxonomy.instance not in (AssetInstances.BACK.value, AssetInstances.FORE.value):
+                if tile.taxonomy.instance not in (
+                    AssetInstances.ENVIRON.value, 
+                    AssetInstances.CANOPY.value
+                ):
                     continue
                 w = tile.properties.dimensions.w
                 l = tile.properties.dimensions.l

@@ -21,8 +21,8 @@ class AssetCategories(str, Enum):
 
 class AssetInstances(str, Enum):
     # TILES
-    BACK            = "back"
-    FORE            = "fore"
+    ENVIRON         = "environ"
+    CANOPY          = "canopy"
     GRID            = "grid"
     # CURSORS
     EXPRESSIONS     = "expressions"

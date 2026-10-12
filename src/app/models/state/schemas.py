@@ -41,8 +41,9 @@ from app.models.state.assets import (
 
 @dataclass(slots=True)
 class TileStateInstances:
-    back: List[MultiplierState] = field(default_factory=list)
-    fore: List[MultiplierState] = field(default_factory=list)
+    environ: List[MultiplierState] = field(default_factory=list)
+    canopy: List[MultiplierState] = field(default_factory=list)
+    grid: List[MultiplierState] = field(default_factory=list)
 
 @dataclass(slots=True)
 class ObjectStateInstances:

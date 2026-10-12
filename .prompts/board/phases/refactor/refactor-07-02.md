@@ -1,5 +1,7 @@
 #### Refactor: Phase 07.02: Platforms & Elevated Hitboxes
 
+**Current Focus**: Synthesizing drafts into a unified task list for Phase 07.02.
+
 **Overview**
 
 This phase establishes `platforms` as a first-class `Crafts` asset instance in the Asset Hierarchy and introduces the `ElevatedHitbox` strategy component. It extends physical collision primitives and query pipelines to support multi-tier structures that span vertical elevation planes (e.g., cliff margins, raised terraces, and stage foundations). Rather than splitting raised architecture into decoupled facade walls and floor decks, unified platform entities project tier-specific physical constraints dynamically across both base and summit tiers.
@@ -13,7 +15,7 @@ In a discrete elevation architecture ($\text{elevation} \in \mathbb{Z}$), an ele
 
 Under a single-hitbox, single-elevation model, achieving this requires deploying two distinct assets for every single platform: an upright facade `Strut` at elevation $0$ ($m = 0$) and a floor deck `Strut` at elevation $1$ ($m = -1$). This clutters the board state, creates namespace bloat in compositions, and forces artificial synchronizations between independent assets that logically represent a single physical structure.
 
-Just as `StageHitbox` dynamically derives hitboxes from an entity's biological `stage` and `OrientedHitbox` derives hitboxes from directional orientation, an **`ElevatedHitbox`** (or `TieredHitbox`) component fulfills the Entity-Component-System contract:
+Just as `StageHitbox` dynamically derives hitboxes from an entity's biological `stage` and `OrientedHitbox` derives hitboxes from directional orientation, an **`ElevatedHitbox`** component fulfills the Entity-Component-System contract:
 
 * **The Archetype:** `category: crafts`, `instance: platforms`.
 * **The Flyweight Strategy:** `frame: SingleFrame`, `animation: NoAnimation`, `hitbox: ElevatedHitbox`.
@@ -21,27 +23,30 @@ Just as `StageHitbox` dynamically derives hitboxes from an entity's biological `
 
 When `Board.weights(layer, elevation)` and `CollisionMechanics` evaluate physical bodies for tier $E$, `ElevatedHitbox` resolves the specific hitboxes assigned to tier $E$, allowing a single platform asset to cleanly participate across multiple elevation tiers simultaneously.
 
+---
+
+VERSION 1: Produced directly after Phase 07 implementation.
+
+---
+
 ##### Specification
 
 1. **Asset Taxonomy & Recipe Registration (`crafts.platforms`)**:
     * Register `AssetInstances.PLATFORMS.value` under `AssetCategories.CRAFTS.value`.
     * Configure recipe mapping in `recipes.yaml` binding `platforms` to `SingleFrame`, `NoAnimation`, and `ElevatedHitbox`.
     * Register `crafts.platforms` in `PropertiesSchema`, `StateSchema`, and `Decomposer`.
-
+    * Implement `PlatformState(AssetState)` (`position`, `elevation: int = 1`, `owner`).
 2. **Hitbox Schema & Data Structure (`ElevatedHitbox`)**:
     * Introduce `ElevatedHitbox(HitboxSchema)` in `app.assets.hitboxes.crafts`.
     * Update `CraftProperties.hitboxes` schema to accept relative tier-indexed hitboxes: `Dict[int, List[Hitbox]]`, where key `0` denotes the base tier facade boundary and key `1` denotes the summit tier edge constraints.
     * `Asset.hitboxes` delegates to `ElevatedHitbox.get()`, accepting an optional `elevation: Optional[int]` context to resolve tier-specific footprints.
-
 3. **Multi-Tier Spatial Partitioning & Query Expansion**:
-    * Add `elevation_span: Tuple[int, int]` property to `Asset` (derived from `(self.elevation, self.elevation + max(properties.hitboxes.keys()))` for platforms, and `(self.elevation, self.elevation)` for standard assets).
-    * Update `Board.weights(layer, elevation)` and `Board.obstacles(layer, elevation)` to evaluate whether target `elevation` falls within an asset's `elevation_span`.
+    * Add `span: Tuple[int, int]` property to `Asset` (derived from `(self.elevation, self.elevation + max(properties.hitboxes.keys()))` for platforms, and `(self.elevation, self.elevation)` for standard assets).
+    * Update `Board.weights(layer, elevation)` and `Board.obstacles(layer, elevation)` to evaluate whether target `elevation` falls within an asset's `span`.
     * Update spatial broad-phase grids to index multi-tier platforms into all relevant elevation buckets.
-
 4. **Environmental Boundary & Perimeter Synthesis**:
     * Refactor `Perimeter.extract(board, layer, elevation)` to query `ElevatedHitbox` primitives corresponding specifically to the evaluated `elevation`.
     * Facade hitboxes on relative tier `0` fold into lower-tier boundary perimeters; perimeter constraints on relative tier `1` fold into upper-tier boundary perimeters.
-
 5. **Collision & Constraint Resolution (`CollisionMechanics`)**:
     * `CollisionMechanics.update()` queries tier-specific hitboxes during Phase 1 (`constrain`) and Phase 2 (`resolve`), ensuring dynamic bodies on tier $E$ only collide against the platform's tier-$E$ physical footprint.
 
@@ -49,7 +54,9 @@ When `Board.weights(layer, elevation)` and `CollisionMechanics` evaluate physica
 
 In the current engine, `CollisionMechanics` partitions physical weights by discrete elevation:
 
-$$\text{CanCollide}(A, B) \iff A.\text{elevation} == B.\text{elevation}$$
+$$
+\text{CanCollide}(A, B) \iff A.\text{elevation} == B.\text{elevation}
+$$
 
 While this eliminates cross-tier collision bleeding between independent entities, it fails for vertical structures that connect tiers. If a platform deck resides at `elevation: 1`, a character walking on `elevation: 0` is completely ignored by the platform during broad-phase filtering, allowing the character to walk straight through the platform's vertical foundation.
 
@@ -69,7 +76,6 @@ Introducing `ElevatedHitbox` solves this via behavioral polymorphism:
 +---------------------+-----------------------------+
 | Ground Plane (Tier 0)                             |
 +---------------------------------------------------+
-
 ```
 
 * When `CollisionMechanics` processes Tier 0, the platform provides `Hitboxes[0]`. Dynamic bodies on the ground collide with the foundation.
@@ -115,7 +121,7 @@ Update `Asset` and `Board` to query physical weights and obstacles across multi-
 class Asset:
     # ...
     @property
-    def elevation_span(self) -> Tuple[int, int]:
+    def span(self) -> Tuple[int, int]:
         """Returns (min_elevation, max_elevation) spanned by this entity."""
         base_e = self.elevation
         if self.taxonomy.instance == AssetInstances.PLATFORMS.value:
@@ -191,8 +197,8 @@ crafts:
 
 *Objective*: Ensure spatial hash caching, `Board.weights()`, and `Board.obstacles()` index and return multi-tier assets across their full elevation span.
 
-* [ ] Subtask: Update `Board.weights(layer, elevation)` to filter assets by `elevation_span`.
-* [ ] Subtask: Update `Board.obstacles(layer, elevation)` to filter assets by `elevation_span`.
+* [ ] Subtask: Update `Board.weights(layer, elevation)` to filter assets by `span`.
+* [ ] Subtask: Update `Board.obstacles(layer, elevation)` to filter assets by `span`.
 * [ ] Subtask: Update `Cache.index_batch()` to insert multi-tier platform references across all spanned elevation buckets.
 
 **4. Task: Collision & Perimeter Mechanics Integration**
@@ -207,23 +213,20 @@ crafts:
 
 *Objective*: Verify multi-tier obstacle blocking, deck containment, and stair transition mechanics.
 
-* [!: Conditional on User Acceptance] Subtask: Add unit tests in `test_collision.py` asserting a player at elevation 0 is obstructed by a platform's tier 0 facade.
-* [!: Conditional on User Acceptance] Subtask: Add unit tests in `test_collision.py` asserting a player at elevation 1 traverses the platform deck unhindered by the tier 0 facade.
-* [!: Conditional on User Acceptance] Subtask: Add integration tests verifying a player traversing stairs from elevation 0 to 1 successfully transitions from front-facade collision to top-deck containment.
+* [!: Conditional on User Acceptance of Previous Tasks] Subtask: Add unit tests in `test_collision.py` asserting a player at elevation 0 is obstructed by a platform's tier 0 facade.
+* [!: Conditional on User Acceptance of Previous Tasks] Subtask: Add unit tests in `test_collision.py` asserting a player at elevation 1 traverses the platform deck unhindered by the tier 0 facade.
+* [!: Conditional on User Acceptance of Previous Tasks] Subtask: Add integration tests verifying a player traversing stairs from elevation 0 to 1 successfully transitions from front-facade collision to top-deck containment.
 
 ---
 
-#### Refactor: Phase 07.02: Platforms & Elevated Hitbox
+VERSION 2: Produced after Phase 07.01 refactor, without reference to VERSION 1.
 
-**Overview**
-
-Phase 07.02 builds upon the elevation tier architecture by introducing `crafts.platforms`—static multi-tier structures that provide elevated, walkable surfaces ($E = 1$). To achieve physical consistency without 3D swept volumes, platforms introduce `ElevatedHitbox`: a dual-hitbox model where the front facade acts as a solid physical obstacle to entities on the ground tier ($E = 0$), while the deck surface acts as a traversable substrate for entities on the elevated tier ($E = 1$). In addition, boundary generation and tactical pathfinding are updated to support multi-tier environments.
+---
 
 ##### Specification
 
 1. **Data Models & Taxonomy (`crafts.platforms`)**:
 
-* Register `AssetInstances.PLATFORMS` under `AssetCategories.CRAFTS.value`.
 * Implement `PlatformProperties` ($w, l, \text{cost}, \text{hitboxes}$) where `hitboxes` maps discrete elevations to collision footprints:
 
 ```yaml
@@ -370,14 +373,25 @@ if elevation > 0:
 
 *Objective*: Generate accurate walkable contours and boundary hulls for elevated tiers.
 
-* [ ] Subtask: Resolve Bug B014 by explicitly excluding sensor bodies ($m < 0$) from static architecture extraction in `Perimeter.extract`.
 * [ ] Subtask: Update `Perimeter.extract` to include platform deck bounds as walkable substrate rectangles for $E \ge 1$.
-* [ ] Subtask: Verify `Perimeter.generate` produces distinct closed boundary contours for Tier 0 and Tier 1.
+* [!: User Task] Subtask: Verify `Perimeter.generate` produces distinct closed boundary contours for Tier 0 and Tier 1.
 
 **4. Task: Elevation-Aware Navigation & Mechanics Integration**
 
 *Objective*: Ensure NPC navigation and broad-phase physics respect platform tiers.
 
 * [ ] Subtask: Update `NavigationMechanics` to filter line-of-sight raycasts and obstacle hulls using `sprite.elevation`.
-* [ ] Subtask: Add unit tests verifying ground-level entities at $E = 0$ collide with platform facades while elevated entities at $E = 1$ traverse the deck.
-* [ ] Subtask: Add integration tests verifying an entity can climb stairs, traverse a platform deck at $E = 1$, and descend via stairs back to $E = 0$.
+* [!: Conditional on User Acceptance of Previous Tasks] Subtask: Add unit tests verifying ground-level entities at $E = 0$ collide with platform facades while elevated entities at $E = 1$ traverse the deck.
+* [!: Conditional on User Acceptance of Previous Tasks] Subtask: Add integration tests verifying an entity can climb stairs, traverse a platform deck at $E = 1$, and descend via stairs back to $E = 0$.
+
+
+---
+
+##### User Review
+
+- Version 1 gets this correct: ElevatedHitbox indices have to be *relative to the deployed state* of the Platform. If a Platform is deployed on `elevation = 2` with elevated hitbox indices of `0` and `1`, then the hitboxes are resolved on `2` and `3`, i.e. the elevation of a Platform's hitbox is the sum of their elevation index and the Platform's base elevation.
+- Version 1 alters the Hitbox interface to achieve this relative reference. While the Hitbox interface is relatively new (Phase 07, 09), I am always hesitant to change an interface to suit a particuLar instance of that interface. Tis seems undesirable and moreover, the result of misunderstanding the meaning of the interface; I am not sure the Hitbox interface should say *which* Hitbox is the hitbox that governs a collision. That information is only available once the collision occurs. The interface is meant to be a schematization of how to access hitboxes from the Asset's internal data structures. 
+    - Code smell: The duck-typing on the Asset `@property span` is undesirable and evidence of a deeper ambiguity in the specification. The hitbox interface is supposed to determine the structure of the Hitbox. Putting conditionals that re-determine the structure is redundant and poor design. 
+- Version 2 does not differentiates between the *deployed* elevation of the Platform and the *relative* elevation of the Platform. In Version 2's implementation of ElevatedHitbox, it assumes the hitbox can retrieved via `state.elevation`, implying the elevation of the Platform can change; however, the elevation of a Platform does not change. It should have a `state.elevation` and a `state.delta` to formalize the distinction between where it sits and how high it rises.  
+    - Incorrect: Platforms cannot resolve their own hitboxes because they are dependent on the Asset that is colliding with the Platform, i.e. an external state.
+- It seems as though the resolution of hitbox elevations with respect to the assets colliding with them should occur at the CollisionMechanics and Perimeter levels.

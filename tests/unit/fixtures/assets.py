@@ -115,7 +115,7 @@ def mock_back_tile(
             id = "temperate",
             name = "the-steppe",
             category = AssetCategories.TILES.value, 
-            instance = AssetInstances.BACK.value
+            instance = AssetInstances.ENVIRON.value
         ), 
         properties = mock_tile_properties.back.get('temperate'), 
         state = mock_multiplier_state, 

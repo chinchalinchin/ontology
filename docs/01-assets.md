@@ -71,7 +71,7 @@ Some Asset Categories have a Mass property. Only Assets with Mass can participat
 
 See [Mechanics](./05-mechanics.md#spatial) for more information.
 
-### Elevation, Perspective & Priority
+#### Elevation, Perspective & Priority
 
 World rendering evaluates spatial geometry using discrete topological elevation tiers and continuous ground perspective. The engine deprecates legacy manual height overrides in favor of a deterministic 3-key lexicographical Painter's Algorithm in `Screen._sort`:
 
@@ -142,6 +142,8 @@ The following table details the *unique* state attributes of each Asset Instance
 | Object | Plate | Base, Animation, Switch, Link |
 | Craft | Bridge | Base, Multiple, Orientation, Owner |
 | Craft | Strut | Base, Owner |
+| Craft | Stairs | Base, Direction, Owner |
+| Craft | Platforms | Base, Delta, Owner |
 | Craft | Decor | Base, Owner |
 | Craft | Forge | Base, TODO |
 | Craft | Device | Base, TODO |
@@ -201,7 +203,7 @@ An Asset's position in the Asset Hierarchy is encoded into its Taxonomy. These a
 
 `id` uniquely identifies the Asset file. It must match a file found in the `src/assets/**` directory.
 
-`category` determines what property model is employed by the Asset. The category must be configured by a `src/assets/<category>/main.yaml` property index file.
+`category` determines what property model is employed by the Asset. The category must be configured by a `src/assets/<category>/**/*.yaml` property index file.
 
 `instance` determines what state model is employed by the Asset. An Asset's state is hydrated from the `data/state/<board>/*` directory.
 
@@ -211,19 +213,11 @@ An Asset's position in the Asset Hierarchy is encoded into its Taxonomy. These a
 
 ## Tiles
 
-* Property File: `/src/assets/tiles/main.yaml`
+* Property File: `/src/assets/tiles/**/*.yaml`
 
-Tiles are static, frictive Assets that form the terrain substrate. Tiles are arranged into continuous background (`back`) and foreground (`fore`) canvases.
+Tiles are static, frictive Assets that form the terrain substrate. Tiles are arranged into continuous background (`environ`) and foreground (`canopy`) canvases.
 
 Tiles Instances have their dimensions fixed by their properties. These dimensions are configurable in the property file, but they apply to all Tiles of a particular instance universally. When a Tile is drawn, it is rendered as a `multiple` of the unit Tile configured in the Asset directory.
-
-**Event Driven Animation**
-
-Tiles are not animated per-frame in `Screen.draw()`. Instead, multi-season tiles leverage `SeasonalFrame` and event-driven canvas reconstruction:
-
-* **Back Tiles**: Rendered beneath all dynamic entities. Represent soil, turf, rock, and water substrates.
-* **Fore Tiles**: Rendered above all dynamic in-world entities (excluding UI widgets). Represent tree canopies, rooftops, and structural overhangs that characters traverse beneath.
-* **Temporal Invalidation**: Tile atlases contain 36 cells ($4_\text{seasons} \times 9_\text{periods}$). When `SeasonMechanics` advances a calendar period, a `SeasonEvent` triggers `Screen.reconstruct(board)`. The screen recompiles the static textures (`bg_canvas` and `fg_canvas`) using the updated seasonal frame keys.
 
 **Friction**
 
@@ -241,11 +235,17 @@ Tiles have coefficients of friction. These coefficient are used by [MotionMechan
 
 **Animation: None**
 
-N/A
+**Hitbox: StaticHitbox**
 
-### Back
+* `get(properties, state, frame): returns properties.hitboxes`
 
-A Back Tile is the first Asset rendered on screen. It has the lowest Z coordinate of all Assets; Back Tiles will *always* be rendered *under* all of the other Assets, regardless of their `depth` or `height`.
+### Environ
+
+A Environ Tile is the first Asset rendered on screen. It has the lowest Z coordinate of all Assets; Environ Tiles will *always* be rendered *under* all of the other Assets, regardless of their `depth` or `height`.
+
+**Event Driven Animation**
+
+Tiles are not animated per-frame in `Screen.draw()`. Instead, multi-season tiles leverage `SeasonalFrame` and event-driven canvas reconstruction. See [Ecology documentation](./09-ecology.md) for more information.
 
 **State: MultiplerState**
 
@@ -286,7 +286,7 @@ There must be precisely *two* Grid tiles:
 
 ## Objects
 
-* Property File: `/src/assets/objects/main.yaml`
+* Property File: `/src/assets/objects/**/*.yaml`
 
 Objects are mutable Assets made of a single frame or pair of frames. They are meant to encapsulate interactions and objects.
 
@@ -304,6 +304,10 @@ Binary Objects have a `count` of 2, where as all other Objects are initialized w
 * `hitboxes: List[Hitbox]` 
 * `count: int = 1`
 * `mass: int`
+
+**Hitbox: StaticHitbox**
+
+* `get(properties, state, frame): returns properties.hitboxes`
 
 ### Chests
 
@@ -467,7 +471,7 @@ N/A
 
 ## Crafts
 
-* Property File: `/src/assets/crafts/main.yaml`
+* Property File: `/src/assets/crafts/**/*.yaml`
 
 Crafts are Assets that can be instantiated through game [Mechanics](./05-mechanics.md), such as `CommerceMechanics` or `ChemistryMechanics`. All Crafts have a `cost` associated with them. 
 
@@ -608,7 +612,7 @@ TODO
 
 ## Cursors
 
-* Property File: `/src/assets/cursors/main.yaml`
+* Property File: `/src/assets/cursors/**/*.yaml`
 
 Cursors are inanimate, mutable Assets. Cursors track positions and trajectories. They are divided into Expressions and Projectiles.
 
@@ -666,7 +670,7 @@ N/A
 
 ## Effects
 
-* Property File: `/src/assets/effects/main.yaml`
+* Property File: `/src/assets/effects/**/*.yaml`
 
 Effects are animate Objects used for environmental dressing, hazards, pickups, and interactive mechanisms. 
 
@@ -724,6 +728,8 @@ Due to dependencies on other Assets and Mechanics, the following Passive Effects
 * `position: Position`
 * `animation: Animation`
 
+**Hitbox: None**
+
 ### Hazards
 
 Hazard Effects deal damage to overlapping dynamic entities (e.g., lava, floor spikes, poison gas clouds).
@@ -739,6 +745,10 @@ Hazard Effects deal damage to overlapping dynamic entities (e.g., lava, floor sp
     - `amount: int`
     - `duration: int`
     - `reaction: bounce | hinder`
+
+**Hitbox: StaticHibox**
+
+* `get(properties, state, frame): returns properties.hitboxes`
 
 ### Collectables
 
@@ -756,6 +766,11 @@ Collectables are Effects that transfer loot keys into a Sprite's or Player's inv
     * `item: str`
     * `quantity: int`
 
+**Hitbox: StaticHibox**
+
+* `get(properties, state, frame): returns properties.hitboxes`
+
+
 ### Reactables
 
 Reactables Effects react to the [Intentional](./04-intentions.md) states of [Sprites](./02-sprites.md).
@@ -769,15 +784,38 @@ Reactables Effects react to the [Intentional](./04-intentions.md) states of [Spr
 * `animation: Animation`
 * `intention`
 
+**Hitbox: StaticHibox**
+
+* `get(properties, state, frame): returns properties.hitboxes`
+
 ### Fluids
 
 Fluids are directional Effects that project along a `source` Direction until obstructed by an obstacle. Once obstructed, Fluids form Pools around the obstacle and bifuricate into secondary streams.
+
+**State: ReactableState**
+
+* `layer: Optional[str]`
+* `position: Position`
+* `source: Directions`
+* `flow: int`
+* `length: int`
+* `pool: Optional[Pool]`
+* `branches: List[Branch]`
+* `hitboxes: List[Hitbox]`
+* `dirty: bool = True`
+* `height: Optional[int] = 0`
+* `depth: int = -1`
+
+
+**Hitbox: DynamicHitbox**
+
+* `get(properties, state, frame): returns state.hitboxes`
 
 Fluids play a vital role in Seasons and Ecology. They are covered in more detail in the [Ecology documentation](./09-ecology.md#instance-fluids).
 
 ## Geography
 
-* Property File: `/src/assets/geography/main.yaml`
+* Property File: `/src/assets/geography/**/*.yaml`
 
 Geography Assets represent inanimate, immutable structural and topographical landforms (e.g., shorelines, cliffs, ledges, and terraces).
 
@@ -803,18 +841,22 @@ $
 
 **Properties: GeographyProperties**
 
-* `dimensions: Dimensions`
+* `layer: str`
+* `position: Position`
+* `orientation: str`
+* `length: int`
+* `thickness: int`
 * `hitboxes: List[Hitbox]`
-* `tile: str`
-* `fluid: Optional[str] = None`
-* `thickness: int = 8`
-* `mass: int = -1`
 
 Geography is not deployed onto the Board in an analogous fashion to other Asset Categories. Instead, Geography is procedurally generated using applications services (e.g. Actuator, Cartographer). See [Ecology documentation](./09-ecology.md#instance-fluids) for more information.
 
+**Hitbox: DynamicHitbox**
+
+* `get(properties, state, frame): returns state.hitboxes`
+
 ## Resources
 
-* Property File: `/src/assets/resources/main.yaml`
+* Property File: `/src/assets/resources/**/*.yaml`
 
 Resources are mutable Assets deployed onto the Board that progress through discrete structural or biological stages, dependent on [Seasonal](./05-mechanics.md#world) parameters. Resources are divided into Crops, Trees and Ores.
 
@@ -835,6 +877,10 @@ A Resource contains a `loot` key. When Resources are mined through the `mine` [I
 * `keys(id, state): returns [ (f"{id}-{state.stage}", 0, 0) ]`
 * `index(id, properties): returns { f"{id}-{stage}": (i * properties.dimensions.w, 0, properties.dimensions.w, properties.dimensions.l) for i, stage in enumerate(properties.lifespan) }`
 
+**Hitbox: StageHitbox**
+
+* `get(properties, state, frame): returns properties[state.stage].hitboxes`
+
 **Animation: None**
 
 Resources do not cycle micro-frame animations. Their appearance updates when `SeasonMechanics` transitions `state.stage`.
@@ -845,7 +891,7 @@ Resources form the core of [SeasonMechanics](./05-mechanics.md) and possess many
 
 ## Sheets
 
-* Property File: `/src/assets/sheets/main.yaml`
+* Property File: `/src/assets/sheets/**/*.yaml`
 
 *Sheets* are animate, mutable Assets whose files are arranged in rows of Frames. Sheet form the core Asset of the gameplay loop; they are used to encapsulate character entities, such as the Player and NPC Sprites. Most of the application is scaffolding for the complex interactions and calculations that occur when Sheet Assets interact.
 
@@ -927,6 +973,10 @@ For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.
 * `hitboxes: List[Hitbox]`
 * `actions: Actions`
 * `mass: int`
+
+**Hitbox: StaticHitbox**
+
+* `get(properties, state, frame): returns properties.hitboxes`
 
 ### Pixies
 

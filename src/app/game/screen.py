@@ -109,9 +109,9 @@ class Screen:
                     tile.state.multiple.nx, tile.state.multiple.ny
                 )
 
-                if tile.taxonomy.instance == AssetInstances.BACK.value:
+                if tile.taxonomy.instance == AssetInstances.ENVIRON.value:
                     back_tiles.append(tile_tuple)
-                elif tile.taxonomy.instance == AssetInstances.FORE.value:
+                elif tile.taxonomy.instance == AssetInstances.CANOPY.value:
                     fore_tiles.append(tile_tuple)
 
         return back_tiles, fore_tiles

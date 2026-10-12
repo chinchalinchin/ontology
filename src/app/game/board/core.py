@@ -204,7 +204,7 @@ class Board:
         self,
         layer: str,
         position: Position,
-        instance: str = AssetInstances.BACK.value
+        instance: str = AssetInstances.ENVIRON.value
     ) -> Optional[Asset]:
         return self._cache.get_tile(layer, position, instance)
 

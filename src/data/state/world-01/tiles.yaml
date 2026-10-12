@@ -1,5 +1,5 @@
 tiles:
-  back:
+  environ:
     - id: temperate
       name: the-steppe
       layer: '0'

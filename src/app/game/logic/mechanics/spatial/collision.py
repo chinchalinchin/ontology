@@ -228,6 +228,7 @@ class CollisionMechanics(SpatialMechanic):
             weights = board.weights(layer)
             weights_by_elevation = collections.defaultdict(list)
             for w in weights:
+                # NOTE: Collapse all negative substrate elevations to 0.
                 tier = max(0, w.elevation)
                 weights_by_elevation[tier].append(w)
 

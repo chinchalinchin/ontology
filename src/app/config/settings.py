@@ -79,7 +79,7 @@ EVAPORATION_RATE: Final[float] = 1.0
 """Multiplicative factor that scales the moisture evaporation rate"""
 
 SUBSTRATES: Final[dict[str, int]] = {
-    AssetInstances.BACK.value: -4,
+    AssetInstances.ENVIRON.value: -4,
     AssetInstances.FLUIDS.value: -3,
     AssetInstances.SHORELINES.value: -2,
     AssetInstances.BRIDGES.value: -1

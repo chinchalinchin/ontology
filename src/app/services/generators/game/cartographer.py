@@ -140,6 +140,9 @@ class Cartographer:
         """
         Constructs a narrow sensor strip aligned along the water perimeter threshold.
         """
+        # TODO: pretty sure 32 should be set to width when direction is DOWN
+        #           and to length when direction is RIGHT, to fit the particular
+        #           Shoreline Asset ID.
         if orientation == Directions.UP.value:
             return Hitbox(Position(0, 0), Dimensions(length, thickness))
         elif orientation == Directions.DOWN.value:

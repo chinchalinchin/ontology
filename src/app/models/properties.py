@@ -135,8 +135,9 @@ class WidgetProperties(AssetProperties):
 
 @dataclass(slots=True)
 class TilePropertyInstances:
-    back: Dict[str, TileProperties] = field(default_factory=dict)
-    fore: Dict[str, TileProperties] = field(default_factory=dict)
+    canopy: Dict[str, TileProperties] = field(default_factory=dict)
+    environ: Dict[str, TileProperties] = field(default_factory=dict)
+    grid: Dict[str, TileProperties] = field(default_factory=dict)
 
 @dataclass(slots=True)
 class EffectPropertyInstances:

@@ -40,13 +40,13 @@ from app.config.enums.engine import (
     FrictiveAssets,
     InertAssets,
     Shortcuts,
+    Substrates,
     Reactions,
     Relations,
     Executors,
     Translators,
     ChannelTypes,
     Fonts,
-    Substrates
 )
 from app.config.enums.menus import (
     Controllers,

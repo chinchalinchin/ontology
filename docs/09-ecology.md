@@ -50,6 +50,10 @@ Fluids declare an explicit `height: 0` and `depth: -1`. This ensures the [render
 * `length: int`: Raycast truncation distance.
 * `hitboxes: List[Hitbox]`: Compound hitboxes covering the secondary stream corridor.
 
+**Hitbox: DynamicHitbox**
+
+* `get(properties, state, frame): returns state.hitboxes`
+
 ### Category: Geography
 
 #### Instance: Shorelines
@@ -72,17 +76,22 @@ Shorelines are procedural, inanimate Geography sensors instantiated along unoccl
 * `orientation: str`
 * `length: int`
 * `thickness: int`
-* `bidirectional: bool = True`
 * `hitboxes: List[Hitbox]`
 * `_keys: Optional[List[Tuple[str, int, int]]] = None` (*Cache for pre-computing frame keys*)
+
+**Hitbox: DynamicHitbox**
+
+* `get(properties, state, frame): returns state.hitboxes`
 
 ### Category: Resources
 
 Resources are mutable assets deployed onto the Board that progress through discrete structural or biological stages governed by macro-temporal seasons and hydrological fluid diffusion.
 
-**State: ResourceState**
+All resource instances (`crops`, `trees`, `ore`) share a unified, slotted state model, Resource State.
 
-All resource instances (`crops`, `trees`, `ore`) share a unified, slotted state model:
+Stage transitions are evaluated through discrete `Executor` instances mapped to the asset's immutable `properties.lifespan` (`annual`, `perennial`, `centennial`).
+
+**State: ResourceState**
 
 * `layer: str`: Current board layer.
 * `position: Position`: Physical coordinate.
@@ -93,7 +102,9 @@ All resource instances (`crops`, `trees`, `ore`) share a unified, slotted state 
 * `moisture_flux: float = 0.0`: Precomputed scalar flux evaluated from the layer's environmental `MoistureField`.
 * `harvested: bool = False`: Flag indicating whether the bloom stage has been harvested.
 
-Stage transitions are evaluated through discrete `Executor` instances mapped to the asset's immutable `properties.lifespan` (`annual`, `perennial`, `centennial`).
+**Hitbox: StageHitbox**
+
+* `get(properties, state, frame): returns properties[state.stage].hitboxes`
 
 #### Instance: Crops
 
@@ -125,9 +136,22 @@ Ores are mineral resources that transition through structural stages when acted 
 
 ### Category: Tiles
 
-#### Instance: Back
+#### Instance: Environ
 
-TODO
+* **Environ Tiles**: Rendered beneath all dynamic entities. Represent soil, turf, rock, and water substrates.
+* **Temporal Invalidation**: Tile atlases contain 36 cells ($4_\text{seasons} \times 9_\text{periods}$). When `SeasonMechanics` advances a calendar period, a `SeasonEvent` triggers `Screen.reconstruct(board)`. The screen recompiles the static textures (`bg_canvas` and `fg_canvas`) using the updated seasonal frame keys.
+
+**State: MultiplerState**
+
+* `layer: str`
+* `depth: int`
+* `height: int`
+* `position: Position`
+* `multiple: Multiple`
+
+**Hitbox: StaticHitbox**
+
+* `get(properties, state, frame): returns properties.hitboxes`
 
 ## Principles
 

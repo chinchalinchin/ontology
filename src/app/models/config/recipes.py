@@ -27,8 +27,9 @@ class Recipe:
 
 @dataclass(slots=True, frozen=True)
 class TileRecipe:
-    fore: Recipe = None
-    back: Recipe = None
+    canopy: Recipe = None
+    environ: Recipe = None
+    grid: Recipe = None
 
 @dataclass(slots=True, frozen=True)
 class CraftRecipe:

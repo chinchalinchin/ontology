@@ -25,7 +25,7 @@ def test_perimeter_generator_extract(mock_board):
     generator = Perimeter()
     rects = generator.extract(mock_board, "0")
 
-    # 1. Back Tile substrate (pos: 0, 0 | w: 32, l: 32 | nx: 10, ny: 10 -> 320x320)
+    # 1. Environ Tile substrate (pos: 0, 0 | w: 32, l: 32 | nx: 10, ny: 10 -> 320x320)
     assert (0, 0, 320, 320) in rects
 
     # 2. Static Gate (pos: 170, 180 | w: 32, l: 32 -> 202x212)

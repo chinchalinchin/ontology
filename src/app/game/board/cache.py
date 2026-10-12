@@ -75,8 +75,8 @@ class Cache:
         self.cached_renderables.setdefault(layer, [])
         self.cached_weights.setdefault(layer, [])
         self.cached_tilemap.setdefault(layer, {
-            AssetInstances.BACK.value: {},
-            AssetInstances.FORE.value: {}
+            AssetInstances.ENVIRON.value: {},
+            AssetInstances.CANOPY.value: {}
         })
         self.cached_fluidmap.setdefault(layer, {})
         self.shorelines.setdefault(layer, [])
@@ -440,7 +440,7 @@ class Cache:
         self,
         layer: str,
         position: Position,
-        instance: str = AssetInstances.BACK.value
+        instance: str = AssetInstances.ENVIRON.value
     ) -> Optional[Asset]:
         cx = int(position.x) // settings.TILE_HASH_SIZE
         cy = int(position.y) // settings.TILE_HASH_SIZE

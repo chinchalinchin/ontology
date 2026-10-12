@@ -104,6 +104,6 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [ ]: [Goal 09: Transverse Fluid Submersion](./phases/achieve/goal-09.md)
     - [x]: [Goal 10: Board Modularization](./phase/achieve/goal-10.md)
 - Backlog:
-  - [ ]: [TODO T000: Telemetry Module](./backlog/todo-t000.md)
+  - [~]: [TODO T000: Telemetry Module](./backlog/todo-t000.md)
   - [ ]: [TODO T001: Telemetry Menu](./backlog/todo-t001.md)
   - [ ]: [TODO T002: Bouyancy](./backlog/todo-t002.md)

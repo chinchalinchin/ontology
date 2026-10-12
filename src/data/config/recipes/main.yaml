@@ -1,10 +1,14 @@
 recipes:
   tiles:
-    back:
+    environ:
       frame: seasonal
       animation: none
       hitbox: none
-    fore:
+    canopy:
+      frame: single
+      animation: none
+      hitbox: none
+    grid:
       frame: single
       animation: none
       hitbox: none

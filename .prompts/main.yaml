@@ -83,16 +83,18 @@ tools:
     # ------------------------ TOOL VIEWS: MANAGER
     # --------------------------------------------
     manager:
-      board: false
+      board: true
       specs: false
-      docs: false
+      docs: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      workflow: false
-      script: false
       data: false
+      entrypoints: false
+      models: false
+      script: false
+      workflow: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
@@ -103,10 +105,10 @@ tools:
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
-      pipeline: true
-      fixtures: true
+      pipeline: false
+      fixtures: false
       session: false
-      workflow: true
+      workflow: false
 # ----------------------------------------------------
   parameters:
     # --------------------------------------------
@@ -114,17 +116,17 @@ tools:
     # --------------------------------------------
     manager:
       board:
-        phase: '07-01'
+        phase: '07-02'
         action: refactor
       docs:
         exclude:
           - index.md
           # - 00-overview.md
           # - 01-assets.md
-          # - 02-sprites.md
+          - 02-sprites.md
           - 03-compositions.md
           - 04-intentions.md
-          - 05-mechanics.md
+          # - 05-mechanics.md
           - 06-widgets.md
           - 07-sounds.md
           - 08-plots.md
@@ -138,6 +140,12 @@ tools:
     source:
       data: 
         properties:
+          - crafts
+          - effects
+          - objects
+          - resources
+          - tiles
+        state:
           - crafts
           - effects
           - objects
@@ -159,6 +167,7 @@ tools:
       pipeline:
         command: pytest -m
         marker: cli
+      workflow: cli
       fixtures:
         # ----------------------- FIXTURES: CONFIGURATIONS
         # - configuration/compositions
@@ -192,7 +201,6 @@ tools:
         # - menus
         - services
         # - structures
-      workflow: cli
       session:
         description: null
         conditions:
