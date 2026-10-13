@@ -21,7 +21,7 @@ from libs.core.models import (
 @pytest.fixture
 def mock_tile_properties() -> TilePropertyInstances:
     return TilePropertyInstances(
-        back = {
+        environ = {
             'temperate': TileProperties(
                 dimensions=Dimensions(w=32, l=32),
                 friction=100

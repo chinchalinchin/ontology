@@ -42,7 +42,7 @@ task:
   # ------------------------ TEMPLATES: MAINTENANCE
   # --------------------------------------------
   # template: maintain/console/patch.md.j2
-  template: maintain/console/session.md.j2
+  # template: maintain/console/session.md.j2
   # template: maintain/script.md.j2
   # --------------------------------------------
   # ------------------------ TEMPLATES: DUMPS 
@@ -55,7 +55,7 @@ task:
   # template: iterate/documentation.md.j2
   # template: iterate/grooming.md.j2
   # template: iterate/implementation.md.j2
-  # template: iterate/coverage.md.j2
+  template: iterate/coverage.md.j2
   # template: iterate/review.md.j2
   # template: iterate/conclusion.md.j2
   # --------------------------------------------
@@ -83,9 +83,9 @@ tools:
     # ------------------------ TOOL VIEWS: MANAGER
     # --------------------------------------------
     manager:
-      board: true
+      board: false
       specs: false
-      docs: true
+      docs: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
@@ -94,21 +94,21 @@ tools:
       entrypoints: false
       models: false
       script: false
-      workflow: true
+      workflow: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: true
+      directory: false
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
-      pipeline: false
-      fixtures: false
-      session: true
-      workflow: false
+      pipeline: true
+      fixtures: true
+      session: false
+      workflow: true
 # ----------------------------------------------------
   parameters:
     # --------------------------------------------
@@ -189,8 +189,8 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: cli
-      workflow: cli
+        marker: collisions
+      workflow: collisions
       fixtures:
         # ----------------------- FIXTURES: CONFIGURATIONS
         # - configuration/compositions
@@ -201,28 +201,28 @@ tools:
         # ----------------------- FIXTURES: PROPERTIES
         # - properties/crafts
         # - properties/cursors
-        # - properties/effects
+        - properties/effects
         # - properties/fonts
         # - properties/geography
-        # - properties/objects
+        - properties/objects
         # - properties/resources
-        # - properites/sheets
-        # - properties/tiles
+        - properties/sheets
+        - properties/tiles
         # - properties/widgets
         - properties/schemas
         # ----------------------- FIXTURES: STATE
         # - state/crafts
-        # - state/effects
-        # - state/objects
+        - state/effects
+        - state/objects
         # - state/resources
-        # - state/sheets
+        - state/sheets
         # - state/world
         - state/schemas
         # ----------------------- FIXTURES: APPLICATIONS
         - assets
         - components
         # - menus
-        - services
+        # - services
         # - structures
       session:
         description: |

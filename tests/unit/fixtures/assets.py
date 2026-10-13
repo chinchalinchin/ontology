@@ -106,7 +106,7 @@ def mock_crop_resource(
 
 
 @pytest.fixture
-def mock_back_tile(
+def mock_environ_tile(
     mock_tile_properties,
     mock_multiplier_state
 ) -> Asset:
@@ -117,7 +117,7 @@ def mock_back_tile(
             category = AssetCategories.TILES.value, 
             instance = AssetInstances.ENVIRON.value
         ), 
-        properties = mock_tile_properties.back.get('temperate'), 
+        properties = mock_tile_properties.environ.get('temperate'), 
         state = mock_multiplier_state, 
         frame = SeasonalFrame(), 
         animation = NoAnimation(),
@@ -576,7 +576,7 @@ def mock_widget(mock_widget_properties) -> Asset:
 
 @pytest.fixture
 def mock_assets(
-    mock_back_tile,
+    mock_environ_tile,
     mock_player,
     mock_sprite,
     mock_sprite_alt,
@@ -598,7 +598,7 @@ def mock_assets(
     mock_crop_resource,
 ) -> list[Asset]:
   return [
-      mock_back_tile,
+      mock_environ_tile,
       mock_sprite,
       mock_sprite_alt,
       mock_player,

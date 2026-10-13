@@ -515,7 +515,7 @@ def test_shoreline_frame_channels():
 def test_seasonal_frame_indexing(mock_tile_properties):
   """Verify SeasonalFrame generates a complete 36-cell atlas index."""
   frame = SeasonalFrame()
-  props = mock_tile_properties.back['temperate']
+  props = mock_tile_properties.environ['temperate']
   crops = frame.index('temperate', props)
 
   assert len(crops) == 36

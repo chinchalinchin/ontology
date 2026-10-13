@@ -37,12 +37,12 @@ def mock_recipes_configuration() -> RecipeConfiguration:
     """Complete RecipeConfiguration matching native engine schemas."""
     return RecipeConfiguration(
         tiles=TileRecipe(
-            back=Recipe(
+            environ =Recipe(
                 frame=FrameRecipe.SINGLE.value, 
                 animation=AnimationRecipe.NONE.value,
                 hitbox=HitboxRecipe.NONE.value
             ),
-            fore=Recipe(
+            canopy =Recipe(
                 frame=FrameRecipe.SINGLE.value, 
                 animation=AnimationRecipe.NONE.value,
                 hitbox=HitboxRecipe.NONE.value

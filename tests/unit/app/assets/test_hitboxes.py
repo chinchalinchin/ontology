@@ -1,4 +1,6 @@
-"""# Ontology: tests.unit.app.assets.test_hitboxes."""
+"""
+# Ontology: tests.unit.app.assets.test_hitboxes.
+"""
 
 import pytest
 from app.config.enums import (
@@ -6,10 +8,14 @@ from app.config.enums import (
     PerennialStages,
 )
 from libs.core.math import geometry
-from libs.core.models import Dimensions, Hitbox, Position
+from libs.core.models import (
+    Dimensions, 
+    Hitbox, 
+    Position
+)
 
 
-@pytest.mark.physics
+@pytest.mark.collisions
 def test_static_hitbox_fallback_on_none(mock_crate):
   """Undeclared hitboxes fall back to full bounding box dimensions."""
   mock_crate.properties.hitboxes = None
@@ -21,7 +27,7 @@ def test_static_hitbox_fallback_on_none(mock_crate):
   assert mock_crate.hitboxes[0].dimensions.l == mock_crate.dimensions.l
 
 
-@pytest.mark.physics
+@pytest.mark.collisions
 def test_static_hitbox_preserves_explicit_empty_list(mock_crate):
   """Explicit empty list [] preserves passable entity without bounding-box fallback (Bug B014)."""
   mock_crate.properties.hitboxes = []
@@ -29,13 +35,13 @@ def test_static_hitbox_preserves_explicit_empty_list(mock_crate):
   assert mock_crate.hitboxes == []
 
 
-@pytest.mark.physics
-def test_no_hitbox_unconditionally_empty(mock_back_tile):
+@pytest.mark.collisions
+def test_no_hitbox_unconditionally_empty(mock_environ_tile):
   """NoHitbox strategy always resolves an empty collision list."""
-  assert mock_back_tile.hitboxes == []
+  assert mock_environ_tile.hitboxes == []
 
 
-@pytest.mark.physics
+@pytest.mark.collisions
 @pytest.mark.fluids
 def test_dynamic_hitbox_reads_state_bounds(mock_fluid):
   """DynamicHitbox resolves the mutable state hitbox list rather than static properties."""
@@ -46,7 +52,7 @@ def test_dynamic_hitbox_reads_state_bounds(mock_fluid):
 
 
 @pytest.mark.seasons
-@pytest.mark.physics
+@pytest.mark.collisions
 def test_stage_hitbox_annual_crop_transitions(mock_crop_resource):
   """Verifies annual crop stages transition from passable sprout/growth to solid stalk/bloom."""
   # 1. Sprout stage: Passable
@@ -81,7 +87,7 @@ def test_stage_hitbox_annual_crop_transitions(mock_crop_resource):
 
 
 @pytest.mark.seasons
-@pytest.mark.physics
+@pytest.mark.collisions
 def test_stage_hitbox_perennial_transitions(mock_tree_resource):
   """Verifies adult stage constrains to trunk, sapling is passable, and stump resizes."""
   # 1. Juvenile sapling is passable

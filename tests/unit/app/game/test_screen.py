@@ -407,7 +407,7 @@ def test_screen_sort_coplanar_priority_tie_breaker(mock_crate, mock_strut):
 
 @pytest.mark.rendering
 def test_screen_sort_substrate_hierarchy(
-    mock_back_tile,
+    mock_environ_tile,
     mock_fluid,
     mock_shoreline,
     mock_bridge,
@@ -418,17 +418,17 @@ def test_screen_sort_substrate_hierarchy(
     enforcing global substrate draw ordering underneath physical entities.
     """
     # Verify default substrate tier resolution via settings.SUBSTRATES
-    assert mock_back_tile.elevation == -4
+    assert mock_environ_tile.elevation == -4
     assert mock_fluid.elevation == -3
     assert mock_shoreline.elevation == -2
     assert mock_bridge.elevation == -1
     assert mock_crate.elevation == 0
 
-    assets = [mock_crate, mock_bridge, mock_shoreline, mock_fluid, mock_back_tile]
+    assets = [mock_crate, mock_bridge, mock_shoreline, mock_fluid, mock_environ_tile]
     print([ (asset.id, asset.name, asset.category, asset.instance, getattr(asset, 'dimensions', None)) for asset in assets ])
     assets.sort(key=Screen._sort)
 
-    assert assets[0] is mock_back_tile  # elevation -4
+    assert assets[0] is mock_environ_tile  # elevation -4
     assert assets[1] is mock_fluid      # elevation -3
     assert assets[2] is mock_shoreline  # elevation -2
     assert assets[3] is mock_bridge     # elevation -1
