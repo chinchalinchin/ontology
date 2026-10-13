@@ -61,6 +61,11 @@ def mock_recipes_configuration() -> RecipeConfiguration:
             )
         ),
         crafts=CraftRecipe(
+            stairs=Recipe(
+                frame=FrameRecipe.DIRECTED.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.STATIC.value
+            ),
             struts=Recipe(
                 frame=FrameRecipe.SINGLE.value, 
                 animation=AnimationRecipe.NONE.value,

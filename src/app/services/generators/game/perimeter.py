@@ -102,7 +102,11 @@ class Perimeter:
     def generate(self, board: Board, layer: str) -> Dict[int, List[Boundary]]:
         weights = board.weights(layer)
         # Collapse all non-positive elevations to Tier 0
-        elevations = {max(0, w.elevation) for w in weights} | {0}
+        elevations = {
+            max(0, e)
+            for w in weights
+            for e in w.hitbox.elevations(w.properties, w.state)
+        } | {0}
         perimeters_by_tier: Dict[int, List[Boundary]] = {}
 
         for elevation in elevations:

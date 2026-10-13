@@ -30,8 +30,12 @@ def mock_craft_states(
     mock_property_state_alt2,
     mock_bridge_state,
     mock_platform_state,
+    mock_stair_state,
 ) -> CraftStateInstances:
     return CraftStateInstances(
+        stairs = [
+            mock_stair_state
+        ],
         struts = [
             mock_property_state,
             mock_property_state_alt,

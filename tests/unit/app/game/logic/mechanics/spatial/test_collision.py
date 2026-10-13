@@ -84,6 +84,9 @@ def test_collision_mechanics_resolve_boundary(mock_collision_mechanics, mock_cra
     """
     Verifies Phase 1 narrow-phase environmental constraint resolution on dynamic bodies (m > 0).
     """
+    mock_boundary.position = Position(0, 0)
+    mock_boundary.dimensions = Dimensions(100, 1)
+
     mock_crate.state.position = Position(10, 0)
     mock_crate.state.velocity = Velocity(0.0, -10.0)
 
@@ -99,6 +102,9 @@ def test_collision_mechanics_resolve_boundary_no_collision(mock_collision_mechan
     """
     Verifies Phase 1 ignores boundary constraint when entity is clear.
     """
+    mock_boundary.position = Position(0, 0)
+    mock_boundary.dimensions = Dimensions(100, 1)
+
     mock_crate.state.position = Position(10, 50)
     mock_crate.state.velocity = Velocity(0.0, -10.0)
 
@@ -134,10 +140,12 @@ def test_collision_mechanics_resolve_boundary_kinematic_player(mock_collision_me
     Verifies Phase 1 environmental boundary constraints enforce spatial bounds on kinematic
     players despite m = 0, shifting position out of the boundary hull.
     """
-    # Bounding box of 50px accounts for LPC feet hitbox offset (y ~ 23..44)
+    # Bounding box of 50px at (0, 0) accounts for LPC feet hitbox offset (y ~ 23..44)
+    mock_boundary.position = Position(0, 0)
+    mock_boundary.dimensions = Dimensions(100, 50)
+
     mock_player.state.position = Position(10, 0)
     mock_player.state.velocity = Velocity(0.0, -10.0)
-    mock_boundary.dimensions = Dimensions(100, 50)
 
     mock_collision_mechanics._boundary(mock_player, mock_boundary, elevation=0)
 
@@ -275,7 +283,6 @@ def test_collision_mechanics_platform_tier_1_deck_traversal(mock_collision_mecha
     assert crate.state.position.x == 120
     assert crate.state.position.y == 160
 
-
 @pytest.mark.physics
 @pytest.mark.collisions
 def test_collision_mechanics_stair_ascent_to_platform_deck_containment(
@@ -289,38 +296,50 @@ def test_collision_mechanics_stair_ascent_to_platform_deck_containment(
     Subtask 6.3: Verifies stair ascent from E = 0 to E = 1 transitions an entity from
     tier 0 facade obstruction to tier 1 deck containment within the collision pipeline.
     """
+    from libs.core.models import Hitbox
+
     payload = mock_board.device.poll() if mock_board.device else None
     if not mock_board.asset(mock_platform.name):
         mock_board.add([mock_platform])
 
-    # Place platform at (100, 100) [w=96, l=96] and synthesize tier 1 deck perimeter
+    # Place platform at (100, 100) [w=96, l=96 -> x: 100..196, y: 100..196] and synthesize perimeters
     mock_platform.elevation = 0
     mock_platform.state.position = Position(100, 100)
     mock_board.perimeters["0"] = mock_perimeter.generate(mock_board, "0")
+    assert 1 in mock_board.perimeters["0"]
 
     # Configure stairs ascending UP from E = 0 to E = 1 at (120, 160)
     stairs = mock_board.asset("stairs-main")
+    if stairs.state.layer != "0":
+        mock_board.relayer(stairs, "0")
     stairs.elevation = 0
     stairs.state.delta = 1
     stairs.state.direction = Directions.UP.value
     stairs.state.position = Position(120, 160)
+    stairs.properties.dimensions = Dimensions(64, 64)
+    stairs.properties.hitboxes = {
+        Directions.UP.value: [Hitbox(Position(0, 0), Dimensions(64, 64))]
+    }
 
-    # Position player at top of stair tread (foot_y = pos.y + 64 <= 160 + 0.2 * stair_l) moving North (vy < 0)
-    player = mock_board.player()
-    player.elevation = 0
-    player.state.position = Position(112, 100)
-    player.state.velocity = Velocity(0.0, -20.0)
-
-    mock_collision_mechanics.update(mock_board, 0.016, mock_bus, payload)
-
-    # Phase 0 transitions player to elevation = 1
-    assert player.elevation == 1
-
-    # Move player across the northern edge of the E = 1 platform deck (y = 100)
-    player.state.position = Position(112, 70)
-    player.state.velocity = Velocity(0.0, -20.0)
+    # Position crate at top of stair tread:
+    # crate y in [132, 164] intersects stair y in [160, 224];
+    # foot_y = 132 + 32 = 164 -> tread_progress = (164 - 160) / 64 = 0.0625 <= 0.2
+    crate = mock_board.asset("box")
+    crate.elevation = 0
+    crate.state.position = Position(120, 132)
+    crate.state.velocity = Velocity(0.0, -20.0)
 
     mock_collision_mechanics.update(mock_board, 0.016, mock_bus, payload)
 
-    # Phase 1 enforces E = 1 platform deck perimeter containment
-    assert player.state.position.y > 70
+    # Phase 0 transitions crate to elevation = 1
+    assert crate.elevation == 1
+
+    # Move crate into the eastern edge of the E = 1 platform deck (x = 196, y in [120, 152])
+    crate.state.position = Position(170, 120)
+    crate.state.velocity = Velocity(20.0, 0.0)
+
+    mock_collision_mechanics.update(mock_board, 0.016, mock_bus, payload)
+
+    # Phase 1 enforces E = 1 platform deck perimeter containment (pushed West) and inverts vx
+    assert crate.state.position.x < 170
+    assert crate.state.velocity.vx == -20.0
