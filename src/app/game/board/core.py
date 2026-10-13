@@ -181,11 +181,14 @@ class Board:
     def set_device(self, device: Device) -> None:
         self.device = device
 
+
     def set_cradle(self, cradle: Cradle) -> None:
         self.cradle = cradle
 
+
     def set_overlays(self, overlays: List[Menu]) -> None:
         self.overlays = overlays
+
 
     def set_plot(self, plot: str) -> None:
         self.plot = plot
@@ -200,6 +203,7 @@ class Board:
             return players[slot]
         return players[0]
 
+
     def tile(
         self,
         layer: str,
@@ -208,15 +212,19 @@ class Board:
     ) -> Optional[Asset]:
         return self._cache.get_tile(layer, position, instance)
 
+
     def character(self, name: str) -> Any:
         return self._cache.get_character(name)
+
 
     def characters(self) -> Dict[str, Any]:
         return self._cache.get_characters()
 
+
     def asset(self, name: str, layer: Optional[str] = None) -> Optional[Asset]:
         search_list = self.renderables(layer) if layer else self._assets
         return next((a for a in search_list if a.name == name), None)
+
 
     def assets(self, layer: Optional[str] = None, elevation: Optional[int] = None) -> List[Asset]:
         if layer is not None:
@@ -228,37 +236,40 @@ class Board:
             return [a for a in target_assets if a.elevation == elevation]
         return target_assets
 
+
     def weights(self, layer: Optional[str] = None, elevation: Optional[int] = None) -> List[Asset]:
         weights = self._cache.get_weights(layer) if layer is not None else [
             a for a in self._assets if predicates.is_weight(a)
         ]
         if elevation is not None:
-            if elevation == 0:
-                return [w for w in weights if w.elevation <= 0]
-            return [w for w in weights if w.elevation == elevation]
+            target_e = max(0, elevation)
+            return [w for w in weights if target_e in w.hitbox.elevations(w.properties, w.state)]
         return weights
     
 
     def obstacles(self, layer: Optional[str] = None, elevation: Optional[int] = None) -> List[Asset]:
         obstacles = self._cache.get_obstacles(layer) if layer is not None else []
         if elevation is not None:
-            if elevation == 0:
-                return [o for o in obstacles if o.elevation <= 0]
-            return [o for o in obstacles if o.elevation == elevation]
+            target_e = max(0, elevation)
+            return [o for o in obstacles if target_e in o.hitbox.elevations(o.properties, o.state)]
         return obstacles
+    
 
     def bridges(self, layer: Optional[str] = None) -> List[Asset]:
         """Retrieves static sensor bridge assets for a specific layer or across all layers."""
         return self.instances(AssetInstances.BRIDGES.value, layer)
 
+
     def layers(self) -> List[str]:
         return self._cache.get_layers()
+
 
     def categories(self, category: str, layer: Optional[str] = None, elevation: Optional[int] = None) -> List[Asset]:
         cat_assets = self._cache.get_categories(category, layer)
         if elevation is not None:
             return [a for a in cat_assets if a.elevation == elevation]
         return cat_assets
+
     
     def instances(self, instance: str, layer: Optional[str] = None, elevation: Optional[int] = None) -> List[Asset]:
         inst_assets = self._cache.get_instances(instance, layer)
@@ -266,10 +277,12 @@ class Board:
             return [a for a in inst_assets if a.elevation == elevation]
         return inst_assets
 
+
     def renderables(self, layer: Optional[str] = None) -> List[Asset]:
         if layer is None:
             return [asset for asset in self._assets if asset.category != AssetCategories.TILES.value]
         return self._cache.get_renderables(layer)
+
 
     def shorelines(self, layer: Optional[str] = None) -> List[Asset]:
         """
@@ -278,6 +291,7 @@ class Board:
         if layer is not None:
             return self._cache.get_shorelines(layer)
         return self.instances(AssetInstances.SHORELINES.value)
+
     
     def moisture(self, layer: str, x: int, y: int) -> float:
         """
@@ -287,6 +301,7 @@ class Board:
         if not field:
             return 0.0
         return field.evaluate(x, y)
+
 
     def size(self, layer: Optional[str] = None) -> List[Dimensions]:
         layers = [layer] if layer is not None else self.layers()
@@ -341,11 +356,13 @@ class Board:
             f"Board: Layer={layer} MoistureField cached across {len(resources)} resources."
         )
 
+
     def update_fluid_cache(self, layer: str) -> None:
         """
         Rebuilds the O(1) spatial fluid grid cache for the specified layer.
         """
         self._cache.rebuild_fluid(layer)
+
 
     def cache_fluid(self, fluid: Asset) -> None:
         """
@@ -355,8 +372,10 @@ class Board:
         if layer:
             self._cache.rebuild_fluid(layer)
 
+
     def relayer(self, asset: Asset, new_layer: str) -> None:
         self._cache.relayer(asset, new_layer)
+
 
     def add(self, additions: List[Asset]) -> None:
         for asset in additions:
@@ -369,6 +388,7 @@ class Board:
             )
         self._cache.index_batch(additions)
 
+
     def remove(self, removals: List[Asset]) -> None:
         """
         Performs bulk entity de-registration.
@@ -379,6 +399,7 @@ class Board:
         removal_set = set(removals)
         self._assets = [a for a in self._assets if a not in removal_set]
         self._cache.evict_batch(removals)
+
 
     def clear(self) -> None:
         self._assets.clear()

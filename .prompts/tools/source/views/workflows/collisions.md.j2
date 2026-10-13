@@ -1,4 +1,4 @@
-### View: Workflow - Collisions (and Compositions, Phase 07.02)
+### View: Workflow - Collisions
 
 #### app.assets
 
@@ -16,24 +16,12 @@
 {{ file(properties.paths.root + 'src/app/assets/hitboxes/core.py') }}
 ```
 
-**src/app/assets/hitboxes/crafts.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/assets/hitboxes/crafts.py') }}
-```
-
 #### app.game
 
 **src/app/game/engine.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/game/engine.py') }}
-```
-
-**src/app/game/screen.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/game/screen.py') }}
 ```
 
 ##### app.game.board
@@ -54,6 +42,12 @@
 {{ file(properties.paths.root + 'src/app/game/logic/mechanics/base.py') }}
 ```
 
+**src/app/game/logic/mechanics/core/motion.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/core/motion.py') }}
+```
+
 **src/app/game/logic/mechanics/spatial/base.py**
 
 ```python
@@ -64,6 +58,18 @@
 
 ```python
 {{ file(properties.paths.root + 'src/app/game/logic/mechanics/spatial/collision.py') }}
+```
+
+**src/app/game/logic/mechanics/world/fluid.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/logic/mechanics/world/fluid.py') }}
+```
+
+##### app.game.logic.modules.motion
+
+```python
+{{ file(properties.paths.root + 'src/app/game/logic/modules/motion/fields.py') }}
 ```
 
 #### app.models
@@ -84,10 +90,10 @@
 
 ###### app.models.state.assets
 
-**src/app/models/state/assets/crafts.py**
+**src/app/models/state/assets/effects.py**
 
 ```python
-{{ file(properties.paths.root + 'src/app/models/state/assets/crafts.py') }}
+{{ file(properties.paths.root + 'src/app/models/state/assets/effects.py') }}
 ```
 
 #### app.services
@@ -100,10 +106,10 @@
 {{ file(properties.paths.root + 'src/app/services/generators/game/perimeter.py') }}
 ```
 
-**src/app/services/generators/game/decomposer.py**
+**src/app/services/generators/game/actuator.py**
 
 ```python
-{{ file(properties.paths.root + 'src/app/services/generators/game/decomposer.py') }}
+{{ file(properties.paths.root + 'src/app/services/generators/game/perimeter.py') }}
 ```
 
 #### libs.core

@@ -409,7 +409,11 @@ def main():
     args = arguments()
     configure_logging(log_level=args.log_level.upper())
 
-    logger.info(f"Starting CLI with command: '{args.command}' for board: '{args.board_key}'")
+    # Log raw sys.argv as well as parsed namespace attributes
+    logger.info("Raw argv: %s", sys.argv[1:])
+    logger.info("Parsed arguments: %s", vars(args))
+
+    logger.info(f"Starting CLI with command: '{args.command}' for board: '{getattr(args, 'board_key', None)}'")
 
     screensize = Dimensions(w=args.width, l=args.height)
 

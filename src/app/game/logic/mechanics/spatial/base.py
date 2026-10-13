@@ -4,7 +4,11 @@
 Package for SpatialMechanic parent class.
 """
 # Standard Libraries
-from typing import List, Tuple
+from typing import (
+    List, 
+    Tuple,
+    Optional
+)
 import logging
 
 from app.assets.base import Asset
@@ -41,23 +45,26 @@ class SpatialMechanic(Mechanic):
         return (position.x + dimensions.w / 2, position.y + dimensions.l / 2)
 
     
-    def collisions(self, assets: List[Asset]) -> List[Tuple]:
+    def collisions(self, assets: List[Asset], elevation: Optional[int] = None) -> List[Tuple]:
         """
         Extracts primitives using standard physics hitboxes, queries the C-grid, 
         and returns colliding Asset pairs.
         """
         self.grid.clear()
-        
         if not assets:
             return []
-
         asset_map = dict(enumerate(assets))
-        primitive_data = [asset.primitive(i) for i, asset in enumerate(assets)]
-        
+        primitive_data = [
+            asset.primitive(
+                i, 
+                hitboxes=asset.hitbox.get(asset.properties, asset.state, elevation, asset.frame)
+            ) if elevation is not None else asset.primitive(i)
+            for i, asset in enumerate(assets)
+        ]
         colliding_indices = physics.collisions(primitive_data, self.grid)
         return [(asset_map[id_a], asset_map[id_b]) for id_a, id_b in colliding_indices]
 
-
+        
     def intersections(self, assets: List[Asset]) -> List[Tuple]:
         """
         Bypasses standard physics hitboxes, constructing a virtual hitbox that 
@@ -120,24 +127,31 @@ class SpatialMechanic(Mechanic):
         return [(asset_map[id_a], asset_map[id_b]) for id_a, id_b in colliding_indices]
 
 
-    def constrain(self, assets: List[Asset], boundaries: List[Boundary]) -> List[Tuple[Asset, Boundary]]:
+    def constrain(
+        self, 
+        assets: List[Asset], 
+        boundaries: List[Boundary], 
+        elevation: Optional[int] = None
+    ) -> List[Tuple[Asset, Boundary]]:        
         """
         Extracts primitives, queries the C-grid for Negative IDs (Boundaries), 
         and returns colliding constraint pairs.
         """
         self.grid.clear()
-        
         if not assets or not boundaries:
             return []
-
         asset_map = dict(enumerate(assets))
         bound_map = dict(enumerate(boundaries))
-        
-        primitive_assets = [asset.primitive(i) for i, asset in enumerate(assets)]
+        primitive_assets = [
+            asset.primitive(
+                i, 
+                hitboxes=asset.hitbox.get(asset.properties, asset.state, elevation, asset.frame)
+            ) if elevation is not None else asset.primitive(i)
+            for i, asset in enumerate(assets)
+        ]
         primitive_bounds = [
-            (i, b.position.x, b.position.y, b.dimensions.w, b.dimensions.l) 
+            (i, b.position.x, b.position.y, b.dimensions.w, b.dimensions.l)
             for i, b in enumerate(boundaries)
         ]
-        
         colliding_indices = physics.boundaries(primitive_assets, primitive_bounds, self.grid)
         return [(asset_map[id_a], bound_map[id_b]) for id_a, id_b in colliding_indices]

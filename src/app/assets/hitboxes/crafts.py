@@ -25,13 +25,26 @@ logger = logging.getLogger(__name__)
 
 class ElevatedHitbox(HitboxSchema):
     """
-    Resolves biological/geological stage-indexed hitboxes from ResourceProperties.
+    Resolves relative tier-indexed hitboxes from CraftProperties.
     """
+    def elevations(
+        self,
+        properties: CraftProperties,
+        state: AssetState
+    ) -> List[int]:
+        base_e = state.elevation if state.elevation is not None else 0
+        if not properties.hitboxes:
+            return [base_e]
+        return [base_e + k for k in properties.hitboxes.keys()]
 
     def get(
         self,
         properties: CraftProperties,
         state: AssetState,
+        elevation: int,
         frame: Optional[Frame] = None
     ) -> List[Hitbox]:
-        return properties.hitboxes.get(state.elevation, []) or []
+        if not properties.hitboxes:
+            return []
+        base_e = state.elevation if state.elevation is not None else 0
+        return properties.hitboxes.get(elevation - base_e, []) or []

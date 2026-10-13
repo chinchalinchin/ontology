@@ -29,6 +29,7 @@ from app.assets.hitboxes import (
     AttackHitbox,
     DirectedHitbox,
     OrientedHitbox,
+    ElevatedHitbox,
     NoHitbox
 )
 from app.assets.frames import (
@@ -133,6 +134,7 @@ class Factory:
         HitboxRecipe.ATTACK.value: AttackHitbox(),
         HitboxRecipe.DIRECTED.value: DirectedHitbox(),
         HitboxRecipe.DYNAMIC.value: DynamicHitbox(),
+        HitboxRecipe.ELEVATED.value: ElevatedHitbox(),
         HitboxRecipe.ORIENTED.value: OrientedHitbox(),
         HitboxRecipe.STAGE.value: StageHitbox(),
         HitboxRecipe.STATIC.value: StaticHitbox(),

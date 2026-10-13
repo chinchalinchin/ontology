@@ -126,16 +126,24 @@ class HitboxSchema(Singleton):
     """
     Foundational interface for Assets that participate in collisions and interactions.
     """
+    @abstractmethod
+    def elevations(
+        self,
+        properties: AssetProperties,
+        state: AssetState
+    ) -> List[int]:
+        """Returns all discrete elevation tiers this asset participates in."""
+        pass
 
     @abstractmethod
-    def get(self,
+    def get(
+        self,
         properties: AssetProperties,
         state: AssetState,
-        frame: Frame
+        elevation: int,
+        frame: Optional[Frame] = None
     ) -> List[Hitbox]:
-        """
-        Abstract method for resolving Asset's hitboxes.
-        """
+        """Resolves active physical hitboxes at the specified elevation plane."""
         pass
 
 
@@ -186,11 +194,6 @@ class Asset:
         return self.properties.dimensions
 
     @property
-    def hitboxes(self) -> List[Hitbox]:
-        """Unified physical boundary retrieval delegated entirely to HitboxSchema."""
-        return self.hitbox.get(self.properties, self.state, self.frame)
-
-    @property
     def elevation(self) -> int:
         if self.state.elevation is not None:
             return self.state.elevation
@@ -200,6 +203,12 @@ class Asset:
     def elevation(self, value: Optional[int]) -> None:
         self.state.elevation = value
 
+    @property
+    def hitboxes(self) -> List[Hitbox]:
+        """Default physical footprint resolved at the asset's deployed elevation."""
+        return self.hitbox.get(self.properties, self.state, self.elevation, self.frame)
+
+        
     def primitive(self, index: int = 0, hitboxes: List[Hitbox] = None) -> Tuple:
         """
         Extracts spatial attributes into primitive integers for Cython math operations.
@@ -209,10 +218,10 @@ class Asset:
         Returns: (index, x, y, w, l, hitboxes)
         """
         return (
-            index, 
-            self.state.position.x, 
-            self.state.position.y, 
-            self.dimensions.w, 
+            index,
+            self.state.position.x,
+            self.state.position.y,
+            self.dimensions.w,
             self.dimensions.l,
             hitboxes if hitboxes is not None else self.hitboxes
         )

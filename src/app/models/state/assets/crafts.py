@@ -52,5 +52,6 @@ class StairState(AssetState):
 
 @dataclass(slots=True)
 class PlatformState(AssetState):
-    # TODO: phase 07-02
-    pass
+    position: Optional[Position] = None # type: ignore
+    elevation: int = 0
+    owner: Optional[str] = None

@@ -33,7 +33,8 @@ from app.models.state.assets import (
     SpriteState,
     PlayerState,
     BridgeState,
-    ResourceState
+    ResourceState,
+    PlatformState
 )
 
 # ---------------------------------------------------------------------------------------
@@ -61,8 +62,7 @@ class CraftStateInstances:
     struts: List[PropertyState] = field(default_factory=list)
     decors: List[PropertyState] = field(default_factory=list)
     bridges: List[BridgeState] = field(default_factory=list)
-    # TODO: phase 07-02
-    # platforms: List[PlatformState] = field(default_factory=list)
+    platforms: List[PlatformState] = field(default_factory=list)
     
 @dataclass(slots=True)
 class ResourceStateInstances:

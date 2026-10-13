@@ -28,7 +28,7 @@ recipes:
     platforms: 
       frame: single
       animation: none
-      hitbox: static
+      hitbox: elevated
   cursors:
     expressions:
       frame: index

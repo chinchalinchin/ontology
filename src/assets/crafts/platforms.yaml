@@ -5,7 +5,15 @@ crafts:
         w: 96
         l: 111
       mass: 0
-      hitboxes: null 
+      hitboxes:
+        # Tier 0 (Base facade wall blocking ground-level movement)
+        0:
+          - position: { x: 0, y: 32 }
+            dimensions: { w: 96, l: 79 }
+        # Tier 1 (Summit deck boundary constraints / railings)
+        1:
+          - position: { x: 0, y: 0 }
+            dimensions: { w: 96, l: 8 }
       cost:
         - item: marble
           quantity: 23

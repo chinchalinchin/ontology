@@ -1,37 +1,9 @@
 # Task: Ontology - Debug Session
 
-!!! important
-    Documentation has not been updated to reflect this phase's implementation yet. Waiting until all of the bugs are ironed out.
-    
-Problems introduced by the refactor:
-
-- `wood-bookshelf` on the `brick-hosue` compose layers can no longer be pushed. It appears to be caught in a collision loop, where it is intersecting the layer's perimeters and resolving back and forth across it, result in jittery behavior.
-- `door-strut-castle-atrium-floor-3-3` is not being rendered.
-- `door-house` in the `brick-house` composition is not being rendered.
-- `door-mansion` on the `castle-dawn-exterior` are not rendering.
-- `torch-*` on the `castle-dawn-exterior` are rendering on top of player.
-- `turret-stone-*` on `castle-dawn-exterior` are rendering on top of the player.
-- `platform-*` in the `castle-dawn-interior` are rendering on top of the player.
-- `pillar-marble` are rendering underneath of the `platform-*`.
-
-- **Preexisting problem**: Decomposer names are not unique.
+{{ tools.parameters.tests.session.description }}
 
 **Priority**
 
 Assist in debugging the issue described. Further information related to the execution can be found in the [Test Session](#view-test-session) console.
 
 {% include 'blocks/controls/debugging-guidelines.md' %}
-
-## Compositions 
-
-**src/data/config/compositions/brick-house.yaml**
-
-```yaml
-{{ file(properties.paths.root + '/src/data/config/compositions/brick-house.yaml') }}
-```
-
-**src/data/config/compositions/castle-dawn.yaml**
-
-```yaml
-{{ file(properties.paths.root + '/src/data/config/compositions/castle-dawn.yaml') }}
-```

@@ -42,20 +42,20 @@ task:
   # ------------------------ TEMPLATES: MAINTENANCE
   # --------------------------------------------
   # template: maintain/console/patch.md.j2
-  # template: maintain/console/session.md.j2
+  template: maintain/console/session.md.j2
   # template: maintain/script.md.j2
   # --------------------------------------------
   # ------------------------ TEMPLATES: DUMPS 
   # --------------------------------------------
   # template: dump/menus.md.j2
-  # template: dump/state.md.j2
+  E template: dump/state.md.j2
   # --------------------------------------------
   # ------------------------ TEMPLATES: ITERATION
   # --------------------------------------------
   # template: iterate/documentation.md.j2
   # template: iterate/grooming.md.j2
   # template: iterate/implementation.md.j2
-  template: iterate/coverage.md.j2
+  # template: iterate/coverage.md.j2
   # template: iterate/review.md.j2
   # template: iterate/conclusion.md.j2
   # --------------------------------------------
@@ -99,7 +99,7 @@ tools:
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: false
+      directory: true
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
@@ -107,7 +107,7 @@ tools:
     tests:  
       pipeline: false
       fixtures: false
-      session: false
+      session: true
       workflow: false
 # ----------------------------------------------------
   parameters:
@@ -124,13 +124,13 @@ tools:
           # - 00-overview.md
           # - 01-assets.md
           - 02-sprites.md
-          # - 03-compositions.md
+          - 03-compositions.md
           - 04-intentions.md
           # - 05-mechanics.md
           - 06-widgets.md
           - 07-sounds.md
           - 08-plots.md
-          - 09-ecology.md
+          # - 09-ecology.md
           - 10-emergence.md
           # - 11-architecture.md
       specs: []
@@ -139,39 +139,43 @@ tools:
     # --------------------------------------------
     source:
       data: 
-        properties:
-          - crafts
-          - cursors
-          - effects
-          - fonts
-          - geography
-          - objects
-          - resources
-          - sheets
-          - sounds
-          - tiles
-          - widgets
-        state:
-          - crafts
-          - effects
-          - objects
-          - resources
-          - sheets
-          - tiles
-          - world
-        configuration:
-          - actions
-          - compositions
-          - intentions
-          - library
-          - mappings
-          - mechanics
-          - menus
-          - plots
-          - recipes
-          - stages
+        properties: []
+          # - crafts
+          # - cursors
+          # - effects
+          # - fonts
+          # - geography
+          # - objects
+          # - resources
+          # - sheets
+          # - sounds
+          # - tiles
+          # - widgets
+        state: []
+          # - crafts
+          # - effects
+          # - objects
+          # - resources
+          # - sheets
+          # - tiles
+          # - world
+        configuration: []
+          # - actions
+          # - compositions
+          # - intentions
+          # - library
+          # - mappings
+          # - mechanics
+          # - menus
+          # - plots
+          # - recipes
+          # - stages
       workflow: collisions
       script: synthesize
+      models: [] 
+        # - 
+      entrypoints: []
+        # -
     # --------------------------------------------
     # ------------------------ PARAMETERS: SHELL
     # --------------------------------------------
@@ -221,4 +225,5 @@ tools:
         - services
         # - structures
       session:
-        description: null
+        description: |
+          Fluid submersion and fluid velocity no longer function after the implementation of this phase. The Player is able to "walk on water", i.e. traverse Fluid Assets without resistance or activation of the "SUBMERGE" channel directive. Player is intersecting a Fluid in the state dump, but has no velocity.

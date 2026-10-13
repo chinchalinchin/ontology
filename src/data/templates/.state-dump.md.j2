@@ -19,9 +19,8 @@
     - `{{ prev_plot }}`
 {% endfor -%}
 {% endif -%}
-{% endif %}
-{% for asset in assets %}
-{% if asset.category != "widgets" %}
+{% endif -%}
+{% for asset in assets if asset.category != "widgets" %}
 
 ## {{ asset.name | default(asset.state.name if (asset.state is defined and asset.state.name is defined) else none, true) | default(asset.id, true) }}
 
@@ -36,7 +35,7 @@
   - Hitbox: `{{ asset.hitbox.__class__.__name__ if asset.hitbox else "None" }}`
 {% set props = asset.properties if (asset.properties is defined and asset.properties is not none) else asset -%}
 {% set dims = props.dimensions if (props.dimensions is defined and props.dimensions is not none) else (asset.dimensions if (asset.dimensions is defined and asset.dimensions is not none) else none) -%}
-{% if dims or (props.priority is defined and props.priority is not none) or (props.mass is defined and props.mass is not none) or (props.loot is defined and props.loot is not none) or (props.lifespan is defined and props.lifespan is not none) or (props.count is defined and props.count is not none) or (props.friction is defined and props.friction is not none) or (props.cost is defined and props.cost) or (props.stack is defined and props.stack) or (props.hitboxes is defined and props.hitboxes) or (props.attackboxes is defined and props.attackboxes) or (props.actions is defined and props.actions) or (props.frames is defined and props.frames) or (props.lifecycle is defined and props.lifecycle is not none) or (props.tile is defined and props.tile is not none) or (props.fluid is defined and props.fluid is not none) or (props.thickness is defined and props.thickness is not none) or (props.alignment is defined or props.color is defined or props.size is defined) -%}
+{% if props is defined and props is not none -%}
 - **Properties:**
 {% if dims -%}
   - Dimensions:
@@ -48,6 +47,12 @@
 {% endif -%}
 {% if props.mass is defined and props.mass is not none -%}
   - Mass: {{ props.mass }}
+{% endif -%}
+{% if props.count is defined and props.count is not none -%}
+  - Count: {{ props.count }}
+{% endif -%}
+{% if props.friction is defined and props.friction is not none -%}
+  - Friction: {{ props.friction }}
 {% endif -%}
 {% if props.loot is defined and props.loot is not none -%}
   - Loot: `{{ props.loot }}`
@@ -63,6 +68,18 @@
 {% endif -%}
 {% if props.thickness is defined and props.thickness is not none -%}
   - Thickness: {{ props.thickness }}
+{% endif -%}
+{% if props.cost is defined and props.cost -%}
+  - Cost:
+{% for c in props.cost -%}
+    - `{{ c.item }}`: {{ c.quantity }}
+{% endfor -%}
+{% endif -%}
+{% if props.stack is defined and props.stack -%}
+  - Stack:
+{% for item in props.stack -%}
+    - `{{ item }}`
+{% endfor -%}
 {% endif -%}
 {% if props.lifecycle is defined and props.lifecycle is not none -%}
   - Lifecycle:
@@ -81,24 +98,6 @@
 {% if props.lifecycle.persist is defined and props.lifecycle.persist is not none -%}
     - Persist: {{ props.lifecycle.persist }}
 {% endif -%}
-{% endif -%}
-{% if props.count is defined and props.count is not none -%}
-  - Count: {{ props.count }}
-{% endif -%}
-{% if props.friction is defined and props.friction is not none -%}
-  - Friction: {{ props.friction }}
-{% endif -%}
-{% if props.cost is defined and props.cost -%}
-  - Cost:
-{% for c in props.cost -%}
-    - `{{ c.item }}`: {{ c.quantity }}
-{% endfor -%}
-{% endif -%}
-{% if props.stack is defined and props.stack -%}
-  - Stack:
-{% for item in props.stack -%}
-    - `{{ item }}`
-{% endfor -%}
 {% endif -%}
 {% if props.hitboxes is defined and props.hitboxes -%}
   - Hitboxes:
@@ -133,17 +132,17 @@
   - Actions:
 {% for act_key, act_val in props.actions.items() -%}
 {% if act_val.count is defined -%}
-    - `{{ act_key }}`:
+    - `{{ act_key.value if act_key.value is defined else act_key }}`:
       - Count: {{ act_val.count }}
       - Delay: {{ act_val.delay }}
 {% if act_val.directions -%}
       - Directions:
 {% for dir_key, dir_val in act_val.directions.items() -%}
-        - `{{ dir_key }}`: row {{ dir_val.row if dir_val.row is defined else dir_val }}
+        - `{{ dir_key.value if dir_key.value is defined else dir_key }}`: row {{ dir_val.row if dir_val.row is defined else dir_val }}
 {% endfor -%}
 {% endif -%}
 {% else -%}
-    - `{{ act_key }}`: `{{ act_val }}`
+    - `{{ act_key.value if act_key.value is defined else act_key }}`: `{{ act_val }}`
 {% endif -%}
 {% endfor -%}
 {% endif -%}
@@ -196,6 +195,8 @@
 {% endif -%}
 {% if asset.elevation is defined and asset.elevation is not none -%}
   - Elevation: {{ asset.elevation }}
+{% elif asset.state.elevation is defined and asset.state.elevation is not none -%}
+  - Elevation: {{ asset.state.elevation }}
 {% endif -%}
 {% if asset.state.anchor is defined and asset.state.anchor is not none -%}
   - Anchor: {{ asset.state.anchor }}
@@ -213,19 +214,22 @@
   - Speed: {{ asset.state.speed }}
 {% endif -%}
 {% if asset.state.direction is defined and asset.state.direction is not none -%}
-  - Direction: `{{ asset.state.direction }}`
-{% endif -%}
-{% if asset.state.orientation is defined and asset.state.orientation is not none -%}
-  - Orientation: `{{ asset.state.orientation.value if asset.state.orientation.value is defined else asset.state.orientation }}`
+  - Direction: `{{ asset.state.direction.value if asset.state.direction.value is defined else asset.state.direction }}`
 {% endif -%}
 {% if asset.state.delta is defined and asset.state.delta is not none -%}
   - Delta: {{ asset.state.delta }}
+{% endif -%}
+{% if asset.state.orientation is defined and asset.state.orientation is not none -%}
+  - Orientation: `{{ asset.state.orientation.value if asset.state.orientation.value is defined else asset.state.orientation }}`
 {% endif -%}
 {% if asset.state.season is defined and asset.state.season is not none -%}
   - Season: `{{ asset.state.season.value if asset.state.season.value is defined else asset.state.season }}`
 {% endif -%}
 {% if asset.state.thickness is defined and asset.state.thickness is not none -%}
   - Thickness: {{ asset.state.thickness }}
+{% endif -%}
+{% if asset.state.length is defined and asset.state.length is not none -%}
+  - Length: {{ asset.state.length }}
 {% endif -%}
 {% if asset.state.bidirectional is defined and asset.state.bidirectional is not none -%}
   - Bidirectional: {{ asset.state.bidirectional }}
@@ -249,8 +253,8 @@
 {% endif -%}
 {% if asset.state.animation is defined and asset.state.animation is not none -%}
   - Animation:
-    - Action: `{{ asset.state.animation.action }}`
-    - Direction: `{{ asset.state.animation.direction }}`
+    - Action: `{{ asset.state.animation.action.value if asset.state.animation.action.value is defined else asset.state.animation.action }}`
+    - Direction: `{{ asset.state.animation.direction.value if asset.state.animation.direction.value is defined else asset.state.animation.direction }}`
     - Frame: {{ asset.state.animation.frame }}
     - Tick: {{ asset.state.animation.tick }}
 {% endif -%}
@@ -259,9 +263,6 @@
 {% endif -%}
 {% if asset.state.flow is defined and asset.state.flow is not none -%}
   - Flow: {{ asset.state.flow }}
-{% endif -%}
-{% if asset.state.length is defined and asset.state.length is not none -%}
-  - Length: {{ asset.state.length }}
 {% endif -%}
 {% if asset.state.dirty is defined and asset.state.dirty is not none -%}
   - Dirty: {{ asset.state.dirty }}
@@ -531,7 +532,7 @@
 {% if asset.state.psyche.expression.icon is not none -%}
       - Icon: `{{ asset.state.psyche.expression.icon }}`
 {% endif -%}
-{% if asset.state.psyche.ttl is not none -%}
+{% if asset.state.psyche.expression.ttl is not none -%}
       - TTL: {{ asset.state.psyche.expression.ttl }}
 {% endif -%}
 {% if asset.state.psyche.expression.offset is not none -%}
@@ -545,9 +546,8 @@
 {% if asset.state.cooldown is defined and asset.state.cooldown is not none -%}
   - Cooldown: {{ asset.state.cooldown }}
 {% endif -%}
-{% endif %}
-{% endif %}
-{% endfor %}
+{% endif -%}
+{% endfor -%}
 {% if perimeters -%}
 
 ---
@@ -560,6 +560,7 @@
 
 {% if tiers -%}
 {% for elevation, bounds in tiers.items() %}
+
 ### Elevation: {{ elevation }}
 
 {% if bounds -%}
@@ -568,10 +569,10 @@
 {% endfor -%}
 {% else -%}
 - *No boundaries derived for this elevation tier.*
-{% endif %}
+{% endif -%}
 {% endfor -%}
 {% else -%}
 - *No boundaries derived for this layer.*
-{% endif %}
-{% endfor %}
+{% endif -%}
+{% endfor -%}
 {% endif %}

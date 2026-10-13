@@ -166,6 +166,36 @@ compositions:
             y: 0
         components:
           crafts: 
+            platforms:
+              - id: platform-marble
+                name: castle-dawn-platform-01
+                owner: bind(root.owner)
+                elevation: 0
+                position:
+                  x: 0
+                  y: 136
+              - id: platform-marble
+                name: castle-dawn-platform-02
+                owner: bind(root.owner)
+                elevation: 0
+                position:
+                  x: 222
+                  y: 136
+              - id: platform-marble
+                name: castle-dawn-platform-03
+                owner: bind(root.owner)
+                elevation: 1
+                position:
+                  x: 222
+                  y: 0
+              - id: platform-marble
+                name: castle-dawn-platform-04
+                owner: bind(root.owner)
+                elevation: 1
+                position:
+                  x: 0
+                  y: 0
+              
             struts:
               # --------------- SUBSTRATE FLOORS (elevation: -1)
               - id: floor-area-marble-checkered
@@ -225,35 +255,6 @@ compositions:
                 position:
                   x: 222
                   y: 41
-              # --------------- ELEVATED BALCONY DECKS (elevation: 1)
-              - id: platform-marble
-                name: castle-dawn-platform-01
-                owner: bind(root.owner)
-                elevation: 1
-                position:
-                  x: 0
-                  y: 136
-              - id: platform-marble
-                name: castle-dawn-platform-02
-                owner: bind(root.owner)
-                elevation: 1
-                position:
-                  x: 222
-                  y: 136
-              - id: platform-marble
-                name: castle-dawn-platform-03
-                owner: bind(root.owner)
-                elevation: 1
-                position:
-                  x: 222
-                  y: 0
-              - id: platform-marble
-                name: castle-dawn-platform-04
-                owner: bind(root.owner)
-                elevation: 1
-                position:
-                  x: 0
-                  y: 0
               # --------------- PILLARS (elevation: 1)
               - id: pillar-marble
                 name: castle-dawn-pillar-01

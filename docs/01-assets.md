@@ -202,12 +202,14 @@ The Recipe for an Asset, i.e. the list of components which go into a particular 
 3. **Behavior: Animation** Stateless strategies injected into the Asset. These contain the specific logic for updating Animation frames.
     - `animate(state, properties)`: Interface for applying animation logic to Asset state.
 4. **Behavior: Frame:** A static schema calculation used by the renderer to determine the correct texture string keys. 
-    - `keys(id: str, state: AssetState) -> List[Tuple[str, int, int]]`: Reflexive intrinsic state projection for dynamic 60 Hz draw passes.
     - `index(id: str, properties: AssetProperties) -> Dict[str, Tuple[int, int, int, int]]`: Interface for indexing Asset frames in Registry.
+    - `keys(id: str, state: AssetState) -> List[Tuple[str, int, int]]`: Reflexive intrinsic state projection for dynamic 60 Hz draw passes.
     - `eras(id: str, calendar: CalendarState) -> List[Tuple[str, int, int]]`: Macro-temporal epochal projection for static pre-rendered canvas baking.
     - `channels(id: str, state: AssetState, properties: AssetProperties) -> List[Tuple]`: Emits auxiliary shader and texture modulation directives.
 5. **Behavior: Hitbox:** Stateless collision boundary resolution strategies injected via Recipes. Resolves active physical obstacles dynamically without mutating cached properties:
-    - `get(properties: AssetProperties, state: AssetState, frame: Optional[Frame]) -> List[Hitbox]`: Emits the active physical collision footprint for spatial broad-phase and narrow-phase physics.
+    - `elevations(properties: AssetProperties, state: AssetState) -> List[int]`: Emits the discrete elevation tiers the entity participates in.
+    - `get(properties: AssetProperties, state: AssetState, elevation: int, frame: Optional[Frame] = None) -> List[Hitbox]`: Emits active physical collision footprints at the requested elevation tier, accounting for animation frame states (e.g., Attackboxes).
+
 
 !!! note
     The state model can be calculated from (Category, Instance), but (Animation, Frame, Hitbox) is independent of the state assigned to an Asset through the Asset Hierarchy. It must be specified through a Recipe.
@@ -542,7 +544,61 @@ The `<key>` in the `cost` is a reference to [Inventory Loot](./02-sprites.md#inv
 * `cost: Cost`
 * `mass: int`
 
-Crafts are inherently bound to the process of [Composition](./03-compositions.md). Their specifications (Struts, Bridges, Stairs, Platforms) are covered in more detail in the [Composition documentation](./03-compositions.md#asset-specifications)
+Many Crafts are inherently bound to the process of [Composition](./03-compositions.md). Several specifications (Struts, Stairs, Platforms) are covered in more detail in the [Composition documentation](./03-compositions.md#asset-specifications)
+
+### Bridges
+
+Bridges are immutable, inanimate Crafts that elevate characters and dynamic items over Fluid corridors, annular pools, and Shoreline margins without entering the `submerged` state.
+
+**Oriented Specification**
+
+A Bridge image file embeds both horizontal and vertical Frames in a single horizontal row:
+
+* Cell 0: `horizontal` Frame (runs East-West to cross North-South streams).
+* Cell 1: `vertical` Frame (runs North-South to cross East-West streams).
+
+**Decomposition & Structural Multipliers**
+
+Bridges are deployed via a 1D structural multiplier (`multiple.nx` for horizontal spans, `multiple.ny` for vertical spans).
+
+During world hydration or dynamic execution of the `build` Intention, the Decomposer unpacks a BridgeState into a contiguous series of $N$ unit Asset instances:
+
+* Each segment receives an absolute Position offset along the primary axis.
+* Each segment references the base unit's static properties, preserving immutable dimensions and relative hitboxes.
+* Construction cost scales linearly with span ($N \times \text{Cost}$).
+
+**Dynamics & Environmental Interception**
+
+* Bridges are registered as Sensors ($m = -1$). They do not participate in momentum transfer or collision overlap resolution.
+* Bridges are excluded from the [Boards Physics Queries](./00-overview.md#board), allowing mechanics to pathfind across river crossings.
+* In [MotionMechanics](./05-mechanics.md#motionmechanics), intersecting a Bridge marks the Asset as being on a surface:
+  * Fluid immersion and current velocity drift are suppressed ($\vec{v}_{\text{drift}} = \vec{0}$).
+  * Shoreline step-down nudges, ledge constraints, and splash particle emissions are bypassed.
+  * `mutators.triggers.submerged` is cleared to `False`.
+
+**Ordering & Perspective**
+
+Bridges belong to a dedicated Substrate, `elevation = -1`. This guarantees that Bridge area renders above Environ Tiles, Fluids, and Shorelines, while allowing dynamic Assets crossing their area to render above the Bridge via their baseline footprint ($y + l$) and [the Painter's Algorithm](./11-architecture.md#rendering).
+
+**Frame: OrientedFrame**
+
+* `keys(id, state): returns [(f"{id}-{state.orientation}", 0, 0)]`
+* `index(id, properties): returns {f"{id}-{Orientations.*}": (0, 0, w, l)}`
+
+**State: BridgeState**
+
+* `id: str`
+* `name: Optional[str]`
+* `layer: str`
+* `position: Position`
+* `orientation: str` (`horizontal`, `vertical`)
+* `multiple: Multiple` (`nx > 1` or `ny > 1`)
+* `owner: Optional[str]`
+* `elevation: int`
+
+**Hitbox: StaticHitbox**
+
+* `get(properties, state, frame): returns properties.hitboxes`
 
 ## Cursors
 

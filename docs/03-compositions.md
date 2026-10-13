@@ -4,7 +4,114 @@ A Composition is collection of multiple Assets organized into a common configura
 
 Composition Configuration can be found in `/src/data/config/compositions/main.yml`, otherwise known as the *composition directory*.
 
-## Overview
+## Asset Specification: Crafts
+
+Compositions are used to formalize Asset relationships for reuse. For this reason, [Crafts](./01-assets.md#crafts) are an essential component of Compositions. The following section provides an in-depth description of each Craft Instance.
+
+**Properties: CraftProperties**
+
+* `dimensions: Dimensions`
+* `hitboxes: List[Hitbox]`
+* `cost: Cost`
+* `mass: int`
+* `priority: int`
+
+### Struts 
+
+*Struts* are inanimate, immutable Assets. Struts are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. In other words, they possess an `owner`. 
+
+Struts may be placed on the Board through the state files manually, but they are generally instantiated ingame through the `build` [Intention](./04-intentions.md). 
+
+Struts are closely related to [Asset Compositions](./03-compositions.md), as they provide a "foundation" upon which configurations of Assets can be built. In other words, a Strut's main purpose is to provide a coordinate system for the relative positioning of reusable Asset configurations. 
+
+**Animation: None**
+
+N/A
+
+**Frame: SingleFrame**
+
+* `keys(id, state): returns [ (id, 0, 0) ]`
+* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+
+**State: PropertyState**
+
+* `layer: str`
+* `elevaiton: int`
+* `position: Position`
+* `owner: str`
+
+**Hitbox: StaticHitbox**
+
+* `get(properties, state, frame): returns properties.hitboxes`
+
+### Stairs
+
+Stairs are static Crafts sensors ($m = -1$) that provide elevation transitions when traversed. 
+
+**Directed Specification**
+
+- `right`: Stair starts in lower right corner and ends in upper left corner.
+- `left`: Stair starts in lower left corner and ends in upper right corner.
+- `up`: Stairs start along bottom edge and end along top edge.
+- `down`: Stairs start along top edge and end along top edge.
+
+!!! important
+    Due to the nature of top-down two-dimensionsal graphics, to preserve perspective, the `down` direction frame must be truncated, i.e. this direction does not fill the full dimensions of the Stair frame.
+
+**Elevation Transitions**
+
+The direction of the elevation transition calculation is dependent on the direction of the transitioning Asset's velocity. For example, once an Asset intersects a Stair, the following conditions are elevated,
+
+- `stairs.state.direction == 'right' and asset.state.velocity.vx < 0: asset.state.elevation += stairs.state.delta`
+- `stairs.state.direction == 'right' and asset.state.velocity.vx > 0: asset.state.elevation -= stairs.state.delta`
+- `stairs.state.direction == 'left' and asset.state.velocity.vx < 0: asset.state.elevation -= stairs.state.delta`
+- `stairs.state.direction == 'left' and asset.state.velocity.vx > 0: asset.state.elevation += stairs.state.delta`
+- `stairs.state.direction == 'up' and asset.state.velocity.vy < 0: asset.state.elevation += stairs.state.delta`
+- `stairs.state.direction == 'up' and asset.state.velocity.vx > 0: asset.state.elevation -= stairs.state.delta`
+- `stairs.state.direction == 'down' and asset.state.velocity.vy > 0: asset.state.elevation += stairs.state.delta`
+- `stairs.state.direction == 'down' and asset.state.velocity.vx < 0: asset.state.elevation -= stairs.state.delta`
+
+**Frame: DirectedFrame**
+
+* `keys(id, state)`: returns `[(f"{id}-{state.direction}", 0, 0)]`
+* `index(id, properties)`: returns `{f"{id}-{Directions.*}": (0, 0, w, l)}`
+
+**State: StairState**
+
+* `layer: str`
+* `position: Position`
+* `elevation: int = 0`
+* `direction: str` (`up`, `down`, `left`, `right`)
+* `delta: int = 1`
+* `owner: Optional[str] = None`
+
+**Hitbox: DirectedHitbox**
+
+* `get(state, properties, frame): returns properties.hitboxes[state.direction]`
+
+### Platforms
+
+Platforms are inanimate, immutable Assets that model elevated surfaces. In order to be traversed, the Asset traversing must be on the same elevation as the Platform. 
+
+Platforms have two kinds of hitboxes: baseline hitboxes and elevated hitboxes, where the former determines the Platform's collision physics on its ground level (`platform.state.elevation`) and the latter determines the Platform's collision physics on the elevated level (`platform.state.elevation + properties.hitboxes[target.state.elevation]`)
+
+**Frame: SingleFrame**
+
+- `keys(id, state): returns [(id, 0, 0)]`
+- `index(id, properties): returns {id: (0, 0, properties.dimensions.w, properties.dimensions.l)}`
+
+**State: PlatformState**
+
+- `position: Position`
+- `elevation: int = 0`
+- `owner: Optional[str] = None`
+
+**Hitbox: ElevatedHitbox**
+
+- `elevations(properties, state): returns [state.elevation + k for k in properties.hitboxes.keys()]`
+- `get(properties, state, elevation, frame): returns properties.hitboxes.get(elevation - state.elevation, [])`
+
+## Composition Overview
 
 From the perspective of the [state files](./00-overview.md#state), Compositions are another type of Asset that can be deployed onto the Board. Similar to the [Player](./02-sprites.md#player), they are a "*virtual*" Asset composed of other Assets, i.e. they do not have properties of their own. Unlike the Player, which is a special type of Sprite, Compositions are collections of multiple Assets. When a Composition is deployed onto the Board, its individual Assets are added to the appropriate (Category, Instance)-nodes in the [Asset Hierarchy](./01-assets.md#asset-hierarchy)
 
@@ -150,11 +257,11 @@ All component Assets can `bind()` to a root Strut state attribute injected into 
 
 In addition, unique names are generated for each component Asset of a Composition according to the schema: `<instance.name>-<strut.name>-<component.name>-<increment>`, where `<increment>` is an index to track the number of unique Compositions deployed on the Board to ensure each has a correspondingly unique name.
 
-## Decomposer
+### Decomposer
 
 The Decomposer is the service module of the application responsible for translating Composition Configuration into Assets. Taking the example from the previous section, the algorithm for the expansion (decomposition) logic can be modeled as a tree traversal (like Depth-First Search), where spatial data and inherited state propagate downward from parent to child.
 
-### Decomposition 
+#### Decomposition 
 
 **1. Root Hydration (The Context)**
 
@@ -195,7 +302,7 @@ For every child node (whether it is a component of the root, or a branching Stru
 * **Action:** As each node is fully resolved, instantiated, and named, append it to a flat, 1D list.
 * **Result:** The engine receives a standard list of `Asset` objects, completely ignorant of the fact that they were generated from a nested Composition macro.
 
-### Application Flow
+#### Application Flow
 
 The Decomposer is a standalone service instantiated *before* the Board and Cradle; it is used during the initial Asset hydration phase of the bootstrapping **and** it is employed ingame by [Mechanics](./05-mechanics.md) through the [Board's Cradle interface](./00-overview.md#board) to instantiate Compositions through the [`build` Intention](./04-intentions.md).
 
@@ -224,161 +331,3 @@ During orchestrationg, when the Cradle is instantiated, the Orchestrator passes 
 * **Execution:** When a Mechanic requests a Composition, it calls this Cradle method. The Cradle creates a temporary pseudo-state from the arguments and passes it to its internal Decomposer.
 * **The Return:** The Decomposer applies the same relative positioning, string binding, and name incrementing as it did at boot, returning the flat list of Assets.
 * **Board Integration:** The Mechanic receives the list and pushes it directly into the game loop via the Board.
-
-## Asset Specification: Crafts
-
-Because Compositions are used to formalize Asset relationships for reuse, [Crafts](./01-assets.md#crafts) are an essential component of Compositions. The following section provides an in-depth description of each Craft Instance.
-
-**Properties: CraftProperties**
-
-* `dimensions: Dimensions`
-* `hitboxes: List[Hitbox]`
-* `cost: Cost`
-* `mass: int`
-* `priority: int`
-
-### Bridges
-
-Bridges are immutable, inanimate Crafts that elevate characters and dynamic items over Fluid corridors, annular pools, and Shoreline margins without entering the `submerged` state.
-
-**Oriented Specification**
-
-A Bridge image file embeds both horizontal and vertical Frames in a single horizontal row:
-
-* Cell 0: `horizontal` Frame (runs East-West to cross North-South streams).
-* Cell 1: `vertical` Frame (runs North-South to cross East-West streams).
-
-**Decomposition & Structural Multipliers**
-
-Bridges are deployed via a 1D structural multiplier (`multiple.nx` for horizontal spans, `multiple.ny` for vertical spans).
-
-During world hydration or dynamic execution of the `build` Intention, the Decomposer unpacks a BridgeState into a contiguous series of $N$ unit Asset instances:
-
-* Each segment receives an absolute Position offset along the primary axis.
-* Each segment references the base unit's static properties, preserving immutable dimensions and relative hitboxes.
-* Construction cost scales linearly with span ($N \times \text{Cost}$).
-
-**Dynamics & Environmental Interception**
-
-* Bridges are registered as Sensors ($m = -1$). They do not participate in momentum transfer or collision overlap resolution.
-* Bridges are excluded from the [Boards Physics Queries](./00-overview.md#board), allowing mechanics to pathfind across river crossings.
-* In [MotionMechanics](./05-mechanics.md#motionmechanics), intersecting a Bridge marks the Asset as being on a surface:
-  * Fluid immersion and current velocity drift are suppressed ($\vec{v}_{\text{drift}} = \vec{0}$).
-  * Shoreline step-down nudges, ledge constraints, and splash particle emissions are bypassed.
-  * `mutators.triggers.submerged` is cleared to `False`.
-
-**Ordering & Perspective**
-
-Bridges belong to a dedicated Substrate, `elevation = -1`. This guarantees that Bridge area renders above background Tiles, Fluids, and Shorelines, while allowing dynamic Assets crossing its area to render above the Bridge via their baseline footprint ($y + l$) and [the Painter's Algorithm](./11-architecture.md#rendering).
-
-**Frame: OrientedFrame**
-
-* `keys(id, state): returns [(f"{id}-{state.orientation}", 0, 0)]`
-* `index(id, properties): returns {f"{id}-{Orientations.*}": (0, 0, w, l)}`
-
-**State: BridgeState**
-
-* `id: str`
-* `name: Optional[str]`
-* `layer: str`
-* `position: Position`
-* `orientation: str` (`horizontal`, `vertical`)
-* `multiple: Multiple` (`nx > 1` or `ny > 1`)
-* `owner: Optional[str]`
-* `elevation: int`
-
-**Hitbox: StaticHitbox**
-
-* `get(properties, state, frame): returns properties.hitboxes`
-
-### Struts 
-
-*Struts* are inanimate, immutable Assets. Struts are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. In other words, they possess an `owner`. 
-
-Struts may be placed on the Board through the state files manually, but they are generally instantiated ingame through the `build` [Intention](./04-intentions.md). 
-
-Struts are closely related to [Asset Compositions](./03-compositions.md), as they provide a "foundation" upon which configurations of Assets can be built. In other words, a Strut's main purpose is to provide a coordinate system for the relative positioning of reusable Asset configurations. 
-
-**Animation: None**
-
-N/A
-
-**Frame: SingleFrame**
-
-* `keys(id, state): returns [ (id, 0, 0) ]`
-* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
-
-**State: PropertyState**
-
-* `layer: str`
-* `elevaiton: int`
-* `position: Position`
-* `owner: str`
-
-**Hitbox: StaticHitbox**
-
-* `get(properties, state, frame): returns properties.hitboxes`
-
-### Stairs
-
-Stairs are static Crafts sensors ($m = -1$) that provide elevation transitions when traversed. 
-
-**Directed Specification**
-
-- `right`: Stair starts in lower right corner and ends in upper left corner.
-- `left`: Stair starts in lower left corner and ends in upper right corner.
-- `up`: Stairs start along bottom edge and end along top edge.
-- `down`: Stairs start along top edge and end along top edge.
-
-!!! important
-    Due to the nature of top-down two-dimensionsal graphics, to preserve perspective, the `down` direction frame must be truncated, i.e. this direction does not fill the full dimensions of the Stair frame.
-
-**Elevation Transitions**
-
-The direction of the elevation transition calculation is dependent on the direction of the transitioning Asset's velocity. For example, once an Asset intersects a Stair, the following conditions are elevated,
-
-- `stairs.state.direction == 'right' and asset.state.velocity.vx < 0: asset.state.elevation += stairs.state.delta`
-- `stairs.state.direction == 'right' and asset.state.velocity.vx > 0: asset.state.elevation -= stairs.state.delta`
-- `stairs.state.direction == 'left' and asset.state.velocity.vx < 0: asset.state.elevation -= stairs.state.delta`
-- `stairs.state.direction == 'left' and asset.state.velocity.vx > 0: asset.state.elevation += stairs.state.delta`
-- `stairs.state.direction == 'up' and asset.state.velocity.vy < 0: asset.state.elevation += stairs.state.delta`
-- `stairs.state.direction == 'up' and asset.state.velocity.vx > 0: asset.state.elevation -= stairs.state.delta`
-- `stairs.state.direction == 'down' and asset.state.velocity.vy > 0: asset.state.elevation += stairs.state.delta`
-- `stairs.state.direction == 'down' and asset.state.velocity.vx < 0: asset.state.elevation -= stairs.state.delta`
-
-**Frame: DirectedFrame**
-
-* `keys(id, state)`: returns `[(f"{id}-{state.direction}", 0, 0)]`
-* `index(id, properties)`: returns `{f"{id}-{Directions.*}": (0, 0, w, l)}`
-
-**State: StairState**
-
-* `layer: str`
-* `position: Position`
-* `elevation: int = 0`
-* `direction: str` (`up`, `down`, `left`, `right`)
-* `delta: int = 1`
-* `owner: Optional[str] = None`
-
-**Hitbox: DirectedHitbox**
-
-* `get(state, properties, frame): returns properties.hitboxes[state.direction]`
-
-### Platforms
-
-Platforms are inanimate, immutable Assets that model elevated surfaces. In order to be traversed, the Asset traversing must be on the same elevation as the Platform. 
-
-Platforms have two kinds of hitboxes: baseline hitboxes and elevated hitboxes, where the former determines the Platform's collision physics on the ground level (`elevation = 0`) and the latter determines the Platform's collision physics on the elevated level (`elevation = platform.elevation`)
-
-**Frame: SingleFrame**
-
-* `keys(id, state): returns [ (id, 0, 0) ]`
-* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
-
-**State: PlatformState**
-
-TODO
-
-**Hitbox: ElevatedHitbox**
-
-* `get(properties, state, frame): returns 'TBD'`

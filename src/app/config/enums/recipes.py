@@ -39,6 +39,7 @@ class HitboxRecipe(str, Enum):
     ATTACK          = "attack"
     DIRECTED        = "directed"
     DYNAMIC         = "dynamic"
+    ELEVATED        = "elevated"
     NONE            = "none"
     ORIENTED        = "oriented"
     STAGE           = "stage"

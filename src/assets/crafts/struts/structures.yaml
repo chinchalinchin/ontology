@@ -54,12 +54,3 @@ crafts:
       cost:
         - item: marble
           quantity: 4
-    platform-marble:
-      dimensions:
-        w: 96
-        l: 111
-      mass: 0
-      hitboxes: null 
-      cost:
-        - item: marble
-          quantity: 23

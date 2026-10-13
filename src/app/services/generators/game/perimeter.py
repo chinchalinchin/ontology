@@ -56,20 +56,32 @@ class Perimeter:
                 x1 = int(tile.state.position.x)
                 y1 = int(tile.state.position.y)
                 rects.append((x1, y1, x1 + (nx * w), y1 + (ny * l)))
+
+        # 2. Map Elevated Substrates (Platform decks at E > base elevation)
+        if elevation is not None and elevation > 0:
+            crafts = board.categories(AssetCategories.CRAFTS.value, layer)
+            for craft in crafts:
+                if craft.taxonomy.instance == AssetInstances.PLATFORMS.value:
+                    base_e = craft.state.elevation if craft.state.elevation is not None else 0
+                    if elevation > base_e and elevation in craft.hitbox.elevations(craft.properties, craft.state):
+                        x1 = int(craft.state.position.x)
+                        y1 = int(craft.state.position.y)
+                        rects.append((x1, y1, x1 + craft.dimensions.w, y1 + craft.dimensions.l))
             
-        # 2. Map Static Architecture
+        # 3. Map Static Architecture
         objects = board.categories(AssetCategories.OBJECTS.value, layer)
         crafts = board.categories(AssetCategories.CRAFTS.value, layer)
         space = objects + crafts
         for obj in space:
-            # Exclude movable bodies from boundary hulls
+            # Exclude movable bodies, dynamic crafts, and platforms from standard hulls
             mass = getattr(obj.properties, 'mass', 0)
             if mass > 0 or obj.taxonomy.instance in (
                 AssetInstances.CRATES.value,
                 AssetInstances.CHESTS.value,
                 AssetInstances.RAFTS.value,
                 AssetInstances.STAIRS.value,
-                AssetInstances.BRIDGES.value
+                AssetInstances.BRIDGES.value,
+                AssetInstances.PLATFORMS.value
             ):
                 continue
 

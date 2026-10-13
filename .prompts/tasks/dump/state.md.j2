@@ -8,12 +8,6 @@
 {{ file(properties.paths.root + '/src/cli.py') }}
 ```
 
-### View: Board
-
-```python
-{{ file(properties.paths.root + '/src/app/game/board/core.py') }}
-```
-
 ### View: Latest Models
 
 ### Base
@@ -96,25 +90,14 @@ python main.py --dump-state start
 !!! note
   Widgets are Menu components and are not included in the State Dump.
 
-## Secondary Priority: Template Update
+**User Review**
 
-Ensure template matches the latest state models.
+What the literal fuck is this:
 
-## Main Priority: State Queries
+{% raw %}
+```jinja2
+{% if dims or (props.priority is defined and props.priority is not none) or (props.mass is defined and props.mass is not none) or (props.loot is defined and props.loot is not none) or (props.lifespan is defined and props.lifespan is not none) or (props.count is defined and props.count is not none) or (props.friction is defined and props.friction is not none) or (props.cost is defined and props.cost) or (props.stack is defined and props.stack) or (props.hitboxes is defined and props.hitboxes) or (props.attackboxes is defined and props.attackboxes) or (props.actions is defined and props.actions) or (props.frames is defined and props.frames) or (props.lifecycle is defined and props.lifecycle is not none) or (props.tile is defined and props.tile is not none) or (props.fluid is defined and props.fluid is not none) or (props.thickness is defined and props.thickness is not none) or (props.alignment is defined or props.color is defined or props.size is defined) -%}
+```
+{% endraw %}
 
-Introduce optional queries to filter the state dump output.
-
-### CLI Arguments
-
-- `--instances <inst1>,<inst2>,...`
-- `--categories <cat1>,<cat2>,...`
-- `--ids <id1>,<id2>,...`
-- `--names <name1>,<name2>`
-
-Each listed parameters `<>` can be a regex string that is used to match the corresponding field value in the state dump.
-
-### Proposal: Telemetry Module
-
-Use the [Backlog Template](#template-backlog) to put together a proposal for constructing a `app.telemetry` module that queries the Board interface.
-
-{% include 'blocks/templates/template-backlog.md' %}
+Why? Why? WHY!? Fix this dumb bullshit. The template shouldn't be a fucking nightmare to read.
