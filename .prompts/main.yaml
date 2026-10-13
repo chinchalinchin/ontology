@@ -106,9 +106,9 @@ tools:
     # --------------------------------------------
     tests:  
       pipeline: true
-      fixtures: true
+      fixtures: false
       session: false
-      workflow: true
+      workflow: false
 # ----------------------------------------------------
   parameters:
     # --------------------------------------------

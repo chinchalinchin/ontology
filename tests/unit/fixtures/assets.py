@@ -27,6 +27,7 @@ from app.assets.hitboxes import (
     DynamicHitbox,
     StageHitbox,
     AttackHitbox,
+    ElevatedHitbox,
     DirectedHitbox,
     NoHitbox
 )
@@ -198,17 +199,17 @@ def mock_player(
     mock_player_state
 ) -> Asset:
     return Asset(
-        taxonomy=  Taxonomy(
-            id = "player",
-            name = "fakename",
-            category = AssetCategories.SHEETS.value, 
-            instance = AssetInstances.PLAYERS.value
-        ), 
-        properties = mock_sheet_properties.sprites.get('player'), 
-        state = mock_player_state, 
-        frame = SpriteFrame(), 
-        animation = SpriteAnimation(),
-        hitbox = StaticHitbox()
+        taxonomy=Taxonomy(
+            id="player",
+            name="player_1",
+            category=AssetCategories.SHEETS.value,
+            instance=AssetInstances.PLAYERS.value
+        ),
+        properties=mock_sheet_properties.players.get("player"),
+        state=mock_player_state,
+        frame=SpriteFrame(),
+        animation=SpriteAnimation(),
+        hitbox=StaticHitbox()
     )
 
 
@@ -553,7 +554,24 @@ def mock_reactable(
         hitbox = StaticHitbox()
     )
 
-# Append to tests/unit/fixtures/assets.py
+@pytest.fixture
+def mock_platform(
+    mock_craft_properties,
+    mock_platform_state
+) -> Asset:
+    return Asset(
+        taxonomy=Taxonomy(
+            id="platform-marble",
+            name="platform-main",
+            category=AssetCategories.CRAFTS.value,
+            instance=AssetInstances.PLATFORMS.value
+        ),
+        properties=mock_craft_properties.platforms.get("platform-marble"),
+        state=mock_platform_state,
+        frame=SingleFrame(),
+        animation=NoAnimation(),
+        hitbox=ElevatedHitbox()
+    )
 
 @pytest.fixture
 def mock_widget(mock_widget_properties) -> Asset:
@@ -584,6 +602,7 @@ def mock_assets(
     mock_fluid_alt,
     mock_reactable,
     mock_door,
+    mock_platform,
     mock_chest,
     mock_plate,
     mock_crate,
@@ -609,6 +628,7 @@ def mock_assets(
       mock_chest,
       mock_plate,
       mock_gate,
+      mock_platform,
       mock_crate,
       mock_strut,
       mock_strut_alt,

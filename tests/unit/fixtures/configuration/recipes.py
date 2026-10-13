@@ -70,6 +70,11 @@ def mock_recipes_configuration() -> RecipeConfiguration:
                 frame=FrameRecipe.ORIENTED.value,
                 animation=AnimationRecipe.NONE.value,
                 hitbox=HitboxRecipe.STATIC.value
+            ),
+            platforms=Recipe(
+                frame=FrameRecipe.SINGLE.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.ELEVATED.value
             )
         ),
         effects=EffectRecipe(

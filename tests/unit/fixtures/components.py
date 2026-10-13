@@ -14,20 +14,26 @@ import pytest
 
 # Application Libraries
 from app.config.enums import (
-    Relations
+    Relations,
+    Executors
 )
 from app.game.devices import Keyboard
 from app.game.board import Board
 from app.game.engine import Engine
 from app.game.screen import Screen
-from app.game.logic.mechanics.world import SeasonMechanics
 from app.models.state import CalendarState
-from app.services.generators.game.factory import Factory
+from app.services.generators.game import (
+    Factory,
+    Perimeter
+)
 from app.services.translators import (
     LambdaTranslator,
     CompilerTranslator
 )
-from app.config.enums import Executors
+from app.game.logic.mechanics import (
+    CollisionMechanics,
+    SeasonMechanics
+)
 
 # Cython Libraries
 from libs.core.models import (
@@ -278,3 +284,17 @@ def mock_season_mechanics(mock_lambda_executors) -> SeasonMechanics:
   mechanic = SeasonMechanics()
   mechanic.executors = mock_lambda_executors
   return mechanic
+
+@pytest.fixture
+def mock_collision_mechanics() -> CollisionMechanics:
+    return CollisionMechanics(cell_size=64, max_entities=200)
+
+
+@pytest.fixture
+def mock_perimeter() -> Perimeter:
+    return Perimeter()
+
+
+@pytest.fixture
+def mock_boundary() -> Boundary:
+    return Boundary(Position(0, 0), Dimensions(100, 1))

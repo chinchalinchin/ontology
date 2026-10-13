@@ -80,6 +80,16 @@ def mock_craft_properties() -> CraftPropertyInstances:
                 hitboxes=[Hitbox(Position(0, 8), Dimensions(32, 16))]
             ),
         },
+        platforms={
+            "platform-marble": CraftProperties(
+                dimensions=Dimensions(w=96, l=96),
+                mass=0,
+                hitboxes={
+                    0: [Hitbox(Position(0, 64), Dimensions(96, 32))],
+                    1: [Hitbox(Position(0, 0), Dimensions(96, 16))]
+                }
+            )
+        },
         stairs={
             'stairs-stone': CraftProperties(
                 dimensions=Dimensions(w=32, l=96),

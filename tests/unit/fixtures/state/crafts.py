@@ -13,6 +13,7 @@ from app.config.enums import (
     Directions
 )
 from app.models.state import (
+    PlatformState,
     PropertyState,
     BridgeState,
     StairState
@@ -81,4 +82,14 @@ def mock_stair_state() -> StairState:
         direction=Directions.UP.value,
         delta=1,
         elevation=0
+    )
+
+@pytest.fixture
+def mock_platform_state() -> PlatformState:
+    return PlatformState(
+        id="platform-marble",
+        name="platform-main",
+        layer="0",
+        elevation=0,
+        position=Position(x=350, y=50)
     )

@@ -4,26 +4,22 @@
 # External Libraries
 import pytest
 
-# Application Libraries
-from app.services.generators.game.perimeter import Perimeter
-
 # Cython Libraries
 from libs.core.models import (
-    Boundary, 
-    Position, 
+    Boundary,
+    Position,
     Dimensions
 )
 
 
 @pytest.mark.services
 @pytest.mark.collisions
-def test_perimeter_generator_extract(mock_board):
+def test_perimeter_generator_extract(mock_perimeter, mock_board):
     """
     Verifies Perimeter.extract captures static substrates and architecture,
     while excluding dynamic bodies (mass > 0).
     """
-    generator = Perimeter()
-    rects = generator.extract(mock_board, "0")
+    rects = mock_perimeter.extract(mock_board, "0")
 
     # 1. Environ Tile substrate (pos: 0, 0 | w: 32, l: 32 | nx: 10, ny: 10 -> 320x320)
     assert (0, 0, 320, 320) in rects
@@ -40,12 +36,32 @@ def test_perimeter_generator_extract(mock_board):
 
 @pytest.mark.services
 @pytest.mark.collisions
-def test_perimeter_generator_generate(mock_board):
+def test_perimeter_generator_extract_platform_elevated_deck(mock_perimeter, mock_board, mock_platform):
+    """
+    Verifies Perimeter.extract excludes platforms from Tier 0 hulls while synthesizing
+    walkable substrate bounds from platform decks at E > base_e.
+    """
+    if not mock_board.asset(mock_platform.name):
+        mock_board.add([mock_platform])
+
+    mock_platform.elevation = 0
+    mock_platform.state.position = Position(350, 50)
+    expected_rect = (350, 50, 350 + mock_platform.dimensions.w, 50 + mock_platform.dimensions.l)
+
+    rects_e0 = mock_perimeter.extract(mock_board, "0", elevation=0)
+    rects_e1 = mock_perimeter.extract(mock_board, "0", elevation=1)
+
+    assert expected_rect not in rects_e0
+    assert expected_rect in rects_e1
+
+
+@pytest.mark.services
+@pytest.mark.collisions
+def test_perimeter_generator_generate(mock_perimeter, mock_board):
     """
     Verifies Perimeter.generate returns perimeters partitioned by elevation tier.
     """
-    generator = Perimeter()
-    perimeters = generator.generate(mock_board, "0")
+    perimeters = mock_perimeter.generate(mock_board, "0")
 
     assert isinstance(perimeters, dict)
     assert 0 in perimeters
@@ -63,43 +79,37 @@ def test_perimeter_generator_generate(mock_board):
 
 @pytest.mark.services
 @pytest.mark.collisions
-def test_perimeter_generator_empty_layer(mock_board):
+def test_perimeter_generator_empty_layer(mock_perimeter, mock_board):
     """
     Verifies Perimeter.generate returns an empty dict for unpopulated layers.
     """
-    generator = Perimeter()
-    perimeters = generator.generate(mock_board, "empty-ghost-layer")
+    perimeters = mock_perimeter.generate(mock_board, "empty-ghost-layer")
     assert perimeters == {}
 
 
 @pytest.mark.services
 @pytest.mark.compositions
 @pytest.mark.collisions
-def test_perimeter_extract_crafts_layer_isolation(mock_board):
+def test_perimeter_extract_crafts_layer_isolation(mock_perimeter, mock_board):
     """
     Verifies Perimeter.extract isolates architecture strictly within the target layer.
     """
-    perimeter = Perimeter()
-    interior_rects = perimeter.extract(mock_board, "brick-house-compose-layer")
+    interior_rects = mock_perimeter.extract(mock_board, "brick-house-compose-layer")
 
-    # Layer contains interior wall (0, 0, 128, 96) and floor (0, 96, 128, 192)
     assert len(interior_rects) == 2
     assert (0, 0, 128, 96) in interior_rects
     assert (0, 96, 128, 192) in interior_rects
-
-    # Layer 0 castle strut (250, 250, 472, 383) must not leak into interior layer
     assert not any(r[0] == 250 and r[1] == 250 for r in interior_rects)
 
 
 @pytest.mark.services
 @pytest.mark.compositions
 @pytest.mark.collisions
-def test_perimeter_generator_composition_layer(mock_board):
+def test_perimeter_generator_composition_layer(mock_perimeter, mock_board):
     """
     Verifies Perimeter.generate builds boundary hulls partitioned by tier for interior layers.
     """
-    generator = Perimeter()
-    boundaries = generator.generate(mock_board, "brick-house-compose-layer")
+    boundaries = mock_perimeter.generate(mock_board, "brick-house-compose-layer")
 
     assert isinstance(boundaries, dict)
     assert len(boundaries) > 0
