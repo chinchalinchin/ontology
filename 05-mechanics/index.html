@@ -434,7 +434,8 @@
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="Core">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#motionmechanics" class="md-nav__link">
@@ -500,6 +501,11 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1302,7 +1308,8 @@
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="Core">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#motionmechanics" class="md-nav__link">
@@ -1368,6 +1375,11 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1564,10 +1576,6 @@
 
 
 <h1 id="ontology-mechanics">Ontology: Mechanics</h1>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Mechanics are listed below using <code>key: class</code>, where <code>key</code> is the unique string identifier for the associated Mechanic implementation class. This <code>key</code> is used in the <a href="#configuration">Mechanics Configuration</a> to specify the order of execution.</p>
-</div>
 <p>A Mechanic is an implementation of an abstract interface the engine calls during the game loop; All Mechanics must implement an <code>update(board: Board, delta: float, bus: collections.deque, payload: DevicePayload)</code> method. The arguments of this interface are the <a href="../00-overview/#board">Board</a>, a game loop time delta, an <a href="../06-widgets/#events">Event Bus</a> for storing Menu Events and the current <a href="../02-sprites/#devices">Device</a> Payload. These arguments are injected from above by the <a href="../00-overview/#engine">Engine</a></p>
 <h2 id="overview">Overview</h2>
 <p>Mechanics, <a href="../04-intentions/">Intentions and Goals</a> are the "foundation" of the gameplay. Their interplay and dynamic generates all of the complexity within the game engine. Mechanics are the "<em>laws of nature</em>" and Intentions &amp; Goals are the "<em>states of mind</em>"</p>
@@ -1589,9 +1597,9 @@
 </li>
 </ol>
 <p><strong>Sprite AI</strong></p>
-<p>As should already be obvious, much of the logic in Mechanics is in support of Sprite AI, via the management of <a href="../04-intentions/">Goals &amp; Intentions</a>. NPC behavior is distributed across four sequential Mechanics in the <code>world</code> pipeline:</p>
+<p>Much of the logic in Mechanics is in support of Sprite AI, via the management of <a href="../04-intentions/">Goals &amp; Intentions</a>. NPC behavior is distributed across four sequential Mechanics in the <code>world</code> pipeline:</p>
 <ul>
-<li><strong>CognitionMechanics ("The Brain")</strong>: Manages high-level strategic <code>Goal</code> models (target entity tracking, cross-layer door subsumption, autonomous wander sampling).</li>
+<li><strong>CognitionMechanics ("The Brain")</strong>: Manages high-level strategic <code>Goal</code> models (target entity tracking, cross-layer door subsumption, autonomous wander sampling, etc.).</li>
 <li><strong>TransitionMechanics ("The Instinct")</strong>: Evaluates the <a href="../04-intentions/#transition-matrix">ISL Transition Matrix</a> to transition <code>Intention</code> states and map animation actions.</li>
 <li><strong>NavigationMechanics ("The Navigator")</strong>: Manages tactical spatial steering. Validates line-of-sight, extracts obstacle hitboxes, executes RRT avoidance paths, and populates <code>sprite.state.trajectory</code>.</li>
 <li><strong>MotionMechanics ("The Muscle")</strong>: Steers velocity vectors toward <code>sprite.state.trajectory.target</code> and integrates physics.</li>
@@ -1629,15 +1637,20 @@
     %% Edge Labels
     linkStyle default color:#e0e0e0,stroke:#90caf9,stroke-width:1.5px;</code></pre>
 <h3 id="core">Core</h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Mechanics are listed below using <code>key: class</code>, where <code>key</code> is the unique string identifier for the associated Mechanic implementation class. This <code>key</code> is used in the <a href="#configuration">Mechanics Configuration</a> to specify the order of execution.</p>
+</div>
 <p>These Mechanics handle the core engine logic.</p>
 <ul>
 <li><code>animation AnimationMechanics</code>: Translates current states into FrameKeys for the renderer.</li>
 <li><code>remove: RemoveMechanics</code>: General garbage collection for Assets whose lifespan has expired.</li>
 <li><code>motion: MotionMechanics</code>: Applies acceleration and velocity integrations to Assets to arrive at their next position.</li>
 <li><code>menu: MenuMechanics</code>: Handles Menu and Widget interactions.</li>
+<li><code>telemetry: TelemetryMechanics</code>: Manages TCP socket queries for game state requests.</li>
 </ul>
-<h3 id="motionmechanics">MotionMechanics</h3>
-<h4 id="dynamics">Dynamics</h4>
+<h4 id="motionmechanics">MotionMechanics</h4>
+<h5 id="dynamics">Dynamics</h5>
 <p>Assets with Mass are divided into Kinematic, Motive, Inert, and Frictive Assets.</p>
 <ul>
 <li><strong>Kinematic Assets (Players)</strong>: Polls input devices. In dry environments, input clamps velocity vectors to <code>character.speed</code> and nullifies orthogonal components. When intersecting an active Fluid stream or pool, kinematic snapping is disabled: voluntary input velocity is added vectorally to the underlying fluid current:
@@ -1656,8 +1669,8 @@
 <p><strong>Updates</strong></p>
 <p>The engine updates the velocity magnitude <span class="arithmatex">\(v\)</span> via Symplectic Euler Integration:</p>
 <div class="arithmatex">\[v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)\]</div>
-<h4 id="fields">Fields</h4>
-<h5 id="fluids">Fluids</h5>
+<h5 id="fields">Fields</h5>
+<h6 id="fluids">Fluids</h6>
 <p>Dynamic bodies (<span class="arithmatex">\(m &gt; 0\)</span>) interacting with active Fluid streams and pools evaluate hydrodynamic buoyancy via <code>properties.buoyant</code>:</p>
 <p><strong>Buoyant Dynamic Bodies (<code>buoyant: True</code>)</strong></p>
 <div class="arithmatex">\[
@@ -1680,7 +1693,7 @@
 <div class="arithmatex">\[
 \vec{v}_{\text{final}} = \vec{v}_{\text{locomotion}} + \vec{v}_{\text{current}}
 \]</div>
-<h3 id="menumechanics">MenuMechanics</h3>
+<h4 id="menumechanics">MenuMechanics</h4>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>In the event of multiple Menus (e.g. a dialogue modal over a trade menu), MenuMechanics is constrained to interact with the top of the Menu stack (<code>board.menus[-1]</code>).</p>
@@ -1715,15 +1728,17 @@
 </div>
 <ul>
 <li>Source: <code>source = sprite | sprite.state.intention = 'interact'</code></li>
-<li>Target: <code>target = asset | intersects(sprite, asset)</code></li>
+<li>Target: <code>target = asset | intersects(source, asset)</code></li>
 <li>Logic:<ul>
 <li><code>if source.instance == 'sprites'</code>:<ul>
 <li><code>if target.instance == 'chests': TODO</code></li>
 <li><code>if target.instance == 'doors': source.state.layer = door.state.outlayer</code> </li>
+<li><code>if target.instance == 'plate': gates[plate.state.link].state.switch = plate.state.switch</code></li>
 </ul>
 </li>
 <li><code>if source.instance == 'players':</code><ul>
 <li><code>if target.instance == 'chests': bus.append(MenuEvent('inventory', { 'context': player.state})</code> </li>
+<li><code>if target.instance == 'plate': gates[plate.state.link].state.switch = plate.state.switch</code></li>
 <li><code>if target.instance == 'doors': source.state.layer = door.state.outlayer</code> </li>
 <li><code>if target.instance == 'signs': bus.append(MenuEvent('dialogue', { 'object': sign.state, 'plot': plot.state}))</code></li>
 </ul>
@@ -1888,14 +1903,14 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 </code></pre></div>
 <p>Mechanics are divided into <code>world</code> Mechanics and <code>core</code> Mechanics. <code>core</code> Mechanics execute every single game loop, regardless of whether or not the <a href="../00-overview/#board">Board</a> is paused; These include AnimationMechanics and MenuMechanics. <code>world</code> Mechanics only execute when the Board is unpaused.</p>
 <h3 id="executors">Executors</h3>
-<p>Mechanics Executors are services made available to the request Mechanics. Available Executors are enumerated below.</p>
+<p>Mechanics Executors are services made available to the requesting Mechanics. Available Executors are enumerated below.</p>
 <ul>
 <li><code>plot</code>: Executor for evaluating the conditions for <a href="../08-plots/">Plot Transitions</a>.</li>
 <li><code>intention</code>: Executor for evaluating the conditions for <a href="../04-intentions/">Intention Transitions</a></li>
 <li><code>actuator</code>: Executor for generating <a href="../01-assets/#fluids">Fluid</a> and <a href="../01-assets/#shorelines">Shoreline</a> Assets.</li>
-<li><code>annual</code>: ISL executor evaluating stage transitions for annual vegetation (crops).</li>
-<li><code>perennial</code>: ISL executor evaluating stage transitions for perennial flora (trees).</li>
-<li><code>centennial</code>: ISL executor evaluating geological progression (ores).</li>
+<li><code>annual</code>: Executor evaluating <a href="../01-assets/#resources">Resource Stage</a> transitions for annual lifespans.</li>
+<li><code>perennial</code>: Executor evaluating <a href="../01-assets/#resources">Resource Stage</a>transitions for perennial lifespans.</li>
+<li><code>centennial</code>: Executor evalutating <a href="../01-assets/#resources">Resource Stage</a> transitions for centennial lifespans.</li>
 </ul>
 <h3 id="relations">Relations</h3>
 <p>Relations are static mappings configured at runtime. Available relations are enumerated below.</p>

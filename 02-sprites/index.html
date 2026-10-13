@@ -1586,6 +1586,10 @@
 <li><code>keys(id, state): returns [ ("{id}-{state.animation.action}-{state.animation.direction}-{animation.frame}", 0, 0) ] + [ (&lt;equipment-frames&gt;, 0, 0) ] + [ (&lt;expression-frames&gt;, offset.x, offset.y) ]</code></li>
 <li><code>index(self, id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
+<p><strong>Hitbox: StaticHitbox</strong></p>
+<ul>
+<li><code>get(properties, state, frame): returns properties.hitboxes</code></li>
+</ul>
 <h3 id="intentions">Intentions</h3>
 <p>Intentions are an internal State data structure that governs a Sprite's core logic. </p>
 <p>See <a href="../04-intentions/">Intentions documentation</a> for more information.</p>

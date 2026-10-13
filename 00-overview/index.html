@@ -1459,7 +1459,7 @@
 <li><a href="../01-assets/#tiles">Tiles</a></li>
 <li><a href="../06-widgets/">Widgets</a></li>
 </ul>
-<p>Assets are placed in the <code>/src/assets/&lt;category&gt;/</code> directory and then registered in a Asset category index <code>/src/assets/&lt;category&gt;/*.yaml</code> file. The YAML index schema for each Asset configures its <em>properties</em>, i.e. the static attributes that are constant and do not change as a result of gameplay. </p>
+<p>Assets are placed in the <code>/src/assets/&lt;category&gt;/</code> directory and then registered in a Asset category index <code>/src/assets/&lt;category&gt;/**/*.yaml</code> file. The YAML index schema for each Asset configures its <em>properties</em>, i.e. the static attributes that are constant and do not change as a result of gameplay. </p>
 <p>The <code>/src/assets</code> directory is known as the <em>asset directory</em>.</p>
 <p>See <a href="../appendices/01-schemas/#model-properties">Asset Schema</a> for more information on the Asset property index.</p>
 <h2 id="data">Data</h2>
@@ -1471,13 +1471,13 @@
 <ul>
 <li>Location: <code>/src/data/state/</code></li>
 </ul>
-<p>An Asset is deployed onto a Board, where it acquires its state, i.e. its dynamic attributes that are variable and change as a result of gameplay. The application ingests and stores state in the state directory.</p>
-<p>An Asset Category has a single schema for properties that each Instance utilizes, but each individual Asset Instance has a unique State, particular to its deployment. For example, a treasure Chest is configured once by its Properties (its width, length, etc.), but each instance of a treasure Chest on a Board has a unique state (its position, content, etc.).</p>
+<p>An <a href="../01-assets/">Asset</a> is deployed onto a <a href="#board">Board</a>, where it acquires its state, i.e. its dynamic attributes that are variable and change as a result of gameplay. The application ingests and stores state in the state directory.</p>
+<p>An <a href="../01-assets/#asset-hierarchy">Asset Category</a> has a single schema for properties that each Instance utilizes, but each individual <a href="../01-assets/#asset-hierarchy">Asset Instance</a> has a unique State, particular to its deployment. For example, a <a href="../01-assets/#chests">Chest</a> is configured once by its properties (its width, length, etc.), but each instance of a <a href="../01-assets/#chests">Chest</a> on the <a href="#board">Board</a> is given a unique state (its position, content, etc.).</p>
 <h3 id="configuration">Configuration</h3>
 <ul>
 <li>Location: <code>/src/data/config</code></li>
 </ul>
-<p>Mechanics and other components of the game Engine (e.g. Menus, Actions, etc.) utilize configuration stored in the configuration directory. The following Engine components are configured by the files in this directory.</p>
+<p>Mechanics and other components of the game <a href="#engine">Engine</a> (e.g. Menus, Actions, etc.) utilize configuration stored in the configuration directory. The following Engine components are configured by the files in this directory.</p>
 <ul>
 <li><a href="../01-assets/#sheets">Actions</a></li>
 <li><a href="../03-compositions/">Compositions</a></li>
@@ -1490,7 +1490,7 @@
 <li><a href="../01-assets/#asset-concepts">Recipes</a></li>
 </ul>
 <h2 id="application">Application</h2>
-<p>The core components of the application are listed below in this seciton, in the rough order they are called in the course of bootstrapping.</p>
+<p>The core components of the application are listed below in this section, in the approximate order they are called in the course of bootstrapping.</p>
 <p>See <a href="../11-architecture/">Architecture documentation</a> for more information.</p>
 <h3 id="loader">Loader</h3>
 <ul>
@@ -1499,12 +1499,12 @@
 <p>The Loader is responsible for reading in the configuration files for properties and state, converting them into Python data structures.</p>
 <h3 id="factory">Factory</h3>
 <ul>
-<li>Package: <code>app.services.factory</code></li>
+<li>Package: <code>app.services.generators.game.factory</code></li>
 </ul>
 <p>The Factory builds Assets and other game components based on Recipes. </p>
 <h3 id="orchestrator">Orchestrator</h3>
 <ul>
-<li>Package: <code>app.services.orchestrator</code></li>
+<li>Package: <code>app.services.orchestration.orchestrator</code></li>
 </ul>
 <p>The Orchestrator is the dependency injection system. It is responsible for converting validated data structures into application data models and supplying them to application classes.</p>
 <h3 id="registry">Registry</h3>
@@ -1571,7 +1571,8 @@
 <p>The Screen acts as a high-level container for a Cythonized SDL rendering interface.</p>
 <h2 id="concepts">Concepts</h2>
 <h3 id="hitboxes">Hitboxes</h3>
-<p>Many Assets have Hitboxes. Hitboxes are <em>properties</em>, i.e., they are static and do not change. Hitboxes have positions and dimensions. To ensures Hitboxes remain static, Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. Hitbox dimensions are always absolute. The following snippet shows the hitbox schema for an LPC Sprite Frame, with the image below showing how the hitbox translates into the physical image with a blue rectangle,</p>
+<p>Many Assets have Hitboxes. Hitboxes definitions are specified as <em>properties</em>, i.e., they are static and read before the execution of the game engine. Hitboxes have positions and dimensions. </p>
+<p>To ensures Hitboxes remain statically configured, Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. Hitbox dimensions are always absolute. The following snippet shows the hitbox schema for an LPC Sprite Frame, with the image below showing how the hitbox translates into the physical image with a blue rectangle,</p>
 <div class="highlight"><pre><span></span><code><span class="nt">position</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">21</span>
 <span class="w">    </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">23</span>
@@ -1585,6 +1586,7 @@
 <p>LPC Sprite Hitbox in (Walk, Down, 0) State</p>
 </figcaption>
 </figure>
+<p>While hitboxes are statically confitured, this does not necessarily mean hitboxes are statically accessed. See <a href="../01-assets/#asset-architecture">Asset Component Architecture</a> for more information.</p>
 <h3 id="layers">Layers</h3>
 <p>All deployed Assets have a Layer. Layers represent a "view" where the Asset is located. When the Screen renders an entire frame, it is rendering a Layer.  </p>
 <p>Layers on a board can be traversed through Doors. The coordinate plane of each Layer is independent of every other. For example, a Sprite may enter a Door on Layer 1 at <code>(x_1, y_1)</code> and get released on Layer 3 at <code>(x_2, y_2)</code>. For this reason, each Layer may have different dimensions.</p>

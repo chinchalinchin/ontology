@@ -326,7 +326,8 @@
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="Asset Concepts">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#elevation-perspective-priority" class="md-nav__link">
@@ -336,6 +337,11 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -390,10 +396,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#back" class="md-nav__link">
+  <a href="#environ" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Back
+        Environ
       
     </span>
   </a>
@@ -401,10 +407,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fore" class="md-nav__link">
+  <a href="#canopy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Fore
+        Canopy
       
     </span>
   </a>
@@ -484,6 +490,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#obstacles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Obstacles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#plates" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -538,39 +555,6 @@
     <span class="md-ellipsis">
       
         Bridges
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#struts" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Struts
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stairs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Stairs
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#platforms" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Platforms
       
     </span>
   </a>
@@ -1522,7 +1506,8 @@
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="Asset Concepts">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#elevation-perspective-priority" class="md-nav__link">
@@ -1532,6 +1517,11 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1586,10 +1576,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#back" class="md-nav__link">
+  <a href="#environ" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Back
+        Environ
       
     </span>
   </a>
@@ -1597,10 +1587,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fore" class="md-nav__link">
+  <a href="#canopy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Fore
+        Canopy
       
     </span>
   </a>
@@ -1680,6 +1670,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#obstacles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Obstacles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#plates" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1734,39 +1735,6 @@
     <span class="md-ellipsis">
       
         Bridges
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#struts" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Struts
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#stairs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Stairs
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#platforms" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Platforms
       
     </span>
   </a>
@@ -2061,17 +2029,25 @@
 <li><span class="arithmatex">\(m = -1\)</span>: <strong>Sensor</strong>. The engine detects the spatial intersection for game logic (like SwitchMechanics or DoorMechanics), but CollisionMechanics bypasses it completely during the overlap resolution phase.</li>
 </ul>
 <p>See <a href="../05-mechanics/#spatial">Mechanics</a> for more information.</p>
-<h3 id="elevation-perspective-priority">Elevation, Perspective &amp; Priority</h3>
+<h4 id="elevation-perspective-priority">Elevation, Perspective &amp; Priority</h4>
 <p>World rendering evaluates spatial geometry using discrete topological elevation tiers and continuous ground perspective. The engine deprecates legacy manual height overrides in favor of a deterministic 3-key lexicographical Painter's Algorithm in <code>Screen._sort</code>:</p>
-<div class="arithmatex">\[\text{sort\_key}(A) = \Big(A.\text{elevation},\; \text{ground\_y}(A),\; A.\text{properties.priority}\Big)\]</div>
+<div class="arithmatex">\[\text{sort}(x) = \Big(x.\text{elevation},\; \text{ground}(x),\; x.\text{properties.priority}\Big)\]</div>
 <ol>
-<li><strong>Primary Key (<code>A.elevation</code> <span class="arithmatex">\(\in \mathbb{Z}\)</span>)</strong>: Discrete spatial <span class="arithmatex">\(Z\)</span>-plane elevation tier. Substrates declare negative integer tiers via <code>settings.SUBSTRATES</code> (<code>back: -4</code>, <code>fluids: -3</code>, <code>shorelines: -2</code>, <code>bridges: -1</code>). Standard entities default to <code>elevation = 0</code>, and elevated structures occupy <span class="arithmatex">\(E \ge 1\)</span>. Entities on higher elevation tiers render strictly on top of lower tiers, preventing cross-tier Z-fighting.</li>
-<li><strong>Secondary Key (<code>ground_y</code> <span class="arithmatex">\(\in \mathbb{R}\)</span>)</strong>: Continuous elevation-dependent geometric ground perspective: <span class="arithmatex">\(\text{ground\_y} = \text{int}(A.\text{state.position.y} + A.\text{dimensions.l} + A.\text{state.anchor})\)</span>. <code>state.anchor</code> is a compiled integer offset that aligns wall-mounted fixtures (doors, torches, windows) with their parent facade's ground baseline.</li>
-<li><strong>Tertiary Key (<code>priority</code> <span class="arithmatex">\(\in \mathbb{Z}\)</span>)</strong>: Elevation-matching coplanar tie-breaker declared on immutable <code>AssetProperties</code>:</li>
+<li><strong>Primary Key (<code>x.elevation</code> <span class="arithmatex">\(\in \mathbb{Z}\)</span>)</strong>: Discrete spatial <span class="arithmatex">\(Z\)</span>-plane elevation tier. Standard Assets default to <code>elevation = 0</code>; elevated structures occupy <span class="arithmatex">\(\text{elevation} \ge 1\)</span>. Entities on higher elevations render strictly on top of lower elevations.</li>
+<li><strong>Secondary Key (<code>ground</code> <span class="arithmatex">\(\in \mathbb{R}\)</span>)</strong>: Elevation-dependent geometric ground perspective: <span class="arithmatex">\(\text{ground} = \text{int}(x.\text{state.position.y} + x.\text{dimensions.l} + x.\text{state.anchor})\)</span>. <code>state.anchor</code> is a compiled integer offset that aligns wall-mounted fixtures (doors, torches, windows) with their parent's ground baseline.</li>
+<li><strong>Tertiary Key (<code>priority</code> <span class="arithmatex">\(\in \mathbb{Z}\)</span>)</strong>: Elevation-matching coplanar tie-breaker declared as an immutable property:</li>
 <li>Substrates (rugs, floorboards): <code>priority = -1</code></li>
 <li>Upright entities (walls, characters, obstacles): <code>priority = 0</code></li>
 <li>Wall fixtures and decals (doors, wall torches): <code>priority = 1</code></li>
 </ol>
+<p><strong>Substrates</strong></p>
+<p>Certain Assets have dedicated Substrate elevations to preserve the fidelity of their rendering order.</p>
+<p>| Category/Instance | Dedicated Elevation Substrate |
+| Environ | -4 | 
+| Fluids  | -3 | 
+| Geography | -2 |
+| Bridges | -1 |</p>
+<p>During <a href="../05-mechanics/#collisionmechanics">CollisionMechanics</a> and Perimeter generation, these Substrates are collapsed into <code>elevation = 0</code>, i.e. <span class="arithmatex">\(\text{elevation} \in [-\infty, 0] \to \text{elevation} = 0\)</span>, in order that all Assets on these Substrates may participate in collisions at <code>elevation = 0</code>.</p>
 <h3 id="asset-hierarchy">Asset Hierarchy</h3>
 <p>While Assets are instantiated by injecting a common root class with component behaviors (see <a href="#asset-architecture">next section</a>), the Assets which result from the Entity-Component-System (ECS) injection still conform to a strict hierarchy of Categories and Instances. The property and state <a href="../appendices/01-schemas/">schemas</a> encode Asset Categories and Instances into the top-level keys.</p>
 <pre class="mermaid"><code>graph LR
@@ -2146,6 +2122,13 @@
 </div>
 <p><strong>Categories</strong></p>
 <p>Asset <em>Categories</em> form the top layer of the hierarchy. Each Asset Category is defined by its static properties; an Asset's Category determines what type of properties it will parse from the property files and inject into its deployment. </p>
+<p>Each set of Asset properties has, at bare minimum:</p>
+<ul>
+<li><code>dimension: Dimension</code></li>
+<li><code>priority: int</code></li>
+</ul>
+<p>These attributes belong to the base class from which all other property classes inherit.</p>
+<p>The following table details the <em>unique</em> property attributes of each Asset Category (with the attributes identified above labeled with the catchall "Base"),</p>
 <table>
 <thead>
 <tr>
@@ -2156,45 +2139,45 @@
 <tbody>
 <tr>
 <td>Tiles</td>
-<td>Dimensions, Friction</td>
+<td>Base, Friction</td>
 </tr>
 <tr>
 <td>Cursors</td>
-<td>Dimensions</td>
+<td>Base</td>
 </tr>
 <tr>
 <td>Objects</td>
-<td>Dimensions, Hitboxes, Mass</td>
+<td>Base, Hitboxes, Mass</td>
 </tr>
 <tr>
 <td>Effects</td>
-<td>Dimensions, Hitboxes, Lifecycle, Count, Mass</td>
+<td>Base, Hitboxes, Lifecycle, Count, Mass</td>
 </tr>
 <tr>
 <td>Geography</td>
-<td>Dimensions, Hitboxes, TODO</td>
+<td>Base, Hitboxes, Tile, Fluid, Thickness</td>
 </tr>
 <tr>
 <td>Resources</td>
-<td>Dimensions, Hitboxes, TODO</td>
+<td>Base, Hitboxes, Lifespan, Loot</td>
 </tr>
 <tr>
 <td>Crafts</td>
-<td>Dimensions, Hitboxes, Mass, Cost</td>
+<td>Base, Hitboxes, Mass, Cost</td>
 </tr>
 <tr>
 <td>Sheets</td>
-<td>Dimensions, Hitboxes, Mass, Stack, Actions</td>
+<td>Base, Hitboxes, Mass, Stack, Actions</td>
 </tr>
 <tr>
 <td>Widgets</td>
-<td>Dimensions, Frames</td>
+<td>Base, Frames</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Instances</strong></p>
-<p>Each Category has Instances. Asset <em>Instances</em> form the bottom layer of the hierarchy. Each Asset Instance is defined by its dynamic state; an Asset's Instance determines what type of state it will parse from the state files and inject into its deployment. </p>
-<p>Each AssetState has, at bare minimum:</p>
+<p>Each Category has Instances. Asset <em>Instances</em> form the bottom of the Asset Hierarchy. Each Asset Instance is defined by its dynamic state; an Asset's Instance determines what type of state it will parse from the state files and inject into its deployment. </p>
+<p>Each Asset state has, at bare minimum:</p>
 <ul>
 <li><code>position: Position</code></li>
 <li><code>layer: str</code></li>
@@ -2202,7 +2185,7 @@
 <li><code>anchor: Union[int, str] = 0</code></li>
 <li><code>mutators: Mutators</code></li>
 </ul>
-<p>These attributes belong to the base class from which all other state dataclasses inherit. Negative elevations resolve substrate draw order, while non-negative values (<span class="arithmatex">\(E \ge 0\)</span>) partition physical collisions and perimeter boundary constraints.</p>
+<p>These attributes belong to the base class from which all other States inherit.</p>
 <p>The following table details the <em>unique</em> state attributes of each Asset Instance (with the attributes identified above labeled with the catchall "Base"),</p>
 <table>
 <thead>
@@ -2215,12 +2198,12 @@
 <tbody>
 <tr>
 <td>Tile</td>
-<td>Back</td>
+<td>Environ</td>
 <td>Base</td>
 </tr>
 <tr>
 <td>Tile</td>
-<td>Fore</td>
+<td>Canopy</td>
 <td>Base</td>
 </tr>
 <tr>
@@ -2277,6 +2260,16 @@
 <td>Craft</td>
 <td>Strut</td>
 <td>Base, Owner</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td>Stairs</td>
+<td>Base, Direction, Owner</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td>Platforms</td>
+<td>Base, Delta, Owner</td>
 </tr>
 <tr>
 <td>Craft</td>
@@ -2398,88 +2391,84 @@
 <p>Every physical entity in the game is an instance of the unified Asset class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. Behaviors are decoupled from Assets and managed entirely by <em>Mechanic</em> classes that iterate over the Board Assets. See <a href="../05-mechanics/">Mechanics documentation</a> for more information.</p>
 <p>The Recipe for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in the <a href="../appendices/01-schemas/#configuration-recipes">Recipe</a> configuration file. The components of each Assets are enumerated below,</p>
 <ol>
-<li><strong>Model: Properties:</strong> A model defining immutable data (e.g., <code>TileProperties</code>, <code>ObjectProperties</code>, etc.).</li>
-<li><strong>Model: State:</strong> A model defining mutable data (e.g., <code>ContainerState</code>, <code>PositionalState</code>, etc.).</li>
-<li><strong>Behavior: Animation</strong> Stateless strategies (e.g. <code>BinaryAnimation</code>, <code>StateAnimation</code>, etc.) injected into the Asset. These contain the specific logic for updating Animation frames.<ul>
+<li><strong>Model: Properties:</strong> A model defining immutable data.</li>
+<li><strong>Model: State:</strong> A model defining mutable data.</li>
+<li><strong>Behavior: Animation</strong> Stateless strategies injected into the Asset. These contain the specific logic for updating Animation frames.<ul>
 <li><code>animate(state, properties)</code>: Interface for applying animation logic to Asset state.</li>
 </ul>
 </li>
-<li><strong>Behavior: Frame:</strong> A static schema calculation used by the renderer to determine the correct texture string keys. An Asset can be a single logical entity composed of multiple superimposed rendered textures, therefore a Frame component returns a <code>List[(str, int, int)]</code> rather than a single <code>str</code>. The tuple <code>(int, int)</code> controls how much the frame is offset from its origin (mainly used in <a href="#expressions">Expressions</a> to pin a <a href="#cursors">Cursor Expressions</a> to the relative Position of a Sprite) In addition, Frames provide the indexing schema for textures used by the <a href="../00-overview/#registry">Registry</a> to store Assets in memory.<ul>
-<li><code>keys(id: str, state: AssetState) -&gt; List[Tuple[str, int, int]]</code>: Reflexive intrinsic state projection for dynamic 60 Hz draw passes.</li>
+<li><strong>Behavior: Frame:</strong> A static schema calculation used by the renderer to determine the correct texture string keys. <ul>
 <li><code>index(id: str, properties: AssetProperties) -&gt; Dict[str, Tuple[int, int, int, int]]</code>: Interface for indexing Asset frames in Registry.</li>
+<li><code>keys(id: str, state: AssetState) -&gt; List[Tuple[str, int, int]]</code>: Reflexive intrinsic state projection for dynamic 60 Hz draw passes.</li>
 <li><code>eras(id: str, calendar: CalendarState) -&gt; List[Tuple[str, int, int]]</code>: Macro-temporal epochal projection for static pre-rendered canvas baking.</li>
 <li><code>channels(id: str, state: AssetState, properties: AssetProperties) -&gt; List[Tuple]</code>: Emits auxiliary shader and texture modulation directives.</li>
 </ul>
 </li>
 <li><strong>Behavior: Hitbox:</strong> Stateless collision boundary resolution strategies injected via Recipes. Resolves active physical obstacles dynamically without mutating cached properties:<ul>
-<li><code>resolve(properties: AssetProperties, state: AssetState, frame: Optional[Frame]) -&gt; List[Hitbox]</code>: Emits the active physical collision footprint for spatial broad-phase and narrow-phase physics.</li>
+<li><code>elevations(properties: AssetProperties, state: AssetState) -&gt; List[int]</code>: Emits the discrete elevation tiers the entity participates in.</li>
+<li><code>get(properties: AssetProperties, state: AssetState, elevation: int, frame: Optional[Frame] = None) -&gt; List[Hitbox]</code>: Emits active physical collision footprints at the requested elevation tier, accounting for animation frame states (e.g., Attackboxes).</li>
 </ul>
 </li>
 </ol>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The state model can be calculated from (Category, Instance), but (Animation, Frame) is independent of the state assigned to an Asset through the Asset Hierarchy. It must be specified through a Recipe.</p>
+<p>The state model can be calculated from (Category, Instance), but (Animation, Frame, Hitbox) is independent of the state assigned to an Asset through the Asset Hierarchy. It must be specified through a Recipe.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>An Asset can be a single logical entity composed of multiple superimposed rendered textures, therefore a Frame component returns a <code>List[(str, int, int)]</code> rather than a single <code>str</code>. The tuple <code>(int, int)</code> controls how much the frame is offset from its origin (mainly used in <a href="#expressions">Expressions</a> to pin a <a href="#cursors">Cursor Expressions</a> to the relative Position of a Sprite). In addition, Frames provide the indexing schema for textures used by the <a href="../00-overview/#registry">Registry</a> to store Assets in memory.</p>
 </div>
 <h3 id="asset-taxonomy">Asset Taxonomy</h3>
-<p>An Asset's position in the Asset Hierarchy is encoded into its Taxonomy. These attributes exist on every Asset instantiated within the game. A Taxonomy is neither state, configuration or properties.</p>
+<p>An Asset's order in the Asset Hierarchy is encoded into its Taxonomy. These attributes exist on every Asset instantiated within the game. A Taxonomy is neither a state, a configuration or a propertt. Taxonomy represents the full, unambiguous identity of a deployed Asset,</p>
 <ul>
-<li><code>id: str</code></li>
-<li><code>category: str</code></li>
-<li><code>instance: str</code></li>
-<li><code>name: str</code></li>
+<li><code>id: str</code>: Uniquely identifies the Asset file. It must match a file found in the <code>src/assets/**</code> directory.</li>
+<li><code>name: str</code>: Uniquely identifies the physical deployment of the Asset. Every Asset Instance deployed onto a Board has a unique <code>name</code>.</li>
+<li><code>category: str</code>: Determines what property model is employed by the Asset. The category must be configured by a <code>src/assets/&lt;category&gt;/**/*.yaml</code> property index file.</li>
+<li><code>instance: str</code>: Determines what state model is employed by the Asset. An Asset's state is hydrated from the <code>data/state/&lt;board&gt;/**/*.yaml</code> directory.</li>
 </ul>
-<p><code>id</code> uniquely identifies the Asset file. It must match a file found in the <code>src/assets/**</code> directory.</p>
-<p><code>category</code> determines what property model is employed by the Asset. The category must be configured by a <code>src/assets/&lt;category&gt;/main.yaml</code> property index file.</p>
-<p><code>instance</code> determines what state model is employed by the Asset. An Asset's state is hydrated from the <code>data/state/&lt;board&gt;/*</code> directory.</p>
-<p><code>name</code> is the physical deployment of the Asset. Every Asset Instance deployed onto a Board has a unique <code>name</code>.</p>
-<p><code>(category, instance)</code> collectively determine the components <code>(frame, animation, properties, state)</code> injected into an Asset class during the <a href="../11-architecture/#initialization">Initialization</a>. More specifically, category determines properties (<code>category -&gt; properties</code>), and instance determines everything else (<code>instance -&gt; (frame, animation, state)</code>).</p>
+<p><code>(category, instance)</code> collectively map to the components <code>(frame, animation, hitbox, properties, state)</code> injected into an Asset class during the <a href="../11-architecture/#initialization">Initialization</a>. More specifically, category maps to properties (<code>category -&gt; properties</code>), and instance maps to everything else (<code>instance -&gt; (frame, animation, hitbox, state)</code>).</p>
 <h2 id="tiles">Tiles</h2>
 <ul>
-<li>Property File: <code>/src/assets/tiles/main.yaml</code></li>
+<li>Property File: <code>/src/assets/tiles/**/*.yaml</code></li>
 </ul>
-<p>Tiles are static, frictive Assets that form the terrain substrate. Tiles are arranged into continuous background (<code>back</code>) and foreground (<code>fore</code>) canvases.</p>
+<p>Tiles are static, frictive Assets that form the lowest terrain Substrate. Tiles are arranged into continuous background (<code>environ</code>) and foreground (<code>canopy</code>) canvases.</p>
 <p>Tiles Instances have their dimensions fixed by their properties. These dimensions are configurable in the property file, but they apply to all Tiles of a particular instance universally. When a Tile is drawn, it is rendered as a <code>multiple</code> of the unit Tile configured in the Asset directory.</p>
-<p><strong>Event Driven Animation</strong></p>
-<p>Tiles are not animated per-frame in <code>Screen.draw()</code>. Instead, multi-season tiles leverage <code>SeasonalFrame</code> and event-driven canvas reconstruction:</p>
-<ul>
-<li><strong>Back Tiles</strong>: Rendered beneath all dynamic entities. Represent soil, turf, rock, and water substrates.</li>
-<li><strong>Fore Tiles</strong>: Rendered above all dynamic in-world entities (excluding UI widgets). Represent tree canopies, rooftops, and structural overhangs that characters traverse beneath.</li>
-<li><strong>Temporal Invalidation</strong>: Tile atlases contain 36 cells (<span class="arithmatex">\(4_\text{seasons} \times 9_\text{periods}\)</span>). When <code>SeasonMechanics</code> advances a calendar period, a <code>SeasonEvent</code> triggers <code>Screen.reconstruct(board)</code>. The screen recompiles the static textures (<code>bg_canvas</code> and <code>fg_canvas</code>) using the updated seasonal frame keys.</li>
-</ul>
 <p><strong>Friction</strong></p>
 <p>Tiles have coefficients of friction. These coefficient are used by <a href="../05-mechanics/#spatial">MotionMechanics</a> to determine the rate of velocity decay for Frictive Assets traversing their area.</p>
 <p><strong>Properties: TileProperties</strong></p>
 <ul>
 <li><code>dimensions: Dimensions</code></li>
+<li><code>priority: int</code></li>
 <li><code>friction: float</code></li>
 </ul>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>keys(id, state): returns [ (id, 0, 0) ] "</code></li>
+<li><code>keys(id, state): returns [ (id, 0, 0) ]</code></li>
 <li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>Animation: None</strong></p>
 <p>N/A</p>
-<h3 id="back">Back</h3>
-<p>A Back Tile is the first Asset rendered on screen. It has the lowest Z coordinate of all Assets; Back Tiles will <em>always</em> be rendered <em>under</em> all of the other Assets, regardless of their <code>depth</code> or <code>height</code>.</p>
+<p><strong>Hitbox: StaticHitbox</strong></p>
+<ul>
+<li><code>get(properties, state, frame): returns properties.hitboxes</code></li>
+</ul>
 <p><strong>State: MultiplerState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
-<li><code>depth: int</code></li>
-<li><code>height: int</code></li>
+<li><code>elvation: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>multiple: Multiple</code></li>
 </ul>
-<h3 id="fore">Fore</h3>
-<p>A Fore Tile is the last Asset rendered on screen. It has the highest Z coordinate of all Assets. Fore Tiles will always be rendered on top of all of other Assets, regardless of their <code>depth</code> or <code>height</code>. The <em>one</em> exception to this rule is Widgets. Fore Tiles are an "in-world" Asset, and thus their Z-ordering is superseded by Widgets.</p>
-<p><strong>State: MultiplerState</strong></p>
-<ul>
-<li><code>layer: str</code></li>
-<li><code>depth: int</code></li>
-<li><code>height: int</code></li>
-<li><code>position: Position</code></li>
-<li><code>multiple: Multiple</code></li>
-</ul>
+<h3 id="environ">Environ</h3>
+<p>A Environ Tile is the first Asset rendered on screen. It has the lowest Z coordinate of all Assets; Environ Tiles will <em>always</em> be rendered <em>under</em> all of the other Assets, regardless of their <code>elevation</code> or <code>priority</code>.</p>
+<p><strong>Event Driven Animation</strong></p>
+<p>Environ Tiles are not animated per-frame in <code>Screen.draw()</code>. Instead, multi-season tiles leverage <code>SeasonalFrame</code> and event-driven canvas reconstruction. See <a href="../09-ecology/">Ecology documentation</a> for more information.</p>
+<h3 id="canopy">Canopy</h3>
+<p>A Canopy Tile is the last Asset rendered on screen. It has the highest Z coordinate of all Assets. Canopy Tiles will always be rendered on top of all of other Assets, regardless of their <code>elevation</code> or <code>priority</code>. </p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The <em>single</em> exception to this rule is Widgets. Canopy Tiles are an "in-world" Asset, and thus their render ordering is superseded by Widgets.</p>
+</div>
 <h3 id="grid">Grid</h3>
 <p>A Grid is a special Type reserved for use in the <a href="../06-widgets/#menus">Editor Menu</a>. It is used as an overlay canvas in the Editor,to create a spatial grid that can be traversed through focus. </p>
 <p>There must be precisely <em>two</em> Grid tiles:</p>
@@ -2487,19 +2476,11 @@
 <li><code>focus</code>: A Grid Tile to represent active selections.</li>
 <li><code>cell</code>: A Grid Tile to represent idle selections.</li>
 </ul>
-<p><strong>State: MultiplerState</strong></p>
-<ul>
-<li><code>layer: str</code></li>
-<li><code>depth: int</code></li>
-<li><code>height: int</code></li>
-<li><code>position: Position</code></li>
-<li><code>multiple: Multiple</code></li>
-</ul>
 <h2 id="objects">Objects</h2>
 <ul>
-<li>Property File: <code>/src/assets/objects/main.yaml</code></li>
+<li>Property File: <code>/src/assets/objects/**/*.yaml</code></li>
 </ul>
-<p>Objects are mutable Assets made of a single frame or pair of frames. They are meant to encapsulate interactions and objects.</p>
+<p>Objects are mutable Assets encapsulating interactive and reactive entities.</p>
 <p><strong>Binary Frames</strong></p>
 <p>An Object with two frames is considered to have an <em>on</em> and <em>off</em> state, i.e. a binary trigger. <em>Binary Objects</em> are Objects whose frame is dependent on an internal state switch.</p>
 <p>Binary Objects frames are always organized in horizontal rows. The off frame will always start at <code>(0,0)</code> and the on frame will always start at <code>(w,0)</code>. Because of this relation, the dimensions of a Chest image file will always be <code>(2w, h)</code>. </p>
@@ -2507,14 +2488,19 @@
 <p><strong>Properties: ObjectProperties</strong></p>
 <ul>
 <li><code>dimensions: Dimensions</code></li>
+<li><code>priority: int</code></li>
 <li><code>hitboxes: List[Hitbox]</code> </li>
 <li><code>count: int = 1</code></li>
 <li><code>mass: int</code></li>
 </ul>
+<p><strong>Hitbox: StaticHitbox</strong></p>
+<ul>
+<li><code>get(properties, state, frame): returns properties.hitboxes</code></li>
+</ul>
 <h3 id="chests">Chests</h3>
-<p><em>Chests</em> are <em>Binary Objects</em> whose frame can be changed by the player entering into an <code>interact</code> <a href="../04-intentions/">Intention</a> while intersecting the hitboxes of the Chest. When <code>switch == true</code>, the Chest is <em>on</em> (open). When <code>switch == false</code>, the Chest is <em>off</em> (closed).</p>
+<p><em>Chests</em> are Binary Objects whose frame can be changed by the player entering into an <code>interact</code> <a href="../04-intentions/">Intention</a> while intersecting the hitboxes of the Chest. When <code>switch == true</code>, the Chest is <em>on</em> (open). When <code>switch == false</code>, the Chest is <em>off</em> (closed).</p>
 <p>A Chest is <em>reusable</em> through the <code>interact</code> <a href="../04-intentions/">Intention</a>, meaning <a href="../02-sprites/#inventory">Inventory Loot</a> can be taken out of and also placed into a Chest. The <code>content</code> state field manages the current contents of the Chest through a list of Inventory Loot keys.</p>
-<p>When <em>interacting</em> with a Chest, the <a href="../02-sprites/#player">Player</a> is shown the <a href="../06-widgets/#menus">Chest menu</a>, allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an <code>interact</code> Intention with a Chest through its <a href="../04-intentions/#transition-matrix">Intention Transition Matrix</a>. This interaction is managed through a dedicated Sprite <a href="../05-mechanics/">Mechanic</a></p>
+<p>When <em>interacting</em> with a Chest, the <a href="../02-sprites/#player">Player</a> is shown the <a href="../06-widgets/#menus">Chest Menu</a>, allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an <code>interact</code> Intention with a Chest through its <a href="../04-intentions/#transition-matrix">Intention Transition Matrix</a>. This interaction is managed through a dedicated Sprite <a href="../05-mechanics/">Mechanic</a></p>
 <p><strong>Animation: BinaryAnimation</strong></p>
 <ul>
 <li><code>if state.switch == true: state.animation.frame = 1</code></li>
@@ -2528,19 +2514,21 @@
 <p><strong>State: ContainerState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
-<li><code>depth: int</code></li>
-<li><code>height: int</code></li>
+<li><code>elevation: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>switch: bool</code></li>
 <li><code>content: List[str]</code></li>
+</ul>
+<p><strong>Hitbox: StaticHitbox</strong></p>
+<ul>
+<li><code>get(properties, state, frame): returns properties.hitboxes</code></li>
 </ul>
 <h3 id="crates">Crates</h3>
 <p>Crates are Objects who state can be altered by in-game physics. For example, when a Sprite collides with a Crate, momentum is transferred from the Sprite to the Crate. See <a href="../05-mechanics/#spatial">CollisionMechanics</a> for more information on the physics of game collisions.</p>
 <p><strong>State: PositionalState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
-<li><code>depth: int</code></li>
-<li><code>height: int</code></li>
+<li><code>elevation: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>velocity: Velocity</code></li>
 </ul>
@@ -2549,13 +2537,16 @@
 <li><code>keys(id, state): returns [ (id, 0, 0) ] "</code></li>
 <li><code>index(self, id, properties): returns { id: (0, 0, properties.dimensions.w, properties.dimensions.l) }</code></li>
 </ul>
+<p><strong>Hitbox: StaticHitbox</strong></p>
+<ul>
+<li><code>get(properties, state, frame): returns properties.hitboxes</code></li>
+</ul>
 <h3 id="doors">Doors</h3>
-<p>Doors are Objects that alter a Sprite's <code>sprite.state.layer</code>. When a Sprite enters the hitbox of a Door, the <code>sprite.state.layer</code> is changed to the <code>door.state.outlayer</code> at the <code>door.state.out</code> Position.</p>
+<p>Doors are Objects that alter a Sprite's <code>layer</code>. When a Sprite <em>interacts</em> (<code>intention = 'interact'</code>) with the hitbox of a Door, the <code>sprite.state.layer</code> is changed to the <code>door.state.outlayer</code> and <code>sprite.state.position</code> is changed to the <code>door.state.out</code> Position.</p>
 <p><strong>State: DoorState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
-<li><code>depth: int</code></li>
-<li><code>height: int</code></li>
+<li><code>elevation: int</code></li>
 <li><code>outlayer: str</code></li>
 <li><code>position: Position</code></li>
 <li><code>out: Position</code></li>
@@ -2565,8 +2556,12 @@
 <li><code>keys(id, state): returns [ (id, 0, 0) ]</code></li>
 <li><code>index(id, properties): returns { id: (0, 0, properties.dimensions.w, properties.dimensions.l) }</code></li>
 </ul>
+<p><strong>Hitbox: StaticHitbox</strong></p>
+<ul>
+<li><code>get(properties, state, frame): returns properties.hitboxes</code></li>
+</ul>
 <h3 id="gates">Gates</h3>
-<p>Gates are Binary Objects whose state is connected to Plates. When a Gate is on (open), it does not have hitboxes and the player can pass freely through it. When a Gate is off (closed), its hitboxes prevent the player from passing through its area.</p>
+<p>Gates are <em>Binary Objects</em> whose state is linked to Plates. When a Gate is on (open), it does not have hitboxes and the player can pass freely through it. When a Gate is off (closed), its hitboxes prevent the player from passing through its area.</p>
 <p><strong>Animation: BinaryAnimation</strong></p>
 <ul>
 <li><code>if state.switch == true: state.animation.frame = 1</code></li>
@@ -2580,14 +2575,38 @@
 <p><strong>State: SwitchState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
-<li><code>depth: int</code></li>
-<li><code>height: int</code></li>
+<li><code>elevation: int</code></li>
 <li><code>link: str</code></li>
 <li><code>position: Position</code></li>
 <li><code>switch: bool</code></li>
 </ul>
+<p><strong>Hitbox: StaticHitbox</strong></p>
+<ul>
+<li><code>get(properties, state, frame): returns properties.hitboxes</code></li>
+</ul>
+<div class="admonition todo">
+<p class="admonition-title">Gate Hitboxes</p>
+<p>Gate Hitboxes should be dynamic.</p>
+</div>
+<h3 id="obstacles">Obstacles</h3>
+<p>Obstacles are immutable, inanimate Objects. They are meant to encapsulate natural obstructions such as rocks, outcroppings and other barriers.</p>
+<p><strong>State: Positional</strong></p>
+<ul>
+<li><code>layer: str</code></li>
+<li><code>elevation: int</code></li>
+<li><code>position: Position</code></li>
+</ul>
+<p><strong>Frame: SingleFrame</strong></p>
+<ul>
+<li><code>keys(id, state): returns [ (id, 0, 0) ]</code></li>
+<li><code>index(id, properties): returns { id: (0, 0, properties.dimensions.w, properties.dimensions.l) }</code></li>
+</ul>
+<p><strong>Hitbox: StaticHitbox</strong></p>
+<ul>
+<li><code>get(properties, state, frame): returns properties.hitboxes</code></li>
+</ul>
 <h3 id="plates">Plates</h3>
-<p>Plates are Binary Objects whose state can be changed by intersection, e.g. when a Sprite enters its hitbox a Plate will flip its <code>switch</code>. When activated, a Plate in turn notifies the state of its <code>link</code>-keyed Gate to change.</p>
+<p>Plates are Binary Objects whose state can be changed by collision, e.g. when a Sprite enters its hitbox a Plate will flip its <code>switch</code>. When activated, a Plate in turn notifies the state of its <code>link</code>-keyed Gate to change.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Plates must have their <code>mass</code> property configured to be <code>-1</code>, to exclude them from the collision resolution while keeping the collision detection active, i.e. Plates do not move due to collisions, but register when other Assets are intersecting them. Plates are considered <em>Sensors</em>. See <a href="../05-mechanics/#spatial">CollisionMechanics</a> for more information.</p>
@@ -2605,11 +2624,14 @@
 <p><strong>State: SwitchState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
-<li><code>depth: int</code></li>
-<li><code>height: int</code></li>
+<li><code>elevation: int</code></li>
 <li><code>link: str</code></li>
 <li><code>position: Position</code></li>
 <li><code>switch: bool</code></li>
+</ul>
+<p><strong>Hitbox: StaticHitbox</strong></p>
+<ul>
+<li><code>get(properties, state, frame): returns properties.hitboxes</code></li>
 </ul>
 <h3 id="rafts">Rafts</h3>
 <p>Rafts are mutable, inanimate Objects that allow Sprites and Players to traverse Fluid corridors without entering the <code>submerged</code> state or being swept away individually. Rafts do not obstruct Fluid flow.</p>
@@ -2617,8 +2639,7 @@
 <ul>
 <li>When deployed in a Fluid corridor, a Raft drifts along the Fluid's <code>source</code> vector at a speed proportional to <code>flow</code>.</li>
 <li>Characters boarding a Raft have their <code>mutators.triggers.submerged</code> mutator suppressed.</li>
-<li>While aboard, character locomotion is evaluated relative to the Raft's deck:
-  $<span class="arithmatex">\(\vec{v}_{\text{world}} = \vec{v}_{\text{locomotion}} + \vec{v}_{\text{raft}}\)</span>$</li>
+<li>While aboard, character locomotion is evaluated relative to the Raft's area: <span class="arithmatex">\(\vec{v}_{\text{world}} = \vec{v}_{\text{locomotion}} + \vec{v}_{\text{raft}}\)</span></li>
 </ul>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
@@ -2630,11 +2651,14 @@
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
 <li><code>velocity: Velocity</code></li>
-<li><code>depth: int = 0</code></li>
-<li><code>height: Optional[int] = None</code></li>
+<li><code>elevation: int</code></li>
+</ul>
+<p><strong>Hitbox: StaticHitbox</strong></p>
+<ul>
+<li><code>get(properties, state, frame): returns properties.hitboxes</code></li>
 </ul>
 <h3 id="signs">Signs</h3>
-<p>Signs are immutable, inanimate Objects whose <code>content</code> is transmitted into a <a href="../06-widgets/#menus">Text Menu</a> when a Player enters into the <code>interact</code> <a href="../04-intentions/">Intention</a>.</p>
+<p>Signs are immutable, inanimate Objects whose <code>content</code> is transmitted into a <a href="../06-widgets/#menus">Text Menu</a> when a Player enters into the <code>interact</code> <a href="../04-intentions/">Intention</a> with them.</p>
 <p>Signs utilize <code>persona</code> and <code>lexicon</code> keys to grab the appropriate content from the <a href="../08-plots/#library">Library</a></p>
 <p><strong>Animation: None</strong></p>
 <p>N/A</p>
@@ -2653,51 +2677,58 @@
 <p class="admonition-title">SeasonMechanics</p>
 <p>Add linkage between Sign lexicon key and Resource SeasonMechanics.</p>
 </div>
+<p><strong>Hitbox: StaticHitbox</strong></p>
+<ul>
+<li><code>get(properties, state, frame): returns properties.hitboxes</code></li>
+</ul>
 <h2 id="crafts">Crafts</h2>
 <ul>
-<li>Property File: <code>/src/assets/crafts/main.yaml</code></li>
+<li>Property File: <code>/src/assets/crafts/**/*.yaml</code></li>
 </ul>
-<p>Crafts are Assets that can be instantiated through game <a href="../05-mechanics/">Mechanics</a>, such as <code>CommerceMechanics</code> or <code>ChemistryMechanics</code>. All Crafts have a <code>cost</code> associated with them. </p>
+<p>Crafts are Assets that can be instantiated through game <a href="../05-mechanics/">Mechanics</a>, such as CommerceMechanics or ChemistryMechanics. All Crafts have a <code>cost</code> associated with them. </p>
 <p><strong>Cost</strong></p>
 <p>Cost is a set of quantities that must be satisfied before the Craft can be instantiated. It is a "formula" for the Craft's creation. </p>
 <div class="highlight"><pre><span></span><code><span class="nt">cost</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">quantity</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;key&gt;</span>
+<span class="w">      </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;quantity&gt;</span>
 </code></pre></div>
-<p>The <code>key</code> referenced in the <code>cost</code> depends on the Instance type of the Craft. For example, a Strut costs Inventory Loot. The <code>cost</code> of a Strut is deducted from a Sprite's Inventory Loot when being instantiated.</p>
+<p>The <code>&lt;key&gt;</code> in the <code>cost</code> is a reference to <a href="../02-sprites/#inventory">Inventory Loot</a>. The <code>cost</code> of a Strut is deducted from a Sprite's Inventory Loot when being instantiated.</p>
 <p><strong>Properties: CraftProperties</strong></p>
 <ul>
 <li><code>dimensions: Dimensions</code></li>
+<li><code>priority: int</code></li>
 <li><code>hitboxes: List[Hitbox]</code></li>
 <li><code>cost: Cost</code></li>
 <li><code>mass: int</code></li>
 </ul>
+<p>Many Crafts are inherently bound to the process of <a href="../03-compositions/">Composition</a>. Several specifications (Struts, Stairs, Platforms) are covered in more detail in the <a href="../03-compositions/#asset-specifications">Composition documentation</a></p>
 <h3 id="bridges">Bridges</h3>
-<p>Bridges are static, passable Crafts that elevate characters and dynamic items over Fluid corridors, annular pools, and Shoreline margins without entering the <code>submerged</code> state.</p>
-<p><strong>Oriented Frame Atlas</strong></p>
-<p>A Bridge image file embeds both horizontal and vertical Frames spans in a single horizontal row:</p>
+<p>Bridges are immutable, inanimate Crafts that elevate characters and dynamic items over Fluid corridors, annular pools, and Shoreline margins without entering the <code>submerged</code> state.</p>
+<p><strong>Oriented Specification</strong></p>
+<p>A Bridge image file embeds both horizontal and vertical Frames in a single horizontal row:</p>
 <ul>
 <li>Cell 0: <code>horizontal</code> Frame (runs East-West to cross North-South streams).</li>
-<li>Cell 1: <code>vertical</code> FRame (runs North-South to cross East-West streams).</li>
+<li>Cell 1: <code>vertical</code> Frame (runs North-South to cross East-West streams).</li>
 </ul>
-<p>During bootstrap, <code>OrientedFrame</code> indexes these into discrete crop keys: <code>{id}-horizontal</code> and <code>{id}-vertical</code>. At runtime, <code>OrientedFrame.keys()</code> emits the key corresponding to <code>state.orientation</code>.</p>
 <p><strong>Decomposition &amp; Structural Multipliers</strong></p>
 <p>Bridges are deployed via a 1D structural multiplier (<code>multiple.nx</code> for horizontal spans, <code>multiple.ny</code> for vertical spans).</p>
-<p>During world hydration or dynamic execution of the <code>build</code> Intention, the <code>Decomposer</code> unpacks a <code>BridgeState</code> into a contiguous series of <span class="arithmatex">\(N\)</span> unit <code>Asset</code> instances:
-* Each constituent segment receives an independent, absolute <code>Position</code> offset along the primary span axis.
-* Each constituent segment references the base unit's static <code>CraftProperties</code>, preserving immutable dimensions and relative hitboxes.
-* Construction cost scales linearly with span length (<span class="arithmatex">\(N \times \text{Cost}\)</span>).</p>
+<p>During world hydration or dynamic execution of the <code>build</code> Intention, the Decomposer unpacks a BridgeState into a contiguous series of <span class="arithmatex">\(N\)</span> unit Asset instances:</p>
+<ul>
+<li>Each segment receives an absolute Position offset along the primary axis.</li>
+<li>Each segment references the base unit's static properties, preserving immutable dimensions and relative hitboxes.</li>
+<li>Construction cost scales linearly with span (<span class="arithmatex">\(N \times \text{Cost}\)</span>).</li>
+</ul>
 <p><strong>Dynamics &amp; Environmental Interception</strong></p>
 <ul>
 <li>Bridges are registered as Sensors (<span class="arithmatex">\(m = -1\)</span>). They do not participate in momentum transfer or collision overlap resolution.</li>
-<li>Bridges are excluded from <code>Board.obstacles()</code> and <code>Board.weights()</code>, allowing <code>NavigationMechanics</code> (RRT) to pathfind across river crossings.</li>
-<li>In <code>MotionMechanics</code> (<code>fields.py</code>), intersecting a Bridge marks the entity as being on a surface:</li>
+<li>Bridges are excluded from the <a href="../00-overview/#board">Boards Physics Queries</a>, allowing mechanics to pathfind across river crossings.</li>
+<li>In <a href="../05-mechanics/#motionmechanics">MotionMechanics</a>, intersecting a Bridge marks the Asset as being on a surface:</li>
 <li>Fluid immersion and current velocity drift are suppressed (<span class="arithmatex">\(\vec{v}_{\text{drift}} = \vec{0}\)</span>).</li>
 <li>Shoreline step-down nudges, ledge constraints, and splash particle emissions are bypassed.</li>
 <li><code>mutators.triggers.submerged</code> is cleared to <code>False</code>.</li>
 </ul>
-<p><strong>Z-Ordering &amp; Perspective</strong></p>
-<p>Bridges declare an explicit <code>height: 0</code> and <code>depth: 1</code>. This guarantees that Bridge decks render above background Tiles, Fluids (<code>depth: -1</code>), and Shorelines (<code>depth: 0</code>), while allowing entities crossing the deck to sort above the Bridge via dynamic geometric height (<span class="arithmatex">\(y + l\)</span>).</p>
+<p><strong>Ordering &amp; Perspective</strong></p>
+<p>Bridges belong to a dedicated Substrate, <code>elevation = -1</code>. This guarantees that Bridge area renders above Environ Tiles, Fluids, and Shorelines, while allowing dynamic Assets crossing their area to render above the Bridge via their baseline footprint (<span class="arithmatex">\(y + l\)</span>) and <a href="../11-architecture/#rendering">the Painter's Algorithm</a>.</p>
 <p><strong>Frame: OrientedFrame</strong></p>
 <ul>
 <li><code>keys(id, state): returns [(f"{id}-{state.orientation}", 0, 0)]</code></li>
@@ -2712,75 +2743,30 @@
 <li><code>orientation: str</code> (<code>horizontal</code>, <code>vertical</code>)</li>
 <li><code>multiple: Multiple</code> (<code>nx &gt; 1</code> or <code>ny &gt; 1</code>)</li>
 <li><code>owner: Optional[str]</code></li>
-<li><code>depth: int = 1</code></li>
-<li><code>height: Optional[int] = 0</code></li>
+<li><code>elevation: int</code></li>
 </ul>
-<h3 id="struts">Struts</h3>
-<p><em>Struts</em> are inanimate, immutable Assets. <em>Struts</em> are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. In other words, they possess an <code>owner</code>. </p>
-<p>Struts may be placed on the Board through the state files manually, but are instantiated ingame through the <code>build</code> <a href="../04-intentions/">Intention</a>. This is an oversimplification, as Struts are closely related to <a href="../03-compositions/">Asset Compositions</a>, but generally true.</p>
-<p><strong>Animation: None</strong></p>
-<p>N/A</p>
-<p><strong>Frame: SingleFrame</strong></p>
+<p><strong>Hitbox: StaticHitbox</strong></p>
 <ul>
-<li><code>keys(id, state): returns [ (id, 0, 0) ]</code></li>
-<li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>get(properties, state, frame): returns properties.hitboxes</code></li>
 </ul>
-<p><strong>State: PropertyState</strong></p>
-<ul>
-<li><code>layer: str</code></li>
-<li><code>depth: int</code></li>
-<li><code>height: int</code></li>
-<li><code>position: Position</code></li>
-<li><code>owner: str</code></li>
-</ul>
-<h3 id="stairs">Stairs</h3>
-<p>Stairs are static Crafts sensors (<span class="arithmatex">\(m = -1\)</span>) that provide continuous elevation transitions across discrete <span class="arithmatex">\(Z\)</span>-plane tiers (<span class="arithmatex">\(E \to E + \delta\)</span>).</p>
-<p><strong>Hitbox: DirectedHitbox</strong></p>
-<ul>
-<li><code>properties.hitboxes[state.direction]</code></li>
-</ul>
-<p><strong>Frame: DirectedFrame</strong></p>
-<ul>
-<li><code>keys(id, state)</code>: returns <code>[(f"{id}-{state.direction}", 0, 0)]</code></li>
-<li><code>index(id, properties)</code>: returns <code>{f"{id}-{Directions.*}": (0, 0, w, l)}</code></li>
-</ul>
-<p><strong>State: StairState</strong></p>
-<ul>
-<li><code>layer: str</code></li>
-<li><code>position: Position</code></li>
-<li><code>elevation: int = 0</code></li>
-<li><code>direction: str</code> (<code>up</code>, <code>down</code>, <code>left</code>, <code>right</code>)</li>
-<li><code>delta: int = 1</code></li>
-<li><code>owner: Optional[str] = None</code></li>
-</ul>
-<h3 id="platforms">Platforms</h3>
-<p>Platforms are inanimate, immutable Assets that model elevated surfaces. In order to be traversed, the Asset traversing must be on the same elevation as the Platform. </p>
-<p>Platforms have two kinds of hitboxes: baseline hitboxes and elevated hitboxes, where the former determines the Platform's collision physics on the ground level (<code>elevation = 0</code>) and the latter determines the Platform's collision physics on the elevated level (<code>elevation = platform.elevation</code>)</p>
-<p>TODO</p>
-<p><strong>Frame: SingleFrame</strong></p>
-<p>TODO</p>
-<p><strong>State: PlatformState</strong></p>
-<p>TODO</p>
-<p><strong>Hitbox: ElevatedHitbox</strong></p>
 <h2 id="cursors">Cursors</h2>
 <ul>
-<li>Property File: <code>/src/assets/cursors/main.yaml</code></li>
+<li>Property File: <code>/src/assets/cursors/**/*.yaml</code></li>
 </ul>
 <p>Cursors are inanimate, mutable Assets. Cursors track positions and trajectories. They are divided into Expressions and Projectiles.</p>
 <p><strong>Properties: ObjectProperties</strong></p>
 <ul>
 <li><code>dimensions: Dimensions</code></li>
+<li><code>priority: int</code></li>
 </ul>
 <h3 id="expressions">Expressions</h3>
-<p>Expressions are "Phantom States" used as visual decorators. Unlike most Assets, Expressions are not instantiated as physical entities on the Board. Instead, their spatial offsets and frame keys are calculated dynamically by the <a href="../00-overview/#board">Cradle</a> and embedded directly into a Sprite's <code>Psyche</code> state as pure data. When the Sprite is rendered, the <code>SpriteFrame</code> reads this embedded data and superimposes the Expression into the rendering pipeline.</p>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
+<p>Expressions are "Phantom States" used as visual decorators. Unlike most Assets, Expressions are not instantiated as physical entities on the Board. Instead, their spatial offsets and frame keys are calculated dynamically by the <a href="../00-overview/#board">Cradle</a> and embedded directly into a Sprite's state as pure data. When the <a href="../02-sprites/#psyche">Sprite</a> is rendered, the SpriteFrame reads this embedded data and superimposes the Expression into the rendering pipeline.</p>
+<p><strong>Required Expression Assets</strong></p>
 <p>Due to the nature of Expressions as representations of the Sprite's internal state, there exists a hard dependency between Expression image files and their properties and the possible Expression frame enumerations. Each file name must exist and the following frames must be indexed by the Expression property index,</p>
 <ul>
 <li>bubbles: <code>agreement</code>, <code>anger</code>, <code>confusion</code>, <code>disagreement</code>, <code>loquacity</code>, <code>surprise</code>, <code>tired</code></li>
 <li>buffs: TODO</li>
 </ul>
-</div>
 <p><strong>Animation: None</strong></p>
 <p>N/A</p>
 <p><strong>Frame: IndexFrame</strong></p>
@@ -2794,6 +2780,8 @@
 <li><code>offset: Position</code></li>
 <li><code>ttl: int</code>: Number of game ticks for which the Expression is present.</li>
 </ul>
+<p><strong>Hitbox: None</strong></p>
+<p>N/A</p>
 <h3 id="projectiles">Projectiles</h3>
 <p>Projectiles are spawned via the <code>shoot</code> Action (entered through the <code>attack</code> <a href="../04-intentions/">Intention</a> when the <code>longbow</code> <a href="../02-sprites/#equipment">Equipment</a> is slotted, for instance) with a certain direction and velocity and then follow a fixed trajectory based on the spawn conditions. Projectiles will either impact a hitbox or trigger garbage-collection and be removed from the <a href="../00-overview/#board">Board</a>.</p>
 <p><strong>Animation: None</strong></p>
@@ -2815,10 +2803,34 @@
 </ul>
 <h2 id="effects">Effects</h2>
 <ul>
-<li>Property File: <code>/src/assets/effects/main.yaml</code></li>
+<li>Property File: <code>/src/assets/effects/**/*.yaml</code></li>
 </ul>
-<p>Effects are animate Objects used for environmental dressing, hazards, pickups, and interactive mechanisms. </p>
-<p>Most Effects iterate over a single row of frames using <code>IterableFrame</code> and advance via <code>LifecycleAnimation</code>. The only thing that differentiates their instances is their state model.</p>
+<p>Effects are animate Assets used for environmental dressing, hazards, pickups, and interactive mechanisms. </p>
+<p>Most Effects iterate over a single row of frames using <code>IterableFrame</code> and advance via <code>LifecycleAnimation</code>. The only thing that differentiates each instance of an Effect is its state model, excepting Fluid which plays an instrumental role in <a href="../09-ecology/">Ecology</a>.</p>
+<p><strong>Lifecycles</strong></p>
+<p>Rather than implementing separate Animation classes to handle Effect animations (which would lead to a combinatorial explosion with the composition of Animation and State implementations to span the space of possible Effects instances, e.g. <code>HarzardContinuousAnimation</code>, <code>HazardPeriodicAnimation</code>, <code>HazardTemporaryAnimation</code> would have the same functional purpose of being a Hazard but different logic handling their Animation), Effects have a Lifecycle that determines how their Animation is handled.</p>
+<pre class="mermaid"><code>flowchart TD
+    Root["AssetCategory: EFFECTS"]
+
+    Root --&gt; PropertyModel
+    Root --&gt; StateModel
+    Root --&gt; BehaviorStrategy
+
+    subgraph PropertyModel ["Property Model"]
+        direction TB
+        PropContent["EffectProperties: dimensions, hitboxes, mass, lifecycle"]
+    end
+
+    subgraph StateModel ["State Model"]
+        direction TB
+        StateContent["Functional State: passive, hazard, collectable, reactable"]
+    end
+
+    subgraph BehaviorStrategy ["Behavior Strategy"]
+        direction TB
+        BehaviorContent["LifecycleAnimation: continuous, periodic, temporary"]
+    end</code></pre>
+<p>In other words, the State Model determines the function of the Effect, but the Lifecycle determines the Animation update schema.</p>
 <p><strong>Properties: EffectProperties</strong></p>
 <ul>
 <li><code>dimensions: Dimensions</code></li>
@@ -2845,32 +2857,8 @@
 <li><code>keys(id, state): returns [ ("{id}-{state.animation.frame}", 0, 0) ]</code></li>
 <li><code>index(id, properties): returns { "{id}-{i}": (i * w, 0, w, l) for i in range(properties.count) }</code></li>
 </ul>
-<p><strong>Lifecycles</strong></p>
-<p>Rather than implementing separate Animation classes to handle Effect animations (which would lead to a combinatorial explosion with the composition of Animation and State implementations to span the space of possible Effects instances, e.g. <code>HarzardContinuousAnimation</code>, <code>HazardPeriodicAnimation</code>, <code>HazardTemporaryAnimation</code> would have the same functional purpose of being a Hazard but different logic handling their Animation), Effects have a Lifecycle that determines how their Animation is handled.</p>
-<pre class="mermaid"><code>flowchart TD
-    Root["AssetCategory: EFFECTS"]
-
-    Root --&gt; PropertyModel
-    Root --&gt; StateModel
-    Root --&gt; BehaviorStrategy
-
-    subgraph PropertyModel ["Property Model"]
-        direction TB
-        PropContent["EffectProperties: dimensions, hitboxes, mass, lifecycle"]
-    end
-
-    subgraph StateModel ["State Model"]
-        direction TB
-        StateContent["Functional State: passive, hazard, collectable, reactable"]
-    end
-
-    subgraph BehaviorStrategy ["Behavior Strategy"]
-        direction TB
-        BehaviorContent["LifecycleAnimation: continuous, periodic, temporary"]
-    end</code></pre>
-<p>In other words, the State Model determines the function of the Effect, but the Lifecycle determines the Animation update schema.</p>
 <h3 id="passive">Passive</h3>
-<p>Passive effects that do not participate in collision resolution or interactions (e.g., torches, water ripples, falling leaves).</p>
+<p>Passive Effects are animate, immutable Assets that do not participate in collision resolution or interactions (e.g., torches, water ripples, falling leaves).</p>
 <p><strong>Required Passive Effects</strong></p>
 <p>Due to dependencies on other Assets and Mechanics, the following Passive Effects are required to exist at runtime,</p>
 <ul>
@@ -2879,18 +2867,18 @@
 <p><strong>State: AnimatorState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
-<li><code>depth: int</code></li>
-<li><code>height: int</code></li>
+<li><code>elvation: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>animation: Animation</code></li>
 </ul>
+<p><strong>Hitbox: None</strong></p>
+<p>N/A</p>
 <h3 id="hazards">Hazards</h3>
-<p>Hazard Effects deal damage to overlapping dynamic entities (e.g., lava, floor spikes, poison gas clouds).</p>
+<p>Hazard Effects deal damage to intersecting Asset (e.g., lava, floor spikes, poison gas clouds).</p>
 <p><strong>State: HazardState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
-<li><code>depth: int</code></li>
-<li><code>height: int</code></li>
+<li><code>elevation: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>animation: Animation</code></li>
 <li><code>damage: Damage</code><ul>
@@ -2900,13 +2888,16 @@
 </ul>
 </li>
 </ul>
+<p><strong>Hitbox: StaticHibox</strong></p>
+<ul>
+<li><code>get(properties, state, frame): returns properties.hitboxes</code></li>
+</ul>
 <h3 id="collectables">Collectables</h3>
 <p>Collectables are Effects that transfer loot keys into a Sprite's or Player's inventory upon hitbox intersection (e.g., dropped coins, potions).</p>
 <p><strong>State: CollectableState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
-<li><code>depth: int</code></li>
-<li><code>height: int</code></li>
+<li><code>elevation: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>animation: Animation</code></li>
 <li><code>lot: Lot</code><ul>
@@ -2916,23 +2907,48 @@
 </ul>
 </li>
 </ul>
+<p><strong>Hitbox: StaticHibox</strong></p>
+<ul>
+<li><code>get(properties, state, frame): returns properties.hitboxes</code></li>
+</ul>
 <h3 id="reactables">Reactables</h3>
 <p>Reactables Effects react to the <a href="../04-intentions/">Intentional</a> states of <a href="../02-sprites/">Sprites</a>.</p>
 <p><strong>State: ReactableState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
-<li><code>depth: int</code></li>
+<li><code>elevation: int</code></li>
 <li><code>height: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>animation: Animation</code></li>
 <li><code>intention</code></li>
 </ul>
+<p><strong>Hitbox: StaticHibox</strong></p>
+<ul>
+<li><code>get(properties, state, frame): returns properties.hitboxes</code></li>
+</ul>
 <h3 id="fluids">Fluids</h3>
-<p>Fluids are directional Effects that project along a <code>source</code> Direction until obstructed by an obstacle. Once obstructed, Fluids form Pools around the obstacle and bifuricate into secondary streams.</p>
+<p>Fluids are directional Effects that project along a <code>source</code> Direction until obstructed by an obstruction (which includes, but is not limited to <a href="#obstacles">Obstacles</a>). Once obstructed, Fluids form Pools around the obstruction and bifuricate into secondary streams.</p>
+<p><strong>State: ReactableState</strong></p>
+<ul>
+<li><code>layer: Optional[str]</code></li>
+<li><code>position: Position</code></li>
+<li><code>source: Directions</code></li>
+<li><code>flow: int</code></li>
+<li><code>length: int</code></li>
+<li><code>pool: Optional[Pool]</code></li>
+<li><code>branches: List[Branch]</code></li>
+<li><code>hitboxes: List[Hitbox]</code></li>
+<li><code>dirty: bool = True</code></li>
+<li><code>elevation: int</code></li>
+</ul>
+<p><strong>Hitbox: DynamicHitbox</strong></p>
+<ul>
+<li><code>get(properties, state, frame): returns state.hitboxes</code></li>
+</ul>
 <p>Fluids play a vital role in Seasons and Ecology. They are covered in more detail in the <a href="../09-ecology/#instance-fluids">Ecology documentation</a>.</p>
 <h2 id="geography">Geography</h2>
 <ul>
-<li>Property File: <code>/src/assets/geography/main.yaml</code></li>
+<li>Property File: <code>/src/assets/geography/**/*.yaml</code></li>
 </ul>
 <p>Geography Assets represent inanimate, immutable structural and topographical landforms (e.g., shorelines, cliffs, ledges, and terraces).</p>
 <ol>
@@ -2940,34 +2956,39 @@
 <li>Columns (0..3): <code>spring</code>, <code>summer</code>, <code>autumn</code>, <code>winter</code></li>
 <li>Rows (0..3): <code>0: up</code>, <code>1: left</code>, <code>2: down</code>, <code>3: right</code></li>
 <li><strong>Keying</strong>: Uses <code>Seasons</code> and <code>Directions</code>. Keys follow <code>{id}-{season}-{direction}</code> with fractional slices keyed as <code>{id}-{season}-{direction}-{rem}</code>.</li>
-<li><strong>Z-Ordering</strong>: Shorelines declare an explicit <code>height: 0</code> and <code>depth: 0</code>. This guarantees shorelines render above Fluid corridors (<code>depth: -1</code>) but sort underneath physical entities (<code>height: y + l</code>).</li>
-<li><strong>Lifecycle &amp; Caching</strong>: Shorelines are procedural entities generated via <code>Cartographer</code>. Frame keys are computed via <code>CardinalFrame.keys()</code> and cached on <code>state._keys</code>. When <code>SeasonMechanics</code> emits a <code>SeasonEvent</code>, active shoreline state seasons are synchronized and frame caches invalidated (<code>state._keys = None</code>) without triggering geometric regeneration.</li>
+<li><strong>Ordering</strong>: Shorelines below to a dedicated Substrate, <code>elevation = -3</code>, to guarantee the correct ordering.</li>
+<li><strong>Lifecycle &amp; Caching</strong>: Shorelines are procedural entities generated via the <em>Cartographer</em> class. Frame keys are computed  and cached on <code>state._keys</code>. When <a href="../05-mechanics/#world">SeasonMechanics</a> emits a SeasonEvent, active Shoreline state seasons are synchronized and frame caches invalidated (<code>state._keys = None</code>) without triggering geometric regeneration.</li>
 </ol>
 <p><strong>Relational Secondary Keys</strong></p>
-<p>Geography assets act as relational bridges across environmental categories. Specifically, Shorelines declare secondary keys referencing the background <code>Tile</code> (and optionally <code>Fluid</code>) assets they border:</p>
+<p>Geography Assets act as relational bridges across environmental Categories and instance. Specifically, Shorelines declare secondary keys referencing the <a href="#environ">Environ Tile</a> (and optionally <a href="#fluids">Fluid Effect</a>) Assets they border:</p>
 <ul>
-<li><code>tile: str</code>: Asset ID of the terrain tile to which this geography margin binds.</li>
-<li><code>fluid: Optional[str]</code>: Optional asset ID of the fluid type required to activate this margin.</li>
+<li><code>tile: str</code>: Asset ID of the <a href="#environ">Environ Tile</a> to which this geography margin binds.</li>
+<li><code>fluid: Optional[str]</code>: Optional Asset ID of the <a href="#fluids">Fluid Effect</a> required to activate this margin.</li>
 </ul>
-<p>During engine bootstrapping, <code>ShorelineIndex</code> compiles these declarations into a composite lookup map:</p>
+<p>Formally, this relation is expressed,</p>
 <p>$
 \text{Index}[(tile_id, fluid_id)] \to shoreline_id
 $</p>
 <p><strong>Properties: GeographyProperties</strong></p>
 <ul>
 <li><code>dimensions: Dimensions</code></li>
+<li><code>priority: int</code></li>
+<li><code>mass: int</code></li>
+<li><code>thickness: int</code></li>
 <li><code>hitboxes: List[Hitbox]</code></li>
-<li><code>tile: str</code></li>
-<li><code>fluid: Optional[str] = None</code></li>
-<li><code>thickness: int = 8</code></li>
-<li><code>mass: int = -1</code></li>
+<li><code>tile: str</code> (Primary key)</li>
+<li><code>fluid: str</code> (Secondary key)</li>
 </ul>
 <p>Geography is not deployed onto the Board in an analogous fashion to other Asset Categories. Instead, Geography is procedurally generated using applications services (e.g. Actuator, Cartographer). See <a href="../09-ecology/#instance-fluids">Ecology documentation</a> for more information.</p>
+<p><strong>Hitbox: DynamicHitbox</strong></p>
+<ul>
+<li><code>get(properties, state, frame): returns state.hitboxes</code></li>
+</ul>
 <h2 id="resources">Resources</h2>
 <ul>
-<li>Property File: <code>/src/assets/resources/main.yaml</code></li>
+<li>Property File: <code>/src/assets/resources/**/*.yaml</code></li>
 </ul>
-<p>Resources are mutable Assets deployed onto the Board that progress through discrete structural or biological stages, dependent on <a href="../05-mechanics/#world">Seasonal</a> parameters. Resources are divided into Crops, Trees and Ores.</p>
+<p>Resources are mutable Assets deployed onto the Board that progress through discrete stages, dependent on <a href="../05-mechanics/#world">Seasonal</a> parameters. </p>
 <p><strong>Loot</strong></p>
 <p>A Resource contains a <code>loot</code> key. When Resources are mined through the <code>mine</code> <a href="../04-intentions/">Intention</a>, they are converted into <a href="#effects">Collectables</a>. The <code>loot</code> key from the Resource is passed to the Collectable via the <a href="../00-overview/#board">Cradle</a> when it is instantiated as a byproduct of <code>mine</code>.</p>
 <p><strong>Properties: ResourceProperties</strong></p>
@@ -2983,13 +3004,17 @@ $</p>
 <li><code>keys(id, state): returns [ (f"{id}-{state.stage}", 0, 0) ]</code></li>
 <li><code>index(id, properties): returns { f"{id}-{stage}": (i * properties.dimensions.w, 0, properties.dimensions.w, properties.dimensions.l) for i, stage in enumerate(properties.lifespan) }</code></li>
 </ul>
+<p><strong>Hitbox: StageHitbox</strong></p>
+<ul>
+<li><code>get(properties, state, frame): returns properties[state.stage].hitboxes</code></li>
+</ul>
 <p><strong>Animation: None</strong></p>
-<p>Resources do not cycle micro-frame animations. Their appearance updates when <code>SeasonMechanics</code> transitions <code>state.stage</code>.</p>
+<p>Resources do not cycle through animations. Their appearance updates when <a href="../05-mechanics/#seasonmechanics">SeasonMechanics</a> transitions <code>state.stage</code>.</p>
 <p><strong>Ecology</strong></p>
-<p>Resources form the core of <a href="../05-mechanics/">SeasonMechanics</a> and possess many unique interactions across Asset classes. They are covered in more detail in the <a href="../09-ecology/#category-resources">Ecology documentation</a></p>
+<p>Resources form the core of <a href="../05-mechanics/#seasonmechanics">SeasonMechanics</a> and possess many unique interactions across Asset classes. They are covered in more detail in the <a href="../09-ecology/#category-resources">Ecology documentation</a></p>
 <h2 id="sheets">Sheets</h2>
 <ul>
-<li>Property File: <code>/src/assets/sheets/main.yaml</code></li>
+<li>Property File: <code>/src/assets/sheets/**/*.yaml</code></li>
 </ul>
 <p><em>Sheets</em> are animate, mutable Assets whose files are arranged in rows of Frames. Sheet form the core Asset of the gameplay loop; they are used to encapsulate character entities, such as the Player and NPC Sprites. Most of the application is scaffolding for the complex interactions and calculations that occur when Sheet Assets interact.</p>
 <p><strong>Sheet Specification</strong></p>
@@ -3062,6 +3087,10 @@ $</p>
 <li><code>actions: Actions</code></li>
 <li><code>mass: int</code></li>
 </ul>
+<p><strong>Hitbox: StaticHitbox</strong></p>
+<ul>
+<li><code>get(properties, state, frame): returns properties.hitboxes</code></li>
+</ul>
 <h3 id="pixies">Pixies</h3>
 <p>Pixies are Sheets that have simple game mechanics, i.e. they are excluded from the complex calculations of the <a href="../04-intentions/">Intention Mechanic</a>. <em>Pixies</em> encapsulate simple Characters, such as animals or bugs.</p>
 <p><strong>Animation: StateAnimation</strong></p>
@@ -3090,43 +3119,7 @@ $</p>
 <p>Widgets are covered in their own section, <a href="../06-widgets/">Widgets</a>.</p>
 <h2 id="fonts">Fonts</h2>
 <p>Fonts are stateless Assets initialized at <a href="../11-architecture/#initialization">runtime</a>. Rather than being deployed onto the Board, Fonts are loaded into the <a href="../00-overview/#registry">Registry</a> and utilized by the <a href="../00-overview/#screen">Screen</a> to rasterize text canvases for Widgets and dialogue modals.</p>
-<p>A Font configuration pairs a <code>.ttf</code> file with styling rules. During bootstrap, the Registry ingests each font declared in <code>/src/assets/fonts/main.yaml</code> alongside its configuration, storing them as styled Cython <code>TTFFont</code> wrappers. When <code>outline</code> is specified, the Registry instantiates a secondary internal outline pointer configured via <code>TTF_SetFontOutline</code>, enabling <code>render.write()</code> to execute two-pass blended rendering (outline pass followed by foreground fill) without runtime glyph cache invalidation.</p>
-<p>In Menu hierarchies, fonts are scoped lexically at the <code>MenuPane</code> level: any <code>font</code> declared on a parent pane cascades down to all child panes and <code>Page</code> widgets unless explicitly shadowed by a nested pane.</p>
-<p>See <a href="../11-architecture/#graphics">Graphics Architecture documentation</a> for technical implementation details.</p>
-<p><strong>Properties: FontProperties</strong></p>
-<ul>
-<li><code>size: int</code>: Point size used during glyph rasterization (defaults to <code>24</code>).</li>
-<li><code>alignment: str</code>: Text alignment within the bounding box (<code>left</code>, <code>center</code>, <code>right</code>).</li>
-<li><code>bold: bool</code>: Toggles <code>TTF_STYLE_BOLD</code>.</li>
-<li><code>italics: bool</code>: Toggles <code>TTF_STYLE_ITALIC</code>.</li>
-<li><code>underline: bool</code>: Toggles <code>TTF_STYLE_UNDERLINE</code>.</li>
-<li><code>strikethrough: bool</code>: Toggles <code>TTF_STYLE_STRIKETHROUGH</code>.</li>
-<li><code>margins: float</code>: Fractional padding applied to the target canvas bounds before wrapping (e.g., <code>0.05</code> for 5%).</li>
-<li><code>color</code>: Primary glyph fill color.<ul>
-<li><code>r: int</code> (0–255)</li>
-<li><code>g: int</code> (0–255)</li>
-<li><code>b: int</code> (0–255)</li>
-<li><code>a: int</code> (0–255)</li>
-</ul>
-</li>
-<li><code>outline</code>: (<em>Optional</em>) Border styling configuration.<ul>
-<li><code>width: int</code>: Perimeter thickness in pixels (<code>outline &gt; 0</code> enables two-pass rendering).</li>
-<li><code>color</code>:<ul>
-<li><code>r: int</code> (0–255)</li>
-<li><code>g: int</code> (0–255)</li>
-<li><code>b: int</code> (0–255)</li>
-<li><code>a: int</code> (0–255)</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p><strong>Required Fonts</strong></p>
-<ul>
-<li><code>dialogue</code>: Standard proportional font used to render NPC conversations and narrative logs.</li>
-<li><code>menu</code>: High-contrast, styled font used for interactive UI controls and button labels.</li>
-<li><code>title</code>: Large-format font used for menu headers and screen titles.</li>
-</ul>
+<p>See <a href="../11-architecture/#fonts">Fonts documentation</a> for more information.</p>
 
 
 

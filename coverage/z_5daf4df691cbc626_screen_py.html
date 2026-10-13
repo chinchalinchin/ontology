@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for src/app/game/screen.py: 56%</title>
+    <title>Coverage for src/app/game/screen.py: 57%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_c827f16f.png">
     <link rel="stylesheet" href="style_cb_4667309f.css" type="text/css">
     <script src="coverage_html_cb_15cffcd0.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>src<span class="sep">/</span>app<span class="sep">/</span>game<span class="sep">/</span>screen.py</b>:
-            <span class="pc_cov">56%</span>
+            <span class="pc_cov">57%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -55,8 +55,8 @@
         </aside>
         <h2>
             <span class="text">206 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">116<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">90<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">117<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">89<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="z_426c5bc0f33f5411___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.16.2">coverage.py v7.16.2</a>,
-            created at 2026-10-12 02:46 +0000
+            created at 2026-10-13 22:04 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -191,9 +191,9 @@
     <p class="run run2"><span class="n"><a id="t109" href="#t109">109</a></span><span class="t">                    <span class="nam">tile</span><span class="op">.</span><span class="nam">state</span><span class="op">.</span><span class="nam">multiple</span><span class="op">.</span><span class="nam">nx</span><span class="op">,</span> <span class="nam">tile</span><span class="op">.</span><span class="nam">state</span><span class="op">.</span><span class="nam">multiple</span><span class="op">.</span><span class="nam">ny</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t110" href="#t110">110</a></span><span class="t">                <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t111" href="#t111">111</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t112" href="#t112">112</a></span><span class="t">                <span class="key">if</span> <span class="nam">tile</span><span class="op">.</span><span class="nam">taxonomy</span><span class="op">.</span><span class="nam">instance</span> <span class="op">==</span> <span class="nam">AssetInstances</span><span class="op">.</span><span class="nam">BACK</span><span class="op">.</span><span class="nam">value</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t112" href="#t112">112</a></span><span class="t">                <span class="key">if</span> <span class="nam">tile</span><span class="op">.</span><span class="nam">taxonomy</span><span class="op">.</span><span class="nam">instance</span> <span class="op">==</span> <span class="nam">AssetInstances</span><span class="op">.</span><span class="nam">ENVIRON</span><span class="op">.</span><span class="nam">value</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t113" href="#t113">113</a></span><span class="t">                    <span class="nam">back_tiles</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="nam">tile_tuple</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t114" href="#t114">114</a></span><span class="t">                <span class="key">elif</span> <span class="nam">tile</span><span class="op">.</span><span class="nam">taxonomy</span><span class="op">.</span><span class="nam">instance</span> <span class="op">==</span> <span class="nam">AssetInstances</span><span class="op">.</span><span class="nam">FORE</span><span class="op">.</span><span class="nam">value</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t114" href="#t114">114</a></span><span class="t">                <span class="key">elif</span> <span class="nam">tile</span><span class="op">.</span><span class="nam">taxonomy</span><span class="op">.</span><span class="nam">instance</span> <span class="op">==</span> <span class="nam">AssetInstances</span><span class="op">.</span><span class="nam">CANOPY</span><span class="op">.</span><span class="nam">value</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t115" href="#t115">115</a></span><span class="t">                    <span class="nam">fore_tiles</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="nam">tile_tuple</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t116" href="#t116">116</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t117" href="#t117">117</a></span><span class="t">        <span class="key">return</span> <span class="nam">back_tiles</span><span class="op">,</span> <span class="nam">fore_tiles</span>&nbsp;</span><span class="r"></span></p>
@@ -591,7 +591,7 @@
             <a class="nav" href="z_426c5bc0f33f5411___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.16.2">coverage.py v7.16.2</a>,
-            created at 2026-10-12 02:46 +0000
+            created at 2026-10-13 22:04 +0000
         </p>
     </div>
 </footer>
