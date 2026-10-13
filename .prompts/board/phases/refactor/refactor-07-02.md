@@ -64,6 +64,12 @@ A Platform has two responsibilities:
 
 *Objective*: Verify obstacle obstruction, deck traversal, and attackbox integrity across elevation planes.
 
-* [!: Conditional on User Acceptance Testing Success] Subtask: Add unit test in `tests/test_collision.py` asserting an entity at $E = 0$ is obstructed by a platform's tier 0 facade.
-* [!: Conditional on User Acceptance Testing Success] Subtask: Add unit test in `tests/test_collision.py` asserting an entity at $E = 1$ traverses the platform deck unhindered by the tier 0 facade.
-* [!: Conditional on User Acceptance Testing Success] Subtask: Add integration test verifying stair ascent from $E = 0$ to $E = 1$ transitions an entity from facade obstruction to deck containment.
+* [x] Subtask: Add unit test in `tests/test_collision.py` asserting an entity at $E = 0$ is obstructed by a platform's tier 0 facade.
+* [x] Subtask: Add unit test in `tests/test_collision.py` asserting an entity at $E = 1$ traverses the platform deck unhindered by the tier 0 facade.
+* [x] Subtask: Add integration test verifying stair ascent from $E = 0$ to $E = 1$ transitions an entity from facade obstruction to deck containment.
+
+**7. User Acceptance Session**
+
+*Objective*: Debug live execution of the game engine.
+
+- [ ] Subtask: Debug the [User Session](#view-session).

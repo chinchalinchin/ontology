@@ -64,7 +64,7 @@ def mock_recipes_configuration() -> RecipeConfiguration:
             stairs=Recipe(
                 frame=FrameRecipe.DIRECTED.value,
                 animation=AnimationRecipe.NONE.value,
-                hitbox=HitboxRecipe.STATIC.value
+                hitbox=HitboxRecipe.DIRECTED.value
             ),
             struts=Recipe(
                 frame=FrameRecipe.SINGLE.value, 

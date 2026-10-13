@@ -9,7 +9,6 @@
 Core Application Dependency Tree
 ///
 
-
 ### Generators
 
 ![Generator Dependencies](../static/svg/dependencies-generators.svg)

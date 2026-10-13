@@ -74,16 +74,16 @@ class CollisionMechanics(SpatialMechanic):
 
             if direction_val == Directions.UP.value:
                 # Ascent moves North (vy < 0); Descent moves South (vy > 0)
-                if tread_progress <= 0.2 and vy < 0:
+                if tread_progress <= 0.85 and vy < 0:
                     sprite.elevation = e_top
-                elif tread_progress >= 0.8 and vy > 0:
+                elif tread_progress >= 0.85 and vy > 0:
                     sprite.elevation = e_base
 
             elif direction_val == Directions.DOWN.value:
                 # Ascent moves South (vy > 0); Descent moves North (vy < 0)
-                if tread_progress >= 0.8 and vy > 0:
+                if tread_progress >= 0.15 and vy > 0:
                     sprite.elevation = e_top
-                elif tread_progress <= 0.2 and vy < 0:
+                elif tread_progress <= 0.15 and vy < 0:
                     sprite.elevation = e_base
 
         # -----------------------------------------------------------------
@@ -98,16 +98,16 @@ class CollisionMechanics(SpatialMechanic):
 
             if direction_val == Directions.RIGHT.value:
                 # Ascent moves East (vx > 0); Descent moves West (vx < 0)
-                if tread_progress >= 0.8 and vx > 0:
+                if tread_progress >= 0.15 and vx > 0:
                     sprite.elevation = e_top
-                elif tread_progress <= 0.2 and vx < 0:
+                elif tread_progress <= 0.15 and vx < 0:
                     sprite.elevation = e_base
 
             elif direction_val == Directions.LEFT.value:
                 # Ascent moves West (vx < 0); Descent moves East (vx > 0)
-                if tread_progress <= 0.2 and vx < 0:
+                if tread_progress <= 0.85 and vx < 0:
                     sprite.elevation = e_top
-                elif tread_progress >= 0.8 and vx > 0:
+                elif tread_progress >= 0.85 and vx > 0:
                     sprite.elevation = e_base
                     
     def _boundary(self, asset: Asset, boundary: Boundary, elevation: int) -> None:

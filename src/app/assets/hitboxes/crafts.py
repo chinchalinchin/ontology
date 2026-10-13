@@ -1,7 +1,5 @@
 """
 # Ontology: app.assets.hitboxes.crafts
-
-## TODO: phase 07-02
 """
 # Standard Libraries
 from typing import (

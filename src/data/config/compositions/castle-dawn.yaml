@@ -277,7 +277,7 @@ compositions:
                   x: 223
                   y: 119
             stairs:
-              - id: stairs-up-stone
+              - id: steps-stone
                 name: castle-dawn-stairs-01
                 owner: bind(root.owner)
                 direction: up
@@ -286,7 +286,7 @@ compositions:
                 position:
                   x: 0
                   y: 216
-              - id: stairs-up-stone
+              - id: steps-stone
                 name: castle-dawn-stairs-02
                 owner: bind(root.owner)
                 direction: up

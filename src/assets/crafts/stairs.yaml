@@ -1,8 +1,8 @@
 crafts:
   stairs:
-    stairs-stone:
+    steps-stone:
       dimensions:
-        w: 32
+        w: 64
         l: 96
       mass: -1
       cost:
@@ -10,26 +10,30 @@ crafts:
           quantity: 12
       hitboxes:
         up:
-          # Left boundary railing
-          - position: { x: 0, y: 27 }
-            dimensions: { w: 1, l: 53 }
-          # Right boundary railing
-          - position: { x: 31, y: 27 }
-            dimensions: { w: 1, l: 53 }
+          - position:
+              x: 0
+              y: 0
+            dimensions:
+              w: 32
+              l: 96
         down:
-          - position: { x: 0, y: 16 }
-            dimensions: { w: 1, l: 53 }
-          - position: { x: 31, y: 16 }
-            dimensions: { w: 1, l: 53 }
+          - position:
+              x: 0
+              y: 0
+            dimensions:
+              w: 32
+              l: 96
         left:
-          # Top boundary railing
-          - position: { x: 16, y: 0 }
-            dimensions: { w: 53, l: 1 }
-          # Bottom boundary railing
-          - position: { x: 16, y: 31 }
-            dimensions: { w: 53, l: 1 }
+          - position:
+              x: 0
+              y: 0
+            dimensions:
+              w: 96
+              l: 32
         right:
-          - position: { x: 27, y: 0 }
-            dimensions: { w: 53, l: 1 }
-          - position: { x: 27, y: 31 }
-            dimensions: { w: 53, l: 1 }
+          - position:
+              x: 0
+              y: 0
+            dimensions:
+              w: 96
+              l: 32

@@ -57,6 +57,7 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 
 - [brick-house](../static/xcf/compositions/brick-house.xcf)
 - [postern-gate](../static/xcf/compositions/postern-gate.xcf)
+- [castle-dawn](../static/xcf/compositions/castle-dawn.xcf)
 
 ### Struts
 
