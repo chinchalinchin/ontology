@@ -2,6 +2,7 @@ crafts:
   struts:
     # ---------------------- RECTANGULAR AREAS
     floor-area-carpet-palace:
+      # description: Persian-style rug with gold outline.
       dimensions:
         w: 161
         l: 160
@@ -11,6 +12,7 @@ crafts:
         - item: cotton
           quantity: 38
     floor-area-marble-checkered:
+      # description: Large ball-room floor
       dimensions: 
         w: 265
         l: 166
@@ -20,6 +22,7 @@ crafts:
         - item: marble
           quantity: 64
     floor-area-wood:
+      # description: Planks of fine wood.
       dimensions:
         w: 128
         l: 96
@@ -30,6 +33,7 @@ crafts:
           quantity: 12
     # --------------------- HORIZONTAL AREAS
     floor-horizontal-stone:
+      # description: Rough hewn stone walkway.
       dimensions:
         w: 289
         l: 81
@@ -39,6 +43,7 @@ crafts:
           quantity: 23
     # --------------------- VERTICAL AREAS
     floor-vertical-marble-diamonds:
+      # description: Extravagant hallway.
       dimensions:
         w: 66
         l: 192

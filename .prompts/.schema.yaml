@@ -44,33 +44,54 @@ tools:
       specs: false
       docs: false
     source:
+      data: false
+      models: false
       workflow: false
+      script: false
     shell:
       directory: false
       commands: false
     tests:  
       console: false
       fixtures: false
+      session: false
       workflow: false
 # ----------------------------------------------------
   parameters:
     manager:
       board:
-        phase: <board-phase>
-        action: <board-action>
+        phase: <phase>
+        action: <action>
       docs:
         exclude:
           - <doc-page>.md
       specs:
         - <spec-page>.md
     source:
+      data:
+        configurations: 
+          - <configuration>
+        properties: 
+          - <property>
+      models: 
+        configurations:
+          - <configuration>
+        properties:
+          - <property>
+        state:
+          - <state>
       workflow: <workflow>
+      script: <script>
     shell:
       directory: tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
       commands: []
     tests:
       console:
-        pytest: pytest -m <workflow>
+        pytest: pytest -m 
+        marker: <workflow>
       fixtures:
         - <fixture>
       workflow: <workflow>
+      session:
+        description: |
+          <description>

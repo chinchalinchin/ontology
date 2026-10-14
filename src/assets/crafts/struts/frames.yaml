@@ -1,6 +1,7 @@
 crafts:
   struts:
     frame-adobe:
+      # description: Baked brick structure for desert climates.
       dimensions:
         w: 96
         l: 160
@@ -16,6 +17,7 @@ crafts:
         - item: clay
           quantity: 15
     frame-brick:
+      # description: Red brick townhouse with roof and stoop.
       dimensions:
         w: 96
         l: 190
