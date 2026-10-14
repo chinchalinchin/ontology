@@ -3,8 +3,9 @@
 | `wood` | 0.75 | 
 | `clay` | 1.00 | 
 | `stone` | 1.25 |
-| `marble` | 1.50 |
-| `cotton` | 1.75 | 
+| `brick` | 1.50 |
+| `marble` | 1.75 |
+| `cotton` | 2 | 
 | `gold` | 5 | 
 
 | Structure | $\delta_{\text{struct}}$ | 

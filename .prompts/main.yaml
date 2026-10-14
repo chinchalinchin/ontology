@@ -116,7 +116,7 @@ tools:
     # --------------------------------------------
     manager:
       board:
-        phase: '07-02'
+        phase: '07-03'
         action: refactor
       docs:
         exclude:

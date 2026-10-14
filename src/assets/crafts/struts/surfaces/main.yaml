@@ -1,0 +1,122 @@
+crafts:
+  struts:
+    # -----------------------------------------
+    # ---------------------------------- FLOORS
+    # -----------------------------------------
+    # ----------------- CARPETS
+    floor-carpet-palace:
+      # description: Persian-style rug with gold outline.
+      dimensions:
+        w: 161
+        l: 160
+      mass: -1
+      priority: -1
+      cost:
+        - item: cotton
+          quantity: 38
+    floor-carpet-gold-border:
+      # description: Plush red carpet with golden border.
+      dimensions:
+        w: 94
+        l: 94
+      mass: -1
+      priority: -1
+      cost: null # TODO
+    floor-carpet-wavy-border:
+      # description: Ornamental tan carpet with intricate border.
+      dimensions:
+        w: 94
+        l: 96
+      mass: -1
+      priority: -1
+      cost: null # TODO
+    # ----------------- BASES
+    floor-granite-border:
+      # description: Granite floor with marble borders.
+      dimensions:
+        w: 96
+        l: 96
+      mass: -1
+      priority: -1
+      cost: null # TODO
+    floor-marble-checkered:
+      # description: Large ball-room floor with checkered pattern.
+      dimensions: 
+        w: 265
+        l: 166
+      mass: -1
+      priority: -1
+      cost:
+        - item: marble
+          quantity: 64
+    floor-marble-diamonds:
+      # description: Extravagant hallway with diamond pattern.
+      dimensions:
+        w: 66
+        l: 192
+      mass: -1
+      cost:
+        - item: marble
+          quantity: 19
+    floor-stone:
+      # description: Rough hewn stone walkway.
+      dimensions:
+        w: 289
+        l: 81
+      mass: -1
+      cost:
+        - item: stone
+          quantity: 23
+    floor-wood:
+      # description: Planks of fine wood.
+      dimensions:
+        w: 128
+        l: 96
+      mass: -1
+      priority: -1
+      cost: 
+        - item: wood
+          quantity: 12
+    # -----------------------------------------
+    # ---------------------------------- STREETS
+    # -----------------------------------------
+    street-brick:
+      # description: Standard grey brick streets.
+      dimensions:
+        w: 96
+        l: 95
+      mass: -1
+      priority: -1
+      cost: null # TODO
+    street-cobblestone:
+      # description: Inlaid cobblestone paths.
+      dimensions:
+        w: 92
+        l: 89
+      mass: -1
+      priority: -1
+      cost: null # TODO
+    street-concrete:
+      # description: Well-made grey brick street.
+      dimensions:
+        w: 96
+        l: 94
+      mass: -1
+      priority: -1
+      cost: null # TODO
+    street-sandstone: 
+      # description: Desert-worn sun-baked brick street.
+      dimensions:
+        w: 96
+        l: 73
+      mass: -1
+      priority: -1
+      cost: null # TODO
+    street-stone:
+      # description: Cut stone streets.
+      dimensions:
+        w: 96
+        l: 96
+      mass: -1
+      priority: -1
+      cost: null # TODO

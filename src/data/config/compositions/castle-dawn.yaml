@@ -59,7 +59,7 @@ compositions:
                 x: 220
                 y: -219
             # Exterior upper walkway deck (elevation: 1)
-            - id: floor-horizontal-stone
+            - id: floor-stone
               name: castle-dawn-flatroof-00
               owner: bind(root.owner)
               elevation: -1
@@ -156,7 +156,7 @@ compositions:
                 y: 140
     branches:
       - strut: 
-          id: floor-area-marble-checkered
+          id: floor-marble-checkered
           name: castle-atrium-floor
           owner: bind(root.owner)
           layer: castle-atrium-layer
@@ -198,35 +198,35 @@ compositions:
               
             struts:
               # --------------- SUBSTRATE FLOORS (elevation: -1)
-              - id: floor-area-marble-checkered
+              - id: floor-marble-checkered
                 name: castle-dawn-floor-02
                 owner: bind(root.owner)
                 elevation: -1
                 position:
                   x: 23
                   y: 213
-              - id: floor-area-marble-checkered
+              - id: floor-marble-checkered
                 name: castle-dawn-floor-03
                 owner: bind(root.owner)
                 elevation: -1
                 position:
                   x: 23
                   y: 81   
-              - id: floor-area-carpet-palace
+              - id: floor-carpet-palace
                 name: castle-dawn-floor-01
                 owner: bind(root.owner)
                 elevation: -1
                 position:
                   x: 75
                   y: 219  
-              - id: floor-vertical-marble-diamonds
+              - id: floor-marble-diamonds
                 name: castle-dawn-floor-04
                 owner: bind(root.owner)
                 elevation: -1
                 position:
                   x: 252
                   y: 187  
-              - id: floor-vertical-marble-diamonds
+              - id: floor-marble-diamonds
                 name: castle-dawn-floor-05
                 owner: bind(root.owner)
                 elevation: -1
