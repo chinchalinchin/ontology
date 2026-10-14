@@ -15,7 +15,7 @@ from app.config.enums import (
 from app.models.state import (
     PlatformState,
     PropertyState,
-    BridgeState,
+    OrientedState,
     StairState
 )
 
@@ -58,11 +58,11 @@ def mock_property_state_alt2() -> PropertyState:
 
 
 @pytest.fixture
-def mock_bridge_state() -> BridgeState:
+def mock_bridge_state() -> OrientedState:
     """
     Bridge craft state initialized to an idle coordinate clear of fluid corridors.
     """
-    return BridgeState(
+    return OrientedState(
         id="wood-bridge",
         name="bridge-main",
         layer="0",

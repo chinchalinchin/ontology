@@ -31,7 +31,8 @@ compositions:
             - id: roof-slate-sloped
               name: citadel-exterior-roof
               owner: bind(root.owner)
-              elevation: 0
+              anchor: anchor(pillar-stone-doric)
+              elevation: 1
               position:
                 x: -34
                 y: -127
@@ -39,7 +40,6 @@ compositions:
               name: citadel-exterior-pillar-left
               owner: bind(root.owner)
               elevation: 0
-              anchor: anchor(root)
               position:
                 x: -32
                 y: -48
@@ -47,7 +47,6 @@ compositions:
               name: citadel-exterior-pillar-right
               owner: bind(root.owner)
               elevation: 0
-              anchor: anchor(root)
               position:
                 x: 188
                 y: -48

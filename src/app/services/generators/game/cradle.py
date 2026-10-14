@@ -26,7 +26,7 @@ from app.models.config import RecipeConfiguration
 from app.models.groups import SpawnableGroup
 from app.models.state import (
     AnimationState,
-    BridgeState,
+    OrientedState,
     MotorState, 
     PropertyState,
     AttachmentState,
@@ -319,7 +319,7 @@ class Cradle:
         Spawns and unpacks a bridge configuration via Decomposer.
         """
         name = self.name()
-        bridge_state = BridgeState(
+        bridge_state = OrientedState(
             id=id,
             name=name,
             layer=layer,

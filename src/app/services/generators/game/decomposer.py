@@ -35,7 +35,7 @@ from app.models.properties import (
 )
 from app.models.state import (
     PropertyState, 
-    BridgeState, 
+    OrientedState, 
     AssetState
 )
 
@@ -468,7 +468,7 @@ class Decomposer:
 
         return assets
 
-    def bridge(self, deployed_state: BridgeState) -> List[Asset]:
+    def bridge(self, deployed_state: OrientedState) -> List[Asset]:
         props = self.properties.crafts.bridges.get(deployed_state.id)
         if not props:
             logger.error(
@@ -506,7 +506,7 @@ class Decomposer:
                 str(i)
             ])
 
-            unit_state = BridgeState(
+            unit_state = OrientedState(
                 id=deployed_state.id,
                 name=unit_name,
                 layer=layer,

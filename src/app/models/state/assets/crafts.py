@@ -34,7 +34,7 @@ class PropertyState(AssetState):
     position: Optional[Position] = None # type: ignore
 
 @dataclass(slots=True)
-class BridgeState(AssetState):
+class OrientedState(AssetState):
     position: Optional[Position] = None # type: ignore
     orientation: str = Orientations.HORIZONTAL.value
     multiple: Optional[Multiple] = None # type: ignore

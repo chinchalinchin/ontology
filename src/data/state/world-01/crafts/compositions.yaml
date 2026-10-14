@@ -18,7 +18,7 @@ compositions:
     owner: the-government
     layer: '0'
     position:
-      x: 275
+      x: 280
       y: 250
   - id: citadel-of-trials
     name: citadel-of-trials

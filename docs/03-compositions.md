@@ -111,6 +111,46 @@ Platforms have two kinds of hitboxes: baseline hitboxes and elevated hitboxes, w
 - `elevations(properties, state): returns [state.elevation + k for k in properties.hitboxes.keys()]`
 - `get(properties, state, elevation, frame): returns properties.hitboxes.get(elevation - state.elevation, [])`
 
+### Carpentry
+
+Carpentry is a collection of inanimate, immutable Crafts. It is distinguished from other Crafts by its directed frame indexing schema. Carpentry encapsulate furniture, living space fixtures and other common household furnishings.
+
+**Frame: DirectedFrame**
+
+TODO
+
+**State: DirectedState**
+
+TODO
+
+**Hitbox: DirectedHitbox**
+
+TODO
+
+### Railings
+
+Railings are a collection of inanimate, immutable Crafts. They are distinguished from other Crafts by its oriented frame indexing schema.
+
+
+**Frame: OrientedFrame**
+
+* `keys(id, state): returns [(f"{id}-{state.orientation}", 0, 0)]`
+* `index(id, properties): returns {f"{id}-{Orientations.*}": (0, 0, w, l)}`
+
+
+**State: OrientedState**
+
+* `layer: str`
+* `position: Position`
+* `elevation: int`
+* `orientation: str` (`horizontal`, `vertical`)
+* `multiple: Multiple` (`nx > 1` or `ny > 1`)
+* `owner: Optional[str]`
+
+**Hitbox: OrientedHitbox**
+
+* `get(properties, state, frame): returns properties.hitboxes[state.orientation]`
+
 ## Composition Overview
 
 From the perspective of the [state files](./00-overview.md#state), Compositions are another type of Asset that can be deployed onto the Board. Similar to the [Player](./02-sprites.md#player), they are a "*virtual*" Asset composed of other Assets, i.e. they do not have properties of their own. Unlike the Player, which is a special type of Sprite, Compositions are collections of multiple Assets. When a Composition is deployed onto the Board, its individual Assets are added to the appropriate (Category, Instance)-nodes in the [Asset Hierarchy](./01-assets.md#asset-hierarchy)
@@ -355,20 +395,11 @@ Purpose and Partition are purely organizational and have no other purpose in the
 
 - **Summary**: Living space decorations.
 - **Partitions**:
-    - `beds`: Sleeping implements.
-    - `chairs`: Sitting implements.
     - `fixtures`: Common household items.
-    - `shelves`: Cabinetry.
+    - `shelves`: Cabinetry and shelving items.
     - `tables`: Areas for storage and eating.
     - `vanities`: Decals and adornments.
     - `windows`: Glass panes and frames.
-
-##### Purpose: Railings
-
-- **Summary**: Containment boundaries.
-- **Partitions**:
-    - `fences`: Exterior, isolated railings.
-    - `crenellations`: Embedded railings.
 
 ##### Purpose: Structures
 

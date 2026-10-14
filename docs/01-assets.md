@@ -585,16 +585,14 @@ Bridges belong to a dedicated Substrate, `elevation = -1`. This guarantees that 
 * `keys(id, state): returns [(f"{id}-{state.orientation}", 0, 0)]`
 * `index(id, properties): returns {f"{id}-{Orientations.*}": (0, 0, w, l)}`
 
-**State: BridgeState**
+**State: OrientedState**
 
-* `id: str`
-* `name: Optional[str]`
 * `layer: str`
 * `position: Position`
+* `elevation: int`
 * `orientation: str` (`horizontal`, `vertical`)
 * `multiple: Multiple` (`nx > 1` or `ny > 1`)
 * `owner: Optional[str]`
-* `elevation: int`
 
 **Hitbox: StaticHitbox**
 

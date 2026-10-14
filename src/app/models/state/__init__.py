@@ -15,7 +15,7 @@ from app.models.state.core import (
 from app.models.state.assets import (
     # ---- CRAFT STATES
     PropertyState,
-    BridgeState,
+    OrientedState,
     PlatformState,
     StairState,
     # ---- CURSOR STATES
@@ -101,7 +101,7 @@ __all__ = [
     'DialogueState',
     # CRAFT STATES
     'PropertyState',
-    'BridgeState',
+    'OrientedState',
     'StairState',
     'PlatformState',
     # CURSOR STATES
