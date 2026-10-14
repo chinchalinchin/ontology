@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/static/md/composition-cost-factors/">
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/static/md/composition-material-factor/">
       
       
       
@@ -21,7 +21,7 @@
     
     
       
-        <title>Composition cost factors - Ontology</title>
+        <title>Composition material factor - Ontology</title>
       
     
     
@@ -103,7 +103,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Composition cost factors
+              Composition material factor
             
           </span>
         </div>
@@ -973,73 +973,76 @@
   
 
 
-  <h1>Composition cost factors</h1>
+  <h1>Composition material factor</h1>
 
 <table>
 <thead>
 <tr>
 <th>Material</th>
 <th><span class="arithmatex">\(\mu_{\text{mat}}\)</span></th>
+<th>Relative Valuation Basis</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>wood</code></td>
-<td>1.00</td>
+<td><code>1.00</code></td>
+<td>Baseline organic structural timber.</td>
+</tr>
+<tr>
+<td><code>sandstone</code></td>
+<td><code>1.25</code></td>
+<td>Sedimentary freestone; denser than <code>wood</code> (<span class="arithmatex">\(1.00\)</span>), softer to quarry and dress than <code>stone</code> (<span class="arithmatex">\(1.50\)</span>).</td>
+</tr>
+<tr>
+<td><code>clay</code></td>
+<td><code>1.25</code></td>
+<td>Sun-baked/kiln-dried earthen material (referenced in <code>frame-adobe</code>); between <code>wood</code> (<span class="arithmatex">\(1.00\)</span>) and vitrified <code>brick</code> (<span class="arithmatex">\(2.00\)</span>).</td>
 </tr>
 <tr>
 <td><code>stone</code></td>
-<td>1.50</td>
+<td><code>1.50</code></td>
+<td>Standard fieldstone/ashlar masonry baseline.</td>
 </tr>
 <tr>
 <td><code>brick</code></td>
-<td>2.00</td>
-</tr>
-<tr>
-<td><code>marble</code></td>
-<td>3.75</td>
-</tr>
-<tr>
-<td><code>cotton</code></td>
-<td>2.50</td>
+<td><code>2.00</code></td>
+<td>Fired ceramic masonry unit.</td>
 </tr>
 <tr>
 <td><code>copper</code></td>
-<td>2.00</td>
+<td><code>2.00</code></td>
+<td>Base non-ferrous metal.</td>
+</tr>
+<tr>
+<td><code>basalt</code></td>
+<td><code>2.25</code></td>
+<td>Dense extrusive igneous rock; harder to dress than <code>stone</code> (<span class="arithmatex">\(1.50\)</span>) and <code>brick</code> (<span class="arithmatex">\(2.00\)</span>), below coarse-grained <code>granite</code> (<span class="arithmatex">\(2.50\)</span>).</td>
+</tr>
+<tr>
+<td><code>cotton</code></td>
+<td><code>2.50</code></td>
+<td>Woven textile substrate.</td>
+</tr>
+<tr>
+<td><code>granite</code></td>
+<td><code>2.50</code></td>
+<td>Intrusive felsic stone of high compressive strength; between <code>basalt</code> (<span class="arithmatex">\(2.25\)</span>) and ornamental <code>marble</code> (<span class="arithmatex">\(3.75\)</span>).</td>
+</tr>
+<tr>
+<td><code>iron</code></td>
+<td><code>3.00</code></td>
+<td>Smelted ferrous metal; requires higher reduction temperatures than <code>copper</code> (<span class="arithmatex">\(2.00\)</span>), below luxury <code>marble</code> (<span class="arithmatex">\(3.75\)</span>).</td>
+</tr>
+<tr>
+<td><code>marble</code></td>
+<td><code>3.75</code></td>
+<td>Metamorphic architectural stone.</td>
 </tr>
 <tr>
 <td><code>gold</code></td>
-<td>10.00</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th>Purpose</th>
-<th><span class="arithmatex">\(\delta_{\text{struct}} \in [\text{lower}, \text{upper}]\)</span></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>decor</code></td>
-<td>[0.25, 200.00]</td>
-</tr>
-<tr>
-<td><code>railings</code></td>
-<td>[0.50, 15.00]</td>
-</tr>
-<tr>
-<td><code>surfaces</code></td>
-<td>[1.00, 50.00]</td>
-</tr>
-<tr>
-<td><code>structures</code></td>
-<td>[5.00, 1000.00]</td>
-</tr>
-<tr>
-<td><code>walls</code></td>
-<td>[1.00, 100.00]</td>
+<td><code>10.00</code></td>
+<td>Precious metal upper bound.</td>
 </tr>
 </tbody>
 </table>

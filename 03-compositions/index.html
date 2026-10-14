@@ -584,13 +584,41 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#cost-factors" class="md-nav__link">
+  <a href="#cost_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Cost Factors
+        Cost
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Cost">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#factors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Factors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ledger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ledger
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1489,13 +1517,41 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#cost-factors" class="md-nav__link">
+  <a href="#cost_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Cost Factors
+        Cost
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Cost">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#factors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Factors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ledger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ledger
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1900,45 +1956,85 @@
 </ul>
 </li>
 </ul>
-<h4 id="cost-factors">Cost Factors</h4>
+<h4 id="cost_1">Cost</h4>
+<p><strong>Formula</strong></p>
+<div class="arithmatex">\[
+\text{C} = \frac{w \cdot l}{1024} \cdot \mu_{\text{mat}} \cdot \delta_{\text{struct}}
+\]</div>
+<h5 id="factors">Factors</h5>
+<p><strong>Material</strong></p>
 <table>
 <thead>
 <tr>
 <th>Material</th>
 <th><span class="arithmatex">\(\mu_{\text{mat}}\)</span></th>
+<th>Relative Valuation Basis</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>wood</code></td>
-<td>1.00</td>
+<td><code>1.00</code></td>
+<td>Baseline organic structural timber.</td>
+</tr>
+<tr>
+<td><code>sandstone</code></td>
+<td><code>1.25</code></td>
+<td>Sedimentary freestone; denser than <code>wood</code> (<span class="arithmatex">\(1.00\)</span>), softer to quarry and dress than <code>stone</code> (<span class="arithmatex">\(1.50\)</span>).</td>
+</tr>
+<tr>
+<td><code>clay</code></td>
+<td><code>1.25</code></td>
+<td>Sun-baked/kiln-dried earthen material (referenced in <code>frame-adobe</code>); between <code>wood</code> (<span class="arithmatex">\(1.00\)</span>) and vitrified <code>brick</code> (<span class="arithmatex">\(2.00\)</span>).</td>
 </tr>
 <tr>
 <td><code>stone</code></td>
-<td>1.50</td>
+<td><code>1.50</code></td>
+<td>Standard fieldstone/ashlar masonry baseline.</td>
 </tr>
 <tr>
 <td><code>brick</code></td>
-<td>2.00</td>
-</tr>
-<tr>
-<td><code>marble</code></td>
-<td>3.75</td>
-</tr>
-<tr>
-<td><code>cotton</code></td>
-<td>2.50</td>
+<td><code>2.00</code></td>
+<td>Fired ceramic masonry unit.</td>
 </tr>
 <tr>
 <td><code>copper</code></td>
-<td>2.00</td>
+<td><code>2.00</code></td>
+<td>Base non-ferrous metal.</td>
+</tr>
+<tr>
+<td><code>basalt</code></td>
+<td><code>2.25</code></td>
+<td>Dense extrusive igneous rock; harder to dress than <code>stone</code> (<span class="arithmatex">\(1.50\)</span>) and <code>brick</code> (<span class="arithmatex">\(2.00\)</span>), below coarse-grained <code>granite</code> (<span class="arithmatex">\(2.50\)</span>).</td>
+</tr>
+<tr>
+<td><code>cotton</code></td>
+<td><code>2.50</code></td>
+<td>Woven textile substrate.</td>
+</tr>
+<tr>
+<td><code>granite</code></td>
+<td><code>2.50</code></td>
+<td>Intrusive felsic stone of high compressive strength; between <code>basalt</code> (<span class="arithmatex">\(2.25\)</span>) and ornamental <code>marble</code> (<span class="arithmatex">\(3.75\)</span>).</td>
+</tr>
+<tr>
+<td><code>iron</code></td>
+<td><code>3.00</code></td>
+<td>Smelted ferrous metal; requires higher reduction temperatures than <code>copper</code> (<span class="arithmatex">\(2.00\)</span>), below luxury <code>marble</code> (<span class="arithmatex">\(3.75\)</span>).</td>
+</tr>
+<tr>
+<td><code>marble</code></td>
+<td><code>3.75</code></td>
+<td>Metamorphic architectural stone.</td>
 </tr>
 <tr>
 <td><code>gold</code></td>
-<td>10.00</td>
+<td><code>10.00</code></td>
+<td>Precious metal upper bound.</td>
 </tr>
 </tbody>
 </table>
+<p><strong>Purpose</strong></p>
 <table>
 <thead>
 <tr>
@@ -1966,6 +2062,130 @@
 <tr>
 <td><code>walls</code></td>
 <td>[1.00, 100.00]</td>
+</tr>
+</tbody>
+</table>
+<h5 id="ledger">Ledger</h5>
+<table>
+<thead>
+<tr>
+<th>Asset ID</th>
+<th>Category / Purpose</th>
+<th>Dimensions (<span class="arithmatex">\(w \times l\)</span>)</th>
+<th><span class="arithmatex">\(N = \frac{w \cdot l}{1024}\)</span></th>
+<th>Material (<span class="arithmatex">\(\mu_{\text{mat}}\)</span>)</th>
+<th><span class="arithmatex">\(\delta_{\text{struct}}\)</span></th>
+<th>Computed Cost (<span class="arithmatex">\(\text{C}\)</span>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>platform-corinthian</code></td>
+<td><code>platforms</code> (<code>surfaces</code>)</td>
+<td><span class="arithmatex">\(96 \times 124\)</span></td>
+<td><span class="arithmatex">\(11.6250\)</span></td>
+<td><code>marble</code> (<span class="arithmatex">\(3.75\)</span>)</td>
+<td><span class="arithmatex">\(1.00\)</span></td>
+<td><code>44 marble</code></td>
+</tr>
+<tr>
+<td><code>platform-ionic</code></td>
+<td><code>platforms</code> (<code>surfaces</code>)</td>
+<td><span class="arithmatex">\(96 \times 124\)</span></td>
+<td><span class="arithmatex">\(11.6250\)</span></td>
+<td><code>marble</code> (<span class="arithmatex">\(3.75\)</span>)</td>
+<td><span class="arithmatex">\(1.00\)</span></td>
+<td><code>44 marble</code></td>
+</tr>
+<tr>
+<td><code>platform-doric</code></td>
+<td><code>platforms</code> (<code>surfaces</code>)</td>
+<td><span class="arithmatex">\(96 \times 125\)</span></td>
+<td><span class="arithmatex">\(11.7188\)</span></td>
+<td><code>stone</code> (<span class="arithmatex">\(1.50\)</span>)</td>
+<td><span class="arithmatex">\(1.50\)</span></td>
+<td><code>26 stone</code></td>
+</tr>
+<tr>
+<td><code>pillar-stone-corinthian</code></td>
+<td><code>struts</code> (<code>structures</code>)</td>
+<td><span class="arithmatex">\(32 \times 128\)</span></td>
+<td><span class="arithmatex">\(4.0000\)</span></td>
+<td><code>stone</code> (<span class="arithmatex">\(1.50\)</span>)</td>
+<td><span class="arithmatex">\(5.00\)</span></td>
+<td><code>30 stone</code></td>
+</tr>
+<tr>
+<td><code>pillar-stone-doric</code></td>
+<td><code>struts</code> (<code>structures</code>)</td>
+<td><span class="arithmatex">\(32 \times 128\)</span></td>
+<td><span class="arithmatex">\(4.0000\)</span></td>
+<td><code>stone</code> (<span class="arithmatex">\(1.50\)</span>)</td>
+<td><span class="arithmatex">\(5.00\)</span></td>
+<td><code>30 stone</code></td>
+</tr>
+<tr>
+<td><code>pillar-stone-ionic</code></td>
+<td><code>struts</code> (<code>structures</code>)</td>
+<td><span class="arithmatex">\(32 \times 128\)</span></td>
+<td><span class="arithmatex">\(4.0000\)</span></td>
+<td><code>stone</code> (<span class="arithmatex">\(1.50\)</span>)</td>
+<td><span class="arithmatex">\(5.00\)</span></td>
+<td><code>30 stone</code></td>
+</tr>
+<tr>
+<td><code>pillar-basalt</code></td>
+<td><code>struts</code> (<code>structures</code>)</td>
+<td><span class="arithmatex">\(22 \times 150\)</span></td>
+<td><span class="arithmatex">\(3.2227\)</span></td>
+<td><code>basalt</code> (<span class="arithmatex">\(2.25\)</span>)</td>
+<td><span class="arithmatex">\(5.00\)</span></td>
+<td><code>36 basalt</code></td>
+</tr>
+<tr>
+<td><code>wall-basalt</code></td>
+<td><code>struts</code> (<code>walls</code>)</td>
+<td><span class="arithmatex">\(94 \times 96\)</span></td>
+<td><span class="arithmatex">\(8.8125\)</span></td>
+<td><code>basalt</code> (<span class="arithmatex">\(2.25\)</span>)</td>
+<td><span class="arithmatex">\(1.00\)</span></td>
+<td><code>20 basalt</code></td>
+</tr>
+<tr>
+<td><code>floor-granite-border</code></td>
+<td><code>struts</code> (<code>surfaces</code>)</td>
+<td><span class="arithmatex">\(96 \times 96\)</span></td>
+<td><span class="arithmatex">\(9.0000\)</span> (<span class="arithmatex">\(8+1\)</span>)</td>
+<td><code>granite</code> (<span class="arithmatex">\(2.50\)</span>), <code>marble</code> (<span class="arithmatex">\(3.75\)</span>)</td>
+<td><span class="arithmatex">\(1.00\)</span></td>
+<td><code>20 granite</code>, <code>4 marble</code></td>
+</tr>
+<tr>
+<td><code>street-cobblestone</code></td>
+<td><code>struts</code> (<code>surfaces</code>)</td>
+<td><span class="arithmatex">\(92 \times 89\)</span></td>
+<td><span class="arithmatex">\(7.9961\)</span></td>
+<td><code>stone</code> (<span class="arithmatex">\(1.50\)</span>)</td>
+<td><span class="arithmatex">\(1.00\)</span></td>
+<td><code>12 stone</code></td>
+</tr>
+<tr>
+<td><code>fence-horizontal-iron</code></td>
+<td><code>struts</code> (<code>railings</code>)</td>
+<td><span class="arithmatex">\(96 \times 17\)</span></td>
+<td><span class="arithmatex">\(1.5938\)</span></td>
+<td><code>iron</code> (<span class="arithmatex">\(3.00\)</span>)</td>
+<td><span class="arithmatex">\(1.00\)</span></td>
+<td><code>5 iron</code></td>
+</tr>
+<tr>
+<td><code>fence-vertical-iron</code></td>
+<td><code>struts</code> (<code>railings</code>)</td>
+<td><span class="arithmatex">\(5 \times 93\)</span></td>
+<td><span class="arithmatex">\(0.4541\)</span></td>
+<td><code>iron</code> (<span class="arithmatex">\(3.00\)</span>)</td>
+<td><span class="arithmatex">\(1.50\)</span></td>
+<td><code>2 iron</code></td>
 </tr>
 </tbody>
 </table>
