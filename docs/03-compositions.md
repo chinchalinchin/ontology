@@ -351,34 +351,52 @@ Struts are the basic element of Compositions. They are classified according to P
 
 Purpose and Partition are purely organizational and have no other purpose in the game engine.
 
+##### Purpose: Decor
+
+**Summary**: Living space decorations.
+
+- `beds`: Sleeping implements.
+- `chairs`: Sitting implements.
+- `fixtures`: Common household items.
+- `shelves`: Cabinetry.
+- `tables`: Areas for storage and eating.
+- `vanities`: Decals and adornments.
+- `windows`: Glass panes and frames.
+
 ##### Purpose: Railings
 
-- `fences`:
-- `crenellations`: 
+**Summary**: Containment boundaries.
+
+- `fences`: Exterior, isolated railings.
+- `crenellations`: Embedded railings.
 
 ##### Purpose: Structures
 
-- `additions`:
-- `buttresses`: 
-- `enclosures`:
-- `pillars`:
-- `towers`:
-- `windows`: 
+**Summary**: Ancillary features of buildings.
+
+- `additions`: Unique features.
+- `buttresses`: Load-bearing structures.
+- `enclosures`: Covered structures.
+- `pillars`: Columnar structures.
+- `towers`: Constructed structures.
+- `windows`: Glass structures.
 
 ##### Purpose: Surfaces
 
-- `floors`:
-- `streets`: 
-- `roofs`: 
+**Summary**: Planes of movement.
+
+- `floors`: Interior surfaces.
+- `streets`: Exterior surfaces.
+- `roofs`: Elevated surfaces.
 
 ##### Purpose: Walls
 
-- `raw`:
-- `refined`:
-- `frames`:
-- `interior`:
+**Summary**: Intentional obstructions.
 
-##### Purpose: Windows
+- `raw`: Basic material walls.
+- `refined`: Crafted and refined walls.
+- `frames`: Premade walls with roofs.
+- `interior`: Interior, dressed walls.
 
 #### Cost Factors
 

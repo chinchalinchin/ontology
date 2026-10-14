@@ -1,20 +1,8 @@
 crafts:
   struts:
-    wall-blue:
-      dimensions:
-        w: 128
-        l: 96
-      mass: 0
-      cost: 
-        - item: wood
-          quantity: 12
-      hitboxes:
-        - position:
-            x: 6
-            y: 17
-          dimensions:
-            w: 116
-            l: 54
+    # -----------------------------------------
+    # ------------------------------------- RAW
+    # -----------------------------------------
     wall-basalt:
       dimensions:
         w: 94
@@ -29,22 +17,6 @@ crafts:
       mass: 0
       cost: null # TODO
       hitboxes: null # TODO
-    wall-facade:
-      dimensions:
-        w: 96
-        l: 96
-      mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
-    wall-palace:
-      dimensions:
-        w: 128
-        l: 96
-      mass: 0
-      cost: 
-        - item: stone
-          quantity: 12
-      hitboxes: null
     wall-stone:
       dimensions: 
         w: 188
@@ -60,33 +32,61 @@ crafts:
           dimensions:
             w: 150
             l: 40
-    wall-stone-turret:
+    # -----------------------------------------
+    # ---------------------------------- FRAMES
+    # -----------------------------------------
+    frame-adobe:
+      # description: Baked brick structure for desert climates.
       dimensions:
-        w: 222
-        l: 133
+        w: 96
+        l: 160
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 0
+            y: 0
+          dimensions:
+            w: 96
+            l: 160
+      cost:
+        - item: clay
+          quantity: 15
+    frame-brick:
+      # description: Red brick townhouse with roof and stoop.
+      dimensions:
+        w: 96
+        l: 190
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 10
+            y: 20
+          dimensions:
+            w: 76
+            l: 144
+      cost:
+        - item: stone
+          quantity: 18
+
+    # -----------------------------------------
+    # --------------------------------- REFINED
+    # -----------------------------------------
+    wall-facade:
+      dimensions:
+        w: 96
+        l: 96
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    wall-palace:
+      dimensions:
+        w: 128
+        l: 96
       mass: 0
       cost: 
         - item: stone
-          quantity: 36
-      hitboxes:
-        - position:
-            x: 178
-            y: 102
-          dimensions:
-            w: 25
-            l: 12
-        - position: 
-            x: 17
-            y: 102
-          dimensions:
-            w: 25
-            l: 12
-        - position:
-            x: 5
-            y: 39
-          dimensions:
-            w: 203
-            l: 63
+          quantity: 12
+      hitboxes: null # TODO
     wall-stone-gold-plated:
       dimensions:
         w: 96
@@ -98,3 +98,21 @@ crafts:
         - item: gold
           quantity: 4
       hitboxes: null
+    # -----------------------------------------
+    # -------------------------------- INTERIOR
+    # -----------------------------------------
+    wallpaper-blue:
+      dimensions:
+        w: 128
+        l: 96
+      mass: 0
+      cost: 
+        - item: wood
+          quantity: 12
+      hitboxes:
+        - position:
+            x: 6
+            y: 17
+          dimensions:
+            w: 116
+            l: 54
