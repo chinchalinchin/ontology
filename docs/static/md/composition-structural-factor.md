@@ -1,13 +1,3 @@
-| Material | $\mu_{\text{mat}}$ | 
-| - | - |
-| `wood` | 1.00 | 
-| `stone` | 1.50 |
-| `brick` | 2.00 |
-| `marble` | 3.75 |
-| `cotton` | 2.50 | 
-| `copper` | 2.00 |
-| `gold` | 10.00 | 
-
 | Purpose | $\delta_{\text{struct}} \in [\text{lower}, \text{upper}]$ | 
 | - | - |
 | `decor` | [0.25, 200.00] |

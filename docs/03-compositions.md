@@ -398,6 +398,24 @@ Purpose and Partition are purely organizational and have no other purpose in the
     - `frames`: Premade walls with roofs.
     - `interior`: Interior, dressed walls.
 
-#### Cost Factors
+#### Cost 
 
---8<-- "static/md/composition-cost-factors.md"
+**Formula**
+
+$$
+--8<-- "static/tex/composition-cost.tex"
+$$
+
+##### Factors
+
+**Material**
+
+--8<-- "static/md/composition-material-factor.md"
+
+**Purpose**
+
+--8<-- "static/md/composition-structural-factor.md"
+
+##### Ledger
+
+--8<-- "static/md/composition-cost-ledger.md"

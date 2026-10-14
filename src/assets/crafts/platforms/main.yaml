@@ -1,5 +1,26 @@
 crafts:
   platforms:
+    platform-corinthian:
+      dimensions:
+        w: 96
+        l: 124
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    platform-doric:
+      dimensions:
+        w: 96
+        l: 125
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    platform-ionic:
+      dimensions:
+        w: 96
+        l: 124
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
     platform-marble:
       dimensions:
         w: 96
