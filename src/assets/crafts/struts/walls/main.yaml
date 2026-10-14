@@ -17,6 +17,13 @@ crafts:
       mass: 0
       cost: null # TODO
       hitboxes: null # TODO
+    wall-iron:
+      dimensions:
+        w: 96
+        l: 97
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
     wall-stone:
       dimensions: 
         w: 188
@@ -32,6 +39,27 @@ crafts:
           dimensions:
             w: 150
             l: 40
+    wall-terracotta:
+      dimensions:
+        w: 92
+        l: 96
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    wall-thatched:
+      dimensions:
+        w: 96
+        l: 97
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    wall-wood:
+      dimensions:
+        w: 95
+        l: 96
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
     # -----------------------------------------
     # ---------------------------------- FRAMES
     # -----------------------------------------
@@ -67,11 +95,45 @@ crafts:
       cost:
         - item: stone
           quantity: 18
-
+    frame-hut:
+      dimensions:
+        w: 87
+        l: 129
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    frame-sandstone:
+      dimensions:
+        w: 96
+        l: 162
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    frame-wood: 
+      dimensions: 
+        w: 94
+        l: 145
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
     # -----------------------------------------
     # --------------------------------- REFINED
     # -----------------------------------------
+    wall-concrete:
+      dimensions:
+        w: 127
+        l: 125
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
     wall-facade:
+      dimensions:
+        w: 96
+        l: 96
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    wall-mansion-brick:
       dimensions:
         w: 96
         l: 96
@@ -97,10 +159,59 @@ crafts:
           quantity: 18
         - item: gold
           quantity: 4
-      hitboxes: null
+      hitboxes: null # TODO
+    wall-stone-wood-rimmed:
+      dimensions:
+        w: 92
+        l: 97
+      mass: 0
+      cost: null # TODO 
+      hitboxes: null # TODO
+    wall-wood-copper-plated:
+      dimensions:
+        w: 96
+        l: 96
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    wall-wood-copper-rimmed:
+      dimensions:
+        w: 128
+        l: 96
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    wall-wood-gold-rimmed:
+      dimensions:
+        w: 128
+        l: 96
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
     # -----------------------------------------
     # -------------------------------- INTERIOR
     # -----------------------------------------
+    panel-wood-green-design:
+      dimensions:
+        w: 128
+        l: 97
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    panel-wood-pink-design:
+      dimensions:
+        w: 128
+        l: 97
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    panel-wood:
+      dimensions:
+        w: 96
+        l: 96
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
     wallpaper-blue:
       dimensions:
         w: 128
@@ -116,3 +227,52 @@ crafts:
           dimensions:
             w: 116
             l: 54
+    wallpaper-blue-circles:
+      dimensions: 
+        w: 128
+        l: 97
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    wallpaper-blue-vines:
+      dimensions:
+        w: 128
+        l: 97
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    wallpaper-green-diamonds:
+      dimensions:
+        w: 128
+        l: 97
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    wallpaper-purple-checkered:
+      dimensions:
+        w: 128
+        l: 96
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    wallpaper-red-vines:
+      dimensions:
+        w: 128
+        l: 84
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    wallpaper-yellow-diamonds:
+      dimensions:
+        w: 128
+        l: 97
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    wallpaper-yellow-vines:
+      dimensions:
+        w: 128
+        l: 97
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
