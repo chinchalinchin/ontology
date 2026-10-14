@@ -1,77 +1,3 @@
-{% set crafts = properties.paths.root + 'src/assets/crafts' %}
-{% set objects = properties.paths.root + 'src/assets/objects'%}
-{# ------------------------------------------------------------- #}
-{% set compositions = properties.paths.root + 'src/data/config/compositions/' %}
-# Tool: Composition Palette
-
-## Views
-
-### View: Craft Palette
-
-#### Palette: Stairs
-
-```yaml
-{{ file(crafts + '/stairs.yaml') }}
-```
-
-#### Palette: Platforms
-
-```yaml
-{{ file(crafts + '/platforms.yaml') }}
-```
-
-#### Palette: Struts
-
-##### Floors
-
-```yaml
-{{ file(crafts + '/struts/floors.yaml') }}
-```
-
-##### Frames
-
-```yaml
-{{ file(crafts + '/struts/frames.yaml') }}
-```
-
-##### Railings
-
-```yaml
-{{ file(crafts + '/struts/railings.yaml') }}
-```
-
-##### Roofs
-
-```yaml
-{{ file(crafts + '/struts/roofs.yaml') }}
-```
-
-##### Structures
-
-```yaml
-{{ file(crafts + '/struts/structures.yaml') }}
-```
-
-##### Walls
-
-```yaml
-{{ file(crafts + '/struts/walls.yaml') }}
-```
-
-##### Windows
-
-```yaml
-{{ file(crafts + '/struts/windows.yaml') }}
-```
-
-### View: Object Palette
-
-#### Doors
-
-```yaml
-{{ file(objects + '/doors/main.yaml')}}
-```
-
 # Task: Design Composition
 
 **Priorities**
@@ -86,7 +12,7 @@
 ## Cost Formula
 
 $$
-\text{C} = \frac{w \cdot l}{1024} \cdot \mu_{\text{mat}} \cdot \delta_{\text{struct}}
+{{ file(properties.paths.root + '/docs/static/tex/composition-cost.md') }}
 $$
 
 {{ file(properties.paths.root + '/docs/static/md/composition-cost-factors.md') }}

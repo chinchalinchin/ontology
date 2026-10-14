@@ -83,9 +83,9 @@ tools:
     # ------------------------ TOOL VIEWS: MANAGER
     # --------------------------------------------
     manager:
-      board: false
+      board: true
       specs: false
-      docs: false
+      docs: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
@@ -142,7 +142,7 @@ tools:
         properties:
           - crafts
           # - cursors
-          # - effects
+          - effects
           # - fonts
           # - geography
           - objects
@@ -159,7 +159,7 @@ tools:
           # - sheets
           # - tiles
           # - world
-        configuration:
+        configurations:
           # - actions
           - compositions
           # - intentions
