@@ -22,13 +22,20 @@ crafts:
       mass: 0
       hitboxes: null # TODO
       cost: null # TODO
-    gazebo:
+    gazebo-stone:
       dimensions:
         w: 86
         l: 106
       mass: 0
       hitboxes: null # TODO
       cost: null # TODO
+    pillar-basalt:
+      dimensions:
+        w: 22
+        l: 150
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
     pillar-marble:
       dimensions:
         w: 20
@@ -38,6 +45,13 @@ crafts:
       cost:
         - item: marble
           quantity: 4
+    pillar-stone:
+      dimensions:
+        w: 16
+        l: 140
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
     steeple-brick:
       dimensions:
         w: 76

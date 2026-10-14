@@ -42,7 +42,7 @@ task:
   # ------------------------ TEMPLATES: MAINTENANCE
   # --------------------------------------------
   # template: maintain/console/patch.md.j2
-  template: maintain/console/session.md.j2
+  # template: maintain/console/session.md.j2
   # template: maintain/script.md.j2
   # --------------------------------------------
   # ------------------------ TEMPLATES: DUMPS 
@@ -62,7 +62,7 @@ task:
   # ------------------------ TEMPLATES: DESIGN
   # --------------------------------------------
   # template: design/structure/menu.md.j2
-  # template: design/structure/composition.md.j2
+  template: design/structure/composition.md.j2
   # template: design/structure/score.md.j2
   # template: design/diagram/hierarchy.md.j2
   # template: design/diagram/automata.md.j2
@@ -83,9 +83,9 @@ tools:
     # ------------------------ TOOL VIEWS: MANAGER
     # --------------------------------------------
     manager:
-      board: true
+      board: false
       specs: false
-      docs: true
+      docs: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
@@ -94,12 +94,12 @@ tools:
       entrypoints: false
       models: false
       script: false
-      workflow: true
+      workflow: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: true
+      directory: false
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
@@ -107,7 +107,7 @@ tools:
     tests:  
       pipeline: false
       fixtures: false
-      session: true
+      session: false
       workflow: false
 # ----------------------------------------------------
   parameters:

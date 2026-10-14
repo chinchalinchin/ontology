@@ -331,3 +331,22 @@ During orchestrationg, when the Cradle is instantiated, the Orchestrator passes 
 * **Execution:** When a Mechanic requests a Composition, it calls this Cradle method. The Cradle creates a temporary pseudo-state from the arguments and passes it to its internal Decomposer.
 * **The Return:** The Decomposer applies the same relative positioning, string binding, and name incrementing as it did at boot, returning the flat list of Assets.
 * **Board Integration:** The Mechanic receives the list and pushes it directly into the game loop via the Board.
+
+### Cost 
+
+The crafting cost $C$ depends on the Asset's area, $w \times l$, normalized to a standard Tile size and material-structural densities.
+
+1. **Unit Footprint ($A_0$)**: $A_0 = 32 \times 32 = 1,024\text{ px}^2$, matching the engine's broad-phase spatial bucket size (`TILE_HASH_SIZE = 32`) and standard tile dimension.
+2. **Normalized Footprint ($N$)**: The continuous tile area of an asset is: $N = \frac{w \cdot l}{A_0} = \frac{w \cdot l}{1024}$
+3. **Material Weight ($\mu_{\text{mat}}$)**: Dimensionless density and rarity scalar reflecting resource tier:
+    * Primary Construction (`wood`, `clay`, `stone`): $\mu = 1.00$
+    * Refined / Metamorphic (`marble`, `cotton`): $\mu = 1.50$
+    * Plating / Decorative Veneer (`gold`): $\mu = 0.20$
+4. **Structural Volume Factor ($\delta_{\text{type}}$)**: Volumetric solidity relative to bounding area:
+    * Pavements & Substrates (`floors`): $\delta = 1.00$
+    * Enclosures & Facades (`walls`, `frames`): $\delta = 1.00$
+    * Fortified Parapets (`walls` with battlements/turrets): $\delta = 1.25$
+    * Dense Masonry & Load-Bearing Elements (`structures`: towers, turrets, buttresses, pillars, platforms): $\delta = 1.50$
+    * Overhead Coverings (`roofs`): $\delta = 0.80$
+    * Fenestrations & Framed Openings (`windows`): $\delta = 0.50$
+    * Linear Enclosures & Perimeters (`railings`, fences): $\delta = 0.50$

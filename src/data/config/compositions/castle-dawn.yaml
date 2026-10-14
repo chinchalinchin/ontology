@@ -2,7 +2,7 @@ compositions:
   castle-dawn:
     root:
       strut: 
-        id: wall-up-stone
+        id: wall-stone
         name: castle-dawn-exterior
         elevation: 0
       components:
@@ -16,7 +16,7 @@ compositions:
               position:
                 x: -34
                 y: -255
-            - id: window-stone
+            - id: window-stone-exterior
               name: castle-dawn-window
               owner: bind(root.owner)
               elevation: 0
@@ -234,21 +234,21 @@ compositions:
                   x: 0
                   y: 187  
               # --------------- GROUND WALL FACADES (elevation: 0)
-              - id: wall-up-palace
+              - id: wall-palace
                 name: castle-dawn-wall-00
                 owner: bind(root.owner)
                 elevation: 0
                 position:
                   x: 96
                   y: -2
-              - id: wall-up-stone-gold-plated
+              - id: wall-stone-gold-plated
                 name: castle-dawn-wall-01
                 owner: bind(root.owner)
                 elevation: 0
                 position:
                   x: 0
                   y: 41
-              - id: wall-up-stone-gold-plated
+              - id: wall-stone-gold-plated
                 name: castle-dawn-wall-02
                 owner: bind(root.owner)
                 elevation: 0

@@ -3,10 +3,12 @@
 
 Package for CollisionMechanics
 """
-# Standard Libraries
 from __future__ import annotations
+
+# Standard Libraries
 from typing import TYPE_CHECKING
 import collections
+import logging
 
 # Application Libraries
 if TYPE_CHECKING:
@@ -24,6 +26,8 @@ from app.models.state import DevicePayload
 import libs.core.math.physics as physics
 import libs.core.math.geometry as geometry
 from libs.core.models import Boundary
+
+logger = logging.getLogger(__name__)
 
 class CollisionMechanics(SpatialMechanic):
     """
@@ -43,6 +47,7 @@ class CollisionMechanics(SpatialMechanic):
         e_base = stairs.elevation
         e_top = e_base + stairs.state.delta
         curr_e = sprite.elevation
+        prev_e = sprite.elevation
 
         # Entity must be on either the base or summit tier of the stair incline
         if curr_e != e_base and curr_e != e_top:
@@ -109,7 +114,16 @@ class CollisionMechanics(SpatialMechanic):
                     sprite.elevation = e_top
                 elif tread_progress >= 0.85 and vx > 0:
                     sprite.elevation = e_base
-                    
+
+        if sprite.elevation != prev_e:
+            logger.info(
+                f"Telemetry:Stairs:{sprite.name} traversed {stairs.name} "
+                f"dir={direction_val} progress={tread_progress:.2f} "
+                f"foot=({foot_x},{foot_y}) vel=({vx:.1f},{vy:.1f}) "
+                f"elevation: {prev_e} -> {sprite.elevation}"
+            )
+
+
     def _boundary(self, asset: Asset, boundary: Boundary, elevation: int) -> None:
         """
         Delegates Asset vs Boundary interaction to the specialized Cython constraint solver,

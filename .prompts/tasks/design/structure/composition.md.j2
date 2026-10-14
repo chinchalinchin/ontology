@@ -8,11 +8,19 @@
 
 ### View: Craft Palette
 
-#### Palette: Struts
+#### Palette: Stairs
 
-```bash
-{{ command('tree -L 3 ' + crafts)}}
-``` 
+```yaml
+{{ file(crafts + '/stairs.yaml') }}
+```
+
+#### Palette: Platforms
+
+```yaml
+{{ file(crafts + '/platforms.yaml') }}
+```
+
+#### Palette: Struts
 
 ##### Floors
 
@@ -36,12 +44,6 @@
 
 ```yaml
 {{ file(crafts + '/struts/roofs.yaml') }}
-```
-
-##### Stairs
-
-```yaml
-{{ file(crafts + '/struts/stairs.yaml') }}
 ```
 
 ##### Structures
@@ -74,22 +76,30 @@
 
 **Priorities**
 
-- All coordinates in the `castle-atrium-floor` were measured in GIMP are relative to the top-left corner (0,0). They need to be made relative to the `castle-atrium-floor` position and the the `castle-atrium-floor` should be zeroed out. Unless there is a better way of synchronizing the coordinates. Ensure the configuration aligns with the expectations of the Decomposer.
-- Ensure the composition in [Current Draft](#current-draft) is functional, meets the specifications and renders in the correct order.
-
-**Specifications**
-
-- All Asset in the `castle-atrium-floor` branch should be on the same layer should be the same
-- `castle-roof-exit-*` on the `castle-atrium-floor` should lead to the `castle-dawn-roof-door-*` on the root layer.
-- `throne-room-entrance` should lead to another layer where the throne room will be.
-- `atrium-exit` should lead back to the original layer.
+- Design a composition to test out Platforms, Stairs and Elevation. To be used in Phase 07.03 User Acceptance Testing to verify functionality.
 
 **Guidelines**
 
 - To prevent infinite interaction loops, the out position of a Door should not intersect the dimensions of a Door on the layer into which is teleporting. 
 
-## Current Draft
+### Valuation Model & Formal Assumptions
 
-```yaml
-{{ file(compositions + task.parameters.composition + '.yaml') }}
-```
+The crafting cost $C$ evaluates material quantities from an asset's 2D bounding footprint $w \times l$, parameterized by the engine's canonical grid cell and material-structural densities.
+
+#### Assumptions
+
+1. **Unit Footprint ($A_0$)**: $A_0 = 32 \times 32 = 1,024\text{ px}^2$, matching the engine's broad-phase spatial bucket size (`TILE_HASH_SIZE = 32`) and standard tile dimension.
+2. **Normalized Footprint ($N$)**: The continuous tile area of an asset is: $N = \frac{w \cdot l}{A_0} = \frac{w \cdot l}{1024}$
+3. **Material Weight ($\mu_{\text{mat}}$)**: Dimensionless density and rarity scalar reflecting resource tier:
+    * Primary Construction (`wood`, `clay`, `stone`): $\mu = 1.00$
+    * Refined / Metamorphic (`marble`, `cotton`): $\mu = 1.50$
+    * Plating / Decorative Veneer (`gold`): $\mu = 0.20$
+4. **Structural Volume Factor ($\delta_{\text{type}}$)**: Volumetric solidity relative to bounding area:
+    * Pavements & Substrates (`floors`): $\delta = 1.00$
+    * Enclosures & Facades (`walls`, `frames`): $\delta = 1.00$
+    * Fortified Parapets (`walls` with battlements/turrets): $\delta = 1.25$
+    * Dense Masonry & Load-Bearing Elements (`structures`: towers, turrets, buttresses, pillars, platforms): $\delta = 1.50$
+    * Overhead Coverings (`roofs`): $\delta = 0.80$
+    * Fenestrations & Framed Openings (`windows`): $\delta = 0.50$
+    * Linear Enclosures & Perimeters (`railings`, fences): $\delta = 0.50$
+

@@ -15,6 +15,27 @@ crafts:
           dimensions:
             w: 116
             l: 54
+    wall-basalt:
+      dimensions:
+        w: 94
+        l: 96
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    wall-brick:
+      dimensions: 
+        w: 92
+        l: 96
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    wall-facade:
+      dimensions:
+        w: 96
+        l: 96
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
     wall-palace:
       dimensions:
         w: 128
