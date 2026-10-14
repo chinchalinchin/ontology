@@ -8,8 +8,12 @@ crafts:
         w: 94
         l: 96
       mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      hitboxes:
+        - position: { x: 0, y: 0 }
+          dimensions: { w: 94, l: 72 }
+      cost:
+        - item: basalt
+          quantity: 20
     wall-brick:
       dimensions: 
         w: 92
@@ -145,21 +149,25 @@ crafts:
         w: 128
         l: 96
       mass: 0
-      cost: 
+      hitboxes:
+        - position: { x: 0, y: 0 }
+          dimensions: { w: 128, l: 72 }
+      cost:
         - item: stone
           quantity: 12
-      hitboxes: null # TODO
     wall-stone-gold-plated:
       dimensions:
         w: 96
         l: 96
       mass: 0
-      cost: 
+      hitboxes:
+        - position: { x: 0, y: 0 }
+          dimensions: { w: 96, l: 72 }
+      cost:
         - item: stone
           quantity: 18
         - item: gold
           quantity: 4
-      hitboxes: null # TODO
     wall-stone-wood-rimmed:
       dimensions:
         w: 92

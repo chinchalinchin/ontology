@@ -5,22 +5,46 @@ crafts:
         w: 96
         l: 124
       mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      hitboxes:
+        0:
+          - position: { x: 0, y: 32 }
+            dimensions: { w: 96, l: 92 }
+        1:
+          - position: { x: 0, y: 0 }
+            dimensions: { w: 96, l: 8 }
+      cost:
+        - item: marble
+          quantity: 44
     platform-doric:
       dimensions:
         w: 96
         l: 125
       mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      hitboxes:
+        0:
+          - position: { x: 0, y: 32 }
+            dimensions: { w: 96, l: 93 }
+        1:
+          - position: { x: 0, y: 0 }
+            dimensions: { w: 96, l: 8 }
+      cost:
+        - item: stone
+          quantity: 26
     platform-ionic:
       dimensions:
         w: 96
         l: 124
       mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      hitboxes:
+        0:
+          - position: { x: 0, y: 32 }
+            dimensions: { w: 96, l: 92 }
+        1:
+          - position: { x: 0, y: 0 }
+            dimensions: { w: 96, l: 8 }
+      cost:
+        - item: marble
+          quantity: 44
     platform-marble:
       dimensions:
         w: 96

@@ -46,14 +46,20 @@ crafts:
         w: 22
         l: 150
       mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      hitboxes:
+        - position: { x: 2, y: 118 }
+          dimensions: { w: 18, l: 32 }
+      cost:
+        - item: basalt
+          quantity: 36
     pillar-marble:
       dimensions:
         w: 20
         l: 96
       mass: 0
-      hitboxes: null # TODO
+      hitboxes:
+        - position: { x: 2, y: 68 }
+          dimensions: { w: 16, l: 28 }
       cost:
         - item: marble
           quantity: 4
@@ -69,22 +75,34 @@ crafts:
         w: 32
         l: 128
       mass: 0
-      hitboxes: null # TODO
-      cost: null # TODO
+      hitboxes:
+        - position: { x: 4, y: 96 }
+          dimensions: { w: 24, l: 32 }
+      cost:
+        - item: stone
+          quantity: 30
     pillar-stone-doric:
       dimensions:
         w: 32
         l: 128
       mass: 0
-      hitboxes: null # TODO
-      cost: null # TODO
+      hitboxes:
+        - position: { x: 4, y: 96 }
+          dimensions: { w: 24, l: 32 }
+      cost:
+        - item: stone
+          quantity: 30
     pillar-stone-ionic:
       dimensions:
         w: 32
         l: 128
       mass: 0
-      hitboxes: null # TODO
-      cost: null # TODO
+      hitboxes:
+        - position: { x: 4, y: 96 }
+          dimensions: { w: 24, l: 32 }
+      cost:
+        - item: stone
+          quantity: 30
     pillar-stone:
       dimensions:
         w: 16
@@ -138,7 +156,7 @@ crafts:
       cost:
         - item: stone
           quantity: 7
-    turret-stone:
+    tower-turret-stone:
       dimensions:
         w: 66
         l: 131

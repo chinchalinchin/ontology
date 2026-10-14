@@ -20,3 +20,10 @@ compositions:
     position:
       x: 275
       y: 250
+  - id: citadel-of-trials
+    name: citadel-of-trials
+    owner: the-government
+    layer: '0'
+    position:
+      x: 825
+      y: 150

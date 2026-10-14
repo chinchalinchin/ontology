@@ -38,7 +38,11 @@ crafts:
         l: 96
       mass: -1
       priority: -1
-      cost: null # TODO
+      cost:
+        - item: granite
+          quantity: 20
+        - item: marble
+          quantity: 4
     floor-marble-checkered:
       # description: Large ball-room floor with checkered pattern.
       dimensions: 
@@ -95,7 +99,9 @@ crafts:
         l: 89
       mass: -1
       priority: -1
-      cost: null # TODO
+      cost:
+        - item: stone
+          quantity: 12
     street-concrete:
       # description: Well-made grey brick street.
       dimensions:

@@ -1,0 +1,514 @@
+compositions:
+  citadel-of-trials:
+    root:
+      strut:
+        id: wall-stone
+        name: citadel-exterior
+        elevation: 0
+      components:
+        crafts:
+          platforms:
+            # Exterior balcony platform (base_e: 0 -> walkable deck at E = 1)
+            - id: platform-doric
+              name: exterior-balcony-platform
+              owner: bind(root.owner)
+              elevation: 0
+              position:
+                x: 220
+                y: -32
+          stairs:
+            # Exterior stair climbing E = 0 <-> E = 1 onto exterior-balcony-platform
+            - id: steps-stone
+              name: exterior-balcony-stairs
+              owner: bind(root.owner)
+              direction: up
+              elevation: 0
+              delta: 1
+              position:
+                x: 284
+                y: 61
+          struts:
+            - id: roof-slate-sloped
+              name: citadel-exterior-roof
+              owner: bind(root.owner)
+              elevation: 0
+              position:
+                x: -34
+                y: -127
+            - id: pillar-stone-doric
+              name: citadel-exterior-pillar-left
+              owner: bind(root.owner)
+              elevation: 0
+              anchor: anchor(root)
+              position:
+                x: -32
+                y: -48
+            - id: pillar-stone-doric
+              name: citadel-exterior-pillar-right
+              owner: bind(root.owner)
+              elevation: 0
+              anchor: anchor(root)
+              position:
+                x: 188
+                y: -48
+            - id: street-cobblestone
+              name: citadel-courtyard-west
+              owner: bind(root.owner)
+              elevation: -1
+              position:
+                x: 2
+                y: 80
+            - id: street-cobblestone
+              name: citadel-courtyard-east
+              owner: bind(root.owner)
+              elevation: -1
+              position:
+                x: 94
+                y: 80
+            - id: fence-vertical-iron
+              name: exterior-balcony-rail-east
+              owner: bind(root.owner)
+              elevation: 1
+              position:
+                x: 311
+                y: -24
+        effects:
+          passive:
+            - id: torch
+              name: citadel-exterior-torch-left
+              elevation: 0
+              anchor: anchor(root)
+              position:
+                x: 16
+                y: 4
+            - id: torch
+              name: citadel-exterior-torch-right
+              elevation: 0
+              anchor: anchor(root)
+              position:
+                x: 140
+                y: 4
+              animation:
+                frame: 4
+        objects:
+          doors:
+            # Ground entrance at E = 0 -> citadel-sanctum-layer (192, 340)
+            - id: door-castle-open
+              name: citadel-main-entrance
+              elevation: 0
+              anchor: anchor(root)
+              position:
+                x: 62
+                y: 16
+              outlayer: citadel-sanctum-layer
+              out:
+                x: 192
+                y: 340
+            # Elevated balcony door at E = 1 -> citadel-sanctum-layer (356, 316) at E = 1
+            - id: door-mansion
+              name: exterior-balcony-door
+              elevation: 1
+              anchor: anchor(exterior-balcony-platform)
+              position:
+                x: 252
+                y: -60
+              outlayer: citadel-sanctum-layer
+              out:
+                x: 356
+                y: 316
+
+    branches:
+      # =========================================================================
+      # BRANCH 1: CITADEL SANCTUM LAYER (4-Tier Gravity & Elevation UAT Arena)
+      # =========================================================================
+      - strut:
+          id: floor-marble-checkered
+          name: sanctum-floor-nw
+          owner: bind(root.owner)
+          layer: citadel-sanctum-layer
+          elevation: -1
+          position:
+            x: 0
+            y: 0
+        components:
+          crafts:
+            platforms:
+              # --- WEST WING: 3-TIER STEPPED GRAVITY CASCADE (E = 3 -> 2 -> 1 -> 0)
+              # E = 3 deck: y in [8, 124]. Drop South (y = 125 + 55 = 180) lands on e2-west
+              - id: platform-corinthian
+                name: sanctum-platform-e3-west
+                owner: bind(root.owner)
+                elevation: 2
+                position:
+                  x: 0
+                  y: 0
+              # E = 2 deck: y in [148, 264]. Drop South (y = 265 + 55 = 320) lands on e1-west
+              - id: platform-ionic
+                name: sanctum-platform-e2-west
+                owner: bind(root.owner)
+                elevation: 1
+                position:
+                  x: 0
+                  y: 140
+              # E = 1 deck: y in [288, 405]. Drop South (y = 406 + 55 = 461) lands on E = 0
+              - id: platform-doric
+                name: sanctum-platform-e1-west
+                owner: bind(root.owner)
+                elevation: 0
+                position:
+                  x: 0
+                  y: 280
+
+              # --- EAST INNER LANE: 2-TIER SKIP DROP (E = 3 -> E = 1, 110 px)
+              # E = 3 deck: y in [8, 124]. Drop South (y = 125 + 110 = 235) skips E = 2 and lands on e1-mid
+              - id: platform-corinthian
+                name: sanctum-platform-e3-east
+                owner: bind(root.owner)
+                elevation: 2
+                position:
+                  x: 256
+                  y: 0
+              # E = 1 catch deck: y in [204, 307]
+              - id: platform-marble
+                name: sanctum-platform-e1-mid
+                owner: bind(root.owner)
+                elevation: 0
+                position:
+                  x: 256
+                  y: 196
+
+              # --- EAST ASCENT COLUMN: CONTINUOUS STAIR CLIMB (E = 0 <-> 1 <-> 2 <-> 3)
+              - id: platform-doric
+                name: sanctum-platform-e1-east
+                owner: bind(root.owner)
+                elevation: 0
+                position:
+                  x: 352
+                  y: 280
+              - id: platform-ionic
+                name: sanctum-platform-e2-east
+                owner: bind(root.owner)
+                elevation: 1
+                position:
+                  x: 352
+                  y: 140
+              - id: platform-corinthian
+                name: sanctum-platform-e3-far-east
+                owner: bind(root.owner)
+                elevation: 2
+                position:
+                  x: 352
+                  y: 0
+
+            stairs:
+              # Stair E = 0 <-> E = 1 (x in [400, 432], y in [360, 456])
+              - id: steps-stone
+                name: sanctum-stairs-e0-e1
+                owner: bind(root.owner)
+                layer: citadel-sanctum-layer
+                direction: up
+                elevation: 0
+                delta: 1
+                position:
+                  x: 400
+                  y: 360
+              # Stair E = 1 <-> E = 2 (x in [400, 432], y in [220, 316])
+              - id: steps-stone
+                name: sanctum-stairs-e1-e2
+                owner: bind(root.owner)
+                layer: citadel-sanctum-layer
+                direction: up
+                elevation: 1
+                delta: 1
+                position:
+                  x: 400
+                  y: 220
+              # Stair E = 2 <-> E = 3 (x in [400, 432], y in [80, 176])
+              - id: steps-stone
+                name: sanctum-stairs-e2-e3
+                owner: bind(root.owner)
+                layer: citadel-sanctum-layer
+                direction: up
+                elevation: 2
+                delta: 1
+                position:
+                  x: 400
+                  y: 80
+
+            struts:
+              # --- GROUND SUBSTRATE TILING (elevation: -1)
+              - id: floor-marble-checkered
+                name: sanctum-floor-ne
+                owner: bind(root.owner)
+                layer: citadel-sanctum-layer
+                elevation: -1
+                position:
+                  x: 183
+                  y: 0
+              - id: floor-marble-checkered
+                name: sanctum-floor-sw
+                owner: bind(root.owner)
+                layer: citadel-sanctum-layer
+                elevation: -1
+                position:
+                  x: 0
+                  y: 166
+              - id: floor-marble-checkered
+                name: sanctum-floor-se
+                owner: bind(root.owner)
+                layer: citadel-sanctum-layer
+                elevation: -1
+                position:
+                  x: 183
+                  y: 166
+              - id: floor-marble-checkered
+                name: sanctum-floor-south-west
+                owner: bind(root.owner)
+                layer: citadel-sanctum-layer
+                elevation: -1
+                position:
+                  x: 0
+                  y: 318
+              - id: floor-marble-checkered
+                name: sanctum-floor-south-east
+                owner: bind(root.owner)
+                layer: citadel-sanctum-layer
+                elevation: -1
+                position:
+                  x: 183
+                  y: 318
+              - id: floor-carpet-palace
+                name: sanctum-courtyard-carpet
+                owner: bind(root.owner)
+                layer: citadel-sanctum-layer
+                elevation: -1
+                position:
+                  x: 144
+                  y: 260
+
+              # --- ELEVATED SENSOR STRUT SUBSTRATES (mass: -1, E > 0)
+              # Central E = 3 skywalk connecting East E = 3 to West E = 3 (3-tier drop South to E = 0)
+              - id: floor-stone
+                name: sanctum-skywalk-e3
+                owner: bind(root.owner)
+                layer: citadel-sanctum-layer
+                elevation: 3
+                anchor: -160
+                position:
+                  x: 80
+                  y: 16
+              # Under-stair sensor bridges ensuring downward stair transitions stay supported
+              - id: floor-marble-diamonds
+                name: sanctum-underbridge-e1
+                owner: bind(root.owner)
+                layer: citadel-sanctum-layer
+                elevation: 1
+                anchor: -250
+                position:
+                  x: 382
+                  y: 180
+              - id: floor-marble-diamonds
+                name: sanctum-underbridge-e2
+                owner: bind(root.owner)
+                layer: citadel-sanctum-layer
+                elevation: 2
+                anchor: -250
+                position:
+                  x: 382
+                  y: 40
+
+              # --- STRUCTURAL PILLARS & RAILINGS
+              - id: pillar-stone-corinthian
+                name: sanctum-pillar-west-e1
+                owner: bind(root.owner)
+                layer: citadel-sanctum-layer
+                elevation: 1
+                anchor: anchor(sanctum-platform-e1-west)
+                position:
+                  x: 64
+                  y: 260
+              - id: pillar-stone-ionic
+                name: sanctum-pillar-west-e2
+                owner: bind(root.owner)
+                layer: citadel-sanctum-layer
+                elevation: 2
+                anchor: anchor(sanctum-platform-e2-west)
+                position:
+                  x: 64
+                  y: 120
+              - id: pillar-basalt
+                name: sanctum-pillar-skywalk-left
+                owner: bind(root.owner)
+                layer: citadel-sanctum-layer
+                elevation: 0
+                position:
+                  x: 112
+                  y: 16
+              - id: pillar-basalt
+                name: sanctum-pillar-skywalk-right
+                owner: bind(root.owner)
+                layer: citadel-sanctum-layer
+                elevation: 0
+                position:
+                  x: 230
+                  y: 16
+              - id: fence-horizontal-iron
+                name: sanctum-skywalk-north-rail-00
+                owner: bind(root.owner)
+                layer: citadel-sanctum-layer
+                elevation: 3
+                position:
+                  x: 96
+                  y: 16
+              - id: fence-horizontal-iron
+                name: sanctum-skywalk-north-rail-01
+                owner: bind(root.owner)
+                layer: citadel-sanctum-layer
+                elevation: 3
+                position:
+                  x: 160
+                  y: 16
+
+          objects:
+            # --- DYNAMIC PUSHABLE CRATES FOR FREEFALL TESTING (mass > 0)
+            crates:
+              # Push South to test E = 3 -> 2 -> 1 -> 0 stepped cascade on dynamic bodies
+              - id: wood-barrel
+                name: barrel-e3-cascade
+                layer: citadel-sanctum-layer
+                elevation: 3
+                position:
+                  x: 34
+                  y: 80
+              # Push South to test continuous 3-tier freefall (E = 3 -> E = 0, 165 px)
+              - id: wood-barrel
+                name: barrel-e3-skywalk
+                layer: citadel-sanctum-layer
+                elevation: 3
+                position:
+                  x: 170
+                  y: 55
+              # Push South to test E = 2 -> E = 1 intermediate landing
+              - id: wood-barrel
+                name: barrel-e2-west
+                layer: citadel-sanctum-layer
+                elevation: 2
+                position:
+                  x: 34
+                  y: 220
+
+            doors:
+              # Ground exit at E = 0 -> root.layer (62, 96)
+              - id: door-shadow-double
+                name: sanctum-ground-exit
+                layer: citadel-sanctum-layer
+                elevation: 0
+                position:
+                  x: 192
+                  y: 420
+                outlayer: bind(root.layer)
+                out:
+                  x: 62
+                  y: 96
+              # Balcony exit at E = 1 -> root.layer (236, 12) on exterior-balcony-platform
+              - id: door-mansion
+                name: sanctum-balcony-exit
+                layer: citadel-sanctum-layer
+                elevation: 1
+                anchor: anchor(sanctum-platform-e1-east)
+                position:
+                  x: 356
+                  y: 252
+                outlayer: bind(root.layer)
+                out:
+                  x: 236
+                  y: 12
+              # Summit belfry entrance at E = 3 -> citadel-belfry-layer (112, 160) at E = 3
+              - id: door-mansion
+                name: sanctum-belfry-door
+                layer: citadel-sanctum-layer
+                elevation: 3
+                anchor: anchor(sanctum-platform-e3-far-east)
+                position:
+                  x: 384
+                  y: -28
+                outlayer: citadel-belfry-layer
+                out:
+                  x: 112
+                  y: 160
+
+      # =========================================================================
+      # BRANCH 2: CITADEL BELFRY LAYER (High-Tier Sanctum at E = 3)
+      # =========================================================================
+      - strut:
+          id: wall-stone-gold-plated
+          name: belfry-north-wall
+          owner: bind(root.owner)
+          layer: citadel-belfry-layer
+          elevation: 3
+          position:
+            x: 96
+            y: 0
+        components:
+          crafts:
+            struts:
+              # Elevated sensor floor at E = 3 so sprites arriving from sanctum-belfry-door remain supported at E = 3
+              - id: floor-marble-checkered
+                name: belfry-elevated-deck
+                owner: bind(root.owner)
+                layer: citadel-belfry-layer
+                elevation: 3
+                anchor: -320
+                position:
+                  x: 12
+                  y: 72
+              - id: floor-granite-border
+                name: belfry-dais
+                owner: bind(root.owner)
+                layer: citadel-belfry-layer
+                elevation: 3
+                anchor: -320
+                position:
+                  x: 96
+                  y: 80
+              - id: wall-basalt
+                name: belfry-west-wall
+                owner: bind(root.owner)
+                layer: citadel-belfry-layer
+                elevation: 3
+                position:
+                  x: 2
+                  y: 0
+              - id: wall-basalt
+                name: belfry-east-wall
+                owner: bind(root.owner)
+                layer: citadel-belfry-layer
+                elevation: 3
+                position:
+                  x: 192
+                  y: 0
+          objects:
+            chests:
+              - id: wood-chest
+                name: belfry-trial-chest
+                layer: citadel-belfry-layer
+                elevation: 3
+                switch: false
+                content:
+                  - gold
+                position:
+                  x: 128
+                  y: 96
+            doors:
+              # Return exit at E = 3 -> citadel-sanctum-layer (368, 28) on sanctum-platform-e3-far-east
+              - id: door-shadow
+                name: belfry-return-exit
+                layer: citadel-belfry-layer
+                elevation: 3
+                position:
+                  x: 128
+                  y: 240
+                outlayer: citadel-sanctum-layer
+                out:
+                  x: 368
+                  y: 28

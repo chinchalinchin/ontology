@@ -57,8 +57,12 @@ crafts:
         w: 96
         l: 17
       mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      hitboxes:
+        - position: { x: 0, y: 0 }
+          dimensions: { w: 96, l: 17 }
+      cost:
+        - item: iron
+          quantity: 5
     fence-horizontal-wood:
       dimensions:
         w: 72
@@ -79,8 +83,12 @@ crafts:
         w: 5
         l: 93
       mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      hitboxes:
+        - position: { x: 0, y: 0 }
+          dimensions: { w: 5, l: 93 }
+      cost:
+        - item: iron
+          quantity: 2
     fence-vertical-wood:
       dimensions:
         w: 8 

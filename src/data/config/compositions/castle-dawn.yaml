@@ -30,14 +30,14 @@ compositions:
               position:
                 x: 0
                 y: -33
-            - id: turret-stone
+            - id: tower-turret-stone
               name: castle-dawn-turret-00
               owner: bind(root.owner)
               elevation: 0
               position:
                 x: -66
                 y: -33
-            - id: turret-stone
+            - id: tower-turret-stone
               name: castle-dawn-turret-01
               owner: bind(root.owner)
               elevation: 0
@@ -66,21 +66,21 @@ compositions:
               position:
                 x: -49
                 y: -82
-            - id: railing-up-stone
+            - id: crenellation-up-stone
               name: castle-dawn-railing-00
               owner: bind(root.owner)
               elevation: 1
               position:
                 x: -10
                 y: -48
-            - id: railing-right-stone
+            - id: crenellation-right-stone
               name: castle-dawn-railing-01
               owner: bind(root.owner)
               elevation: 1
               position:
                 x: 235
                 y: -82
-            - id: railing-left-stone
+            - id: crenellation-left-stone
               name: castle-dawn-railing-02
               owner: bind(root.owner)
               elevation: 1

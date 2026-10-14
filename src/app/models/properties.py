@@ -99,7 +99,7 @@ class TileProperties(AssetProperties):
 
 @dataclass(slots=True)
 class CraftProperties(AssetProperties):
-    cost: List[Cost] = field(default_factory=list)
+    cost: Union[List[Cost], None] = field(default_factory=list)
     mass: int = 0
     hitboxes: Optional[Union[Dict[int, List[Hitbox]], Dict[str, Optional[List[Hitbox]]], List[Hitbox]]] = None # type: ignore
     
