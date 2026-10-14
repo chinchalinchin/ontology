@@ -345,6 +345,41 @@ $$
 --8<-- "static/tex/cost.tex"
 $$
 
+#### Struts Hierarchy
+
+Struts are the basic element of Compositions. They are classified according to Purpose, Partitions. All Struts are functionally equivalent (but may differ in the declaration of their properties), yet serve different atmospheric, vanity or aesthetic purposes. 
+
+Purpose and Partition are purely organizational and have no other purpose in the game engine.
+
+##### Purpose: Railings
+
+- `fences`:
+- `crenellations`: 
+
+##### Purpose: Structures
+
+- `additions`:
+- `buttresses`: 
+- `enclosures`:
+- `pillars`:
+- `towers`:
+- `windows`: 
+
+##### Purpose: Surfaces
+
+- `floors`:
+- `streets`: 
+- `roofs`: 
+
+##### Purpose: Walls
+
+- `raw`:
+- `refined`:
+- `frames`:
+- `interior`:
+
+##### Purpose: Windows
+
 #### Cost Factors
 
 --8<-- "static/md/composition-cost-factors.md"

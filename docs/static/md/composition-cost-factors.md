@@ -1,7 +1,6 @@
 | Material | $\mu_{\text{mat}}$ | 
 | - | - |
 | `wood` | 0.75 | 
-| `clay` | 1.00 | 
 | `stone` | 1.25 |
 | `brick` | 1.50 |
 | `marble` | 1.75 |
