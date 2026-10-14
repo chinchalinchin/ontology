@@ -15,6 +15,43 @@ crafts:
       cost:
         - item: stone
           quantity: 9
+    clocktower-brick:
+      dimensions:
+        w: 64
+        l: 176
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    gazebo:
+      dimensions:
+        w: 86
+        l: 106
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    pillar-marble:
+      dimensions:
+        w: 20
+        l: 96
+      mass: 0
+      hitboxes: null # TODO
+      cost:
+        - item: marble
+          quantity: 4
+    steeple-brick:
+      dimensions:
+        w: 76
+        l: 192
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO 
+    steeple-stone:
+      dimensions:
+        w: 100
+        l: 160
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
     tower-stone:
       dimensions:
         w: 32
@@ -45,12 +82,3 @@ crafts:
       cost:
         - item: stone
           quantity: 13
-    pillar-marble:
-      dimensions:
-        w: 20
-        l: 96
-      mass: 0
-      hitboxes: null
-      cost:
-        - item: marble
-          quantity: 4

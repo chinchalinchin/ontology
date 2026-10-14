@@ -1,5 +1,12 @@
 crafts:
   struts:
+    chimney:
+      dimensions:
+        w: 22
+        l: 45
+      mass: 0
+      hitboxes: null # TODO 
+      cost: null # TODO
     roof-slate:
       dimensions:
         w: 256
@@ -15,3 +22,24 @@ crafts:
       cost:
         - item: stone
           quantity: 25
+    roof-shingle-blue:
+      dimensions:
+        w: 95
+        l: 52
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    roof-shingle-brown:
+      dimensions:
+        w: 96
+        l: 52
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    roof-shingle-red:
+      dimensions:
+        w: 96
+        l: 52
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO

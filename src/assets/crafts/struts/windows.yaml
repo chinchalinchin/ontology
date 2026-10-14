@@ -1,6 +1,6 @@
 crafts:
   struts:
-    window-stone:
+    window-stone-exterior:
       dimensions:
         w: 254
         l: 112
@@ -15,3 +15,10 @@ crafts:
       cost:
         - item: stone
           quantity: 14
+    window-stone-interior:
+      dimensions:
+        w: 80
+        l: 157
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO

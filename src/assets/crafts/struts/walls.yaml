@@ -1,9 +1,6 @@
 crafts:
   struts:
-    # ---------------- DIRECTED WALLS
-    # -------------------------------
-    # ---------------- UP WALLS
-    wall-up-blue:
+    wall-blue:
       dimensions:
         w: 128
         l: 96
@@ -18,7 +15,7 @@ crafts:
           dimensions:
             w: 116
             l: 54
-    wall-up-palace:
+    wall-palace:
       dimensions:
         w: 128
         l: 96
@@ -27,7 +24,7 @@ crafts:
         - item: stone
           quantity: 12
       hitboxes: null
-    wall-up-stone:
+    wall-stone:
       dimensions: 
         w: 188
         l: 80
@@ -42,7 +39,7 @@ crafts:
           dimensions:
             w: 150
             l: 40
-    wall-up-stone-turret:
+    wall-stone-turret:
       dimensions:
         w: 222
         l: 133
@@ -69,7 +66,7 @@ crafts:
           dimensions:
             w: 203
             l: 63
-    wall-up-stone-gold-plated:
+    wall-stone-gold-plated:
       dimensions:
         w: 96
         l: 96
@@ -79,26 +76,4 @@ crafts:
           quantity: 18
         - item: gold
           quantity: 4
-      hitboxes: null
-    # ---------------- SLANT WALLS
-    # -------------------------------
-    # ---------------- LEFT-DOWN WALLS
-    wall-slant-left-down-palace:
-      dimensions: 
-        w: 112
-        l: 151
-      mass: 0
-      cost: 
-        - item: stone
-          quantity: 17
-      hitboxes: null
-    # ---------------- RIGHT-DOWN WALLS
-    wall-slant-right-down-palace:
-      dimensions: 
-        w: 112
-        l: 151
-      mass: 0
-      cost: 
-        - item: stone
-          quantity: 17
       hitboxes: null
