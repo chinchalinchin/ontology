@@ -499,6 +499,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1304,6 +1315,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1630,6 +1652,28 @@
 <li><strong>The Return:</strong> The Decomposer applies the same relative positioning, string binding, and name incrementing as it did at boot, returning the flat list of Assets.</li>
 <li><strong>Board Integration:</strong> The Mechanic receives the list and pushes it directly into the game loop via the Board.</li>
 </ul>
+<h3 id="cost">Cost</h3>
+<p>The crafting cost <span class="arithmatex">\(C\)</span> depends on the Asset's area, <span class="arithmatex">\(w \times l\)</span>, normalized to a standard Tile size and material-structural densities.</p>
+<ol>
+<li><strong>Unit Footprint (<span class="arithmatex">\(A_0\)</span>)</strong>: <span class="arithmatex">\(A_0 = 32 \times 32 = 1,024\text{ px}^2\)</span>, matching the engine's broad-phase spatial bucket size (<code>TILE_HASH_SIZE = 32</code>) and standard tile dimension.</li>
+<li><strong>Normalized Footprint (<span class="arithmatex">\(N\)</span>)</strong>: The continuous tile area of an asset is: <span class="arithmatex">\(N = \frac{w \cdot l}{A_0} = \frac{w \cdot l}{1024}\)</span></li>
+<li><strong>Material Weight (<span class="arithmatex">\(\mu_{\text{mat}}\)</span>)</strong>: Dimensionless density and rarity scalar reflecting resource tier:<ul>
+<li>Primary Construction (<code>wood</code>, <code>clay</code>, <code>stone</code>): <span class="arithmatex">\(\mu = 1.00\)</span></li>
+<li>Refined / Metamorphic (<code>marble</code>, <code>cotton</code>): <span class="arithmatex">\(\mu = 1.50\)</span></li>
+<li>Plating / Decorative Veneer (<code>gold</code>): <span class="arithmatex">\(\mu = 0.20\)</span></li>
+</ul>
+</li>
+<li><strong>Structural Volume Factor (<span class="arithmatex">\(\delta_{\text{type}}\)</span>)</strong>: Volumetric solidity relative to bounding area:<ul>
+<li>Pavements &amp; Substrates (<code>floors</code>): <span class="arithmatex">\(\delta = 1.00\)</span></li>
+<li>Enclosures &amp; Facades (<code>walls</code>, <code>frames</code>): <span class="arithmatex">\(\delta = 1.00\)</span></li>
+<li>Fortified Parapets (<code>walls</code> with battlements/turrets): <span class="arithmatex">\(\delta = 1.25\)</span></li>
+<li>Dense Masonry &amp; Load-Bearing Elements (<code>structures</code>: towers, turrets, buttresses, pillars, platforms): <span class="arithmatex">\(\delta = 1.50\)</span></li>
+<li>Overhead Coverings (<code>roofs</code>): <span class="arithmatex">\(\delta = 0.80\)</span></li>
+<li>Fenestrations &amp; Framed Openings (<code>windows</code>): <span class="arithmatex">\(\delta = 0.50\)</span></li>
+<li>Linear Enclosures &amp; Perimeters (<code>railings</code>, fences): <span class="arithmatex">\(\delta = 0.50\)</span></li>
+</ul>
+</li>
+</ol>
 
 
 
