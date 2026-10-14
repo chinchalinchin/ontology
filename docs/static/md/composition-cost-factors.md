@@ -1,0 +1,23 @@
+| Material | $\mu_{\text{mat}}$ | 
+| - | - |
+| `wood` | 0.75 | 
+| `clay` | 1.00 | 
+| `stone` | 1.25 |
+| `marble` | 1.50 |
+| `cotton` | 1.75 | 
+| `gold` | 5 | 
+
+| Structure | $\delta_{\text{struct}}$ | 
+| - | - |
+| `floors` | 0.50 |
+| `walls` | 0.75 |
+| `frames` | 1.00 | 
+| `towers` | 1.5 | 
+| `turrets` | 1.5 | 
+| `buttresses` | 1.25 |
+| `pillars` | 1.25 |
+| `platforms` | 1.25 | 
+| `roofs` | 1.00 | 
+| `windows` | 0.75 | 
+| `fences` | 0.5 |
+| `railings` | 0.5 | 

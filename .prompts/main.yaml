@@ -90,7 +90,7 @@ tools:
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: false
+      data: true
       entrypoints: false
       models: false
       script: false
@@ -139,13 +139,13 @@ tools:
     # --------------------------------------------
     source:
       data: 
-        properties: []
-          # - crafts
+        properties:
+          - crafts
           # - cursors
           # - effects
           # - fonts
           # - geography
-          # - objects
+          - objects
           # - resources
           # - sheets
           # - sounds
@@ -159,9 +159,9 @@ tools:
           # - sheets
           # - tiles
           # - world
-        configuration: []
+        configuration:
           # - actions
-          # - compositions
+          - compositions
           # - intentions
           # - library
           # - mappings

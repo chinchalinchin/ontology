@@ -229,18 +229,25 @@ def logs(path: str) -> str:
     return file(os.path.join(full_path, latest_filename))
 
 
-def markdown(path: str, exclude: list | tuple | str | None = None) -> list:
+def markdown(
+    path: str, 
+    exclude: list | tuple | str | None = None, 
+    recursive: bool = False
+) -> list:
     """
-    Returns an alphabetized list of all Markdown (.md) files contained directly 
-    in the specified path, excluding specified filenames. Ignores subdirectories.
+    Returns an alphabetized list of all Markdown (.md) files contained in the 
+    specified path, excluding specified filenames.
 
     Args:
         path (str): The directory path to inspect. Supports `~` expansion.
-        exclude (list | tuple | str | None): File name(s) to exclude. Defaults to ['index.md'].
+        exclude (list | tuple | str | None): File name(s) or relative paths to exclude. 
+                                             Defaults to ['index.md'].
+        recursive (bool): Whether to traverse subdirectories. Defaults to False.
 
     Returns:
-        list: An alphabetized list of filenames ending in '.md' (excluding files in exclude). 
-              Returns an empty list if the path is invalid, not a directory, or unreadable.
+        list: An alphabetized list of filenames (or relative paths if recursive=True) 
+              ending in '.md'. Returns an empty list if the path is invalid, 
+              not a directory, or unreadable.
     """
     if exclude is None:
         exclude = ['index.md']
@@ -254,29 +261,44 @@ def markdown(path: str, exclude: list | tuple | str | None = None) -> list:
         return []
 
     try:
-        md_files = [
-            f for f in os.listdir(full_path)
-            if f.lower().endswith('.md') 
-            and f.lower() not in exclude_set
-            and os.path.isfile(os.path.join(full_path, f))
-        ]
+        if not recursive:
+            md_files = [
+                f for f in os.listdir(full_path)
+                if f.lower().endswith('.md') 
+                and f.lower() not in exclude_set
+                and os.path.isfile(os.path.join(full_path, f))
+            ]
+        else:
+            md_files = []
+            for root, _, files in os.walk(full_path):
+                for f in files:
+                    if f.lower().endswith('.md'):
+                        rel_path = os.path.relpath(os.path.join(root, f), full_path)
+                        rel_path_norm = rel_path.replace(os.sep, '/')
+                        if (
+                            f.lower() not in exclude_set 
+                            and rel_path_norm.lower() not in exclude_set
+                        ):
+                            md_files.append(rel_path_norm)
         return sorted(md_files)
     except Exception as e:
         print(f"Error reading directory '{path}': {e}")
         return []
 
 
-def yaml(path: str) -> list:
+def yaml(path: str, recursive: bool = False) -> list:
     """
-    Returns a list of all YAML (.yaml, .yml) files contained directly in the 
-    specified path. Ignores subdirectories.
+    Returns a list of all YAML (.yaml, .yml) files contained in the 
+    specified path.
 
     Args:
         path (str): The directory path to inspect. Supports `~` expansion.
+        recursive (bool): Whether to traverse subdirectories. Defaults to False.
 
     Returns:
-        list: A list of filenames ending in '.yaml' or '.yml'. Returns an empty 
-              list if the path is invalid, not a directory, or unreadable.
+        list: A list of filenames (or relative paths if recursive=True) ending in 
+              '.yaml' or '.yml'. Returns an empty list if the path is invalid, 
+              not a directory, or unreadable.
     """
     full_path = os.path.expanduser(path)
 
@@ -284,11 +306,20 @@ def yaml(path: str) -> list:
         return []
 
     try:
-        return [
-            f for f in os.listdir(full_path)
-            if (f.lower().endswith('.yaml') or f.lower().endswith('.yml'))
-            and os.path.isfile(os.path.join(full_path, f))
-        ]
+        if not recursive:
+            return [
+                f for f in os.listdir(full_path)
+                if (f.lower().endswith('.yaml') or f.lower().endswith('.yml'))
+                and os.path.isfile(os.path.join(full_path, f))
+            ]
+        else:
+            yaml_files = []
+            for root, _, files in os.walk(full_path):
+                for f in files:
+                    if f.lower().endswith('.yaml') or f.lower().endswith('.yml'):
+                        rel_path = os.path.relpath(os.path.join(root, f), full_path)
+                        yaml_files.append(rel_path.replace(os.sep, '/'))
+            return yaml_files
     except Exception as e:
         print(f"Error reading directory '{path}': {e}")
         return []
@@ -330,7 +361,7 @@ def now(kind: str = None):
     return dt.strftime("%Y-%m-%d %H:%M:%S")
 
 
-def check_rendered_output(content: str, output_path: str = "") -> list[tuple[int, str]]:
+def _validate(content: str, output_path: str = "") -> list[tuple[int, str]]:
     """
     Scans rendered output for missing file errors enclosed in triple tick marks (```).
 
@@ -414,7 +445,7 @@ def render(template_path: str, output_path: str, vars_path: str) -> None:
         print(f"Successfully rendered '{template_path}' to '{output_path}'.")
 
         # Validation stage: check rendered output for missing file errors
-        check_rendered_output(rendered_output, output_path)
+        _validate(rendered_output, output_path)
 
     except jinja2.TemplateNotFound as e:
         print(f"Error: Could not find template '{e.name}' (called during render of '{template_path}').")

@@ -80,26 +80,13 @@
 
 **Guidelines**
 
-- To prevent infinite interaction loops, the out position of a Door should not intersect the dimensions of a Door on the layer into which is teleporting. 
+- To prevent infinite interaction loops, the out position of a Door should not intersect the dimensions of a Door on the layer into which is teleporting.
+- Many Assets are indexed without costs. If using an Asset without a cost, apply the [Cost](#assigning-costs) formula.
 
-### Valuation Model & Formal Assumptions
+## Cost Formula
 
-The crafting cost $C$ evaluates material quantities from an asset's 2D bounding footprint $w \times l$, parameterized by the engine's canonical grid cell and material-structural densities.
+$$
+\text{C} = \frac{w \cdot l}{1024} \cdot \mu_{\text{mat}} \cdot \delta_{\text{struct}}
+$$
 
-#### Assumptions
-
-1. **Unit Footprint ($A_0$)**: $A_0 = 32 \times 32 = 1,024\text{ px}^2$, matching the engine's broad-phase spatial bucket size (`TILE_HASH_SIZE = 32`) and standard tile dimension.
-2. **Normalized Footprint ($N$)**: The continuous tile area of an asset is: $N = \frac{w \cdot l}{A_0} = \frac{w \cdot l}{1024}$
-3. **Material Weight ($\mu_{\text{mat}}$)**: Dimensionless density and rarity scalar reflecting resource tier:
-    * Primary Construction (`wood`, `clay`, `stone`): $\mu = 1.00$
-    * Refined / Metamorphic (`marble`, `cotton`): $\mu = 1.50$
-    * Plating / Decorative Veneer (`gold`): $\mu = 0.20$
-4. **Structural Volume Factor ($\delta_{\text{type}}$)**: Volumetric solidity relative to bounding area:
-    * Pavements & Substrates (`floors`): $\delta = 1.00$
-    * Enclosures & Facades (`walls`, `frames`): $\delta = 1.00$
-    * Fortified Parapets (`walls` with battlements/turrets): $\delta = 1.25$
-    * Dense Masonry & Load-Bearing Elements (`structures`: towers, turrets, buttresses, pillars, platforms): $\delta = 1.50$
-    * Overhead Coverings (`roofs`): $\delta = 0.80$
-    * Fenestrations & Framed Openings (`windows`): $\delta = 0.50$
-    * Linear Enclosures & Perimeters (`railings`, fences): $\delta = 0.50$
-
+{{ file(properties.paths.root + '/docs/static/md/composition-cost-factors.md') }}

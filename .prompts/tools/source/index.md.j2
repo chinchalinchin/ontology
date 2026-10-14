@@ -17,4 +17,8 @@ The **Source Tool** provides **Views** into the application codebase.
 {% include 'tools/source/views/scripts/' ~ tools.parameters.source.script ~ '.md.j2' %}
 {% endif %}
 
+{% if tools.views.source.data %}
+{% include 'tools/source/views/data/index.md.j2' %}
+{% endif %}
+
 {% endif %}

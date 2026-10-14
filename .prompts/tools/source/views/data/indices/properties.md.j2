@@ -1,77 +1,32 @@
 {# ------------------------------------------------------------- #}
 {% set property_indices = {
-    'crafts': properties.paths.root + 'src/assets/crafts',
-    'cursors': properties.paths.root + 'src/asset/cursors',
-    'effects': properties.paths.root + 'src/assets/effects',
-    'geography': properties.paths.root + 'src/assets/geography',
-    'objects': properties.paths.root + 'src/assets/objects',
-    'resources': properties.paths.root + 'src/assets/resources',
-    'sheets': properties.paths.root + 'src/assets/sheets'
-    'sounds': properties.paths.root + 'src/assets/sounds',
-    'tiles': properties.paths.root + 'src/assets/tiles'
-    'widgets': properties.paths.root + 'src/assets/widgets'
+    'crafts': properties.paths.root ~ 'src/assets/crafts/',
+    'cursors': properties.paths.root ~ 'src/assets/cursors/',
+    'effects': properties.paths.root ~ 'src/assets/effects/',
+    'fonts': properties.paths.root ~ 'src/assets/fonts/',
+    'geography': properties.paths.root ~ 'src/assets/geography/',
+    'objects': properties.paths.root ~ 'src/assets/objects/',
+    'resources': properties.paths.root ~ 'src/assets/resources/',
+    'sheets': properties.paths.root ~ 'src/assets/sheets/',
+    'sounds': properties.paths.root ~ 'src/assets/sounds/',
+    'tiles': properties.paths.root ~ 'src/assets/tiles/',
+    'widgets': properties.paths.root ~ 'src/assets/widgets/'
 } %}
 {# ------------------------------------------------------------- #}
-{% set categories = {
-    'crafts': [ 'bridges', 'platforms', 'stairs', 'struts' ],
-    'cursors': [ 'expressions', 'projectiles' ],
-    'effects': [ 'collectables', 'fluids', 'hazards', 'passive', 'reactable' ],
-    'geography': [ 'shorelines' ],
-    'objects': [ 'chests', 'crates', 'doors', 'gates', 'obstacles', 'plates', 'signs' ],
-    'resources': [ 'crops', 'flowers', 'ore', 'trees' ],
-    'sheets': [ 'equipment', 'pixies', 'sprites' ],
-    'tiles': [ 'back', 'fore', 'grid'], 
-    'widgets': [ 'buttons', 'icons', 'meters', 'pages', 'panes' ]
-} %}
-{# ------------------------------------------------------------- #}
-{% set classifications = {
-    'crates': [ 'barrels', 'bookshelf', 'boxes' ],
-    'doors': [ 'openings', 'structures' ],
-    'gates': [ 'entrances' ],
-    'obstacles': [ 'rocks' ],
-    'plates': [ 'switches' ],
-    'signs': [ 'books', 'markers' ]
-    'equipment': ['armor', 'shields', 'tools', 'utilities', 'weapons' ],
-    'pixies': [ 'animals' ],
-    'struts': [ 'floors', 'frames', 'railings', 'roofs', 'structures', 'walls', 'windows' ],
-    'sprites': [ 'base', 'features' ]
-} %}
-{# ------------------------------------------------------------- #}
-{% set subclassifications = { 
-    'base': [ 'human', 'monster' ],
-    'features': [ 'feet', 'hair', 'head', 'legs', 'torso' ]
-} %}
-{# ------------------------------------------------------------- #}
-{# - 1. START: parameter loop - #}
-{% for p in tools.parameters.source.data.properties %}
-#### Properties: {{ p | capitalize }}
+{% for param in tools.parameters.source.data.properties %}
+{% set location = property_indices.get(param) %}
+{% if location %}
+#### Properties: {{ param | capitalize }}
 
-- Location: {{ property_indices.get(p) }}
+- Location: `{{ location }}`
 
-{# - 2. START: instance loop -#}
-{% for instance in categories.get(p) %}
+{% for prop in yaml(location, recursive=True) | sort %}
+**{{ prop }}**
 
-
-{# - 3. START: class loop - #}
-{% if instance in classifications.keys() %}
-{% for class in classifications.get(instance)%}
-
-{# - 4. START: subclass loop - #}
-{% if class in subclassifications.keys() %}
-{% for subclass in subclassifications.get(class)%}
-
-{# ---- todo ------#}
+```yaml
+{{ file(location ~ prop) }}
+```
 
 {% endfor %}
 {% endif %}
-{# - 4. END: subclass loop - #}
-
 {% endfor %}
-{% endif %}
-{# - 3. END: class loop - #}
-
-{% endfor %}
-{# - 2. END: instance loop - #}
-
-{% endfor %}
-{# - 1. END: parameter loop - #}
