@@ -94,7 +94,7 @@ tools:
       entrypoints: false
       models: false
       script: false
-      workflow: false
+      workflow: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
@@ -170,7 +170,7 @@ tools:
           # - plots
           # - recipes
           # - stages
-      workflow: collisions
+      workflow: compositions
       script: synthesize
       models: [] 
         # - 

@@ -120,3 +120,147 @@ crafts:
       mass: -1
       priority: -1
       cost: null # TODO
+    # -----------------------------------------
+    # ----------------------------------- ROOFS
+    # -----------------------------------------
+    awning-canvas-square:
+      dimensions:
+        w: 96
+        l: 74
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    roof-building-sloped:
+      dimensions:
+        w: 287
+        l: 168
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    roof-glass-octagon:
+      dimensions:
+        w: 224
+        l: 131
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    roof-shingle-blue-hexgaon:
+      dimensions:
+        w: 95
+        l: 52
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    roof-shingle-blue-sloped:
+      dimensions:
+        w: 138
+        l: 168
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    roof-shingle-blue-square:
+      dimensions:
+        w: 96
+        l: 97
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    roof-shingle-brown-hexagon:
+      dimensions:
+        w: 96
+        l: 52
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    roof-shingle-brown-sloped:
+      dimensions:
+        w: 128
+        l: 128
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    roof-shingle-brown-square:
+      dimensions:
+        w: 96
+        l: 97
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    roof-shingle-red-hexagon:
+      dimensions:
+        w: 96
+        l: 52
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    roof-shingle-red-sloped:
+      dimensions:
+        w: 139
+        l: 169
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    roof-shingle-red-square:
+      dimensions:
+        w: 96
+        l: 97
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    roof-slate-sloped:
+      dimensions:
+        w: 256
+        l: 127
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 10
+            y: 10
+          dimensions:
+            w: 230
+            l: 100
+      cost:
+        - item: stone
+          quantity: 25
+    roof-slats-blue:
+      dimensions:
+        w: 128
+        l: 134
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    roof-slats-brown:
+      dimensions:
+        w: 129
+        l: 134
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    roof-slats-red:
+      dimensions:
+        w: 129
+        l: 134
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    roof-temple-sloped:
+      dimensions:
+        w: 288
+        l:  168
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    roof-thatched-sloped:
+      dimensions:
+        w: 116
+        l: 110
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    roof-thatched-square:
+      dimensions:
+        w: 120
+        l: 114
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO

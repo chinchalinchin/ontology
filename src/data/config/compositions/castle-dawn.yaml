@@ -9,14 +9,14 @@ compositions:
         crafts: 
           struts:
             # Overhang canopy / high roof
-            - id: roof-slate
+            - id: roof-slate-sloped
               name: castle-dawn-roof
               owner: bind(root.owner)
               elevation: 0
               position:
                 x: -34
                 y: -255
-            - id: window-stone-exterior
+            - id: window-stone-peaked
               name: castle-dawn-window
               owner: bind(root.owner)
               elevation: 0

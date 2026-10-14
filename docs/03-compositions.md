@@ -347,56 +347,56 @@ $$
 
 #### Struts Hierarchy
 
-Struts are the basic element of Compositions. They are classified according to Purpose, Partitions. All Struts are functionally equivalent (but may differ in the declaration of their properties), yet serve different atmospheric, vanity or aesthetic purposes. 
+Struts are the basic element of Compositions. They are classified according to Purpose and Partitions. All Struts are functionally equivalent (but may differ in the declaration of their properties), yet serve different atmospheric, vanity or aesthetic purposes. 
 
 Purpose and Partition are purely organizational and have no other purpose in the game engine.
 
 ##### Purpose: Decor
 
-**Summary**: Living space decorations.
-
-- `beds`: Sleeping implements.
-- `chairs`: Sitting implements.
-- `fixtures`: Common household items.
-- `shelves`: Cabinetry.
-- `tables`: Areas for storage and eating.
-- `vanities`: Decals and adornments.
-- `windows`: Glass panes and frames.
+- **Summary**: Living space decorations.
+- **Partitions**:
+    - `beds`: Sleeping implements.
+    - `chairs`: Sitting implements.
+    - `fixtures`: Common household items.
+    - `shelves`: Cabinetry.
+    - `tables`: Areas for storage and eating.
+    - `vanities`: Decals and adornments.
+    - `windows`: Glass panes and frames.
 
 ##### Purpose: Railings
 
-**Summary**: Containment boundaries.
-
-- `fences`: Exterior, isolated railings.
-- `crenellations`: Embedded railings.
+- **Summary**: Containment boundaries.
+- **Partitions**:
+    - `fences`: Exterior, isolated railings.
+    - `crenellations`: Embedded railings.
 
 ##### Purpose: Structures
 
-**Summary**: Ancillary features of buildings.
-
-- `additions`: Unique features.
-- `buttresses`: Load-bearing structures.
-- `enclosures`: Covered structures.
-- `pillars`: Columnar structures.
-- `towers`: Constructed structures.
-- `windows`: Glass structures.
+- **Summary**: Ancillary features of buildings.
+- **Partitions**:
+    - `additions`: Unique features.
+    - `buttresses`: Load-bearing structures.
+    - `enclosures`: Covered structures.
+    - `pillars`: Columnar structures.
+    - `towers`: Constructed structures.
+    - `windows`: Glass structures.
 
 ##### Purpose: Surfaces
 
-**Summary**: Planes of movement.
-
-- `floors`: Interior surfaces.
-- `streets`: Exterior surfaces.
-- `roofs`: Elevated surfaces.
+- **Summary**: Planes of movement.
+- **Partitions**:
+    - `floors`: Interior surfaces.
+    - `streets`: Exterior surfaces.
+    - `roofs`: Elevated surfaces.
 
 ##### Purpose: Walls
 
-**Summary**: Intentional obstructions.
-
-- `raw`: Basic material walls.
-- `refined`: Crafted and refined walls.
-- `frames`: Premade walls with roofs.
-- `interior`: Interior, dressed walls.
+- **Summary**: Intentional obstructions.
+- **Partitions**:
+    - `raw`: Basic material walls.
+    - `refined`: Crafted and refined walls.
+    - `frames`: Premade walls with roofs.
+    - `interior`: Interior, dressed walls.
 
 #### Cost Factors
 

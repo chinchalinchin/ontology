@@ -42,18 +42,13 @@ Under this formulation, gravity is purely a property of the topological elevatio
 
 ##### Architectural Analysis I
 
-1. **Decoupling Gravity from Lower-Elevation Hitboxes**
-Elevations $E \in \mathbb{Z}$ are topological planes rather than attributes of obstacle hitboxes. By deriving $\Delta y_{\text{tier}} = U \tan(\theta)$ from the camera projection angle ($\theta = 60^\circ$) and unit grid scale ($U = 32\text{ px}$), the vertical distance required to transition from plane $E$ to plane $E - 1$ is invariant across all Asset categories.
-2. **Multi-Tier Step-Down & Intermediate Landing ($E_n \to E_{n-1}$)**
-In `castle-atrium-layer-3`, `platform-04` is deployed at `Position(0, 0)` with `elevation = 1` (walkable deck at $E = 2$, $y \in [0, 111]$), directly above `platform-01` at `Position(0, 136)` with `elevation = 0` (walkable deck at $E = 1$, $y \in [136, 247]$).
-* When an entity at $E = 2$ steps South off `platform-04` ($y > 111$), it is unsupported at $E = 2$ and enters freefall (`falling = True`).
-* After descending $\Delta y_{\text{tier}} \approx 55\text{ px}$ ($y \approx 166$), `fall_distance >= TIER_DROP_DISTANCE` triggers $E: 2 \to 1$ and decrements `fall_distance -= TIER_DROP_DISTANCE`.
-* The engine immediately checks support at the new tier $E = 1$. Because $(x, 166)$ lies inside `platform-01`'s $E = 1$ surface ($y \in [136, 247]$), the entity lands on $E = 1$ (`falling = False`, `vy = 0.0`) without falling to $E = 0$.
-* Conversely, if the entity steps off an $E = 2$ ledge into open space with no $E = 1$ substrate below, the support check at $E = 1$ returns `False`; the entity retains its downward velocity $v_y$ and falls an additional $\Delta y_{\text{tier}}$ until it reaches $E = 0$.
-
-
-3. **Coplanar Overlap Resolution on Landing**
-While `falling == True`, the entity is between discrete elevation planes and bypasses `CollisionMechanics`. The moment `falling` transitions to `False` on a supported tier $E$, the entity re-enters `CollisionMechanics` at tier $E$, where any minor coplanar hitbox overlap at the landing coordinate is resolved via standard inverse-mass separation (`physics.collide`).
+1. **Decoupling Gravity from Lower-Elevation Hitboxes**: Elevations $E \in \mathbb{Z}$ are topological planes rather than attributes of obstacle hitboxes. By deriving $\Delta y_{\text{tier}} = U \tan(\theta)$ from the camera projection angle ($\theta = 60^\circ$) and unit grid scale ($U = 32\text{ px}$), the vertical distance required to transition from plane $E$ to plane $E - 1$ is invariant across all Asset categories.
+2. **Multi-Tier Step-Down & Intermediate Landing ($E_n \to E_{n-1}$)**: In `castle-atrium-layer-3`, `platform-04` is deployed at `Position(0, 0)` with `elevation = 1` (walkable deck at $E = 2$, $y \in [0, 111]$), directly above `platform-01` at `Position(0, 136)` with `elevation = 0` (walkable deck at $E = 1$, $y \in [136, 247]$).
+    * When an entity at $E = 2$ steps South off `platform-04` ($y > 111$), it is unsupported at $E = 2$ and enters freefall (`falling = True`).
+    * After descending $\Delta y_{\text{tier}} \approx 55\text{ px}$ ($y \approx 166$), `fall_distance >= TIER_DROP_DISTANCE` triggers $E: 2 \to 1$ and decrements `fall_distance -= TIER_DROP_DISTANCE`.
+    * The engine immediately checks support at the new tier $E = 1$. Because $(x, 166)$ lies inside `platform-01`'s $E = 1$ surface ($y \in [136, 247]$), the entity lands on $E = 1$ (`falling = False`, `vy = 0.0`) without falling to $E = 0$.
+    * Conversely, if the entity steps off an $E = 2$ ledge into open space with no $E = 1$ substrate below, the support check at $E = 1$ returns `False`; the entity retains its downward velocity $v_y$ and falls an additional $\Delta y_{\text{tier}}$ until it reaches $E = 0$.
+3. **Coplanar Overlap Resolution on Landing**: While `falling == True`, the entity is between discrete elevation planes and bypasses `CollisionMechanics`. The moment `falling` transitions to `False` on a supported tier $E$, the entity re-enters `CollisionMechanics` at tier $E$, where any minor coplanar hitbox overlap at the landing coordinate is resolved via standard inverse-mass separation (`physics.collide`).
 
 ##### Goals
 

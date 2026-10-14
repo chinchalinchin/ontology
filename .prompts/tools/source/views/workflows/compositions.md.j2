@@ -8,6 +8,21 @@
 {{ file(properties.paths.root + 'src/app/assets/base.py') }}
 ```
 
+##### app.assets.hitboxes
+
+**src/app/assets/hitboxes/core.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/hitboxes/core.py') }}
+```
+
+**src/app/assets/hitboxes/crafts.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/hitboxes/crafts.py') }}
+```
+
+
 #### app.game
 
 **src/app/game/engine.py**
@@ -54,29 +69,32 @@
 {{ file(properties.paths.root + 'src/app/models/state/core.py') }}
 ```
 
-**src/app/models/state/crafts.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/models/state/objects.py' ) }}
-```
-
 **src/app/models/state/schemas.py:**
 
 ```python
 {{ file(properties.paths.root + 'src/app/models/state/schemas.py')}}
 ```
 
+###### app.models.state.assets
+
+**src/app/models/state/assets/crafts.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/state/assets/crafts.py' ) }}
+```
 #### app.services
 
 ##### app.services.generators
 
 ###### app.services.generators.game
 
+{# 
 **src/app/services/generators/game/cradle.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/services/generators/game/cradle.py') }}
-```
+``` 
+#}
 
 **src/app/services/generators/game/decomposer.py**
 
@@ -84,16 +102,20 @@
 {{ file(properties.paths.root + 'src/app/services/generators/game/decomposer.py' ) }}
 ```
 
+{# 
 **src/app/services/generators/game/factory.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/services/generators/game/factory.py' ) }}
-```
+``` 
+#}
 
+{# 
 ##### app.services.orchestration
 
 **src/app/services/orchestration/migrator.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/services/orchestration/migrator.py') }}
-```
+``` 
+#}
