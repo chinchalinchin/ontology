@@ -76,6 +76,7 @@ class Decomposer:
         props = inst_props.get(asset_id)
         return props.dimensions.l if props and props.dimensions else 0
 
+
     def _resolve_anchor(
         self,
         anchor_val: Any,
@@ -143,6 +144,7 @@ class Decomposer:
                 for c in props.cost:
                     cost_map[c.item] = cost_map.get(c.item, 0) + c.quantity
 
+
     def _aggregate_components_cost(self, 
         components: Any, 
         cost_map: Dict[str, int]
@@ -189,6 +191,7 @@ class Decomposer:
             layer_map[layer_str] = settings.SEPARATOR.join([layer_str, str(inc)])
 
         return layer_map[layer_str]
+
     
     def _resolve_bind(self, 
         val: Any, 
@@ -209,6 +212,7 @@ class Decomposer:
             return root_context.get(key, val)
             
         return val
+
 
     def _hydrate_state(self, 
         state_obj: AssetState, 
@@ -293,6 +297,7 @@ class Decomposer:
                 
         return type(state_obj)(**kwargs)
 
+
     def _create_asset(self, 
         cat_key: str, 
         inst_key: str, 
@@ -371,6 +376,7 @@ class Decomposer:
 
         self._unpack_components(node.components, root_context, node_context, inc, assets)
         return assets
+
 
     def _unpack_components(self, 
         components: Any, 

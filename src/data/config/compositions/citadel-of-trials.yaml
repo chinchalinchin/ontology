@@ -26,8 +26,15 @@ compositions:
               delta: 1
               position:
                 x: 284
-                y: 61
+                y: 40
           struts:
+            - id: wall-stone
+              name: citadel-exterior-upper-level
+              owner: bind(root.owner)
+              elevation: 0
+              position: 
+                x: 0
+                y: -75
             - id: roof-slate-sloped
               name: citadel-exterior-roof
               owner: bind(root.owner)
@@ -41,15 +48,15 @@ compositions:
               owner: bind(root.owner)
               elevation: 0
               position:
-                x: -32
-                y: -48
+                x: -28
+                y: -44
             - id: pillar-stone-doric
               name: citadel-exterior-pillar-right
               owner: bind(root.owner)
               elevation: 0
               position:
-                x: 188
-                y: -48
+                x: 184
+                y: -44
             - id: street-cobblestone
               name: citadel-courtyard-west
               owner: bind(root.owner)
@@ -64,6 +71,13 @@ compositions:
               position:
                 x: 94
                 y: 80
+            - id: window-church-stained-arched
+              name: citadel-window
+              owner: bind(root.owner)
+              elevation: 1
+              position:
+                x: 78
+                y: -55
           railings:
             - id: fence-iron
               name: exterior-balcony-rail-east
@@ -72,7 +86,7 @@ compositions:
               orientation: vertical
               position:
                 x: 311
-                y: -24
+                y: -30
               multiple:
                 nx: 0
                 ny: 1

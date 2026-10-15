@@ -35,28 +35,28 @@ compositions:
               owner: bind(root.owner)
               elevation: 0
               position:
-                x: -66
+                x: -60
                 y: -33
             - id: tower-turret-stone
               name: castle-dawn-turret-01
               owner: bind(root.owner)
               elevation: 0
               position:
-                x: 188
+                x: 182
                 y: -33
             - id: tower-stone
               name: castle-dawn-tower-00
               owner: bind(root.owner)
               elevation: 0
               position:
-                x: -65
+                x: -59
                 y: -219
             - id: tower-stone
               name: castle-dawn-tower-01
               owner: bind(root.owner)
               elevation: 0
               position:
-                x: 220
+                x: 214
                 y: -219
             # Exterior upper walkway deck (elevation: 1)
             - id: floor-stone
@@ -64,7 +64,7 @@ compositions:
               owner: bind(root.owner)
               elevation: -1
               position:
-                x: -49
+                x: -50
                 y: -82
           railings:
             - id: crenellation-stone
@@ -73,10 +73,10 @@ compositions:
               elevation: 1
               orientation: horizontal
               position:
-                x: -10
+                x: -3
                 y: -48
               multiple:
-                nx: 2
+                nx: 3
                 ny: 0
             - id: crenellation-stone
               name: castle-dawn-railing-01
@@ -84,7 +84,7 @@ compositions:
               elevation: 1
               orientation: vertical
               position:
-                x: 235
+                x: 238
                 y: -82
               multiple:
                 nx: 0
@@ -95,7 +95,7 @@ compositions:
               elevation: 1
               orientation: vertical
               position:
-                x: -65
+                x: -59
                 y: -85
               multiple:
                 nx: 0
@@ -124,6 +124,8 @@ compositions:
               name: castle-entrance
               link: castle-gate-link
               elevation: 0
+              # force render on top of door-castle-open
+              anchor: 1 
               position:
                 x: 62
                 y: 16
@@ -139,7 +141,7 @@ compositions:
             - id: door-castle-open
               name: castle-entrance-open
               elevation: 0
-              anchor: anchor(castle-gate)
+              priority: 0
               position:
                 x: 62
                 y: 16
@@ -166,7 +168,7 @@ compositions:
                 y: -130
               outlayer: castle-atrium-layer
               out:
-                x: 303
+                x: 250
                 y: 140
     branches:
       - strut: 
@@ -209,7 +211,6 @@ compositions:
                 position:
                   x: 0
                   y: 0
-              
             struts:
               # --------------- SUBSTRATE FLOORS (elevation: -1)
               - id: floor-marble-checkered
@@ -231,7 +232,7 @@ compositions:
                 owner: bind(root.owner)
                 elevation: -1
                 position:
-                  x: 75
+                  x: 76
                   y: 219  
               - id: floor-marble-diamonds
                 name: castle-dawn-floor-04
@@ -258,14 +259,14 @@ compositions:
               - id: wall-stone-gold-plated
                 name: castle-dawn-wall-01
                 owner: bind(root.owner)
-                elevation: 0
+                elevation: 1
                 position:
                   x: 0
                   y: 41
               - id: wall-stone-gold-plated
                 name: castle-dawn-wall-02
                 owner: bind(root.owner)
-                elevation: 0
+                elevation: 1
                 position:
                   x: 222
                   y: 41
@@ -288,7 +289,7 @@ compositions:
                 # = (136 + 111) - (19 + 96) = 247 - 215 = 32
                 anchor: anchor(castle-dawn-platform-02)
                 position:
-                  x: 223
+                  x: 222
                   y: 119
             stairs:
               - id: steps-stone
@@ -331,6 +332,7 @@ compositions:
               - id: door-double
                 name: throne-room-entrance
                 elevation: 0
+                anchor: anchor(castle-dawn-wall-00)
                 position:
                   x: 128
                   y: 29
@@ -350,7 +352,8 @@ compositions:
                   y: 95
               # Balcony exits on upper deck (elevation: 1)
               - id: door-mansion
-                name: castle-roof-exit-00
+                name: castle-roof-exit-01
+                anchor: anchor(castle-dawn-wall-01)
                 elevation: 1
                 position:
                   x: 0
@@ -358,9 +361,10 @@ compositions:
                 outlayer: bind(root.layer)
                 out:
                   x: 22
-                  y: -75
+                  y: -100
               - id: door-mansion
-                name: castle-roof-exit-01
+                name: castle-roof-exit-02
+                anchor: anchor(castle-dawn-wall-02)
                 elevation: 1
                 position:
                   x: 287

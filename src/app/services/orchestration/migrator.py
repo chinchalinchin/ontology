@@ -68,26 +68,36 @@ class Migrator:
         self.maximum = 1
         self.current = 0
 
+
     def _build_generator(self):
         logger.info(f"Migrator starting hydration for target state: {self.target}")
         self.state = Loader.load_state(self.target)
         
         # 1. Compile the manifest of objects to generate
         tasks = []
-        if hasattr(self.state, Shortcuts.COMPOSITIONS.value) and self.state.compositions:
+        if hasattr(
+            self.state, 
+            Shortcuts.COMPOSITIONS.value
+        ) and self.state.compositions:
             for comp_state in self.state.compositions:
                 tasks.append((
                     Shortcuts.COMPOSITIONS.value, 
                     comp_state
                 ))
 
-        if hasattr(self.state, Shortcuts.PLOTS.value) and self.state.plots:
+        if hasattr(
+            self.state,
+            Shortcuts.PLOTS.value
+        ) and self.state.plots:
             tasks.append((
                 Shortcuts.PLOTS.value, 
                 self.state.plots
             ))
 
-        if hasattr(self.state, Shortcuts.CALENDAR.value) and self.state.calendar:
+        if hasattr(
+            self.state, 
+            Shortcuts.CALENDAR.value
+        ) and self.state.calendar:
             self.board.calendar = self.state.calendar
             
         for cat_field in dataclasses.fields(self.state):
@@ -144,6 +154,7 @@ class Migrator:
                 recipe = getattr(cat_recipes, instance_key, None)
                 
                 prop_instance_key = instance_key
+                # NOTE: Register Sprite properties as Player properties
                 if category_key == AssetCategories.SHEETS.value and (
                     instance_key == AssetInstances.PLAYERS.value
                 ):
@@ -179,6 +190,7 @@ class Migrator:
         fluids = self.board.instances(AssetInstances.FLUIDS.value)
         for fluid in fluids:
             self.actuator.pump(fluid, self.board)
+
 
     def step(self, budget_ms: int = 16) -> bool:
         """

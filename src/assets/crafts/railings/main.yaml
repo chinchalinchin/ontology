@@ -5,8 +5,8 @@ crafts:
     # -----------------------------------------
     crenellation-stone:
       dimensions:
-        w: 127
-        l: 127
+        w: 65
+        l: 71
       mass: 0
       hitboxes:
         horizontal:
@@ -14,15 +14,15 @@ crafts:
               x: 0
               y: 0
             dimensions:
-              w: 127
-              l: 9
+              w: 65
+              l: 10
         vertical:
           - position:
               x: 0
               y: 0
             dimensions:
-              w: 11
-              l: 126
+              w: 9
+              l: 63
       cost:
         - item: stone
           quantity: 2
@@ -32,7 +32,7 @@ crafts:
     fence-iron:
       dimensions:
         w: 96
-        l: 17
+        l: 93
       mass: 0
       hitboxes:
         horizontal:
