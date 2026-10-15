@@ -104,9 +104,7 @@ class Perimeter:
             else:
                 if obj.elevation != elevation:
                     continue
-            logger.info(obj.name)
-            logger.info(obj.category)
-            logger.info(obj.instance)
+
             x1 = int(obj.state.position.x)
             y1 = int(obj.state.position.y)
             rects.append((x1, y1, x1 + obj.dimensions.w, y1 + obj.dimensions.l))

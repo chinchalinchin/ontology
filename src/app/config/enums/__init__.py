@@ -36,6 +36,7 @@ from app.config.enums.devices import (
 from app.config.enums.engine import (
     Mechanics,
     Configurations,
+    OrientedAssets,
     MotiveAssets,
     FrictiveAssets,
     InertAssets,
@@ -133,6 +134,7 @@ __all__ = [
     'MotiveAssets',
     'FrictiveAssets',
     'InertAssets',
+    'OrientedAssets',
     'Shortcuts',
     'Reactions',
     'Relations',

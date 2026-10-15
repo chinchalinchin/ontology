@@ -38,8 +38,9 @@ from app.models.state.assets import (
     StairState
 )
 
-# ---------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------- ROOT SCHEMAS
+# --------------------------------------------------------------
+# ------------------------------------------------- SCHEMA NODES
+# --------------------------------------------------------------
 
 @dataclass(slots=True)
 class TileStateInstances:
@@ -62,9 +63,9 @@ class ObjectStateInstances:
 class CraftStateInstances:
     stairs: List[StairState] = field(default_factory=list)
     struts: List[PropertyState] = field(default_factory=list)
-    decors: List[PropertyState] = field(default_factory=list)
     bridges: List[OrientedState] = field(default_factory=list)
     platforms: List[PlatformState] = field(default_factory=list)
+    railings: List[OrientedState] = field(default_factory=list)
     
 @dataclass(slots=True)
 class ResourceStateInstances:
@@ -90,6 +91,11 @@ class SheetStateInstances:
     sprites: List[SpriteState] = field(default_factory=list)
     players: List[PlayerState] = field(default_factory=list)
 
+
+# --------------------------------------------------------------
+# -------------------------------------------------- ROOT SCHEMA
+# --------------------------------------------------------------
+
 @dataclass(slots=True)
 class StateSchema:
     # ASSET STATES
@@ -100,6 +106,7 @@ class StateSchema:
     effects: EffectStateInstances = field(default_factory=EffectStateInstances)
     resources: ResourceStateInstances = field(default_factory=ResourceStateInstances)
     sheets: SheetStateInstances = field(default_factory=SheetStateInstances)
+    ## VIRTUALIZED ASSETS
     compositions: List[PropertyState] = field(default_factory=list)
     # BOARD STATES
     plots: PlotState = field(default_factory=PlotState)

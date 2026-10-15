@@ -1,6 +1,6 @@
 crafts:
   bridges:
-    wood-bridge:
+    bridge-wood:
       dimensions:
         w: 128
         l: 128

@@ -22,6 +22,7 @@ from app.config.enums import (
     AssetCategories, 
     AssetInstances, 
     Orientations, 
+    OrientedAssets,
     Shortcuts
 )
 from app.services.generators.game.factory import Factory
@@ -302,7 +303,8 @@ class Decomposer:
         
         prop_instance_key = inst_key
 
-        if cat_key == AssetCategories.SHEETS.value and inst_key == AssetInstances.PLAYERS.value:
+        if cat_key == AssetCategories.SHEETS.value and \
+            inst_key == AssetInstances.PLAYERS.value:
             prop_instance_key = AssetInstances.SPRITES.value
             
         cat_props = getattr(self.properties, cat_key, None)
@@ -436,10 +438,15 @@ class Decomposer:
                         layer_map=layer_map,
                         scope_lookup=scope_lookup
                     )
-                    assets.append(self._create_asset(cat_key, inst_key, new_state))
+                    
+                    if inst_key in OrientedAssets:
+                        assets.extend(self.orient(new_state, cat_key, inst_key))
+                    else:
+                        assets.append(self._create_asset(cat_key, inst_key, new_state))
 
     # ---------------------------------------------------------
     # ------------------------------------------ PUBLIC METHODS
+    # ---------------------------------------------------------
 
     def unpack(self, deployed_state: PropertyState) -> List[Asset]:
         assets = []
@@ -468,32 +475,40 @@ class Decomposer:
 
         return assets
 
-    def bridge(self, deployed_state: OrientedState) -> List[Asset]:
-        props = self.properties.crafts.bridges.get(deployed_state.id)
-        if not props:
+
+    def orient(self, 
+        state: OrientedState, 
+        category: str, 
+        instance: str
+    ) -> List[Asset]:
+        cat_props = getattr(self.properties, category, {})
+        instance_props = getattr(cat_props, instance, {})
+        props = instance_props.get(state.id, None)
+
+        if props is None:
             logger.error(
                 settings.SEPARATOR.join([
                     "Decomposer",
-                    "BridgeMissingProperties",
-                    deployed_state.id
+                    "OrientationMissingProperties",
+                    state.id
                 ])
             )
             return []
 
         w = props.dimensions.w
         l = props.dimensions.l
-        orientation = deployed_state.orientation
-        base_pos = deployed_state.position or Position(0, 0)
-        layer = deployed_state.layer or "0"
+        orientation = state.orientation
+        base_pos = state.position or Position(0, 0)
+        layer = state.layer or "0"
 
         if orientation == Orientations.HORIZONTAL.value:
-            count = deployed_state.multiple.nx if deployed_state.multiple else 1
+            count = state.multiple.nx if state.multiple else 1
         else:
-            count = deployed_state.multiple.ny if deployed_state.multiple else 1
+            count = state.multiple.ny if state.multiple else 1
 
         unit_assets: List[Asset] = []
-        cat_recipes = getattr(self.recipes, AssetCategories.CRAFTS.value, None)
-        recipe = getattr(cat_recipes, AssetInstances.BRIDGES.value, None)
+        cat_recipes = getattr(self.recipes, category, None)
+        recipe = getattr(cat_recipes, instance, None)
 
         for i in range(count):
             if orientation == Orientations.HORIZONTAL.value:
@@ -502,27 +517,27 @@ class Decomposer:
                 seg_pos = Position(base_pos.x, base_pos.y + i * l)
 
             unit_name = settings.SEPARATOR.join([
-                deployed_state.name or deployed_state.id,
+                state.name or state.id,
                 str(i)
             ])
 
             unit_state = OrientedState(
-                id=deployed_state.id,
+                id=state.id,
                 name=unit_name,
                 layer=layer,
                 position=seg_pos,
                 orientation=orientation,
                 multiple=Multiple(1, 1),
-                owner=deployed_state.owner,
-                elevation=deployed_state.elevation
+                owner=state.owner,
+                elevation=state.elevation
             )
 
             unit_asset = Asset(
                 taxonomy=Factory.taxonomy(
-                    deployed_state.id,
+                    state.id,
                     unit_name,
-                    AssetCategories.CRAFTS.value,
-                    AssetInstances.BRIDGES.value
+                    category,
+                    instance
                 ),
                 properties=props,
                 state=unit_state,
@@ -533,6 +548,7 @@ class Decomposer:
             unit_assets.append(unit_asset)
 
         return unit_assets
+
 
     def cost(self, comp_id: str) -> List[Cost]:
         config = self.compositions.get(comp_id)
@@ -560,6 +576,7 @@ class Decomposer:
                 self._aggregate_components_cost(branch.components, cost_map)
                 
         return [Cost(item=k, quantity=v) for k, v in cost_map.items()]
+
 
     def bridge_cost(self, id: str, multiple: Multiple, orientation: str) -> List[Cost]:
         props = self.properties.crafts.bridges.get(id)

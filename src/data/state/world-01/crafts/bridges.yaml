@@ -1,6 +1,6 @@
 crafts:
   bridges:
-    - id: wood-bridge
+    - id: bridge-wood
       name: the-bridge-of-tears-left
       position:
         x: 50
@@ -10,7 +10,7 @@ crafts:
         ny: 0
       owner: evil-empress-jasilynn
       orientation: horizontal
-    - id: wood-bridge
+    - id: bridge-wood
       name: the-bridge-of-tears-right
       position:
         x: 550
@@ -20,7 +20,7 @@ crafts:
         ny: 0
       owner: evil-empress-jasilynn
       orientation: horizontal
-    - id: wood-bridge
+    - id: bridge-wood
       name: the-downtown-bridge
       position:
         x: 850
@@ -30,7 +30,7 @@ crafts:
         ny: 3
       owner: evil-empress-jasilynn
       orientation: vertical
-    - id: wood-bridge
+    - id: bridge-wood
       name: the-harvest-bridge
       position:
         x: 160

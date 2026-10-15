@@ -47,9 +47,9 @@ class AssetInstances(str, Enum):
     # CRAFTS
     BRIDGES         = "bridges"
     PLATFORMS       = "platforms"
+    RAILINGS        = "railings"
     STRUTS          = "struts"
     STAIRS          = "stairs"
-    DECORS          = "decors"
     FORGES          = "forges"
     DEVICES         = "devices"
     # SHEETS
@@ -184,12 +184,12 @@ class CentennialStages(str, Enum):
     CRYSTAL         = "crystal"
     ALLOY           = "alloy"
     
-# -------------------------------- ASSET ID ENUMERATIONS
-#   NOTE: These are required Asset IDs.
+# -------------------------------- ASSET ENUMERATIONS
+#   NOTE: These are required Assets.
 
 class RequiredAssets(str, Enum):
     PLAYER          = "player"
-
+    
 class ExpressionsPalette(str, Enum):
     BUBBLES         = "bubbles"
     BUFFS           = "buffs"

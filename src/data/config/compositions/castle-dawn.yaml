@@ -66,27 +66,40 @@ compositions:
               position:
                 x: -49
                 y: -82
-            - id: crenellation-up-stone
+          railings:
+            - id: crenellation-stone
               name: castle-dawn-railing-00
               owner: bind(root.owner)
               elevation: 1
+              orientation: horizontal
               position:
                 x: -10
                 y: -48
-            - id: crenellation-right-stone
+              multiple:
+                nx: 2
+                ny: 0
+            - id: crenellation-stone
               name: castle-dawn-railing-01
               owner: bind(root.owner)
               elevation: 1
+              orientation: vertical
               position:
                 x: 235
                 y: -82
-            - id: crenellation-left-stone
+              multiple:
+                nx: 0
+                ny: 1
+            - id: crenellation-stone
               name: castle-dawn-railing-02
               owner: bind(root.owner)
               elevation: 1
+              orientation: vertical
               position:
                 x: -65
                 y: -85
+              multiple:
+                nx: 0
+                ny: 1
         effects:
           passive:
             - id: torch
@@ -126,6 +139,7 @@ compositions:
             - id: door-castle-open
               name: castle-entrance-open
               elevation: 0
+              anchor: anchor(castle-gate)
               position:
                 x: 62
                 y: 16

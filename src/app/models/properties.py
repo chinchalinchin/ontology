@@ -16,7 +16,7 @@ from app.models.adapters import (
     PydanticHitbox as Hitbox
 )
 
-# ---------------------------------------------------------------------------------------
+# --------------------------------------------------------------
 
 @dataclass(slots=True)
 class Direction:
@@ -41,14 +41,15 @@ class Lifecycle:
     cooldown: int = 60
     persist: bool = False
 
-# ---------------------------------------------------------------------------------------
+# --------------------------------------------------------------
 
 @dataclass(slots=True)
 class AssetProperties:
     dimensions: Dimensions # type: ignore
     priority: int = 0
 
-# ---------------------------------------------------------------------------------------
+
+# --------------------------------------------------------------
 
 @dataclass(slots=True)
 class RGBA:
@@ -74,7 +75,10 @@ class FontProperties:
     margins: float = 0
     size: int = 24
 
-# ---------------------------------------------------------------------------------------
+# 
+# --------------------------------------------------------------
+# ---------------------------------------------- NODE PROPERTIES
+# --------------------------------------------------------------
 
 @dataclass(slots=True)
 class CursorProperties(AssetProperties):
@@ -130,8 +134,9 @@ class SheetProperties(AssetProperties):
 class WidgetProperties(AssetProperties):
     frames: Optional[List[str]] = field(default_factory=list)
 
-# ---------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------- ROOT SCHEMAS
+# --------------------------------------------------------------
+# ------------------------------------------------- SCHEMA NODES
+# --------------------------------------------------------------
 
 @dataclass(slots=True)
 class TilePropertyInstances:
@@ -168,6 +173,7 @@ class CraftPropertyInstances:
     bridges: Dict[str, CraftProperties] = field(default_factory=dict)
     platforms: Dict[str, CraftProperties] = field(default_factory=dict)
     stairs: Dict[str, CraftProperties] = field(default_factory=dict)
+    railings: Dict[str, CraftProperties] = field(default_factory=dict)
 
 @dataclass(slots=True)
 class ResourcePropertyInstances:
@@ -198,6 +204,11 @@ class WidgetPropertyInstances:
     meters: Dict[str, WidgetProperties] = field(default_factory=dict)
     pages: Dict[str, WidgetProperties] = field(default_factory=dict)
     panes: Dict[str, WidgetProperties] = field(default_factory=dict)
+
+
+# --------------------------------------------------------------
+# -------------------------------------------------- ROOT SCHEMA
+# --------------------------------------------------------------
 
 @dataclass(slots=True)
 class PropertiesSchema:

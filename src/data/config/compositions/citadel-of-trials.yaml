@@ -64,13 +64,18 @@ compositions:
               position:
                 x: 94
                 y: 80
-            - id: fence-vertical-iron
+          railings:
+            - id: fence-iron
               name: exterior-balcony-rail-east
               owner: bind(root.owner)
               elevation: 1
+              orientation: vertical
               position:
                 x: 311
                 y: -24
+              multiple:
+                nx: 0
+                ny: 1
         effects:
           passive:
             - id: torch
@@ -351,23 +356,31 @@ compositions:
                 position:
                   x: 230
                   y: 16
-              - id: fence-horizontal-iron
+            railings:
+              - id: fence-iron
                 name: sanctum-skywalk-north-rail-00
                 owner: bind(root.owner)
                 layer: citadel-sanctum-layer
                 elevation: 3
+                orientation: horizontal
                 position:
                   x: 96
                   y: 16
-              - id: fence-horizontal-iron
+                multiple:
+                  nx: 1
+                  ny: 0
+              - id: fence-iron
                 name: sanctum-skywalk-north-rail-01
                 owner: bind(root.owner)
                 layer: citadel-sanctum-layer
                 elevation: 3
+                orientation: horizontal
                 position:
                   x: 160
                   y: 16
-
+                multiple:
+                  nx: 1
+                  ny: 0
           objects:
             # --- DYNAMIC PUSHABLE CRATES FOR FREEFALL TESTING (mass > 0)
             crates:

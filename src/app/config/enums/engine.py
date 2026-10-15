@@ -38,17 +38,8 @@ class Configurations(str, Enum):
     PLOTS           = "plots"
     RECIPES         = "recipes"
 
-class MotiveAssets(str, Enum):
-    PLAYERS         = "players"
-    SPRITES         = "sprites"
-
-class FrictiveAssets(str, Enum):
-    CRATES          = "crates"
-
-class InertAssets(str, Enum):
-    PROJECTILES     = "projectiles"
-
 class Shortcuts(str, Enum):
+    ASSETS          = "assets"
     CALENDAR        = "calendar"
     COMPOSITIONS    = "compositions"
     BRIDGES         = "bridges"
@@ -60,6 +51,22 @@ class Substrates(int, Enum):
     FLUIDS          = -3
     GEOGRAPHY       = -2
     BRIDGES         = -1
+
+# -------------------------------- ENGINE ASSET ENUMERATIONS
+
+class MotiveAssets(str, Enum):
+    PLAYERS         = "players"
+    SPRITES         = "sprites"
+
+class FrictiveAssets(str, Enum):
+    CRATES          = "crates"
+
+class InertAssets(str, Enum):
+    PROJECTILES     = "projectiles"
+
+class OrientedAssets(str, Enum):
+    RAILINGS        = "railings"
+    BRIDGES         = "bridges"
     
 # -------------------------------- MECHANIC ENUMERATIONS
 

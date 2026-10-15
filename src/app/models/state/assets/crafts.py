@@ -34,24 +34,18 @@ class PropertyState(AssetState):
     position: Optional[Position] = None # type: ignore
 
 @dataclass(slots=True)
-class OrientedState(AssetState):
-    position: Optional[Position] = None # type: ignore
+class OrientedState(PropertyState):
     orientation: str = Orientations.HORIZONTAL.value
     multiple: Optional[Multiple] = None # type: ignore
-    owner: Optional[str] = None
 
 @dataclass(slots=True)
-class StairState(AssetState):
+class StairState(PropertyState):
     """
     State representation for walkable incline transitions.
     """
-    position: Optional[Position] = None # type: ignore
     direction: str = Directions.UP.value
     delta: int = 1                         
-    owner: Optional[str] = None
 
 @dataclass(slots=True)
-class PlatformState(AssetState):
-    position: Optional[Position] = None # type: ignore
+class PlatformState(PropertyState):
     elevation: int = 0
-    owner: Optional[str] = None

@@ -17,6 +17,7 @@ from app.config.loader import Loader
 from app.config.enums import (
     AssetCategories,
     AssetInstances, 
+    OrientedAssets,
     Shortcuts
 )
 from app.models.properties import PropertiesSchema
@@ -75,10 +76,16 @@ class Migrator:
         tasks = []
         if hasattr(self.state, Shortcuts.COMPOSITIONS.value) and self.state.compositions:
             for comp_state in self.state.compositions:
-                tasks.append((Shortcuts.COMPOSITIONS.value, comp_state))
+                tasks.append((
+                    Shortcuts.COMPOSITIONS.value, 
+                    comp_state
+                ))
 
         if hasattr(self.state, Shortcuts.PLOTS.value) and self.state.plots:
-            tasks.append((Shortcuts.PLOTS.value, self.state.plots))
+            tasks.append((
+                Shortcuts.PLOTS.value, 
+                self.state.plots
+            ))
 
         if hasattr(self.state, Shortcuts.CALENDAR.value) and self.state.calendar:
             self.board.calendar = self.state.calendar
@@ -99,24 +106,30 @@ class Migrator:
                     continue
                 
                 for state_obj in instance_list:
-                    tasks.append(('asset', category_key, instance_key, state_obj))
+                    tasks.append((
+                        Shortcuts.ASSETS.value, 
+                        category_key, 
+                        instance_key, 
+                        state_obj
+                    ))
                     
         self.maximum = max(1, len(tasks))
         self.current = 0
         
         # 2. Yield through component injection
         for task in tasks:
+
             if task[0] == Shortcuts.COMPOSITIONS.value:
                 comp_state = task[1]
                 expanded_assets = self.decomposer.unpack(comp_state)
                 self.board.add(expanded_assets)
 
-            elif task[0] == 'asset' and \
-                task[1] == AssetCategories.CRAFTS.value and \
-                task[2] == AssetInstances.BRIDGES.value:
-                bridge_state = task[3]
-                expanded_bridges = self.decomposer.bridge(bridge_state)
-                self.board.add(expanded_bridges)
+            elif task[0] == Shortcuts.ASSETS.value and \
+                task[2] in OrientedAssets:
+
+                oriented_state = task[3]
+                oriented_asset = self.decomposer.orient(oriented_state, task[1], task[2])
+                self.board.add(oriented_asset)
 
             elif task[0] == Shortcuts.PLOTS.value:
                 plot = task[1]

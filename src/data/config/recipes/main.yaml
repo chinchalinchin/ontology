@@ -17,6 +17,18 @@ recipes:
       frame: oriented
       animation: none
       hitbox: static
+    carpentry:
+      frame: directed
+      animation: none
+      hitbox: directed
+    platforms: 
+      frame: single
+      animation: none
+      hitbox: elevated
+    railings:
+      frame: oriented
+      animation: none
+      hitbox: oriented
     struts:
       frame: single
       animation: none
@@ -25,10 +37,6 @@ recipes:
       frame: directed
       animation: none
       hitbox: directed
-    platforms: 
-      frame: single
-      animation: none
-      hitbox: elevated
   cursors:
     expressions:
       frame: index
