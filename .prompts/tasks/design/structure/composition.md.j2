@@ -1,12 +1,16 @@
-# Task: Design Composition
+# Task: Design
 
 **Priorities**
 
-- Design a composition to test out Platforms, Stairs and Elevation. To be used during Phase 07.03 User Acceptance Testing to verify functionality.
+- Implement the current Design Specification on the [Task Board](#view-ontology-task-board) by constructing a Compositiong `.yaml` file.
 
-**Guidelines**
+**Asset Guidelines**
 
-- To prevent infinite interaction loops, the `out` position of a Door should not intersect the dimensions of a Door on the layer into which is transporting a Sprite.
+- **Doors** To prevent infinite interaction loops, the `out` position of a Door should not intersect the dimensions of a Door on the layer into which is transporting a Sprite.
+- **Signs** If adding Signs, ensure the text is stored in the [Library](#library) and accounts for all current [Plot](#ontology-plot) states. Sign Personas may be added freely, but all Sign Personas must have the following Lexicon keys: `spring`, `summer`, `autumn`, `winter`.
+
+**Indexing Guidlines**
+
 - Many Assets are indexed without costs. If using an Asset without a cost, apply the [Cost Formula](#cost-formula).
 - Many Assets may need their properties adjusted to render or behave properly (This does not include `dimensions`; all `dimensions` are accurate.). If using an Asset that is missing properties or has misconfigured properties, set or adjust them accordingly.
 - Material may not yet be indexed in the [Cost Formula](#cost-formula) tables. If using an Asset that contains Material not in the table, perform an assessment of its value relative to the other entries and add a row.
@@ -28,6 +32,10 @@ $$
 **Purpose**
 
 {{ file(properties.paths.root + '/docs/static/md/composition-cost-factors.md') }}
+
+#### Pallete
+
+{{ file(properties.paths.root + '/docs/static/md/composition-material-palette.md') }}
 
 ### Ledger
 

@@ -14,11 +14,12 @@ This is the Task Board for the project. Below is a backlog of completed and pend
   - Refactor: Complex, multi-task iteration of existing functionality.
   - Patch: Tasks for fixing logical bugs or errors in the codebase.
   - Achieve: Short, encapsulated tasks for either new or existing functionality.
+  - Design: Short, encapsulated tasks for creating data structures.
 
 **Table of Contents**
 
-- Actions:
-  - Implement:
+-**Actions:**
+  - **Implement:**
     - [x]: [Phase 01: Renderer](./phases/implement/phase-01.md)
     - [x]: [Phase 02: Game](./phases/implement/phase-02.md)
     - [x]: [Phase 03: Physics](./phases/implement/phase-03.md)
@@ -32,7 +33,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [ ]: [Phase n-1: Sound](./phases/implement/phase-n-1.md)
     - [ ]: [Phase n: Commerce](./phases/implement/phase-n.md)
     - [ ]: [Phase n+1: Towns](./phase/implement/phase-n+1.md)
-  - Refactor:
+  - **Refactor:**
     - Phase 01:
       - [x]: [Phase 01.01: Orchestration](./phases/refactor/refactor-01-01.md)
     - Phase 02:
@@ -71,13 +72,13 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 09.05: Bridges & Bifurcation](./phases/refactor/refactor-09-05.md)
       - [x]: [Phase 09.06: Cythonization](./phases/refactor/refactor-09-06.md)
       - [x]: [Phase 09.07: Frame Caching](./phases/refactor/refactor-09-07.md)
-      - [ ]: [Phase 09.08: ]
+      - [ ]: [Phase 09.08: Transverse Fluid Submersion](./phases/refactor/refactor-09-08.md)
     - Phase 10:
       - [x]: [Phase 10.01: Stage Hitboxes](./phases/refactor/refactor-10-01.md)
       - [x]: [Phase 10.02: Shoreline Seasonal Indexing](./phases/refactor/refactor-10-02.md)
       - [ ]: [Phase 10.03: Flowers, Pixies & Reproduction](./phases/refactor/refactor-10-03.md)
       - [ ]: [Phase 10.04: Cythonization](./phases/refactor/refactor-10-04.md)
-  - Patch:
+  - **Patch:**
     - [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering Instantiated Assets](./phases/patch/bug-b001.md)
     - [ ]: [Bug B002: Board Cache Wipe](./phases/patch/bug-b002.md)
@@ -93,7 +94,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Bug B012: Composition Duplication](./phases/patch/bug-b012.md)
     - [ ]: [Bug B013: Canvas Bleed on Fore Tiles](./phases/patch/bug-b013.md)
     - [x]: [Bug B014: Stair Railing Hitbox Traversal Block](./phases/patch/bug-b014.md)
-  - Achieve:
+  - **Achieve:**
     - [x]: [Goal 01: Boundaries](./phases/achieve/goal-01.md)
     - [x]: [Goal 02: ScrollController, Library & Plots](./phases/achieve/goal-02)
     - [ ]: [Goal 03: ExchangeController & Loot](./phases/achieve/goal-03.md)
@@ -102,8 +103,12 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Goal 06: Speak Intentions](./phases/achieve/goal-06.md)
     - [x]: [Goal 07: Door Interact Intentions](./phases/achieve/goal-07.md)
     - [x]: [Goal 08: CLI Handling](./phases/achieve/goal-08.md)
-    - [ ]: [Goal 09: Transverse Fluid Submersion](./phases/achieve/goal-09.md)
-    - [x]: [Goal 10: Board Modularization](./phase/achieve/goal-10.md)
+    - [x]: [Goal 10: Board Modularization](./phases/achieve/goal-10.md)
+  - **Design:**
+    - [x]: [Composition C000: Castle Dawn](./phases/design/composition-c000.md)
+    - [x]: [Composition C000: Citadel of Trials](./phases/design/composition-c001.md)
+    - [~]: [Composition C000: Regalia Galleria](./phases/design/composition-c002.md)
+
 - Backlog:
   - [~]: [TODO T000: Telemetry Module](./backlog/todo-t000.md)
   - [ ]: [TODO T001: Telemetry Menu](./backlog/todo-t001.md)

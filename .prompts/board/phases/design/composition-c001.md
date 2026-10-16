@@ -1,4 +1,4 @@
-#### Design: Composition - Citadel of Trials
+#### Design: Composition C001 - Citadel of Trials
 
 !!! "context"
 

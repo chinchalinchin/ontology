@@ -73,11 +73,13 @@ See [Mechanics](./05-mechanics.md#spatial) for more information.
 
 #### Elevation, Perspective & Priority
 
-World rendering evaluates spatial geometry using discrete topological elevation tiers and continuous ground perspective. The engine deprecates legacy manual height overrides in favor of a deterministic 3-key lexicographical Painter's Algorithm in `Screen._sort`:
+World rendering evaluates spatial geometry using discrete topological elevations and continuous ground perspective,
 
-$$\text{sort}(x) = \Big(x.\text{elevation},\; \text{ground}(x),\; x.\text{properties.priority}\Big)$$
+$$
+\text{sort}(x) = \Big(x.\text{elevation},\; \text{ground}(x),\; x.\text{properties.priority}\Big)
+$$
 
-1. **Primary Key (`x.elevation` $\in \mathbb{Z}$)**: Discrete spatial $Z$-plane elevation tier. Standard Assets default to `elevation = 0`; elevated structures occupy $\text{elevation} \ge 1$. Entities on higher elevations render strictly on top of lower elevations.
+1. **Primary Key (`x.elevation` $\in \mathbb{Z}$)**: Discrete spatial $Z$-plane elevation. Standard Assets default to `elevation = 0`; elevated structures occupy $\text{elevation} \ge 1$. Entities on higher elevations render on top of lower elevations.
 2. **Secondary Key (`ground` $\in \mathbb{R}$)**: Elevation-dependent geometric ground perspective: $\text{ground} = \text{int}(x.\text{state.position.y} + x.\text{dimensions.l} + x.\text{state.anchor})$. `state.anchor` is a compiled integer offset that aligns wall-mounted fixtures (doors, torches, windows) with their parent's ground baseline.
 3. **Tertiary Key (`priority` $\in \mathbb{Z}$)**: Elevation-matching coplanar tie-breaker declared as an immutable property:
    - Substrates (rugs, floorboards): `priority = -1`
@@ -135,7 +137,7 @@ The following table details the *unique* property attributes of each Asset Categ
 | Sheets | Base, Hitboxes, Mass, Stack, Actions |
 | Widgets | Base, Frames |
 
-The distinguishing features of each Category is given below,
+The distinguishing features of each Category are given below,
 
 - Tiles: Environmental
 - Object: Functional
@@ -222,8 +224,7 @@ The Recipe for an Asset, i.e. the list of components which go into a particular 
     - `channels(id: str, state: AssetState, properties: AssetProperties) -> List[Tuple]`: Emits auxiliary shader and texture modulation directives.
 5. **Behavior: Hitbox:** Stateless collision boundary resolution strategies injected via Recipes. Resolves active physical obstacles dynamically without mutating cached properties:
     - `elevations(properties: AssetProperties, state: AssetState) -> List[int]`: Emits the discrete elevation tiers the entity participates in.
-    - `get(properties: AssetProperties, state: AssetState, elevation: int, frame: Optional[Frame] = None) -> List[Hitbox]`: Emits active physical collision footprints at the requested elevation tier, accounting for animation frame states (e.g., Attackboxes).
-
+    - `get(properties: AssetProperties, state: AssetState, elevation: int, frame: Optional[Frame] = None) -> List[Hitbox]`: Emits active physical collision footprints at the requested elevation, accounting for animation frame states (e.g., Attackboxes).
 
 !!! note
     The state model can be calculated from (Category, Instance), but (Animation, Frame, Hitbox) is independent of the state assigned to an Asset through the Asset Hierarchy. It must be specified through a Recipe.
@@ -297,7 +298,7 @@ A Canopy Tile is the last Asset rendered on screen. It has the highest Z coordin
 
 ### Grid
 
-A Grid is a special Type reserved for use in the [Editor Menu](./06-widgets.md#menus). It is used as an overlay canvas in the Editor,to create a spatial grid that can be traversed through focus. 
+A Grid is a special Tile reserved for use in the [Editor Menu](./06-widgets.md#menus). It is used as an overlay in the Editor, to create a spatial grid that can be traversed through focus. 
 
 There must be precisely *two* Grid tiles:
 

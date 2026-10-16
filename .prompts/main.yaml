@@ -39,18 +39,18 @@ properties:
 task:
 # ----------------------------------------------------
   # --------------------------------------------
-  # ------------------------ TEMPLATES: MAINTENANCE
+  # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
   # template: maintain/console/patch.md.j2
   # template: maintain/console/session.md.j2
   # template: maintain/script.md.j2
   # --------------------------------------------
-  # ------------------------ TEMPLATES: DUMPS 
+  # --------------------------- TEMPLATES: DUMPS 
   # --------------------------------------------
   # template: dump/menus.md.j2
   # template: dump/state.md.j2
   # --------------------------------------------
-  # ------------------------ TEMPLATES: ITERATION
+  # ----------------------- TEMPLATES: ITERATION
   # --------------------------------------------
   # template: iterate/documentation.md.j2
   # template: iterate/grooming.md.j2
@@ -59,11 +59,14 @@ task:
   # template: iterate/review.md.j2
   # template: iterate/conclusion.md.j2
   # --------------------------------------------
-  # ------------------------ TEMPLATES: DESIGN
+  # -------------------------- TEMPLATES: DESIGN
   # --------------------------------------------
   # template: design/structure/menu.md.j2
   template: design/structure/composition.md.j2
   # template: design/structure/score.md.j2
+  # --------------------------------------------
+  # ----------------------- TEMPLATES: ARTIFACTS
+  # --------------------------------------------
   # template: design/diagram/hierarchy.md.j2
   # template: design/diagram/automata.md.j2
   # template: diagram/stages.md.j2
@@ -116,8 +119,8 @@ tools:
     # --------------------------------------------
     manager:
       board:
-        phase: '07-03'
-        action: refactor
+        phase: 'c002'
+        action: design
       docs:
         exclude:
           - index.md
@@ -126,13 +129,13 @@ tools:
           - 02-sprites.md
           # - 03-compositions.md
           - 04-intentions.md
-          # - 05-mechanics.md
+          - 05-mechanics.md
           - 06-widgets.md
           - 07-sounds.md
-          - 08-plots.md
+          # - 08-plots.md
           - 09-ecology.md
           - 10-emergence.md
-          # - 11-architecture.md
+          - 11-architecture.md
       specs: []
     # --------------------------------------------
     # ------------------------ PARAMETERS: SOURCE
@@ -161,9 +164,9 @@ tools:
           # - world
         configurations:
           # - actions
-          - compositions
+          # - compositions
           # - intentions
-          # - library
+          - library
           # - mappings
           # - mechanics
           # - menus
