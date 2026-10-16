@@ -198,7 +198,7 @@ crafts:
       hitboxes: null # TODO
       cost: null # TODO
     tower-stone-turret:
-      # description: Turret drumtower made of stone blocks.
+      # description: Turret drum-tower made of stone blocks.
       dimensions:
         w: 66
         l: 131

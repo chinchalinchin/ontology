@@ -7,7 +7,7 @@ objects:
         x: 180
         y: 250
   signs:
-    - id: wood-bulletin
+    - id: bulletin
       name: castle-dawn-sign-board-00
       layer: '0'
       persona: castle-dawn-sign
