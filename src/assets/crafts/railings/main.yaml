@@ -53,6 +53,22 @@ crafts:
       cost:
         - item: iron
           quantity: 5
+    fence-palisades:
+      dimensions:
+        w: 96
+        l: 93
+      mass: 0
+      cost: null # TODO
+      hitboxes:
+        vertical: null # TODO
+        horizontal: null # TOOD
+    fence-stone:
+      dimensions:
+        w: 96
+        l: 94
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
     fence-wood:
       dimensions:
         w: 144
