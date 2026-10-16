@@ -35,7 +35,7 @@ compositions:
               position: 
                 x: 0
                 y: -75
-            - id: roof-slate-sloped
+            - id: panels-granite
               name: citadel-exterior-roof
               owner: bind(root.owner)
               anchor: anchor(pillar-stone-doric)

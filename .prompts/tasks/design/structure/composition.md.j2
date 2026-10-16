@@ -3,6 +3,7 @@
 **Priorities**
 
 - Implement the current Design Specification on the [Task Board](#view-ontology-task-board) by constructing a Compositiong `.yaml` file.
+- (*Optional*) Be on the lookout for bugs. Use the [Report Template](#template-bug-report) to raise any issues you find.
 
 **Asset Guidelines**
 
@@ -11,7 +12,7 @@
 
 **Indexing Guidlines**
 
-- Many Assets are indexed without costs. If using an Asset without a cost, apply the [Cost Formula](#cost-formula).
+- Many Assets are indexed without costs. If using an Asset without a cost, apply the [Cost Formula](#cost-formula) and add the appropriate value.
 - Many Assets may need their properties adjusted to render or behave properly (This does not include `dimensions`; all `dimensions` are accurate.). If using an Asset that is missing properties or has misconfigured properties, set or adjust them accordingly.
 - Material may not yet be indexed in the [Cost Formula](#cost-formula) tables. If using an Asset that contains Material not in the table, perform an assessment of its value relative to the other entries and add a row.
 
@@ -40,3 +41,7 @@ $$
 ### Ledger
 
 {{ file(properties.paths.root + '/docs/static/md/composition-cost-ledger.md') }}
+
+## Templates
+
+{% include 'blocks/templates/template-bug.md' %}

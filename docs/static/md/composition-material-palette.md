@@ -1,6 +1,7 @@
 | Material | Hexcodes |
 | - | - |
 | `brick` | #B14E45, #BA6C4C |
+| `canvas` | - |
 | `concrete` | #9A8F8F |
 | `copper` | #9D5427, #7B2008 #973C23 |  
 | `clay` | #C4B59F, #B19998, #9D8080  |

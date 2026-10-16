@@ -9,7 +9,7 @@ compositions:
         crafts: 
           struts:
             # Overhang canopy / high roof
-            - id: roof-slate-sloped
+            - id: panels-granite
               name: castle-dawn-roof
               owner: bind(root.owner)
               elevation: 0

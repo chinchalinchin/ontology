@@ -22,7 +22,7 @@ crafts:
       mass: -1
       priority: -1
       cost: null # TODO
-    # ----------------- BASES
+    # ----------------- BLOCKS
     floor-granite-border:
       # description: Granite floor with marble borders.
       dimensions:
@@ -64,7 +64,7 @@ crafts:
         - item: stone
           quantity: 23
     floor-stone-border:
-      # description: Ornamental tan carpet with intricate border.
+      # description: Ornamental stone with intricate border.
       dimensions:
         w: 94
         l: 96
@@ -119,7 +119,7 @@ crafts:
       priority: -1
       cost: null # TODO
     street-stone:
-      # description: Cut stone streets.
+      # description: Quarried stone streets.
       dimensions:
         w: 96
         l: 96
@@ -129,91 +129,131 @@ crafts:
     # -----------------------------------------
     # ----------------------------------- ROOFS
     # -----------------------------------------
+    # ----------------- AWNINGS
     awning-canvas-square:
+      # description: Red overhang for stands.
       dimensions:
         w: 96
         l: 74
       mass: 0
       hitboxes: null # TODO
       cost: null # TODO
-    roof-building-sloped:
+    # ----------------- BASES
+    base-brick-sloped:
+      # description: Red brick roof set on a stone platform.
       dimensions:
         w: 287
         l: 168
       mass: 0
       hitboxes: null # TODO
       cost: null # TODO
-    roof-glass-octagon:
+    base-slate-sloped:
+      # description: Grey brick roof set on a stone platform.
       dimensions:
-        w: 224
-        l: 131
+        w: 288
+        l:  168
       mass: 0
       hitboxes: null # TODO
       cost: null # TODO
-    roof-shingle-blue-hexgaon:
-      dimensions:
-        w: 95
-        l: 52
-      mass: 0
-      hitboxes: null # TODO
-      cost: null # TODO
-    roof-shingle-blue-sloped:
-      dimensions:
-        w: 138
-        l: 168
-      mass: 0
-      hitboxes: null # TODO
-      cost: null # TODO
-    roof-shingle-blue-square:
-      dimensions:
-        w: 96
-        l: 97
-      mass: 0
-      hitboxes: null # TODO
-      cost: null # TODO
-    roof-shingle-brown-hexagon:
+    # ----------------- SHINGLES
+    shingle-brick-hexagon:
+        # description: Standard home shingle roof.
       dimensions:
         w: 96
         l: 52
       mass: 0
       hitboxes: null # TODO
       cost: null # TODO
-    roof-shingle-brown-sloped:
-      dimensions:
-        w: 128
-        l: 128
-      mass: 0
-      hitboxes: null # TODO
-      cost: null # TODO
-    roof-shingle-brown-square:
-      dimensions:
-        w: 96
-        l: 97
-      mass: 0
-      hitboxes: null # TODO
-      cost: null # TODO
-    roof-shingle-red-hexagon:
-      dimensions:
-        w: 96
-        l: 52
-      mass: 0
-      hitboxes: null # TODO
-      cost: null # TODO
-    roof-shingle-red-sloped:
+    shingle-brick-sloped:
+        # description: Standard home shingle roof.
       dimensions:
         w: 139
         l: 169
       mass: 0
       hitboxes: null # TODO
       cost: null # TODO
-    roof-shingle-red-square:
+    shingle-brick-square:
+        # description: Standard home shingle roof.
       dimensions:
         w: 96
         l: 97
       mass: 0
       hitboxes: null # TODO
       cost: null # TODO
-    roof-slate-sloped:
+    shingle-marble-hexagon:
+        # description: Standard home shingle roof.
+      dimensions:
+        w: 96
+        l: 52
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    shingle-marble-sloped:
+      # description: Standard home shingle roof.
+      dimensions:
+        w: 128
+        l: 128
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    shingle-marble-square:
+      # description: Standard home shingle roof.
+      dimensions:
+        w: 96
+        l: 97
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    shingle-slate-hexgaon:
+      # description: Standard home shingle roof.
+      dimensions:
+        w: 95
+        l: 52
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    shingle-slate-sloped:
+      # description: Standard home shingle roof.
+      dimensions:
+        w: 138
+        l: 168
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    shingle-slate-square:
+      # description: Standard home shingle roof.
+      dimensions:
+        w: 96
+        l: 97
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    # ----------------- SHAKES
+    shakes-slate-square:
+      dimensions:
+        w: 128
+        l: 134
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    shakes-marble-square:
+      dimensions:
+        w: 129
+        l: 134
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    # ----------------- SKYLIGHTS
+    skylight-iron-octagon:
+      # description: Iron-framed glass panes.
+      dimensions:
+        w: 224
+        l: 131
+      mass: 0
+      hitboxes: null # TODO
+      cost: null # TODO
+    # ----------------- PANELS
+    panels-granite:
       dimensions:
         w: 256
         l: 127
@@ -228,42 +268,15 @@ crafts:
       cost:
         - item: stone
           quantity: 25
-    roof-slats-blue:
-      dimensions:
-        w: 128
-        l: 134
-      mass: 0
-      hitboxes: null # TODO
-      cost: null # TODO
-    roof-slats-brown:
-      dimensions:
-        w: 129
-        l: 134
-      mass: 0
-      hitboxes: null # TODO
-      cost: null # TODO
-    roof-slats-red:
-      dimensions:
-        w: 129
-        l: 134
-      mass: 0
-      hitboxes: null # TODO
-      cost: null # TODO
-    roof-temple-sloped:
-      dimensions:
-        w: 288
-        l:  168
-      mass: 0
-      hitboxes: null # TODO
-      cost: null # TODO
-    roof-thatched-sloped:
+    # ----------------- PANELS
+    thatches-reeds-sloped:
       dimensions:
         w: 116
         l: 110
       mass: 0
       hitboxes: null # TODO
       cost: null # TODO
-    roof-thatched-square:
+    thatches-reeds-square:
       dimensions:
         w: 120
         l: 114
