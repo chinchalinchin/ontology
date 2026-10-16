@@ -15,8 +15,12 @@ crafts:
         w: 94
         l: 72
       mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      hitboxes:
+        - position: { x: 4, y: 24 }
+          dimensions: { w: 86, l: 48 }
+      cost:
+        - item: brick
+          quantity: 20
     fixture-sink:
       dimensions:
         w: 34
@@ -29,8 +33,14 @@ crafts:
         w: 31
         l: 63
       mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      hitboxes:
+        - position: { x: 2, y: 31 }
+          dimensions: { w: 27, l: 32 }
+      cost:
+        - item: wood
+          quantity: 3
+        - item: glass
+          quantity: 3
     # -----------------------------------------
     # --------------------------------- SHELVES
     # -----------------------------------------
@@ -39,8 +49,12 @@ crafts:
         w: 32
         l: 69
       mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      hitboxes:
+        - position: { x: 2, y: 37 }
+          dimensions: { w: 28, l: 32 }
+      cost:
+        - item: wood
+          quantity: 4
     shelf-drawers:
       dimensions:
         w: 32
@@ -84,8 +98,12 @@ crafts:
         w: 63
         l: 54
       mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      hitboxes:
+        - position: { x: 6, y: 14 }
+          dimensions: { w: 51, l: 36 }
+      cost:
+        - item: wood
+          quantity: 5
     table-dinner-squre:
       dimensions:
         w: 80
@@ -98,8 +116,14 @@ crafts:
         w: 48
         l: 104
       mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      hitboxes:
+        - position: { x: 4, y: 16 }
+          dimensions: { w: 40, l: 84 }
+      cost:
+        - item: wood
+          quantity: 4
+        - item: gold
+          quantity: 5
     table-vendor:
       dimensions:
         w: 96
@@ -114,100 +138,133 @@ crafts:
       dimensions:
         w: 32
         l: 94
-      mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      mass: -1
+      priority: 1
+      hitboxes: null
+      cost:
+        - item: cotton
+          quantity: 7
     curtains-red:
       dimensions:
         w: 32
         l: 94
-      mass: 0
+      mass: -1
+      priority: 1
       cost: null # TODO
       hitboxes: null # TODO
     curtains-white:
       dimensions:
         w: 32
         l: 94
-      mass: 0
+      mass: -1
+      priority: 1
       cost: null # TODO
       hitboxes: null # TODO
     painting-abstract:
       dimensions:
         w: 59
         l: 43
-      mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      mass: -1
+      priority: 1
+      hitboxes: null
+      cost:
+        - item: wood
+          quantity: 1
+        - item: cotton
+          quantity: 10
     painting-cityscape:
       dimensions:
         w: 60
         l: 47
-      mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      mass: -1
+      priority: 1
+      cost:
+        - item: wood
+          quantity: 2
+        - item: cotton
+          quantity: 10
     painting-flowers:
       dimensions:
         w: 29
         l: 40
-      mass: 0
+      mass: -1
+      priority: 1
       cost: null # TODO
       hitboxes: null # TODO
     painting-knight:
       dimensions:
         w: 29
         l: 49
-      mass: 0
+      mass: -1
+      priority: 1
       cost: null # TODO
       hitboxes: null # TODO
     painting-landscape-desert:
       dimensions:
         w: 81
         l: 25
-      mass: 0
+      mass: -1
+      priority: 1
       cost: null # TODO
       hitboxes: null # TODO
     painting-landscape-forest:
       dimensions:
         w: 37
         l: 28
-      mass: 0
+      mass: -1
+      priority: 1
       cost: null # TODO
       hitboxes: null # TODO
     painting-landscape-mountains:
       dimensions:
         w: 81
         l: 25
-      mass: 0
+      mass: -1
+      priority: 1
       cost: null # TODO
       hitboxes: null # TODO
     painting-portrait-female:
       dimensions:
         w: 17
         l: 25
-      mass: 0
+      mass: -1
+      priority: 1
       cost: null # TODO
       hitboxes: null # TODO
     painting-portrait-king:
       dimensions:
         w: 28
         l: 49
-      mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      mass: -1
+      priority: 1
+      cost:
+        - item: gold
+          quantity: 7
+        - item: cotton
+          quantity: 5
     painting-portrait-queen:
       dimensions:
         w: 29
         l: 49
-      mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      mass: -1
+      priority: 1
+      hitboxes: null
+      cost:
+        - item: gold
+          quantity: 8
+        - item: cotton
+          quantity: 5
     painting-sailboat:
       dimensions:
         w: 39
         l: 31
-      mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      mass: -1
+      priority: 1
+      cost:
+        - item: wood
+          quantity: 1
+        - item: cotton
+          quantity: 4
     # -----------------------------------------
     # --------------------------------- WINDOWS
     # -----------------------------------------
@@ -215,105 +272,124 @@ crafts:
       dimensions:
         w: 40
         l: 59
-      mass: 0
+      mass: -1
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     window-castle-overhang:
       dimensions:
         w: 64
         l: 65
-      mass: 0
+      mass: -1
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     window-castle:
       dimensions:
         w: 38
         l: 50
-      mass: 0
+      mass: -1
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     window-church-stained-arched:
       dimensions:
         w: 31
         l: 63
-      mass: 0
+      mass: -1
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     window-church-stained-circular:
       dimensions:
         w: 96
         l: 96
-      mass: 0
+      mass: -1
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     window-house-arched:
       dimensions:
         w: 28
         l: 45
-      mass: 0
+      mass: -1
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     window-house-circular:
       dimensions:
         w: 28
         l: 45
-      mass: 0
+      mass: -1
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     window-house-overhand:
       dimensions:
         w: 32
         l: 53
-      mass: 0
+      mass: -1
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     window-house:
       dimensions:
         w: 26
         l: 37
-      mass: 0
+      mass: -1
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     window-mansion-glass-arched:
       dimensions:
         w: 62
         l: 71
-      mass: 0
-      hitboxes: null # TODO
-      cost: null # TODO
+      mass: -1
+      priority: 1
+      hitboxes: null
+      cost:
+        - item: stone
+          quantity: 2
+        - item: glass
+          quantity: 9
     window-mansion-glass: 
       dimensions:
         w: 63
         l: 58
-      mass: 0
+      mass: -1
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     window-mansion-ledge:
       dimensions:
         w: 89
         l: 157
-      mass: 0
+      mass: -1
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     window-mansion:
       dimensions:
         w: 32
         l: 46
-      mass: 0
+      mass: -1
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     window-mansion-rondels:
       dimensions:
         w: 50
         l: 76
-      mass: 0
+      mass: -1
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     window-stone-peaked:
       dimensions:
         w: 254
         l: 112
-      mass: 0
+      mass: -1
+      priority: 1
       hitboxes:
         - position: 
             x: 10

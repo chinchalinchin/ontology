@@ -32,7 +32,7 @@ compositions:
         components:
           crafts: 
             struts:
-              - id: floor-wood
+              - id: support-wood
                 name: house-floor
                 layer: brick-house-compose-layer
                 owner: bind(root.owner)

@@ -27,6 +27,7 @@ objects:
         l: 48
     door-house:
       mass: -1
+      priority: 1
       dimensions: 
         w: 32
         l: 48

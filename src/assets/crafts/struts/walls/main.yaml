@@ -43,7 +43,7 @@ crafts:
             x: 8
             y: 15
           dimensions:
-            w: 150
+            w: 80
             l: 40
     wall-terracotta:
       # description: Standard baked brick wall.
@@ -193,8 +193,14 @@ crafts:
         w: 128
         l: 96
       mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      hitboxes:
+        - position: { x: 0, y: 0 }
+          dimensions: { w: 128, l: 72 }
+      cost:
+        - item: wood
+          quantity: 11
+        - item: gold
+          quantity: 10
     wall-wood-trimmed:
       # description: Elegant wooden wall with panels.
       dimensions:
@@ -234,8 +240,12 @@ crafts:
         w: 128
         l: 97
       mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      hitboxes:
+        - position: { x: 0, y: 0 }
+          dimensions: { w: 128, l: 72 }
+      cost:
+        - item: wood
+          quantity: 12
     wallpaper-green-diamonds:
       dimensions:
         w: 128
@@ -248,8 +258,12 @@ crafts:
         w: 128
         l: 96
       mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+      hitboxes:
+        - position: { x: 0, y: 0 }
+          dimensions: { w: 128, l: 72 }
+      cost:
+        - item: wood
+          quantity: 12
     wallpaper-red-vines:
       dimensions:
         w: 128

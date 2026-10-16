@@ -12,7 +12,9 @@ crafts:
         1:
           - position: { x: 0, y: 0 }
             dimensions: { w: 96, l: 8 }
-      cost: null # TODO
+      cost:
+        - item: stone
+          quantity: 26
     platform-stone-doric:
       dimensions:
         w: 96

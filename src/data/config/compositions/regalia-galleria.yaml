@@ -1,0 +1,1117 @@
+compositions:
+  regalia-galleria:
+    # =========================================================================
+    # EXTERIOR (Root Layer: 384w x 288l)
+    # =========================================================================
+    root:
+      strut:
+        id: wall-palace
+        name: galleria-ext-wall-west
+        position:
+          x: 0
+          y: 96
+      components:
+        crafts:
+          struts:
+            # --- Facade Walls (y: 96..192, w: 384) ---
+            - id: wall-palace
+              name: galleria-ext-wall-center
+              position: { x: 128, y: 0 }
+            - id: wall-palace
+              name: galleria-ext-wall-east
+              position: { x: 256, y: 0 }
+            # --- Upper Crown & Skylight Pediment (y: 0..96) ---
+            - id: wall-stone-gold-plated
+              name: galleria-ext-crown-west
+              position: { x: 0, y: -96 }
+            - id: wall-stone-gold-plated
+              name: galleria-ext-crown-center-west
+              position: { x: 96, y: -96 }
+            - id: wall-stone-gold-plated
+              name: galleria-ext-crown-center-east
+              position: { x: 192, y: -96 }
+            - id: wall-stone-gold-plated
+              name: galleria-ext-crown-east
+              position: { x: 288, y: -96 }
+            - id: skylight-iron-octagon
+              name: galleria-ext-skylight
+              position: { x: 80, y: -96 }
+              anchor: anchor(galleria-ext-wall-center)
+            # --- Corinthian Colonnade (Base aligned to y = 192) ---
+            - id: pillar-stone-corinthian
+              name: galleria-ext-pillar-nw
+              position: { x: 0, y: -32 }
+            - id: pillar-stone-corinthian
+              name: galleria-ext-pillar-cw
+              position: { x: 96, y: -32 }
+            - id: pillar-stone-corinthian
+              name: galleria-ext-pillar-ce
+              position: { x: 256, y: -32 }
+            - id: pillar-stone-corinthian
+              name: galleria-ext-pillar-ne
+              position: { x: 352, y: -32 }
+            # --- Facade Arched Windows ---
+            - id: window-mansion-glass-arched
+              name: galleria-ext-window-west
+              position: { x: 33, y: 12 }
+              anchor: anchor(parent)
+            - id: window-mansion-glass-arched
+              name: galleria-ext-window-east
+              position: { x: 289, y: 12 }
+              anchor: anchor(galleria-ext-wall-east)
+            # --- Forecourt Plaza Surfaces (y: 192..288, w: 384) ---
+            - id: support-granite-border
+              elevation: -1
+              name: galleria-ext-plaza-0
+              position: { x: 0, y: 96 }
+            - id: support-granite-border
+              elevation: -1
+              name: galleria-ext-plaza-1
+              position: { x: 96, y: 96 }
+            - id: support-granite-border
+              elevation: -1
+              name: galleria-ext-plaza-2
+              position: { x: 192, y: 96 }
+            - id: support-granite-border
+              elevation: -1
+              name: galleria-ext-plaza-3
+              position: { x: 288, y: 96 }
+            - id: carpet-cotton-gold-border
+              elevation: -1
+              name: galleria-ext-runner
+              position: { x: 145, y: 97 }
+        objects:
+          doors:
+            # Occupies root-relative x: 160..224, y: 128..192 (local y: 32..96)
+            - id: door-double
+              name: galleria-ext-entrance
+              position: { x: 160, y: 32 }
+              anchor: anchor(galleria-ext-wall-center)
+              outlayer: 'galleria-hallway'
+              out: { x: 352, y: 152 }
+          signs:
+            - id: bulletin
+              name: galleria-ext-directory
+              position: { x: 312, y: 120 }
+              persona: galleria-exterior-sign
+              lexicon: spring
+        effects:
+          passive:
+            - id: torch
+              name: galleria-ext-torch-west
+              position: { x: 128, y: 20 }
+              anchor: anchor(galleria-ext-wall-center)
+            - id: torch
+              name: galleria-ext-torch-east
+              position: { x: 224, y: 20 }
+              anchor: anchor(galleria-ext-wall-center)
+            - id: birdbath
+              name: galleria-ext-birdbath
+              position: { x: 40, y: 104 }
+
+    branches:
+      # =======================================================================
+      # CENTRAL HALLWAY (Layer: 'galleria-hallway', 768w x 288l)
+      # =======================================================================
+      - strut:
+          id: wall-palace
+          name: hallway-wall-n0
+          layer: 'galleria-hallway'
+          owner: bind(root.owner)
+          position: { x: 0, y: 0 }
+        components:
+          crafts:
+            struts:
+              # --- North Wall Span (x: 0..768, y: 0..96) ---
+              - id: wall-palace
+                name: hallway-wall-n1
+                position: { x: 128, y: 0 }
+              - id: wall-palace
+                name: hallway-wall-n2
+                position: { x: 256, y: 0 }
+              - id: wall-palace
+                name: hallway-wall-n3
+                position: { x: 384, y: 0 }
+              - id: wall-palace
+                name: hallway-wall-n4
+                position: { x: 512, y: 0 }
+              - id: wall-palace
+                name: hallway-wall-n5
+                position: { x: 640, y: 0 }
+              # --- Bay Dividing Marble Pillars ---
+              - id: pillar-marble
+                name: hallway-pillar-0
+                position: { x: 166, y: 0 }
+              - id: pillar-marble
+                name: hallway-pillar-1
+                position: { x: 374, y: 0 }
+              - id: pillar-marble
+                name: hallway-pillar-2
+                position: { x: 582, y: 0 }
+              # --- Granite Floor Grid (8 cols x 3 rows = 768w x 288l) ---
+              - id: support-granite-border
+                name: hallway-floor-r0c0
+                elevation: -1
+                position: { x: 0, y: 0 }
+              - id: support-granite-border
+                name: hallway-floor-r0c1
+                elevation: -1
+                position: { x: 96, y: 0 }
+              - id: support-granite-border
+                name: hallway-floor-r0c2
+                elevation: -1
+                position: { x: 192, y: 0 }
+              - id: support-granite-border
+                name: hallway-floor-r0c3
+                elevation: -1
+                position: { x: 288, y: 0 }
+              - id: support-granite-border
+                name: hallway-floor-r0c4
+                elevation: -1
+                position: { x: 384, y: 0 }
+              - id: support-granite-border
+                name: hallway-floor-r0c5
+                elevation: -1
+                position: { x: 480, y: 0 }
+              - id: support-granite-border
+                name: hallway-floor-r0c6
+                elevation: -1
+                position: { x: 576, y: 0 }
+              - id: support-granite-border
+                name: hallway-floor-r0c7
+                elevation: -1
+                position: { x: 672, y: 0 }
+              - id: support-granite-border
+                name: hallway-floor-r1c0
+                elevation: -1
+                position: { x: 0, y: 96 }
+              - id: support-granite-border
+                name: hallway-floor-r1c1
+                elevation: -1
+                position: { x: 96, y: 96 }
+              - id: support-granite-border
+                name: hallway-floor-r1c2
+                elevation: -1
+                position: { x: 192, y: 96 }
+              - id: support-granite-border
+                name: hallway-floor-r1c3
+                elevation: -1
+                position: { x: 288, y: 96 }
+              - id: support-granite-border
+                name: hallway-floor-r1c4
+                elevation: -1
+                position: { x: 384, y: 96 }
+              - id: support-granite-border
+                name: hallway-floor-r1c5
+                elevation: -1
+                position: { x: 480, y: 96 }
+              - id: support-granite-border
+                name: hallway-floor-r1c6
+                elevation: -1
+                position: { x: 576, y: 96 }
+              - id: support-granite-border
+                name: hallway-floor-r1c7
+                elevation: -1
+                position: { x: 672, y: 96 }
+              - id: support-granite-border
+                name: hallway-floor-r2c0
+                elevation: -1
+                position: { x: 0, y: 192 }
+              - id: support-granite-border
+                name: hallway-floor-r2c1
+                elevation: -1
+                position: { x: 96, y: 192 }
+              - id: support-granite-border
+                name: hallway-floor-r2c2
+                elevation: -1
+                position: { x: 192, y: 192 }
+              - id: support-granite-border
+                name: hallway-floor-r2c3
+                elevation: -1
+                position: { x: 288, y: 192 }
+              - id: support-granite-border
+                name: hallway-floor-r2c4
+                elevation: -1
+                position: { x: 384, y: 192 }
+              - id: support-granite-border
+                name: hallway-floor-r2c5
+                elevation: -1
+                position: { x: 480, y: 192 }
+              - id: support-granite-border
+                name: hallway-floor-r2c6
+                elevation: -1
+                position: { x: 576, y: 192 }
+              - id: support-granite-border
+                name: hallway-floor-r2c7
+                elevation: -1
+                position: { x: 672, y: 192 }
+              # --- Central Concourse Gold-Bordered Carpet Runner ---
+              - id: carpet-cotton-gold-border
+                name: hallway-carpet-0
+                elevation: -1
+                position: { x: 49, y: 97 }
+              - id: carpet-cotton-gold-border
+                name: hallway-carpet-1
+                elevation: -1
+                position: { x: 210, y: 97 }
+              - id: carpet-cotton-gold-border
+                name: hallway-carpet-2
+                elevation: -1
+                position: { x: 464, y: 97 }
+              - id: carpet-cotton-gold-border
+                name: hallway-carpet-3
+                elevation: -1
+                position: { x: 625, y: 97 }
+          objects:
+            doors:
+              # --- Main Foyer Exit to Exterior (x: 352..416, y: 224..288) ---
+              # Root door is at root+(160, 128..192); out at root+(160, 216) is 24px south
+              - id: door-shadow-double
+                name: hallway-door-exit
+                position: { x: 352, y: 224 }
+                outlayer: bind(root.layer)
+                out: { x: 160, y: 216 }
+              # --- North Doors 1-4 (y: 48..96) ---
+              - id: door-mansion
+                name: hallway-door-room-1
+                position: { x: 80, y: 48 }
+                anchor: anchor(parent)
+                outlayer: 'galleria-room-reactions'
+                out: { x: 176, y: 168 }
+              - id: door-mansion
+                name: hallway-door-room-2
+                position: { x: 240, y: 48 }
+                anchor: anchor(hallway-wall-n1)
+                outlayer: 'galleria-room-elevations'
+                out: { x: 224, y: 296 }
+              - id: door-mansion
+                name: hallway-door-room-3
+                position: { x: 496, y: 48 }
+                anchor: anchor(hallway-wall-n3)
+                outlayer: 'galleria-room-passivity'
+                out: { x: 176, y: 168 }
+              - id: door-mansion
+                name: hallway-door-room-4
+                position: { x: 656, y: 48 }
+                anchor: anchor(hallway-wall-n5)
+                outlayer: 'galleria-room-vanity'
+                out: { x: 176, y: 168 }
+              # --- South Doors 5-8 (y: 240..288) ---
+              - id: door-shadow
+                name: hallway-door-room-5
+                position: { x: 80, y: 240 }
+                outlayer: 'galleria-room-study'
+                out: { x: 176, y: 112 }
+              - id: door-shadow
+                name: hallway-door-room-6
+                position: { x: 240, y: 240 }
+                outlayer: 'galleria-room-annex-west'
+                out: { x: 176, y: 112 }
+              - id: door-shadow
+                name: hallway-door-room-7
+                position: { x: 496, y: 240 }
+                outlayer: 'galleria-room-annex-center'
+                out: { x: 176, y: 112 }
+              - id: door-shadow
+                name: hallway-door-room-8
+                position: { x: 656, y: 240 }
+                outlayer: 'galleria-room-annex-east'
+                out: { x: 176, y: 112 }
+          effects:
+            passive:
+              - id: torch
+                name: hallway-torch-0
+                position: { x: 32, y: 16 }
+                anchor: anchor(parent)
+              - id: torch
+                name: hallway-torch-1
+                position: { x: 128, y: 16 }
+                anchor: anchor(hallway-wall-n1)
+              - id: torch
+                name: hallway-torch-2
+                position: { x: 288, y: 16 }
+                anchor: anchor(hallway-wall-n2)
+              - id: torch
+                name: hallway-torch-3
+                position: { x: 448, y: 16 }
+                anchor: anchor(hallway-wall-n3)
+              - id: torch
+                name: hallway-torch-4
+                position: { x: 608, y: 16 }
+                anchor: anchor(hallway-wall-n4)
+              - id: torch
+                name: hallway-torch-5
+                position: { x: 704, y: 16 }
+                anchor: anchor(hallway-wall-n5)
+
+      # =======================================================================
+      # ROOM 1: THE HALL OF REACTIONS (Layer: 'galleria-room-reactions', 384w x 288l)
+      # =======================================================================
+      - strut:
+          id: wall-palace
+          name: reactions-wall-n0
+          layer: 'galleria-room-reactions'
+          owner: bind(root.owner)
+          position: { x: 0, y: 0 }
+        components:
+          crafts:
+            struts:
+              - id: wall-palace
+                name: reactions-wall-n1
+                position: { x: 128, y: 0 }
+              - id: wall-palace
+                name: reactions-wall-n2
+                position: { x: 256, y: 0 }
+              # --- Wood Floor Grid (3x3 = 384w x 288l) ---
+              - id: support-wood
+                elevation: -1
+                name: reactions-floor-r0c0
+                elevation: -1
+                position: { x: 0, y: 0 }
+              - id: support-wood
+                name: reactions-floor-r0c1
+                elevation: -1
+                position: { x: 128, y: 0 }
+              - id: support-wood
+                name: reactions-floor-r0c2
+                elevation: -1
+                position: { x: 256, y: 0 }
+              - id: support-wood
+                name: reactions-floor-r1c0
+                elevation: -1
+                position: { x: 0, y: 96 }
+              - id: support-wood
+                name: reactions-floor-r1c1
+                elevation: -1
+                position: { x: 128, y: 96 }
+              - id: support-wood
+                name: reactions-floor-r1c2
+                elevation: -1
+                position: { x: 256, y: 96 }
+              - id: support-wood
+                name: reactions-floor-r2c0
+                elevation: -1
+                position: { x: 0, y: 192 }
+              - id: support-wood
+                name: reactions-floor-r2c1
+                elevation: -1
+                position: { x: 128, y: 192 }
+              - id: support-wood
+                name: reactions-floor-r2c2
+                elevation: -1
+                position: { x: 256, y: 192 }
+              - id: carpet-cotton-gold-border
+                name: reactions-dais-carpet
+                elevation: -1
+                position: { x: 145, y: 97 }
+          objects:
+            doors:
+              # Occupies x: 176..208, y: 240..288; returns to hallway (80, 112) south of door-1 (80, 48..96)
+              - id: door-shadow
+                name: reactions-door-return
+                position: { x: 176, y: 240 }
+                outlayer: 'galleria-hallway'
+                out: { x: 80, y: 112 }
+          effects:
+            reactables:
+              - id: spinning-dummy
+                name: reactions-dummy-center
+                position: { x: 160, y: 104 }
+                intention: attack
+                cooldown: 30
+              - id: spinning-dummy
+                name: reactions-dummy-west
+                position: { x: 64, y: 104 }
+                intention: attack
+                cooldown: 30
+            passive:
+              - id: torch
+                name: reactions-torch-west
+                position: { x: 64, y: 16 }
+                anchor: anchor(parent)
+              - id: torch
+                name: reactions-torch-east
+                position: { x: 288, y: 16 }
+                anchor: anchor(reactions-wall-n2)
+
+      # =======================================================================
+      # ROOM 2: THE HALL OF ELEVATIONS (Layer: 'galleria-room-elevations', 480w x 416l)
+      # =======================================================================
+      - strut:
+          id: wall-stone-gold-plated
+          name: elevations-wall-n0
+          layer: 'galleria-room-elevations'
+          owner: bind(root.owner)
+          position: { x: 0, y: 0 }
+        components:
+          crafts:
+            struts:
+              - id: wall-stone-gold-plated
+                name: elevations-wall-n1
+                position: { x: 96, y: 0 }
+              - id: wall-stone-gold-plated
+                name: elevations-wall-n2
+                position: { x: 192, y: 0 }
+              - id: wall-stone-gold-plated
+                name: elevations-wall-n3
+                position: { x: 288, y: 0 }
+              - id: wall-stone-gold-plated
+                name: elevations-wall-n4
+                position: { x: 384, y: 0 }
+              # --- Granite Floor Grid (5 cols x 5 rows covering 480w x 416l) ---
+              - id: support-granite-border
+                name: elevations-floor-r0c0
+                elevation: -1
+                position: { x: 0, y: 0 }
+              - id: support-granite-border
+                name: elevations-floor-r0c1
+                elevation: -1
+                position: { x: 96, y: 0 }
+              - id: support-granite-border
+                name: elevations-floor-r0c2
+                elevation: -1
+                position: { x: 192, y: 0 }
+              - id: support-granite-border
+                name: elevations-floor-r0c3
+                elevation: -1
+                position: { x: 288, y: 0 }
+              - id: support-granite-border
+                name: elevations-floor-r0c4
+                elevation: -1
+                position: { x: 384, y: 0 }
+              - id: support-granite-border
+                name: elevations-floor-r1c0
+                elevation: -1
+                position: { x: 0, y: 96 }
+              - id: support-granite-border
+                name: elevations-floor-r1c1
+                elevation: -1
+                position: { x: 96, y: 96 }
+              - id: support-granite-border
+                name: elevations-floor-r1c2
+                elevation: -1
+                position: { x: 192, y: 96 }
+              - id: support-granite-border
+                name: elevations-floor-r1c3
+                elevation: -1
+                position: { x: 288, y: 96 }
+              - id: support-granite-border
+                name: elevations-floor-r1c4
+                elevation: -1
+                position: { x: 384, y: 96 }
+              - id: support-granite-border
+                name: elevations-floor-r2c0
+                elevation: -1
+                position: { x: 0, y: 192 }
+              - id: support-granite-border
+                name: elevations-floor-r2c1
+                elevation: -1
+                position: { x: 96, y: 192 }
+              - id: support-granite-border
+                name: elevations-floor-r2c2
+                elevation: -1
+                position: { x: 192, y: 192 }
+              - id: support-granite-border
+                name: elevations-floor-r2c3
+                elevation: -1
+                position: { x: 288, y: 192 }
+              - id: support-granite-border
+                name: elevations-floor-r2c4
+                elevation: -1
+                position: { x: 384, y: 192 }
+              - id: support-granite-border
+                name: elevations-floor-r3c0
+                elevation: -1
+                position: { x: 0, y: 288 }
+              - id: support-granite-border
+                name: elevations-floor-r3c1
+                elevation: -1
+                position: { x: 96, y: 288 }
+              - id: support-granite-border
+                name: elevations-floor-r3c2
+                elevation: -1
+                position: { x: 192, y: 288 }
+              - id: support-granite-border
+                name: elevations-floor-r3c3
+                elevation: -1
+                position: { x: 288, y: 288 }
+              - id: support-granite-border
+                name: elevations-floor-r3c4
+                elevation: -1
+                position: { x: 384, y: 288 }
+              - id: support-granite-border
+                name: elevations-floor-r4c0
+                elevation: -1
+                position: { x: 0, y: 320 }
+              - id: support-granite-border
+                name: elevations-floor-r4c1
+                elevation: -1
+                position: { x: 96, y: 320 }
+              - id: support-granite-border
+                name: elevations-floor-r4c2
+                elevation: -1
+                position: { x: 192, y: 320 }
+              - id: support-granite-border
+                name: elevations-floor-r4c3
+                elevation: -1
+                position: { x: 288, y: 320 }
+              - id: support-granite-border
+                name: elevations-floor-r4c4
+                elevation: -1
+                position: { x: 384, y: 320 }
+            platforms:
+              # --- Tier 1 Interconnected Promenade (Base elevation 0 -> Walkable deck at elevation 1, y: 128..160) ---
+              - id: platform-stone-doric
+                name: elevations-platform-doric
+                elevation: 0
+                position: { x: 48, y: 128 }
+              - id: platform-stone-ionic
+                name: elevations-platform-ionic
+                elevation: 0
+                position: { x: 144, y: 128 }
+              - id: platform-stone-corinthian
+                name: elevations-platform-corinthian
+                elevation: 0
+                position: { x: 240, y: 128 }
+              - id: platform-stone
+                name: elevations-platform-marble
+                elevation: 0
+                position: { x: 336, y: 128 }
+              # --- Tier 2 Upper Terrace (Base elevation 1 -> Walkable deck at elevation 2, y: 96..128) ---
+              - id: platform-stone-corinthian
+                name: elevations-platform-upper
+                elevation: 1
+                position: { x: 240, y: 96 }
+            stairs:
+              # --- West Stair (0 <-> 1) ---
+              - id: steps-stone
+                name: elevations-stairs-west
+                direction: up
+                elevation: 0
+                delta: 1
+                position: { x: 64, y: 160 }
+              # --- East Stair (0 <-> 1) ---
+              - id: steps-stone
+                name: elevations-stairs-east
+                direction: up
+                elevation: 0
+                delta: 1
+                position: { x: 368, y: 160 }
+              # --- Upper Tier Lateral Stair (1 <-> 2) ---
+              - id: steps-stone
+                name: elevations-stairs-upper
+                direction: left
+                elevation: 1
+                delta: 1
+                position: { x: 176, y: 128 }
+          objects:
+            doors:
+              # Occupies x: 224..256, y: 368..416; returns to hallway (240, 112)
+              - id: door-shadow
+                name: elevations-door-return
+                position: { x: 224, y: 368 }
+                outlayer: 'galleria-hallway'
+                out: { x: 240, y: 112 }
+
+      # =======================================================================
+      # ROOM 3: THE HALL OF PASSIVITY (Layer: 'galleria-room-passivity', 384w x 288l)
+      # =======================================================================
+      - strut:
+          id: wallpaper-blue-vines
+          name: passivity-wall-n0
+          layer: 'galleria-room-passivity'
+          owner: bind(root.owner)
+          position: { x: 0, y: 0 }
+        components:
+          crafts:
+            struts:
+              - id: wallpaper-blue-vines
+                name: passivity-wall-n1
+                position: { x: 128, y: 0 }
+              - id: wallpaper-blue-vines
+                name: passivity-wall-n2
+                position: { x: 256, y: 0 }
+              - id: support-granite-border
+                name: passivity-floor-r0c0
+                elevation: -1
+                position: { x: 0, y: 0 }
+              - id: support-granite-border
+                name: passivity-floor-r0c1
+                elevation: -1
+                position: { x: 96, y: 0 }
+              - id: support-granite-border
+                name: passivity-floor-r0c2
+                elevation: -1
+                position: { x: 192, y: 0 }
+              - id: support-granite-border
+                name: passivity-floor-r0c3
+                elevation: -1
+                position: { x: 288, y: 0 }
+              - id: support-granite-border
+                name: passivity-floor-r1c0
+                elevation: -1
+                position: { x: 0, y: 96 }
+              - id: support-granite-border
+                name: passivity-floor-r1c1
+                elevation: -1
+                position: { x: 96, y: 96 }
+              - id: support-granite-border
+                name: passivity-floor-r1c2
+                elevation: -1
+                position: { x: 192, y: 96 }
+              - id: support-granite-border
+                name: passivity-floor-r1c3
+                elevation: -1
+                position: { x: 288, y: 96 }
+              - id: support-granite-border
+                name: passivity-floor-r2c0
+                elevation: -1
+                position: { x: 0, y: 192 }
+              - id: support-granite-border
+                name: passivity-floor-r2c1
+                elevation: -1
+                position: { x: 96, y: 192 }
+              - id: support-granite-border
+                name: passivity-floor-r2c2
+                elevation: -1
+                position: { x: 192, y: 192 }
+              - id: support-granite-border
+                name: passivity-floor-r2c3
+                elevation: -1
+                position: { x: 288, y: 192 }
+              - id: carpet-cotton-palace
+                name: passivity-palace-rug
+                elevation: -1
+                position: { x: 112, y: 80 }
+          objects:
+            doors:
+              - id: door-shadow
+                name: passivity-door-return
+                position: { x: 176, y: 240 }
+                outlayer: 'galleria-hallway'
+                out: { x: 496, y: 112 }
+          effects:
+            passive:
+              - id: grandfather-clock
+                name: passivity-clock-west
+                position: { x: 96, y: 4 }
+                anchor: anchor(parent)
+              - id: grandfather-clock
+                name: passivity-clock-east
+                position: { x: 256, y: 4 }
+                anchor: anchor(passivity-wall-n2)
+              - id: torch
+                name: passivity-torch-nw
+                position: { x: 32, y: 16 }
+                anchor: anchor(parent)
+              - id: torch
+                name: passivity-torch-center
+                position: { x: 176, y: 16 }
+                anchor: anchor(passivity-wall-n1)
+              - id: torch
+                name: passivity-torch-ne
+                position: { x: 320, y: 16 }
+                anchor: anchor(passivity-wall-n2)
+              - id: birdbath
+                name: passivity-birdbath-west
+                position: { x: 48, y: 128 }
+              - id: birdbath
+                name: passivity-birdbath-east
+                position: { x: 304, y: 128 }
+
+      # =======================================================================
+      # ROOM 4: THE HALL OF VANITY (Layer: 'galleria-room-vanity', 384w x 288l)
+      # =======================================================================
+      - strut:
+          id: wallpaper-purple-checkered
+          name: vanity-wall-n0
+          layer: 'galleria-room-vanity'
+          owner: bind(root.owner)
+          position: { x: 0, y: 0 }
+        components:
+          crafts:
+            struts:
+              - id: wallpaper-purple-checkered
+                name: vanity-wall-n1
+                position: { x: 128, y: 0 }
+              - id: wallpaper-purple-checkered
+                name: vanity-wall-n2
+                position: { x: 256, y: 0 }
+              # --- Wood Floor Grid (3x3 = 384w x 288l) ---
+              - id: support-wood
+                name: vanity-floor-r0c0
+                elevation: -1
+                position: { x: 0, y: 0 }
+              - id: support-wood
+                name: vanity-floor-r0c1
+                elevation: -1
+                position: { x: 128, y: 0 }
+              - id: support-wood
+                name: vanity-floor-r0c2
+                elevation: -1
+                position: { x: 256, y: 0 }
+              - id: support-wood
+                name: vanity-floor-r1c0
+                elevation: -1
+                position: { x: 0, y: 96 }
+              - id: support-wood
+                name: vanity-floor-r1c1
+                elevation: -1
+                position: { x: 128, y: 96 }
+              - id: support-wood
+                name: vanity-floor-r1c2
+                elevation: -1
+                position: { x: 256, y: 96 }
+              - id: support-wood
+                name: vanity-floor-r2c0
+                elevation: -1
+                position: { x: 0, y: 192 }
+              - id: support-wood
+                name: vanity-floor-r2c1
+                elevation: -1
+                position: { x: 128, y: 192 }
+              - id: support-wood
+                name: vanity-floor-r2c2
+                elevation: -1
+                position: { x: 256, y: 192 }
+              - id: carpet-cotton-palace
+                name: vanity-palace-rug
+                elevation: -1
+                position: { x: 112, y: 88 }
+              # --- Wall-Mounted Vanity Struts (Curtains & Paintings) ---
+              - id: curtains-red
+                name: vanity-curtain-west
+                position: { x: 0, y: 2 }
+                anchor: anchor(parent)
+              - id: painting-portrait-king
+                name: vanity-painting-king
+                position: { x: 40, y: 14 }
+                anchor: anchor(parent)
+              - id: painting-portrait-queen
+                name: vanity-painting-queen
+                position: { x: 76, y: 14 }
+                anchor: anchor(parent)
+              - id: painting-abstract
+                name: vanity-painting-abstract
+                position: { x: 162, y: 8 }
+                anchor: anchor(vanity-wall-n1)
+              - id: painting-cityscape
+                name: vanity-painting-cityscape
+                position: { x: 260, y: 14 }
+                anchor: anchor(vanity-wall-n2)
+              - id: painting-sailboat
+                name: vanity-painting-sailboat
+                position: { x: 308, y: 20 }
+                anchor: anchor(vanity-wall-n2)
+              - id: curtains-red
+                name: vanity-curtain-east
+                position: { x: 352, y: 2 }
+                anchor: anchor(vanity-wall-n2)
+              # --- Floor-Standing Decor Struts (Fixtures, Shelves, Tables) ---
+              - id: fixture-fireplace
+                name: vanity-fireplace
+                position: { x: 145, y: 32 }
+              - id: fixture-vanity
+                name: vanity-dressing-table
+                position: { x: 48, y: 56 }
+              - id: shelf-cabinet
+                name: vanity-cabinet
+                position: { x: 304, y: 52 }
+              - id: table-hallway-candlesticks
+                name: vanity-candelabra-table
+                position: { x: 32, y: 136 }
+              - id: table-dinner-round
+                name: vanity-round-table
+                position: { x: 288, y: 152 }
+          objects:
+            doors:
+              - id: door-shadow
+                name: vanity-door-return
+                position: { x: 176, y: 240 }
+                outlayer: 'galleria-hallway'
+                out: { x: 656, y: 112 }
+
+      # =======================================================================
+      # ROOM 5: THE HALL OF STUDY (Layer: 'galleria-room-study', 384w x 288l)
+      # =======================================================================
+      - strut:
+          id: wall-wood-gold-rimmed
+          name: study-wall-n0
+          layer: 'galleria-room-study'
+          owner: bind(root.owner)
+          position: { x: 0, y: 0 }
+        components:
+          crafts:
+            struts:
+              - id: wall-wood-gold-rimmed
+                name: study-wall-n1
+                position: { x: 128, y: 0 }
+              - id: wall-wood-gold-rimmed
+                name: study-wall-n2
+                position: { x: 256, y: 0 }
+              - id: support-wood
+                name: study-floor-r0c0
+                elevation: -1
+                position: { x: 0, y: 0 }
+              - id: support-wood
+                name: study-floor-r0c1
+                elevation: -1
+                position: { x: 128, y: 0 }
+              - id: support-wood
+                name: study-floor-r0c2
+                elevation: -1
+                position: { x: 256, y: 0 }
+              - id: support-wood
+                name: study-floor-r1c0
+                elevation: -1
+                position: { x: 0, y: 96 }
+              - id: support-wood
+                name: study-floor-r1c1
+                elevation: -1
+                position: { x: 128, y: 96 }
+              - id: support-wood
+                name: study-floor-r1c2
+                elevation: -1
+                position: { x: 256, y: 96 }
+              - id: support-wood
+                name: study-floor-r2c0
+                elevation: -1
+                position: { x: 0, y: 192 }
+              - id: support-wood
+                name: study-floor-r2c1
+                elevation: -1
+                position: { x: 128, y: 192 }
+              - id: support-wood
+                name: study-floor-r2c2
+                elevation: -1
+                position: { x: 256, y: 192 }
+          objects:
+            doors:
+              # North Return Door (x: 176..208, y: 48..96); returns to hallway (80, 168) north of door-5 (80, 240..288)
+              - id: door-mansion
+                name: study-door-return
+                position: { x: 176, y: 48 }
+                anchor: anchor(study-wall-n1)
+                outlayer: 'galleria-hallway'
+                out: { x: 80, y: 168 }
+            signs:
+              - id: bulletin
+                name: study-sign-bulletin
+                position: { x: 48, y: 64 }
+                persona: galleria-study-bulletin
+                lexicon: spring
+              - id: poster
+                name: study-sign-poster
+                position: { x: 304, y: 44 }
+                anchor: anchor(study-wall-n2)
+                persona: galleria-study-poster
+                lexicon: spring
+              - id: chalkboard
+                name: study-sign-chalkboard
+                position: { x: 64, y: 152 }
+                persona: galleria-study-chalkboard
+                lexicon: spring
+              - id: post
+                name: study-sign-post
+                position: { x: 176, y: 192 }
+                persona: galleria-study-post
+                lexicon: spring
+              - id: bevel
+                name: study-sign-bevel
+                position: { x: 288, y: 136 }
+                persona: galleria-study-bevel
+                lexicon: spring
+              - id: headstone
+                name: study-sign-headstone
+                position: { x: 288, y: 204 }
+                persona: galleria-study-headstone
+                lexicon: spring
+
+      # =======================================================================
+      # ROOM 6: ANNEX EXHIBITION WEST (Layer: 'galleria-room-annex-west', 384w x 288l)
+      # =======================================================================
+      - strut:
+          id: wallpaper-blue
+          name: annex-west-wall-n0
+          layer: 'galleria-room-annex-west'
+          owner: bind(root.owner)
+          position: { x: 0, y: 0 }
+        components:
+          crafts:
+            struts:
+              - id: wallpaper-blue
+                name: annex-west-wall-n1
+                position: { x: 128, y: 0 }
+              - id: wallpaper-blue
+                name: annex-west-wall-n2
+                position: { x: 256, y: 0 }
+              - id: support-wood
+                name: annex-west-floor-r0c0
+                elevation: -1
+                position: { x: 0, y: 0 }
+              - id: support-wood
+                name: annex-west-floor-r0c1
+                elevation: -1
+                position: { x: 128, y: 0 }
+              - id: support-wood
+                name: annex-west-floor-r0c2
+                elevation: -1
+                position: { x: 256, y: 0 }
+              - id: support-wood
+                name: annex-west-floor-r1c0
+                elevation: -1
+                position: { x: 0, y: 96 }
+              - id: support-wood
+                name: annex-west-floor-r1c1
+                elevation: -1
+                position: { x: 128, y: 96 }
+              - id: support-wood
+                name: annex-west-floor-r1c2
+                elevation: -1
+                position: { x: 256, y: 96 }
+              - id: support-wood
+                name: annex-west-floor-r2c0
+                elevation: -1
+                position: { x: 0, y: 192 }
+              - id: support-wood
+                name: annex-west-floor-r2c1
+                elevation: -1
+                position: { x: 128, y: 192 }
+              - id: support-wood
+                name: annex-west-floor-r2c2
+                elevation: -1
+                position: { x: 256, y: 192 }
+          objects:
+            doors:
+              - id: door-mansion
+                name: annex-west-door-return
+                position: { x: 176, y: 48 }
+                anchor: anchor(annex-west-wall-n1)
+                outlayer: 'galleria-hallway'
+                out: { x: 240, y: 168 }
+
+      # =======================================================================
+      # ROOM 7: ANNEX EXHIBITION CENTER (Layer: 'galleria-room-annex-center', 384w x 288l)
+      # =======================================================================
+      - strut:
+          id: wallpaper-blue
+          name: annex-center-wall-n0
+          layer: 'galleria-room-annex-center'
+          owner: bind(root.owner)
+          position: { x: 0, y: 0 }
+        components:
+          crafts:
+            struts:
+              - id: wallpaper-blue
+                name: annex-center-wall-n1
+                position: { x: 128, y: 0 }
+              - id: wallpaper-blue
+                name: annex-center-wall-n2
+                position: { x: 256, y: 0 }
+              - id: support-wood
+                name: annex-center-floor-r0c0
+                elevation: -1
+                position: { x: 0, y: 0 }
+              - id: support-wood
+                name: annex-center-floor-r0c1
+                elevation: -1
+                position: { x: 128, y: 0 }
+              - id: support-wood
+                name: annex-center-floor-r0c2
+                elevation: -1
+                position: { x: 256, y: 0 }
+              - id: support-wood
+                name: annex-center-floor-r1c0
+                elevation: -1
+                position: { x: 0, y: 96 }
+              - id: support-wood
+                name: annex-center-floor-r1c1
+                elevation: -1
+                position: { x: 128, y: 96 }
+              - id: support-wood
+                name: annex-center-floor-r1c2
+                elevation: -1
+                position: { x: 256, y: 96 }
+              - id: support-wood
+                name: annex-center-floor-r2c0
+                elevation: -1
+                position: { x: 0, y: 192 }
+              - id: support-wood
+                name: annex-center-floor-r2c1
+                elevation: -1
+                position: { x: 128, y: 192 }
+              - id: support-wood
+                name: annex-center-floor-r2c2
+                elevation: -1
+                position: { x: 256, y: 192 }
+          objects:
+            doors:
+              - id: door-mansion
+                name: annex-center-door-return
+                position: { x: 176, y: 48 }
+                anchor: anchor(annex-center-wall-n1)
+                outlayer: 'galleria-hallway'
+                out: { x: 496, y: 168 }
+
+      # =======================================================================
+      # ROOM 8: ANNEX EXHIBITION EAST (Layer: 'galleria-room-annex-east', 384w x 288l)
+      # =======================================================================
+      - strut:
+          id: wallpaper-blue
+          name: annex-east-wall-n0
+          layer: 'galleria-room-annex-east'
+          owner: bind(root.owner)
+          position: { x: 0, y: 0 }
+        components:
+          crafts:
+            struts:
+              - id: wallpaper-blue
+                name: annex-east-wall-n1
+                position: { x: 128, y: 0 }
+              - id: wallpaper-blue
+                name: annex-east-wall-n2
+                position: { x: 256, y: 0 }
+              - id: support-wood
+                name: annex-east-floor-r0c0
+                elevation: -1
+                position: { x: 0, y: 0 }
+              - id: support-wood
+                name: annex-east-floor-r0c1
+                elevation: -1
+                position: { x: 128, y: 0 }
+              - id: support-wood
+                name: annex-east-floor-r0c2
+                elevation: -1
+                position: { x: 256, y: 0 }
+              - id: support-wood
+                name: annex-east-floor-r1c0
+                elevation: -1
+                position: { x: 0, y: 96 }
+              - id: support-wood
+                name: annex-east-floor-r1c1
+                elevation: -1
+                position: { x: 128, y: 96 }
+              - id: support-wood
+                name: annex-east-floor-r1c2
+                elevation: -1
+                position: { x: 256, y: 96 }
+              - id: support-wood
+                name: annex-east-floor-r2c0
+                elevation: -1
+                position: { x: 0, y: 192 }
+              - id: support-wood
+                name: annex-east-floor-r2c1
+                elevation: -1
+                position: { x: 128, y: 192 }
+              - id: support-wood
+                name: annex-east-floor-r2c2
+                elevation: -1
+                position: { x: 256, y: 192 }
+          objects:
+            doors:
+              - id: door-mansion
+                name: annex-east-door-return
+                position: { x: 176, y: 48 }
+                anchor: anchor(annex-east-wall-n1)
+                outlayer: 'galleria-hallway'
+                out: { x: 656, y: 168 }

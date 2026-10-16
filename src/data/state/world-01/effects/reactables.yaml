@@ -1,10 +1,10 @@
 effects:
-  reactables:
-    - id: spinning-dummy
-      name: test-dummy
-      layer: '0'
-      position:
-        x: 999
-        y: 885
-      intention: attack
-      cooldown: 30
+  reactables: []
+    # - id: spinning-dummy
+    #   name: test-dummy
+    #   layer: '0'
+    #   position:
+    #     x: 999
+    #     y: 885
+    #   intention: attack
+    #   cooldown: 30

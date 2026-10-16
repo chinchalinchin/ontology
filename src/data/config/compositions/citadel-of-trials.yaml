@@ -140,7 +140,7 @@ compositions:
       # BRANCH 1: CITADEL SANCTUM LAYER (4-Tier Gravity & Elevation UAT Arena)
       # =========================================================================
       - strut:
-          id: floor-marble-checkered
+          id: support-stone
           name: sanctum-floor-nw
           owner: bind(root.owner)
           layer: citadel-sanctum-layer
@@ -255,7 +255,7 @@ compositions:
 
             struts:
               # --- GROUND SUBSTRATE TILING (elevation: -1)
-              - id: floor-marble-checkered
+              - id: support-stone
                 name: sanctum-floor-ne
                 owner: bind(root.owner)
                 layer: citadel-sanctum-layer
@@ -263,7 +263,7 @@ compositions:
                 position:
                   x: 183
                   y: 0
-              - id: floor-marble-checkered
+              - id: support-stone
                 name: sanctum-floor-sw
                 owner: bind(root.owner)
                 layer: citadel-sanctum-layer
@@ -271,7 +271,7 @@ compositions:
                 position:
                   x: 0
                   y: 166
-              - id: floor-marble-checkered
+              - id: support-stone
                 name: sanctum-floor-se
                 owner: bind(root.owner)
                 layer: citadel-sanctum-layer
@@ -279,7 +279,7 @@ compositions:
                 position:
                   x: 183
                   y: 166
-              - id: floor-marble-checkered
+              - id: support-stone
                 name: sanctum-floor-south-west
                 owner: bind(root.owner)
                 layer: citadel-sanctum-layer
@@ -287,7 +287,7 @@ compositions:
                 position:
                   x: 0
                   y: 318
-              - id: floor-marble-checkered
+              - id: support-stone
                 name: sanctum-floor-south-east
                 owner: bind(root.owner)
                 layer: citadel-sanctum-layer
@@ -295,7 +295,7 @@ compositions:
                 position:
                   x: 183
                   y: 318
-              - id: floor-carpet-palace
+              - id: carpet-cotton-palace
                 name: sanctum-courtyard-carpet
                 owner: bind(root.owner)
                 layer: citadel-sanctum-layer
@@ -306,7 +306,7 @@ compositions:
 
               # --- ELEVATED SENSOR STRUT SUBSTRATES (mass: -1, E > 0)
               # Central E = 3 skywalk connecting East E = 3 to West E = 3 (3-tier drop South to E = 0)
-              - id: floor-stone
+              - id: support-stone
                 name: sanctum-skywalk-e3
                 owner: bind(root.owner)
                 layer: citadel-sanctum-layer
@@ -316,7 +316,7 @@ compositions:
                   x: 80
                   y: 16
               # Under-stair sensor bridges ensuring downward stair transitions stay supported
-              - id: floor-marble-diamonds
+              - id: support-stone
                 name: sanctum-underbridge-e1
                 owner: bind(root.owner)
                 layer: citadel-sanctum-layer
@@ -325,7 +325,7 @@ compositions:
                 position:
                   x: 382
                   y: 180
-              - id: floor-marble-diamonds
+              - id: support-stone
                 name: sanctum-underbridge-e2
                 owner: bind(root.owner)
                 layer: citadel-sanctum-layer
@@ -354,7 +354,7 @@ compositions:
                 position:
                   x: 64
                   y: 120
-              - id: pillar-basalt
+              - id: pillar-slate
                 name: sanctum-pillar-skywalk-left
                 owner: bind(root.owner)
                 layer: citadel-sanctum-layer
@@ -362,7 +362,7 @@ compositions:
                 position:
                   x: 112
                   y: 16
-              - id: pillar-basalt
+              - id: pillar-slate
                 name: sanctum-pillar-skywalk-right
                 owner: bind(root.owner)
                 layer: citadel-sanctum-layer
@@ -479,7 +479,7 @@ compositions:
           crafts:
             struts:
               # Elevated sensor floor at E = 3 so sprites arriving from sanctum-belfry-door remain supported at E = 3
-              - id: floor-marble-checkered
+              - id: support-stone
                 name: belfry-elevated-deck
                 owner: bind(root.owner)
                 layer: citadel-belfry-layer
@@ -488,7 +488,7 @@ compositions:
                 position:
                   x: 12
                   y: 72
-              - id: floor-granite-border
+              - id: support-granite-border
                 name: belfry-dais
                 owner: bind(root.owner)
                 layer: citadel-belfry-layer
@@ -497,7 +497,7 @@ compositions:
                 position:
                   x: 96
                   y: 80
-              - id: wall-basalt
+              - id: wall-slate
                 name: belfry-west-wall
                 owner: bind(root.owner)
                 layer: citadel-belfry-layer
@@ -505,7 +505,7 @@ compositions:
                 position:
                   x: 2
                   y: 0
-              - id: wall-basalt
+              - id: wall-slate
                 name: belfry-east-wall
                 owner: bind(root.owner)
                 layer: citadel-belfry-layer

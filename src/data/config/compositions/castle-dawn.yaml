@@ -30,14 +30,14 @@ compositions:
               position:
                 x: 0
                 y: -33
-            - id: tower-turret-stone
+            - id: tower-stone-turret
               name: castle-dawn-turret-00
               owner: bind(root.owner)
               elevation: 0
               position:
                 x: -60
                 y: -33
-            - id: tower-turret-stone
+            - id: tower-stone-turret
               name: castle-dawn-turret-01
               owner: bind(root.owner)
               elevation: 0
@@ -59,7 +59,7 @@ compositions:
                 x: 214
                 y: -219
             # Exterior upper walkway deck (elevation: 1)
-            - id: floor-stone
+            - id: support-stone
               name: castle-dawn-flatroof-00
               owner: bind(root.owner)
               elevation: -1
@@ -172,7 +172,7 @@ compositions:
                 y: 140
     branches:
       - strut: 
-          id: floor-marble-checkered
+          id: support-stone
           name: castle-atrium-floor
           owner: bind(root.owner)
           layer: castle-atrium-layer
@@ -213,41 +213,40 @@ compositions:
                   y: 0
             struts:
               # --------------- SUBSTRATE FLOORS (elevation: -1)
-              - id: floor-marble-checkered
-                name: castle-dawn-floor-02
+              - id: support-stone
+                name: castle-dawn-floor-00
                 owner: bind(root.owner)
-                elevation: -1
+                elevation: 0
                 position:
-                  x: 23
-                  y: 213
-              - id: floor-marble-checkered
+                  x: 0
+                  y: 299
+              - id: support-stone
                 name: castle-dawn-floor-03
                 owner: bind(root.owner)
-                elevation: -1
+                elevation: 0
                 position:
-                  x: 23
-                  y: 81   
-              - id: floor-carpet-palace
+                  x: 0
+                  y: 219 
+              - id: support-stone
+                name: castle-dawn-floor-02
+                owner: bind(root.owner)
+                elevation: 0
+                position:
+                  x: 236
+                  y: 299
+              - id: support-stone
+                name: castle-dawn-floor-03
+                owner: bind(root.owner)
+                position:
+                  x: 236
+                  y: 219  
+              - id: carpet-cotton-palace
                 name: castle-dawn-floor-01
                 owner: bind(root.owner)
                 elevation: -1
                 position:
                   x: 76
                   y: 219  
-              - id: floor-marble-diamonds
-                name: castle-dawn-floor-04
-                owner: bind(root.owner)
-                elevation: -1
-                position:
-                  x: 252
-                  y: 187  
-              - id: floor-marble-diamonds
-                name: castle-dawn-floor-05
-                owner: bind(root.owner)
-                elevation: -1
-                position:
-                  x: 0
-                  y: 187  
               # --------------- GROUND WALL FACADES (elevation: 0)
               - id: wall-palace
                 name: castle-dawn-wall-00

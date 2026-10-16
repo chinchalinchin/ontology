@@ -49,7 +49,6 @@ crafts:
             dimensions:
               w: 5
               l: 93
-        vertical:
       cost:
         - item: iron
           quantity: 5

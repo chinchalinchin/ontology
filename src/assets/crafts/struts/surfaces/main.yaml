@@ -21,7 +21,11 @@ crafts:
         l: 94
       mass: -1
       priority: -1
-      cost: null # TODO
+      cost:
+        - item: cotton
+          quantity: 20
+        - item: gold
+          quantity: 5
     # ----------------- SUPPORTS
     support-granite-border:
       # description: Granite floor with marble borders.
@@ -41,6 +45,7 @@ crafts:
         w: 81
         l: 81
       mass: -1
+      priority: -1
       cost:
         - item: stone
           quantity: 7
@@ -52,7 +57,7 @@ crafts:
       mass: -1
       priority: -1
       cost: null # TODO
-    floor-wood:
+    support-wood:
       # description: Planks of fine wood.
       dimensions:
         w: 128
@@ -117,6 +122,7 @@ crafts:
         w: 96
         l: 74
       mass: 0
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     # ----------------- BASES
@@ -126,6 +132,7 @@ crafts:
         w: 287
         l: 168
       mass: 0
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     base-slate-sloped:
@@ -134,6 +141,7 @@ crafts:
         w: 288
         l:  168
       mass: 0
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     # ----------------- SHINGLES
@@ -143,6 +151,7 @@ crafts:
         w: 96
         l: 52
       mass: 0
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     shingle-brick-sloped:
@@ -151,6 +160,7 @@ crafts:
         w: 139
         l: 169
       mass: 0
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     shingle-brick-square:
@@ -159,6 +169,7 @@ crafts:
         w: 96
         l: 97
       mass: 0
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     shingle-marble-hexagon:
@@ -167,6 +178,7 @@ crafts:
         w: 96
         l: 52
       mass: 0
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     shingle-marble-sloped:
@@ -175,6 +187,7 @@ crafts:
         w: 128
         l: 128
       mass: 0
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     shingle-marble-square:
@@ -183,6 +196,7 @@ crafts:
         w: 96
         l: 97
       mass: 0
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     shingle-slate-hexgaon:
@@ -191,6 +205,7 @@ crafts:
         w: 95
         l: 52
       mass: 0
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     shingle-slate-sloped:
@@ -199,6 +214,7 @@ crafts:
         w: 138
         l: 168
       mass: 0
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     shingle-slate-square:
@@ -207,6 +223,7 @@ crafts:
         w: 96
         l: 97
       mass: 0
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     # ----------------- SHAKES
@@ -215,6 +232,7 @@ crafts:
         w: 128
         l: 134
       mass: 0
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     shakes-marble-square:
@@ -222,6 +240,7 @@ crafts:
         w: 129
         l: 134
       mass: 0
+      priority: 1
       hitboxes: null # TODO
       cost: null # TODO
     # ----------------- SKYLIGHTS
@@ -231,8 +250,13 @@ crafts:
         w: 224
         l: 131
       mass: 0
+      priority: 1
       hitboxes: null # TODO
-      cost: null # TODO
+      cost:
+        - item: iron
+          quantity: 26
+        - item: glass
+          quantity: 60
     # ----------------- PANELS
     panels-granite:
       dimensions:

@@ -105,6 +105,9 @@ class Perimeter:
                 if obj.elevation != elevation:
                     continue
 
+            if not hasattr(obj, 'dimensions'):
+                raise ValueError(f"{obj.id} - {obj.name}")
+            
             x1 = int(obj.state.position.x)
             y1 = int(obj.state.position.y)
             rects.append((x1, y1, x1 + obj.dimensions.w, y1 + obj.dimensions.l))
