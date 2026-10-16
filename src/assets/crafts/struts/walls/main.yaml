@@ -3,18 +3,8 @@ crafts:
     # -----------------------------------------
     # ------------------------------------- RAW
     # -----------------------------------------
-    wall-basalt:
-      dimensions:
-        w: 94
-        l: 96
-      mass: 0
-      hitboxes:
-        - position: { x: 0, y: 0 }
-          dimensions: { w: 94, l: 72 }
-      cost:
-        - item: basalt
-          quantity: 20
     wall-brick:
+      # description: Standard red brick wall.
       dimensions: 
         w: 92
         l: 96
@@ -22,15 +12,27 @@ crafts:
       cost: null # TODO
       hitboxes: null # TODO
     wall-iron:
+      # description: Standard cast iron wall.
       dimensions:
         w: 96
         l: 97
       mass: 0
       cost: null # TODO
       hitboxes: null # TODO
+    wall-slate:
+      # description: Standard grey brick wall.
+      dimensions:
+        w: 94
+        l: 96
+      mass: 0
+      hitboxes:
+        - position: { x: 0, y: 0 }
+          dimensions: { w: 94, l: 72 }
+      cost: null # TODO
     wall-stone:
+      # description: Standard stone block wall.
       dimensions: 
-        w: 188
+        w: 95
         l: 80
       mass: 0
       cost: 
@@ -44,13 +46,15 @@ crafts:
             w: 150
             l: 40
     wall-terracotta:
+      # description: Standard baked brick wall.
       dimensions:
         w: 92
         l: 96
       mass: 0
       cost: null # TODO
       hitboxes: null # TODO
-    wall-thatched:
+    wall-thatches:
+      # description: Standard thatched wall.
       dimensions:
         w: 96
         l: 97
@@ -100,6 +104,7 @@ crafts:
         - item: stone
           quantity: 18
     frame-hut:
+      # description: Grass woven hut for jungle living.
       dimensions:
         w: 87
         l: 129
@@ -107,6 +112,7 @@ crafts:
       hitboxes: null # TODO
       cost: null # TODO
     frame-sandstone:
+      # description: Time-worn sandstone structure.
       dimensions:
         w: 96
         l: 162
@@ -114,6 +120,7 @@ crafts:
       hitboxes: null # TODO
       cost: null # TODO
     frame-wood: 
+      # description: wooden frame with stone walls and brick shingled roof.
       dimensions: 
         w: 94
         l: 145
@@ -123,21 +130,7 @@ crafts:
     # -----------------------------------------
     # --------------------------------- REFINED
     # -----------------------------------------
-    wall-concrete:
-      dimensions:
-        w: 127
-        l: 125
-      mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
-    wall-facade:
-      dimensions:
-        w: 96
-        l: 96
-      mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
-    wall-mansion-brick:
+    wall-brick-border:
       dimensions:
         w: 96
         l: 96
@@ -145,6 +138,7 @@ crafts:
       cost: null # TODO
       hitboxes: null # TODO
     wall-palace:
+      # description: Mason-made walls with inset pillars.
       dimensions:
         w: 128
         l: 96
@@ -156,6 +150,7 @@ crafts:
         - item: stone
           quantity: 12
     wall-stone-gold-plated:
+      # description: Stone block wall with gold panels.
       dimensions:
         w: 96
         l: 96
@@ -169,6 +164,7 @@ crafts:
         - item: gold
           quantity: 4
     wall-stone-wood-rimmed:
+      # description: Stone block wall with wood supports.
       dimensions:
         w: 92
         l: 97
@@ -176,6 +172,7 @@ crafts:
       cost: null # TODO 
       hitboxes: null # TODO
     wall-wood-copper-plated:
+      # description: Plank wall with copper panels.
       dimensions:
         w: 96
         l: 96
@@ -183,6 +180,7 @@ crafts:
       cost: null # TODO
       hitboxes: null # TODO
     wall-wood-copper-rimmed:
+      # description: Plank wall with copper supports.
       dimensions:
         w: 128
         l: 96
@@ -190,8 +188,17 @@ crafts:
       cost: null # TODO
       hitboxes: null # TODO
     wall-wood-gold-rimmed:
+      # description: Plank wall with gold supports.
       dimensions:
         w: 128
+        l: 96
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    wall-wood-trimmed:
+      # description: Elegant wooden wall with panels.
+      dimensions:
+        w: 96
         l: 96
       mass: 0
       cost: null # TODO
@@ -199,27 +206,7 @@ crafts:
     # -----------------------------------------
     # -------------------------------- INTERIOR
     # -----------------------------------------
-    panel-wood-green-design:
-      dimensions:
-        w: 128
-        l: 97
-      mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
-    panel-wood-pink-design:
-      dimensions:
-        w: 128
-        l: 97
-      mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
-    panel-wood:
-      dimensions:
-        w: 96
-        l: 96
-      mass: 0
-      cost: null # TODO
-      hitboxes: null # TODO
+    # ------------- WALLPAPER
     wallpaper-blue:
       dimensions:
         w: 128
@@ -278,6 +265,28 @@ crafts:
       cost: null # TODO
       hitboxes: null # TODO
     wallpaper-yellow-vines:
+      dimensions:
+        w: 128
+        l: 97
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    # ------------ PANELLING
+    wall-wood-panel:
+      dimensions:
+        w: 96
+        l: 96
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    wall-wood-panel-green:
+      dimensions:
+        w: 128
+        l: 97
+      mass: 0
+      cost: null # TODO
+      hitboxes: null # TODO
+    wall-wood-panel-pink:
       dimensions:
         w: 128
         l: 97
