@@ -14,7 +14,7 @@ from app.config.enums import (
     Orientations
 )
 from app.models.state.assets import PropertyState
-from app.models.state.assets.crafts import BridgeState
+from app.models.state.assets.crafts import OrientedState
 from libs.core.models import (
     Multiple, 
     Position
@@ -95,10 +95,10 @@ def test_migrator_build_generator_bridges(
     mock_state
 ):
     """
-    Verify Migrator expands BridgeState instances via Decomposer into constituent unit assets on the board.
+    Verify Migrator expands OrientedState instances via Decomposer into constituent unit assets on the board.
     """
     mock_state.crafts.bridges = [
-        BridgeState(
+        OrientedState(
             id="wood-bridge",
             name="test-bridge",
             layer="0",

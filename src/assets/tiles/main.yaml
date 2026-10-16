@@ -16,3 +16,9 @@
           w: 32
           l: 32
         friction: 100
+      highland:
+        priority: -4
+        dimensions:
+          w: 32
+          l: 32
+        friction: 150

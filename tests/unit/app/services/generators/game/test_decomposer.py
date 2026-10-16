@@ -5,9 +5,13 @@
 import pytest
 
 # Application Libraries
-from app.config.enums import Orientations
+from app.config.enums import (
+    AssetCategories,
+    AssetInstances,
+    Orientations
+)
 from app.models.state import (
-    BridgeState,
+    OrientedState,
     PropertyState
 )
 from app.models.config import (
@@ -238,7 +242,7 @@ def test_decomposer_bridge_horizontal_expansion(mock_decomposer):
     Verify Decomposer expands horizontal bridge multiplier into discrete unit assets
     with sequential names, offset coordinates, and preserved craft properties.
     """
-    state = BridgeState(
+    state = OrientedState(
         id="wood-bridge",
         name="river-crossing",
         layer="0",
@@ -247,7 +251,11 @@ def test_decomposer_bridge_horizontal_expansion(mock_decomposer):
         multiple=Multiple(nx=3, ny=1)
     )
 
-    units = mock_decomposer.bridge(state)
+    units = mock_decomposer.orient(
+        state, 
+        AssetCategories.CRAFTS.value,
+        AssetInstances.BRIDGES.value
+    )
     assert len(units) == 3
 
     assert units[0].name == "river-crossing-0"
@@ -273,7 +281,7 @@ def test_decomposer_bridge_vertical_expansion(mock_decomposer):
     """
     Verify Decomposer expands vertical bridge multiplier along +Y axis.
     """
-    state = BridgeState(
+    state = OrientedState(
         id="wood-bridge",
         name="chasm-bridge",
         layer="0",
@@ -282,7 +290,11 @@ def test_decomposer_bridge_vertical_expansion(mock_decomposer):
         multiple=Multiple(nx=1, ny=2)
     )
 
-    units = mock_decomposer.bridge(state)
+    units = mock_decomposer.orient(
+        state,
+        AssetCategories.CRAFTS.value,
+        AssetInstances.BRIDGES.value
+    )
     assert len(units) == 2
 
     assert units[0].state.position.x == 50

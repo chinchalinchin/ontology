@@ -561,7 +561,7 @@ A Bridge image file embeds both horizontal and vertical Frames in a single horiz
 
 Bridges are deployed via a 1D structural multiplier (`multiple.nx` for horizontal spans, `multiple.ny` for vertical spans).
 
-During world hydration or dynamic execution of the `build` Intention, the Decomposer unpacks a BridgeState into a contiguous series of $N$ unit Asset instances:
+During world hydration or dynamic execution of the `build` Intention, the Decomposer unpacks a OrientedState into a contiguous series of $N$ unit Asset instances:
 
 * Each segment receives an absolute Position offset along the primary axis.
 * Each segment references the base unit's static properties, preserving immutable dimensions and relative hitboxes.
