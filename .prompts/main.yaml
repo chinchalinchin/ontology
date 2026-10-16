@@ -135,7 +135,7 @@ tools:
           # - 08-plots.md
           - 09-ecology.md
           - 10-emergence.md
-          - 11-architecture.md
+          # - 11-architecture.md
       specs: []
     # --------------------------------------------
     # ------------------------ PARAMETERS: SOURCE

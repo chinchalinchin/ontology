@@ -34,9 +34,9 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [ ]: [Phase n: Commerce](./phases/implement/phase-n.md)
     - [ ]: [Phase n+1: Towns](./phase/implement/phase-n+1.md)
   - **Refactor:**
-    - Phase 01:
+    - *Phase 01:*
       - [x]: [Phase 01.01: Orchestration](./phases/refactor/refactor-01-01.md)
-    - Phase 02:
+    - *Phase 02:*
       - [x]: [Phase 02.01: Frames](./phases/refactor/refactor-02-01.md)
       - [x]: [Phase 02.02: Registry](./phases/refactor/refactor-02-02.md)
       - [x]: [Phase 02.03: Equipment](./phases/refactor/refactor-02-03.md)
@@ -44,29 +44,29 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 02.05: Finetuning](./phases/refactor/refactor-02-05.md)
       - [x]: [Phase 02.06: Effects](./phases/refactor/refactor-02-06.md)
       - [x]: [Phase 02.07: Registry Data Structures](./phases/refactor/refactor-02-07.md)
-    - Phase 03:
+    - *Phase 03:*
       - [x]: [Phase 03.01: Mechanics](./phases/refactor/refactor-03-01.md)
       - [x]: [Phase 03.02: Consolidation](./phases/refactor/refactor-03-02.md)
       - [x]: [Phase 03.03: Motion](./phases/refactor/refactor-03-03.md)
       - [ ]: [Phase 03.04: Projectiles](./phases/refactor/refactor-03-04.md)
-    - Phase 04:
+    - *Phase 04:*
       - [x]: [Phase 04.01: Typography](./phases/refactor/refactor-04-01.md)
       - [x]: [Phase 04.02: Simplification](./phases/refactor/refactor-04-02.md)
       - [x]: [Phase 04.03: EventHandlers](./phases/refactor/refactor-04-03.md)
       - [x]: [Phase 04.04: MenuContext](./phases/refactor/refactor-04-04.md)
       - [x]: [Phase 04.05: Gizmos](./phases/refactor/refactor-04-05.md)
-    - Phase 06:
+    - *Phase 06:*
       - [x]: [Phase 06.01: Expressions](./phases/refactor/refactor-06-01.md)
-    - Phase 07:
+    - *Phase 07:*
       - [x]: [Phase 07.01: Elevation Sorting](./phases/refactor/refactor-07-01.md)
       - [x]: [Phase 07.02: Platforms & Elevated Hitboxes](./phases/refactor/refactor-07-02.md)
       - [ ]: [Phase 07.03: Gravity](./phases/refactor/refactor-07-03.md)
       - [ ]: [Phase 07.04: Materialization](./phases/refactor/refactor-07-04.md)
-    - Phase 08:
+    - *Phase 08:*
       - [x]: [Phase 08.01: Obstable Geometry](./phases/refactor/refactor-08-01.md)
       - [x]: [Phase 08.02: NavigationMechanics](./phases/refactor/refactor-08-02.md)
       - [x]: [Phase 08.03: Trajectory Optimization](./phases/refactor/refactor-08-03.md)
-    - Phase 09:
+    - *Phase 09:*
       - [x]: [Phase 09.01: Fluid Flows](./phases/refactor/refactor-09-01.md)
       - [x]: [Phase 09.02: Shorelines & Geography](./phases/refactor/refactor-09-02.md)
       - [x]: [Phase 09.03: Consolidation](./phases/refactor/refactor-09-03.md)
@@ -75,7 +75,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 09.06: Cythonization](./phases/refactor/refactor-09-06.md)
       - [x]: [Phase 09.07: Frame Caching](./phases/refactor/refactor-09-07.md)
       - [ ]: [Phase 09.08: Transverse Fluid Submersion](./phases/refactor/refactor-09-08.md)
-    - Phase 10:
+    - *Phase 10:*
       - [x]: [Phase 10.01: Stage Hitboxes](./phases/refactor/refactor-10-01.md)
       - [x]: [Phase 10.02: Shoreline Seasonal Indexing](./phases/refactor/refactor-10-02.md)
       - [ ]: [Phase 10.03: Flowers, Pixies & Reproduction](./phases/refactor/refactor-10-03.md)
@@ -110,8 +110,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Composition C000: Castle Dawn](./phases/design/composition-c000.md)
     - [x]: [Composition C000: Citadel of Trials](./phases/design/composition-c001.md)
     - [~]: [Composition C000: Regalia Galleria](./phases/design/composition-c002.md)
-
-- Backlog:
+- **Backlog:**
   - [~]: [TODO T000: Telemetry Module](./backlog/todo-t000.md)
   - [ ]: [TODO T001: Telemetry Menu](./backlog/todo-t001.md)
   - [ ]: [TODO T002: Bouyancy](./backlog/todo-t002.md)

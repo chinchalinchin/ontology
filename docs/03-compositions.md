@@ -230,7 +230,7 @@ compositions:
                             -   id: door-shadow
                                 name: door-frame
                                 layer: 'compose-layer'
-                                anchor: anchor(wall-blue)
+                                anchor: anchor(house-interior)
                                 outlayer: bind(root.layer)
                                 position:
                                     x: 20
@@ -244,7 +244,7 @@ compositions:
     `components` is an [Asset State](./00-overview.md#state) schema, identical to a state file.
 
 !!! note "anchor() Macro"
-    The Doors in this Configuration utilize the `anchor` macro to ensure they are rendered on top of their parent Struts. The `anchor` macro applies the formula, `anchor(self, target) = (target.y - target.l) - (self.y + self.l)` to dynamically calculate the rendering order, i.e. ensure the Door is rendered on top of the parent Strut. 
+    The Doors in this Configuration utilize the `anchor` macro to ensure they are rendered on top of their parent Struts. The `anchor` macro applies the formula, `anchor(self, target) = (target.y - target.l) - (self.y + self.l)` to dynamically calculate the rendering order, i.e. this ensures the Door is rendered on top of the parent Strut. 
 
     See [Rendering](./11-architecture.md#rendering) for more information on rendering order.
     
@@ -286,6 +286,8 @@ Hydration uses the following rules:
 
 Other than Position, which is calculated according to the above formula, any state attribute *not* specified in a component Asset Pseudo State automatically inherits the root Strut's Deployed State, if those attributes exist on the root Strut. 
 
+In addition, unique names are generated for each component Asset of a Composition according to the schema: `<instance.name>-<strut.name>-<component.name>-<increment>`, where `<increment>` is an index to track the number of unique Compositions deployed on the Board to ensure each has a correspondingly unique name.
+
 #### Bindings
 
 The Pseudo State of component Assets (and branching Struts) can be bound to the root Struts Deployed State as well, to allow for the parameterization of relationships. In this example, the Deployed State `layer` is passed down as a reference to the component `door-frame` Asset, which then uses it to specify its (Pseudo State) attribute for `outlayer` through the use of `bind(root.layer)`; This is how the interior Door leads back to the deployed layer, allowing the Player to return from whence they came. In other words, a binding is a formal constraints between Asset states that makes component Asset states dependent on the root Strut state. This constraint is realized during the Composition unpacking and Pseudo State hydration.
@@ -294,8 +296,6 @@ All component Assets can `bind()` to a root Strut state attribute injected into 
 
 * **Contextual Bindings:** Component Pseudo States can bind attributes to either their immediate parent or the root strut context via regex evaluation:
     * `bind(root.)` or `bind()`: Queries the root deployment context (e.g., `outlayer: bind(root.layer)`).
-
-In addition, unique names are generated for each component Asset of a Composition according to the schema: `<instance.name>-<strut.name>-<component.name>-<increment>`, where `<increment>` is an index to track the number of unique Compositions deployed on the Board to ensure each has a correspondingly unique name.
 
 ### Decomposer
 
@@ -387,11 +387,19 @@ $$
 
 #### Struts Hierarchy
 
-Struts are the basic element of Compositions. They are classified according to Purpose and Partitions. All Struts are functionally equivalent (but may differ in the declaration of their properties), yet serve different atmospheric, vanity or aesthetic purposes. 
+Struts are the basic element of Compositions. They are classified according to Material and Purpose. All Struts are functionally equivalent (but may differ in the declaration of their properties), yet serve different atmospheric, vanity or aesthetic purposes; Material and Purpose describe the axes of this "*aesthetic*" space.
 
-Purpose and Partition are purely organizational and have no other purpose in the game engine.
+##### Materials
 
-##### Purpose: Decor
+Material serves mainly to alter the color and shading of the Strut.
+
+**Palette**
+
+--8<-- "static/md/composition-material-palette.md"
+
+##### Purposes
+
+###### Purpose: Decor
 
 - **Summary**: Living space decorations.
 - **Partitions**:
@@ -401,7 +409,7 @@ Purpose and Partition are purely organizational and have no other purpose in the
     - `vanities`: Decals and adornments.
     - `windows`: Glass panes and frames.
 
-##### Purpose: Structures
+###### Purpose: Structures
 
 - **Summary**: Ancillary features of buildings.
 - **Partitions**:
@@ -412,7 +420,7 @@ Purpose and Partition are purely organizational and have no other purpose in the
     - `towers`: Constructed structures.
     - `windows`: Glass structures.
 
-##### Purpose: Surfaces
+###### Purpose: Surfaces
 
 - **Summary**: Planes of movement.
 - **Partitions**:
@@ -420,7 +428,7 @@ Purpose and Partition are purely organizational and have no other purpose in the
     - `streets`: Exterior surfaces.
     - `roofs`: Elevated surfaces.
 
-##### Purpose: Walls
+###### Purpose: Walls
 
 - **Summary**: Intentional obstructions.
 - **Partitions**:
@@ -445,13 +453,7 @@ $$
 
 **Purpose**
 
---8<-- "static/md/composition-structural-factor.md"
-
-###### Aesthetics
-
-**Palette**
-
---8<-- "static/md/composition-material-palette.md"
+--8<-- "static/md/composition-purpose-factor.md"
 
 ##### Ledger
 

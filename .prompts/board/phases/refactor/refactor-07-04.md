@@ -2,53 +2,15 @@
 
 **Overview** 
 
-- Reduce the Strut overhead and asset proliferation by affecting a simplification through hierarchical organization of Struts via `material` and `purpose`.
+- Reduce the Strut overhead and Asset proliferation by affecting a simplification through hierarchical organization of Struts via `material` and `purpose`.
 
 **Notes**
 
 - Determine which Assets need pruned to ensure all conform to the schema and simplify the amount of boilerplate.
 - Many assets will need edited so their dimensions align along the `material` axis, or else MaterialHitbox will need introduced so segregate hitboxes by `material`.
-
-##### Specification
-
+- How to handle decor, which has a Material dependence, but does not conform to partitioning. Perhaps Decor should be a separate Craft category, due to the bespoke nature of the Asset file.
+- Strut Frames (`frame-brick`, `frame-adobe`, etc.) do not exactly conform to the `material`, `purpose` schema due to the specialization of the Asset file. They may also be candidates for a separate Instance in the Craft Category.
 - Materials: Enumeration of all game materials.
 - MaterialFrame: Index Assets by material columns.
 - PropertyState: `material` and `purpose` definition and specification. Logic handling.
-
-{% if grooming %}
-##### Architectural Analysis {{ grooming.iteration | roman_numerals }}
-
-{{ grooming.analysis }}
-
-{% endif %}
-
-{% if user %}
-{# Reserved Block for User #}
-##### User Review {{ user.iteration | roman_numerals }}
-
-{{ user.alignment or user.constraints or user.notes }}
-
-{% endif }
-
-##### Goals
-
-{% for goal in goals %}
-###### Goal: {{ goal.title }}
-
-{{ goal.description | architectural_discussion or pseudo_code }}
-
-{% endfor %}
-
-{% for task in tasks %}
-##### Tasks
-
-**{{ loop.index }}. Task: {{ task.title }}**
-
-*Objective*: {{ task.objective }}
-
-{% for subtask in task $}
-- [] Subtask: {{ subtask.description }}
-{% endfor %}
-
-{% endfor %}
 
