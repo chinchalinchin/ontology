@@ -20,7 +20,7 @@
 
 3. **East Inner Lane — 2-Tier Skip Landing ($E = 3 \to E = 1$)**:
 
-* **`sanctum-platform-e3-east`** (`platform-corinthian`, `elevation: 2`, $x \in [256, 352], y \in [0, 124]$, deck at $E = 3$) sits above **`sanctum-platform-e1-mid`** (`platform-marble`, `elevation: 0`, $x \in [256, 352], y \in [196, 307]$, deck at $E = 1$) with no $E = 2$ platform in between. Stepping South off $y = 125$ passes unsupported through $E = 2$ at $y = 180$ and lands on $E = 1$ after $2 \times 55 = 110\text{ px}$ at $y = 235$ (hitbox $y \in [258, 279] \subset [204, 307]$).
+* **`sanctum-platform-e3-east`** (`platform-corinthian`, `elevation: 2`, $x \in [256, 352], y \in [0, 124]$, deck at $E = 3$) sits above **`sanctum-platform-e1-mid`** (`platform-stone`, `elevation: 0`, $x \in [256, 352], y \in [196, 307]$, deck at $E = 1$) with no $E = 2$ platform in between. Stepping South off $y = 125$ passes unsupported through $E = 2$ at $y = 180$ and lands on $E = 1$ after $2 \times 55 = 110\text{ px}$ at $y = 235$ (hitbox $y \in [258, 279] \subset [204, 307]$).
 
 4. **East Ascent Column — Multi-Tier Stair Traversal ($E = 0 \leftrightarrow 1 \leftrightarrow 2 \leftrightarrow 3$)**:
 

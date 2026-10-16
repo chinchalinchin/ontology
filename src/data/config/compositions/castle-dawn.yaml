@@ -183,28 +183,28 @@ compositions:
         components:
           crafts: 
             platforms:
-              - id: platform-marble
+              - id: platform-stone
                 name: castle-dawn-platform-01
                 owner: bind(root.owner)
                 elevation: 0
                 position:
                   x: 0
                   y: 136
-              - id: platform-marble
+              - id: platform-stone
                 name: castle-dawn-platform-02
                 owner: bind(root.owner)
                 elevation: 0
                 position:
                   x: 222
                   y: 136
-              - id: platform-marble
+              - id: platform-stone
                 name: castle-dawn-platform-03
                 owner: bind(root.owner)
                 elevation: 1
                 position:
                   x: 222
                   y: 0
-              - id: platform-marble
+              - id: platform-stone
                 name: castle-dawn-platform-04
                 owner: bind(root.owner)
                 elevation: 1

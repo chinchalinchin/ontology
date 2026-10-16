@@ -69,7 +69,6 @@ $$Q_{\text{veneer}} = \max\left(1, \operatorname{round}\left(N \cdot \delta_{\te
 | `tower-stone` | $32 \times 143$ | 4,576 | 4.47 | 1.50 | `stone` | 1.00 | 250 | **7 stone** |
 | `turret-stone` | $66 \times 131$ | 8,646 | 8.44 | 1.50 | `stone` | 1.00 | 250 | **13 stone** |
 | `pillar-marble` | $20 \times 96$ | 1,920 | 1.88 | 1.50 | `marble` | 1.50 | — | **4 marble** |
-| `platform-marble` | $96 \times 111$ | 10,656 | 10.41 | 1.50 | `marble` | 1.50 | — | **23 marble** |
 | **Walls** |  |  |  |  |  |  |  |  |
 | `wall-up-blue` | $128 \times 96$ | 12,288 | 12.00 | 1.00 | `wood` | 1.00 | 10 | **12 wood** |
 | `wall-up-palace` | $128 \times 96$ | 12,288 | 12.00 | 1.00 | `stone` | 1.00 | 10 | **12 stone** |

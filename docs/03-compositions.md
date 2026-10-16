@@ -405,7 +405,7 @@ Purpose and Partition are purely organizational and have no other purpose in the
 
 - **Summary**: Ancillary features of buildings.
 - **Partitions**:
-    - `additions`: Unique features.
+    - `additions`: Unique structures.
     - `buttresses`: Load-bearing structures.
     - `enclosures`: Covered structures.
     - `pillars`: Columnar structures.
@@ -446,6 +446,12 @@ $$
 **Purpose**
 
 --8<-- "static/md/composition-structural-factor.md"
+
+###### Aesthetics
+
+**Palette**
+
+--8<-- "static/md/composition-material-palette.md"
 
 ##### Ledger
 

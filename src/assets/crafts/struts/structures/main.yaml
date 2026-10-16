@@ -41,17 +41,6 @@ crafts:
     # -----------------------------------------
     # --------------------------------- PILLARS
     # -----------------------------------------
-    pillar-basalt:
-      dimensions:
-        w: 22
-        l: 150
-      mass: 0
-      hitboxes:
-        - position: { x: 2, y: 118 }
-          dimensions: { w: 18, l: 32 }
-      cost:
-        - item: basalt
-          quantity: 36
     pillar-marble:
       dimensions:
         w: 20
@@ -69,6 +58,15 @@ crafts:
         l: 121
       mass: 0
       hitboxes: null # TODO
+      cost: null # TODO
+    pillar-slate:
+      dimensions:
+        w: 22
+        l: 150
+      mass: 0
+      hitboxes:
+        - position: { x: 2, y: 118 }
+          dimensions: { w: 18, l: 32 }
       cost: null # TODO
     pillar-stone-corinthian:
       dimensions:

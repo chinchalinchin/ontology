@@ -22,14 +22,6 @@ crafts:
       mass: -1
       priority: -1
       cost: null # TODO
-    floor-carpet-wavy-border:
-      # description: Ornamental tan carpet with intricate border.
-      dimensions:
-        w: 94
-        l: 96
-      mass: -1
-      priority: -1
-      cost: null # TODO
     # ----------------- BASES
     floor-granite-border:
       # description: Granite floor with marble borders.
@@ -71,6 +63,14 @@ crafts:
       cost:
         - item: stone
           quantity: 23
+    floor-stone-border:
+      # description: Ornamental tan carpet with intricate border.
+      dimensions:
+        w: 94
+        l: 96
+      mass: -1
+      priority: -1
+      cost: null # TODO
     floor-wood:
       # description: Planks of fine wood.
       dimensions:

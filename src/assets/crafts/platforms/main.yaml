@@ -1,6 +1,6 @@
 crafts:
   platforms:
-    platform-corinthian:
+    platform-stone-corinthian:
       dimensions:
         w: 96
         l: 124
@@ -12,10 +12,8 @@ crafts:
         1:
           - position: { x: 0, y: 0 }
             dimensions: { w: 96, l: 8 }
-      cost:
-        - item: marble
-          quantity: 44
-    platform-doric:
+      cost: null # TODO
+    platform-stone-doric:
       dimensions:
         w: 96
         l: 125
@@ -30,7 +28,7 @@ crafts:
       cost:
         - item: stone
           quantity: 26
-    platform-ionic:
+    platform-stone-ionic:
       dimensions:
         w: 96
         l: 124
@@ -42,20 +40,16 @@ crafts:
         1:
           - position: { x: 0, y: 0 }
             dimensions: { w: 96, l: 8 }
-      cost:
-        - item: marble
-          quantity: 44
-    platform-marble:
+      cost: null # TODO
+    platform-stone:
       dimensions:
         w: 96
         l: 111
       mass: 0
       hitboxes:
-        # Tier 0 (Base facade wall blocking ground-level movement)
         0:
           - position: { x: 0, y: 32 }
             dimensions: { w: 96, l: 79 }
-        # Tier 1 (Summit deck boundary constraints / railings)
         1:
           - position: { x: 0, y: 0 }
             dimensions: { w: 96, l: 8 }

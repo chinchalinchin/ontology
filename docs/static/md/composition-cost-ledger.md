@@ -1,13 +1,8 @@
 | Asset ID | Category / Purpose | Dimensions ($w \times l$) | $N = \frac{w \cdot l}{1024}$ | Material ($\mu_{\text{mat}}$) | $\delta_{\text{struct}}$ | Computed Cost ($\text{C}$) |
 | --- | --- | --- | --- | --- | --- | --- |
-| `platform-corinthian` | `platforms` (`surfaces`) | $96 \times 124$ | $11.6250$ | `marble` ($3.75$) | $1.00$ | `44 marble` |
-| `platform-ionic` | `platforms` (`surfaces`) | $96 \times 124$ | $11.6250$ | `marble` ($3.75$) | $1.00$ | `44 marble` |
-| `platform-doric` | `platforms` (`surfaces`) | $96 \times 125$ | $11.7188$ | `stone` ($1.50$) | $1.50$ | `26 stone` |
 | `pillar-stone-corinthian` | `struts` (`structures`) | $32 \times 128$ | $4.0000$ | `stone` ($1.50$) | $5.00$ | `30 stone` |
 | `pillar-stone-doric` | `struts` (`structures`) | $32 \times 128$ | $4.0000$ | `stone` ($1.50$) | $5.00$ | `30 stone` |
 | `pillar-stone-ionic` | `struts` (`structures`) | $32 \times 128$ | $4.0000$ | `stone` ($1.50$) | $5.00$ | `30 stone` |
-| `pillar-basalt` | `struts` (`structures`) | $22 \times 150$ | $3.2227$ | `basalt` ($2.25$) | $5.00$ | `36 basalt` |
-| `wall-basalt` | `struts` (`walls`) | $94 \times 96$ | $8.8125$ | `basalt` ($2.25$) | $1.00$ | `20 basalt` |
 | `floor-granite-border` | `struts` (`surfaces`) | $96 \times 96$ | $9.0000$ ($8+1$) | `granite` ($2.50$), `marble` ($3.75$) | $1.00$ | `20 granite`, `4 marble` |
 | `street-cobblestone` | `struts` (`surfaces`) | $92 \times 89$ | $7.9961$ | `stone` ($1.50$) | $1.00$ | `12 stone` |
 | `fence-horizontal-iron` | `struts` (`railings`) | $96 \times 17$ | $1.5938$ | `iron` ($3.00$) | $1.00$ | `5 iron` |

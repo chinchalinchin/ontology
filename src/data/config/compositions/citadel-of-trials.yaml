@@ -9,7 +9,7 @@ compositions:
         crafts:
           platforms:
             # Exterior balcony platform (base_e: 0 -> walkable deck at E = 1)
-            - id: platform-doric
+            - id: platform-stone-doric
               name: exterior-balcony-platform
               owner: bind(root.owner)
               elevation: 0
@@ -153,7 +153,7 @@ compositions:
             platforms:
               # --- WEST WING: 3-TIER STEPPED GRAVITY CASCADE (E = 3 -> 2 -> 1 -> 0)
               # E = 3 deck: y in [8, 124]. Drop South (y = 125 + 55 = 180) lands on e2-west
-              - id: platform-corinthian
+              - id: platform-stone-corinthian
                 name: sanctum-platform-e3-west
                 owner: bind(root.owner)
                 elevation: 2
@@ -161,7 +161,7 @@ compositions:
                   x: 0
                   y: 0
               # E = 2 deck: y in [148, 264]. Drop South (y = 265 + 55 = 320) lands on e1-west
-              - id: platform-ionic
+              - id: platform-stone-ionic
                 name: sanctum-platform-e2-west
                 owner: bind(root.owner)
                 elevation: 1
@@ -169,7 +169,7 @@ compositions:
                   x: 0
                   y: 140
               # E = 1 deck: y in [288, 405]. Drop South (y = 406 + 55 = 461) lands on E = 0
-              - id: platform-doric
+              - id: platform-stone-doric
                 name: sanctum-platform-e1-west
                 owner: bind(root.owner)
                 elevation: 0
@@ -179,7 +179,7 @@ compositions:
 
               # --- EAST INNER LANE: 2-TIER SKIP DROP (E = 3 -> E = 1, 110 px)
               # E = 3 deck: y in [8, 124]. Drop South (y = 125 + 110 = 235) skips E = 2 and lands on e1-mid
-              - id: platform-corinthian
+              - id: platform-stone-corinthian
                 name: sanctum-platform-e3-east
                 owner: bind(root.owner)
                 elevation: 2
@@ -187,7 +187,7 @@ compositions:
                   x: 256
                   y: 0
               # E = 1 catch deck: y in [204, 307]
-              - id: platform-marble
+              - id: platform-stone
                 name: sanctum-platform-e1-mid
                 owner: bind(root.owner)
                 elevation: 0
@@ -196,21 +196,21 @@ compositions:
                   y: 196
 
               # --- EAST ASCENT COLUMN: CONTINUOUS STAIR CLIMB (E = 0 <-> 1 <-> 2 <-> 3)
-              - id: platform-doric
+              - id: platform-stone-doric
                 name: sanctum-platform-e1-east
                 owner: bind(root.owner)
                 elevation: 0
                 position:
                   x: 352
                   y: 280
-              - id: platform-ionic
+              - id: platform-stone-ionic
                 name: sanctum-platform-e2-east
                 owner: bind(root.owner)
                 elevation: 1
                 position:
                   x: 352
                   y: 140
-              - id: platform-corinthian
+              - id: platform-stone-corinthian
                 name: sanctum-platform-e3-far-east
                 owner: bind(root.owner)
                 elevation: 2

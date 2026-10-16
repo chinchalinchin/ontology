@@ -107,6 +107,9 @@ While Assets are instantiated by injecting a common root class with component be
 !!! note
     The Asset Hierarchy can be thought of as a data abstraction governing the schemas, which in turn drive the ECS instantiation. 
 
+!!! note
+    An analogy may be drawn from the Asset Hierarchy to Edward Zalta's Metaphysics: properties *encode* an Asset, state *exemplifies* an Asset. 
+
 **Categories**
 
 Asset *Categories* form the top layer of the hierarchy. Each Asset Category is defined by its static properties; an Asset's Category determines what type of properties it will parse from the property files and inject into its deployment. 
@@ -131,6 +134,17 @@ The following table details the *unique* property attributes of each Asset Categ
 | Crafts | Base, Hitboxes, Mass, Cost |
 | Sheets | Base, Hitboxes, Mass, Stack, Actions |
 | Widgets | Base, Frames |
+
+The distinguishing features of each Category is given below,
+
+- Tiles: Environmental
+- Object: Functional
+- Effects: Reactive
+- Geography: Procedural
+- Resources: Biological
+- Crafts: Structural
+- Sheets: Intentional
+- Widgets: Metalogical
 
 **Instances**
 
