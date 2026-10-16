@@ -546,6 +546,29 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#materials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Materials
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#purposes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purposes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Purposes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#purpose-decor" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -594,6 +617,11 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+        
           <li class="md-nav__item">
   <a href="#cost_1" class="md-nav__link">
     <span class="md-ellipsis">
@@ -614,23 +642,6 @@
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Factors">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#aesthetics" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Aesthetics
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1507,6 +1518,29 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#materials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Materials
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#purposes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purposes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Purposes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#purpose-decor" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1555,6 +1589,11 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+        
           <li class="md-nav__item">
   <a href="#cost_1" class="md-nav__link">
     <span class="md-ellipsis">
@@ -1575,23 +1614,6 @@
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Factors">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#aesthetics" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Aesthetics
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1834,7 +1856,7 @@
 <span class="w">                            </span><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">door-shadow</span>
 <span class="w">                                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">door-frame</span>
 <span class="w">                                </span><span class="nt">layer</span><span class="p">:</span><span class="w"> </span><span class="s">'compose-layer'</span>
-<span class="w">                                </span><span class="nt">anchor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">anchor(wall-blue)</span>
+<span class="w">                                </span><span class="nt">anchor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">anchor(house-interior)</span>
 <span class="w">                                </span><span class="nt">outlayer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bind(root.layer)</span>
 <span class="w">                                </span><span class="nt">position</span><span class="p">:</span>
 <span class="w">                                    </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
@@ -1849,7 +1871,7 @@
 </div>
 <div class="admonition note">
 <p class="admonition-title">anchor() Macro</p>
-<p>The Doors in this Configuration utilize the <code>anchor</code> macro to ensure they are rendered on top of their parent Struts. The <code>anchor</code> macro applies the formula, <code>anchor(self, target) = (target.y - target.l) - (self.y + self.l)</code> to dynamically calculate the rendering order, i.e. ensure the Door is rendered on top of the parent Strut. </p>
+<p>The Doors in this Configuration utilize the <code>anchor</code> macro to ensure they are rendered on top of their parent Struts. The <code>anchor</code> macro applies the formula, <code>anchor(self, target) = (target.y - target.l) - (self.y + self.l)</code> to dynamically calculate the rendering order, i.e. this ensures the Door is rendered on top of the parent Strut. </p>
 <p>See <a href="../11-architecture/#rendering">Rendering</a> for more information on rendering order.</p>
 </div>
 <p>This is a formula for a <code>brick-house</code> composed of two Struts on different <a href="../00-overview/#layers">Layers</a>, each of which have their own <a href="../01-assets/#doors">Door</a>, each Door being linked to one another through a circuit (<code>'compose-layer' &lt;-&gt; bind(root.layer)</code>). In this way, the "inside" of Assets can be traversed. In other words, each Composition may be composed of separate, independent Layers. </p>
@@ -1887,6 +1909,7 @@
 <li><strong>Entering Interior Layers (<code>outlayer != root.layer</code>):</strong> Teleport exit positions remain local to the destination layer's coordinate plane: <code>Child Out = Child Pseudo Out</code>. (<code>house-door.out</code> evaluates to <code>(10, 10)</code>).</li>
 </ul>
 <p>Other than Position, which is calculated according to the above formula, any state attribute <em>not</em> specified in a component Asset Pseudo State automatically inherits the root Strut's Deployed State, if those attributes exist on the root Strut. </p>
+<p>In addition, unique names are generated for each component Asset of a Composition according to the schema: <code>&lt;instance.name&gt;-&lt;strut.name&gt;-&lt;component.name&gt;-&lt;increment&gt;</code>, where <code>&lt;increment&gt;</code> is an index to track the number of unique Compositions deployed on the Board to ensure each has a correspondingly unique name.</p>
 <h4 id="bindings">Bindings</h4>
 <p>The Pseudo State of component Assets (and branching Struts) can be bound to the root Struts Deployed State as well, to allow for the parameterization of relationships. In this example, the Deployed State <code>layer</code> is passed down as a reference to the component <code>door-frame</code> Asset, which then uses it to specify its (Pseudo State) attribute for <code>outlayer</code> through the use of <code>bind(root.layer)</code>; This is how the interior Door leads back to the deployed layer, allowing the Player to return from whence they came. In other words, a binding is a formal constraints between Asset states that makes component Asset states dependent on the root Strut state. This constraint is realized during the Composition unpacking and Pseudo State hydration.</p>
 <p>All component Assets can <code>bind()</code> to a root Strut state attribute injected into the Composition from the state directory files. When component Asset reference <code>bind(root.layer)</code> this is a reference to the root Strut's layer. Only state attributes defined on the root Strut can be bound.</p>
@@ -1896,7 +1919,6 @@
 </ul>
 </li>
 </ul>
-<p>In addition, unique names are generated for each component Asset of a Composition according to the schema: <code>&lt;instance.name&gt;-&lt;strut.name&gt;-&lt;component.name&gt;-&lt;increment&gt;</code>, where <code>&lt;increment&gt;</code> is an index to track the number of unique Compositions deployed on the Board to ensure each has a correspondingly unique name.</p>
 <h3 id="decomposer">Decomposer</h3>
 <p>The Decomposer is the service module of the application responsible for translating Composition Configuration into Assets. Taking the example from the previous section, the algorithm for the expansion (decomposition) logic can be modeled as a tree traversal (like Depth-First Search), where spatial data and inherited state propagate downward from parent to child.</p>
 <h4 id="decomposition">Decomposition</h4>
@@ -1981,9 +2003,74 @@
 <div class="arithmatex">\[
 \]</div>
 <h4 id="struts-hierarchy">Struts Hierarchy</h4>
-<p>Struts are the basic element of Compositions. They are classified according to Purpose and Partitions. All Struts are functionally equivalent (but may differ in the declaration of their properties), yet serve different atmospheric, vanity or aesthetic purposes. </p>
-<p>Purpose and Partition are purely organizational and have no other purpose in the game engine.</p>
-<h5 id="purpose-decor">Purpose: Decor</h5>
+<p>Struts are the basic element of Compositions. They are classified according to Material and Purpose. All Struts are functionally equivalent (but may differ in the declaration of their properties), yet serve different atmospheric, vanity or aesthetic purposes; Material and Purpose describe the axes of this "<em>aesthetic</em>" space.</p>
+<h5 id="materials">Materials</h5>
+<p>Material serves mainly to alter the color and shading of the Strut.</p>
+<p><strong>Palette</strong></p>
+<table>
+<thead>
+<tr>
+<th>Material</th>
+<th>Hexcodes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>brick</code></td>
+<td>#B14E45, #BA6C4C</td>
+</tr>
+<tr>
+<td><code>canvas</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>concrete</code></td>
+<td>#9A8F8F</td>
+</tr>
+<tr>
+<td><code>copper</code></td>
+<td>#9D5427, #7B2008 #973C23</td>
+</tr>
+<tr>
+<td><code>clay</code></td>
+<td>#C4B59F, #B19998, #9D8080</td>
+</tr>
+<tr>
+<td><code>gold</code></td>
+<td>#DEB573, #B87E3A, #9C6B31</td>
+</tr>
+<tr>
+<td><code>granite</code></td>
+<td>#8AAAAB, #748DA4, #5C6C89,</td>
+</tr>
+<tr>
+<td><code>iron</code></td>
+<td>#2E2533</td>
+</tr>
+<tr>
+<td><code>marble</code></td>
+<td>#C39753, #AE764B, #D9B75C</td>
+</tr>
+<tr>
+<td><code>sandstone</code></td>
+<td>#CCBD7B</td>
+</tr>
+<tr>
+<td><code>slate</code></td>
+<td>#818B8B, #4A5057, #31313E</td>
+</tr>
+<tr>
+<td><code>stone</code></td>
+<td>#E5E6C7, #C4B59F, #B19998</td>
+</tr>
+<tr>
+<td><code>wood</code></td>
+<td>#9D6639, #8F5030, #62351C</td>
+</tr>
+</tbody>
+</table>
+<h5 id="purposes">Purposes</h5>
+<h6 id="purpose-decor">Purpose: Decor</h6>
 <ul>
 <li><strong>Summary</strong>: Living space decorations.</li>
 <li><strong>Partitions</strong>:<ul>
@@ -1995,7 +2082,7 @@
 </ul>
 </li>
 </ul>
-<h5 id="purpose-structures">Purpose: Structures</h5>
+<h6 id="purpose-structures">Purpose: Structures</h6>
 <ul>
 <li><strong>Summary</strong>: Ancillary features of buildings.</li>
 <li><strong>Partitions</strong>:<ul>
@@ -2008,7 +2095,7 @@
 </ul>
 </li>
 </ul>
-<h5 id="purpose-surfaces">Purpose: Surfaces</h5>
+<h6 id="purpose-surfaces">Purpose: Surfaces</h6>
 <ul>
 <li><strong>Summary</strong>: Planes of movement.</li>
 <li><strong>Partitions</strong>:<ul>
@@ -2018,7 +2105,7 @@
 </ul>
 </li>
 </ul>
-<h5 id="purpose-walls">Purpose: Walls</h5>
+<h6 id="purpose-walls">Purpose: Walls</h6>
 <ul>
 <li><strong>Summary</strong>: Intentional obstructions.</li>
 <li><strong>Partitions</strong>:<ul>
@@ -2032,7 +2119,7 @@
 <h4 id="cost_1">Cost</h4>
 <p><strong>Formula</strong></p>
 <div class="arithmatex">\[
-\text{C} = \frac{w \cdot l}{1024} \cdot \mu_{\text{mat}} \cdot \delta_{\text{struct}}
+\text{C} = \frac{w \cdot l}{1024} \cdot \mu_{\text{material}} \cdot \delta_{\text{purpose}}
 \]</div>
 <h5 id="factors">Factors</h5>
 <p><strong>Material</strong></p>
@@ -2107,13 +2194,25 @@
 <thead>
 <tr>
 <th>Purpose</th>
-<th><span class="arithmatex">\(\delta_{\text{struct}} \in [\text{lower}, \text{upper}]\)</span></th>
+<th><span class="arithmatex">\(\delta_{\text{purpose}} \in [\text{lower}, \text{upper}]\)</span></th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td><code>bridges</code></td>
+<td>[1.00, 100]</td>
+</tr>
+<tr>
+<td><code>carpentry</code></td>
+<td>[5.00, 200.00]</td>
+</tr>
+<tr>
 <td><code>decor</code></td>
 <td>[0.25, 200.00]</td>
+</tr>
+<tr>
+<td><code>platforms</code></td>
+<td>[1.00, 100]</td>
 </tr>
 <tr>
 <td><code>railings</code></td>
@@ -2124,76 +2223,16 @@
 <td>[1.00, 50.00]</td>
 </tr>
 <tr>
+<td><code>stairs</code></td>
+<td>[5.00, 100.00]</td>
+</tr>
+<tr>
 <td><code>structures</code></td>
 <td>[5.00, 1000.00]</td>
 </tr>
 <tr>
 <td><code>walls</code></td>
 <td>[1.00, 100.00]</td>
-</tr>
-</tbody>
-</table>
-<h6 id="aesthetics">Aesthetics</h6>
-<p><strong>Palette</strong></p>
-<table>
-<thead>
-<tr>
-<th>Material</th>
-<th>Hexcodes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>brick</code></td>
-<td>#B14E45, #BA6C4C</td>
-</tr>
-<tr>
-<td><code>canvas</code></td>
-<td>-</td>
-</tr>
-<tr>
-<td><code>concrete</code></td>
-<td>#9A8F8F</td>
-</tr>
-<tr>
-<td><code>copper</code></td>
-<td>#9D5427, #7B2008 #973C23</td>
-</tr>
-<tr>
-<td><code>clay</code></td>
-<td>#C4B59F, #B19998, #9D8080</td>
-</tr>
-<tr>
-<td><code>gold</code></td>
-<td>#DEB573, #B87E3A, #9C6B31</td>
-</tr>
-<tr>
-<td><code>granite</code></td>
-<td>#8AAAAB, #748DA4, #5C6C89,</td>
-</tr>
-<tr>
-<td><code>iron</code></td>
-<td>#2E2533</td>
-</tr>
-<tr>
-<td><code>marble</code></td>
-<td>#C39753, #AE764B, #D9B75C</td>
-</tr>
-<tr>
-<td><code>sandstone</code></td>
-<td>#CCBD7B</td>
-</tr>
-<tr>
-<td><code>slate</code></td>
-<td>#818B8B, #4A5057, #31313E</td>
-</tr>
-<tr>
-<td><code>stone</code></td>
-<td>#E5E6C7, #C4B59F, #B19998</td>
-</tr>
-<tr>
-<td><code>wood</code></td>
-<td>#9D6639, #8F5030, #62351C</td>
 </tr>
 </tbody>
 </table>
@@ -2239,7 +2278,7 @@
 <td><code>30 stone</code></td>
 </tr>
 <tr>
-<td><code>floor-granite-border</code></td>
+<td><code>support-granite-border</code></td>
 <td><code>struts</code> (<code>surfaces</code>)</td>
 <td><span class="arithmatex">\(96 \times 96\)</span></td>
 <td><span class="arithmatex">\(9.0000\)</span> (<span class="arithmatex">\(8+1\)</span>)</td>
@@ -2257,22 +2296,13 @@
 <td><code>12 stone</code></td>
 </tr>
 <tr>
-<td><code>fence-horizontal-iron</code></td>
+<td><code>fence-iron</code></td>
 <td><code>struts</code> (<code>railings</code>)</td>
 <td><span class="arithmatex">\(96 \times 17\)</span></td>
 <td><span class="arithmatex">\(1.5938\)</span></td>
 <td><code>iron</code> (<span class="arithmatex">\(3.00\)</span>)</td>
 <td><span class="arithmatex">\(1.00\)</span></td>
 <td><code>5 iron</code></td>
-</tr>
-<tr>
-<td><code>fence-vertical-iron</code></td>
-<td><code>struts</code> (<code>railings</code>)</td>
-<td><span class="arithmatex">\(5 \times 93\)</span></td>
-<td><span class="arithmatex">\(0.4541\)</span></td>
-<td><code>iron</code> (<span class="arithmatex">\(3.00\)</span>)</td>
-<td><span class="arithmatex">\(1.50\)</span></td>
-<td><code>2 iron</code></td>
 </tr>
 </tbody>
 </table>
