@@ -2030,10 +2030,12 @@
 </ul>
 <p>See <a href="../05-mechanics/#spatial">Mechanics</a> for more information.</p>
 <h4 id="elevation-perspective-priority">Elevation, Perspective &amp; Priority</h4>
-<p>World rendering evaluates spatial geometry using discrete topological elevation tiers and continuous ground perspective. The engine deprecates legacy manual height overrides in favor of a deterministic 3-key lexicographical Painter's Algorithm in <code>Screen._sort</code>:</p>
-<div class="arithmatex">\[\text{sort}(x) = \Big(x.\text{elevation},\; \text{ground}(x),\; x.\text{properties.priority}\Big)\]</div>
+<p>World rendering evaluates spatial geometry using discrete topological elevations and continuous ground perspective,</p>
+<div class="arithmatex">\[
+\text{sort}(x) = \Big(x.\text{elevation},\; \text{ground}(x),\; x.\text{properties.priority}\Big)
+\]</div>
 <ol>
-<li><strong>Primary Key (<code>x.elevation</code> <span class="arithmatex">\(\in \mathbb{Z}\)</span>)</strong>: Discrete spatial <span class="arithmatex">\(Z\)</span>-plane elevation tier. Standard Assets default to <code>elevation = 0</code>; elevated structures occupy <span class="arithmatex">\(\text{elevation} \ge 1\)</span>. Entities on higher elevations render strictly on top of lower elevations.</li>
+<li><strong>Primary Key (<code>x.elevation</code> <span class="arithmatex">\(\in \mathbb{Z}\)</span>)</strong>: Discrete spatial <span class="arithmatex">\(Z\)</span>-plane elevation. Standard Assets default to <code>elevation = 0</code>; elevated structures occupy <span class="arithmatex">\(\text{elevation} \ge 1\)</span>. Entities on higher elevations render on top of lower elevations.</li>
 <li><strong>Secondary Key (<code>ground</code> <span class="arithmatex">\(\in \mathbb{R}\)</span>)</strong>: Elevation-dependent geometric ground perspective: <span class="arithmatex">\(\text{ground} = \text{int}(x.\text{state.position.y} + x.\text{dimensions.l} + x.\text{state.anchor})\)</span>. <code>state.anchor</code> is a compiled integer offset that aligns wall-mounted fixtures (doors, torches, windows) with their parent's ground baseline.</li>
 <li><strong>Tertiary Key (<code>priority</code> <span class="arithmatex">\(\in \mathbb{Z}\)</span>)</strong>: Elevation-matching coplanar tie-breaker declared as an immutable property:</li>
 <li>Substrates (rugs, floorboards): <code>priority = -1</code></li>
@@ -2120,6 +2122,10 @@
 <p class="admonition-title">Note</p>
 <p>The Asset Hierarchy can be thought of as a data abstraction governing the schemas, which in turn drive the ECS instantiation. </p>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>An analogy may be drawn from the Asset Hierarchy to Edward Zalta's Metaphysics: properties <em>encode</em> an Asset, state <em>exemplifies</em> an Asset. </p>
+</div>
 <p><strong>Categories</strong></p>
 <p>Asset <em>Categories</em> form the top layer of the hierarchy. Each Asset Category is defined by its static properties; an Asset's Category determines what type of properties it will parse from the property files and inject into its deployment. </p>
 <p>Each set of Asset properties has, at bare minimum:</p>
@@ -2175,6 +2181,17 @@
 </tr>
 </tbody>
 </table>
+<p>The distinguishing features of each Category are given below,</p>
+<ul>
+<li>Tiles: Environmental</li>
+<li>Object: Functional</li>
+<li>Effects: Reactive</li>
+<li>Geography: Procedural</li>
+<li>Resources: Biological</li>
+<li>Crafts: Structural</li>
+<li>Sheets: Intentional</li>
+<li>Widgets: Metalogical</li>
+</ul>
 <p><strong>Instances</strong></p>
 <p>Each Category has Instances. Asset <em>Instances</em> form the bottom of the Asset Hierarchy. Each Asset Instance is defined by its dynamic state; an Asset's Instance determines what type of state it will parse from the state files and inject into its deployment. </p>
 <p>Each Asset state has, at bare minimum:</p>
@@ -2406,7 +2423,7 @@
 </li>
 <li><strong>Behavior: Hitbox:</strong> Stateless collision boundary resolution strategies injected via Recipes. Resolves active physical obstacles dynamically without mutating cached properties:<ul>
 <li><code>elevations(properties: AssetProperties, state: AssetState) -&gt; List[int]</code>: Emits the discrete elevation tiers the entity participates in.</li>
-<li><code>get(properties: AssetProperties, state: AssetState, elevation: int, frame: Optional[Frame] = None) -&gt; List[Hitbox]</code>: Emits active physical collision footprints at the requested elevation tier, accounting for animation frame states (e.g., Attackboxes).</li>
+<li><code>get(properties: AssetProperties, state: AssetState, elevation: int, frame: Optional[Frame] = None) -&gt; List[Hitbox]</code>: Emits active physical collision footprints at the requested elevation, accounting for animation frame states (e.g., Attackboxes).</li>
 </ul>
 </li>
 </ol>
@@ -2470,7 +2487,7 @@
 <p>The <em>single</em> exception to this rule is Widgets. Canopy Tiles are an "in-world" Asset, and thus their render ordering is superseded by Widgets.</p>
 </div>
 <h3 id="grid">Grid</h3>
-<p>A Grid is a special Type reserved for use in the <a href="../06-widgets/#menus">Editor Menu</a>. It is used as an overlay canvas in the Editor,to create a spatial grid that can be traversed through focus. </p>
+<p>A Grid is a special Tile reserved for use in the <a href="../06-widgets/#menus">Editor Menu</a>. It is used as an overlay in the Editor, to create a spatial grid that can be traversed through focus. </p>
 <p>There must be precisely <em>two</em> Grid tiles:</p>
 <ul>
 <li><code>focus</code>: A Grid Tile to represent active selections.</li>
