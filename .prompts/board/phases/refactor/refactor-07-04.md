@@ -2,12 +2,18 @@
 
 **Overview** 
 
-- Reduce the Strut overhead and asset proliferation by effecting a simplification through hierarchical organization of Struts into `material`.
+- Reduce the Strut overhead and asset proliferation by affecting a simplification through hierarchical organization of Struts via `material` and `purpose`.
+
+**Notes**
+
+- Determine which Assets need pruned to ensure all conform to the schema and simplify the amount of boilerplate.
+- Many assets will need edited so their dimensions align along the `material` axis, or else MaterialHitbox will need introduced so segregate hitboxes by `material`.
 
 ##### Specification
 
 - Materials: Enumeration of all game materials.
 - MaterialFrame: Index Assets by material columns.
+- PropertyState: `material` and `purpose` definition and specification. Logic handling.
 
 {% if grooming %}
 ##### Architectural Analysis {{ grooming.iteration | roman_numerals }}
