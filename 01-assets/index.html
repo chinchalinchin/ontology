@@ -2712,7 +2712,7 @@
 </ul>
 <p><strong>Decomposition &amp; Structural Multipliers</strong></p>
 <p>Bridges are deployed via a 1D structural multiplier (<code>multiple.nx</code> for horizontal spans, <code>multiple.ny</code> for vertical spans).</p>
-<p>During world hydration or dynamic execution of the <code>build</code> Intention, the Decomposer unpacks a BridgeState into a contiguous series of <span class="arithmatex">\(N\)</span> unit Asset instances:</p>
+<p>During world hydration or dynamic execution of the <code>build</code> Intention, the Decomposer unpacks a OrientedState into a contiguous series of <span class="arithmatex">\(N\)</span> unit Asset instances:</p>
 <ul>
 <li>Each segment receives an absolute Position offset along the primary axis.</li>
 <li>Each segment references the base unit's static properties, preserving immutable dimensions and relative hitboxes.</li>
@@ -2734,16 +2734,14 @@
 <li><code>keys(id, state): returns [(f"{id}-{state.orientation}", 0, 0)]</code></li>
 <li><code>index(id, properties): returns {f"{id}-{Orientations.*}": (0, 0, w, l)}</code></li>
 </ul>
-<p><strong>State: BridgeState</strong></p>
+<p><strong>State: OrientedState</strong></p>
 <ul>
-<li><code>id: str</code></li>
-<li><code>name: Optional[str]</code></li>
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
+<li><code>elevation: int</code></li>
 <li><code>orientation: str</code> (<code>horizontal</code>, <code>vertical</code>)</li>
 <li><code>multiple: Multiple</code> (<code>nx &gt; 1</code> or <code>ny &gt; 1</code>)</li>
 <li><code>owner: Optional[str]</code></li>
-<li><code>elevation: int</code></li>
 </ul>
 <p><strong>Hitbox: StaticHitbox</strong></p>
 <ul>

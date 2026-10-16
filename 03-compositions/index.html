@@ -404,6 +404,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#carpentry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carpentry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#railings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Railings
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -528,17 +550,6 @@
     <span class="md-ellipsis">
       
         Purpose: Decor
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#purpose-railings" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Purpose: Railings
       
     </span>
   </a>
@@ -1337,6 +1348,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#carpentry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Carpentry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#railings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Railings
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1461,17 +1494,6 @@
     <span class="md-ellipsis">
       
         Purpose: Decor
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#purpose-railings" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Purpose: Railings
       
     </span>
   </a>
@@ -1681,6 +1703,34 @@
 <ul>
 <li><code>elevations(properties, state): returns [state.elevation + k for k in properties.hitboxes.keys()]</code></li>
 <li><code>get(properties, state, elevation, frame): returns properties.hitboxes.get(elevation - state.elevation, [])</code></li>
+</ul>
+<h3 id="carpentry">Carpentry</h3>
+<p>Carpentry is a collection of inanimate, immutable Crafts. It is distinguished from other Crafts by its directed frame indexing schema. Carpentry encapsulate furniture, living space fixtures and other common household furnishings.</p>
+<p><strong>Frame: DirectedFrame</strong></p>
+<p>TODO</p>
+<p><strong>State: DirectedState</strong></p>
+<p>TODO</p>
+<p><strong>Hitbox: DirectedHitbox</strong></p>
+<p>TODO</p>
+<h3 id="railings">Railings</h3>
+<p>Railings are a collection of inanimate, immutable Crafts. They are distinguished from other Crafts by its oriented frame indexing schema.</p>
+<p><strong>Frame: OrientedFrame</strong></p>
+<ul>
+<li><code>keys(id, state): returns [(f"{id}-{state.orientation}", 0, 0)]</code></li>
+<li><code>index(id, properties): returns {f"{id}-{Orientations.*}": (0, 0, w, l)}</code></li>
+</ul>
+<p><strong>State: OrientedState</strong></p>
+<ul>
+<li><code>layer: str</code></li>
+<li><code>position: Position</code></li>
+<li><code>elevation: int</code></li>
+<li><code>orientation: str</code> (<code>horizontal</code>, <code>vertical</code>)</li>
+<li><code>multiple: Multiple</code> (<code>nx &gt; 1</code> or <code>ny &gt; 1</code>)</li>
+<li><code>owner: Optional[str]</code></li>
+</ul>
+<p><strong>Hitbox: OrientedHitbox</strong></p>
+<ul>
+<li><code>get(properties, state, frame): returns properties.hitboxes[state.orientation]</code></li>
 </ul>
 <h2 id="composition-overview">Composition Overview</h2>
 <p>From the perspective of the <a href="../00-overview/#state">state files</a>, Compositions are another type of Asset that can be deployed onto the Board. Similar to the <a href="../02-sprites/#player">Player</a>, they are a "<em>virtual</em>" Asset composed of other Assets, i.e. they do not have properties of their own. Unlike the Player, which is a special type of Sprite, Compositions are collections of multiple Assets. When a Composition is deployed onto the Board, its individual Assets are added to the appropriate (Category, Instance)-nodes in the <a href="../01-assets/#asset-hierarchy">Asset Hierarchy</a></p>
@@ -1903,22 +1953,11 @@
 <ul>
 <li><strong>Summary</strong>: Living space decorations.</li>
 <li><strong>Partitions</strong>:<ul>
-<li><code>beds</code>: Sleeping implements.</li>
-<li><code>chairs</code>: Sitting implements.</li>
 <li><code>fixtures</code>: Common household items.</li>
-<li><code>shelves</code>: Cabinetry.</li>
+<li><code>shelves</code>: Cabinetry and shelving items.</li>
 <li><code>tables</code>: Areas for storage and eating.</li>
 <li><code>vanities</code>: Decals and adornments.</li>
 <li><code>windows</code>: Glass panes and frames.</li>
-</ul>
-</li>
-</ul>
-<h5 id="purpose-railings">Purpose: Railings</h5>
-<ul>
-<li><strong>Summary</strong>: Containment boundaries.</li>
-<li><strong>Partitions</strong>:<ul>
-<li><code>fences</code>: Exterior, isolated railings.</li>
-<li><code>crenellations</code>: Embedded railings.</li>
 </ul>
 </li>
 </ul>
