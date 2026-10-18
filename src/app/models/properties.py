@@ -8,7 +8,7 @@ from app.config.enums import (
     Actions,
     Directions,
     Alignments,
-    Lifecycles,
+    Frequencies,
     Lifespans
 )
 from app.models.adapters import (
@@ -34,8 +34,8 @@ class Cost:
     quantity: int
 
 @dataclass(slots=True)
-class Lifecycle:
-    type: Lifecycles = Lifecycles.CONTINUOUS.value
+class Frequency:
+    type: Frequencies = Frequencies.CONTINUOUS.value
     delay: int = 1
     frequency: int = 0
     cooldown: int = 60
@@ -87,7 +87,7 @@ class CursorProperties(AssetProperties):
 @dataclass(slots=True)
 class EffectProperties(AssetProperties):
     count: int = 1
-    lifecycle: Lifecycle = field(default_factory=Lifecycle)
+    frequency: Frequency = field(default_factory=Frequency)
     mass: int = -1
     hitboxes: Optional[List[Hitbox]] = None # type: ignore
 

@@ -12,7 +12,8 @@ Compositions are used to formalize Asset relationships for reuse. For this reaso
 
 * `dimensions: Dimensions`
 * `hitboxes: List[Hitbox]`
-* `cost: Cost`
+* `materials: List[str]`
+* `blueprints: List[str]`
 * `mass: int`
 * `priority: int`
 
@@ -24,20 +25,54 @@ Struts may be placed on the Board through the state files manually, but they are
 
 Struts are closely related to [Asset Compositions](./03-compositions.md), as they provide a "foundation" upon which configurations of Assets can be built. In other words, a Strut's main purpose is to provide a coordinate system for the relative positioning of reusable Asset configurations. 
 
+**Strut Hierarchy**
+
+Struts are the basic element of Compositions. They are classified according to Material and Blueprint. All Struts are functionally equivalent (but may differ in the declaration of their properties), yet serve different atmospheric, vanity or aesthetic purposes; Material and Blueprint describe the axes of this "*aesthetic*" space.
+
+**Materials**
+
+Material serves mainly to alter the color and shading of the Strut.
+
+- Organics: `wood`, `thatches`
+- Geologics: `brick`, `granite`, `marble`, `stone`, `sandstone`
+- Metallics: `copper`, `iron`, `gold`
+- Chromatics: `white`, `red`, `blue`, `yellow`, `green`
+
+**Material Palette**
+
+--8<-- "static/md/composition-material-palette.md"
+
+**Blueprints**
+
+Blueprints describe specific structural implementations.
+ 
+- Building Blueprints:
+    - `floors`: Interior ground surfaces.
+    - `walls`: Exterior support surfaces.
+    - `flats`: Elevated surfaces.
+    - `roofs`: Building enclosures.
+    - `paths`: Exterior ground surfaces.
+    - `halls`: Interior support surfaces.
+- Interior Blueprints:
+    - `carpets`
+    - `wallpapers`
+
 **Animation: None**
 
 N/A
 
-**Frame: SingleFrame**
+**Frame: MaterialFrame**
 
-* `keys(id, state): returns [ (id, 0, 0) ]`
-* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, state): returns [ (f"{id}-{state.material}-{state.blueprint}", 0, 0) ]`
+* `index(id, properties): returns { f"{id}-{properties.materials.*}-{properties.blueprints.*}: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: PropertyState**
 
 * `layer: str`
 * `elevaiton: int`
 * `position: Position`
+* `material: str`
+* `blueprint: str`
 * `owner: str`
 
 **Hitbox: StaticHitbox**
@@ -385,58 +420,6 @@ $$
 --8<-- "static/tex/cost.tex"
 $$
 
-#### Struts Hierarchy
-
-Struts are the basic element of Compositions. They are classified according to Material and Purpose. All Struts are functionally equivalent (but may differ in the declaration of their properties), yet serve different atmospheric, vanity or aesthetic purposes; Material and Purpose describe the axes of this "*aesthetic*" space.
-
-##### Materials
-
-Material serves mainly to alter the color and shading of the Strut.
-
-**Palette**
-
---8<-- "static/md/composition-material-palette.md"
-
-##### Purposes
-
-###### Purpose: Decor
-
-- **Summary**: Living space decorations.
-- **Partitions**:
-    - `fixtures`: Common household items.
-    - `shelves`: Cabinetry and shelving items.
-    - `tables`: Areas for storage and eating.
-    - `vanities`: Decals and adornments.
-    - `windows`: Glass panes and frames.
-
-###### Purpose: Structures
-
-- **Summary**: Ancillary features of buildings.
-- **Partitions**:
-    - `additions`: Unique structures.
-    - `buttresses`: Load-bearing structures.
-    - `enclosures`: Covered structures.
-    - `pillars`: Columnar structures.
-    - `towers`: Constructed structures.
-    - `windows`: Glass structures.
-
-###### Purpose: Surfaces
-
-- **Summary**: Planes of movement.
-- **Partitions**:
-    - `floors`: Interior surfaces.
-    - `streets`: Exterior surfaces.
-    - `roofs`: Elevated surfaces.
-
-###### Purpose: Walls
-
-- **Summary**: Intentional obstructions.
-- **Partitions**:
-    - `raw`: Basic material walls.
-    - `refined`: Crafted and refined walls.
-    - `frames`: Premade walls with roofs.
-    - `interior`: Interior, dressed walls.
-
 #### Cost 
 
 **Formula**
@@ -451,9 +434,9 @@ $$
 
 --8<-- "static/md/composition-material-factor.md"
 
-**Purpose**
+**Blueprint**
 
---8<-- "static/md/composition-purpose-factor.md"
+--8<-- "static/md/composition-blueprint-factor.md"
 
 ##### Ledger
 

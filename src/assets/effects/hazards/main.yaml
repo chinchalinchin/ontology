@@ -5,7 +5,7 @@ effects:
       dimensions:
         w: 16
         l: 16
-      lifecycle: 
+      frequency: 
         type: continuous
       hitboxes: null
       mass: -1
@@ -14,7 +14,7 @@ effects:
       dimensions:
         w: 64
         l: 64
-      lifecycle: 
+      frequency: 
         type: periodic
         frequency: 120
       hitboxes: null
@@ -24,7 +24,7 @@ effects:
       dimensions:
         w: 32
         l: 32
-      lifecycle: 
+      frequency: 
         type: temporary
       hitboxes: null
       mass: -1
@@ -33,7 +33,7 @@ effects:
       dimensions:
         w: 32
         l: 32
-      lifecycle: 
+      frequency: 
         type: temporary
       hitboxes: null
       mass: -1

@@ -6,7 +6,7 @@ Package for Asset Animation implementations.
 # Application Libraries
 import app.config.settings as settings
 from app.config.enums import (
-    Lifecycles,
+    Frequencies,
     Switches
 )
 from app.assets.base import Animation
@@ -76,19 +76,19 @@ class LifecycleAnimation(Animation):
             anim.tick = 0
             return state
         
-        if lifecycle.type == Lifecycles.CONTINUOUS.value:
+        if lifecycle.type == Frequencies.CONTINUOUS.value:
             if anim.tick >= lifecycle.delay:
                 anim.tick = 0
                 anim.frame = (anim.frame + 1) % properties.count
 
-        elif lifecycle.type == Lifecycles.TEMPORARY.value:
+        elif lifecycle.type == Frequencies.TEMPORARY.value:
             limit = properties.count - 1 if lifecycle.persist else properties.count
             if anim.frame < limit:
                 if anim.tick >= lifecycle.delay:
                     anim.tick = 0
                     anim.frame += 1
 
-        elif lifecycle.type == Lifecycles.PERIODIC.value:
+        elif lifecycle.type == Frequencies.PERIODIC.value:
             active_duration = properties.count * lifecycle.delay
             if anim.tick < active_duration:
                 anim.frame = anim.tick // lifecycle.delay

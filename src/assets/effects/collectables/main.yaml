@@ -5,7 +5,7 @@ effects:
       dimensions:
         w: 32
         l: 32
-      lifecycle:
+      frequency:
         type: continuous
       hitboxes: null
       mass: -1

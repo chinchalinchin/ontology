@@ -7,7 +7,7 @@ from app.config.enums.assets import (
     Equipment,
     Groups,
     # ------
-    Lifecycles,
+    Frequencies,
     Directions,
     Actions,
     Expressions,
@@ -91,7 +91,7 @@ __all__ = [
     'Equipment',
     'Groups',
     # ------
-    'Lifecycles',
+    'Frequencies',
     # -------
     'Directions',
     'Actions',

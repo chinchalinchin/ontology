@@ -5,7 +5,7 @@ effects:
       dimensions:
         w: 96
         l: 32
-      lifecycle:
+      frequency:
         type: continuous
         delay: 20
       count: 5

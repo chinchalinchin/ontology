@@ -12,7 +12,7 @@ from app.assets.animations.core import (
     StateAnimation, 
     SpriteAnimation
 )
-from app.config.enums import Lifecycles
+from app.config.enums import Frequencies
 from app.models.properties import EffectProperties, Lifecycle
 from app.models.state import (
     AssetState, 
@@ -53,7 +53,7 @@ def test_binary_animation():
 
 def test_lifecycle_animation_inactive():
     animation = LifecycleAnimation()
-    lifecycle = Lifecycle(type=Lifecycles.CONTINUOUS.value, delay=1)
+    lifecycle = Lifecycle(type=Frequencies.CONTINUOUS.value, delay=1)
     properties = EffectProperties(dimensions=Dimensions(32, 32), count=4, lifecycle=lifecycle)
     state = EffectState(id="effect-1", active=False, animation=AnimationState(frame=2, tick=3))
 
@@ -64,7 +64,7 @@ def test_lifecycle_animation_inactive():
 
 def test_lifecycle_animation_continuous():
     animation = LifecycleAnimation()
-    lifecycle = Lifecycle(type=Lifecycles.CONTINUOUS.value, delay=2)
+    lifecycle = Lifecycle(type=Frequencies.CONTINUOUS.value, delay=2)
     properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, lifecycle=lifecycle)
     state = EffectState(id="torch", active=True, animation=AnimationState(frame=0, tick=0))
 
@@ -88,7 +88,7 @@ def test_lifecycle_animation_continuous():
 
 def test_lifecycle_animation_temporary_non_persisting():
     animation = LifecycleAnimation()
-    lifecycle = Lifecycle(type=Lifecycles.TEMPORARY.value, delay=1, persist=False)
+    lifecycle = Lifecycle(type=Frequencies.TEMPORARY.value, delay=1, persist=False)
     properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, lifecycle=lifecycle)
     state = EffectState(id="slash-spark", active=True, animation=AnimationState(frame=0, tick=0))
 
@@ -104,7 +104,7 @@ def test_lifecycle_animation_temporary_non_persisting():
 
 def test_lifecycle_animation_temporary_persisting():
     animation = LifecycleAnimation()
-    lifecycle = Lifecycle(type=Lifecycles.TEMPORARY.value, delay=1, persist=True)
+    lifecycle = Lifecycle(type=Frequencies.TEMPORARY.value, delay=1, persist=True)
     properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, lifecycle=lifecycle)
     state = EffectState(id="dummy", active=True, animation=AnimationState(frame=0, tick=0))
 
@@ -119,7 +119,7 @@ def test_lifecycle_animation_temporary_persisting():
 
 def test_lifecycle_animation_periodic():
     animation = LifecycleAnimation()
-    lifecycle = Lifecycle(type=Lifecycles.PERIODIC.value, delay=2, frequency=8)
+    lifecycle = Lifecycle(type=Frequencies.PERIODIC.value, delay=2, frequency=8)
     properties = EffectProperties(dimensions=Dimensions(32, 32), count=2, lifecycle=lifecycle)
     state = EffectState(id="geyser", active=True, animation=AnimationState(frame=0, tick=0))
 
@@ -144,7 +144,7 @@ def test_lifecycle_animation_periodic():
 
 def test_lifecycle_animation_cooldown_and_reset():
     animation = LifecycleAnimation()
-    lifecycle = Lifecycle(type=Lifecycles.TEMPORARY.value, delay=1, cooldown=60, persist=True)
+    lifecycle = Lifecycle(type=Frequencies.TEMPORARY.value, delay=1, cooldown=60, persist=True)
     properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, lifecycle=lifecycle)
     state = ReactableState(id="dummy", active=True, cooldown=2, animation=AnimationState(frame=2, tick=0))
 

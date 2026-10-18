@@ -54,23 +54,23 @@ recipes:
   effects:
     collectables:
       frame: iterable
-      animation: lifecycle
+      animation: frequency
       hitbox: static
     reactables:
       frame: iterable
-      animation: lifecycle
+      animation: frequency
       hitbox: static
     hazards:
       frame: iterable
-      animation: lifecycle
+      animation: frequency
       hitbox: static
     passive:
       frame: iterable
-      animation: lifecycle
+      animation: frequency
       hitbox: none
     fluids:
       frame: fluid
-      animation: lifecycle
+      animation: frequency
       hitbox: dynamic
   objects:
     chests:

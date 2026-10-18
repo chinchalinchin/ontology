@@ -5,7 +5,7 @@ effects:
       dimensions:
         w: 64
         l: 64
-      lifecycle: 
+      frequency: 
         type: temporary
         persist: True
         delay: 5

@@ -14,7 +14,7 @@ import logging
 from app.config.enums import (
     AssetCategories, 
     AssetInstances, 
-    Lifecycles,
+    Frequencies,
 )
 from app.game.logic.mechanics import Mechanic
 from app.models.state import DevicePayload
@@ -39,7 +39,7 @@ class RemoveMechanics(Mechanic):
         removals = []
         for effect in board.categories(AssetCategories.EFFECTS):
             if effect.properties.lifecycle.persist or (
-                effect.properties.lifecycle.type != Lifecycles.TEMPORARY.value
+                effect.properties.lifecycle.type != Frequencies.TEMPORARY.value
             ): continue
 
             if effect.state.animation.frame >= effect.properties.count:

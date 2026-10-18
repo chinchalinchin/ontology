@@ -685,15 +685,15 @@ Effects are animate Assets used for environmental dressing, hazards, pickups, an
 
 Most Effects iterate over a single row of frames using `IterableFrame` and advance via `LifecycleAnimation`. The only thing that differentiates each instance of an Effect is its state model, excepting Fluid which plays an instrumental role in [Ecology](./09-ecology.md).
 
-**Lifecycles**
+**Frequencies**
 
-Rather than implementing separate Animation classes to handle Effect animations (which would lead to a combinatorial explosion with the composition of Animation and State implementations to span the space of possible Effects instances, e.g. `HarzardContinuousAnimation`, `HazardPeriodicAnimation`, `HazardTemporaryAnimation` would have the same functional purpose of being a Hazard but different logic handling their Animation), Effects have a Lifecycle that determines how their Animation is handled.
+Rather than implementing separate Animation classes to handle Effect animations (which would lead to a combinatorial explosion with the composition of Animation and State implementations to span the space of possible Effects instances, e.g. `HarzardContinuousAnimation`, `HazardPeriodicAnimation`, `HazardTemporaryAnimation` would have the same functional purpose of being a Hazard but different logic handling their Animation), Effects have a Frequencies that determines how their Animation is handled.
 
 ```mermaid
 --8<-- "static/mmd/models-effect.mmd"
 ```
 
-In other words, the State Model determines the function of the Effect, but the Lifecycle determines the Animation update schema.
+In other words, the State Model determines the function of the Effect, but the Frequency determines the Animation update schema.
 
 **Properties: EffectProperties**
 
@@ -701,10 +701,10 @@ In other words, the State Model determines the function of the Effect, but the L
 * `count: int`
 * `mass: int`
 * `hitboxes: List[Hitbox]`
-* `lifecycle: LifecycleProperties`
+* `frequency: FrequencyProperties`
     * `type: str` (`continuous`, `periodic`, `temporary`)
     * `delay: int` (tick pacing between frames)
-    * `frequency: int` (tick interval for periodic resets)
+    * `amount: int` (tick interval for periodic resets)
     * `persist: bool` (whether temporary effects persist on their final frame)
     * `cooldown: int`: (ticks before becoming active after animation)
 

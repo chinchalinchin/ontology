@@ -38,6 +38,7 @@ class AssetInstances(str, Enum):
     # OBJECTS
     CHESTS          = "chests"
     CRATES          = "crates"
+    DEVICES         = "devices"
     DOORS           = "doors"
     GATES           = "gates"
     OBSTACLES       = "obstacles"
@@ -46,12 +47,13 @@ class AssetInstances(str, Enum):
     RAFTS           = "rafts"
     # CRAFTS
     BRIDGES         = "bridges"
+    CARPENTRY       = "carpentry"
+    DECOR           = "decor"
     PLATFORMS       = "platforms"
     RAILINGS        = "railings"
     STRUTS          = "struts"
     STAIRS          = "stairs"
     FORGES          = "forges"
-    DEVICES         = "devices"
     # SHEETS
     PIXIES          = "pixies"
     SPRITES         = "sprites"
@@ -73,6 +75,7 @@ class AssetInstances(str, Enum):
     ICONS           = "icons"
 
 # -------------------------------- GROUPING ENUMERATIONS
+#   NOTE: Abstract groups of Assets.
 
 class Spawnables(str, Enum):
     COLLECTABLES    = "collectables"
@@ -96,11 +99,9 @@ class Groups(str, Enum):
     SPAWNABLES      = "spawnables"
 
 # -------------------------------- FRAME SPACE PARTITIONS
-#   NOTE: These denote different ways of dividing and 
-#           partitioning Asset image files.
+#   NOTE: Different partitions of Asset image files.
 
-class Lifecycles(str, Enum):
-    # TODO: rename to Frequencies. update properties accordingly.
+class Frequencies(str, Enum):
     CONTINUOUS      = "continuous"
     PERIODIC        = "periodic"
     TEMPORARY       = "temporary"
@@ -183,7 +184,54 @@ class CentennialStages(str, Enum):
     VEIN            = "vein"
     CRYSTAL         = "crystal"
     ALLOY           = "alloy"
+
+class Materials(str, Enum):
+    ORGANICS        = "organics"
+    GEOLOGICS       = "geologics"
+    METALLICS       = "metallics"
+
+class Organics(str, Enum):
+    THATCHES        = "thatches"
+    WOOD            = "wood"
+
+class Geologics(str, Enum):
+    BRICK           = "brick"
+    GRANITE         = "granite"
+    MARBLE          = "marble"
+    SANDSTONE       = "sandstone"
+    SLATE           = "slate"
+    STONE           = "stone"
     
+class Metallics(str, Enum):
+    COPPER          = "copper"
+    IRON            = "iron"
+    SILVER          = "silver"
+    GOLD            = "gold"
+
+class Chromatics(str, Enum):
+    WHITE           = "white"
+    BLUE            = "blue"
+    RED             = "red"
+    YELLOW          = "yellow"
+    GREEN           = "green"
+
+class Blueprints(str, Enum):
+    BUILDINGS       = "buildings"
+
+class Buildings(str, Enum):
+    FLATS           = "flats"
+    FLOORS          = "floors"
+    HALLS           = "halls"
+    PATHS           = "paths"
+    ROOFS           = "roofs"
+    WALLS           = "walls"
+
+class Corridors(str, Enum):
+    CARPETS         = "carpets"
+    PAINTS          = "paints"
+    PLANKS          = "planks"
+    WALLPAPERS      = "wallpapers"
+
 # -------------------------------- ASSET ENUMERATIONS
 #   NOTE: These are required Assets.
 

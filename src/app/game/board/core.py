@@ -20,7 +20,7 @@ from app.assets.base import Asset
 from app.config.enums import (
     AssetCategories,
     AssetInstances,
-    Lifecycles,
+    Frequencies,
     Shortcuts
 )
 from app.config.loader import Loader
@@ -420,7 +420,7 @@ class Board:
 
             if asset.category == AssetCategories.EFFECTS.value:
                 lifecycle = getattr(asset.properties, "lifecycle", None)
-                if lifecycle and lifecycle.type == Lifecycles.TEMPORARY.value and not lifecycle.persist:
+                if lifecycle and lifecycle.type == Frequencies.TEMPORARY.value and not lifecycle.persist:
                     continue
 
             if asset.category == AssetCategories.SHEETS.value and asset.instance not in (

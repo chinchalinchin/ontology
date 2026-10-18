@@ -8,7 +8,7 @@ effects:
       dimensions:
         w: 32
         l: 64
-      lifecycle: 
+      frequency: 
         type: periodic
         frequency: 1200
       hitboxes: null
@@ -21,7 +21,7 @@ effects:
       dimensions:
         w: 32
         l: 96
-      lifecycle: 
+      frequency: 
         type: continuous
         delay: 60
       hitboxes: null
@@ -32,7 +32,7 @@ effects:
       dimensions:
         w: 32
         l: 64
-      lifecycle: 
+      frequency: 
         type: continuous
         delay: 15
       hitboxes: null
@@ -46,7 +46,7 @@ effects:
       dimensions:
         w: 60
         l: 12
-      lifecycle: 
+      frequency: 
         type: temporary
         delay: 15
       hitboxes: null

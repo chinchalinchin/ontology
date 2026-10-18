@@ -8,7 +8,7 @@ import pytest
 
 # Application Libraries
 from app.config.enums import (
-    Lifecycles,
+    Frequencies,
 )
 from app.models.properties import (
     Lifecycle,
@@ -30,7 +30,7 @@ def mock_effect_properties() -> EffectPropertyInstances:
                 count=3,
                 mass=-1,
                 lifecycle=Lifecycle(
-                    type=Lifecycles.CONTINUOUS.value,
+                    type=Frequencies.CONTINUOUS.value,
                     delay=60, 
                     persist=False
                 )
@@ -42,7 +42,7 @@ def mock_effect_properties() -> EffectPropertyInstances:
                 count=3, 
                 mass=-1,
                 lifecycle=Lifecycle(
-                    type=Lifecycles.TEMPORARY.value, 
+                    type=Frequencies.TEMPORARY.value, 
                     delay=60, 
                     frequency=0, 
                     persist=False
@@ -55,7 +55,7 @@ def mock_effect_properties() -> EffectPropertyInstances:
                 count=3,
                 mass=-1,
                 lifecycle=Lifecycle(
-                    type=Lifecycles.TEMPORARY.value, 
+                    type=Frequencies.TEMPORARY.value, 
                     delay=60, 
                     frequency=0, 
                     persist=True

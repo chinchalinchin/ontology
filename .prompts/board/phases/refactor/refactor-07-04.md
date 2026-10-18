@@ -2,7 +2,7 @@
 
 **Motivation** 
 
-- Reduce the Strut overhead and Asset proliferation by affecting a simplification through hierarchical organization of Struts via `material` and `purpose`.
+- Reduce the Strut overhead and Asset proliferation by affecting a simplification through hierarchical organization of Struts via `material` and `blueprint`.
 
 **Context**
 
@@ -14,10 +14,10 @@
 - Many assets will need edited so their dimensions align along the `material` axis, or else MaterialHitbox will need introduced so segregate hitboxes by `material`.
 - How to handle decor, which has a Material dependence, but does not conform to partitioning. Perhaps Decor should be a separate Craft category, due to the bespoke nature of the Asset file.
     - Many Strut Structures, Enclosures and Additions also have this property of oblique, but not categorical, dependence on marble, i.e. they don't partition cleanly into frames.
-- Strut Frames (`frame-brick`, `frame-adobe`, etc.) do not exactly conform to the `material`, `purpose` schema due to the specialization of the Asset file. They may also be candidates for a separate Instance in the Craft Category.
-- Materials, Purposes: Enumeration of all Strut materials and purposes.
+- Strut Frames (`frame-brick`, `frame-adobe`, etc.) do not exactly conform to the `material`, `blueprint` schema due to the specialization of the Asset file. They may also be candidates for a separate Instance in the Craft Category.
+- Materials, Blueprints: Enumeration of all Strut materials and blueprints.
 - MaterialFrame: Index Assets by material columns.
-- PropertyState: `material` and `purpose` definition and specification.
+- PropertyState: `material` and `blueprint` definition and specification.
 - Decomposer needs an analogous method to `orient()` for `multiply()` for Assets without orientations that still need multiplied. It has become clear certain Struts (walls, surfaces, buttresses) need to be able to multiply their dimensions to conserve verbosity in the configuration.
     - Needs to be called during Migrator state migration.
     - This seems to indicate another Instance of Crafts is necessary to support MultiplierStates and simple positional PropertyStates. 
@@ -38,7 +38,7 @@ Reduce `Strut` configuration overhead, YAML state verbosity, and Asset file prol
     * **`decor` (`PropertyState`, `SingleFrame`, `StaticHitbox`)**: Bespoke interior and exterior furnishings, fixtures, shelving, tables, wall decals, paintings, curtains, and windows (`fixture-*`, `shelf-*`, `table-*`, `painting-*`, `curtains-*`, `window-*`).
 2. **Enumerations (`app.config.enums`)**:
     * `Materials`: `wood`, `sandstone`, `clay`, `stone`, `slate`, `brick`, `copper`, `cotton`, `granite`, `iron`, `glass`, `marble`, `gold`.
-    * `Purposes`: `bridges`, `carpentry`, `decor`, `platforms`, `railings`, `surfaces`, `stairs`, `structures`, `walls`.
+    * `Blueprints`: `bridges`, `carpentry`, `decor`, `platforms`, `railings`, `surfaces`, `stairs`, `structures`, `walls`.
     * `MultipliedAssets`: Tuple/Enum registering `(AssetInstances.STRUTS,)` for 2D grid unpacking during state hydration.
 3. **Atlas & Frame Specification (`MaterialFrame`)**:
     * Multi-material `Strut` `.png` files are arranged as a single horizontal row of uniform cells $(w, l)$, where column index $i \in [0, M)$ corresponds to `properties.materials[i]`.
@@ -64,7 +64,7 @@ In `Composition C002` (`regalia-galleria`), paving the $768 \times 288$ central 
     id: wall-palace
     name: hallway-wall-north
     material: stone
-    purpose: walls
+    blueprint: walls
     multiple: { nx: 6, ny: 1 }
     layer: 'galleria-hallway'
     position: { x: 0, y: 0 }
@@ -74,7 +74,7 @@ In `Composition C002` (`regalia-galleria`), paving the $768 \times 288$ central 
         - id: support-border
           name: hallway-floor
           material: granite
-          purpose: surfaces
+          blueprint: surfaces
           multiple: { nx: 8, ny: 3 }
           position: { x: 0, y: 0 }
 
@@ -119,13 +119,112 @@ Currently, `Decomposer._accumulate_cost()` looks up `props.cost` by `asset_id` a
 
 ##### User Review I
 
-*Pending User Review.*
+###### Cost
+
+Cost is extraneous as a property. It can be derived from the area, material, material cost and blueprint. Remove cost property from Crafts, move material cost table to configuration, and remove all cost functions from the Decomposer. Need a new type of service, `app.services.markets`, and a new `Materializer` service. Receives cost configuration during bootstrap, exposes an interface `cost()` that accepts Dimensions, Material, Blueprint and then calculates the list of Costs, e.g. `[ Cost(material, amount) ]`. 
+
+###### Reatlasing 
+
+By curating combinations of different Asset files in the LPC database, the following sheets have been constructed so each cell is exactly 96 px by 96 px.
+
+- Strut Sheet: (bluebrint, material)
+    - id: hut
+        - blueprints (rows): floors, walls, flats, roofs, paths, halls
+        - materials (columms): thatches, wood
+    - id: home 
+        - blueprints (rows): floors, walls, flats, roofs, paths, halls
+        - materials (columns): stone, brick, granite, marble
+    - id: mansion
+        - blueprints (rows): floors, walls, flats, roofs, paths, halls
+        - materials (columns): stone, brick, granite, marble
+
+**Materials**
+
+- Organics: `wood`, `thatches`
+- Geologics: `brick`, `granite`, `marble`, `stone`, `sandstone`
+- Metallics: `copper`, `iron`, `gold`
+- Chromatics: `white`, `red`, `blue`, `yellow`, `green`
+
+**Blueprints**
+
+- Building Blueprints:
+    - `floors`: Interior ground surfaces.
+    - `walls`: Exterior support surfaces.
+    - `flats`: Elevated support surfaces.
+    - `roofs`: Building enclosures.
+    - `paths`: Exterior ground surfaces.
+    - `halls`: Interior support surfaces.
+- Corridor Blueprints:
+    - `carpets`: Interior ground surfaces
+    - `paints`: Interior support surfaces.
+    - `planks`: Interior ground surfaces.
+    - `wallpapers`: Interior support surfaces.
+
+**Idea**
+
+Struts declare Materials (`organics`, `geologics`, `metallics`, `chromatics`) and Blueprints (`building`, `interior`)
+**Notes**
+
+```python
+@dataclass
+class MaterialState(AssetState):
+    # ...
+    material: str
+    blueprint: str
+```
+
+```python
+class Materials(str, Enum):
+    ORGANICS        = "organics"
+    GEOLOGICS       = "geologics"
+    METALLICS       = "metallics"
+
+class Organics(str, Enum):
+    THATCHES        = "thatches"
+    WOOD            = "wood"
+
+class Geologics(str, Enum):
+    BRICK           = "brick"
+    GRANITE         = "granite"
+    MARBLE          = "marble"
+    SANDSTONE       = "sandstone"
+    SLATE           = "slate"
+    STONE           = "stone"
+    
+class Metallics(str, Enum):
+    COPPER          = "copper"
+    IRON            = "iron"
+    SILVER          = "silver"
+    GOLD            = "gold"
+
+class Chromatics(str, Enum):
+    WHITE           = "white"
+    BLUE            = "blue"
+    RED             = "red"
+    YELLOW          = "yellow"
+    GREEN           = "green"
+
+class Blueprints(str, Enum):
+    BUILDINGS       = "buildings"
+
+class Buildings(str, Enum):
+    FLATS           = "flats"
+    FLOORS          = "floors"
+    HALLS           = "halls"
+    PATHS           = "paths"
+    ROOFS           = "roofs"
+    WALLS           = "walls"
+
+class Interiors(str, Enum):
+    CARPETS         = "carpets"
+    WALLPAPERS      = "wallpapers"
+```
 
 ##### Goals
 
 ###### Goal: Enumerations & Data Models (`enums.py`, `properties.py`, `crafts.py`, `schemas.py`)
 
-Define `Materials`, `Purposes`, and `MultipliedAssets` in `app.config.enums`. Expand `CraftProperties` to support `materials: Optional[List[str]]` and material-keyed `cost`. Define `StrutState` for materialized, multipliable struts while retaining `PropertyState` for `structures`, `decor`, and `compositions`.
+Define `Materials`, `Blueprints`, and `MultipliedAssets` in `app.config.enums`. Expand `CraftProperties` to support `materials: Optional[List[str]]` and material-keyed `cost`. Define `StrutState` for materialized, multipliable struts while retaining `PropertyState` for `structures`, `decor`, and `compositions`.
 
 ```python
 # src/app/config/enums.py
@@ -144,7 +243,7 @@ class Materials(StrEnum):
     MARBLE = "marble"
     GOLD = "gold"
 
-class Purposes(StrEnum):
+class Blueprints(StrEnum):
     BRIDGES = "bridges"
     CARPENTRY = "carpentry"
     DECOR = "decor"
@@ -164,7 +263,7 @@ class PropertyState(AssetState):
 @dataclass(slots=True)
 class StrutState(PropertyState):
     material: Optional[str] = None
-    purpose: Optional[str] = None
+    blueprint: Optional[str] = None
     multiple: Optional[Multiple] = None  # type: ignore
 
 ```
@@ -341,11 +440,11 @@ elif task[0] == Shortcuts.ASSETS.value and \
 
 **1. Task: Enumerations, Schemas & Recipes**
 
-*Objective*: Introduce `Materials`, `Purposes`, `MultipliedAssets`, and the partitioned Craft Instances (`struts`, `structures`, `decor`) across application models and recipe configurations.
+*Objective*: Introduce `Materials`, `Blueprints`, `MultipliedAssets`, and the partitioned Craft Instances (`struts`, `structures`, `decor`) across application models and recipe configurations.
 
-* [ ] Subtask: Add `Materials`, `Purposes`, `MultipliedAssets`, and `AssetInstances.STRUCTURES` / `AssetInstances.DECOR` to `src/app/config/enums.py`.
+* [ ] Subtask: Add `Materials`, `Blueprints`, `MultipliedAssets`, and `AssetInstances.STRUCTURES` / `AssetInstances.DECOR` to `src/app/config/enums.py`.
 * [ ] Subtask: Update `CraftProperties` and `CraftPropertyInstances` in `src/app/models/properties.py` (and corresponding Pydantic adapters) to add `materials: Optional[List[str]]`, `structures`, and `decor`.
-* [ ] Subtask: Define `StrutState` (with `material`, `purpose`, `multiple`) in `src/app/models/state/assets/crafts.py` and register `struts: List[StrutState]`, `structures: List[PropertyState]`, and `decor: List[PropertyState]` in `CraftStateInstances` (`src/app/models/state/schemas.py`).
+* [ ] Subtask: Define `StrutState` (with `material`, `blueprint`, `multiple`) in `src/app/models/state/assets/crafts.py` and register `struts: List[StrutState]`, `structures: List[PropertyState]`, and `decor: List[PropertyState]` in `CraftStateInstances` (`src/app/models/state/schemas.py`).
 * [ ] Subtask: Update `CompositionPseudoState.strut` typing in `src/app/models/config/compositions.py` to `Union[StrutState, PropertyState]`.
 * [ ] Subtask: Register recipes for `crafts.struts` (`MaterialFrame`, `MaterialHitbox`), `crafts.structures` (`SingleFrame`, `StaticHitbox`), and `crafts.decor` (`SingleFrame`, `StaticHitbox`) in `src/data/config/recipes/main.yaml`.
 
@@ -381,6 +480,6 @@ elif task[0] == Shortcuts.ASSETS.value and \
 
 *Objective*: Migrate existing Compositions (`C000: Castle Dawn`, `C001: Citadel of Trials`, `C002: Regalia Galleria`) and Board state files to the materialized schema and `multiple` grid syntax.
 
-* [ ] Subtask: Refactor `src/data/config/compositions/main.yml` to replace repeated wall and floor strut lists with `multiple: { nx, ny }`, `material`, and `purpose`, and move `decor`/`structures` components to their respective schema keys.
+* [ ] Subtask: Refactor `src/data/config/compositions/main.yml` to replace repeated wall and floor strut lists with `multiple: { nx, ny }`, `material`, and `blueprint`, and move `decor`/`structures` components to their respective schema keys.
 * [ ] Subtask: Update `/src/data/state/**` board files referencing legacy strut IDs.
 * [ ] Subtask: Update `01-assets.md` and `03-compositions.md` documentation and Mermaid hierarchy diagrams to reflect `struts`, `structures`, and `decor`.
