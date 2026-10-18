@@ -147,9 +147,12 @@ By curating combinations of different Asset files in the LPC database, the follo
     - id: home (96px by 96px)
         - Rows (Blueprint: Building): floors, walls, flats, roofs, paths, halls
         - Columns (Material: Geologics): limestone, feldspar, granite, marble
+    - id: store (96px by 96px)
+        - Rows (Blueprint: Building): floors, walls, flats, roofs, paths, halls
+        - Columns (Material: Geologics): limestone, feldspar, granite, marble
     - id: suburb (96px by 96px)
         - Rows (Blueprint: Building): floors, walls, flats, roofs, paths, halls
-        - Columns (Material: Chromatics):  neutral, blue, red, yellow, green
+        - Columns (Material: Chromatics): neutral, blue, red, yellow, green
     - id: mansion (96px by 96px)
         - Rows (Blueprint: Building): floors, walls, flats, roofs, paths, halls
         - Columns (Material, Geologics): limestone, feldspar, granite, marble
@@ -162,6 +165,12 @@ By curating combinations of different Asset files in the LPC database, the follo
     - id: avenue (32px by 32px)
         - Rows (Blueprint: Corridor): solids, stripes, designs
         - Columns (Material: Geologics): limestone, feldspar, granite, marble
+    - id: pillar (16px by 32px)
+        - Rows (Blueprint: Column): crowns, shafts, bases
+        - Columns (Material: Geologics): limestone, feldspar, granite, marble
+    - id: tower (64px by 64px)
+        - Rows (Blueprint: Column): crowns, shafts, bases
+        - Columns (Material: Geologics): limestone, feldspar, granite, marble  
 
 **Materials**
 
@@ -171,7 +180,25 @@ By curating combinations of different Asset files in the LPC database, the follo
 - Chromatics (Dyes): `neutral`, `red`, `blue`, `yellow`, `green`
     - If a Strut declares a Chromatic as its Material, then it must specify a Host Material. This is encapsulated within a Material model that defaults `host` to `None`.
 
-Model:
+**Blueprints**
+
+- Building Blueprint (Simple Multiplication Strategy):
+    - `floors`: Interior ground surfaces.
+    - `walls`: Exterior support surfaces.
+    - `flats`: Elevated support surfaces.
+    - `roofs`: Building enclosures.
+    - `paths`: Exterior ground surfaces.
+    - `halls`: Interior support surfaces.
+- Corridor Blueprint (Simple Multiplication Strategy):
+    - `solids`: Support surfaces.
+    - `stripes`: Support surfaces.
+    - `designs`: Support surfaces.
+- Column Blueprint (Expansion Multiplication Strategy):
+    - `crowns`: Building enclosures.
+    - `shafts` (Multiplicands): Elevated surfaces.
+    - `bases`: Ground level surface.
+
+**Models**
 
 ```python
 # pseudocode
@@ -179,6 +206,9 @@ class Material:
     genus: str
     host: Union[str, None] = None
 
+class Blueprint:
+    schema: str
+    strategy: str = MultiplicationStrategies.SIMPLE.value
 
 class CraftProperties(AssetProperties):
     # ...
@@ -209,30 +239,24 @@ crafts:
             material: 
                 genus: geologics
             blueprints: buildings
+        some-geologic-column:
+            dimensions:
+                w: 100
+                l: 100
+            mass: 0
+            hitboxes: null
+            material:
+                genus: geologics
+            blueprints: columns
 ```
 
 - Host Materials: Materials that can "receive" Chromatic Materials. 
     - `cotton`
     - `wood`
-
-**Blueprints**
-
-- Building Blueprint:
-    - `floors`: Interior ground surfaces.
-    - `walls`: Exterior support surfaces.
-    - `flats`: Elevated support surfaces.
-    - `roofs`: Building enclosures.
-    - `paths`: Exterior ground surfaces.
-    - `halls`: Interior support surfaces.
-- Corridor Blueprint:
-    - `solids`: Support surfaces.
-    - `stripes`: Support surfaces.
-    - `designs`: Support surfaces.
-- Column Blueprint:
-    - `bases`: Ground level surface.
-    - `shafts`: Elevated surfaces
-    - `crowns`: Building enclosures.
-
+- Multiplication Strategy:
+    - `simple`: Any blueprint can be multiplied.
+    - `expansion`: 
+        - `blueprint: columns`:  `base` and `crown` cannot be multiplied and are fixed as caps along the vertical dimension of the Asset; `shaft` multiplicand expands.
 
 ##### Goals
 
