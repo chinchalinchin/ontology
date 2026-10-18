@@ -2821,9 +2821,9 @@
 <li>Property File: <code>/src/assets/effects/**/*.yaml</code></li>
 </ul>
 <p>Effects are animate Assets used for environmental dressing, hazards, pickups, and interactive mechanisms. </p>
-<p>Most Effects iterate over a single row of frames using <code>IterableFrame</code> and advance via <code>LifecycleAnimation</code>. The only thing that differentiates each instance of an Effect is its state model, excepting Fluid which plays an instrumental role in <a href="../09-ecology/">Ecology</a>.</p>
-<p><strong>Lifecycles</strong></p>
-<p>Rather than implementing separate Animation classes to handle Effect animations (which would lead to a combinatorial explosion with the composition of Animation and State implementations to span the space of possible Effects instances, e.g. <code>HarzardContinuousAnimation</code>, <code>HazardPeriodicAnimation</code>, <code>HazardTemporaryAnimation</code> would have the same functional purpose of being a Hazard but different logic handling their Animation), Effects have a Lifecycle that determines how their Animation is handled.</p>
+<p>Most Effects iterate over a single row of frames using <code>IterableFrame</code> and advance via <code>FrequencyAnimation</code>. The only thing that differentiates each instance of an Effect is its state model, excepting Fluid which plays an instrumental role in <a href="../09-ecology/">Ecology</a>.</p>
+<p><strong>Frequencies</strong></p>
+<p>Rather than implementing separate Animation classes to handle Effect animations (which would lead to a combinatorial explosion with the composition of Animation and State implementations to span the space of possible Effects instances, e.g. <code>HarzardContinuousAnimation</code>, <code>HazardPeriodicAnimation</code>, <code>HazardTemporaryAnimation</code> would have the same functional purpose of being a Hazard but different logic handling their Animation), Effects have a Frequencies that determines how their Animation is handled.</p>
 <pre class="mermaid"><code>flowchart TD
     Root["AssetCategory: EFFECTS"]
 
@@ -2843,19 +2843,19 @@
 
     subgraph BehaviorStrategy ["Behavior Strategy"]
         direction TB
-        BehaviorContent["LifecycleAnimation: continuous, periodic, temporary"]
+        BehaviorContent["FrequencyAnimation: continuous, periodic, temporary"]
     end</code></pre>
-<p>In other words, the State Model determines the function of the Effect, but the Lifecycle determines the Animation update schema.</p>
+<p>In other words, the State Model determines the function of the Effect, but the Frequency determines the Animation update schema.</p>
 <p><strong>Properties: EffectProperties</strong></p>
 <ul>
 <li><code>dimensions: Dimensions</code></li>
 <li><code>count: int</code></li>
 <li><code>mass: int</code></li>
 <li><code>hitboxes: List[Hitbox]</code></li>
-<li><code>lifecycle: LifecycleProperties</code><ul>
+<li><code>frequency: FrequencyProperties</code><ul>
 <li><code>type: str</code> (<code>continuous</code>, <code>periodic</code>, <code>temporary</code>)</li>
 <li><code>delay: int</code> (tick pacing between frames)</li>
-<li><code>frequency: int</code> (tick interval for periodic resets)</li>
+<li><code>amount: int</code> (tick interval for periodic resets)</li>
 <li><code>persist: bool</code> (whether temporary effects persist on their final frame)</li>
 <li><code>cooldown: int</code>: (ticks before becoming active after animation)</li>
 </ul>

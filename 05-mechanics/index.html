@@ -1784,9 +1784,9 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
       direction TB
         CythonNarrow --&gt; ConfirmedPair["Intersecting Attacker &amp; Target Pair"]
         ConfirmedPair --&gt; ReactableTrigger["ReactableState.active = True"]
-        ReactableTrigger --&gt; AnimTick["LifecycleAnimation.animate(): frame += 1"]
+        ReactableTrigger --&gt; AnimTick["FrequencyAnimation.animate(): frame += 1"]
         AnimTick --&gt; Clamp["Clamp to Final Frame: persist=True"]
-        Clamp --&gt; CooldownStep["LifecycleAnimation.cooldown(state, props): cooldown -= 1"]
+        Clamp --&gt; CooldownStep["FrequencyAnimation.cooldown(state, props): cooldown -= 1"]
         CooldownStep --&gt; Reset["cooldown &lt;= 0: active = False, frame = 0, cooldown = default"]
     end
 
