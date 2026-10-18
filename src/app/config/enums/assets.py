@@ -217,6 +217,8 @@ class Chromatics(str, Enum):
 
 class Blueprints(str, Enum):
     BUILDINGS       = "buildings"
+    CORRIDORS       = "corridors"
+    COLUMNS         = "columns"
 
 class Buildings(str, Enum):
     FLATS           = "flats"
@@ -230,7 +232,12 @@ class Corridors(str, Enum):
     SOLIDS          = "solids"
     STRIPES         = "stripes"
     DESIGNS         = "designs"
-    
+
+class Columns(str, Enum):
+    BASES           = "bases"
+    SHAFTS          = "shafts"
+    CROWNS          = "crowns"
+
 # -------------------------------- ASSET ENUMERATIONS
 #   NOTE: These are required Assets.
 

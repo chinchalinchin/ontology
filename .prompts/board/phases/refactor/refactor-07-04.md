@@ -119,31 +119,35 @@ Currently, `Decomposer._accumulate_cost()` looks up `props.cost` by `asset_id` a
 
 ##### User Review I
 
-###### Cost
+This is the correct direction, but it can be further refined prior to implementation. I have conducted an exhaustive analysis of the LPC Asset Database. I have discovered the following relationships can be extracted to further clarify Struts and formalize their usage.
 
-Cost is extraneous as a property. It can be derived from the area, material, material cost and blueprint. Remove cost property from Crafts, move material cost table to configuration, and remove all cost functions from the Decomposer. Need a new type of service, `app.services.markets`, and a new `Materializer` service. Receives cost configuration during bootstrap, exposes an interface `cost()` that accepts Dimensions, Material, Blueprint and then calculates the list of Costs, e.g. `[ Cost(material, amount) ]`. 
+###### Side Note: Cost
 
-###### Reatlasing 
+Cost is now extraneous as a property. It can be derived from the area, material, material cost and blueprint. Remove cost property from Crafts, move material cost table to configuration, and remove all cost functions from the Decomposer. Need a new type of service, `app.services.markets`, and a new `Materializer` service. Receives cost configuration during bootstrap, exposes an interface `cost()` that accepts Dimensions, Material, Blueprint and then calculates the list of Costs, e.g. `[ Cost(material, amount) ]`. Remove cost methods from the Decomposer.
 
-**Idea**
-
-Struts declare Material  (`organics`, `geologics`, `metallics`, `chromatics`) and Blueprint (`building`, `corridor`, `carpet`) axes in their properties. Rather than enumerating every single Material or Blueprint, they will refer to partitions of each space.
+###### Main Note: Reatlasing 
 
 **Rebrand**:
 
-To align with the theme, the following relabellings should occur,
+To align with the simulation theme, the following relabellings should occur,
 
 - Renaming `brick` to `feldspar`.
 - Renaming `stone` to `limestone`
 
+In addition, many materials and assets have been pruned.
+
+**Idea**
+
+Struts declare Material genus (`organics`, `geologics`, `metallics`, `chromatics`) and Blueprint schema (`building`, `corridor`, `tower`) axes in their properties. Rather than enumerating every single Material or Blueprint, they will refer to partitions of each space.
+
 **Reorganization**
 
-By curating combinations of different Asset files in the LPC database, the following sheets have been constructed so each cell is exactly 96 px by 96 px.
+By curating combinations of different Asset files in the LPC database, the following sheets have been constructed to conform to regular schemas.
 
 - Strut Sheet:
     - id: hut (96px by 96px)
         - Rows (Blueprint: Building): floors, walls, flats, roofs, paths, halls
-        - Columns (Material: Organics): thatches, wood
+        - Columns (Material: Organics): cotton, thatches, wood
     - id: home (96px by 96px)
         - Rows (Blueprint: Building): floors, walls, flats, roofs, paths, halls
         - Columns (Material: Geologics): limestone, feldspar, granite, marble
@@ -152,7 +156,7 @@ By curating combinations of different Asset files in the LPC database, the follo
         - Columns (Material: Geologics): limestone, feldspar, granite, marble
     - id: suburb (96px by 96px)
         - Rows (Blueprint: Building): floors, walls, flats, roofs, paths, halls
-        - Columns (Material: Chromatics): neutral, blue, red, yellow, green
+        - Columns (Material: Chromatics, Host: Wood): neutral, blue, red, yellow, green
     - id: mansion (96px by 96px)
         - Rows (Blueprint: Building): floors, walls, flats, roofs, paths, halls
         - Columns (Material, Geologics): limestone, feldspar, granite, marble
@@ -172,15 +176,23 @@ By curating combinations of different Asset files in the LPC database, the follo
         - Rows (Blueprint: Column): crowns, shafts, bases
         - Columns (Material: Geologics): limestone, feldspar, granite, marble  
 
-**Materials**
+**Material Space**
 
-- Organics: `wood`, `thatches`
+Order matters, i.e. Material space is ordered along its partitions.
+
+Partitions:
+
+- Organics: `cotton`, `thatches`, `wood`,
 - Geologics: `limestone`, `feldspar`, `granite`, `marble`
-- Metallics: `copper`, `iron`, `gold`
-- Chromatics (Dyes): `neutral`, `red`, `blue`, `yellow`, `green`
-    - If a Strut declares a Chromatic as its Material, then it must specify a Host Material. This is encapsulated within a Material model that defaults `host` to `None`.
+- Metallics: `copper`, `iron`, `gold` (Not yet culled from database, but from inspection, it is possible to impose this partition on several blueprints and extract several other Strut assets.)
+- Chromatics (Dyes): `neutral`, `blue`, `red`, `yellow`, `green`
+    - If a Strut declares a Chromatic as its Material, then it must specify a Host Material. This is encapsulated within a Material model that defaults `host` to `None`. Only Organic Material can be a Host Material for Chromatics.
 
 **Blueprints**
+
+Order matters, i.e. Blueprint space is ordered along its partitions.
+
+Partitions:
 
 - Building Blueprint (Simple Multiplication Strategy):
     - `floors`: Interior ground surfaces.
@@ -197,6 +209,12 @@ By curating combinations of different Asset files in the LPC database, the follo
     - `crowns`: Building enclosures.
     - `shafts` (Multiplicands): Elevated surfaces.
     - `bases`: Ground level surface.
+
+**Multiplication Strategies**
+
+- `simple`: Any blueprint can be multiplied.
+- `expansion`: 
+    - `blueprint: columns`:  `base` and `crown` cannot be multiplied and are fixed as caps along the vertical dimension of the Asset, where `base.position.y > crown.position.y`; `shaft` multiplicand expands to make the Asset contiguous.
 
 **Models**
 
@@ -249,14 +267,6 @@ crafts:
                 genus: geologics
             blueprints: columns
 ```
-
-- Host Materials: Materials that can "receive" Chromatic Materials. 
-    - `cotton`
-    - `wood`
-- Multiplication Strategy:
-    - `simple`: Any blueprint can be multiplied.
-    - `expansion`: 
-        - `blueprint: columns`:  `base` and `crown` cannot be multiplied and are fixed as caps along the vertical dimension of the Asset; `shaft` multiplicand expands.
 
 ##### Goals
 
