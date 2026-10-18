@@ -190,7 +190,7 @@ def test_board_fluid_spatial_query(mock_board, mock_fluid):
 
 
 @pytest.mark.main
-def test_board_add_and_remove_lifecycle(mock_board, mock_crate_alt, mock_shoreline):
+def test_board_add_and_remove_frequency(mock_board, mock_crate_alt, mock_shoreline):
     """
     Validates batch entity additions, evictions, and confirms Bug B012 remediation.
     """
@@ -214,7 +214,7 @@ def test_board_add_and_remove_lifecycle(mock_board, mock_crate_alt, mock_shoreli
 
 
 @pytest.mark.main
-def test_board_clear_lifecycle(mock_board):
+def test_board_clear_frequency(mock_board):
     """
     Validates full board database wipe and confirms Bug B012 remediation on clear.
     """

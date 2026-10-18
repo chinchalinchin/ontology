@@ -42,7 +42,7 @@ class BinaryAnimation(Animation):
         return state
 
 
-class LifecycleAnimation(Animation):
+class FrequencyAnimation(Animation):
     """
     """
 
@@ -51,7 +51,7 @@ class LifecycleAnimation(Animation):
         """
         limit = (
             properties.count - 1 
-            if properties.lifecycle.persist else 
+            if properties.frequency.persist else 
             properties.count
         )
         if state.animation.frame >= limit:
@@ -60,14 +60,14 @@ class LifecycleAnimation(Animation):
                 state.active = False
                 state.animation.frame = 0
                 state.animation.tick = 0
-                state.cooldown = properties.lifecycle.cooldown
+                state.cooldown = properties.frequency.cooldown
         return state
 
 
     def animate(self, state: EffectState, properties: EffectProperties) -> EffectState:
         """
         """
-        lifecycle = properties.lifecycle
+        frequency = properties.frequency
         anim = state.animation
         anim.tick += 1
 
@@ -76,26 +76,26 @@ class LifecycleAnimation(Animation):
             anim.tick = 0
             return state
         
-        if lifecycle.type == Frequencies.CONTINUOUS.value:
-            if anim.tick >= lifecycle.delay:
+        if frequency.type == Frequencies.CONTINUOUS.value:
+            if anim.tick >= frequency.delay:
                 anim.tick = 0
                 anim.frame = (anim.frame + 1) % properties.count
 
-        elif lifecycle.type == Frequencies.TEMPORARY.value:
-            limit = properties.count - 1 if lifecycle.persist else properties.count
+        elif frequency.type == Frequencies.TEMPORARY.value:
+            limit = properties.count - 1 if frequency.persist else properties.count
             if anim.frame < limit:
-                if anim.tick >= lifecycle.delay:
+                if anim.tick >= frequency.delay:
                     anim.tick = 0
                     anim.frame += 1
 
-        elif lifecycle.type == Frequencies.PERIODIC.value:
-            active_duration = properties.count * lifecycle.delay
+        elif frequency.type == Frequencies.PERIODIC.value:
+            active_duration = properties.count * frequency.delay
             if anim.tick < active_duration:
-                anim.frame = anim.tick // lifecycle.delay
+                anim.frame = anim.tick // frequency.delay
             else:
                 anim.frame = 0
             
-            if anim.tick >= max(lifecycle.frequency, active_duration):
+            if anim.tick >= max(frequency.frequency, active_duration):
                 anim.tick = 0
                 anim.frame = 0
 

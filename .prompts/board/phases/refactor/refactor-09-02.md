@@ -87,7 +87,7 @@ Asset Hierarchy
 
 ```
 
-1. **Why Shorelines Cannot Be `Effects`**: In this engine, `Effects` (`passive`, `hazard`, `collectable`, `reactable`, `fluids`) are defined by `LifecycleProperties` and temporal frame cycling via `LifecycleAnimation`. A shoreline is not a transient particle or an oscillating hazard; it is a permanent topographical feature. Classifying it as an `Effect` forces dummy lifecycle schemas onto a static structural boundary.
+1. **Why Shorelines Cannot Be `Effects`**: In this engine, `Effects` (`passive`, `hazard`, `collectable`, `reactable`, `fluids`) are defined by `LifecycleProperties` and temporal frame cycling via `FrequencyAnimation`. A shoreline is not a transient particle or an oscillating hazard; it is a permanent topographical feature. Classifying it as an `Effect` forces dummy lifecycle schemas onto a static structural boundary.
 2. **Geography vs. Geology**: *Geology* denotes subsurface mineralogy, petrology, and stratigraphy. *Geography* (specifically Physical Geography / Geomorphology) denotes macroscopic surface topography, water boundaries, coastlines, terraces, and relief profiles. Because this engine already models mineral deposits under `Resources` (`ore`), surface landforms and water margins belong strictly to **Geography**.
 3. **Why `Geography` Should Be an Autonomous `AssetCategory`**: While shorelines share `ObjectProperties` (`dimensions`, `hitboxes`, `mass = -1`), grouping them under `Objects` causes structural confusion:
   * `Objects` (`chests`, `crates`, `doors`, `gates`, `plates`) represent discrete interactive entities placed manually on a board.

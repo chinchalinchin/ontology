@@ -11,7 +11,7 @@ from app.config.enums import (
     Frequencies,
 )
 from app.models.properties import (
-    Lifecycle,
+    Frequency,
     EffectProperties,
     EffectPropertyInstances,
 )
@@ -29,7 +29,7 @@ def mock_effect_properties() -> EffectPropertyInstances:
                 dimensions=Dimensions(w=32, l=32),
                 count=3,
                 mass=-1,
-                lifecycle=Lifecycle(
+                frequency=Frequency(
                     type=Frequencies.CONTINUOUS.value,
                     delay=60, 
                     persist=False
@@ -41,7 +41,7 @@ def mock_effect_properties() -> EffectPropertyInstances:
                 dimensions=Dimensions(w=16, l=16), 
                 count=3, 
                 mass=-1,
-                lifecycle=Lifecycle(
+                frequency=Frequency(
                     type=Frequencies.TEMPORARY.value, 
                     delay=60, 
                     frequency=0, 
@@ -54,7 +54,7 @@ def mock_effect_properties() -> EffectPropertyInstances:
                 dimensions=Dimensions(w=32, l=32),
                 count=3,
                 mass=-1,
-                lifecycle=Lifecycle(
+                frequency=Frequency(
                     type=Frequencies.TEMPORARY.value, 
                     delay=60, 
                     frequency=0, 

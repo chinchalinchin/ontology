@@ -28,26 +28,26 @@ def test_remove_mechanics_update():
     temp_effect_remove = Mock()
     temp_effect_remove.state.animation.frame = 10
     temp_effect_remove.properties.count = 5
-    temp_effect_remove.properties.lifecycle.persist = False
-    temp_effect_remove.properties.lifecycle.type = Frequencies.TEMPORARY.value
+    temp_effect_remove.properties.frequency.persist = False
+    temp_effect_remove.properties.frequency.type = Frequencies.TEMPORARY.value
 
     temp_effect_keep = Mock()
     temp_effect_keep.state.animation.frame = 2
     temp_effect_keep.properties.count = 5
-    temp_effect_keep.properties.lifecycle.persist = False
-    temp_effect_keep.properties.lifecycle.type = Frequencies.TEMPORARY.value
+    temp_effect_keep.properties.frequency.persist = False
+    temp_effect_keep.properties.frequency.type = Frequencies.TEMPORARY.value
 
     persist_effect_keep = Mock()
     persist_effect_keep.state.animation.frame = 10
     persist_effect_keep.properties.count = 5
-    persist_effect_keep.properties.lifecycle.persist = True
-    persist_effect_keep.properties.lifecycle.type = Frequencies.TEMPORARY.value
+    persist_effect_keep.properties.frequency.persist = True
+    persist_effect_keep.properties.frequency.type = Frequencies.TEMPORARY.value
 
     continuous_effect_keep = Mock()
     continuous_effect_keep.state.animation.frame = 10
     continuous_effect_keep.properties.count = 5
-    continuous_effect_keep.properties.lifecycle.persist = False
-    continuous_effect_keep.properties.lifecycle.type = Frequencies.CONTINUOUS.value
+    continuous_effect_keep.properties.frequency.persist = False
+    continuous_effect_keep.properties.frequency.type = Frequencies.CONTINUOUS.value
 
     dead_sprite = Mock()
     dead_sprite.state.mutators.triggers.dead = True

@@ -454,7 +454,7 @@ libpng warning: iCCP: known incorrect sRGB profile
   - ID: `grandfather-clock`
   - Name: `passive-strut-house-interior-1-1`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.core.IterableFrame'>`
 - **Properties:**
   - Dimensions:
@@ -631,7 +631,7 @@ libpng warning: iCCP: known incorrect sRGB profile
   - ID: `torch`
   - Name: `passive-strut-castle-exterior-2-2`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.core.IterableFrame'>`
 - **Properties:**
   - Dimensions:
@@ -668,7 +668,7 @@ libpng warning: iCCP: known incorrect sRGB profile
   - ID: `torch`
   - Name: `passive-strut-castle-exterior-2-2`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.core.IterableFrame'>`
 - **Properties:**
   - Dimensions:
@@ -861,7 +861,7 @@ libpng warning: iCCP: known incorrect sRGB profile
   - ID: `spinning-dummy`
   - Name: `test-dummy`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.core.IterableFrame'>`
 - **Properties:**
   - Dimensions:
@@ -900,7 +900,7 @@ libpng warning: iCCP: known incorrect sRGB profile
   - ID: `waterflow-00`
   - Name: `jasilynns-tears-00`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.effects.FluidFrame'>`
 - **Properties:**
   - Dimensions:
@@ -947,7 +947,7 @@ libpng warning: iCCP: known incorrect sRGB profile
   - ID: `waterflow-00`
   - Name: `jasilynns-tears-01`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.effects.FluidFrame'>`
 - **Properties:**
   - Dimensions:
@@ -994,7 +994,7 @@ libpng warning: iCCP: known incorrect sRGB profile
   - ID: `waterflow-00`
   - Name: `jasilynns-tears-02`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.effects.FluidFrame'>`
 - **Properties:**
   - Dimensions:
@@ -1041,7 +1041,7 @@ libpng warning: iCCP: known incorrect sRGB profile
   - ID: `waterflow-00`
   - Name: `jasilynns-tears-03`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.effects.FluidFrame'>`
 - **Properties:**
   - Dimensions:

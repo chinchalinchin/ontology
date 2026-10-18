@@ -137,7 +137,7 @@ Stage progression must be driven by environmental interaction rather than arbitr
 
 ###### Animations vs Transitions
 
-* **`Animation` components** (`BinaryAnimation`, `LifecycleAnimation`, `StateAnimation`, `SpriteAnimation`) are evaluated every tick in `core` mechanics via `AnimationMechanics`. They govern micro-temporal visual motion (e.g., ticking walking frames at $10\text{ Hz}$, cycling water ripples, or flashing cooldowns).
+* **`Animation` components** (`BinaryAnimation`, `FrequencyAnimation`, `StateAnimation`, `SpriteAnimation`) are evaluated every tick in `core` mechanics via `AnimationMechanics`. They govern micro-temporal visual motion (e.g., ticking walking frames at $10\text{ Hz}$, cycling water ripples, or flashing cooldowns).
 * **Biological Stages** (`SPROUT`, `GROWTH`, `STALK`, `BLOOM`, `STUMP`), by contrast, are discrete macro-environmental states. They do not advance via tick counters; they advance through environmental preconditions (season, cycle, hydrological fluid retention) evaluated by `SeasonMechanics`.
 
 In other words, `StageFrame` maps `state.stage` directly to horizontal atlas cell offsets:

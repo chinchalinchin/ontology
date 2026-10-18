@@ -1,7 +1,7 @@
 """
 # Ontology: app.game.logic.mechanics.intentional.cognition
 
-Package for handling the Sprite Goal lifecycle.
+Package for handling the Sprite Goal frequency.
 """
 from __future__ import annotations
 
@@ -42,7 +42,7 @@ class CognitionMechanics(Mechanic):
     """
     ## CognitionMechanics
 
-    The central Mechanic for managing the lifecycle of Sprite Goals. Acts as the sensory input for Sprites, handling target acquisition, vision radiuses, and goal coordinate updates. 
+    The central Mechanic for managing the frequency of Sprite Goals. Acts as the sensory input for Sprites, handling target acquisition, vision radiuses, and goal coordinate updates. 
     """
 
     @staticmethod

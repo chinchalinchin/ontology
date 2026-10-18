@@ -125,100 +125,56 @@ Cost is extraneous as a property. It can be derived from the area, material, mat
 
 ###### Reatlasing 
 
+**Idea**
+
+Struts declare Material  (`organics`, `geologics`, `metallics`, `chromatics`) and Blueprint (`building`, `corridor`, `carpet`) axes in their properties. Rather than enumerating every single Material or Blueprint, they will refer to partitions of each space.
+
+**Reorganization**
+
 By curating combinations of different Asset files in the LPC database, the following sheets have been constructed so each cell is exactly 96 px by 96 px.
 
-- Strut Sheet: (bluebrint, material)
+- Strut Sheet:
     - id: hut
-        - blueprints (rows): floors, walls, flats, roofs, paths, halls
-        - materials (columms): thatches, wood
+        - Rows (Blueprint: Building): floors, walls, flats, roofs, paths, halls
+        - Columns (Material: Organics): thatches, wood
     - id: home 
-        - blueprints (rows): floors, walls, flats, roofs, paths, halls
-        - materials (columns): stone, brick, granite, marble
+        - Rows (Blueprint: Building): floors, walls, flats, roofs, paths, halls
+        - Columns (Material: Geologics): stone, brick, granite, marble
+    - id: suburbs
+        - Rows (Blueprint: Building): floors, walls, flats, roofs, paths, halls
+        - Columns (Material: Chromatics):  white, blue, red, yellow, green
     - id: mansion
-        - blueprints (rows): floors, walls, flats, roofs, paths, halls
-        - materials (columns): stone, brick, granite, marble
+        - Rows (Blueprint: Building): floors, walls, flats, roofs, paths, halls
+        - Columns (Material, Geologics): stone, brick, granite, marble
+    - id: hallway
+        - Rows (Blueprint: Corridor): solids, stripes, designs
+        - Columns (Material: Chromatics, Host: Wood): white, blue, red, yellow, green
+    - id: carpet
+        - Rows (Blueprint: Corridor): solids, stripes, designs
+        - Columns (Material: Chromatics, Host: Cotton): white, blue, red, yellow, green
 
 **Materials**
 
+- Hosts: `cotton`, `wood`
 - Organics: `wood`, `thatches`
-- Geologics: `brick`, `granite`, `marble`, `stone`, `sandstone`
+- Geologics: `stone`, `brick`, `granite`, `marble`
 - Metallics: `copper`, `iron`, `gold`
-- Chromatics: `white`, `red`, `blue`, `yellow`, `green`
+- Chromatics (Dyes): `white`, `red`, `blue`, `yellow`, `green`
+    - If a Strut declares a Chromatic as its Material, then it must specify a Host Material.
 
 **Blueprints**
 
-- Building Blueprints:
+- Building Blueprint:
     - `floors`: Interior ground surfaces.
     - `walls`: Exterior support surfaces.
     - `flats`: Elevated support surfaces.
     - `roofs`: Building enclosures.
     - `paths`: Exterior ground surfaces.
     - `halls`: Interior support surfaces.
-- Corridor Blueprints:
-    - `carpets`: Interior ground surfaces
-    - `paints`: Interior support surfaces.
-    - `planks`: Interior ground surfaces.
-    - `wallpapers`: Interior support surfaces.
-
-**Idea**
-
-Struts declare Materials (`organics`, `geologics`, `metallics`, `chromatics`) and Blueprints (`building`, `interior`)
-**Notes**
-
-```python
-@dataclass
-class MaterialState(AssetState):
-    # ...
-    material: str
-    blueprint: str
-```
-
-```python
-class Materials(str, Enum):
-    ORGANICS        = "organics"
-    GEOLOGICS       = "geologics"
-    METALLICS       = "metallics"
-
-class Organics(str, Enum):
-    THATCHES        = "thatches"
-    WOOD            = "wood"
-
-class Geologics(str, Enum):
-    BRICK           = "brick"
-    GRANITE         = "granite"
-    MARBLE          = "marble"
-    SANDSTONE       = "sandstone"
-    SLATE           = "slate"
-    STONE           = "stone"
-    
-class Metallics(str, Enum):
-    COPPER          = "copper"
-    IRON            = "iron"
-    SILVER          = "silver"
-    GOLD            = "gold"
-
-class Chromatics(str, Enum):
-    WHITE           = "white"
-    BLUE            = "blue"
-    RED             = "red"
-    YELLOW          = "yellow"
-    GREEN           = "green"
-
-class Blueprints(str, Enum):
-    BUILDINGS       = "buildings"
-
-class Buildings(str, Enum):
-    FLATS           = "flats"
-    FLOORS          = "floors"
-    HALLS           = "halls"
-    PATHS           = "paths"
-    ROOFS           = "roofs"
-    WALLS           = "walls"
-
-class Interiors(str, Enum):
-    CARPETS         = "carpets"
-    WALLPAPERS      = "wallpapers"
-```
+- Corridor Blueprint:
+    - `solids`: Support surfaces.
+    - `stripes`: Support surfaces.
+    - `designs`: Support surfaces.
 
 ##### Goals
 

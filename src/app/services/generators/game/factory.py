@@ -9,7 +9,7 @@ from typing import Any, Dict, Optional
 # Application Libraries
 from app.assets.animations import (
     BinaryAnimation, 
-    LifecycleAnimation,
+    FrequencyAnimation,
     StateAnimation,
     SpriteAnimation,
     TraversalAnimation,
@@ -122,7 +122,7 @@ class Factory:
 
     _ANIMATIONS = {
         AnimationRecipe.BINARY.value: BinaryAnimation(),
-        AnimationRecipe.LIFECYCLE.value: LifecycleAnimation(),
+        AnimationRecipe.FREQUENCY.value: FrequencyAnimation(),
         AnimationRecipe.STATE.value: StateAnimation(),
         AnimationRecipe.SPRITE.value: SpriteAnimation(),
         AnimationRecipe.TRAVERSAL.value: TraversalAnimation(),

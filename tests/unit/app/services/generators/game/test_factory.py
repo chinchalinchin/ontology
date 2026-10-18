@@ -30,7 +30,7 @@ from app.assets.frames import (
 )
 from app.assets.animations import (
     BinaryAnimation,
-    LifecycleAnimation,
+    FrequencyAnimation,
     StateAnimation,
     SpriteAnimation,
     TraversalAnimation,
@@ -133,8 +133,8 @@ def test_factory_animation():
         BinaryAnimation
     )
     assert isinstance(
-        Factory.animation(AnimationRecipe.LIFECYCLE.value), 
-        LifecycleAnimation
+        Factory.animation(AnimationRecipe.FREQUENCY.value), 
+        FrequencyAnimation
     )
     assert isinstance(
         Factory.animation(AnimationRecipe.STATE.value), 

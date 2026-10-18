@@ -646,7 +646,7 @@ effects:
   - ID: `waterflow-00`
   - Name: `jasilynns-tears-00`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.core.FluidFrame'>`
 - **Properties:**
   - Dimensions:
@@ -689,7 +689,7 @@ effects:
   - ID: `waterflow-00`
   - Name: `jasilynns-tears-01`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.core.FluidFrame'>`
 - **Properties:**
   - Dimensions:
@@ -732,7 +732,7 @@ effects:
   - ID: `waterflow-00`
   - Name: `jasilynns-tears-02`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.core.FluidFrame'>`
 - **Properties:**
   - Dimensions:

@@ -309,7 +309,7 @@ State Dump (`python src/cli.py --dump-state start`):
   - ID: `grandfather-clock`
   - Name: `passive-strut-house-interior-1-1`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.core.IterableFrame'>`
 - **Properties:**
 - Dimensions:
@@ -536,7 +536,7 @@ State Dump (`python src/cli.py --dump-state start`):
   - ID: `grandfather-clock`
   - Name: `passive-strut-house-interior-2-2`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.core.IterableFrame'>`
 - **Properties:**
 - Dimensions:

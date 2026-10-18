@@ -34,7 +34,7 @@ from app.assets.hitboxes import (
 from app.assets.animations import (
     NoAnimation,
     BinaryAnimation,
-    LifecycleAnimation,
+    FrequencyAnimation,
     SpriteAnimation
 )
 from app.config.enums import ( 
@@ -409,7 +409,7 @@ def mock_fluid(
     mock_fluid_state
 ) -> Asset:
     """
-    Standard directional fluid emitter asset configured with continuous lifecycle.
+    Standard directional fluid emitter asset configured with continuous frequency.
     """
     return Asset(
         taxonomy = Taxonomy(
@@ -421,7 +421,7 @@ def mock_fluid(
         properties = mock_effect_properties.fluids.get('waterflow-01'), 
         state = mock_fluid_state, 
         frame = FluidFrame(tile_w=32, tile_l=32), 
-        animation = LifecycleAnimation(),
+        animation = FrequencyAnimation(),
         hitbox = DynamicHitbox()
     )
 
@@ -432,7 +432,7 @@ def mock_fluid_alt(
     mock_fluid_state_alt
 ) -> Asset:
     """
-    Standard directional fluid emitter asset configured with continuous lifecycle.
+    Standard directional fluid emitter asset configured with continuous frequency.
     """
     return Asset(
         taxonomy = Taxonomy(
@@ -444,7 +444,7 @@ def mock_fluid_alt(
         properties = mock_effect_properties.fluids.get('waterflow-01'), 
         state = mock_fluid_state_alt, 
         frame = FluidFrame(tile_w=32, tile_l=32), 
-        animation = LifecycleAnimation(),
+        animation = FrequencyAnimation(),
         hitbox = DynamicHitbox()
     )
 
@@ -467,7 +467,7 @@ def mock_fluid_alt2(
         properties=mock_effect_properties.fluids.get("waterflow-01"),
         state=mock_fluid_state_alt2,
         frame=FluidFrame(tile_w=32, tile_l=32),
-        animation=LifecycleAnimation(),
+        animation=FrequencyAnimation(),
         hitbox = DynamicHitbox()
     )
 
@@ -550,7 +550,7 @@ def mock_reactable(
         properties=mock_effect_properties.reactables.get('reactable-1'),
         state=mock_reactable_state,
         frame=IterableFrame(),
-        animation=LifecycleAnimation(),
+        animation=FrequencyAnimation(),
         hitbox = StaticHitbox()
     )
 

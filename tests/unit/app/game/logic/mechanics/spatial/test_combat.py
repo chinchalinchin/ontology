@@ -52,12 +52,12 @@ from app.assets.hitboxes import (
 )
 from app.assets.animations import (
     SpriteAnimation,
-    LifecycleAnimation
+    FrequencyAnimation
 )
 from app.models.properties import (
     SheetProperties, 
     EffectProperties, 
-    Lifecycle
+    Frequency
 )
 
 def _create_player_attacker(x=10, y=10, action="slash", direction="right", frame=3, strength=20):
@@ -103,7 +103,7 @@ def _create_reactable_target(x=50, y=20):
     props = EffectProperties(
         dimensions=Dimensions(w=64, l=64),
         count=8,
-        lifecycle=Lifecycle(type="temporary", persist=True),
+        frequency=Frequency(type="temporary", persist=True),
         mass=0,
         hitboxes=[Hitbox(Position(0, 0), Dimensions(64, 64))]
     )
@@ -115,7 +115,7 @@ def _create_reactable_target(x=50, y=20):
         intention=Intentions.ATTACK.value,
         active=False
     )
-    return Asset(tax, props, state, IterableFrame(), LifecycleAnimation(), StaticHitbox())
+    return Asset(tax, props, state, IterableFrame(), FrequencyAnimation(), StaticHitbox())
 
 
 def _create_equipment():

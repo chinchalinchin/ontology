@@ -205,7 +205,7 @@ def test_cartographer_empty_fluid_returns_empty(mock_board, mock_shoreline_index
 
 @pytest.mark.fluids
 @pytest.mark.services
-def test_cartographer_board_shoreline_lifecycle(mock_board, mock_shoreline):
+def test_cartographer_board_shoreline_frequency(mock_board, mock_shoreline):
     """
     Verify that Board correctly indexes and tracks procedural shoreline assets
     in board.shorelines[layer] on add and remove.

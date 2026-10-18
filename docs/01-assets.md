@@ -683,7 +683,7 @@ N/A
 
 Effects are animate Assets used for environmental dressing, hazards, pickups, and interactive mechanisms. 
 
-Most Effects iterate over a single row of frames using `IterableFrame` and advance via `LifecycleAnimation`. The only thing that differentiates each instance of an Effect is its state model, excepting Fluid which plays an instrumental role in [Ecology](./09-ecology.md).
+Most Effects iterate over a single row of frames using `IterableFrame` and advance via `FrequencyAnimation`. The only thing that differentiates each instance of an Effect is its state model, excepting Fluid which plays an instrumental role in [Ecology](./09-ecology.md).
 
 **Frequencies**
 

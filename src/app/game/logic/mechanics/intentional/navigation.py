@@ -182,7 +182,7 @@ class NavigationMechanics(Mechanic):
         
     def _navigate(self, sprite: Asset, board: Board) -> None:
         """
-        Tactical trajectory update lifecycle for an individual sprite.
+        Tactical trajectory update frequency for an individual sprite.
         """
         # 1. Goal Verification
         if not self.navigating(sprite):

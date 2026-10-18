@@ -2,7 +2,7 @@
 
 **Overview**
 
-Refactor the Effect Asset hierarchy by decoupling animation lifecycle mechanics from functional simulation instances. Replace the `temporary` and `persistent` instances with functional variants (`passive`, `hazard`, `collectable`, `reactable`), introduce `LifecycleProperties` to govern frame updates, and implement a unified `LifecycleAnimation` strategy.
+Refactor the Effect Asset hierarchy by decoupling animation lifecycle mechanics from functional simulation instances. Replace the `temporary` and `persistent` instances with functional variants (`passive`, `hazard`, `collectable`, `reactable`), introduce `LifecycleProperties` to govern frame updates, and implement a unified `FrequencyAnimation` strategy.
 
 ##### Analysis 
 
@@ -10,7 +10,7 @@ The current architecture in `src/app/config/enums.py` and `src/app/models/proper
 
 1. **Category vs. Instance Inversion:** Across all other categories (`objects`, `sheets`, `cursors`), `instance` defines the domain model and gameplay mechanics (`doors` -> `DoorMechanics`, `crates` -> `MotionMechanics`, `chests` -> `ContainerState`). For `effects`, instances currently reflect animation lifespans, leaving no clean mechanism to distinguish between an ambient visual (water ripple), a damaging tile (lava), a world pickup (spinning coin), or an interactive entity (furnace).
 2. **Permutational Explosion:** Forcing the lifecycle into the `instance` taxonomy requires $N \times M$ classes (`HazardContinuous`, `HazardPeriodic`, `HazardTemporary`, `PassiveContinuous`, etc.), violating DRY and fracturing Board queries.
-3. **The Recommended Architecture:** Partition `AssetInstances` of category `effects` strictly by their **functional role** (`passive`, `hazard`, `collectable`, `reactable`), and shift animation duration and pacing into a unified `LifecycleProperties` model on `EffectProperties`. All Effect instances then consume a single, deterministic `LifecycleAnimation` strategy.
+3. **The Recommended Architecture:** Partition `AssetInstances` of category `effects` strictly by their **functional role** (`passive`, `hazard`, `collectable`, `reactable`), and shift animation duration and pacing into a unified `LifecycleProperties` model on `EffectProperties`. All Effect instances then consume a single, deterministic `FrequencyAnimation` strategy.
 
 ```mermaid
 flowchart TD
@@ -32,7 +32,7 @@ flowchart TD
 
     subgraph BehaviorStrategy ["Behavior Strategy"]
         direction TB
-        BehaviorContent["LifecycleAnimation: continuous, periodic, temporary"]
+        BehaviorContent["FrequencyAnimation: continuous, periodic, temporary"]
     end
 ```
 
@@ -63,12 +63,12 @@ class EffectProperties(AssetProperties):
 
 ```
 
-**2. Deterministic `LifecycleAnimation`**
+**2. Deterministic `FrequencyAnimation`**
 
 By leveraging `state.animation.tick` alongside `state.animation.frame`, all three lifecycles execute within a single stateless animation component with zero runtime heap allocation:
 
 ```python
-class LifecycleAnimation(Animation):
+class FrequencyAnimation(Animation):
     def animate(self, state: AssetState, properties: EffectProperties) -> AssetState:
         lifecycle = properties.lifecycle
         anim = state.animation
@@ -116,7 +116,7 @@ Migrate Effect instances in `app.config.enums.AssetInstances` from temporal defi
 
 ##### Goal: Unified Animation Engine
 
-Implement `LifecycleAnimation` in `app.assets.animations.core` to resolve `continuous`, `periodic`, and `temporary` cycles using internal tick accumulators. Deprecate `TemporaryAnimation` and `PersistentAnimation`.
+Implement `FrequencyAnimation` in `app.assets.animations.core` to resolve `continuous`, `periodic`, and `temporary` cycles using internal tick accumulators. Deprecate `TemporaryAnimation` and `PersistentAnimation`.
 
 ##### Goal: Engine Lifecycle & Garbage Collection Integration
 
@@ -142,12 +142,12 @@ Update `RemoveMechanics` to query expired temporary effects across any functiona
 * [x] Subtask: Define `ReactableState` containing `action` trigger requirements and `cooldown`.
 * [x] Subtask: Register new state models to `StateRecipe` and the loader type adaptors.
 
-**3. Task: LifecycleAnimation Strategy Implementation**
+**3. Task: FrequencyAnimation Strategy Implementation**
 
 *Objective*: Implement a unified animation strategy replacing `TemporaryAnimation` and `PersistentAnimation`.
 
-* [x] Subtask: Implement `LifecycleAnimation` in `app.assets.animations.core` supporting continuous, periodic, and temporary behaviors.
-* [x] Subtask: Register `LifecycleAnimation` in `app.services.generators.factory.Factory` under `AnimationRecipe.LIFECYCLE`.
+* [x] Subtask: Implement `FrequencyAnimation` in `app.assets.animations.core` supporting continuous, periodic, and temporary behaviors.
+* [x] Subtask: Register `FrequencyAnimation` in `app.services.generators.factory.Factory` under `AnimationRecipe.LIFECYCLE`.
 * [x] Subtask: Update `default.yaml` recipe configurations to map all Effect instances to `FrameRecipe.ITERABLE` and `AnimationRecipe.LIFECYCLE`.
 
 **4. Task: Engine Mechanics and Cradle Alignment**
@@ -826,7 +826,7 @@ libpng warning: iCCP: known incorrect sRGB profile
   - Instance: `reactables`
   - ID: `spinning-dummy`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.core.IterableFrame'>`
 - **Properties:**
   - Dimensions:
@@ -1022,9 +1022,9 @@ flowchart TD
       direction TB
         CythonNarrow --> ConfirmedPair["Intersecting Attacker & Target Pair"]
         ConfirmedPair --> ReactableTrigger["ReactableState.active = True"]
-        ReactableTrigger --> AnimTick["LifecycleAnimation.animate() Frame 0 -> Count-1"]
+        ReactableTrigger --> AnimTick["FrequencyAnimation.animate() Frame 0 -> Count-1"]
         AnimTick --> Clamp["Clamp to Final Frame (persist=True)"]
-        Clamp --> CooldownStep["LifecycleAnimation.cooldown(state, props) cooldown -= 1"]
+        Clamp --> CooldownStep["FrequencyAnimation.cooldown(state, props) cooldown -= 1"]
         CooldownStep --> Reset["cooldown <= 0: active = False, frame = 0, cooldown = default"]
     end
 ```
@@ -1047,9 +1047,9 @@ When querying broad and narrow phase combat collisions, attackers must not be pa
 Reactables are props that respond to specific character intentions (`INTERACT` or `ATTACK`). Their lifecycle flow must remain deterministic and stateless:
 
 * **Trigger**: When an interaction or attack intersects a Reactable whose configured trigger matches the source intention, the system sets `state.active = True`.
-* **Execution**: While `state.active == True`, `LifecycleAnimation.animate()` advances frames according to `lifecycle.delay`.
+* **Execution**: While `state.active == True`, `FrequencyAnimation.animate()` advances frames according to `lifecycle.delay`.
 * **Persistence**: For `persist: True` effects (like sparring dummies or switches), the animation clamps at `properties.count - 1`.
-* **Cooldown & Reset**: Once clamped, `LifecycleAnimation.cooldown(state, properties)` decrements `state.cooldown`. When `state.cooldown <= 0`, it resets `state.active = False`, `state.animation.frame = 0`, `state.animation.tick = 0`, and restores `state.cooldown` from configuration.
+* **Cooldown & Reset**: Once clamped, `FrequencyAnimation.cooldown(state, properties)` decrements `state.cooldown`. When `state.cooldown <= 0`, it resets `state.active = False`, `state.animation.frame = 0`, `state.animation.tick = 0`, and restores `state.cooldown` from configuration.
 
 ##### Bug B008: CombatMechanics Body-Hitbox Broad/Narrow Phase Culling Mismatch
 
@@ -1084,7 +1084,7 @@ Refactor `CombatMechanics` to eliminate dependencies on character torso hitboxes
 
 ##### Goal: Reactable State Reset & Cooldown Loop
 
-Correct the invocation signature of `LifecycleAnimation.cooldown` in `AnimationMechanics`. Normalize `cooldown` defaults between `LifecycleProperties` and `ReactableState` to ensure repeatable interaction triggers without state corruption.
+Correct the invocation signature of `FrequencyAnimation.cooldown` in `AnimationMechanics`. Normalize `cooldown` defaults between `LifecycleProperties` and `ReactableState` to ensure repeatable interaction triggers without state corruption.
 
 ##### Tasks
 

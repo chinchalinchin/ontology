@@ -18,7 +18,7 @@ from libs.core.models import Dimensions
 
 class Orchestrator:
     """
-    Enforces the correct sequence of instantiation for the Engine lifecycle.
+    Enforces the correct sequence of instantiation for the Engine frequency.
     """
     def __init__(self, builder: Builder = None):
         if builder is None:

@@ -227,11 +227,16 @@ class Buildings(str, Enum):
     WALLS           = "walls"
 
 class Corridors(str, Enum):
-    CARPETS         = "carpets"
     PAINTS          = "paints"
-    PLANKS          = "planks"
+    PATTERNS        = "patterns"
+    SIDINGS         = "sidings"
     WALLPAPERS      = "wallpapers"
 
+class Carpets(str, Enum):
+    CUTS            = "cuts"
+    PLUSH           = "plush"
+    LOOPS           = "loops"
+    
 # -------------------------------- ASSET ENUMERATIONS
 #   NOTE: These are required Assets.
 

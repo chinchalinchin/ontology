@@ -8,12 +8,12 @@ from unittest.mock import MagicMock
 from app.assets.animations.core import (
     NoAnimation, 
     BinaryAnimation, 
-    LifecycleAnimation, 
+    FrequencyAnimation, 
     StateAnimation, 
     SpriteAnimation
 )
 from app.config.enums import Frequencies
-from app.models.properties import EffectProperties, Lifecycle
+from app.models.properties import EffectProperties, Frequency
 from app.models.state import (
     AssetState, 
     AnimationState, 
@@ -51,10 +51,10 @@ def test_binary_animation():
     assert state.animation.frame == 0
 
 
-def test_lifecycle_animation_inactive():
-    animation = LifecycleAnimation()
-    lifecycle = Lifecycle(type=Frequencies.CONTINUOUS.value, delay=1)
-    properties = EffectProperties(dimensions=Dimensions(32, 32), count=4, lifecycle=lifecycle)
+def test_frequency_animation_inactive():
+    animation = FrequencyAnimation()
+    frequency = Frequency(type=Frequencies.CONTINUOUS.value, delay=1)
+    properties = EffectProperties(dimensions=Dimensions(32, 32), count=4, frequency=frequency)
     state = EffectState(id="effect-1", active=False, animation=AnimationState(frame=2, tick=3))
 
     animation.animate(state, properties)
@@ -62,10 +62,10 @@ def test_lifecycle_animation_inactive():
     assert state.animation.tick == 0
 
 
-def test_lifecycle_animation_continuous():
-    animation = LifecycleAnimation()
-    lifecycle = Lifecycle(type=Frequencies.CONTINUOUS.value, delay=2)
-    properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, lifecycle=lifecycle)
+def test_frequency_animation_continuous():
+    animation = FrequencyAnimation()
+    frequency = Frequency(type=Frequencies.CONTINUOUS.value, delay=2)
+    properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, frequency=frequency)
     state = EffectState(id="torch", active=True, animation=AnimationState(frame=0, tick=0))
 
     # Tick 1: Pacing delay threshold not reached
@@ -86,10 +86,10 @@ def test_lifecycle_animation_continuous():
     assert state.animation.frame == 0
 
 
-def test_lifecycle_animation_temporary_non_persisting():
-    animation = LifecycleAnimation()
-    lifecycle = Lifecycle(type=Frequencies.TEMPORARY.value, delay=1, persist=False)
-    properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, lifecycle=lifecycle)
+def test_frequency_animation_temporary_non_persisting():
+    animation = FrequencyAnimation()
+    frequency = Frequency(type=Frequencies.TEMPORARY.value, delay=1, persist=False)
+    properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, frequency=frequency)
     state = EffectState(id="slash-spark", active=True, animation=AnimationState(frame=0, tick=0))
 
     # Advances through frames up to count
@@ -102,10 +102,10 @@ def test_lifecycle_animation_temporary_non_persisting():
     assert state.animation.frame == 3
 
 
-def test_lifecycle_animation_temporary_persisting():
-    animation = LifecycleAnimation()
-    lifecycle = Lifecycle(type=Frequencies.TEMPORARY.value, delay=1, persist=True)
-    properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, lifecycle=lifecycle)
+def test_frequency_animation_temporary_persisting():
+    animation = FrequencyAnimation()
+    frequency = Frequency(type=Frequencies.TEMPORARY.value, delay=1, persist=True)
+    properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, frequency=frequency)
     state = EffectState(id="dummy", active=True, animation=AnimationState(frame=0, tick=0))
 
     state.animation.frame = 1
@@ -117,10 +117,10 @@ def test_lifecycle_animation_temporary_persisting():
     assert state.animation.frame == 2
 
 
-def test_lifecycle_animation_periodic():
-    animation = LifecycleAnimation()
-    lifecycle = Lifecycle(type=Frequencies.PERIODIC.value, delay=2, frequency=8)
-    properties = EffectProperties(dimensions=Dimensions(32, 32), count=2, lifecycle=lifecycle)
+def test_frequency_animation_periodic():
+    animation = FrequencyAnimation()
+    frequency = Frequency(type=Frequencies.PERIODIC.value, delay=2, frequency=8)
+    properties = EffectProperties(dimensions=Dimensions(32, 32), count=2, frequency=frequency)
     state = EffectState(id="geyser", active=True, animation=AnimationState(frame=0, tick=0))
 
     # Active duration = 2 * 2 = 4 ticks. Frame 0 during ticks 0-1
@@ -142,10 +142,10 @@ def test_lifecycle_animation_periodic():
     assert state.animation.frame == 0
 
 
-def test_lifecycle_animation_cooldown_and_reset():
-    animation = LifecycleAnimation()
-    lifecycle = Lifecycle(type=Frequencies.TEMPORARY.value, delay=1, cooldown=60, persist=True)
-    properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, lifecycle=lifecycle)
+def test_frequency_animation_cooldown_and_reset():
+    animation = FrequencyAnimation()
+    frequency = Frequency(type=Frequencies.TEMPORARY.value, delay=1, cooldown=60, persist=True)
+    properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, frequency=frequency)
     state = ReactableState(id="dummy", active=True, cooldown=2, animation=AnimationState(frame=2, tick=0))
 
     # Frame matches clamp limit (count - 1): decrement cooldown

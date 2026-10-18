@@ -1,7 +1,7 @@
 from app.assets.animations.core import (
     NoAnimation,
     BinaryAnimation,
-    LifecycleAnimation,
+    FrequencyAnimation,
     StateAnimation,
     SpriteAnimation
 )
@@ -13,7 +13,7 @@ from app.assets.animations.widgets import (
 __all__ = [
     'NoAnimation',
     'BinaryAnimation',
-    'LifecycleAnimation',
+    'FrequencyAnimation',
     'StateAnimation',
     'TraversalAnimation',
     'MeterAnimation',

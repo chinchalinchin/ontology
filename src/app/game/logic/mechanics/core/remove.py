@@ -38,8 +38,8 @@ class RemoveMechanics(Mechanic):
     ) -> None:          
         removals = []
         for effect in board.categories(AssetCategories.EFFECTS):
-            if effect.properties.lifecycle.persist or (
-                effect.properties.lifecycle.type != Frequencies.TEMPORARY.value
+            if effect.properties.frequency.persist or (
+                effect.properties.frequency.type != Frequencies.TEMPORARY.value
             ): continue
 
             if effect.state.animation.frame >= effect.properties.count:

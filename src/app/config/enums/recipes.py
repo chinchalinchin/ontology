@@ -33,7 +33,7 @@ class AnimationRecipe(str, Enum):
     SPRITE          = "sprite"
     METER           = "meter"
     TRAVERSAL       = "traversal"
-    LIFECYCLE       = "lifecycle"
+    FREQUENCY       = "frequency"
 
 class HitboxRecipe(str, Enum):
     ATTACK          = "attack"

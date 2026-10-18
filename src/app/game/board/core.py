@@ -419,8 +419,10 @@ class Board:
                 continue
 
             if asset.category == AssetCategories.EFFECTS.value:
-                lifecycle = getattr(asset.properties, "lifecycle", None)
-                if lifecycle and lifecycle.type == Frequencies.TEMPORARY.value and not lifecycle.persist:
+                frequency = getattr(asset.properties, "frequency", None)
+                if asset.properties.frequency and \
+                    asset.properties.frequency.type == Frequencies.TEMPORARY.value and \
+                    not asset.properties.frequency.persist:
                     continue
 
             if asset.category == AssetCategories.SHEETS.value and asset.instance not in (

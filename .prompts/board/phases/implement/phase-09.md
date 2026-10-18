@@ -550,7 +550,7 @@ src/assets/effects/fluids/continuous/waterflow.png: PNG image data, 96 x 32, 8-b
   - Instance: `fluids`
   - ID: `waterflow`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.core.FluidFrame'>`
 - **Properties:**
   - Dimensions:

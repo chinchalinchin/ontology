@@ -29,9 +29,11 @@ Struts are closely related to [Asset Compositions](./03-compositions.md), as the
 
 Struts are the basic element of Compositions. They are classified according to Material and Blueprint. All Struts are functionally equivalent (but may differ in the declaration of their properties), yet serve different atmospheric, vanity or aesthetic purposes; Material and Blueprint describe the axes of this "*aesthetic*" space.
 
+A Blueprint is constant along the axis of Material, and Material is constant along the axis of Blueprints.
+
 **Materials**
 
-Material serves mainly to alter the color and shading of the Strut.
+Material serves mainly to alter the color and shading of the Strut. A Material must have implemenations for every Blueprint in a Strut atlas.
 
 - Organics: `wood`, `thatches`
 - Geologics: `brick`, `granite`, `marble`, `stone`, `sandstone`
@@ -44,7 +46,7 @@ Material serves mainly to alter the color and shading of the Strut.
 
 **Blueprints**
 
-Blueprints describe specific structural implementations.
+Blueprints describe specific structural implementations of a Strut. A Blueprint must have implementations for every Material in a Strut atlas.
  
 - Building Blueprints:
     - `floors`: Interior ground surfaces.

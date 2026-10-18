@@ -85,27 +85,27 @@ def mock_recipes_configuration() -> RecipeConfiguration:
         effects=EffectRecipe(
             collectables=Recipe(
                 frame=FrameRecipe.ITERABLE.value, 
-                animation=AnimationRecipe.LIFECYCLE.value,
+                animation=AnimationRecipe.FREQUENCY.value,
                 hitbox=HitboxRecipe.STATIC.value
             ),
             hazards=Recipe(
                 frame=FrameRecipe.ITERABLE.value, 
-                animation=AnimationRecipe.LIFECYCLE.value,
+                animation=AnimationRecipe.FREQUENCY.value,
                 hitbox=HitboxRecipe.STATIC.value
             ),
             passive=Recipe(
                 frame=FrameRecipe.ITERABLE.value, 
-                animation=AnimationRecipe.LIFECYCLE.value,
+                animation=AnimationRecipe.FREQUENCY.value,
                 hitbox=HitboxRecipe.NONE.value
             ),
             reactables=Recipe(
                 frame=FrameRecipe.ITERABLE.value, 
-                animation=AnimationRecipe.LIFECYCLE.value,
+                animation=AnimationRecipe.FREQUENCY.value,
                 hitbox=HitboxRecipe.STATIC.value
             ),
             fluids=Recipe(
                 frame=FrameRecipe.FLUID.value, 
-                animation=AnimationRecipe.LIFECYCLE.value,
+                animation=AnimationRecipe.FREQUENCY.value,
                 hitbox=HitboxRecipe.DYNAMIC.value
             )
         ),
