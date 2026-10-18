@@ -227,15 +227,9 @@ class Buildings(str, Enum):
     WALLS           = "walls"
 
 class Corridors(str, Enum):
-    PAINTS          = "paints"
-    PATTERNS        = "patterns"
-    SIDINGS         = "sidings"
-    WALLPAPERS      = "wallpapers"
-
-class Carpets(str, Enum):
-    CUTS            = "cuts"
-    PLUSH           = "plush"
-    LOOPS           = "loops"
+    SOLIDS          = "solids"
+    STRIPES         = "stripes"
+    DESIGNS         = "designs"
     
 # -------------------------------- ASSET ENUMERATIONS
 #   NOTE: These are required Assets.

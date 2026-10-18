@@ -129,38 +129,91 @@ Cost is extraneous as a property. It can be derived from the area, material, mat
 
 Struts declare Material  (`organics`, `geologics`, `metallics`, `chromatics`) and Blueprint (`building`, `corridor`, `carpet`) axes in their properties. Rather than enumerating every single Material or Blueprint, they will refer to partitions of each space.
 
+**Rebrand**:
+
+To align with the theme, the following relabellings should occur,
+
+- Renaming `brick` to `feldspar`.
+- Renaming `stone` to `limestone`
+
 **Reorganization**
 
 By curating combinations of different Asset files in the LPC database, the following sheets have been constructed so each cell is exactly 96 px by 96 px.
 
 - Strut Sheet:
-    - id: hut
+    - id: hut (96px by 96px)
         - Rows (Blueprint: Building): floors, walls, flats, roofs, paths, halls
         - Columns (Material: Organics): thatches, wood
-    - id: home 
+    - id: home (96px by 96px)
         - Rows (Blueprint: Building): floors, walls, flats, roofs, paths, halls
-        - Columns (Material: Geologics): stone, brick, granite, marble
-    - id: suburbs
+        - Columns (Material: Geologics): limestone, feldspar, granite, marble
+    - id: suburb (96px by 96px)
         - Rows (Blueprint: Building): floors, walls, flats, roofs, paths, halls
-        - Columns (Material: Chromatics):  white, blue, red, yellow, green
-    - id: mansion
+        - Columns (Material: Chromatics):  neutral, blue, red, yellow, green
+    - id: mansion (96px by 96px)
         - Rows (Blueprint: Building): floors, walls, flats, roofs, paths, halls
-        - Columns (Material, Geologics): stone, brick, granite, marble
-    - id: hallway
+        - Columns (Material, Geologics): limestone, feldspar, granite, marble
+    - id: hallway (96px by 96px)
         - Rows (Blueprint: Corridor): solids, stripes, designs
-        - Columns (Material: Chromatics, Host: Wood): white, blue, red, yellow, green
-    - id: carpet
+        - Columns (Material: Chromatics, Host: Wood): neutral, blue, red, yellow, green
+    - id: carpet (96px by 96px)
         - Rows (Blueprint: Corridor): solids, stripes, designs
-        - Columns (Material: Chromatics, Host: Cotton): white, blue, red, yellow, green
+        - Columns (Material: Chromatics, Host: Cotton): neutral, blue, red, yellow, green
+    - id: avenue (32px by 32px)
+        - Rows (Blueprint: Corridor): solids, stripes, designs
+        - Columns (Material: Geologics): limestone, feldspar, granite, marble
 
 **Materials**
 
-- Hosts: `cotton`, `wood`
 - Organics: `wood`, `thatches`
-- Geologics: `stone`, `brick`, `granite`, `marble`
+- Geologics: `limestone`, `feldspar`, `granite`, `marble`
 - Metallics: `copper`, `iron`, `gold`
-- Chromatics (Dyes): `white`, `red`, `blue`, `yellow`, `green`
-    - If a Strut declares a Chromatic as its Material, then it must specify a Host Material.
+- Chromatics (Dyes): `neutral`, `red`, `blue`, `yellow`, `green`
+    - If a Strut declares a Chromatic as its Material, then it must specify a Host Material. This is encapsulated within a Material model that defaults `host` to `None`.
+
+Model:
+
+```python
+# pseudocode
+class Material:
+    genus: str
+    host: Union[str, None] = None
+
+
+class CraftProperties(AssetProperties):
+    # ...
+    material: Material
+```
+
+Property Schema:
+
+```yaml
+crafts:
+    strut:
+        some-chromatic-strut:
+            dimensions:
+                w: 100
+                l: 100
+            mass: 0
+            hitboxes: null
+            material: 
+                genus: chromatics
+                host: wood
+            blueprints: corridors
+        some-geologic-strut:
+            dimensions:
+                w: 100
+                l: 100
+            mass: 0
+            hitboxes: null
+            material: 
+                genus: geologics
+            blueprints: buildings
+```
+
+- Host Materials: Materials that can "receive" Chromatic Materials. 
+    - `cotton`
+    - `wood`
 
 **Blueprints**
 
@@ -175,6 +228,11 @@ By curating combinations of different Asset files in the LPC database, the follo
     - `solids`: Support surfaces.
     - `stripes`: Support surfaces.
     - `designs`: Support surfaces.
+- Column Blueprint:
+    - `bases`: Ground level surface.
+    - `shafts`: Elevated surfaces
+    - `crowns`: Building enclosures.
+
 
 ##### Goals
 
