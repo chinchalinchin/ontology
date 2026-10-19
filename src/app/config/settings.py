@@ -10,7 +10,8 @@ from typing import Final
 # Application Libraries
 from app.config.enums import (
     AssetInstances,
-    Seasons
+    Seasons,
+    Substrates
 )
 # ---------------------------------------------------
 # APPLICATION SETTINGS
@@ -79,10 +80,10 @@ EVAPORATION_RATE: Final[float] = 1.0
 """Multiplicative factor that scales the moisture evaporation rate"""
 
 SUBSTRATES: Final[dict[str, int]] = {
-    AssetInstances.ENVIRON.value: -4,
-    AssetInstances.FLUIDS.value: -3,
-    AssetInstances.SHORELINES.value: -2,
-    AssetInstances.BRIDGES.value: -1
+    AssetInstances.ENVIRON.value: Substrates.ENVIRON.value,
+    AssetInstances.FLUIDS.value: Substrates.FLUIDS.value,
+    AssetInstances.SHORELINES.value: Substrates.SHORELINES.value,
+    AssetInstances.BRIDGES.value: Substrates.BRIDGES.value
 }
 """Instance-keyed map of substrate elevations."""
 

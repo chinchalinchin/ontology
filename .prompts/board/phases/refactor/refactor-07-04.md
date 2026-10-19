@@ -17,6 +17,7 @@ Order within each partition is strict and determines the horizontal column index
 * *Host Constraint*: Any Strut declaring `genus: chromatics` must declare a `host` material restricted to the `organics` partition (`cotton`, `thatches`, `wood`). Non-chromatic genera default `host` to `None`.
 
 2. **Ordered Blueprint Space & Multiplication Strategies (`app.config.enums`)**:
+
 Order within each partition is strict and determines the vertical row index $r \in [0, R)$ in a Strut Sheet atlas:
 
 * **`buildings`** (`strategy: simple`): `0: floors`, `1: walls`, `2: flats`, `3: roofs`, `4: paths`, `5: halls`
@@ -174,13 +175,16 @@ $$\text{rect}(r, c) = (c \cdot w,\; r \cdot l,\; w,\; l)$$
 Unifying `floors`, `paths`, `walls`, and `halls` into a single `building` Strut Sheet (`home`, `mansion`, `hut`, `store`, `suburb`) introduces an important interaction with `Screen.draw()` and `CollisionMechanics`:
 
 1. **Rendering Priority (`priority`)**: In `Screen.draw()`, ground substrates (`floors`, `paths`, `solids`, `stripes`, `designs`) must sort with `priority = -1` so characters and furniture standing at the same `ground_y` render above them, whereas upright walls (`walls`, `halls`, `bases`) sort with `priority = 0`. Because all rows of `mansion` share a single `CraftProperties` instance, `Asset` (or `Screen._sort`) should resolve substrate priority dynamically when `state.blueprint` belongs to `SUBSTRATE_BLUEPRINTS = {'floors', 'paths', 'solids', 'stripes', 'designs'}`.
+
 2. **Blueprint-Segregated Hitboxes (`MaterialHitbox`)**: Passable surface rows (`floors`, `paths`, `solids`, `stripes`, `designs`, and column `crowns`/`shafts`) must emit `[]` from `hitbox.get()`, whereas structural obstruction rows (`walls`, `halls`, `bases`) emit active `List[Hitbox]`. By keying `CraftProperties.hitboxes` by blueprint partition (or defaulting to active hitboxes only on `OBSTACLE_BLUEPRINTS = {'walls', 'halls', 'bases'}` when `properties.hitboxes is None`), `floors` and `paths` on a `mass = 0` building sheet remain completely passable without needing separate property definitions.
+
 
 ###### 3. Column `expansion` Strategy & Perspective Baseline Anchoring
 
 For `blueprints: columns` (`pillar`, `tower`), `MultiplicationStrategies.EXPANSION` constructs a vertical column from top to bottom along the positive $y$-axis (`base.position.y` greater than `crown.position.y`):
 
 * Given deployment origin $(x_0, y_0)$ and vertical shaft multiplier $n_y \ge 1$ (and optional horizontal count $n_x \ge 1$):
+
 1. **`crowns` (Top Cap)**: Placed at $(x_0 + i_x \cdot w,\; y_0)$ with `blueprint = 'crowns'`.
 2. **`shafts` (Multiplicand)**: $n_y$ contiguous segments placed at $(x_0 + i_x \cdot w,\; y_0 + (k + 1) \cdot l)$ for $k \in [0, n_y)$ with `blueprint = 'shafts'`.
 3. **`bases` (Ground Cap)**: Placed at $(x_0 + i_x \cdot w,\; y_0 + (n_y + 1) \cdot l)$ with `blueprint = 'bases'`.
@@ -212,7 +216,68 @@ $$\text{Host Cost} = \text{Cost}\big(\text{item} = \text{material\_prop.host},\;
 
 If `state.material != 'neutral'`, append $\text{Cost}(\text{item} = \text{state.material},\; \text{quantity} = \max(1, \text{round}(N \cdot \mu_{\text{chromatic}})))$.
 
+##### User Review II
 
+All of the code. taskings and goals looks good; however there is a latent bug you touched on.
+
+###### Elevation vs Priority vs Anchors
+
+For [Architectural Analysis #2.1](#2-coplanar-priority--passability-across-unified-strut-sheets), this is a problem that has occured to me. However, priority only matters when the elevations and vertical displacements are equal; it is the fallback tie-breaker. Your solution handles an important edge case, but not the main solution set. I also think it misunderstands the nature of the problem. Priority is a property, i.e. static and configured in the property indices.  
+
+For dynamic Assets, priority only gets evaluated in the cases where the Sprite happens to be at the same vertical displacement as the static Asset; it is mainly used in conjunction with `anchor` to lock the rendering order of static assets in Compositions. While your solution solves the static case, it does not solve the dynamic case, where a Sprite is walking on a surface in which it is wholly contained `sprite.state.position.y + sprite.dimensions.l < strut.state.position.y + strut.dimensions.l` AND `sprite.state.position.y > strut.state.position.y`. Consider a Strut with dimension `(400, 400)` and a Sprite with standard dimensions `(64, 64)`; once the Sprite passes the boundary, the surface will render on top of the Sprite (This actually currently occurs with Stairs, but I haven't logged the bug yet). Even with the priority resolving dynamically, this setup will not render this situtation correctly. The actual solution, if we go down this route, I believe, is to dynamically resolve the *`anchor`* and the `priority`; as the `anchor` is explicitly there to override vertical displacements so `priority` will be referenced. However, there is another solution to consider.
+
+During Fluid and Geography development, a very similar problem occured and the following solution was implemented. It likely needs to be extended for Struts, as the core issue is "ground level" and "shoulder level" are not the same elevation.
+
+The engine currently utilizes `SUBSTRATES` to ensure the rendering order of certain Assets. Enum is defined,
+
+```python
+# src/app/config/enums.py
+class Substrates(int, Enum):
+    ENVIRON         = -4 
+    FLUIDS          = -3
+    SHORELINES      = -2
+    BRIDGES         = -1
+```
+
+Then settings are mapped,
+
+```python
+# src/app/config/settings.py
+SUBSTRATES: Final[dict[str, int]] = {
+    AssetInstances.ENVIRON.value: Substrates.ENVIRON.value,
+    AssetInstances.FLUIDS.value: Substrates.FLUIDS.value,
+    AssetInstances.SHORELINES.value: Substrates.SHORELINES.value,
+    AssetInstances.BRIDGES.value: Substrates.BRIDGES.value
+}
+"""Instance-keyed map of substrate elevations."""
+```
+
+And it is defined as the fallback in the Asset class,
+
+```python
+# src/app/assets/base.py
+    class Asset:
+        # ...
+        @property
+        def elevation(self) -> int:
+            if self.state.elevation is not None:
+                return self.state.elevation
+            return settings.SUBSTRATES.get(self.taxonomy.instance, 0)
+```
+
+And all Hitboxes collapse negative elevations to elevation 0, so all substrates are effectively elevation 0 when collisions are evaluated,
+
+```python
+class StaticHitbox(HitboxSchema):
+    def elevations(self, properties: AssetProperties, state: AssetState) -> List[int]:
+        return [max(0, state.elevation if state.elevation is not None else 0)]
+```
+
+Consider this: what if, instead of jury-rigging the priorities or anchors to resolve dynamically, Strut blueprints were assigned and lazily-loaded Substrates? This has a problem that did not occur in the case of Fluids and Geography, insofar that Struts are fundamentally "detached" from elevations and can be deployed anywhere. However, much like Pseudo-State, the Decomposer could reference Pseudo-Substrates so the elevations of internal components are relatively specified.
+
+The other option is to dynamically resolve the `anchor`/`priority` and the question becomes where. This seems the more complicated solution to me, as it involves Asset collisions, i.e. you have to know when a dynamic Asset is intersecting a Strut of a particular `blueprint`. This adds more conditional logic to collisions, which are already sufficiently complicated. However, this does not mean this way is not the solution. 
+
+All of the tasks and goals are good as is, I believe, and do not require further modification, so consider this an addendum. 
 
 ##### Goals
 

@@ -49,7 +49,7 @@ class Shortcuts(str, Enum):
 class Substrates(int, Enum):
     ENVIRON         = -4 
     FLUIDS          = -3
-    GEOGRAPHY       = -2
+    SHORELINES      = -2
     BRIDGES         = -1
 
 # -------------------------------- ENGINE ASSET ENUMERATIONS
