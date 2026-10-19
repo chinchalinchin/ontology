@@ -186,30 +186,29 @@ class CentennialStages(str, Enum):
     ALLOY           = "alloy"
 
 class Materials(str, Enum):
+    CHROMATICS      = "chromatics"
     ORGANICS        = "organics"
     GEOLOGICS       = "geologics"
     METALLICS       = "metallics"
 
 class Organics(str, Enum):
+    COTTON          = "cotton"
     THATCHES        = "thatches"
     WOOD            = "wood"
 
 class Geologics(str, Enum):
-    BRICK           = "brick"
+    LIMESTONE       = "limestone"
+    FELDSPAR        = "feldspar"
     GRANITE         = "granite"
     MARBLE          = "marble"
-    SANDSTONE       = "sandstone"
-    SLATE           = "slate"
-    STONE           = "stone"
     
 class Metallics(str, Enum):
     COPPER          = "copper"
     IRON            = "iron"
-    SILVER          = "silver"
     GOLD            = "gold"
 
 class Chromatics(str, Enum):
-    WHITE           = "white"
+    NEUTRAL         = "neutrl"
     BLUE            = "blue"
     RED             = "red"
     YELLOW          = "yellow"
@@ -221,12 +220,12 @@ class Blueprints(str, Enum):
     COLUMNS         = "columns"
 
 class Buildings(str, Enum):
-    FLATS           = "flats"
     FLOORS          = "floors"
-    HALLS           = "halls"
-    PATHS           = "paths"
-    ROOFS           = "roofs"
     WALLS           = "walls"
+    FLATS           = "flats"
+    ROOFS           = "roofs"
+    PATHS           = "paths"
+    HALLS           = "halls"
 
 class Corridors(str, Enum):
     SOLIDS          = "solids"

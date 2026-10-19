@@ -5,14 +5,32 @@ Package for global application constants.
 """
 # Standard Libraries
 from pathlib import Path
-from typing import Final
-
+from typing import (
+    Dict,
+    Final,
+    Tuple
+)
 # Application Libraries
 from app.config.enums import (
     AssetInstances,
+    # ----
+    Chromatics,
+    Geologics,
+    Materials,
+    Metallics,
+    Organics,
+    # -----
+    Blueprints,
+    Buildings,
+    Columns,
+    Corridors,
+    # ----- 
     Seasons,
-    Substrates
+    # -----
+    MultiplicationStrategies,
+    Substrates,
 )
+
 # ---------------------------------------------------
 # APPLICATION SETTINGS
 # ---------------------------------------------------
@@ -34,6 +52,7 @@ LOG_LEVEL: Final[str] = "INFO"
 
 SOCKET: Final[str] = "/tmp/ontology.sock"
 """TCP Socket for application telemetry."""
+
 # ---------------------------------------------------
 # ENGINE CONSTANTS
 # ---------------------------------------------------
@@ -87,6 +106,27 @@ SUBSTRATES: Final[dict[str, int]] = {
 }
 """Instance-keyed map of substrate elevations."""
 
+MATERIAL_PARTITIONS: Final[Dict[str, Tuple[str, ...]]] = {
+    Materials.ORGANICS.value: tuple(m.value for m in Organics),
+    Materials.GEOLOGICS.value: tuple(m.value for m in Geologics),
+    Materials.METALLICS.value: tuple(m.value for m in Metallics),
+    Materials.CHROMATICS.value: tuple(m.value for m in Chromatics)
+}
+"""Materials partitioned by genus."""
+
+BLUEPRINT_PARTITIONS: Final[Dict[str, Tuple[str, ...]]] = {
+    Blueprints.BUILDINGS.value: tuple(b.value for b in Buildings),
+    Blueprints.CORRIDORS.value: tuple(b.value for b in Corridors),
+    Blueprints.COLUMNS.value: tuple(b.value for b in Columns)
+}
+"""Blueprints partitioned by schema."""
+
+BLUEPRINT_STRATEGIES: Final[Dict[str, str]] = {
+    Blueprints.BUILDINGS.value: MultiplicationStrategies.SIMPLE.value,
+    Blueprints.CORRIDORS.value: MultiplicationStrategies.SIMPLE.value,
+    Blueprints.COLUMNS.value: MultiplicationStrategies.EXPANSION.value
+}
+"""Multiplication strategy Blueprint mapping for deploying Asset states."""
 # ---------------------------------------------------
 # DIRECTORY SETTINGS
 # ---------------------------------------------------

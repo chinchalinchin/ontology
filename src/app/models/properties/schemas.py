@@ -1,142 +1,30 @@
 """
-# Ontology: app.models.properties
+# Ontology: app.models.properties.schemas
+
+Module for typing property schemas.
 """
-from typing import Dict, List, Union, Optional
-from dataclasses import dataclass, field
-
-from app.config.enums import (
-    Actions,
-    Directions,
-    Alignments,
-    Frequencies,
-    Lifespans
-)
-from app.models.adapters import (
-    PydanticDimensions as Dimensions, 
-    PydanticHitbox as Hitbox
+# Standard Libraries
+from typing import Dict
+from dataclasses import (
+    dataclass, 
+    field
 )
 
-# --------------------------------------------------------------
-
-@dataclass(slots=True)
-class Direction:
-    row: int
-
-@dataclass(slots=True)
-class Action:
-    count: int
-    directions: Dict[Directions, Direction]
-    delay: int = 1
-
-@dataclass(slots=True)
-class Cost:
-    item: str
-    quantity: int
-
-@dataclass(slots=True)
-class Frequency:
-    type: Frequencies = Frequencies.CONTINUOUS.value
-    delay: int = 1
-    frequency: int = 0
-    cooldown: int = 60
-    persist: bool = False
-
-# --------------------------------------------------------------
-
-@dataclass(slots=True)
-class AssetProperties:
-    dimensions: Dimensions # type: ignore
-    priority: int = 0
-
-
-# --------------------------------------------------------------
-
-@dataclass(slots=True)
-class RGBA:
-    r: int = 255
-    g: int = 255
-    b: int = 255
-    a: int = 255
-
-@dataclass(slots=True)
-class Outline:
-    color: RGBA = field(default_factory=lambda: RGBA(r=255, g=255, b=255, a=255))    
-    width: int = 0
-
-@dataclass(slots=True)
-class FontProperties:
-    alignment: Alignments = Alignments.START.value
-    color: RGBA = field(default_factory=lambda: RGBA(r=255, g=255, b=255, a=255))    
-    outline: Optional[Outline] = None
-    bold: bool = False
-    italics: bool = False
-    strikethrough: bool = False
-    underline: bool = False
-    margins: float = 0
-    size: int = 24
-
-# 
-# --------------------------------------------------------------
-# ---------------------------------------------- NODE PROPERTIES
-# --------------------------------------------------------------
-
-@dataclass(slots=True)
-class CursorProperties(AssetProperties):
-    frames: List[str] = field(default_factory=list)
-
-@dataclass(slots=True)
-class EffectProperties(AssetProperties):
-    count: int = 1
-    frequency: Frequency = field(default_factory=Frequency)
-    mass: int = -1
-    hitboxes: Optional[List[Hitbox]] = None # type: ignore
-
-@dataclass(slots=True)
-class ObjectProperties(AssetProperties):
-    mass: int = 0
-    count: int = 1
-    hitboxes: Optional[List[Hitbox]] = None # type: ignore
-
-@dataclass(slots=True)
-class TileProperties(AssetProperties):
-    friction: float = 0.0
-
-@dataclass(slots=True)
-class CraftProperties(AssetProperties):
-    cost: Union[List[Cost], None] = field(default_factory=list)
-    mass: int = 0
-    hitboxes: Optional[Union[Dict[int, List[Hitbox]], Dict[str, Optional[List[Hitbox]]], List[Hitbox]]] = None # type: ignore
-    
-@dataclass(slots=True)
-class ResourceProperties(AssetProperties):
-    loot: str = None
-    lifespan: Lifespans = Lifespans.ANNUAL.value
-    mass: int = 0
-    hitboxes: Dict[str, Optional[List[Hitbox]]] = None # type: ignore
-
-@dataclass(slots=True)
-class GeographyProperties(AssetProperties):
-    hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
-    tile: str = None
-    fluid: Optional[str] = None
-    thickness: int = 8
-    mass: int = -1
-
-@dataclass(slots=True)
-class SheetProperties(AssetProperties):
-    stack: List[str] = field(default_factory=list)
-    mass: int = 1
-    hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
-    actions: Union[str, Dict[Actions, Action]] = field(default_factory=dict)
-    attackboxes: Optional[Dict[str, List[Hitbox]]] = field(default_factory=dict) # type: ignore
-    
-@dataclass(slots=True)
-class WidgetProperties(AssetProperties):
-    frames: Optional[List[str]] = field(default_factory=list)
-
-# --------------------------------------------------------------
-# ------------------------------------------------- SCHEMA NODES
-# --------------------------------------------------------------
+# Application Libraries
+from app.models.properties.assets import (
+    CraftProperties,
+    CursorProperties,
+    EffectProperties,
+    GeographyProperties,
+    ObjectProperties,
+    ResourceProperties,
+    SheetProperties,
+    TileProperties,
+    WidgetProperties,
+)
+from app.models.properties.fonts import (
+    FontProperties
+)
 
 @dataclass(slots=True)
 class TilePropertyInstances:

@@ -28,6 +28,16 @@ from app.config.enums.assets import (
     AnnualStages,
     PerennialStages,
     CentennialStages,
+    # -----
+    Materials,
+    Organics,
+    Geologics,
+    Metallics,
+    Chromatics,
+    Blueprints,
+    Buildings,
+    Corridors,
+    Columns
 )
 from app.config.enums.devices import (
     Devices,
@@ -46,6 +56,7 @@ from app.config.enums.engine import (
     Relations,
     Executors,
     Translators,
+    MultiplicationStrategies,
     ChannelTypes,
     Fonts,
 )
@@ -110,6 +121,16 @@ __all__ = [
     'PerennialStages',
     'CentennialStages',
     # ------
+    'Materials',
+    'Organics',
+    'Geologics',
+    'Metallics',
+    'Chromatics',
+    'Blueprints',
+    'Buildings',
+    'Corridors',
+    'Columns',
+    # ------
     'RequiredAssets',
     'EffectsPalette',
     'ExpressionsPalette',
@@ -140,6 +161,7 @@ __all__ = [
     'Relations',
     'Executors',
     'Translators',
+    'MultiplicationStrategies',
     'ChannelTypes',
     'Substrates',
     'Fonts',

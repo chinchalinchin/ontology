@@ -67,6 +67,9 @@ class InertAssets(str, Enum):
 class OrientedAssets(str, Enum):
     RAILINGS        = "railings"
     BRIDGES         = "bridges"
+
+class MultipliedAssets(str, Enum):
+    STRUTS          = "struts"
     
 # -------------------------------- MECHANIC ENUMERATIONS
 
@@ -90,6 +93,10 @@ class Executors(str, Enum):
 class Translators(str, Enum):
     COMPILER        = "compiler"
     LAMBDA          = "lambda"
+
+class MultiplicationStrategies(str, Enum):
+    SIMPLE          = "simple"
+    EXPANSION       = "expansion"
 
 # -------------------------------- RENDERING ENUMERATIONS
 
