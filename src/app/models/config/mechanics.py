@@ -15,9 +15,7 @@ from dataclasses import (
 # Application Libraries
 from app.models.config.core import Configuration
 
-# ---------------------------------------------------------------------------------------
-# --------------------------------------------------------------- MECHANICS CONFIGURATION
-# ---------------------------------------------------------------------------------------
+# ---------------------------------------------------------
 
 @dataclass(slots=True, frozen=True)
 class MechanicsInstance:

@@ -20,9 +20,7 @@ from app.models.state import (
 )
 from app.models.config.core import Configuration
 
-# ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------- COMPOSITION CONFIGURATION
-# ---------------------------------------------------------------------------------------
+# ---------------------------------------------------------
 
 @dataclass(slots=True, frozen=True)
 class CompositionPseudoState:

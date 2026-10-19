@@ -26,6 +26,7 @@ from app.models.adapters import (
 )
 from app.models.config.core import Configuration
 
+# ---------------------------------------------------------
 
 @dataclass(slots=True, frozen=True)
 class MenuBinding:

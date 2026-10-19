@@ -8,30 +8,43 @@ from typing import (
     Dict, 
     List, 
 )
-from dataclasses import dataclass, field
+from dataclasses import (
+    dataclass, 
+    field
+)
 
 # Application Libraries
 from app.config.enums import (
     Intentions
 )
-from app.models.config.core import (
-    ActionConfiguration, 
-    LibraryConfiguration
+from app.models.config.actions import (
+    ActionConfiguration
 )
 from app.models.config.transitions import (
     IntentionConfiguration,
     PlotConfiguration,
     StageConfiguration,
 )
-from app.models.config.compositions import CompositionConfiguration
-from app.models.config.mechanics import MechanicsConfiguration
-from app.models.config.markets import MarketConfiguration
-from app.models.config.mappings import MappingConfiguration
-from app.models.config.menus import MenuConfiguration
-from app.models.config.recipes import RecipeConfiguration
+from app.models.config.compositions import (
+    CompositionConfiguration
+)
+from app.models.config.mechanics import (
+    MechanicsConfiguration
+)
+from app.models.config.markets import (
+    MarketConfiguration
+)
+from app.models.config.mappings import (
+    MappingConfiguration
+)
+from app.models.config.menus import (
+    MenuConfiguration
+)
+from app.models.config.recipes import (
+    RecipeConfiguration
+)
 
-# ---------------------------------------------------------------------------------------
-# --------------------------------------------------------------------------- ROOT SCHEMA
+# ---------------------------------------------------------
 
 @dataclass(slots=True, frozen=True)
 class ConfigurationSchema:

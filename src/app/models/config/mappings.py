@@ -18,9 +18,7 @@ from app.config.enums import (
 )
 from app.models.config.core import Configuration
 
-
-# ---------------------------------------------------------------------------------------
-# ----------------------------------------------------------------- MAPPING CONFIGURATION
+# ---------------------------------------------------------
 
 @dataclass(slots=True, frozen=True)
 class WorldMapping:

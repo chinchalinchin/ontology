@@ -15,9 +15,7 @@ from app.config.enums import (
 )
 from app.models.config.core import Configuration
 
-
-# ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------------ RECIPE CONFIGURATION
+# ---------------------------------------------------------
 
 @dataclass(slots=True, frozen=True)
 class Recipe:

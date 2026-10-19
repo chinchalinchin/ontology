@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 # Application Libraries
 from app.models.config.core import Configuration
 
+# ---------------------------------------------------------
 
 @dataclass(slots=True)
 class Cost:

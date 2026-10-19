@@ -8,13 +8,15 @@
 {{ file(properties.paths.root + 'src/app/assets/base.py') }}
 ```
 
-##### app.assets.hitboxes
+##### app.assets.frames
 
-**src/app/assets/hitboxes/core.py**
+**src/app/assets/frames/crafts.py**
 
 ```python
-{{ file(properties.paths.root + 'src/app/assets/hitboxes/core.py') }}
+{{ file(properties.paths.root + 'src/app/assets/hitboxes/frames.py') }}
 ```
+
+##### app.assets.hitboxes
 
 **src/app/assets/hitboxes/crafts.py**
 
@@ -46,15 +48,35 @@
 
 #### app.models
 
-**src/app/models/properties.py**
+##### app.models.properties
+
+**src/app/models/properties/core.py**
 
 ```python
-{{ file(properties.paths.root + 'src/app/models/properties.py') }}
+{{ file(properties.paths.root + 'src/app/models/properties/core.py') }}
+```
+
+**src/app/models/properties/crafts.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/properties/crafts.py') }}
+```
+
+**src/app/models/properties/schemas.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/properties/schemas.py') }}
 ```
 
 ##### app.models.config
 
 **src/app/models/config/compositions.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/config/compositions.py') }}
+```
+
+**src/app/models/config/markets.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/models/config/compositions.py') }}
@@ -68,7 +90,7 @@
 {{ file(properties.paths.root + 'src/app/models/state/core.py') }}
 ```
 
-**src/app/models/state/schemas.py:**
+**src/app/models/state/schemas.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/models/state/schemas.py')}}
@@ -94,34 +116,16 @@
 
 ###### app.services.generators.game
 
-{# 
-**src/app/services/generators/game/cradle.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/services/generators/game/cradle.py') }}
-``` 
-#}
-
 **src/app/services/generators/game/decomposer.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/services/generators/game/decomposer.py' ) }}
 ```
 
-{# 
-**src/app/services/generators/game/factory.py**
+##### app.services.markets
+
+**src/app/services/markets/materializer.py**
 
 ```python
-{{ file(properties.paths.root + 'src/app/services/generators/game/factory.py' ) }}
-``` 
-#}
-
-{# 
-##### app.services.orchestration
-
-**src/app/services/orchestration/migrator.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/services/orchestration/migrator.py') }}
-``` 
-#}
+{{ file(properties.paths.root + 'src/app/services/markets/materializer.py') }}
+```

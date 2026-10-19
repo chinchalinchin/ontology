@@ -1,7 +1,9 @@
 # Application Libraries
 from app.models.config.core import (
     Configuration,
-    ActionConfiguration,
+)
+from app.models.config.actions import (
+    ActionConfiguration
 )
 from app.models.config.compositions import (
     CompositionPseudoState,
