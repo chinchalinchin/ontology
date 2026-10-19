@@ -33,11 +33,6 @@ class Action:
     delay: int = 1
 
 @dataclass(slots=True)
-class Cost:
-    item: str
-    quantity: int
-
-@dataclass(slots=True)
 class Frequency:
     type: Frequencies = Frequencies.CONTINUOUS.value
     delay: int = 1

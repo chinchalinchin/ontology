@@ -26,11 +26,20 @@ from app.models.properties.fonts import (
     FontProperties
 )
 
+
 @dataclass(slots=True)
-class TilePropertyInstances:
-    canopy: Dict[str, TileProperties] = field(default_factory=dict)
-    environ: Dict[str, TileProperties] = field(default_factory=dict)
-    grid: Dict[str, TileProperties] = field(default_factory=dict)
+class CursorPropertyInstances:
+    expressions: Dict[str, CursorProperties] = field(default_factory=dict)
+    projectiles: Dict[str, CursorProperties] = field(default_factory=dict)
+
+@dataclass(slots=True)
+class CraftPropertyInstances:
+    struts: Dict[str, CraftProperties] = field(default_factory=dict)
+    bridges: Dict[str, CraftProperties] = field(default_factory=dict)
+    platforms: Dict[str, CraftProperties] = field(default_factory=dict)
+    stairs: Dict[str, CraftProperties] = field(default_factory=dict)
+    railings: Dict[str, CraftProperties] = field(default_factory=dict)
+
 
 @dataclass(slots=True)
 class EffectPropertyInstances:
@@ -56,23 +65,16 @@ class ObjectPropertyInstances:
     rafts: Dict[str, ObjectProperties] = field(default_factory=dict)
     
 @dataclass(slots=True)
-class CraftPropertyInstances:
-    struts: Dict[str, CraftProperties] = field(default_factory=dict)
-    bridges: Dict[str, CraftProperties] = field(default_factory=dict)
-    platforms: Dict[str, CraftProperties] = field(default_factory=dict)
-    stairs: Dict[str, CraftProperties] = field(default_factory=dict)
-    railings: Dict[str, CraftProperties] = field(default_factory=dict)
-
-@dataclass(slots=True)
 class ResourcePropertyInstances:
     crops: Dict[str, ResourceProperties] = field(default_factory=dict)
     ore: Dict[str, ResourceProperties] = field(default_factory=dict)
     trees: Dict[str, ResourceProperties] = field(default_factory=dict)
 
 @dataclass(slots=True)
-class CursorPropertyInstances:
-    expressions: Dict[str, CursorProperties] = field(default_factory=dict)
-    projectiles: Dict[str, CursorProperties] = field(default_factory=dict)
+class TilePropertyInstances:
+    canopy: Dict[str, TileProperties] = field(default_factory=dict)
+    environ: Dict[str, TileProperties] = field(default_factory=dict)
+    grid: Dict[str, TileProperties] = field(default_factory=dict)
 
 @dataclass(slots=True)
 class SheetPropertyInstances:

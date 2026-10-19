@@ -105,6 +105,8 @@ class IterableFrame(Frame):
 
 class OrientedFrame(Frame):
     """
+    ## OrientedFrame
+
     Indexes 2-axis horizontal atlas frames (Horizontal, Vertical) and emits
     the corresponding orientation frame key.
     """
@@ -134,6 +136,8 @@ class OrientedFrame(Frame):
 
 class DirectedFrame(Frame):
     """
+    ## DirectedFrame
+    
     Indexes 2-axis horizontal atlas frames (Horizontal, Vertical) and emits
     the corresponding orientation frame key.
     """

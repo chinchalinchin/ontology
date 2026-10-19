@@ -18,6 +18,7 @@ from app.models.state.assets import (
     OrientedState,
     PlatformState,
     StairState,
+    StrutState,
     # ---- CURSOR STATES
     MotorState,
     AttachmentState,
@@ -103,6 +104,7 @@ __all__ = [
     'PropertyState',
     'OrientedState',
     'StairState',
+    'StrutState',
     'PlatformState',
     # CURSOR STATES
     'MotorState',

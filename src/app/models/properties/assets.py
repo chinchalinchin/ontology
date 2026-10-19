@@ -33,6 +33,13 @@ from app.models.properties.core import (
 # --------------------------------------------------------------
 
 @dataclass(slots=True)
+class CraftProperties(AssetProperties):
+    mass: int = 0
+    material: Optional[Material] = None
+    blueprints: Optional[str] = None
+    hitboxes: Optional[Union[Dict[int, List[Hitbox]], Dict[str, Optional[List[Hitbox]]], List[Hitbox]]] = None  # type: ignore
+
+@dataclass(slots=True)
 class CursorProperties(AssetProperties):
     frames: List[str] = field(default_factory=list)
 
@@ -52,13 +59,6 @@ class ObjectProperties(AssetProperties):
 @dataclass(slots=True)
 class TileProperties(AssetProperties):
     friction: float = 0.0
-
-@dataclass(slots=True)
-class CraftProperties(AssetProperties):
-    mass: int = 0
-    material: Optional[Material] = None
-    blueprints: Optional[str] = None
-    hitboxes: Optional[Union[Dict[int, List[Hitbox]], Dict[str, Optional[List[Hitbox]]], List[Hitbox]]] = None  # type: ignore
 
 @dataclass(slots=True)
 class ResourceProperties(AssetProperties):

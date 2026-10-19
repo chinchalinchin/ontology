@@ -13,6 +13,10 @@ from app.models.config.mappings import (
     DeviceMapping,
     MappingConfiguration
 )
+from app.models.config.markets import (
+    Cost,
+    MarketConfiguration
+)
 from app.models.config.mechanics import (
     MechanicsInstance,
     MechanicsConfiguration
@@ -76,5 +80,7 @@ __all__ = [
     'RecipeConfiguration',
     'ConfigurationSchema',
     'MenuBinding',
-    'MechanicsInstance'
+    'MechanicsInstance',
+    'Cost',
+    'MarketConfiguration',
 ]

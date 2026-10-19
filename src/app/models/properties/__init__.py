@@ -1,8 +1,8 @@
 from app.models.properties.core import (
     Action,
     Direction,
-    Cost,
     Frequency,
+    Material,
     AssetProperties
 )
 from app.models.properties.assets import (
@@ -21,12 +21,22 @@ from app.models.properties.fonts import (
     Outline,
     FontProperties
 )
+from app.models.properties.schemas import (
+    CursorPropertyInstances,
+    CraftPropertyInstances,
+    EffectPropertyInstances,
+    ObjectPropertyInstances,
+    ResourcePropertyInstances,
+    SheetPropertyInstances,
+    WidgetPropertyInstances,
+    PropertiesSchema
+)
 
 __all__ = [
     'Action',
     'Direction',
-    'Cost',
     'Frequency',
+    'Material',
     'AssetProperties',
     # -----
     'RGBA',
@@ -42,4 +52,13 @@ __all__ = [
     'SheetProperties',
     'TileProperties',
     'WidgetProperties',
+    # -----
+    'CursorPropertyInstances',
+    'CraftPropertyInstances',
+    'EffectPropertyInstances',
+    'ObjectPropertyInstances',
+    'ResourcePropertyInstances',
+    'SheetPropertyInstances',
+    'WidgetPropertyInstances',
+    'PropertiesSchema'
 ]

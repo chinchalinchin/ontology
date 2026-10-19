@@ -25,6 +25,7 @@ from app.models.config.transitions import (
 )
 from app.models.config.compositions import CompositionConfiguration
 from app.models.config.mechanics import MechanicsConfiguration
+from app.models.config.markets import MarketConfiguration
 from app.models.config.mappings import MappingConfiguration
 from app.models.config.menus import MenuConfiguration
 from app.models.config.recipes import RecipeConfiguration
@@ -39,6 +40,7 @@ class ConfigurationSchema:
     intentions: Dict[Intentions, List[IntentionConfiguration]] = field(default_factory=dict)
     library: Dict[str, Dict[str, Dict[str, str]]] = field(default_factory=dict)
     mappings: MappingConfiguration = field(default_factory=MappingConfiguration)
+    markets: MarketConfiguration = field(default_factory=MarketConfiguration)
     mechanics: MechanicsConfiguration = field(default_factory=MechanicsConfiguration)
     plots: Dict[str, List[PlotConfiguration]] = field(default_factory=dict)
     stages: Dict[str, Dict[str, List[StageConfiguration]]] = field(default_factory=dict)

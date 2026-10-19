@@ -34,6 +34,12 @@ class PropertyState(AssetState):
     position: Optional[Position] = None # type: ignore
 
 @dataclass(slots=True)
+class StrutState(PropertyState):
+    material: Optional[str] = None
+    blueprint: Optional[str] = None
+    multiple: Optional[Multiple] = None # type: ignore
+    
+@dataclass(slots=True)
 class OrientedState(PropertyState):
     orientation: str = Orientations.HORIZONTAL.value
     multiple: Optional[Multiple] = None # type: ignore
