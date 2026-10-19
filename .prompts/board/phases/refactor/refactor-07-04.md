@@ -457,6 +457,96 @@ At any macro-elevation $E$, `SURFACES (-2)` (`floors`, `paths`, `flats`) render 
 
 ##### User Review III
 
-I believe this is now the correct implementation. However, looking backwards, this nows means Bridge, Platform and Stairs have to be refactored. I see now that what defines Crafts is their structural nature and the method by which they are arranged in an atlas must be a function of their design and purpose.
+I believe this is now the correct implementation. However, looking backwards, this nows means Bridge, Railings, Platforms  and Stairs have to be refactored; while `cost` could simply be removed, this is an opportunity to simplify things and reduce sprawl. In addition, there are several prototypes that now have to be refined. Before moving on to user acceptance testing and unit testing, let's expand the phase scope to encompass the entire category of crafts.
 
-In other words, frames in a Sprite Sheet represent Actions, Frames in a Resource represent lifespan stages, Frames in an Effect represent Periodic Animations, etc. Frames in Crafts must be atlased according to structural components. Thus begins another reatlasing adventure.
+I see now that what defines Crafts is their structural nature and the method by which they are arranged in an atlas must be a function of their design and purpose. 
+
+In other words, the Frame schema of an Asset is related to the *Category* of a Asset. Frames in a Sprite Sheet represent Actions, Frames in a Resource represent Lifespan Stages, Frames in an Effect represent Periodicity, etc. Frames in Crafts must be atlased according to structural components. 
+
+Properties exist to demarcate and provide a metric for Frame space; State exists to denote location in the space spanned by the properties; Animations are strategies for moving through that space; Frames and Animation are the underlying process (stuff) that is being abstracted and described by the logical terms *Properties* and *State*. 
+
+Thus begins another reatlasing adventure. 
+
+Review the notes section and then add more addendums to the tasking to accomodate the expansion of the scope.
+
+###### Notes
+
+- IMPORTANT: Deferring any modifications to Platforms to Phase 07.03, as Gravity will subsume and deprecate/subtantially alter Platforms.
+
+**Current Recipes**
+
+```yaml
+# comments include state, which is hydrated via Pydantic validation.
+recipes:
+  crafts:
+    bridges:
+      frame: oriented
+      animation: none
+      hitbox: oriented
+      # state: oriented
+    platforms: 
+      frame: single
+      animation: none
+      hitbox: elevated
+      # state: platform
+    railings:
+      frame: oriented
+      animation: none
+      hitbox: oriented
+      # state: oriented
+    struts:
+      frame: material
+      animation: none
+      hitbox: material
+      # state: strut
+    stairs:
+      frame: directed
+      animation: none
+      hitbox: directed
+      # state: stair
+```
+
+**Simple Cases**
+
+After an inspection, the following atlases can be synthesized from the LPC asset database, 
+
+- Bridges: (rows: orientations, columns: material)
+    - Note: cotton = rope bridge.
+- Railings: (rows: orientations, columns: material)
+- Stairs: (rows: directions, columns: material)
+
+While having the same atlasing schema, Bridges and Railings serve different functional purposes; Bridges suppress Fluids fields while Railings serve as physical obstructions.
+
+* Bridge Sheets
+    * id: arch (80px by 103px)
+        * rows: horizontal, vertical
+        * columns: limestone, feldspar, granite, marble
+    * id: suspension (96px by 96px)
+        * rows: horizontal, vertical
+        * columns: cotton, thatches, wood
+* Stair Sheets
+    * id:
+        * rows: up, left, right
+        * columns:
+    * id:
+        * rows: up, left, right
+        * columns: 
+* Railing Sheets
+    * id: crenellation (32px by 32px)
+        * rows: horizontal, vertical
+        * columns: limestone, feldspar, granite, marble
+
+**Complex Case**
+
+Some Railing Asset files are more complex than I initially thought. The current implementation of Railings in the game is actually ignoring a good deal of information contained in some of the raw frames. First, the purely orientable (horizontal-vertical) Assets can remain in the Railing Instance, but a few need split off into a separate *Enclosure* Instance and given further specification.
+
+Enclosures are abstractions of fencing. They require a special MultiplicationStrategy, similar to the Expansion strategy for Columns, but in two dimensions and with special attention paid to hitboxes. Here is how Enclosure atlasing works:
+
+- Enclosures from a continuous perimeter around the edge of the image. There are north, east, south, west faces. 
+- The north-south faces are end caps for vertical multiplication, where the space between is extended. Similarly, the west-east faces are end caps for horizontal multiplication. Note: the west-east edge are "shaft" of the north-south caps and the north-south edge are the "shaft" of the east-west edge. 
+- Whereas Columns were contiguous hitboxes, so their hitboxes could be multiplied, here the situtation is different, as the Enclosure is a perimeter, with the space enclosed open to movement. Their hitboxes will need special handling.
+
+**Other Notes**
+
+- Stairs are atlased by direction, but do not have a `down` direction, due to the LPC top-down perspective. Current implementation sidesteps this by just having an empty frame in the atlas, but this should be optimized.
+

@@ -50,6 +50,19 @@ Under this formulation, gravity is purely a property of the topological elevatio
     * Conversely, if the entity steps off an $E = 2$ ledge into open space with no $E = 1$ substrate below, the support check at $E = 1$ returns `False`; the entity retains its downward velocity $v_y$ and falls an additional $\Delta y_{\text{tier}}$ until it reaches $E = 0$.
 3. **Coplanar Overlap Resolution on Landing**: While `falling == True`, the entity is between discrete elevation planes and bypasses `CollisionMechanics`. The moment `falling` transitions to `False` on a supported tier $E$, the entity re-enters `CollisionMechanics` at tier $E$, where any minor coplanar hitbox overlap at the landing coordinate is resolved via standard inverse-mass separation (`physics.collide`).
 
+##### User Review I
+
+**Platforms?**
+
+I question the utility of Platforms now. THey exist to have tiered hitboxes, so the front facade exists at ground level with hitboxes while an elevated surface has its own hitboxes. ElevatedHitbox exists for Platforms. However, this seems extraneous to me? I suppose the point is to prevent the Sprite from traversing onto the elevated surface without going up Stairs, but if Gravity is correctly implemented, it seems Platforms are entirely superflous, with one caveat.
+
+Assets on higher elevations have to emit "footprints" on lower elevations for their baselines. In other words, if collisions are completely isolated by layer, then a Sprite on elevation = 0 can traverse across an Asset on elevation = 1. It will appear the Sprite is moving "underneath" the Asset, due to the sorting in `screen.py`. 
+
+I think the proper solution is to deprecate Platforms altogether (perhaps create a blueprint schema in Struts for their aesthetic/vanity purpose), add Asset "footprint" projections for every elevation lower than its current elevation. 
+
+Also, "footprinting" should be optional and default to True. There are certain types of platforms that need to render above everything on lower elevations AND not participate in collisions on lower levels.
+
+
 ##### Goals
 
 ###### Goal: Elevated Substrate Support Evaluation
