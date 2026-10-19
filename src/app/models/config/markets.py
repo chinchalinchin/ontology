@@ -20,5 +20,5 @@ class Cost:
 
 @dataclass(slots=True, frozen=True)
 class MarketConfiguration(Configuration):
-    materials: Dict[str, float] = field(default_factory=dict)
-    blueprints: Dict[str, float] = field(default_factory=dict)
+    materials: Dict[str, Dict[str, float]] = field(default_factory=dict)
+    blueprints: Dict[str, Dict[str, float]] = field(default_factory=dict)

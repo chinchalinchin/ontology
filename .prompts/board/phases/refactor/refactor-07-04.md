@@ -285,430 +285,21 @@ All of the tasks and goals are good as is, I believe, and do not require further
 
 Define the ordered partitions for `MaterialGenera` (`Organics`, `Geologics`, `Metallics`, `Chromatics`) and `BlueprintSchemas` (`BuildingBlueprints`, `CorridorBlueprints`, `ColumnBlueprints`), along with `MultiplicationStrategies`.
 
-```python
-# src/app/config/enums.py
-class MaterialGenera(StrEnum):
-    ORGANICS = "organics"
-    GEOLOGICS = "geologics"
-    METALLICS = "metallics"
-    CHROMATICS = "chromatics"
-
-class OrganicMaterials(StrEnum):
-    COTTON = "cotton"
-    THATCHES = "thatches"
-    WOOD = "wood"
-
-class GeologicMaterials(StrEnum):
-    LIMESTONE = "limestone"
-    FELDSPAR = "feldspar"
-    GRANITE = "granite"
-    MARBLE = "marble"
-
-class MetallicMaterials(StrEnum):
-    COPPER = "copper"
-    IRON = "iron"
-    GOLD = "gold"
-
-class ChromaticMaterials(StrEnum):
-    NEUTRAL = "neutral"
-    BLUE = "blue"
-    RED = "red"
-    YELLOW = "yellow"
-    GREEN = "green"
-
-MATERIAL_PARTITIONS: Dict[str, Tuple[str, ...]] = {
-    MaterialGenera.ORGANICS.value: tuple(m.value for m in OrganicMaterials),
-    MaterialGenera.GEOLOGICS.value: tuple(m.value for m in GeologicMaterials),
-    MaterialGenera.METALLICS.value: tuple(m.value for m in MetallicMaterials),
-    MaterialGenera.CHROMATICS.value: tuple(m.value for m in ChromaticMaterials),
-}
-
-class BlueprintSchemas(StrEnum):
-    BUILDINGS = "buildings"
-    CORRIDORS = "corridors"
-    COLUMNS = "columns"
-
-class BuildingBlueprints(StrEnum):
-    FLOORS = "floors"
-    WALLS = "walls"
-    FLATS = "flats"
-    ROOFS = "roofs"
-    PATHS = "paths"
-    HALLS = "halls"
-
-class CorridorBlueprints(StrEnum):
-    SOLIDS = "solids"
-    STRIPES = "stripes"
-    DESIGNS = "designs"
-
-class ColumnBlueprints(StrEnum):
-    CROWNS = "crowns"
-    SHAFTS = "shafts"
-    BASES = "bases"
-
-class MultiplicationStrategies(StrEnum):
-    SIMPLE = "simple"
-    EXPANSION = "expansion"
-
-BLUEPRINT_PARTITIONS: Dict[str, Tuple[str, ...]] = {
-    BlueprintSchemas.BUILDINGS.value: tuple(b.value for b in BuildingBlueprints),
-    BlueprintSchemas.CORRIDORS.value: tuple(b.value for b in CorridorBlueprints),
-    BlueprintSchemas.COLUMNS.value: tuple(b.value for b in ColumnBlueprints),
-}
-
-BLUEPRINT_STRATEGIES: Dict[str, str] = {
-    BlueprintSchemas.BUILDINGS.value: MultiplicationStrategies.SIMPLE.value,
-    BlueprintSchemas.CORRIDORS.value: MultiplicationStrategies.SIMPLE.value,
-    BlueprintSchemas.COLUMNS.value: MultiplicationStrategies.EXPANSION.value,
-}
-
-SUBSTRATE_BLUEPRINTS = frozenset({
-    BuildingBlueprints.FLOORS.value,
-    BuildingBlueprints.PATHS.value,
-    CorridorBlueprints.SOLIDS.value,
-    CorridorBlueprints.STRIPES.value,
-    CorridorBlueprints.DESIGNS.value,
-})
-
-OBSTACLE_BLUEPRINTS = frozenset({
-    BuildingBlueprints.WALLS.value,
-    BuildingBlueprints.HALLS.value,
-    ColumnBlueprints.BASES.value,
-})
-
-```
-
 ###### Goal: Property, State & Market Configuration Models (`properties.py`, `crafts.py`, `markets.py`)
 
 Remove `cost` from `CraftProperties`, add `Material` (`genus`, `host`) and `blueprints`, define `StrutState` (`material`, `blueprint`, `multiple`), and add `MarketConfiguration` to `app.models.config`.
-
-```python
-# src/app/models/properties.py
-@dataclass(slots=True)
-class Material:
-    genus: str
-    host: Optional[str] = None
-
-    def __post_init__(self):
-        if self.genus == MaterialGenera.CHROMATICS.value:
-            if self.host not in MATERIAL_PARTITIONS[MaterialGenera.ORGANICS.value]:
-                raise ValueError(
-                    f"Chromatic material requires an organic host; got '{self.host}'."
-                )
-        elif self.host is not None:
-            raise ValueError(
-                f"Non-chromatic genus '{self.genus}' cannot declare a host material."
-            )
-
-@dataclass(slots=True)
-class CraftProperties(AssetProperties):
-    mass: int = 0
-    material: Optional[Material] = None
-    blueprints: Optional[str] = None
-    hitboxes: Optional[Union[Dict[int, List[Hitbox]], Dict[str, Optional[List[Hitbox]]], List[Hitbox]]] = None  # type: ignore
-
-```
-
-```python
-# src/app/models/state/assets/crafts.py
-@dataclass(slots=True)
-class PropertyState(AssetState):
-    owner: Optional[str] = None
-    position: Optional[Position] = None  # type: ignore
-
-@dataclass(slots=True)
-class StrutState(PropertyState):
-    material: Optional[str] = None
-    blueprint: Optional[str] = None
-    multiple: Optional[Multiple] = None  # type: ignore
-
-```
-
-```python
-# src/app/models/config/markets.py
-@dataclass(slots=True, frozen=True)
-class Cost:
-    item: str
-    quantity: int
-
-@dataclass(slots=True, frozen=True)
-class MarketConfiguration(Configuration):
-    materials: Dict[str, float] = field(default_factory=dict)
-    blueprints: Dict[str, float] = field(default_factory=dict)
-
-```
 
 ###### Goal: `Materializer` Service (`src/app/services/markets/materializer.py`)
 
 Implement `Materializer` to compute crafting costs dynamically from `Dimensions`, `Material`, `Blueprint`, and `Multiple`, removing all cost logic from `Decomposer`.
 
-```python
-# src/app/services/markets/materializer.py
-"""
-# Ontology: app.services.markets.materializer
-
-Service for calculating dynamic crafting and construction costs.
-"""
-from typing import List, Optional
-from app.config.enums import (
-    MaterialGenera,
-    ChromaticMaterials,
-    BLUEPRINT_STRATEGIES,
-    MultiplicationStrategies
-)
-from app.models.config.markets import MarketConfiguration, Cost
-from app.models.properties import Material
-from libs.core.models import Dimensions, Multiple
-
-UNIT_FOOTPRINT = 1024.0
-
-class Materializer:
-    markets: MarketConfiguration
-
-    def __init__(self, markets: MarketConfiguration):
-        self.markets = markets
-
-    def cost(
-        self,
-        dimensions: Dimensions,
-        material: str,
-        blueprint: str,
-        material_spec: Optional[Material] = None,
-        blueprint_schema: Optional[str] = None,
-        multiple: Optional[Multiple] = None
-    ) -> List[Cost]:
-        nx = multiple.nx if multiple and multiple.nx else 1
-        ny = multiple.ny if multiple and multiple.ny else 1
-
-        strategy = BLUEPRINT_STRATEGIES.get(
-            blueprint_schema or "",
-            MultiplicationStrategies.SIMPLE.value
-        )
-        if strategy == MultiplicationStrategies.EXPANSION.value:
-            total_units = nx * (ny + 2)
-        else:
-            total_units = nx * ny
-
-        norm_area = ((dimensions.w * dimensions.l) / UNIT_FOOTPRINT) * total_units
-        delta = self.markets.blueprints.get(blueprint, 1.0)
-
-        costs: List[Cost] = []
-        if material_spec and material_spec.genus == MaterialGenera.CHROMATICS.value:
-            host_item = material_spec.host
-            mu_host = self.markets.materials.get(host_item, 1.0)
-            host_qty = max(1, round(norm_area * mu_host * delta))
-            costs.append(Cost(item=host_item, quantity=host_qty))
-
-            if material != ChromaticMaterials.NEUTRAL.value:
-                mu_dye = self.markets.materials.get(material, 1.0)
-                dye_qty = max(1, round(norm_area * mu_dye))
-                costs.append(Cost(item=material, quantity=dye_qty))
-        else:
-            mu_mat = self.markets.materials.get(material, 1.0)
-            qty = max(1, round(norm_area * mu_mat * delta))
-            costs.append(Cost(item=material, quantity=qty))
-
-        return costs
-
-```
-
 ###### Goal: 2D `MaterialFrame` & Blueprint-Aware `MaterialHitbox`
 
 Implement `MaterialFrame` to index `(blueprint_row, material_col)` cells and `MaterialHitbox` to resolve collision geometry per blueprint partition.
 
-```python
-# src/app/assets/frames/crafts.py
-class MaterialFrame(Frame):
-    """
-    Indexes 2D Strut Sheet atlases where rows correspond to Blueprint partitions
-    and columns correspond to Material genus partitions.
-    """
-    def keys(self, id: str, state: StrutState) -> List[Tuple[str, int, int]]:
-        if state and state.blueprint and state.material:
-            key = settings.SEPARATOR.join([id, state.blueprint, state.material])
-            return [(key, 0, 0)]
-        return [(id, 0, 0)]
-
-    def index(
-        self,
-        id: str,
-        properties: CraftProperties
-    ) -> Dict[str, Tuple[int, int, int, int]]:
-        w = properties.dimensions.w
-        l = properties.dimensions.l
-        if not properties.material or not properties.blueprints:
-            return {id: (0, 0, w, l)}
-
-        rows = BLUEPRINT_PARTITIONS.get(properties.blueprints, ())
-        cols = MATERIAL_PARTITIONS.get(properties.material.genus, ())
-
-        atlas: Dict[str, Tuple[int, int, int, int]] = {}
-        for r_idx, bp in enumerate(rows):
-            for c_idx, mat in enumerate(cols):
-                key = settings.SEPARATOR.join([id, bp, mat])
-                atlas[key] = (c_idx * w, r_idx * l, w, l)
-        return atlas
-
-```
-
-```python
-# src/app/assets/hitboxes/crafts.py
-class MaterialHitbox(HitboxSchema):
-    """
-    Resolves blueprint- and material-dependent hitboxes for Struts.
-    Passable surface blueprints emit [] while structural blueprints emit active hitboxes.
-    """
-    def elevations(self, properties: CraftProperties, state: StrutState) -> List[int]:
-        if getattr(state, "blueprint", None) not in OBSTACLE_BLUEPRINTS:
-            return []
-        return [max(0, state.elevation if state.elevation is not None else 0)]
-
-    def get(
-        self,
-        properties: CraftProperties,
-        state: StrutState,
-        elevation: int,
-        frame: Optional[Frame] = None
-    ) -> List[Hitbox]:
-        bp = getattr(state, "blueprint", None)
-        if bp not in OBSTACLE_BLUEPRINTS:
-            return []
-
-        target_e = max(0, state.elevation if state.elevation is not None else 0)
-        if max(0, elevation) != target_e:
-            return []
-
-        if properties.hitboxes is None:
-            if properties.dimensions:
-                return [Hitbox(Position(0, 0), properties.dimensions)]
-            return []
-
-        if isinstance(properties.hitboxes, dict):
-            return properties.hitboxes.get(bp, []) or []
-
-        return properties.hitboxes
-
-```
-
 ###### Goal: Strategy-Driven `Decomposer.multiply()` (`simple` & `expansion`)
 
 Implement `Decomposer.multiply()` to handle both 2D `simple` tiling (`buildings`, `corridors`) and vertical `expansion` capping (`columns`: `crown` at $y_0$, $n_y$ `shafts`, `base` at $y_0 + (n_y + 1)l$).
-
-```python
-# src/app/services/generators/game/decomposer.py
-def multiply(
-    self,
-    state: StrutState,
-    category: str,
-    instance: str
-) -> List[Asset]:
-    cat_props = getattr(self.properties, category, {})
-    instance_props = getattr(cat_props, instance, {})
-    props = instance_props.get(state.id, None)
-
-    if props is None:
-        logger.error(
-            settings.SEPARATOR.join([
-                "Decomposer",
-                "MultiplyMissingProperties",
-                state.id
-            ])
-        )
-        return []
-
-    w = props.dimensions.w
-    l = props.dimensions.l
-    base_pos = state.position or Position(0, 0)
-    layer = state.layer or "0"
-    nx = state.multiple.nx if state.multiple and state.multiple.nx else 1
-    ny = state.multiple.ny if state.multiple and state.multiple.ny else 1
-
-    strategy = BLUEPRINT_STRATEGIES.get(
-        props.blueprints or "",
-        MultiplicationStrategies.SIMPLE.value
-    )
-
-    cat_recipes = getattr(self.recipes, category, None)
-    recipe = getattr(cat_recipes, instance, None)
-    unit_assets: List[Asset] = []
-    idx = 0
-
-    if strategy == MultiplicationStrategies.EXPANSION.value:
-        # Column expansion: [crown] + ny * [shaft] + [base] along +y axis
-        for ix in range(nx):
-            col_x = base_pos.x + ix * w
-            base_y = base_pos.y + (ny + 1) * l
-            base_ground = base_y + l
-
-            segments: List[Tuple[str, int]] = [
-                (ColumnBlueprints.CROWNS.value, base_pos.y)
-            ]
-            for k in range(ny):
-                segments.append(
-                    (ColumnBlueprints.SHAFTS.value, base_pos.y + (k + 1) * l)
-                )
-            segments.append((ColumnBlueprints.BASES.value, base_y))
-
-            for bp_part, seg_y in segments:
-                unit_name = settings.SEPARATOR.join([
-                    state.name or state.id,
-                    bp_part,
-                    str(idx)
-                ])
-                idx += 1
-                seg_anchor = int(base_ground - (seg_y + l))
-
-                unit_state = dataclasses.replace(
-                    state,
-                    name=unit_name,
-                    layer=layer,
-                    position=Position(col_x, seg_y),
-                    blueprint=bp_part,
-                    multiple=Multiple(1, 1),
-                    anchor=seg_anchor
-                )
-                unit_assets.append(
-                    Asset(
-                        taxonomy=Factory.taxonomy(state.id, unit_name, category, instance),
-                        properties=props,
-                        state=unit_state,
-                        frame=Factory.frame(recipe.frame),
-                        animation=Factory.animation(recipe.animation),
-                        hitbox=Factory.hitbox(recipe.hitbox)
-                    )
-                )
-    else:
-        # Simple 2D grid multiplication
-        for iy in range(ny):
-            for ix in range(nx):
-                seg_pos = Position(base_pos.x + ix * w, base_pos.y + iy * l)
-                unit_name = settings.SEPARATOR.join([
-                    state.name or state.id,
-                    str(idx)
-                ])
-                idx += 1
-
-                unit_state = dataclasses.replace(
-                    state,
-                    name=unit_name,
-                    layer=layer,
-                    position=seg_pos,
-                    multiple=Multiple(1, 1)
-                )
-                unit_assets.append(
-                    Asset(
-                        taxonomy=Factory.taxonomy(state.id, unit_name, category, instance),
-                        properties=props,
-                        state=unit_state,
-                        frame=Factory.frame(recipe.frame),
-                        animation=Factory.animation(recipe.animation),
-                        hitbox=Factory.hitbox(recipe.hitbox)
-                    )
-                )
-
-    return unit_assets
-
-```
 
 ##### Tasks
 
@@ -716,50 +307,52 @@ def multiply(
 
 *Objective*: Codify the ordered `Material` genera, `Blueprint` schemas, `MultiplicationStrategies`, `StrutState`, and `CraftProperties` in the application models.
 
-* [ ] Subtask: Add `MaterialGenera`, `OrganicMaterials`, `GeologicMaterials`, `MetallicMaterials`, `ChromaticMaterials`, `MATERIAL_PARTITIONS`, `BlueprintSchemas`, `BuildingBlueprints`, `CorridorBlueprints`, `ColumnBlueprints`, `BLUEPRINT_PARTITIONS`, `MultiplicationStrategies`, `BLUEPRINT_STRATEGIES`, `SUBSTRATE_BLUEPRINTS`, and `OBSTACLE_BLUEPRINTS` to `src/app/config/enums.py`.
-* [ ] Subtask: Rename all references of `brick` to `feldspar` and `stone` to `limestone` across enums, configs, and property indices.
-* [ ] Subtask: Update `src/app/models/properties.py` (and Pydantic adapters) to add `Material(genus, host)`, remove `cost` from `CraftProperties`, and add `material: Optional[Material]` and `blueprints: Optional[str]` to `CraftProperties`.
-* [ ] Subtask: Update `src/app/models/state/assets/crafts.py` to define `StrutState(PropertyState)` with `material: Optional[str]`, `blueprint: Optional[str]`, and `multiple: Optional[Multiple]`, and update `CraftStateInstances.struts` in `src/app/models/state/schemas.py`.
+* [x] Subtask: Add `Materials`, `Organics`, `GeologicMaterials`, `Metallic`, `Chromatics`, `Blueprints`, `Buildings`, `Corridors`, `Columns`, `MultiplicationStrategies` to `src/app/config/enums.py`.
+* [x] Add `MATERIAL_PARTITIONS`, `BLUEPRINT_PARTITIONS` and `BLUEPRINT_STRATEGIES`, `SUBSTRATE_BLUEPRINTS`, and `OBSTACLE_BLUEPRINTS` to `src/app/config/settings.py`.
+* [x] Subtask: Update `src/app/models/properties.py` (and Pydantic adapters) to add `Material(genus, host)`, remove `cost` from `CraftProperties`, and add `material: Optional[Material]` and `blueprints: Optional[str]` to `CraftProperties`.
+* [x] Subtask: Update `src/app/models/state/assets/crafts.py` to define `StrutState(PropertyState)` with `material: Optional[str]`, `blueprint: Optional[str]`, and `multiple: Optional[Multiple]`, and update `CraftStateInstances.struts` in `src/app/models/state/schemas.py`.
 
 **2. Task: `app.services.markets` & `Materializer` Implementation**
 
 *Objective*: Decouple cost data from Craft properties into `/src/data/config/markets/main.yaml` and implement the `Materializer` service.
 
-* [ ] Subtask: Create `src/app/models/config/markets.py` defining `Cost` and `MarketConfiguration`, and register `markets: MarketConfiguration` on `ConfigurationSchema`.
-* [ ] Subtask: Create `/src/data/config/markets/main.yaml` containing the rebranded material valuation factors ($\mu_{\text{mat}}$ for `organics`, `geologics`, `metallics`, `chromatics`) and blueprint factors ($\delta_{\text{blueprint}}$).
-* [ ] Subtask: Implement `Materializer` in `src/app/services/markets/materializer.py` with `cost(dimensions, material, blueprint, material_spec, blueprint_schema, multiple)` supporting chromatic host + dye decomposition and column expansion unit counts.
-* [ ] Subtask: Remove `_accumulate_cost`, `_aggregate_components_cost`, `cost`, and `bridge_cost` from `src/app/services/generators/game/decomposer.py`.
-* [ ] Subtask: Remove `cost` keys from all `/src/assets/crafts/**/*.yaml` files.
+* [x] Subtask: Create `src/app/models/config/markets.py` defining `Cost` and `MarketConfiguration`, and register `markets: MarketConfiguration` on `ConfigurationSchema`.
+* [x] Subtask: Create `/src/data/config/markets/main.yaml` containing the rebranded material valuation factors ($\mu_{\text{mat}}$ for `organics`, `geologics`, `metallics`, `chromatics`) and blueprint factors ($\delta_{\text{blueprint}}$).
+* [x] Subtask: Implement `Materializer` in `src/app/services/markets/materializer.py` with `cost(dimensions, material, blueprint, material_spec, blueprint_schema, multiple)` supporting chromatic host + dye decomposition and column expansion unit counts.
+* [x] Subtask: Remove `_accumulate_cost`, `_aggregate_components_cost`, `cost`, and `bridge_cost` from `src/app/services/generators/game/decomposer.py`.
+* [x] Subtask: Remove `cost` keys from all `/src/assets/crafts/**/*.yaml` files.
 
 **3. Task: `MaterialFrame`, `MaterialHitbox` & Substrate Priority**
 
 *Objective*: Implement 2D `(Blueprint, Material)` atlas indexing, blueprint-aware hitbox resolution, and substrate priority sorting.
 
-* [ ] Subtask: Implement `MaterialFrame` in `src/app/assets/frames/` to index `{id}-{blueprint}-{material}` at `(c * w, r * l, w, l)` and resolve `keys(id, state)` from `(state.blueprint, state.material)`.
-* [ ] Subtask: Implement `MaterialHitbox` in `src/app/assets/hitboxes/crafts.py` returning `[]` for passable blueprints (`floors`, `paths`, `solids`, `stripes`, `designs`, `crowns`, `shafts`) and active hitboxes for `OBSTACLE_BLUEPRINTS` (`walls`, `halls`, `bases`).
-* [ ] Subtask: Update `Asset` / `Screen._sort` so `Strut` instances with `state.blueprint in SUBSTRATE_BLUEPRINTS` evaluate tertiary sort priority as `-1`.
-* [ ] Subtask: Register `MaterialFrame` and `MaterialHitbox` in `Factory` and `src/data/config/recipes/main.yaml`.
+* [x] Subtask: Implement `MaterialFrame` in `src/app/assets/frames/` to index `{id}-{blueprint}-{material}` at `(c * w, r * l, w, l)` and resolve `keys(id, state)` from `(state.blueprint, state.material)`.
+* [x] Subtask: Implement `MaterialHitbox` in `src/app/assets/hitboxes/crafts.py` returning `[]` for passable blueprints (`floors`, `paths`, `solids`, `stripes`, `designs`, `crowns`, `shafts`) and active hitboxes for `OBSTACLE_BLUEPRINTS` (`walls`, `halls`, `bases`).
+* [!: CANCELLED, SEE BELOW] Subtask: Update `Asset` / `Screen._sort` so `Strut` instances with `state.blueprint in SUBSTRATE_BLUEPRINTS` evaluate tertiary sort priority as `-1`.
+* [x] Subtask: Register `MaterialFrame` and `MaterialHitbox` in `Factory` and `src/data/config/recipes/main.yaml`.
 
 **4. Task: Strategy-Driven `Decomposer.multiply()` & `Migrator` Integration**
 
 *Objective*: Implement `simple` and `expansion` multiplication strategies in `Decomposer.multiply()` and wire them into `Decomposer` and `Migrator`.
 
-* [ ] Subtask: Implement `Decomposer.multiply()` in `src/app/services/generators/game/decomposer.py` handling `simple` 2D grid expansion and `expansion` vertical column construction (`crown`, $n_y$ `shafts`, `base` with baseline `anchor` alignment).
-* [ ] Subtask: Update `Decomposer._unpack_node()` and `Decomposer._unpack_components()` to route `AssetInstances.STRUTS` through `self.multiply()`.
-* [ ] Subtask: Update `Migrator._build_generator()` in `src/app/services/orchestration/migrator.py` to route standalone `struts` state entries through `self.decomposer.multiply()`.
-* [ ] Subtask: Add unit tests covering `simple` multiplication, `expansion` column capping (`base.position.y` greater than `crown.position.y`), and `MaterialFrame` key generation.
+* [x] Subtask: Implement `Decomposer.multiply()` in `src/app/services/generators/game/decomposer.py` handling `simple` 2D grid expansion and `expansion` vertical column construction (`crown`, $n_y$ `shafts`, `base` with baseline `anchor` alignment).
+* [x] Subtask: Update `Decomposer._unpack_node()` and `Decomposer._unpack_components()` to route `AssetInstances.STRUTS` through `self.multiply()`.
+* [x] Subtask: Update `Migrator._build_generator()` in `src/app/services/orchestration/migrator.py` to route standalone `struts` state entries through `self.decomposer.multiply()`.
+* [!] Subtask: Add unit tests covering `simple` multiplication, `expansion` column capping (`base.position.y` greater than `crown.position.y`), and `MaterialFrame` key generation.
 
 **5. Task: Strut Sheet Re-Indexing & Composition Migration**
 
 *Objective*: Replace legacy `/src/assets/crafts/struts/**` indices with the 10 curated 2D Strut Sheets and refactor existing Compositions to the new schema.
 
-* [ ] Subtask: Index `hut`, `home`, `store`, `suburb`, `mansion`, `hallway`, `carpet`, `avenue`, `pillar`, and `tower` in `/src/assets/crafts/struts/main.yaml` using `material: { genus, host }` and `blueprints`.
-* [ ] Subtask: Relocate non-Strut decor and bespoke structures (`decor`, `structures`) to their dedicated Craft instances.
-* [ ] Subtask: Refactor `src/data/config/compositions/main.yml` (`C000`, `C001`, `C002`) and `/src/data/state/**` to use the new `(id, blueprint, material, multiple)` Strut schema.
+* [x] Subtask: Index `hut`, `home`, `store`, `suburb`, `mansion`, `hallway`, `carpet`, `avenue`, `pillar`, and `tower` in `/src/assets/crafts/struts/main.yaml` using `material: { genus, host }` and `blueprints`.
+* [~] Subtask: Relocate non-Strut decor and bespoke structures (`decor`, `structures`) to their dedicated Craft instances.
+* [!] Subtask: Refactor `src/data/config/compositions/main.yml` (`C000`, `C001`, `C002`) and `/src/data/state/**` to use the new `(id, blueprint, material, multiple)` Strut schema.
 
-### Architectural Drill-Down: Dynamic `anchor`/`priority` vs. Relative `Substrates`
+---
 
-#### 1. Why Dynamic `anchor`/`priority` Resolution Breaks Down
+#### Architectural Drill-Down: Dynamic `anchor`/`priority` vs. Relative `Substrates`
+
+##### 1. Why Dynamic `anchor`/`priority` Resolution Breaks Down
 
 Let $S$ be a walkable surface Strut (`floors`, `paths`, `flats`, `corridors`) or `Stairs` with dimensions $(w_S, l_S)$, and let $P$ be a Sprite with dimensions $(w_P, l_P) = (64, 64)$ on the same elevation $E$. When $P$ stands on $S$ north of its southern edge:
 
@@ -773,9 +366,7 @@ Attempting to solve this dynamically by mutating $S.\text{state.anchor}$ when $P
 2. **Static `anchor = -S.dimensions.l` Failure on Stacked Substrates**: If $S$ statically sets `anchor = -S.dimensions.l` so $\text{ground\_y}(S) = S.y$, then a `carpet` (`corridors`, $l = 96$) placed at $y = 0$ on top of a `floor` (`buildings`, $l = 96$) at $y = 0$ shares the exact same baseline $\text{ground\_y} = 0$ and `priority = -1`. Worse, if a smaller rug ($l = 64$) is placed near the bottom of a large room floor ($l = 400$) at $y = 300$, its top edge $y = 300 > 0$ sorts above the floor, whereas if a long runner ($l = 400$, $y = 0$) is placed over a local floor slab ($l = 96$, $y = 96$), the floor slab has $\text{ground\_y} = 96 > \text{ground\_y}(\text{runner}) = 0$, causing the floor slab to **overdraw the carpet runner**.
 3. **Physics Pipeline Pollution**: Walkable Strut surfaces (`floors`, `paths`, `corridors`) have no collision footprint (`NoHitbox` / empty hitboxes). Dynamically computing `anchor` on intersection would force `CollisionMechanics` or `MotionMechanics` to run AABB overlap checks against every passive floor and carpet tile every frame.
 
----
-
-#### 2. Why `Substrates` Worked for Fluids/Geography—and Why `Asset.elevation` Conflated Two Axes
+##### 2. Why `Substrates` Worked for Fluids/Geography—and Why `Asset.elevation` Conflated Two Axes
 
 Look at how `Asset.elevation` is currently implemented in `src/app/assets/base.py`:
 
@@ -798,9 +389,7 @@ Because `Asset.elevation` only checks `settings.SUBSTRATES` when `self.state.ele
 * Any asset whose `state.elevation` is explicitly hydrated to `0` (such as `Decomposer.orient()` setting `elevation=state.elevation` on `bridges`, or `Stairs` initialized with `elevation = 0`) **bypasses `settings.SUBSTRATES` entirely** and sorts at `0` alongside Sprites.
 * Any surface deployed on an elevated platform (`state.elevation = 1`) cannot use a global negative `elevation` without falling underneath `elevation = 0` assets.
 
----
-
-#### 3. The Exact Solution: Fibered `(elevation, substrate, ground_y, priority)` Sorting
+##### 3. The Exact Solution: Fibered `(elevation, substrate, ground_y, priority)` Sorting
 
 Every macro-elevation tier $E \in \mathbb{Z}_{\ge 0}$ is a local stack of substrate planes $\sigma \in [-4, 0]$. By separating `Asset.elevation` (always $\ge 0$) from `Asset.substrate` (resolved lazily from `(instance, state.blueprint)` via `settings.SUBSTRATES`), the Painter's Algorithm sort key becomes:
 

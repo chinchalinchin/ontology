@@ -121,7 +121,7 @@ class Screen:
     def _sort(asset: Asset) -> tuple[int, int, int]:
         dim_l = asset.dimensions.l if asset.dimensions else 0
         ground_y = int(asset.state.position.y + dim_l + asset.state.anchor)
-        return (asset.elevation, ground_y, asset.properties.priority)
+        return (asset.elevation, asset.substrate, ground_y, asset.properties.priority)
 
     
     def _widgets(self, menus: List[Menu]) -> None:

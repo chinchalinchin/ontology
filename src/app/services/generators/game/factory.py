@@ -28,6 +28,7 @@ from app.assets.hitboxes import (
     DynamicHitbox,
     AttackHitbox,
     DirectedHitbox,
+    MaterialHitbox,
     OrientedHitbox,
     ElevatedHitbox,
     NoHitbox
@@ -46,6 +47,7 @@ from app.assets.frames import (
     OrientedFrame,
     StageFrame,
     SeasonalFrame,
+    MaterialFrame,
     NoFrame
 )
 from app.config.enums import (
@@ -109,6 +111,7 @@ class Factory:
         FrameRecipe.INDEX.value: IndexFrame(),
         FrameRecipe.ITERABLE.value: IterableFrame(),
         FrameRecipe.FLUID.value: FluidFrame(),
+        FrameRecipe.MATERIAL.value: MaterialFrame(),
         FrameRecipe.METER.value: MeterFrame(),
         FrameRecipe.NONE.value: NoFrame(),
         FrameRecipe.ORIENTED.value: OrientedFrame(),
@@ -135,6 +138,7 @@ class Factory:
         HitboxRecipe.DIRECTED.value: DirectedHitbox(),
         HitboxRecipe.DYNAMIC.value: DynamicHitbox(),
         HitboxRecipe.ELEVATED.value: ElevatedHitbox(),
+        HitboxRecipe.MATERIAL.value: MaterialHitbox(),
         HitboxRecipe.ORIENTED.value: OrientedHitbox(),
         HitboxRecipe.STAGE.value: StageHitbox(),
         HitboxRecipe.STATIC.value: StaticHitbox(),

@@ -21,6 +21,7 @@ from typing import (
 # Application Libraries
 import app.config.settings as settings
 from app.config.enums import (
+    AssetInstances,
     ChannelTypes,
 )
 from app.models.properties import AssetProperties
@@ -195,14 +196,19 @@ class Asset:
 
     @property
     def elevation(self) -> int:
-        if self.state.elevation is not None:
-            return self.state.elevation
-        return settings.SUBSTRATES.get(self.taxonomy.instance, 0)
+        return self.state.elevation if self.state.elevation is not None else 0
 
+    
     @elevation.setter
     def elevation(self, value: Optional[int]) -> None:
         self.state.elevation = value
 
+    @property
+    def substrate(self) -> int:
+        if self.instance == AssetInstances.STRUTS.value:
+            return settings.SUBSTRATES.get(self.state.blueprint)
+        return settings.Substrates.get(self.taxonomy.instance, 0)
+    
     @property
     def hitboxes(self) -> List[Hitbox]:
         """Default physical footprint resolved at the asset's deployed elevation."""

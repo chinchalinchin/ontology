@@ -6,9 +6,7 @@ Package for global application constants.
 # Standard Libraries
 from pathlib import Path
 from typing import (
-    Dict,
     Final,
-    Tuple
 )
 # Application Libraries
 from app.config.enums import (
@@ -99,14 +97,23 @@ EVAPORATION_RATE: Final[float] = 1.0
 """Multiplicative factor that scales the moisture evaporation rate"""
 
 SUBSTRATES: Final[dict[str, int]] = {
+    # ---------------------------------- INSTANCE LEVEL SUBSTRATES
     AssetInstances.ENVIRON.value: Substrates.ENVIRON.value,
     AssetInstances.FLUIDS.value: Substrates.FLUIDS.value,
-    AssetInstances.SHORELINES.value: Substrates.SHORELINES.value,
-    AssetInstances.BRIDGES.value: Substrates.BRIDGES.value
+    AssetInstances.SHORELINES.value: Substrates.SURFACES.value,
+    AssetInstances.BRIDGES.value: Substrates.OVERLAYS.value,
+    AssetInstances.STAIRS.value: Substrates.OVERLAYS.value,
+    # ---------------------------------- BLUEPRINT LEVEL SUBTRACTS
+    Buildings.FLOORS.value: Substrates.SURFACES.value, 
+    Buildings.PATHS.value: Substrates.SURFACES.value,
+    Buildings.FLATS.value: Substrates.SURFACES.value,
+    Corridors.SOLIDS.value: Substrates.OVERLAYS.value,
+    Corridors.STRIPES.value: Substrates.OVERLAYS.value,
+    Corridors.DESIGNS.value: Substrates.OVERLAYS.value
 }
 """Instance-keyed map of substrate elevations."""
 
-MATERIAL_PARTITIONS: Final[Dict[str, Tuple[str, ...]]] = {
+MATERIAL_PARTITIONS: Final[dict[str, tuple[str, ...]]] = {
     Materials.ORGANICS.value: tuple(m.value for m in Organics),
     Materials.GEOLOGICS.value: tuple(m.value for m in Geologics),
     Materials.METALLICS.value: tuple(m.value for m in Metallics),
@@ -114,19 +121,35 @@ MATERIAL_PARTITIONS: Final[Dict[str, Tuple[str, ...]]] = {
 }
 """Materials partitioned by genus."""
 
-BLUEPRINT_PARTITIONS: Final[Dict[str, Tuple[str, ...]]] = {
+BLUEPRINT_PARTITIONS: Final[dict[str, tuple[str, ...]]] = {
     Blueprints.BUILDINGS.value: tuple(b.value for b in Buildings),
     Blueprints.CORRIDORS.value: tuple(b.value for b in Corridors),
     Blueprints.COLUMNS.value: tuple(b.value for b in Columns)
 }
 """Blueprints partitioned by schema."""
 
-BLUEPRINT_STRATEGIES: Final[Dict[str, str]] = {
+BLUEPRINT_STRATEGIES: Final[dict[str, str]] = {
     Blueprints.BUILDINGS.value: MultiplicationStrategies.SIMPLE.value,
     Blueprints.CORRIDORS.value: MultiplicationStrategies.SIMPLE.value,
     Blueprints.COLUMNS.value: MultiplicationStrategies.EXPANSION.value
 }
 """Multiplication strategy Blueprint mapping for deploying Asset states."""
+
+OBSTACLE_BLUEPRINTS: Final[frozenset[str]] = frozenset({
+    Buildings.WALLS.value,
+    Buildings.HALLS.value,
+    Columns.BASES.value
+})
+"""Blueprints for constructing obstacles."""
+
+SUBSTRATE_BLUEPRINTS: Final[frozenset[str]] = frozenset({
+    Buildings.FLOORS.value,
+    Buildings.PATHS.value,
+    Corridors.SOLIDS.value,
+    Corridors.STRIPES.value,
+    Corridors.DESIGNS.value
+})
+"""Blueprints for rendering ground-level decals and decorations"""
 # ---------------------------------------------------
 # DIRECTORY SETTINGS
 # ---------------------------------------------------

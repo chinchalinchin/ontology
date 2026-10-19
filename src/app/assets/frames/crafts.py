@@ -1,7 +1,7 @@
 """
-# Ontology: app.assets.frames.resources
+# Ontology: app.assets.frames.crafts
 
-Package for Resource Frame implementations. 
+Package for Crafts Frame implementations. 
 
 """
 # Stamdard Libraries
@@ -26,6 +26,7 @@ from app.models.properties import (
 
 logger = logging.getLogger(__name__)
 
+# ---------------------------------------------
 
 class MaterialFrame(Frame):
     """

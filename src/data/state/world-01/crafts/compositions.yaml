@@ -1,36 +1,36 @@
-compositions:
-  - id: brick-house
-    name: suburbs-00
-    layer: '0'
-    owner: player
-    position:
-      x: 650
-      y: 750
-  - id: brick-house
-    name: suburbs-01
-    layer: '0'
-    owner: archaxes
-    position:
-      x: 400
-      y: 750
-  - id: regalia-galleria
-    name: the-gallery
-    layer: '0'
-    owner: the-government
-    position:
-      x: 650
-      y: 1100
-  - id: castle-dawn
-    name: the-capital
-    owner: the-government
-    layer: '0'
-    position:
-      x: 280
-      y: 250
-  - id: citadel-of-trials
-    name: level-01
-    owner: the-government
-    layer: '0'
-    position:
-      x: 825
-      y: 150
+# compositions:
+#   - id: brick-house
+#     name: suburbs-00
+#     layer: '0'
+#     owner: player
+#     position:
+#       x: 650
+#       y: 750
+#   - id: brick-house
+#     name: suburbs-01
+#     layer: '0'
+#     owner: archaxes
+#     position:
+#       x: 400
+#       y: 750
+#   - id: regalia-galleria
+#     name: the-gallery
+#     layer: '0'
+#     owner: the-government
+#     position:
+#       x: 650
+#       y: 1100
+#   - id: castle-dawn
+#     name: the-capital
+#     owner: the-government
+#     layer: '0'
+#     position:
+#       x: 280
+#       y: 250
+#   - id: citadel-of-trials
+#     name: level-01
+#     owner: the-government
+#     layer: '0'
+#     position:
+#       x: 825
+#       y: 150

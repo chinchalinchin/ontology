@@ -6,7 +6,8 @@ from app.assets.hitboxes.core import (
     DirectedHitbox,
 )
 from app.assets.hitboxes.crafts import (
-    ElevatedHitbox
+    ElevatedHitbox,
+    MaterialHitbox
 )
 from app.assets.hitboxes.sheets import (
     AttackHitbox
@@ -23,5 +24,6 @@ __all__ = [
     "StageHitbox",
     "OrientedHitbox",
     "DirectedHitbox",
-    'ElevatedHitbox'
+    'ElevatedHitbox',
+    'MaterialHitbox'
 ]

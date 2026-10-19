@@ -18,6 +18,7 @@ from app.config.enums import (
     AssetCategories,
     AssetInstances, 
     OrientedAssets,
+    MultipliedAssets,
     Shortcuts
 )
 from app.models.properties import PropertiesSchema
@@ -141,6 +142,13 @@ class Migrator:
                 oriented_asset = self.decomposer.orient(oriented_state, task[1], task[2])
                 self.board.add(oriented_asset)
 
+            elif task[0] == Shortcuts.Assets.value and \
+                task[2] in MultipliedAssets:
+
+                multiplied_state = task[3]
+                multiplied_asset = self.decomposer.multiply(multiplied_state, task[1], task[2])
+                self.board.add(multiplied_asset)
+                
             elif task[0] == Shortcuts.PLOTS.value:
                 plot = task[1]
                 self.board.set_plot(plot)

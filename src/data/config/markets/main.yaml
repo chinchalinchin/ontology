@@ -1,0 +1,35 @@
+materials:
+  chromatics:
+    blue: 2.5
+    red: 2.5 
+    green: 5
+    yellow: 2.5
+  geologics:
+    limestone: 1.00
+    feldspar: 5.00
+    granite: 10.00
+    marble: 20.00
+  metallics:
+    copper: 5.00
+    iron: 10.00
+    gold: 25.00
+  organics:
+    cotton: 5.00
+    thatches: 1.00
+    wood: 2.00
+blueprints:
+  buildings:
+    floors: 1.00
+    walls: 2.00
+    flats: 2.00
+    roofs: 3.00
+    paths: 1.00
+    halls: 2.00
+  corridors:
+    solids: 1.00
+    stripes: 2.00
+    designs: 5.00
+  columns:
+    crowns: 5.00
+    shafts: 5.00
+    bases: 2.00

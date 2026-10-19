@@ -21,8 +21,11 @@ from app.assets.base import Asset
 from app.config.enums import (
     AssetCategories, 
     AssetInstances, 
+    Columns,
     Orientations, 
     OrientedAssets,
+    MultipliedAssets,
+    MultiplicationStrategies,
     Shortcuts
 )
 from app.services.generators.game.factory import Factory
@@ -32,11 +35,11 @@ from app.models.config import (
 )
 from app.models.properties import (
     PropertiesSchema, 
-    Cost
 )
 from app.models.state import (
     PropertyState, 
     OrientedState, 
+    StrutState,
     AssetState
 )
 
@@ -66,6 +69,7 @@ class Decomposer:
 
     # ---------------------------------------------------------
     # ---------------------------------------- HELPER UTILITIES
+    # ---------------------------------------------------------
 
     def _get_length(self, cat_key: str, inst_key: str, asset_id: str) -> int:
         """Retrieves static length (l) property for an asset ID."""
@@ -75,6 +79,50 @@ class Decomposer:
         inst_props = getattr(cat_props, inst_key, {})
         props = inst_props.get(asset_id)
         return props.dimensions.l if props and props.dimensions else 0
+
+
+    # ---------------------------------------------------------
+    # ------------------------------------- HYDRATION UTILITIES
+    # ---------------------------------------------------------
+
+    def _resolve_layer(self, 
+        layer: Optional[str], 
+        root_layer: Optional[str], 
+        inc: int, 
+        layer_map: Dict[str, str]
+    ) -> Optional[str]:
+        if layer is None or str(layer) == str(root_layer):
+            return layer
+
+        layer_str = str(layer)
+        if layer_str in layer_map.values():
+            return layer_str
+
+        if layer_str not in layer_map:
+            layer_map[layer_str] = settings.SEPARATOR.join([layer_str, str(inc)])
+
+        return layer_map[layer_str]
+
+    
+    def _resolve_bind(self, 
+        val: Any, 
+        root_context: Dict[str, Any], 
+        parent_context: Dict[str, Any]
+    ) -> Any:
+        if not isinstance(val, str):
+            return val
+            
+        match_parent = re.match(r"^bind\(parent\.(.*?)\)$", val)
+        if match_parent:
+            key = match_parent.group(1)
+            return parent_context.get(key, val)
+            
+        match_root = re.match(r"^bind\((?:root\.)?(.*?)\)$", val)
+        if match_root:
+            key = match_root.group(1)
+            return root_context.get(key, val)
+            
+        return val
 
 
     def _resolve_anchor(
@@ -127,91 +175,6 @@ class Decomposer:
             return 0
 
         return int((target_y + target_l) - (self_y + self_l))
-
-    # ---------------------------------------------------------
-    # ------------------------------------------ COST UTILITIES
-
-    def _accumulate_cost(self, 
-        cat: str, 
-        inst: str, 
-        asset_id: str, 
-        cost_map: Dict[str, int]
-    ) -> None:
-        if cat == AssetCategories.CRAFTS.value:
-            cat_props = getattr(self.properties.crafts, inst, {})
-            props = cat_props.get(asset_id)
-            if props and props.cost:
-                for c in props.cost:
-                    cost_map[c.item] = cost_map.get(c.item, 0) + c.quantity
-
-
-    def _aggregate_components_cost(self, 
-        components: Any, 
-        cost_map: Dict[str, int]
-    ) -> None:
-        if not components: 
-            return
-        
-        for cat_field in dataclasses.fields(components):
-            cat_key = cat_field.name
-            if cat_key in Shortcuts:
-                continue
-
-            cat_data = getattr(components, cat_key)
-            if not cat_data: 
-                continue
-            
-            for inst_field in dataclasses.fields(cat_data):
-                inst_key = inst_field.name
-                inst_list = getattr(cat_data, inst_key)
-
-                if not inst_list: 
-                    continue
-                
-                for state_obj in inst_list:
-                    self._accumulate_cost(cat_key, inst_key, state_obj.id, cost_map)
-
-    # ---------------------------------------------------------
-    # ------------------------------------- HYDRATION UTILITIES
-
-    def _resolve_layer(self, 
-        layer: Optional[str], 
-        root_layer: Optional[str], 
-        inc: int, 
-        layer_map: Dict[str, str]
-    ) -> Optional[str]:
-        if layer is None or str(layer) == str(root_layer):
-            return layer
-
-        layer_str = str(layer)
-        if layer_str in layer_map.values():
-            return layer_str
-
-        if layer_str not in layer_map:
-            layer_map[layer_str] = settings.SEPARATOR.join([layer_str, str(inc)])
-
-        return layer_map[layer_str]
-
-    
-    def _resolve_bind(self, 
-        val: Any, 
-        root_context: Dict[str, Any], 
-        parent_context: Dict[str, Any]
-    ) -> Any:
-        if not isinstance(val, str):
-            return val
-            
-        match_parent = re.match(r"^bind\(parent\.(.*?)\)$", val)
-        if match_parent:
-            key = match_parent.group(1)
-            return parent_context.get(key, val)
-            
-        match_root = re.match(r"^bind\((?:root\.)?(.*?)\)$", val)
-        if match_root:
-            key = match_root.group(1)
-            return root_context.get(key, val)
-            
-        return val
 
 
     def _hydrate_state(self, 
@@ -325,6 +288,7 @@ class Decomposer:
 
     # ---------------------------------------------------------
     # ------------------------------------- EXPANSION UTILITIES
+    # ---------------------------------------------------------
 
     def _unpack_node(self, 
         node: Any, 
@@ -447,6 +411,10 @@ class Decomposer:
                     
                     if inst_key in OrientedAssets:
                         assets.extend(self.orient(new_state, cat_key, inst_key))
+
+                    elif inst_key in MultipliedAssets:
+                        assets.extend(self.multiply(new_state, cat_key, inst_key))
+
                     else:
                         assets.append(self._create_asset(cat_key, inst_key, new_state))
 
@@ -556,41 +524,114 @@ class Decomposer:
         return unit_assets
 
 
-    def cost(self, comp_id: str) -> List[Cost]:
-        config = self.compositions.get(comp_id)
-        if not config: 
+    def multiply(
+        self,
+        state: StrutState,
+        category: str,
+        instance: str
+    ) -> List[Asset]:
+        cat_props = getattr(self.properties, category, {})
+        instance_props = getattr(cat_props, instance, {})
+        props = instance_props.get(state.id, None)
+
+        if props is None:
+            logger.error(
+                settings.SEPARATOR.join([
+                    "Decomposer",
+                    "MultiplyMissingProperties",
+                    state.id
+                ])
+            )
             return []
-        
-        cost_map = {}
-        
-        self._accumulate_cost(
-            AssetCategories.CRAFTS.value, 
-            AssetInstances.STRUTS.value, 
-            config.root.strut.id, 
-            cost_map
+
+        w = props.dimensions.w
+        l = props.dimensions.l
+        base_pos = state.position
+        layer = state.layer
+        nx = state.multiple.nx if state.multiple and state.multiple.nx else 1
+        ny = state.multiple.ny if state.multiple and state.multiple.ny else 1
+
+        strategy = settings.BLUEPRINT_STRATEGIES.get(
+            props.blueprints,
+            MultiplicationStrategies.SIMPLE.value
         )
-        self._aggregate_components_cost(config.root.components, cost_map)
-        
-        if config.branches:
-            for branch in config.branches:
-                self._accumulate_cost(
-                    AssetCategories.CRAFTS.value, 
-                    AssetInstances.STRUTS.value, 
-                    branch.strut.id, 
-                    cost_map
-                )
-                self._aggregate_components_cost(branch.components, cost_map)
-                
-        return [Cost(item=k, quantity=v) for k, v in cost_map.items()]
 
+        cat_recipes = getattr(self.recipes, category, None)
+        recipe = getattr(cat_recipes, instance, None)
+        unit_assets: List[Asset] = []
+        idx = 0
 
-    def bridge_cost(self, id: str, multiple: Multiple, orientation: str) -> List[Cost]:
-        props = self.properties.crafts.bridges.get(id)
-        if not props:
-            return []
+        if strategy == MultiplicationStrategies.EXPANSION.value:
+            # Column expansion: [crown] + ny * [shaft] + [base] along +y axis
+            for ix in range(nx):
+                col_x = base_pos.x + ix * w
+                base_y = base_pos.y + (ny + 1) * l
+                base_ground = base_y + l
 
-        count = multiple.nx if orientation == Orientations.HORIZONTAL.value else multiple.ny
-        return [
-            Cost(item=c.item, quantity=c.quantity * count)
-            for c in props.cost
-        ]
+                segments: List[Tuple[str, int]] = [
+                    (Columns.CROWNS.value, base_pos.y)
+                ]
+                for k in range(ny):
+                    segments.append(
+                        (Columns.SHAFTS.value, base_pos.y + (k + 1) * l)
+                    )
+                segments.append((Columns.BASES.value, base_y))
+
+                for bp_part, seg_y in segments:
+                    unit_name = settings.SEPARATOR.join([
+                        state.name or state.id,
+                        bp_part,
+                        str(idx)
+                    ])
+                    idx += 1
+                    seg_anchor = int(base_ground - (seg_y + l))
+
+                    unit_state = dataclasses.replace(
+                        state,
+                        name=unit_name,
+                        layer=layer,
+                        position=Position(col_x, seg_y),
+                        blueprint=bp_part,
+                        multiple=Multiple(1, 1),
+                        anchor=seg_anchor
+                    )
+                    unit_assets.append(
+                        Asset(
+                            taxonomy=Factory.taxonomy(state.id, unit_name, category, instance),
+                            properties=props,
+                            state=unit_state,
+                            frame=Factory.frame(recipe.frame),
+                            animation=Factory.animation(recipe.animation),
+                            hitbox=Factory.hitbox(recipe.hitbox)
+                        )
+                    )
+        else:
+            # Simple 2D grid multiplication
+            for iy in range(ny):
+                for ix in range(nx):
+                    seg_pos = Position(base_pos.x + ix * w, base_pos.y + iy * l)
+                    unit_name = settings.SEPARATOR.join([
+                        state.name or state.id,
+                        str(idx)
+                    ])
+                    idx += 1
+
+                    unit_state = dataclasses.replace(
+                        state,
+                        name=unit_name,
+                        layer=layer,
+                        position=seg_pos,
+                        multiple=Multiple(1, 1)
+                    )
+                    unit_assets.append(
+                        Asset(
+                            taxonomy=Factory.taxonomy(state.id, unit_name, category, instance),
+                            properties=props,
+                            state=unit_state,
+                            frame=Factory.frame(recipe.frame),
+                            animation=Factory.animation(recipe.animation),
+                            hitbox=Factory.hitbox(recipe.hitbox)
+                        )
+                    )
+
+        return unit_assets

@@ -6,6 +6,9 @@ from app.assets.frames.core import (
     OrientedFrame,
     DirectedFrame
 )
+from app.assets.frames.crafts import (
+    MaterialFrame
+)
 from app.assets.frames.effects import (
     FluidFrame
 )
@@ -40,5 +43,6 @@ __all__ = [
     'OrientedFrame',
     'DirectedFrame',
     'StageFrame',
-    'SeasonalFrame'
+    'SeasonalFrame',
+    'MaterialFrame'
 ]
