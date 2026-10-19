@@ -16,7 +16,7 @@ recipes:
     bridges:
       frame: oriented
       animation: none
-      hitbox: static
+      hitbox: oriented
     carpentry:
       frame: directed
       animation: none
@@ -30,9 +30,9 @@ recipes:
       animation: none
       hitbox: oriented
     struts:
-      frame: single
+      frame: material
       animation: none
-      hitbox: static
+      hitbox: material
     stairs:
       frame: directed
       animation: none
