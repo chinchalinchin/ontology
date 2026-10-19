@@ -350,9 +350,9 @@ Implement `Decomposer.multiply()` to handle both 2D `simple` tiling (`buildings`
 
 ---
 
-#### Architectural Drill-Down: Dynamic `anchor`/`priority` vs. Relative `Substrates`
+##### Architectural Analysis III
 
-##### 1. Why Dynamic `anchor`/`priority` Resolution Breaks Down
+###### 1. Why Dynamic `anchor`/`priority` Resolution Breaks Down
 
 Let $S$ be a walkable surface Strut (`floors`, `paths`, `flats`, `corridors`) or `Stairs` with dimensions $(w_S, l_S)$, and let $P$ be a Sprite with dimensions $(w_P, l_P) = (64, 64)$ on the same elevation $E$. When $P$ stands on $S$ north of its southern edge:
 
@@ -366,7 +366,7 @@ Attempting to solve this dynamically by mutating $S.\text{state.anchor}$ when $P
 2. **Static `anchor = -S.dimensions.l` Failure on Stacked Substrates**: If $S$ statically sets `anchor = -S.dimensions.l` so $\text{ground\_y}(S) = S.y$, then a `carpet` (`corridors`, $l = 96$) placed at $y = 0$ on top of a `floor` (`buildings`, $l = 96$) at $y = 0$ shares the exact same baseline $\text{ground\_y} = 0$ and `priority = -1`. Worse, if a smaller rug ($l = 64$) is placed near the bottom of a large room floor ($l = 400$) at $y = 300$, its top edge $y = 300 > 0$ sorts above the floor, whereas if a long runner ($l = 400$, $y = 0$) is placed over a local floor slab ($l = 96$, $y = 96$), the floor slab has $\text{ground\_y} = 96 > \text{ground\_y}(\text{runner}) = 0$, causing the floor slab to **overdraw the carpet runner**.
 3. **Physics Pipeline Pollution**: Walkable Strut surfaces (`floors`, `paths`, `corridors`) have no collision footprint (`NoHitbox` / empty hitboxes). Dynamically computing `anchor` on intersection would force `CollisionMechanics` or `MotionMechanics` to run AABB overlap checks against every passive floor and carpet tile every frame.
 
-##### 2. Why `Substrates` Worked for Fluids/Geography—and Why `Asset.elevation` Conflated Two Axes
+###### 2. Why `Substrates` Worked for Fluids/Geography—and Why `Asset.elevation` Conflated Two Axes
 
 Look at how `Asset.elevation` is currently implemented in `src/app/assets/base.py`:
 
@@ -389,7 +389,7 @@ Because `Asset.elevation` only checks `settings.SUBSTRATES` when `self.state.ele
 * Any asset whose `state.elevation` is explicitly hydrated to `0` (such as `Decomposer.orient()` setting `elevation=state.elevation` on `bridges`, or `Stairs` initialized with `elevation = 0`) **bypasses `settings.SUBSTRATES` entirely** and sorts at `0` alongside Sprites.
 * Any surface deployed on an elevated platform (`state.elevation = 1`) cannot use a global negative `elevation` without falling underneath `elevation = 0` assets.
 
-##### 3. The Exact Solution: Fibered `(elevation, substrate, ground_y, priority)` Sorting
+###### 3. The Exact Solution: Fibered `(elevation, substrate, ground_y, priority)` Sorting
 
 Every macro-elevation tier $E \in \mathbb{Z}_{\ge 0}$ is a local stack of substrate planes $\sigma \in [-4, 0]$. By separating `Asset.elevation` (always $\ge 0$) from `Asset.substrate` (resolved lazily from `(instance, state.blueprint)` via `settings.SUBSTRATES`), the Painter's Algorithm sort key becomes:
 
@@ -409,76 +409,25 @@ This resolves every static and dynamic case across all elevations without touchi
 
 ---
 
-### Bug Report: Surface & Stair Overdraw
-
-##### Bug B019: Walkable Surface Struts and Stairs Overdraw Traversing Sprites
-
-**STATUS**: OPEN
-**SEVERITY**: HIGH
-
-**Description**
-
-In `Screen.draw()`, active renderables are sorted by `(asset.elevation, ground_y, asset.properties.priority)`. When a dynamic `Sprite` ($64 \times 64$) traverses a walkable surface `Strut` (`floors`, `paths`, `flats`, `corridors`) or `Stairs` (`steps-stone`) on the same `elevation` tier $E$, any position where the Sprite's feet are north of the surface's bottom edge ($P.y + P.l < S.y + S.l$) yields $\text{ground\_y}(P) < \text{ground\_y}(S)$. Because `ground_y` is evaluated prior to `priority`, the floor, carpet, or stair asset renders **on top of** the Sprite. Additionally, `Asset.elevation` in `src/app/assets/base.py` only queries `settings.SUBSTRATES` when `self.state.elevation is None`, causing any substrate asset with an explicit `state.elevation` (e.g., `0` or `1`) to lose its substrate ordering altogether.
-
-**Steps to Replicate**
-
-1. Deploy `steps-stone` (`w: 64, l: 96`) or a `floor-wood` / `support-granite-border` Strut (`w: 96, l: 96`) at `position: { x: 100, y: 100 }`, `elevation: 0`.
-2. Move the Player Sprite (`w: 64, l: 64`, `elevation: 0`) onto the asset at `position: { x: 100, y: 110 }` such that `player.ground_y = 174 < surface.ground_y = 196`.
-3. Observe that `Screen.draw()` renders the stair or floor texture over the Player Sprite.
-
-**Proposed Remeditation**
-
-1. Decouple macro-tier `Asset.elevation` ($\ge 0$) from intra-tier `Asset.substrate` ($\in [-4, 0]$) on `Asset` (`src/app/assets/base.py`):
-```python
-@property
-def elevation(self) -> int:
-    return self.state.elevation if self.state.elevation is not None else 0
-
-@property
-def substrate(self) -> int:
-    bp = getattr(self.state, "blueprint", None)
-    if bp and bp in settings.SUBSTRATES:
-        return settings.SUBSTRATES[bp]
-    return settings.SUBSTRATES.get(self.taxonomy.instance, 0)
-
-```
-
-
-2. Update `Screen._sort` in `src/app/game/screen.py` to sort by the 4-tuple `(asset.elevation, asset.substrate, ground_y, asset.properties.priority)`.
-3. Register `AssetInstances.STAIRS.value: Substrates.OVERLAYS.value` (`-1`), `BuildingBlueprints` surfaces (`floors`, `paths`, `flats`: `-2`), and `CorridorBlueprints` (`solids`, `stripes`, `designs`: `-1`) in `settings.SUBSTRATES`.
-
----
-
-### Addendum: Phase 07.04 Grooming Updates
-
-The following sections append directly to **Refactor: Phase 07.04 - Materialization** to incorporate `User Review II`.
-
-```markdown
-##### User Review II
-
-For Architectural Analysis #2.1, priority only matters when the elevations and vertical displacements are equal; it is the fallback tie-breaker. For dynamic Assets, when a Sprite is walking on a surface in which it is wholly contained (`sprite.state.position.y + sprite.dimensions.l < strut.state.position.y + strut.dimensions.l` AND `sprite.state.position.y > strut.state.position.y`), the surface will render on top of the Sprite (which also currently occurs with Stairs). 
-
-Rather than dynamically resolving `anchor`/`priority` via collision checks, extend the `SUBSTRATES` mechanism so Strut blueprints and Stairs lazily resolve intra-tier substrate offsets relative to their deployed `elevation`.
-
-##### Architectural Analysis III
+##### Task
 
 ###### Relative Intra-Tier `Substrates` (`Asset.substrate` & `Screen._sort`)
 
 Previously, `Asset.elevation` returned negative `settings.SUBSTRATES` values only when `state.elevation is None`. Because Struts, Stairs, and Bridges can be deployed at arbitrary macro-elevations ($E \in \{0, 1, 2, \dots\}$) and receive explicit `state.elevation` integers during `Decomposer` hydration, intra-tier substrate ordering must be orthogonal to `state.elevation`.
 
 1. **`Substrates` Enumeration (`src/app/config/enums.py`)**:
-   ```python
-   class Substrates(int, Enum):
-       ENVIRON    = -4
-       FLUIDS     = -3
-       SHORELINES = -2
-       SURFACES   = -2
-       OVERLAYS   = -1
-       STANDARD   =  0
 
+```python
+class Substrates(int, Enum):
+    ENVIRON    = -4
+    FLUIDS     = -3
+    SURFACES   = -2
+    OVERLAYS   = -1
+    STANDARD   =  0
 ```
 
-2. **Blueprint & Instance Substrate Mapping (`src/app/config/settings.py`)**:
+2. **Blueprint & Instance Substrate Mapping (`src/app/config/settings.py`)**
+
 ```python
 SUBSTRATES: Final[dict[str, int]] = {
     AssetInstances.ENVIRON.value: Substrates.ENVIRON.value,
@@ -493,7 +442,6 @@ SUBSTRATES: Final[dict[str, int]] = {
     CorridorBlueprints.STRIPES.value: Substrates.OVERLAYS.value,
     CorridorBlueprints.DESIGNS.value: Substrates.OVERLAYS.value,
 }
-
 ```
 
 
@@ -501,16 +449,14 @@ SUBSTRATES: Final[dict[str, int]] = {
 
 $$\text{sort\_key}(A) = \Big(A.\text{elevation},\; A.\text{substrate},\; \text{ground\_y}(A),\; A.\text{properties.priority}\Big)$$
 
-
-
 At any macro-elevation $E$, `SURFACES (-2)` (`floors`, `paths`, `flats`) render first, `OVERLAYS (-1)` (`carpets`, `hallways`, `avenues`, `bridges`, `stairs`) render second, and `STANDARD (0)` (`walls`, `halls`, `columns`, `sprites`, `objects`) sort by `ground_y` and `priority` on top.
 
-###### Updated Subtask in Task 3 (`MaterialFrame`, `MaterialHitbox` & Substrate Priority)
+**Addendum**
 
-* [ ] Subtask: Add `Substrates.SURFACES (-2)` and `Substrates.OVERLAYS (-1)` to `src/app/config/enums.py`, map surface/corridor blueprints and `stairs` in `settings.SUBSTRATES`, expose `Asset.substrate` on `src/app/assets/base.py`, and update `Screen._sort` in `src/app/game/screen.py` to sort by `(asset.elevation, asset.substrate, ground_y, asset.properties.priority)`.
+* [x] Subtask: Add `Substrates.SURFACES (-2)` and `Substrates.OVERLAYS (-1)` to `src/app/config/enums.py`, map surface/corridor blueprints and `stairs` in `settings.SUBSTRATES`, expose `Asset.substrate` on `src/app/assets/base.py`, and update `Screen._sort` in `src/app/game/screen.py` to sort by `(asset.elevation, asset.substrate, ground_y, asset.properties.priority)`.
 
-```
+##### User Review III
 
-<FollowUp label="Want me to draft the implementation patch for Bug B019 in `base.py` and `screen.py`?" query="Draft the implementation patch for Bug B019 across `src/app/config/enums.py`, `src/app/config/settings.py`, `src/app/assets/base.py`, and `src/app/game/screen.py`, along with unit tests."/>
+I believe this is now the correct implementation. However, looking backwards, this nows means Bridge, Platform and Stairs have to be refactored. I see now that what defines Crafts is their structural nature and the method by which they are arranged in an atlas must be a function of their design and purpose.
 
-```
+In other words, frames in a Sprite Sheet represent Actions, Frames in a Resource represent lifespan stages, Frames in an Effect represent Periodic Animations, etc. Frames in Crafts must be atlased according to structural components. Thus begins another reatlasing adventure.
