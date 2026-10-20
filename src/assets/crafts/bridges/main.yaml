@@ -1,11 +1,18 @@
 crafts:
   bridges:
-    bridge-wood:
+    arch:
       dimensions:
-        w: 128
-        l: 128
-      cost:
-        - item: wood
-          quantity: 10
+        w:
+        l:
+      material: 
+        genus: geologics
+      mass: -1
+      hitboxes: null
+    suspension:
+      dimensions:
+        w: 
+        l:
+      material: 
+        genus: organics
       mass: -1
       hitboxes: null

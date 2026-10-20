@@ -1,107 +1,11 @@
 crafts:
   carpentry:
-    # -----------------------------------------
-    # ------------------------------------ BEDS
-    # -----------------------------------------
-    bed-board:
+    bed:
       dimensions:
-        w: 71
-        l: 71
+        w:
+        l:
       mass: 0
-      cost: null # TODO
-      hitboxes:
-        up: null # TODO
-        left: null # TODO
-        down: null # TODO
-        right: null # TODO   
-    bed-cot-blue:
-      dimensions:
-        w: 74
-        l: 88
-      mass: 0
-      cost: null # TODO
-      hitboxes:
-        up: null # TODO
-        left: null # TODO
-        down: null # TODO
-        right: null # TODO
-    bed-cot-red:
-      dimensions:
-        w: 74
-        l: 88
-      mass: 0
-      cost: null # TODO
-      hitboxes:
-        up: null # TODO
-        left: null # TODO
-        down: null # TODO
-        right: null # TODO
-    bed-standard-blue:
-      dimensions:
-        w: 74
-        l: 71
-      mass: 0
-      cost: null # TODO
-      hitboxes:
-        up: null # TODO
-        left: null # TODO
-        down: null # TODO
-        right: null # TODO
-    bed-standard-red:
-      dimensions:
-        w: 74
-        l: 71
-      mass: 0
-      cost: null # TODO
-      hitboxes:
-        up: null # TODO
-        left: null # TODO
-        down: null # TODO
-        right: null # TODO
-    # -----------------------------------------
-    # ---------------------------------- CHAIRS
-    # -----------------------------------------
-    chair-cushion-blue:
-      dimensions:
-        w: 26
-        l: 32
-      mass: 0
-      cost: null # TODO
-      hitboxes:
-        up: null # TODO
-        left: null # TODO
-        down: null # TODO
-        right: null # TODO
-    chair-cushion-red:
-      dimensions:
-        w: 26
-        l: 32
-      mass: 0
-      cost: null # TODO
-      hitboxes:
-        up: null # TODO
-        left: null # TODO
-        down: null # TODO
-        right: null # TODO
-    chair-sofa-blue:
-      dimensions:
-        w: 64
-        l: 64
-      mass: 0
-      cost: null # TODO
-      hitboxes:
-        up: null # TODO
-        left: null # TODO
-        down: null # TODO
-        right: null # TODO
-    chair-sofa-red:
-      dimensions:
-        w: 64
-        l: 64
-      mass: 0
-      cost: null # TODO
-      hitboxes:
-        up: null # TODO
-        left: null # TODO
-        down: null # TODO
-        right: null # TODO
+      material:
+        genus: chromatics
+        host: wood
+      hitboxes: null
