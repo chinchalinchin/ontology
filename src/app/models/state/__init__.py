@@ -37,6 +37,7 @@ from app.models.state.assets import (
     # ---- TILE STATES
     MultiplierState,
     # ---- OBJECT STATES
+    ObjectState,
     ContainerState,
     PositionalState,
     DoorState,
@@ -93,7 +94,7 @@ __all__ = [
     'WorldPayload',
     'MenuPayload',
     # OBJECT STATES
-    'MultiplierState',
+    'ObjectState',
     'ContainerState',
     'PositionalState',
     'DoorState',
@@ -138,6 +139,8 @@ __all__ = [
     'Mutators',
     'RadialParameters',
     'FearParameters',
+    # TILE STATES
+    'MultiplierState',
     # WIDGET STATES
     'IconState',
     'TraversalState',

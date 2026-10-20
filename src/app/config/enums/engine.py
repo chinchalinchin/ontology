@@ -81,6 +81,7 @@ class Reactions(str, Enum):
     
 class Relations(str, Enum):
     SHORELINES      = "shorelines"
+    MATERIALS       = "materials"
 
 class Executors(str, Enum):
     # TRANSITION EXECUTORS

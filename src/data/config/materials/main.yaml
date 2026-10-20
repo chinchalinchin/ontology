@@ -1,0 +1,74 @@
+# /src/data/config/materials/main.yaml (or unified /src/data/config/markets/main.yaml)
+materials:
+  genera:
+    organics:
+      hosts: []
+      partitions:
+        cotton: 1.0
+        thatches: 1.5
+        wood: 2.0
+    ceramics:
+      hosts: []
+      partitions:
+        clay: 1.5
+    geologics:
+      hosts: []
+      partitions:
+        limestone: 3.0
+        feldspar: 3.5
+        granite: 4.5
+        marble: 6.0
+    metallics:
+      hosts: []
+      partitions:
+        copper: 5.0
+        iron: 7.5
+        gold: 15.0
+    chromatics:
+      hosts: [ organics, ceramics ]
+      partitions:
+        neutral: 0.0
+        blue: 1.0
+        red: 1.0
+        yellow: 1.0
+        green: 1.0
+  blueprints:
+    buildings:
+      strategy: simple
+      partitions:
+        floors: { delta: 1.0, substrate: -2, obstacle: false }
+        walls:  { delta: 2.5, substrate:  0, obstacle: true  }
+        flats:  { delta: 1.5, substrate: -2, obstacle: false }
+        roofs:  { delta: 2.0, substrate:  0, obstacle: false }
+        paths:  { delta: 1.0, substrate: -2, obstacle: false }
+        halls:  { delta: 2.0, substrate:  0, obstacle: true  }
+    corridors:
+      strategy: simple
+      partitions:
+        solids:  { delta: 1.0, substrate: -1, obstacle: false }
+        stripes: { delta: 1.2, substrate: -1, obstacle: false }
+        designs: { delta: 1.5, substrate: -1, obstacle: false }
+    columns:
+      strategy: expansion
+      partitions:
+        crowns: { delta: 1.5, substrate: 0, obstacle: false }
+        shafts: { delta: 1.0, substrate: 0, obstacle: false }
+        bases:  { delta: 1.5, substrate: 0, obstacle: true  }
+    enclosures:
+      strategy: perimeter
+      partitions:
+        north: { delta: 1.0, substrate: 0, obstacle: true }
+        east:  { delta: 1.0, substrate: 0, obstacle: true }
+        south: { delta: 1.0, substrate: 0, obstacle: true }
+        west:  { delta: 1.0, substrate: 0, obstacle: true }
+    orientations:
+      strategy: oriented
+      partitions:
+        horizontal: { delta: 1.0, substrate: 0, obstacle: true }
+        vertical:   { delta: 1.0, substrate: 0, obstacle: true }
+    inclines:
+      strategy: simple
+      partitions:
+        up:    { delta: 1.5, substrate: -1, obstacle: true }
+        left:  { delta: 1.5, substrate: -1, obstacle: true }
+        right: { delta: 1.5, substrate: -1, obstacle: true }

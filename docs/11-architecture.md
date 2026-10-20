@@ -64,12 +64,12 @@ def _play(self, delta) -> None:
 
 When a [MenuEvent](./06-widgets.md#events) fires and a modal Menu is pushed to the screen, `board.paused` evaluates to `True`. The Engine skips the `world` mechanics loop entirely. The world freezes, but `core` mechanics continue ticking, allowing the Player to navigate the menu while background torches remain animated without the risk of enemies moving or attacking.
 
-### Dependency Injection & MechanicsFactory
+### Dependency Injection & Factory
 
 Mechanics enforce strict separation between static construction dependencies and per-frame execution arguments:
 
 1. **Execution Interface (`Mechanic.update`)**: The runtime interface `update(board, delta, bus, payload)` receives only transient frame state. Static services are never passed through `update()`.
-2. **Constructor Injection (`MechanicsFactory`)**: Systems requiring external services (such as `Actuator` for `FluidMechanics`, or compiled ISL expression trees for `TransitionMechanics` and `PlotMechanics`) receive them strictly through their constructor via `MechanicsFactory`.
+2. **Constructor Injection (`Factory`)**: Systems requiring external services (such as `Actuator` for `FluidMechanics`, or compiled ISL expression trees for `TransitionMechanics` and `PlotMechanics`) receive them strictly through their constructor via `Factory`.
 
 ```mermaid
 --*<-- "static/mmd/mechanics.bootstrap.mmd
@@ -107,33 +107,24 @@ When asserting fluid immersion (`board.fluid(layer, position)`), the engine quer
 
 ## Rendering
 
-### Elevation, Perspective & Priority
+#### Elevation, Substrate, Perspective & Priority
 
-To accurately render perspective across multi-tiered 2.5D geometry, the Screen `draw()` loop applies Painter's Algorithm sorting to all active assets before translating them to Cython primitives.
+World rendering evaluates spatial geometry using discrete topological macro-elevations, intra-tier substrate planes, continuous ground perspective, and coplanar priority:
 
-Sorting evaluates a deterministic 3-key lexicographical tuple:
+$$
+\text{sort_key}(A) = \Big(A.\text{elevation}, A.\text{substrate}, \text{ground_y}(A), A.\text{properties.priority}\Big)
+$$
 
-$$\text{sort\_key}(A) = \Big(A.\text{elevation},\; \text{ground\_y}(A),\; A.\text{properties.priority}\Big)$$
+1. **Primary Key (`A.elevation` $\in \mathbb{Z}_{\ge 0}$)**: Discrete macro-elevation story or platform tier (`0`, `1`, `2`, ...).
+2. **Secondary Key (`A.substrate` $\in \mathbb{Z}_{\le 0}$)**: Intra-tier rendering plane within macro-elevation $E$, resolved via `settings.SUBSTRATES` from `(instance, state.blueprint)`:
+   - `Substrates.ENVIRON (-4)`: `tiles.environ`
+   - `Substrates.FLUIDS (-3)`: `effects.fluids`
+   - `Substrates.SURFACES (-2)`: `geography.shorelines`, `struts` (`floors`, `paths`, `flats`)
+   - `Substrates.OVERLAYS (-1)`: `crafts.bridges`, `crafts.stairs`, `objects.doors` (shadow footprints), `struts` (`solids`, `stripes`, `designs`)
+   - `Substrates.STANDARD (0)`: All upright entities, walls, columns, enclosures, objects, and sheets.
+3. **Tertiary Key (`ground_y` $\in \mathbb{Z}$)**: Continuous in-tier geometric perspective: $\text{ground_y} = \text{int}(A.\text{state.position.y} + A.\text{dimensions.l} + A.\text{state.anchor})$.
+4. **Quaternary Key (`priority` $\in \mathbb{Z}$)**: Coplanar tie-breaker for entities sharing an identical `(elevation, substrate, ground_y)` baseline.
 
-1. **Primary Key (`A.elevation` $\in \mathbb{Z}$)**: Discrete spatial $Z$-plane elevation tier resolved via `Asset.elevation`. If an entity does not define an explicit `state.elevation`, it lazily falls back to `settings.SUBSTRATES`:
-   - `tiles.back`: `elevation = -4`
-   - `effects.fluids`: `elevation = -3`
-   - `geography.shorelines`: `elevation = -2`
-   - `crafts.bridges`: `elevation = -1`
-   - Standard entities (walls, entities, characters): `elevation = 0`
-   - Elevated tiers (balconies, terraces, canopies): `elevation \ge 1`
-   
-   Enforces strict global partitioning: assets on higher elevation tiers render strictly on top of assets on lower tiers, preventing cross-tier Z-fighting and substrate overdraw.
-2. **Secondary Key (`ground_y` $\in \mathbb{R}$)**: Continuous in-tier geometric perspective. For upright physical entities, ground depth evaluates physical ground contact:
-
-   $$\text{ground\_y} = \text{int}(A.\text{state.position.y} + A.\text{dimensions.l} + A.\text{state.anchor})$$
-
-   `state.anchor` provides a dynamic deployment-specific scalar offset to align wall-mounted fixtures (doors, windows, torches) with their host facade's ground baseline.
-3. **Tertiary Key (`priority` $\in \mathbb{Z}$)**: In-tier coplanar surface tie-breaker. When two assets share an identical ground perspective baseline ($\text{ground\_y}_A = \text{ground\_y}_B$), `priority` declared on immutable `AssetProperties` resolves draw order:
-   - Substrates (floorboards, carpets): `priority = -1`
-   - Upright entities (walls, characters, obstacles): `priority = 0`
-   - Surface decals & apertures (doors, wall torches): `priority = 1`
-4. **Allocation Optimization**: Replacing per-frame `lambda` closures with a static module-level `_sort` method eliminates millions of transient function objects and reduces draw overhead across expanded entity sets.
 
 ### Fonts
 

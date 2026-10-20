@@ -163,6 +163,7 @@ class CollisionMechanics(SpatialMechanic):
         Extract variables logically and defer matrix shifts to Cython,
         resolving hitboxes matching the active collision elevation tier.
         """
+        # TODO: mass and velocity should probably be core Asset properties.
         m1 = getattr(asset_a.properties, 'mass', 0)
         m2 = getattr(asset_b.properties, 'mass', 0)
 

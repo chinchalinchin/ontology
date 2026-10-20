@@ -169,6 +169,7 @@ tools:
           # - library
           # - mappings
           - markets
+          - materials
           # - mechanics
           # - menus
           # - plots

@@ -32,9 +32,7 @@ class TileRecipe:
 @dataclass(slots=True, frozen=True)
 class CraftRecipe:
     bridges: Recipe = None
-    carpentry: Recipe = None
     platforms: Recipe = None
-    railings: Recipe = None
     stairs: Recipe = None
     struts: Recipe = None
 

@@ -15,9 +15,9 @@ from app.models.config.mappings import (
     DeviceMapping,
     MappingConfiguration
 )
-from app.models.config.markets import (
+from ontology.src.app.models.config.materials import (
     Cost,
-    MarketConfiguration
+    MaterialsConfiguration
 )
 from app.models.config.mechanics import (
     MechanicsInstance,
@@ -84,5 +84,5 @@ __all__ = [
     'MenuBinding',
     'MechanicsInstance',
     'Cost',
-    'MarketConfiguration',
+    'MaterialsConfiguration',
 ]

@@ -164,15 +164,6 @@ OBSTACLE_BLUEPRINTS: Final[frozenset[str]] = frozenset({
 })
 """Blueprints for constructing obstacles."""
 
-SUBSTRATE_BLUEPRINTS: Final[frozenset[str]] = frozenset({
-    Buildings.FLOORS.value,
-    Buildings.PATHS.value,
-    Corridors.SOLIDS.value,
-    Corridors.STRIPES.value,
-    Corridors.DESIGNS.value
-})
-"""Blueprints for rendering ground-level decals and decorations"""
-
 CHROMATIC_HOSTS: Final[frozenset[str]] = frozenset((
     *MATERIAL_PARTITIONS[Materials.ORGANICS.value], 
     *MATERIAL_PARTITIONS[Materials.CERAMICS.value]

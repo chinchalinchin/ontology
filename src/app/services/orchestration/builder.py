@@ -31,7 +31,10 @@ from app.game.screen import Screen
 from app.game.logic.mechanics import (
     Mechanic,
 )
-from app.game.logic.relations.shorelines import ShorelineIndex
+from app.game.logic.relations import (
+    ShorelineIndex,
+    MaterialIndex
+)
 from app.models.groups import (
     SpawnableGroup, 
     EquipmentGroup
@@ -61,6 +64,8 @@ from libs.graphics.registry import Registry
 
 logger = logging.getLogger(__name__)
 
+# -------------------------------------------------
+
 @dataclasses.dataclass
 class ApplicationContext:
     """
@@ -72,6 +77,7 @@ class ApplicationContext:
     screensize: Dimensions = None
     headless: bool = False
 
+# -------------------------------------------------
 
 class Builder:
     """
@@ -152,11 +158,15 @@ class Builder:
             if stage_rules:
                 self.executors[lifespan.value] = translator.compile(stage_rules)
 
+
     def build_relations(self) -> None:
         logger.info("Compiling relational indices...")
         self.relations = {
             Relations.SHORELINES.value: ShorelineIndex.from_properties(
                 self.context.properties.geography.shorelines
+            ),
+            Relations.MATERIALS.value: MaterialIndex.from_configuration(
+                self.context.configurations.materials
             )
         }
 

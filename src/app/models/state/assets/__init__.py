@@ -24,6 +24,7 @@ from app.models.state.assets.geography import (
     ShorelineState
 )
 from app.models.state.assets.objects import (
+    ObjectState,
     ContainerState,
     PositionalState,
     DoorState,
@@ -51,6 +52,7 @@ from app.models.state.assets.tiles import (
 
 __all__ = [ 
     # OBJECT STATES
+    'ObjectState',
     'ContainerState',
     'PositionalState',
     'DoorState',

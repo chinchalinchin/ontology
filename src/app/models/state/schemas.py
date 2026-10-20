@@ -48,7 +48,6 @@ class CraftStateInstances:
     struts: List[CraftState] = field(default_factory=list)
     bridges: List[CraftState] = field(default_factory=list)
     platforms: List[PlatformState] = field(default_factory=list)
-    railings: List[CraftState] = field(default_factory=list)
 
 @dataclass(slots=True)
 class CursorStateInstances:
