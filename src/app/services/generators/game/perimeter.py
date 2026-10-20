@@ -67,6 +67,7 @@ class Perimeter:
                         x1 = int(craft.state.position.x)
                         y1 = int(craft.state.position.y)
                         rects.append((x1, y1, x1 + craft.dimensions.w, y1 + craft.dimensions.l))
+                        
                 elif craft.taxonomy.instance == AssetInstances.STAIRS.value:
                     if base_e + craft.state.delta == elevation:
                         x1 = int(craft.state.position.x)

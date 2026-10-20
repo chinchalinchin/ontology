@@ -1,58 +1,21 @@
 objects:
   doors:
-    # ----------------- STRUCTURES
-    door-castle-open:
+    # --------------------------
+    panel-door:
       mass: -1
       priority: 1
+      material:
+        genus: chromatics
+        host: wood
       dimensions:
         w: 64
         l: 64
-    door-double:
+    mansion-door:
       mass: -1
       priority: 1
-      dimensions:
-        w: 64
-        l: 64
-    door-dungeon:
-      mass: -1
-      priority: 1
-      dimensions:
-        w: 32
-        l: 48
-    door-mansion:
-      mass: -1
-      priority: 1
-      dimensions:
-        w: 32
-        l: 48
-    door-house:
-      mass: -1
-      priority: 1
+      material: 
+        genus: chromatics
+        host: wood
       dimensions: 
-        w: 32
-        l: 48
-    door-open:
-      mass: -1
-      priority: 1
-      dimensions:
-        w: 32
-        l: 57
-    door-shack:
-      mass: -1 
-      priority: 1
-      dimensions:
-        w: 32
-        l: 48
-    # --------------- OPENINGS
-    door-shadow-double:
-      mass: -1
-      priority: 1
-      dimensions:
-        w: 64
-        l: 64
-    door-shadow:
-      mass: -1
-      priority: 1
-      dimensions:
-        w: 32
-        l: 48
+        w:
+        l:

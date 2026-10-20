@@ -1,9 +1,21 @@
 objects:
   chests:
-    # --------------------------- WOODEN CHESTS
-    wood-chest:
+    # ---------------------------
+    trunk:
       dimensions:
         w: 32
         l: 32
-      mass: 1
+      mass: 10
+      material:
+        genus: metallic
       hitboxes: null
+    # ---------------------------
+    container:
+      dimensions:
+        w: 32
+        l: 32
+      mass: 5
+      material:
+        genus: organics
+      hitboxes: null
+    # ---------------------------

@@ -1,27 +1,27 @@
 objects:
   crates:
-    # --------------------------- WOODEN CRATES
-    wood-barrel:
+    # ---------------------------
+    box:
       dimensions:
-        w: 28
-        l: 38
+        w: 
+        l: 
       mass: 5
+      material: 
+        genus: organics
       hitboxes:
         - position:
-            x: 0
-            y: 0
+            x: 
+            y: 
           dimensions:
-            w: 28
-            l: 38
-    wood-box:
+            w: 
+            l:
+    # ---------------------------
+    vase:
       dimensions:
-        w: 28
-        l: 30
-      mass: 100
-      hitboxes: null
-    wood-bookshelf:
-      dimensions:
-        w: 54
-        l: 64
-      mass: 100
+        w:
+        l:
+      mass: 2
+      material:
+        genus: chromatic 
+        host: 
       hitboxes: null

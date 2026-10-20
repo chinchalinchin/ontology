@@ -693,41 +693,41 @@ Obstacles needs moved to Geography, as I have ideas on how to procedurally gener
 The following atlases can be imposed on Object Assets from the LPC database,
 
 * Chest Sheets
-    * id: container (TBD px by TBD px)
+    * id: container (32px by 32px)
         * rows (material: organics): cotton, thatches, wood
         * columns: closed, open
-    * id: trunk (TBD px by TBD px)
+    * id: trunk (32px by 32px)
         * rows (material: metallics): copper, iron, gold
         * columns: closed, open
 * Crate Sheets
-    * id: box (TBD px by TBD px)
+    * id: box (32px by 32px)
         * rows (material: organics): cotton, thatches, wood
     * id: vase (TBD px by TBD px)
         * rows (material: chromatics, host: clay): neutral, blue, red, yellow, green
     * id: bookcase (TBD px by TBD px)
         * rows (material: chromatics, host: wood): neutral, blue, red, yellow, green
 * Door Sheets
-    * id: panel (TBD px by TBD px)
+    * id: panel (32px by 48px)
         * rows (material: chromatics, host: wood): neutral, blue, red, yellow, green
-    * id: mansion (TBD px by TBD px)
+    * id: dutch (32px by 48px)
         * rows (material: chromatics, host: wood): neutral, blue, red, yellow, green
-    * id: reinforced (TBD px by TBD px)
+    * id: pivot (32px by 48px)
         * rows (material: metallics): copper, iron, gold
 * Gate Sheets
-    * id: postern (TBD px by TBD px)
+    * id: postern (64px by 64px)
         * rows (material: geologics): limestone, feldspar, granite, marble
         * columns: closed, open
     * id: barred (TBD px by TBD px)
         * rows (material: chromatics, host: wood): neutral, blue, red, yellow, green
         * columns: closed, open
 * Sign Sheets
-    * id: plaque (TBD px by TBD px)
+    * id: plaque (24px by 24px)
         * rows (material: geologics): limestone, feldspar, granite, marble
-    * id: headstone (TBD px by TBD px)
+    * id: headstone (TBDpx by TBDpx)
         * rows (material: geologics): limestone, feldspar, granite, marble
-    * id: poster (TBD px by TBD px)
+    * id: poster (30px by 30px)
         * rows (material: chromatics, host: cotton): neutral, blue, red, yellow, green
-    * id: book (TBD px by TBD px)
+    * id: book (TBDpx by TBDpx)
         * rows (material: chromatics, host: cotton): neutral, blue, red, yellow, green
 
 - Will need to add a partition for Clay; However, do not want to invalidate the existing partitions for Struts, if possible. Need to fit everything in a single, unified Material model. 
