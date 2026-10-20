@@ -33,6 +33,7 @@ class Configurations(str, Enum):
     INTENTIONS      = "intentions"
     LIBRARY         = "library"
     MAPPINGS        = "mappings"
+    MARKETS         = "markets"
     MECHANICS       = "mechanics"
     MENUS           = "menus"
     PLOTS           = "plots"
