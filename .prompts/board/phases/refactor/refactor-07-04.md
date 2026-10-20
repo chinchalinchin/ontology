@@ -471,7 +471,7 @@ Review the notes section and then add more addendums to the tasking to accomodat
 
 ###### Notes
 
-- IMPORTANT: Deferring any modifications to Platforms to Phase 07.03, as Gravity will subsume and deprecate/subtantially alter Platforms.
+- IMPORTANT: Deferring discussion and implementation of any modifications to Platforms to Phase 07.03, as Gravity will subsume and deprecate/subtantially alter Platforms.
 
 **Current Recipes**
 
@@ -525,16 +525,18 @@ While having the same atlasing schema, Bridges and Railings serve different func
         * rows: horizontal, vertical
         * columns: cotton, thatches, wood
 * Stair Sheets
-    * id:
+    * id: steps
         * rows: up, left, right
-        * columns:
-    * id:
-        * rows: up, left, right
-        * columns: 
+        * columns: limestone, feldspar, granite, marble
 * Railing Sheets
     * id: crenellation (32px by 32px)
         * rows: horizontal, vertical
         * columns: limestone, feldspar, granite, marble
+
+These assest have been culled from the database. It also appears the following is true, though the assets have yet to be formatted:
+
+- Railings can be extracted along the Metallic and Chromatic-Wood partitions.
+- Stairs can be extracted along the Metallic and Chromatic-Wood partitions.
 
 **Complex Case**
 
@@ -549,4 +551,4 @@ Enclosures are abstractions of fencing. They require a special MultiplicationStr
 **Other Notes**
 
 - Stairs are atlased by direction, but do not have a `down` direction, due to the LPC top-down perspective. Current implementation sidesteps this by just having an empty frame in the atlas, but this should be optimized.
-
+- I don't see any use for `blueprints` in the Stairs, Bridge or Railings Instances. It will need to go unspecified for those categories. This is usually an indicator of an incorrect data model. Analyze the problem.
