@@ -129,7 +129,7 @@ BLUEPRINT_PARTITIONS: Final[dict[str, tuple[str, ...]]] = {
     Blueprints.BUILDINGS.value: tuple(b.value for b in Buildings),
     Blueprints.CORRIDORS.value: tuple(b.value for b in Corridors),
     Blueprints.COLUMNS.value: tuple(b.value for b in Columns),
-    Blueprints.DIRECTIONS.value: tuple(b.vlaue for b in Directions),
+    Blueprints.DIRECTIONS.value: tuple(b.value for b in Directions),
     Blueprints.ENCLOSURES.value: tuple(b.value for b in Enclosures),
     Blueprints.INCLINES.value: tuple(b.value for b in Inclines),
     Blueprints.ORIENTATIONS.value: tuple(b.value for b in Orientations)

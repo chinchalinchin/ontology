@@ -51,10 +51,10 @@ class Material:
                 raise ValueError(
                     f"Chromatic material requires an organic host; got '{self.host}'."
                 )
-            elif self.host is not None:
-                raise ValueError(
-                    f"Non-chromatic genus '{self.genus}' cannot declare a host material."
-                )
+        elif self.host is not None:
+            raise ValueError(
+                f"Non-chromatic genus '{self.genus}' cannot declare a host material."
+            )
             
 # --------------------------------------------------------------
 

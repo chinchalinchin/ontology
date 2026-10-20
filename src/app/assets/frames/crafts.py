@@ -18,7 +18,7 @@ from app.assets.base import (
     Frame
 )
 from app.models.state import (
-    StrutState
+    CraftState
 )
 from app.models.properties import (
     CraftProperties
@@ -48,5 +48,9 @@ class MaterialFrame(Frame):
                 atlas[key] = (c_idx * w, r_idx * l, w, l)
         return atlas
 
-    def keys(self, id: str, state: StrutState) -> List[Tuple[str, int, int]]:
-        return settings.SEPARATOR.join([id, state.blueprint, state.material])
+    def keys(self, id: str, state: CraftState) -> List[Tuple[str, int, int]]:
+        return [(settings.SEPARATOR.join([
+            id, 
+            state.blueprint, 
+            state.material
+        ]), 0, 0)]

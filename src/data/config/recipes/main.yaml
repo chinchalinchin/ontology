@@ -38,9 +38,9 @@ recipes:
       animation: none
       hitbox: material
     stairs:
-      frame: directed
+      frame: material
       animation: none
-      hitbox: directed
+      hitbox: material
   cursors:
     expressions:
       frame: index

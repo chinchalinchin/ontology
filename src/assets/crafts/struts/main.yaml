@@ -12,6 +12,7 @@ crafts:
       material: 
         genus: geologics
       blueprint: buildings
+    # -----------------------------------------
     mansion:
       dimensions:
         w: 96
@@ -21,6 +22,7 @@ crafts:
       material: 
         genus: geologics
       blueprint: buildings
+    # -----------------------------------------
     shack:
       dimensions:
         w: 96
@@ -30,6 +32,7 @@ crafts:
       material: 
         genus: organics
       blueprint: buildings
+    # -----------------------------------------
     store: 
       dimensions:
         w: 96
@@ -39,6 +42,7 @@ crafts:
       material:
         genus: geologics
       blueprint: buildings
+    # -----------------------------------------
     suburb:
       dimensions:
        w: 96
@@ -61,6 +65,7 @@ crafts:
       material:
         genus: geologics
       blueprint: corridors
+    # -----------------------------------------
     carpet:
       dimensions:
         w: 96
@@ -70,7 +75,8 @@ crafts:
       material: 
         genus: chromatics
         host: cotton
-      blueprint: corridors
+      blueprints: corridors
+    # -----------------------------------------
     hallway:
       dimensions:
         w: 96
@@ -80,25 +86,25 @@ crafts:
       material:
         genus: chromatics
         host: wood
-      blueproint: corridors
+      blueprints: corridors
     # -----------------------------------------
     # --------------------------------- COLUMNS
     # -----------------------------------------
     pillar:
       dimensions:
         w: 16
-        l: 96
+        l: 32
       mass: 0
       hitboxes: null
       material:
         genus: geologics
-      blueprint: columns
+      blueprints: columns
     tower:
       dimensions:
         w: 64
-        l: 192
+        l: 64
       mass: 0
       hitboxes: null
       material:
         genus: geologics
-      blueprint: columns
+      blueprints: columns

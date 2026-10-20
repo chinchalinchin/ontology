@@ -9,6 +9,6 @@ crafts:
       material:
         genus: chromatics
         host: wood
-      blueprint: directions
+      blueprints: directions
       hitboxes: null
     # -------------------------------------------------

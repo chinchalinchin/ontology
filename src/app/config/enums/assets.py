@@ -205,6 +205,9 @@ class Organics(str, Enum):
     THATCHES        = "thatches"
     WOOD            = "wood"
 
+class Ceramics(str, Enum):
+    CLAY            = "clay"
+
 class Geologics(str, Enum):
     LIMESTONE       = "limestone"
     FELDSPAR        = "feldspar"
@@ -246,9 +249,9 @@ class Corridors(str, Enum):
     DESIGNS         = "designs"
 
 class Columns(str, Enum):
-    BASES           = "bases"
-    SHAFTS          = "shafts"
     CROWNS          = "crowns"
+    SHAFTS          = "shafts"
+    BASES           = "bases"
 
 class Enclosures(str, Enum):
     NORTH           = "north"

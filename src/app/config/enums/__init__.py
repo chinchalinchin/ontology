@@ -34,6 +34,7 @@ from app.config.enums.assets import (
     Geologics,
     Metallics,
     Chromatics,
+    Ceramics,
     Blueprints,
     Buildings,
     Corridors,
@@ -128,12 +129,13 @@ __all__ = [
     'Geologics',
     'Metallics',
     'Chromatics',
+    'Ceramics',
     'Blueprints',
     'Buildings',
     'Corridors',
     'Columns',
     'Enclosures',
-    'Inclines'
+    'Inclines',
     # ------
     'RequiredAssets',
     'EffectsPalette',

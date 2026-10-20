@@ -69,6 +69,7 @@ class MultipliedAssets(str, Enum):
     BRIDGES         = "bridges"
     ENCLOSURES      = "enclosures"
     RAILINGS        = "railings"
+    STAIRS          = "stairs"
     STRUTS          = "struts"
 
 # -------------------------------- MECHANIC ENUMERATIONS

@@ -206,8 +206,9 @@ class Asset:
     @property
     def substrate(self) -> int:
         if self.instance == AssetInstances.STRUTS.value:
-            return settings.SUBSTRATES.get(self.state.blueprint)
-        return settings.Substrates.get(self.taxonomy.instance, 0)
+            if settings.SUBSTRATES.get(self.state.blueprint, None) is not None:
+                return settings.SUBSTRATES.get(self.state.blueprint)
+        return settings.SUBSTRATES.get(self.taxonomy.instance, 0)
 
     @property
     def hitboxes(self) -> List[Hitbox]:

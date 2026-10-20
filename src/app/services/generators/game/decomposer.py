@@ -516,6 +516,7 @@ class Decomposer:
         idx = 0
 
         # TODO: this seems in need of a handler abstraction.
+        
         if strategy == MultiplicationStrategies.ORIENTED.value:
             # 1D axis-locked expansion for Bridges and Railings
             if state.blueprint == Orientations.HORIZONTAL.value:

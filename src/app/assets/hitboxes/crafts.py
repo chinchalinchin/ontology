@@ -17,7 +17,7 @@ from app.assets.base import (
 from app.models.properties import CraftProperties
 from app.models.state import (
     PlatformState,
-    StrutState,
+    CraftState,
 )
 
 # Cython Libraries
@@ -61,7 +61,7 @@ class MaterialHitbox(HitboxSchema):
     """
     def elevations(self, 
         properties: CraftProperties, 
-        state: StrutState
+        state: CraftState
     ) -> List[int]:
         if state.blueprint not in settings.OBSTACLE_BLUEPRINTS:
             return []
@@ -70,7 +70,7 @@ class MaterialHitbox(HitboxSchema):
     def get(
         self,
         properties: CraftProperties,
-        state: StrutState,
+        state: CraftState,
         elevation: int,
         frame: Optional[Frame] = None
     ) -> List[Hitbox]:
