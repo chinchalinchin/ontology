@@ -30,6 +30,7 @@ objects:
           dimensions: { w: 15, l: 14 }
     # -----------------------------------------
     headstone:
+      # 
       mass: 0
       dimensions: 
         w: 45
