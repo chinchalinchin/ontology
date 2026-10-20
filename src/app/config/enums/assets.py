@@ -6,7 +6,9 @@ Asset key enumerations.
 # Standard Libraries
 from enum import Enum
 
+# -------------------------------------------------------
 # -------------------------------- HIERARCHY ENUMERATIONS
+# -------------------------------------------------------
 
 class AssetCategories(str, Enum):
     CRAFTS          = "crafts"
@@ -21,18 +23,18 @@ class AssetCategories(str, Enum):
 
 class AssetInstances(str, Enum):
     # TILES
-    ENVIRON         = "environ"
     CANOPY          = "canopy"
+    ENVIRON         = "environ"
     GRID            = "grid"
     # CURSORS
     EXPRESSIONS     = "expressions"
     PROJECTILES     = "projectiles"
     # EFFECTS
-    PASSIVE         = "passive"
-    HAZARDS         = "hazards"
     COLLECTABLES    = "collectables"
-    REACTABLES      = "reactables"
     FLUIDS          = "fluids"
+    HAZARDS         = "hazards"
+    PASSIVE         = "passive"
+    REACTABLES      = "reactables"
     # GEOGRAPHY     
     SHORELINES      = "shorelines"
     # OBJECTS
@@ -49,6 +51,7 @@ class AssetInstances(str, Enum):
     BRIDGES         = "bridges"
     CARPENTRY       = "carpentry"
     DECOR           = "decor"
+    ENCLOSURES      = "enclosures"
     PLATFORMS       = "platforms"
     RAILINGS        = "railings"
     STRUTS          = "struts"
@@ -56,8 +59,9 @@ class AssetInstances(str, Enum):
     FORGES          = "forges"
     # SHEETS
     PIXIES          = "pixies"
-    SPRITES         = "sprites"
     PLAYERS         = "players"
+    SPRITES         = "sprites"
+    ## SHEETS: EQUIPMENT
     WEAPONS         = "weapons"
     ARMOR           = "armor"
     UTILITIES       = "utilities"
@@ -68,13 +72,15 @@ class AssetInstances(str, Enum):
     ORE             = "ore"
     TREES           = "trees"
     # WIDGETS
-    PANES           = "panes"
     BUTTONS         = "buttons"
-    PAGES           = "pages"
-    METERS          = "meters"
     ICONS           = "icons"
+    METERS          = "meters"
+    PAGES           = "pages"
+    PANES           = "panes"
 
+# -------------------------------------------------------
 # -------------------------------- GROUPING ENUMERATIONS
+# -------------------------------------------------------
 #   NOTE: Abstract groups of Assets.
 
 class Spawnables(str, Enum):
@@ -88,18 +94,21 @@ class Spawnables(str, Enum):
     STRUTS          = "struts"
 
 class Equipment(str, Enum):
-    WEAPONS         = "weapons"
     ARMOR           = "armor"
-    UTILITIES       = "utilities"
-    TOOLS           = "tools"
     SHIELDS         = "shields"
+    TOOLS           = "tools"
+    UTILITIES       = "utilities"
+    WEAPONS         = "weapons"
 
 class Groups(str, Enum):
     EQUIPMENT       = "equipment"
     SPAWNABLES      = "spawnables"
 
+# -------------------------------------------------------
 # -------------------------------- FRAME SPACE PARTITIONS
+# -------------------------------------------------------
 #   NOTE: Different partitions of Asset image files.
+#           Order matters.
 
 class Frequencies(str, Enum):
     CONTINUOUS      = "continuous"
@@ -208,7 +217,7 @@ class Metallics(str, Enum):
     GOLD            = "gold"
 
 class Chromatics(str, Enum):
-    NEUTRAL         = "neutrl"
+    NEUTRAL         = "neutral"
     BLUE            = "blue"
     RED             = "red"
     YELLOW          = "yellow"
@@ -218,6 +227,10 @@ class Blueprints(str, Enum):
     BUILDINGS       = "buildings"
     CORRIDORS       = "corridors"
     COLUMNS         = "columns"
+    DIRECTIONS      = "directions"
+    ENCLOSURES      = "enclosures"
+    ORIENTATIONS    = "orientations"
+    INCLINES        = "inclines"
 
 class Buildings(str, Enum):
     FLOORS          = "floors"
@@ -237,7 +250,20 @@ class Columns(str, Enum):
     SHAFTS          = "shafts"
     CROWNS          = "crowns"
 
-# -------------------------------- ASSET ENUMERATIONS
+class Enclosures(str, Enum):
+    NORTH           = "north"
+    EAST            = "east"
+    SOUTH           = "south"
+    WEST            = "west"
+
+class Inclines(str, Enum):
+    UP              = "up"
+    LEFT            = "left"
+    RIGHT           = "right"
+    
+# -------------------------------------------------------
+# ------------------------------------ ASSET ENUMERATIONS
+# -------------------------------------------------------
 #   NOTE: These are required Assets.
 
 class RequiredAssets(str, Enum):

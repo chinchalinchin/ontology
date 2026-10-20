@@ -1,0 +1,21 @@
+# crafts:
+#   enclosures:
+#     palisade:
+#       dimensions: { w: 96, l: 96 }
+#       mass: 0
+#       material:
+#         genus: organics
+#       blueprints: enclosures
+#       hitboxes:
+#         north:
+#           - position: { x: 0, y: 0 }
+#             dimensions: { w: 96, l: 16 }
+#         south:
+#           - position: { x: 0, y: 80 }
+#             dimensions: { w: 96, l: 16 }
+#         west:
+#           - position: { x: 0, y: 0 }
+#             dimensions: { w: 8, l: 96 }
+#         east:
+#           - position: { x: 88, y: 0 }
+#             dimensions: { w: 8, l: 96 }

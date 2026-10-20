@@ -68,9 +68,10 @@ class CollisionMechanics(SpatialMechanic):
         foot_y = sprite.state.position.y + dim_l
 
         # -----------------------------------------------------------------
-        # VERTICAL STAIRS (UP / DOWN)
+        # VERTICAL STAIRS (UP)
         # -----------------------------------------------------------------
-        if direction_val in (Directions.UP.value, Directions.DOWN.value):
+        # NOTE: DOWN is impossible due to LPC perspective specification.
+        if direction_val == Directions.UP.value:
             stair_l = stairs.dimensions.l
             if stair_l == 0:
                 return
@@ -82,13 +83,6 @@ class CollisionMechanics(SpatialMechanic):
                 if tread_progress <= 0.85 and vy < 0:
                     sprite.elevation = e_top
                 elif tread_progress >= 0.85 and vy > 0:
-                    sprite.elevation = e_base
-
-            elif direction_val == Directions.DOWN.value:
-                # Ascent moves South (vy > 0); Descent moves North (vy < 0)
-                if tread_progress >= 0.15 and vy > 0:
-                    sprite.elevation = e_top
-                elif tread_progress <= 0.15 and vy < 0:
                     sprite.elevation = e_base
 
         # -----------------------------------------------------------------

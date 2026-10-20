@@ -14,9 +14,13 @@ recipes:
       hitbox: none
   crafts:
     bridges:
-      frame: oriented
+      frame: material
       animation: none
-      hitbox: oriented
+      hitbox: material
+    decor:
+      frame: single
+      animation: none
+      hitbox: static
     carpentry:
       frame: directed
       animation: none
@@ -26,9 +30,9 @@ recipes:
       animation: none
       hitbox: elevated
     railings:
-      frame: oriented
+      frame: material
       animation: none
-      hitbox: oriented
+      hitbox: material
     struts:
       frame: material
       animation: none

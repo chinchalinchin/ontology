@@ -37,7 +37,9 @@ from app.config.enums.assets import (
     Blueprints,
     Buildings,
     Corridors,
-    Columns
+    Columns,
+    Enclosures,
+    Inclines
 )
 from app.config.enums.devices import (
     Devices,
@@ -46,7 +48,6 @@ from app.config.enums.devices import (
 from app.config.enums.engine import (
     Mechanics,
     Configurations,
-    OrientedAssets,
     MotiveAssets,
     FrictiveAssets,
     InertAssets,
@@ -131,6 +132,8 @@ __all__ = [
     'Buildings',
     'Corridors',
     'Columns',
+    'Enclosures',
+    'Inclines'
     # ------
     'RequiredAssets',
     'EffectsPalette',
@@ -156,7 +159,6 @@ __all__ = [
     'MotiveAssets',
     'FrictiveAssets',
     'InertAssets',
-    'OrientedAssets',
     'MultipliedAssets',
     'Shortcuts',
     'Reactions',

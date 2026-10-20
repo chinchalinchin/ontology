@@ -1,11 +1,14 @@
 crafts:
   carpentry:
+    # -------------------------------------------------
     bed:
       dimensions:
-        w:
-        l:
+        w: 71
+        l: 74
       mass: 0
       material:
         genus: chromatics
         host: wood
+      blueprint: directions
       hitboxes: null
+    # -------------------------------------------------

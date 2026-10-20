@@ -1,3 +1,32 @@
 crafts:
   stairs:
     steps:
+      dimensions:
+        w: 64
+        l: 96
+      mass: -1
+      material:
+        genus: geologics
+      blueprints: inclines
+      hitboxes:
+        up:
+          - position:
+              x: 0
+              y: 0
+            dimensions:
+              w: 32
+              l: 96
+        left:
+          - position:
+              x: 0
+              y: 0
+            dimensions:
+              w: 64
+              l: 32
+        right:
+          - position:
+              x: 0
+              y: 0
+            dimensions: 
+              w: 64
+              l: 32

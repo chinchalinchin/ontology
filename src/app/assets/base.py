@@ -208,13 +208,12 @@ class Asset:
         if self.instance == AssetInstances.STRUTS.value:
             return settings.SUBSTRATES.get(self.state.blueprint)
         return settings.Substrates.get(self.taxonomy.instance, 0)
-    
+
     @property
     def hitboxes(self) -> List[Hitbox]:
         """Default physical footprint resolved at the asset's deployed elevation."""
         return self.hitbox.get(self.properties, self.state, self.elevation, self.frame)
 
-        
     def primitive(self, index: int = 0, hitboxes: List[Hitbox] = None) -> Tuple:
         """
         Extracts spatial attributes into primitive integers for Cython math operations.

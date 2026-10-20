@@ -22,6 +22,10 @@ from app.config.enums import (
     Buildings,
     Columns,
     Corridors,
+    Enclosures,
+    Inclines,
+    Orientations,
+    Directions,
     # ----- 
     Seasons,
     # -----
@@ -124,21 +128,39 @@ MATERIAL_PARTITIONS: Final[dict[str, tuple[str, ...]]] = {
 BLUEPRINT_PARTITIONS: Final[dict[str, tuple[str, ...]]] = {
     Blueprints.BUILDINGS.value: tuple(b.value for b in Buildings),
     Blueprints.CORRIDORS.value: tuple(b.value for b in Corridors),
-    Blueprints.COLUMNS.value: tuple(b.value for b in Columns)
+    Blueprints.COLUMNS.value: tuple(b.value for b in Columns),
+    Blueprints.DIRECTIONS.value: tuple(b.vlaue for b in Directions),
+    Blueprints.ENCLOSURES.value: tuple(b.value for b in Enclosures),
+    Blueprints.INCLINES.value: tuple(b.value for b in Inclines),
+    Blueprints.ORIENTATIONS.value: tuple(b.value for b in Orientations)
+
 }
 """Blueprints partitioned by schema."""
 
 BLUEPRINT_STRATEGIES: Final[dict[str, str]] = {
     Blueprints.BUILDINGS.value: MultiplicationStrategies.SIMPLE.value,
     Blueprints.CORRIDORS.value: MultiplicationStrategies.SIMPLE.value,
-    Blueprints.COLUMNS.value: MultiplicationStrategies.EXPANSION.value
+    Blueprints.COLUMNS.value: MultiplicationStrategies.EXPANSION.value,
+    Blueprints.DIRECTIONS.value: None,
+    Blueprints.ENCLOSURES.value: MultiplicationStrategies.PERIMETER.value,
+    Blueprints.INCLINES.value: MultiplicationStrategies.SIMPLE.value,
+    Blueprints.ORIENTATIONS.value: MultiplicationStrategies.ORIENTED.value
 }
 """Multiplication strategy Blueprint mapping for deploying Asset states."""
 
 OBSTACLE_BLUEPRINTS: Final[frozenset[str]] = frozenset({
     Buildings.WALLS.value,
     Buildings.HALLS.value,
-    Columns.BASES.value
+    Columns.BASES.value,
+    Enclosures.NORTH.value,
+    Enclosures.EAST.value,
+    Enclosures.SOUTH.value,
+    Enclosures.WEST.value,
+    Orientations.HORIZONTAL.value, 
+    Orientations.VERTICAL.value,
+    Inclines.UP.value,
+    Inclines.LEFT.value,
+    Inclines.RIGHT.value
 })
 """Blueprints for constructing obstacles."""
 

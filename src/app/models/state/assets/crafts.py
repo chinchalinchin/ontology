@@ -34,23 +34,22 @@ class PropertyState(AssetState):
     position: Optional[Position] = None # type: ignore
 
 @dataclass(slots=True)
-class StrutState(PropertyState):
+class CraftState(PropertyState):
     material: Optional[str] = None
     blueprint: Optional[str] = None
     multiple: Optional[Multiple] = None # type: ignore
     
 @dataclass(slots=True)
-class OrientedState(PropertyState):
-    orientation: str = Orientations.HORIZONTAL.value
-    multiple: Optional[Multiple] = None # type: ignore
-
-@dataclass(slots=True)
-class StairState(PropertyState):
+class StairState(CraftState):
     """
     State representation for walkable incline transitions.
+    Inherits material, blueprint ('up', 'left', 'right'), and multiple from StrutState.
     """
-    direction: str = Directions.UP.value
-    delta: int = 1                         
+    delta: int = 1
+
+    @property
+    def direction(self) -> Optional[str]:
+        return self.blueprint                      
 
 @dataclass(slots=True)
 class PlatformState(PropertyState):

@@ -22,8 +22,8 @@ from app.config.enums import (
     AssetCategories, 
     AssetInstances, 
     Columns,
+    Enclosures,
     Orientations, 
-    OrientedAssets,
     MultipliedAssets,
     MultiplicationStrategies,
     Shortcuts
@@ -35,11 +35,11 @@ from app.models.config import (
 )
 from app.models.properties import (
     PropertiesSchema, 
+    CraftProperties,
 )
 from app.models.state import (
     PropertyState, 
-    OrientedState, 
-    StrutState,
+    CraftState,
     AssetState
 )
 
@@ -286,6 +286,36 @@ class Decomposer:
         
         return Asset(taxonomy, props, state_obj, frame, animation, hitbox)
 
+    def _spawn_unit(
+        self,
+        state: CraftState,
+        props: CraftProperties,
+        recipe: Any,
+        category: str,
+        instance: str,
+        unit_name: str,
+        layer: str,
+        pos: Position,
+        blueprint: Optional[str],
+        anchor: int
+    ) -> Asset:
+        unit_state = dataclasses.replace(
+            state,
+            name=unit_name,
+            layer=layer,
+            position=pos,
+            blueprint=blueprint,
+            multiple=Multiple(1, 1),
+            anchor=anchor
+        )
+        return Asset(
+            taxonomy=Factory.taxonomy(state.id, unit_name, category, instance),
+            properties=props,
+            state=unit_state,
+            frame=Factory.frame(recipe.frame),
+            animation=Factory.animation(recipe.animation),
+            hitbox=Factory.hitbox(recipe.hitbox)
+        )
     # ---------------------------------------------------------
     # ------------------------------------- EXPANSION UTILITIES
     # ---------------------------------------------------------
@@ -409,10 +439,7 @@ class Decomposer:
                         scope_lookup=scope_lookup
                     )
                     
-                    if inst_key in OrientedAssets:
-                        assets.extend(self.orient(new_state, cat_key, inst_key))
-
-                    elif inst_key in MultipliedAssets:
+                    if inst_key in MultipliedAssets:
                         assets.extend(self.multiply(new_state, cat_key, inst_key))
 
                     else:
@@ -450,83 +477,9 @@ class Decomposer:
         return assets
 
 
-    def orient(self, 
-        state: OrientedState, 
-        category: str, 
-        instance: str
-    ) -> List[Asset]:
-        cat_props = getattr(self.properties, category, {})
-        instance_props = getattr(cat_props, instance, {})
-        props = instance_props.get(state.id, None)
-
-        if props is None:
-            logger.error(
-                settings.SEPARATOR.join([
-                    "Decomposer",
-                    "OrientationMissingProperties",
-                    state.id
-                ])
-            )
-            return []
-
-        w = props.dimensions.w
-        l = props.dimensions.l
-        orientation = state.orientation
-        base_pos = state.position or Position(0, 0)
-        layer = state.layer or "0"
-
-        if orientation == Orientations.HORIZONTAL.value:
-            count = state.multiple.nx if state.multiple else 1
-        else:
-            count = state.multiple.ny if state.multiple else 1
-
-        unit_assets: List[Asset] = []
-        cat_recipes = getattr(self.recipes, category, None)
-        recipe = getattr(cat_recipes, instance, None)
-
-        for i in range(count):
-            if orientation == Orientations.HORIZONTAL.value:
-                seg_pos = Position(base_pos.x + i * w, base_pos.y)
-            else:
-                seg_pos = Position(base_pos.x, base_pos.y + i * l)
-
-            unit_name = settings.SEPARATOR.join([
-                state.name or state.id,
-                str(i)
-            ])
-
-            unit_state = OrientedState(
-                id=state.id,
-                name=unit_name,
-                layer=layer,
-                position=seg_pos,
-                orientation=orientation,
-                multiple=Multiple(1, 1),
-                owner=state.owner,
-                elevation=state.elevation
-            )
-
-            unit_asset = Asset(
-                taxonomy=Factory.taxonomy(
-                    state.id,
-                    unit_name,
-                    category,
-                    instance
-                ),
-                properties=props,
-                state=unit_state,
-                frame=Factory.frame(recipe.frame),
-                animation=Factory.animation(recipe.animation),
-                hitbox=Factory.hitbox(recipe.hitbox)
-            )
-            unit_assets.append(unit_asset)
-
-        return unit_assets
-
-
     def multiply(
         self,
-        state: StrutState,
+        state: CraftState,
         category: str,
         instance: str
     ) -> List[Asset]:
@@ -546,10 +499,10 @@ class Decomposer:
 
         w = props.dimensions.w
         l = props.dimensions.l
-        base_pos = state.position
-        layer = state.layer
-        nx = state.multiple.nx if state.multiple and state.multiple.nx else 1
-        ny = state.multiple.ny if state.multiple and state.multiple.ny else 1
+        base_pos = state.position or Position(0, 0)
+        layer = state.layer or "0"
+        nx = state.multiple.nx if state.multiple and state.multiple.nx is not None else 1
+        ny = state.multiple.ny if state.multiple and state.multiple.ny is not None else 1
 
         strategy = settings.BLUEPRINT_STRATEGIES.get(
             props.blueprints,
@@ -559,10 +512,38 @@ class Decomposer:
         cat_recipes = getattr(self.recipes, category, None)
         recipe = getattr(cat_recipes, instance, None)
         unit_assets: List[Asset] = []
+        base_name = state.name or state.id
         idx = 0
 
-        if strategy == MultiplicationStrategies.EXPANSION.value:
-            # Column expansion: [crown] + ny * [shaft] + [base] along +y axis
+        # TODO: this seems in need of a handler abstraction.
+        if strategy == MultiplicationStrategies.ORIENTED.value:
+            # 1D axis-locked expansion for Bridges and Railings
+            if state.blueprint == Orientations.HORIZONTAL.value:
+                ny = 1
+            else:
+                nx = 1
+            for iy in range(ny):
+                for ix in range(nx):
+                    seg_pos = Position(base_pos.x + ix * w, base_pos.y + iy * l)
+                    unit_name = settings.SEPARATOR.join([base_name, str(idx)])
+                    idx += 1
+                    unit_assets.append(
+                        self._spawn_unit(
+                            state, 
+                            props, 
+                            recipe, 
+                            category, 
+                            instance,
+                            unit_name, 
+                            layer, 
+                            seg_pos, 
+                            state.blueprint, 
+                            int(state.anchor or 0)
+                        )
+                    )
+
+        elif strategy == MultiplicationStrategies.EXPANSION.value:
+            # 1D vertical column expansion: [crown] + ny * [shaft] + [base]
             for ix in range(nx):
                 col_x = base_pos.x + ix * w
                 base_y = base_pos.y + (ny + 1) * l
@@ -578,59 +559,143 @@ class Decomposer:
                 segments.append((Columns.BASES.value, base_y))
 
                 for bp_part, seg_y in segments:
-                    unit_name = settings.SEPARATOR.join([
-                        state.name or state.id,
-                        bp_part,
-                        str(idx)
-                    ])
+                    unit_name = settings.SEPARATOR.join([base_name, bp_part, str(idx)])
                     idx += 1
                     seg_anchor = int(base_ground - (seg_y + l))
-
-                    unit_state = dataclasses.replace(
-                        state,
-                        name=unit_name,
-                        layer=layer,
-                        position=Position(col_x, seg_y),
-                        blueprint=bp_part,
-                        multiple=Multiple(1, 1),
-                        anchor=seg_anchor
-                    )
                     unit_assets.append(
-                        Asset(
-                            taxonomy=Factory.taxonomy(state.id, unit_name, category, instance),
-                            properties=props,
-                            state=unit_state,
-                            frame=Factory.frame(recipe.frame),
-                            animation=Factory.animation(recipe.animation),
-                            hitbox=Factory.hitbox(recipe.hitbox)
+                        self._spawn_unit(
+                            state, 
+                            props, 
+                            recipe, 
+                            category, 
+                            instance,
+                            unit_name, 
+                            layer, 
+                            Position(col_x, seg_y), 
+                            bp_part, 
+                            seg_anchor
                         )
                     )
+
+        elif strategy == MultiplicationStrategies.PERIMETER.value:
+            # 2D hollow perimeter expansion for Enclosures:
+            # North/South span ix in [0..nx+1] at iy=0 and iy=ny+1
+            # West/East span iy in [0..ny+1] at ix=0 and ix=nx+1
+            north_hbs = (
+                props.hitboxes.get(Enclosures.NORTH.value, [])
+                if isinstance(props.hitboxes, dict) else []
+            )
+            north_bottom = (
+                max((hb.position.y + hb.dimensions.l for hb in north_hbs), default=l)
+                if north_hbs else l
+            )
+            north_anchor = int(north_bottom - l)
+
+            for ix in range(nx + 2):
+                seg_x = base_pos.x + ix * w
+                # North cap/shaft segment
+                n_name = settings.SEPARATOR.join([
+                    base_name, 
+                    Enclosures.NORTH.value, 
+                    str(idx)
+                ])
+                idx += 1
+                unit_assets.append(
+                    self._spawn_unit(
+                        state, 
+                        props, 
+                        recipe, 
+                        category, 
+                        instance,
+                        n_name, 
+                        layer, 
+                        Position(seg_x, base_pos.y),
+                        Enclosures.NORTH.value, 
+                        north_anchor
+                    )
+                )
+                # South cap/shaft segment
+                s_name = settings.SEPARATOR.join([
+                    base_name, 
+                    Enclosures.SOUTH.value, 
+                    str(idx)
+                ])
+                idx += 1
+                unit_assets.append(
+                    self._spawn_unit(
+                        state, 
+                        props, 
+                        recipe, 
+                        category, 
+                        instance,
+                        s_name, 
+                        layer, 
+                        Position(seg_x, base_pos.y + (ny + 1) * l),
+                        Enclosures.SOUTH.value, 0
+                    )
+                )
+
+            for iy in range(ny + 2):
+                seg_y = base_pos.y + iy * l
+                # West cap/shaft segment
+                w_name = settings.SEPARATOR.join([
+                    base_name, 
+                    Enclosures.WEST.value, str(idx)])
+                idx += 1
+                unit_assets.append(
+                    self._spawn_unit(
+                        state, 
+                        props, 
+                        recipe, 
+                        category, 
+                        instance,
+                        w_name, 
+                        layer, 
+                        Position(base_pos.x, seg_y),
+                        Enclosures.WEST.value, 
+                        0
+                    )
+                )
+                # East cap/shaft segment
+                e_name = settings.SEPARATOR.join([
+                    base_name, 
+                    Enclosures.EAST.value, 
+                    str(idx)
+                ])
+                idx += 1
+                unit_assets.append(
+                    self._spawn_unit(
+                        state, 
+                        props, 
+                        recipe, 
+                        category, 
+                        instance,
+                        e_name, 
+                        layer, 
+                        Position(base_pos.x + (nx + 1) * w, seg_y),
+                        Enclosures.EAST.value, 0
+                    )
+                )
+
         else:
-            # Simple 2D grid multiplication
+            # SIMPLE 2D grid multiplication (buildings, corridors, inclines)
             for iy in range(ny):
                 for ix in range(nx):
                     seg_pos = Position(base_pos.x + ix * w, base_pos.y + iy * l)
-                    unit_name = settings.SEPARATOR.join([
-                        state.name or state.id,
-                        str(idx)
-                    ])
+                    unit_name = settings.SEPARATOR.join([base_name, str(idx)])
                     idx += 1
-
-                    unit_state = dataclasses.replace(
-                        state,
-                        name=unit_name,
-                        layer=layer,
-                        position=seg_pos,
-                        multiple=Multiple(1, 1)
-                    )
                     unit_assets.append(
-                        Asset(
-                            taxonomy=Factory.taxonomy(state.id, unit_name, category, instance),
-                            properties=props,
-                            state=unit_state,
-                            frame=Factory.frame(recipe.frame),
-                            animation=Factory.animation(recipe.animation),
-                            hitbox=Factory.hitbox(recipe.hitbox)
+                        self._spawn_unit(
+                            state, 
+                            props, 
+                            recipe, 
+                            category, 
+                            instance,
+                            unit_name, 
+                            layer, 
+                            seg_pos, 
+                            state.blueprint, 
+                            int(state.anchor or 0)
                         )
                     )
 

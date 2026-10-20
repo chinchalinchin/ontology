@@ -1,0 +1,25 @@
+crafts:
+  railings:
+    crenellation:
+      dimensions:
+        w: 32
+        l: 32
+      mass: 0
+      material:
+        genus: geologics
+      blueprints: orientations
+      hitboxes:
+        horizontal:
+          - position: 
+              x: 0
+              y: 0
+            dimensions:
+              w: 32
+              l: 10
+        vertical:
+          - position:
+              x: 0
+              y: 0
+            dimensions:
+              w: 9
+              l: 32

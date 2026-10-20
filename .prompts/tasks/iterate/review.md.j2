@@ -1,24 +1,12 @@
 # Task: Ontology - Review
 
 The current Phase has been paused. Review the current state of its implementation for clarity and logical consistency.
-
-**Notes**
-
-- Stairs have not been tested due to extensive debugging of the rendering sort order. I believe there to be a bug in their implementation, or atleast an inefficiency. Currently the elevation delta is changed based purely on geometric calculation and does not take into the direction of the sprite's velocity (more generally, a dynamic asset's velocity). It seems like the following should be the case (similarly for the horizontal directed stairs with `velocity.vx`):
-    - `if stair.state.direction == 'up':`
-        - `asset.state.velocity.vy < 0: asset.elevation = stair.elevation+ stair.state.delta`
-        - `asset.state.velocity.vy > 0: asset.elevation = stair.elevation`
-    - `if stair.state.direction == 'down'`:
-        - `asset.state.velocity.vy > 0: asset.elevation = stair.elevation+ stair.state.delta`
-        - `asset.state.velocity.vy < 0: asset.elevation = stair.elevation`
-    - Seems like a cleaner way that doesn't involve tread progress. Also doesn't make the elevation delta calculation dependent on the asset dimensions.
-
 **Priorities**
 
 - Use the [Code Review Template](#template-code-review) to perform an analysis of the current phase's implementation.
 - (*Optional*) Use the [Documentation Template](#template-documentaton) to isolate any divergences in the documentation and codebase.
 - (*Optional*) Use the [Bug Report Template](#template-bug-report) to raise any issues you find.
-- (*Optional*) Add tasks to the Phase to re-align the implementation.
+- (*Optional*) If necessary, add tasks to the Phase to re-align the implementation.
 
 {% include 'blocks/controls/architecture-guidelines.md' %}
 

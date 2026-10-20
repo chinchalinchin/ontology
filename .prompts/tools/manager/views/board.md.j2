@@ -12,7 +12,7 @@
 {# -------------------------------------------------  #}
 ### View: {{ properties.project.title | capitalize }} Task Board
 
-- **Current Phase**: {{ prefix | upper }} {{ phase | upper }}
+- **Current Phase**: {{ phase | upper }}
 - **Current Phase Action**: {{ action | upper }}
 
 {{ file(properties.paths.root + properties.paths.board + '/' + properties.files.index) }}

@@ -1,18 +1,23 @@
 crafts:
   bridges:
+    # -------------------------------------------------
     arch:
       dimensions:
-        w:
-        l:
+        w: 80
+        l: 103
       material: 
         genus: geologics
+      blueprints: orientations
       mass: -1
       hitboxes: null
+    # -------------------------------------------------
     suspension:
       dimensions:
-        w: 
-        l:
+        w: 96
+        l: 96
       material: 
         genus: organics
+      blueprints: orientations
       mass: -1
       hitboxes: null
+    # -------------------------------------------------

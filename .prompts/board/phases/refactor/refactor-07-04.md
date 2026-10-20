@@ -555,20 +555,6 @@ Enclosures are abstractions of fencing. They require a special MultiplicationStr
 - Stairs are atlased by direction, but do not have a `down` direction, due to the LPC top-down perspective. Current implementation sidesteps this by just having an empty frame in the atlas, but this should be optimized.
 - I don't see any use for `blueprints` in the Stairs, Bridge or Railings Instances. It will need to go unspecified for those categories. This is usually an indicator of an incorrect data model. Analyze the problem.
 
-#### Refactor: Phase 07.04 - Materialization (Addendum: Category-Wide Craft Unification)
-
-##### User Review III
-
-Expand the scope of **Phase 07.04: Materialization** to encompass the entire `Crafts` category (excluding `Platforms`, which is deferred to **Phase 07.03: Gravity**):
-
-* Unify the Frame, Hitbox, Property, and State schemas across `Struts`, `Bridges`, `Railings`, `Enclosures`, and `Stairs` so that all Craft atlases are parameterized as 2D `(Blueprint x Material)` spaces.
-* Synthesize the curated `Bridges` (`arch`, `suspension`), `Railings` (`crenellation`), and `Stairs` (`steps`) sheets across the `Material` partitions (`organics`, `geologics`, `metallics`, `chromatics`).
-* Split perimeter fencing out of `Railings` into a dedicated `Enclosures` Craft Instance (`north`, `east`, `south`, `west` faces) with a 2D hollow-perimeter multiplication strategy and edge-aligned hitboxes.
-* Optimize `Stairs` atlasing by removing the unused `down` row (`rows: up, left, right`).
-* Analyze and resolve the data model discrepancy wherein `blueprints` appeared unused on `Stairs`, `Bridges`, and `Railings`.
-
----
-
 ##### Architectural Analysis IV
 
 ###### 1. Data Model Diagnosis: Why `blueprints` Appeared Unused on `Bridges`, `Railings`, and `Stairs`
@@ -577,30 +563,30 @@ In the Ontology ECS architecture (`01-assets.md#asset-taxonomy`), **Category map
 
 * **The Symptom**: In the initial draft, `CraftProperties` declared `blueprints: Optional[str]`, which was populated for `struts` (`buildings`, `corridors`, `columns`) but left `None` for `bridges`, `railings`, and `stairs`. Meanwhile, `bridges` and `railings` relied on `OrientedFrame` / `OrientedHitbox` (`state.orientation`), and `stairs` relied on `DirectedFrame` / `DirectedHitbox` (`state.direction`).
 * **Root Cause**: `OrientedFrame` and `DirectedFrame` hardcoded the row metric of the Craft atlas inside the `Frame` strategy instead of reading the metric from `CraftProperties`, while `OrientedState` (`orientation`), `StairState` (`direction`), and `StrutState` (`blueprint`) used three different field names to denote the exact same coordinate: **the row index in the Craft's structural partition**.
-* **The Unified Craft Metric**:
+
+**The Unified Craft Metric**
+
 Every multi-material Craft atlas is a 2D Cartesian product of **Structural Blueprint Rows ($R$)** and **Material Genus Columns ($C$)**:
 
-$$\text{Atlas}(id) = \text{BLUEPRINT\_PARTITIONS}[\text{properties.blueprints}] \times \text{MATERIAL\_PARTITIONS}[\text{properties.material.genus}]$$
-
-
+$$
+\text{Atlas}(id) = \text{BLUEPRINT\_PARTITIONS}[\text{properties.blueprints}] \times \text{MATERIAL\_PARTITIONS}[\text{properties.material.genus}]
+$$
 
 By recognizing that `orientations` (`horizontal`, `vertical`), `inclines` (`up`, `left`, `right`), and `enclosures` (`north`, `east`, `south`, `west`) **are** `BlueprintSchemas`:
+
 1. **`CraftProperties.blueprints` is mandatory across all materialized Crafts**:
-* `struts`: `buildings` | `corridors` | `columns`
-* `bridges`: `orientations`
-* `railings`: `orientations`
-* `enclosures`: `enclosures`
-* `stairs`: `inclines`
-
-
-2. **`OrientedFrame`, `DirectedFrame`, `OrientedHitbox`, and `DirectedHitbox` are deprecated and deleted**:
-A single `MaterialFrame` and a single `MaterialHitbox` service every `Strut`, `Bridge`, `Railing`, `Enclosure`, and `Stair` in the game.
+    * `struts`: `buildings` | `corridors` | `columns`
+    * `bridges`: `orientations`
+    * `railings`: `orientations`
+    * `enclosures`: `enclosures`
+    * `stairs`: `inclines`
+2. **`OrientedFrame`, `DirectedFrame`, `OrientedHitbox`, and `DirectedHitbox` are deprecated and deleted**: A single `MaterialFrame` and a single `MaterialHitbox` service every `Strut`, `Bridge`, `Railing`, `Enclosure`, and `Stair` in the game.
 3. **`Decomposer.orient()` and `OrientedAssets` are deprecated and deleted**:
 `Decomposer.multiply()` handles all Craft expansion via `BLUEPRINT_STRATEGIES[properties.blueprints]`.
-4. **Unified Recipe Table**:
+
+**Unified Recipe Table**
+
 Every materialized Craft instance (`struts`, `bridges`, `railings`, `enclosures`, `stairs`) shares the identical component recipe `(frame: material, animation: none, hitbox: material)`.
-
-
 
 | Craft Instance | `properties.blueprints` | Row Partition ($r \in [0, R)$) | Multiplication Strategy | Substrate ($\sigma$) | Mass ($m$) |
 | --- | --- | --- | --- | --- | --- |
@@ -613,7 +599,6 @@ Every materialized Craft instance (`struts`, `bridges`, `railings`, `enclosures`
 | `stairs` | `inclines` | `up`, `left`, `right` | `simple` ($n_x \times n_y$) | `-1` (`OVERLAYS`) | `-1` (Sensor) |
 | `platforms` | *Deferred to Phase 07.03* | *N/A* | *N/A* | `0` (`STANDARD`) | `0` |
 
----
 
 ###### 2. `Stairs` Atlas Optimization: Eliminating the `down` Row
 
@@ -624,490 +609,39 @@ In top-down 2.5D projection, a south-facing staircase is traversed bidirectional
 
 By defining `InclineBlueprints = ('up', 'left', 'right')` (3 rows instead of 4), the empty/truncated `down` row is eliminated from the `steps` atlas, reducing Stair VRAM footprint by 25% and removing the dead `direction == 'down'` branch from `StairMechanics`.
 
----
-
 ###### 3. `Enclosures`: Reciprocal 2D Perimeter Expansion & Hitbox Geometry
 
 An `Enclosure` represents a closed rectangular perimeter (fences, palisades, walled paddocks) with an open interior. Its atlas rows are partitioned by `EnclosureBlueprints = ('north', 'east', 'south', 'west')`.
 
-1. **Reciprocal Cap/Shaft Topology (`MultiplicationStrategies.PERIMETER`)**:
-Given deployment origin $(x_0, y_0)$, cell dimensions $(w, l)$, and `multiple = Multiple(nx, ny)` where $(n_x, n_y)$ specifies the interior span between opposing caps:
-* Total bounding footprint is $(n_x + 2)w \times (n_y + 2)l$ across grid indices $i_x \in [0, n_x + 1]$ and $i_y \in [0, n_y + 1]$.
-* **Horizontal Span (`north` at $i_y = 0$, `south` at $i_y = n_y + 1$)**:
-Spawned across $i_x \in [0, n_x + 1]$. Here, `north` and `south` act as the vertical end caps at the top and bottom of the enclosure while repeating horizontally as the "shafts" between the `west` and `east` boundaries.
-* **Vertical Span (`west` at $i_x = 0$, `east` at $i_x = n_x + 1$)**:
-Spawned across $i_y \in [0, n_y + 1]$. Here, `west` and `east` act as the horizontal end caps at the left and right of the enclosure while repeating vertically as the "shafts" between the `north` and `south` boundaries.
-* **Open Interior ($i_x \in [1, n_x],\; i_y \in [1, n_y]$)**:
-Zero assets are instantiated in the interior cells, leaving the enclosed courtyard completely open to movement.
-* **Corner Closure**:
-At the four corners $(0, 0)$, $(n_x + 1, 0)$, $(0, n_y + 1)$, and $(n_x + 1, n_y + 1)$, the horizontal cap (`north`/`south`) and vertical cap (`west`/`east`) superimpose, joining their orthogonal strip hitboxes into sealed `L`-corners without requiring dedicated corner rows in the atlas.
-
-
+1. **Reciprocal Cap/Shaft Topology (`MultiplicationStrategies.PERIMETER`)**: Given deployment origin $(x_0, y_0)$, cell dimensions $(w, l)$, and `multiple = Multiple(nx, ny)` where $(n_x, n_y)$ specifies the interior span between opposing caps:
+    * Total bounding footprint is $(n_x + 2)w \times (n_y + 2)l$ across grid indices $i_x \in [0, n_x + 1]$ and $i_y \in [0, n_y + 1]$.
+    * **Horizontal Span (`north` at $i_y = 0$, `south` at $i_y = n_y + 1$)**: Spawned across $i_x \in [0, n_x + 1]$. Here, `north` and `south` act as the vertical end caps at the top and bottom of the enclosure while repeating horizontally as the "shafts" between the `west` and `east` boundaries.
+    * **Vertical Span (`west` at $i_x = 0$, `east` at $i_x = n_x + 1$)**: Spawned across $i_y \in [0, n_y + 1]$. Here, `west` and `east` act as the horizontal end caps at the left and right of the enclosure while repeating vertically as the "shafts" between the `north` and `south` boundaries.
+    * **Open Interior ($i_x \in [1, n_x],\; i_y \in [1, n_y]$)**: Zero assets are instantiated in the interior cells, leaving the enclosed courtyard completely open to movement.
+    * **Corner Closure**: At the four corners $(0, 0)$, $(n_x + 1, 0)$, $(0, n_y + 1)$, and $(n_x + 1, n_y + 1)$, the horizontal cap (`north`/`south`) and vertical cap (`west`/`east`) superimpose, joining their orthogonal strip hitboxes into sealed `L`-corners without requiring dedicated corner rows in the atlas.
 2. **Perimeter Hitbox & 2.5D Baseline Anchoring**:
 Each face declares a thin strip hitbox flush against its respective outer edge of the $(w, l)$ cell:
-* `north`: `Position(0, 0), Dimensions(w, t_n)`
-* `south`: `Position(0, l - t_s), Dimensions(w, t_s)`
-* `west`: `Position(0, 0), Dimensions(t_w, l)`
-* `east`: `Position(w - t_e, 0), Dimensions(t_e, l)`
+    * `north`: `Position(0, 0), Dimensions(w, t_n)`
+    * `south`: `Position(0, l - t_s), Dimensions(w, t_s)`
+    * `west`: `Position(0, 0), Dimensions(t_w, l)`
+    * `east`: `Position(w - t_e, 0), Dimensions(t_e, l)`
 
 
 Because the visual rail of the `north` face occupies the top strip $y \in [0, t_n]$ of its $(w, l)$ cell while the remaining $l - t_n$ pixels are transparent interior ground, `Decomposer.multiply()` sets `anchor = -(l - t_n)` on `north` segments. This aligns `ground_y` of the `north` fence to $y_0 + t_n$, ensuring any Sprite walking inside the enclosure ($P.y + P.l > y_0 + t_n$) renders **in front of** the `north` fence and **behind** the `south` fence ($\text{ground\_y} = y_0 + (n_y + 2)l$).
 
----
-
-##### Updated Goals
+##### Goals
 
 ###### Goal: Unified Craft Blueprints, Strategies & Recipes (`enums.py`, `recipes/main.yaml`)
 
 Expand `BlueprintSchemas`, `BLUEPRINT_PARTITIONS`, `MultiplicationStrategies`, and `OBSTACLE_BLUEPRINTS` to cover `struts`, `bridges`, `railings`, `enclosures`, and `stairs`.
 
-```python
-# src/app/config/enums.py
-class AssetInstances(StrEnum):
-    # ... existing instances ...
-    STRUTS = "struts"
-    BRIDGES = "bridges"
-    PLATFORMS = "platforms"
-    STAIRS = "stairs"
-    RAILINGS = "railings"
-    ENCLOSURES = "enclosures"
-    STRUCTURES = "structures"
-    DECOR = "decor"
-    CARPENTRY = "carpentry"
-
-class BlueprintSchemas(StrEnum):
-    BUILDINGS = "buildings"
-    CORRIDORS = "corridors"
-    COLUMNS = "columns"
-    ENCLOSURES = "enclosures"
-    ORIENTATIONS = "orientations"
-    INCLINES = "inclines"
-
-class EnclosureBlueprints(StrEnum):
-    NORTH = "north"
-    EAST = "east"
-    SOUTH = "south"
-    WEST = "west"
-
-class OrientationBlueprints(StrEnum):
-    HORIZONTAL = "horizontal"
-    VERTICAL = "vertical"
-
-class InclineBlueprints(StrEnum):
-    UP = "up"
-    LEFT = "left"
-    RIGHT = "right"
-
-class MultiplicationStrategies(StrEnum):
-    SIMPLE = "simple"
-    ORIENTED = "oriented"
-    EXPANSION = "expansion"
-    PERIMETER = "perimeter"
-
-BLUEPRINT_PARTITIONS: Dict[str, Tuple[str, ...]] = {
-    BlueprintSchemas.BUILDINGS.value: tuple(b.value for b in BuildingBlueprints),
-    BlueprintSchemas.CORRIDORS.value: tuple(b.value for b in CorridorBlueprints),
-    BlueprintSchemas.COLUMNS.value: tuple(b.value for b in ColumnBlueprints),
-    BlueprintSchemas.ENCLOSURES.value: tuple(b.value for b in EnclosureBlueprints),
-    BlueprintSchemas.ORIENTATIONS.value: tuple(b.value for b in OrientationBlueprints),
-    BlueprintSchemas.INCLINES.value: tuple(b.value for b in InclineBlueprints),
-}
-
-BLUEPRINT_STRATEGIES: Dict[str, str] = {
-    BlueprintSchemas.BUILDINGS.value: MultiplicationStrategies.SIMPLE.value,
-    BlueprintSchemas.CORRIDORS.value: MultiplicationStrategies.SIMPLE.value,
-    BlueprintSchemas.COLUMNS.value: MultiplicationStrategies.EXPANSION.value,
-    BlueprintSchemas.ENCLOSURES.value: MultiplicationStrategies.PERIMETER.value,
-    BlueprintSchemas.ORIENTATIONS.value: MultiplicationStrategies.ORIENTED.value,
-    BlueprintSchemas.INCLINES.value: MultiplicationStrategies.SIMPLE.value,
-}
-
-OBSTACLE_BLUEPRINTS = frozenset({
-    BuildingBlueprints.WALLS.value,
-    BuildingBlueprints.HALLS.value,
-    ColumnBlueprints.BASES.value,
-    EnclosureBlueprints.NORTH.value,
-    EnclosureBlueprints.EAST.value,
-    EnclosureBlueprints.SOUTH.value,
-    EnclosureBlueprints.WEST.value,
-    OrientationBlueprints.HORIZONTAL.value,
-    OrientationBlueprints.VERTICAL.value,
-    InclineBlueprints.UP.value,
-    InclineBlueprints.LEFT.value,
-    InclineBlueprints.RIGHT.value,
-})
-
-MULTIPLIED_CRAFT_INSTANCES = frozenset({
-    AssetInstances.STRUTS.value,
-    AssetInstances.BRIDGES.value,
-    AssetInstances.RAILINGS.value,
-    AssetInstances.ENCLOSURES.value,
-    AssetInstances.STAIRS.value,
-})
-
-```
-
-```yaml
-# src/data/config/recipes/main.yaml
-recipes:
-  crafts:
-    bridges:
-      frame: material
-      animation: none
-      hitbox: material
-    enclosures:
-      frame: material
-      animation: none
-      hitbox: material
-    platforms:
-      frame: single
-      animation: none
-      hitbox: elevated
-    railings:
-      frame: material
-      animation: none
-      hitbox: material
-    struts:
-      frame: material
-      animation: none
-      hitbox: material
-    stairs:
-      frame: material
-      animation: none
-      hitbox: material
-    structures:
-      frame: single
-      animation: none
-      hitbox: static
-    decor:
-      frame: single
-      animation: none
-      hitbox: static
-
-```
-
 ###### Goal: Unified `StrutState` & `StairState` Models (`src/app/models/state/assets/crafts.py`)
 
 Consolidate `OrientedState` into `StrutState` (used by `struts`, `bridges`, `railings`, and `enclosures`), and make `StairState` inherit from `StrutState` so every multi-material Craft specifies `(blueprint, material, multiple)`.
 
-```python
-# src/app/models/state/assets/crafts.py
-@dataclass(slots=True)
-class PropertyState(AssetState):
-    owner: Optional[str] = None
-    position: Optional[Position] = None  # type: ignore
-
-@dataclass(slots=True)
-class StrutState(PropertyState):
-    material: Optional[str] = None
-    blueprint: Optional[str] = None
-    multiple: Optional[Multiple] = None  # type: ignore
-
-@dataclass(slots=True)
-class StairState(StrutState):
-    """
-    State representation for walkable incline transitions.
-    Inherits material, blueprint ('up', 'left', 'right'), and multiple from StrutState.
-    """
-    delta: int = 1
-
-    @property
-    def direction(self) -> Optional[str]:
-        return self.blueprint
-
-```
-
 ###### Goal: Unified `Decomposer.multiply()` (`simple`, `oriented`, `expansion`, `perimeter`)
 
 Replace `Decomposer.orient()` with a strategy-driven `Decomposer.multiply()` supporting all four `MultiplicationStrategies`.
-
-```python
-# src/app/services/generators/game/decomposer.py
-def _spawn_unit(
-    self,
-    state: StrutState,
-    props: CraftProperties,
-    recipe: Any,
-    category: str,
-    instance: str,
-    unit_name: str,
-    layer: str,
-    pos: Position,
-    blueprint: Optional[str],
-    anchor: int
-) -> Asset:
-    unit_state = dataclasses.replace(
-        state,
-        name=unit_name,
-        layer=layer,
-        position=pos,
-        blueprint=blueprint,
-        multiple=Multiple(1, 1),
-        anchor=anchor
-    )
-    return Asset(
-        taxonomy=Factory.taxonomy(state.id, unit_name, category, instance),
-        properties=props,
-        state=unit_state,
-        frame=Factory.frame(recipe.frame),
-        animation=Factory.animation(recipe.animation),
-        hitbox=Factory.hitbox(recipe.hitbox)
-    )
-
-def multiply(
-    self,
-    state: StrutState,
-    category: str,
-    instance: str
-) -> List[Asset]:
-    cat_props = getattr(self.properties, category, {})
-    instance_props = getattr(cat_props, instance, {})
-    props = instance_props.get(state.id, None)
-
-    if props is None:
-        logger.error(
-            settings.SEPARATOR.join([
-                "Decomposer",
-                "MultiplyMissingProperties",
-                state.id
-            ])
-        )
-        return []
-
-    w = props.dimensions.w
-    l = props.dimensions.l
-    base_pos = state.position or Position(0, 0)
-    layer = state.layer or "0"
-    nx = state.multiple.nx if state.multiple and state.multiple.nx is not None else 1
-    ny = state.multiple.ny if state.multiple and state.multiple.ny is not None else 1
-
-    strategy = BLUEPRINT_STRATEGIES.get(
-        props.blueprints or "",
-        MultiplicationStrategies.SIMPLE.value
-    )
-
-    cat_recipes = getattr(self.recipes, category, None)
-    recipe = getattr(cat_recipes, instance, None)
-    unit_assets: List[Asset] = []
-    base_name = state.name or state.id
-    idx = 0
-
-    if strategy == MultiplicationStrategies.ORIENTED.value:
-        # 1D axis-locked expansion for Bridges and Railings
-        if state.blueprint == OrientationBlueprints.HORIZONTAL.value:
-            ny = 1
-        else:
-            nx = 1
-        for iy in range(ny):
-            for ix in range(nx):
-                seg_pos = Position(base_pos.x + ix * w, base_pos.y + iy * l)
-                unit_name = settings.SEPARATOR.join([base_name, str(idx)])
-                idx += 1
-                unit_assets.append(
-                    self._spawn_unit(
-                        state, props, recipe, category, instance,
-                        unit_name, layer, seg_pos, state.blueprint, int(state.anchor or 0)
-                    )
-                )
-
-    elif strategy == MultiplicationStrategies.EXPANSION.value:
-        # 1D vertical column expansion: [crown] + ny * [shaft] + [base]
-        for ix in range(nx):
-            col_x = base_pos.x + ix * w
-            base_y = base_pos.y + (ny + 1) * l
-            base_ground = base_y + l
-
-            segments: List[Tuple[str, int]] = [
-                (ColumnBlueprints.CROWNS.value, base_pos.y)
-            ]
-            for k in range(ny):
-                segments.append(
-                    (ColumnBlueprints.SHAFTS.value, base_pos.y + (k + 1) * l)
-                )
-            segments.append((ColumnBlueprints.BASES.value, base_y))
-
-            for bp_part, seg_y in segments:
-                unit_name = settings.SEPARATOR.join([base_name, bp_part, str(idx)])
-                idx += 1
-                seg_anchor = int(base_ground - (seg_y + l))
-                unit_assets.append(
-                    self._spawn_unit(
-                        state, props, recipe, category, instance,
-                        unit_name, layer, Position(col_x, seg_y), bp_part, seg_anchor
-                    )
-                )
-
-    elif strategy == MultiplicationStrategies.PERIMETER.value:
-        # 2D hollow perimeter expansion for Enclosures:
-        # North/South span ix in [0..nx+1] at iy=0 and iy=ny+1
-        # West/East span iy in [0..ny+1] at ix=0 and ix=nx+1
-        north_hbs = (
-            props.hitboxes.get(EnclosureBlueprints.NORTH.value, [])
-            if isinstance(props.hitboxes, dict) else []
-        )
-        north_bottom = (
-            max((hb.position.y + hb.dimensions.l for hb in north_hbs), default=l)
-            if north_hbs else l
-        )
-        north_anchor = int(north_bottom - l)
-
-        for ix in range(nx + 2):
-            seg_x = base_pos.x + ix * w
-            # North cap/shaft segment
-            n_name = settings.SEPARATOR.join([base_name, EnclosureBlueprints.NORTH.value, str(idx)])
-            idx += 1
-            unit_assets.append(
-                self._spawn_unit(
-                    state, props, recipe, category, instance,
-                    n_name, layer, Position(seg_x, base_pos.y),
-                    EnclosureBlueprints.NORTH.value, north_anchor
-                )
-            )
-            # South cap/shaft segment
-            s_name = settings.SEPARATOR.join([base_name, EnclosureBlueprints.SOUTH.value, str(idx)])
-            idx += 1
-            unit_assets.append(
-                self._spawn_unit(
-                    state, props, recipe, category, instance,
-                    s_name, layer, Position(seg_x, base_pos.y + (ny + 1) * l),
-                    EnclosureBlueprints.SOUTH.value, 0
-                )
-            )
-
-        for iy in range(ny + 2):
-            seg_y = base_pos.y + iy * l
-            # West cap/shaft segment
-            w_name = settings.SEPARATOR.join([base_name, EnclosureBlueprints.WEST.value, str(idx)])
-            idx += 1
-            unit_assets.append(
-                self._spawn_unit(
-                    state, props, recipe, category, instance,
-                    w_name, layer, Position(base_pos.x, seg_y),
-                    EnclosureBlueprints.WEST.value, 0
-                )
-            )
-            # East cap/shaft segment
-            e_name = settings.SEPARATOR.join([base_name, EnclosureBlueprints.EAST.value, str(idx)])
-            idx += 1
-            unit_assets.append(
-                self._spawn_unit(
-                    state, props, recipe, category, instance,
-                    e_name, layer, Position(base_pos.x + (nx + 1) * w, seg_y),
-                    EnclosureBlueprints.EAST.value, 0
-                )
-            )
-
-    else:
-        # SIMPLE 2D grid multiplication (buildings, corridors, inclines)
-        for iy in range(ny):
-            for ix in range(nx):
-                seg_pos = Position(base_pos.x + ix * w, base_pos.y + iy * l)
-                unit_name = settings.SEPARATOR.join([base_name, str(idx)])
-                idx += 1
-                unit_assets.append(
-                    self._spawn_unit(
-                        state, props, recipe, category, instance,
-                        unit_name, layer, seg_pos, state.blueprint, int(state.anchor or 0)
-                    )
-                )
-
-    return unit_assets
-
-```
-
-###### Goal: Curated Craft Property Indices (`bridges`, `railings`, `enclosures`, `stairs`)
-
-```yaml
-# src/assets/crafts/bridges/main.yaml
-crafts:
-  bridges:
-    arch:
-      dimensions: { w: 80, l: 103 }
-      mass: -1
-      hitboxes: null
-      material:
-        genus: geologics
-      blueprints: orientations
-    suspension:
-      dimensions: { w: 96, l: 96 }
-      mass: -1
-      hitboxes: null
-      material:
-        genus: organics
-      blueprints: orientations
-
-```
-
-```yaml
-# src/assets/crafts/railings/main.yaml
-crafts:
-  railings:
-    crenellation:
-      dimensions: { w: 32, l: 32 }
-      mass: 0
-      material:
-        genus: geologics
-      blueprints: orientations
-      hitboxes:
-        horizontal:
-          - position: { x: 0, y: 0 }
-            dimensions: { w: 32, l: 10 }
-        vertical:
-          - position: { x: 0, y: 0 }
-            dimensions: { w: 9, l: 32 }
-
-```
-
-```yaml
-# src/assets/crafts/enclosures/main.yaml
-crafts:
-  enclosures:
-    palisade:
-      dimensions: { w: 96, l: 96 }
-      mass: 0
-      material:
-        genus: organics
-      blueprints: enclosures
-      hitboxes:
-        north:
-          - position: { x: 0, y: 0 }
-            dimensions: { w: 96, l: 16 }
-        south:
-          - position: { x: 0, y: 80 }
-            dimensions: { w: 96, l: 16 }
-        west:
-          - position: { x: 0, y: 0 }
-            dimensions: { w: 8, l: 96 }
-        east:
-          - position: { x: 88, y: 0 }
-            dimensions: { w: 8, l: 96 }
-
-```
-
-```yaml
-# src/assets/crafts/stairs/main.yaml
-crafts:
-  stairs:
-    steps:
-      dimensions: { w: 64, l: 96 }
-      mass: -1
-      material:
-        genus: geologics
-      blueprints: inclines
-      hitboxes:
-        up:
-          - position: { x: 0, y: 0 }
-            dimensions: { w: 32, l: 96 }
-        left:
-          - position: { x: 0, y: 0 }
-            dimensions: { w: 64, l: 32 }
-        right:
-          - position: { x: 0, y: 0 }
-            dimensions: { w: 64, l: 32 }
-
-```
-
----
 
 ##### Addendum Tasks
 
@@ -1115,25 +649,40 @@ crafts:
 
 *Objective*: Unify `Bridges`, `Railings`, `Enclosures`, `Stairs`, and `Struts` under `MaterialFrame`, `MaterialHitbox`, and `StrutState`, deprecating `OrientedFrame`, `DirectedFrame`, `OrientedHitbox`, `DirectedHitbox`, and `OrientedState`.
 
-* [ ] Subtask: Add `AssetInstances.ENCLOSURES`, `BlueprintSchemas.ENCLOSURES`, `BlueprintSchemas.ORIENTATIONS`, `BlueprintSchemas.INCLINES`, `EnclosureBlueprints`, `OrientationBlueprints`, `InclineBlueprints`, `MultiplicationStrategies.ORIENTED`, `MultiplicationStrategies.PERIMETER`, and `MULTIPLIED_CRAFT_INSTANCES` to `src/app/config/enums.py`.
-* [ ] Subtask: Consolidate `OrientedState` into `StrutState` and update `StairState` to inherit from `StrutState` in `src/app/models/state/assets/crafts.py`; register `enclosures` on `CraftPropertyInstances` and `CraftStateInstances`.
-* [ ] Subtask: Update `src/data/config/recipes/main.yaml` so `bridges`, `railings`, `enclosures`, `struts`, and `stairs` all map to `(frame: material, animation: none, hitbox: material)`, leaving `platforms` untouched (`frame: single, hitbox: elevated`) for Phase 07.03.
-* [ ] Subtask: Remove `OrientedFrame`, `DirectedFrame`, `OrientedHitbox`, and `DirectedHitbox` from `src/app/assets/` and `Factory`.
-* [ ] Subtask: Remove the deprecated `direction == 'down'` transition condition from `StairMechanics`.
+* [x] Subtask: Add `AssetInstances.ENCLOSURES`, `BlueprintSchemas.ENCLOSURES`, `BlueprintSchemas.ORIENTATIONS`, `BlueprintSchemas.INCLINES`, `EnclosureBlueprints`, `OrientationBlueprints`, `InclineBlueprints`, `MultiplicationStrategies.ORIENTED`, `MultiplicationStrategies.PERIMETER`, and `MULTIPLIED_CRAFT_INSTANCES` to `src/app/config/enums.py`.
+* [x] Subtask: Consolidate `OrientedState` into `StrutState` and update `StairState` to inherit from `StrutState` in `src/app/models/state/assets/crafts.py`; register `enclosures` on `CraftPropertyInstances` and `CraftStateInstances`.
+* [x] Subtask: Update `src/data/config/recipes/main.yaml` so `bridges`, `railings`, `enclosures`, `struts`, and `stairs` all map to `(frame: material, animation: none, hitbox: material)`, leaving `platforms` untouched (`frame: single, hitbox: elevated`) for Phase 07.03.
+* [x] Subtask: Remove `OrientedFrame`, `DirectedFrame`, `OrientedHitbox`, and `DirectedHitbox` from `src/app/assets/` and `Factory`.
+* [x] Subtask: Remove the deprecated `direction == 'down'` transition condition from `StairMechanics`.
 
 **7. Task: `Decomposer.multiply()` Strategy Expansion & `Materializer` Perimeter Valuation**
 
 *Objective*: Subsume `Decomposer.orient()` into `Decomposer.multiply()` and add `ORIENTED` and `PERIMETER` multiplication strategies across `Decomposer`, `Migrator`, and `Materializer`.
 
-* [ ] Subtask: Expand `Decomposer.multiply()` to execute `ORIENTED` (1D axis-locked tiling for `bridges`/`railings`) and `PERIMETER` (2D hollow boundary capping with `north` baseline anchor adjustment for `enclosures`).
-* [ ] Subtask: Remove `Decomposer.orient()` and `OrientedAssets`, routing all `MULTIPLIED_CRAFT_INSTANCES` through `Decomposer.multiply()` in both `Decomposer._unpack_components()` and `Migrator._build_generator()`.
+* [x] Subtask: Expand `Decomposer.multiply()` to execute `ORIENTED` (1D axis-locked tiling for `bridges`/`railings`) and `PERIMETER` (2D hollow boundary capping with `north` baseline anchor adjustment for `enclosures`).
+* [x] Subtask: Remove `Decomposer.orient()` and `OrientedAssets`, routing all `MULTIPLIED_CRAFT_INSTANCES` through `Decomposer.multiply()` in both `Decomposer._unpack_components()` and `Migrator._build_generator()`.
 * [ ] Subtask: Update `Materializer.cost()` in `src/app/services/markets/materializer.py` to compute `total_units = 2 * (nx + ny + 2)` when `strategy == MultiplicationStrategies.PERIMETER.value` and `total_units = nx` (horizontal) or `ny` (vertical) when `strategy == MultiplicationStrategies.ORIENTED.value`.
 
 **8. Task: Re-Atlasing & Re-Indexing `Bridges`, `Railings`, `Enclosures`, and `Stairs**`
 
 *Objective*: Index the newly synthesized 2D Craft sheets and migrate existing state and composition files.
 
-* [ ] Subtask: Update `/src/assets/crafts/bridges/main.yaml` with `arch` (`80x103`, `geologics`, `orientations`) and `suspension` (`96x96`, `organics`, `orientations`).
-* [ ] Subtask: Update `/src/assets/crafts/railings/main.yaml` with `crenellation` (`32x32`, `geologics`, `orientations`) and create `/src/assets/crafts/enclosures/main.yaml` for 4-face perimeter fences (`north`, `east`, `south`, `west`).
-* [ ] Subtask: Update `/src/assets/crafts/stairs/main.yaml` with `steps` (`64x96`, `geologics`, `inclines`: `up`, `left`, `right`).
-* [ ] Subtask: Migrate all `bridges`, `railings`, and `stairs` entries in `src/data/config/compositions/main.yml` and `/src/data/state/**` to the unified `(id, blueprint, material, multiple)` state schema.
+* [x] Subtask: Update `/src/assets/crafts/bridges/main.yaml` with `arch` (`80x103`, `geologics`, `orientations`) and `suspension` (`96x96`, `organics`, `orientations`).
+* [x] Subtask: Update `/src/assets/crafts/railings/main.yaml` with `crenellation` (`32x32`, `geologics`, `orientations`) and create `/src/assets/crafts/enclosures/main.yaml` for 4-face perimeter fences (`north`, `east`, `south`, `west`).
+* [x] Subtask: Update `/src/assets/crafts/stairs/main.yaml` with `steps` (`64x96`, `geologics`, `inclines`: `up`, `left`, `right`).
+* [x] Subtask: Migrate all `bridges`, `railings`, and `stairs` entries in `src/data/config/compositions/main.yml` and `/src/data/state/**` to the unified `(id, blueprint, material, multiple)` state schema.
+
+##### User Review IV
+
+###### Railings?
+
+Is it even necessary to differentiate Railings from Struts at this point? Stairs and Bridges have unique functionality, but if we are saying Railings are a `orientations` Blueprint, then why not just remove railings altogether and make them a Strut with a special multiplication strategy? 
+
+###### Objects?
+
+Objects are starting to blur with Crafts. Many Object Assets have a Material dimension that can be imposed on the atlas, although the engine does not currently utilize this dimension.
+
+In particular, Bridges and Stairs seem very similar to Objects; since they have effects upon the environment beyond simply demarcating boundaries and stamping decals. However, I think the distinction still holds because Bridges and Stairs have structural rows in their frame sheets. Objects do not have this property.
+
+
+ 

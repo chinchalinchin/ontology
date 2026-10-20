@@ -17,7 +17,6 @@ from app.config.loader import Loader
 from app.config.enums import (
     AssetCategories,
     AssetInstances, 
-    OrientedAssets,
     MultipliedAssets,
     Shortcuts
 )
@@ -136,13 +135,6 @@ class Migrator:
                 self.board.add(expanded_assets)
 
             elif task[0] == Shortcuts.ASSETS.value and \
-                task[2] in OrientedAssets:
-
-                oriented_state = task[3]
-                oriented_asset = self.decomposer.orient(oriented_state, task[1], task[2])
-                self.board.add(oriented_asset)
-
-            elif task[0] == Shortcuts.Assets.value and \
                 task[2] in MultipliedAssets:
 
                 multiplied_state = task[3]

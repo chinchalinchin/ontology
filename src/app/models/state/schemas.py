@@ -32,7 +32,7 @@ from app.models.state.assets import (
     FluidState,
     SpriteState,
     PlayerState,
-    OrientedState,
+    CraftState,
     ResourceState,
     PlatformState,
     StairState
@@ -45,10 +45,10 @@ from app.models.state.assets import (
 @dataclass(slots=True)
 class CraftStateInstances:
     stairs: List[StairState] = field(default_factory=list)
-    struts: List[PropertyState] = field(default_factory=list)
-    bridges: List[OrientedState] = field(default_factory=list)
+    struts: List[CraftState] = field(default_factory=list)
+    bridges: List[CraftState] = field(default_factory=list)
     platforms: List[PlatformState] = field(default_factory=list)
-    railings: List[OrientedState] = field(default_factory=list)
+    railings: List[CraftState] = field(default_factory=list)
 
 @dataclass(slots=True)
 class CursorStateInstances:

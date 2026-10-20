@@ -1,9 +1,8 @@
 # Application Libraries
 from app.models.state.assets.crafts import (
     PropertyState,
-    OrientedState,
     StairState,
-    StrutState,
+    CraftState,
     PlatformState
 )
 from app.models.state.assets.cursors import (
@@ -59,9 +58,8 @@ __all__ = [
     'DialogueState',
     # CRAFT STATES
     'PropertyState',
-    'OrientedState',
     'StairState',
-    'StrutState',
+    'CraftState',
     'PlatformState',
     # CURSOR STATES
     'MotorState',

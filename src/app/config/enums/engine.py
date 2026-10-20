@@ -64,13 +64,12 @@ class FrictiveAssets(str, Enum):
 class InertAssets(str, Enum):
     PROJECTILES     = "projectiles"
 
-class OrientedAssets(str, Enum):
-    RAILINGS        = "railings"
-    BRIDGES         = "bridges"
-
 class MultipliedAssets(str, Enum):
+    BRIDGES         = "bridges"
+    ENCLOSURES      = "enclosures"
+    RAILINGS        = "railings"
     STRUTS          = "struts"
-    
+
 # -------------------------------- MECHANIC ENUMERATIONS
 
 class Reactions(str, Enum):
@@ -97,6 +96,8 @@ class Translators(str, Enum):
 class MultiplicationStrategies(str, Enum):
     SIMPLE          = "simple"
     EXPANSION       = "expansion"
+    ORIENTED        = "oriented"
+    PERIMETER       = "perimeter"
 
 # -------------------------------- RENDERING ENUMERATIONS
 
