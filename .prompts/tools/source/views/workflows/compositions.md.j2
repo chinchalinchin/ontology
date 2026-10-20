@@ -10,6 +10,12 @@
 
 ##### app.assets.frames
 
+**src/app/assets/frames/core.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/frames/core.py') }}
+```
+
 **src/app/assets/frames/crafts.py**
 
 ```python
@@ -17,6 +23,12 @@
 ```
 
 ##### app.assets.hitboxes
+
+**src/app/assets/hitboxes/core.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/hitboxes/core.py') }}
+```
 
 **src/app/assets/hitboxes/crafts.py**
 
@@ -30,6 +42,20 @@
 
 ```python
 {{ file(properties.paths.root + 'src/app/config/settings.py') }}
+```
+
+##### app.config.enums
+
+**src/app/config/enums/assets.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/config/enums/assets.py') }}
+```
+
+**src/app/config/enums/engine.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/config/enums/engine.py') }}
 ```
 
 #### app.game
@@ -64,7 +90,7 @@
 {{ file(properties.paths.root + 'src/app/models/properties/core.py') }}
 ```
 
-**src/app/models/properties/crafts.py**
+**src/app/models/properties/assets.py**
 
 ```python
 {{ file(properties.paths.root + 'src/app/models/properties/assets.py') }}
@@ -87,7 +113,7 @@
 **src/app/models/config/markets.py**
 
 ```python
-{{ file(properties.paths.root + 'src/app/models/config/compositions.py') }}
+{{ file(properties.paths.root + 'src/app/models/config/markets.py') }}
 ```
 
 ##### app.models.state 
@@ -136,4 +162,12 @@
 
 ```python
 {{ file(properties.paths.root + 'src/app/services/markets/materializer.py') }}
+```
+
+##### app.services.orchestration
+
+**src/app/services/orchestration/migrator.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/orchestration/migrator.py')}}
 ```

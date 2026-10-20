@@ -10,11 +10,11 @@ This is the Task Board for the project. Below is a backlog of completed and pend
   `[!]`: DO NOT COMPLETE
 
 !!! "Phase Actions"
-  - Implement: Complex, multi-task development of new functionality.
-  - Refactor: Complex, multi-task iteration of existing functionality.
-  - Patch: Tasks for fixing logical bugs or errors in the codebase.
-  - Achieve: Short, encapsulated tasks for either new or existing functionality.
-  - Design: Short, encapsulated tasks for creating data structures.
+  - **Implement**: Complex, multi-task development of new functionality.
+  - **Refactor**: Complex, multi-task iteration of existing functionality.
+  - **Patch**: Tasks for fixing logical bugs or errors in the codebase.
+  - **Achieve**: Short, encapsulated tasks for either new or existing functionality.
+  - **Design**: Short, encapsulated tasks for creating data structures.
 
 **Table of Contents**
 

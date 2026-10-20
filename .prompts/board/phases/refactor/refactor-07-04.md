@@ -682,7 +682,56 @@ Is it even necessary to differentiate Railings from Struts at this point? Stairs
 
 Objects are starting to blur with Crafts. Many Object Assets have a Material dimension that can be imposed on the atlas, although the engine does not currently utilize this dimension.
 
-In particular, Bridges and Stairs seem very similar to Objects; since they have effects upon the environment beyond simply demarcating boundaries and stamping decals. However, I think the distinction still holds because Bridges and Stairs have structural rows in their frame sheets. Objects do not have this property.
+In particular, Bridges and Stairs seem very similar to Objects; since they have effects upon the environment beyond simply demarcating boundaries and stamping decals. However, I think the distinction still holds because Bridges and Stairs have structural rows in their frame sheets. Objects do not have this property. 
 
+Objects, being one of the first Assets implemented in the game, may have some inefficiencies or incorrect models powering them. I believe the Material dimension needs to be added to Objects. Crates, Chests, Doors, Gates and Signs Assets from the LPC database all can have Material atlasing imposed on them; not Plates, though (Plates are exceptionally rare to come across in open-source assets for some reasons; you would think switches to be a natural component, but alas no atlas.).
 
- 
+Obstacles needs moved to Geography, as I have ideas on how to procedurally generate their distribution using geological principles, i.e. where Environ Tiles meet faultlines are formed. 
+
+**Asset Analysis**
+
+The following atlases can be imposed on Object Assets from the LPC database,
+
+* Chest Sheets
+    * id: container (TBD px by TBD px)
+        * rows (material: organics): cotton, thatches, wood
+        * columns: closed, open
+    * id: trunk (TBD px by TBD px)
+        * rows (material: metallics): copper, iron, gold
+        * columns: closed, open
+* Crate Sheets
+    * id: box (TBD px by TBD px)
+        * rows (material: organics): cotton, thatches, wood
+    * id: vase (TBD px by TBD px)
+        * rows (material: chromatics, host: clay): neutral, blue, red, yellow, green
+    * id: bookcase (TBD px by TBD px)
+        * rows (material: chromatics, host: wood): neutral, blue, red, yellow, green
+* Door Sheets
+    * id: panel (TBD px by TBD px)
+        * rows (material: chromatics, host: wood): neutral, blue, red, yellow, green
+    * id: mansion (TBD px by TBD px)
+        * rows (material: chromatics, host: wood): neutral, blue, red, yellow, green
+    * id: reinforced (TBD px by TBD px)
+        * rows (material: metallics): copper, iron, gold
+* Gate Sheets
+    * id: postern (TBD px by TBD px)
+        * rows (material: geologics): limestone, feldspar, granite, marble
+        * columns: closed, open
+    * id: barred (TBD px by TBD px)
+        * rows (material: chromatics, host: wood): neutral, blue, red, yellow, green
+        * columns: closed, open
+* Sign Sheets
+    * id: plaque (TBD px by TBD px)
+        * rows (material: geologics): limestone, feldspar, granite, marble
+    * id: headstone (TBD px by TBD px)
+        * rows (material: geologics): limestone, feldspar, granite, marble
+    * id: poster (TBD px by TBD px)
+        * rows (material: chromatics, host: cotton): neutral, blue, red, yellow, green
+    * id: book (TBD px by TBD px)
+        * rows (material: chromatics, host: cotton): neutral, blue, red, yellow, green
+
+- Will need to add a partition for Clay; However, do not want to invalidate the existing partitions for Struts, if possible. Need to fit everything in a single, unified Material model. 
+- Doors need to cast shadows on the layers they are linked to. This is currently achieved by a dedicated `door-shadow-*` asset and explicitly binding those shadowed assets to the original Door. However, this is an unnecessary complexity and requires managing decoupled Door assets within Compositions. 
+    - However, if Doors are partitioned by Material, then this becomes an untenable model. Doors need a "footprint" on the layer they are connecting, a frame of solid color and reduced alpha but equal dimensions to the Door. 
+    - Moreover, the main issue with shadows will be the "infinite Door interaction" induced by the `outlayer` of a Door, i.e. the Door cannot transport the Sprite to a position in the `outlayer` which intersects with a Door, or else the Sprite will enter into an infinite loop.
+        - Objects were implemented before HitboxSchemea was well-defined; This problem seems solvable by having LayeredHitboxes, similar to ElevatedHitboxes, insofar that they must be *relative* to the deployed layer, but whereas Elevation is scalar, Layer is categorical, i.e. not necessarily a number.
