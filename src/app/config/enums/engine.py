@@ -52,6 +52,7 @@ class Substrates(int, Enum):
     FLUIDS          = -3
     SURFACES        = -2
     OVERLAYS        = -1
+    STANDARD        = 0
 
 # -------------------------------- ENGINE ASSET ENUMERATIONS
 
@@ -106,7 +107,6 @@ class MultiplicationStrategies(str, Enum):
 class ChannelTypes(int, Enum):
     TINT            = 0
     SUBMERGE        = 1
-
 
 class Fonts(str, Enum):
     DIALOGUE        = "dialogue"

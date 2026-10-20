@@ -195,6 +195,7 @@ class CentennialStages(str, Enum):
     ALLOY           = "alloy"
 
 class Materials(str, Enum):
+    CERAMICS        = "ceramics"
     CHROMATICS      = "chromatics"
     ORGANICS        = "organics"
     GEOLOGICS       = "geologics"

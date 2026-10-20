@@ -22,7 +22,8 @@ from app.config.enums import (
     Mechanics,
     AssetCategories,
     Executors,
-    Lifespans
+    Lifespans,
+    Relations
 )
 from app.game.board import Board
 from app.game.engine import Engine
@@ -153,7 +154,6 @@ class Builder:
 
     def build_relations(self) -> None:
         logger.info("Compiling relational indices...")
-        from app.config.enums import Relations
         self.relations = {
             Relations.SHORELINES.value: ShorelineIndex.from_properties(
                 self.context.properties.geography.shorelines

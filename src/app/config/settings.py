@@ -172,6 +172,12 @@ SUBSTRATE_BLUEPRINTS: Final[frozenset[str]] = frozenset({
     Corridors.DESIGNS.value
 })
 """Blueprints for rendering ground-level decals and decorations"""
+
+CHROMATIC_HOSTS: Final[frozenset[str]] = frozenset((
+    *MATERIAL_PARTITIONS[Materials.ORGANICS.value], 
+    *MATERIAL_PARTITIONS[Materials.CERAMICS.value]
+))
+"""Mapping for indexing Chromatic Materials to Host Materials"""
 # ---------------------------------------------------
 # DIRECTORY SETTINGS
 # ---------------------------------------------------

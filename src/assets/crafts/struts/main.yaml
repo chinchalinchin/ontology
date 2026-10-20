@@ -11,7 +11,7 @@ crafts:
       hitboxes: null
       material: 
         genus: geologics
-      blueprint: buildings
+      blueprints: buildings
     # -----------------------------------------
     mansion:
       dimensions:
@@ -21,7 +21,7 @@ crafts:
       hitboxes: null
       material: 
         genus: geologics
-      blueprint: buildings
+      blueprints: buildings
     # -----------------------------------------
     shack:
       dimensions:
@@ -31,7 +31,7 @@ crafts:
       hitboxes: null
       material: 
         genus: organics
-      blueprint: buildings
+      blueprints: buildings
     # -----------------------------------------
     store: 
       dimensions:
@@ -41,7 +41,7 @@ crafts:
       hitboxes: null
       material:
         genus: geologics
-      blueprint: buildings
+      blueprints: buildings
     # -----------------------------------------
     suburb:
       dimensions:
@@ -52,7 +52,7 @@ crafts:
       material:
         genus: chromatics
         host: wood
-      blueprint: buildings
+      blueprints: buildings
     # -----------------------------------------
     # ------------------------------- CORRIDORS
     # -----------------------------------------
@@ -64,7 +64,7 @@ crafts:
       hitboxes: null
       material:
         genus: geologics
-      blueprint: corridors
+      blueprints: corridors
     # -----------------------------------------
     carpet:
       dimensions:
@@ -99,6 +99,7 @@ crafts:
       material:
         genus: geologics
       blueprints: columns
+    # -----------------------------------------
     tower:
       dimensions:
         w: 64
@@ -108,3 +109,67 @@ crafts:
       material:
         genus: geologics
       blueprints: columns
+    # -----------------------------------------
+    # -------------------------------- RAILINGS
+    # -----------------------------------------
+    crenellation:
+      dimensions:
+        w: 32
+        l: 32
+      mass: 0
+      material:
+        genus: geologics
+      blueprints: orientations
+      hitboxes:
+        horizontal:
+          - position: 
+              x: 0
+              y: 0
+            dimensions:
+              w: 32
+              l: 10
+        vertical:
+          - position:
+              x: 0
+              y: 0
+            dimensions:
+              w: 9
+              l: 32
+    # -----------------------------------------
+    # ------------------------------- CARPENTRY
+    # -----------------------------------------
+    bed:
+      dimensions:
+        w: 71
+        l: 74
+      mass: 0
+      material:
+        genus: chromatics
+        host: wood
+      blueprints: directions
+      hitboxes: null
+    # -----------------------------------------
+    # ------------------------------ ENCLOSURES
+    # -----------------------------------------
+
+# NOTE: Asset File not yet ready for testing.
+#
+#     palisade:
+#       dimensions: { w: 96, l: 96 }
+#       mass: 0
+#       material:
+#         genus: organics
+#       blueprints: enclosures
+#       hitboxes:
+#         north:
+#           - position: { x: 0, y: 0 }
+#             dimensions: { w: 96, l: 16 }
+#         south:
+#           - position: { x: 0, y: 80 }
+#             dimensions: { w: 96, l: 16 }
+#         west:
+#           - position: { x: 0, y: 0 }
+#             dimensions: { w: 8, l: 96 }
+#         east:
+#           - position: { x: 88, y: 0 }
+#             dimensions: { w: 8, l: 96 }

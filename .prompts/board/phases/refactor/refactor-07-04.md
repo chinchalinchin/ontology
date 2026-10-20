@@ -694,44 +694,387 @@ The following atlases can be imposed on Object Assets from the LPC database,
 
 * Chest Sheets
     * id: container (32px by 32px)
-        * rows (material: organics): cotton, thatches, wood
-        * columns: closed, open
+        * columns (material: organics): cotton, thatches, wood
+        * rows: closed, open
     * id: trunk (32px by 32px)
-        * rows (material: metallics): copper, iron, gold
-        * columns: closed, open
+        * columns (material: metallics): copper, iron, gold
+        * rows: closed, open
 * Crate Sheets
     * id: box (32px by 32px)
-        * rows (material: organics): cotton, thatches, wood
+        * columns (material: organics): cotton, thatches, wood
     * id: vase (TBD px by TBD px)
-        * rows (material: chromatics, host: clay): neutral, blue, red, yellow, green
+        * columns (material: chromatics, host: clay): neutral, blue, red, yellow, green
     * id: bookcase (TBD px by TBD px)
-        * rows (material: chromatics, host: wood): neutral, blue, red, yellow, green
+        * columns (material: chromatics, host: wood): neutral, blue, red, yellow, green
 * Door Sheets
     * id: panel (32px by 48px)
-        * rows (material: chromatics, host: wood): neutral, blue, red, yellow, green
+        * columns (material: chromatics, host: wood): neutral, blue, red, yellow, green
     * id: dutch (32px by 48px)
-        * rows (material: chromatics, host: wood): neutral, blue, red, yellow, green
+        * columns (material: chromatics, host: wood): neutral, blue, red, yellow, green
     * id: pivot (32px by 48px)
-        * rows (material: metallics): copper, iron, gold
+        * columns (material: metallics): copper, iron, gold
 * Gate Sheets
     * id: postern (64px by 64px)
-        * rows (material: geologics): limestone, feldspar, granite, marble
-        * columns: closed, open
+        * columns (material: geologics): limestone, feldspar, granite, marble
+        * rows: closed, open
     * id: barred (TBD px by TBD px)
-        * rows (material: chromatics, host: wood): neutral, blue, red, yellow, green
-        * columns: closed, open
+        * columns (material: chromatics, host: wood): neutral, blue, red, yellow, green
+        * rows: closed, open
 * Sign Sheets
     * id: plaque (24px by 24px)
-        * rows (material: geologics): limestone, feldspar, granite, marble
+        * columns (material: geologics): limestone, feldspar, granite, marble
     * id: headstone (TBDpx by TBDpx)
-        * rows (material: geologics): limestone, feldspar, granite, marble
+        * columns (material: geologics): limestone, feldspar, granite, marble
     * id: poster (30px by 30px)
-        * rows (material: chromatics, host: cotton): neutral, blue, red, yellow, green
+        * columns (material: chromatics, host: cotton): neutral, blue, red, yellow, green
     * id: book (TBDpx by TBDpx)
-        * rows (material: chromatics, host: cotton): neutral, blue, red, yellow, green
+        * columns (material: chromatics, host: cotton): neutral, blue, red, yellow, green
 
 - Will need to add a partition for Clay; However, do not want to invalidate the existing partitions for Struts, if possible. Need to fit everything in a single, unified Material model. 
 - Doors need to cast shadows on the layers they are linked to. This is currently achieved by a dedicated `door-shadow-*` asset and explicitly binding those shadowed assets to the original Door. However, this is an unnecessary complexity and requires managing decoupled Door assets within Compositions. 
     - However, if Doors are partitioned by Material, then this becomes an untenable model. Doors need a "footprint" on the layer they are connecting, a frame of solid color and reduced alpha but equal dimensions to the Door. 
     - Moreover, the main issue with shadows will be the "infinite Door interaction" induced by the `outlayer` of a Door, i.e. the Door cannot transport the Sprite to a position in the `outlayer` which intersects with a Door, or else the Sprite will enter into an infinite loop.
         - Objects were implemented before HitboxSchemea was well-defined; This problem seems solvable by having LayeredHitboxes, similar to ElevatedHitboxes, insofar that they must be *relative* to the deployed layer, but whereas Elevation is scalar, Layer is categorical, i.e. not necessarily a number.
+
+##### Review: Phase 07.04 - Materialization & Category-Wide Atlasing
+
+###### Review: Implementation
+
+1. **Incomplete Task 4, Task 6 & Task 7 Wiring**:
+    * **`Decomposer._unpack_node()` (`src/app/services/generators/game/decomposer.py`)**: Still calls `self._create_asset()` on `node.strut` instead of routing root and branch Struts through `self.multiply()`. Any root or branch Strut declaring `multiple` or using `columns`/`enclosures`/`orientations` fails to expand.
+    * **`CraftPropertyInstances` & `CraftStateInstances` (`src/app/models/properties/schemas.py`, `src/app/models/state/schemas.py`)**: Omit `enclosures` and `carpentry` (unless `enclosures` and `railings` are collapsed into `struts`; see Architecture Review below).
+
+###### Review: Quality
+
+1. **Duck-Typing Violations (`getattr`, `hasattr`, `isinstance`)**:
+    * **`Decomposer` (`src/app/services/generators/game/decomposer.py`)**: Repeatedly uses `getattr(node.strut, 'position', None)`, `getattr(strut_state, 'owner', None)`, `getattr(pseudo_state, 'name', None)`, and `getattr(deployed_state, 'layer', '')`. `node.strut` and `deployed_state` are typed `PropertyState` / `CraftState` instances validated by Pydantic; their fields (`position`, `owner`, `name`, `layer`, `elevation`) are guaranteed by `AssetState` and `PropertyState`.
+    * **`Migrator._build_generator()` (`src/app/services/orchestration/migrator.py`)**: Uses `if hasattr(self.state, Shortcuts.COMPOSITIONS.value)` on `self.state`, which is a strictly typed `StateSchema` dataclass where `self.state.compositions`, `self.state.plots`, and `self.state.calendar` always exist as attributes.
+    * **`Board.serialize()` (`src/app/game/board/core.py`)**: Uses `frequency = getattr(asset.properties, "frequency", None)` and `hasattr(self.plot, "__dataclass_fields__")` instead of relying on `EffectProperties.frequency` and `PlotState`.
+    * **`IndexFrame.keys()` (`src/app/assets/frames/core.py`)**: Uses `icon_key = getattr(state, "icon", None)` instead of typing `state: AttachmentState` (or `IconState`) and reading `state.icon`.
+    * **`MaterialHitbox.get()` & `Decomposer.multiply()**`: Uses `isinstance(props.hitboxes, dict)` to branch between list and dictionary hitbox definitions. Normalizing `CraftProperties.hitboxes` to `Dict[str, List[Hitbox]]` via a Pydantic validator (or uniform schema) eliminates runtime type inspection.
+2. **Monolithic Conditional Branching in `Decomposer.multiply()`**:
+    * `Decomposer.multiply()` embeds a 150-line `if / elif / elif / else` block over `MultiplicationStrategies` with nested loops and inline hitbox boundary math (noted by the inline `# TODO: this seems in need of a handler abstraction`). Extracting strategy methods (`_multiply_simple`, `_multiply_oriented`, `_multiply_expansion`, `_multiply_perimeter`) mapped via a class-level dispatch table flattens the control flow and adheres to fail-fast standards.
+
+###### Review: Logic
+
+1. **Nested Dictionary Lookup Bug & Missing Strategies in `Materializer.cost()` (`src/app/services/markets/materializer.py`)**:
+    * `MarketConfiguration` types `materials` and `blueprints` as nested dictionaries (`Dict[str, Dict[str, float]]`, keyed first by genus/schema and second by specific material/blueprint).
+    * `Materializer.cost()` queries `self.markets.blueprints.get(blueprint_key, 1.0)` and `self.markets.materials.get(material_key, 1.0)` at the top level. Because top-level keys are genera (`organics`, `geologics`, `metallics`, `chromatics`) and schemas (`buildings`, `corridors`, `columns`), every lookup misses and falls back to `1.0`.
+    * Additionally, `Materializer.cost()` only branches on `EXPANSION` (`nx * (ny + 2)`) and `else` (`nx * ny`), omitting `ORIENTED` (`nx` if horizontal else `ny`) and `PERIMETER` (`2 * (nx + ny + 2)`).
+2. **Corner Superimposition & Unit Count Mismatch in `MultiplicationStrategies.PERIMETER` (`src/app/services/generators/game/decomposer.py`)**:
+    * In `Decomposer.multiply()`, the `PERIMETER` branch loops `ix in range(nx + 2)` for `north`/`south` ($2(n_x + 2)$ units) and `iy in range(ny + 2)` for `west`/`east` ($2(n_y + 2)$ units), spawning $2(n_x + n_y + 4)$ units instead of the specified $2(n_x + n_y + 2)$ units.
+
+###### Review: Architecture
+
+Addressing the four architectural questions raised in **User Review IV**:
+
+1. **Eliminating `Railings` and `Enclosures` as Distinct Craft Instances**:
+    * In Ontology's ECS architecture, an `AssetInstance` is justified if and only if it requires a distinct `(frame, animation, hitbox, state)` recipe or participates in a dedicated `Mechanic` query:
+    * `bridges`: Sensor ($m = -1$) queried by `board.bridges()` in `MotionMechanics` to suppress fluid immersion and drift.
+    * `stairs`: Sensor ($m = -1$) with `StairState.delta` queried by `StairMechanics` to transition `state.elevation`.
+    * `platforms`: Uses `ElevatedHitbox` (pending Phase 07.03 Gravity refactor).
+    * By contrast, `railings` and `enclosures` share the exact same properties (`CraftProperties`), state (`CraftState`), recipe (`frame: material, animation: none, hitbox: material`), mass ($m = 0$), and substrate (`Substrates.STANDARD = 0`) as `struts`. Their multiplication behavior is governed entirely by `BLUEPRINT_STRATEGIES[properties.blueprints]` (`orientations -> oriented`, `enclosures -> perimeter`).
+    * **Conclusion**: Collapse `railings` and `enclosures` into `struts`. Move `crenellation` and `palisade` into `/src/assets/crafts/struts/main.yaml` and delete `AssetInstances.RAILINGS` and `AssetInstances.ENCLOSURES`.
+2. **Extending Material Atlasing to `Objects` & Introducing the `Ceramics` (`clay`) Partition**:
+    * **Structural vs. Functional Atlasing**:
+        * **Crafts** are indexed across 2D `(Blueprint_Row x Material_Col)` sheets because Crafts vary across structural morphology (`floors`, `walls`, `crowns`, `shafts`) and material.
+        * **Objects** have a single morphology per ID, varying across **Material Rows ($r \in [0, M)$)** and **State/Switch Columns ($c \in [0, \text{count})$)** where $\text{count} = 1$ for static/kinematic objects (`crates`, `doors`, `signs`) and $\text{count} = 2$ (`0: closed`, `1: open`) for binary objects (`chests`, `gates`).
+    * **Unified `Ceramics` Partition for `clay`**:
+        * Adding `clay` to `Organics` or `Geologics` would alter the column cardinality of those partitions (`3` and `4` respectively), invalidating every existing Strut atlas.
+        * Introducing `Materials.CERAMICS = "ceramics"` with `class Ceramics(str, Enum): CLAY = "clay"` preserves the exact column indices of `Organics`, `Geologics`, `Metallics`, and `Chromatics`.
+        * Defining `CHROMATIC_HOSTS: Final[frozenset[str]] = frozenset((*MATERIAL_PARTITIONS[Materials.ORGANICS.value], *MATERIAL_PARTITIONS[Materials.CERAMICS.value]))` allows `vase` (`genus: chromatics, host: clay`) to pass `Material.__post_init__` validation while keeping all Strut sheets untouched.
+    * **Unified Object Frame Indexing (`ObjectFrame` / `MaterialFrame`)**:
+        * By adding `material: Optional[Material] = None` to `ObjectProperties` and `material: Optional[str] = None` to `AssetState` (or `ObjectState` base class):
+        * If `properties.material is None` (e.g., `plates`, `rafts`), row $r = 0$.
+        * If `properties.material is not None`, row $r$ iterates over `MATERIAL_PARTITIONS[properties.material.genus]`, and column $c$ iterates over `range(properties.count)` at crop coordinate `(c * w, r * l, w, l)`.
+        * Canonical key: `"{id}-{material}-{frame}"` for binary objects (`count > 1`) and `"{id}-{material}"` for single-frame objects (`count == 1`).
+3. **Migrating `Obstacles` from `Objects` to `Geography`**:
+    * `Obstacles` are immutable, inanimate landforms (`mass = 0`) that do not participate in object interactions and will be procedurally distributed along Environ Tile faultlines. Moving `obstacles` from `ObjectPropertyInstances` / `ObjectStateInstances` to `GeographyPropertyInstances` / `GeographyStateInstances` (with `PositionalState` and recipe `frame: single, animation: none, hitbox: static`) cleanly separates geological landforms from interactive functional `Objects`.
+4. **Door Shadow Footprints, Infinite Teleportation Loops & `LayeredHitbox`**:
+    * **Why the Infinite Loop Occurs**: When a Sprite interacts with a Door on `layer` at `position`, `InteractionMechanics` transitions `sprite.state.layer = door.state.outlayer` and `sprite.state.position = door.state.out`. If a reciprocal Door or shadow footprint is placed at `door.state.out` with the same hitbox geometry, the arriving Sprite lands *inside* the return Door's active hitbox on the first frame after layer transition, immediately re-triggering teleportation back to `layer`.
+    * **Why `door-shadow-*` Assets Fail Under Materialization**: Maintaining separate `door-shadow` PNGs and manual branch Door declarations in Compositions couples every Door placement to a boilerplate twin and breaks when Doors are indexed by `Material`.
+    * **The Unified Solution (`LayeredHitbox` + Reciprocal Shadow Channel)**:
+        * **Categorical Layer Resolution (`LayeredHitbox`)**: Just as `ElevatedHitbox` resolves hitboxes relative to scalar `elevation` offsets, `LayeredHitbox` resolves hitboxes relative to categorical `layer` keys (`state.layer` vs. `state.outlayer`):
+            * On `layer == state.layer` (the upright Door facade at `state.position`): emits the standard door interaction hitbox `properties.hitboxes`.
+            * On `layer == state.outlayer` (the shadow footprint at `state.out`): emits a thin threshold strip hitbox offset to the **southern exit edge** of the footprint (`Position(0, l - t_shadow), Dimensions(w, t_shadow)`), while the Sprite's arrival coordinate `state.out` is positioned north of that strip (or offset by `-sprite.dimensions.l` upon exit). Because the arrival coordinate and the return trigger strip are disjoint on `outlayer`, the Sprite cannot re-enter the Door without intentionally walking back across the threshold strip.
+        * **Zero-Asset Shadow Rendering (`ChannelTypes.TINT` / `SHADOW`)**:
+        During hydration (`Decomposer` / `Migrator`), a single `DoorState` declaration automatically registers its reciprocal shadow projection on `state.outlayer` at `state.out` on `Substrates.OVERLAYS (-1)` using `ChannelTypes.TINT` (`RGBA(0, 0, 0, 110)`), eliminating `door-shadow-*` files and manual Composition twin declarations entirely.
+
+###### Review: Optimization
+
+1. **Hoisting `Factory` Lookups in `Decomposer.multiply()` (`src/app/services/generators/game/decomposer.py`)**:
+    * `_spawn_unit()` calls `Factory.frame(recipe.frame)`, `Factory.animation(recipe.animation)`, and `Factory.hitbox(recipe.hitbox)` on **every single unit iteration** inside the `nx * ny` loop. Because `Frame`, `Animation`, and `HitboxSchema` are `Singleton` instances, resolving them once at the top of `multiply()` and passing the resolved references into `_spawn_unit()` eliminates $3 \times (n_x \cdot n_y)$ redundant dictionary/singleton lookups per multiplied Craft.
+
+
+##### Bug B021: `Materializer.cost()` Queries Nested Market Dictionaries with Leaf Keys
+
+**STATUS**: OPEN
+**SEVERITY**: HIGH
+
+**Description**
+
+`MarketConfiguration.materials` and `MarketConfiguration.blueprints` are two-level dictionaries keyed by `(genus -> material -> factor)` and `(schema -> blueprint -> factor)`. `Materializer.cost()` in `src/app/services/markets/materializer.py` queries `self.markets.materials.get(material_key, 1.0)` and `self.markets.blueprints.get(blueprint_key, 1.0)` at the root dictionary level, causing all lookups to miss and default to `1.0`. Additionally, `ORIENTED` and `PERIMETER` unit counts are not handled.
+
+**Proposed Remediation**
+
+Update `Materializer.cost()` in `src/app/services/markets/materializer.py` to resolve factors through their partition keys and handle all four multiplication strategies:
+
+```python
+    def _material_factor(self, genus: str, key: str) -> float:
+        return self.markets.materials.get(genus, {}).get(key, 1.0)
+
+    def _blueprint_factor(self, schema: str, key: str) -> float:
+        return self.markets.blueprints.get(schema, {}).get(key, 1.0)
+
+```
+
+---
+
+##### Draft: Fibered Intra-Tier Substrate Sorting
+
+* **Page**: `docs/01-assets.md` and `docs/11-architecture.md`
+* **Heading**: `Elevation, Perspective & Priority`
+
+###### Drift
+
+Both `docs/01-assets.md` and `docs/11-architecture.md` document the legacy 3-key Painter's Algorithm sort tuple `(elevation, ground_y, priority)` where `Asset.elevation` falls back to negative `settings.SUBSTRATES` values when `state.elevation is None`. Phase 07.04 decouples macro-elevation ($E \ge 0$) from intra-tier `Asset.substrate` ($\sigma \in [-4, 0]$), establishing a 4-key lexicographical sort `(elevation, substrate, ground_y, priority)`.
+
+###### Update
+
+```markdown
+#### Elevation, Substrate, Perspective & Priority
+
+World rendering evaluates spatial geometry using discrete topological macro-elevations, intra-tier substrate planes, continuous ground perspective, and coplanar priority:
+
+$$\text{sort\_key}(A) = \Big(A.\text{elevation},\; A.\text{substrate},\; \text{ground\_y}(A),\; A.\text{properties.priority}\Big)$$
+
+1. **Primary Key (`A.elevation` $\in \mathbb{Z}_{\ge 0}$)**: Discrete macro-elevation story or platform tier (`0`, `1`, `2`, ...).
+2. **Secondary Key (`A.substrate` $\in \mathbb{Z}_{\le 0}$)**: Intra-tier rendering plane within macro-elevation $E$, resolved via `settings.SUBSTRATES` from `(instance, state.blueprint)`:
+   - `Substrates.ENVIRON (-4)`: `tiles.environ`
+   - `Substrates.FLUIDS (-3)`: `effects.fluids`
+   - `Substrates.SURFACES (-2)`: `geography.shorelines`, `struts` (`floors`, `paths`, `flats`)
+   - `Substrates.OVERLAYS (-1)`: `crafts.bridges`, `crafts.stairs`, `objects.doors` (shadow footprints), `struts` (`solids`, `stripes`, `designs`)
+   - `Substrates.STANDARD (0)`: All upright entities, walls, columns, enclosures, objects, and sheets.
+3. **Tertiary Key (`ground_y` $\in \mathbb{Z}$)**: Continuous in-tier geometric perspective: $\text{ground\_y} = \text{int}(A.\text{state.position.y} + A.\text{dimensions.l} + A.\text{state.anchor})$.
+4. **Quaternary Key (`priority` $\in \mathbb{Z}$)**: Coplanar tie-breaker for entities sharing an identical `(elevation, substrate, ground_y)` baseline.
+
+```
+
+---
+
+##### Draft: Unified Craft Properties, Strut Atlasing & Market Materializer
+
+* **Page**: `docs/01-assets.md` and `docs/03-compositions.md`
+* **Heading**: `Crafts` / `Asset Specification: Crafts`
+
+###### Drift
+
+`docs/01-assets.md` and `docs/03-compositions.md` still list `cost: Cost` on `CraftProperties`, document `Bridges` with `OrientedFrame`/`OrientedState`, `Stairs` with `DirectedFrame`/`DirectedHitbox` (including the removed `down` direction), `Railings` as a standalone Craft instance, and `MaterialFrame` key ordering as `{id}-{material}-{blueprint}` instead of `{id}-{blueprint}-{material}`.
+
+###### Update
+
+```markdown
+**Properties: CraftProperties**
+
+- `dimensions: Dimensions`
+- `priority: int = 0`
+- `mass: int = 0`
+- `material: Optional[Material] = None` (`genus`, `host`)
+- `blueprints: Optional[str] = None` (`buildings`, `corridors`, `columns`, `orientations`, `enclosures`, `inclines`, `directions`)
+- `hitboxes: Optional[Dict[str, List[Hitbox]]] = None`
+
+**Frame: MaterialFrame**
+
+- `keys(id, state)`: returns `[(f"{id}-{state.blueprint}-{state.material}", 0, 0)]`
+- `index(id, properties)`: returns `{f"{id}-{bp}-{mat}": (c * w, r * l, w, l)}` across `BLUEPRINT_PARTITIONS[properties.blueprints]` rows and `MATERIAL_PARTITIONS[properties.material.genus]` columns.
+
+**Hitbox: MaterialHitbox**
+
+- `get(properties, state, elevation, frame)`: returns `[]` if `state.blueprint not in settings.OBSTACLE_BLUEPRINTS`, otherwise resolves `properties.hitboxes[state.blueprint]`.
+
+```
+
+---
+
+##### Proposed Phase 07.04 Task Additions
+
+To resolve the bugs identified above and incorporate the architectural expansions from **User Review IV**, add the following tasks to **Phase 07.04 - Materialization**:
+
+**9. Task: Phase 07.04 Core Bug Fixes & Strut Consolidation (`Railings` & `Enclosures` $\to$ `Struts`)**
+
+*Objective*: Fix blocking defects in `settings.py`, `core.py`, `base.py`, `crafts.py`, `decomposer.py`, `materializer.py`, and `struts/main.yaml`, and collapse `railings` and `enclosures` into `struts`.
+
+* [ ] Subtask: Fix `b.vlaue` typo in `src/app/config/settings.py`, add `Substrates.STANDARD = 0` to `src/app/config/enums/engine.py`, reorder `Columns` to `(CROWNS, SHAFTS, BASES)` in `src/app/config/enums/assets.py`, and add `STAIRS` to `MultipliedAssets`.
+* [ ] Subtask: Fix `Material.__post_init__` indentation in `src/app/models/properties/core.py`, fix `Asset.substrate` in `src/app/assets/base.py`, and fix `MaterialFrame.keys()` return tuple and `CraftState` import in `src/app/assets/frames/crafts.py`.
+* [ ] Subtask: Collapse `AssetInstances.RAILINGS` and `AssetInstances.ENCLOSURES` into `AssetInstances.STRUTS`; move `crenellation` (`blueprints: orientations`) and `palisade` (`blueprints: enclosures`) into `/src/assets/crafts/struts/main.yaml`, and remove `railings`/`enclosures` from `CraftPropertyInstances`, `CraftStateInstances`, `MultipliedAssets`, and `recipes/main.yaml`.
+* [ ] Subtask: Fix `struts/main.yaml` keys (`blueprint`/`blueproint` $\to$ `blueprints`, `shack` $\to$ `hut`, `pillar` length `96` $\to$ `32`, `tower` length `192` $\to$ `64`) and update `stairs` recipe in `src/data/config/recipes/main.yaml` to `(frame: material, animation: none, hitbox: material)`.
+* [ ] Subtask: Route `node.strut` through `self.multiply()` in `Decomposer._unpack_node()`, refactor `Decomposer.multiply()` into strategy handler methods, and update `Materializer.cost()` to resolve nested `(genus, material)` and `(schema, blueprint)` market dictionaries across all four `MultiplicationStrategies`.
+
+**10. Task: Category-Wide `Objects` Materialization, `Ceramics` Partition & `Obstacles` Migration**
+
+*Objective*: Impose Material atlasing on `Objects` (`chests`, `crates`, `doors`, `gates`, `signs`), add the `Ceramics` (`clay`) genus partition, and migrate `obstacles` to `Geography`.
+
+* [ ] Subtask: Add `Materials.CERAMICS = "ceramics"` and `class Ceramics(str, Enum): CLAY = "clay"` to `src/app/config/enums/assets.py`, register `MATERIAL_PARTITIONS[Materials.CERAMICS.value]`, and allow `Ceramics` as a valid host in `Material.__post_init__`.
+* [ ] Subtask: Add `material: Optional[Material] = None` to `ObjectProperties` and `material: Optional[str] = None` to `Object` state models (`PositionalState`, `ContainerState`, `DoorState`, `SwitchState`, `DialogueState`).
+* [ ] Subtask: Implement 2D `(Material_Row x Count_Col)` indexing in `MaterialFrame` (or `ObjectFrame`) supporting both static (`count = 1`: `crates`, `doors`, `signs`) and binary (`count = 2`: `chests`, `gates`) Objects, and implement dynamic open/closed hitbox resolution on `gates` (`Bug B008`).
+* [ ] Subtask: Move `obstacles` from `ObjectPropertyInstances` / `ObjectStateInstances` / `recipes.objects` to `GeographyPropertyInstances` / `GeographyStateInstances` / `recipes.geography`.
+* [ ] Subtask: Index the curated Object sheets (`container`, `trunk`, `box`, `vase`, `bookcase`, `panel`, `mansion`, `reinforced`, `postern`, `barred`, `plaque`, `headstone`, `poster`, `book`) in `/src/assets/objects/**/*.yaml`.
+
+**11. Task: `Door` Reciprocal Shadow Footprints & `LayeredHitbox**`
+
+*Objective*: Eliminate decoupled `door-shadow-*` assets and prevent infinite teleportation loops via `LayeredHitbox` and alpha-tinted shadow footprints.
+
+* [ ] Subtask: Implement `LayeredHitbox` in `src/app/assets/hitboxes/` resolving full facade hitboxes on `state.layer` (`state.position`) and southern-edge threshold sensor strips on `state.outlayer` (`state.out`) disjoint from the Sprite arrival coordinate.
+* [ ] Subtask: Update `Decomposer` / `Migrator` and `DoorFrame.channels()` so each `Door` automatically projects a darkened footprint (`ChannelTypes.TINT`, `Substrates.OVERLAYS = -1`) at `(state.outlayer, state.out)` with reciprocal return linkage, and remove legacy `door-shadow-*` assets from Compositions.
+
+##### User Review V
+
+###### Task: Review Collisions
+
+- [ ] Drill down on **4.Door Shadow Footprints, Infinite Teleportation Loops & `LayeredHitbox`** from [Review: Architecture](#review-architecture).
+
+TODO: placeholder for code
+
+###### Task: Relationships Masquerading as Settings
+
+- [] Anaylze the proper way to represent the Blueprint, Material relationships and propose a task list.
+
+`app.config.settings` is beginning to accomodate code that is not exactly a "*setting*". It's more like a relationship. 
+
+A similar issue was encountered during the development of Shoreline Geography and its inherent association with its adjacent Environ Tile and Fluid Tile. The relationship was codified as a property,
+
+```yaml
+geography:
+  shorelines:
+    temperate-banks:
+      tile: temperate
+      fluid: waterflow
+      dimensions: 
+        w: 41
+        l: 41
+      thickness: 22
+      mass: -1
+      priority: -2
+      hitboxes: null
+```
+
+Then, in the `app.services.orchestration.builder`, it is compiled from properties into a model,
+
+```python
+    def build_relations(self) -> None:
+        logger.info("Compiling relational indices...")
+        self.relations = {
+            Relations.SHORELINES.value: ShorelineIndex.from_properties(
+                self.context.properties.geography.shorelines
+            )
+        }
+```
+
+Using this class in `app.game.logics.modules.relations`,
+
+```python
+"""
+# Ontology: app.game.logic.relations.shorelines
+
+Relational index mapping terrain tiles, fluids, and seasons to shoreline asset IDs.
+"""
+from __future__ import annotations
+
+# Standard Libraries
+from typing import (
+    Dict,
+    Tuple,
+    Optional,
+    Any,
+    TYPE_CHECKING
+)
+import logging
+
+if TYPE_CHECKING:
+    from app.models.properties import GeographyProperties
+
+logger = logging.getLogger(__name__)
+
+
+class ShorelineIndex:
+    """
+    Relational secondary index mapping (tile_id, fluid_id, [season]) to shoreline Asset ID.
+    Supports multi-level fallback:
+    1. (tile_id, fluid_id, season)
+    2. (tile_id, fluid_id)
+    3. (tile_id, None, season)
+    4. (tile_id, None)
+    """
+    _map: Dict[Tuple[str, Optional[str], Optional[str]], str]
+    _fallback_map: Dict[Tuple[str, Optional[str]], str]
+
+    def __init__(self, relations: Optional[Dict[Any, str]] = None):
+        self._map = {}
+        self._fallback_map = {}
+        if relations:
+            for key, shoreline_id in relations.items():
+                self.register(key, shoreline_id)
+
+    @classmethod
+    def from_properties(cls, shorelines: Dict[str, GeographyProperties]) -> ShorelineIndex:
+        """
+        Factory constructor compiling relational definitions from geography property schemas.
+        """
+        index = cls()
+        for shoreline_id, props in shorelines.items():
+            season = getattr(props, "season", None)
+            if season:
+                index.register((props.tile, props.fluid, season), shoreline_id)
+            index.register((props.tile, props.fluid), shoreline_id)
+        return index
+
+    def register(self, key: Tuple, shoreline_id: str) -> None:
+        """
+        Registers a composite relation tuple to target shoreline asset ID.
+        """
+        if len(key) == 3:
+            tile_id, fluid_id, season = key
+            self._map[(tile_id, fluid_id, season)] = shoreline_id
+        elif len(key) == 2:
+            tile_id, fluid_id = key
+            self._fallback_map[(tile_id, fluid_id)] = shoreline_id
+
+    def resolve(
+        self,
+        tile_id: str,
+        fluid_id: Optional[str] = None,
+        season: Optional[str] = None
+    ) -> Optional[str]:
+        """
+        Resolves the appropriate shoreline asset ID across compound keys with seasonal fallback.
+        """
+        # 1. Primary seasonal resolution: (tile, fluid, season)
+        if season is not None:
+            seasonal_key = (tile_id, fluid_id, season)
+            if seasonal_key in self._map:
+                return self._map[seasonal_key]
+
+            # Seasonal fallback without fluid constraint
+            if fluid_id is not None:
+                dry_seasonal_key = (tile_id, None, season)
+                if dry_seasonal_key in self._map:
+                    return self._map[dry_seasonal_key]
+
+        # 2. Base relational fallback: (tile, fluid)
+        base_key = (tile_id, fluid_id)
+        if base_key in self._fallback_map:
+            return self._fallback_map[base_key]
+
+        # 3. Base fallback without fluid constraint: (tile, None)
+        if fluid_id is not None:
+            dry_base_key = (tile_id, None)
+            if dry_base_key in self._fallback_map:
+                return self._fallback_map[dry_base_key]
+
+        return None
+```
+
+The difference here is the Material and Blueprint "*settings*" are not properties of a specific (Category, Instance) node, but rather runtime configuration. 
+
+Ultimately, `app.config.settings` will pull its value from the environment using the `os` library, to allow runtime configuration; Everything is simply hard-coded for quicker development. Settings are supposed to represent "knobs" and "dials" that can be set prior to running to the game. The Material and Blueprint fields are more naturally relations that are configured through a `materials` Configuration model. 
+I believe all of the 

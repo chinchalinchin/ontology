@@ -4,18 +4,20 @@ For documentation divergences detected, use the following template,
 
 ```jinja2
 {% raw %}
-#### Draft: {{ title }}
+{% for page in documentation if page is drifting %}
+##### Draft: {{ title }}
 
 - **Page**: {{ page.file }}
 - **Heading**: {{ page.heading }}
 
-##### Drift
+###### Drift
 
-{{ drift.description | justification }}
+{{ page.drift.description | justification }}
 
-##### Update
+###### Update
 
-{{ update.description | markdown }}
+{{ page.update.description | markdown }}
+{% endfor %}
 {% endraw %}
 ```
 
