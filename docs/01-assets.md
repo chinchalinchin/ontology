@@ -10,7 +10,7 @@ This document serves to specify the Asset architecture and provide key definitio
 
 ## Overview 
 
-The Asset directory (and all subdirectories) contains Asset Image Files (`*.png`) and Asset Property indices (`*.yaml`). The [initialization](./11-architecture.md#initialization) will read in all of these files recursively and then use the property indices to index each Asset file. Each image file that appears in the Asset directories must be configured in a YAML file to get indexed and injected into the game. The property configuration in the `*.yaml` files must conform to the [Asset property schema](./appendices/01-schemas.md#model-properties) of the respective Asset Category they are configuring. 
+The Asset directory (and all subdirectories) contains Asset Image Files (`*.png`) and Asset Property indices (`*.yaml`). The [initialization](./11-architecture.md#initialization) reads in all of these files recursively and then use the property indices to index each Asset file into the [Registry](./00-overview.md#registry). Each image file that appears in the Asset directories must be configured in a YAML file to get indexed and injected into the game. The property configuration in the `*.yaml` files must conform to the [Asset property schema](./appendices/01-schemas.md#model-properties) of the respective Asset Category it is configuring. 
 
 !!! important
     All `*.yaml` files in the Asset directories are merged into a single schema, so every key must be unique. If two image files have the same name, one of them will be overwritten during [Registry indexing](./00-overview.md#registry).
@@ -19,24 +19,11 @@ The Asset directory (and all subdirectories) contains Asset Image Files (`*.png`
 
 **IDs & Names**
 
-IDs are used to map Assets to images loaded into the [Registry](./00-overview.md#registry), to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, IDs uniquely identify a physical Asset, but not in-game entities.
+IDs are used to map Asset Files to images loaded into the [Registry](./00-overview.md#registry), to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, IDs uniquely identify a physical Asset File, but not in-game entities.
 
 Names are used to uniquely identify an ingame entity. A single Asset ID may have multiple Names. A Name corresponds to a particular deployment of an Asset onto a Board. 
 
-In short, a Name identifies an Asset's deployment. A ID is what binds a deployed state to Asset file.
-
-**Mutability & Animability**
-
-!!! note
-    These terms are useful for refering to the state, but do not play a formal role in the application's implementation. They are included to make precise what is meant when they are employed.
-
-Assets are divided along an axis of mutability, into *mutable* and *immutable* groups. *Immutable* Assets never have their state altered by the game loop. *Mutable* Assets change their state based on the game loop.
-
-Assets are also divided along axis of animability, into *animate* and *inanimate* groups. *Inanimate* Assets possess a single frame. *Animate* objects possess rows of frames for different animation states.
-
-These terms form a partition of the Asset "*space*". An inanimate Asset is not necessarily immutable; Crates, for example, do not have animation, but do have mutable states. An animate Asset is not necessarily mutable; Effects, such as water ripples, have an animation, but do not have a mutable state.
-
-In other words, an Asset's *mutability* refers to the capacity of its state (not including its animation) to change.
+In short, a Name identifies an Asset's deployment. A ID is what binds a deployed Asset to its Asset File.
 
 **Direction & Action**
 
@@ -44,12 +31,12 @@ The frame rows of Sheet Assets are categorized by the axes of *Direction* and *A
 
 **Properties & State**
 
-*Properties* are static and never changed by game Mechanics. Properties determine the immutable characteristics of an ingame Asset, e.g. dimensions and hitboxes. They are loaded side-by-side with the Asset files in the `/src/assets/**` directory. All Assets have, at bare minumum, a Dimension property, specifying their respective width and length. Dimensions are Cartesian coordinate tuples.
+*Properties* are static and never changed by game Mechanics. Properties determine the immutable characteristics of Assets, e.g. their dimensions and hitboxes. They are loaded side-by-side with the Asset files in the `/src/assets/**` directory. All Assets have, at bare minumum, a Dimension property, specifying their respective width and length, and a Priority property, that specifies the [statically configured sort key](./11-architecture.md#rendering) for their relative rendering order. Dimension is a Cartesian coordinate (tuple), whereas Priority is an integer.
 
-*State* is dynamic and can be changed by game Mechanics. State determines the mutable characteristics of an ingame Asset, e.g. the current Position of an ingame Asset, the current Animation, etc.. All Assets have a *Position* mutable state; most (except for Widgets) have a *Layer*. Position is given as a Cartesian coordinate (tuple), whereas Layer is a categorical variable.
+*State* is dynamic and can be changed by [Mechanics](./05-mechanics.md). State determines the mutable characteristics of an Asset, e.g. the current Position of an ingame Asset, the current Animation, etc. All Assets have a *Position* mutable state; most (except for Widgets) have a *Layer*. Position is given as a Cartesian coordinate (tuple), whereas Layer is a categorical variable.
 
 !!! note "Layers"
-    The concept of a Layer is defined more explicitly in [Overview documentation](./00-overview.md#layers). It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting with Doors.
+    The concept of a Layer is defined more explicitly in [Overview documentation](./00-overview.md#layers). It suffices to think of Layers as floors in a house, where each floor is differentiated by its topography but contributes to the same space. In-game, Layers are traversed by the Player interacting with Doors.
 
 State files are maintained in `/src/data/state/<board-key>/**` directory, where `<board-key>` is a unique identifer for a [Board](./00-overview.md#board).
 
@@ -63,32 +50,17 @@ Of particular importance is the *AnimationState*, described directly below,
 
 **Mass**
 
-Some Asset Categories have a Mass property. Only Assets with Mass can participate in the physics engine. An Asset's mass determines how collisions behave.
+Many  Asset Categories have a Mass property. Only Assets with Mass can participate in the physics engine. An Asset's mass determines how collisions behave.
  
 - $m > 0$: **Dynamic Body**. Participates in momentum calculations.
-- $m = 0$: **Static Body**. Treated as having infinite mass ($m \to \infty$) in physics equations. Its Velocity is unaffected by collisions, but it forces dynamic bodies to resolve overlap.
+- $m = 0$: **Static Body**. Treated as having infinite mass ($m \to \infty$) in physics equations. Its Velocity is unaffected by collisions, but its immobility forces dynamic bodies to resolve overlap.
 - $m = -1$: **Sensor**. The engine detects the spatial intersection for game logic (like SwitchMechanics or DoorMechanics), but CollisionMechanics bypasses it completely during the overlap resolution phase.
 
 See [Mechanics](./05-mechanics.md#spatial) for more information.
 
-#### Elevation, Perspective & Priority
+#### Elevation, Substrates, Perspective & Priority
 
-**Substrates**
-
-Certain Assets have dedicated Substrate elevations to preserve the fidelity of their rendering order.
-
-| Substrate | Dedicated Elevation | Assets | 
-| Environ | -4 | `tiles.environs` |
-| Fluids  | -3 |  `effects.fluid` |
-| Surfaces | -2 | `geography.shorelines`, `crafts.struts.floors`, `crafts.struts.paths`, `crafts.struts.flats` |
-| Overlay | -1 | `crafts.bridges`, `crafts.stairs`, `objects.doors`, `crafts.struts.solids`, `crafts.struts.stripes`, `crafts.struts.designs` |
-| Standard | 0 | everything else | 
-
-These values hydrated onto `state.substrate` via [MaterialIndex](./appendices/01-schemas.md#configuration-materials).
-
-During [CollisionMechanics](./05-mechanics.md#collisionmechanics) and Perimeter generation, these Substrates are collapsed into `elevation = 0`, i.e. $\text{elevation} \in [-\infty, 0] \to \text{elevation} = 0$, in order that all Assets on these Substrates may participate in collisions at `elevation = 0`.
-
-**Rendering Order**
+**Rendering**
 
 World rendering evaluates spatial geometry using discrete macro-elevations, intra-elevation substrate planes, ground perspective, and coplanar priority:
 
@@ -101,9 +73,24 @@ $$
 3. **Tertiary Key (`ground_y` $\in \mathbb{Z}$)**: Continuous geometric perspective: $\text{ground_y} = \text{int}(x.\text{state.position.y} + x.\text{dimensions.l} + x.\text{state.anchor})$.
 4. **Quaternary Key (`priority` $\in \mathbb{Z}$)**: Coplanar tie-breaker declared on immutable `AssetProperties`.
 
+**Substrates**
+
+Certain Assets have dedicated Substrates to preserve the fidelity of their rendering order.
+
+| Substrate | Dedicated Elevation | Assets | 
+| Environ | -4 | `tiles.environs` |
+| Fluids  | -3 |  `effects.fluid` |
+| Surfaces | -2 | `geography.shorelines`, `crafts.struts.floors`, `crafts.struts.paths`, `crafts.struts.flats` |
+| Overlay | -1 | `crafts.bridges`, `crafts.stairs`, `objects.doors`, `crafts.struts.solids`, `crafts.struts.stripes`, `crafts.struts.designs` |
+| Standard | 0 | everything else | 
+
+These values hydrated onto `state.substrate` via [MaterialIndex](./appendices/01-schemas.md#configuration-materials).
+
+During [CollisionMechanics](./05-mechanics.md#collisionmechanics) and Perimeter generation, these Substrates are collapsed into `elevation = 0`, i.e. $\text{elevation} \in [-\infty, 0] \to \text{elevation} = 0$, in order that all Assets on these Substrates may participate in collisions at `elevation = 0`.
+
 ### Asset Hierarchy
 
-While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to a strict hierarchy of Categories and Instances. The property and state [schemas](./appendices/01-schemas.md) encode Asset Categories and Instances into the top-level keys.
+While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to a strict hierarchy of Categories and Instances. The property and state [schemas](./appendices/01-schemas.md) encode Asset Categories and Instances into their top-level keys.
 
 ```mermaid
 --8<-- "static/mmd/asset-hierarchy.mmd"
@@ -142,14 +129,14 @@ The following table details the *unique* property attributes of each Asset Categ
 
 The distinguishing features of each Category are given below,
 
-- Tiles: Environmental
-- Object: Functional
-- Effects: Reactive
-- Geography: Procedural
-- Resources: Biological
-- Crafts: Structural
-- Sheets: Intentional
-- Widgets: Metalogical
+- Tiles: Environmental. These Assets determine the background and macro-level processes that underlie the Engine.
+- Object: Functional. These Assets perform functions and alter their states. 
+- Effects: Periodic. These Assets undergo changes in their state according to fundamental frequencies.
+- Geography: Procedural. These Assets are generated via physical principles embodied by the Engine.
+- Resources: Biological. These Assets undergo lifecycles and have reactive states that change as the result of the environment.
+- Crafts: Structural. These Assets provide the foundation and topology of the Board.
+- Sheets: Intentional. These Assets perform Actions and engage Intentionally with the Board.
+- Widgets: Metalogical. These Assets display metadata about the world to the User.
 
 **Instances**
 
