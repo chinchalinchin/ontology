@@ -121,9 +121,9 @@ The following table details the *unique* property attributes of each Asset Categ
 | Cursors | Base |
 | Objects | Base, Hitboxes, Mass, Material, Count |
 | Effects | Base, Hitboxes, Mass, Lifecycle, Count|
-| Geography | Base, Hitboxes, Tile, Fluid, Thickness | 
-| Resources | Base, Hitboxes, Lifespan, Loot |
-| Crafts | Base, Hitboxes, Mass, Material, Blueprint |
+| Geography | Base, Hitboxes, Mass, Tile, Fluid, Thickness | 
+| Resources | Base, Hitboxes, Mass, Lifespan, Loot |
+| Crafts | Base, Hitboxes, Mass, Materials, Blueprints |
 | Sheets | Base, Hitboxes, Mass, Stack, Actions |
 | Widgets | Base, Frames |
 
@@ -140,7 +140,7 @@ The distinguishing features of each Category are given below,
 
 **Instances**
 
-Each Category has Instances. Asset *Instances* form the bottom of the Asset Hierarchy. Each Asset Instance is defined by its dynamic state; an Asset's Instance determines what type of state it will parse from the state files and inject into its deployment. 
+Each Category has Instances. Asset *Instances* form the bottom of the Asset Hierarchy. Each Asset Instance is defined by its dynamic nature; an Asset's Instance determines what type of state it will parse from the state files and inject into its deployment. 
 
 Each Asset state has, at bare minimum:
 
@@ -157,21 +157,20 @@ The following table details the *unique* state attributes of each Asset Instance
 
 | Asset Category | Asset Instance | State |
 | - | - | - | 
-| Tile | Environ | Base |
-| Tile | Canopy | Base |
-| Tile | Grid | Base |
+| Tile | Environ | Base, Multiple |
+| Tile | Canopy | Base, Multiple |
+| Tile | Grid | Base, Multiple |
 | Object | Crate | Base, Velocity |
 | Object | Obstacle | Base, Velocity |
 | Object | Raft | Base, Velocity |
 | Object | Sign | Base, Persona, Lexicon |
-| Object | Door | Base, OutLayer |
+| Object | Door | Base, Out, OutLayer |
 | Object | Chest | Base, Animation, Switch, Content |
 | Object | Gate | Base, Animation, Switch, Link |
 | Object | Plate | Base, Animation, Switch, Link |
-| Craft | Bridge | Base, Multiple, Orientation, Owner |
-| Craft | Strut | Base, Owner |
-| Craft | Stairs | Base, Direction, Owner |
-| Craft | Platforms | Base, Delta, Owner |
+| Craft | Bridge | Base, Multiple, Material, Blueprint, Owner |
+| Craft | Strut | Base, Multiple, Material, Blueprint, Owner |
+| Craft | Stairs | Base, Multiple, Material, Blueprint, Owner |
 | Craft | Decor | Base, Owner |
 | Craft | Forge | Base, TODO |
 | Craft | Device | Base, TODO |
