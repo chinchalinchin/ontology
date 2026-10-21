@@ -207,14 +207,11 @@ class Asset:
 
     @property
     def substrate(self) -> int:
-        if self.instance == AssetInstances.STRUTS.value:
-            return settings.SUBSTRATES.get(self.state.blueprint, Substrates.STANDARD.value)
-        if (
-            self.instance == AssetInstances.DOORS.value
-            and self.state.projection == LayerProjections.OUT.value
-        ):
-            return Substrates.OVERLAYS.value
-        return settings.SUBSTRATES.get(self.taxonomy.instance, Substrates.STANDARD.value)
+        return self.state.substrate
+
+    @substrate.setter
+    def substrate(self, value: int) -> None:
+        self.state.substrate = value
 
     @property
     def hitboxes(self) -> List[Hitbox]:

@@ -189,11 +189,15 @@ class Builder:
         if not self.executors:
             self.build_executors()
 
+        if not self.relations:
+            self.build_relations()
+
         # 1. Instantiate Decomposer ahead of standard Asset migrations
         self.decomposer = Decomposer(
             compositions=self.context.configurations.compositions,
             properties=self.context.properties,
-            recipes=self.context.configurations.recipes
+            recipes=self.context.configurations.recipes,
+            materials=self.relations[Relations.MATERIALS.value]
         )
 
         equipment = EquipmentGroup(
@@ -212,7 +216,9 @@ class Builder:
             self.board, 
             self.context.properties, 
             self.context.configurations,
-            actuator=self.executors[Executors.ACTUATOR.value]
+            actuator=self.executors[Executors.ACTUATOR.value],
+            decomposer=self.decomposer,
+            materials = self.relations[Relations.MATERIALS.value]
         )
 
 

@@ -4,11 +4,13 @@
 Package for instantiating Asset classes and their components.
 """
 # Standard Libraries
-from typing import Any, Dict, Optional
+from typing import (
+    Any, 
+    Dict, 
+)
 
 # Application Libraries
 from app.assets.animations import (
-    BinaryAnimation, 
     FrequencyAnimation,
     StateAnimation,
     SpriteAnimation,
@@ -31,6 +33,8 @@ from app.assets.hitboxes import (
     MaterialHitbox,
     OrientedHitbox,
     ElevatedHitbox,
+    LayeredHitbox,
+    SwitchHitbox,
     NoHitbox
 )
 from app.assets.frames import (
@@ -44,6 +48,7 @@ from app.assets.frames import (
     MeterFrame,
     IndexFrame,
     DirectedFrame,
+    ObjectFrame,
     OrientedFrame,
     StageFrame,
     SeasonalFrame,
@@ -114,6 +119,7 @@ class Factory:
         FrameRecipe.MATERIAL.value: MaterialFrame(),
         FrameRecipe.METER.value: MeterFrame(),
         FrameRecipe.NONE.value: NoFrame(),
+        FrameRecipe.OBJECT.value: ObjectFrame(),
         FrameRecipe.ORIENTED.value: OrientedFrame(),
         FrameRecipe.SEASONAL.value: SeasonalFrame(),
         FrameRecipe.SPRITE.value: SpriteFrame(),
@@ -124,7 +130,6 @@ class Factory:
     }
 
     _ANIMATIONS = {
-        AnimationRecipe.BINARY.value: BinaryAnimation(),
         AnimationRecipe.FREQUENCY.value: FrequencyAnimation(),
         AnimationRecipe.STATE.value: StateAnimation(),
         AnimationRecipe.SPRITE.value: SpriteAnimation(),
@@ -138,10 +143,12 @@ class Factory:
         HitboxRecipe.DIRECTED.value: DirectedHitbox(),
         HitboxRecipe.DYNAMIC.value: DynamicHitbox(),
         HitboxRecipe.ELEVATED.value: ElevatedHitbox(),
+        HitboxRecipe.LAYERED.value: LayeredHitbox(),
         HitboxRecipe.MATERIAL.value: MaterialHitbox(),
         HitboxRecipe.ORIENTED.value: OrientedHitbox(),
         HitboxRecipe.STAGE.value: StageHitbox(),
         HitboxRecipe.STATIC.value: StaticHitbox(),
+        HitboxRecipe.SWITCH.value: SwitchHitbox(),
         HitboxRecipe.NONE.value: NoHitbox()
     }
 

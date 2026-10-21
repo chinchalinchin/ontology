@@ -14,8 +14,9 @@ from app.config.enums import (
     Directions,
     Frequencies,
     Materials,
+    Organics,
+    Ceramics
 )
-from app.config.settings import MATERIAL_PARTITIONS
 from app.models.adapters import (
     PydanticDimensions as Dimensions, 
 )
@@ -47,9 +48,10 @@ class Material:
 
     def __post_init__(self):
         if self.genus == Materials.CHROMATICS.value:
-            if self.host not in MATERIAL_PARTITIONS[Materials.ORGANICS.value]:
+            valid_hosts = (*Organics, *Ceramics)
+            if self.host not in valid_hosts:
                 raise ValueError(
-                    f"Chromatic material requires an organic host; got '{self.host}'."
+                    f"Chromatic material requires an organic or ceramic host; got '{self.host}'."
                 )
         elif self.host is not None:
             raise ValueError(

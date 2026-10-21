@@ -365,7 +365,7 @@ When *interacting* with a Chest, the [Player](./02-sprites.md#player) is shown t
 
 Crates are Objects who state can be altered by in-game physics. For example, when a Sprite collides with a Crate, momentum is transferred from the Sprite to the Crate. See [CollisionMechanics](./05-mechanics.md#spatial) for more information on the physics of game collisions.
 
-**State: PositionalState**
+**State: MotiveState**
 
 * `layer: str`
 * `elevation: int`
@@ -494,7 +494,7 @@ Rafts are mutable, inanimate Objects that allow Sprites and Players to traverse 
 * `keys(id, state)`: returns `[(id, 0, 0)]`
 * `index(id, properties)`: returns `{id: (0, 0, properties.dimensions.w, properties.dimensions.l)}`
 
-**State: PositionalState**
+**State: MotiveState**
 
 * `layer: str`
 * `position: Position`

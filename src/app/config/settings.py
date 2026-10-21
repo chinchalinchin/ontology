@@ -1,86 +1,68 @@
 """
 # Ontology: app.config.settings
 
-Package for global application constants.
+Package for global runtime environment settings.
 """
 # Standard Libraries
+import os
 from pathlib import Path
-from typing import (
-    Final,
-)
+from typing import Final
+
 # Application Libraries
-from app.config.enums import (
-    AssetInstances,
-    # ----
-    Chromatics,
-    Geologics,
-    Materials,
-    Metallics,
-    Organics,
-    # -----
-    Blueprints,
-    Buildings,
-    Columns,
-    Corridors,
-    Enclosures,
-    Inclines,
-    Orientations,
-    Directions,
-    # ----- 
-    Seasons,
-    # -----
-    MultiplicationStrategies,
-    Substrates,
-)
+from app.config.enums import Seasons
 
 # ---------------------------------------------------
 # APPLICATION SETTINGS
 # ---------------------------------------------------
 
-SEPARATOR: Final[str] = "-"
+SEPARATOR: Final[str] = os.getenv("ONTOLOGY_SEPARATOR", "-")
 """Separator used by registry indexing to separate asset keys."""
 
-NEW_BOARD: Final[str] = "world-01"
+NEW_BOARD: Final[str] = os.getenv("ONTOLOGY_NEW_BOARD", "world-01")
 """Key used to instantiate new game states."""
 
-MIGRATOR_DELAY: Final[int] = 1
+MIGRATOR_DELAY: Final[int] = int(os.getenv("ONTOLOGY_MIGRATOR_DELAY", "1"))
 """Delay interval in seconds for state migrations."""
 
-EXPRESSION_TTL: Final[int] = 120
+EXPRESSION_TTL: Final[int] = int(os.getenv("ONTOLOGY_EXPRESSION_TTL", "120"))
 """Number of game ticks before Expressions are garbage collected."""
 
-LOG_LEVEL: Final[str] = "INFO"
+LOG_LEVEL: Final[str] = os.getenv("ONTOLOGY_LOG_LEVEL", "INFO")
 """Application logging verbosity level."""
 
-SOCKET: Final[str] = "/tmp/ontology.sock"
+SOCKET: Final[str] = os.getenv("ONTOLOGY_SOCKET", "/tmp/ontology.sock")
 """TCP Socket for application telemetry."""
 
 # ---------------------------------------------------
 # ENGINE CONSTANTS
 # ---------------------------------------------------
 
-TARGET_FPS: Final[int] = 60
+TARGET_FPS: Final[int] = int(os.getenv("ONTOLOGY_TARGET_FPS", "60"))
 """Engine target frame rate."""
 
-TILE_HASH_SIZE: Final[int] = 32
+TILE_HASH_SIZE: Final[int] = int(os.getenv("ONTOLOGY_TILE_HASH_SIZE", "32"))
 """Size of spatial cache hash on Board."""
 
-PATH_RETRY_INTERVAL: Final[int] = 60
+PATH_RETRY_INTERVAL: Final[int] = int(os.getenv("ONTOLOGY_PATH_RETRY_INTERVAL", "60"))
 """Number of ticks between pathfinding retry attempts."""
 
-TELEMETRY_TICKS: Final[int] = 600
+TELEMETRY_TICKS: Final[int] = int(os.getenv("ONTOLOGY_TELEMETRY_TICKS", "600"))
 """Number of game ticks between telemetry log flushes."""
 
-SPIN_RATE: Final[float] = 0.002
+SPIN_RATE: Final[float] = float(os.getenv("ONTOLOGY_SPIN_RATE", "0.002"))
 """Rotational step rate per tick."""
 
-BASE_FLOW_SPEED: Final[int] = 20
+BASE_FLOW_SPEED: Final[int] = int(os.getenv("ONTOLOGY_BASE_FLOW_SPEED", "20"))
 """Base Fluid vector field speed magnitude."""
 
-FLUID_INVALIDATION_DEBOUNCE_TICKS: Final[int] = 2
+FLUID_INVALIDATION_DEBOUNCE_TICKS: Final[int] = int(
+    os.getenv("ONTOLOGY_FLUID_INVALIDATION_DEBOUNCE_TICKS", "2")
+)
 """Number of ticks before Fluid invalidation retries."""
 
-SEASON_DURATION_SECONDS: Final[int] = 300
+SEASON_DURATION_SECONDS: Final[int] = int(
+    os.getenv("ONTOLOGY_SEASON_DURATION_SECONDS", "300")
+)
 """Length of a Season in seconds."""
 
 SEASON_EVAPORATION_MODIFIERS: Final[dict[str, float]] = {
@@ -91,84 +73,15 @@ SEASON_EVAPORATION_MODIFIERS: Final[dict[str, float]] = {
 }
 """Multiplicative factors scaling moisture evaporation by Board Season."""
 
-MAX_RETENTION: Final[int] = 100
+MAX_RETENTION: Final[int] = int(os.getenv("ONTOLOGY_MAX_RETENTION", "100"))
 """Maximum moisture retention percentage."""
 
-DIFFUSION_RATE: Final[float] = 10.0
+DIFFUSION_RATE: Final[float] = float(os.getenv("ONTOLOGY_DIFFUSION_RATE", "10.0"))
 """Factor scaling moisture based on physical proximity to Fluid Assets."""
 
-EVAPORATION_RATE: Final[float] = 1.0
-"""Multiplicative factor that scales the moisture evaporation rate"""
+EVAPORATION_RATE: Final[float] = float(os.getenv("ONTOLOGY_EVAPORATION_RATE", "1.0"))
+"""Multiplicative factor that scales the moisture evaporation rate."""
 
-SUBSTRATES: Final[dict[str, int]] = {
-    # ---------------------------------- INSTANCE LEVEL SUBSTRATES
-    AssetInstances.ENVIRON.value: Substrates.ENVIRON.value,
-    AssetInstances.FLUIDS.value: Substrates.FLUIDS.value,
-    AssetInstances.SHORELINES.value: Substrates.SURFACES.value,
-    AssetInstances.BRIDGES.value: Substrates.OVERLAYS.value,
-    AssetInstances.STAIRS.value: Substrates.OVERLAYS.value,
-    # ---------------------------------- BLUEPRINT LEVEL SUBTRACTS
-    Buildings.FLOORS.value: Substrates.SURFACES.value, 
-    Buildings.PATHS.value: Substrates.SURFACES.value,
-    Buildings.FLATS.value: Substrates.SURFACES.value,
-    Corridors.SOLIDS.value: Substrates.OVERLAYS.value,
-    Corridors.STRIPES.value: Substrates.OVERLAYS.value,
-    Corridors.DESIGNS.value: Substrates.OVERLAYS.value
-}
-"""Instance-keyed map of substrate elevations."""
-
-MATERIAL_PARTITIONS: Final[dict[str, tuple[str, ...]]] = {
-    Materials.ORGANICS.value: tuple(m.value for m in Organics),
-    Materials.GEOLOGICS.value: tuple(m.value for m in Geologics),
-    Materials.METALLICS.value: tuple(m.value for m in Metallics),
-    Materials.CHROMATICS.value: tuple(m.value for m in Chromatics)
-}
-"""Materials partitioned by genus."""
-
-BLUEPRINT_PARTITIONS: Final[dict[str, tuple[str, ...]]] = {
-    Blueprints.BUILDINGS.value: tuple(b.value for b in Buildings),
-    Blueprints.CORRIDORS.value: tuple(b.value for b in Corridors),
-    Blueprints.COLUMNS.value: tuple(b.value for b in Columns),
-    Blueprints.DIRECTIONS.value: tuple(b.value for b in Directions),
-    Blueprints.ENCLOSURES.value: tuple(b.value for b in Enclosures),
-    Blueprints.INCLINES.value: tuple(b.value for b in Inclines),
-    Blueprints.ORIENTATIONS.value: tuple(b.value for b in Orientations)
-
-}
-"""Blueprints partitioned by schema."""
-
-BLUEPRINT_STRATEGIES: Final[dict[str, str]] = {
-    Blueprints.BUILDINGS.value: MultiplicationStrategies.SIMPLE.value,
-    Blueprints.CORRIDORS.value: MultiplicationStrategies.SIMPLE.value,
-    Blueprints.COLUMNS.value: MultiplicationStrategies.EXPANSION.value,
-    Blueprints.DIRECTIONS.value: None,
-    Blueprints.ENCLOSURES.value: MultiplicationStrategies.PERIMETER.value,
-    Blueprints.INCLINES.value: MultiplicationStrategies.SIMPLE.value,
-    Blueprints.ORIENTATIONS.value: MultiplicationStrategies.ORIENTED.value
-}
-"""Multiplication strategy Blueprint mapping for deploying Asset states."""
-
-OBSTACLE_BLUEPRINTS: Final[frozenset[str]] = frozenset({
-    Buildings.WALLS.value,
-    Buildings.HALLS.value,
-    Columns.BASES.value,
-    Enclosures.NORTH.value,
-    Enclosures.EAST.value,
-    Enclosures.SOUTH.value,
-    Enclosures.WEST.value,
-    Orientations.HORIZONTAL.value, 
-    Orientations.VERTICAL.value,
-    Inclines.UP.value,
-    Inclines.LEFT.value,
-    Inclines.RIGHT.value
-})
-"""Blueprints for constructing obstacles."""
-
-CHROMATIC_HOSTS: Final[frozenset[str]] = frozenset((
-    *MATERIAL_PARTITIONS[Materials.ORGANICS.value], 
-    *MATERIAL_PARTITIONS[Materials.CERAMICS.value]
-))
-"""Mapping for indexing Chromatic Materials to Host Materials"""
 # ---------------------------------------------------
 # DIRECTORY SETTINGS
 # ---------------------------------------------------
@@ -213,5 +126,5 @@ TITLE_FONT: Final[Path] = FONT_DIR / "title.ttf"
 # ISL SETTINGS
 # ---------------------------------------------------
 
-ISL_TRANSLATOR: Final[str] = "lambda"
+ISL_TRANSLATOR: Final[str] = os.getenv("ONTOLOGY_ISL_TRANSLATOR", "lambda")
 """Evaluation strategy for ISL scripting conditions ('lambda' or 'compiler')."""

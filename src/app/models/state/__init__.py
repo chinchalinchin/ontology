@@ -39,7 +39,7 @@ from app.models.state.assets import (
     # ---- OBJECT STATES
     ObjectState,
     ContainerState,
-    PositionalState,
+    MotiveState,
     DoorState,
     SwitchState,
     DialogueState,
@@ -96,7 +96,7 @@ __all__ = [
     # OBJECT STATES
     'ObjectState',
     'ContainerState',
-    'PositionalState',
+    'MotiveState',
     'DoorState',
     'SwitchState',
     'DialogueState',

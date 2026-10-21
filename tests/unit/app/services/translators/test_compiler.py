@@ -80,7 +80,7 @@ def test_compiler_evaluation_attribute_error_handling(mock_intention_configurati
     translator = CompilerTranslator()
     executor = translator.compile(mock_intention_configuration)
     
-    # PositionalState has no 'meters' attribute, so 'sprite.meters.health.current' safely trips AttributeError handling
+    # MotiveState has no 'meters' attribute, so 'sprite.meters.health.current' safely trips AttributeError handling
     result = executor.evaluate(
         Intentions.IDLE.value, 
         {"sprite": mock_positional_state}

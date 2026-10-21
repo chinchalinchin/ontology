@@ -26,6 +26,8 @@ __all__ = [
     "DynamicHitbox",
     "AttackHitbox",
     "StageHitbox",
+    "LayeredHitbox",
+    "SwitchHitbox",
     "OrientedHitbox",
     "DirectedHitbox",
     'ElevatedHitbox',

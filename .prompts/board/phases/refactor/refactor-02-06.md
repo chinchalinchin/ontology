@@ -155,7 +155,7 @@ Update `RemoveMechanics` to query expired temporary effects across any functiona
 *Objective*: Adapt lifecycle garbage collection, spawning, and mechanics to the new Effect hierarchy.
 
 * [x] Subtask: Refactor `RemoveMechanics` in `app.game.logic.mechanics.core` to inspect `board.categories(AssetCategories.EFFECTS)` for expired temporary effects.
-* [~] Subtask: Refactor `Cradle.spawn_temporary` to `Cradle.spawn_effect`, accepting the target instance type and instantiating `AnimatorState` or its subclasses instead of `PositionalState`.
+* [~] Subtask: Refactor `Cradle.spawn_temporary` to `Cradle.spawn_effect`, accepting the target instance type and instantiating `AnimatorState` or its subclasses instead of `MotiveState`.
 * [x] Subtask: Update `SpawnableGroup` to index spawnable effects under functional categories.
 * [x] Subtask: Ensure `board.serialize()` continues to cleanly skip transient effect states while preserving world hazards if configured.
 

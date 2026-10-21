@@ -17,8 +17,10 @@ import app.config.settings as settings
 from app.assets.base import Frame
 from app.config.enums import (
     ChannelTypes,
-    LayerProjections
+    LayerProjections,
+    Switches
 )
+from app.game.logic.relations.materials import MaterialIndex
 from app.models.properties import ObjectProperties
 from app.models.state import (
     ObjectState,
@@ -47,7 +49,7 @@ class ObjectFrame(Frame):
         if not properties.material:
             return {id: (0, 0, w, l)}
 
-        cols = settings.MATERIAL_PARTITIONS.get(properties.material.genus, ())
+        cols = MaterialIndex().materials(properties.material.genus)
         return {
             settings.SEPARATOR.join([id, mat]): (c_idx * w, 0, w, l)
             for c_idx, mat in enumerate(cols)
@@ -67,7 +69,6 @@ class ObjectFrame(Frame):
     ) -> List[Tuple]:
         directives = super().channels(id, state, properties)
         if isinstance(state, DoorState) and state.projection == LayerProjections.OUT.value:
-            # Project solid dark alpha footprint on outlayer
             directives.append((
                 ChannelTypes.TINT.value,
                 (0, 0, 0, 0, 110)
@@ -77,9 +78,8 @@ class ObjectFrame(Frame):
 
 class BinaryFrame(Frame):
     """
-    Indexes 2D (Switch_Row x Material_Col) Binary Object atlases (Chests, Gates)
-    where rows correspond to binary states (0: closed, 1: open) and columns
-    correspond to Material genus partitions.
+    Indexes 2D (Switch_Row x Material_Col) Binary Object atlases (Chests, Gates, Plates)
+    and resolves keys directly from state.switch without an Animation component.
     """
 
     def index(
@@ -92,11 +92,11 @@ class BinaryFrame(Frame):
 
         if not properties.material:
             return {
-                settings.SEPARATOR.join([id, str(r_idx)]): (r_idx * w, 0, w, l)
-                for r_idx in range(properties.count)
+                settings.SEPARATOR.join([id, str(i)]): (i * w, 0, w, l)
+                for i in range(properties.count)
             }
 
-        cols = settings.MATERIAL_PARTITIONS.get(properties.material.genus, ())
+        cols = MaterialIndex().materials(properties.material.genus)
         atlas: Dict[str, Tuple[int, int, int, int]] = {}
         for r_idx in range(properties.count):
             for c_idx, mat in enumerate(cols):
@@ -109,7 +109,7 @@ class BinaryFrame(Frame):
         id: str,
         state: Union[ContainerState, SwitchState]
     ) -> List[Tuple[str, int, int]]:
-        frame_idx = str(state.animation.frame)
+        frame_idx = str(Switches.ON.value if state.switch else Switches.OFF.value)
         if not state.material:
             return [(settings.SEPARATOR.join([id, frame_idx]), 0, 0)]
         key = settings.SEPARATOR.join([id, frame_idx, state.material])

@@ -1,9 +1,14 @@
 objects:
   gates:
-    castle-gate:
-      mass: 0
+    # --------------------------
+    postern:
       dimensions:
         w: 64
         l: 64
-      hitboxes: null
+      mass: 0
       count: 2
+      material:
+        genus: geologics
+      hitboxes: null
+    # --------------------------
+

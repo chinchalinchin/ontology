@@ -10,7 +10,7 @@ import pytest
 from app.models.state import (
     ContainerState,
     DoorState,
-    PositionalState,
+    MotiveState,
     SwitchState,
 )
 
@@ -23,8 +23,8 @@ from libs.core.models import (
 # ------------------------------------------------------------ OBJECT STATES
 
 @pytest.fixture
-def mock_positional_state() -> PositionalState:
-    return PositionalState(
+def mock_positional_state() -> MotiveState:
+    return MotiveState(
         id="wood-crate", 
         layer="0", 
         position=Position(x=10, y=10), 
@@ -33,11 +33,11 @@ def mock_positional_state() -> PositionalState:
 
 
 @pytest.fixture
-def mock_positional_state_alt() -> PositionalState:
+def mock_positional_state_alt() -> MotiveState:
     """
     Raft positional state initialized to an idle coordinate clear of fluid corridors.
     """
-    return PositionalState(
+    return MotiveState(
         id="wood-raft",
         layer="0",
         position=Position(x=10, y=200),
@@ -46,11 +46,11 @@ def mock_positional_state_alt() -> PositionalState:
 
 
 @pytest.fixture
-def mock_positional_state_alt2() -> PositionalState:
+def mock_positional_state_alt2() -> MotiveState:
     """
     Upstream crate positional state positioned along the fluid x=70 axis.
     """
-    return PositionalState(
+    return MotiveState(
         id="wood-crate",
         layer="0",
         position=Position(x=70, y=10),

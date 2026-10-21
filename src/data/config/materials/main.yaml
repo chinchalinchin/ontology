@@ -1,5 +1,17 @@
-# /src/data/config/materials/main.yaml (or unified /src/data/config/markets/main.yaml)
 materials:
+  # ---------------------------------------------------
+  # INSTANCE-LEVEL SUBSTRATES
+  # ---------------------------------------------------
+  substrates:
+    environ: -4
+    fluids: -3
+    shorelines: -2
+    bridges: -1
+    stairs: -1
+
+  # ---------------------------------------------------
+  # ORDERED MATERIAL GENERA (Columns c in [0, C))
+  # ---------------------------------------------------
   genera:
     organics:
       hosts: []
@@ -25,23 +37,29 @@ materials:
         iron: 7.5
         gold: 15.0
     chromatics:
-      hosts: [ organics, ceramics ]
+      hosts:
+        - organics
+        - ceramics
       partitions:
         neutral: 0.0
         blue: 1.0
         red: 1.0
         yellow: 1.0
         green: 1.0
+
+  # ---------------------------------------------------
+  # ORDERED BLUEPRINT SCHEMAS (Rows r in [0, R))
+  # ---------------------------------------------------
   blueprints:
     buildings:
       strategy: simple
       partitions:
-        floors: { delta: 1.0, substrate: -2, obstacle: false }
-        walls:  { delta: 2.5, substrate:  0, obstacle: true  }
-        flats:  { delta: 1.5, substrate: -2, obstacle: false }
-        roofs:  { delta: 2.0, substrate:  0, obstacle: false }
-        paths:  { delta: 1.0, substrate: -2, obstacle: false }
-        halls:  { delta: 2.0, substrate:  0, obstacle: true  }
+        floors:  { delta: 1.0, substrate: -2, obstacle: false }
+        walls:   { delta: 2.5, substrate:  0, obstacle: true  }
+        flats:   { delta: 1.5, substrate: -2, obstacle: false }
+        roofs:   { delta: 2.0, substrate:  0, obstacle: false }
+        paths:   { delta: 1.0, substrate: -2, obstacle: false }
+        halls:   { delta: 2.0, substrate:  0, obstacle: true  }
     corridors:
       strategy: simple
       partitions:
@@ -51,16 +69,16 @@ materials:
     columns:
       strategy: expansion
       partitions:
-        crowns: { delta: 1.5, substrate: 0, obstacle: false }
-        shafts: { delta: 1.0, substrate: 0, obstacle: false }
-        bases:  { delta: 1.5, substrate: 0, obstacle: true  }
+        crowns:  { delta: 1.5, substrate:  0, obstacle: false }
+        shafts:  { delta: 1.0, substrate:  0, obstacle: false }
+        bases:   { delta: 1.5, substrate:  0, obstacle: true  }
     enclosures:
       strategy: perimeter
       partitions:
-        north: { delta: 1.0, substrate: 0, obstacle: true }
-        east:  { delta: 1.0, substrate: 0, obstacle: true }
-        south: { delta: 1.0, substrate: 0, obstacle: true }
-        west:  { delta: 1.0, substrate: 0, obstacle: true }
+        north:   { delta: 1.0, substrate:  0, obstacle: true  }
+        east:    { delta: 1.0, substrate:  0, obstacle: true  }
+        south:   { delta: 1.0, substrate:  0, obstacle: true  }
+        west:    { delta: 1.0, substrate:  0, obstacle: true  }
     orientations:
       strategy: oriented
       partitions:
@@ -69,6 +87,13 @@ materials:
     inclines:
       strategy: simple
       partitions:
-        up:    { delta: 1.5, substrate: -1, obstacle: true }
-        left:  { delta: 1.5, substrate: -1, obstacle: true }
-        right: { delta: 1.5, substrate: -1, obstacle: true }
+        up:      { delta: 1.5, substrate: -1, obstacle: true  }
+        left:    { delta: 1.5, substrate: -1, obstacle: true  }
+        right:   { delta: 1.5, substrate: -1, obstacle: true  }
+    directions:
+      strategy: simple
+      partitions:
+        up:      { delta: 1.0, substrate:  0, obstacle: true  }
+        left:    { delta: 1.0, substrate:  0, obstacle: true  }
+        down:    { delta: 1.0, substrate:  0, obstacle: true  }
+        right:   { delta: 1.0, substrate:  0, obstacle: true  }

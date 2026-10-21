@@ -1,42 +1,20 @@
 objects:
   signs:
     # -----------------------------------------
-    bulletin:
-      # description: Wooden bulletin board with postings. 
+    plaque:
+      dimensions: { w: 24, l: 24 }
       mass: 0
-      dimensions:
-        w: 30
-        l: 32
-      hitboxes:
-        - position:
-            x: 4
-            y: 4
-          dimensions:
-            w: 22
-            l: 24
-    # -----------------------------------------
-    poster:
-      # description: Paper posting for a wall.
-      mass: -1
-      priority: 1
-      material:
-        genus: chromatics
-        host: paper
-      dimensions: 
-        w: 15
-        l: 14
-      hitboxes:
-        - position: { x: 0, y: 0 }
-          dimensions: { w: 15, l: 14 }
-    # -----------------------------------------
-    headstone:
-      # 
-      mass: 0
-      dimensions: 
-        w: 45
-        l: 44
+      count: 1
       material:
         genus: geologics
-      hitboxes:
-        - position: { x: 4, y: 12 }
-          dimensions: { w: 37, l: 32 }
+      hitboxes: null
+    # -----------------------------------------
+    poster:
+      dimensions: { w: 30, l: 30 }
+      mass: 0
+      count: 1
+      material:
+        genus: chromatics
+        host: cotton
+      hitboxes: null
+    # -----------------------------------------

@@ -15,6 +15,8 @@ from app.models.state import (
     EffectState
 )
 
+# --------------------------------------------------
+
 class FrequencyAnimation(Animation):
     """
     """

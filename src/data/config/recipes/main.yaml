@@ -83,7 +83,7 @@ recipes:
       hitbox: layered
     gates:
       frame: binary
-      animation: binary
+      animation: none
       hitbox: switch
     obstacles:
       frame: single
@@ -91,7 +91,7 @@ recipes:
       hitbox: static
     plates:
       frame: iterable
-      animation: binary
+      animation: none
       hitbox: static
     signs:
       frame: object

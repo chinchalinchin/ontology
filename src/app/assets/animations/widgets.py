@@ -8,6 +8,8 @@ from app.assets.base import Animation
 from app.models.properties import AssetProperties
 from app.models.state import AssetState
 
+# --------------------------------------------------
+
 class TraversalAnimation(Animation):
     """
     """
@@ -17,6 +19,8 @@ class TraversalAnimation(Animation):
         """
         state.animation.action = state.status
         return state
+
+# --------------------------------------------------
 
 class MeterAnimation(Animation):
     """

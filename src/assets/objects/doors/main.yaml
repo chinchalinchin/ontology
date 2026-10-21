@@ -1,21 +1,79 @@
 objects:
   doors:
     # --------------------------
-    panel-door:
-      mass: -1
+    panel:
+      dimensions:
+        w: 32
+        l: 48
+      mass: 0
+      count: 1
       priority: 1
       material:
         genus: chromatics
         host: wood
+      hitboxes:
+        in:
+          - position:
+              x: 0
+              y: 0
+            dimensions: 
+              w: 32
+              l: 36
+        out:
+          - position: 
+              x: 0
+              y: 0
+            dimensions:
+              w: 32
+              l: 16
+    # --------------------------
+    dutch:
       dimensions:
-        w: 64
-        l: 64
-    mansion-door:
-      mass: -1
+        w: 32
+        l: 48
+      mass: 0
+      count: 1
       priority: 1
-      material: 
+      material:
         genus: chromatics
         host: wood
-      dimensions: 
-        w:
-        l:
+      hitboxes:
+        in:
+          - position:
+              x: 0
+              y: 0
+            dimensions:
+              w: 32
+              l: 36
+        out:
+          - position:
+              x: 0
+              y: 0
+            dimensions:
+              w: 32
+              l: 16
+    # --------------------------
+    pivot:
+      dimensions:
+        w: 32
+        l: 48
+      mass: 0
+      count: 1
+      priority: 1
+      material:
+        genus: metallics
+      hitboxes:
+        in:
+          - position:
+              x: 0
+              y: 0
+            dimensions: 
+              w: 32
+              l: 36
+        out:
+          - position: 
+              x: 0
+              y: 0
+            dimensions:
+                w: 32
+                l: 16

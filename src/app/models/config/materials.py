@@ -28,7 +28,8 @@ from app.config.enums import (
     Columns,
     Enclosures,
     Orientations,
-    Inclines
+    Inclines,
+    Substrates
 )
 from app.models.config.core import Configuration
 
@@ -53,7 +54,7 @@ class MaterialSpace:
 @dataclass(slots=True, frozen=True)
 class BlueprintPartition:
     delta: float = 1.0
-    substrate: int = 0
+    substrate: int = Substrates.STANDARD.value
     obstacle: bool = False
 
 @dataclass(slots=True, frozen=True)
@@ -72,3 +73,4 @@ class BlueprintSpace:
 class MaterialsConfiguration(Configuration):
     genera: Dict[Materials, MaterialSpace] = field(default_factory=dict)
     blueprints: Dict[Blueprints, BlueprintSpace] = field(default_factory=dict)
+    substrates: Dict[str, int] = field(default_factory=dict)

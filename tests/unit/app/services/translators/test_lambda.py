@@ -103,7 +103,7 @@ def test_lambda_evaluation_attribute_error_handling(
     translator = LambdaTranslator()
     executor = translator.compile(mock_intention_configuration)
     
-    # PositionalState has no 'meters' attribute, so 'sprite.meters.health.current' safely trips AttributeError handling
+    # MotiveState has no 'meters' attribute, so 'sprite.meters.health.current' safely trips AttributeError handling
     result = executor.evaluate(
         Intentions.IDLE.value, 
         {"sprite": mock_positional_state}

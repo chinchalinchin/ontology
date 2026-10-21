@@ -13,6 +13,8 @@ from app.models.state import (
     SpriteState,
 )
 
+# --------------------------------------------------
+
 class StateAnimation(Animation):
     """
     Advances frame based on configured action delay.
@@ -31,6 +33,7 @@ class StateAnimation(Animation):
 
         return state
 
+# --------------------------------------------------
 
 class SpriteAnimation(StateAnimation):
     """

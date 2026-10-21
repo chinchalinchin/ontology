@@ -36,7 +36,10 @@ from app.config.enums import (
     Shortcuts,
     Substrates
 )
-from app.services.generators.game.factory import Factory
+from app.services.generators.game.factory import (
+    Factory
+)
+from app.game.logic.relations import MaterialIndex
 from app.models.config import (
     CompositionConfiguration,
     RecipeConfiguration
@@ -64,6 +67,7 @@ logger = logging.getLogger(__name__)
 class Decomposer:
     compositions: Dict[str, CompositionConfiguration]
     properties: PropertiesSchema
+    materials: MaterialIndex
     recipes: RecipeConfiguration
     _increment: int
     _strategies: Dict[str, Callable]
@@ -72,11 +76,13 @@ class Decomposer:
         self,
         compositions: Dict[str, CompositionConfiguration],
         properties: PropertiesSchema,
-        recipes: RecipeConfiguration
+        recipes: RecipeConfiguration,
+        materials: Optional[MaterialIndex] = None
     ):
         self.compositions = compositions
         self.properties = properties
         self.recipes = recipes
+        self.materials = materials or MaterialIndex()
         self._increment = 0
         self._strategies = {
             MultiplicationStrategies.SIMPLE.value: self._multiply_simple,
@@ -98,6 +104,46 @@ class Decomposer:
             return 0
         return props.dimensions.l
 
+    def _get_span_length(
+        self,
+        cat_key: str,
+        inst_key: str,
+        state_obj: AssetState
+    ) -> int:
+        """
+        Computes total vertical footprint length (L) for an AssetState,
+        accounting for Craft multiplication strategies when resolving anchors.
+        """
+        unit_l = self._get_length(cat_key, inst_key, state_obj.id)
+        if (
+            inst_key not in MultipliedAssets 
+            or not isinstance(state_obj, CraftState)
+        ): return unit_l
+
+        cat_props = getattr(self.properties, cat_key)
+        inst_props = getattr(cat_props, inst_key)
+        props = inst_props.get(state_obj.id)
+
+        if not props: return unit_l
+
+        ny = state_obj.multiple.ny if state_obj.multiple and state_obj.multiple.ny else 1
+        strategy = self.materials.strategy(props.blueprints)
+
+        if strategy in (
+            MultiplicationStrategies.EXPANSION.value,
+            MultiplicationStrategies.PERIMETER.value
+        ):
+            if state_obj.multiple is None and state_obj.blueprint in self.materials.blueprints(props.blueprints):
+                return unit_l
+            return unit_l * (ny + 2)
+
+        if strategy == MultiplicationStrategies.ORIENTED.value:
+            if state_obj.blueprint == Orientations.HORIZONTAL.value:
+                return unit_l
+            return unit_l * ny
+
+        return unit_l * ny
+    
     # ---------------------------------------------------------
     # ------------------------------------- HYDRATION UTILITIES
     # ---------------------------------------------------------
@@ -121,6 +167,7 @@ class Decomposer:
 
         return layer_map[layer_str]
 
+
     def _resolve_bind(
         self,
         val: Any,
@@ -141,6 +188,7 @@ class Decomposer:
             return root_context.get(key, val)
 
         return val
+
 
     def _resolve_anchor(
         self,
@@ -169,7 +217,7 @@ class Decomposer:
 
         target_ref = match.group(1).strip()
         self_y = self_state.position.y if self_state.position else 0
-        self_l = self._get_length(self_cat, self_inst, self_state.id)
+        self_l = self._get_span_length(self_cat, self_inst, self_state)
 
         target_y = 0
         target_l = 0
@@ -183,7 +231,7 @@ class Decomposer:
         elif target_ref in scope_lookup:
             target_state, target_cat, target_inst = scope_lookup[target_ref]
             target_y = target_state.position.y if target_state.position else 0
-            target_l = self._get_length(target_cat, target_inst, target_state.id)
+            target_l = self._get_span_length(target_cat, target_inst, target_state)
         else:
             logger.warning(
                 f"Decomposer: Unable to resolve anchor target '{target_ref}' "
@@ -192,6 +240,7 @@ class Decomposer:
             return 0
 
         return int((target_y + target_l) - (self_y + self_l))
+
 
     def _hydrate_state(
         self,
@@ -280,44 +329,52 @@ class Decomposer:
 
         return type(state_obj)(**kwargs)
 
+
     def _create_asset(
         self,
         cat_key: str,
-        inst_key: str,
-        state_obj: AssetState
+        instance: str,
+        state: AssetState,
+        substrate: Optional[int] = None
     ) -> Asset:
+        state.substrate = (
+            substrate
+            if substrate is not None
+            else self.materials.substrate(instance)
+        )
         cat_recipes = getattr(self.recipes, cat_key)
-        recipe = getattr(cat_recipes, inst_key)
+        recipe = getattr(cat_recipes, instance)
 
         prop_instance_key = (
             AssetInstances.SPRITES.value
             if cat_key == AssetCategories.SHEETS.value \
-                and inst_key == AssetInstances.PLAYERS.value
-            else inst_key
+                and instance == AssetInstances.PLAYERS.value
+            else instance
         )
 
         cat_props = getattr(self.properties, cat_key)
         inst_props = getattr(cat_props, prop_instance_key)
-        props = inst_props.get(state_obj.id)
+        props = inst_props.get(state.id)
 
-        taxonomy = Factory.taxonomy(
-            state_obj.id, 
-            state_obj.name, 
-            cat_key, 
-            inst_key
+        taxonomy    = Factory.taxonomy(
+            id      =state.id, 
+            name    =state.name, 
+            category=cat_key, 
+            instance=instance
         )
         frame = Factory.frame(recipe.frame)
         animation = Factory.animation(recipe.animation)
         hitbox = Factory.hitbox(recipe.hitbox)
 
         return Asset(
-            taxonomy, 
-            props, 
-            state_obj, 
-            frame, 
-            animation, 
-            hitbox
+            taxonomy    =taxonomy, 
+            properties  =props, 
+            state       =state, 
+            frame       =frame, 
+            animation   =animation, 
+            hitbox      =hitbox
         )
+
 
     def _spawn_unit(
         self,
@@ -334,6 +391,7 @@ class Decomposer:
         blueprint: Optional[str],
         anchor: int
     ) -> Asset:
+        unit_substrate = self.materials.substrate(instance, blueprint=blueprint)
         unit_state = dataclasses.replace(
             state,
             name=unit_name,
@@ -341,7 +399,8 @@ class Decomposer:
             position=pos,
             blueprint=blueprint,
             multiple=Multiple(1, 1),
-            anchor=anchor
+            anchor=anchor,
+            substrate=unit_substrate
         )
         return Asset(
             taxonomy=Factory.taxonomy(state.id, unit_name, category, instance),
@@ -400,6 +459,7 @@ class Decomposer:
                 )
         return units
 
+
     def _multiply_oriented(
         self,
         state: CraftState,
@@ -434,6 +494,7 @@ class Decomposer:
             ny
         )
 
+
     def _multiply_expansion(
         self,
         state: CraftState,
@@ -449,6 +510,23 @@ class Decomposer:
         nx: int,
         ny: int
     ) -> List[Asset]:
+        # Guard against re-expanding already-unpacked column segments on state reload
+        if state.multiple is None and state.blueprint in self.materials.blueprints(props.blueprints):
+            return self._multiply_simple(
+                state,
+                props,
+                frame,
+                animation,
+                hitbox,
+                category,
+                instance,
+                base_pos,
+                layer,
+                base_name,
+                1,
+                1
+            )
+
         w = props.dimensions.w
         l = props.dimensions.l
         units: List[Asset] = []
@@ -490,6 +568,7 @@ class Decomposer:
                 )
         return units
 
+
     def _multiply_perimeter(
         self,
         state: CraftState,
@@ -505,6 +584,23 @@ class Decomposer:
         nx: int,
         ny: int
     ) -> List[Asset]:
+        # Guard against re-expanding already-unpacked enclosure segments on state reload
+        if state.multiple is None and state.blueprint in self.materials.blueprints(props.blueprints):
+            return self._multiply_simple(
+                state,
+                props,
+                frame,
+                animation,
+                hitbox,
+                category,
+                instance,
+                base_pos,
+                layer,
+                base_name,
+                1,
+                1
+            )
+
         w = props.dimensions.w
         l = props.dimensions.l
         units: List[Asset] = []
@@ -514,7 +610,7 @@ class Decomposer:
         north_bottom = max((hb.position.y + hb.dimensions.l for hb in north_hbs), default=l)
         north_anchor = int(north_bottom - l)
 
-        # Horizontal caps/shafts across [0, nx + 1] (includes corners)
+        # Horizontal caps/shafts across [0, nx + 1]
         for ix in range(nx + 2):
             seg_x = base_pos.x + ix * w
             n_name = settings.SEPARATOR.join([base_name, Enclosures.NORTH.value, str(idx)])
@@ -555,8 +651,8 @@ class Decomposer:
                 )
             )
 
-        # Vertical interior shafts across [1, ny] (2 * (nx + ny + 2) total perimeter units)
-        for iy in range(1, ny + 1):
+        # Vertical caps/shafts across [0, ny + 1] (superimposes at corners to seal L-hitboxes)
+        for iy in range(ny + 2):
             seg_y = base_pos.y + iy * l
             w_name = settings.SEPARATOR.join([base_name, Enclosures.WEST.value, str(idx)])
             idx += 1
@@ -632,13 +728,11 @@ class Decomposer:
             )
         )
 
-        unit_len = self._get_length(
+        strut_len = self._get_span_length(
             AssetCategories.CRAFTS.value,
             AssetInstances.STRUTS.value,
-            node.strut.id
+            strut_state
         )
-        ny = strut_state.multiple.ny if strut_state.multiple and strut_state.multiple.ny else 1
-        strut_len = unit_len * ny
 
         node_context = {
             "position": strut_state.position,
@@ -656,6 +750,7 @@ class Decomposer:
 
         self._unpack_components(node.components, root_context, node_context, inc, assets)
         return assets
+
 
     def _unpack_components(
         self,
@@ -734,9 +829,20 @@ class Decomposer:
 
     def project_door(self, state: DoorState) -> List[Asset]:
         """
-        Instantiates a primary Door on state.layer and its reciprocal shadow footprint
-        on state.outlayer if outlayer and out are specified.
+        Instantiates a primary Door on state.layer (Substrates.STANDARD) and its
+        reciprocal shadow footprint on state.outlayer (Substrates.OVERLAYS).
+        If state is already an OUT projection, instantiates it directly without duplicating.
         """
+        if state.projection == LayerProjections.OUT.value:
+            return [
+                self._create_asset(
+                    AssetCategories.OBJECTS.value,
+                    AssetInstances.DOORS.value,
+                    state,
+                    substrate=Substrates.OVERLAYS.value
+                )
+            ]
+
         primary_state = dataclasses.replace(
             state,
             projection=LayerProjections.IN.value
@@ -745,7 +851,8 @@ class Decomposer:
             self._create_asset(
                 AssetCategories.OBJECTS.value,
                 AssetInstances.DOORS.value,
-                primary_state
+                primary_state,
+                substrate=Substrates.STANDARD.value
             )
         ]
 
@@ -770,7 +877,8 @@ class Decomposer:
             self._create_asset(
                 AssetCategories.OBJECTS.value,
                 AssetInstances.DOORS.value,
-                shadow_state
+                shadow_state,
+                substrate=Substrates.OVERLAYS.value
             )
         )
         return doors
@@ -830,10 +938,7 @@ class Decomposer:
         ny = state.multiple.ny if state.multiple and state.multiple.ny is not None else 1
         base_name = state.name or state.id
 
-        strategy_key = settings.BLUEPRINT_STRATEGIES.get(
-            props.blueprints,
-            MultiplicationStrategies.SIMPLE.value
-        )
+        strategy_key = self.materials.strategy(props.blueprints)
         handler = self._strategies.get(strategy_key, self._multiply_simple)
 
         cat_recipes = getattr(self.recipes, category)

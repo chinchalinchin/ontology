@@ -22,7 +22,6 @@ from app.models.adapters import (
     PydanticVelocity as Velocity,
 )
 from app.models.state.core import (
-    AnimationState,
     AssetState
 )
 
@@ -39,14 +38,13 @@ class ObjectState(AssetState):
     material: Optional[str] = None
 
 @dataclass(slots=True)
-class PositionalState(AssetState):
+class MotiveState(AssetState):
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
 
 @dataclass(slots=True)
 class ContainerState(AssetState):
     content: Optional[List[str]] = field(default_factory=list)
     switch: Optional[bool] = False
-    animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
 class DoorState(AssetState):
@@ -58,7 +56,6 @@ class DoorState(AssetState):
 class SwitchState(AssetState):
     link: Optional[str] = None
     switch: Optional[bool] = False
-    animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
 class DialogueState(AssetState):

@@ -19,7 +19,8 @@ from app.config.enums import (
     Actions, 
     Directions,
     Cycles,
-    Seasons
+    Seasons,
+    Substrates
 )
 
 # ---------------------------------------------------------------------------------------
@@ -67,6 +68,7 @@ class AssetState:
     layer: Optional[str] = None
     elevation: Optional[int] = None
     anchor: Union[int, str] = 0
+    substrate: int = Substrates.STANDARD.value
     mutators: Mutators = field(default_factory=Mutators)
 
 @dataclass(slots=True)

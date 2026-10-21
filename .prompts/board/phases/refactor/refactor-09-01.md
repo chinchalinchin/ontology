@@ -138,7 +138,7 @@ final_vy = locomotion_vy + v_current.vy
 
 ##### Goal: Raft Object Entity & Galvanic Reference Frames
 
-Introduce `rafts` under `AssetCategories.OBJECTS` with `PositionalState`. Rafts drift passively with fluid currents without obstructing fluid raycasts. Sprites boarding a Raft inherit its drift velocity as a baseline reference frame, suppressing the `submerged` mutator.
+Introduce `rafts` under `AssetCategories.OBJECTS` with `MotiveState`. Rafts drift passively with fluid currents without obstructing fluid raycasts. Sprites boarding a Raft inherit its drift velocity as a baseline reference frame, suppressing the `submerged` mutator.
 
 ##### Goal: Solid-Base Annular Pool Rendering
 
@@ -392,7 +392,7 @@ if channel_primitives:
 
 * [x] Subtask: Add `RAFTS` to `AssetInstances` enum and `ObjectPropertyInstances` schema in `models/properties.py`.
 * [x] Subtask: Add `submerged: bool = False` to `MutatorTriggers` in `models/state/sheets.py`.
-* [x] Subtask: Add recipe for `rafts` (`SingleFrame`, `NoAnimation`, `PositionalState`) in `recipes/main.yaml`.
+* [x] Subtask: Add recipe for `rafts` (`SingleFrame`, `NoAnimation`, `MotiveState`) in `recipes/main.yaml`.
 * [x] Subtask: Ensure `Actuator._collect_obstacles` bypasses `AssetInstances.RAFTS.value`.
 
 **2. Task: Environmental Field Step & Surface Interception**

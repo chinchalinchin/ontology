@@ -9,7 +9,10 @@ from __future__ import annotations
 import time
 import dataclasses
 import logging
-from typing import Optional, TYPE_CHECKING
+from typing import (
+    Optional, 
+    TYPE_CHECKING
+)
 
 # Application Libraries
 from app.assets.base import Asset
@@ -20,6 +23,7 @@ from app.config.enums import (
     MultipliedAssets,
     Shortcuts
 )
+from app.game.logic.relations import MaterialIndex
 from app.models.properties import PropertiesSchema
 from app.models.config import ConfigurationSchema
 from app.services.generators.game import (
@@ -43,18 +47,23 @@ class Migrator:
     configurations: ConfigurationSchema
     properties: PropertiesSchema
     actuator: Actuator
+    materials: MaterialIndex
 
     def __init__(self, 
         board: Board, 
         properties: PropertiesSchema, 
         configurations: ConfigurationSchema,
         actuator: Optional[Actuator] = None,
-        decomposer: Optional[Decomposer] = None
+        decomposer: Optional[Decomposer] = None,
+        materials: Optional[MaterialIndex] = None
     ):
         self.board = board
         self.properties = properties
         self.configurations = configurations
         self.actuator = actuator or Actuator()
+        self.materials = materials or MaterialIndex.from_configuration(
+            self.configurations.materials
+        )
         self.decomposer = decomposer or Decomposer(
             compositions=self.configurations.compositions,
             properties=self.properties,
@@ -153,6 +162,9 @@ class Migrator:
                 _, category_key, instance_key, state_obj = task
                 asset_id = state_obj.id
                 asset_name = state_obj.name
+
+                # Hydrate intra-tier substrate from MaterialIndex
+                state_obj.substrate = self.materials.substrate(instance_key)
                 
                 cat_recipes = getattr(self.configurations.recipes, category_key, None)
                 recipe = getattr(cat_recipes, instance_key, None)

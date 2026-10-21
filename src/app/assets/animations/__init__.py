@@ -1,6 +1,5 @@
 from app.assets.animations.core import (
     NoAnimation,
-    BinaryAnimation,
 )
 from app.assets.animations.effects import (
     FrequencyAnimation
@@ -16,7 +15,6 @@ from app.assets.animations.widgets import (
 
 __all__ = [
     'NoAnimation',
-    'BinaryAnimation',
     'FrequencyAnimation',
     'StateAnimation',
     'TraversalAnimation',

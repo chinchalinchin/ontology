@@ -20,7 +20,7 @@ from app.models.state.assets import (
     AttachmentState,
     MultiplierState,
     ContainerState,
-    PositionalState,
+    MotiveState,
     DoorState,
     SwitchState,
     PropertyState,
@@ -65,13 +65,13 @@ class EffectStateInstances:
 @dataclass(slots=True)
 class ObjectStateInstances:
     chests: List[ContainerState] = field(default_factory=list)
-    crates: List[PositionalState] = field(default_factory=list)
+    crates: List[MotiveState] = field(default_factory=list)
     doors: List[DoorState] = field(default_factory=list)
     gates: List[SwitchState] = field(default_factory=list)
-    obstacles: List[PositionalState] = field(default_factory=list)
+    obstacles: List[MotiveState] = field(default_factory=list)
     plates: List[SwitchState] = field(default_factory=list)
     signs: List[DialogueState] = field(default_factory=list)
-    rafts: List[PositionalState] = field(default_factory=list)
+    rafts: List[MotiveState] = field(default_factory=list)
     
 @dataclass(slots=True)
 class ResourceStateInstances:

@@ -1,10 +1,9 @@
 """
 # Ontology: app.assets.frames.crafts
 
-Package for Crafts Frame implementations. 
-
+Package for Crafts Frame implementations.
 """
-# Stamdard Libraries
+# Standard Libraries
 from typing import (
     List,
     Tuple,
@@ -13,33 +12,32 @@ from typing import (
 import logging
 
 # Application Libraries
-import app.config.settings as settings 
-from app.assets.base import (
-    Frame
-)
-from app.models.state import (
-    CraftState
-)
-from app.models.properties import (
-    CraftProperties
-)
+import app.config.settings as settings
+from app.assets.base import Frame
+from app.game.logic.relations.materials import MaterialIndex
+from app.models.state import CraftState
+from app.models.properties import CraftProperties
 
 logger = logging.getLogger(__name__)
 
-# ---------------------------------------------
 
 class MaterialFrame(Frame):
     """
-    Indexes 2D Strut Sheet atlases where rows correspond to Blueprint partitions
+    Indexes 2D Craft Sheet atlases where rows correspond to Blueprint partitions
     and columns correspond to Material genus partitions.
     """
 
-    def index(self, id: str, properties: CraftProperties) -> Dict[str, Tuple[int, int, int, int]]:
+    def index(
+        self,
+        id: str,
+        properties: CraftProperties
+    ) -> Dict[str, Tuple[int, int, int, int]]:
         w = properties.dimensions.w
         l = properties.dimensions.l
 
-        rows = settings.BLUEPRINT_PARTITIONS.get(properties.blueprints, ())
-        cols = settings.MATERIAL_PARTITIONS.get(properties.material.genus, ())
+        relations = MaterialIndex()
+        rows = relations.blueprints(properties.blueprints)
+        cols = relations.materials(properties.material.genus) if properties.material else ()
 
         atlas: Dict[str, Tuple[int, int, int, int]] = {}
         for r_idx, bp in enumerate(rows):
@@ -49,8 +47,10 @@ class MaterialFrame(Frame):
         return atlas
 
     def keys(self, id: str, state: CraftState) -> List[Tuple[str, int, int]]:
-        return [(settings.SEPARATOR.join([
-            id, 
-            state.blueprint, 
-            state.material
-        ]), 0, 0)]
+        return [(
+            settings.SEPARATOR.join([
+                id, 
+                state.blueprint, 
+                state.material
+            ])
+        , 0, 0)]

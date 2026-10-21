@@ -26,7 +26,7 @@ from app.models.state.assets.geography import (
 from app.models.state.assets.objects import (
     ObjectState,
     ContainerState,
-    PositionalState,
+    MotiveState,
     DoorState,
     SwitchState,
     DialogueState,
@@ -54,7 +54,7 @@ __all__ = [
     # OBJECT STATES
     'ObjectState',
     'ContainerState',
-    'PositionalState',
+    'MotiveState',
     'DoorState',
     'SwitchState',
     'DialogueState',

@@ -59,13 +59,13 @@
 
 * [x] **Subtask**: Update `libs.core.models.Position` to track `cdef public double rx, ry` for sub-pixel accumulation.
 * [x] **Subtask**: Create `Velocity(vx: double, vy: double)` in `libs.core.models.pxd`.
-* [x] **Subtask**: Add `velocity: Velocity` to `SpriteState`, `MotorState`, and `PositionalState` schemas.
+* [x] **Subtask**: Add `velocity: Velocity` to `SpriteState`, `MotorState`, and `MotiveState` schemas.
 * [x] **Subtask**: Add `impulse: int` to `Character` properties (the rate of acceleration for self-propelled Sprites).
 * [x] **Subtask**: Add `friction: float` to `TileProperties`.
 * [x] **Subtask**: Implement `Board.tile(layer, position) -> Asset` using grid-index math ($O(1)$) to return the Tile at a specific coordinate.
 * [x] **Subtask**: Add `mass: int` property to collidable Asset Properties ($m > 0$ for Dynamic, $m = 0$ for Static, $m = -1$ for Sensor).
 * [x] **Subtask**: Create `Velocity(vx: double, vy: double)` in `libs.core.models.pxd`.
-* [x] **Subtask**: Add `velocity: Velocity` to `SpriteState`, `MotorState`, and `PositionalState` schemas.
+* [x] **Subtask**: Add `velocity: Velocity` to `SpriteState`, `MotorState`, and `MotiveState` schemas.
 * [x] **Subtask**: Add `impulse: int` to `Character` properties.
 * [x] **Subtask**: **Tile Refactor - Schema**: Update `/src/assets/tiles/main.yaml` to nest IDs under instances, mapping each to `dimensions` and `friction`.
 * [x] **Subtask**: **Tile Refactor - Models**: Update `app.models.properties.TileProperties`. Remove `ids: List[str]`, add `friction: float`.

@@ -31,7 +31,6 @@ class FrameRecipe(str, Enum):
     
 class AnimationRecipe(str, Enum):
     NONE            = "none"
-    BINARY          = "binary"
     STATE           = "state"
     SPRITE          = "sprite"
     METER           = "meter"
@@ -49,3 +48,4 @@ class HitboxRecipe(str, Enum):
     ORIENTED        = "oriented"
     STAGE           = "stage"
     STATIC          = "static"
+    SWITCH          = "switch"

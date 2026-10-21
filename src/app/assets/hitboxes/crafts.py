@@ -9,11 +9,11 @@ from typing import (
 import logging
 
 # Application Libraries
-import app.config.settings as settings
 from app.assets.base import (
     Frame,
     HitboxSchema
 )
+from app.game.logic.relations import MaterialIndex
 from app.models.properties import CraftProperties
 from app.models.state import (
     PlatformState,
@@ -54,16 +54,19 @@ class ElevatedHitbox(HitboxSchema):
         base_e = state.elevation if state.elevation is not None else 0
         return properties.hitboxes.get(elevation - base_e, []) or []
 
+
 class MaterialHitbox(HitboxSchema):
     """
-    Resolves blueprint- and material-dependent hitboxes for Struts.
-    Passable surface blueprints emit [] while structural blueprints emit active hitboxes.
+    Resolves blueprint-dependent hitboxes for Crafts via MaterialIndex.
+    Passable blueprints emit [] while obstacle blueprints emit active hitboxes.
     """
-    def elevations(self, 
-        properties: CraftProperties, 
+
+    def elevations(
+        self,
+        properties: CraftProperties,
         state: CraftState
     ) -> List[int]:
-        if state.blueprint not in settings.OBSTACLE_BLUEPRINTS:
+        if not MaterialIndex().is_obstacle(state.blueprint):
             return []
         return [max(0, state.elevation if state.elevation is not None else 0)]
 
@@ -74,7 +77,7 @@ class MaterialHitbox(HitboxSchema):
         elevation: int,
         frame: Optional[Frame] = None
     ) -> List[Hitbox]:
-        if state.blueprint not in settings.OBSTACLE_BLUEPRINTS:
+        if not MaterialIndex().is_obstacle(state.blueprint):
             return []
 
         target_e = max(0, state.elevation if state.elevation is not None else 0)

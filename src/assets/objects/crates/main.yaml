@@ -2,26 +2,11 @@ objects:
   crates:
     # ---------------------------
     box:
-      dimensions:
-        w: 
-        l: 
-      mass: 5
-      material: 
-        genus: organics
-      hitboxes:
-        - position:
-            x: 
-            y: 
-          dimensions:
-            w: 
-            l:
-    # ---------------------------
-    vase:
-      dimensions:
-        w:
-        l:
-      mass: 2
+      dimensions: { w: 32, l: 32 }
+      mass: 1
+      count: 1
       material:
-        genus: chromatic 
-        host: 
+        genus: organics
       hitboxes: null
+
+    # ---------------------------
