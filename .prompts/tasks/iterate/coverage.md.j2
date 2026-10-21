@@ -11,21 +11,6 @@
 
 Application fixtures have recently been reorganized and streamlined for reuse, rather than recreating them for every single test. This is an ongoing effort. The goal is to remove all blackbox testing with MagicMocks.
 
-**Coverage Guidelines**
+{% include 'blocks/controls/guideline-coverage.md' %}
 
-$$
-\text{Ideal Test} = \text{Fixture} \to \text{Setup} \to \text{Assertion}
-$$
-
-- Ensure all new tests are marked with a `@pytest.mark.<workflow>` annotation.
-- Add any new fixtures to the appropriate fixture module.
-- Treat `tests.unit.fixtures` as a test bed for constructing application objects. Fixtures should not be created in an adhoc manner; instead, fixtures should exemplify and construct the application dependency tree prior to the execution of tests.  
-- If a test requires a specific edge case, request the fixture and mutate its attributes explicitly in the test setup.
-- The only actions that should be mocked are file-level access and image rendering.
-
-**Coverage Constraints**
-
-- Do **not** test code you haven't seen.
-- Do **not** create fixtures in the test itself; Tests should request fixtures and use them.
-- Do **not** use MagicMocks unless *absolutely* necessary. Unit tests should not be a blackbox probe; they should test live code execution.
-- Do **not** test how a Mechanic does its job (e.g., asserting internal method calls) unless it delegates to a Cython module. Test the result on the Board.
+{% include 'blocks/controls/constraint-coverage.md' %}

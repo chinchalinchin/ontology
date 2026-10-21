@@ -1,4 +1,4 @@
-**Code Quality**
+**Constraint: Quality**
 
 - Do not delete comments.
 - All implementations should be linted and commented. 

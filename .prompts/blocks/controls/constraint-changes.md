@@ -1,4 +1,4 @@
-**Change Constraints**
+**Constraint: Changes**
 
 Changes that violate these constraints will be rejected.
 

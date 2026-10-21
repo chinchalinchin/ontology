@@ -25,10 +25,6 @@ Names are used to uniquely identify an ingame entity. A single Asset ID may have
 
 In short, a Name identifies an Asset's deployment. A ID is what binds a deployed Asset to its Asset File.
 
-**Direction & Action**
-
-The frame rows of Sheet Assets are categorized by the axes of *Direction* and *Action*. See [Sheets section](#sheets) below for more information on the division of *Direction* and *Action*.
-
 **Properties & State**
 
 *Properties* are static and never changed by game Mechanics. Properties determine the immutable characteristics of Assets, e.g. their dimensions and hitboxes. They are loaded side-by-side with the Asset files in the `/src/assets/**` directory. All Assets have, at bare minumum, a Dimension property, specifying their respective width and length, and a Priority property, that specifies the [statically configured sort key](./11-architecture.md#rendering) for their relative rendering order. Dimension is a Cartesian coordinate (tuple), whereas Priority is an integer.
@@ -58,6 +54,16 @@ Many  Asset Categories have a Mass property. Only Assets with Mass can participa
 
 See [Mechanics](./05-mechanics.md#spatial) for more information.
 
+**Frames & Animations**
+
+A Frame represents an interface for binding an Asset to a particular partition of its raw image file (its *Frame space*). Frames expose interfaces for *indexing* the Frame space via Asset Properties, and they also expose interfaces for *accessing* Frame space via Asset State.
+
+In other words, Asset Properties determine the metric used by the Engine to measure the Asset's Frame space, whereas Asset State determine where in the Frame space the Asset currently resides. 
+
+This is the reason for distinguishing Asset Categories and Asset Instances in the Hierarchy: Frames in a Sprite Sheet represent Actions, Frames in a Resource represent Lifespan Stages, Frames in an Effect represent Periodicity, etc. These are different stateful dispositions for an Asset to assume that are categorically distinct and manifest in the atlasing strategy used by the image file. This space is described by the particular configuration of an Asset's Properties, and furthermore, to exist on the [Board](./00-overview.md#board), an Asset must have a strategy for associating its State with a particular Frame described by its Properties.
+
+To extend the analogy, an Animation represents an interface for navigating the Frame space over time. Animations time-mapping that projects the internal state changes in an Asset to a particular trajectory through its Frame space.
+
 #### Elevation, Substrates, Perspective & Priority
 
 **Rendering**
@@ -75,26 +81,18 @@ $$
 
 **Substrates**
 
-Certain Assets have dedicated Substrates to preserve the fidelity of their rendering order.
+Certain Assets have a dedicated Substrate to preserve the fidelity of their rendering order. These values hydrated onto `state.substrate` via [MaterialIndex](./appendices/01-schemas.md#configuration-materials).
 
-| Substrate | Dedicated Elevation | Assets | 
-| Environ | -4 | `tiles.environs` |
-| Fluids  | -3 |  `effects.fluid` |
-| Surfaces | -2 | `geography.shorelines`, `crafts.struts.floors`, `crafts.struts.paths`, `crafts.struts.flats` |
-| Overlay | -1 | `crafts.bridges`, `crafts.stairs`, `objects.doors`, `crafts.struts.solids`, `crafts.struts.stripes`, `crafts.struts.designs` |
-| Standard | 0 | everything else | 
+--8<-- "static/md/asset-substrates.md"
 
-These values hydrated onto `state.substrate` via [MaterialIndex](./appendices/01-schemas.md#configuration-materials).
+!!! @TODO(07-04)
+    This entire procedure needs re-evaluation now that Substrates are not Elevations, i.e. prior to Phase 07.04 Substrates were used to lazily-load Elevations. Now they are a dedicated partition of the sort key `(elevation, substrate, ground, priority)`
 
-During [CollisionMechanics](./05-mechanics.md#collisionmechanics) and Perimeter generation, these Substrates are collapsed into `elevation = 0`, i.e. $\text{elevation} \in [-\infty, 0] \to \text{elevation} = 0$, in order that all Assets on these Substrates may participate in collisions at `elevation = 0`.
+During [CollisionMechanics](./05-mechanics.md#collisionmechanics) and Perimeter generation, all negative Substrates are collapsed into `elevation = 0`, i.e. $\text{elevation} \in [-\infty, 0] \to \text{elevation} = 0$, in order that all Assets on these Substrates may participate in collisions at `elevation = 0`.
 
 ### Asset Hierarchy
 
 While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to a strict hierarchy of Categories and Instances. The property and state [schemas](./appendices/01-schemas.md) encode Asset Categories and Instances into their top-level keys.
-
-```mermaid
---8<-- "static/mmd/asset-hierarchy.mmd"
-```
 
 !!! note
     The Asset Hierarchy can be thought of as a data abstraction governing the schemas, which in turn drive the ECS instantiation. 
@@ -102,32 +100,22 @@ While Assets are instantiated by injecting a common root class with component be
 !!! note
     An analogy may be drawn from the Asset Hierarchy to Edward Zalta's Metaphysics: properties *encode* an Asset, state *exemplifies* an Asset. 
 
+```mermaid
+--8<-- "static/mmd/asset-hierarchy.mmd"
+```
+
 **Categories**
 
 Asset *Categories* form the top layer of the hierarchy. Each Asset Category is defined by its static properties; an Asset's Category determines what type of properties it will parse from the property files and inject into its deployment. 
 
-Each set of Asset properties has, at bare minimum:
+Every Asset Category Properties has, at bare minimum:
 
 - `dimension: Dimension`
 - `priority: int`
 
 These attributes belong to the base class from which all other property classes inherit.
 
-The following table details the *unique* property attributes of each Asset Category (with the attributes identified above labeled with the catchall "Base"),
-
-| Asset Category | Properties |
-| - | - |
-| Tiles | Base, Friction |
-| Cursors | Base |
-| Objects | Base, Hitboxes, Mass, Material, Count |
-| Effects | Base, Hitboxes, Mass, Lifecycle, Count|
-| Geography | Base, Hitboxes, Mass, Tile, Fluid, Thickness | 
-| Resources | Base, Hitboxes, Mass, Lifespan, Loot |
-| Crafts | Base, Hitboxes, Mass, Materials, Blueprints |
-| Sheets | Base, Hitboxes, Mass, Stack, Actions |
-| Widgets | Base, Frames |
-
-The distinguishing features of each Category are given below,
+Each Category is differentiated by its purpose and place in the semantics of the Engine.
 
 - Tiles: Environmental. These Assets determine the background and macro-level processes that underlie the Engine.
 - Object: Functional. These Assets perform functions and alter their states. 
@@ -138,11 +126,13 @@ The distinguishing features of each Category are given below,
 - Sheets: Intentional. These Assets perform Actions and engage Intentionally with the Board.
 - Widgets: Metalogical. These Assets display metadata about the world to the User.
 
+--8<-- "static/md/asset-categories.md"
+
 **Instances**
 
 Each Category has Instances. Asset *Instances* form the bottom of the Asset Hierarchy. Each Asset Instance is defined by its dynamic nature; an Asset's Instance determines what type of state it will parse from the state files and inject into its deployment. 
 
-Each Asset state has, at bare minimum:
+Each Asset Instance State has, at bare minimum:
 
 - `position: Position`
 - `layer: str`
@@ -153,58 +143,18 @@ Each Asset state has, at bare minimum:
 
 These attributes belong to the base class from which all other States inherit.
 
-The following table details the *unique* state attributes of each Asset Instance (with the attributes identified above labeled with the catchall "Base"),
+Each Instance is differentiated by its State, Frame and Animation.
 
-| Asset Category | Asset Instance | State |
-| - | - | - | 
-| Tile | Environ | Base, Multiple |
-| Tile | Canopy | Base, Multiple |
-| Tile | Grid | Base, Multiple |
-| Object | Crate | Base, Velocity |
-| Object | Obstacle | Base, Velocity |
-| Object | Raft | Base, Velocity |
-| Object | Sign | Base, Persona, Lexicon |
-| Object | Door | Base, Out, OutLayer |
-| Object | Chest | Base, Animation, Switch, Content |
-| Object | Gate | Base, Animation, Switch, Link |
-| Object | Plate | Base, Animation, Switch, Link |
-| Craft | Bridge | Base, Multiple, Material, Blueprint, Owner |
-| Craft | Strut | Base, Multiple, Material, Blueprint, Owner |
-| Craft | Stairs | Base, Multiple, Material, Blueprint, Owner |
-| Craft | Decor | Base, Owner |
-| Craft | Forge | Base, TODO |
-| Craft | Device | Base, TODO |
-| Resource | Crop | Base, Stage, Retention, Moisture, Harvested |
-| Resource | Flower | Base, Stage, Retention, Moisture, Harvested |
-| Resource | Ore | Base, Stage, Retention, Moisture, Harvested |
-| Resource | Tree | Base, Stage, Retention, Moisture, Harvested |
-| Cursor | Expression | Base, Attachment |
-| Cursor | Projectile | Base, Initial, Velocity |
-| Geography | Shoreline | Base, Orientation, Length, Thickness |
-| Effect | Passive | Base, Animation |
-| Effect | Hazard | Base, Animation, Damage |
-| Effect | Collectable | Base, Animation, Lot |
-| Effect | Reactable | Base, Animation, Intention, Cooldown |
-| Effect | Fluid | Base, Animation, Source, Flow, Length, Pool, Branches |
-| Sheet | Pixie | Base, Animation |
-| Sheet | Sprite | Base, Animation, Velocity, Intention, Inventory, Meters, Memory, Mutators, Goal, Trajectory |
-| Widget | Icon | Base, Icon |
-| Widget | Pane | Base, Layout, Alignment, Gap, Margins |
-| Widget | Button  | Base, Status, Animation |
-| Widget | Meter | Base, Animation, Reading, Unit |
-| Widget | Page | Base, Animation, Content, Page Index, Page Size, Canvas |
-
-!!! note
-    [Equipment](./02-sprites.md#equipment) and [Player](./02-sprites.md#player) Assets are excluded from this table, due to the special nature of these particular Assets. Equipment is a stateless Sheet, whereas the Player is a special type of [Sprite](./02-sprites.md).
+--8<-- "static/md/asset-instances.md"
 
 ### Asset Architecture
 
-Every physical entity in the game is an instance of the unified Asset class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. Behaviors are decoupled from Assets and managed entirely by *Mechanic* classes that iterate over the Board Assets. See [Mechanics documentation](./05-mechanics.md) for more information.
+Every physical entity in the game is an instance of the unified Asset class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. Behaviors are decoupled from Assets and managed entirely by *Mechanic* classes that iterate over the [Board](./00-overview.md#board) Assets. See [Mechanics documentation](./05-mechanics.md) for more information.
 
 The Recipe for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in the [Recipe](./appendices/01-schemas.md#configuration-recipes) configuration file. The components of each Assets are enumerated below,
 
-1. **Model: Properties:** A model defining immutable data.
-2. **Model: State:** A model defining mutable data.
+1. **Model: Properties** A model defining immutable data.
+2. **Model: State** A model defining mutable data.
 3. **Behavior: Animation** Stateless strategies injected into the Asset. These contain the specific logic for updating Animation frames.
     - `animate(state, properties)`: Interface for applying animation logic to Asset state.
 4. **Behavior: Frame:** A static schema calculation used by the renderer to determine the correct texture string keys. 
@@ -217,31 +167,32 @@ The Recipe for an Asset, i.e. the list of components which go into a particular 
     - `get(properties: AssetProperties, state: AssetState, elevation: int, frame: Optional[Frame] = None) -> List[Hitbox]`: Emits active physical collision footprints at the requested elevation, accounting for animation frame states (e.g., Attackboxes).
 
 !!! note
-    The state model can be calculated from (Category, Instance), but (Animation, Frame, Hitbox) is independent of the state assigned to an Asset through the Asset Hierarchy. It must be specified through a Recipe.
-
-!!! note
-    An Asset can be a single logical entity composed of multiple superimposed rendered textures, therefore a Frame component returns a `List[(str, int, int)]` rather than a single `str`. The tuple `(int, int)` controls how much the frame is offset from its origin (mainly used in [Expressions](#expressions) to pin a [Cursor Expressions](#cursors) to the relative Position of a Sprite). In addition, Frames provide the indexing schema for textures used by the [Registry](./00-overview.md#registry) to store Assets in memory.
+    An Asset can be a single logical entity composed of multiple superimposed rendered textures, i.e. [Sheets](#sheets), therefore a Frame component returns a `List[(str, int, int)]` rather than a single `str`. The tuple `(int, int)` controls how much the frame is offset from its origin (mainly used in [Expressions](#expressions) to pin a [Cursor Expressions](#cursors) to the relative Position of a Sprite).
 
 ### Asset Taxonomy
 
-An Asset's order in the Asset Hierarchy is encoded into its Taxonomy. These attributes exist on every Asset instantiated within the game. A Taxonomy is neither a state, a configuration or a propertt. Taxonomy represents the full, unambiguous identity of a deployed Asset,
+An Asset's order in the Asset Hierarchy is encoded into its Taxonomy. These attributes exist on every Asset instantiated within the game. A Taxonomy is neither a state, a configuration or a property. Taxonomy represents the full, unambiguous identity of a deployed Asset,
 
 - `id: str`: Uniquely identifies the Asset file. It must match a file found in the `src/assets/**` directory.
 - `name: str`: Uniquely identifies the physical deployment of the Asset. Every Asset Instance deployed onto a Board has a unique `name`.
-- `category: str`: Determines what property model is employed by the Asset. The category must be configured by a `src/assets/<category>/**/*.yaml` property index file.
-- `instance: str`: Determines what state model is employed by the Asset. An Asset's state is hydrated from the `data/state/<board>/**/*.yaml` directory.
+- `category: str`: Determines what Property model is employed by the Asset. The Category must be configured by a `src/assets/<category>/**/*.yaml` property index file.
+- `instance: str`: Determines what State model is employed by the Asset. An Asset's state is hydrated from the `data/state/<board>/**/*.yaml` directory.
 
-`(category, instance)` collectively map to the components `(frame, animation, hitbox, properties, state)` injected into an Asset class during the [Initialization](./11-architecture.md#initialization). More specifically, category maps to properties (`category -> properties`), and instance maps to everything else (`instance -> (frame, animation, hitbox, state)`).
+`(category, instance)` collectively map to the components `(frame, animation, hitbox, properties, state)` injected into an Asset class during the [application initialization](./11-architecture.md#initialization). More specifically, Category maps to properties ($\text{category} \to \text{properties}$), and Instance maps to the remaining components ($\text{instance} \to (\text{frame}, \text{animation}, text{hitbox}, \text{state})$).
+
+The State and Property model of an Asset can be calculated (and is, during [application bootstrapping](./11-architecture.md#initialization) via Pydantic) from its (Category, Instance)-node, but (Animation, Frame, Hitbox) are independent of the node in the Asset Hierarchy. These components must be specified through a [Recipe](./appendices/01-schemas.md#configuration-recipes).
 
 ## Tiles
 
 * Property File: `/src/assets/tiles/**/*.yaml`
 
-Tiles are static, frictive Assets that form the lowest terrain Substrate. Tiles are arranged into continuous background (`environ`) and foreground (`canopy`) canvases.
+Tiles are static Assets that form environmental foundation of the game. 
 
-Tiles Instances have their dimensions fixed by their properties. These dimensions are configurable in the property file, but they apply to all Tiles of a particular instance universally. When a Tile is drawn, it is rendered as a `multiple` of the unit Tile configured in the Asset directory.
+**Behavior: Rendering**
 
-**Friction**
+When a Tile is drawn, it is rendered as a `multiple` of the unit Tile, usings the Dimensions configured in the Asset directory to expand the multiplied area.
+
+**Behavior: Friction**
 
 Tiles have coefficients of friction. These coefficient are used by [MotionMechanics](./05-mechanics.md#spatial) to determine the rate of velocity decay for Frictive Assets traversing their area.
 
@@ -250,11 +201,6 @@ Tiles have coefficients of friction. These coefficient are used by [MotionMechan
 * `dimensions: Dimensions`
 * `priority: int`
 * `friction: float`
-
-**Frame: SingleFrame**
-
-* `keys(id, state): returns [ (id, 0, 0) ]`
-* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **Animation: None**
 
@@ -267,47 +213,69 @@ N/A
 **State: MultiplerState**
 
 * `layer: str`
-* `elvation: int`
+* `elevation: int`
 * `position: Position`
 * `multiple: Multiple`
 
 ### Environ
 
-A Environ Tile is the first Asset rendered on screen. It has the lowest Z coordinate of all Assets; Environ Tiles will *always* be rendered *under* all of the other Assets, regardless of their `elevation` or `priority`.
+A Environ Tile represents the environment. They participate in climatic events and macro-level state changes in the [Ecology](./09-ecology.md).
 
-**Event Driven Animation**
+**Behavior: Rendering**
 
-Environ Tiles are not animated per-frame in `Screen.draw()`. Instead, multi-season tiles leverage `SeasonalFrame` and event-driven canvas reconstruction. See [Ecology documentation](./09-ecology.md) for more information.
+Tiles have the lowest terrain Substrate; They are always rendered underneath the other Assets in the Hierarchy, regardless any calculations involving `elevation`, `substrate`, `ground`, or `priority`. 
+
+Moreover, they are not included in the core rendering loop; Instead, they are prerendered once and drawn from cache. See [Rendering documentation](./11-architecture.md#rendering) for more information.
+
+**Behavior: Seasonality**
+
+Environ Tiles undergo Frame changes based on the accumulation of time on the [Board](./00-overview.md#board). In other words, Environ Tiles have the unique property of having their Frame depend on an external State, rather than internal State. All rendering of Environ Tiles occurs through the `Frame.eras()` interface to account for this external dependency.
+
+For this reason, Environ Tiles leverage a SeasonalFrame and event-driven reconstruction triggered as the Board undergoes Seasons. See [Ecology documentation](./09-ecology.md) for more information.
+
+**Atlas: (Row: Season, Column: Period)**
+
+Environ Tiles use a (Season, Column) atlas
+
+- rows: `^(?:spring|summer|autumn|winter)`
+- columns: `^(?:onset|peak|decline)-[0-9]$`
 
 ### Canopy
 
-A Canopy Tile is the last Asset rendered on screen. It has the highest Z coordinate of all Assets. Canopy Tiles will always be rendered on top of all of other Assets, regardless of their `elevation` or `priority`. 
+Canopy Tiles are hardcoded to always render on on top of all of other Assets, regardless of their `elevation` or `priority`. 
 
 !!! important
     The *single* exception to this rule is Widgets. Canopy Tiles are an "in-world" Asset, and thus their render ordering is superseded by Widgets.
 
+**Frame: SingleFrame**
+
+* `keys(id, state): returns [ (id, 0, 0) ]`
+* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+
 ### Grid
 
 A Grid is a special Tile reserved for use in the [Editor Menu](./06-widgets.md#menus). It is used as an overlay in the Editor, to create a spatial grid that can be traversed through focus. 
+
+!!! @TODO(05)
+    Reatlasing of Grid Tiles needs to occur.
 
 There must be precisely *two* Grid tiles:
 
 - `focus`: A Grid Tile to represent active selections.
 - `cell`: A Grid Tile to represent idle selections.
 
+**Frame: SingleFrame**
+
+* `keys(id, state): returns [ (id, 0, 0) ]`
+* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+
 ## Objects
 
 * Property File: `/src/assets/objects/**/*.yaml`
 
-Objects are mutable Assets encapsulating interactive and reactive entities.
+Objects are Assets encapsulating interactive and reactive entities. Objects participate in [CollisionMechanics](./05-mechanics.md#collisionmechanics) and may undergo instantaneous changes of their state. However, Objects do not implement an Animation; All changes of an Object's Frame are handled through the mutation of State attributes.
 
-**Binary Frames**
-
-An Object with two frames is considered to have an *on* and *off* state, i.e. a binary trigger. *Binary Objects* are Objects whose frame is dependent on an internal state switch.
-
-Binary Objects frames are always organized in horizontal rows. The off frame will always start at `(0,0)` and the on frame will always start at `(w,0)`. Because of this relation, the dimensions of a Chest image file will always be `(2w, h)`. 
-
-Binary Objects have a `count` of 2, where as all other Objects are initialized with `count = 1` by default.
+**Atlas: (row: Material, column: Count)**
 
 **Properties: ObjectProperties**
 
@@ -321,6 +289,10 @@ Binary Objects have a `count` of 2, where as all other Objects are initialized w
 
 * `get(properties, state, frame): returns properties.hitboxes`
 
+**Animation: None**
+
+N/A
+
 ### Chests
 
 *Chests* are Binary Objects whose frame can be changed by the player entering into an `interact` [Intention](./04-intentions.md) while intersecting the hitboxes of the Chest. When `switch == true`, the Chest is *on* (open). When `switch == false`, the Chest is *off* (closed).
@@ -328,11 +300,6 @@ Binary Objects have a `count` of 2, where as all other Objects are initialized w
 A Chest is *reusable* through the `interact` [Intention](./04-intentions.md), meaning [Inventory Loot](./02-sprites.md#inventory) can be taken out of and also placed into a Chest. The `content` state field manages the current contents of the Chest through a list of Inventory Loot keys.
 
 When *interacting* with a Chest, the [Player](./02-sprites.md#player) is shown the [Chest Menu](./06-widgets.md#menus), allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an `interact` Intention with a Chest through its [Intention Transition Matrix](./04-intentions.md#transition-matrix). This interaction is managed through a dedicated Sprite [Mechanic](05-mechanics.md)
-
-**Animation: BinaryAnimation**
-
-- `if state.switch == true: state.animation.frame = 1`
-- `if state.switch != true: state.animation.frame = 0`
 
 **Frame: IterableFrame**
 
