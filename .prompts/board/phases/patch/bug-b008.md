@@ -1,6 +1,6 @@
 ##### Bug B008: Open Gate Obstruction
 
-**STATUS**: OPEN
+**STATUS**: OPEN / NEEDS REVIEW POST PHASE 07.04
 **SEVERITY**: Medium
 
 **Description**

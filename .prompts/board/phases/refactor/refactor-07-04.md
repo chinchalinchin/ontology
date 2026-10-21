@@ -738,12 +738,6 @@ The following atlases can be imposed on Object Assets from the LPC database,
 
 ##### Self Review I
 
-###### Review: Implementation
-
-1. **Incomplete Task 4, Task 6 & Task 7 Wiring**:
-    * **`Decomposer._unpack_node()` (`src/app/services/generators/game/decomposer.py`)**: Still calls `self._create_asset()` on `node.strut` instead of routing root and branch Struts through `self.multiply()`. Any root or branch Strut declaring `multiple` or using `columns`/`enclosures`/`orientations` fails to expand.
-    * **`CraftPropertyInstances` & `CraftStateInstances` (`src/app/models/properties/schemas.py`, `src/app/models/state/schemas.py`)**: Omit `enclosures` and `carpentry` (unless `enclosures` and `railings` are collapsed into `struts`; see Architecture Review below).
-
 ###### Review: Quality
 
 1. **Duck-Typing Violations (`getattr`, `hasattr`, `isinstance`)**:
@@ -1143,108 +1137,6 @@ An exhaustive pre-UAT audit of all Phase 07.04 changes across `enums`, `settings
 
 ---
 
-##### Bug B022: `Material.__post_init__` Import & Bootstrap Order Failure After `settings.py` Purification
-
-**STATUS**: OPEN
-**SEVERITY**: CRITICAL
-
-**Description**
-
-In `src/app/models/properties/core.py`, `Material.__post_init__` previously imported `MATERIAL_PARTITIONS` / `CHROMATIC_HOSTS` from `app.config.settings`. Removing those dictionaries from `settings.py` in Task 12 causes an `ImportError`, and querying `MaterialIndex()` inside `Material.__post_init__` fails during `Loader.load_properties()` because `properties` are validated before `MaterialIndex` is compiled.
-
-**Steps to Replicate**
-
-1. Remove `MATERIAL_PARTITIONS` and `CHROMATIC_HOSTS` from `src/app/config/settings.py`.
-2. Call `Builder.load_data()`.
-3. Observe `ImportError` (or `ValueError` if querying an uninitialized `MaterialIndex`).
-
-**Proposed Remediation**
-
-Validate `self.host` in `Material.__post_init__` (`src/app/models/properties/core.py`) directly against `(*Organics, *Ceramics)` from `app.config.enums`, as implemented in Fix #3 above.
-
-##### Bug B023: Unsealed Corner Geometry and Unit Count Mismatch in `MultiplicationStrategies.PERIMETER`
-
-**STATUS**: OPEN
-**SEVERITY**: HIGH
-
-**Description**
-
-Each `palisade` enclosure cell (`96x96`) defines strip hitboxes along a single outer edge (`north`: $y \in [0, 16]$; `south`: $y \in [80, 96]$; `west`: $x \in [0, 8]$; `east`: $x \in [88, 96]$). When `_multiply_perimeter()` restricted `west` and `east` segments to `range(1, ny + 1)`, the four corner cells $(0, 0)$, $(n_x + 1, 0)$, $(0, n_y + 1)$, and $(n_x + 1, n_y + 1)$ lacked vertical `west`/`east` strips, leaving $80\text{px}$ visual and collision gaps at every corner.
-
-**Steps to Replicate**
-
-1. Deploy `palisade` with `multiple: { nx: 1, ny: 1 }`.
-2. Inspect the top-left corner cell $(0, 0)$ across $y \in [16, 96]$.
-3. Observe that no `west` segment exists at $i_y = 0$, allowing Sprites to walk through the corner.
-
-**Proposed Remediation**
-
-Spawn `west` and `east` segments across the full vertical span `for iy in range(ny + 2):` in `Decomposer._multiply_perimeter()` so orthogonal strips superimpose into sealed `L`-corners, and update `Materializer._total_units()` for `PERIMETER` in `src/app/services/markets/materializer.py` to `2 * (nx + ny + 4)`.
-
-##### Bug B024: Save/Load Re-Expansion of Unpacked `Columns`, `Enclosures`, and Projected `Door` Shadows
-
-**STATUS**: OPEN
-**SEVERITY**: HIGH
-
-**Description**
-
-`Board.serialize()` writes all active `Asset` states in `self._assets` to the save slot. Because `Decomposer._spawn_unit()` previously assigned `multiple=Multiple(1, 1)` to unpacked units and `Board.serialize()` exported derived `LayerProjections.OUT` Door shadows, loading a saved board caused `Migrator` to re-run `EXPANSION` on every individual column crown/shaft/base unit, re-run `PERIMETER` on every individual fence unit, and project a second shadow door for every existing shadow door.
-
-**Steps to Replicate**
-
-1. Hydrate a board containing a `pillar` (`columns`, `ny=2`), a `palisade` (`enclosures`, `nx=1, ny=1`), and a `panel` Door with `outlayer`.
-2. Call `board.serialize("save-01")` and hydrate `"save-01"` via `Migrator`.
-3. Observe that the 4 column segments expand into 12 segments, the 8 fence segments expand into 64 segments, and the 2 door entities become 4 door entities.
-
-**Proposed Remediation**
-
-1. Set `multiple=None` in `Decomposer._spawn_unit()` and guard `_multiply_expansion` and `_multiply_perimeter` when `state.multiple is None and state.blueprint in self.materials.blueprints(props.blueprints)`.
-2. Skip derived Door shadow projections (`asset.instance == AssetInstances.DOORS.value and asset.state.projection == LayerProjections.OUT.value`) in `Board.serialize()` (`src/app/game/board/core.py`):
-
-```python
-            if (
-                asset.instance == AssetInstances.DOORS.value
-                and asset.state.projection == LayerProjections.OUT.value
-            ):
-                continue
-
-```
-
----
-
-#### Draft: Relational Material Configuration & `Materializer` Service
-
-* **Page**: `docs/00-overview.md`
-* **Heading**: `Configuration`
-
-##### Drift
-
-`docs/00-overview.md` omits `Materials` (`/src/data/config/materials/main.yaml`) from the list of Engine configurations and does not mention `MaterialIndex` or `Materializer`.
-
-##### Update
-
-```markdown
-### Configuration
-
-- Location: `/src/data/config`
-
-Mechanics, Relations, and other components of the game [Engine](#engine) utilize configuration stored in the configuration directory:
-
-- [Actions](./01-assets.md#sheets)
-- [Compositions](./03-compositions.md)
-- [Intentions](./04-intentions.md)
-- [Library](./08-plots.md)
-- [Mappings](./02-sprites.md#devices)
-- [Materials](./03-compositions.md#materials)
-- [Mechanics](./05-mechanics.md)
-- [Menus](./06-widgets.md#menus)
-- [Plots](./08-plots.md)
-- [Recipes](./01-assets.md#asset-concepts)
-
-```
-
----
-
 #### Draft: Fibered Substrate Sorting, Inanimate Objects & Unified Craft Atlasing
 
 * **Page**: `docs/01-assets.md`
@@ -1270,26 +1162,6 @@ Mechanics, Relations, and other components of the game [Engine](#engine) utilize
 
 
 
-##### Update
-
-```markdown
-#### Elevation, Substrate, Perspective & Priority
-
-World rendering evaluates spatial geometry using discrete macro-elevations, intra-tier substrate planes, continuous ground perspective, and coplanar priority:
-
-$$
-\text{sort\_key}(x) = \Big(x.\text{elevation},\; x.\text{substrate},\; \text{ground\_y}(x),\; x.\text{properties.priority}\Big)
-$$
-
-1. **Primary Key (`x.elevation` $\in \mathbb{Z}_{\ge 0}$)**: Discrete topological story or platform tier (`0`, `1`, `2`, ...).
-2. **Secondary Key (`x.substrate` $\in \mathbb{Z}_{\le 0}$)**: Intra-tier rendering plane within macro-elevation $E$, hydrated onto `AssetState.substrate` via `MaterialIndex`:
-   - `Substrates.ENVIRON (-4)`: `tiles.environ`
-   - `Substrates.FLUIDS (-3)`: `effects.fluids`
-   - `Substrates.SURFACES (-2)`: `geography.shorelines`, `struts` (`floors`, `paths`, `flats`)
-   - `Substrates.OVERLAYS (-1)`: `crafts.bridges`, `crafts.stairs`, `objects.doors` (`out` shadow footprints), `struts` (`solids`, `stripes`, `designs`)
-   - `Substrates.STANDARD (0)`: All upright structures (`walls`, `halls`, `columns`, `enclosures`, `orientations`), `objects`, and `sheets`.
-3. **Tertiary Key (`ground_y` $\in \mathbb{Z}$)**: Continuous in-tier geometric perspective: $\text{ground\_y} = \text{int}(x.\text{state.position.y} + x.\text{dimensions.l} + x.\text{state.anchor})$.
-4. **Quaternary Key (`priority` $\in \mathbb{Z}$)**: Coplanar tie-breaker declared on immutable `AssetProperties`.
 
 ---
 

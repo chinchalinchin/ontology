@@ -134,6 +134,10 @@ The default mappings bundled with the game are provided below,
 --8<-- "static/yaml/examples/default-mappings.yaml"
 ```
 
+### Configuration: Materials
+
+TODO
+
 ### Configuration: Mechanics
 
 Mechanics Configuration defines what Mechanic classes are instantiated by the game engine. The order in which they are specified in the schema becomes the order of execution in the game engine.

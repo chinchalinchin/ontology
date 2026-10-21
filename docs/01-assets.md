@@ -73,30 +73,33 @@ See [Mechanics](./05-mechanics.md#spatial) for more information.
 
 #### Elevation, Perspective & Priority
 
-World rendering evaluates spatial geometry using discrete topological elevations and continuous ground perspective,
-
-$$
-\text{sort}(x) = \Big(x.\text{elevation},\; \text{ground}(x),\; x.\text{properties.priority}\Big)
-$$
-
-1. **Primary Key (`x.elevation` $\in \mathbb{Z}$)**: Discrete spatial $Z$-plane elevation. Standard Assets default to `elevation = 0`; elevated structures occupy $\text{elevation} \ge 1$. Entities on higher elevations render on top of lower elevations.
-2. **Secondary Key (`ground` $\in \mathbb{R}$)**: Elevation-dependent geometric ground perspective: $\text{ground} = \text{int}(x.\text{state.position.y} + x.\text{dimensions.l} + x.\text{state.anchor})$. `state.anchor` is a compiled integer offset that aligns wall-mounted fixtures (doors, torches, windows) with their parent's ground baseline.
-3. **Tertiary Key (`priority` $\in \mathbb{Z}$)**: Elevation-matching coplanar tie-breaker declared as an immutable property:
-   - Substrates (rugs, floorboards): `priority = -1`
-   - Upright entities (walls, characters, obstacles): `priority = 0`
-   - Wall fixtures and decals (doors, wall torches): `priority = 1`
-
 **Substrates**
 
 Certain Assets have dedicated Substrate elevations to preserve the fidelity of their rendering order.
 
-| Category/Instance | Dedicated Elevation Substrate |
-| Environ | -4 | 
-| Fluids  | -3 | 
-| Geography | -2 |
-| Bridges | -1 |
+| Substrate | Dedicated Elevation | Assets | 
+| Environ | -4 | `tiles.environs` |
+| Fluids  | -3 |  `effects.fluid` |
+| Surfaces | -2 | `geography.shorelines`, `crafts.struts.floors`, `crafts.struts.paths`, `crafts.struts.flats` |
+| Overlay | -1 | `crafts.bridges`, `crafts.stairs`, `objects.doors`, `crafts.struts.solids`, `crafts.struts.stripes`, `crafts.struts.designs` |
+| Standard | 0 | everything else | 
+
+These values hydrated onto `state.substrate` via [MaterialIndex](./appendices/01-schemas.md#configuration-materials).
 
 During [CollisionMechanics](./05-mechanics.md#collisionmechanics) and Perimeter generation, these Substrates are collapsed into `elevation = 0`, i.e. $\text{elevation} \in [-\infty, 0] \to \text{elevation} = 0$, in order that all Assets on these Substrates may participate in collisions at `elevation = 0`.
+
+**Rendering Order**
+
+World rendering evaluates spatial geometry using discrete macro-elevations, intra-elevation substrate planes, ground perspective, and coplanar priority:
+
+$$
+\text{sort_key}(x) = \Big(x.\text{elevation},\; x.\text{substrate},\; \text{ground_y}(x),\; x.\text{properties.priority}\Big)
+$$
+
+1. **Primary Key (`x.elevation` $\in \mathbb{Z}_{\ge 0}$)**: Discrete topological story or platform tier (`0`, `1`, `2`, ...).
+2. **Secondary Key (`x.substrate` $\in \mathbb{Z}_{\le 0}$)**: Intra-elevation rendering plane within macro-elevation $E$.
+3. **Tertiary Key (`ground_y` $\in \mathbb{Z}$)**: Continuous geometric perspective: $\text{ground_y} = \text{int}(x.\text{state.position.y} + x.\text{dimensions.l} + x.\text{state.anchor})$.
+4. **Quaternary Key (`priority` $\in \mathbb{Z}$)**: Coplanar tie-breaker declared on immutable `AssetProperties`.
 
 ### Asset Hierarchy
 

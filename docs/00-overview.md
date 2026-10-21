@@ -53,13 +53,14 @@ An [Asset Category](./01-assets.md#asset-hierarchy) has a single schema for prop
 
 * Location: `/src/data/config`
 
-Mechanics and other components of the game [Engine](#engine) (e.g. Menus, Actions, etc.) utilize configuration stored in the configuration directory. The following Engine components are configured by the files in this directory.
+Mechanics, Relations and other components of the game [Engine](#engine) utilize configuration stored in the configuration directory:
 
 - [Actions](./01-assets.md#sheets)
 - [Compositions](./03-compositions.md)
 - [Intentions](./04-intentions.md)
 - [Library](./08-plots.md)
 - [Mappings](./02-sprites.md#devices)
+- [Materials](./03-compositions.md#materials)
 - [Mechanics](./05-mechanics.md)
 - [Menus](./06-widgets.md#menus)
 - [Plots](./08-plots.md)
