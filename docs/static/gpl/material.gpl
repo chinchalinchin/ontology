@@ -1,0 +1,46 @@
+GIMP Palette
+Name: Materials Palette
+Columns: 3
+#
+# Genera: chromatics
+ 37  58  94	chromatics-blue-dark
+138 170 171	chromatics-blue-light
+151  60  35	chromatics-red-dark
+243 154 154	chromatics-red-light
+183 140  65	chromatics-yellow-dark
+253 245 204	chromatics-yellow-light
+ 95 135  77	chromatics-green-dark
+110 156 107	chromatics-green-light
+#
+# Genera: geologics
+149 128 128	geologics-limestone-dark
+196 181 159	geologics-limestone-medium
+227 231 211	geologics-limestone-light
+149  56  28	geologics-feldspar-dark
+181  73  54	geologics-feldspar-medium
+211 139  89	geologics-feldspar-light
+ 46  37  51	geologics-granite-dark
+ 77  74  93	geologics-granite-medium
+114 107 126	geologics-granite-light
+ 98  53  28	geologics-marble-dark
+116  75  48	geologics-marble-medium
+153 107  74	geologics-marble-light
+#
+# Genera: metallics
+ 87  42  23	metallics-copper-dark
+123  32   8	metallics-copper-light
+184 126  58	metallics-gold-dark
+222 181 115	metallics-gold-light
+ 94  82  82	metallics-iron-dark
+126 112 104	metallics-iron-light
+#
+# Genera: organics
+212 196 172	organics-cotton-dark
+225 210 169	organics-cotton-medium
+253 251 234	organics-cotton-light
+154 111  55	organics-thatches-dark
+195 151  83	organics-thatches-medium
+237 226 108	organics-thatches-light
+ 62  38  19	organics-wood-dark
+ 98  53  28	organics-wood-medium
+116  75  48	organics-wood-light

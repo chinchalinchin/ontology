@@ -736,7 +736,7 @@ The following atlases can be imposed on Object Assets from the LPC database,
     - Moreover, the main issue with shadows will be the "infinite Door interaction" induced by the `outlayer` of a Door, i.e. the Door cannot transport the Sprite to a position in the `outlayer` which intersects with a Door, or else the Sprite will enter into an infinite loop.
         - Objects were implemented before HitboxSchemea was well-defined; This problem seems solvable by having LayeredHitboxes, similar to ElevatedHitboxes, insofar that they must be *relative* to the deployed layer, but whereas Elevation is scalar, Layer is categorical, i.e. not necessarily a number.
 
-##### Review: Phase 07.04 - Materialization & Category-Wide Atlasing
+##### Self Review I
 
 ###### Review: Implementation
 
@@ -804,41 +804,6 @@ Addressing the four architectural questions raised in **User Review IV**:
 
 1. **Hoisting `Factory` Lookups in `Decomposer.multiply()` (`src/app/services/generators/game/decomposer.py`)**:
     * `_spawn_unit()` calls `Factory.frame(recipe.frame)`, `Factory.animation(recipe.animation)`, and `Factory.hitbox(recipe.hitbox)` on **every single unit iteration** inside the `nx * ny` loop. Because `Frame`, `Animation`, and `HitboxSchema` are `Singleton` instances, resolving them once at the top of `multiply()` and passing the resolved references into `_spawn_unit()` eliminates $3 \times (n_x \cdot n_y)$ redundant dictionary/singleton lookups per multiplied Craft.
-
-
-##### Draft: Unified Craft Properties, Strut Atlasing & Market Materializer
-
-* **Page**: `docs/01-assets.md` and `docs/03-compositions.md`
-* **Heading**: `Crafts` / `Asset Specification: Crafts`
-
-###### Drift
-
-`docs/01-assets.md` and `docs/03-compositions.md` still list `cost: Cost` on `CraftProperties`, document `Bridges` with `OrientedFrame`/`OrientedState`, `Stairs` with `DirectedFrame`/`DirectedHitbox` (including the removed `down` direction), `Railings` as a standalone Craft instance, and `MaterialFrame` key ordering as `{id}-{material}-{blueprint}` instead of `{id}-{blueprint}-{material}`.
-
-###### Update
-
-```markdown
-**Properties: CraftProperties**
-
-- `dimensions: Dimensions`
-- `priority: int = 0`
-- `mass: int = 0`
-- `material: Optional[Material] = None` (`genus`, `host`)
-- `blueprints: Optional[str] = None` (`buildings`, `corridors`, `columns`, `orientations`, `enclosures`, `inclines`, `directions`)
-- `hitboxes: Optional[Dict[str, List[Hitbox]]] = None`
-
-**Frame: MaterialFrame**
-
-- `keys(id, state)`: returns `[(f"{id}-{state.blueprint}-{state.material}", 0, 0)]`
-- `index(id, properties)`: returns `{f"{id}-{bp}-{mat}": (c * w, r * l, w, l)}` across `BLUEPRINT_PARTITIONS[properties.blueprints]` rows and `MATERIAL_PARTITIONS[properties.material.genus]` columns.
-
-**Hitbox: MaterialHitbox**
-
-- `get(properties, state, elevation, frame)`: returns `[]` if `state.blueprint not in settings.OBSTACLE_BLUEPRINTS`, otherwise resolves `properties.hitboxes[state.blueprint]`.
-
-```
-
----
 
 ##### Tasks: Addendum III
 
@@ -953,7 +918,7 @@ I believe all of the enum mappings in `app.config.settings` should be parameteri
 
 Object interactions are governed by InteractionMechanics, CollisionMechanics and their base SpatialMechanics case.
 
-##### Architectural Analysis V: Relationships Masquerading as Settings
+##### Architectural Analysis V
 
 ###### 1. Distinguishing Environment Settings from Domain Relations
 
@@ -1104,7 +1069,7 @@ With that in mind, I believe one of the defining characteristics of Objects in t
 
 The Decomposer will need injected with the Material Index. This will need to occur in the `app.services.orchestration.builder`. This is then orchestrated in `app.services.orchestration.orchestrator`
 
-##### Analysis: Object Inanimacy & `BinaryAnimation` Removal
+##### Architectural Analysis VI
 
 ###### 1. Ontological Distinction: Instantaneous State Projection vs. Temporal Continuity
 
@@ -1127,22 +1092,21 @@ Projecting `state.switch` directly inside `BinaryFrame.keys()` enforces the cate
 
 All changes accepted, except it is not clear where to set the substrate in Migrator. Also, the MaterialIndex isn't being passed in or instantiated currently in the Migrator, to compound the ambiguity. Fix these final items and then conduct an exhaustive analysis of everything that has been changed.  Search for any bugs or logical errors. Isolate any documentation divergences and propose updates to align with current implementation. Once documentation is updated, UAT and Unit testing will start.
 
-##### Final Fixes: `Migrator`, `Decomposer`, `Builder` & `Material` Validation
+##### Tasks: Addendum IV
 
-###### 1. `src/app/services/orchestration/migrator.py`
+**1. `src/app/services/orchestration/migrator.py`**
 
-Injects `materials: Optional[MaterialIndex] = None` into `Migrator.__init__()` (defaulting to `MaterialIndex.from_configuration(self.configurations.materials)` when not explicitly supplied by `Builder`), passes the same `MaterialIndex` instance to the fallback `Decomposer`, and hydrates `state_obj.substrate = self.materials.substrate(instance_key)` directly in the standalone asset branch of `_build_generator()`.
+- [x] Injects `materials: Optional[MaterialIndex] = None` into `Migrator.__init__()` (defaulting to `MaterialIndex.from_configuration(self.configurations.materials)` when not explicitly supplied by `Builder`), passes the same `MaterialIndex` instance to the fallback `Decomposer`, and hydrates `state_obj.substrate = self.materials.substrate(instance_key)` directly in the standalone asset branch of `_build_generator()`.
 
+2. `src/app/services/generators/game/decomposer.py`
 
-###### 2. `src/app/services/generators/game/decomposer.py`
-
-Resolves `state.substrate` without duck-typing across `_spawn_unit()`, `project_door()`, and `_create_asset()`, restores full `range(ny + 2)` corner superimposition in `_multiply_perimeter()`, ensures idempotent reload behavior for serialized units (`multiple=None`), and computes strategy-aware vertical span lengths in `_get_span_length()` for `anchor()` macros.
+- [x] Resolves `state.substrate` without duck-typing across `_spawn_unit()`, `project_door()`, and `_create_asset()`, restores full `range(ny + 2)` corner superimposition in `_multiply_perimeter()`, ensures idempotent reload behavior for serialized units (`multiple=None`), and computes strategy-aware vertical span lengths in `_get_span_length()` for `anchor()` macros.
 
 ###### 3. `src/app/models/properties/core.py` & `src/app/services/orchestration/builder.py`
 
-Removes the deleted `settings.MATERIAL_PARTITIONS` / `settings.CHROMATIC_HOSTS` import from `src/app/models/properties/core.py` by validating chromatic host membership directly against `(Organics, Ceramics)` enums, and updates `Builder.build_board()` and `Builder.build_registry()` so `MaterialIndex` is always compiled and injected into both `Decomposer` and `Migrator`.
+- [x] Removes the deleted `settings.MATERIAL_PARTITIONS` / `settings.CHROMATIC_HOSTS` import from `src/app/models/properties/core.py` by validating chromatic host membership directly against `(Organics, Ceramics)` enums, and updates `Builder.build_board()` and `Builder.build_registry()` so `MaterialIndex` is always compiled and injected into both `Decomposer` and `Migrator`.
 
-##### Review: Phase 07.04 Final Pre-UAT Audit
+##### Self Review II
 
 ###### Overview
 
@@ -1456,4 +1420,52 @@ $$\text{sort\_key}(A) = \Big(A.\text{elevation},\; A.\text{substrate},\; \text{g
 
 ##### User Review VIII
 
-- The Decomposer is now doing two separate things: unpacking compositions and spawning multiplied Assets. 
+1. The Decomposer is now doing two separate things: unpacking compositions and spawning multiplied Assets. 
+
+2. Since we are talking about the Decomposer. It is supposed to be, in the final state, a way of completely formalizing the relations of Assets. Consider this simple Composition,
+
+```yaml
+compositions:
+    brick-house:
+        root:
+            strut: 
+                id: home
+                name: house-exterior
+                material: feldspar
+                blueprint: walls
+            components:
+                objects:
+                    doors:
+                        -   id: panel
+                            name: house-door
+                            anchor: anchor(house-exterior)
+                            outlayer: house-layer
+                            position:
+                                x: 20
+                                y: 20
+                            out:
+                                x: 10
+                                y: 10
+        branches:
+            -   strut: 
+                    id: hallway
+                    name: house-interior
+                    owner: bind(root.owner)
+                    material: blue
+                    blueprint: solid
+                    layer: house-layer
+                    position:
+                        x: 10
+                        y: 10
+                components:
+                    crafts:
+                        struts:
+                            -   id: carpet
+                                name: house-floor
+                                owner: bind(root.owner)
+                                material: blue
+                                blueprint: design
+                                position:
+                                    x: 0
+                                    y: bind(parent.dimensions.l)
+```

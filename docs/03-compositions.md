@@ -10,12 +10,12 @@ Compositions are used to formalize Asset relationships for reuse. For this reaso
 
 **Properties: CraftProperties**
 
-* `dimensions: Dimensions`
-* `hitboxes: List[Hitbox]`
-* `materials: List[str]`
-* `blueprints: List[str]`
-* `mass: int`
-* `priority: int`
+- `dimensions: Dimensions`
+- `priority: int = 0`
+- `mass: int = 0`
+- `material: Optional[Material] = None`
+- `blueprints: Optional[str] = None` 
+- `hitboxes: Optional[Dict[str, List[Hitbox]]] = None`
 
 ### Struts 
 
@@ -35,14 +35,15 @@ A Blueprint is constant along the axis of Material, and Material is constant alo
 
 Material serves mainly to alter the color and shading of the Strut. A Material must have implemenations for every Blueprint in a Strut atlas.
 
-- Organics: `wood`, `thatches`
-- Geologics: `brick`, `granite`, `marble`, `stone`, `sandstone`
+- Ceramics: `clay`
+- Organics: `cotton`, `wood`, `thatches`
+- Geologics: `limestone`, `feldspar`, `granite`, `marble`
 - Metallics: `copper`, `iron`, `gold`
-- Chromatics: `white`, `red`, `blue`, `yellow`, `green`
+- Chromatics: `neutral`, `red`, `blue`, `yellow`, `green`
 
 **Material Palette**
 
---8<-- "static/md/composition-material-palette.md"
+--8<-- "static/md/material-palette.md"
 
 **Blueprints**
 
@@ -55,9 +56,28 @@ Blueprints describe specific structural implementations of a Strut. A Blueprint 
     - `roofs`: Building enclosures.
     - `paths`: Exterior ground surfaces.
     - `halls`: Interior support surfaces.
-- Interior Blueprints:
-    - `carpets`
-    - `wallpapers`
+- Corridor Blueprints:
+    - `solids`: 
+    - `stripes`: 
+    - `designs`: 
+- Column Blueprints:
+    - `crowns`: 
+    - `shafts`: 
+    - `bases`: 
+- Direction Blueprints:
+    - `up`: 
+    - `left`: 
+    - `down`: 
+    - `right`: 
+- Enclosures Blueprints:
+    - `north`: 
+    - `east`: 
+    - `south`: 
+    - `west`:
+- Inclines Blueprints:
+    - `up`: 
+    - `left`: 
+    - `right`: 
 
 **Animation: None**
 
@@ -85,16 +105,6 @@ N/A
 
 Stairs are static Crafts sensors ($m = -1$) that provide elevation transitions when traversed. 
 
-**Directed Specification**
-
-- `right`: Stair starts in lower right corner and ends in upper left corner.
-- `left`: Stair starts in lower left corner and ends in upper right corner.
-- `up`: Stairs start along bottom edge and end along top edge.
-- `down`: Stairs start along top edge and end along top edge.
-
-!!! important
-    Due to the nature of top-down two-dimensionsal graphics, to preserve perspective, the `down` direction frame must be truncated, i.e. this direction does not fill the full dimensions of the Stair frame.
-
 **Elevation Transitions**
 
 The direction of the elevation transition calculation is dependent on the direction of the transitioning Asset's velocity. For example, once an Asset intersects a Stair, the following conditions are elevated,
@@ -108,11 +118,6 @@ The direction of the elevation transition calculation is dependent on the direct
 - `stairs.state.direction == 'down' and asset.state.velocity.vy > 0: asset.state.elevation += stairs.state.delta`
 - `stairs.state.direction == 'down' and asset.state.velocity.vx < 0: asset.state.elevation -= stairs.state.delta`
 
-**Frame: DirectedFrame**
-
-* `keys(id, state)`: returns `[(f"{id}-{state.direction}", 0, 0)]`
-* `index(id, properties)`: returns `{f"{id}-{Directions.*}": (0, 0, w, l)}`
-
 **State: StairState**
 
 * `layer: str`
@@ -121,10 +126,6 @@ The direction of the elevation transition calculation is dependent on the direct
 * `direction: str` (`up`, `down`, `left`, `right`)
 * `delta: int = 1`
 * `owner: Optional[str] = None`
-
-**Hitbox: DirectedHitbox**
-
-* `get(state, properties, frame): returns properties.hitboxes[state.direction]`
 
 ### Platforms
 
@@ -148,51 +149,11 @@ Platforms have two kinds of hitboxes: baseline hitboxes and elevated hitboxes, w
 - `elevations(properties, state): returns [state.elevation + k for k in properties.hitboxes.keys()]`
 - `get(properties, state, elevation, frame): returns properties.hitboxes.get(elevation - state.elevation, [])`
 
-### Carpentry
-
-Carpentry is a collection of inanimate, immutable Crafts. It is distinguished from other Crafts by its directed frame indexing schema. Carpentry encapsulate furniture, living space fixtures and other common household furnishings.
-
-**Frame: DirectedFrame**
-
-TODO
-
-**State: DirectedState**
-
-TODO
-
-**Hitbox: DirectedHitbox**
-
-TODO
-
-### Railings
-
-Railings are a collection of inanimate, immutable Crafts. They are distinguished from other Crafts by its oriented frame indexing schema.
-
-
-**Frame: OrientedFrame**
-
-* `keys(id, state): returns [(f"{id}-{state.orientation}", 0, 0)]`
-* `index(id, properties): returns {f"{id}-{Orientations.*}": (0, 0, w, l)}`
-
-
-**State: OrientedState**
-
-* `layer: str`
-* `position: Position`
-* `elevation: int`
-* `orientation: str` (`horizontal`, `vertical`)
-* `multiple: Multiple` (`nx > 1` or `ny > 1`)
-* `owner: Optional[str]`
-
-**Hitbox: OrientedHitbox**
-
-* `get(properties, state, frame): returns properties.hitboxes[state.orientation]`
-
 ## Composition Overview
 
-From the perspective of the [state files](./00-overview.md#state), Compositions are another type of Asset that can be deployed onto the Board. Similar to the [Player](./02-sprites.md#player), they are a "*virtual*" Asset composed of other Assets, i.e. they do not have properties of their own. Unlike the Player, which is a special type of Sprite, Compositions are collections of multiple Assets. When a Composition is deployed onto the Board, its individual Assets are added to the appropriate (Category, Instance)-nodes in the [Asset Hierarchy](./01-assets.md#asset-hierarchy)
+From the perspective of the [state files](./00-overview.md#state), Compositions are another type of Asset that can be deployed onto the Board. Similar to the [Player](./02-sprites.md#player), they are a "*virtual*" Asset composed of other Assets, i.e. they do not have properties of their own. Unlike the Player, which is a special type of Sprite, Compositions are collections of multiple Assets. When a Composition is deployed onto the [Board](./00-overview.md#board), its individual Assets are added to the appropriate (Category, Instance)-nodes in the [Asset Hierarchy](./01-assets.md#asset-hierarchy)
 
-A Composition is a way to reuse common Asset configurations in the state without having to specify their individual components each time they are deployed. Functionally, Compositions serve no purpose from the Board's perspective. They only serve to simplify the amount of state specification that is required to fully declare a complex, high-level game Board.
+A Composition is a way to reuse common Asset configurations in the state without having to specify their individual components each time they are deployed. Functionally, Compositions serve no purpose from the Board's perspective. They only serve to simplify the amount of state boilerplate that is required to fully declare a complex, high-level game entites on the [Board](./00-overview.md#board).
 
 Compositions are organized around [Struts](./01-assets.md#struts). They serve as abstract containers (or wrappers) for Struts. Compositions, in a sense, are the *realization* of a Strut. While Struts can be deployed individually onto the Board, their true purpose is to provide a "root" for other Assets.
 
@@ -237,15 +198,17 @@ compositions:
     brick-house:
         root:
             strut: 
-                id: frame-brick
+                id: home
                 name: house-exterior
+                material: feldspar
+                blueprint: walls
             components:
                 objects:
                     doors:
-                        -   id: mansion
+                        -   id: panel
                             name: house-door
                             anchor: anchor(house-exterior)
-                            outlayer: 'compose-layer'
+                            outlayer: house-layer
                             position:
                                 x: 20
                                 y: 20
@@ -254,27 +217,26 @@ compositions:
                                 y: 10
         branches:
             -   strut: 
-                    id: wall-blue
+                    id: hallway
                     name: house-interior
                     owner: bind(root.owner)
-                    layer: 'compose-layer'
+                    material: blue
+                    blueprint: solid
+                    layer: house-layer
                     position:
                         x: 10
                         y: 10
                 components:
-                    objects:
-                        doors:
-                            -   id: door-shadow
-                                name: door-frame
-                                layer: 'compose-layer'
-                                anchor: anchor(house-interior)
-                                outlayer: bind(root.layer)
+                    crafts:
+                        struts:
+                            -   id: carpet
+                                name: house-floor
+                                owner: bind(root.owner)
+                                material: blue
+                                blueprint: design
                                 position:
-                                    x: 20
-                                    y: 20
-                                out:
-                                    x: 10
-                                    y: 10
+                                    x: 0
+                                    y: bind(parent.dimensions.l)
 ```
 
 !!! note "Pseudo State"
@@ -285,10 +247,10 @@ compositions:
 
     See [Rendering](./11-architecture.md#rendering) for more information on rendering order.
     
-This is a formula for a `brick-house` composed of two Struts on different [Layers](./00-overview.md#layers), each of which have their own [Door](./01-assets.md#doors), each Door being linked to one another through a circuit (`'compose-layer' <-> bind(root.layer)`). In this way, the "inside" of Assets can be traversed. In other words, each Composition may be composed of separate, independent Layers. 
+This is a formula for a `brick-house` composed of two Struts on different [Layers](./00-overview.md#layers), each of which have their own [Door](./01-assets.md#doors), each Door being linked to one another through a circuit (`'house-layer' <-> bind(root.layer)`). In this way, the "inside" of Assets can be traversed. In other words, each Composition may be composed of separate, independent Layers. 
 
 !!! note "Pseudo State Overrides"
-    Except for Position (see immediately below), the Pseudo State of the components of a Composition overrides the deployed state of the root Strut. In this example, the `state.layer` of `door-frame` would be `compose-layer`, regardless of the `layer` passed to the root Strut when deployed. 
+    Except for Position (see immediately below), the Pseudo State of the components of a Composition overrides the deployed state of the root Strut. In this example, the `state.layer` of `door-frame` would be `house-layer`, regardless of the `layer` passed to the root Strut when deployed. 
 
 The root Strut (`brick-house.root`) does not have a Position, where as the `brick-house.branches` Strut does; this is the defining feature of Composition Pseudo State. The Composition configuration leaves the root Strut Position state and layer "empty", so that it can be injected by the state file during deployment. Component Assets and branching Struts define Pseudo States relative to their hierarchical contexts. Consider deploying the above Composition onto a Board, e.g. with the following YAML in the state directory,
 
@@ -315,8 +277,8 @@ Hydration uses the following rules:
     * **Same Layer:** `Child Position = Parent Position + Child Pseudo Position`.
     * **Cross Layer:** When an entity defines a `layer` differing from its immediate parent, coordinates decouple from the parent's world position and anchor to layer origin `(0, 0)`: `Child Position = (0, 0) + Child Pseudo Position`.
         * *Root Component (`house-door` on `'0'`):* `(100, 100) + (20, 20) = (120, 120)`
-        * *Branching Strut (`house-interior` on `'compose-layer'`):* `(0, 0) + (10, 10) = (10, 10)`
-        * *Branch Component (`door-frame` on `'compose-layer'`):* `(10, 10) + (20, 20) = (30, 30)`
+        * *Branching Strut (`house-interior` on `'house-layer'`):* `(0, 0) + (10, 10) = (10, 10)`
+        * *Branch Component (`door-frame` on `'house-layer'`):* `(10, 10) + (20, 20) = (30, 30)`
         * **Teleport `out` Resolution:**
 * **Returning to Root Layer (`outlayer == root.layer`):** Teleport exit positions offset by the deployed root position: `Child Out = Root Position + Child Pseudo Out`. (`door-frame.out` evaluates to `(100, 100) + (10, 10) = (110, 110)`).
 * **Entering Interior Layers (`outlayer != root.layer`):** Teleport exit positions remain local to the destination layer's coordinate plane: `Child Out = Child Pseudo Out`. (`house-door.out` evaluates to `(10, 10)`).
@@ -326,6 +288,9 @@ Other than Position, which is calculated according to the above formula, any sta
 In addition, unique names are generated for each component Asset of a Composition according to the schema: `<instance.name>-<strut.name>-<component.name>-<increment>`, where `<increment>` is an index to track the number of unique Compositions deployed on the Board to ensure each has a correspondingly unique name.
 
 #### Bindings
+
+!!! todo
+    Out of date as Phase 07.04. General idea of binding to root and parents is still correct, but Doors now emit shadows on their linked layers, so this example is not correct anymore.
 
 The Pseudo State of component Assets (and branching Struts) can be bound to the root Struts Deployed State as well, to allow for the parameterization of relationships. In this example, the Deployed State `layer` is passed down as a reference to the component `door-frame` Asset, which then uses it to specify its (Pseudo State) attribute for `outlayer` through the use of `bind(root.layer)`; This is how the interior Door leads back to the deployed layer, allowing the Player to return from whence they came. In other words, a binding is a formal constraints between Asset states that makes component Asset states dependent on the root Strut state. This constraint is realized during the Composition unpacking and Pseudo State hydration.
 
@@ -429,17 +394,3 @@ $$
 $$
 --8<-- "static/tex/composition-cost.tex"
 $$
-
-##### Factors
-
-**Material**
-
---8<-- "static/md/composition-material-factor.md"
-
-**Blueprint**
-
---8<-- "static/md/composition-blueprint-factor.md"
-
-##### Ledger
-
---8<-- "static/md/composition-cost-ledger.md"

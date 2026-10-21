@@ -129,11 +129,11 @@ The following table details the *unique* property attributes of each Asset Categ
 | - | - |
 | Tiles | Base, Friction |
 | Cursors | Base |
-| Objects | Base, Hitboxes, Mass |
-| Effects | Base, Hitboxes, Lifecycle, Count, Mass |
+| Objects | Base, Hitboxes, Mass, Material, Count |
+| Effects | Base, Hitboxes, Mass, Lifecycle, Count|
 | Geography | Base, Hitboxes, Tile, Fluid, Thickness | 
 | Resources | Base, Hitboxes, Lifespan, Loot |
-| Crafts | Base, Hitboxes, Mass, Cost |
+| Crafts | Base, Hitboxes, Mass, Material, Blueprint |
 | Sheets | Base, Hitboxes, Mass, Stack, Actions |
 | Widgets | Base, Frames |
 
@@ -158,6 +158,7 @@ Each Asset state has, at bare minimum:
 - `layer: str`
 - `elevation: Optional[int] = None`
 - `anchor: Union[int, str] = 0`
+- `substrate: int = 0`
 - `mutators: Mutators`
 
 These attributes belong to the base class from which all other States inherit.
@@ -537,29 +538,35 @@ N/A
 
 * Property File: `/src/assets/crafts/**/*.yaml`
 
-Crafts are Assets that can be instantiated through game [Mechanics](./05-mechanics.md), such as CommerceMechanics or ChemistryMechanics. All Crafts have a `cost` associated with them. 
+Crafts are Assets that can be instantiated through [Game Mechanics](./05-mechanics.md) or utilized in [Compositions](./03-compositions.md). They encapsulate structural components of the game and are mainly used to establish boundaries in the game and stamp static decals onto the Screen.
 
-**Cost**
+Many Crafts are inherently bound to the process of [Composition](./03-compositions.md). Several specifications (Struts, Stairs, Decor) are covered in more detail in the [Composition documentation](./03-compositions.md#asset-specifications)
 
-Cost is a set of quantities that must be satisfied before the Craft can be instantiated. It is a "formula" for the Craft's creation. 
+**Material & Blueprints**
 
-```yaml
-cost:
-    - key: <key>
-      quantity: <quantity>
-```
+Craft Asset files are organized into a (Blueprint, Material) atlas, where each row denotes a different structural schematic (Blueprint) and columns denotes an aesthetic quantity (Material) used to bind the crafting, economic and resource logic into a unified system. 
 
-The `<key>` in the `cost` is a reference to [Inventory Loot](./02-sprites.md#inventory). The `cost` of a Strut is deducted from a Sprite's Inventory Loot when being instantiated.
+The *Blueprint Space* and *Material Space* are further subdivded into non-overlapping partitions of Genera and Schema.
+
+--8<-- "static/md/material-genera.md"
+
+--8<-- "static/md/blueprint-schema.md"
+
+Chromatic Material represent discrete colors and thus require a *Host Material* to accept their payload.
 
 **Properties: CraftProperties**
 
-* `dimensions: Dimensions`
-* `priority: int`
-* `hitboxes: List[Hitbox]`
-* `cost: Cost`
-* `mass: int`
+- `dimensions: Dimensions`
+- `priority: int = 0`
+- `mass: int = 0`
+- `material: Optional[Material] = None`
+- `blueprints: Optional[str] = None` 
+- `hitboxes: Optional[Dict[str, List[Hitbox]]] = None`
 
-Many Crafts are inherently bound to the process of [Composition](./03-compositions.md). Several specifications (Struts, Stairs, Platforms) are covered in more detail in the [Composition documentation](./03-compositions.md#asset-specifications)
+**Model: Material**
+
+- `genus: str`: Partition of Material Space.
+- `host: str`: Host Material for Genera.
 
 ### Bridges
 
