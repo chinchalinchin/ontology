@@ -70,21 +70,21 @@ recipes:
       hitbox: dynamic
   objects:
     chests:
-      frame: iterable
+      frame: binary
       animation: binary
       hitbox: static
     crates:
-      frame: single
+      frame: object
       animation: none
       hitbox: static
     doors:
-      frame: single
+      frame: object
       animation: none
-      hitbox: static
-    gates: 
-      frame: iterable
+      hitbox: layered
+    gates:
+      frame: binary
       animation: binary
-      hitbox: static
+      hitbox: switch
     obstacles:
       frame: single
       animation: none
@@ -94,7 +94,7 @@ recipes:
       animation: binary
       hitbox: static
     signs:
-      frame: single
+      frame: object
       animation: none
       hitbox: static
     rafts:

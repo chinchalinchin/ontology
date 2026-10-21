@@ -55,7 +55,7 @@ class ObjectProperties(AssetProperties):
     mass: int = 0
     count: int = 1
     material: Optional[Material] = None
-    hitboxes: Optional[List[Hitbox]] = None # type: ignore
+    hitboxes: Optional[Union[Dict[str, List[Hitbox]], List[Hitbox]]] = None # type: ignore
 
 @dataclass(slots=True)
 class TileProperties(AssetProperties):

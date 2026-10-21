@@ -291,8 +291,14 @@ class Builder:
             MechanicsInstance(Mechanics.MOTION.value)
         ]
         
-        self.core = [Factory.mechanics(m, self.executors, self.relations) for m in core_cfg]
-        self.world = [Factory.mechanics(m, self.executors, self.relations) for m in world_cfg]
+        self.core = [
+            Factory.mechanics(m, self.executors, self.relations) 
+            for m in core_cfg
+        ]
+        self.world = [
+            Factory.mechanics(m, self.executors, self.relations) 
+            for m in world_cfg
+        ]
 
         self.library = Library(self.context.configurations.library)
         self.binder = Binder(self.registry, self.library)

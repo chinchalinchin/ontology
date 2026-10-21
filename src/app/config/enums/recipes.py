@@ -11,6 +11,7 @@ from enum import Enum
 #   NOTE: These are required Recipe configuration keys
 
 class FrameRecipe(str, Enum):
+    BINARY          = "binary"
     CARDINAL        = "cardinal"
     DIRECTED        = "directed"
     FLUID           = "fluid"
@@ -19,6 +20,7 @@ class FrameRecipe(str, Enum):
     MATERIAL        = "material"
     METER           = "meter"
     NONE            = "none"
+    OBJECT          = "object"
     ORIENTED        = "oriented"
     SINGLE          = "single"
     SEASONAL        = "seasonal"
@@ -41,6 +43,7 @@ class HitboxRecipe(str, Enum):
     DIRECTED        = "directed"
     DYNAMIC         = "dynamic"
     ELEVATED        = "elevated"
+    LAYERED         = "layered"
     MATERIAL        = "material"
     NONE            = "none"
     ORIENTED        = "oriented"

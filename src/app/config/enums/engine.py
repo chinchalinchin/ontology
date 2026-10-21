@@ -54,6 +54,10 @@ class Substrates(int, Enum):
     OVERLAYS        = -1
     STANDARD        = 0
 
+class LayerProjections(str, Enum):
+    IN              = "in"
+    OUT             = "out"
+    
 # -------------------------------- ENGINE ASSET ENUMERATIONS
 
 class MotiveAssets(str, Enum):

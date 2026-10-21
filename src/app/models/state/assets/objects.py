@@ -14,9 +14,11 @@ from dataclasses import (
 )
 
 # Application Libraries
+from app.config.enums import (
+    LayerProjections
+)
 from app.models.adapters import (
     PydanticPosition as Position, 
-    PydanticMultiple as Multiple, 
     PydanticVelocity as Velocity,
 )
 from app.models.state.core import (
@@ -50,6 +52,7 @@ class ContainerState(AssetState):
 class DoorState(AssetState):
     out: Optional[Position] = None # type: ignore
     outlayer: Optional[str] = None
+    projection: str = LayerProjections.IN.value
 
 @dataclass(slots=True)
 class SwitchState(AssetState):

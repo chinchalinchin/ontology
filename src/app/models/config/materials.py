@@ -59,7 +59,8 @@ class BlueprintPartition:
 @dataclass(slots=True, frozen=True)
 class BlueprintSpace:
     strategy: MultiplicationStrategies = MultiplicationStrategies.SIMPLE.value
-    partitions: Dict[Union[Buildings,
+    partitions: Dict[Union[
+        Buildings,
         Corridors,
         Columns,
         Enclosures,

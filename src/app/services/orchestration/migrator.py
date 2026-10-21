@@ -75,29 +75,20 @@ class Migrator:
         
         # 1. Compile the manifest of objects to generate
         tasks = []
-        if hasattr(
-            self.state, 
-            Shortcuts.COMPOSITIONS.value
-        ) and self.state.compositions:
+        if self.state.compositions:
             for comp_state in self.state.compositions:
                 tasks.append((
                     Shortcuts.COMPOSITIONS.value, 
                     comp_state
                 ))
 
-        if hasattr(
-            self.state,
-            Shortcuts.PLOTS.value
-        ) and self.state.plots:
+        if self.state.plots:
             tasks.append((
                 Shortcuts.PLOTS.value, 
                 self.state.plots
             ))
 
-        if hasattr(
-            self.state, 
-            Shortcuts.CALENDAR.value
-        ) and self.state.calendar:
+        if self.state.calendar:
             self.board.calendar = self.state.calendar
             
         for cat_field in dataclasses.fields(self.state):
@@ -134,13 +125,26 @@ class Migrator:
                 expanded_assets = self.decomposer.unpack(comp_state)
                 self.board.add(expanded_assets)
 
-            elif task[0] == Shortcuts.ASSETS.value and \
-                task[2] in MultipliedAssets:
+            elif (
+                task[0] == Shortcuts.ASSETS.value 
+                and task[2] in MultipliedAssets
+            ):
 
                 multiplied_state = task[3]
-                multiplied_asset = self.decomposer.multiply(multiplied_state, task[1], task[2])
+                multiplied_asset = self.decomposer.multiply(
+                    multiplied_state, 
+                    task[1], 
+                    task[2]
+                )
                 self.board.add(multiplied_asset)
-                
+
+            elif (
+                task[0] == Shortcuts.ASSETS.value
+                and task[2] == AssetInstances.DOORS.value
+            ):
+                door_state = task[3]
+                self.board.add(self.decomposer.project_door(door_state))
+
             elif task[0] == Shortcuts.PLOTS.value:
                 plot = task[1]
                 self.board.set_plot(plot)

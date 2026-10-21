@@ -23,6 +23,8 @@ import app.config.settings as settings
 from app.config.enums import (
     AssetInstances,
     ChannelTypes,
+    Substrates,
+    LayerProjections,
 )
 from app.models.properties import AssetProperties
 from app.models.state import (
@@ -206,9 +208,13 @@ class Asset:
     @property
     def substrate(self) -> int:
         if self.instance == AssetInstances.STRUTS.value:
-            if settings.SUBSTRATES.get(self.state.blueprint, None) is not None:
-                return settings.SUBSTRATES.get(self.state.blueprint)
-        return settings.SUBSTRATES.get(self.taxonomy.instance, 0)
+            return settings.SUBSTRATES.get(self.state.blueprint, Substrates.STANDARD.value)
+        if (
+            self.instance == AssetInstances.DOORS.value
+            and self.state.projection == LayerProjections.OUT.value
+        ):
+            return Substrates.OVERLAYS.value
+        return settings.SUBSTRATES.get(self.taxonomy.instance, Substrates.STANDARD.value)
 
     @property
     def hitboxes(self) -> List[Hitbox]:

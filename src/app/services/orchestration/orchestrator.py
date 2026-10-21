@@ -1,7 +1,7 @@
 """
-# Ontology: app.services.orchestration.constructors
+# Ontology: app.services.orchestration.orchestrator
 
-Classes for constructing game objects.
+Application dependency pipeline.
 """
 # Application Libraries
 from app.config.enums import Menus

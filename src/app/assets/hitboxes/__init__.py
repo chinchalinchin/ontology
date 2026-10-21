@@ -9,6 +9,10 @@ from app.assets.hitboxes.crafts import (
     ElevatedHitbox,
     MaterialHitbox
 )
+from app.assets.hitboxes.objects import (
+    LayeredHitbox,
+    SwitchHitbox
+)
 from app.assets.hitboxes.sheets import (
     AttackHitbox
 )

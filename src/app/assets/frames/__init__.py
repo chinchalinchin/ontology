@@ -15,6 +15,10 @@ from app.assets.frames.effects import (
 from app.assets.frames.geography import (
     CardinalFrame
 )
+from app.assets.frames.objects import (
+    ObjectFrame,
+    BinaryFrame
+)
 from app.assets.frames.resources import (
     StageFrame
 )
