@@ -46,7 +46,7 @@ Blueprints describe specific structural implementations of a Craft. A Blueprint 
 
 ## Category: Crafts
 
-Compositions are used to formalize Asset relationships for reuse. For this reason, [Crafts](./01-assets.md#crafts) are an essential component of Compositions. The following section provides an in-depth description of each Craft Instance.
+Compositions are used to formalize Asset relationships for reuse. For this reason, [Crafts](./01-assets.md#category-crafts) are an essential component of Compositions. The following section provides an in-depth description of each Craft Instance.
 
 **Behavior: MultiplicationStrategies**
 
@@ -56,24 +56,6 @@ Each Blueprint Schema has a unique Multiplication Strategy associated with it in
 - `expansion`: 
 - `oriented`:
 - `perimeter`:
-
-**Properties: CraftProperties(AssetProperties)**
-
-- `mass: int = 0`
-- `material: Optional[Material] = None`
-- `blueprints: Optional[str] = None` 
-- `hitboxes: Optional[Dict[str, List[Hitbox]]] = None`
-
-**State: CraftState(AssetState)**
-
-* `material: str`
-* `blueprint: str`
-* `multiple: str`
-
-**Frame: MaterialFrame**
-
-* `keys(id, state): returns [ (f"{id}-{state.material}-{state.blueprint}", 0, 0) ]`
-* `index(id, properties): returns { f"{id}-{i}-{j}: (i * properties.dimensions.w, j * properties.dimensions.l, properties.dimension.w, properties.dimensions.l) } for i, j in product(properties.blueprints, properties.materials)`
 
 ### Struts 
 

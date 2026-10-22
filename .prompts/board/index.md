@@ -58,6 +58,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 04.05: Gizmos](./phases/refactor/refactor-04-05.md)
     - *Phase 06:*
       - [x]: [Phase 06.01: Expressions](./phases/refactor/refactor-06-01.md)
+      - [ ]: [Phase 06.01: Cursors](./phases/refactor/refactor-06-02.md)
     - *Phase 07:*
       - [x]: [Phase 07.01: Elevation Sorting](./phases/refactor/refactor-07-01.md)
       - [x]: [Phase 07.02: Platforms & Elevated Hitboxes](./phases/refactor/refactor-07-02.md)

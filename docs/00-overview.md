@@ -68,59 +68,51 @@ Mechanics, Relations and other components of the game [Engine](#engine) utilize 
 
 ## Application 
 
-The core components of the application are listed below in this section, in the approximate order they are called in the course of bootstrapping.
+The core application consists of interconnected system of Configurations, Services, Libraries and Components.
 
 See [Architecture documentation](./11-architecture.md) for more information.
 
-### Loader
+## Configurations
 
-- Package: `app.config.loader`
+### Configuration: Loader
 
-The Loader is responsible for reading in the configuration files for properties and state, converting them into Python data structures.
+- Address: `app.config.loader`
 
-### Factory
+The Loader is responsible for reading in Configuration files for Properties and State, and then validating them into Models via Pydantic TypeAdaptors.
 
-- Package: `app.services.generators.game.factory`
+### Configuration: Enums
+
+- Address: `app.config.enums`
+
+All semantic terms utilized by the Engine are enumerated within this package. 
+
+## Services
+
+### Service: Factory
+
+- Address: `app.services.generators.game.factory`
 
 The Factory builds Assets and other game components based on Recipes. 
 
-### Orchestrator
+### Service: Orchestrator
 
-- Package: `app.services.orchestration.orchestrator`
+- Address: `app.services.orchestration.orchestrator`
 
-The Orchestrator is the dependency injection system. It is responsible for converting validated data structures into application data models and supplying them to application classes.
+The Orchestrator is the dependency injection system. It is responsible for converting validated data models into application components.
 
-### Registry
+## Libraries
 
-- Package: `libs.graphics.registry`
+### Library: Registry
 
-The Registry loads in all of the Asset files when the application bootstraps. The frames are indexed and stored in the memory. 
+- Address: `libs.graphics.registry`
 
-### Engine
+The Registry loads in all of the Asset files while the application bootstraps. Each Asset Frame is indexed and stored in memory. 
 
-- Package: `app.game.engine`
+## Components
 
-The Engine handles the core gameplay loop and framerate calculations. 
+### Components: Board
 
-**Component: Bus**
-
-The Engine contains a Bus for processing Menu Events.
-
-**Component: Provider**
-
-The Engine contains a Provider for instantiating Menus.
-
-**Component: Binder**
-
-The Provider contains a Binder for binding Widget states to game state.
-
-**Component: Library**
-
-The Provider contains a Library for injecting Widget states with plot-dependent content.
-
-### Board
-
-- Package: `app.game.board`
+- Address: `app.game.board`
 
 The Board acts as the Game's in-memory "database". It holds all in-game Assets and Configurations during the game loop, providing queryable interfaces to the Engine and Mechanics.
 
@@ -151,13 +143,35 @@ THe Board exposes predicates for asserting conditions on the Board state.
 
 **Component: Cradle**
 
-The Board posseses a Cradle field for instantiating Assets through game Mechanics, e.g. `CombatMechanics` uses the Cradle to inject new Projectiles into the Board state.
+The Board posseses a Cradle field for instantiating Assets through game [Mechanics](./05-mechanics.md).
 
 **Component: Migrator**
 
 The Board posses a Migrator field for asynchronously loading game state.
 
-### Screen
+### Game: Engine
+
+- Package: `app.game.engine`
+
+The Engine handles the core gameplay loop and framerate calculations. 
+
+**Component: Bus**
+
+The Engine contains a Bus for processing Menu Events.
+
+**Component: Provider**
+
+The Engine contains a Provider for instantiating Menus.
+
+**Component: Binder**
+
+The Provider contains a Binder for binding Widget states to game state.
+
+**Component: Library**
+
+The Provider contains a Library for injecting Widget states with plot-dependent content.
+
+### Game: Screen
 
 - Package: `app.game.screen`
 

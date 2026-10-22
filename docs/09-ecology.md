@@ -11,7 +11,7 @@ The Ecology of the [Board](./00-overview.md#board) is a collection of interactin
 
 ### Category: Effects
 
-#### Instance: Fluids
+#### Effect: Fluids
 
 Fluids are directional Effects that project along a `source` Direction until obstructed by an obstacle. Once obstructed, Fluids form Pools around the obstacle and bifuricate into secondary streams.
 
@@ -54,11 +54,30 @@ Fluids declare an explicit `height: 0` and `depth: -1`. This ensures the [render
 
 * `get(properties, state, frame): returns state.hitboxes`
 
-### Category: Geography
+### Category: Geographies
 
-#### Instance: Shorelines
+#### Geography: Shorelines
 
-Shorelines are procedural, inanimate Geography sensors instantiated along unoccluded environmental water margins. Rather than belonging to individual fluid emitters, Shorelines are derived at the layer level: `FluidMechanics` aggregates all active fluid streams and annular pools on a layer, derives the outer perimeter hull via `geometry.contours()`, samples bordering substrate tiles from `Board`, and coalesces contiguous segments into cohesive shoreline entities.
+Shorelines are procedural, inanimate Geography sensors instantiated along unoccluded environmental water margins. Rather than belonging to individual fluid emitters, Shorelines are derived at the layer level: [FluidMechanics](./05-mechanics.md#fluidmechanics) aggregates all active fluid streams and annular pools on a layer, derives the outer perimeter hull via `geometry.contours()`, samples bordering substrate tiles from `Board`, and coalesces contiguous segments into cohesive shoreline entities.
+
+**Relation: ShorelineIndex**
+
+Shoreline Assets act as relational bridges across environmental Categories and Instances. Specifically, Shorelines declare secondary keys referencing the [Environ Tile](#environ) and optionally [Fluid Effect](#fluids) Assets they border:
+
+* `tile: str`: Asset ID of the [Environ Tile](#environ) to which the Shoreline binds.
+* `fluid: Optional[str]`: Optional Asset ID of the [Fluid Effect](#fluids) required to activate this Shoreline.
+
+Formally, this relation is expressed,
+
+$
+\text{Index}[(tile_id, fluid_id)] \to shoreline_id
+$
+
+**Atlas: (row: Direction, column: Season)**
+
+* columns: `^(?:[spring|summer|autumn|winter])`
+* rows: `^(?:[up|left|down|right])`
+
 
 **Frame: CardinalFrame**
 
