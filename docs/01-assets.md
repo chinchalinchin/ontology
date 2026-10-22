@@ -716,7 +716,7 @@ Fluids play a vital role in Seasons and Ecology. They are covered in more detail
 
 * Property File: `/src/assets/geography/**/*.yaml`
 
-Geography Assets represent inanimate, immutable structural and topographical landforms (e.g., shorelines, cliffs, ledges, and terraces).
+Geography Assets encapsulate structural and topographical landforms. Geography is not deployed onto the Board in an analogous fashion to other Asset Categories. Instead, Geography is procedurally generated using applications services (e.g. Actuator, Cartographer). See [Ecology documentation](./09-ecology.md#instance-fluids) for more information.
 
 **Behavior: Rendering**
 
@@ -727,16 +727,6 @@ Shorelines belong to a dedicated Substrate, `substrate = -3`, to guarantee the c
 * columns: `^(?:[spring|summer|autumn|winter])`
 * rows: `^(?:[up|left|down|right])`
 
-
-
-
-
-
-
-2. **Keying**: Uses `Seasons` and `Directions`. Keys follow `{id}-{season}-{direction}` with fractional slices keyed as `{id}-{season}-{direction}-{rem}`.
-3. **Ordering**: Shorelines below to a dedicated Substrate, `elevation = -3`, to guarantee the correct ordering.
-4. **Lifecycle & Caching**: Shorelines are procedural entities generated via the *Cartographer* class. Frame keys are computed  and cached on `state._keys`. When [SeasonMechanics](./05-mechanics.md#world) emits a SeasonEvent, active Shoreline state seasons are synchronized and frame caches invalidated (`state._keys = None`) without triggering geometric regeneration.
-
 **Properties: GeographyProperties(AssetProperties)**
 
 * `mass: int`
@@ -745,25 +735,26 @@ Shorelines belong to a dedicated Substrate, `substrate = -3`, to guarantee the c
 * `tile: str` (Primary key)
 * `fluid: str` (Secondary key)
 
-Geography is not deployed onto the Board in an analogous fashion to other Asset Categories. Instead, Geography is procedurally generated using applications services (e.g. Actuator, Cartographer). See [Ecology documentation](./09-ecology.md#instance-fluids) for more information.
-
 **Hitbox: DynamicHitbox**
 
 * `get(properties, state, elevation, frame): returns state.hitboxes`
 
-## Resources
+## Category: Resources
 
 * Property File: `/src/assets/resources/**/*.yaml`
 
-Resources are mutable Assets deployed onto the Board that progress through discrete stages, dependent on [Seasonal](./05-mechanics.md#world) parameters. 
+Resources are biological Assets deployed onto the Board that progress through discrete life stages, dependent on [Seasonal and Temporal](./05-mechanics.md#world) factors. 
 
-**Loot**
+**Behavior: Ecological**
 
-A Resource contains a `loot` key. When Resources are mined through the `mine` [Intention](./04-intentions.md), they are converted into [Collectables](#effects). The `loot` key from the Resource is passed to the Collectable via the [Cradle](./00-overview.md#board) when it is instantiated as a byproduct of `mine`.
+Resources form the core of [SeasonMechanics](./05-mechanics.md#seasonmechanics) and possess many unique interactions across Asset classes. They are covered in more detail in the [Ecology documentation](./09-ecology.md#category-resources)
 
-**Properties: ResourceProperties**
+**Model: Loot**
 
-* `dimensions: Dimensions`
+A Resource contains a `loot` key. When Resources are mined through the `mine` [Intention](./04-intentions.md), they are converted into [Collectables](#effect-collectables). The `loot` key from the Resource is passed to the Collectable via the [Cradle](./00-overview.md#board) when it is instantiated as a byproduct of `mine`.
+
+**Properties: ResourceProperties(AssetProperties)**
+
 * `hitboxes: List[Hitbox]`
 * `mass: int = 0`
 * `loot: str`: Inventory loot key dropped upon harvest or mining.
@@ -782,52 +773,68 @@ A Resource contains a `loot` key. When Resources are mined through the `mine` [I
 
 Resources do not cycle through animations. Their appearance updates when [SeasonMechanics](./05-mechanics.md#seasonmechanics) transitions `state.stage`.
 
-**Ecology**
-
-Resources form the core of [SeasonMechanics](./05-mechanics.md#seasonmechanics) and possess many unique interactions across Asset classes. They are covered in more detail in the [Ecology documentation](./09-ecology.md#category-resources)
-
-## Sheets
+## Category: Sheets
 
 * Property File: `/src/assets/sheets/**/*.yaml`
 
-*Sheets* are animate, mutable Assets whose files are arranged in rows of Frames. Sheet form the core Asset of the gameplay loop; they are used to encapsulate character entities, such as the Player and NPC Sprites. Most of the application is scaffolding for the complex interactions and calculations that occur when Sheet Assets interact.
+*Sheets* are intentional Assets whose Frames organized into Actions and Directions. Sheets form the core Asset of the [Engine](./00-overview.md#component-engine) loop; they are used to encapsulate character entities, such as the Player and Non-Playable Sprites. Most of the application is scaffolding for the complex interactions and calculations that occur when Sheet Assets interact.
 
-**Sheet Specification**
+**Model: Direction**
 
-The rows of a Sheet are identified by *Direction*, *Action* and *Frame*. Each row is identified by a tuple (Direction, Action), and then divided horizontally into contiguous horizontal Frames. 
+* Directions: `up`, `left`, `down`, `right`
+
+Direction is part of the Animation State.
+
+**Model: Action**
+
+* Action: `cast`, `thrust`, `walk`, `slash`, `shoot`, `die`
+
+Action is part of the Animation State. An Action implicitly contains a Direction, i.e. an Action cannot be specified without an accompanying Direction(s). 
+
+**Model: Count**
+
+* Count: `0, 1, 2 , ... , n(Action)`
+
+Where `n(Action)` is the number of Frames per Action. 
+
+**Atlas: (row: (Action, Direction), column: Count)**
+
+A Sheet Asset is partitioned along the axes of *Direction*, *Action* and *Count*. Each cell is identified by a tuple (Direction, Action), and then divided horizontally into contiguous horizontal Frames of amount (Count). 
 
 !!! important
-    For Sheets, it is assumed coordinates of an image in the Asset file are *completely determined* by Action, Direction and Frame. It is assumed Actions form contiguous rows partitioned by Direction, and frames are organized in horizontal cells of equal length. This specification is enforced on the application level.
+    For Sheets, it is assumed coordinates of an image in the Asset file are *completely determined* by Action, Direction and Frame. It is assumed Actions form contiguous rows partitioned by Direction, and Frames are organized in horizontal cells of equal length. This specification is enforced on the application level.
 
-**LPC Specification**
+!!! note "LPC Specification"
+    While an arbitrary Action Set can be defined in `/src/data/config/actions/main.yaml`, the documentation will often assume the LPC (Liberated Pixel Cup) specification when discussing Action, Direction and Frame, without loss of generality. The values for these fields in the LPC Spec are enumerated below,
 
-While an Action set an be defined in `/src/data/config/actions/main.yaml`, the documentation will often assume the LPC (Liberated Pixel Cup) specification when discussing Action, Direction and Frame, without loss of generality. The values for these fields in the LPC Spec are enumerated below,
+    The Frames per Action for the LPC Spec are given below,
 
-* Direction: `up, left, down, right`
-* Action: `cast, thrust, walk, slash, shoot, die`
-* Frame: `0, 1, 2 , ... , n(Action)`
+    - `cast`: Count = 7
+    - `thrust`: Count = 8
+    - `walk`: Count = 9
+    - `slash`: Count = 6
+    - `shoot`: Count = 13
+    - `die`: Count = 6
 
-Where `n(Action)` is the number of frames per Action. The frames per Action for the LPC Spec are given below,
+    Two important points regarding the LPC and worth drawing attention are given below,
 
-- `cast`: Count = 7
-- `thrust`: Count = 8
-- `walk`: Count = 9
-- `slash`: Count = 6
-- `shoot`: Count = 13
-- `die`: Count = 6
+    1. `die` is only associated with a single row in the LPC specification, i.e. it is a "Directionless" State. By default, the Engine labels it with an `up` direction.
 
-!!! note
-    `die` is only associated with a single row in the LPC specification.
+    2. The `thrust` Action plays double-duty for spears and shovels. The spear is a Weapon, whereas the shovel is a Tool. With LPC assets, the animations of these pieces of Equipment are governed by the `thrust` state. In other words, different types of Equipment do not necessarily map to different Action states. The Engine accounts for this by treating the Equipment Group of Assets as "stateless" and inherently bound to the state of a Sprite Sheet Asset. See [Equipment documentation](./02-sprites.md#equipment) for more information.
 
 !!! note
     The row indexing starts at 0.
 
-!!! note 
-    In the LPC specification, the `thrust` Action plays double-duty for spears and shovels. The spear is a Weapon, whereas the shovel is a Tool. With LPC assets, the animations of these pieces of Equipment are governed by the `thrust` state. In other words, different types of Equipment do not necessarily map to different Action states. The engine accounts for this by treating the Equipment Group of Assets as "stateless" and inherently bound to the state of a Sprite Sheet Asset. See [Equipment documentation](./02-sprites.md#equipment) for more information.
+**Configuration: ActionSets**
 
-**Action**
+Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its Property index file. See [Action Configuration Schema](./appendices/01-schemas.md#configuration-actions) for more details. 
 
-Actions are part of the Animation state. An Action implicitly contains Directions, i.e. an Action cannot be specified without accompanying Direction(s). The "space" of the (Action, Direction) space is configured by Sheet Properties. 
+**Hitbox: Attackboxes**
+
+!!! @TODO(10-01)
+    The Hitbox interface has been formally codified into a component of an Asset. Attackboxes are the last remaining legacy hitbox implementation that needs migrated to the new paradigm.
+
+An Attackbox is a special type of hitbox unique to Sheet Assets. It is mapped to a canonical `<action>-<direction>-<frame>` key (where `setting.SEPARATOR = "-"`) and applied during the animation state identified by this key. Attackboxes are used to augment the Sheet's basic hitbox collision detection during [CombatMechanics](./05-mechanics.md#spatial). While any Sprite can alter its Attackbox properties, this property is utilized mainly by [Equipment](./02-sprites.md#equipment).
 
 This snippet from the [Schemas](./appendices/01-schemas.md#configuration-actions) shows the general structure of an Action,
 
@@ -845,17 +852,9 @@ This snippet from the [Schemas](./appendices/01-schemas.md#configuration-actions
 * `count: int` - is the number of frames in the Action row grouping. 
 - `delay`: (*Optional*) Number of Engine ticks to accumulate before a frame update. Used to control the speed of the animation. Defaults to 1. 
 
-**Action Sets**
+**Model: Stack**
 
-Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its property index file. See [Action Configuration Schema](./appendices/01-schemas.md#configuration-actions) for more details. 
-
-**Attackboxes**
-
-An Attackbox is a special type of hitbox unique to Sheet Assets. It is mapped to a canonical `<action>-<direction>-<frame>` key (where `setting.SEPARATOR = "-"`) and applied during the animation state identified by this key. Attackboxes are used to augment the Sheet's basic hitbox collision detection during [CombatMechanics](./05-mechanics.md#spatial). While any Sprite can alter its Attackbox properties, this property is utilized mainly by [Equipment](./02-sprites.md#equipment).
-
-**Stacks**
-
-A Stack is a list of Sheets keys to superimpose over one another to form the resultant Sheet used in the game. The Sheet stacks are drawn in the order they are specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.
+A Stack is a list of Sheet Asset IDs to superimpose over one another to form the resultant Sheet displayed on the [Screen](./00-overview.md#component-screen). A Sheet Stack is drawn in the order it is specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.
 
 For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.png` might be stacked on top of `src/assets/sheets/<sheet-category>/skins/male-dark-human.png` to create a new Sheet asset used in the game. This Sprite stack is assembled in the [Registry](./00-overview.md#registry) using the `stack` property during the [application bootstrap](./11-architecture.md#initialization). The assembled `stack` is saved as a Sheet Asset, using the `<sheet-id>` as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.
 

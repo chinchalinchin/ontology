@@ -29,8 +29,6 @@ Fluids declare an explicit `height: 0` and `depth: -1`. This ensures the [render
 
 **State: FluidState**
 
-* `layer: Optional[str]`
-* `position: Position`
 * `source: Directions`
 * `flow: int`
 * `length: int`
@@ -38,8 +36,6 @@ Fluids declare an explicit `height: 0` and `depth: -1`. This ensures the [render
 * `branches: List[Branch]`
 * `hitboxes: List[Hitbox]`
 * `dirty: bool = True`
-* `height: Optional[int] = 0`
-* `depth: int = -1`
 * `_keys: Dict[int, List[Tuple[str, int, int]]] = field(default_factory=dict)` (*Cache for pre-computing fluid keys*)
 
 **Model: Branch**
@@ -55,6 +51,12 @@ Fluids declare an explicit `height: 0` and `depth: -1`. This ensures the [render
 * `get(properties, state, frame): returns state.hitboxes`
 
 ### Category: Geographies
+
+**Behavior: Procedural**
+
+Geographies are procedural entities generated via Service classes (e.g. the *Cartographer* spawns [Shorelines](#geography-shorelines)). 
+
+Frame keys are computed and cached on `state._keys`. When [SeasonMechanics](./05-mechanics.md#world) emits a SeasonEvent, active Shoreline state seasons are synchronized and frame caches invalidated (`state._keys = None`) without triggering geometric regeneration.
 
 #### Geography: Shorelines
 
