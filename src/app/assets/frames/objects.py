@@ -100,7 +100,7 @@ class BinaryFrame(Frame):
         atlas: Dict[str, Tuple[int, int, int, int]] = {}
         for r_idx in range(properties.count):
             for c_idx, mat in enumerate(cols):
-                key = settings.SEPARATOR.join([id, str(r_idx), mat])
+                key = settings.SEPARATOR.join([id, mat, str(r_idx),])
                 atlas[key] = (c_idx * w, r_idx * l, w, l)
         return atlas
 
@@ -112,5 +112,5 @@ class BinaryFrame(Frame):
         frame_idx = str(Switches.ON.value if state.switch else Switches.OFF.value)
         if not state.material:
             return [(settings.SEPARATOR.join([id, frame_idx]), 0, 0)]
-        key = settings.SEPARATOR.join([id, frame_idx, state.material])
+        key = settings.SEPARATOR.join([id, state.material, frame_idx])
         return [(key, 0, 0)]

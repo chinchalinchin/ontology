@@ -17,7 +17,7 @@ The Asset directory (and all subdirectories) contains Asset Image Files (`*.png`
 
 ### Asset Concepts
 
-**IDs & Names**
+#### IDs & Names
 
 IDs are used to map Asset Files to images loaded into the [Registry](./00-overview.md#registry), to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, IDs uniquely identify a physical Asset File, but not in-game entities.
 
@@ -25,7 +25,7 @@ Names are used to uniquely identify an ingame entity. A single Asset ID may have
 
 In short, a Name identifies an Asset's deployment. A ID is what binds a deployed Asset to its Asset File.
 
-**Properties & State**
+#### Properties & State
 
 *Properties* are static and never changed by game Mechanics. Properties determine the immutable characteristics of Assets, e.g. their dimensions and hitboxes. They are loaded side-by-side with the Asset files in the `/src/assets/**` directory. All Assets have, at bare minumum, a Dimension property, specifying their respective width and length, and a Priority property, that specifies the [statically configured sort key](./11-architecture.md#rendering) for their relative rendering order. Dimension is a Cartesian coordinate (tuple), whereas Priority is an integer.
 
@@ -36,39 +36,57 @@ In short, a Name identifies an Asset's deployment. A ID is what binds a deployed
 
 State files are maintained in `/src/data/state/<board-key>/**` directory, where `<board-key>` is a unique identifer for a [Board](./00-overview.md#board).
 
-Of particular importance is the *AnimationState*, described directly below,
+**Base Model: AssetProperties**
 
-- AnimationState
-    - action: Action key of Animation.
-    - direction: Directiony key of Animation.
-    - frame: Frame index of Animation.
-    - tick: Engine tick accumulator. Used in conjunction with Action `delay` to control the speed of the Animation.
+- `dimensions`: Asset dimensions.
+- `priority`: Static ordinal render sort key. 
 
-**Mass**
+All Asset Properties inherit fields from this class.
 
-Many  Asset Categories have a Mass property. Only Assets with Mass can participate in the physics engine. An Asset's mass determines how collisions behave.
+**Base Model: AssetState**
+
+- `layer`: Board layer key.
+- `elevation`: Elevation render sort key.
+- `anchor`: Offset for ground render sort key.
+- `substrate`: Intra-elevation render sort key.
+- `mutators`: General behavioral flags for rendering and logic.
+
+All Asset States inherit fields from this class.
+
+#### Frames & Animations
+
+A *Frame *represents the binding of an Asset to a particular partitioning of its raw image file into a *Frame space*. Frames expose interfaces for *indexing* the Frame space via Asset Properties, and they also expose interfaces for *accessing* Frame space via Asset State.
+
+In other words, Asset Properties determine the metric used by the Engine to measure the Asset's Frame space, whereas Asset State determines where in its Frame space the Asset currently resides. 
+
+This is the reason for distinguishing Asset Categories and Asset Instances in the Hierarchy: Frames in a Sprite Sheet represent Actions, Frames in a Resource represent Lifespan Stages, Frames in an Effect represent Periodicity, etc. These are different stateful dispositions for an Asset to assume that are categorically distinct and manifest in the atlasing strategy used by the image file. This space is described by the particular configuration of an Asset's Properties, and furthermore, to exist on the [Board](./00-overview.md#board), an Asset must have a strategy for associating its State with a particular Frame described by its Properties.
+
+To extend the analogy, an *Animation* represents a strategy for navigating the Frame space over time (hence its interface depends on a time delta). Animations projects the internal state changes in an Asset onto a particular trajectory through its Frame space.
+
+When an Asset implements an Animation, this is accompanied by its State possessing an `animation` field. The purpose of this field is mutate over time and thus describe the trajectory of the Asset through its Frame space.
+
+**Model: AnimationState**
+
+- `action`: Action key of Animation.
+- `direction`: Directiony key of Animation.
+- `frame`: Frame index of Animation.
+- `tick`: Engine tick accumulator. Used in conjunction with Action `delay` to control the speed of the Animation.
+
+#### Mass
+
+Many Asset Categories have a Mass Property. Only Assets with Mass can participate in collisions and other kinematic events. An Asset's mass determines its behavior within the physics of the game,
  
 - $m > 0$: **Dynamic Body**. Participates in momentum calculations.
 - $m = 0$: **Static Body**. Treated as having infinite mass ($m \to \infty$) in physics equations. Its Velocity is unaffected by collisions, but its immobility forces dynamic bodies to resolve overlap.
 - $m = -1$: **Sensor**. The engine detects the spatial intersection for game logic (like SwitchMechanics or DoorMechanics), but CollisionMechanics bypasses it completely during the overlap resolution phase.
 
-See [Mechanics](./05-mechanics.md#spatial) for more information.
+See [SpatialMechanics](./05-mechanics.md#spatial) for more information.
 
-**Frames & Animations**
-
-A Frame represents an interface for binding an Asset to a particular partition of its raw image file (its *Frame space*). Frames expose interfaces for *indexing* the Frame space via Asset Properties, and they also expose interfaces for *accessing* Frame space via Asset State.
-
-In other words, Asset Properties determine the metric used by the Engine to measure the Asset's Frame space, whereas Asset State determine where in the Frame space the Asset currently resides. 
-
-This is the reason for distinguishing Asset Categories and Asset Instances in the Hierarchy: Frames in a Sprite Sheet represent Actions, Frames in a Resource represent Lifespan Stages, Frames in an Effect represent Periodicity, etc. These are different stateful dispositions for an Asset to assume that are categorically distinct and manifest in the atlasing strategy used by the image file. This space is described by the particular configuration of an Asset's Properties, and furthermore, to exist on the [Board](./00-overview.md#board), an Asset must have a strategy for associating its State with a particular Frame described by its Properties.
-
-To extend the analogy, an Animation represents an interface for navigating the Frame space over time. Animations time-mapping that projects the internal state changes in an Asset to a particular trajectory through its Frame space.
-
-#### Elevation, Substrates, Perspective & Priority
+#### Render Order
 
 **Rendering**
 
-World rendering evaluates spatial geometry using discrete macro-elevations, intra-elevation substrate planes, ground perspective, and coplanar priority:
+World rendering evaluates spatial geometry using discrete macro-elevations, intra-elevation substrate planes, ground perspective, and coplanar priority, known respectively as Elevation, Substrates, Perspective and Priority,
 
 $$
 \text{sort_key}(x) = \Big(x.\text{elevation},\; x.\text{substrate},\; \text{ground_y}(x),\; x.\text{properties.priority}\Big)
@@ -78,6 +96,8 @@ $$
 2. **Secondary Key (`x.substrate` $\in \mathbb{Z}_{\le 0}$)**: Intra-elevation rendering plane within macro-elevation $E$.
 3. **Tertiary Key (`ground_y` $\in \mathbb{Z}$)**: Continuous geometric perspective: $\text{ground_y} = \text{int}(x.\text{state.position.y} + x.\text{dimensions.l} + x.\text{state.anchor})$.
 4. **Quaternary Key (`priority` $\in \mathbb{Z}$)**: Coplanar tie-breaker declared on immutable `AssetProperties`.
+
+See [Rendering documentation](./11-architecture.md#rendering) for more information.
 
 **Substrates**
 
@@ -89,6 +109,25 @@ Certain Assets have a dedicated Substrate to preserve the fidelity of their rend
     This entire procedure needs re-evaluation now that Substrates are not Elevations, i.e. prior to Phase 07.04 Substrates were used to lazily-load Elevations. Now they are a dedicated partition of the sort key `(elevation, substrate, ground, priority)`
 
 During [CollisionMechanics](./05-mechanics.md#collisionmechanics) and Perimeter generation, all negative Substrates are collapsed into `elevation = 0`, i.e. $\text{elevation} \in [-\infty, 0] \to \text{elevation} = 0$, in order that all Assets on these Substrates may participate in collisions at `elevation = 0`.
+
+#### Material
+
+**Model: Material**
+
+- `genus: str`: Partition of Material Space.
+- `host: str`: Host Material for Chromatic Genera.
+
+Many Assets have their Frame space defined over a Material partition. Material affects the color palette of an Asset and has other consequences in the [Economy](./10-emergence.md#economy).
+
+The *Material Space* is further subdivded into non-overlapping Genera,
+
+--8<-- "static/md/material-genera.md"
+
+`chromatics`, being a discrete shade of color, requires a `host` material to accept its payload.
+
+See [Material documentation](./03-compositions.md#material) for more information.
+
+If an Asset indexes its Frame space over Material, then its Asset State must have a `material` field to specify which Material it should instantiate when deployed.
 
 ### Asset Hierarchy
 
@@ -212,9 +251,6 @@ N/A
 
 **State: MultiplerState**
 
-* `layer: str`
-* `elevation: int`
-* `position: Position`
 * `multiple: Multiple`
 
 ### Environ
@@ -273,9 +309,12 @@ There must be precisely *two* Grid tiles:
 
 * Property File: `/src/assets/objects/**/*.yaml`
 
-Objects are Assets encapsulating interactive and reactive entities. Objects participate in [CollisionMechanics](./05-mechanics.md#collisionmechanics) and may undergo instantaneous changes of their state. However, Objects do not implement an Animation; All changes of an Object's Frame are handled through the mutation of State attributes.
+Objects are Assets that encapsulate interaction and reaction. Objects participate in [CollisionMechanics](./05-mechanics.md#collisionmechanics) and may undergo instantaneous changes of their state due to environmental stimuli. However, Objects do not implement an Animation; All changes of an Object's Frame are handled through the mutation of State attributes. 
 
 **Atlas: (row: Material, column: Count)**
+
+- row: `^(?:ceramics|chromatics|geologics|metallics|organics)`
+- count: `^[0-1]`
 
 **Properties: ObjectProperties**
 
@@ -285,9 +324,18 @@ Objects are Assets encapsulating interactive and reactive entities. Objects part
 * `count: int = 1`
 * `mass: int`
 
-**Hitbox: StaticHitbox**
+**State: ObjectState**
 
-* `get(properties, state, frame): returns properties.hitboxes`
+* `layer: str`
+* `elevation: int`
+* `position: Position`
+* `material: str` 
+
+All Objects extend this base class.
+
+**Frame: ObjectFrame**
+
+* `index(id, properties): returns { "{id}-{i}-{j}": (j * properties.dimension.w, i * properties.dimensions.l, properties.dimensions.w, properties.dimension.l )} for i,j in product(properties.count, properties.material)`
 
 **Animation: None**
 
@@ -295,22 +343,14 @@ N/A
 
 ### Chests
 
-*Chests* are Binary Objects whose frame can be changed by the player entering into an `interact` [Intention](./04-intentions.md) while intersecting the hitboxes of the Chest. When `switch == true`, the Chest is *on* (open). When `switch == false`, the Chest is *off* (closed).
+*Chests* are Objects with a binary state whose Frame can be changed by the Player or Sprite entering the `interact` [Intention](./04-intentions.md) while in the immediate proximity of the Chest. When `switch == true`, the Chest is *on* (open). When `switch == false`, the Chest is *off* (closed).
 
 A Chest is *reusable* through the `interact` [Intention](./04-intentions.md), meaning [Inventory Loot](./02-sprites.md#inventory) can be taken out of and also placed into a Chest. The `content` state field manages the current contents of the Chest through a list of Inventory Loot keys.
 
-When *interacting* with a Chest, the [Player](./02-sprites.md#player) is shown the [Chest Menu](./06-widgets.md#menus), allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an `interact` Intention with a Chest through its [Intention Transition Matrix](./04-intentions.md#transition-matrix). This interaction is managed through a dedicated Sprite [Mechanic](05-mechanics.md)
-
-**Frame: IterableFrame**
-
-* `keys(id, state): returns [ ("{id}-{state.animation.frame}", 0, 0) ]`
-* `index(id, properties): returns { "{id}-{i}": (i * w, 0, w, l) for i in range(properties.count) }`
+When interacting with a Chest, the [Player](./02-sprites.md#player) is shown the [Chest Menu](./06-widgets.md#menus), allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an `interact` Intention with a Chest through its [Intention Transition Matrix](./04-intentions.md#transition-matrix). This interaction is managed through a dedicated Sprite [Mechanic](05-mechanics.md)
 
 **State: ContainerState**
 
-* `layer: str`
-* `elevation: int`
-* `position: Position`
 * `switch: bool`
 * `content: List[str]`
 
@@ -320,19 +360,11 @@ When *interacting* with a Chest, the [Player](./02-sprites.md#player) is shown t
 
 ### Crates
 
-Crates are Objects who state can be altered by in-game physics. For example, when a Sprite collides with a Crate, momentum is transferred from the Sprite to the Crate. See [CollisionMechanics](./05-mechanics.md#spatial) for more information on the physics of game collisions.
+Crates are Objects who state can be altered by collisions. When acted upon by an external force, momentum is transferred to the Crate and it acquires velocity. See [CollisionMechanics](./05-mechanics.md#collisionmechanics) for more information on game physics.
 
 **State: MotiveState**
 
-* `layer: str`
-* `elevation: int`
-* `position: Position`
 * `velocity: Velocity`
-
-**Frame: SingleFrame**
-
-* `keys(id, state): returns [ (id, 0, 0) ] "`
-* `index(self, id, properties): returns { id: (0, 0, properties.dimensions.w, properties.dimensions.l) }`
 
 **Hitbox: StaticHitbox**
 
@@ -340,56 +372,37 @@ Crates are Objects who state can be altered by in-game physics. For example, whe
 
 ### Doors
 
-Doors are Objects that alter a Sprite's `layer`. When a Sprite *interacts* (`intention = 'interact'`) with the hitbox of a Door, the `sprite.state.layer` is changed to the `door.state.outlayer` and `sprite.state.position` is changed to the `door.state.out` Position.
+Doors are Objects that alter a Sprite's `layer`. When a Sprite interacts (`state.intention = 'interact'`) with the hitbox of a Door, the `sprite.state.layer` is changed to the `door.state.outlayer` and `sprite.state.position` is changed to the `door.state.out` Position.
 
 **State: DoorState**
 
-* `layer: str`
-* `elevation: int`
 * `outlayer: str`
-* `position: Position`
 * `out: Position`
 
-**Frame: SingleFrame**
+**Hitbox: LayeredHitbox**
 
-* `keys(id, state): returns [ (id, 0, 0) ]`
-* `index(id, properties): returns { id: (0, 0, properties.dimensions.w, properties.dimensions.l) }`
-
-**Hitbox: StaticHitbox**
-
-* `get(properties, state, frame): returns properties.hitboxes`
+* `get(properties, state, frame): returns properties.hitboxes[state.layer] if LayerProjection.IN.value else properties.hitboxes[state.outlayer]`
 
 ### Gates
 
-Gates are *Binary Objects* whose state is linked to Plates. When a Gate is on (open), it does not have hitboxes and the player can pass freely through it. When a Gate is off (closed), its hitboxes prevent the player from passing through its area.
+Gates are Objects with a binary state linked to Plates. When a Gate is on (open), it does not have hitboxes and dynamic Assets can pass freely through its area. When a Gate is off (closed), its hitboxes prevent dynamic Assets from passing through its area.
 
-**Animation: BinaryAnimation**
-
-- `if state.switch == true: state.animation.frame = 1`
-- `if state.switch != true: state.animation.frame = 0`
-
-**Frame: IterableFrame**
-
-* `keys(id, state): returns [ ("{id}-{state.animation.frame}", 0, 0) ]`
-* `index(id, properties): returns { "{id}-{i}": (i * w, 0, w, l) for i in range(properties.count) }`
+Gates do not switch their states of their own accord. A Plate automatically updates the `state.switched` of its linked Gate, so when the Plate is on, the Gate is on, and when the Plate is off, the Gate is off.
 
 **State: SwitchState**
 
-* `layer: str`
-* `elevation: int`
 * `link: str`
-* `position: Position`
 * `switch: bool`
 
-**Hitbox: StaticHitbox**
+**Hitbox: SwitchHitbox**
 
-* `get(properties, state, frame): returns properties.hitboxes`
-
-!!! todo "Gate Hitboxes"
-    Gate Hitboxes should be dynamic.
+* `get(properties, state, frame): returns [] if state.switch else properties.hitboxes`
 
 ### Obstacles
 
+!!! @TODO(11)
+    Obstacles need moved to Geography and inducted into procedural generation. This entire section is subject to radical change post Phase 11.
+    
 Obstacles are immutable, inanimate Objects. They are meant to encapsulate natural obstructions such as rocks, outcroppings and other barriers.
 
 **State: Positional**
@@ -409,54 +422,30 @@ Obstacles are immutable, inanimate Objects. They are meant to encapsulate natura
 
 ### Plates
 
-Plates are Binary Objects whose state can be changed by collision, e.g. when a Sprite enters its hitbox a Plate will flip its `switch`. When activated, a Plate in turn notifies the state of its `link`-keyed Gate to change.
+Plates are Objects with a binary state. Furthermore, that state can be instantaneously altered by collision, e.g. when a Sprite enters its hitbox. When a collision occurs, a Plate will flip its `switch`. When activated, a Plate in turn notifies the state of its `link`-keyed Gate to change.
 
 !!! note
     Plates must have their `mass` property configured to be `-1`, to exclude them from the collision resolution while keeping the collision detection active, i.e. Plates do not move due to collisions, but register when other Assets are intersecting them. Plates are considered *Sensors*. See [CollisionMechanics](./05-mechanics.md#spatial) for more information.
 
-**Animation: BinaryAnimation**
-
-- `if state.switch == true: state.animation.frame = 1`
-- `if state.switch != true: state.animation.frame = 0`
-
-**Frame: IterableFrame**
-
-* `keys(id, state): returns [ ("{id}-{state.animation.frame}", 0, 0) ]`
-* `index(id, properties): returns { "{id}-{i}": (i * w, 0, w, l) for i in range(properties.count) }`
-
 **State: SwitchState**
 
-* `layer: str`
-* `elevation: int`
-* `link: str`
-* `position: Position`
 * `switch: bool`
 
-**Hitbox: StaticHitbox**
+**Hitbox: SwitchHitbox**
 
-* `get(properties, state, frame): returns properties.hitboxes`
+* `get(properties, state, frame): returns [] if state.switch else properties.hitboxes`
 
 ### Rafts
 
-Rafts are mutable, inanimate Objects that allow Sprites and Players to traverse Fluid corridors without entering the `submerged` state or being swept away individually. Rafts do not obstruct Fluid flow.
-
-**Dynamics & Relative Motion**
+Rafts are kinematics Objects that allow other Assets to traverse [Fluid](#fluids) streams without entering the `submerged` state or being swept away individually. Rafts do not obstruct [Fluid flow](#fluids), meaning they still acquire velocity in the [Fluid stream](#fluids).
 
 * When deployed in a Fluid corridor, a Raft drifts along the Fluid's `source` vector at a speed proportional to `flow`.
 * Characters boarding a Raft have their `mutators.triggers.submerged` mutator suppressed.
-* While aboard, character locomotion is evaluated relative to the Raft's area: $\vec{v}_{\text{world}} = \vec{v}_{\text{locomotion}} + \vec{v}_{\text{raft}}$
-
-**Frame: SingleFrame**
-
-* `keys(id, state)`: returns `[(id, 0, 0)]`
-* `index(id, properties)`: returns `{id: (0, 0, properties.dimensions.w, properties.dimensions.l)}`
+* While aboard, locomotion is evaluated relative to the Raft's area: $\vec{v}_{\text{world}} = \vec{v}_{\text{locomotion}} + \vec{v}_{\text{raft}}$
 
 **State: MotiveState**
 
-* `layer: str`
-* `position: Position`
 * `velocity: Velocity`
-* `elevation: int`
 
 **Hitbox: StaticHitbox**
 
@@ -464,26 +453,16 @@ Rafts are mutable, inanimate Objects that allow Sprites and Players to traverse 
 
 ### Signs
 
-Signs are immutable, inanimate Objects whose `content` is transmitted into a [Text Menu](./06-widgets.md#menus) when a Player enters into the `interact` [Intention](./04-intentions.md) with them.
+Signs are linguistic Objects whose `content` is transmitted into a [Text Menu](./06-widgets.md#menus) when a Player enters into the `interact` [Intention](./04-intentions.md) with them.
 
 Signs utilize `persona` and `lexicon` keys to grab the appropriate content from the [Library](./08-plots.md#library)
 
-**Animation: None**
-
-N/A
-
-**Frame: SingleFrame**
-
-* `keys(id, state): returns [ (id, 0, 0) ]`
-* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
-
 **State: DialogueState**
 
-* `position: Position`
 * `persona: str`
 * `lexicon: str`
 
-!!! todo "SeasonMechanics"
+!!! @TODO(10-05)
     Add linkage between Sign lexicon key and Resource SeasonMechanics.
 
 **Hitbox: StaticHitbox**
@@ -498,17 +477,16 @@ Crafts are Assets that can be instantiated through [Game Mechanics](./05-mechani
 
 Many Crafts are inherently bound to the process of [Composition](./03-compositions.md). Several specifications (Struts, Stairs, Decor) are covered in more detail in the [Composition documentation](./03-compositions.md#asset-specifications)
 
-**Material & Blueprints**
+**Atlas: (row: Material, column: Blueprints)**
 
-Craft Asset files are organized into a (Blueprint, Material) atlas, where each row denotes a different structural schematic (Blueprint) and columns denotes an aesthetic quantity (Material) used to bind the crafting, economic and resource logic into a unified system. 
+- row: `^(?:ceramics|chromatics|geologics|metallics|organics)`
+- count: `^[?:buildings|corridors|columns|directions|enclosures|orientations|inclines]`
 
-The *Blueprint Space* and *Material Space* are further subdivded into non-overlapping partitions of Genera and Schema.
+Craft Asset files are organized into a (Blueprint, Material) atlas, where each row denotes a different structural schematic (Blueprint) and columns denote an aesthetic quantity (Material) used to bind the crafting, economic and resource logic into a unified system. 
 
---8<-- "static/md/material-genera.md"
+Just as the Material space is partitioned into Genera, the *Blueprint Space* is furthered subdivded into non-overlapping partitions of Schema.
 
 --8<-- "static/md/blueprint-schema.md"
-
-Chromatic Material represent discrete colors and thus require a *Host Material* to accept their payload.
 
 **Properties: CraftProperties**
 
@@ -518,11 +496,6 @@ Chromatic Material represent discrete colors and thus require a *Host Material* 
 - `material: Optional[Material] = None`
 - `blueprints: Optional[str] = None` 
 - `hitboxes: Optional[Dict[str, List[Hitbox]]] = None`
-
-**Model: Material**
-
-- `genus: str`: Partition of Material Space.
-- `host: str`: Host Material for Genera.
 
 ### Bridges
 

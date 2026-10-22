@@ -4,36 +4,12 @@ A Composition is collection of multiple Assets organized into a common configura
 
 Composition Configuration can be found in `/src/data/config/compositions/main.yml`, otherwise known as the *composition directory*.
 
-## Asset Specification: Crafts
+## Material
 
-Compositions are used to formalize Asset relationships for reuse. For this reason, [Crafts](./01-assets.md#crafts) are an essential component of Compositions. The following section provides an in-depth description of each Craft Instance.
-
-**Properties: CraftProperties**
-
-- `dimensions: Dimensions`
-- `priority: int = 0`
-- `mass: int = 0`
-- `material: Optional[Material] = None`
-- `blueprints: Optional[str] = None` 
-- `hitboxes: Optional[Dict[str, List[Hitbox]]] = None`
-
-### Struts 
-
-*Struts* are inanimate, immutable Assets. Struts are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. In other words, they possess an `owner`. 
-
-Struts may be placed on the Board through the state files manually, but they are generally instantiated ingame through the `build` [Intention](./04-intentions.md). 
-
-Struts are closely related to [Asset Compositions](./03-compositions.md), as they provide a "foundation" upon which configurations of Assets can be built. In other words, a Strut's main purpose is to provide a coordinate system for the relative positioning of reusable Asset configurations. 
-
-**Strut Hierarchy**
-
-Struts are the basic element of Compositions. They are classified according to Material and Blueprint. All Struts are functionally equivalent (but may differ in the declaration of their properties), yet serve different atmospheric, vanity or aesthetic purposes; Material and Blueprint describe the axes of this "*aesthetic*" space.
-
-A Blueprint is constant along the axis of Material, and Material is constant along the axis of Blueprints.
 
 **Materials**
 
-Material serves mainly to alter the color and shading of the Strut. A Material must have implemenations for every Blueprint in a Strut atlas.
+Material serves mainly to alter the color and shading of the Craft. A Material must have implemenations for every Blueprint in a Craft atlas.
 
 - Ceramics: `clay`
 - Organics: `cotton`, `wood`, `thatches`
@@ -47,7 +23,7 @@ Material serves mainly to alter the color and shading of the Strut. A Material m
 
 **Blueprints**
 
-Blueprints describe specific structural implementations of a Strut. A Blueprint must have implementations for every Material in a Strut atlas.
+Blueprints describe specific structural implementations of a Craft. A Blueprint must have implementations for every Material in a Strut atlas.
  
 - Building Blueprints:
     - `floors`: Interior ground surfaces.
@@ -78,6 +54,33 @@ Blueprints describe specific structural implementations of a Strut. A Blueprint 
     - `up`: 
     - `left`: 
     - `right`: 
+
+## Asset Specification: Crafts
+
+Compositions are used to formalize Asset relationships for reuse. For this reason, [Crafts](./01-assets.md#crafts) are an essential component of Compositions. The following section provides an in-depth description of each Craft Instance.
+
+**Properties: CraftProperties**
+
+- `dimensions: Dimensions`
+- `priority: int = 0`
+- `mass: int = 0`
+- `material: Optional[Material] = None`
+- `blueprints: Optional[str] = None` 
+- `hitboxes: Optional[Dict[str, List[Hitbox]]] = None`
+
+### Struts 
+
+*Struts* are inanimate, immutable Assets. Struts are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. In other words, they possess an `owner`. 
+
+Struts may be placed on the Board through the state files manually, but they are generally instantiated ingame through the `build` [Intention](./04-intentions.md). 
+
+Struts are closely related to [Asset Compositions](./03-compositions.md), as they provide a "foundation" upon which configurations of Assets can be built. In other words, a Strut's main purpose is to provide a coordinate system for the relative positioning of reusable Asset configurations. 
+
+**Strut Hierarchy**
+
+Struts are the basic element of Compositions. They are classified according to Material and Blueprint. All Struts are functionally equivalent (but may differ in the declaration of their properties), yet serve different atmospheric, vanity or aesthetic purposes; Material and Blueprint describe the axes of this "*aesthetic*" space.
+
+A Blueprint is constant along the axis of Material, and Material is constant along the axis of Blueprints.
 
 **Animation: None**
 
