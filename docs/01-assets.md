@@ -255,6 +255,13 @@ Environ Tiles undergo Frame changes based on the accumulation of time on the [Bo
 
 For this reason, Environ Tiles leverage a SeasonalFrame and event-driven reconstruction triggered as the Board undergoes Seasons. See [Ecology documentation](./09-ecology.md) for more information.
 
+**Enum: Seasons**
+
+* `spring`
+* `summer`
+* `autumn`
+* `winter`
+
 **Atlas: (Row: Season, Column: Period)**
 
 - columns: `^(?:onset|peak|decline)-[0-9]$`
@@ -369,6 +376,11 @@ Gates are Objects with a binary state linked to Plates. When a Gate is on (open)
 
 Gates do not switch their states of their own accord. A Plate automatically updates the `state.switched` of its linked Gate, so when the Plate is on, the Gate is on, and when the Plate is off, the Gate is off.
 
+**Enum: Switches**
+
+* `on`: The Gate is open.
+* `off`: The Gate is closed.
+
 **State: SwitchState**
 
 * `link: str`
@@ -384,12 +396,6 @@ Gates do not switch their states of their own accord. A Plate automatically upda
     Obstacles need moved to Geography and inducted into procedural generation. This entire section is subject to radical change post Phase 11.
     
 Obstacles are immutable, inanimate Objects. They are meant to encapsulate natural obstructions such as rocks, outcroppings and other barriers.
-
-**State: Positional**
-
-* `layer: str`
-* `elevation: int`
-* `position: Position`
 
 **Frame: SingleFrame**
 
@@ -455,17 +461,21 @@ Signs utilize `persona` and `lexicon` keys to grab the appropriate content from 
 
 Crafts are Assets instantiated through [Game Mechanics](./05-mechanics.md) or utilized in [Compositions](./03-compositions.md). They encapsulate structures and topologies in the game. Crafts are used to establish boundaries, impose perimeters and stamp decals onto the [Screen](./00-overview.md#screen).
 
-Many Crafts are inherently bound to the process of [Composition](./03-compositions.md). Several specifications (Struts, Stairs, Decor) are covered in more detail in the [Composition documentation](./03-compositions.md#asset-specifications)
+Many Crafts are inherently bound to the process of [Composition](./03-compositions.md). Several specifications (Struts, Decor) are covered in more detail in the [Composition documentation](./03-compositions.md#asset-specifications)
 
 Craft Asset files are organized into a (Blueprint, Material) atlas, where each row denotes a different structural schematic (Blueprint) and columns denote an aesthetic quantity (Material) used to bind the [crafting, economic and resource Mechanics](./05-mechanics.md#world) into a unified system. 
 
-Just as the Material space is partitioned into Genera, the *Blueprint Space* is furthered subdivded into non-overlapping partitions of Schema.
+**Behavior: Property***
 
---8<-- "static/md/blueprint-schema.md"
+Crafts introduce the notion of *ownership*. Each Craft possesses an `owner`. An `owner` is a key that references the `name` of a [Sprite](./02-sprites.md).
 
 **Model: Blueprint**
 
 * `schema: str`
+
+Just as the Material space is partitioned into Genera, the *Blueprint Space* is furthered subdivded into non-overlapping partitions of Schema.
+
+--8<-- "static/md/blueprint-schema.md"
 
 **Atlas: (row: Blueprints, column: Materials)**
 
@@ -500,7 +510,9 @@ All Crafts inherit fields from this State model.
 
 Bridges are Crafts that elevate dynamic Assets over [Fluid](#effect-fluids) corridors, annular pools, and [Shoreline](#category-geography) margins without entering the `submerged` state.
 
-To achieve this functionality, broadly speaking, the following occurs,
+**Behavior: Field Suppression**
+
+To achieve the functionality of suppressing [Fluids fields](#effect-fluids), broadly speaking, the following occurs,
 
 * Bridges are registered as Sensors ($m = -1$). Therefore, they do not participate in momentum transfer or collisions.
 * Bridges are excluded from the [Boards Physics Queries](./00-overview.md#board), allowing [Mechanics](./05-mechanics.md) to pathfind across river crossings.
@@ -512,6 +524,28 @@ To achieve this functionality, broadly speaking, the following occurs,
 **Behavior: Rendering**
 
 Bridges belong to a dedicated [Substrate](#concept-appearance), `substrate = -1`. This guarantees that Bridge areas render above [Environ Tiles](#tile-environ), [Fluids](#effect-fluids), and [Shorelines](#category-geography), while allowing dynamic Assets crossing their area to render above the Bridge via their baseline footprint ($y + l$) and [the Painter's Algorithm](./11-architecture.md#rendering).
+
+### Craft: Stairs
+
+Stairs are static Crafts sensors ($m = -1$) that provide elevation transitions when traversed by Dynamic Assets. 
+
+**Behavior: Elevation**
+
+The direction of the elevation transition calculation is dependent on the direction of the transitioning Asset's velocity. For example, once an Asset intersects a Stair, the following conditions are elevated,
+
+- `stairs.state.direction == 'right' and asset.state.velocity.vx < 0: asset.state.elevation += stairs.state.delta`
+- `stairs.state.direction == 'right' and asset.state.velocity.vx > 0: asset.state.elevation -= stairs.state.delta`
+- `stairs.state.direction == 'left' and asset.state.velocity.vx < 0: asset.state.elevation -= stairs.state.delta`
+- `stairs.state.direction == 'left' and asset.state.velocity.vx > 0: asset.state.elevation += stairs.state.delta`
+- `stairs.state.direction == 'up' and asset.state.velocity.vy < 0: asset.state.elevation += stairs.state.delta`
+- `stairs.state.direction == 'up' and asset.state.velocity.vx > 0: asset.state.elevation -= stairs.state.delta`
+- `stairs.state.direction == 'down' and asset.state.velocity.vy > 0: asset.state.elevation += stairs.state.delta`
+- `stairs.state.direction == 'down' and asset.state.velocity.vx < 0: asset.state.elevation -= stairs.state.delta`
+
+**State: StairState**
+
+* `direction: str` (`up`, `down`, `left`, `right`)
+* `delta: int = 1`
 
 ## Category: Cursors
 
@@ -635,10 +669,6 @@ Due to dependencies on other Assets and Mechanics, the following Passive Effects
 
 - `splash`: Animation for "submerged" Assets moving through [Fluid](#effect-fluids) fields.
 
-**State: AnimatorState**
-
-* `animation: Animation`
-
 **Hitbox: None**
 
 N/A
@@ -647,11 +677,16 @@ N/A
 
 Hazard Effects deal damage to intersecting Assets (e.g., lava, floor spikes, poison gas clouds).
 
+**Enum: Reactions**
+
+* `bounce`: 
+* `hinder`: 
+
 **Model: Damage**
 
 * `amount: int`
 * `duration: int`
-* `reaction: bounce | hinder`
+* `reaction: Reactions`
 
 **State: HazardState**
 
@@ -659,7 +694,7 @@ Hazard Effects deal damage to intersecting Assets (e.g., lava, floor spikes, poi
 
 **Hitbox: StaticHibox**
 
-* `get(properties, state, frame): returns properties.hitboxes`
+* `get(properties, state, elevation, frame): returns properties.hitboxes`
 
 ### Effect: Collectables
 
@@ -673,12 +708,11 @@ Collectables are Effects that transfer loot keys into a Sprite's or Player's inv
 
 **State: CollectableState**
 
-* `animation: Animation`
 * `lot: Lot`
 
 **Hitbox: StaticHibox**
 
-* `get(properties, state, frame): returns properties.hitboxes`
+* `get(properties, state, elevation, frame): returns properties.hitboxes`
 
 ### Effect: Reactables
 
@@ -690,7 +724,7 @@ Reactables Effects react to the [Intentional](./04-intentions.md) states of [Spr
 
 **Hitbox: StaticHibox**
 
-* `get(properties, state, frame): returns properties.hitboxes`
+* `get(properties, state, elevation, frame): returns properties.hitboxes`
 
 ### Effect: Fluids
 
@@ -710,7 +744,7 @@ Fluids play a vital role in Seasons and Ecology. They are covered in more detail
 
 **Hitbox: DynamicHitbox**
 
-* `get(properties, state, frame): returns state.hitboxes`
+* `get(properties, state, elevation, frame): returns state.hitboxes`
 
 ## Category: Geographies
 
@@ -749,7 +783,7 @@ Resources are biological Assets deployed onto the Board that progress through di
 
 Resources form the core of [SeasonMechanics](./05-mechanics.md#seasonmechanics) and possess many unique interactions across Asset classes. They are covered in more detail in the [Ecology documentation](./09-ecology.md#category-resources)
 
-**Model: Loot**
+**Enum: Loot**
 
 A Resource contains a `loot` key. When Resources are mined through the `mine` [Intention](./04-intentions.md), they are converted into [Collectables](#effect-collectables). The `loot` key from the Resource is passed to the Collectable via the [Cradle](./00-overview.md#board) when it is instantiated as a byproduct of `mine`.
 
@@ -779,19 +813,19 @@ Resources do not cycle through animations. Their appearance updates when [Season
 
 *Sheets* are intentional Assets whose Frames organized into Actions and Directions. Sheets form the core Asset of the [Engine](./00-overview.md#component-engine) loop; they are used to encapsulate character entities, such as the Player and Non-Playable Sprites. Most of the application is scaffolding for the complex interactions and calculations that occur when Sheet Assets interact.
 
-**Model: Direction**
+**Enum: Directions**
 
 * Directions: `up`, `left`, `down`, `right`
 
 Direction is part of the Animation State.
 
-**Model: Action**
+**Enum: Actions**
 
 * Action: `cast`, `thrust`, `walk`, `slash`, `shoot`, `die`
 
 Action is part of the Animation State. An Action implicitly contains a Direction, i.e. an Action cannot be specified without an accompanying Direction(s). 
 
-**Model: Count**
+**Field: Count**
 
 * Count: `0, 1, 2 , ... , n(Action)`
 
@@ -827,7 +861,7 @@ A Sheet Asset is partitioned along the axes of *Direction*, *Action* and *Count*
 
 **Configuration: ActionSets**
 
-Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its Property index file. See [Action Configuration Schema](./appendices/01-schemas.md#configuration-actions) for more details. 
+Many Sheet Assets reuse the same Action specification. Common Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as *ActionSets*. Each Sheet specifies an Action Set in its Property index file, to use in the indexing of its Frame space. See [Action Configuration Schema](./appendices/01-schemas.md#configuration-actions) for more details. 
 
 **Hitbox: Attackboxes**
 
@@ -874,7 +908,10 @@ For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.
 
 * `get(properties, state, frame): returns properties.hitboxes`
 
-### Pixies
+### Sheet: Pixies
+
+!!! @TODO(10-03)
+    The whole concept of Pixies needs re-evaluated from the ground up before implementation. It is still uncertain how Pixie intentionality will differ from Sprite intentionality. 
 
 Pixies are Sheets that have simple game mechanics, i.e. they are excluded from the complex calculations of the [Intention Mechanic](./04-intentions.md). *Pixies* encapsulate simple Characters, such as animals or bugs.
 
@@ -890,29 +927,29 @@ Pixies are Sheets that have simple game mechanics, i.e. they are excluded from t
 
 **State: TBD**
 
-TODO
+TBD
 
-### Sprites
+### Sheet: Sprites
 
 Sprites are Sheets over multiple rows of frames, where each row may have a variable number of frames. Sprite have a diverse palette of Animation Actions. They are meant to encapsulate the core game entities, e.g. the player, NPCs, and enemies.
 
 Sprite States are covered in more detail in the [Sprites documentation](./02-sprites.md).
 
-### Equipment 
+### Sheet: Equipment 
 
 - Equipment: Weapons, Utilities, Tools, Armor, Shields
 
-Equipment is a group of Asset Instances within the Category of Sheets (known as the Equipment Instance Group). They are closely tied to Sprites Animations. Equipment Assets are rendered on top of a Sprite when those pieces of Equipment are active in the Sprite's inventory. Because of this relationship between the Assets,  i.e. Equipment rendering is dependent on Sprite state, Equipment does not possess its own state, frame or animation implementation. Equipment only has properties.
+Equipment is a group of Asset Instances within the Category of Sheets (known as the Equipment Instance Group). They are closely tied to Sprites Animations. Equipment Assets are rendered on top of a Sprite when those pieces of Equipment are active in the Sprite's Inventory. Because of this relationship between the Assets,  i.e. Equipment rendering being dependent on Sprite state, Equipment does not possess its own State, Frame or Animation implementation. Equipment only has Properties.
 
 Equipment is covered in more detail in the [Sprites documentation](./02-sprites.md#equipment).
 
-## Widgets
+## Category: Widgets
 
-Widgets are used to constructs Menus. They are not a part of the core gameplay loop and have special Mechanics that govern their lifecycle. 
+Widgets are used to constructs Menus. They are not a part of the core [Engine](./00-overview.md#component-engine) loop and have special [Mechanics](./05-mechanics.md) that govern their lifecycle.  
 
-Widgets are covered in their own section, [Widgets](./06-widgets.md).
+Widgets are covered in the [Widget documentation](./06-widgets.md).
 
-## Fonts
+## Category: Fonts
 
 Fonts are stateless Assets initialized at [runtime](./11-architecture.md#initialization). Rather than being deployed onto the Board, Fonts are loaded into the [Registry](./00-overview.md#registry) and utilized by the [Screen](./00-overview.md#screen) to rasterize text canvases for Widgets and dialogue modals.
 

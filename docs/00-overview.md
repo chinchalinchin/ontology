@@ -108,7 +108,7 @@ The Registry loads in all of the Asset files while the application bootstraps. E
 
 ### Components
 
-#### Components: Board
+#### Component: Board
 
 - Address: `app.game.board`
 
