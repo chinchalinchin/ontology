@@ -6,8 +6,11 @@ Composition Configuration can be found in `/src/data/config/compositions/main.ym
 
 ## Material
 
+**Material Palette**
 
-**Materials**
+--8<-- "static/md/material-palette.md"
+
+**Material Genera**
 
 Material serves mainly to alter the color and shading of the Craft. A Material must have implemenations for every Blueprint in a Craft atlas.
 
@@ -17,56 +20,60 @@ Material serves mainly to alter the color and shading of the Craft. A Material m
 - Metallics: `copper`, `iron`, `gold`
 - Chromatics: `neutral`, `red`, `blue`, `yellow`, `green`
 
-**Material Palette**
-
---8<-- "static/md/material-palette.md"
-
-**Blueprints**
+**Blueprints Schemas**
 
 Blueprints describe specific structural implementations of a Craft. A Blueprint must have implementations for every Material in a Strut atlas.
  
-- Building Blueprints:
-    - `floors`: Interior ground surfaces.
-    - `walls`: Exterior support surfaces.
-    - `flats`: Elevated surfaces.
-    - `roofs`: Building enclosures.
-    - `paths`: Exterior ground surfaces.
-    - `halls`: Interior support surfaces.
-- Corridor Blueprints:
-    - `solids`: 
-    - `stripes`: 
-    - `designs`: 
-- Column Blueprints:
-    - `crowns`: 
-    - `shafts`: 
-    - `bases`: 
-- Direction Blueprints:
-    - `up`: 
-    - `left`: 
-    - `down`: 
-    - `right`: 
+- Building Schema:
+    - `halls, walls`: Support surfaces.
+    - `roofs, flats`: Elevated surfaces.
+    - `paths, floor`: Ground surfaces.
+- Corridor Schema:
+    - `solids, stripes, designs`: Ground surfaces 
+- Column Schema:
+    - `crowns`: Upper cap for multiplcation.
+    - `shafts`: Multiplicand for multiplcation.
+    - `bases`: Lower cap for multiplcation.
+- Direction Schema:
+    - `up, left, down, right`: Directed Obstacles
 - Enclosures Blueprints:
-    - `north`: 
-    - `east`: 
-    - `south`: 
-    - `west`:
+    - `north, south`: End cap for vertical multiplcation, edges for horizontal multiplcation.
+    - `east, west`:  End cap for horizontal multiplcation, edge for vertical multiplcation.
 - Inclines Blueprints:
     - `up`: 
     - `left`: 
     - `right`: 
 
-## Asset Specification: Crafts
+## Category: Crafts
 
 Compositions are used to formalize Asset relationships for reuse. For this reason, [Crafts](./01-assets.md#crafts) are an essential component of Compositions. The following section provides an in-depth description of each Craft Instance.
 
-**Properties: CraftProperties**
+**Behavior: MultiplicationStrategies**
 
-- `dimensions: Dimensions`
-- `priority: int = 0`
+Each Blueprint Schema has a unique Multiplication Strategy associated with it in the [Materials Configuration](./appendices/01-schemas.md#configuration-materials) that determines how its `multiple` will be expanded during [Board](./00-overview.md#board) hydration.
+
+- `simple`:
+- `expansion`: 
+- `oriented`:
+- `perimeter`:
+
+**Properties: CraftProperties(AssetProperties)**
+
 - `mass: int = 0`
 - `material: Optional[Material] = None`
 - `blueprints: Optional[str] = None` 
 - `hitboxes: Optional[Dict[str, List[Hitbox]]] = None`
+
+**State: CraftState(AssetState)**
+
+* `material: str`
+* `blueprint: str`
+* `multiple: str`
+
+**Frame: MaterialFrame**
+
+* `keys(id, state): returns [ (f"{id}-{state.material}-{state.blueprint}", 0, 0) ]`
+* `index(id, properties): returns { f"{id}-{i}-{j}: (i * properties.dimensions.w, j * properties.dimensions.l, properties.dimension.w, properties.dimensions.l) } for i, j in product(properties.blueprints, properties.materials)`
 
 ### Struts 
 
