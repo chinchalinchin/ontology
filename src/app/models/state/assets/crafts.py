@@ -29,16 +29,18 @@ from app.models.state.core import (
 # ---------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
-class PropertyState(AssetState):
-    owner: Optional[str] = None
+class CraftState(AssetState):
     position: Optional[Position] = None # type: ignore
-
-@dataclass(slots=True)
-class CraftState(PropertyState):
     material: Optional[str] = None
     blueprint: Optional[str] = None
     multiple: Optional[Multiple] = None # type: ignore
-    
+
+
+@dataclass(slots=True)
+class PropertyState(CraftState):
+    owner: Optional[str] = None
+
+
 @dataclass(slots=True)
 class StairState(CraftState):
     """
@@ -50,6 +52,7 @@ class StairState(CraftState):
     @property
     def direction(self) -> Optional[str]:
         return self.blueprint                      
+
 
 @dataclass(slots=True)
 class PlatformState(PropertyState):

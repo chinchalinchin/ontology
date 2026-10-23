@@ -26,7 +26,7 @@ from app.models.config import RecipeConfiguration
 from app.models.groups import SpawnableGroup
 from app.models.state import (
     AnimationState,
-    OrientedState,
+    CraftState,
     MotorState, 
     PropertyState,
     AttachmentState,
@@ -286,6 +286,7 @@ class Cradle:
         )
         return Asset(taxonomy, properties, state, frame, animation, hitbox)
 
+
     def spawn_composition(self, 
         id: str, 
         position: Position,  # type: ignore
@@ -296,7 +297,7 @@ class Cradle:
         Dynamically spawn an entire composition schema through the engine's mechanics flow.
         """
         name = self.name()
-        pseudo_state    = PropertyState(
+        pseudo_state    = CraftState(
             id          = id, 
             name        = name, 
             layer       = layer, 
@@ -319,12 +320,12 @@ class Cradle:
         Spawns and unpacks a bridge configuration via Decomposer.
         """
         name = self.name()
-        bridge_state = OrientedState(
+        bridge_state = CraftState(
             id=id,
             name=name,
             layer=layer,
             position=position,
-            orientation=orientation,
+            blueprint=orientation,
             multiple=multiple,
             owner=owner
         )

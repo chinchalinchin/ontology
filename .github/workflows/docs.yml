@@ -2,7 +2,7 @@ name: ontology-docs
 
 on:
   workflow_run:
-    workflows: 
+    workflows:
       - ontology-tests
     types:
       - completed
@@ -29,8 +29,23 @@ jobs:
       - name: setup
         run: |
           uv venv --python 3.14
-          uv pip install --group docs --group analysis
-      
+          uv pip install --group docs --group analysis --group build
+
+      - name: cache-cython
+        id: cache-cython
+        uses: actions/cache@v4
+        with:
+          path: |
+            src/libs/**/*.so
+            src/libs/**/*.c
+            build/
+          key: ${{ runner.os }}-cython-v2-${{ hashFiles('src/libs/**/*.pyx', 'src/libs/**/*.pxd', 'setup.cicd.py') }}
+
+      - name: compile
+        if: steps.cache-cython.outputs.cache-hit != 'true'
+        run: |
+          uv run python setup.cicd.py build_ext --inplace --force
+
       - name: download-coverage
         uses: actions/download-artifact@v4
         with:
@@ -43,6 +58,11 @@ jobs:
         run: | 
           chmod +x scripts/dependencies/main.sh
           uv run ./scripts/dependencies/main.sh
+
+      - name: generate-schemas
+        run: |
+          mkdir -p docs/static/yaml
+          PYTHONPATH=src uv run python src/cli.py schema --target all --format yaml --out docs/static/yaml
 
       - name: documentation
         run: |

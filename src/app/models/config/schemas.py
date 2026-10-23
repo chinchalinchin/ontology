@@ -31,7 +31,7 @@ from app.models.config.compositions import (
 from app.models.config.mechanics import (
     MechanicsConfiguration
 )
-from ontology.src.app.models.config.materials import (
+from app.models.config.materials import (
     MaterialsConfiguration
 )
 from app.models.config.mappings import (
@@ -53,7 +53,7 @@ class ConfigurationSchema:
     intentions: Dict[Intentions, List[IntentionConfiguration]] = field(default_factory=dict)
     library: Dict[str, Dict[str, Dict[str, str]]] = field(default_factory=dict)
     mappings: MappingConfiguration = field(default_factory=MappingConfiguration)
-    materials: MaterialsConfiguration = field(default_factory=MaterialConfiguration)
+    materials: MaterialsConfiguration = field(default_factory=MaterialsConfiguration)
     mechanics: MechanicsConfiguration = field(default_factory=MechanicsConfiguration)
     plots: Dict[str, List[PlotConfiguration]] = field(default_factory=dict)
     stages: Dict[str, Dict[str, List[StageConfiguration]]] = field(default_factory=dict)

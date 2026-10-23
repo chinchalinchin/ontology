@@ -57,11 +57,10 @@ Blueprints describe specific structural implementations of a Craft. Blueprints a
 
 Each Blueprint Schema has a unique Multiplication Strategy associated with it in the [Materials Configuration](./appendices/01-schemas.md#configuration-materials) that determines how its `multiple` will be expanded during [Board](./00-overview.md#board) hydration.
 
-- `simple`:
-- `expansion`: 
-- `oriented`:
-- `perimeter`:
-
+- `simple`: TODO
+- `expansion`: TODO
+- `oriented`: TODO
+- `perimeter`: TODO
 
 ### Craft: Struts 
 
@@ -122,7 +121,7 @@ For example, a `brick-house` Composition might contain a `wall` Strut as its roo
 
 In other words, Root Struts provided a *frame of reference* for their components.
 
-### Definition: Pseudo State
+### Definition: PseudoState
 
 To achieve this, Compositions have a *Pseudo State* and a *Deployed State*. A Pseudo State is a formula for constructing the State of its component Assets from the Deployed State of the Composition's [Root Strut](#root-struts). The Pseudo State of a Composition is configured in the Composition directory, whereas the Deployed State is set in the State directory, alongside the other Asset States.
 
@@ -200,7 +199,7 @@ compositions:
 This is a formula for a `brick-house` composed of two Struts on different [Layers](./00-overview.md#layers), each of which have their own [Door](./01-assets.md#doors), each Door being linked to one another through a circuit (`'house-layer' <-> root.layer`). In this way, the "inside" of Assets can be traversed. In other words, each Composition may be composed of separate, independent Layers. 
 
 !!! note "Pseudo State Overrides"
-    Except for Position (see immediately below), the Pseudo State of the components of a Composition overrides the inherited State of the Root Strut. In this example, the `state.layer` of `house-floor` would be `house-layer`, regardless of the `layer` passed to the Root Strut when deployed. 
+    Except for Position (see immediately below), the Pseudo State overrides the inherited State of the Root Strut. In this example, the `state.layer` of `house-floor` is `house-layer`, regardless of the `layer` passed to the Root Strut when deployed. 
 
 The Root Strut (`brick-house.root`) does not have a Position, whereas the `brick-house.branches` Strut does; this is the defining feature of Composition Pseudo State. The Composition configuration leaves the Root Strut Position State and Layer "empty", so that it can be injected by the State file during deployment. Component Assets and Branching Struts define Pseudo States relative to their hierarchical contexts. 
 
@@ -279,13 +278,13 @@ The Decomposer is a standalone Service instantiated *before* the [Board and Crad
 
 Because the Decomposer inherently generates Asset Instances, it acts as a higher-level orchestrator of the Factory. To accomplish this, it needs access to the global [Asset Properties](./01-assets.md#concept-mutability), [Recipes](./appendices/01-schemas.md#configuration-recipes) and Composition Configuration.
 
-1. **Initialization**: The Decomposer must be instantiated inside the [Orchestrator](./00-overview.md#service-orchestrator), immediately after the Configuration files are loaded and validated, but *before* `migrate()` is called.
-2. **Hydration**: During `Orchestrator.migrate()`, the Application parses the State directory.
-    * When the Orchestrator loop encounters the `self.state.compositions` list (the Compositions placed manually in the State files), it passes each deployed state object directly to the Decomposer.
-    * The Decomposer returns a flat list of Assets. The Orchestrator appends these to the master Asset list being compiled for the Board. The Board boots up completely unaware that these assets originated from a macro.
-3. **Runtime**: During orchestrationg, when the Cradle is instantiated, the Orchestrator passes the Decomposer into the Cradle's constructor.
-    *  When a Mechanic requests a Composition, it calls this Cradle method. The Cradle creates a temporary Pseudo-state from the arguments and passes it to its internal Decomposer.
-    * The Mechanic receives the list and pushes it directly into the game loop via the Board.
+1. **Initialization**: The Decomposer is instantiated inside the [Orchestrator](./00-overview.md#service-orchestrator), immediately after the Configuration files are loaded and validated.
+2. **Hydration**: During State migration, the Application parses the State directory.
+    * When the Orchestrator loop encounters the Composition list, it passes the Deployed State directly to the Decomposer.
+    * The Decomposer returns a list of Assets. The Orchestrator appends these to the Board.
+3. **Runtime**: The Orchestrator passes the Decomposer into the Cradle's constructor before injecting the Cradle into the Board.
+    *  When a Mechanic requests a Composition, it calls this Cradle method. The Cradle creates a temporary PseudoState and passes it to its internal Decomposer.
+    * The Mechanic receives the list o Asset and pushes it onto the Board.
 
 ### Service: Materializer
 

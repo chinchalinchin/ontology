@@ -15,7 +15,7 @@ from app.models.config.mappings import (
     DeviceMapping,
     MappingConfiguration
 )
-from ontology.src.app.models.config.materials import (
+from app.models.config.materials import (
     Cost,
     MaterialsConfiguration
 )

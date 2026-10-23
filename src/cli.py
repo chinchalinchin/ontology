@@ -20,19 +20,29 @@ from typing import Dict, List, Optional, Any
 
 # External Libraries
 import jinja2
+import yaml
+from pydantic import TypeAdapter
 
 # ---------------------------------------------------------
 # PATH RESOLUTION: Add project root to sys.path
 # ---------------------------------------------------------
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 # Application Libraries
 import app.config.settings as settings
 from app.config.logging import configure_logging
-from app.config.enums import Devices, AssetCategories
+from app.config.enums import (
+    Devices, 
+    AssetCategories
+)
+
 from app.game.screen import Screen
+from app.models.state import StateSchema
+from app.models.properties import PropertiesSchema
+from app.models.config import ConfigurationSchema
 from app.services.orchestration import Orchestrator
 
 # Cython Libraries
@@ -47,6 +57,12 @@ SCREENSIZES = {
     'large': 600
 }
 SCREENSIZE = SCREENSIZES['medium']
+
+SCHEMA_TARGETS = {
+    "state": StateSchema,
+    "properties": PropertiesSchema,
+    "config": ConfigurationSchema,
+}
 
 # ---------------------------------------------------------
 # COMMAND ARGUMENTS
@@ -82,7 +98,7 @@ def arguments():
         p.add_argument("--out", type=str, required=True)
         p.add_argument("--layer", type=str, required=True)
         p.add_argument("--width", type=int, default=SCREENSIZE)
-        p.add_argument("--height", type=int, default=SCREENSIZE)
+        p.add_argument("--length", type=int, default=SCREENSIZE)
         p.add_argument("--device", type=str, default=Devices.KEYBOARD.value)
 
     # Interactive start subcommand: board_key is optional (nargs="?", default=None)
@@ -90,16 +106,38 @@ def arguments():
     p_start.add_argument("board_key", type=str, nargs="?", default=None,
                          help="Optional board key to bypass the Main Menu and start immediately.")
     p_start.add_argument("--width", type=int, default=SCREENSIZE)
-    p_start.add_argument("--height", type=int, default=SCREENSIZE)
+    p_start.add_argument("--length", type=int, default=SCREENSIZE)
     p_start.add_argument("--device", type=str, default=Devices.KEYBOARD.value)
 
+    # Schema Dump subcommand (Headless, no board_key required)
+    p_schema = subparsers.add_parser("schema", help="Export JSON or YAML model schemas.")
+    p_schema.add_argument(
+        "--target",
+        type=str,
+        default="all",
+        choices=["all", "state", "properties", "config"],
+        help="Target model schema to export (default: 'all')."
+    )
+    p_schema.add_argument(
+        "--format",
+        type=str,
+        default="yaml",
+        choices=["json", "yaml"],
+        help="Output serialization format (default: 'yaml')."
+    )
+    p_schema.add_argument(
+        "--out",
+        type=str,
+        default=None,
+        help="Output destination path or directory. Writes to stdout if omitted."
+    )
     return parser.parse_args()
 
 # ---------------------------------------------------------
 # COMMAND HELPERS
 # ---------------------------------------------------------
 
-def filter_assets(assets: List[Any], filters: Optional[Dict[str, Optional[str]]] = None) -> List[Any]:
+def filter(assets: List[Any], filters: Optional[Dict[str, Optional[str]]] = None) -> List[Any]:
     """
     Applies regex filtering to the Asset sequence across instances, categories, ids, and names.
     Excludes Widgets unconditionally.
@@ -168,7 +206,7 @@ def dump(board_key: Optional[str], context: Any, temp: str = "state", filters: O
 
     if temp == "state":
         raw_assets = context.assets() if hasattr(context, "assets") else []
-        args["assets"] = filter_assets(raw_assets, filters)
+        args["assets"] = filter(raw_assets, filters)
         if hasattr(context, "perimeters"):
             args["perimeters"] = context.perimeters() if callable(context.perimeters) else context.perimeters
         if hasattr(context, "calendar"):
@@ -251,6 +289,14 @@ def hydrate(engine, board_key, screensize):
             )
             
     engine.board.loaded = True
+
+
+def serialize(schema_cls: Any, fmt: str) -> str:
+    """Generates and serializes a JSON Schema dictionary into JSON or YAML."""
+    schema_dict = TypeAdapter(schema_cls).json_schema()
+    if fmt == "yaml":
+        return yaml.safe_dump(schema_dict, sort_keys=False, default_flow_style=False)
+    return json.dumps(schema_dict, indent=2)
 
 # ---------------------------------------------------------
 # COMMAND HANDLERS
@@ -391,13 +437,56 @@ def handle_telemetry(args):
     print(json.dumps(json.loads(response.decode("utf-8")), indent=2))
     client.close()
 
+
+def handle_schema(args: argparse.Namespace) -> None:
+    """
+    Exports JSON Schema definitions for StateSchema, PropertiesSchema,
+    and ConfigurationSchema without initializing engine subsystems or SDL.
+    """
+    selected_targets = (
+        list(SCHEMA_TARGETS.keys()) if args.target == "all" else [args.target]
+    )
+    
+    out_path = Path(args.out).expanduser() if args.out else None
+
+    # Multi-schema directory export or single-file export
+    if out_path and (len(selected_targets) > 1 or out_path.is_dir() or not out_path.suffix):
+        out_path.mkdir(parents=True, exist_ok=True)
+        for target_key in selected_targets:
+            cls = SCHEMA_TARGETS[target_key]
+            rendered = serialize(cls, args.format)
+            dest = out_path / f"{target_key}.schema.{args.format}"
+            dest.write_text(rendered, encoding="utf-8")
+            logger.info(f"Wrote {target_key} schema to {dest}")
+        return
+
+    # Single-target output to file or stdout
+    combined_outputs = []
+    for target_key in selected_targets:
+        cls = SCHEMA_TARGETS[target_key]
+        rendered = serialize(cls, args.format)
+        
+        if out_path:
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            out_path.write_text(rendered, encoding="utf-8")
+            logger.info(f"Wrote {target_key} schema to {out_path}")
+            return
+        
+        combined_outputs.append(rendered)
+
+    print("\n---\n".join(combined_outputs))
+
+
 COMMAND_REGISTRY = {
     "prerender": handle_prerender,
     "render": handle_render,
     "map": handle_map,
     "start": handle_start,
-    "telemetry": handle_telemetry
+    "telemetry": handle_telemetry,
+    "schema": handle_schema
 }
+
+ENGINE_COMMANDS = { "prerender", "render", "map", "start" }
 
 # ---------------------------------------------------------
 # MAIN
@@ -409,10 +498,26 @@ def main():
     args = arguments()
     configure_logging(log_level=args.log_level.upper())
 
-    # Log raw sys.argv as well as parsed namespace attributes
     logger.info("Raw argv: %s", sys.argv[1:])
     logger.info("Parsed arguments: %s", vars(args))
 
+    handler = COMMAND_REGISTRY.get(args.command)
+    if not handler:
+        logger.error(f"Unknown command received: {args.command}")
+        sys.exit(1)
+
+    # ---------------------------------------------------------
+    # STANDALONE EXECUTION (No SDL, no Orchestrator, no Dimensions)
+    # ---------------------------------------------------------
+    if args.command not in ENGINE_COMMANDS:
+        logger.info(f"Executing standalone command: '{args.command}'")
+        handler(args)
+        logger.info("CLI processes completed.")
+        return
+
+    # ---------------------------------------------------------
+    # ENGINE LIFECYCLE EXECUTION
+    # ---------------------------------------------------------
     logger.info(f"Starting CLI with command: '{args.command}' for board: '{getattr(args, 'board_key', None)}'")
 
     screensize = Dimensions(w=args.width, l=args.height)
@@ -421,12 +526,6 @@ def main():
         os.environ["SDL_RENDER_DRIVER"] = "software"
 
     orchestrator = Orchestrator()
-    
-    handler = COMMAND_REGISTRY.get(args.command)
-    if not handler:
-        logger.error(f"Unknown command received: {args.command}")
-        sys.exit(1)
-
     engine = handler(args, orchestrator, screensize)
 
     # State Query Filter Configuration
