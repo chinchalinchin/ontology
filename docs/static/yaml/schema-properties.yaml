@@ -1,0 +1,706 @@
+$defs:
+  Action:
+    properties:
+      count:
+        title: Count
+        type: integer
+      directions:
+        additionalProperties:
+          $ref: '#/$defs/Direction'
+        propertyNames:
+          $ref: '#/$defs/Directions'
+        title: Directions
+        type: object
+      delay:
+        default: 1
+        title: Delay
+        type: integer
+    required:
+    - count
+    - directions
+    title: Action
+    type: object
+  Actions:
+    enum:
+    - cast
+    - thrust
+    - walk
+    - slash
+    - shoot
+    - die
+    title: Actions
+    type: string
+  Alignments:
+    enum:
+    - start
+    - end
+    - center
+    title: Alignments
+    type: string
+  CraftProperties:
+    properties:
+      dimensions:
+        title: Dimensions
+      priority:
+        default: 0
+        title: Priority
+        type: integer
+      mass:
+        default: 0
+        title: Mass
+        type: integer
+      material:
+        anyOf:
+        - $ref: '#/$defs/Material'
+        - type: 'null'
+        default: null
+      blueprints:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Blueprints
+      hitboxes:
+        anyOf:
+        - additionalProperties:
+            items: {}
+            type: array
+          type: object
+        - additionalProperties:
+            anyOf:
+            - items: {}
+              type: array
+            - type: 'null'
+          type: object
+        - items: {}
+          type: array
+        - type: 'null'
+        default: null
+        title: Hitboxes
+    required:
+    - dimensions
+    title: CraftProperties
+    type: object
+  CraftPropertyInstances:
+    properties:
+      struts:
+        additionalProperties:
+          $ref: '#/$defs/CraftProperties'
+        title: Struts
+        type: object
+      bridges:
+        additionalProperties:
+          $ref: '#/$defs/CraftProperties'
+        title: Bridges
+        type: object
+      platforms:
+        additionalProperties:
+          $ref: '#/$defs/CraftProperties'
+        title: Platforms
+        type: object
+      stairs:
+        additionalProperties:
+          $ref: '#/$defs/CraftProperties'
+        title: Stairs
+        type: object
+    title: CraftPropertyInstances
+    type: object
+  CursorProperties:
+    properties:
+      dimensions:
+        title: Dimensions
+      priority:
+        default: 0
+        title: Priority
+        type: integer
+      frames:
+        items:
+          type: string
+        title: Frames
+        type: array
+    required:
+    - dimensions
+    title: CursorProperties
+    type: object
+  CursorPropertyInstances:
+    properties:
+      expressions:
+        additionalProperties:
+          $ref: '#/$defs/CursorProperties'
+        title: Expressions
+        type: object
+      projectiles:
+        additionalProperties:
+          $ref: '#/$defs/CursorProperties'
+        title: Projectiles
+        type: object
+    title: CursorPropertyInstances
+    type: object
+  Direction:
+    properties:
+      row:
+        title: Row
+        type: integer
+    required:
+    - row
+    title: Direction
+    type: object
+  Directions:
+    enum:
+    - up
+    - left
+    - down
+    - right
+    title: Directions
+    type: string
+  EffectProperties:
+    properties:
+      dimensions:
+        title: Dimensions
+      priority:
+        default: 0
+        title: Priority
+        type: integer
+      count:
+        default: 1
+        title: Count
+        type: integer
+      frequency:
+        $ref: '#/$defs/Frequency'
+      mass:
+        default: -1
+        title: Mass
+        type: integer
+      hitboxes:
+        anyOf:
+        - items: {}
+          type: array
+        - type: 'null'
+        default: null
+        title: Hitboxes
+    required:
+    - dimensions
+    title: EffectProperties
+    type: object
+  EffectPropertyInstances:
+    properties:
+      collectables:
+        additionalProperties:
+          $ref: '#/$defs/EffectProperties'
+        title: Collectables
+        type: object
+      reactables:
+        additionalProperties:
+          $ref: '#/$defs/EffectProperties'
+        title: Reactables
+        type: object
+      hazards:
+        additionalProperties:
+          $ref: '#/$defs/EffectProperties'
+        title: Hazards
+        type: object
+      passive:
+        additionalProperties:
+          $ref: '#/$defs/EffectProperties'
+        title: Passive
+        type: object
+      fluids:
+        additionalProperties:
+          $ref: '#/$defs/EffectProperties'
+        title: Fluids
+        type: object
+    title: EffectPropertyInstances
+    type: object
+  FontProperties:
+    properties:
+      alignment:
+        $ref: '#/$defs/Alignments'
+        default: start
+      color:
+        $ref: '#/$defs/RGBA'
+      outline:
+        anyOf:
+        - $ref: '#/$defs/Outline'
+        - type: 'null'
+        default: null
+      bold:
+        default: false
+        title: Bold
+        type: boolean
+      italics:
+        default: false
+        title: Italics
+        type: boolean
+      strikethrough:
+        default: false
+        title: Strikethrough
+        type: boolean
+      underline:
+        default: false
+        title: Underline
+        type: boolean
+      margins:
+        default: 0
+        title: Margins
+        type: number
+      size:
+        default: 24
+        title: Size
+        type: integer
+    title: FontProperties
+    type: object
+  Frequencies:
+    enum:
+    - continuous
+    - periodic
+    - temporary
+    title: Frequencies
+    type: string
+  Frequency:
+    properties:
+      type:
+        $ref: '#/$defs/Frequencies'
+        default: continuous
+      delay:
+        default: 1
+        title: Delay
+        type: integer
+      frequency:
+        default: 0
+        title: Frequency
+        type: integer
+      cooldown:
+        default: 60
+        title: Cooldown
+        type: integer
+      persist:
+        default: false
+        title: Persist
+        type: boolean
+    title: Frequency
+    type: object
+  GeographyProperties:
+    properties:
+      dimensions:
+        title: Dimensions
+      priority:
+        default: 0
+        title: Priority
+        type: integer
+      hitboxes:
+        anyOf:
+        - items: {}
+          type: array
+        - type: 'null'
+        title: Hitboxes
+      tile:
+        default: null
+        title: Tile
+        type: string
+      fluid:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Fluid
+      thickness:
+        default: 8
+        title: Thickness
+        type: integer
+      mass:
+        default: -1
+        title: Mass
+        type: integer
+    required:
+    - dimensions
+    title: GeographyProperties
+    type: object
+  GeographyPropertyInstances:
+    properties:
+      shorelines:
+        additionalProperties:
+          $ref: '#/$defs/GeographyProperties'
+        title: Shorelines
+        type: object
+    title: GeographyPropertyInstances
+    type: object
+  Lifespans:
+    enum:
+    - annual
+    - perennial
+    - centennial
+    title: Lifespans
+    type: string
+  Material:
+    properties:
+      genus:
+        title: Genus
+        type: string
+      host:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Host
+    required:
+    - genus
+    title: Material
+    type: object
+  ObjectProperties:
+    properties:
+      dimensions:
+        title: Dimensions
+      priority:
+        default: 0
+        title: Priority
+        type: integer
+      mass:
+        default: 0
+        title: Mass
+        type: integer
+      count:
+        default: 1
+        title: Count
+        type: integer
+      material:
+        anyOf:
+        - $ref: '#/$defs/Material'
+        - type: 'null'
+        default: null
+      hitboxes:
+        anyOf:
+        - additionalProperties:
+            items: {}
+            type: array
+          type: object
+        - items: {}
+          type: array
+        - type: 'null'
+        default: null
+        title: Hitboxes
+    required:
+    - dimensions
+    title: ObjectProperties
+    type: object
+  ObjectPropertyInstances:
+    properties:
+      obstacles:
+        additionalProperties:
+          $ref: '#/$defs/ObjectProperties'
+        title: Obstacles
+        type: object
+      chests:
+        additionalProperties:
+          $ref: '#/$defs/ObjectProperties'
+        title: Chests
+        type: object
+      crates:
+        additionalProperties:
+          $ref: '#/$defs/ObjectProperties'
+        title: Crates
+        type: object
+      doors:
+        additionalProperties:
+          $ref: '#/$defs/ObjectProperties'
+        title: Doors
+        type: object
+      gates:
+        additionalProperties:
+          $ref: '#/$defs/ObjectProperties'
+        title: Gates
+        type: object
+      plates:
+        additionalProperties:
+          $ref: '#/$defs/ObjectProperties'
+        title: Plates
+        type: object
+      signs:
+        additionalProperties:
+          $ref: '#/$defs/ObjectProperties'
+        title: Signs
+        type: object
+      rafts:
+        additionalProperties:
+          $ref: '#/$defs/ObjectProperties'
+        title: Rafts
+        type: object
+    title: ObjectPropertyInstances
+    type: object
+  Outline:
+    properties:
+      color:
+        $ref: '#/$defs/RGBA'
+      width:
+        default: 0
+        title: Width
+        type: integer
+    title: Outline
+    type: object
+  RGBA:
+    properties:
+      r:
+        default: 255
+        title: R
+        type: integer
+      g:
+        default: 255
+        title: G
+        type: integer
+      b:
+        default: 255
+        title: B
+        type: integer
+      a:
+        default: 255
+        title: A
+        type: integer
+    title: RGBA
+    type: object
+  ResourceProperties:
+    properties:
+      dimensions:
+        title: Dimensions
+      priority:
+        default: 0
+        title: Priority
+        type: integer
+      loot:
+        default: null
+        title: Loot
+        type: string
+      lifespan:
+        $ref: '#/$defs/Lifespans'
+        default: annual
+      mass:
+        default: 0
+        title: Mass
+        type: integer
+      hitboxes:
+        additionalProperties:
+          anyOf:
+          - items: {}
+            type: array
+          - type: 'null'
+        default: null
+        title: Hitboxes
+        type: object
+    required:
+    - dimensions
+    title: ResourceProperties
+    type: object
+  ResourcePropertyInstances:
+    properties:
+      crops:
+        additionalProperties:
+          $ref: '#/$defs/ResourceProperties'
+        title: Crops
+        type: object
+      ore:
+        additionalProperties:
+          $ref: '#/$defs/ResourceProperties'
+        title: Ore
+        type: object
+      trees:
+        additionalProperties:
+          $ref: '#/$defs/ResourceProperties'
+        title: Trees
+        type: object
+    title: ResourcePropertyInstances
+    type: object
+  SheetProperties:
+    properties:
+      dimensions:
+        title: Dimensions
+      priority:
+        default: 0
+        title: Priority
+        type: integer
+      stack:
+        items:
+          type: string
+        title: Stack
+        type: array
+      mass:
+        default: 1
+        title: Mass
+        type: integer
+      hitboxes:
+        anyOf:
+        - items: {}
+          type: array
+        - type: 'null'
+        title: Hitboxes
+      actions:
+        anyOf:
+        - type: string
+        - additionalProperties:
+            $ref: '#/$defs/Action'
+          propertyNames:
+            $ref: '#/$defs/Actions'
+          type: object
+        title: Actions
+      attackboxes:
+        anyOf:
+        - additionalProperties:
+            items: {}
+            type: array
+          type: object
+        - type: 'null'
+        title: Attackboxes
+    required:
+    - dimensions
+    title: SheetProperties
+    type: object
+  SheetPropertyInstances:
+    properties:
+      pixies:
+        additionalProperties:
+          $ref: '#/$defs/SheetProperties'
+        title: Pixies
+        type: object
+      sprites:
+        additionalProperties:
+          $ref: '#/$defs/SheetProperties'
+        title: Sprites
+        type: object
+      weapons:
+        additionalProperties:
+          $ref: '#/$defs/SheetProperties'
+        title: Weapons
+        type: object
+      utilities:
+        additionalProperties:
+          $ref: '#/$defs/SheetProperties'
+        title: Utilities
+        type: object
+      armor:
+        additionalProperties:
+          $ref: '#/$defs/SheetProperties'
+        title: Armor
+        type: object
+      tools:
+        additionalProperties:
+          $ref: '#/$defs/SheetProperties'
+        title: Tools
+        type: object
+      shields:
+        additionalProperties:
+          $ref: '#/$defs/SheetProperties'
+        title: Shields
+        type: object
+      players:
+        additionalProperties:
+          $ref: '#/$defs/SheetProperties'
+        title: Players
+        type: object
+    title: SheetPropertyInstances
+    type: object
+  TileProperties:
+    properties:
+      dimensions:
+        title: Dimensions
+      priority:
+        default: 0
+        title: Priority
+        type: integer
+      friction:
+        default: 0.0
+        title: Friction
+        type: number
+    required:
+    - dimensions
+    title: TileProperties
+    type: object
+  TilePropertyInstances:
+    properties:
+      canopy:
+        additionalProperties:
+          $ref: '#/$defs/TileProperties'
+        title: Canopy
+        type: object
+      environ:
+        additionalProperties:
+          $ref: '#/$defs/TileProperties'
+        title: Environ
+        type: object
+      grid:
+        additionalProperties:
+          $ref: '#/$defs/TileProperties'
+        title: Grid
+        type: object
+    title: TilePropertyInstances
+    type: object
+  WidgetProperties:
+    properties:
+      dimensions:
+        title: Dimensions
+      priority:
+        default: 0
+        title: Priority
+        type: integer
+      frames:
+        anyOf:
+        - items:
+            type: string
+          type: array
+        - type: 'null'
+        title: Frames
+    required:
+    - dimensions
+    title: WidgetProperties
+    type: object
+  WidgetPropertyInstances:
+    properties:
+      buttons:
+        additionalProperties:
+          $ref: '#/$defs/WidgetProperties'
+        title: Buttons
+        type: object
+      icons:
+        additionalProperties:
+          $ref: '#/$defs/WidgetProperties'
+        title: Icons
+        type: object
+      meters:
+        additionalProperties:
+          $ref: '#/$defs/WidgetProperties'
+        title: Meters
+        type: object
+      pages:
+        additionalProperties:
+          $ref: '#/$defs/WidgetProperties'
+        title: Pages
+        type: object
+      panes:
+        additionalProperties:
+          $ref: '#/$defs/WidgetProperties'
+        title: Panes
+        type: object
+    title: WidgetPropertyInstances
+    type: object
+properties:
+  tiles:
+    $ref: '#/$defs/TilePropertyInstances'
+  effects:
+    $ref: '#/$defs/EffectPropertyInstances'
+  geography:
+    $ref: '#/$defs/GeographyPropertyInstances'
+  objects:
+    $ref: '#/$defs/ObjectPropertyInstances'
+  crafts:
+    $ref: '#/$defs/CraftPropertyInstances'
+  cursors:
+    $ref: '#/$defs/CursorPropertyInstances'
+  resources:
+    $ref: '#/$defs/ResourcePropertyInstances'
+  sheets:
+    $ref: '#/$defs/SheetPropertyInstances'
+  fonts:
+    additionalProperties:
+      $ref: '#/$defs/FontProperties'
+    title: Fonts
+    type: object
+  widgets:
+    $ref: '#/$defs/WidgetPropertyInstances'
+title: PropertiesSchema
+type: object

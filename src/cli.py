@@ -61,8 +61,10 @@ SCREENSIZE = SCREENSIZES['medium']
 SCHEMA_TARGETS = {
     "state": StateSchema,
     "properties": PropertiesSchema,
-    "config": ConfigurationSchema,
+    "configuration": ConfigurationSchema,
 }
+
+ENGINE_COMMANDS = { "prerender", "render", "map", "start" }
 
 # ---------------------------------------------------------
 # COMMAND ARGUMENTS
@@ -455,7 +457,7 @@ def handle_schema(args: argparse.Namespace) -> None:
         for target_key in selected_targets:
             cls = SCHEMA_TARGETS[target_key]
             rendered = serialize(cls, args.format)
-            dest = out_path / f"{target_key}.schema.{args.format}"
+            dest = out_path / f"schema-{target_key}.{args.format}"
             dest.write_text(rendered, encoding="utf-8")
             logger.info(f"Wrote {target_key} schema to {dest}")
         return
@@ -476,6 +478,9 @@ def handle_schema(args: argparse.Namespace) -> None:
 
     print("\n---\n".join(combined_outputs))
 
+# ---------------------------------------------------------
+# MAIN
+# ---------------------------------------------------------
 
 COMMAND_REGISTRY = {
     "prerender": handle_prerender,
@@ -485,12 +490,6 @@ COMMAND_REGISTRY = {
     "telemetry": handle_telemetry,
     "schema": handle_schema
 }
-
-ENGINE_COMMANDS = { "prerender", "render", "map", "start" }
-
-# ---------------------------------------------------------
-# MAIN
-# ---------------------------------------------------------
 
 def main():
     faulthandler.enable()
