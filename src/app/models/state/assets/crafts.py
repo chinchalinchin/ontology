@@ -45,7 +45,6 @@ class PropertyState(CraftState):
 class StairState(CraftState):
     """
     State representation for walkable incline transitions.
-    Inherits material, blueprint ('up', 'left', 'right'), and multiple from CraftState.
     """
     delta: int = 1
 

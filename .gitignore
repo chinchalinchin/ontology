@@ -17,6 +17,7 @@ TODOS.md
 **/*.pstats
 engine-run.svg
 **/*.0
+**/uv.lock
 
 !**/.gitkeep
 !**/templates/*-dump.md
