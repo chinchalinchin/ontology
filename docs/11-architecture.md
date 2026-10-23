@@ -1,49 +1,52 @@
 # Ontology: Architecture
 
-This section contains an in-depth presentation of the game engine's programmatic architecture.
+This section contains an in-depth presentation of the [Application's](./00-overview.md#application) architecture.
 
-## Initialization
+## Specifications
 
-The engine utilizes a decoupled boot-and-hydrate lifecycle to achieve instantaneous menu rendering and non-blocking scene transitions. The general flow is shwon in the following diagram and detailed further in the following sections,
+### Specification: Initialization
+
+The engine utilizes a decoupled boot-and-hydrate lifecycle to achieve instantaneous menu rendering and non-blocking transitions. The general flow is shwon in the following diagram and detailed further in the following sections,
 
 ```mermaid
 flowchart LR
-    A[Orchestrator Boot] --> B[Registry Indexes (No VRAM)]
-    B --> C[Engine Starts (Empty Board)]
+    A[Orchestrator] --> B[Registry]
+    B --> C[Engine]
     C --> D[MainMenu]
     D --> E[StateEvent]
-    E --> F[Migrator/Prewarm (Time-sliced)]
-    F --> G[World Simulation]
+    E --> F[Migrator]
+    F --> G[LoadController]
+    G --> H[Engine]
 ```
 
 !!! important "Hardware Rendering Context Pre-requisites"
-    When running in live (non-headless) mode, the hardware window context (`render.show()`) **must** be instantiated strictly *after* `render.init()` but *before* `Registry` initialization. 
+    When running in live (non-headless) mode, the hardware window context (`render.show()`) **must** be instantiated strictly *after* `render.init()` but *before* Registry initialization. 
     
-    The `Registry` caches textures directly into GPU memory via Cython (`TexturePtr`). If the window context does not exist when the Registry attempts to index and load `.png` files, the textures will silently resolve as empty `0x0` null pointers. This results in a "ghost state" where the entire game board is invisible, but the `Board` database, spatial physics, and collision systems continue to operate normally.
+    The Registry caches textures directly into GPU memory via Cython (`TexturePtr`). If the window context does not exist when the Registry attempts to index and load `.png` files, the textures will silently resolve as empty `0x0` null pointers. This results in a "ghost state" where the entire game board is invisible, but the Board database and Mechanic systems continue to operate normally.
 
-### Phase 1: Boot (Static Memory)
+#### Phase 1: Boot
 
-1. **Bootstrapping & Loading (`Orchestrator.__init__`)**: Loads configuration YAML files via Pydantic and instantiates the `Decomposer` singleton.
-2. **Cython Context Initialization (`render.init`)**: Initializes SDL2 video, image, and typography subsystems.
-3. **Registry Initialization (`Registry`)**: Recursively parses the asset directory, mapping file paths and generating crop-map indexes. **VRAM allocation is completely deferred.**
-4. **Mechanics, Menus & Board (`Provider`)**: Instantiates `core` and `world` mechanics, the UI `Provider`, and an empty `Board` database initialized with `loaded = False`. 
-5. **Ignition (`Engine.start`)**: The fixed-timestep loop begins. A `MenuEvent('main')` is injected into the Engine bus prior to ignition to immediately render the Main Menu.
+1. **Bootstrapping**: Loads Configuration files via Pydantic TypeAdaptor, instantiates Service singletons, compiles [Executors](./05-mechanics.md#dependency-executors) and [Relations](./05-mechanics.md#dependency-relations)
+2. **Cython**: Initializes SDL2 video, image, and typography subsystems.
+3. **Registry**: Recursively parses the Asset directory, mapping file paths and generating crop-map indexes. *VRAM allocation is completely deferred.*
+4. **Components**: Instantiates [Mechanics](./05-mechanics.md) and an empty [Board database](./00-overview.md#component-board). 
+5. **Ignition**: The fixed-timestep loop begins. A [MenuEvent('main')](./06-widgets.md#events) is injected into the Engine bus prior to ignition to immediately render the [Main Menu](./06-widgets.md#menus).
 
-### Phase 2: Hydration (Dynamic World Memory)
+#### Phase 2: Hydration
 
-Triggered by a `StateEvent` (e.g., selecting "New Game" or "Load"), the Engine transitions into world generation without blocking the Python GIL.
+Triggered by a StateEvent (e.g., selecting "*New Game*" or "*Load*"), the Engine transitions into world generation without blocking the Python GIL.
 
-1. **Time-Sliced Generation (`Migrator.step`)**: The `LoadController` calls the Migrator each frame. The Migrator applies the Entity-Component-System (ECS) pattern to a batch of assets from the state YAML, injecting Frame, Animation, Properties, and State components, then yields execution back to the Engine to maintain UI responsiveness.
-   - The StateSchema distinguishes between Physical Assets (Assets requiring state, frames, and logic, such as Tiles or Sprites) and World Metadata (abstract governing states, such as the current Plot). During hydration, the Migrator parses World Metadata instantly ($O(1)$) and assigns it directly to the Board, explicitly bypassing the time-sliced ECS component injection loop reserved for Physical Assets.
-2. **Asset Prewarming (`Registry.prewarm`)**: Concurrently, the Registry parses a queue of dependency string keys, loading `.png` and `.ttf` files into GPU memory (`TexturePtr`) within a strictly enforced millisecond time budget.
-3. **Screen Allocation (`Screen.rebake`)**: Once hydration reaches 100%, the Migrator triggers `rebake()` on all active Screens to dynamically calculate max dimensions and allocate independent hardware canvases for the Painter's Algorithm.
-4. **Execution**: The `LoadController` emits a `TerminalEvent`, popping the loading screen, setting `board.loaded = True`, and unpausing the `world` Mechanics.
+1. **Generation**: The [LoadController](./06-widgets.md#controllers) calls the Migrator each frame. The Migrator applies calls the [Factory](./00-overview.md#service-factory) to generate batches of Assets from the State file, injecting Frame, Animation, Hitbox, Properties, and State components, then yields execution back to the Engine.
+   *The StateSchema distinguishes between Physical Asset State (Assets requiring State, Frames, etc.) and World State. During hydration, the Migrator parses World State and assigns it to the Board.
+2. **Prewarming**: Concurrently, the Registry parses a queue of keys, loading Asset files into memory within a time budget.
+3. **Allocation**: Once hydration is complete, the Migrator triggers  all Screens to recalculate max dimensions and reallocate canvases for the Painter's Algorithm.
+4. **Execution**: The LoadController emits a [TerminalEvent](./06-widgets.md#events), popping the loading screen, activating the Board, and unpausing the [World Mechanics](./05-mechanics.md#mechanics-world).
 
-## Mechanics
+### Specification: Engine Loop
 
-The Engine delegates behavior to [Mechanics](./05-mechanics.md). Rather than the Engine passing arguments to a system, a Mechanic is responsible for querying the [Board](./00-overview.md#board) for the exact data it requires, processing the state, and optionally pushing Events to the Engine's `bus`.
+The Engine delegates behavior to [Mechanics](./05-mechanics.md). Rather than the [Engine](./00-overview.md#component-engine) passing arguments to a system, a Mechanic is responsible for querying the [Board](./00-overview.md#component=board) for the exact data it requires, processing the state, and optionally pushing Events to the Engine's Bus.
 
-Mechanics are strictly segregated into `core` pipelines and `world` pipelines. The `Engine._play()` method processes these lists conditionally:
+Mechanics are strictly segregated into `core` pipelines and `world` pipelines. The [Engine](./00-overview.md#component-engine) method processes these pipelines conditionally:
 
 ```python
 def _play(self, delta) -> None:
@@ -62,71 +65,53 @@ def _play(self, delta) -> None:
 * **Core Mechanics:** Systems that must execute every frame regardless of game state. This includes [MenuMechanics](./05-mechanics.md#core) (to process input and layout traversals), [AnimationMechanics](./05-mechanics.md#core) (to keep Assets animating), and RemoveMechanics (garbage collection).
 * **World Mechanics:** Systems that govern gameplay logic, physics, and NPC behavior. This includes [MotionMechanics, CombatMechanics, and PlayerMechanics](./05-mechanics.md).
 
-When a [MenuEvent](./06-widgets.md#events) fires and a modal Menu is pushed to the screen, `board.paused` evaluates to `True`. The Engine skips the `world` mechanics loop entirely. The world freezes, but `core` mechanics continue ticking, allowing the Player to navigate the menu while background torches remain animated without the risk of enemies moving or attacking.
+When a [MenuEvent](./06-widgets.md#events) fires and a modal Menu is pushed to the screen, the Board is paused. The Engine skips the World Mechanics loop entirely. The World freezes, but Core Mechanics continue ticking, allowing the User to navigate the Menu.
 
-### Dependency Injection & Factory
+### Specification: Board Caches
 
-Mechanics enforce strict separation between static construction dependencies and per-frame execution arguments:
-
-1. **Execution Interface (`Mechanic.update`)**: The runtime interface `update(board, delta, bus, payload)` receives only transient frame state. Static services are never passed through `update()`.
-2. **Constructor Injection (`Factory`)**: Systems requiring external services (such as `Actuator` for `FluidMechanics`, or compiled ISL expression trees for `TransitionMechanics` and `PlotMechanics`) receive them strictly through their constructor via `Factory`.
-
-```mermaid
---*<-- "static/mmd/mechanics.bootstrap.mmd
-```
-
-## Maps
-
-Maps associate ancillary Asset states to their final Animation state. See [AnimationMap](./04-intentions.md#animationmap) for more information.
-
-The `AnimationMap` plays a crucial role in enforcing logical constraints. For example, `TransitionMechanics` and `PlayerMechanics` utilize `AnimationMap.action(state, equipment)` to resolve whether an intended action is possible. This guarantees that an `attack` intention will not translate into a `thrust` animation action if the Sprite currently lacks the required tool or weapon equipped in its inventory.
-
-## Board
-
-### Spatial Grid Caching
+#### Cache: Spatial Grid
 
 To optimize environmental lookups without traversing linear asset arrays, the Board utilizes two discrete ($O(1)$) spatial hash grids managed by `BoardCaches`:
 
 1. **Tile Spatial Grid (`tilemap`)**:
 
-Partitions static tiles into spatial buckets of size `TILE_HASH_SIZE = 32`. To prevent foreground architectural tiles (`fore`) from overwriting terrain friction data (`back`), buckets nest by layer and instance:
+Partitions Tiles into spatial buckets. To prevent [Canopy Tiles](./01-assets.md#tile-canopy) from overwriting [Environ Tiles](./01-assets.md#tile-environ), buckets nest by layer and instance:
 
 $$
 \text{tilemap}[\text{layer}][\text{instance}][(c_x, c_y)] \to \text{Asset}
 $$
 
-2. **Hydrological Broad-Phase Grid (`fluidmap`)**:
+2. **Hydrological Broad-Phase Grid**:
 
-Indexes active fluid streams, annular pools, and branching corridors into spatial buckets of size `TILE_HASH_SIZE = 32`. Each bucket stores references to overlapping fluid entities:
+Indexes active Fluid streams, annular pools, and branching corridors into spatial buckets. Each bucket stores references to overlapping Fluids:
 
 $$
 \text{fluidmap}[\text{layer}][(c_x, c_y)] \to \text{List}[\text{Asset}]
 $$
 
-When asserting fluid immersion (`board.fluid(layer, position)`), the engine queries the bucket corresponding to the coordinate in $O(1)$ time, then delegates to narrow-phase AABB segment validation via `app.game.board.predicates.in_fluid()`.
+When asserting Fluid immersion, the Engine queries the bucket corresponding to the coordinate, then delegates to narrow-phase AABB segment validation.
 
-## Rendering
+### Specification: Rendering
 
-#### Elevation, Substrate, Perspective & Priority
+#### Sorting: Elevation, Substrate, Perspective & Priority
 
-World rendering evaluates spatial geometry using discrete topological macro-elevations, intra-tier substrate planes, continuous ground perspective, and coplanar priority:
+World rendering evaluates spatial geometry using discrete topological macro-elevations, intra-elevation substrate planes, continuous ground perspective, and coplanar priority:
 
 $$
 \text{sort_key}(A) = \Big(A.\text{elevation}, A.\text{substrate}, \text{ground_y}(A), A.\text{properties.priority}\Big)
 $$
 
-1. **Primary Key (`A.elevation` $\in \mathbb{Z}_{\ge 0}$)**: Discrete macro-elevation story or platform tier (`0`, `1`, `2`, ...).
-2. **Secondary Key (`A.substrate` $\in \mathbb{Z}_{\le 0}$)**: Intra-tier rendering plane within macro-elevation $E$, resolved via `settings.SUBSTRATES` from `(instance, state.blueprint)`:
-   - `Substrates.ENVIRON (-4)`: `tiles.environ`
-   - `Substrates.FLUIDS (-3)`: `effects.fluids`
-   - `Substrates.SURFACES (-2)`: `geography.shorelines`, `struts` (`floors`, `paths`, `flats`)
-   - `Substrates.OVERLAYS (-1)`: `crafts.bridges`, `crafts.stairs`, `objects.doors` (shadow footprints), `struts` (`solids`, `stripes`, `designs`)
-   - `Substrates.STANDARD (0)`: All upright entities, walls, columns, enclosures, objects, and sheets.
-3. **Tertiary Key (`ground_y` $\in \mathbb{Z}$)**: Continuous in-tier geometric perspective: $\text{ground_y} = \text{int}(A.\text{state.position.y} + A.\text{dimensions.l} + A.\text{state.anchor})$.
-4. **Quaternary Key (`priority` $\in \mathbb{Z}$)**: Coplanar tie-breaker for entities sharing an identical `(elevation, substrate, ground_y)` baseline.
+1. **Primary Key (`A.elevation` $\in \mathbb{Z}_{\ge 0}$)**: Discrete elevation (`0`, `1`, `2`, ...).
+2. **Secondary Key (`A.substrate` $\in \mathbb{Z}_{\le 0}$)**: Intra-elevation rendering plane within elevation $E$:
+   * `Substrates.ENVIRON (-4)`: `tiles.environ`
+   * `Substrates.FLUIDS (-3)`: `effects.fluids`
+   * `Substrates.SURFACES (-2)`: `geography.shorelines`, `struts` (`floors`, `paths`, `flats`)
+   * `Substrates.OVERLAYS (-1)`: `crafts.bridges`, `crafts.stairs`, `objects.doors` (shadow footprints), `struts` (`solids`, `stripes`, `designs`)
+   * `Substrates.STANDARD (0)`: All upright entities, walls, columns, enclosures, objects, and sheets.
+3. **Tertiary Key (`ground_y` $\in \mathbb{Z}$)**: Geometric perspective offset by Anchor: $\text{ground_y} = \text{int}(A.\text{state.position.y} + A.\text{dimensions.l} + A.\text{state.anchor})$.
+4. **Quaternary Key (`priority` $\in \mathbb{Z}$)**: Coplanar tie-breaker for Asset sharing an identical `(elevation, substrate, ground_y)` baseline.
 
-
-### Fonts
+#### Typography: Fonts
 
 A Font configuration pairs a `.ttf` file with styling rules. During bootstrap, the Registry ingests each font declared in `/src/assets/fonts/main.yaml` alongside its configuration, storing them as styled Cython `TTFFont` wrappers. When `outline` is specified, the Registry instantiates a secondary internal outline pointer configured via `TTF_SetFontOutline`, enabling `render.write()` to execute two-pass blended rendering (outline pass followed by foreground fill) without runtime glyph cache invalidation.
 
@@ -156,20 +141,20 @@ See [Graphics Architecture documentation](./11-architecture.md#graphics) for tec
         * `b: int` (0–255)
         * `a: int` (0–255)
 
-**Required Fonts**
+**Required: Fonts**
 
 * `dialogue`: Standard proportional font used to render NPC conversations and narrative logs.
 * `menu`: High-contrast, styled font used for interactive UI controls and button labels.
 * `title`: Large-format font used for menu headers and screen titles.
 
-## Cython Libraries
+### Specification: Cython Libraries
 
 While Python objects are fast enough for general logic, calculating collisions and processing rendering instructions for thousands of entities requires maximum performance. The engine strategically uses Cython to bridge this gap, adhering to a strict **"Zero Heap Allocation in the Inner Loop"** philosophy to prevent frame stutters caused by the Python Garbage Collector.
 
 !!! important
     Zero Heap Allocation is more of an ideal/driving principle than an enforced constraint. 
 
-### Library: Models
+#### Library: Models
 
 - `libs/core/models.pyx`
 
@@ -192,7 +177,7 @@ While Python objects are fast enough for general logic, calculating collisions a
     - `px: double`
     - `py: double`
 
-### Library: Math
+#### Library: Math
 
 * `libs/core/math/geometry.pyx`
 * `libs/core/math/paths.pyx`
@@ -254,7 +239,7 @@ This module orchestrates the physical simulation, bridging the broad-phase grid 
 * **`boundaries`**: Evaluates broad-phase and narrow-phase candidate collisions between dynamic assets and static environmental boundary hulls.
 * **`constrain`**: Resolves spatial overlap and inverts velocity vectors for assets colliding with infinitely massive boundary hulls.
 
-### Graphics
+#### Library: Graphics
 
 - `libs/core/graphics.pyx`
 

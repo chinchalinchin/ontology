@@ -12,6 +12,9 @@
 !!! note "Width, Length"
     Width is a horizontal displacement, length is a vertical displacement.
 
+!!! note "Logical Quantification
+    `|` is used as a logical quantifier, e.g. `y | y + x = 3` would mean the set of `y` that lie along the line `3 - x`.
+
 ## Cores
 
 ### Core: Assets

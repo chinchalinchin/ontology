@@ -26,6 +26,10 @@ These Mechanics handle the core engine logic.
 * `menu: MenuMechanics`: Handles Menu and Widget interactions.
 * `telemetry: TelemetryMechanics`: Manages TCP socket queries for game state requests.
 
+#### Core Mechanic: AnimationMechanics
+
+TODO
+
 #### Core Mechanic: MotionMechanics
 
 **Behavior: Updates**
@@ -83,22 +87,44 @@ Dynamic Assets ($m > 0$) interacting with active Fluid streams and pools evaluat
 
 **Behavior: Buoyancy**
 
-$$
-\vec{v}_{\text{body}} = \vec{v}_{\text{current}}
-$$
-
 * `if properties.bouyant`:
-    * $\vec{v}_{\text{final}} = \vec{v}_{\text{locomotion}} + \vec{v}_{\text{current}}$
+    * $\vec{v}_{\text{final}} = \vec{v}_{\text{self}} + \vec{v}_{\text{current}}$
     * `state.mutators.triggers.submerged = true`
     * Tile Friction is suspended, allowing drift.
 * `if not properties.buoyant`:
-    * $\vec{v}_{\text{drift}} = \vec{0}$
+    * TODO: equations with friction
     * `state.mutators.triggers.submerged = True`
     * Tile Friction remains active, causing Assets to resist water flow.
 
 ###### Field: Gravity
 
-TODO
+!!! @TODO(07-03)
+    Needs elaboration.
+
+Let world space be parameterized by $(X, Y, Z)$, where $(X, Y)$ spans the horizontal ground plane ($E = 0$) and $Z \ge 0$ is the vertical elevation axis perpendicular to the ground plane:
+
+1. **Assumption**: Camera rays are parallel and intersect the horizontal ground plane $(X, Y)$ at a constant inclination angle $\theta = 60^\circ$.
+
+2. **Assumption**: For a point at discrete elevation $E$ dropping by $\Delta E = 1$ to $E - 1$, the vertical elevation change ($\Delta z$), the horizontal ground change ($\Delta y$), and the camera line-of-sight ray ($L_{\text{LOS}}$) form a right triangle $\triangle$ with right angle at the base of the vertical leg and acute angle $\theta = 60^\circ$ at the ground intercept.
+
+$$
+\tan(\theta) = \frac{\Delta z}{\Delta y}, \qquad \sin(\theta) = \frac{\Delta z}{L_{\text{LOS}}}, \qquad \cos(\theta) = \frac{\Delta y}{L_{\text{LOS}}}
+$$
+
+**Unit Elevation Drop ($\Delta y_{\text{elevation}}$):**
+
+Taking the horizontal ground run of one unit Tile as the adjacent leg ($\Delta y = U = 32\text{ px}$), the vertical leg opposite $\theta = 60^\circ$ (the Screen-space $+y$ of one unit elevation) is:
+
+$$
+\Delta y_{\text{elevation}} = U \cdot \tan(60^\circ) = 32\sqrt{3} \approx 55.43\text{ px}
+$$
+
+Equivalently, taking the line-of-sight hypotenuse across a two-tile Sprite frame ($L_{\text{LOS}} = 2U = 64\text{ px}$) yields the same opposite vertical leg:
+
+$$
+\Delta y_{\text{elevation}} = L_{\text{LOS}} \cdot \sin(60^\circ) = 64 \cdot \frac{\sqrt{3}}{2} = 32\sqrt{3} \approx 55.43\text{ px}$$
+
+Under this formulation, Gravity is purely a property of the topological elevation planes $E \in \mathbb{Z}$: every $\Delta y_{\text{elevation}} = U \tan(\theta)$ pixels of vertical freefall transitions the entity down one discrete elevation plane ($E \to E - 1$), where support is re-evaluated immediately.
 
 #### Core Mechanic: MenuMechanics
 
@@ -141,25 +167,31 @@ This class serves to unpack the Application data structures into raw primitives 
 
 #### Spatial Mechanic: InteractionMechanics
 
-!!! note
-    `|` is used as a quantifier in the following.
-
-- Source: `source = sprite | sprite.state.intention = 'interact'`
-- Target: `target = asset | intersects(source, asset)`
-- Logic:
-    - `if source.instance == 'sprites'`:
-        - `if target.instance == 'chests': TODO`
-        - `if target.instance == 'doors': source.state.layer = door.state.outlayer` 
-        - `if target.instance == 'plate': gates[plate.state.link].state.switch = plate.state.switch`
-    - `if source.instance == 'players':`
-        - `if target.instance == 'chests': bus.append(MenuEvent('inventory', { 'context': player.state})` 
-        - `if target.instance == 'plate': gates[plate.state.link].state.switch = plate.state.switch`
-        - `if target.instance == 'doors': source.state.layer = door.state.outlayer` 
-        - `if target.instance == 'signs': bus.append(MenuEvent('dialogue', { 'object': sign.state, 'plot': plot.state}))`
+* `source | source.state.intention == Intentions.INTERACT`
+* `target | (source, target) in self.intersections(assets)`
+* `if source.instance == AssetInstances.SPRITES`:
+    * `if target.instance == AssetInstances.CHESTS`: 
+        * `TODO`
+    * `if target.instance == AssetInstances.DOORS`:
+        * `source.state.layer = door.state.outlayer` 
+    * `if target.instance == AssetInstances.PLATES`: 
+        * `gates[plate.state.link].state.switch = plate.state.switch`
+* `if source.instance == AssetInstances.PLAYERS:`
+    * `if target.instance == AssetInstances.CHESTS`: 
+        * `bus.append(MenuEvent('inventory'))` 
+    * `if target.instance == AssetInstances.PLATES`: 
+        * `gates[plate.state.link].state.switch = plate.state.switch`
+    * `if target.instance == AssetInstances.DOORS`: 
+        * `source.state.layer = door.state.outlayer` 
+    * `if target.instance == AssetInstances.SIGNS`: 
+        * `bus.append(MenuEvent('dialogue'))`
 
 #### Spatial Mechanic: CollisionMechanics
 
-When Assets collide, overlap resolution uses inverse mass ratios to correct spatial positioning, ensuring immutable Assets with no Mass (`m = 0`) remain completely immobile while dynamic Assets with Mass (`m > 0`) absorb 100% of the displacement shift. Post-separation, Velocities are updated via elastic collision formulas, conserving momentum across all participating masses,
+!!! @TODO
+    Out of date.
+
+When Assets collide, overlap resolution uses inverse mass ratios to correct spatial positioning, ensuring immutable Assets with no Mass (`m = 0`) remain  immobile while dynamic Assets with Mass (`m > 0`) absorb the displacement shift. Post-separation, Velocities are updated via elastic collision formulas, conserving momentum across all participating masses,
 
 $$
 v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
@@ -183,9 +215,9 @@ Incline transitions (`_traverse_stairs`) execute in Phase 0 of `CollisionMechani
 --8<-- "static/mmd/mechanics-combat.mmd"
 ```
 
-In CombatMechanics, entities do not query spatial reach using their default body hitboxes (`asset.hitboxes`). Because CollisionMechanics prevents overlapping physical boundaries, character torsos will rarely intersect target bodies during weapon strikes. Instead, CombatMechanics queries the active weapon attackbox (`CombatMap.attackboxes`) associated with the entity's current `(action, direction, frame)`. Attacker spatial primitives are injected into the broad-phase spatial hash using their active weapon reach, evaluating collisions strictly against the target's physical hitboxes. Attackers with no attackboxes configured on their current animation frame bypass combat collision checks entirely.
+CombatMechanics queries the active Attackboxes associated with the entity's current AnimationState. Attacker primitives are injected into the spatial hash using the result and used to evaluate the collision. Attackers with no attackboxes configured on their current Animation State `frame` bypass Combat collision checks.
 
-### Intentional
+### Mechanics: Intentional
 
 These Mechanics handle Sprite intentionality, goal-seeking, and tactical navigation.
 
@@ -267,28 +299,32 @@ The Planner is a wrapper around a Cython implementation of the Rapidly-Exploring
 * `stalled`:
 * `cooldown`:
 
-### World
+#### Intentional Mechanic: TransitionMechanics
 
-The World is not a single 
-These Mechanics handle world state, high-level game calculations and other abstract accounting.
+TODO
 
-- `plot: PlotMechanics`: Evaluates the [Plot Transition matrix](./08-plots.md) to transition the [Board's](./00-overview.md#board) plot state.
-- `fluid: FluidMechanics`: Resolves directional fluid propagation, obstacle impact truncation, and radial pool perimeter calculation.
+### Mechanics: World
 
-#### FluidMechanics
+The World is a collection of correlated fields stored on the [Board](./00-overview.md#component-board). World Mechanics handle and mutate this macro State, performing high-level calculations and other abstract accounting.
+
+* `plot: PlotMechanics`: Evaluates the [Plot Transition matrix](./08-plots.md#transition-matrix) to transition the [Board](./00-overview.md#component-board) [plot State](./08-plots.md#plot-states).
+* `fluid: FluidMechanics`: Resolves [Fluid](./01-assets.md#effect-fluids) propagation, stream obstructions, and radial pool perimeter calculation.
+* `season: SeasonMechanics`: Handles the accumulation of time, manages the lifespan of [Resources](./01-assets.md#category-resources) and the transition of Seasons on the [Board](./00-overview.md#component-board)
+
+#### World Mechanic: FluidMechanics
 
 ```mermaid
 --8<-- "static/mmd/mechanics-fluid.mmd"
 ```
 
-FluidMechanics governs fluid emission, recursive bifurcation, and procedural shoreline margins across active layers. It executes after physical momentum updates (`MotionMechanics` and `CollisionMechanics`) and uses a 3-tier reactive dirty-checking architecture:
+FluidMechanics governs [Fluid](./01-assets.md#effect-fluids) emission and recursive bifurcation across active layers. It executes after physical momentum updates ([MotionMechanics](#core-mechanic-motionmechanics) and [CollisionMechanics](#spatial-mechanic-collisionmechanics)) and uses a 3-tier reactive dirty-checking architecture:
 
 1. **Spatial Corridor Filtering**: Inspects switch-linked gates (`AssetInstances.GATES`). A mutating gate only flags the layer's fluids as `dirty` if the gate's AABB intersects active fluid compound hitboxes or falls within downstream emission corridors.
 2. **Debounce Accumulator**: Consecutive gate oscillations are coalesced using `settings.FLUID_INVALIDATION_DEBOUNCE_TICKS` before triggering propagation.
 3. **Pass 1 (Fluid Propagation & Bifurcation)**: For invalidated layers, `Actuator.propagate()` updates stream lengths, expands annular pools around static obstacles (\(m = 0\)), derives secondary branch corridors, and updates `board.update_fluid_cache(layer)`. Cache slots (`fluid.state._keys`) are cleared.
 4. **Pass 2 (Geometric Shift Detection & Shoreline Synthesis)**: Compares the pre- and post-propagation geometric signature (`_fluid_signature`: stream lengths, pool bounds, branch positions). If water geometry is invariant, shoreline regeneration is bypassed. If geometry shifted (or during hydration), `Cartographer.purge()` and `Cartographer.generate()` synthesize updated boundary contours.
 
-#### SeasonMechanics
+#### World Mechanic: SeasonMechanics
 
 `SeasonMechanics` executes within the `world` mechanics pipeline, driving global time, soil hydrology, and biological resource lifecycles:
 
@@ -298,11 +334,15 @@ FluidMechanics governs fluid emission, recursive bifurcation, and procedural sho
    * **Zero Flux**: Evaporates moisture via $\text{retention} \mathrel{-}= \kappa_{\text{evap}} \cdot \mu_{\text{season}} \cdot \Delta t$.
 3. **Throttled Stage Transitions**: Biological and geological progression checks (`executor.evaluate(stage, locals)`) are decoupled from the 60 Hz physics loop, evaluating at a 1.0-second throttled frequency or upon calendar period transitions (`period_changed == True`).
 
-## Configuration
+#### World Mechanic: PlotMechanics
+
+TODO
+
+## Configuration: Mechanics
 
 * Location: `/src/data/config/mechanics/main.yaml`
 
-Mechanics Configuration defines what Mechanic classes are instantiated by the game engine and what dependencies to inject into them. The order in which they are specified in the schema becomes the order of execution in the game engine.
+Mechanics Configuration defines what Mechanic classes are instantiated by the [Factory](./00-overview.md#service-factory) and what dependencies are injected into them. 
 
 ```yaml
 mechanics:
@@ -320,21 +360,44 @@ mechanics:
             - <relation-key>
 ```
 
-Mechanics are divided into `world` Mechanics and `core` Mechanics. `core` Mechanics execute every single game loop, regardless of whether or not the [Board](./00-overview.md#board) is paused; These include AnimationMechanics and MenuMechanics. `world` Mechanics only execute when the Board is unpaused.
+Mechanics are divided into [World Mechanics](#mechanics-world) and [Core Mechanics](#mechanics-core). Core Mechanics execute every single [Engine loop](./00-overview.md#component-engine), regardless of whether or not the [Board](./00-overview.md#board) is paused; These include [AnimationMechanics](#core-mechanic-animationmechanics) and [MenuMechanics](#core-mechanic-menumechanics). World Mechanics only execute when the [Board](./00-overview.md#component-board) is unpaused.
 
-### Executors
+The order in which Mechanics are specified in the schema becomes the order of execution in the [Engine loop](./00-overview.md#component-engine).
 
-Mechanics Executors are services made available to the requesting Mechanics. Available Executors are enumerated below.
+## Dependencies
 
-- `plot`: Executor for evaluating the conditions for [Plot Transitions](./08-plots.md).
-- `intention`: Executor for evaluating the conditions for [Intention Transitions](./04-intentions.md)
-- `actuator`: Executor for generating [Fluid](./01-assets.md#fluids) and [Shoreline](./01-assets.md#shorelines) Assets.
-- `annual`: Executor evaluating [Resource Stage](./01-assets.md#resources) transitions for annual lifespans.
-- `perennial`: Executor evaluating [Resource Stage](./01-assets.md#resources)transitions for perennial lifespans.
-- `centennial`: Executor evalutating [Resource Stage](./01-assets.md#resources) transitions for centennial lifespans.
+Systems requiring external services (such as the Actuator for [FluidMechanics](./05-mechanics.md#world-mechanic-fluidmechanics), or compiled Transition Executors for [TransitionMechanics](./05-mechanics.md#intentional-mechanic-transitionmechanics) and [PlotMechanics](./05-mechanics.md#world-mechanic-plotmechanics)) receive them through their constructor via Factory.
 
-### Relations
+```mermaid
+--*<-- "static/mmd/mechanics.bootstrap.mmd
+```
 
-Relations are static mappings configured at runtime. Available relations are enumerated below.
+### Dependency: Executors
 
-- `shorelines`: A map of [Shoreline Geography Asset IDs](./01-assets.md#shorelines) to a compound index of [Tile Asset IDs](./01-assets.md#tiles) and [Fluid Asset ID](./01-assets.md#fluids). This relation maps Fluid Shorelines to the Tiles in which they are embedded, e.g. `grassy-shore` Shorelines are mapped to `grass` Tiles and `water` Fluids. 
+Executors are Services made available to Mechanics that register to receive them in the [Configuration](#configuration-mechanics). Available Executors are enumerated below,
+
+* `plot`: Executor for evaluating the conditions for [Plot Transitions](./08-plots.md).
+* `intention`: Executor for evaluating the conditions for [Intention Transitions](./04-intentions.md)
+* `actuator`: Executor for generating [Fluid](./01-assets.md#fluids) and [Shoreline](./01-assets.md#shorelines) Assets.
+* `annual`: Executor evaluating [Resource Stage](./01-assets.md#resources) transitions for annual lifespans.
+* `perennial`: Executor evaluating [Resource Stage](./01-assets.md#resources)transitions for perennial lifespans.
+* `centennial`: Executor evalutating [Resource Stage](./01-assets.md#resources) transitions for centennial lifespans.
+
+### Dependency: Relations
+
+Relations are static mappings configured at runtime. Available Relations are enumerated below,
+
+* `shorelines`: A map of [Shoreline Geography Asset IDs](./01-assets.md#shorelines) to a compound index of [Tile Asset IDs](./01-assets.md#tiles) and [Fluid Asset ID](./01-assets.md#fluids). This relation maps Fluid Shorelines to the Tiles in which they are embedded, e.g. `grassy-shore` Shorelines are mapped to `grass` Tiles and `water` Fluids. 
+* `materials`: TODO
+
+## Modules
+
+### Modules: Maps
+
+Maps associate ancillary Asset states to their final Animation state. See [AnimationMap](./04-intentions.md#animationmap) for more information.
+
+The AnimationMap plays a crucial role in enforcing logical constraints for Animations. For example, TransitionMechanics and PlayerMechanics utilize AnimationMaps to resolve whether an intended action is possible. This guarantees that an `attack` Intention will not translate into a `thrust` Action if the Sprite currently lacks the required tool or weapon equipped in its inventory.
+
+**Interface: Queries**
+
+* `action(state, equipment): returns Action`
