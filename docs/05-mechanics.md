@@ -1,78 +1,80 @@
 # Ontology: Mechanics
 
-A Mechanic is an implementation of an abstract interface the engine calls during the game loop; All Mechanics must implement an `update(board: Board, delta: float, bus: collections.deque, payload: DevicePayload)` method. The arguments of this interface are the [Board](./00-overview.md#board), a game loop time delta, an [Event Bus](./06-widgets.md#events) for storing Menu Events and the current [Device](./02-sprites.md#devices) Payload. These arguments are injected from above by the [Engine](./00-overview.md#engine)
+A Mechanic is an implementation of an abstract interface the [Engine](./00-overview.md#component-engine) calls during its core loop. All Mechanics must implement the following method signature:
+ 
+`update(board: Board, delta: float, bus: collections.deque, payload: DevicePayload)`  
 
-## Overview
+* `board`: The Application [Board](./00-overview.md#component-board) database.
+* `delta`: Time delta of the current [Engine](./00-overview.md#component-engine) loop.
+* `bus`: A Bus for storing [Events](./06-widgets.md#events)
+* `payload`: The current [Device](./02-sprites.md#devices) Payload. 
 
-Mechanics, [Intentions and Goals](./04-intentions.md) are the "foundation" of the gameplay. Their interplay and dynamic generates all of the complexity within the game engine. Mechanics are the "*laws of nature*" and Intentions & Goals are the "*states of mind*"
-
-1. Navigational Intentions (`find`, `follow`, `hunt`, `escape`, `wander`, `return`)
-    - Handled by: CognitionMechanics, MotionMechanics
-    - Logic: Cognition moves the Goal Position coordinate. Motion accelerates the velocity vector toward it.
-2. Spatial/Interactive Intentions (`attack`, `mine`, `build`, `interaction`)
-    - Handled by: CombatMechanics, InteractionMechanics
-    - Logic: These Mechanics iterate only over Sprites in their respective Intention "statelessly". For example, CombatMechanics does not care how a Sprite got into the `attack` intention; it only applies logic once the Sprite is in `attack`.
-3. Communicative Intentions (`speak`, `threaten`, `barter`)
-    - Handled by: SocialMechanics
-    - Logic: Iterates over Sprites in communicative Intentions, checking if they are within conversational radius of their target to swap prices or rumors.
-
-**Sprite AI**
-
-Much of the logic in Mechanics is in support of Sprite AI, via the management of [Goals & Intentions](./04-intentions.md). NPC behavior is distributed across four sequential Mechanics in the `world` pipeline:
-
-- **CognitionMechanics ("The Brain")**: Manages high-level strategic `Goal` models (target entity tracking, cross-layer door subsumption, autonomous wander sampling, etc.).
-- **TransitionMechanics ("The Instinct")**: Evaluates the [ISL Transition Matrix](./04-intentions.md#transition-matrix) to transition `Intention` states and map animation actions.
-- **NavigationMechanics ("The Navigator")**: Manages tactical spatial steering. Validates line-of-sight, extracts obstacle hitboxes, executes RRT avoidance paths, and populates `sprite.state.trajectory`.
-- **MotionMechanics ("The Muscle")**: Steers velocity vectors toward `sprite.state.trajectory.target` and integrates physics.
-
-To visualize how this all ties together for a [Sprite](./02-sprites.md) in a single frame,
-
-```mermaid
---8<-- "static/mmd/mechanics-sprite-flow.mmd"
-```
-
-### Core
+Once a Mechanic registered in the [Mechanics Configuration](./appendices/01-schemas.md#configuration-mechanics) and implements this signature, the arguments will be injected from above by the [Engine](./00-overview.md#componentengine) each tick of its loop.
 
 !!! note
-    Mechanics are listed below using `key: class`, where `key` is the unique string identifier for the associated Mechanic implementation class. This `key` is used in the [Mechanics Configuration](#configuration) to specify the order of execution.
+    Mechanics are listed below using `key: class`, where `key` is the unique string identifier for the associated Mechanic implementation. This `key` is used in the [Mechanics Configuration](#configuration) to specify the order of execution.
+
+### Mechanics: Core
+
+* Address: `app.game.logic.mechanics.core`
 
 These Mechanics handle the core engine logic.
 
-- `animation AnimationMechanics`: Translates current states into FrameKeys for the renderer.
-- `remove: RemoveMechanics`: General garbage collection for Assets whose lifespan has expired.
-- `motion: MotionMechanics`: Applies acceleration and velocity integrations to Assets to arrive at their next position.
-- `menu: MenuMechanics`: Handles Menu and Widget interactions.
-- `telemetry: TelemetryMechanics`: Manages TCP socket queries for game state requests.
+* `animation AnimationMechanics`: Translates current states into FrameKeys for the renderer.
+* `remove: RemoveMechanics`: General garbage collection for Assets whose lifespan has expired.
+* `motion: MotionMechanics`: Applies acceleration and velocity integrations to Assets to arrive at their next position.
+* `menu: MenuMechanics`: Handles Menu and Widget interactions.
+* `telemetry: TelemetryMechanics`: Manages TCP socket queries for game state requests.
 
-#### MotionMechanics
+#### Core Mechanic: MotionMechanics
 
-##### Dynamics
+**Behavior: Updates**
 
-Assets with Mass are divided into Kinematic, Motive, Inert, and Frictive Assets.
+MotionMechanics updates the Velocity of Assets via Symplectic Euler Integration:
 
-* **Kinematic Assets (Players)**: Polls input devices. In dry environments, input clamps velocity vectors to `character.speed` and nullifies orthogonal components. When intersecting an active Fluid stream or pool, kinematic snapping is disabled: voluntary input velocity is added vectorally to the underlying fluid current:
-  $$\vec{v}_{\text{final}} = \vec{v}_{\text{input}} + \vec{v}_{\text{current}}$$
-* **Motive Assets (Sprites)**: Guided by `NavigationMechanics`. Evaluates avoidance and waypoint steering vectors. In fluid corridors, the environmental current vector is added to the steering vector.
-* **Frictive Assets (Crates)**: Passively receive momentum from physical collisions, decaying via tile friction. Floating dynamic bodies in fluids drift along the stream vector.
-* **Rafts**: Specialized dynamic objects that do not obstruct fluid propagation. Rafts passively drift at the fluid current velocity $\vec{v}_{\text{current}}$. Passengers aboard a Raft adopt the Raft's velocity as their baseline reference frame, suppressing the submerged state.
-* **Inert Assets (Projectiles)**: Translate along ballistic linear trajectories until lifetime expiration or boundary collision triggers garbage collection.
+$$
+v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)
+$$
+
+##### Motion: Dynamics
+
+Assets with Mass are divided into behavioral groups.
+
+**Kinematic Assets: Players**
+
+Polls input devices. In dry environments, input clamps Velocity vectors to Speed and nullifies orthogonal components. When intersecting an active Fluid stream or pool, kinematic snapping is disabled: voluntary input velocity is added vectorally to the underlying fluid current:
+
+$$
+\vec{v}_{\text{final}} = \vec{v}_{\text{input}} + \vec{v}_{\text{current}}
+$$
+
+**Motive Assets: Sprites**
+
+Guided by NavigationMechanics. Evaluates avoidance and Trajectory vectors. In [Field](#motion-fields) streams, the Field vector is added to the Trajectory vector.
+
+**Frictive Assets: Crates**
+
+Passively receive momentum from physical collisions, decaying via tile friction. Floating dynamic bodies in fluids drift along the stream vector.
 
 The mathematical bounds for Friction are $[0, \infty)$.
 
-* **Lower Bound ($0$):** A value of exactly $0$ yields $\Delta v = 0$, meaning the asset will glide indefinitely without losing momentum until it strikes a static body. 
-* **Upper Bound ($\infty$):** There is no programmatic upper bound. Any value satisfying the condition $\text{friction} \cdot \Delta t \ge \vert v \vert$ will eventually halt the asset.
+* *Lower Bound* ($0$): A value of exactly $0$ yields $\Delta v = 0$, meaning the asset will glide indefinitely without losing momentum until it strikes a static body. 
+* *Upper Bound* ($\infty$): Any value satisfying the condition $\text{friction} \cdot \Delta t \ge \vert v \vert$ will eventually halt the Asset.
 
-The `friction` property defines the rate of linear velocity decay, measured in pixels per second squared ($px/s^2$).
+!!! note "Units"
+    The `friction` Property of [Environ Tiles](./01-assets.md#tile-environ) defines the rate of linear velocity decay, measured in pixels per second squared ($px/s^2$).
 
-**Updates**
+**Galilean Assets: Rafts**
 
-The engine updates the velocity magnitude $v$ via Symplectic Euler Integration:
+Specialized Assets that do not obstruct Fluid propagation. Rafts passively drift at the Fluid current velocity $\vec{v}_{\text{current}}$. Passengers aboard a Raft adopt the Raft's velocity as their baseline reference frame, suppressing the `submerged` Mutator.
 
-$$v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)$$
+**Inert Assets: Projectiles**: 
 
-##### Fields
+Translates along linear trajectories until lifetime expiration or boundary collision triggers garbage collection.
 
-###### Fluids
+##### Motion: Fields
+
+###### Field: Fluids
 
 Dynamic bodies ($m > 0$) interacting with active Fluid streams and pools evaluate hydrodynamic buoyancy via `properties.buoyant`:
 
@@ -99,7 +101,11 @@ $$
 \vec{v}_{\text{final}} = \vec{v}_{\text{locomotion}} + \vec{v}_{\text{current}}
 $$
 
-#### MenuMechanics
+###### Field: Gravity
+
+TODO
+
+#### Core Mechanic: MenuMechanics
 
 !!! note
     In the event of multiple Menus (e.g. a dialogue modal over a trade menu), MenuMechanics is constrained to interact with the top of the Menu stack (`board.menus[-1]`).
@@ -116,18 +122,29 @@ MenuMechanics delegates to logic to MenuController classes. MenuMechanics is res
 
 AnimationMechanics strictly governs "World Time". MenuMechanics governs "Menu Time". The `animate()` interface for Widgets is called inside MenuMechanics, iterating over `board.overlays` (always) and `board.menus[-1]` (if active).
 
-### Spatial
+### Mechanics: Spatial
+
+* Address: `app.game.logic.mechanics.spatial`
 
 These Mechanics handle spatial interactions and collisions between Assets.
 
-- `switch: SwitchMechanics`: (Cython) Binds the Gate and Plate states together based on their `switch`.
-- `projectile: ProjectileMechanics`: (Cython) Increment projectile positions, checks intersections and resolves impacts.
-- `collision: CollisioMechanics`: Resolves collisions.
-- `combat: CombatMechanics`: (Cython) Resolves attack hitbox overlaps, decrements health, etc.
-- `interaction: InteractionMechanics`: (Cython) Resolves Asset interactions.
-- `social: SpeechMechanics`: Handle `speak` Intentions and [Plot calculations](./08-plots.md).
+* `switch: SwitchMechanics`: Binds the Gate and Plate states together based on their `switch`.
+* `projectile: ProjectileMechanics`: Increment projectile positions, checks intersections and resolves impacts.
+* `collision: CollisioMechanics`: Resolves collisions.
+* `combat: CombatMechanics`: Resolves attack hitbox overlaps, decrements health, etc.
+* `interaction: InteractionMechanics`:Resolves Asset interactions.
+* `social: SocialMechanics`: Handle Social Intentions and [Plot calculations](./08-plots.md).
 
-#### InteractionMechanics
+**Base: SpatialMechanics**
+
+This class serves to unpack the Application data structures into raw primitives to pass through the Cython boundary, and then package the results back into the Application data structures. All Spatial Mechanics inherit from this class to abstract away the boilerplate and core geometrical calculations of collisions.
+
+* `collisions(assets) -> List[(asset, asset)]`: Returns pairs of colliding Assets.
+* `intersections(assets) -> List[(asset, asset)]`: Returns pairs of intersecting Assets.
+* `proximities(assets) -> List[(asset, asset)]`: Returns pairs of Assets within each other's Mutator Action radius. 
+* `constrain(asets, boundaries, elevation) -> [(asset, boundary)]`: Returns pairs of colliding Asset and Boundaries.
+
+#### Spatial Mechanic: InteractionMechanics
 
 !!! note
     `|` is used as a quantifier in the following.
@@ -145,7 +162,7 @@ These Mechanics handle spatial interactions and collisions between Assets.
         - `if target.instance == 'doors': source.state.layer = door.state.outlayer` 
         - `if target.instance == 'signs': bus.append(MenuEvent('dialogue', { 'object': sign.state, 'plot': plot.state}))`
 
-#### CollisionMechanics
+#### Spatial Mechanic: CollisionMechanics
 
 When Assets collide, overlap resolution uses inverse mass ratios to correct spatial positioning, ensuring immutable Assets with no Mass (`m = 0`) remain completely immobile while dynamic Assets with Mass (`m > 0`) absorb 100% of the displacement shift. Post-separation, Velocities are updated via elastic collision formulas, conserving momentum across all participating masses,
 
@@ -165,7 +182,7 @@ CollisionMechanics partitions active weights by discrete elevation tiers (`tier 
 
 Incline transitions (`_traverse_stairs`) execute in Phase 0 of `CollisionMechanics` strictly prior to tier partitioning, ensuring elevation mutations take effect within the current frame's broad-phase spatial hash.
 
-#### CombatMechanics
+#### Spatial Mechanic: CombatMechanics
 
 ```mermaid
 --8<-- "static/mmd/mechanics-combat.mmd"
@@ -177,45 +194,88 @@ In CombatMechanics, entities do not query spatial reach using their default body
 
 These Mechanics handle Sprite intentionality, goal-seeking, and tactical navigation.
 
-- `player: PlayerMechanics`: Resolves Device input into Player (Intention, Goal)-state.
-- `cognition: CognitionMechanics`: Manages high-level strategic Goal selection and memory stacks.
-- `transition: TransitionMechanics`: Evaluates ISL condition matrices and transitions Intention states.
-- `navigation: NavigationMechanics`: Resolves tactical steering, sensory anchors, line-of-sight, and RRT waypoint queues.
-- `commerce: CommerceMechanics`: Translates communicative intentions (`barter`, `attract`) into trades and price updates.
+* `player: PlayerMechanics`: Resolves Device input into Player (Intention, Goal)-state.
+* `cognition: CognitionMechanics`: Manages high-level strategic Goal selection and memory stacks.
+* `transition: TransitionMechanics`: Evaluates Intention Transition condition matrices and transitions Intention States.
+* `navigation: NavigationMechanics`: Resolves tactical steering, line-of-sight, and waypoint queues.
+* `commerce: CommerceMechanics`: Translates communicative intentions (`barter`, `attract`) into trades and price updates.
 
 !!! important
-    CognitionMechanics mutates Goals, TransitionMechanics mutates Intentions, NavigationMechanics populates Trajectories, and MotionMechanics integrates velocities. This separation of concerns **must** be preserved at all times.
+    CognitionMechanics mutates Goals, TransitionMechanics mutates Intentions, NavigationMechanics populates Trajectories, and MotionMechanics integrates velocities. This separation of concerns is **strictly** enforced.
 
-#### CognitionMechanics
+Mechanics, [Intentions and Goals](./04-intentions.md) are the "crux" of the Application. Their interplay and dynamic is the locus of the Application. Mechanics are "*laws of nature*" and Intentions & Goals are "*states of mind*"; Intentional Mechanics are, therefore, the "*psychological laws of the mind*".
 
-CognitionMechanics acts as the Sprite's deliberative core. It operates exclusively on high-level **Strategic Goals**. For example, for Sprite in the given Intention states, CognitionMechanics generates and manages the following Goals:
+1. Navigational Intentions (`find`, `follow`, `hunt`, `escape`, `wander`, `return`)
+    * Handled by: CognitionMechanics, MotionMechanics
+    * Logic: CognitionMechanics moves the Goal Position coordinate. Motion Mechanics accelerates Velocity vectors toward it.
+2. Spatial/Interactive Intentions (`attack`, `mine`, `build`, `interaction`)
+    * Handled by: CombatMechanics, InteractionMechanics
+    * Logic: These Mechanics iterate "statelessly" over Sprites in their respective Intention. For example, CombatMechanics does not care how a Sprite got into the `attack` intention; it only applies logic once the Sprite is in `attack`.
+3. Communicative Intentions (`speak`, `threaten`, `barter`)
+    * Handled by: SocialMechanics, CommerceMechanics
+    * Logic: Iterates over Sprites in communicative Intentions, checking if they are within conversational radius of their target to swap prices or rumors.
 
-- `wander`: Samples a random coordinate within the vision radius bounded by layer dimensions and commits a `Goal(name="wander", category=POSITION)`.
-- `find / follow / hunt`: Queries the Board for the target entity. If visible, updates `goal.position` to match the target's physical coordinates. If the target leaves the vision radius, coordinates freeze at the last known position.
-- `escape`: Extrapolates a spatial coordinate in the vector direction opposite to the threat.
-- **Cross-Layer Subsumption**: When a goal's layer mismatches the sprite's layer, Cognition pushes the goal to `memory.goals` and substitutes a prerequisite `OBJECT` goal for the nearest transition door.
+**Sprite AI**
 
-This is by no means an exhaustive list of CognitionMechanics' responsibility, but instead an example of its domain operation, e.g. Sprites and their Goals. CognitionMechanics is completely decoupled from geometric obstacles, intermediate waypoints, and line-of-sight raycasts. Intermediate path planning is offloaded entirely to `NavigationMechanics`.
+Much of the logic in Mechanics is in support of Sprite AI, via the management of [Goals & Intentions](./04-intentions.md). NPC behavior is distributed across four sequential Mechanics in the World pipeline:
+
+* **CognitionMechanics**: Manages high-level strategic Goal models (target tracking, cross-layer door subsumption, autonomous wander sampling, etc.).
+* **TransitionMechanics**: Evaluates the [Intention Transition Matrix](./04-intentions.md#transition-matrix) to transition Intention States and map Actions to Animations.
+* **NavigationMechanics**: Manages tactical spatial steering. Validates line-of-sight, extracts obstacle hitboxes, executesavoidance paths, and manages the Sprite's trajectory.
+* **MotionMechanics**: Steers velocity vectors toward the trajectory's target and integrates physics.
+
+To visualize how this all ties together for a [Sprite](./02-sprites.md) in a single frame,
+
+```mermaid
+--8<-- "static/mmd/mechanics-sprite-flow.mmd"
+```
+
+#### Intentional Mechanic: CognitionMechanics
+
+CognitionMechanics acts as the Sprite's deliberative core. It operates exclusively on high-level Goals. 
+
+For example, for Sprites in the given Intention states, CognitionMechanics generates and manages the following Goals:
+
+* `wander`: Samples a random coordinate within the vision radius bounded by layer dimensions and commits a `Goal(name="wander", category=POSITION)`.
+* `find / follow / hunt`: Queries the Board for the target entity. If visible, updates the Sprite Goal to match the target's coordinates. If the target leaves the Sprite's vision radius, coordinates freeze at the last known position.
+* `escape`: Extrapolates a spatial coordinate in the vector direction opposite to the threat.
+* **Cross-Layer Subsumption**: When a Goal's layer mismatches the sprite's layer, Cognition pushes the goal to Memory and substitutes a Goal for the nearest Door.
+
+This is by no means an exhaustive list of CognitionMechanics' responsibility, but instead an example of its domain OF operation, e.g. Sprites and their Goals. CognitionMechanics is completely decoupled from geometric obstacles, intermediate waypoints, and line-of-sight raycasts. Intermediate path planning is offloaded entirely to [NavigationMechanics](#intentional-mechanic-navigationmechanics).
 
 Since CognitionMechanics is intrinsically tied to Sprite Intentions and Goals, the cognition workflow is covered in more detail in the [Intentions amd Goals documentation](./04-intentions.md#cognition).
 
-#### NavigationMechanics
+#### Intentional Mechanic: NavigationMechanics
 
-NavigationMechanics acts as the Sprite's tactical navigator, bridging strategic intent with physical locomotion:
+NavigationMechanics acts as the Sprite's tactical navigator, bridging strategic Goals with physical locomotion:
 
-1. **Goal Verification**: Verifies `sprite.state.goal` exists and `sprite.state.intention` belongs to NavigationIntentions. Clears `trajectory` and yields if false.
-2. **Anchor Resolution**: Computes sensory footprints using `anchor(sprite)` and target footprint offsets, preventing top-left origin hitbox drift.
-3. **Line-of-Sight Check**: Raycasts using Cython `geometry.los()` against active layer weights (`board.weights`) and boundary perimeters (`board.perimeters`).
+1. **Goal Verification**: Verifies Goal exists and Intention belongs to NavigationIntentions. Clears Trajectory and yields if false.
+2. **Anchor Resolution**: Computes sensory footprints using Anchors and targets footprint offsets, preventing top-left origin hitbox drift.
+3. **Line-of-Sight Check**: Raycasts against active Layer obstacles and boundary perimeters.
 4. **Path Maintenance**:
-    - **Clear LOS**: Clears `trajectory.vertices` and sets `trajectory.target = sprite.state.goal.position`.
-    - **Occluded LOS**: If `trajectory.vertices` is empty, extracts obstacle hitboxes, executes `Planner.plan()`, converts waypoints to canvas coordinates by subtracting anchor displacement, and populates `trajectory.vertices`. Sets `trajectory.target = trajectory.vertices[0]`.
-    - **Dynamic Invalidation**: If active intermediate waypoints lose LOS due to a moving dynamic body (e.g., pushed crate), invalidates the queue and replans immediately.
-5. **Waypoint Arrival**: When the entity arrives within `action_radius` of `trajectory.target`, pops the completed waypoint from `trajectory.vertices` and sets `target` to the next vertex (or strategic goal when vertices are exhausted).
-6. **Stall & Cooldown Handling**: When RRT cannot resolve a collision-free path, sets `trajectory.stalled = True` and starts a `cooldown` timer (`settings.PATH_RETRY_INTERVAL`) to prevent per-frame re-planning thrash.
+    - **Clear LOS**: Clears Trajectory and sets new target to Goal.
+    - **Occluded LOS**: If Trajectory is empty, extracts obstacle hitboxes, executes a Plan, converts vertices to coordinates by subtracting anchor displacement, and populates Trajectories. Sets target to the first segment of the Trajectory.
+    - **Dynamic Invalidation**: If active intermediate segments lose line-of-sight due to a moving dynamic Asset, invalidates the queue and replans immediately.
+5. **Waypoint Arrival**: When the entity arrives within proximal range of target, pops the completed segment from its Trajectory and sets target to the next vertex (or Goal when vertices are exhausted).
+6. **Stall & Cooldown Handling**: When Navigation cannot resolve a collision-free path, sets to `stalled` and starts a `cooldown` timer to prevent per-frame re-planning thrash.
+
+**Module: Planner**
+
+* `Planner(start, target, obstacles).plan(): returns [Position]`
+
+The Planner is a wrapper around a Cython implementation of the Rapidly-Exploring Random Tree path-finding algorithm. See [Library: Math](./11-architecture.md#library-math) for more information.
+
+**Model: Trajectory**
+
+* `target`: 
+* `vertices`:
+* `stalled`:
+* `cooldown`:
 
 ### World
 
-These Mechanics handle ambient world state, high-level game calculations and other abstract accounting.
+The World is not a single 
+These Mechanics handle world state, high-level game calculations and other abstract accounting.
 
 - `plot: PlotMechanics`: Evaluates the [Plot Transition matrix](./08-plots.md) to transition the [Board's](./00-overview.md#board) plot state.
 - `fluid: FluidMechanics`: Resolves directional fluid propagation, obstacle impact truncation, and radial pool perimeter calculation.

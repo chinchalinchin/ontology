@@ -31,29 +31,43 @@ In short, a Name identifies an Asset's deployment. A ID is what binds a deployed
 
 **Properties & State**
 
-*Properties* are static and never changed by game Mechanics. Properties determine the immutable characteristics of Assets, e.g. their dimensions and hitboxes. They are loaded side-by-side with the Asset files in the `/src/assets/**` directory. All Assets have, at bare minumum, a Dimension property, specifying their respective width and length, and a Priority property, that specifies the [statically configured sort key](./11-architecture.md#rendering) for their relative rendering order. Dimension is a Cartesian coordinate (tuple), whereas Priority is an integer.
+*Properties* are static and never changed by [Mechanics](./05-mechanics.md). Properties determine the immutable characteristics of Assets, e.g. their dimensions and hitboxes. They are loaded side-by-side with the Asset files in the `/src/assets/**` directory. All Assets have, at bare minumum, a Dimension property, specifying their respective width and length, and a Priority property, that specifies the [statically configured sort key](./11-architecture.md#rendering) for their relative rendering order. Dimension is a Cartesian coordinate (tuple), whereas Priority is an integer.
 
-*State* is dynamic and can be changed by [Mechanics](./05-mechanics.md). State determines the mutable characteristics of an Asset, e.g. the current Position of an ingame Asset, the current Animation, etc. All Assets have a *Position* mutable state; most (except for Widgets) have a *Layer*. Position is given as a Cartesian coordinate (tuple), whereas Layer is a categorical variable.
+*State* is dynamic and can be changed by [Mechanics](./05-mechanics.md). State determines the mutable characteristics of an Asset, e.g. the current Position of an Asset, the current Animation, etc. All Assets have: *Position* State, given as a Cartesian coordinate (tuple); a Layer, given as a categorical variable'; an Elevation, representing their Z-axis, given as an integer; a Substrate, used for sorting and rendering Assets at the same elevation; an Anchor, used to augment the perspective-based render sorting, given as an integer.
 
-!!! note "Layers"
-    The concept of a Layer is defined more explicitly in [Overview documentation](./00-overview.md#layers). It suffices to think of Layers as floors in a house, where each floor is differentiated by its topography but contributes to the same space. In-game, Layers are traversed by the Player interacting with Doors.
+!!! @TODO(08-04)
+    Mutators are polymorphic. Because of this, they have attributes that are not utilized by every Asset that is instantiated. They are one of the core ambiguities in the entire Asset model. They are mainly utilized by Sprites to signal their states have internally reached certain conditions, e.g. `vision` is triggered when the Sprite is in sight of its Goal. 
 
-State files are maintained in `/src/data/state/<board-key>/**` directory, where `<board-key>` is a unique identifer for a [Board](./00-overview.md#board).
+    They also contain general Asset fields, like `submerged`, that is triggered when an Asset is immersed in a Fluid stream. 
+
+    Mutators likely need to be another component, like Frame or Animation, that is injected into the Asset. Then different implementations of Mutators need to be registered to each Asset. 
+
+In addition, all Assets have a `mutators` attribute that is used to augment the core behavior of the Asset during [Screen rendering](./00-overview.md#component-screen) and [Mechanics evaluation](./05-mechanics.md).
+
+**Model: Mutators**
+
+* `parameters`: 
+    * `action: bool`: The radius of the Asset's action.
+    * `vision: bool`: The radius of Asset's vision.
+* `triggers`: Boolean flags. 
+    * `animated: bool`: Flag for receiving animation updates.
+    * `dead: bool`: Flag for receiving Mechanic updates.
+    * `submerged: bool`: Flag for receiving Frame channels.
 
 **Base Model: AssetProperties**
 
-- `dimensions`: Asset Frame dimensions.
-- `priority`: Static ordinal render sort key. 
+* `dimensions: Dimensions`: Asset Frame dimensions.
+* `priority: int`: Static ordinal render sort key. 
 
 All Asset Properties inherit fields from this model.
 
 **Base Model: AssetState**
 
-- `layer`: Board Layer key.
-- `elevation`: Elevation render sort key.
-- `anchor`: Offset for ground render sort key.
-- `substrate`: Intra-elevation render sort key.
-- `mutators`: General behavioral flags for rendering and logic.
+* `layer: str`: Board Layer key.
+* `elevation: int`: The Z-axis of the Asset.
+* `anchor: int`: Offset for ground perspective render sort-key.
+* `substrate: int`: Intra-elevation render sort-key.
+* `mutators: Mutators`: General behavioral flags for rendering and logic.
 
 All Asset States inherit fields from this model.
 
@@ -83,8 +97,8 @@ When an Asset implements an Animation, this is accompanied by its State possessi
 Many Asset Categories have a Mass Property. Only Assets with Mass can participate in collisions and other kinematic events. An Asset's mass determines its behavior within the physics of the game,
  
 - $m > 0$: **Dynamic Body**. Participates in momentum calculations.
-- $m = 0$: **Static Body**. Treated as having infinite mass ($m \to \infty$) in physics equations. Its Velocity is unaffected by collisions, but its immobility forces dynamic bodies to resolve overlap.
-- $m = -1$: **Sensor**. The engine detects the spatial intersection for game logic (like SwitchMechanics or DoorMechanics), but CollisionMechanics bypasses it completely during the overlap resolution phase.
+- $m = 0$: **Static Body**. Treated as having infinite mass ($m \to \infty$) in physical models. Its Velocity is unaffected by collisions, but its immobility forces dynamic Assets to resolve overlap.
+- $m = -1$: **Sensor**. The Engine detects the spatial collisions for logical conditions, but ignores it entirely during collision resolution.
 
 See [SpatialMechanics](./05-mechanics.md#spatial) for more information.
 
@@ -508,7 +522,7 @@ All Crafts inherit fields from this State model.
 
 ### Craft: Bridges
 
-Bridges are Crafts that elevate dynamic Assets over [Fluid](#effect-fluids) corridors, annular pools, and [Shoreline](#category-geography) margins without entering the `submerged` state.
+Bridges are Crafts that elevate dynamic Assets over [Fluid](#effect-fluids) streams and [Shoreline](#category-geography) margins without passing through the `submerged` mutator.
 
 **Behavior: Field Suppression**
 
@@ -527,7 +541,7 @@ Bridges belong to a dedicated [Substrate](#concept-appearance), `substrate = -1`
 
 ### Craft: Stairs
 
-Stairs are static Crafts sensors ($m = -1$) that provide elevation transitions when traversed by Dynamic Assets. 
+Stairs are Crafts that transition the elevation of dynamic Assets. 
 
 **Behavior: Elevation**
 

@@ -68,6 +68,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 08.01: Obstable Geometry](./phases/refactor/refactor-08-01.md)
       - [x]: [Phase 08.02: NavigationMechanics](./phases/refactor/refactor-08-02.md)
       - [x]: [Phase 08.03: Trajectory Optimization](./phases/refactor/refactor-08-03.md)
+      - [ ]: [Phase 08.04: Mutators](./phases/refactor/refactor-08-04.md)
     - *Phase 09:*
       - [x]: [Phase 09.01: Fluid Flows](./phases/refactor/refactor-09-01.md)
       - [x]: [Phase 09.02: Shorelines & Geography](./phases/refactor/refactor-09-02.md)

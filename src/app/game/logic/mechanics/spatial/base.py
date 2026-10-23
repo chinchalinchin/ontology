@@ -101,7 +101,7 @@ class SpatialMechanic(Mechanic):
         return [(asset_map[id_a], asset_map[id_b]) for id_a, id_b in colliding_indices]
 
 
-    def proximities(self, assets: List[Asset]) -> List[Tuple]:
+    def proximities(self, assets: List[Asset]) -> List[Tuple[Asset]]:
         """
         Bypasses physics hitboxes, constructing a virtual hitbox padded by 
         the entity's action radius. This determines interaction reach.
