@@ -76,30 +76,25 @@ Translates along linear trajectories until lifetime expiration or boundary colli
 
 ###### Field: Fluids
 
-Dynamic bodies ($m > 0$) interacting with active Fluid streams and pools evaluate hydrodynamic buoyancy via `properties.buoyant`:
+!!! @TODO(T002)
+    Bouyancy is not yet fully implemented.
 
-**Buoyant Dynamic Bodies (`buoyant: True`)**
+Dynamic Assets ($m > 0$) interacting with active Fluid streams and pools evaluate buoyancy via the `buoyant` Property.
+
+**Behavior: Buoyancy**
 
 $$
 \vec{v}_{\text{body}} = \vec{v}_{\text{current}}
 $$
 
-* Enter the submerged state (`mutators.triggers.submerged = True`).
-* Tile friction decay is suspended in `frictive.py`, allowing continuous drift along the hydrological network.
-
-**Non-Buoyant Dynamic Bodies (`buoyant: False`)**
-
-* Sink to the substrate. Fluid current velocity is not imparted ($\vec{v}_{\text{drift}} = \vec{0}$).
-* Enter the submerged state (`mutators.triggers.submerged = True`).
-* Tile friction remains active, causing unpushed non-buoyant objects to settle and resist water flow.
-
-**Motive and Kinematic Characters (Sheets)**
-
-* Voluntary locomotion is preserved and vectorally superimposed with current velocity:
-
-$$
-\vec{v}_{\text{final}} = \vec{v}_{\text{locomotion}} + \vec{v}_{\text{current}}
-$$
+* `if properties.bouyant`:
+    * $\vec{v}_{\text{final}} = \vec{v}_{\text{locomotion}} + \vec{v}_{\text{current}}$
+    * `state.mutators.triggers.submerged = true`
+    * Tile Friction is suspended, allowing drift.
+* `if not properties.buoyant`:
+    * $\vec{v}_{\text{drift}} = \vec{0}$
+    * `state.mutators.triggers.submerged = True`
+    * Tile Friction remains active, causing Assets to resist water flow.
 
 ###### Field: Gravity
 
