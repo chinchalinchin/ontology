@@ -179,11 +179,21 @@ def file(file_path: str) -> str:
         return f"Error reading file: {str(e)}"
 
 
-def annotations(directory: str, tags: Union[str, List[str]]) -> List[Dict[str, Any]]:
+def annotations(directory: str, tags: Union[str, List[str]], strategy: str = "OR") -> List[Dict[str, Any]]:
     """
-    Scans a directory for Python files containing any of the given `@tags` in their docstring.
+    Scans a directory for Python files containing `@tags` in their docstring.
     Groups matching files by package, sorting packages and modules hierarchically.
+
+    Args:
+        directory: Root directory path to scan.
+        tags: A single tag or list of tags to match.
+        strategy: Matching strategy - "OR" (matches if any tag is present)
+                  or "AND" (matches only if all tags are present).
     """
+    strat = strategy.upper()
+    if strat not in {"OR", "AND"}:
+        raise ValueError(f"Invalid strategy '{strategy}'. Supported strategies are 'OR' and 'AND'.")
+
     root = Path(directory).resolve()
     tag_list = [tags] if isinstance(tags, str) else list(tags)
     target_tokens = {f"@{t.lstrip('@')}" for t in tag_list}
@@ -203,10 +213,15 @@ def annotations(directory: str, tags: Union[str, List[str]]) -> List[Dict[str, A
         if not docstring:
             continue
 
-        # Match target annotations against whitespace-separated docstring tokens
         doc_tokens = set(docstring.split())
-        if not target_tokens.intersection(doc_tokens):
-            continue
+
+        # Evaluate tag match according to selected strategy
+        if strat == "AND":
+            if not target_tokens.issubset(doc_tokens):
+                continue
+        else:
+            if not target_tokens.intersection(doc_tokens):
+                continue
 
         # Relative paths and package hierarchy
         rel_file = file_path.relative_to(root)

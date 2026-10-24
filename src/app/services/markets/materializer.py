@@ -1,5 +1,5 @@
 """
-@workflow.materializer
+@workflow.compositions
 
 # Ontology: app.services.markets.materializer
 

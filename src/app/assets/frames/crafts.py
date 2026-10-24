@@ -1,5 +1,5 @@
 """
-@workflow.composition
+@workflow.compositions
 
 # Ontology: app.assets.frames.crafts
 

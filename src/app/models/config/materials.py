@@ -8,10 +8,13 @@ Models for typing the Market configuration.
 # Standard Libraries
 from typing import (
     Dict,
-    List,
-    Union
+    Union,
+    Optional
 )
-from dataclasses import dataclass, field
+from dataclasses import (
+    dataclass, 
+    field
+)
 
 # Application Libraries
 from app.config.enums import (
@@ -44,7 +47,7 @@ class Cost:
 
 @dataclass(slots=True, frozen=True)
 class MaterialSpace:
-    host: List[Materials] = field(default_factory=list)
+    host: Optional[Materials] = None
     partitions: Dict[Union[
         Organics, 
         Chromatics, 

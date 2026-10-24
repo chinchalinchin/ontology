@@ -8,7 +8,7 @@ objects:
       mass: 10
       count: 2
       material:
-        genus: metallic
+        genus: metallics
       hitboxes: null
     # ---------------------------
     container:

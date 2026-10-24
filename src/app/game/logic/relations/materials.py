@@ -1,4 +1,6 @@
 """
+@workflow.compositions
+
 # Ontology: app.game.logic.relations.materials
 
 Relational index compiling Material genera, Blueprint schemas, multiplication
@@ -27,7 +29,7 @@ from app.config.enums import (
 )
 
 if TYPE_CHECKING:
-    from app.models.config.materials import MaterialConfiguration
+    from app.models.config.materials import MaterialsConfiguration
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +41,7 @@ class MaterialIndex(Singleton):
     _material_partitions: Dict[str, Tuple[str, ...]]
     _material_weights: Dict[str, Dict[str, float]]
     _material_to_genus: Dict[str, str]
-    _genus_hosts: Dict[str, FrozenSet[str]]
+    _genus_host: Dict[str, Optional[str]]
     _blueprint_partitions: Dict[str, Tuple[str, ...]]
     _blueprint_strategies: Dict[str, Optional[str]]
     _blueprint_deltas: Dict[str, Dict[str, float]]
@@ -52,7 +54,7 @@ class MaterialIndex(Singleton):
             self._material_partitions = {}
             self._material_weights = {}
             self._material_to_genus = {}
-            self._genus_hosts = {}
+            self._genus_host = {}
             self._blueprint_partitions = {}
             self._blueprint_strategies = {}
             self._blueprint_deltas = {}
@@ -61,7 +63,7 @@ class MaterialIndex(Singleton):
             self._blueprint_substrates = {}
 
     @classmethod
-    def from_configuration(cls, config: MaterialConfiguration) -> MaterialIndex:
+    def from_configuration(cls, config: MaterialsConfiguration) -> MaterialIndex:
         """
         Compiles relational lookup tables from MaterialConfiguration.
         """
@@ -69,7 +71,7 @@ class MaterialIndex(Singleton):
         index._material_partitions = {}
         index._material_weights = {}
         index._material_to_genus = {}
-        index._genus_hosts = {}
+        index._genus_host = {}
         index._blueprint_partitions = {}
         index._blueprint_strategies = {}
         index._blueprint_deltas = {}
@@ -78,20 +80,14 @@ class MaterialIndex(Singleton):
 
         obstacles: Set[str] = set()
 
-        # 1. Compile Material Genera & Partitions
+        # 1. Compile Material Genera, Host Genus & Partitions in a single pass
         for genus, mat_part in config.genera.items():
             ordered_keys = tuple(mat_part.partitions.keys())
             index._material_partitions[genus] = ordered_keys
             index._material_weights[genus] = dict(mat_part.partitions)
+            index._genus_host[genus] = mat_part.host
             for mat_key in ordered_keys:
                 index._material_to_genus[mat_key] = genus
-
-        # Resolve allowed host material keys per genus
-        for genus, mat_part in config.genera.items():
-            allowed_hosts: Set[str] = set()
-            for host_genus in mat_part.hosts:
-                allowed_hosts.update(index._material_partitions.get(host_genus, ()))
-            index._genus_hosts[genus] = frozenset(allowed_hosts)
 
         # 2. Compile Blueprint Schemas, Strategies, Obstacles & Substrates
         for schema, bp_part in config.blueprints.items():
@@ -112,8 +108,16 @@ class MaterialIndex(Singleton):
     def materials(self, genus: str) -> Tuple[str, ...]:
         return self._material_partitions.get(genus, ())
 
-    def hosts(self, genus: str) -> FrozenSet[str]:
-        return self._genus_hosts.get(genus, frozenset())
+    def host(self, genus: str) -> Optional[str]:
+        """Returns the single host genus key for a material genus, or None."""
+        return self._genus_host.get(genus)
+
+    def hosts(self, genus: str) -> Tuple[str, ...]:
+        """Returns the partition tuple of valid host materials for a genus."""
+        host_genus = self._genus_host.get(genus)
+        if not host_genus:
+            return ()
+        return self._material_partitions.get(host_genus, ())
 
     def blueprints(self, schema: str) -> Tuple[str, ...]:
         return self._blueprint_partitions.get(schema, ())

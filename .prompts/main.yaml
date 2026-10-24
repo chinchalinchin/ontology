@@ -141,6 +141,40 @@ tools:
     # ------------------------ PARAMETERS: SOURCE
     # --------------------------------------------
     source:
+      filter:
+        strategy: OR # AND | OR | NOT
+        tags:
+          asset: []
+            # - base
+            # - properties
+            # - state
+            # - frame
+            # - animation
+            # - hitbox
+          hierarchy: []
+            # - crafts
+            # - cursors
+            # - effects
+            # - geographys
+            # - objects
+            # - resources
+            # - sheets
+            # - tiles
+            # - widgets
+          workflows: []
+            # - collisions
+            # - combat
+            - compositions
+            # - ecology
+            # - fluids 
+            # - intentions
+            # - menus
+            # - motion
+            # - orchestration
+            # - pathfinding
+            # - rendering
+            # - seasons
+            # - telemetry
       data: 
         properties:
           - crafts
@@ -174,18 +208,6 @@ tools:
           # - plots
           - recipes
           # - stages
-      workflows:
-        - asset
-        # - collisions
-        - compositions
-        - main
-        - models
-        # - telemetry
-      script: synthesize
-      models: [] 
-        # - 
-      entrypoints: []
-        # -
     # --------------------------------------------
     # ------------------------ PARAMETERS: SHELL
     # --------------------------------------------

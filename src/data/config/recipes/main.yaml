@@ -71,7 +71,7 @@ recipes:
   objects:
     chests:
       frame: binary
-      animation: binary
+      animation: none
       hitbox: static
     crates:
       frame: object
@@ -90,7 +90,7 @@ recipes:
       animation: none
       hitbox: static
     plates:
-      frame: iterable
+      frame: binary
       animation: none
       hitbox: static
     signs:

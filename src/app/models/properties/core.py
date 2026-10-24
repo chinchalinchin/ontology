@@ -4,11 +4,12 @@
 
 # Ontology: app.models.properties.core
 
-Module for typing core property attributes.
+Module for typing core Properties.
 """
 from typing import (
     Dict,
-    Optional
+    Optional,
+    Union
 )
 from dataclasses import dataclass
 
@@ -46,8 +47,8 @@ class Frequency:
 
 @dataclass(slots=True)
 class Material:
-    genus: str
-    host: Optional[str] = None
+    genus: Materials
+    host: Optional[Union[Organics, Ceramics]] = None
 
     def __post_init__(self):
         if self.genus == Materials.CHROMATICS.value:
