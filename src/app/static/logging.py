@@ -12,7 +12,7 @@ from datetime import datetime
 from pathlib import Path
 
 # Application Libraries
-import app.config.settings as settings
+import app.static.settings as settings
 
 def _get_session_log_filename(log_dir: Path = settings.LOG_DIR) -> str:
     """

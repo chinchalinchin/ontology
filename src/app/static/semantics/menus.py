@@ -1,7 +1,10 @@
 """
+@app.semantics
+@workflow.menus
+
 # Ontology: app.config.enums.menus
 
-Menu key enumerations
+Enumeration of Menu semantics.
 """
 # Standard Libraries
 from enum import Enum

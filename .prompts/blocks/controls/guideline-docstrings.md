@@ -20,6 +20,10 @@ Use the following template to create docstrings for Python modules,
     * Application Tags:
         * `app.core`
         * `app.base`
+        * `app.semantics`
+        * `app.input`
+        * `app.mechanics`
+    * Enumeration Tags:
     * Script Tags: 
         * `scripts.context`
         * `scripts.synthesize`

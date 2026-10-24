@@ -6,7 +6,7 @@
 Application dependency pipeline.
 """
 # Application Libraries
-from app.config.enums import Menus
+from app.static.semantics import Menus
 from app.game.engine import Engine
 from app.game.menus.events import (
     MenuEvent,

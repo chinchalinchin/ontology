@@ -12,7 +12,7 @@ from typing import (
 import logging
 
 # Application Libraries
-from app.config.enums import AssetInstances
+from app.static.semantics import AssetInstances
 from app.assets.base import Asset
 from app.game.logic.mechanics import Mechanic
 

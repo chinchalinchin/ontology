@@ -5,7 +5,7 @@
 from typing import List
 
 # Application Libraries
-import app.config.settings as settings
+import app.static.settings as settings
 from app.models.groups import EquipmentGroup
 from app.models.state import (
     SpriteState

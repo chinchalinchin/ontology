@@ -14,9 +14,9 @@ from typing import (
 import logging
 
 # Application Libraries
-import app.config.settings as settings
+import app.static.settings as settings
 from app.assets.base import Frame
-from app.config.enums import (
+from app.static.semantics import (
     Statuses,
     Gauges
 )

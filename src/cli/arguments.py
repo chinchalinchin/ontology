@@ -9,7 +9,7 @@ import logging
 from pathlib import Path
 
 # Application Libraries
-from app.config.enums import Devices
+from app.static.semantics import Devices
 
 # ------------------------------------------------------
 

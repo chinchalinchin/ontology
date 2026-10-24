@@ -19,8 +19,8 @@ from typing import (
 
 # Application Libraries
 from app.assets.base import Asset
-from app.config.loader import Loader
-from app.config.enums import (
+from app.static.loader import Loader
+from app.static.semantics import (
     AssetCategories,
     AssetInstances, 
     MultipliedAssets,

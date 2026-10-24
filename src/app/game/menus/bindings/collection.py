@@ -10,7 +10,7 @@ import logging
 # Application Libraries
 from app.game.menus.bindings.base import Binding
 from app.game.menus.contexts import MenuContext
-from app.config.enums import Statuses
+from app.static.semantics import Statuses
 
 logger = logging.getLogger(__name__)
 

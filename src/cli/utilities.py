@@ -26,8 +26,8 @@ from cli.enums import (
     Filters
 )
 # Application Libraries
-import app.config.settings as settings
-from app.config.enums import AssetCategories
+import app.static.settings as settings
+from app.static.semantics import AssetCategories
 from app.assets.base import Asset
 from app.game.screen import Screen
 

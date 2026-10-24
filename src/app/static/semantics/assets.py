@@ -1,9 +1,10 @@
 """
-@workflow.compositions
+@app.semantics
+@app.core
 
 # Ontology: app.config.enums.asset
 
-Asset key enumerations.
+Enumeration of Asset semantics.
 """
 # Standard Libraries
 from enum import Enum
@@ -80,7 +81,7 @@ class AssetInstances(str, Enum):
     PANES           = "panes"
 
 # -------------------------------------------------------
-# -------------------------------- GROUPING ENUMERATIONS
+# --------------------------------- GROUPING ENUMERATIONS
 # -------------------------------------------------------
 #   NOTE: Abstract groups of Assets.
 

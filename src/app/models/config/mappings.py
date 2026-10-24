@@ -9,7 +9,7 @@ from typing import Dict
 from dataclasses import dataclass, field
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     Intentions,
     PlayerGoals,
     Menus,

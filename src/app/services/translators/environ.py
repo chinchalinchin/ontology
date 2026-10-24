@@ -7,7 +7,7 @@ Helper functions for ISL conditions.
 from typing import Dict, List
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     RequiredAssets,
     AssetInstances, 
     AssetCategories,

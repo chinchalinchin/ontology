@@ -12,7 +12,7 @@ from typing import (
 from dataclasses import dataclass, field
 
 # Application Libraries
-import app.config.settings as settings
+import app.static.settings as settings
 
 
 @dataclass(slots=True)

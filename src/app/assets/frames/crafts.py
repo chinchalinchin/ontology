@@ -16,7 +16,7 @@ from typing import (
 import logging
 
 # Application Libraries
-import app.config.settings as settings
+import app.static.settings as settings
 from app.assets.base import Frame
 from app.game.logic.relations.materials import MaterialIndex
 from app.models.state import CraftState

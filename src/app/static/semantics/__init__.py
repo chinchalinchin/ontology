@@ -1,4 +1,4 @@
-from app.config.enums.assets import (
+from app.static.semantics.assets import (
     # ------
     AssetCategories,
     AssetInstances,
@@ -42,13 +42,19 @@ from app.config.enums.assets import (
     Enclosures,
     Inclines
 )
-from app.config.enums.devices import (
+from app.static.semantics.config import (
+    Configurations,
+)
+from app.static.semantics.devices import (
     Devices,
     DeviceContexts
 )
-from app.config.enums.engine import (
+from app.static.semantics.graphics import (
+    ChannelTypes,
+    Fonts,
+)
+from app.static.semantics.engine import (
     Mechanics,
-    Configurations,
     MotiveAssets,
     FrictiveAssets,
     InertAssets,
@@ -61,10 +67,8 @@ from app.config.enums.engine import (
     LayerProjections,
     MultipliedAssets,
     MultiplicationStrategies,
-    ChannelTypes,
-    Fonts,
 )
-from app.config.enums.menus import (
+from app.static.semantics.menus import (
     Controllers,
     Layouts,
     Alignments,
@@ -75,12 +79,12 @@ from app.config.enums.menus import (
     Selections,
     Statuses
 )
-from app.config.enums.recipes import (
+from ontology.src.app.static.semantics.config import (
     FrameRecipe,
     AnimationRecipe,
     HitboxRecipe
 )
-from app.config.enums.sprites import (
+from app.static.semantics.sprites import (
     Intentions,
     BlockingIntentions,
     AnimatedIntentions,

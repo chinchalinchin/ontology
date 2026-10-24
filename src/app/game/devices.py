@@ -6,7 +6,7 @@
 import logging 
 
 # Application Libraries
-from app.config.enums import DeviceContexts
+from app.static.semantics import DeviceContexts
 from app.models.config import DeviceMapping
 from app.models.state import (
     DevicePayload,

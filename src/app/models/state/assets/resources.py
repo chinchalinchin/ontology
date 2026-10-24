@@ -8,7 +8,7 @@ from typing import Optional
 from dataclasses import dataclass
 
 # Application Libraries
-from app.config.enums.assets import (
+from app.static.semantics.assets import (
     AnnualStages
 )
 from app.models.adapters import (

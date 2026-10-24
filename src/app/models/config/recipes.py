@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     FrameRecipe, 
     AnimationRecipe,
     HitboxRecipe

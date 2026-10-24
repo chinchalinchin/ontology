@@ -18,7 +18,7 @@ from app.assets.base import (
     HitboxSchema
 )
 from app.assets.hitboxes.core import StaticHitbox
-from app.config.enums import LayerProjections
+from app.static.semantics import LayerProjections
 from app.models.properties import ObjectProperties
 from app.models.state import (
     DoorState,

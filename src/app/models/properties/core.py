@@ -14,7 +14,7 @@ from typing import (
 from dataclasses import dataclass
 
 # Applicaiton Libraries
-from app.config.enums import (
+from app.static.semantics import (
     Directions,
     Frequencies,
     Materials,

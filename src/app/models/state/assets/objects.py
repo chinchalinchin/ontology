@@ -16,7 +16,7 @@ from dataclasses import (
 )
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     LayerProjections
 )
 from app.models.adapters import (

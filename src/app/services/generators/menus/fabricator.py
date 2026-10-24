@@ -12,7 +12,7 @@ from typing import (
 )
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances,
     Layouts,
     Alignments,

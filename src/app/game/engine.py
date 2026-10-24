@@ -12,7 +12,7 @@ from typing import List, Dict
 import logging
 
 # Application Libraries
-import app.config.settings as settings
+import app.static.settings as settings
 from app.game.board import Board
 from app.game.logic.mechanics import Mechanic
 from app.game.screen import Screen

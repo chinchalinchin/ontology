@@ -18,7 +18,7 @@ from typing import (
 # Application Libraries
 from app.assets.base import Asset
 from app.game.board import predicates
-from app.config.enums import (
+from app.static.semantics import (
     AssetCategories,
     AssetInstances,
     Directions

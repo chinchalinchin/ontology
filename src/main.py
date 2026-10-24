@@ -34,7 +34,7 @@ from cli.enums import (
     Filters
 )
 # Application Libraries
-from app.config.logging import configure_logging
+from app.static.logging import configure_logging
 from app.services.orchestration import Orchestrator
 
 # Cython Libraries

@@ -1,11 +1,15 @@
 """
+@asset.animation
+@category.widgets
+@workflow.menus
+
 # Ontology: app.asset.animations.widgets
 
 Package for Widget Animation implementations.
 """
 # Application Libraries
 from app.assets.base import Animation
-from app.models.properties import AssetProperties
+from app.models.properties import WidgetProperties
 from app.models.state import AssetState
 
 # --------------------------------------------------
@@ -14,7 +18,7 @@ class TraversalAnimation(Animation):
     """
     """
 
-    def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
+    def animate(self, state: AssetState, properties: WidgetProperties) -> AssetState:
         """
         """
         state.animation.action = state.status
@@ -26,7 +30,7 @@ class MeterAnimation(Animation):
     """
     """
 
-    def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
+    def animate(self, state: AssetState, properties: WidgetProperties) -> AssetState:
         """
         """
         if getattr(state, 'unit', 0) > 0:

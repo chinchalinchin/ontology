@@ -19,14 +19,14 @@ from typing import (
 )
 
 # Application Libraries
-import app.config.settings as settings
+import app.static.settings as settings
 from app.assets.base import (
     Asset,
     Frame,
     Animation,
     HitboxSchema
 )
-from app.config.enums import (
+from app.static.semantics import (
     AssetCategories,
     AssetInstances,
     Columns,

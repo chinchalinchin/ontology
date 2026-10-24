@@ -11,7 +11,7 @@ import logging
 from typing import TYPE_CHECKING
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     Selections,
     Menus
 )

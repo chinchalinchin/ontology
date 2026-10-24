@@ -21,7 +21,7 @@ import logging
 
 # Application Libraries
 from app.assets.base import Singleton
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances,
     LayerProjections,
     MultiplicationStrategies,

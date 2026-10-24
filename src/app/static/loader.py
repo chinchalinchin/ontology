@@ -6,7 +6,7 @@ import logging
 import yaml
 from pydantic import TypeAdapter
 
-import app.config.settings as settings
+import app.static.settings as settings
 from app.models.state import StateSchema
 from app.models.properties import PropertiesSchema
 from app.models.config import ConfigurationSchema

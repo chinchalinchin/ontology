@@ -13,7 +13,7 @@ from typing import (
 from dataclasses import dataclass, field
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     Directions,
     Seasons
 )

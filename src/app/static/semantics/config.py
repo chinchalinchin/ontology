@@ -1,13 +1,27 @@
 """
 # Ontology: app.config.enums.recipes
 
-Recipe key enumerations
+Enumeration of Configuration semantics.
 """
 # Standard Libraries
 from enum import Enum
 
+class Configurations(str, Enum):
+    """Enumeration of Configurations"""
+    ACTIONS         = "actions"
+    COMPOSITIONS    = "compositions"
+    INTENTIONS      = "intentions"
+    LIBRARY         = "library"
+    MAPPINGS        = "mappings"
+    MARKETS         = "markets"
+    MECHANICS       = "mechanics"
+    MENUS           = "menus"
+    PLOTS           = "plots"
+    RECIPES         = "recipes"
 
+# ----------------------------------------------------------
 # -------------------------------- ASSET RECIPE ENUMERATIONS
+# ----------------------------------------------------------
 #   NOTE: These are required Recipe configuration keys
 
 class FrameRecipe(str, Enum):

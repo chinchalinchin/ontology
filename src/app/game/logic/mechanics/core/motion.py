@@ -11,7 +11,7 @@ import collections
 import logging
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances, 
 )
 from app.game.logic.modules.motion import (

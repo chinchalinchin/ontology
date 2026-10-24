@@ -2,8 +2,8 @@
 # Ontology: app.game.maps.animation
 """
 # Application Libraries
-import app.config.settings as settings
-from app.config.enums import (
+import app.static.settings as settings
+from app.static.semantics import (
     Actions, 
     Directions, 
     Intentions,

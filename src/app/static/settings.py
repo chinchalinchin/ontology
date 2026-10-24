@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Final
 
 # Application Libraries
-from app.config.enums import Seasons
+from app.static.semantics import Seasons
 
 # ---------------------------------------------------
 # APPLICATION SETTINGS

@@ -19,11 +19,11 @@ if TYPE_CHECKING:
 
 # Application Libraries
 from app.assets.base import Asset
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances,
     NavigationIntentions,
 )
-import app.config.settings as settings
+import app.static.settings as settings
 from app.game.logic.mechanics import Mechanic
 from app.game.logic.modules.paths.plan import Planner
 from app.models.state import DevicePayload

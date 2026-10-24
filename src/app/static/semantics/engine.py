@@ -1,8 +1,10 @@
 """
-@workflow.compositions
+@app.semantics
+@app.mechanics
 
 # Ontology: app.config.enums
 
+Enumeration of Engine semantics.
 """
 # Standard Libraries
 from enum import Enum
@@ -29,19 +31,6 @@ class Mechanics(str, Enum):
     SWITCH          = "switch"
     TELEMETRY       = "telemetry"
     TRANSITION      = "transition"
-
-class Configurations(str, Enum):
-    """Enumeration of Configurations"""
-    ACTIONS         = "actions"
-    COMPOSITIONS    = "compositions"
-    INTENTIONS      = "intentions"
-    LIBRARY         = "library"
-    MAPPINGS        = "mappings"
-    MARKETS         = "markets"
-    MECHANICS       = "mechanics"
-    MENUS           = "menus"
-    PLOTS           = "plots"
-    RECIPES         = "recipes"
 
 class Shortcuts(str, Enum):
     """Enumeration of Asset hydration shortcuts."""
@@ -122,16 +111,3 @@ class MultiplicationStrategies(str, Enum):
     EXPANSION       = "expansion"
     ORIENTED        = "oriented"
     PERIMETER       = "perimeter"
-
-# -------------------------------- RENDERING ENUMERATIONS
-
-class ChannelTypes(int, Enum):
-    """Enumeration of Frame Channels"""
-    TINT            = 0
-    SUBMERGE        = 1
-
-class Fonts(str, Enum):
-    """Enumeration of Font Assets."""
-    DIALOGUE        = "dialogue"
-    MENU            = "menu"
-    TITLE           = "title"

@@ -1,19 +1,16 @@
 """
+@asset.animation
+@category.effects
+
 # Ontology: app.asset.animations.effects
 
-Package for Effect Animation implementations.
+Effect Animation implementations.
 """
 # Application Libraries
-from app.config.enums import (
-    Frequencies,
-)
+from app.static.semantics import Frequencies
 from app.assets.base import Animation
-from app.models.properties import (
-    EffectProperties,
-)
-from app.models.state import (
-    EffectState
-)
+from app.models.properties import EffectProperties
+from app.models.state import EffectState
 
 # --------------------------------------------------
 

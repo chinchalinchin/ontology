@@ -17,15 +17,15 @@ from typing import (
 from dataclasses import asdict
 
 # Application Libraries
-import app.config.settings as settings
+import app.static.settings as settings
 from app.assets.base import Asset
-from app.config.enums import (
+from app.static.semantics import (
     AssetCategories,
     AssetInstances,
     Frequencies,
     Shortcuts
 )
-from app.config.loader import Loader
+from app.static.loader import Loader
 from app.game.board.fields import MoistureField
 from app.game.devices import Device
 from app.game.menus.core import Menu

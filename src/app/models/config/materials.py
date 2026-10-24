@@ -17,7 +17,7 @@ from dataclasses import (
 )
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances,
     Blueprints,
     Materials,

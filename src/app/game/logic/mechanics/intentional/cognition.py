@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 # Application Libraries
 from app.assets.base import Asset
-from app.config.enums import (
+from app.static.semantics import (
     Intentions, 
     Goals, 
     Motivations,

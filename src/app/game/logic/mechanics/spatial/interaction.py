@@ -11,7 +11,7 @@ import logging
 if TYPE_CHECKING:
     from app.game.board import Board
 
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances,
     Intentions,
     Menus

@@ -10,7 +10,7 @@ import collections
 from typing import TYPE_CHECKING, Any
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     Selections,
     Statuses
 )

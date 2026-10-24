@@ -1,12 +1,15 @@
 """
+@app.semantics
+@app.input
+
 # Ontology: app.config.enums.devices
 
-Device key enumeartions.
+Enumeration of Device semanatics.
 """
 # Standard Libraries
 from enum import Enum
 
-# -------------------------------- DEVICE ENUMERATIONS
+# ---------------------------------------
 
 class Devices(str, Enum):
     CONTROLLER      = "controller"

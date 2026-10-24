@@ -17,9 +17,9 @@ from typing import (
 )
 
 # Application Libraries
-import app.config.settings as settings
-from app.config.loader import Loader
-from app.config.enums import (
+import app.static.settings as settings
+from app.static.loader import Loader
+from app.static.semantics import (
     Devices, 
     Mechanics,
     AssetCategories,

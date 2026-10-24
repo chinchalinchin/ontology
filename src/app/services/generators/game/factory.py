@@ -55,7 +55,7 @@ from app.assets.frames import (
     MaterialFrame,
     NoFrame
 )
-from app.config.enums import (
+from app.static.semantics import (
     AnimationRecipe, 
     FrameRecipe, 
     HitboxRecipe,

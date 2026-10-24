@@ -8,7 +8,7 @@ from typing import List, TYPE_CHECKING
 
 # Application Libraries
 from app.assets.base import Asset
-from app.config.enums import NavigationIntentions
+from app.static.semantics import NavigationIntentions
 
 if TYPE_CHECKING:
     from app.game.board import Board

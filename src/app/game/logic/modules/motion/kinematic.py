@@ -7,7 +7,7 @@ from typing import List
 # Application Libraries
 from app.assets.base import Asset
 from app.models.state.devices import DevicePayload
-from app.config.enums import PlayerGoals
+from app.static.semantics import PlayerGoals
 
 # Cython Libraries
 import libs.core.math.physics as physics
