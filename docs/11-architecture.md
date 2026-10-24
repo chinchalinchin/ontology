@@ -91,33 +91,33 @@ $$
 
 When asserting Fluid immersion, the Engine queries the bucket corresponding to the coordinate, then delegates to narrow-phase AABB segment validation.
 
-### Specification: Rendering
+### Specification: Graphics
 
-#### Sorting: Elevation, Substrate, Perspective & Priority
+#### Rendering: Sort
 
-World rendering evaluates spatial geometry using discrete topological macro-elevations, intra-elevation substrate planes, continuous ground perspective, and coplanar priority:
+World rendering evaluates spatial geometry using discrete elevations, intra-elevation substrate planes, ground perspective, and coplanar priority:
 
 $$
 \text{sort_key}(A) = \Big(A.\text{elevation}, A.\text{substrate}, \text{ground_y}(A), A.\text{properties.priority}\Big)
 $$
 
 1. **Primary Key (`A.elevation` $\in \mathbb{Z}_{\ge 0}$)**: Discrete elevation (`0`, `1`, `2`, ...).
-2. **Secondary Key (`A.substrate` $\in \mathbb{Z}_{\le 0}$)**: Intra-elevation rendering plane within elevation $E$:
+2. **Secondary Key (`A.substrate` $\in \mathbb{Z}_{\le 0}$)**: Intra-elevation rendering plane within $E$:
    * `Substrates.ENVIRON (-4)`: `tiles.environ`
    * `Substrates.FLUIDS (-3)`: `effects.fluids`
-   * `Substrates.SURFACES (-2)`: `geography.shorelines`, `struts` (`floors`, `paths`, `flats`)
-   * `Substrates.OVERLAYS (-1)`: `crafts.bridges`, `crafts.stairs`, `objects.doors` (shadow footprints), `struts` (`solids`, `stripes`, `designs`)
+   * `Substrates.SURFACES (-2)`: `geography.shorelines`, `crafts.struts.floors`, `crafts.struts.paths`, `crafts.strtuts.flats`
+   * `Substrates.OVERLAYS (-1)`: `crafts.bridges`, `crafts.stairs`, `objects.doors`, `crafts.struts.solids`, `crafts.struts.stripes`, `crafts.struts.designs`
    * `Substrates.STANDARD (0)`: All upright entities, walls, columns, enclosures, objects, and sheets.
 3. **Tertiary Key (`ground_y` $\in \mathbb{Z}$)**: Geometric perspective offset by Anchor: $\text{ground_y} = \text{int}(A.\text{state.position.y} + A.\text{dimensions.l} + A.\text{state.anchor})$.
-4. **Quaternary Key (`priority` $\in \mathbb{Z}$)**: Coplanar tie-breaker for Asset sharing an identical `(elevation, substrate, ground_y)` baseline.
+4. **Quaternary Key (`priority` $\in \mathbb{Z}$)**: Coplanar tie-breaker for Assets sharing an identical `(elevation, substrate, ground_y)` baseline.
 
-#### Typography: Fonts
+#### Rendering: Typography
 
-A Font configuration pairs a `.ttf` file with styling rules. During bootstrap, the Registry ingests each font declared in `/src/assets/fonts/main.yaml` alongside its configuration, storing them as styled Cython `TTFFont` wrappers. When `outline` is specified, the Registry instantiates a secondary internal outline pointer configured via `TTF_SetFontOutline`, enabling `render.write()` to execute two-pass blended rendering (outline pass followed by foreground fill) without runtime glyph cache invalidation.
+A Font configuration pairs a `.ttf` file with styling rules. During bootstrap, the Registry ingests each Font declared in `/src/assets/fonts/**/*.yaml`, storing them as styled Cython `TTFFont` wrappers. When `outline` is specified, the Registry instantiates a secondary internal outline pointer configured via `TTF_SetFontOutline`, enabling `render.write()` to execute two-pass blended rendering (outline pass followed by foreground fill) without runtime glyph cache invalidation.
 
-In Menu hierarchies, fonts are scoped lexically at the `MenuPane` level: any `font` declared on a parent pane cascades down to all child panes and `Page` widgets unless explicitly shadowed by a nested pane.
+In Menu hierarchies, Font are scoped lexically at the MenuPane level: any `font` declared on a parent pane cascades down to all child Widgets unless explicitly shadowed by a nested pane.
 
-See [Graphics Architecture documentation](./11-architecture.md#graphics) for technical implementation details.
+See [Library: Graphics](#library-graphics) for more implementation details.
 
 **Properties: FontProperties**
 
@@ -149,40 +149,48 @@ See [Graphics Architecture documentation](./11-architecture.md#graphics) for tec
 
 ### Specification: Cython Libraries
 
-While Python objects are fast enough for general logic, calculating collisions and processing rendering instructions for thousands of entities requires maximum performance. The engine strategically uses Cython to bridge this gap, adhering to a strict **"Zero Heap Allocation in the Inner Loop"** philosophy to prevent frame stutters caused by the Python Garbage Collector.
+While Python objects are fast enough for general logic, calculating collisions and processing rendering instructions for thousands of entities requires maximum performance. The engine uses Cython to bridge this gap, adhering to a **"Zero Heap Allocation in the Inner Loop"** philosophy to prevent frame stutters caused by the Python Garbage Collector.
 
 !!! important
     Zero Heap Allocation is more of an ideal/driving principle than an enforced constraint. 
 
 #### Library: Models
 
-- `libs/core/models.pyx`
+* Address `libs.core.models`
 
-- Position: 
-    - `x: int`
-    - `y: int`
-- Dimensions:
-    - `w: int`
-    - `l: int`
-- Multiple:
-    - `nx: int`
-    - `ny: int`
-- Velocity:
-    - `vx: int`
-    - `vy: int`
-- Hitbox:
-    - `position: Position`
-    -` dimension Dimensions`
-- ScreenPosition:
-    - `px: double`
-    - `py: double`
+**Model: Position**
+
+- `x: int`
+- `y: int`
+
+**Model: Dimensions**
+
+* `w: int`
+* `l: int`
+
+**Model: Multiple**
+
+* `nx: int`
+* `ny: int`
+
+**Model: Velocity**
+
+* `vx: int`
+* `vy: int`
+
+**Model: Hitbox**
+
+* `position: Position`
+* `dimension Dimensions`
+
+**ScreenPosition**:
+
+* `px: double`
+* `py: double`
 
 #### Library: Math
 
-* `libs/core/math/geometry.pyx`
-* `libs/core/math/paths.pyx`
-* `libs/core/math/physics.pyx`
-* `libs/core/math/space.pyx`
+* Address: `libs.core.math`
 
 The engine leverages Cython for high-frequency mathematical, geometric, and physical calculations. To achieve maximum throughput, stateless operations are implemented as module-level `cpdef` and `cdef` functions within the `libs.core.math` package, avoiding the Virtual Method Table (vtable) overhead of class wrappers.
 
@@ -190,7 +198,9 @@ Spatial data (such as `Position`, `Velocity`, `Dimensions`, and `Hitbox`) are mo
 
 The engine selectively manages the Global Interpreter Lock (GIL). Standard spatial routines retain the GIL to preserve reference counting and clean iteration syntax over Python collections. Performance-critical, loop-intensive mathematical routines—specifically RRT tree generation in `paths.pyx`—release the GIL (`nogil`) and execute entirely against contiguous C-allocated buffers.
 
-**Geometry (`libs/core/math/geometry.pyx`)**
+##### Math: Geometry
+
+* Address: `libs.core.math.geometry`
 
 This module houses pure geometric evaluations, translating expensive Python float and distance calculations into C-level primitives.
 
@@ -203,29 +213,35 @@ This module houses pure geometric evaluations, translating expensive Python floa
 * **`contours`**: Executes a two-pass Sweep-Line algorithm over primitive AABBs to dynamically generate map boundaries. Uses C-level interval merging and XOR symmetric differences to isolate exposed contour edges, returning boundary segments.
 * **`bounded`**: Narrow-phase validation checking whether an asset's offset hitboxes intersect a raw mathematical boundary constraint.
 
-**Paths (`libs/core/math/paths.pyx`)**
+##### Math: Paths
 
-This module implements the Rapidly-exploring Random Tree (RRT) pathfinding algorithm in pure C memory, adhering to the "Zero Heap Allocation in the Inner Loop" philosophy.
+* Address: `libs.core.math.paths`
+
+This module implements the Rapidly-exploring Random Tree (RRT) pathfinding algorithm in pure C memory.
 
 * **Memory Management**: Ingests obstacle lists at function entry into a flat `RRTObstacle*` contiguous buffer and allocates an `RRTNode*` tree buffer sized to `max_iter + 2` via `malloc()`. Both buffers are freed synchronously via a `try...finally` block.
 * **Tree Representation**: Nodes are represented as flat `RRTNode` structs containing coordinate values and an integer `parent_idx`, eliminating object pointer chasing and heap fragmentation.
 * **Inner Loop (`nogil`)**: Releases the Python GIL during the exploratory phase. Executes 5% goal-biased continuous coordinate sampling, $O(N)$ nearest-neighbor distance minimization via `hypotf()`, fixed-distance trigonometric node steering via `atan2f()`, `cosf()`, and `sinf()`, and line-of-sight segment verification via `c_punctures`.
 * **Path Reconstruction**: Re-acquires the GIL upon reaching the goal, traverses the `parent_idx` chain in reverse into an integer path buffer, and instantiates the final list of Python `Position` models. Returns an empty list if iterations expire without resolving a route.
 
-**Space (`libs/core/math/space.pyx`)**
+##### Math: Space
 
-This module manages the broad-phase spatial partitioning grid, reducing collision detection complexity from $O(N^2)$ to $O(N)$ for local clusters.
+* Address: `libs.core.math.space`
+
+This module manages the broad-phase spatial partitioning grid.
 
 * **Memory Management (`__init__`, `__dealloc__`)**: Manually allocates continuous blocks of system memory (`malloc`) for its `bucket_counts` and `bucket_data` arrays. Enforces safe teardown via `__dealloc__` calling `free()`, preventing memory leaks.
 * **`clear`**: Resets the grid for the current frame by zeroing out the allocated memory block using C's `memset()`.
 * **`insert` & `_hash**`: Maps 2D spatial coordinates to a 1D flat array. Assets intersecting cell boundaries are hashed into multiple buckets dynamically.
 * **`query`**: Iterates through populated buckets and yields a list of unique `(id1, id2)` integer tuples, generating candidate pairs for narrow-phase evaluation.
 
-**Physics (`libs/core/math/physics.pyx`)**
+##### Math: Physics
+
+* Address: `libs.core.math.physics`
 
 This module orchestrates the physical simulation, bridging the broad-phase grid with narrow-phase resolution, computing forces, and applying velocities to engine states.
 
-* **`collisions`**: The master collision pipeline. Ingests a flat list of primitive integer tuples to avoid Python object overhead:
+* **`collisions`**: The collision pipeline. Ingests a flat list of primitive integer tuples to avoid Python object overhead:
     1. **Hash**: Inserts dynamic assets into the `Space` grid using physical dimensions.
     2. **Query**: Retrieves the reduced list of candidate pairs occupying the same spatial buckets.
     3. **Narrow Phase**: Pre-allocates dummy `Position` and `Dimensions` objects on the C-stack, unpacks candidate primitives, and evaluates overlaps via `geometry.intersects`. Returns verified colliding pairs.
@@ -241,7 +257,7 @@ This module orchestrates the physical simulation, bridging the broad-phase grid 
 
 #### Library: Graphics
 
-- `libs/core/graphics.pyx`
+* Address: `libs.core.graphics`
 
 The engine relies on a Cythonized bridge to C-level SDL2 bindings. To mitigate the overhead of crossing the Python-to-C boundary, the rendering pipeline does not pass heavy Python objects (like `SpriteState` or `Dimensions`) to the renderer. Instead, it extracts raw integers on the Python side and unpacks them cleanly onto the C-stack.
 

@@ -8,6 +8,7 @@ Usage:
 
 Dependencies:
 - jinja2
+- panflute
 - pyyaml
 
 Security Warning:
@@ -15,16 +16,17 @@ Security Warning:
 """
 
 # Standard Libraries
-
 import argparse
 from datetime import datetime
 import os
 import re
 import subprocess
 import sys
+from typing import Union
 
 # External Libraries
 import jinja2
+import panflute as pf
 import yaml as pyyaml
 
 # -------------------- Configuration
@@ -76,6 +78,34 @@ MARKDOWN_TYPE_HINTS = {
     'zsh': 'zsh',
 }
 
+MD_MODIFIERS = {
+    # Increases or decreases heading levels (clamped between 1 and 6)
+    "header": lambda shift: (
+        lambda elem, _doc: (
+            setattr(elem, "level", min(max(elem.level + int(shift), 1), 6))
+            if isinstance(elem, pf.Header)
+            else None
+        )
+    ),
+    # Example: set fallback language for untyped fenced code blocks
+    "default-codeblock": lambda lang: (
+        lambda elem, _doc: (
+            elem.classes.append(str(lang))
+            if isinstance(elem, pf.CodeBlock) and not elem.classes
+            else None
+        )
+    ),
+    # Prefix all relative URLs with a base repository path
+    "url":
+        lambda prefix: (
+        lambda elem, _doc: (
+            setattr(elem, "url", f"{prefix.rstrip('/')}/{elem.url.lstrip('/')}")
+            if isinstance(elem, pf.Link) and not elem.url.startswith(("http://", "https://", "#"))
+            else None
+        )
+    )
+}
+
 # -------------------- Templating Functions
 
 def typehint(filepath: str) -> str:
@@ -108,7 +138,6 @@ def command(command_str: str) -> str:
              This ensures the template rendering does not crash on a single failed command.
     """
     try:
-        # Security Note: shell=True is necessary for pipes/complex commands but carries RCE risk.
         result = subprocess.check_output(
             command_str,
             shell=True,
@@ -144,6 +173,41 @@ def file(file_path: str) -> str:
     except Exception as e:
         return f"Error reading file: {str(e)}"
 
+
+def md(file_path: str, modifications: Union[dict, None] = None) -> str:
+    """
+    Loads a Markdown file, applies transformations via MD_MODIFIERS,
+    and returns the rendered Markdown string.
+    """
+    full_path = os.path.expanduser(file_path)
+
+    if not os.path.exists(full_path):
+        return f"Error: File not found at {full_path}"
+
+    try:
+        with open(full_path, "r", encoding="utf-8") as f:
+            content = f.read()
+    except Exception as e:
+        return f"Error reading file: {str(e)}"
+
+    try:
+        doc = pf.convert_text(content, input_format="markdown", standalone=True)
+
+        if modifications and isinstance(modifications, dict):
+            for key, val in modifications.items():
+                if key in MD_MODIFIERS and val is not None:
+                    doc.walk(MD_MODIFIERS[key](val))
+
+        rendered = pf.convert_text(
+            doc,
+            input_format="panflute",
+            output_format="markdown",
+            extra_args=["--wrap=none"]
+        )
+        return rendered.strip()
+    except Exception as e:
+        return f"Error processing markdown with panflute: {str(e)}"
+    
 
 def dumps(path: str) -> str:
     """
@@ -421,6 +485,7 @@ def render(template_path: str, output_path: str, vars_path: str) -> None:
     # Register custom functions into the Jinja globals
     env.globals['command'] = command
     env.globals['file'] = file
+    env.globals['md'] = md
     env.globals['markdown'] = markdown
     env.globals['yaml'] = yaml
     env.globals['now'] = now

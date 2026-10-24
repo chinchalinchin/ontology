@@ -5,13 +5,8 @@
 %}
 ### View: {{ properties.project.title | capitalize }} Documentation 
 
------------ START HEADING BREAK: HEADING LEVELS RESET -----------
-
-{{ file(properties.paths.root + properties.paths.docs + 'index.md') }}
+{{ md(properties.paths.root + properties.paths.docs + 'index.md', { "header": 3}) }}
 
 {% for doc in markdown(properties.paths.root + properties.paths.docs, exclude) %}
-{{ file(properties.paths.root + properties.paths.docs + doc) }}
-
+{{ md(properties.paths.root + properties.paths.docs + doc, { "header": 3 }) }}
 {% endfor %}
-
------------ END HEADING BREAK: HEADING LEVELS RESUME -----------
