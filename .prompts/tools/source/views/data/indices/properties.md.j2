@@ -3,14 +3,14 @@
 {% for property in tools.parameters.source.data.properties %}
 #### Property: {{ property | capitalize }}
 
-- Location: `src/assets/{{ property }}`
+* Location: `src/assets/{{ property }}`
 
 {% for prop in yaml('src/assets/' ~ property, recursive=True) | sort %}
 
 **{{ prop }}**
 
 ```yaml
-{{ file(property ~ prop) }}
+{{ file(properties.paths.root ~ 'src/assets/' ~ property ~ '/' ~ prop) }}
 ```
 
 {% endfor %}

@@ -3,13 +3,13 @@
 {% for board in tools.parameters.source.data.state %}
 #### State: {{ board | capitalize }}
 
-- Location: `src/data/state/{{ board }}`
+* Location: `src/data/state/{{ board }}`
 
 {% for state in yaml('src/data/state/' ~ s, recursive=True) | sort %}
 **{{ state }}**
 
 ```yaml
-{{ file(board ~ state) }}
+{{ file(properties.paths.root ~ '/' ~ board ~ '/' ~ state) }}
 ```
 
 {% endfor %}

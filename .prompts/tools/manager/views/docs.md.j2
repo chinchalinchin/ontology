@@ -9,4 +9,5 @@
 
 {% for doc in markdown(properties.paths.root + properties.paths.docs, exclude) %}
 {{ md(properties.paths.root + properties.paths.docs + doc, { "header": 3 }) }}
+
 {% endfor %}
