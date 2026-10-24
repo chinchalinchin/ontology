@@ -1,4 +1,7 @@
 """
+@domain.system
+@main.cli
+
 # Ontology: cli.arguments
 
 Package for command line interface.

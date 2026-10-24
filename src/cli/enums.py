@@ -1,5 +1,7 @@
 """
-@workflow.cli
+@domain.system
+@main.cli
+@app.semantics
 
 # Ontology: cli.enums
 """

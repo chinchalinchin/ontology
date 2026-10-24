@@ -1,4 +1,7 @@
 """
+@domain.logic
+@main.cli
+
 # Ontology: cli
 
 Package for command line interface.

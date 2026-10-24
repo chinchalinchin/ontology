@@ -1,0 +1,17 @@
+
+{# ------------------------------------------------------------- #}
+{% for temp in tools.parameters.source.data.configurations %}
+{% set name = "." ~ temp ~ ".md.jd" %}
+#### Template: {{ temp | capitalize }}
+
+* Location: `src/data/template/{{ name }}`
+
+{% for tmp in yaml('src/data/templates/' ~ name, recursive=True) | sort %}
+**{{ tmp }}**
+
+```yaml
+{{ file(properties.paths.root ~ 'src/data/templates/' ~ name ~ '/' ~ tmp) }}
+```
+
+{% endfor %}
+{% endfor %}

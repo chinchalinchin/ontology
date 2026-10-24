@@ -234,6 +234,11 @@ tools:
         #                   recipes, stages
         # ]
         configurations: [ materials, recipes]
+        # templates: [
+        #                   menu-dump, registry-dump, sdl-dump, 
+        #                   state-dump
+        # ]
+        templates: [  ]
     # --------------------------------------------
     # ------------------------ PARAMETERS: SHELL
     # --------------------------------------------

@@ -1,5 +1,6 @@
 """
-@workflow.cli
+@domain.logic
+@main.cli
 
 # Ontology: cli.utilities
 
