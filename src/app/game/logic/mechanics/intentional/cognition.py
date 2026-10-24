@@ -1,5 +1,8 @@
 """
+@domain.concrete
+@domain.logic
 @app.mechanics
+@category.sheets
 @workflow.intentions
 
 # Ontology: Source - app.game.logic.mechanics.intentional.cognition

@@ -1,5 +1,12 @@
 """
+@domain.concrete
+@domain.logic
+@app.mechanics
+@workflow.plot
+
 # Ontology: Source - app.game.logic.mechanics.world.plot
+
+PlotMechanics implementation.
 """
 from __future__ import annotations
 

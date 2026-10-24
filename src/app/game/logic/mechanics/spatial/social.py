@@ -1,4 +1,11 @@
 """
+@domain.concrete
+@domain.logic
+@app.mechanics
+@category.sheets
+@physics.space
+@workflow.intentions
+
 # Ontology: Source - app.game.logic.mechanics.spatial.social
 """
 from __future__ import annotations

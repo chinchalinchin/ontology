@@ -1,4 +1,10 @@
 """
+@domain.logic
+@app.mechanics
+@category.sheets
+@physics.space
+@workflow.combat
+
 # Ontology: Source - app.game.logic.mechanics.spatial.combat
 
 Package for CombatMechanics

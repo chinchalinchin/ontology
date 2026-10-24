@@ -1,4 +1,10 @@
 """
+@domain.concrete
+@domain.logic
+@app.mechanics
+@physics.space
+@category.objects
+
 # Ontology: Source - app.game.logic.mechanics.spatial.switch
 
 Package for SwitchMechanics

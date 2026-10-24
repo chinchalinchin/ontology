@@ -1,5 +1,13 @@
 """
+@domain.concrete
+@domain.logic
+@app.mechanics
+@category.sheets
+@workflow.intentions
+
 # Ontology: Source - app.game.logic.mechanics.intentional.transition
+
+TransitionMechanics implementation.
 """
 # Standard Libraries
 from __future__ import annotations

@@ -1,5 +1,15 @@
 """
+@domain.concrete
+@domain.logic
+@app.mechanics
+@physics.fields
+@category.effects
+@workflow.fluids
+@workflow.ecology
+
 # Ontology: Source - app.game.logic.mechanics.world.fluid
+
+FluidMechanics implementation.
 """
 from __future__ import annotations
 

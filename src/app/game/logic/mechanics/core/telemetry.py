@@ -1,5 +1,6 @@
 """
-@domain.systems
+@domain.concrete
+@domain.system
 @app.mechanics
 @workflow.telemetry
 

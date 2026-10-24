@@ -1,7 +1,15 @@
 """
+@domain.concrete
+@domain.logic
+@app.mechanics
+@physics.space
+@category.sheets
+@category.objects
+@workflow.intentions
+
 # Ontology: Source - app.game.logic.mechanics.spatial.interaction
 
-Package for InteractionMechanics
+InteractionMechanics implementation.
 """
 from __future__ import annotations
 from typing import TYPE_CHECKING

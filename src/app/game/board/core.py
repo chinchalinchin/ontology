@@ -1,5 +1,5 @@
 """
-@domain.systems
+@domain.system
 @app.core
 @app.component
 

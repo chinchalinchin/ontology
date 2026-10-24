@@ -1,5 +1,6 @@
 """
 @domain.logic
+@domain.concrete
 @app.mechanics
 @physics.motion
 

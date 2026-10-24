@@ -1,5 +1,5 @@
 """
-@domain.systems
+@domain.system
 @app.module
 
 # Ontology: Source - app.game.board.modules.caches

@@ -1,7 +1,16 @@
 """
+@domain.concrete
+@domain.logic
+@app.mechanics
+@category.crafts
+@category.objects
+@category.sheets
+@physics.space
+@workflow.collisions
+
 # Ontology: Source - app.game.logic.mechanics.spatial.collision
 
-Package for CollisionMechanics
+CollisionMechanics implementation.
 """
 from __future__ import annotations
 
@@ -27,7 +36,11 @@ import libs.core.math.physics as physics
 import libs.core.math.geometry as geometry
 from libs.core.models import Boundary
 
+# -----------------------------------------------
+
 logger = logging.getLogger(__name__)
+
+# -----------------------------------------------
 
 class CollisionMechanics(SpatialMechanic):
     """

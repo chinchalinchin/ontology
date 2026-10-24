@@ -1,4 +1,10 @@
 """
+@domain.concrete
+@domain.logic
+@app.mechanics
+@workflow.ecology
+@workflow.seasons
+
 # Ontology: Source - app.game.logic.mechanics.world.seasons
 
 Mechanic implementation governing macro-temporal progression,

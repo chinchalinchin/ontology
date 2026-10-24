@@ -23,7 +23,7 @@ Use the following template to create docstrings for Python modules,
         * `domain.graphics`
         * `domain.logic`
         * `domain.model`
-        * `domain.systems`
+        * `domain.system`
         * `domain.user`
     * Predicate Tags:
         * Hierarchy Tags:
@@ -62,6 +62,7 @@ Use the following template to create docstrings for Python modules,
             * Physics Tags:
                 * `physics.fields`
                 * `physics.motion`
+                * `physics.space`
             * Workflow Tags: 
                 * `workflow.collisions`
                 * `workflow.combat`

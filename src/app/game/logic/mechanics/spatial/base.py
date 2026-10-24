@@ -1,7 +1,14 @@
 """
+@domain.concrete
+@domain.logic
+@app.base
+@app.mechanics
+@physics.space
+@workflow.collisions
+
 # Ontology: Source - app.game.logic.mechanics.spatial.base
 
-Package for SpatialMechanic parent class.
+SpatialMechanic implementation base class.
 """
 # Standard Libraries
 from typing import (

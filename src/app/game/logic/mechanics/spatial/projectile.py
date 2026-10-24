@@ -1,4 +1,10 @@
 """
+@domain.concrete
+@domain.logic
+@app.mechanics
+@category.cursors
+@physics.space
+
 # Ontology: Source - app.game.logic.mechanics.spatial.projectile
 
 Package for ProjectileMechanics
