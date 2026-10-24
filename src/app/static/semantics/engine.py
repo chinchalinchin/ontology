@@ -2,7 +2,7 @@
 @app.semantics
 @app.mechanics
 
-# Ontology: app.config.enums
+# Ontology: Source - app.config.enums
 
 Enumeration of Engine semantics.
 """

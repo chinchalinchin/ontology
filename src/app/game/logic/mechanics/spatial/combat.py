@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.spatial.combat
+# Ontology: Source - app.game.logic.mechanics.spatial.combat
 
 Package for CombatMechanics
 """

@@ -1,4 +1,4 @@
-#### Ontology Specification: Interaction Loop
+#### Ontology Spec: Interaction Loop
 
 This specification governs how Sprites traverse the environment and manipulate Objects (such as Doors and Chests).
 

@@ -1,5 +1,7 @@
 """
-# Ontology: app.telemetry.server
+@workflow.telemetry
+
+# Ontology: Source - app.telemetry.server
 """
 # Standard Libraries
 import os

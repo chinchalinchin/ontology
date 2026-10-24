@@ -2,7 +2,7 @@
 @app.core
 @asset.property
 
-# Ontology: app.models.properties.core
+# Ontology: Source - app.models.properties.core
 
 Core Property Models.
 """

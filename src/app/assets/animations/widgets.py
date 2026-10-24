@@ -1,9 +1,10 @@
 """
+@domain.concrete
 @asset.animation
 @category.widgets
 @workflow.menus
 
-# Ontology: app.asset.animations.widgets
+# Ontology: Source - app.asset.animations.widgets
 
 Widget Animation implementations.
 """

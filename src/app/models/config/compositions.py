@@ -2,7 +2,7 @@
 @app.config
 @workflow.compositions
 
-# Ontology: app.models.config.compositions
+# Ontology: Source - app.models.config.compositions
 
 Composition Configuration Models.
 """

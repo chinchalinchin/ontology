@@ -1,5 +1,5 @@
 """
-# Ontology: app.models.adapters
+# Ontology: Source - app.models.adapters
 
 Pydantic adapters for instantiating Cython structs across the GIL during YAML parsing.
 """

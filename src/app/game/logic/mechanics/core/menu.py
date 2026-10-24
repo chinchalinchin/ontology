@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.core.menu
+# Ontology: Source - app.game.logic.mechanics.core.menu
 
 Package for MenuMechanics.
 """

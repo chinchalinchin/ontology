@@ -1,5 +1,5 @@
 """
-# Ontology: app.services.generators.binder
+# Ontology: Source - app.services.generators.binder
 
 Factory for generating and preparing Binding components.
 """

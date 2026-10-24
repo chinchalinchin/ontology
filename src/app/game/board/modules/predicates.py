@@ -1,7 +1,10 @@
 """
-# Ontology: app.game.board.predicates
+@domain.logic
+@app.module
 
-Stateless domain and geometric predicate functions for game assets and coordinates.
+# Ontology: Source - app.game.board.predicates
+
+Stateless Predicates for making assertions on the Board.
 """
 # Standard Libraries
 from typing import (
@@ -61,7 +64,7 @@ def in_pool(position: Position, fluid: Asset) -> bool:
     """
     Evaluates whether a Cartesian coordinate intersects the annular pool of a fluid entity.
     """
-    pool = getattr(fluid.state, "pool", None)
+    pool = fluid.state.pool
     if not pool or pool.w <= 0 or pool.l <= 0:
         return False
 

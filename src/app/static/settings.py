@@ -1,5 +1,5 @@
 """
-# Ontology: app.config.settings
+# Ontology: Source - app.config.settings
 
 Package for global runtime environment settings.
 """
@@ -85,6 +85,11 @@ DIFFUSION_RATE: Final[float] = float(os.getenv("ONTOLOGY_DIFFUSION_RATE", "10.0"
 EVAPORATION_RATE: Final[float] = float(os.getenv("ONTOLOGY_EVAPORATION_RATE", "1.0"))
 """Multiplicative factor that scales the moisture evaporation rate."""
 
+MOISTURE_DECAY_SIGMA: Final[float] = float(os.getenv("ONTOLOGY_MOISTURE_DECAY_SIGMA", "64.0"))
+""""""
+
+BASE_MOISTURE_POTENTIAL: Final[float] = float(os.getenv("ONTOLOGY_BASE_MOISTURE_POTENTIAL", "1.0"))
+""""""
 # ---------------------------------------------------
 # -------------------------------- DIRECTORY SETTINGS
 # ---------------------------------------------------

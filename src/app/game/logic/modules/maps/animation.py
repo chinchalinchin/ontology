@@ -1,5 +1,11 @@
 """
-# Ontology: app.game.maps.animation
+@domain.logic
+@app.module
+@workflow.intentions
+
+# Ontology: Source - app.game.maps.animation
+
+Animation Maps for mapping SpriteState to Equipment Frames.
 """
 # Application Libraries
 import app.static.settings as settings

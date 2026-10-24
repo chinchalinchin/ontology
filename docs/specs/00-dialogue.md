@@ -1,4 +1,4 @@
-#### Ontology Specification: Dialogue Loop
+#### Ontology Spec: Dialogue Loop
 
 This specification governs the exchange of dialogue between Sprites, and between Sprites and the Player.
 

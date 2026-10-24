@@ -1,5 +1,5 @@
 """
-# Ontology: app.models.config.menus
+# Ontology: Source - app.models.config.menus
 
 Models for typing the configuration attributes of Menus.
 """

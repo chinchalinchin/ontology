@@ -68,9 +68,10 @@ tools:
     source:
     source:
       filter:
-        default: <AND | OR | NOT>
+        default: <AND | OR>
         queries:
-            - strategy: <AND | OR | NOT>
+            - title: <title>
+              strategy: <AND | OR>
               scan: 
                 app: [ <app-tag> ]
                 asset: [ <asset-tag> ]

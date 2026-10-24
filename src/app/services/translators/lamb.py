@@ -3,7 +3,7 @@
 @workflow.plot
 @workflow.seasons
 
-# Ontology: app.services.translators.lamb
+# Ontology: Source - app.services.translators.lamb
 
 Lambda implementations for Transition Executors and Translators.
 

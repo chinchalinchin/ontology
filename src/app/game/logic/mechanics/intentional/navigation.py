@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.intentional.navigation
+# Ontology: Source - app.game.logic.mechanics.intentional.navigation
 
 Package for managing tactical pathfinding trajectories and steering waypoints.
 """

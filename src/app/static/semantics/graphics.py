@@ -2,7 +2,7 @@
 @app.semantics
 @workflow.rendering
 
-# Ontology: app.config.enums.graphics
+# Ontology: Source - app.config.enums.graphics
 
 Enumeration of Graphics semantics.
 """

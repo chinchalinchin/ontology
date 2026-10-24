@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.controllers.pause
+# Ontology: Source - app.game.menus.controllers.pause
 
 Menu controller handling pause state actions: saving, loading, options, and exiting.
 """

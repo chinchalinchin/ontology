@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.handlers.state
+# Ontology: Source - app.game.menus.handlers.state
 
 State event handling implementation.
 """

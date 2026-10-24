@@ -1,7 +1,7 @@
 """
 @workflow.compositions
 
-# Ontology: app.services.generators.game.decomposer
+# Ontology: Source - app.services.generators.game.decomposer
 
 Package for decomposing Compositions into their constituent Assets.
 """

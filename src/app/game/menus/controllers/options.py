@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.controllers.options
+# Ontology: Source - app.game.menus.controllers.options
 
 Menu controller stub for the Options menu placeholder.
 """

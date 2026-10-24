@@ -1,9 +1,10 @@
 """
-@workflow.compositions
+@domain.concrete
 @asset.hitbox
 @category.crafts
+@workflow.compositions
 
-# Ontology: app.assets.hitboxes.crafts
+# Ontology: Source - app.assets.hitboxes.crafts
 
 Craft HitboxSchema implementations.
 """

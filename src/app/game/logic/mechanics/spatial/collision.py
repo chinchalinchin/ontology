@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.spatial.collision
+# Ontology: Source - app.game.logic.mechanics.spatial.collision
 
 Package for CollisionMechanics
 """

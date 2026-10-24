@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.core.telemetry
+# Ontology: Source - app.game.logic.mechanics.core.telemetry
 """
 from __future__ import annotations
 

@@ -1,8 +1,9 @@
 """
+@domain.concrete
 @app.core
 @asset.frame
 
-# Ontology: app.assets.frames.core
+# Ontology: Source - app.assets.frames.core
 
 Core Asset Frame implementations. 
 

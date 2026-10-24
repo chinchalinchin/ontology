@@ -1,8 +1,8 @@
 """
 @main.hydration
-@workflow.initialiation
+@workflow.initialization
 
-# Ontology: app.services.orchestration.migrator
+# Ontology: Source - app.services.orchestration.migrator
 
 State Hydration module.
 """

@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.bindings.icon
+# Ontology: Source - app.game.menus.bindings.icon
 
 Icon Widget Binding implementation.
 """

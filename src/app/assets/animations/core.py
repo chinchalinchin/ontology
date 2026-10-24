@@ -1,8 +1,9 @@
 """
+@domain.concrete
 @app.core
 @asset.animation
 
-# Ontology: app.asset.animations.core
+# Ontology: Source - app.asset.animations.core
 
 Core Animation implementations.
 """

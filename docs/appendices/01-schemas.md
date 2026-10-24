@@ -1,4 +1,4 @@
-# Ontology: Appendix I - Schemas
+# Ontology Docs: Appendix I - Schemas
 
 ## Hitboxes Schemas
 

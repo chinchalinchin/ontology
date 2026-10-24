@@ -1,10 +1,11 @@
 """
-@app.core
+@domain.abstract
+@app.component
 @app.base
 
-# Ontology: app.assets.base
+# Ontology: Source - app.assets.base
 
-Package for foundational Asset classes and interfaces.
+Base Asset Interfaces.
 """
 # Standard Libraries
 from abc import (

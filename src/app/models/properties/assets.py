@@ -1,7 +1,7 @@
 """
 @asset.property
 
-# Ontology: app.models.properties.assets
+# Ontology: Source - app.models.properties.assets
 
 Asset Property Models.
 """

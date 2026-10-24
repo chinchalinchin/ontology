@@ -1,5 +1,5 @@
 """
-# Ontology: app.models.groups
+# Ontology: Source - app.models.groups
 
 Dataclasses for grouping asset properties for injection into generators and registries.
 """

@@ -1,9 +1,10 @@
 """
+@domain.concrete
 @asset.animation
 @workflow.intentions
 @workflow.combat
 
-# Ontology: app.asset.animations.sheets
+# Ontology: Source - app.asset.animations.sheets
 
 Sheet Animation implementations.
 """

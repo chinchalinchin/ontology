@@ -1,7 +1,11 @@
 """
-# Ontology: app.game.logic.mechanics.base
+@app.core
+@app.component
+@app.mechanics
 
-Package for defining the Mechanic interface.
+# Ontology: Source - app.game.logic.mechanics.base
+
+Mechanic interface
 """
 from __future__ import annotations
 
@@ -16,7 +20,7 @@ import collections
 import logging
 
 # Application Libraries
-from app.models.state import  DevicePayload
+from app.models.state import DevicePayload
 
 if TYPE_CHECKING:
     from app.game.board import Board

@@ -1,8 +1,9 @@
 """
+@domain.concrete
 @app.core
 @asset.hitbox
 
-# Ontology: app.assets.hitboxes.core
+# Ontology: Source - app.assets.hitboxes.core
 
 Core Asset HitboxSchema implementations.
 """

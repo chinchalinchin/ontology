@@ -1,4 +1,4 @@
-# Ontology: Architecture
+# Ontology Docs: Architecture
 
 This section contains an in-depth presentation of the [Application's](./00-overview.md#application) architecture.
 

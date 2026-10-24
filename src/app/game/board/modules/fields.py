@@ -1,19 +1,26 @@
 """
-# Ontology: app.game.board.fields
+@domain.logic
+@app.modules
+@physics.fields
+@workflow.seasons
 
-Continuous environmental potential field models obeying linear superposition.
+# Ontology: Source - app.game.board.modules.fields
+
+Superpositions Fields on the Board.
+
+## TODO
+
+1. Anything that uses `math` should be using Cython libraries.
 """
 # Standard Libraries
 import math
-from typing import (
-    List,
-    Tuple
-)
-from dataclasses import dataclass, field
+from typing import List
+from dataclasses import dataclass
 
 # Application Libraries
 import app.static.settings as settings
 
+# -------------------------------------------
 
 @dataclass(slots=True)
 class StreamSegment:
@@ -31,6 +38,7 @@ class PoolSource:
     radius: float
     flow: int
 
+# -------------------------------------------
 
 class MoistureField:
     """
@@ -45,8 +53,8 @@ class MoistureField:
 
     def __init__(
         self,
-        sigma: float = getattr(settings, "MOISTURE_DECAY_SIGMA", 64.0),
-        phi_0: float = getattr(settings, "BASE_MOISTURE_POTENTIAL", 1.0)
+        sigma: float = settings.MOISTURE_DECAY_SIGMA,
+        phi_0: float = settings.BASE_MOISTURE_POTENTIAL
     ):
         self._streams = []
         self._pools = []

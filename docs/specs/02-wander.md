@@ -1,4 +1,4 @@
-#### Ontology Specification: Wander Loop
+#### Ontology Spec: Wander Loop
 
 This specification governs autonomous exploratory navigation and target reacquisition.
 

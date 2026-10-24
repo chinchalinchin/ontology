@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.spatial.interaction
+# Ontology: Source - app.game.logic.mechanics.spatial.interaction
 
 Package for InteractionMechanics
 """

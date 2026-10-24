@@ -1,4 +1,4 @@
-# Ontology: Plots
+# Ontology Docs: Plots
 
 Due to the nature of the Ontology game engine, a Plot is not scripted, in the sense that Sprite Actions are hardcoded and pre-determined down to the pixel. Conditions are reached to change the World state, which causes the [Board's](./00-overview.md#board) `plot` attribute to update. This in turn affects what dialogue keys can be reached by the gameplay loop. 
 

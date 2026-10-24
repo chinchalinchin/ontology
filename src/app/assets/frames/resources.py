@@ -1,9 +1,10 @@
 """
+@domain.concrete
 @asset.frame
 @category.resources
 @workflow.seasons
 
-# Ontology: app.assets.frames.resources
+# Ontology: Source - app.assets.frames.resources
 
 Resource Frame implementations. 
 """

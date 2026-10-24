@@ -1,7 +1,10 @@
 """
-# Ontology: app.game.board.caches
+@domain.systems
+@app.module
 
-Spatial acceleration structures and multi-tier entity caching container for Board.
+# Ontology: Source - app.game.board.modules.caches
+
+Acceleration structures and caching container for the Board.
 """
 # Standard Libraries
 import logging
@@ -22,7 +25,7 @@ from app.static.semantics import (
     AssetInstances,
     Directions
 )
-from app.game.board.predicates import is_weight
+from ontology.src.app.game.board.modules.predicates import is_weight
 
 # Cython Libraries
 from libs.core.models import Position

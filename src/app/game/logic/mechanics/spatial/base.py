@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.spatial.base
+# Ontology: Source - app.game.logic.mechanics.spatial.base
 
 Package for SpatialMechanic parent class.
 """

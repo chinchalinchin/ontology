@@ -1,8 +1,9 @@
 """
+@domain.concrete
 @asset.frame
 @category.objects
 
-# Ontology: app.assets.frames.objects
+# Ontology: Source - app.assets.frames.objects
 
 Object Frame implementations.
 """

@@ -1,5 +1,5 @@
 """
-# Ontology: app.services.generators.game.actuator
+# Ontology: Source - app.services.generators.game.actuator
 
 Package for constructing Fluid Effect flows and radial pools.
 """
@@ -22,7 +22,7 @@ from app.static.semantics import (
     AssetInstances,
     Directions
 )
-from app.game.board.fields import MoistureField
+from game.board.modules.fields import MoistureField
 from app.models.state import (
     Pool, 
     Branch

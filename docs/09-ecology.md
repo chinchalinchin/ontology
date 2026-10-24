@@ -1,5 +1,5 @@
-# Ontology: Ecology
-
+# Ontology Docs: Ecology
+ 
 The Ecology of the [Board](./00-overview.md#board) is a collection of interacting systems. [Assets](./01-assets.md) form the "particles" of this system, while [Mechanics](./05-mechanics.md) play the role of "natural laws". 
 
 **References**

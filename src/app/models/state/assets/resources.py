@@ -3,7 +3,7 @@
 @category.resources
 @workflow.seasons
 
-# Ontology: app.models.state.resources
+# Ontology: Source - app.models.state.resources
 
 Resource State Models.
 """

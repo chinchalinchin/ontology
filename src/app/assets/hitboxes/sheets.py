@@ -1,8 +1,9 @@
 """
+@domain.concrete
 @asset.hitbox
 @category.sheets
 
-# Ontology: app.assets.hitboxes.sheets
+# Ontology: Source - app.assets.hitboxes.sheets
 
 """
 # Standard Libraries

@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.spatial.social
+# Ontology: Source - app.game.logic.mechanics.spatial.social
 """
 from __future__ import annotations
 # Standard Libraries

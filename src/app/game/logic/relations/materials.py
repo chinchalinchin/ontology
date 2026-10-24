@@ -1,7 +1,7 @@
 """
 @workflow.compositions
 
-# Ontology: app.game.logic.relations.materials
+# Ontology: Source - app.game.logic.relations.materials
 
 Relational index compiling Material genera, Blueprint schemas, multiplication
 strategies, obstacle predicates, and intra-tier Substrates.

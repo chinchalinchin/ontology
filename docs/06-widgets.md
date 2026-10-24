@@ -1,4 +1,4 @@
-# Ontology: Widgets
+# Ontology Docs: Widgets
 
 Widgets are a type of [Asset](./01-assets.md); however, they reside outside of the core loop and have a special place in the application flow.
 

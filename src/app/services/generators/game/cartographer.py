@@ -1,5 +1,5 @@
 """
-# Ontology: app.services.generators.game.cartographer
+# Ontology: Source - app.services.generators.game.cartographer
 
 Module for Cartographer generator class.
 """
@@ -17,7 +17,7 @@ from typing import (
 
 # Application Libraries
 from app.assets.base import Asset
-from app.game.board import predicates
+from app.game.board.modules import predicates
 from app.static.semantics import (
     AssetCategories,
     AssetInstances,

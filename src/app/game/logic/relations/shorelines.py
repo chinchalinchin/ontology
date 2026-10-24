@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.relations.shorelines
+# Ontology: Source - app.game.logic.relations.shorelines
 
 Relational index mapping terrain tiles, fluids, and seasons to shoreline asset IDs.
 """

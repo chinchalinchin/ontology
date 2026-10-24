@@ -1,4 +1,4 @@
-# Ontology: Overview
+# Ontology Docs: Overview
 
 !!! note "Capitalization"
     Terminology is capitalized to distinguish it from its colloquial connotations.

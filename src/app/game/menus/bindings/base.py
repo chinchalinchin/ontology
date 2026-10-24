@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.bindings
+# Ontology: Source - app.game.menus.bindings
 
 Package for binding Widget states to game state.
 """

@@ -1,9 +1,10 @@
 """
+@domain.concrete
 @asset.frame
 @category.widgets
 @workflow.menus
 
-# Ontology: app.assets.frames
+# Ontology: Source - app.assets.frames
 
 Package for Widget Frame implementations.
 """

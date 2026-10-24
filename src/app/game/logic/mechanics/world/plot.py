@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.world.plot
+# Ontology: Source - app.game.logic.mechanics.world.plot
 """
 from __future__ import annotations
 

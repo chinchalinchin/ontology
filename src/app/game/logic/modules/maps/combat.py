@@ -1,5 +1,11 @@
 """
-# Ontology: app.game.maps.combat
+@domain.logic
+@app.module
+@workflow.combat
+
+# Ontology: Source - app.game.maps.combat
+
+CombatMaps for mapping SpriteState Frame keys to Equipment Attackboxes.
 """
 # Standard Libraries
 from typing import List

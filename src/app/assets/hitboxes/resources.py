@@ -1,8 +1,9 @@
 """
+@domain.concrete
 @asset.hitbox
 @category.resources
 
-# Ontology: app.assets.hitboxes.resources
+# Ontology: Source - app.assets.hitboxes.resources
 
 Resource HitboxSchema implementations.
 """

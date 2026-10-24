@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.core.remove
+# Ontology: Source - app.game.logic.mechanics.core.remove
 
 Package for RemoveMechanics
 """

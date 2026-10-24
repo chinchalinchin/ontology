@@ -1,9 +1,10 @@
 """
+@domain.concrete
 @asset.frame
 @category.crafts
 @workflow.compositions
 
-# Ontology: app.assets.frames.crafts
+# Ontology: Source - app.assets.frames.crafts
 
 Craft Frame implementations.
 """

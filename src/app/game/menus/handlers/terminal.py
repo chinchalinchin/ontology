@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.handlers.terminal
+# Ontology: Source - app.game.menus.handlers.terminal
 
 Terminal event handling implementations.
 """

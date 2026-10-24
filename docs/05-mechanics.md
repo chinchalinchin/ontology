@@ -1,4 +1,4 @@
-# Ontology: Mechanics
+# Ontology Docs: Mechanics
 
 A Mechanic is an implementation of an abstract interface the [Engine](./00-overview.md#component-engine) calls during its core loop. All Mechanics must implement the following method signature:
  

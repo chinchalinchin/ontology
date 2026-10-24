@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.handlers
+# Ontology: Source - app.game.menus.handlers
 
 Strategy implementations for Event resolution.
 """

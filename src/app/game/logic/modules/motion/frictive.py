@@ -1,5 +1,9 @@
 """
-# Ontology: app.game.logic.modules.motion.frictive
+@domain.logic
+@app.module
+@physics.motion
+
+# Ontology: Source - app.game.logic.modules.motion.frictive
 """
 from __future__ import annotations
 

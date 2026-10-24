@@ -3,7 +3,7 @@
 @app.config
 @app.input
 
-# Ontology: app.models.config.mappings
+# Ontology: Source - app.models.config.mappings
 
 Device Mapping Configuration Models.
 """

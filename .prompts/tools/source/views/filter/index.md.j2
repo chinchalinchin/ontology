@@ -4,6 +4,8 @@ The Filter View *queries* the codebase based on the **Active Tags** and the **Fi
 
 {% for query in tools.parameters.source.filter.queries %}
 {# -------------------------------------------- #}
+{% set query_idx = loop.index %}
+{% set title = query.title %}
 {% set strategy = query.strategy or tools.parameters.source.filter.default %}
 {% set tags = [] %}
 {% for prefix, items in [
@@ -14,14 +16,14 @@ The Filter View *queries* the codebase based on the **Active Tags** and the **Fi
     ('workflow.', query.scan.workflows)
 ] %}
 {% for item in items %}
-  {% set _ = tags.append(prefix ~ item) %}
+{% set _ = tags.append(prefix ~ item) %}
 {% endfor %}
 {% endfor %}
 {# -------------------------------------------- #}
-#### Query: 
+#### Query #{{ query_idx }}: {{ title }}
 
-* **Filter Strategy**: {{ strategy }}
-* **Active Tags**: {{ tags | join(", ") }}
+* **Filter Strategy**: `{{ strategy }}`
+- **Active Tags**: `{{ tags | join('`, `') }}`
 
 {% for pkg in annotations(properties.paths.root ~ 'src', tags, strategy) %}
 {{ '#' * (pkg.depth + 2) }} {{ pkg.package }}

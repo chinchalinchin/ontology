@@ -3,7 +3,7 @@
 @workflow.rendering
 @workflow.typography
 
-# Ontology: app.models.properties.fonts
+# Ontology: Source - app.models.properties.fonts
 
 Font Property Models.
 """

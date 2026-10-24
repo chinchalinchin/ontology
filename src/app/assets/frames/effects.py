@@ -1,9 +1,10 @@
 """
+@domain.concrete
 @asset.frame
 @category.effects
 @workflow.fluids
 
-# Ontology: app.assets.frames.effects
+# Ontology: Source - app.assets.frames.effects
 
 Effect Frame implementations. 
 """

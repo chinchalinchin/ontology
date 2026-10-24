@@ -1,7 +1,9 @@
 """
+@app.core
+@app.component
 @workflow.main
 
-# Ontology: app.game.engine
+# Ontology: Source - app.game.engine
 
 Package for core game loop.
 """

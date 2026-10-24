@@ -1,4 +1,4 @@
-**EXPLICIT WARNING**
+**EXPLICIT WARNING(S)**
 
-`defensive_programming == garbage_programming`: If you wrap every attribute check in unnecessary conditionals to prevent errors, your changes will be rejected. Applications are supposed to throw errors when their input is incorrect. When you prevent the application from throwing errors, not only are you adding empty, garbage code to the codebase, you are hiding bugs that would otherwise bubble up in testing. The point of development is to solidify data models, streamline logic and determine what needs refactored, *not* paper over every executable hole.
+* `defensive_programming == garbage_programming`: If you wrap every attribute check in unnecessary conditionals to prevent errors, your changes will be rejected. Applications are supposed to throw errors when their input is incorrect. When you prevent the application from throwing errors, not only are you adding empty, garbage code to the codebase, you are hiding bugs that would otherwise bubble up in testing. The point of development is to solidify data models, streamline logic and determine what needs refactored, *not* paper over every executable hole.
 

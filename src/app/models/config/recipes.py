@@ -1,5 +1,5 @@
 """
-# Ontology: app.models.config.recipes
+# Ontology: Source - app.models.config.recipes
 
 Models for typing the configuration attributes of Asset Recipes. 
 """

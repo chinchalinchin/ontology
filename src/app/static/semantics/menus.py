@@ -2,7 +2,7 @@
 @app.semantics
 @workflow.menus
 
-# Ontology: app.config.enums.menus
+# Ontology: Source - app.config.enums.menus
 
 Enumeration of Menu semantics.
 """

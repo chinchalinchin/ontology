@@ -1,4 +1,4 @@
-# Ontology: Appendix II - Diagrams
+# Ontology Docs: Appendix II - Diagrams
 
 ## Dependency Trees
 

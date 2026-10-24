@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.intentional.cognition
+# Ontology: Source - app.game.logic.mechanics.intentional.cognition
 
 Package for handling the Sprite Goal frequency.
 """

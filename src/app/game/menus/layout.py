@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.layout
+# Ontology: Source - app.game.menus.layout
 
 Package for Menu spatial layouts and traversal graph generation.
 """

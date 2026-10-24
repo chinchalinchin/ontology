@@ -1,9 +1,11 @@
 """
-@workflow.main
+@domain.systems
+@app.core
+@app.component
 
-# Ontology: app.game.board.core
+# Ontology: Source - app.game.board.core
 
-Module for the game database class, Board.
+The Board Database.
 """
 # Standard Libraries
 import logging
@@ -26,7 +28,7 @@ from app.static.semantics import (
     Shortcuts
 )
 from app.static.loader import Loader
-from app.game.board.fields import MoistureField
+from app.game.board.modules.fields import MoistureField
 from app.game.devices import Device
 from app.game.menus.core import Menu
 from app.services.generators.game.cradle import Cradle
@@ -36,8 +38,8 @@ from app.models.state.core import (
 )
 from app.models.config import ConfigurationSchema
 from app.models.groups import EquipmentGroup
-from app.game.board.cache import Cache
-import app.game.board.predicates as predicates
+from game.board.modules.cache import Cache
+import game.board.modules.predicates as predicates
 
 # Cython Libraries
 from libs.core.models import (

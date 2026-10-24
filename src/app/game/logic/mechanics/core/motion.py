@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.core.motion
+# Ontology: Source - app.game.logic.mechanics.core.motion
 
 Package for MotionMechanics
 """

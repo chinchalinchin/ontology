@@ -1,5 +1,11 @@
 """
-# Ontology: app.game.logic.modules.motion.fields
+@domain.logic
+@app.module
+@physics.fields
+@workflow.fluids
+@workflow.gravity
+
+# Ontology: Source - app.game.logic.modules.motion.fields
 """
 from __future__ import annotations
 

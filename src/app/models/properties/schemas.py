@@ -3,7 +3,7 @@
 @app.schema
 @asset.property
 
-# Ontology: app.models.properties.schemas
+# Ontology: Source - app.models.properties.schemas
 
 Module for typing property schemas.
 """

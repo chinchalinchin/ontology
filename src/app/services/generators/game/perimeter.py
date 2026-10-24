@@ -1,5 +1,5 @@
 """
-# Ontology: app.services.generators.game.perimeter
+# Ontology: Source - app.services.generators.game.perimeter
 
 Package for dynamic environment boundary generation partitioned by elevation tier.
 """

@@ -1,8 +1,9 @@
 """
+@domain.concrete
 @asset.frame
 @category.geography
 
-# Ontology: app.assets.frames.geography
+# Ontology: Source - app.assets.frames.geography
 
 Geography Frame implementations. 
 """

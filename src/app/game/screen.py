@@ -1,8 +1,9 @@
 """
 @app.core
+@app.component
 @workflow.rendering
 
-# Ontology: app.game.screen
+# Ontology: Source - app.game.screen
 
 Implementation of the Screen, an abstraction over the Cython SDL rendering interface and the Registry.
 """

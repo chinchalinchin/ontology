@@ -1,8 +1,9 @@
 """
+@domain.concrete
 @asset.animation
 @category.effects
 
-# Ontology: app.asset.animations.effects
+# Ontology: Source - app.asset.animations.effects
 
 Effect Animation implementations.
 """

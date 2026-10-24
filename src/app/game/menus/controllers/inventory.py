@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.controllers.inventory
+# Ontology: Source - app.game.menus.controllers.inventory
 
 Package for managing the Player Inventory modal menu.
 """

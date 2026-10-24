@@ -3,7 +3,7 @@
 @app.config
 @app.mechanics
 
-# Ontology: app.models.config.mechanics
+# Ontology: Source - app.models.config.mechanics
 
 Models for typing the configuration attributes of Mechanics.
 """

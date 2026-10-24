@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.spatial.projectile
+# Ontology: Source - app.game.logic.mechanics.spatial.projectile
 
 Package for ProjectileMechanics
 """

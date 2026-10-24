@@ -2,7 +2,7 @@
 @app.semantics
 @app.input
 
-# Ontology: app.config.enums.devices
+# Ontology: Source - app.config.enums.devices
 
 Enumeration of Device semanatics.
 """

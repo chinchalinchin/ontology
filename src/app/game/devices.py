@@ -1,6 +1,7 @@
 """
-# Ontology: app.game.devices
+@app.input
 
+# Ontology: Source - app.game.devices
 """
 # Standard Libraries
 import logging 

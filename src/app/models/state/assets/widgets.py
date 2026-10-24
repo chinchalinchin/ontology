@@ -3,7 +3,7 @@
 @category.widgets
 @workflow.menus
 
-# Ontology: app.models.state.widget
+# Ontology: Source - app.models.state.widget
 
 Widget State Models.
 """

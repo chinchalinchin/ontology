@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.bindings.collection
+# Ontology: Source - app.game.menus.bindings.collection
 
 Package for binding collection data to Gizmo slots.
 """

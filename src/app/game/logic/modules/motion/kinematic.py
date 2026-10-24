@@ -1,5 +1,9 @@
 """
-# Ontology: app.game.logic.modules.motion.kinematic
+@domain.logic
+@app.module
+@physics.motion
+
+# Ontology: Source - app.game.logic.modules.motion.kinematic
 """
 # Standard Libraries
 from typing import List

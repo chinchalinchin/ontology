@@ -1,4 +1,4 @@
-# Ontology: Sprites
+# Ontology Docs: Sprites
 
 Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Assets. Sprites, however, unique in their deployment, are the most important Asset to the game and thus have many unique attributes and methods; the gameplay loop can be understood mainly as a medium for the Sprite states to interact and react to one another, the Player included. 
 

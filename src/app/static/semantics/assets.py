@@ -2,7 +2,7 @@
 @app.semantics
 @app.core
 
-# Ontology: app.config.enums.asset
+# Ontology: Source - app.config.enums.asset
 
 Enumeration of Asset semantics.
 """

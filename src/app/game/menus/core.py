@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.core
+# Ontology: Source - app.game.menus.core
 """
 from __future__ import annotations
 

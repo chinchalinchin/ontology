@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.world.seasons
+# Ontology: Source - app.game.logic.mechanics.world.seasons
 
 Mechanic implementation governing macro-temporal progression,
 continuous soil moisture flux integration, and throttled biological stage transitions.

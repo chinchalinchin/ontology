@@ -1,8 +1,9 @@
 """
+@domain.concrete
 @asset.hitbox
 @category.objects
 
-# Ontology: app.assets.hitboxes.objects
+# Ontology: Source - app.assets.hitboxes.objects
 
 Package for Object HitboxSchema implementations.
 """

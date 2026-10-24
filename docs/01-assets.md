@@ -1,4 +1,4 @@
-# Ontology: Assets
+# Ontology Docs: Assets
 
 This document serves to specify the Asset architecture and provide key definition for game terminology.
 

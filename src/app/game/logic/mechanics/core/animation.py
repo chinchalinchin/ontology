@@ -1,7 +1,10 @@
 """
-# Ontology: app.game.logic.mechanics.core.animation
+@app.core
+@app.mechanics
 
-Package for AnimationMechanics
+# Ontology: Source - app.game.logic.mechanics.core.animation
+
+AnimationMechanics implementation.
 """
 from __future__ import annotations
 

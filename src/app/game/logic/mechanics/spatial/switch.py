@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.spatial.switch
+# Ontology: Source - app.game.logic.mechanics.spatial.switch
 
 Package for SwitchMechanics
 """

@@ -1,5 +1,5 @@
 """
-# Ontology: app.config.enums.sprites
+# Ontology: Source - app.config.enums.sprites
 
 Sprite key enumerations.
 """

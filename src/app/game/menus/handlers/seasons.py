@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.handlers.update
+# Ontology: Source - app.game.menus.handlers.update
 
 Season event handling implementation.
 """

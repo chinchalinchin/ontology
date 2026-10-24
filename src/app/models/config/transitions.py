@@ -1,5 +1,5 @@
 """
-# Ontology: app.models.config.transitions
+# Ontology: Source - app.models.config.transitions
 
 Models for typing the transition configuration attributes of game components.
 """

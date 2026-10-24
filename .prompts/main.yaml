@@ -139,28 +139,51 @@ tools:
     # --------------------------------------------
     source:
       filter:
-        default: OR # AND | OR | NOT
+        default: OR # AND | OR
         queries:
-            - strategy: OR # AND | OR | NOT
+            # ------------------------------------
+            # - title: TITLE
+            #   strategy: AND | OR
+            #   scan:
+            #     app: [ base,core,component,
+            #             config,schema,semantics,
+            #             input,mechanics ]
+            #     asset: [ property,state,frame,
+            #             animation,hitbox ]
+            #     domain: [ abstract, concrete, model,
+            #              logic]
+            #     category: [ crafts,cursors,effects,
+            #             geography,objects,resources,
+            #             sheets,tiles,widgets ]
+            #     main: [ cli,graphics,hydration ]
+            #     workflows: [ collisions,combat,compositions,
+            #             ecology,fluids,intentions,
+            #             menus,motion,orchestration,
+            #             pathfinding,rendering,seasons,
+            #             telemetry ]
+            # ------------------------------------
+            - title: Abstracts
+              strategy: AND
               scan:
-                # app: base, core, config,
-                #       schema, semantics, input,
-                #       mechanics
-                app: []
-                # asset: base, properties, state, 
-                #         frame, animation, hitbox
-                asset: []
-                # hierarchy: crafts, cursors, effects, 
-                #             geography,  objects, resources,
-                #             sheets, tiles, widgets
+                app: [ base, component ]
+                domain: [ abstract ]
+            # ------------------------------------
+            - title: Implementations
+              strategy: AND
+              scan:
+                domain: [ concrete ]
                 category: [ crafts ]
-                # main: cli, graphics, hydration
-                main: []
-                # workflows: collisions, combat, compositions,
-                #             ecology, fluids, intentions,
-                #             menus, motion, orchestration,
-                #             pathfinding, rendering, seasons,
-                #             telemetry
+            # ------------------------------------
+            - title: Models
+              strategy: AND
+              scan:
+                category: [ crafts ]
+                domain: [ model ]
+            # ------------------------------------
+            - title: Logic
+              strategy: OR # AND | OR
+              scan:
+                main: [ hydration ]
                 workflows: [ compositions ]
       data: 
         properties:
