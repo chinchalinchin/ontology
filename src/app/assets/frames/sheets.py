@@ -1,4 +1,9 @@
 """
+@asset.frame
+@category.sheets
+@workflow.intentions
+@workflow.combat
+
 # Ontology: app.assets.frames.sheets
 
 Package for Sheet Frame implementations.

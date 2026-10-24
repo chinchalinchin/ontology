@@ -1,6 +1,10 @@
 """
+@asset.hitbox
+@category.resources
+
 # Ontology: app.assets.hitboxes.resources
 
+Resource HitboxSchema implementations.
 """
 # Standard Libraries
 from typing import (
@@ -20,7 +24,11 @@ from app.models.state import ResourceState
 # Cython Libraries
 from libs.core.models import Hitbox
 
+# ---------------------------------------------------------
+
 logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------
 
 class StageHitbox(HitboxSchema):
     """

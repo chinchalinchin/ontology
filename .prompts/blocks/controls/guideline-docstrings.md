@@ -14,23 +14,24 @@ Use the following template to create docstrings for Python modules,
 {% endraw %}
 ```
 
-**All** module docstrings must be marked with a `tag` on the very first line. They may optionally have more than one tag.
+**All** module docstrings must be marked with atleast one `@tag` on the very first line. They may optionally have more than one `@tag` on subsequent new lines after the first `@tag`.
 
-* Tags: 
+* Tags:
+    * Application Tags:
+        * `app.core`
+        * `app.base`
     * Script Tags: 
-        * `script.context`
-        * `script.synthesize`
+        * `scripts.context`
+        * `scripts.synthesize`
     * Source Tags:
         * Main Tags
             * `main.cli`
-            * `main.core`
             * `main.graphics`
         * Asset Tags:
-            * `asset.base` 
-            * `asset.properties`
+            * `asset.property`
             * `asset.state`
-            * `asset.frames`
-            * `asset.animations`
+            * `asset.frame`
+            * `asset.animation`
             * `asset.hitbox`
         * Hierarchy Tags:
             * `category.crafts`

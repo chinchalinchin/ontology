@@ -1,4 +1,8 @@
 """
+@asset.frame
+@category.widgets
+@workflow.menus
+
 # Ontology: app.assets.frames
 
 Package for Widget Frame implementations.
@@ -19,9 +23,11 @@ from app.config.enums import (
 from app.models.state import AssetState
 from app.models.properties import WidgetProperties
 
+# -------------------------------------------------------------
+
 logger = logging.getLogger(__name__)
 
-# -------------------------------------------------------------------------------------
+# -------------------------------------------------------------
 
 class TraversalFrame(Frame):
     """
@@ -64,7 +70,7 @@ class TraversalFrame(Frame):
             ]): (3*w, 0, w, l)
         }
 
-# -------------------------------------------------------------------------------------
+# -------------------------------------------------------------
 
 class MeterFrame(Frame):
     """

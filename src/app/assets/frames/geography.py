@@ -1,7 +1,10 @@
 """
-# Ontology: app.assets.frames
+@asset.frame
+@category.geography
 
-Package for Geography Frame implementations. 
+# Ontology: app.assets.frames.geography
+
+Geography Frame implementations. 
 """
 # Standard Libraries
 from typing import (

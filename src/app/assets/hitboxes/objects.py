@@ -1,4 +1,7 @@
 """
+@asset.hitbox
+@category.objects
+
 # Ontology: app.assets.hitboxes.objects
 
 Package for Object HitboxSchema implementations.
@@ -29,8 +32,12 @@ from libs.core.models import (
     Position
 )
 
+# ---------------------------------------------------------
+
 DEFAULT_IN_THRESHOLD_CLEARANCE = 12
 DEFAULT_OUT_SENSOR_THICKNESS = 16
+
+# ---------------------------------------------------------
 
 
 class SwitchHitbox(StaticHitbox):

@@ -1,9 +1,11 @@
 """
+@asset.frame
+@category.crafts
 @workflow.compositions
 
 # Ontology: app.assets.frames.crafts
 
-Package for Crafts Frame implementations.
+Craft Frame implementations.
 """
 # Standard Libraries
 from typing import (

@@ -1,7 +1,10 @@
 """
+@asset.frame
+@category.objects
+
 # Ontology: app.assets.frames.objects
 
-Package for Object Frame implementations.
+Object Frame implementations.
 """
 # Standard Libraries
 from typing import (

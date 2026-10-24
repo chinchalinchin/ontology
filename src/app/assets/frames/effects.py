@@ -1,10 +1,11 @@
 """
+@asset.frame
+@category.effects
 @workflow.fluids
 
 # Ontology: app.assets.frames.effects
 
-Package for Effect Frame implementations. 
-
+Effect Frame implementations. 
 """
 # Stamdard Libraries
 from typing import (

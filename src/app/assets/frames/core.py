@@ -1,16 +1,17 @@
 """
-@workflow.main
+@app.core
+@asset.frame
 
 # Ontology: app.assets.frames.core
 
-Package for core Asset Frame implementations. 
+Core Asset Frame implementations. 
 
 **Overview**
 
 Frames exist on the boundary of the Python-Cython interface.
 
--`index()`: This interface is a configuration-time method for generating the Asset Frame space from the Asset properties; this method is called inside of Cython from the Registry. Asset Properties are passed in as dicts.
-- `keys()` interface is a runtime method for accessing the Frame key that corresponds to an Asset Frame state. It is called inside of Python from the Screen. Asset States are passed in as Python objects.
+-`index(id, properties)`: This interface is a configuration-time method for generating the Asset Frame space from the Asset Properties; this method is called inside of Cython from the Registry. Asset Properties are passed in.
+- `keys(id, state)` interface is a runtime method for accessing the Frame key that corresponds to an Asset Frame state. It is called inside of Python from the Screen. Asset States are passed in.
 """
 # Stamdard Libraries
 from typing import (

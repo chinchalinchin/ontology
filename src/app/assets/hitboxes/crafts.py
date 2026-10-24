@@ -1,7 +1,11 @@
 """
 @workflow.compositions
+@asset.hitbox
+@category.crafts
 
 # Ontology: app.assets.hitboxes.crafts
+
+Craft HitboxSchema implementations.
 """
 # Standard Libraries
 from typing import (

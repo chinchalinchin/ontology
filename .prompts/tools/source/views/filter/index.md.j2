@@ -14,8 +14,8 @@
 
 The Filter View *filters* the codebase based on the **Active Tags** and the **Filter Strategy**.
 
-- **Filter Strategy**: {{ strategy }}
-- **Active Tags**: {{ tags | join(", ") }}
+* **Filter Strategy**: {{ strategy }}
+* **Active Tags**: {{ tags | join(", ") }}
 
 {% for pkg in annotations(properties.paths.root ~ 'src', tags, strategy) %}
 {{ '#' * (pkg.depth + 2) }} {{ pkg.package }}

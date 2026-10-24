@@ -1,4 +1,7 @@
 """
+@asset.hitbox
+@category.sheets
+
 # Ontology: app.assets.hitboxes.sheets
 
 """
@@ -18,6 +21,8 @@ from app.models.state import AssetState
 
 # Cython Libraries
 from libs.core.models import Hitbox
+
+# ---------------------------------------------------------
 
 class AttackHitbox(HitboxSchema):
     """

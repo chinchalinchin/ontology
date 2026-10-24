@@ -1,8 +1,11 @@
 """
+@asset.frame
+@category.resources
+@workflow.seasons
+
 # Ontology: app.assets.frames.resources
 
-Package for Resource Frame implementations. 
-
+Resource Frame implementations. 
 """
 # Stamdard Libraries
 from typing import (
