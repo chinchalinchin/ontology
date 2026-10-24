@@ -1,7 +1,12 @@
 """
+@domain.logic
+@app.mechanics
+@workflow.navigation
+@workflow.intentions
+
 # Ontology: Source - app.game.logic.mechanics.intentional.navigation
 
-Package for managing tactical pathfinding trajectories and steering waypoints.
+NavigationMechanics implementation. Manages Sprite Trajectories.
 """
 from __future__ import annotations
 
@@ -32,8 +37,11 @@ from app.models.state import DevicePayload
 import libs.core.math.geometry as geometry
 from libs.core.models import Position
 
+# -----------------------------------------------------
+
 logger = logging.getLogger(__name__)
 
+# -----------------------------------------------------
 
 class NavigationMechanics(Mechanic):
     """

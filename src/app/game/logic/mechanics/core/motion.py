@@ -1,7 +1,11 @@
 """
+@domain.logic
+@app.mechanics
+@physics.motion
+
 # Ontology: Source - app.game.logic.mechanics.core.motion
 
-Package for MotionMechanics
+MotionMechanics implementation.
 """
 from __future__ import annotations
 

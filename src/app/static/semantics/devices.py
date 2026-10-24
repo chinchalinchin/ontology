@@ -1,6 +1,7 @@
 """
+@domain.user
 @app.semantics
-@app.input
+@app.devices
 
 # Ontology: Source - app.config.enums.devices
 

@@ -1,11 +1,12 @@
 """
-@app.core
+@domain.abstract
+@app.base
 @app.component
 @app.mechanics
 
 # Ontology: Source - app.game.logic.mechanics.base
 
-Mechanic interface
+Abstract for Mechanic interface.
 """
 from __future__ import annotations
 

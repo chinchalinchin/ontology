@@ -1,7 +1,10 @@
 """
+@app.mechanics
+@workflow.intentions
+
 # Ontology: Source - app.game.logic.mechanics.intentional.cognition
 
-Package for handling the Sprite Goal frequency.
+CognitionMechanics implementation. Manage Sprite Goals.
 """
 from __future__ import annotations
 
@@ -34,9 +37,15 @@ from app.models.state import (
 import libs.core.math.geometry as geometry
 from libs.core.models import Position
 
+# -----------------------------------------------------
+
 logger = logging.getLogger(__name__)
 
+# -----------------------------------------------------
+
 WANDER = "wander"
+
+# -----------------------------------------------------
 
 class CognitionMechanics(Mechanic):
     """

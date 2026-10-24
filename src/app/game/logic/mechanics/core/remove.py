@@ -1,4 +1,7 @@
 """
+@domain.systems
+@app.mechanics
+
 # Ontology: Source - app.game.logic.mechanics.core.remove
 
 Package for RemoveMechanics

@@ -1,6 +1,9 @@
 """
+@domain.graphics
 @app.core
 @app.mechanics
+@asset.animation
+@workflow.rendering
 
 # Ontology: Source - app.game.logic.mechanics.core.animation
 
@@ -24,11 +27,11 @@ from app.models.state import DevicePayload
 if TYPE_CHECKING:
     from app.game.board import Board
 
-
-# Cython Libraries
+# -----------------------------------------------------
 
 logger = logging.getLogger(__name__)
 
+# -----------------------------------------------------
 
 class AnimationMechanics(Mechanic):
     """

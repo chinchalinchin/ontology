@@ -1,4 +1,7 @@
 """
+@domain.user
+@app.mechanics
+
 # Ontology: Source - app.game.logic.mechanics.intentional.player
 """
 # Standard Libraries

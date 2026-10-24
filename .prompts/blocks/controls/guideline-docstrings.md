@@ -20,9 +20,11 @@ Use the following template to create docstrings for Python modules,
     * Domain Tags:
         * `domain.abstract`
         * `domain.concrete`
+        * `domain.graphics`
         * `domain.logic`
         * `domain.model`
         * `domain.systems`
+        * `domain.user`
     * Predicate Tags:
         * Hierarchy Tags:
             * Asset Tags:
@@ -47,15 +49,14 @@ Use the following template to create docstrings for Python modules,
                 * `app.core` 
                 * `app.component`
                 * `app.config`
+                * `app.devices`
+                * `app.mechanics`
                 * `app.module`
                 * `app.schema`
                 * `app.semantics`
                 * `app.services`
-                * `app.input`
-                * `app.mechanics`
             * Main Tags
                 * `main.cli`
-                * `main.graphics`
                 * `main.hydration`
                 * `main.injection`
             * Physics Tags:
@@ -72,7 +73,7 @@ Use the following template to create docstrings for Python modules,
                 * `workflow.intentions`
                 * `workflow.menus`
                 * `workflow.initialization`
-                * `workflow.pathfinding`
+                * `workflow.navigation`
                 * `workflow.plot`
                 * `workflow.rendering`
                 * `workflow.seasons`

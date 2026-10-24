@@ -151,11 +151,11 @@ tools:
             #     asset: [ property,state,frame,
             #             animation,hitbox ]
             #     domain: [ abstract, concrete, model,
-            #              logic]
+            #              logic,graphics]
             #     category: [ crafts,cursors,effects,
             #             geography,objects,resources,
             #             sheets,tiles,widgets ]
-            #     main: [ cli,graphics,hydration ]
+            #     main: [ cli,hydration ]
             #     workflows: [ collisions,combat,compositions,
             #             ecology,fluids,intentions,
             #             menus,motion,orchestration,
@@ -165,7 +165,7 @@ tools:
             - title: Abstracts
               strategy: AND
               scan:
-                app: [ base, component ]
+                app: [ component ]
                 domain: [ abstract ]
             # ------------------------------------
             - title: Implementations
@@ -174,14 +174,14 @@ tools:
                 domain: [ concrete ]
                 category: [ crafts ]
             # ------------------------------------
-            - title: Models
+            - title: Structures
               strategy: AND
               scan:
                 category: [ crafts ]
                 domain: [ model ]
             # ------------------------------------
             - title: Logic
-              strategy: OR # AND | OR
+              strategy: OR 
               scan:
                 main: [ hydration ]
                 workflows: [ compositions ]

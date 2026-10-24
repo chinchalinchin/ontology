@@ -1,5 +1,6 @@
 """
-@app.input
+@domain.user
+@app.devices
 
 # Ontology: Source - app.game.devices
 """

@@ -1,7 +1,8 @@
 
 """
+@domain.user
 @app.config
-@app.input
+@app.devices
 
 # Ontology: Source - app.models.config.mappings
 
