@@ -1,4 +1,8 @@
-"""Data models and serialization DTOs for the audio synthesis pipeline."""
+"""
+@script.synthesize
+
+Data models and serialization DTOs for the audio synthesis pipeline.
+"""
 
 from typing import Dict, List, Optional, Tuple, Union
 from pydantic import BaseModel, Field, model_validator

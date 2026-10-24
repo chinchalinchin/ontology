@@ -1,4 +1,8 @@
-"""CLI entry point for procedural synthesis and music21 score ingestion."""
+"""
+@script.synthesize
+
+CLI entry point for procedural synthesis and music21 score ingestion.
+"""
 
 import argparse
 import logging

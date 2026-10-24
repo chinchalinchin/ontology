@@ -1,4 +1,6 @@
 """
+@script.context
+
 # Jinja2 Template Renderer
 
 This module automates the generation of context-rich Markdown files. It extends the standard Jinja2 environment with custom hooks for filesystem access and shell command execution, allowing templates to dynamically include the latest project state.
@@ -219,9 +221,11 @@ def annotations(directory: str, tags: Union[str, List[str]]) -> List[Dict[str, A
         package_groups[package].append({
             "name": file_path.name,
             "module": module,
-            "import_path": import_path,
-            "file_path": rel_file.as_posix(),       # e.g., 'app/models/config/compositions.py'
-            "full_path": str(file_path.resolve()),  # Absolute path for file() loader
+            "import": import_path,
+            "paths": {
+                "relative": rel_file.as_posix(),
+                "absolute": str(file_path.resolve()),
+            }
         })
 
     output = []

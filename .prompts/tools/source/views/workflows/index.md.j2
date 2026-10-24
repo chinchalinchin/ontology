@@ -5,10 +5,10 @@
 {{ '#' * (pkg.depth + 2) }} {{ pkg.package }}
 
 {% for mod in pkg.modules %}
-**{{ mod.file_path }}**
+**{{ mod.paths.relative }}**
 
-```{{ typehint(mod.file_path) }}
-{{ file(mod.full_path) }}
+```{{ typehint(mod.paths.relative) }}
+{{ file(mod.paths.absolute) }}
 ```
 
 {% endfor %}

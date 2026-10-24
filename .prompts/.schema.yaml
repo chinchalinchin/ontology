@@ -80,7 +80,8 @@ tools:
           - <property>
         state:
           - <state>
-      workflow: <workflow>
+      workflows: 
+        - <workflow>
       script: <script>
     shell:
       directory: tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"

@@ -262,7 +262,7 @@ def test_dump_menus_success(mock_settings, mock_datetime, mock_board):
 @pytest.mark.cli
 @patch("cli.datetime")
 @patch("cli.settings")
-@patch("cli.get_system_info")
+@patch("cli.sysinfo")
 def test_dump_sdl_success(mock_sys_info, mock_settings, mock_datetime, mock_board):
     mock_datetime.datetime.now.return_value.strftime.return_value = "20260101_120000"
     mock_settings.TEMPLATE_DIR = Path("/mock/dir")

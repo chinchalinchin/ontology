@@ -1,0 +1,17 @@
+{% for script in tools.parameters.source.scripts %}
+### View: Script - {{ script | capitalize }}
+
+{% for pkg in annotations(properties.paths.root ~ 'scripts', 'script.' ~ script) %}
+{{ '#' * (pkg.depth + 2) }} {{ pkg.package }}
+
+{% for mod in pkg.modules %}
+
+**{{ mod.paths.relative }}**
+
+```{{ typehint(mod.paths.absolute) }}
+{{ file(mod.path.absolute) }}
+```
+
+{% endfor %}
+{% endfor %}
+{% endfor %}

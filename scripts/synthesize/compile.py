@@ -1,4 +1,8 @@
-"""Time-domain score compilation engine."""
+"""
+@script.synthesize
+
+Time-domain score compilation engine.
+"""
 
 import logging
 from typing import Dict, List, Optional

@@ -173,7 +173,7 @@ cdef SDL_Window* _window = NULL
 # Public Python/Cython API
 # -----------------------------------------------------------------------------
 
-def get_system_info() -> dict:
+def sysinfo() -> dict:
     """Retrieves low-level SDL context and driver details."""
     cdef SDL_RendererInfo info
     cdef dict sys_info = {

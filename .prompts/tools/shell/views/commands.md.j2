@@ -1,10 +1,10 @@
 ### View: Commands
 
-- This section contains additional information, scraped at prompt-time.
+* This section contains additional information, scraped at prompt-time.
 
 {% for cmd in tools.parameters.shell.commands -%}
 ```bash
-{{ properties.user.username }}@localhost %  {{ cmd }}
+{{ properties.user.username }}@{{ properties.user.hostname }}%  {{ cmd }}
 
 {{ command(cmd) }}
 ```
