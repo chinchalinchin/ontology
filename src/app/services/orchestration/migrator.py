@@ -1,6 +1,9 @@
 """
+@domain.system
+@app.services
 @main.hydration
 @workflow.initialization
+@workflow.compositions
 
 # Ontology: Source - app.services.orchestration.migrator
 

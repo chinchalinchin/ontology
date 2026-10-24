@@ -1,4 +1,5 @@
 """
+@domain.model
 @app.core
 @app.schema
 @asset.state

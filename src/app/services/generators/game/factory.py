@@ -1,4 +1,9 @@
 """
+@domain.system
+@app.services
+@workflow.injections
+@workflow.compositions
+
 # Ontology: Source - app.services.generators.game.factory
 
 Package for instantiating Asset classes and their components.

@@ -1,0 +1,32 @@
+queries:
+  compositions:
+    - title: Abstracts
+      strategy: AND
+      scan:
+        app: [ component ]
+        domain: [ abstract ]
+    # ------------------------------------
+    - title: Implementations
+      strategy: AND
+      scan:
+        app: [ asset ]
+        domain: [ concrete ]
+        category: [ crafts ]
+    # ------------------------------------
+    - title: Models
+      strategy: AND
+      scan:
+        domain: [ model ]
+        category: [ crafts ]
+    # ------------------------------------
+    - title: Composition Logic
+      strategy: AND 
+      scan:
+        domain: [ logic ]
+        app: [ module ]
+        workflows: [ compositions ]
+    - title: Composition Services
+      strategy: AND
+      scan:
+        app: [ services ]
+        workflows: [ compositions ]

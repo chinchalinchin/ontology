@@ -1,4 +1,6 @@
 """
+@domain.concrete
+@domain.logic
 @app.services
 @workflow.intentions
 @workflow.plot

@@ -1,4 +1,9 @@
 """
+@domain.logic
+@app.services
+@workflow.generation
+@workflow.ecology
+
 # Ontology: Source - app.services.generators.game.cartographer
 
 Module for Cartographer generator class.

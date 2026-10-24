@@ -1,4 +1,6 @@
 """
+@domain.model
+@app.asset
 @asset.state
 @category.sheets
 @workflow.intentions

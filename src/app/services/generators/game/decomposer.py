@@ -1,4 +1,6 @@
 """
+@domain.logic
+@app.services
 @workflow.compositions
 
 # Ontology: Source - app.services.generators.game.decomposer

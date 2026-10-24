@@ -1,11 +1,12 @@
 """
 @domain.concrete
+@app.asset
 @app.core
 @asset.hitbox
 
 # Ontology: Source - app.assets.hitboxes.core
 
-Core Asset HitboxSchema implementations.
+Core HitboxSchema implementations.
 """
 # Standard Libraries
 from typing import (

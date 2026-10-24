@@ -1,4 +1,5 @@
 """
+@domain.abstract
 @app.services
 @workflow.intentions
 @workflow.plot

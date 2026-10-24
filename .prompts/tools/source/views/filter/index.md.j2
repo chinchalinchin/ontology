@@ -10,6 +10,7 @@ The Filter View *queries* the codebase based on the **Active Tags** and the **Fi
 {% set tags = [] %}
 {% for prefix, items in [
     ('app.', query.scan.app),
+    ('domain.', query.scan.domain),
     ('asset.', query.scan.asset),
     ('category.', query.scan.category),
     ('main.', query.scan.main),

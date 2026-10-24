@@ -1,5 +1,6 @@
 """
 @domain.concrete
+@app.asset
 @app.core
 @asset.animation
 

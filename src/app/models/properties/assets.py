@@ -1,4 +1,15 @@
 """
+@domain.model
+@category.crafts
+@category.cursors
+@category.effects
+@category.geography
+@category.objects
+@category.resources
+@category.sheets
+@category.tiles
+@category.widgets
+@app.asset
 @asset.property
 
 # Ontology: Source - app.models.properties.assets

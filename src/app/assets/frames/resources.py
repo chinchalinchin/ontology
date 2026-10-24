@@ -1,5 +1,6 @@
 """
 @domain.concrete
+@app.asset
 @asset.frame
 @category.resources
 @workflow.seasons

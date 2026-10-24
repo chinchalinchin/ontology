@@ -1,5 +1,6 @@
 """
 @domain.concrete
+@app.asset
 @asset.animation
 @workflow.intentions
 @workflow.combat

@@ -1,4 +1,10 @@
 """
+@domain.logic
+@app.services
+@workflow.generation
+@workflow.ecology
+@workflow.seasons
+
 # Ontology: Source - app.services.generators.game.actuator
 
 Package for constructing Fluid Effect flows and radial pools.

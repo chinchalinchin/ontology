@@ -156,6 +156,7 @@ tools:
             #             geography,objects,resources,
             #             sheets,tiles,widgets ]
             #     main: [ cli,hydration ]
+            #     physics: [ fields, motion, space ]
             #     workflows: [ collisions,combat,compositions,
             #             ecology,fluids,intentions,
             #             menus,motion,orchestration,
@@ -171,19 +172,26 @@ tools:
             - title: Implementations
               strategy: AND
               scan:
+                app: [ asset ]
                 domain: [ concrete ]
                 category: [ crafts ]
             # ------------------------------------
-            - title: Structures
+            - title: Models
               strategy: AND
               scan:
-                category: [ crafts ]
                 domain: [ model ]
+                category: [ crafts ]
             # ------------------------------------
-            - title: Logic
-              strategy: OR 
+            - title: Composition Logic
+              strategy: AND 
               scan:
-                main: [ hydration ]
+                domain: [ logic ]
+                app: [ module ]
+                workflows: [ compositions ]
+            - title: Composition Services
+              strategy: AND
+              scan:
+                app: [ services ]
                 workflows: [ compositions ]
       data: 
         properties:

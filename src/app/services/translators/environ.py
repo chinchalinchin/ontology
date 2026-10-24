@@ -1,4 +1,6 @@
 """
+@domain.concrete
+@domain.logic
 @workflow.intentions
 @workflow.plot
 @workflow.seasons

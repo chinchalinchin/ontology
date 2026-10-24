@@ -1,4 +1,8 @@
 """
+@domain.system
+@app.services
+@workflow.injection
+
 # Ontology: Source - app.services.generators.game.cradle
 
 Package for ingame Asset instantiation.

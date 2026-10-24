@@ -1,4 +1,8 @@
 """
+@domain.model
+@domain.system
+@app.config
+
 # Ontology: Source - app.models.adapters
 
 Pydantic adapters for instantiating Cython structs across the GIL during YAML parsing.

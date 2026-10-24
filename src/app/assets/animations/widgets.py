@@ -1,5 +1,6 @@
 """
 @domain.concrete
+@app.asset
 @asset.animation
 @category.widgets
 @workflow.menus

@@ -1,5 +1,7 @@
 """
+@domain.model
 @app.core
+@app.asset
 @asset.property
 
 # Ontology: Source - app.models.properties.core

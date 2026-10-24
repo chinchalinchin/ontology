@@ -1,6 +1,10 @@
 """
+@domain.model
+@app.asset
 @app.core
 @asset.state
+@workflow.plot
+@workflow.seasons
 
 # Ontology: Source - app.models.state.core
 

@@ -1,5 +1,6 @@
 """
 @domain.abstract
+@app.asset
 @app.component
 @app.base
 

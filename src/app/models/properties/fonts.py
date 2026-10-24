@@ -1,4 +1,5 @@
 """
+@domain.model
 @asset.property
 @workflow.rendering
 @workflow.typography

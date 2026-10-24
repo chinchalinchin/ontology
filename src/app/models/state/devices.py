@@ -1,5 +1,6 @@
 """
 @domain.user
+@domain.model
 @app.devices
 
 # Ontology: Source - app.models.state.devices

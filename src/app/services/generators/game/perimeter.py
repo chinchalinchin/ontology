@@ -1,7 +1,12 @@
 """
+@domain.logic
+@app.services
+@workflow.generation
+@workflow.collisions
+
 # Ontology: Source - app.services.generators.game.perimeter
 
-Package for dynamic environment boundary generation partitioned by elevation tier.
+Dynamic perimeter generation partitioned by elevation.
 """
 from __future__ import annotations
 
@@ -35,7 +40,7 @@ logger = logging.getLogger(__name__)
 
 class Perimeter:
     """
-    Derives simply-connected outer hulls of an environment partitioned by layer and elevation tier.
+    Derives simply-connected outer hulls of an environment partitioned by layer and elevation.
     """
     def extract(self, board: Board, layer: str, elevation: Optional[int] = None) -> List[tuple[int, int, int, int]]:
         rects = []
