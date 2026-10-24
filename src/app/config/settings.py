@@ -15,6 +15,9 @@ from app.config.enums import Seasons
 # APPLICATION SETTINGS
 # ---------------------------------------------------
 
+TIME_FORMAT: Final[str] = "%Y%m%d_%H%M%S"
+"""Global time format."""
+
 SEPARATOR: Final[str] = os.getenv("ONTOLOGY_SEPARATOR", "-")
 """Separator used by registry indexing to separate asset keys."""
 

@@ -86,23 +86,23 @@ def handle_tags(args) -> list[str]:
 def handle_map(args, orchestrator, screensize):
     logger.info("Orchestrating engine components for full board execution (render-full)...")
     engine = orchestrator.orchestrate(
-        state_key=args.board_key, 
+        state_key=args.board, 
         screensize=screensize, 
         device=args.device,
         headless=True
     )
 
-    utilities.hydrate(engine, args.board_key, screensize)
+    utilities.hydrate(engine, args.board, screensize)
     
     if args.layer not in engine.screens:
-        logger.error(f"Layer '{args.layer}' not found on board '{args.board_key}'.")
+        logger.error(f"Layer '{args.layer}' not found on board '{args.board}'.")
         return engine
 
     screen = engine.screens[args.layer]
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    out_path = out_dir / f"{args.board_key}-{args.layer}-full.png"
+    out_path = out_dir / f"{args.board}-{args.layer}-full.png"
     assets = engine.board.renderables(args.layer)        
     screen.export_map(str(out_path), assets)
 
@@ -112,23 +112,23 @@ def handle_map(args, orchestrator, screensize):
 def handle_render(args, orchestrator, screensize):
     logger.info("Orchestrating engine components for headless execution (render)...")
     engine = orchestrator.orchestrate(
-        state_key=args.board_key, 
+        state_key=args.board, 
         screensize=screensize, 
         device=args.device,
         headless=True
     )
 
-    utilities.hydrate(engine, args.board_key, screensize)
+    utilities.hydrate(engine, args.board, screensize)
     
     if args.layer not in engine.screens:
-        logger.error(f"Layer '{args.layer}' not found on board '{args.board_key}'.")
+        logger.error(f"Layer '{args.layer}' not found on board '{args.board}'.")
         return engine
 
     screen = engine.screens[args.layer]
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    out_path = out_dir / f"{args.board_key}-{args.layer}.png"
+    out_path = out_dir / f"{args.board}-{args.layer}.png"
     assets = engine.board.renderables(args.layer)        
     player = engine.board.player()
 
@@ -145,23 +145,23 @@ def handle_render(args, orchestrator, screensize):
 def handle_prerender(args, orchestrator, screensize):
     logger.info("Orchestrating engine components for headless execution (prerender)...")
     engine = orchestrator.orchestrate(
-        state_key=args.board_key, 
+        state_key=args.board, 
         screensize=screensize, 
         device=args.device,
         headless=True
     )
     
-    utilities.hydrate(engine, args.board_key, screensize)
+    utilities.hydrate(engine, args.board, screensize)
     
     if args.layer not in engine.screens:
-        logger.error(f"Layer '{args.layer}' not found on board '{args.board_key}'.")
+        logger.error(f"Layer '{args.layer}' not found on board '{args.board}'.")
         return engine
 
     screen = engine.screens[args.layer]
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    out_path = out_dir / f"{args.board_key}-{args.layer}-background.png"
+    out_path = out_dir / f"{args.board}-{args.layer}-background.png"
     screen.export_background(str(out_path))
 
     return engine
@@ -170,7 +170,7 @@ def handle_prerender(args, orchestrator, screensize):
 def handle_start(args, orchestrator, screensize):
     logger.info("Igniting engine for live execution...")
     engine = orchestrator.orchestrate(
-        state_key=args.board_key, 
+        state_key=args.board, 
         screensize=screensize, 
         device=args.device,
         headless=False

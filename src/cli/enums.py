@@ -4,7 +4,7 @@
 # Ontology: cli.enums
 """
 
-from enums import Enum
+from enum import Enum
 
 class Commands(str, Enum):
     PRERENDER   = "prerender"

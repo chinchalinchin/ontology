@@ -28,6 +28,7 @@ from cli.enums import (
 # Application Libraries
 import app.config.settings as settings
 from app.config.enums import AssetCategories
+from app.assets.base import Asset
 from app.game.screen import Screen
 
 # Cython Libraries
@@ -38,8 +39,8 @@ logger = logging.getLogger(__name__)
 # ------------------------------------------------------
 
 def filter(
-    assets: List[Any], 
-    filters: Optional[Dict[str, Optional[str]]] = None
+    assets: List[Asset], 
+    filters: Optional[Dict[Filters, Optional[str]]] = None
 ) -> List[Any]:
     """
     Applies regex filtering to the Asset sequence across instances, categories, ids, 
@@ -100,7 +101,7 @@ def dump(
         template_str = f.read()
     
     template = jinja2.Template(template_str)
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.datetime.now().strftime(settings.TIME_FORMAT)
 
     args: Dict[str, Any] = {
         "board_key": board,
