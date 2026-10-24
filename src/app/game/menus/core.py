@@ -1,4 +1,10 @@
 """
+@domain.user
+@domain.model
+@app.core
+@category.widgets
+@workflow.menus
+
 # Ontology: Source - app.game.menus.core
 """
 from __future__ import annotations

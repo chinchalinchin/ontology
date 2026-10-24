@@ -1,7 +1,12 @@
 """
+@domain.logic
+@app.module
+@category.geography
+@workflows.generation
+
 # Ontology: Source - app.game.logic.relations.shorelines
 
-Relational index mapping terrain tiles, fluids, and seasons to shoreline asset IDs.
+Relational index mapping Environ Tiles, Fluid Effects and Seasons to Geography Shorelines.
 """
 from __future__ import annotations
 
@@ -18,8 +23,11 @@ import logging
 if TYPE_CHECKING:
     from app.models.properties import GeographyProperties
 
+# ---------------------------------------------------
+
 logger = logging.getLogger(__name__)
 
+# ---------------------------------------------------
 
 class ShorelineIndex:
     """

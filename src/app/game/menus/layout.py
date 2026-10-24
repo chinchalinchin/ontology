@@ -1,15 +1,18 @@
 """
+@domain.user
+@domain.logic
+@category.widgets
+@workflow.menus
+
 # Ontology: Source - app.game.menus.layout
 
-Package for Menu spatial layouts and traversal graph generation.
+Menu spatial layouts and traversal graph generation.
 """
 # Standard Libraries
 from typing import (
     List, 
     Dict, 
-    Tuple, 
-    Union,
-    Any
+    Tuple
 )
 import logging
 
@@ -30,8 +33,11 @@ from app.models.config.menus import (
 # Cython Libraries
 from libs.core.models import Position, Dimensions
 
+# --------------------------------------------
+
 logger = logging.getLogger(__name__)
 
+# --------------------------------------------
 
 class Layout:
     screensize: Dimensions

@@ -1,9 +1,13 @@
 """
+@domain.logic
+@app.module
+@category.crafts
+@category.objects
 @workflow.compositions
 
 # Ontology: Source - app.game.logic.relations.materials
 
-Relational index compiling Material genera, Blueprint schemas, multiplication
+Relational index mapping Material Genera, Blueprint schemas, multiplication
 strategies, obstacle predicates, and intra-tier Substrates.
 """
 from __future__ import annotations
