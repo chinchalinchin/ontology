@@ -1,10 +1,10 @@
 """
-@workflow.asset
-@workflows.models
+@app.core
+@asset.state
 
 # Ontology: app.models.state.core
 
-Python data models for typing Asset state attributes.
+Core State Models.
 """
 # Standard Libraries
 from typing import (

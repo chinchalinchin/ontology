@@ -4,7 +4,7 @@
 
 # Ontology: app.asset.animations.core
 
-Core Asset Animation implementations.
+Core Animation implementations.
 """
 # Application Libraries
 from app.assets.base import Animation
@@ -12,7 +12,10 @@ from app.models.properties import (
     AssetProperties,
     SheetProperties
 )
-from app.models.state import AssetState
+from app.models.state import (
+    AssetState,
+    SheetState
+)
 
 # --------------------------------------------------
 
@@ -29,7 +32,7 @@ class StateAnimation(Animation):
     """
     Advances frame based on configured action delay.
     """
-    def animate(self, state: AssetState, properties: SheetProperties) -> AssetState:
+    def animate(self, state: SheetState, properties: SheetProperties) -> AssetState:
         action_props = properties.actions[state.animation.action]
         state.animation.tick += 1
 

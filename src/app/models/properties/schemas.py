@@ -1,6 +1,7 @@
 """
-@workflow.asset
-@workflow.models
+@app.core
+@app.schema
+@asset.property
 
 # Ontology: app.models.properties.schemas
 

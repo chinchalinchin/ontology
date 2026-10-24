@@ -12,7 +12,7 @@ from typing import Final
 from app.static.semantics import Seasons
 
 # ---------------------------------------------------
-# APPLICATION SETTINGS
+# ------------------------------ APPLICATION SETTINGS
 # ---------------------------------------------------
 
 TIME_FORMAT: Final[str] = "%Y%m%d_%H%M%S"
@@ -37,7 +37,7 @@ SOCKET: Final[str] = os.getenv("ONTOLOGY_SOCKET", "/tmp/ontology.sock")
 """TCP Socket for application telemetry."""
 
 # ---------------------------------------------------
-# ENGINE CONSTANTS
+# ----------------------------------- ENGINE SETTINGS
 # ---------------------------------------------------
 
 TARGET_FPS: Final[int] = int(os.getenv("ONTOLOGY_TARGET_FPS", "60"))
@@ -86,7 +86,7 @@ EVAPORATION_RATE: Final[float] = float(os.getenv("ONTOLOGY_EVAPORATION_RATE", "1
 """Multiplicative factor that scales the moisture evaporation rate."""
 
 # ---------------------------------------------------
-# DIRECTORY SETTINGS
+# -------------------------------- DIRECTORY SETTINGS
 # ---------------------------------------------------
 
 SRC_DIR: Final[Path] = Path(__file__).resolve().parent.parent.parent
@@ -104,7 +104,7 @@ APP_EXT: Final[str] = "main.yaml"
 """Standard application configuration filename extension."""
 
 # ---------------------------------------------------
-# CLI SETTINGS
+# -------------------------------------- CLI SETTINGS
 # ---------------------------------------------------
 
 DUMP_TEMPLATES: Final[dict[str, str]] = {
@@ -116,7 +116,7 @@ DUMP_TEMPLATES: Final[dict[str, str]] = {
 """Jinja2 template filenames for CLI dump outputs."""
 
 # ---------------------------------------------------
-# RENDERING SETTINGS
+# -------------------------------- RENDERING SETTINGS
 # ---------------------------------------------------
 
 DIALOGUE_FONT: Final[Path] = FONT_DIR / "dialogue.tff"
@@ -129,5 +129,8 @@ TITLE_FONT: Final[Path] = FONT_DIR / "title.ttf"
 # ISL SETTINGS
 # ---------------------------------------------------
 
-ISL_TRANSLATOR: Final[str] = os.getenv("ONTOLOGY_ISL_TRANSLATOR", "lambda")
-"""Evaluation strategy for ISL scripting conditions ('lambda' or 'compiler')."""
+TRANSLATOR_IMPLEMENTATION: Final[str] = os.getenv("ONTOLOGY_TRANSLATOR", "lambda")
+"""Evaluation strategy for Transition conditions ('lambda' or 'compiler')."""
+
+LAMBDA_SIGNATURE: Final[str] = "lambda sprite=None, sprites=None, plot=None, resource=None, calendar=None, **kwargs: {cond}"
+"""Function signature for Lambda transitions."""

@@ -1,4 +1,8 @@
 """
+@app.core
+@app.config
+@app.mechanics
+
 # Ontology: app.models.config.mechanics
 
 Models for typing the configuration attributes of Mechanics.

@@ -10,7 +10,7 @@ Core Asset Frame implementations.
 
 Frames exist on the boundary of the Python-Cython interface.
 
--`index(id, properties)`: This interface is a configuration-time method for generating the Asset Frame space from the Asset Properties; this method is called inside of Cython from the Registry. Asset Properties are passed in.
+- `index(id, properties)`: This interface is a configuration-time method for generating the Asset Frame space from the Asset Properties; this method is called inside of Cython from the Registry. Asset Properties are passed in.
 - `keys(id, state)` interface is a runtime method for accessing the Frame key that corresponds to an Asset Frame state. It is called inside of Python from the Screen. Asset States are passed in.
 """
 # Stamdard Libraries

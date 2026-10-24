@@ -139,39 +139,29 @@ tools:
     # --------------------------------------------
     source:
       filter:
-        strategy: OR # AND | OR | NOT
-        tags:
-          asset: []
-            # - base
-            # - properties
-            # - state
-            # - frame
-            # - animation
-            # - hitbox
-          hierarchy: []
-            # - crafts
-            # - cursors
-            # - effects
-            # - geographys
-            # - objects
-            # - resources
-            # - sheets
-            # - tiles
-            # - widgets
-          workflows:
-            # - collisions
-            # - combat
-            - compositions
-            # - ecology
-            # - fluids 
-            # - intentions
-            # - menus
-            # - motion
-            # - orchestration
-            # - pathfinding
-            # - rendering
-            # - seasons
-            # - telemetry
+        default: OR # AND | OR | NOT
+        queries:
+            - strategy: OR # AND | OR | NOT
+              scan:
+                # app: base, core, config,
+                #       schema, semantics, input,
+                #       mechanics
+                app: []
+                # asset: base, properties, state, 
+                #         frame, animation, hitbox
+                asset: []
+                # hierarchy: crafts, cursors, effects, 
+                #             geography,  objects, resources,
+                #             sheets, tiles, widgets
+                category: [ crafts ]
+                # main: cli, graphics, hydration
+                main: []
+                # workflows: collisions, combat, compositions,
+                #             ecology, fluids, intentions,
+                #             menus, motion, orchestration,
+                #             pathfinding, rendering, seasons,
+                #             telemetry
+                workflows: [ compositions ]
       data: 
         properties:
           - crafts

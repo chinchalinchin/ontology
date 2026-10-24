@@ -1,9 +1,9 @@
 """
-@workflows.models
+@app.config
 
 # Ontology: app.models.config.core
 
-Models for typing the core configuration attributes of game components.
+Core Configuration Models.
 """
 
 # ---------------------------------------------------------

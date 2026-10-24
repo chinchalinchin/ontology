@@ -5,7 +5,7 @@
 
 # Ontology: app.asset.animations.sheets
 
-Package for Sheet Animation implementations.
+Sheet Animation implementations.
 """
 # Application Libraries
 from app.assets.animations.core import StateAnimation

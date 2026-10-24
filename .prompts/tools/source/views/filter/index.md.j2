@@ -1,18 +1,24 @@
-{% set tags = [] %}
-{% for prefix, items in [
-    ('main.', tools.parameters.source.filter.tags.main),
-    ('asset.', tools.parameters.source.filter.tags.asset),
-    ('category.', tools.parameters.source.filter.tags.hierarchy),
-    ('workflow.', tools.parameters.source.filter.tags.workflows)
-] %}
-  {% for item in items %}
-    {% set _ = tags.append(prefix ~ item) %}
-  {% endfor %}
-{% endfor %}
-{% set strategy = tools.parameters.source.filter.strategy %}
 ### View: Filter
 
-The Filter View *filters* the codebase based on the **Active Tags** and the **Filter Strategy**.
+The Filter View *queries* the codebase based on the **Active Tags** and the **Filter Strategy**.
+
+{% for query in tools.parameters.source.filter.queries %}
+{# -------------------------------------------- #}
+{% set strategy = query.strategy or tools.parameters.source.filter.default %}
+{% set tags = [] %}
+{% for prefix, items in [
+    ('app.', query.scan.app),
+    ('asset.', query.scan.asset),
+    ('category.', query.scan.category),
+    ('main.', query.scan.main),
+    ('workflow.', query.scan.workflows)
+] %}
+{% for item in items %}
+  {% set _ = tags.append(prefix ~ item) %}
+{% endfor %}
+{% endfor %}
+{# -------------------------------------------- #}
+#### Query: 
 
 * **Filter Strategy**: {{ strategy }}
 * **Active Tags**: {{ tags | join(", ") }}
@@ -27,5 +33,6 @@ The Filter View *filters* the codebase based on the **Active Tags** and the **Fi
 {{ file(mod.paths.absolute) }}
 ```
 
+{% endfor %}
 {% endfor %}
 {% endfor %}

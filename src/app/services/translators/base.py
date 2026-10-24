@@ -1,8 +1,12 @@
 """
+@app.services
+@workflow.intentions
+@workflow.plot
+@workflow.seasons
+
 # Ontology: app.services.translators.base
 
-Defines the foundational interfaces for Intentional Scripting Language (ISL) compilation 
-and execution within the game engine.
+Interfaces for Transition Translation and Execution.
 """
 # Standard Libraries
 from dataclasses import dataclass

@@ -1,9 +1,10 @@
 """
-@workflow.orchestration
+@main.injection
+@workflow.initialiation
 
 # Ontology: app.services.orchestration.orchestrator
 
-Application dependency pipeline.
+Application Dependency Pipeline
 """
 # Application Libraries
 from app.static.semantics import Menus

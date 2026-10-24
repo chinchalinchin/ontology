@@ -1,7 +1,11 @@
 """
+@asset.property
+@workflow.rendering
+@workflow.typography
+
 # Ontology: app.models.properties.fonts
 
-Module for typing Font property attributes.
+Font Property Models.
 """
 # Standard Libraries
 from typing import Optional
@@ -11,9 +15,7 @@ from dataclasses import (
 )
 
 # Application Libraries
-from app.static.semantics import (
-    Alignments,
-)
+from app.static.semantics import Alignments
 
 # --------------------------------------------------------------
 

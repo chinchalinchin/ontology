@@ -1,10 +1,10 @@
 """
-@workflow.compositions
-@workflow.orchestration
+@main.hydration
+@workflow.initialiation
 
 # Ontology: app.services.orchestration.migrator
 
-Package for state hydration and ECS component injection.
+State Hydration module.
 """
 from __future__ import annotations
 

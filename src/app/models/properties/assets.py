@@ -1,9 +1,9 @@
 """
-@workflow.asset
+@asset.property
 
 # Ontology: app.models.properties.assets
 
-Module for typing Asset Properties.
+Asset Property Models.
 """
 # Standard Libraries
 from typing import (

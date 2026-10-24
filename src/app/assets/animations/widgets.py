@@ -5,7 +5,7 @@
 
 # Ontology: app.asset.animations.widgets
 
-Package for Widget Animation implementations.
+Widget Animation implementations.
 """
 # Application Libraries
 from app.assets.base import Animation

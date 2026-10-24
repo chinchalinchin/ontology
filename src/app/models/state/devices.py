@@ -1,7 +1,9 @@
 """
+@app.input
+
 # Ontology: app.models.state.devices
 
-Python data models for typing Device polling payloads.
+Device Payload State Models.
 """
 # Standard Libraries
 from typing import (

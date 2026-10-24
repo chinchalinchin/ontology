@@ -1,7 +1,10 @@
 """
+@app.config
+@workflow.intentions
+
 # Ontology: app.models.config.core
 
-Models for typing the core configuration attributes of game components.
+Action Configuration Models.
 """
 # Standard Libraries
 from typing import (

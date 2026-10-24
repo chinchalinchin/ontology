@@ -46,7 +46,6 @@ tools:
     source:
       data: false
       filter: false
-      script: false
     shell:
       directory: false
       commands: false
@@ -67,14 +66,17 @@ tools:
       specs:
         - <spec-page>.md
     source:
+    source:
       filter:
-        strategy: <AND | OR | NOT>
-        asset: 
-          - <tag>
-        hierarchy:
-          - <tag>
-        workflows:
-          - <tag>
+        default: <AND | OR | NOT>
+        queries:
+            - strategy: <AND | OR | NOT>
+              scan: 
+                app: [ <app-tag> ]
+                asset: [ <asset-tag> ]
+                category: [ <category-tag> ]
+                main: [ <main-tag> ]
+                workflows: [ <workflow-tag> ]
       data:
         configurations: 
           - <configuration>
@@ -83,7 +85,7 @@ tools:
         state: 
           - <state>
     shell:
-      directory: tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
+      directory: <cmd>
       commands: []
     tests:
       console:

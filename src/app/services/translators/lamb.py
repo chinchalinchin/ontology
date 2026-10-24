@@ -1,5 +1,12 @@
 """
+@workflow.intentions
+@workflow.plot
+@workflow.seasons
+
 # Ontology: app.services.translators.lamb
+
+Lambda implementations for Transition Executors and Translators.
+
 """
 # Standard Libraries
 import logging
@@ -13,6 +20,7 @@ from typing import (
 )
 
 # Application Libraries
+import app.static.settings as settings
 from app.services.translators.base import (
     Translator, 
     Executor, 
@@ -20,9 +28,11 @@ from app.services.translators.base import (
 )
 from app.services.translators.environ import Environ
 
+# ----------------------------------------------
+
 logger = logging.getLogger(__name__)
 
-LAMBDA_SIGNATURE = "lambda sprite=None, sprites=None, plot=None, resource=None, calendar=None, **kwargs: {cond}"
+# ----------------------------------------------
 
 class LambdaExecutor(Executor):
     def evaluate(self, current_state: str, locals: Dict[str, Any]) -> Optional[str]:
@@ -69,7 +79,7 @@ class LambdaTranslator(Translator):
                 for cond_str in config.conditions:
                     try:
                         # Dynamic parameter list accommodates any dict passed via **locals
-                        func_str = LAMBDA_SIGNATURE.format(cond=cond_str)    
+                        func_str = settings.LAMBDA_SIGNATURE.format(cond=cond_str)    
                         compiled_func = eval(func_str, self.env_globals)
                         callables.append(compiled_func)
                     except Exception as e:

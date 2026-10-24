@@ -18,16 +18,17 @@ Security Warning:
 """
 
 # Standard Libraries
-import argparse
 from datetime import datetime
+from typing import Union, Any, Dict, List
+from pathlib import Path
+from collections import defaultdict
+import argparse
 import os
 import re
 import subprocess
 import sys
-from typing import Union, Any, Dict, List
 import ast
-from pathlib import Path
-from collections import defaultdict
+import traceback
 
 # External Libraries
 import jinja2
@@ -601,9 +602,20 @@ def render(template_path: str, output_path: str, vars_path: str) -> None:
         _validate(rendered_output, output_path)
 
     except jinja2.TemplateNotFound as e:
-        print(f"Error: Could not find template '{e.name}' (called during render of '{template_path}').")
+        print(f"Error: Template not found: '{e.name}' (referenced in '{template_path}')")
+        sys.exit(1)
+    except jinja2.TemplateSyntaxError as e:
+        print(f"Jinja Syntax Error: {e.message}")
+        print(f"  File: {e.filename or template_path}:{e.lineno}")
+        sys.exit(1)
+    except jinja2.TemplateRuntimeError as e:
+        print(f"Jinja Runtime Error in '{template_path}': {e}")
+        traceback.print_exc()
+        sys.exit(1)
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        print(f"Error during rendering of '{template_path}': {e}")
+        traceback.print_exc()
+        sys.exit(1)
 
 # -------------------- Entrypoint
 

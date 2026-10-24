@@ -1,10 +1,11 @@
 """
-@workflow.asset
-@workflow.models
+@app.core
+@app.schema
+@asset.state
 
 # Ontology: app.models.state.schemas
 
-Python data models for typing the entire Asset Hierarchy state attributes.
+State Schema Models.
 """
 # Standard Libraries
 from typing import List

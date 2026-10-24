@@ -1,7 +1,12 @@
 """
+@workflow.intentions
+@workflow.plot
+@workflow.seasons
+
 # Ontology: app.services.translators.environ
 
-Helper functions for ISL conditions.
+Helper functions for Transition conditions.
+
 """
 # Standard Libraries
 from typing import Dict, List

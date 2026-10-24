@@ -1,10 +1,10 @@
 """
-@workflow.asset
-@workflows.models
+@app.core
+@asset.property
 
 # Ontology: app.models.properties.core
 
-Module for typing core Properties.
+Core Property Models.
 """
 from typing import (
     Dict,

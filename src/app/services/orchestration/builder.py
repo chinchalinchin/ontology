@@ -1,9 +1,9 @@
 """
-@workflow.orchestration
+@workflow.initialiation
 
 # Ontology: app.services.orchestration.builder
 
-Classes for constructing game objects.
+Dependency Injection systems.
 """
 from __future__ import annotations
 
@@ -143,7 +143,7 @@ class Builder:
 
     def build_executors(self) -> None:
         logger.info("Compiling master mechanic executors...")
-        translator = Factory.translator(settings.ISL_TRANSLATOR)
+        translator = Factory.translator(settings.TRANSLATOR_IMPLEMENTATION)
         intention_executor = translator.compile(self.context.configurations.intentions)
         plot_executor = translator.compile(self.context.configurations.plots)
         actuator_executor = Actuator()

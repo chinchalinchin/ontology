@@ -1,12 +1,18 @@
 
 """
-# Ontology: app.models.config
+@app.config
+@app.input
 
-Models for typing the configuration attributes of Mechanics and other game components. See documentation for a more in-depth explanation of each field and its purpose. 
+# Ontology: app.models.config.mappings
+
+Device Mapping Configuration Models.
 """
 # Standard Libraries
 from typing import Dict
-from dataclasses import dataclass, field
+from dataclasses import (
+    dataclass, 
+    field
+)
 
 # Application Libraries
 from app.static.semantics import (
@@ -35,6 +41,8 @@ class MenuMapping:
 class DeviceMapping:
     world: WorldMapping
     menu: MenuMapping
+
+# ---------------------------------------------------------
 
 @dataclass(slots=True, frozen=True)
 class MappingConfiguration(Configuration):

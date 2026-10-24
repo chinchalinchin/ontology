@@ -1,8 +1,11 @@
 
 """
-# Ontology: app.models.config
+@app.config
+@workflow.compositions
 
-Models for typing the Market configuration.
+# Ontology: app.models.config.materials
+
+Material Configuration Models.
 """
 
 # Standard Libraries

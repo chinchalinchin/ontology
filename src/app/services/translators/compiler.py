@@ -1,5 +1,12 @@
 """
+@app.services
+@workflow.intentions
+@workflow.plot
+@workflow.seasons
+
 # Ontology: app.services.translators.compiler
+
+Compiler implementations for Transition Executors and Translators.
 """
 import logging
 from types import SimpleNamespace

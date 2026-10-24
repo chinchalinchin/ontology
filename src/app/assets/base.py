@@ -1,5 +1,6 @@
 """
-@workflow.asset
+@app.core
+@app.base
 
 # Ontology: app.assets.base
 
