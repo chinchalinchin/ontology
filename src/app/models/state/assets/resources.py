@@ -1,7 +1,11 @@
 """
+@asset.state
+@category.resources
+@workflow.seasons
+
 # Ontology: app.models.state.resources
 
-Python data models for typing Resource state attributes.
+Resource State Models.
 """
 # Standard Libraries
 from typing import Optional

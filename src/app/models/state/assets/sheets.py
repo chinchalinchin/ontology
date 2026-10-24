@@ -1,7 +1,12 @@
 """
-# Ontology: app.models.state.sprites
+@asset.state
+@category.sheets
+@workflow.intentions
+@workflow.combat
 
-Python data models for typing Sprite state attributes.
+# Ontology: app.models.state.sheets
+
+Sheet State Models.
 """
 # Standard Libraries
 from typing import (
@@ -119,21 +124,25 @@ class Trajectory:
     cooldown: int = 0
 
 
-# ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------- SPRITE STATES
+# ---------------------------------------------------
+# -------------------------------------  SHEET STATES
+# ---------------------------------------------------
+
+@dataclass(slots=True)
+class SheetState(AssetState):
+    position: Optional[Position] = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
+    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
+    animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
 class SpriteState(AssetState):
     intention: Optional[Intentions] = None
     goal: Optional[Goal] = field(default_factory=Goal)
-    position: Optional[Position] = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
     character: Optional[Character] = field(default_factory=Character)
     inventory: Optional[Inventory] = field(default_factory=Inventory)
     meters: Optional[Meters] = field(default_factory=Meters)
     memory: Optional[Memory] = field(default_factory=Memory)
     psyche: Optional[Psyche] = field(default_factory=Psyche)
-    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
-    animation: AnimationState = field(default_factory=AnimationState)
     trajectory: Trajectory = field(default_factory=Trajectory)
 
 @dataclass(slots=True)

@@ -1,7 +1,11 @@
 """
+@asset.state
+@category.effects
+@workflows.fluids
+
 # Ontology: app.models.state.effects
 
-Python data models for typing Effect state attributes.
+Effect State Models.
 """
 # Standard Libraries
 from typing import ( 
@@ -28,10 +32,9 @@ from app.models.state.core import (
     AssetState
 )
 
-# ---------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------- ASSET STATES
-
-# ------------------------------------------------------------------------ EFFECT FIELDS
+# ------------------------------------------------------------
+# ---------------------------------------------- EFFECT FIELDS
+# ------------------------------------------------------------
 
 @dataclass(slots=True)
 class Damage:
@@ -55,12 +58,14 @@ class Pool:
 @dataclass(slots=True)
 class Branch:
     position: Position # type: ignore
-    source: str
+    source: Directions
     flow: int
     length: int = 0
     hitboxes: List[Hitbox] = field(default_factory=list) # type: ignore
 
-# ------------------------------------------------------------------------ EFFECT STATES
+# ------------------------------------------------------------
+# ---------------------------------------------- EFFECT STATES
+# ------------------------------------------------------------
 
 @dataclass(slots=True)
 class EffectState(AssetState):

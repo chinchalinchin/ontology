@@ -1,7 +1,9 @@
 """
+@workflow.menus
+
 # Ontology: app.game.menus.contexts
 
-Package for Menu Context models.
+Menu Context models.
 """
 from __future__ import annotations
 
@@ -12,14 +14,15 @@ from typing import (
     Dict, 
     Union, 
     List, 
-    Optional, 
     TYPE_CHECKING
 )
 
 # Application Classes
 from app.models.state.core import PlotState
-from app.models.state.assets.sprites import SpriteState
-from app.models.state.assets.objects import DialogueState
+from app.models.state.assets import (
+    SpriteState,
+    DialogueState
+)
 
 # Cython Libraries
 from libs.graphics.registry import Registry

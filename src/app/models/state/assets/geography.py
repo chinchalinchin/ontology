@@ -1,13 +1,16 @@
 """
+@asset.state
+@category.geography
+@workflow.generation
+
 # Ontology: app.models.state.geography
 
-Python data models for typing Geography state attributes.
+Geography State Models.
 """
 # Standard Libraries
 from typing import ( 
     List,
     Optional,
-    Union,
     Tuple
 )
 from dataclasses import dataclass, field
@@ -25,14 +28,14 @@ from app.models.state.core import (
     AssetState
 )
 
-# --------------------------------------------------------------------- GEOGRAPHY STATES
+# ------------------------------------------------------------
 
 @dataclass(slots=True)
 class ShorelineState(AssetState):
     # Shoreline fields
     position: Optional[Position] = None  # type: ignore
-    orientation: str = Directions.DOWN.value
-    season: str = Seasons.SPRING.value
+    orientation: Directions = Directions.DOWN.value
+    season: Seasons = Seasons.SPRING.value
     length: int = 0
     thickness: int = 8
     bidirectional: bool = True

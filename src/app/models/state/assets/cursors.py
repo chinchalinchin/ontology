@@ -1,7 +1,10 @@
 """
+@asset.state
+@category.cursors
+
 # Ontology: app.models.state.cursors
 
-Python data models for typing Cursors state attributes.
+Cursors State models.
 """
 # Standard Libraries
 from typing import ( 
@@ -24,6 +27,7 @@ from app.models.state.core import (
 # Cython Libraries
 from libs.core.models import Velocity as CoreVelocity
 
+# ------------------------------------------------------------
 
 @dataclass(slots=True)
 class MotorState(AssetState):

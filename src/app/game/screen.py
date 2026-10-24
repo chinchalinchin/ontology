@@ -1,9 +1,10 @@
 """
-@workflow.main
+@app.core
+@workflow.rendering
 
 # Ontology: app.game.screen
 
-Package for the Screen, an abstraction over the Cython SDL rendering interface and image registries.
+Implementation of the Screen, an abstraction over the Cython SDL rendering interface and the Registry.
 """
 
 # Standard Libraries
@@ -21,21 +22,16 @@ from app.static.semantics import (
     ChannelTypes
 )
 from app.models.state import (
-    CalendarState
-)
-from app.models.state.widgets import (
-    DisplayState,
-    PaneState
-)
-from app.models.state.assets.sprites import (
+    CalendarState,
     SpriteState,
     PlayerState,
+    DisplayState,
+    PaneState
 )
 from app.game.menus.core import Menu
 
 # Cython Libraries
 import libs.graphics.render as render
-
 from libs.core.models import (
     Position, 
     Dimensions

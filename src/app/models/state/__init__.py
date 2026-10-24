@@ -48,6 +48,7 @@ from app.models.state.assets import (
     # ---- SHEET STATES
     SpriteState,
     PlayerState,
+    SheetState,
     # ----- SHEET FIELDS
     Character,
     Equipment,
@@ -56,7 +57,15 @@ from app.models.state.assets import (
     Psyche,
     Goal,
     Inventory,
-    Memory
+    Memory,
+    # ---- WIDGET STATES
+    IconState,
+    TraversalState,
+    PaneState,
+    DisplayState,
+    MeterState,
+    CollectionState,
+    WidgetState
 )
 from app.models.state.devices import (
     DevicePayload,
@@ -72,14 +81,6 @@ from app.models.state.schemas import (
     SheetStateInstances,
     ResourceStateInstances,
     StateSchema
-)
-from app.models.state.widgets import (
-    IconState,
-    TraversalState,
-    PaneState,
-    DisplayState,
-    MeterState,
-    CollectionState
 )
 
 __all__ = [ 
@@ -125,6 +126,7 @@ __all__ = [
     # SPRITE STATES
     'SpriteState',
     'PlayerState',
+    'SheetState',
     ## SPRITE FIELDS
     'Character',
     'Equipment',
@@ -148,6 +150,7 @@ __all__ = [
     'DisplayState',
     'MeterState',
     'CollectionState',
+    'WidgetState',
     ## SCHEMAS
     'TileStateInstances',
     'ObjectStateInstances',

@@ -1,9 +1,10 @@
 """
-@workflow.compositions
+@asset.state
+@category.objects
 
 # Ontology: app.models.state.objects
 
-Python data models for typing Object state attributes.
+Object State Models.
 """
 # Standard Libraries
 from typing import ( 
@@ -16,16 +17,12 @@ from dataclasses import (
 )
 
 # Application Libraries
-from app.static.semantics import (
-    LayerProjections
-)
 from app.models.adapters import (
     PydanticPosition as Position, 
     PydanticVelocity as Velocity,
 )
-from app.models.state.core import (
-    AssetState
-)
+from app.models.state.core import AssetState
+from app.static.semantics import LayerProjections
 
 # Cython Libraries
 from libs.core.models import (

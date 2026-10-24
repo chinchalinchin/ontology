@@ -1,41 +1,63 @@
 """
+@asset.state
+@category.crafts
 @workflow.compositions
 
 # Ontology: app.models.state.crafts
 
-Python data models for typing Craft state attributes.
+Craft State models.
 """
 # Standard Libraries
 from typing import ( 
     Optional,
+    Union
 )
-from dataclasses import (
-    dataclass,
-)
+from dataclasses import dataclass
 
 # Application Libraries
 from app.static.semantics import (
+    # ---- BLUEPRINT SCHEMAS
+    Buildings,
+    Corridors,
+    Columns,
+    Enclosures,
+    Inclines,
+    Directions,
     Orientations,
-    Directions
+    # --- MATERIAL GENERA
+    Ceramics,
+    Geologics,
+    Metallics,
+    Chromatics
 )
 from app.models.adapters import (
     PydanticPosition as Position, 
     PydanticMultiple as Multiple
 )
-from app.models.state.core import (
-    AssetState,
-)
+from app.models.state.core import AssetState
 
-# ---------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------- CRAFT STATES
-# ---------------------------------------------------------------------------------------
+# ------------------------------------------------------------
 
 @dataclass(slots=True)
 class CraftState(AssetState):
     position: Optional[Position] = None # type: ignore
-    material: Optional[str] = None
-    blueprint: Optional[str] = None
     multiple: Optional[Multiple] = None # type: ignore
+    material: Optional[Union[
+        Ceramics,
+        Chromatics,
+        Geologics,
+        Metallics
+    ]] = None
+    blueprint: Optional[Union[
+        Buildings,
+        Corridors,
+        Columns,
+        Directions,
+        Enclosures,
+        Inclines,
+        Orientations,
+    
+    ]] = None
 
 
 @dataclass(slots=True)

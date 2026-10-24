@@ -1,7 +1,11 @@
 """
+@asset.state
+@category.widgets
+@workflow.menus
+
 # Ontology: app.models.state.widget
 
-Python data models for typing Widget state attributes.
+Widget State Models.
 """
 # Standard Libraries
 from typing import (
@@ -32,38 +36,43 @@ from app.models.state.core import (
 from libs.core.models import (
     Position as CorePosition
 )
-# ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------- WIDGET STATES
+
+# ------------------------------------------------------------
 
 @dataclass(slots=True)
-class IconState(AssetState):
+class WidgetState(AssetState):
     position: Position = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
+
+# ------------------------------------------------------------
+
+@dataclass(slots=True)
+class IconState(WidgetState):
     icon_function: Callable[[], str] = field(default_factory=Callable)
     
     @property
     def icon(self) -> str:
         return self.icon_function()
 
+# ------------------------------------------------------------
 
 @dataclass(slots=True)
-class TraversalState(AssetState):
-    position: Position = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
+class TraversalState(WidgetState):
     status: Statuses = Statuses.IDLE.value
     animation: AnimationState = field(default_factory=AnimationState)
 
-    
+# ------------------------------------------------------------
+
 @dataclass(slots=True)
-class PaneState:
-    position: Position= field(default_factory=lambda: CorePosition(0,0)) # type: ignore
+class PaneState(WidgetState):
     layout: Layouts = Layouts.STACK.value
     alignment: Alignments = Alignments.CENTER.value
     gap: Optional[int] = 0
     margins: Optional[int] = 0
 
+# ------------------------------------------------------------
 
 @dataclass(slots=True)
-class MeterState(AssetState):
-    position: Position = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
+class MeterState(WidgetState):
     reading_function: Callable[[], Union[int, float]] = field(default_factory=Callable)
     unit_function: Callable[[], Union[int, float]] = field(default_factory=Callable)
     animation: AnimationState = field(default_factory=AnimationState)
@@ -76,10 +85,10 @@ class MeterState(AssetState):
     def unit(self) -> Union[int, float]:
         return self.unit_function()
 
-    
+# ------------------------------------------------------------
+
 @dataclass(slots=True)
-class DisplayState(AssetState):
-    position: Position = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
+class DisplayState(WidgetState):
     content_function: Callable[[], Union[str, List[str]]] = field(default_factory=Callable)
     pageindex: int = 0
     pagesize: int = 1
@@ -123,6 +132,7 @@ class DisplayState(AssetState):
         if self.more():
             self.pageindex += 1
 
+# ------------------------------------------------------------
 
 @dataclass(slots=True)
 class CollectionState(PaneState):
