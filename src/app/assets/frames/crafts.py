@@ -1,4 +1,6 @@
 """
+@workflow.composition
+
 # Ontology: app.assets.frames.crafts
 
 Package for Crafts Frame implementations.

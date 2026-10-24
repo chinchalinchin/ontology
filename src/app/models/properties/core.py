@@ -1,4 +1,7 @@
 """
+@workflow.asset
+@workflows.models
+
 # Ontology: app.models.properties.core
 
 Module for typing core property attributes.

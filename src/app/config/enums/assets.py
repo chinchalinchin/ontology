@@ -1,4 +1,6 @@
 """
+@workflow.compositions
+
 # Ontology: app.config.enums.asset
 
 Asset key enumerations.
@@ -11,6 +13,7 @@ from enum import Enum
 # -------------------------------------------------------
 
 class AssetCategories(str, Enum):
+    """Enumeration of Asset Categories."""
     CRAFTS          = "crafts"
     CURSORS         = "cursors"
     EFFECTS         = "effects"
@@ -22,6 +25,7 @@ class AssetCategories(str, Enum):
     WIDGETS         = "widgets"
 
 class AssetInstances(str, Enum):
+    """Enumeration of Asset Instances."""
     # TILES
     CANOPY          = "canopy"
     ENVIRON         = "environ"
@@ -81,6 +85,7 @@ class AssetInstances(str, Enum):
 #   NOTE: Abstract groups of Assets.
 
 class Spawnables(str, Enum):
+    """Enumeration of Spawnable Assets."""
     COLLECTABLES    = "collectables"
     COMPOSITIONS    = "compositions"
     CROPS           = "crops"
@@ -91,6 +96,7 @@ class Spawnables(str, Enum):
     STRUTS          = "struts"
 
 class Equipment(str, Enum):
+    """Enumeration of Equipment Sheets."""
     ARMOR           = "armor"
     SHIELDS         = "shields"
     TOOLS           = "tools"
@@ -98,6 +104,7 @@ class Equipment(str, Enum):
     WEAPONS         = "weapons"
 
 class Groups(str, Enum):
+    """Enumeration of Asset Groups."""
     EQUIPMENT       = "equipment"
     SPAWNABLES      = "spawnables"
 
@@ -108,17 +115,20 @@ class Groups(str, Enum):
 #           Order matters.
 
 class Frequencies(str, Enum):
+    """Enumeration of Asset Frequencies."""
     CONTINUOUS      = "continuous"
     PERIODIC        = "periodic"
     TEMPORARY       = "temporary"
 
 class Directions(str, Enum):
+    """Enumeration of Asset Directions."""
     UP              = "up"
     LEFT            = "left"
     DOWN            = "down"
     RIGHT           = "right"
 
 class Actions(str, Enum):
+    """Enumeration of Asset Actions."""
     CAST            = "cast"
     THRUST          = "thrust"
     WALK            = "walk"
@@ -127,10 +137,12 @@ class Actions(str, Enum):
     DIE             = "die"
 
 class Orientations(str, Enum):
+    """Enumeration of Asset Orientations."""
     HORIZONTAL      = "horizontal"
     VERTICAL        = "vertical"
 
 class Switches(int, Enum):
+    """Enumeration of Asset Switch States."""
     ON              = 1
     OFF             = 0
 

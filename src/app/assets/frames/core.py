@@ -1,4 +1,6 @@
 """
+@workflow.main
+
 # Ontology: app.assets.frames.core
 
 Package for core Asset Frame implementations. 

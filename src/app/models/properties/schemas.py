@@ -1,4 +1,7 @@
 """
+@workflow.asset
+@workflow.models
+
 # Ontology: app.models.properties.schemas
 
 Module for typing property schemas.

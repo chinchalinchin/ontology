@@ -1,0 +1,19 @@
+{% set modules = [ 'workflow.' ~ workflow for workflow in tools.parameters.source.workflows ] %}
+### View: Workflow
+
+{% for workflow in tools.parameters.source.workflows %}
+#### Workflow: {{ workflow | capitalize }}
+
+{% for pkg in annotations(properties.paths.root ~ 'src', 'workflow.' ~ workflow) %}
+{{ '#' * (pkg.depth + 1) }} {{ pkg.package }}
+
+{% for mod in pkg.modules %}
+{{ '#' * (pkg.depth + 2) }} {{ mod.file_path }}
+
+```{{ typehint(mod.file_path) }}
+{{ file(mod.full_path) }}
+```
+
+{% endfor %}
+{% endfor %}
+{% endfor %}

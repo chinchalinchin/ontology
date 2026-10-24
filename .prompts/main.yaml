@@ -174,7 +174,13 @@ tools:
           # - plots
           - recipes
           # - stages
-      workflow: compositions
+      workflows:
+        - asset
+        # - collisions
+        - compositions
+        - main
+        - models
+        # - telemetry
       script: synthesize
       models: [] 
         # - 

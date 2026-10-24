@@ -1,4 +1,6 @@
 """
+@workflow.asset
+
 # Ontology: app.models.properties.assets
 
 Module for typing Asset property attributes.

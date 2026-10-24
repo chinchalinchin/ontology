@@ -1,4 +1,6 @@
 """
+@workflow.asset
+
 # Ontology: app.assets.base
 
 Package for foundational Asset classes and interfaces.
@@ -19,14 +21,12 @@ from typing import (
 )
 
 # Application Libraries
-import app.config.settings as settings
 from app.config.enums import (
-    AssetInstances,
-    ChannelTypes,
-    Substrates,
-    LayerProjections,
+    ChannelTypes
 )
-from app.models.properties import AssetProperties
+from app.models.properties import (
+    AssetProperties
+)
 from app.models.state import (
     AssetState,
     CalendarState
@@ -36,7 +36,6 @@ from app.models.state import (
 from libs.core.models import (
     Dimensions, 
     Hitbox, 
-    Position
 )
 
 class Singleton(ABC):

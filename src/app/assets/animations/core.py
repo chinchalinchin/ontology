@@ -1,4 +1,6 @@
 """
+@workflow.main
+
 # Ontology: app.asset.animations.core
 
 Package for Asset Animation implementations.

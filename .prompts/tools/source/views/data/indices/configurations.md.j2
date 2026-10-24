@@ -1,31 +1,16 @@
-{# ------------------------------------------------------------- #}
-{% set configuration_indices = {
-    'actions': properties.paths.root ~ 'src/data/config/actions/',
-    'compositions': properties.paths.root ~ 'src/data/config/compositions/',
-    'intentions': properties.paths.root ~ 'src/data/config/intentions/',
-    'library': properties.paths.root ~ 'src/data/config/library/',
-    'mappings': properties.paths.root ~ 'src/data/config/mappings/',
-    'mechanics': properties.paths.root ~ 'src/data/config/mechanics/',
-    'menus': properties.paths.root ~ 'src/data/config/menus/',
-    'plots': properties.paths.root ~ 'src/data/config/plots/',
-    'recipes': properties.paths.root ~ 'src/data/config/recipes/',
-    'stages': properties.paths.root ~ 'src/data/config/stages'
-} %}
-{# ------------------------------------------------------------- #}
-{% for param in tools.parameters.source.data.configurations %}
-{% set location = configuration_indices.get(param) %}
-{% if location %}
-#### Configuration: {{ param | capitalize }}
 
-- Location: {{ location }}
+{# ------------------------------------------------------------- #}
+{% for config in tools.parameters.source.data.configurations %}
+#### Configuration: {{ config | capitalize }}
 
-{% for config in yaml(location, recursive=True) | sort %}
-**{{ config }}**
+- Location: `src/data/config/{{ config }}`
+
+{% for f in yaml('src/data/config/' ~ config, recursive=True) | sort %}
+**{{ f }}**
 
 ```yaml
-{{ file(location ~ config) }}
+{{ file(config ~ f) }}
 ```
 
 {% endfor %}
-{% endif %}
 {% endfor %}

@@ -1,32 +1,17 @@
-{# ------------------------------------------------------------- #}
-{% set property_indices = {
-    'crafts': properties.paths.root ~ 'src/assets/crafts/',
-    'cursors': properties.paths.root ~ 'src/assets/cursors/',
-    'effects': properties.paths.root ~ 'src/assets/effects/',
-    'fonts': properties.paths.root ~ 'src/assets/fonts/',
-    'geography': properties.paths.root ~ 'src/assets/geography/',
-    'objects': properties.paths.root ~ 'src/assets/objects/',
-    'resources': properties.paths.root ~ 'src/assets/resources/',
-    'sheets': properties.paths.root ~ 'src/assets/sheets/',
-    'sounds': properties.paths.root ~ 'src/assets/sounds/',
-    'tiles': properties.paths.root ~ 'src/assets/tiles/',
-    'widgets': properties.paths.root ~ 'src/assets/widgets/'
-} %}
-{# ------------------------------------------------------------- #}
-{% for param in tools.parameters.source.data.properties %}
-{% set location = property_indices.get(param) %}
-{% if location %}
-#### Properties: {{ param | capitalize }}
 
-- Location: `{{ location }}`
+{# ------------------------------------------------------------- #}
+{% for property in tools.parameters.source.data.properties %}
+#### Property: {{ property | capitalize }}
 
-{% for prop in yaml(location, recursive=True) | sort %}
+- Location: `src/assets/{{ property }}`
+
+{% for prop in yaml('src/assets/' ~ property, recursive=True) | sort %}
+
 **{{ prop }}**
 
 ```yaml
-{{ file(location ~ prop) }}
+{{ file(property ~ prop) }}
 ```
 
 {% endfor %}
-{% endif %}
 {% endfor %}

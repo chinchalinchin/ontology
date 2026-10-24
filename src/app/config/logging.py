@@ -1,4 +1,6 @@
 """
+@workflow.telemetry
+
 # Ontology: app.config.logging
 
 Centralized logging configuration for the Ontology application.

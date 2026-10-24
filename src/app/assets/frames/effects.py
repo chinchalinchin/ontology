@@ -1,4 +1,6 @@
 """
+@workflow.fluids
+
 # Ontology: app.assets.frames.effects
 
 Package for Effect Frame implementations. 

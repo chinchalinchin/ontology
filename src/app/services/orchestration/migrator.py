@@ -1,4 +1,7 @@
 """
+@workflow.compositions
+@workflow.orchestration
+
 # Ontology: app.services.orchestration.migrator
 
 Package for state hydration and ECS component injection.

@@ -22,7 +22,10 @@ import os
 import re
 import subprocess
 import sys
-from typing import Union
+from typing import Union, Any, Dict, List
+import ast
+from pathlib import Path
+from collections import defaultdict
 
 # External Libraries
 import jinja2
@@ -172,6 +175,71 @@ def file(file_path: str) -> str:
             return f.read().strip()
     except Exception as e:
         return f"Error reading file: {str(e)}"
+
+
+def annotations(directory: str, tags: Union[str, List[str]]) -> List[Dict[str, Any]]:
+    """
+    Scans a directory for Python files containing any of the given `@tags` in their docstring.
+    Groups matching files by package, sorting packages and modules hierarchically.
+    """
+    root = Path(directory).resolve()
+    tag_list = [tags] if isinstance(tags, str) else list(tags)
+    target_tokens = {f"@{t.lstrip('@')}" for t in tag_list}
+
+    package_groups: Dict[str, list] = defaultdict(list)
+
+    for file_path in root.rglob("*.py"):
+        if file_path.name.startswith((".", "_")) and file_path.name != "__init__.py":
+            continue
+
+        try:
+            tree = ast.parse(file_path.read_text(encoding="utf-8"))
+        except (SyntaxError, UnicodeDecodeError):
+            continue
+
+        docstring = ast.get_docstring(tree)
+        if not docstring:
+            continue
+
+        # Match target annotations against whitespace-separated docstring tokens
+        doc_tokens = set(docstring.split())
+        if not target_tokens.intersection(doc_tokens):
+            continue
+
+        # Relative paths and package hierarchy
+        rel_file = file_path.relative_to(root)
+        rel_parts = rel_file.with_suffix("").parts
+        if rel_parts[-1] == "__init__":
+            rel_parts = rel_parts[:-1]
+
+        package = ".".join(rel_parts[:-1]) if len(rel_parts) > 1 else ""
+        module = rel_parts[-1] if rel_parts else ""
+        import_path = ".".join(rel_parts)
+
+        package_groups[package].append({
+            "name": file_path.name,
+            "module": module,
+            "import_path": import_path,
+            "file_path": rel_file.as_posix(),       # e.g., 'app/models/config/compositions.py'
+            "full_path": str(file_path.resolve()),  # Absolute path for file() loader
+        })
+
+    output = []
+    # Sort packages hierarchically: ('app', 'game') comes before ('app', 'game', 'logic')
+    sorted_packages = sorted(package_groups.keys(), key=lambda p: tuple(p.split(".")) if p else ())
+
+    for package in sorted_packages:
+        # Depth equals number of segments: "app.game" -> 2, "app.services.generators" -> 3
+        depth = len(package.split(".")) if package else 1
+        sorted_modules = sorted(package_groups[package], key=lambda m: m["module"])
+
+        output.append({
+            "package": package or "<root>",
+            "depth": depth,
+            "modules": sorted_modules,
+        })
+
+    return output
 
 
 def md(file_path: str, modifications: Union[dict, None] = None) -> str:
@@ -483,6 +551,7 @@ def render(template_path: str, output_path: str, vars_path: str) -> None:
     )
 
     # Register custom functions into the Jinja globals
+    env.globals['annotations'] = annotations
     env.globals['command'] = command
     env.globals['file'] = file
     env.globals['md'] = md

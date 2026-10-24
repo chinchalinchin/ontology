@@ -1,4 +1,6 @@
 """
+@workflow.main
+
 # Ontology: app.game.board.core
 
 Module for the game database class, Board.

@@ -1,4 +1,6 @@
 """
+@workflow.compositions
+
 # Ontology: app.models.state.crafts
 
 Python data models for typing Craft state attributes.

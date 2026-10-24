@@ -1,4 +1,6 @@
 """
+@workflow.materializer
+
 # Ontology: app.services.markets.materializer
 
 Service for calculating dynamic crafting and construction costs via MaterialIndex.

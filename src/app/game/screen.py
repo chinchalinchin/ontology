@@ -1,4 +1,6 @@
 """
+@workflow.main
+
 # Ontology: app.game.screen
 
 Package for the Screen, an abstraction over the Cython SDL rendering interface and image registries.

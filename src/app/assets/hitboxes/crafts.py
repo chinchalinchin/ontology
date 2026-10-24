@@ -1,4 +1,6 @@
 """
+@workflow.compositions
+
 # Ontology: app.assets.hitboxes.crafts
 """
 # Standard Libraries

@@ -4,6 +4,7 @@
 Package for command line interface.
 """
 # Standard Libraries
+import ast
 import sys
 import argparse
 import logging
@@ -132,6 +133,15 @@ def arguments():
         type=str,
         default=None,
         help="Output destination path or directory. Writes to stdout if omitted."
+    )
+
+    p_tags = subparsers.add_parser("tags", help="Export JSON or YAML model schemas.")
+    p_tags.add_argument("directory", 
+        type=str,
+        nargs="?",
+        default=PROJECT_ROOT,
+        metavar="DIR",
+        help="Scan and list all @tags found in Python docstrings (default: script directory)."
     )
     return parser.parse_args()
 
@@ -303,6 +313,51 @@ def serialize(schema_cls: Any, fmt: str) -> str:
 # ---------------------------------------------------------
 # COMMAND HANDLERS
 # ---------------------------------------------------------
+
+def handle_tags(args) -> list[str]:
+    """
+    Scans a directory for Python files and returns an alphabetized list of
+    all unique tags found in module docstrings.
+
+    Args:
+        directory: Directory path to scan. Defaults to the script directory.
+
+    Returns:
+        list[str]: Sorted list of unique tag names without the '@' prefix.
+    """
+    root = Path(args.directory).expanduser().resolve()
+
+    if not root.exists() or not root.is_dir():
+        print(f"Error: Directory not found at {root}")
+        return []
+
+    tags = set()
+
+    for file_path in root.rglob("*.py"):
+        if ".venv" in file_path.parts:
+            continue
+        
+        if file_path.name.startswith((".", "_")) and file_path.name != "__init__.py":
+            continue
+
+        try:
+            tree = ast.parse(file_path.read_text(encoding="utf-8"))
+        except (SyntaxError, UnicodeDecodeError):
+            continue
+
+        docstring = ast.get_docstring(tree)
+        if not docstring:
+            continue
+
+        for token in docstring.split():
+            if token.startswith("@") and len(token) > 1:
+                cleaned = token.lstrip("@").rstrip(".,;:()")
+                if cleaned:
+                    tags.add(cleaned)
+
+    sorted_tags = sorted(tags)
+    logger.info(sorted_tags)
+    return sorted_tags
 
 def handle_map(args, orchestrator, screensize):
     logger.info("Orchestrating engine components for full board execution (render-full)...")
@@ -488,7 +543,8 @@ COMMAND_REGISTRY = {
     "map": handle_map,
     "start": handle_start,
     "telemetry": handle_telemetry,
-    "schema": handle_schema
+    "schema": handle_schema,
+    "tags": handle_tags
 }
 
 def main():

@@ -1,4 +1,6 @@
 """
+@workflow.compositions
+
 # Ontology: app.models.config.compositions
 
 Models for typing the configuration attributes of Compositions.
