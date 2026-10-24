@@ -151,7 +151,7 @@ See [Library: Graphics](#library-graphics) for more implementation details.
 
 While Python objects are fast enough for general logic, calculating collisions and processing rendering instructions for thousands of entities requires maximum performance. The engine uses Cython to bridge this gap, adhering to a **"Zero Heap Allocation in the Inner Loop"** philosophy to prevent frame stutters caused by the Python Garbage Collector.
 
-!!! important
+!!! important "Zero Heap Allocation Flexibility"
     Zero Heap Allocation is more of an ideal/driving principle than an enforced constraint. 
 
 #### Library: Models

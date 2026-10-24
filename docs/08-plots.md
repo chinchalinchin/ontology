@@ -53,7 +53,7 @@ plots:
 
 For example, the following Plot Transition Matrix demonstrates how a Plot tree can be embedded into the game by specifying nodes and the conditions that must be met to transition out of a given node, 
 
-!!! important
+!!! important "Plot Transitions"
   Plot Transitions use the same scripting syntax and constants as [Intention Transitions](./04-intentions.md#transition-matrix).
 
 ```yaml

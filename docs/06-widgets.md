@@ -135,7 +135,7 @@ Panes may optionally have `headers`. `headers` is a list of Buttons. `len(header
 * `key(asset, state): returns <asset>`
 * `index(self, asset, properties, recipe): returns TODO` 
 
-!!! important
+!!! important "Pane Layouts"
     A Pane at runtime is just a background Asset with layout metadata. A Position has already been injected into from the Provider, after the Menu ScreenPositions have been unpacked into absolute coordinates.
 
 ### Buttons

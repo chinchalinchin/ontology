@@ -11,7 +11,7 @@ A Mechanic is an implementation of an abstract interface the [Engine](./00-overv
 
 Once a Mechanic registered in the [Mechanics Configuration](./appendices/01-schemas.md#configuration-mechanics) and implements this signature, the arguments will be injected from above by the [Engine](./00-overview.md#componentengine) each tick of its loop.
 
-!!! note
+!!! note "Mechanic Keys"
     Mechanics are listed below using `key: class`, where `key` is the unique string identifier for the associated Mechanic implementation. This `key` is used in the [Mechanics Configuration](#configuration) to specify the order of execution.
 
 ### Mechanics: Core
@@ -128,7 +128,7 @@ Under this formulation, Gravity is purely a property of the topological elevatio
 
 #### Core Mechanic: MenuMechanics
 
-!!! note
+!!! note "Menu Stack"
     In the event of multiple Menus (e.g. a dialogue modal over a trade menu), MenuMechanics is constrained to interact with the top of the Menu stack (`board.menus[-1]`).
 
 MenuMechanics delegates to logic to MenuController classes. MenuMechanics is responsible for general Menu logic (e.g. traversal, opening, closing). The MenuController is responsible for particular Menu logic (e.g. equipping, buying, selling). The general workflow of MenuMechanics is given below,
@@ -227,8 +227,8 @@ These Mechanics handle Sprite intentionality, goal-seeking, and tactical navigat
 * `navigation: NavigationMechanics`: Resolves tactical steering, line-of-sight, and waypoint queues.
 * `commerce: CommerceMechanics`: Translates communicative intentions (`barter`, `attract`) into trades and price updates.
 
-!!! important
-    CognitionMechanics mutates Goals, TransitionMechanics mutates Intentions, NavigationMechanics populates Trajectories, and MotionMechanics integrates velocities. This separation of concerns is **strictly** enforced.
+!!! important "Separation of Duties"
+    [CognitionMechanics](#intentional-mechanic-cognitionmechanics) mutates Goals, [TransitionMechanics](#intentional-mechanic-transitionmechanics) mutates Intentions, [NavigationMechanics](#intentional-mechanic-navigationmechanics) populates Trajectories, and [MotionMechanics](#core-mechanic-motionmechanics) integrates velocities. This separation of concerns is **strictly** enforced.
 
 Mechanics, [Intentions and Goals](./04-intentions.md) are the "crux" of the Application. Their interplay and dynamic is the locus of the Application. Mechanics are "*laws of nature*" and Intentions & Goals are "*states of mind*"; Intentional Mechanics are, therefore, the "*psychological laws of the mind*".
 

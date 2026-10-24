@@ -1,11 +1,11 @@
-# Ontology Docs
+# Ontology Docs: Index
 
 *Ontology* is a personal project I have been working on in some form for over a decade, begun shortly after the actual Liberated Pixel Cup concluded. It has been scrapped and remade many times as I learned the mechanics of game development and software engineering. This is my latest attempt to build a highly opinionated, yet entirely configurable and extensible game engine. The general philosophy of the project is: simulation and emergence, at all costs. The goal of the engine is to construct a process that ingests a starting world state and then evolves according to its own internal logic, without scripting. All gameplay is achieved by configuring the initial conditions of the world state and letting it "rip", so to speak.
 
 !!! note "LPC"
     All assets are taken from the [Liberated Pixel Cup](https://lpc.opengameart.org/)
 
-## Ontology Docs: Sections
+## Index: Sections
 
 * [Overview](./00-overview.md)
 * [Assets](./01-assets.md)
@@ -27,6 +27,6 @@
     * [Spec: Interaction Loop](./specs/01-interaction.md)
     * [Spec: Wander Loop](./specs/02-wander.md)
     
-## Ontology Docs: Quality Control
+## Index: Quality Control
 
 [![ontology-tests](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml)

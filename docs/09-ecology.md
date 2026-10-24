@@ -15,8 +15,8 @@ The Ecology of the [Board](./00-overview.md#board) is a collection of interactin
 
 Fluids are directional Effects that project along a `source` Direction until obstructed by an obstacle. Once obstructed, Fluids form Pools around the obstacle and bifuricate into secondary streams.
 
-!!! note
-    Because Fluid assets span multiple grid units, they bypass standard geometric height calculation (`pos.y + dim.l`).
+!!! note "Fluid Rendering"
+    Because Fluid Asset span multiple grid units, they bypass standard geometric height calculation (`pos.y + dim.l`).
 
 **Z-Ordering & Sorting**
 

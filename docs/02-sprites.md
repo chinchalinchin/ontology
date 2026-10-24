@@ -291,7 +291,7 @@ Equipment is a grouping of several Sheet Asset Instances that share the common f
 
 - Equipment: Armor, Tools, Utilities, Weapons
 
-!!! important
+!!! important "Equipment Sheet Specification"
     It assumed Equipment Sheets conform to the same (Action, Direction) grouping utilized by the [Sprite Sheet](./01-assets.md#sheets) equipping it. In other words, the frames coordinates and dimensions in an Equipment Sheet must correspond exactly to frames in a Sprite Sheet. This does not mean Equipment frames may not be present in every frame, but rather what is present must conform to the schema. For example, the `longbow` only occupies the `(shoot, *)` rows of a Sheet, while all other rows of the `longbow` Asset file are blank.
 
 ### Equipment Frames
@@ -310,7 +310,7 @@ equipment:
 
 When this Sprite's Frame `keys()` interface is called, it will return a list of Frame keys that include Equipment Frame keys. The Screen will then retrieve each of these keys from the Registry and render them in the order they were received, thus stacking the Equipment on top of the Sprite who is equipping it.
 
-!!! important
+!!! important "Equipment Frame Indexing"
     Equipment must utilize the StateFrame to get indexed by the Registry.
     
 ### Equipment Animations
@@ -326,8 +326,8 @@ sprite.state.animation.action = AnimationMap.action(
 )
 ```
 
-!!! note
-    Equipment properties are stored in the [Board](./00-overview.md#board) database.
+!!! note "Equipment"
+    Equipment Properties are stored in the [Board](./00-overview.md#board) database.
 
 ## Player
 
@@ -335,7 +335,7 @@ A Player is a special type of Sprite Sheet Asset Instance. It may be thought of 
 
 The Player Sprite Sheet is configured through the `player` Sprite Sheet. 
 
-!!! important
+!!! important "Player Required"
     The `player` Sprite *must* be defined in `/src/assets/sheets/main.yml#sprites`.
 
 **Taxonomy**

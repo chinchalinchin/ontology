@@ -12,7 +12,7 @@ This document serves to specify the Asset architecture and provide key definitio
 
 The Asset directory (and all subdirectories) contains Asset Image Files (`*.png`) and Asset Property indices (`*.yaml`). The [initialization](./11-architecture.md#initialization) reads in all of these files recursively and then use the property indices to index each Asset file into the [Registry](./00-overview.md#registry). Each image file that appears in the Asset directories must be configured in a YAML file to get indexed and injected into the game. The property configuration in the `*.yaml` files must conform to the [Asset property schema](./appendices/01-schemas.md#model-properties) of the respective Asset Category it is configuring. 
 
-!!! important
+!!! important "Schema Merge"
     All `*.yaml` files in the Asset directories are merged into a single schema, so every key must be unique. If two image files have the same name, one of them will be overwritten during [Registry indexing](./00-overview.md#registry).
 
 ### Asset: Concepts
@@ -153,10 +153,10 @@ See [Material documentation](./03-compositions.md#material) for more information
 
 While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to a strict hierarchy of Categories and Instances. The property and state [schemas](./appendices/01-schemas.md) encode Asset Categories and Instances into their top-level keys.
 
-!!! note
+!!! note "Abstraction"
     The Asset Hierarchy can be thought of as a data abstraction governing the schemas, which in turn drive the ECS instantiation. 
 
-!!! note
+!!! note "Metaphysics"
     An analogy may be drawn from the Asset Hierarchy to Edward Zalta's Metaphysics: properties *encode* an Asset, state *exemplifies* an Asset. 
 
 ```mermaid
@@ -220,7 +220,7 @@ The Recipe for an Asset, i.e. the list of components which go into a particular 
     - `elevations(properties: AssetProperties, state: AssetState) -> List[int]`: Emits the discrete elevation tiers the entity participates in.
     - `get(properties: AssetProperties, state: AssetState, elevation: int, frame: Optional[Frame] = None) -> List[Hitbox]`: Emits active physical collision footprints at the requested elevation, accounting for animation frame states (e.g., Attackboxes).
 
-!!! note
+!!! note "Stacks and Offsets"
     An Asset can be a single logical entity composed of multiple superimposed rendered textures, i.e. [Sheets](#sheets), therefore a Frame component returns a `List[(str, int, int)]` rather than a single `str`. The tuple `(int, int)` controls how much the frame is offset from its origin (mainly used in [Expressions](#expressions) to pin a [Cursor Expressions](#cursors) to the relative Position of a Sprite).
 
 ## Category: Tiles
@@ -285,7 +285,7 @@ For this reason, Environ Tiles leverage a SeasonalFrame and event-driven reconst
 
 Canopy Tiles are hardcoded to always render on on top of all of other Assets, regardless of their `elevation` or `priority`. 
 
-!!! important
+!!! important "Widget Exception"
     The *single* exception to this rule is Widgets. Canopy Tiles are an "in-world" Asset, and thus their render ordering is superseded by Widgets.
 
 **Frame: SingleFrame**
@@ -424,7 +424,7 @@ Obstacles are immutable, inanimate Objects. They are meant to encapsulate natura
 
 Plates are Objects with a binary state. Furthermore, that state can be instantaneously altered by collision, e.g. when a Sprite enters its hitbox. When a collision occurs, a Plate will flip its `switch`. When activated, a Plate in turn notifies the state of its `link`-keyed Gate to change.
 
-!!! note
+!!! note "Plate Sensors"
     Plates must have their `mass` property configured to be `-1`, to exclude them from the collision resolution while keeping the collision detection active, i.e. Plates do not move due to collisions, but register when other Assets are intersecting them. Plates are considered *Sensors*. See [CollisionMechanics](./05-mechanics.md#spatial) for more information.
 
 **State: SwitchState**
@@ -849,7 +849,7 @@ Where `n(Action)` is the number of Frames per Action.
 
 A Sheet Asset is partitioned along the axes of *Direction*, *Action* and *Count*. Each cell is identified by a tuple (Direction, Action), and then divided horizontally into contiguous horizontal Frames of amount (Count). 
 
-!!! important
+!!! important "Sheet Altas Strictness"
     For Sheets, it is assumed coordinates of an image in the Asset file are *completely determined* by Action, Direction and Frame. It is assumed Actions form contiguous rows partitioned by Direction, and Frames are organized in horizontal cells of equal length. This specification is enforced on the application level.
 
 !!! note "LPC Specification"
@@ -870,7 +870,7 @@ A Sheet Asset is partitioned along the axes of *Direction*, *Action* and *Count*
 
     2. The `thrust` Action plays double-duty for spears and shovels. The spear is a Weapon, whereas the shovel is a Tool. With LPC assets, the animations of these pieces of Equipment are governed by the `thrust` state. In other words, different types of Equipment do not necessarily map to different Action states. The Engine accounts for this by treating the Equipment Group of Assets as "stateless" and inherently bound to the state of a Sprite Sheet Asset. See [Equipment documentation](./02-sprites.md#equipment) for more information.
 
-!!! note
+!!! note "Sheet Rows"
     The row indexing starts at 0.
 
 **Configuration: ActionSets**
@@ -906,7 +906,7 @@ A Stack is a list of Sheet Asset IDs to superimpose over one another to form the
 
 For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.png` might be stacked on top of `src/assets/sheets/<sheet-category>/skins/male-dark-human.png` to create a new Sheet asset used in the game. This Sprite stack is assembled in the [Registry](./00-overview.md#registry) using the `stack` property during the [application bootstrap](./11-architecture.md#initialization). The assembled `stack` is saved as a Sheet Asset, using the `<sheet-id>` as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.
 
-!!! note
+!!! note "Sheet Stacks"
     It is assumed all Sheets in a Stack conform to the same (Action, Direction) row mapping.
 
 **Properties: SheetProperties**

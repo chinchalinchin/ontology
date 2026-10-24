@@ -191,7 +191,7 @@ compositions:
 !!! note "PseudoState"
     `components` is an [Asset State Schema](./00-overview.md#state) schema, identical to a state file.
 
-!!! note "anchor() Macro"
+!!! note "Anchor Macro"
     The Doors in this Configuration utilize the `anchor` macro to ensure they are rendered on top of their parent Struts. The `anchor` macro applies the formula, `anchor(self, target) = (target.y - target.l) - (self.y + self.l)` to dynamically calculate the rendering order, i.e. this ensures the Door is rendered on top of the parent Strut. 
 
     See [Rendering](./11-architecture.md#rendering) for more information on rendering order.

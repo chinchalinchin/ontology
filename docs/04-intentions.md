@@ -2,17 +2,17 @@
 
 Intentions and Goals are an internal data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state and Goal state that is updated by the gameplay loop. Intentions represent a node in the Sprite's "*finite automaton*", the Intention Transition Matrix. They are used to calculate the (Action, Direction) dimensions of a Sprite Animations state. Goals represent the focus of the Sprite's logic, e.g. a position to move to, a chest to open, etc.
 
-!!! important
-    [CognitionMechanics](#cognition) mutates Goals, TransitionMechanics mutates Intentions, and the Transition Matrix governs the mapping. This rule **must** be followed at all times.
+!!! important "Separation of Duties"
+    [CognitionMechanics](./05-mechanics.md#intentional-mechanic-cognitionmechanics) mutates Goals, [TransitionMechanics](./05-mechanics.md#intentional-mechanic-transitionmechanics) mutates Intentions, and the [Transition Matrix](#transition-matrix) governs the mapping. This rule **must** be followed at all times.
 
 Both Sprites and Players utilize the interface of Intention and Goals to communicate state updates. The key difference is how Intentions and Goals are generated. In the case of the Player, they are mapped from polling the input codes of a Device. For a non-playable Sprite, they are calculated using the [Intention Transition Matrix](#transition-matrix).
 
 Broadly speaking, an Intention is a "verb", e.g. `attack`, `find`, `barter`, etc. A Goal is a "noun" (e.g. `object`, `position`, `property`, etc.). While the exact mapping is more complex, in general terms: Intentions produce Actions, Goals produce Directions.
 
-!!! note
+!!! note "Specifications"
     Each individual intention has a detailed specification in the [Specifications section](./specs/index.md).
 
-!!! note
+!!! note "Transition Notation"
     A Transition from the Intention $i_1$ to the Intention $i_2$ is denoted $i_1:i_2$
 
 ## Intention
@@ -23,27 +23,27 @@ For Sprites, Intention is an attribute that controls state transitions and actio
 
 It may indirectly alter the Sprite state changes or other properties of the Sprites, e.g. entering into the `sprint` state increases the velocity of the `(walk, *)` states, but does not factor into the animation speed or the frame indexing scheme. Similarly, entering into the `interact` state does not alter the Sprite's current animation in any way, but instead allows, for example, the Sprite to open a Chest or Door.
 
-A brief explanation of each Intention state value is given below,
+**Enum: Intentions**
 
-- `attack`: Initiate an Attack Animation.
-- `attract`: Attract a Sprite for interaction.
-- `barter`: Exchange Inventories.
-- `build`: Instantiate a Strut.
-- `escape`: Move away from target.
-- `find`: Move towards target.
-- `follow`: Move towards target.
-- `hunt`: Move towards target.
-- `idle`: Do nothing. Used for memory buffering, i.e. allowing remembered goals to pop onto the stack.
-- `interact`: Interact with Objects.
-- `mine`: Convert Resources into Inventory. 
-- `return`: Return to remembered locations.
-- `scavenge`: Collect loot.
-- `speak`: Initiate dialogue.
-- `sprint`: Increase movement speed.
-- `threaten`: Pre-cursor to Attack.
-- `wander`: Move to randomized positions.
+* `attack`: Initiate an Attack Animation.
+* `attract`: Attract a Sprite for interaction.
+* `barter`: Exchange Inventories.
+* `build`: Instantiate a Strut.
+* `escape`: Move away from target.
+* `find`: Move towards target.
+* `follow`: Move towards target.
+* `hunt`: Move towards target.
+* `idle`: Do nothing. Used for memory buffering, i.e. allowing remembered goals to pop onto the stack.
+* `interact`: Interact with Objects.
+* `mine`: Convert Resources into Inventory. 
+* `return`: Return to remembered locations.
+* `scavenge`: Collect loot.
+* `speak`: Initiate dialogue.
+* `sprint`: Increase movement speed.
+* `threaten`: Pre-cursor to Attack.
+* `wander`: Move to randomized positions.
 
-!!! note
+!!! note "Thrust Polymorphism"
     `mine` is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows. This is resolved by [Action Sets](./appendices/01-schemas.md#configuration-actions) and [AnimationMaps](./11-architecture.md#maps).
 
 **Intention Groups**
@@ -83,10 +83,10 @@ If $i_j:i_{j+1}$ where $i_j, i_{j+1} \neq \text{idle}$, then that transition is 
 
 * Location: `/src/data/config/intentions/main.yaml`
 
-!!! important
+!!! important "Player Exclusion"
     The Player state does not observe the Intention Transition matrix; the Player state is managed by polling the user's input and mapping input to intention. See [Player documentation](./02-sprites.md#player) for more information on the Player.
 
-!!! warning
+!!! warning "Intention Silo"
     Nothing in the game engine changes Intentions *except* Transitions. Transitions (and TransitionMechanics) are the only component of the application that alters Intention State. This is important for consistency. Failure to observe this rule may result in the Sprite Intention logic not behaving correctly. 
 
 The Intention Transition Matrix determines which Intention states are currently reachable for a Sprite from its current Intention. The general schema for the Intention Transition Matrix is given below,
@@ -151,7 +151,7 @@ In another example, the transition from `attack` to `scavenge` in the default In
 
 `sprites` is a reference to a cross-layer dictionary (`_cached_characters`) of all ingame Sprites states keyed by their identifying and unique `name`, which provides $O(1)$ access to their state attributes.
 
-!!! important
+!!! important "Intention Order"
     The conditions for an Intention transition are evaluated in the order they specified! In the given example, if `sprite.goal.category == constants.Goals.TARGET.value`, none of the other conditions for Intention transitions are evaluated and the Intention transitions back into `attack`.
 
 Intention transition conditions are compiled by the application during initialization and evaluated at runtime. The engine supports two execution strategies, configured via `ISL_TRANSLATOR` in `settings.py`: `lambda` (which generates inline Python functions) and `compiler` (which generates native Abstract Syntax Trees). The application evaluates ISL conditions sequentially utilizing Python's native short-circuit logic.
@@ -184,7 +184,7 @@ The ISL environment is injected with variables during execution:
     - `any_goals(m: List[Goal], category: str)`: Determine if a GoalCategory exists in the Sprite memory.
     - `any_memories_visible(sprite: SpriteState, sprites: Dict[str, SpriteState], categories: List[GoalCategories])`
 
-!!! warning
+!!! warning "KeyErrors"
     When referencing `sprites[...]` via a Goal name, authors must use `sprites.get(sprite.goal.name)` to protect the runtime against `KeyErrors` from garbage-collected entities.
 
 ## Goal
