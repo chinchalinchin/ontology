@@ -736,77 +736,77 @@ libpng warning: iCCP: known incorrect sRGB profile
 2026-09-16 11:50:08,353 - INFO - app.game.menus.controllers.load - Hydration complete. Reallocating rendering canvases...
 2026-09-16 11:50:08,354 - INFO - app.game.screen - Rebaking Screen canvases for new world state...
 2026-09-16 11:50:08,443 - INFO - app.game.screen - Initializing Screen (Viewport: 480x480 |Board: 480x480)
-2026-09-16 11:50:10,677 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Intention: ATTACK | Resolved Action: slash
-2026-09-16 11:50:10,677 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
+2026-09-16 11:50:10,677 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Intention: ATTACK | Resolved Action: slash
+2026-09-16 11:50:10,677 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
 2026-09-16 11:50:10,678 - INFO - app.game.logic.mechanics.spatial.combat - attackboxes: None
 2026-09-16 11:50:10,678 - INFO - app.assets.frames.core - SpriteFrame generated keys: [('player-slash-right-0', 0, 0), ('shortsword-slash-right-0', 0, 0), ('buckler-slash-right-0', 0, 0)]
-2026-09-16 11:50:10,700 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Intention: ATTACK | Resolved Action: slash
-2026-09-16 11:50:10,700 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
+2026-09-16 11:50:10,700 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Intention: ATTACK | Resolved Action: slash
+2026-09-16 11:50:10,700 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
 2026-09-16 11:50:10,701 - INFO - app.game.logic.mechanics.spatial.combat - attackboxes: None
 2026-09-16 11:50:10,703 - INFO - app.assets.frames.core - SpriteFrame generated keys: [('player-slash-right-1', 0, 0), ('shortsword-slash-right-1', 0, 0), ('buckler-slash-right-1', 0, 0)]
-2026-09-16 11:50:10,717 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Intention: ATTACK | Resolved Action: slash
-2026-09-16 11:50:10,717 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
+2026-09-16 11:50:10,717 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Intention: ATTACK | Resolved Action: slash
+2026-09-16 11:50:10,717 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
 2026-09-16 11:50:10,718 - INFO - app.game.logic.mechanics.spatial.combat - attackboxes: None
 2026-09-16 11:50:10,718 - INFO - app.assets.frames.core - SpriteFrame generated keys: [('player-slash-right-1', 0, 0), ('shortsword-slash-right-1', 0, 0), ('buckler-slash-right-1', 0, 0)]
-2026-09-16 11:50:10,733 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Intention: ATTACK | Resolved Action: slash
-2026-09-16 11:50:10,734 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
+2026-09-16 11:50:10,733 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Intention: ATTACK | Resolved Action: slash
+2026-09-16 11:50:10,734 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
 2026-09-16 11:50:10,734 - INFO - app.game.logic.mechanics.spatial.combat - attackboxes: None
 2026-09-16 11:50:10,735 - INFO - app.assets.frames.core - SpriteFrame generated keys: [('player-slash-right-2', 0, 0), ('shortsword-slash-right-2', 0, 0), ('buckler-slash-right-2', 0, 0)]
-2026-09-16 11:50:10,750 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Intention: ATTACK | Resolved Action: slash
-2026-09-16 11:50:10,750 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
+2026-09-16 11:50:10,750 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Intention: ATTACK | Resolved Action: slash
+2026-09-16 11:50:10,750 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
 2026-09-16 11:50:10,750 - INFO - app.game.logic.mechanics.spatial.combat - attackboxes: None
 2026-09-16 11:50:10,751 - INFO - app.assets.frames.core - SpriteFrame generated keys: [('player-slash-right-3', 0, 0), ('shortsword-slash-right-3', 0, 0), ('buckler-slash-right-3', 0, 0)]
-2026-09-16 11:50:10,766 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Intention: ATTACK | Resolved Action: slash
-2026-09-16 11:50:10,767 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
+2026-09-16 11:50:10,766 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Intention: ATTACK | Resolved Action: slash
+2026-09-16 11:50:10,767 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
 2026-09-16 11:50:10,767 - INFO - app.game.logic.mechanics.spatial.combat - attackboxes: [{'position': {'x': 46, 'y': 44}, 'dimensions': {'w': 7, 'l': 20}}]
 2026-09-16 11:50:10,768 - INFO - app.assets.frames.core - SpriteFrame generated keys: [('player-slash-right-3', 0, 0), ('shortsword-slash-right-3', 0, 0), ('buckler-slash-right-3', 0, 0)]
-2026-09-16 11:50:10,784 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Intention: ATTACK | Resolved Action: slash
-2026-09-16 11:50:10,785 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
+2026-09-16 11:50:10,784 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Intention: ATTACK | Resolved Action: slash
+2026-09-16 11:50:10,785 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
 2026-09-16 11:50:10,786 - INFO - app.game.logic.mechanics.spatial.combat - attackboxes: [{'position': {'x': 50, 'y': 31}, 'dimensions': {'w': 14, 'l': 14}}]
 2026-09-16 11:50:10,786 - INFO - app.assets.frames.core - SpriteFrame generated keys: [('player-slash-right-4', 0, 0), ('shortsword-slash-right-4', 0, 0), ('buckler-slash-right-4', 0, 0)]
-2026-09-16 11:50:10,801 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Intention: ATTACK | Resolved Action: slash
-2026-09-16 11:50:10,802 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
+2026-09-16 11:50:10,801 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Intention: ATTACK | Resolved Action: slash
+2026-09-16 11:50:10,802 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
 2026-09-16 11:50:10,802 - INFO - app.game.logic.mechanics.spatial.combat - attackboxes: [{'position': {'x': 50, 'y': 31}, 'dimensions': {'w': 14, 'l': 14}}]
 2026-09-16 11:50:10,805 - INFO - app.assets.frames.core - SpriteFrame generated keys: [('player-slash-right-5', 0, 0), ('shortsword-slash-right-5', 0, 0), ('buckler-slash-right-5', 0, 0)]
-2026-09-16 11:50:10,817 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Intention: ATTACK | Resolved Action: slash
-2026-09-16 11:50:10,818 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
+2026-09-16 11:50:10,817 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Intention: ATTACK | Resolved Action: slash
+2026-09-16 11:50:10,818 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
 2026-09-16 11:50:10,818 - INFO - app.game.logic.mechanics.spatial.combat - attackboxes: [{'position': {'x': 48, 'y': 18}, 'dimensions': {'w': 16, 'l': 17}}]
 2026-09-16 11:50:10,819 - INFO - app.assets.frames.core - SpriteFrame generated keys: [('player-slash-right-5', 0, 0), ('shortsword-slash-right-5', 0, 0), ('buckler-slash-right-5', 0, 0)]
 2026-09-16 11:50:17,499 - INFO - app.game.engine - Avg FPS: 35.4 |Avg UPS: 59.9
-2026-09-16 11:50:18,100 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Intention: ATTACK | Resolved Action: slash
-2026-09-16 11:50:18,101 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
+2026-09-16 11:50:18,100 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Intention: ATTACK | Resolved Action: slash
+2026-09-16 11:50:18,101 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
 2026-09-16 11:50:18,101 - INFO - app.game.logic.mechanics.spatial.combat - attackboxes: None
 2026-09-16 11:50:18,102 - INFO - app.assets.frames.core - SpriteFrame generated keys: [('player-slash-right-0', 0, 0), ('shortsword-slash-right-0', 0, 0), ('buckler-slash-right-0', 0, 0)]
-2026-09-16 11:50:18,116 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Intention: ATTACK | Resolved Action: slash
-2026-09-16 11:50:18,117 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
+2026-09-16 11:50:18,116 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Intention: ATTACK | Resolved Action: slash
+2026-09-16 11:50:18,117 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
 2026-09-16 11:50:18,117 - INFO - app.game.logic.mechanics.spatial.combat - attackboxes: None
 2026-09-16 11:50:18,118 - INFO - app.assets.frames.core - SpriteFrame generated keys: [('player-slash-right-1', 0, 0), ('shortsword-slash-right-1', 0, 0), ('buckler-slash-right-1', 0, 0)]
-2026-09-16 11:50:18,133 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Intention: ATTACK | Resolved Action: slash
-2026-09-16 11:50:18,134 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
+2026-09-16 11:50:18,133 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Intention: ATTACK | Resolved Action: slash
+2026-09-16 11:50:18,134 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
 2026-09-16 11:50:18,136 - INFO - app.game.logic.mechanics.spatial.combat - attackboxes: None
 2026-09-16 11:50:18,137 - INFO - app.assets.frames.core - SpriteFrame generated keys: [('player-slash-right-1', 0, 0), ('shortsword-slash-right-1', 0, 0), ('buckler-slash-right-1', 0, 0)]
-2026-09-16 11:50:18,150 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Intention: ATTACK | Resolved Action: slash
-2026-09-16 11:50:18,151 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
+2026-09-16 11:50:18,150 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Intention: ATTACK | Resolved Action: slash
+2026-09-16 11:50:18,151 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
 2026-09-16 11:50:18,151 - INFO - app.game.logic.mechanics.spatial.combat - attackboxes: None
 2026-09-16 11:50:18,152 - INFO - app.assets.frames.core - SpriteFrame generated keys: [('player-slash-right-2', 0, 0), ('shortsword-slash-right-2', 0, 0), ('buckler-slash-right-2', 0, 0)]
-2026-09-16 11:50:18,166 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Intention: ATTACK | Resolved Action: slash
-2026-09-16 11:50:18,167 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
+2026-09-16 11:50:18,166 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Intention: ATTACK | Resolved Action: slash
+2026-09-16 11:50:18,167 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
 2026-09-16 11:50:18,168 - INFO - app.game.logic.mechanics.spatial.combat - attackboxes: None
 2026-09-16 11:50:18,168 - INFO - app.assets.frames.core - SpriteFrame generated keys: [('player-slash-right-3', 0, 0), ('shortsword-slash-right-3', 0, 0), ('buckler-slash-right-3', 0, 0)]
-2026-09-16 11:50:18,183 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Intention: ATTACK | Resolved Action: slash
-2026-09-16 11:50:18,184 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
+2026-09-16 11:50:18,183 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Intention: ATTACK | Resolved Action: slash
+2026-09-16 11:50:18,184 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
 2026-09-16 11:50:18,185 - INFO - app.game.logic.mechanics.spatial.combat - attackboxes: [{'position': {'x': 46, 'y': 44}, 'dimensions': {'w': 7, 'l': 20}}]
 2026-09-16 11:50:18,186 - INFO - app.assets.frames.core - SpriteFrame generated keys: [('player-slash-right-3', 0, 0), ('shortsword-slash-right-3', 0, 0), ('buckler-slash-right-3', 0, 0)]
-2026-09-16 11:50:18,200 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Intention: ATTACK | Resolved Action: slash
-2026-09-16 11:50:18,201 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
+2026-09-16 11:50:18,200 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Intention: ATTACK | Resolved Action: slash
+2026-09-16 11:50:18,201 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
 2026-09-16 11:50:18,202 - INFO - app.game.logic.mechanics.spatial.combat - attackboxes: [{'position': {'x': 50, 'y': 31}, 'dimensions': {'w': 14, 'l': 14}}]
 2026-09-16 11:50:18,204 - INFO - app.assets.frames.core - SpriteFrame generated keys: [('player-slash-right-4', 0, 0), ('shortsword-slash-right-4', 0, 0), ('buckler-slash-right-4', 0, 0)]
-2026-09-16 11:50:18,217 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Intention: ATTACK | Resolved Action: slash
-2026-09-16 11:50:18,217 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
+2026-09-16 11:50:18,217 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Intention: ATTACK | Resolved Action: slash
+2026-09-16 11:50:18,217 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
 2026-09-16 11:50:18,218 - INFO - app.game.logic.mechanics.spatial.combat - attackboxes: [{'position': {'x': 50, 'y': 31}, 'dimensions': {'w': 14, 'l': 14}}]
 2026-09-16 11:50:18,218 - INFO - app.assets.frames.core - SpriteFrame generated keys: [('player-slash-right-5', 0, 0), ('shortsword-slash-right-5', 0, 0), ('buckler-slash-right-5', 0, 0)]
-2026-09-16 11:50:18,233 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Intention: ATTACK | Resolved Action: slash
-2026-09-16 11:50:18,234 - INFO - app.game.logic.mechanics.intentional.player - [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
+2026-09-16 11:50:18,233 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Intention: ATTACK | Resolved Action: slash
+2026-09-16 11:50:18,234 - INFO - app.game.logic.mechanics.intentional.player * [TELEMETRY] Equipment State: Weapon: shortsword | Armor: None | Shield: buckler | Tool: None
 2026-09-16 11:50:18,234 - INFO - app.game.logic.mechanics.spatial.combat - attackboxes: [{'position': {'x': 48, 'y': 18}, 'dimensions': {'w': 16, 'l': 17}}]
 2026-09-16 11:50:18,235 - INFO - app.assets.frames.core - SpriteFrame generated keys: [('player-slash-right-5', 0, 0), ('shortsword-slash-right-5', 0, 0), ('buckler-slash-right-5', 0, 0)]
 ^C2026-09-16 11:50:19,801 - INFO - __main__ - Game engine loop interrupted by user.

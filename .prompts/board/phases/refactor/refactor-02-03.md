@@ -16,16 +16,16 @@ Analyze code for bugs and logical errors.
 
 **Tasks:**
 
-- [x] **Fix Data Ingestion Pipeline:** Update `PySheetPropertyInstances` and `PySheetProperties` Pydantic schemas in `validators.py` to accept dictionary groupings and string-based action keys to unblock CLI rendering. Include `shields`.
-- [x] **Hydrate Equipment Actions:** Update `Orchestrator.migrate()` to intercept Equipment `actions` strings and resolve them into actual `Action` dictionaries via `self.instance_actions()` before passing them to the `Factory`.
-- [x] **Resolve Registry Indexing:** Ensure Equipment instances have a defined recipe in `recipes/main.yaml` mapping to `StateRecipe.NONE` and `AnimationRecipe.NONE`, but utilizing `FrameRecipe.STATE` so the Registry can pre-compute their crop coordinates.
-- [x] **Correct Animation Mapping Logic:** Refactor `AnimationMap.action()` in `maps.py` to retrieve the resolved action key (e.g., 'slash', 'shoot') dynamically from the equipped weapon's properties, rather than querying a non-existent `animation` field.
-- [x] **Squash Peripheral Bugs:** 
-  - [x] Fix `self.configuration` typo in `Orchestrator`.
-  - [x] Fix `del maestro` unbound variable in `cli.py`.
-  - [x] Fix `export_render` signature mismatch passing `registry` to `draw()` in `screen.py`.
-- [x] **Documentation Sync:** Update Asset/Equipment documentation to clarify that Equipment *does* possess a Recipe purely to expose its Frame schema to the `Registry`, but it is skipped during State instantiation.
-- [x] **Fix Factory Component Mapping**: In src/app/hooks/factory.py, update Factory.FRAME_MAP to map FrameRecipe.SPRITE to the SpriteFrame class. This will restore Equipment rendering and StateFrame coordinate indexing.
-- [x] **Filter Dynamic Tiles**: In `app/game/screen.py::draw()`, add a condition to filter out `AssetCategories.TILES` before populating active_assets. Tiles must exclusively be drawn via the pre-compiled bg_canvas and fg_canvas to prevent the single-tile water artifacting seen in the render output.
-- [x] **Fix Background Stretching**: In `libs/graphics/render.pyx::render()`, explicitly define a destination SDL_Rect for the background canvas (derived from `cam_x`, `cam_y` and screen dimensions) and pass it to SDL_RenderCopy instead of NULL. This prevents SDL from stretching the 320px high board to fit the 480px high screen.
-- [x] **Cython Serialization Hook**: Implement a `.to_dict()` interface on `libs.core.models` Cython classes to unblock CLI debugging and logging, as `dataclasses.asdict` is incompatible with `cdef` structs.
+* [x] **Fix Data Ingestion Pipeline:** Update `PySheetPropertyInstances` and `PySheetProperties` Pydantic schemas in `validators.py` to accept dictionary groupings and string-based action keys to unblock CLI rendering. Include `shields`.
+* [x] **Hydrate Equipment Actions:** Update `Orchestrator.migrate()` to intercept Equipment `actions` strings and resolve them into actual `Action` dictionaries via `self.instance_actions()` before passing them to the `Factory`.
+* [x] **Resolve Registry Indexing:** Ensure Equipment instances have a defined recipe in `recipes/main.yaml` mapping to `StateRecipe.NONE` and `AnimationRecipe.NONE`, but utilizing `FrameRecipe.STATE` so the Registry can pre-compute their crop coordinates.
+* [x] **Correct Animation Mapping Logic:** Refactor `AnimationMap.action()` in `maps.py` to retrieve the resolved action key (e.g., 'slash', 'shoot') dynamically from the equipped weapon's properties, rather than querying a non-existent `animation` field.
+* [x] **Squash Peripheral Bugs:** 
+  * [x] Fix `self.configuration` typo in `Orchestrator`.
+  * [x] Fix `del maestro` unbound variable in `cli.py`.
+  * [x] Fix `export_render` signature mismatch passing `registry` to `draw()` in `screen.py`.
+* [x] **Documentation Sync:** Update Asset/Equipment documentation to clarify that Equipment *does* possess a Recipe purely to expose its Frame schema to the `Registry`, but it is skipped during State instantiation.
+* [x] **Fix Factory Component Mapping**: In src/app/hooks/factory.py, update Factory.FRAME_MAP to map FrameRecipe.SPRITE to the SpriteFrame class. This will restore Equipment rendering and StateFrame coordinate indexing.
+* [x] **Filter Dynamic Tiles**: In `app/game/screen.py::draw()`, add a condition to filter out `AssetCategories.TILES` before populating active_assets. Tiles must exclusively be drawn via the pre-compiled bg_canvas and fg_canvas to prevent the single-tile water artifacting seen in the render output.
+* [x] **Fix Background Stretching**: In `libs/graphics/render.pyx::render()`, explicitly define a destination SDL_Rect for the background canvas (derived from `cam_x`, `cam_y` and screen dimensions) and pass it to SDL_RenderCopy instead of NULL. This prevents SDL from stretching the 320px high board to fit the 480px high screen.
+* [x] **Cython Serialization Hook**: Implement a `.to_dict()` interface on `libs.core.models` Cython classes to unblock CLI debugging and logging, as `dataclasses.asdict` is incompatible with `cdef` structs.

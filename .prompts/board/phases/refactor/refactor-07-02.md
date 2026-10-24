@@ -72,4 +72,4 @@ A Platform has two responsibilities:
 
 *Objective*: Debug live execution of the game engine.
 
-- [ ] Subtask: Debug the [User Session](#view-session).
+* [ ] Subtask: Debug the [User Session](#view-session).

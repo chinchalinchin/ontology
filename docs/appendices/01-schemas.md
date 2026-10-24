@@ -4,7 +4,7 @@
 
 ### Sprites
 
-- [sheet-sprite-walk-down-0](../static/xcf/hitboxes/sheet-sprite-walk-down-0.xcf)
+* [sheet-sprite-walk-down-0](../static/xcf/hitboxes/sheet-sprite-walk-down-0.xcf)
 
 ![sheet-sprite-walk-down-0](../static/png/hitboxes/sheet-sprite-walk-down-0.png)
 /// caption
@@ -13,7 +13,7 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 
 **Attackboxes**
 
-- [sheet-weapon-shortsword-slash-down-3](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-down-3.xcf) | [sheet-weapon-shortsword-slash-down-4](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-down-4.xcf) | [sheet-weapon-shortsword-slash-down-5](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-down-5.xcf)
+* [sheet-weapon-shortsword-slash-down-3](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-down-3.xcf) | [sheet-weapon-shortsword-slash-down-4](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-down-4.xcf) | [sheet-weapon-shortsword-slash-down-5](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-down-5.xcf)
 
 <div class="grid cards" markdown>
 
@@ -23,7 +23,7 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 
 </div>
 
-- [sheet-weapon-shortsword-slash-left-3](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-left-3.xcf) | [sheet-weapon-shortsword-slash-left-4](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-left-4.xcf) | [sheet-weapon-shortsword-slash-left-5](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-left-5.xcf)
+* [sheet-weapon-shortsword-slash-left-3](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-left-3.xcf) | [sheet-weapon-shortsword-slash-left-4](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-left-4.xcf) | [sheet-weapon-shortsword-slash-left-5](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-left-5.xcf)
 
 <div class="grid cards" markdown>
 
@@ -33,7 +33,7 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 
 </div>
 
-- [sheet-weapon-shortsword-slash-up-3](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-up-3.xcf) | [sheet-weapon-shortsword-slash-down-4](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-up-4.xcf) | [sheet-weapon-shortsword-slash-up-5](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-up-5.xcf)
+* [sheet-weapon-shortsword-slash-up-3](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-up-3.xcf) | [sheet-weapon-shortsword-slash-down-4](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-up-4.xcf) | [sheet-weapon-shortsword-slash-up-5](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-up-5.xcf)
 
 <div class="grid cards" markdown>
 
@@ -43,7 +43,7 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 
 </div>
 
-- [sheet-weapon-shortsword-slash-right-3](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-right-3.xcf) | [sheet-weapon-shortsword-slash-right-4](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-right-4.xcf) | [sheet-weapon-shortsword-slash-right-5](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-right-5.xcf)
+* [sheet-weapon-shortsword-slash-right-3](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-right-3.xcf) | [sheet-weapon-shortsword-slash-right-4](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-right-4.xcf) | [sheet-weapon-shortsword-slash-right-5](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-right-5.xcf)
 
 <div class="grid cards" markdown>
 
@@ -55,15 +55,15 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 
 ## Compositions Schemas
 
-- [brick-house](../static/xcf/compositions/brick-house.xcf)
-- [postern-gate](../static/xcf/compositions/postern-gate.xcf)
-- [castle-dawn](../static/xcf/compositions/castle-dawn.xcf)
+* [brick-house](../static/xcf/compositions/brick-house.xcf)
+* [postern-gate](../static/xcf/compositions/postern-gate.xcf)
+* [castle-dawn](../static/xcf/compositions/castle-dawn.xcf)
 
 ### Struts
 
-- [craft-strut-frame-brick](../static/xcf/hitboxes/craft-strut-frame-brick.xcf)
-- [craft-strut-wall-blue](../static/xcf/hitboxes/craft-strut-wall-blue.xcf)
-- [craft-strut-wall-castle](../static/xcf/hitboxes/craft-strut-wall-castle.xcf)
+* [craft-strut-frame-brick](../static/xcf/hitboxes/craft-strut-frame-brick.xcf)
+* [craft-strut-wall-blue](../static/xcf/hitboxes/craft-strut-wall-blue.xcf)
+* [craft-strut-wall-castle](../static/xcf/hitboxes/craft-strut-wall-castle.xcf)
 
 ![Brick Frame Strut Hitboxes](../static/png/hitboxes/craft-strut-frame-brick.png)
 /// caption

@@ -112,7 +112,35 @@ MD_MODIFIERS = {
     )
 }
 
-# -------------------- Templating Functions
+# -------------------- MARKDOWN UTILTIES
+
+def _asterisks(text: str) -> str:
+    """
+    Converts list bullet markers from '-' to '*' while preserving
+    code blocks and horizontal rules.
+    """
+    in_code_block = False
+    out_lines = []
+    # Matches indentation and optional blockquote prefixes followed by '- '
+    bullet_pattern = re.compile(r"^([ \t]*(?:>[ \t]*)*)-\s+(.*)$")
+
+    for line in text.splitlines():
+        if line.strip().startswith("```"):
+            in_code_block = not in_code_block
+            out_lines.append(line)
+            continue
+
+        if not in_code_block:
+            match = bullet_pattern.match(line)
+            if match:
+                prefix, rest = match.groups()
+                line = f"{prefix}* {rest}"
+
+        out_lines.append(line)
+
+    return "\n".join(out_lines)
+
+# -------------------- TEMPLATE FUNCTIONS
 
 def typehint(filepath: str) -> str:
     """
@@ -265,7 +293,7 @@ def annotations(directory: str, tags: Union[str, List[str]], strategy: str = "OR
 def md(file_path: str, modifications: Union[dict, None] = None) -> str:
     """
     Loads a Markdown file, applies transformations via MD_MODIFIERS,
-    and returns the rendered Markdown string.
+    and returns the rendered Markdown string with '*' bullet lists.
     """
     full_path = os.path.expanduser(file_path)
 
@@ -292,11 +320,11 @@ def md(file_path: str, modifications: Union[dict, None] = None) -> str:
             output_format="markdown",
             extra_args=["--wrap=none"]
         )
-        return rendered.strip()
+        return _asterisks(rendered.strip())
     except Exception as e:
         return f"Error processing markdown with panflute: {str(e)}"
-    
 
+    
 def dumps(path: str) -> str:
     """
     Scans the path for any state-dump files (yyyymmdd_hhmmss.state-dump.md),

@@ -139,35 +139,55 @@ tools:
     # --------------------------------------------
     source:
       filter:
-        default: OR # AND | OR
+        default: OR
         queries:
             # ------------------------------------
             # - title: TITLE
             #   strategy: AND | OR
             #   scan:
-            #     app: [ base,core,component,
-            #             config,schema,semantics,
-            #             input,mechanics ]
-            #     asset: [ property,state,frame,
-            #             animation,hitbox ]
-            #     domain: [ abstract, concrete, model,
-            #              logic,graphics]
-            #     category: [ crafts,cursors,effects,
-            #             geography,objects,resources,
-            #             sheets,tiles,widgets ]
-            #     main: [ cli,hydration ]
-            #     physics: [ fields, motion, space ]
-            #     workflows: [ collisions,combat,compositions,
-            #             ecology,fluids,intentions,
-            #             menus,motion,orchestration,
-            #             pathfinding,rendering,seasons,
-            #             telemetry ]
+            #     app: [ 
+            #             base, core, component,
+            #             config, schema, semantics,
+            #             input, mechanics 
+            #     ]
+            #     asset: [ 
+            #             property, state, frame,
+            #             animation, hitbox 
+            #     ]
+            #     domain: [ 
+            #               abstract, concrete, model,
+            #               logic, graphics
+            #     ]
+            #     category: [ 
+            #               crafts, cursors, effects,
+            #               geography, objects, resources,
+            #               sheets, tiles, widgets 
+            #     ]
+            #     main: [ 
+            #               cli, hydration 
+            #     ]
+            #     physics: [ 
+            #               fields, motion, space 
+            #     ]
+            #     workflows: [ 
+            #               collisions, combat, compositions,
+            #               ecology, fluids, intentions,
+            #               menus, motion, orchestration,
+            #               navgiation, rendering, seasons,
+            #               telemetry 
+            #     ]
             # ------------------------------------
             - title: Abstracts
               strategy: AND
               scan:
                 app: [ component ]
                 domain: [ abstract ]
+            # ------------------------------------
+            - title: Components
+              strategy: AND
+              scan:
+                app: [ core, component ]
+                domain: [ system ]
             # ------------------------------------
             - title: Implementations
               strategy: AND
@@ -194,38 +214,26 @@ tools:
                 app: [ services ]
                 workflows: [ compositions ]
       data: 
-        properties:
-          - crafts
-          # - cursors
-          # - effects
-          # - fonts
-          # - geography
-          # - objects
-          # - resources
-          # - sheets
-          # - sounds
-          # - tiles
-          # - widgets
+        # properties: [ 
+        #                   crafts, cursors, effects,
+        #                   fonts, geography, objects
+        #                   resources, sheets, sounds
+        #                   tiles, widgets
+        # ]
+        properties: [ crafts ]
+        # state: [
+        #                   crafts, effects, objects
+        #                   objects, resources, sheets,
+        #                   tiles, world
+        # ]
         state: []
-          # - crafts
-          # - effects
-          # - objects
-          # - resources
-          # - sheets
-          # - tiles
-          # - world
-        configurations:
-          # - actions
-          # - compositions
-          # - intentions
-          # - library
-          # - mappings
-          - materials
-          # - mechanics
-          # - menus
-          # - plots
-          - recipes
-          # - stages
+        # configurations: [
+        #                   actions, compositions, intentions,
+        #                   library, mappings, materials,
+        #                   mechanics, menus, plots,
+        #                   recipes, stages
+        # ]
+        configurations: [ materials, recipes]
     # --------------------------------------------
     # ------------------------ PARAMETERS: SHELL
     # --------------------------------------------

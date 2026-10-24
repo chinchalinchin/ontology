@@ -5,28 +5,28 @@
 !!! note "LPC"
     All assets are taken from the [Liberated Pixel Cup](https://lpc.opengameart.org/)
 
-## Sections
+## Ontology Docs: Sections
 
-- [Overview](./00-overview.md)
-- [Assets](./01-assets.md)
-- [Sprites](./02-sprites.md)
-- [Compositions](./03-compositions.md)
-- [Intentions](./04-intentions.md)
-- [Mechanics](./05-mechanics.md)
-- [Widgets](./06-widgets.md)
-- [Sounds](./07-sounds.md)
-- [Plots](./08-plots.md)
-- [Emergence](./10-emergence.md)
-- [Architecture](./11-architecture.md)
-- [Appendices](./appendices/index.md)
-    - [Appendix O: References](./appendices/00-references.md)
-    - [Appendix I: Schemas](./appendices/01-schemas.md)
-    - [Appendix II: Diagrams](./appendices/02-diagrams.md)
-- [Specifications](./specs/index.md)
-    - [Spec: Dialogue Loop](./specs/00-dialogue.md)
-    - [Spec: Interaction Loop](./specs/01-interaction.md)
-    - [Spec: Wander Loop](./specs/02-wander.md)
+* [Overview](./00-overview.md)
+* [Assets](./01-assets.md)
+* [Sprites](./02-sprites.md)
+* [Compositions](./03-compositions.md)
+* [Intentions](./04-intentions.md)
+* [Mechanics](./05-mechanics.md)
+* [Widgets](./06-widgets.md)
+* [Sounds](./07-sounds.md)
+* [Plots](./08-plots.md)
+* [Emergence](./10-emergence.md)
+* [Architecture](./11-architecture.md)
+* [Appendices](./appendices/index.md)
+    * [Appendix O: References](./appendices/00-references.md)
+    * [Appendix I: Schemas](./appendices/01-schemas.md)
+    * [Appendix II: Diagrams](./appendices/02-diagrams.md)
+* [Specifications](./specs/index.md)
+    * [Spec: Dialogue Loop](./specs/00-dialogue.md)
+    * [Spec: Interaction Loop](./specs/01-interaction.md)
+    * [Spec: Wander Loop](./specs/02-wander.md)
     
-## CI/CD
+## Ontology Docs: Quality Control
 
 [![ontology-tests](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml)

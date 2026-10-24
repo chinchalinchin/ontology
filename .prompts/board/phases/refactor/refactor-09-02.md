@@ -368,7 +368,7 @@ Implement sensory edge crossing in `fields.py`. Detect when character footprints
 Okay, bugs logged and documentation updated. Backlog mostly accepted. I think the task list is basically finalized, but two further points I want to drill down into before proceeding to the implementation of the refactor. 
 
 ```markdown
-- [ ] Subtask: Implement inverted lookup cache `_shoreline_index: Dict[Tuple[str, Optional[str]], str]` in `Registry` or `Loader` mapping `(tile_id, fluid_id)` to `shoreline_id`.
+* [ ] Subtask: Implement inverted lookup cache `_shoreline_index: Dict[Tuple[str, Optional[str]], str]` in `Registry` or `Loader` mapping `(tile_id, fluid_id)` to `shoreline_id`.
 ```
 
 This is probably going to be the trickiest bit. It is not clear to me where the lookup occurs or where in the application it should live. It seems like it would only be needed during the Actuator phase. Once the Fluid ID is determined, the rendering shouldn't care where the Shoreline ID came from. 
@@ -1003,15 +1003,15 @@ def mechanics(config: MechanicConfig, executors: Dict[str, Any]) -> Mechanic:
 
 *Objective*: Codify mechanic executor declarations in configuration and formalize executor injection through the Mechanic base interface.
 
-- [x] Subtask: Add `executors: Dict[str, Any]`, `set_executor(key, executor)`, and `executor` property to `Mechanic` in `app/game/logic/mechanics/base.py`.
-- [x] Subtask: Update `MechanicsConfiguration` schema in `app/models/config.py` to support `MechanicInstance(key, executors)` normalization for string and dict YAML entries.
-- [x] Subtask: Update `src/data/config/mechanics/main.yaml` declaring executors for `transition` (intention), `plot` (plot), and `fluid` (actuator).
-- [x] Subtask: Implement `ShorelineIndex.from_properties()` in `app/game/logic/relations/shorelines.py`.
-- [x] Subtask: Update `Actuator.__init__()` to accept `shorelines: Optional[ShorelineIndex] = None`.
-- [x] Subtask: Add `Builder.build_executors()` compiling the master executor registry (`intention`, `plot`, `actuator`).
-- [x] Subtask: Update `Builder.build_board()` to inject `self.executors["actuator"]` into `Migrator`.
-- [x] Subtask: Refactor `Factory.mechanics(config, executors)` to wire declared executors, eliminating all `type(m).__name__` checks in `Builder.build_pipeline()`.
-- [x] Subtask: Refactor `FluidMechanics` to query `self.actuator` via its registered executor instead of ad-hoc instantiation.
+* [x] Subtask: Add `executors: Dict[str, Any]`, `set_executor(key, executor)`, and `executor` property to `Mechanic` in `app/game/logic/mechanics/base.py`.
+* [x] Subtask: Update `MechanicsConfiguration` schema in `app/models/config.py` to support `MechanicInstance(key, executors)` normalization for string and dict YAML entries.
+* [x] Subtask: Update `src/data/config/mechanics/main.yaml` declaring executors for `transition` (intention), `plot` (plot), and `fluid` (actuator).
+* [x] Subtask: Implement `ShorelineIndex.from_properties()` in `app/game/logic/relations/shorelines.py`.
+* [x] Subtask: Update `Actuator.__init__()` to accept `shorelines: Optional[ShorelineIndex] = None`.
+* [x] Subtask: Add `Builder.build_executors()` compiling the master executor registry (`intention`, `plot`, `actuator`).
+* [x] Subtask: Update `Builder.build_board()` to inject `self.executors["actuator"]` into `Migrator`.
+* [x] Subtask: Refactor `Factory.mechanics(config, executors)` to wire declared executors, eliminating all `type(m).__name__` checks in `Builder.build_pipeline()`.
+* [x] Subtask: Refactor `FluidMechanics` to query `self.actuator` via its registered executor instead of ad-hoc instantiation.
 
 **3. Task: ShorelineFrame Indexing & Rendering**
 

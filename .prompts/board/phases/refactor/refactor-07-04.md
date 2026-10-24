@@ -877,7 +877,7 @@ The rest will await the completion of the current phase before indexing.
 
 ###### New Task: Relationships Masquerading as Settings
 
-- [x] Anaylze the proper way to represent the Blueprint, Material relationships and propose a task list.
+* [x] Anaylze the proper way to represent the Blueprint, Material relationships and propose a task list.
 
 `app.config.settings` is beginning to accumulate code that is not exactly a "*setting*". It's more like a relationship. 
 
@@ -1090,15 +1090,15 @@ All changes accepted, except it is not clear where to set the substrate in Migra
 
 **1. `src/app/services/orchestration/migrator.py`**
 
-- [x] Injects `materials: Optional[MaterialIndex] = None` into `Migrator.__init__()` (defaulting to `MaterialIndex.from_configuration(self.configurations.materials)` when not explicitly supplied by `Builder`), passes the same `MaterialIndex` instance to the fallback `Decomposer`, and hydrates `state_obj.substrate = self.materials.substrate(instance_key)` directly in the standalone asset branch of `_build_generator()`.
+* [x] Injects `materials: Optional[MaterialIndex] = None` into `Migrator.__init__()` (defaulting to `MaterialIndex.from_configuration(self.configurations.materials)` when not explicitly supplied by `Builder`), passes the same `MaterialIndex` instance to the fallback `Decomposer`, and hydrates `state_obj.substrate = self.materials.substrate(instance_key)` directly in the standalone asset branch of `_build_generator()`.
 
 2. `src/app/services/generators/game/decomposer.py`
 
-- [x] Resolves `state.substrate` without duck-typing across `_spawn_unit()`, `project_door()`, and `_create_asset()`, restores full `range(ny + 2)` corner superimposition in `_multiply_perimeter()`, ensures idempotent reload behavior for serialized units (`multiple=None`), and computes strategy-aware vertical span lengths in `_get_span_length()` for `anchor()` macros.
+* [x] Resolves `state.substrate` without duck-typing across `_spawn_unit()`, `project_door()`, and `_create_asset()`, restores full `range(ny + 2)` corner superimposition in `_multiply_perimeter()`, ensures idempotent reload behavior for serialized units (`multiple=None`), and computes strategy-aware vertical span lengths in `_get_span_length()` for `anchor()` macros.
 
 ###### 3. `src/app/models/properties/core.py` & `src/app/services/orchestration/builder.py`
 
-- [x] Removes the deleted `settings.MATERIAL_PARTITIONS` / `settings.CHROMATIC_HOSTS` import from `src/app/models/properties/core.py` by validating chromatic host membership directly against `(Organics, Ceramics)` enums, and updates `Builder.build_board()` and `Builder.build_registry()` so `MaterialIndex` is always compiled and injected into both `Decomposer` and `Migrator`.
+* [x] Removes the deleted `settings.MATERIAL_PARTITIONS` / `settings.CHROMATIC_HOSTS` import from `src/app/models/properties/core.py` by validating chromatic host membership directly against `(Organics, Ceramics)` enums, and updates `Builder.build_board()` and `Builder.build_registry()` so `MaterialIndex` is always compiled and injected into both `Decomposer` and `Migrator`.
 
 ##### Self Review II
 

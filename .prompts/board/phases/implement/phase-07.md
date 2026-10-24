@@ -16,27 +16,27 @@ Compositions can be instantiated both at boot (via state files) and at runtime (
 
 *Objective*: Expand Pydantic models to ingest Composition YAML data from both state and config directories.
 
-- [x] Subtack: Define `CompositionConfig` in `models/config.py`
-- [x] Subtask: Update root schemas to include these fields.
+* [x] Subtack: Define `CompositionConfig` in `models/config.py`
+* [x] Subtask: Update root schemas to include these fields.
 
 **2. Task: Hydration Engine**
 
 *Objective*: Create a shared `Decomposer` utility to decouple expansion logic from the Orchestrator.
 
-- [x] Subtask: Implement recursive relative coordinate mapping.
-- [x] Subtask: Implement regex string parser for `bind(root.x)` syntax.
-- [x] Subtask: Implement global increment counter for unique naming.
+* [x] Subtask: Implement recursive relative coordinate mapping.
+* [x] Subtask: Implement regex string parser for `bind(root.x)` syntax.
+* [x] Subtask: Implement global increment counter for unique naming.
 
 **3. Task: Orchestrator Integration**
 
 *Objective*: Intercept Compositions during bootstrapping and flatten them before Board initialization.
 
-- [x] Subtask: Update `Orchestrator.migrate()` to process `self.state.compositions`
-- [x] Subtask: Feed expanded Pseudo States into the standard `Asset` instantiation flow.
+* [x] Subtask: Update `Orchestrator.migrate()` to process `self.state.compositions`
+* [x] Subtask: Feed expanded Pseudo States into the standard `Asset` instantiation flow.
 
 **4. Cradle Integration**
 
 *Objective*: Enable runtime instantiation of Compositions for IndustryMechanics.
 
-- [x] Subtask: Add `spawn_composition()` to `Cradle`.
-- [x] Subtask: Implement aggregate `Cost` calculation for the entire Composition tree.
+* [x] Subtask: Add `spawn_composition()` to `Cradle`.
+* [x] Subtask: Implement aggregate `Cost` calculation for the entire Composition tree.

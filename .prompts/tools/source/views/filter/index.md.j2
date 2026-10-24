@@ -24,7 +24,7 @@ The Filter View *queries* the codebase based on the **Active Tags** and the **Fi
 #### Query #{{ query_idx }}: {{ title }}
 
 * **Filter Strategy**: `{{ strategy }}`
-- **Active Tags**: `{{ tags | join('`, `') }}`
+* **Active Tags**: `{{ tags | join('`, `') }}`
 
 {% for pkg in annotations(properties.paths.root ~ 'src', tags, strategy) %}
 {{ '#' * (pkg.depth + 2) }} {{ pkg.package }}

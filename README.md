@@ -2,7 +2,7 @@
 
 [![ontology-tests](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml)
 
-- [Documentation](https://chinchalinchin.github.io/ontology/)
+* [Documentation](https://chinchalinchin.github.io/ontology/)
 
 ## Setup
 

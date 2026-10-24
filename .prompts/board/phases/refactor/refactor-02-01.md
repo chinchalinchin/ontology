@@ -20,35 +20,35 @@ The basis of the Intention system has been laid. Both Sprite and Player Assets h
 
 *Objective*: Remove file parsing and dictionary merging from the Orchestrator.
 
-- [x] Create a `Loader` utility class.
-- [x] Move `Orchestrator.merge()` and `Orchestrator.load()` into `Loader`.
-- [x] Ensure `Loader` returns the fully merged and Pydantic-validated dictionaries.
-- [x] Update `Orchestrator.__init__` to instantiate and call `Loader`.
+* [x] Create a `Loader` utility class.
+* [x] Move `Orchestrator.merge()` and `Orchestrator.load()` into `Loader`.
+* [x] Ensure `Loader` returns the fully merged and Pydantic-validated dictionaries.
+* [x] Update `Orchestrator.__init__` to instantiate and call `Loader`.
 
 **Task 2: Implement Mechanics Pipeline**
 
 *Objective*: Decouple Mechanics from the Board instantiation.
 
-- [x] Define the execution order of mechanics in a YAML configuration file.
-- [!] Update `Factory` to instantiate the list of `Mechanic` objects based on the YAML configuration.
-- [x] Remove `self._mechanics` instantiation and the play() method from Board.
+* [x] Define the execution order of mechanics in a YAML configuration file.
+* [!] Update `Factory` to instantiate the list of `Mechanic` objects based on the YAML configuration.
+* [x] Remove `self._mechanics` instantiation and the play() method from Board.
 
 **Task 3: Extract Game Loop into Engine Class**
 
 *Objective*: Remove runtime execution responsibilities from the Orchestrator.
 
-- [x] Create an `Engine` class responsible for clock cycles, delta-time accumulation, and frame dispatching.
-- [x] Move `Orchestrator.time()` and `Orchestrator.start()` into the Engine.
-- [x] The `Engine` constructor should accept: the `Board`, the `Screens` dictionary, and the instantiated `Mechanics` list.
-- [x] The `Engine` loop will replace `Board.play()` by explicitly iterating over its injected mechanics: `[m.update(board, delta) for m in self.mechanics]`.
+* [x] Create an `Engine` class responsible for clock cycles, delta-time accumulation, and frame dispatching.
+* [x] Move `Orchestrator.time()` and `Orchestrator.start()` into the Engine.
+* [x] The `Engine` constructor should accept: the `Board`, the `Screens` dictionary, and the instantiated `Mechanics` list.
+* [x] The `Engine` loop will replace `Board.play()` by explicitly iterating over its injected mechanics: `[m.update(board, delta) for m in self.mechanics]`.
 
 **Task 4: Streamline Orchestrator**
 
 *Objective*: Reduce Orchestrator to a pure dependency injection container.
 
-- [!] Initialize `Mechanics` in `Orchestrator.ignite()`
-- [x] Initialize `Engine` in `Orchestrator.ignite()`
-- [x] Verify the `Orchestrator` no longer contains runtime logic or file-system traversal.
+* [!] Initialize `Mechanics` in `Orchestrator.ignite()`
+* [x] Initialize `Engine` in `Orchestrator.ignite()`
+* [x] Verify the `Orchestrator` no longer contains runtime logic or file-system traversal.
 
 **Task 5: Upgrade the Frame Interface**
 

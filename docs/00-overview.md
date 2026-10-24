@@ -25,16 +25,16 @@ All Assets have an *ID* and *properties*. Most, but not all, Assets have *State*
 
 Assets are divided into non-overlapping (Category, Instance) nodes, known as the [Asset Hierarchy](./01-assets.md#asset-hierarchy). Different Categories of Assets expand the base Properties and States in various ways. In brief, the Asset categories are,
 
-- [Crafts](./01-assets.md#crafts)
-- [Cursors](./01-assets.md#cursors)
-- [Effects](./01-assets.md#effects)
-- [Geography](./01-assets.md#geography)
-- [Objects](./01-assets.md#objects)
-- [Sheets](./01-assets.md#sheets)
-- [Sounds](./07-sounds.md)
-- [Resources](./01-assets.md#resources)
-- [Tiles](./01-assets.md#tiles)
-- [Widgets](./06-widgets.md)
+* [Crafts](./01-assets.md#crafts)
+* [Cursors](./01-assets.md#cursors)
+* [Effects](./01-assets.md#effects)
+* [Geography](./01-assets.md#geography)
+* [Objects](./01-assets.md#objects)
+* [Sheets](./01-assets.md#sheets)
+* [Sounds](./07-sounds.md)
+* [Resources](./01-assets.md#resources)
+* [Tiles](./01-assets.md#tiles)
+* [Widgets](./06-widgets.md)
 
 Assets are placed in the `/src/assets/<category>/` directory and then registered in a Asset Category index `/src/assets/<category>/**/*.yaml` file. The YAML index schema for each Asset configures its *Properties*, i.e. the static attributes that are constant and do not change as a result of gameplay. 
 
@@ -56,16 +56,16 @@ An [Asset Category](./01-assets.md#asset-hierarchy) has a single schema for Prop
 
 Mechanics, Relations and other components of the [Engine](#engine) utilize Configuration stored in the Configuration directory:
 
-- [Actions](./01-assets.md#sheets)
-- [Compositions](./03-compositions.md)
-- [Intentions](./04-intentions.md)
-- [Library](./08-plots.md)
-- [Mappings](./02-sprites.md#devices)
-- [Materials](./01-assets.md#concept-materiality)
-- [Mechanics](./05-mechanics.md)
-- [Menus](./06-widgets.md#menus)
-- [Plots](./08-plots.md)
-- [Recipes](./01-assets.md#asset-concepts)
+* [Actions](./01-assets.md#sheets)
+* [Compositions](./03-compositions.md)
+* [Intentions](./04-intentions.md)
+* [Library](./08-plots.md)
+* [Mappings](./02-sprites.md#devices)
+* [Materials](./01-assets.md#concept-materiality)
+* [Mechanics](./05-mechanics.md)
+* [Menus](./06-widgets.md#menus)
+* [Plots](./08-plots.md)
+* [Recipes](./01-assets.md#asset-concepts)
 
 ## Application 
 

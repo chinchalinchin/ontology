@@ -171,6 +171,6 @@ class Board:
 
 *Objective*: Update `Perimeter.generate` to preserve the `List[Boundary]` contract on `Board.perimeters` following contour sweep optimizations.
 
-- [x] Subtask: Verify whether `geometry.contours` returns primitive tuples or concrete `Boundary` objects.
-- [x] Subtask: If primitive tuples are returned, unpack `(x, y, w, l, *_)` in `Perimeter.generate` and construct `Boundary(Position(x, y), Dimensions(w, l))` instances.
-- [x] Subtask: Add unit tests verifying `board.perimeters[layer]` retains typed `Boundary` models with valid `.position` and `.dimensions` attributes after layer extraction.
+* [x] Subtask: Verify whether `geometry.contours` returns primitive tuples or concrete `Boundary` objects.
+* [x] Subtask: If primitive tuples are returned, unpack `(x, y, w, l, *_)` in `Perimeter.generate` and construct `Boundary(Position(x, y), Dimensions(w, l))` instances.
+* [x] Subtask: Add unit tests verifying `board.perimeters[layer]` retains typed `Boundary` models with valid `.position` and `.dimensions` attributes after layer extraction.

@@ -1177,34 +1177,34 @@ if executor:
 
 *Objective*: Support multi-season tile sprite sheets and connect macro-temporal invalidation to Screen canvas baking via the Frame.eras interface.
 
-- [x] Subtask: Implement `SeasonalFrame` in `app.assets.frames.tiles` indexing 36 cells ($4\text{ rows} \times 9\text{ columns}$) formatted as `{id}-{season}-{cycle}-{period}`.
-- [x] Subtask: Add `eras(id: str, calendar: CalendarState) -> List[Tuple[str, int, int]]` to foundational `Frame` class in `app.assets.base`, defaulting to `self.keys(id, None)`.
-- [x] Subtask: Implement `SeasonalFrame.eras(id, calendar)` to emit `[(f"{id}-{calendar.season}-{calendar.cycle}-{calendar.period}", 0, 0)]`.
-- [x] Subtask: Update `Screen.__init__`, `Screen._prerender`, and `Screen.rebake` to accept `calendar: CalendarState` and route tile frame resolution through `tile.frame.eras(tile.id, calendar)`.
-- [x] Subtask: Implement `Screen.reconstruct(tiles: List[Asset], calendar: CalendarState)` to recompile `bg_canvas` and `fg_canvas` without destroying VRAM targets.
-- [x] Subtask: Implement `SeasonEventHandler.handle(event, context)` in `app.game.menus.handlers.seasons` to call `screen.reconstruct(tiles, context.board.calendar)` across active screens.
-- [x] Subtask: Add `SeasonalFrame` to `app.services.generators.game.factory`.
+* [x] Subtask: Implement `SeasonalFrame` in `app.assets.frames.tiles` indexing 36 cells ($4\text{ rows} \times 9\text{ columns}$) formatted as `{id}-{season}-{cycle}-{period}`.
+* [x] Subtask: Add `eras(id: str, calendar: CalendarState) -> List[Tuple[str, int, int]]` to foundational `Frame` class in `app.assets.base`, defaulting to `self.keys(id, None)`.
+* [x] Subtask: Implement `SeasonalFrame.eras(id, calendar)` to emit `[(f"{id}-{calendar.season}-{calendar.cycle}-{calendar.period}", 0, 0)]`.
+* [x] Subtask: Update `Screen.__init__`, `Screen._prerender`, and `Screen.rebake` to accept `calendar: CalendarState` and route tile frame resolution through `tile.frame.eras(tile.id, calendar)`.
+* [x] Subtask: Implement `Screen.reconstruct(tiles: List[Asset], calendar: CalendarState)` to recompile `bg_canvas` and `fg_canvas` without destroying VRAM targets.
+* [x] Subtask: Implement `SeasonEventHandler.handle(event, context)` in `app.game.menus.handlers.seasons` to call `screen.reconstruct(tiles, context.board.calendar)` across active screens.
+* [x] Subtask: Add `SeasonalFrame` to `app.services.generators.game.factory`.
 
 **3. Task: Resource Hierarchy Models & Stage Framing**
 
 *Objective*: Implement the Resource category using unified lifespan typing.
 
-- [x] Subtask: Add `Lifespans` enum (`ANNUAL`, `PERENNIAL`, `CENTENNIAL`) .
-- [x] Subtask: Update `ResourceProperties` in `app.models.properties` with `dimensions: Dimensions`, `lifespan: str`, `loot: str`, `hitboxes: List[Hitbox]`, and `mass: int = 0`.
-- [x] Subtask: Implement unified `ResourceState` in `app.models.state.assets.resources` with `position`, `stage`, `retention`, `phase`, and `harvested`.
-- [x] Subtask: Implement generic `StageFrame` in `app.assets.frames.resources` indexing horizontal strips dynamically using `properties.lifespan`.
-- [x] Subtask: Configure resource recipes in `app.services.orchestrator` binding resources to `StageFrame`, `NoAnimation`, `ResourceProperties`, and `ResourceState`.
+* [x] Subtask: Add `Lifespans` enum (`ANNUAL`, `PERENNIAL`, `CENTENNIAL`) .
+* [x] Subtask: Update `ResourceProperties` in `app.models.properties` with `dimensions: Dimensions`, `lifespan: str`, `loot: str`, `hitboxes: List[Hitbox]`, and `mass: int = 0`.
+* [x] Subtask: Implement unified `ResourceState` in `app.models.state.assets.resources` with `position`, `stage`, `retention`, `phase`, and `harvested`.
+* [x] Subtask: Implement generic `StageFrame` in `app.assets.frames.resources` indexing horizontal strips dynamically using `properties.lifespan`.
+* [x] Subtask: Configure resource recipes in `app.services.orchestrator` binding resources to `StageFrame`, `NoAnimation`, `ResourceProperties`, and `ResourceState`.
 * [x] Subtask: Add `StageFrame` to `app.services.generators.game.factory`.
 
 **4. Task: Declarative Stage Transition Architecture**
 
 *Objective*: Build the declarative transition engine partitioned by Lifespan.
 
-- [x] Subtask: Author `/src/data/config/stages/main.yaml` declaring stage transition graphs partitioned by `lifespan` (`annual`, `perennial`, `centennial`).
-- [x] Subtask: Add `StageConfiguration` to `app.models.config.core` and register `stages: Dict[str, Dict[str, List[StageConfiguration]]]` on `ConfigurationSchema`.
-- [!] Subtask: Implement `StageExecutor` compiling `/src/data/config/stages/main.yaml` to evaluate `(lifespan, current_stage, locals)` and return `StageTransition(next, phase)`.
-- [!] Subtask: Register `stage: StageExecutor` in `Builder.build_executors()` under `Executors.STAGE.value`.
-- [!] Subtask: Update the Transition Executor `Environ` to include Seasonality enums.
+* [x] Subtask: Author `/src/data/config/stages/main.yaml` declaring stage transition graphs partitioned by `lifespan` (`annual`, `perennial`, `centennial`).
+* [x] Subtask: Add `StageConfiguration` to `app.models.config.core` and register `stages: Dict[str, Dict[str, List[StageConfiguration]]]` on `ConfigurationSchema`.
+* [!] Subtask: Implement `StageExecutor` compiling `/src/data/config/stages/main.yaml` to evaluate `(lifespan, current_stage, locals)` and return `StageTransition(next, phase)`.
+* [!] Subtask: Register `stage: StageExecutor` in `Builder.build_executors()` under `Executors.STAGE.value`.
+* [!] Subtask: Update the Transition Executor `Environ` to include Seasonality enums.
 
 *Objective*: Register lifespan-keyed executors in `Builder.build_executors()`.
 

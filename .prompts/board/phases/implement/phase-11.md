@@ -48,7 +48,7 @@
 *Objective*: {{ task.objective }}
 
 {% for subtask in task $}
-- [] Subtask: {{ subtask.description }}
+* [] Subtask: {{ subtask.description }}
 {% endfor %}
 
 {% endfor %}
