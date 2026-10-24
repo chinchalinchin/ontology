@@ -1,16 +1,23 @@
-{% set main_tags = [ 'main.' ~ main for main in tools.parameters.source.filters.tags.main ]%}
-{% set asset_tags = [ 'asset.' ~ asset for asset in tools.parameters.source.filters.tags.asset ] %}
-{% set hierarchy_tags = [ 'category.' ~ category for category in tools.parameters.source.filters.tags.hierarchy ]%}
-{% set workflow_tags = [ 'workflow.' ~ workflow for workflow in tools.parameters.source.filters.tags.workflows ]%}
-{% set tags = main_tags + asset_tags + hierarchy_tags + workflow_tags %}
+{% set tags = [] %}
+{% for prefix, items in [
+    ('main.', tools.parameters.source.filter.tags.main),
+    ('asset.', tools.parameters.source.filter.tags.asset),
+    ('category.', tools.parameters.source.filter.tags.hierarchy),
+    ('workflow.', tools.parameters.source.filter.tags.workflows)
+] %}
+  {% for item in items %}
+    {% set _ = tags.append(prefix ~ item) %}
+  {% endfor %}
+{% endfor %}
+{% set strategy = tools.parameters.source.filter.strategy %}
 ### View: Filter
 
 The Filter View *filters* the codebase based on the **Active Tags** and the **Filter Strategy**.
 
-* **Filter Strategy**: {{ tools.parameters.source.filters.tags.strategy }}
-* **Active Tags**: {{ tags | join(', ') }}
+- **Filter Strategy**: {{ strategy }}
+- **Active Tags**: {{ tags | join(", ") }}
 
-{% for pkg in annotations(properties.paths.root ~ 'src', tags, tools.parameters.source.filters.tags.strategy) %}
+{% for pkg in annotations(properties.paths.root ~ 'src', tags, strategy) %}
 {{ '#' * (pkg.depth + 2) }} {{ pkg.package }}
 
 {% for mod in pkg.modules %}

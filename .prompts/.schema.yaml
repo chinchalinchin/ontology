@@ -45,8 +45,7 @@ tools:
       docs: false
     source:
       data: false
-      models: false
-      workflow: false
+      filter: false
       script: false
     shell:
       directory: false
@@ -68,21 +67,21 @@ tools:
       specs:
         - <spec-page>.md
     source:
+      filter:
+        strategy: <AND | OR | NOT>
+        asset: 
+          - <tag>
+        hierarchy:
+          - <tag>
+        workflows:
+          - <tag>
       data:
         configurations: 
           - <configuration>
         properties: 
           - <property>
-      models: 
-        configurations:
-          - <configuration>
-        properties:
-          - <property>
-        state:
+        state: 
           - <state>
-      workflows: 
-        - <workflow>
-      script: <script>
     shell:
       directory: tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
       commands: []
