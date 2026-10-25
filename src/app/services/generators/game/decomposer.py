@@ -23,12 +23,7 @@ from typing import (
 
 # Application Libraries
 import app.static.settings as settings
-from app.assets.base import (
-    Asset,
-    Frame,
-    Animation,
-    HitboxSchema
-)
+from app.assets.base import Asset
 from app.static.semantics import (
     AssetCategories,
     AssetInstances,
@@ -41,9 +36,7 @@ from app.static.semantics import (
     Shortcuts,
     Substrates
 )
-from app.services.generators.game.factory import (
-    Factory
-)
+from app.services.factories.assets import AssetFactory
 from app.game.logic.relations import MaterialIndex
 from app.models.config import (
     CompositionConfiguration,
@@ -82,12 +75,12 @@ class Decomposer:
         compositions: Dict[str, CompositionConfiguration],
         properties: PropertiesSchema,
         recipes: RecipeConfiguration,
-        materials: Optional[MaterialIndex] = None
+        materials: MaterialIndex
     ):
         self.compositions = compositions
         self.properties = properties
         self.recipes = recipes
-        self.materials = materials or MaterialIndex()
+        self.materials = materials
         self._increment = 0
         self._strategies = {
             MultiplicationStrategies.SIMPLE.value: self._multiply_simple,
@@ -108,7 +101,6 @@ class Decomposer:
         if not props or not props.dimensions:
             return 0
         return props.dimensions.l
-
 
     def _get_span_length(
         self,
@@ -336,7 +328,8 @@ class Decomposer:
         return type(state_obj)(**kwargs)
 
 
-    def _create_asset(self,
+    def _create_asset(
+        self,
         cat_key: str,
         instance: str,
         state: AssetState,
@@ -359,24 +352,13 @@ class Decomposer:
         inst_props = getattr(cat_props, prop_instance_key)
         props = inst_props.get(state.id)
 
-        taxonomy = Factory.taxonomy(
-            state.id, 
-            state.name, 
-            cat_key, 
-            instance
-        )
-        frame = Factory.frame(recipe.frame)
-        animation = Factory.animation(recipe.animation)
-        hitbox = Factory.hitbox(recipe.hitbox)
-
-        return Asset(
-            taxonomy    =taxonomy, 
-            properties  =props, 
-            state       =state, 
-            frame       =frame, 
-            animation   =animation, 
-            hitbox      =hitbox,
-            substrate   =substrate
+        return AssetFactory.asset(
+            category=cat_key,
+            instance=instance,
+            properties=props,
+            state=state,
+            recipe=recipe,
+            substrate=substrate
         )
 
 
@@ -384,9 +366,7 @@ class Decomposer:
         self,
         state: CraftState,
         props: CraftProperties,
-        frame: Frame,
-        animation: Animation,
-        hitbox: HitboxSchema,
+        recipe: Any,
         category: str,
         instance: str,
         unit_name: str,
@@ -405,13 +385,12 @@ class Decomposer:
             multiple=Multiple(1, 1),
             anchor=anchor
         )
-        return Asset(
-            taxonomy=Factory.taxonomy(state.id, unit_name, category, instance),
+        return AssetFactory.asset(
+            category=category,
+            instance=instance,
             properties=props,
             state=unit_state,
-            frame=frame,
-            animation=animation,
-            hitbox=hitbox,
+            recipe=recipe,
             substrate=unit_substrate
         )
 
@@ -423,9 +402,7 @@ class Decomposer:
         self,
         state: CraftState,
         props: CraftProperties,
-        frame: Frame,
-        animation: Animation,
-        hitbox: HitboxSchema,
+        recipe: Any,
         category: str,
         instance: str,
         base_pos: Position,
@@ -449,9 +426,7 @@ class Decomposer:
                     self._spawn_unit(
                         state,
                         props,
-                        frame,
-                        animation,
-                        hitbox,
+                        recipe,
                         category,
                         instance,
                         unit_name,
@@ -468,9 +443,7 @@ class Decomposer:
         self,
         state: CraftState,
         props: CraftProperties,
-        frame: Frame,
-        animation: Animation,
-        hitbox: HitboxSchema,
+        recipe: Any,
         category: str,
         instance: str,
         base_pos: Position,
@@ -486,9 +459,7 @@ class Decomposer:
         return self._multiply_simple(
             state,
             props,
-            frame,
-            animation,
-            hitbox,
+            recipe,
             category,
             instance,
             base_pos,
@@ -503,9 +474,7 @@ class Decomposer:
         self,
         state: CraftState,
         props: CraftProperties,
-        frame: Frame,
-        animation: Animation,
-        hitbox: HitboxSchema,
+        recipe: Any,
         category: str,
         instance: str,
         base_pos: Position,
@@ -519,9 +488,7 @@ class Decomposer:
             return self._multiply_simple(
                 state,
                 props,
-                frame,
-                animation,
-                hitbox,
+                recipe,
                 category,
                 instance,
                 base_pos,
@@ -558,9 +525,7 @@ class Decomposer:
                     self._spawn_unit(
                         state,
                         props,
-                        frame,
-                        animation,
-                        hitbox,
+                        recipe,
                         category,
                         instance,
                         unit_name,
@@ -577,9 +542,7 @@ class Decomposer:
         self,
         state: CraftState,
         props: CraftProperties,
-        frame: Frame,
-        animation: Animation,
-        hitbox: HitboxSchema,
+        recipe: Any,
         category: str,
         instance: str,
         base_pos: Position,
@@ -593,9 +556,7 @@ class Decomposer:
             return self._multiply_simple(
                 state,
                 props,
-                frame,
-                animation,
-                hitbox,
+                recipe,
                 category,
                 instance,
                 base_pos,
@@ -623,9 +584,7 @@ class Decomposer:
                 self._spawn_unit(
                     state,
                     props,
-                    frame,
-                    animation,
-                    hitbox,
+                    recipe,
                     category,
                     instance,
                     n_name,
@@ -642,9 +601,7 @@ class Decomposer:
                 self._spawn_unit(
                     state,
                     props,
-                    frame,
-                    animation,
-                    hitbox,
+                    recipe,
                     category,
                     instance,
                     s_name,
@@ -664,9 +621,7 @@ class Decomposer:
                 self._spawn_unit(
                     state,
                     props,
-                    frame,
-                    animation,
-                    hitbox,
+                    recipe,
                     category,
                     instance,
                     w_name,
@@ -683,9 +638,7 @@ class Decomposer:
                 self._spawn_unit(
                     state,
                     props,
-                    frame,
-                    animation,
-                    hitbox,
+                    recipe,
                     category,
                     instance,
                     e_name,
@@ -823,7 +776,7 @@ class Decomposer:
                     if inst_key in MultipliedAssets:
                         assets.extend(self.multiply(new_state, cat_key, inst_key))
                     elif inst_key == AssetInstances.DOORS.value:
-                        assets.extend(self.project(new_state))
+                        assets.extend(self.project_door(new_state))
                     else:
                         assets.append(self._create_asset(cat_key, inst_key, new_state))
 
@@ -831,7 +784,7 @@ class Decomposer:
     # ------------------------------------------ PUBLIC METHODS
     # ---------------------------------------------------------
 
-    def project(self, state: DoorState) -> List[Asset]:
+    def project_door(self, state: DoorState) -> List[Asset]:
         """
         Instantiates a primary Door on state.layer (Substrates.STANDARD) and its
         reciprocal shadow footprint on state.outlayer (Substrates.OVERLAYS).
@@ -947,16 +900,11 @@ class Decomposer:
 
         cat_recipes = getattr(self.recipes, category)
         recipe = getattr(cat_recipes, instance)
-        frame = Factory.frame(recipe.frame)
-        animation = Factory.animation(recipe.animation)
-        hitbox = Factory.hitbox(recipe.hitbox)
 
         return handler(
             state,
             props,
-            frame,
-            animation,
-            hitbox,
+            recipe,
             category,
             instance,
             base_pos,

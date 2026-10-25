@@ -20,6 +20,9 @@ from typing import (
 )
 import logging
 
+# Application Library
+from app.models.abstracts import Singleton
+
 if TYPE_CHECKING:
     from app.models.properties import GeographyProperties
 
@@ -29,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------
 
-class ShorelineIndex:
+class ShorelineIndex(Singleton):
     """
     Relational secondary index mapping (tile_id, fluid_id, [season]) to shoreline Asset ID.
     Supports multi-level fallback:
@@ -38,8 +41,8 @@ class ShorelineIndex:
     3. (tile_id, None, season)
     4. (tile_id, None)
     """
-    _map: Dict[Tuple[str, Optional[str], Optional[str]], str]
-    _fallback_map: Dict[Tuple[str, Optional[str]], str]
+    _map: Dict[Tuple[str, Optional[str], Optional[str]], str] = {}
+    _fallback_map: Dict[Tuple[str, Optional[str]], str] = {}
 
     def __init__(self, relations: Optional[Dict[Any, str]] = None):
         self._map = {}

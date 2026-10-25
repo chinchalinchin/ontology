@@ -14,7 +14,8 @@ from typing import (
     Dict,
     Tuple,
     Any,
-    Optional
+    Optional,
+    TYPE_CHECKING
 )
 from dataclasses import asdict
 
@@ -41,6 +42,9 @@ from app.models.state.core import (
 from app.models.config import ConfigurationSchema
 from app.models.groups import EquipmentGroup
 from app.game.board.modules.cache import Cache
+
+if TYPE_CHECKING:
+    from app.services.orchestration.migrator import Migrator
 
 # Cython Libraries
 from libs.core.models import (
@@ -73,6 +77,7 @@ class Board:
     # Game Components
     device: Device
     cradle: Cradle
+    migrator: Optional[Migrator]
     menus: List[Menu]
     overlays: List[Menu]
     # ------- Private Fields
@@ -92,6 +97,7 @@ class Board:
         self.plot = None
         self.device = None
         self.cradle = None
+        self.migrator = None
         self.calendar = CalendarState()
         self.menus = []
         self.overlays = []
@@ -198,6 +204,10 @@ class Board:
     def set_plot(self, plot: str) -> None:
         self.plot = plot
 
+
+    def set_migrator(self, migrator: Migrator) -> None:
+        self.migrator = migrator
+    
     # ------------------------------------------------ GETTERS
 
     def player(self, slot: int = 0) -> Optional[Asset]:

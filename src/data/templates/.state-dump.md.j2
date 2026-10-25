@@ -24,6 +24,9 @@
 
 ## {{ asset.name | default(asset.state.name if (asset.state is defined and asset.state.name is defined) else none, true) | default(asset.id, true) }}
 
+{% if asset.substrate is defined and asset.substrate is not none -%}
+- **Substrate**: `{{ asset.substrate }}`
+{% endif -%}
 - **Taxonomy:**
   - Category: `{{ asset.category }}`
   - Instance: `{{ asset.instance }}`
@@ -190,9 +193,6 @@
 {% endif -%}
 {% if asset.state is defined and asset.state is not none -%}
 - **State:**
-{% if asset.state.substrate is defined and asset.state.substrate is not none -%}
-  - Substrate: `{{ asset.state.substrate }}`
-{% endif -%}
 {% if asset.state.layer is defined and asset.state.layer is not none -%}
   - Layer: `{{ asset.state.layer }}`
 {% endif -%}

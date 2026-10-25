@@ -54,8 +54,9 @@ class Actuator:
     and downstream flank bifurcation networks.
     """
 
+    @classmethod
     def _collect_obstacles(
-        self, 
+        cls, 
         fluid: Asset, 
         board: Board, 
         direction: str,
@@ -110,7 +111,7 @@ class Actuator:
                 asset.state.switch
             ): continue
 
-            if hasattr(asset.properties, "mass") and asset.properties.mass != 0:
+            if asset.properties.mass != 0:
                 continue
 
             for hb in asset.hitboxes:
@@ -136,9 +137,9 @@ class Actuator:
 
         return obstacle_tuples
 
-
+    @classmethod
     def _calculate_max_distance(
-        self, 
+        cls, 
         x: int, 
         y: int, 
         board: Board, 
@@ -162,9 +163,9 @@ class Actuator:
 
         return 10000
 
-
+    @classmethod
     def _build_stream_hitbox(
-        self, 
+        cls, 
         direction: str, 
         length: int, 
         fw: int, 
@@ -184,9 +185,9 @@ class Actuator:
 
         return None
 
-
+    @classmethod
     def _partition_pool(
-        self,
+        cls,
         obstacle: Asset,
         fluid: Asset,
         flow: int
@@ -226,9 +227,9 @@ class Actuator:
 
         return pool_bounds, pool_hitboxes
 
-
+    @classmethod
     def _calculate_branch_discharges(
-        self,
+        cls,
         pool: Pool, 
         direction: str, 
         flow: int, 
@@ -263,11 +264,10 @@ class Actuator:
             top_pos = Position(x, pool.y)
             bottom_pos = Position(x, pool.y + pool.l - fl)
             return [(top_pos, direction, child_flow), (bottom_pos, direction, child_flow)]
-
         return []
 
-
-    def compile_moisture_field(self, layer: str, board: Board) -> MoistureField:
+    @classmethod
+    def compile_moisture_field(cls, layer: str, board: Board) -> MoistureField:
         """
         Constructs a MoistureField representing the linear superposition of all active
         stream corridors, annular pools, and branches across the layer.
@@ -282,8 +282,7 @@ class Actuator:
             fl = fluid.properties.dimensions.l
             flow = fluid.state.flow
             length = fluid.state.length
-            direction = fluid.state.source
-            dir_val = direction.value if hasattr(direction, "value") else str(direction)
+            dir_val = Directions(fluid.state.source).value
 
             # 1. Linear parent corridor line segment
             if length > 0 and flow > 0:
@@ -315,8 +314,7 @@ class Actuator:
                     by = branch.position.y
                     b_mid_x = bx + (fw // 2)
                     b_mid_y = by + (fl // 2)
-                    b_dir = branch.source
-                    b_dir_val = b_dir.value if hasattr(b_dir, "value") else str(b_dir)
+                    b_dir_val = Directions(branch.source).value
 
                     if b_dir_val == Directions.DOWN.value:
                         field.add_stream(b_mid_x, by, b_mid_x, by + branch.length, branch.flow)
@@ -325,18 +323,17 @@ class Actuator:
                     elif b_dir_val == Directions.RIGHT.value:
                         field.add_stream(bx, b_mid_y, bx + branch.length, b_mid_y, branch.flow)
                     elif b_dir_val == Directions.LEFT.value:
-                        field.add_stream(bx, b_mid_y, bx - branch.length, b_mid_y, branch.flow)
+                        field.add_stream(bx, b_mid_y, bx - branch.length, branch.flow)
 
         return field
-
-
-    def propagate(self, fluid: Asset, board: Board) -> Tuple[int, Optional[Pool], List[Hitbox]]:
+    
+    @classmethod
+    def propagate(cls, fluid: Asset, board: Board) -> Tuple[int, Optional[Pool], List[Hitbox]]:
         """
         Truncates fluid corridor against map bounds and static obstacles, expands annular
         pooling, raycasts downstream flank bifurcation branches, and compiles compound hitboxes.
         """
-        source_prop = fluid.state.source
-        direction = source_prop.value if hasattr(source_prop, "value") else str(source_prop)        
+        direction = Directions(fluid.state.source).value
         flow = fluid.state.flow
         fw = fluid.properties.dimensions.w
         fl = fluid.properties.dimensions.l
@@ -347,8 +344,8 @@ class Actuator:
         fluid.frame.tile_w = fw
         fluid.frame.tile_l = fl
 
-        obstacle_tuples = self._collect_obstacles(fluid, board, direction)
-        max_dist = self._calculate_max_distance(fx, fy, board, layer, direction)
+        obstacle_tuples = cls._collect_obstacles(fluid, board, direction)
+        max_dist = cls._calculate_max_distance(fx, fy, board, layer, direction)
 
         stream_length, struck_obstacle = geometry.raycast(
             fx,
@@ -367,7 +364,7 @@ class Actuator:
 
         # 1. Expand pool and truncate parent corridor at pool boundary
         if isinstance(struck_obstacle, Asset) and flow > 0:
-            pool_bounds, pool_hitboxes = self._partition_pool(struck_obstacle, fluid, flow)
+            pool_bounds, pool_hitboxes = cls._partition_pool(struck_obstacle, fluid, flow)
             
             if direction == Directions.DOWN.value:
                 stream_length = max(0, pool_bounds.y - fy)
@@ -380,7 +377,7 @@ class Actuator:
 
             # 2. Bifurcate downstream flank continuation streams
             if flow > 1:
-                discharges = self._calculate_branch_discharges(
+                discharges = cls._calculate_branch_discharges(
                     pool_bounds,
                     direction,
                     flow,
@@ -388,14 +385,14 @@ class Actuator:
                     fl
                 )
                 for origin_pos, branch_dir, child_flow in discharges:
-                    branch_obstacles = self._collect_obstacles(
+                    branch_obstacles = cls._collect_obstacles(
                         fluid,
                         board,
                         branch_dir,
                         origin_x=origin_pos.x,
                         origin_y=origin_pos.y
                     )
-                    b_max_dist = self._calculate_max_distance(
+                    b_max_dist = cls._calculate_max_distance(
                         origin_pos.x,
                         origin_pos.y,
                         board,
@@ -412,7 +409,7 @@ class Actuator:
                         b_max_dist
                     )
                     if b_len > 0:
-                        b_hb = self._build_stream_hitbox(branch_dir, b_len, fw, fl)
+                        b_hb = cls._build_stream_hitbox(branch_dir, b_len, fw, fl)
                         b_hitboxes = [b_hb] if b_hb else []
                         branches.append(
                             Branch(
@@ -444,7 +441,7 @@ class Actuator:
 
         # 3. Assemble compound relative hitboxes
         hitboxes: List[Hitbox] = []
-        stream_hb = self._build_stream_hitbox(direction, stream_length, fw, fl)
+        stream_hb = cls._build_stream_hitbox(direction, stream_length, fw, fl)
         if stream_hb:
             hitboxes.append(stream_hb)
         if pool_hitboxes:
@@ -460,14 +457,14 @@ class Actuator:
         fluid.state._keys.clear()
 
         # 4. Compile and assign continuous hydrological superposition field to Board
-        moisture_field = self.compile_moisture_field(layer, board)
+        moisture_field = cls.compile_moisture_field(layer, board)
         board.set_moisture_field(layer, moisture_field)
 
         return stream_length, pool_bounds, hitboxes
 
-
-    def pump(self, fluid: Asset, board: Board) -> Tuple[int, Optional[Pool], List[Hitbox]]:
+    @classmethod
+    def pump(cls, fluid: Asset, board: Board) -> Tuple[int, Optional[Pool], List[Hitbox]]:
         """
         Unified execution interface for isolated fluid propagation.
         """
-        return self.propagate(fluid, board)
+        return cls.propagate(fluid, board)

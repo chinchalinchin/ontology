@@ -1,3 +1,6 @@
+- Cartographer and Actuator are static. They shouldn't actually be injected anywhere.
+
+
 
 An inspection of `Orchestrator`, `Builder`, `Factory`, `Migrator`, `Decomposer`, `Cradle`, `Board`, and `MaterialIndex` reveals six structural inconsistencies in the current dependency tree.
 

@@ -36,8 +36,7 @@ mechanics:
       executors: []
       relations: []
     - key: fluid
-      executors:
-        - actuator
+      executors: []
       relations:
         - shorelines
     - key: season

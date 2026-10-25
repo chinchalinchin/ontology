@@ -60,8 +60,7 @@ def _obstacle_intersects_fluid(gate: Asset, fluid: Asset) -> bool:
     fy = fluid.state.position.y
     fw = fluid.properties.dimensions.w
     fl = fluid.properties.dimensions.l
-    direction = fluid.state.source
-    dir_val = direction.value if hasattr(direction, "value") else str(direction)
+    dir_val = Directions(fluid.state.source).value
 
     # 1. Broad-phase edge-touching AABB check against active compound hitboxes
     for hb in fluid.hitboxes:
@@ -102,16 +101,6 @@ class FluidMechanics(Mechanic):
     _initialized: bool
 
     @property
-    def actuator(self) -> Actuator:
-        if Executors.ACTUATOR.value not in self.executors:
-            self.executors[Executors.ACTUATOR.value] = Actuator()
-        return self.executors[Executors.ACTUATOR.value]
-
-    @actuator.setter
-    def actuator(self, value: Actuator) -> None:
-        self.executors[Executors.ACTUATOR.value] = value
-
-    @property
     def shorelines(self) -> Optional[ShorelineIndex]:
         return self.relations.get(Relations.SHORELINES.value)
 
@@ -119,10 +108,8 @@ class FluidMechanics(Mechanic):
     def shorelines(self, value: ShorelineIndex) -> None:
         self.set_relation(Relations.SHORELINES.value, value)
 
-    def __init__(self, actuator: Optional[Actuator] = None):
+    def __init__(self):
         super().__init__()
-        if actuator is not None:
-            self.set_executor(Executors.ACTUATOR.value, actuator)
         self._gate_states = {}
         self._debounce = {}
         self._initialized = False
@@ -218,7 +205,7 @@ class FluidMechanics(Mechanic):
                     f"len={f.state.length} "
                     f"pool={f.state.pool}"
                 )
-                self.actuator.propagate(f, board)
+                Actuator.propagate(f, board)
             
             # Delegate layer water cache synchronization to FluidMechanics
             board.update_fluid_cache(layer)

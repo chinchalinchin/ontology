@@ -86,20 +86,20 @@ tools:
     # ------------------------ TOOL VIEWS: MANAGER
     # --------------------------------------------
     manager:
-      board: true
+      board: false
       specs: false
-      docs: true
+      docs: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: true
+      data: false
       filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: true
+      directory: false
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
@@ -177,48 +177,53 @@ tools:
             #               telemetry 
             #     ]
             # ------------------------------------
-            - title: Abstracts
+            - title: Fluid Mechanics
               strategy: AND
-              scan:
-                app: [ component ]
-                domain: [ abstract ]
-            # ------------------------------------
-            - title: Components
-              strategy: AND
-              scan:
-                app: [ core, component ]
-                domain: [ system ]
-            # ------------------------------------
-            - title: Material Implementations
-              strategy: AND
-              scan:
-                app: [ asset ]
-                domain: [ concrete ]
-                modality: [ material ]
-            # ------------------------------------
-            - title: Material Models
-              strategy: AND
-              scan:
-                domain: [ model ]
-                modality: [ material ]
-            # ------------------------------------
-            - title: Composition Logic
-              strategy: AND 
-              scan:
+              scan: 
                 domain: [ logic ]
-                app: [ module ]
-                workflows: [ compositions ]
-            - title: Composition Services
-              strategy: AND
-              scan:
-                app: [ services ]
-                workflows: [ compositions ]
-            # ------------------------------------
-            - title: Procedural Generation Services
-              strategy: AND
-              scan:
-                app: [ services ]
-                workflows: [ ecology, generation ]
+                workflows: [ fluids ]
+            # - title: Abstracts
+            #   strategy: AND
+            #   scan:
+            #     app: [ component ]
+            #     domain: [ abstract ]
+            # # ------------------------------------
+            # - title: Components
+            #   strategy: AND
+            #   scan:
+            #     app: [ core, component ]
+            #     domain: [ system ]
+            # # ------------------------------------
+            # - title: Material Implementations
+            #   strategy: AND
+            #   scan:
+            #     app: [ asset ]
+            #     domain: [ concrete ]
+            #     modality: [ material ]
+            # # ------------------------------------
+            # - title: Material Models
+            #   strategy: AND
+            #   scan:
+            #     domain: [ model ]
+            #     modality: [ material ]
+            # # ------------------------------------
+            # - title: Composition Logic
+            #   strategy: AND 
+            #   scan:
+            #     domain: [ logic ]
+            #     app: [ module ]
+            #     workflows: [ compositions ]
+            # - title: Composition Services
+            #   strategy: AND
+            #   scan:
+            #     app: [ services ]
+            #     workflows: [ compositions ]
+            # # ------------------------------------
+            # - title: Procedural Generation Services
+            #   strategy: AND
+            #   scan:
+            #     app: [ services ]
+            #     workflows: [ ecology, generation ]
       data: 
         # properties: [ 
         #                   crafts, cursors, effects,
@@ -295,4 +300,6 @@ tools:
         # - structures
       session:
         description: |
-          Shorelines are rendering on top of Bridges and Player. In the current state dump, this bug is exemplified.
+          These changes have broken Fluid Flows. Fluid streams propagate down, but are no longer obstructed by obstacles nor do they bifurcate, annular pools are not forming and Fluid fields are no longer being applied.
+          
+          Shorelines are still generated, though.

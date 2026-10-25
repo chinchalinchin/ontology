@@ -41,7 +41,9 @@ class Perimeter:
     """
     Derives simply-connected outer hulls of an environment partitioned by layer and elevation.
     """
-    def extract(self, board: Board, layer: str, elevation: Optional[int] = None) -> List[tuple[int, int, int, int]]:
+
+    @classmethod
+    def extract(cls, board: Board, layer: str, elevation: Optional[int] = None) -> List[tuple[int, int, int, int]]:
         rects = []
         
         # 1. Map Tiles (Substrates belong to Tier 0)
@@ -119,7 +121,8 @@ class Perimeter:
             
         return rects
 
-    def generate(self, board: Board, layer: str) -> Dict[int, List[Boundary]]:
+    @classmethod
+    def generate(cls, board: Board, layer: str) -> Dict[int, List[Boundary]]:
         weights = board.weights(layer)
         # Collapse all non-positive elevations to Tier 0
         elevations = {
@@ -130,7 +133,7 @@ class Perimeter:
         perimeters_by_tier: Dict[int, List[Boundary]] = {}
 
         for elevation in elevations:
-            rects = self.extract(board, layer, elevation=elevation)
+            rects = cls.extract(board, layer, elevation=elevation)
             if not rects:
                 continue
                 

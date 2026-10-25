@@ -109,12 +109,15 @@ class MaterialIndex(Singleton):
         index._obstacle_blueprints = frozenset(obstacles)
         return index
 
+
     def materials(self, genus: str) -> Tuple[str, ...]:
         return self._material_partitions.get(genus, ())
+
 
     def host(self, genus: str) -> Optional[str]:
         """Returns the single host genus key for a material genus, or None."""
         return self._genus_host.get(genus)
+
 
     def hosts(self, genus: str) -> Tuple[str, ...]:
         """Returns the partition tuple of valid host materials for a genus."""
@@ -122,6 +125,7 @@ class MaterialIndex(Singleton):
         if not host_genus:
             return ()
         return self._material_partitions.get(host_genus, ())
+
 
     def blueprints(self, schema: str) -> Tuple[str, ...]:
         return self._blueprint_partitions.get(schema, ())

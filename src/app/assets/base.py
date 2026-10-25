@@ -19,8 +19,6 @@ from typing import (
     List, 
     Tuple,
     Optional,
-    Type,
-    Any,
 )
 
 # Application Libraries
@@ -28,6 +26,7 @@ from app.static.semantics import (
     ChannelTypes,
     Substrates
 )
+from app.models.abstracts import Singleton
 from app.models.properties import (
     AssetProperties
 )
@@ -41,15 +40,6 @@ from libs.core.models import (
     Dimensions, 
     Hitbox, 
 )
-
-class Singleton(ABC):
-    _instances: Dict[Type[Any], Any] = {}
-
-    def __new__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super().__new__(cls)
-        return cls._instances[cls]
-
     
 @dataclass(slots=True)
 class Taxonomy:
