@@ -6,7 +6,7 @@
 from libc.math cimport sqrt
 
 # Application Libraries
-from app.config.enums import Directions
+from app.static.semantics import Directions
 
 # Cython Libraries
 from libs.core.models cimport (

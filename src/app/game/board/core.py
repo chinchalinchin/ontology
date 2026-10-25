@@ -20,6 +20,8 @@ from dataclasses import asdict
 
 # Application Libraries
 import app.static.settings as settings
+import app.game.board.modules.predicates as predicates
+
 from app.assets.base import Asset
 from app.static.semantics import (
     AssetCategories,
@@ -38,8 +40,7 @@ from app.models.state.core import (
 )
 from app.models.config import ConfigurationSchema
 from app.models.groups import EquipmentGroup
-from game.board.modules.cache import Cache
-import game.board.modules.predicates as predicates
+from app.game.board.modules.cache import Cache
 
 # Cython Libraries
 from libs.core.models import (

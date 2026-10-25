@@ -28,7 +28,7 @@ from app.static.semantics import (
     AssetInstances,
     Directions
 )
-from game.board.modules.fields import MoistureField
+from app.game.board.modules.fields import MoistureField
 from app.models.state import (
     Pool, 
     Branch
