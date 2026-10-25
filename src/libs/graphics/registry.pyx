@@ -1,5 +1,10 @@
 # cython: language_level=3
 """
+@domain.systems
+@domain.graphics
+@app.library
+@workflow.rendering
+
 # Ontology: libs.graphics.registry
 """
 # Standard Libraries

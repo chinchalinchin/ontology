@@ -1,5 +1,13 @@
 """
-# Ontology: libs.core.math.geometry
+@domain.system
+@domain.logic
+@app.library
+@workflow.collisions
+@workflow.navigation
+
+# Ontology: Source - libs.core.math.geometry
+
+Cython Library for geometrical calculations and algorithms.
 """
 # cython: language_level=3
 # C Libraries

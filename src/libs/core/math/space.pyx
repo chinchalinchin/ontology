@@ -1,4 +1,11 @@
 """
+@domain.logic
+@domain.system
+@app.library
+@physics.space
+@workflow.collisions
+@workflow.space
+
 # Ontology: libs.core.math.space
 """
 # cython: language_level=3

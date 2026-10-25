@@ -1,4 +1,9 @@
 """
+@domain.system
+@domain.logic
+@workflow.intentions
+@workflow.navigation
+
 # Ontology: libs.core.math.paths
 """
 # cython: language_level=3

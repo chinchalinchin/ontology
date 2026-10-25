@@ -1,5 +1,13 @@
 """
+@domain.system
+@domain.logic
+@app.library
+@physics.motion
+@workflow.collisions
+@workflow.navigation
+
 # Ontology: libs.core.math.physics
+
 """
 # cython: language_level=3
 from libc.math cimport sqrt, cos, sin, atan2

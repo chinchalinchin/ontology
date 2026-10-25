@@ -1,4 +1,9 @@
 """
+@domain.system
+@domain.user
+@app.library
+@app.devices
+
 # Ontology: libs.core.input
 """
 # cython: language_level=3

@@ -1,4 +1,9 @@
 """
+@domain.systems
+@domain.model
+@app.library
+@workflow.collisions
+
 Ontology: libs.core.models
 """
 # cython: language_level=3
