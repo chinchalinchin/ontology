@@ -52,7 +52,7 @@ To support this structural change, the schemas of Sheets have been modified to a
 
 The Pixie Schema is now reworked, and some of the properties have been renamed to correspond to their Sprite counterparts. Pixies used to be constrained to have a certain number of rows and frames. But to generalize across the asset hierarchy, their properties have been brought in line with Sprites.
 
-The Sprite Schema used to assemble the Sprite Sheets from a `base` and `features` attribute specified in the `/assets/sheets/main.yaml` configuration file. To align the Pixie and Sprite configurations, a more general Property schema has been adopted, with Actions and Personas alterations to ensure they conform with both Asset Instance types. See [Sheets documentation](../../01-assets.md#sheets) for more information.
+The Sprite Schema used to assemble the Sprite Sheets from a `base` and `features` attribute specified in the `/assets/sheets/main.yaml` configuration file. To align the Pixie and Sprite configurations, a more general Property schema has been adopted, with Actions and Personas alterations to ensure they conform with both Asset Instance types. See [Sheets documentation](../../01-assets.md#category-sheets) for more information.
 
 * [x] Ensure Sheets remained indexed correctly in the `libs/registry.pyx`
 * [x] Re-hydrate the Pixie states in `src/app/orchestration.py`, `src/app/game/factory.py`.

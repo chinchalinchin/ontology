@@ -106,7 +106,7 @@ See [Goals documentation](./04-intentions.md) for more information.
 
 ### Trajectory
 
-Tactical obstacle avoidance is managed via Trajecotires. When direct line of sight to a strategic Goal is occluded, [NavigationMechanics](./05-mechanics.md#intentional) executes an [Rapidly-exploring Random Tree pathfinding routine](./11-architecture.md#math) and populates the trajectory buffer:
+Tactical obstacle avoidance is managed via Trajecotires. When direct line of sight to a strategic Goal is occluded, [NavigationMechanics](./05-mechanics.md#mechanics-intentional) executes an [Rapidly-exploring Random Tree pathfinding routine](./11-architecture.md#math) and populates the trajectory buffer:
 
 * `target`: The immediate physical coordinate \((x, y)\) that `MotionMechanics` steers toward on the current tick. If line of sight to the strategic goal is clear, `target == sprite.state.goal.position`. If occluded, `target == vertices[0]`.
 * `vertices`: The FIFO queue of intermediate RRT avoidance coordinates, adjusted for sensory anchor displacement.
@@ -292,7 +292,7 @@ Equipment is a grouping of several Sheet Asset Instances that share the common f
 - Equipment: Armor, Tools, Utilities, Weapons
 
 !!! important "Equipment Sheet Specification"
-    It assumed Equipment Sheets conform to the same (Action, Direction) grouping utilized by the [Sprite Sheet](./01-assets.md#sheets) equipping it. In other words, the frames coordinates and dimensions in an Equipment Sheet must correspond exactly to frames in a Sprite Sheet. This does not mean Equipment frames may not be present in every frame, but rather what is present must conform to the schema. For example, the `longbow` only occupies the `(shoot, *)` rows of a Sheet, while all other rows of the `longbow` Asset file are blank.
+    It assumed Equipment Sheets conform to the same (Action, Direction) grouping utilized by the [Sprite Sheet](./01-assets.md#category-sheets) equipping it. In other words, the frames coordinates and dimensions in an Equipment Sheet must correspond exactly to frames in a Sprite Sheet. This does not mean Equipment frames may not be present in every frame, but rather what is present must conform to the schema. For example, the `longbow` only occupies the `(shoot, *)` rows of a Sheet, while all other rows of the `longbow` Asset file are blank.
 
 ### Equipment Frames
 
@@ -327,7 +327,7 @@ sprite.state.animation.action = AnimationMap.action(
 ```
 
 !!! note "Equipment"
-    Equipment Properties are stored in the [Board](./00-overview.md#board) database.
+    Equipment Properties are stored in the [Board](./00-overview.md#component-board) database.
 
 ## Player
 
@@ -383,7 +383,7 @@ Players utilize the same information channel (e.g. Goals and Intentions) as Spri
 
 ### Devices
 
-The [Board](./00-overview.md#board) contains a Device, which polls for user input. The Device uses a Mapping to translate the polling data into a structured `DevicePayload`, resolving hardware inputs based on their discrete or continuous nature. The [Mapping Configuration](./appendices/01-schemas.md#configuration-mapping) file provides a translation key between input state and game state.
+The [Board](./00-overview.md#component-board) contains a Device, which polls for user input. The Device uses a Mapping to translate the polling data into a structured `DevicePayload`, resolving hardware inputs based on their discrete or continuous nature. The [Mapping Configuration](./appendices/01-schemas.md#configuration-mapping) file provides a translation key between input state and game state.
 
 **Keyboard**
 

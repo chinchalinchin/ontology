@@ -1,6 +1,6 @@
 # Ontology Docs: Ecology
  
-The Ecology of the [Board](./00-overview.md#board) is a collection of interacting systems. [Assets](./01-assets.md) form the "particles" of this system, while [Mechanics](./05-mechanics.md) play the role of "natural laws". 
+The Ecology of the [Board](./00-overview.md#component-board) is a collection of interacting systems. [Assets](./01-assets.md) form the "particles" of this system, while [Mechanics](./05-mechanics.md) play the role of "natural laws". 
 
 **References**
 
@@ -64,10 +64,10 @@ Shorelines are procedural, inanimate Geography sensors instantiated along unoccl
 
 **Relation: ShorelineIndex**
 
-Shoreline Assets act as relational bridges across environmental Categories and Instances. Specifically, Shorelines declare secondary keys referencing the [Environ Tile](#environ) and optionally [Fluid Effect](#fluids) Assets they border:
+Shoreline Assets act as relational bridges across environmental Categories and Instances. Specifically, Shorelines declare secondary keys referencing the [Environ Tile](#environ) and optionally [Fluid Effect](#effect-fluids) Assets they border:
 
 * `tile: str`: Asset ID of the [Environ Tile](#environ) to which the Shoreline binds.
-* `fluid: Optional[str]`: Optional Asset ID of the [Fluid Effect](#fluids) required to activate this Shoreline.
+* `fluid: Optional[str]`: Optional Asset ID of the [Fluid Effect](#effect-fluids) required to activate this Shoreline.
 
 Formally, this relation is expressed,
 

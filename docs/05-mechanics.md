@@ -360,7 +360,7 @@ mechanics:
             - <relation-key>
 ```
 
-Mechanics are divided into [World Mechanics](#mechanics-world) and [Core Mechanics](#mechanics-core). Core Mechanics execute every single [Engine loop](./00-overview.md#component-engine), regardless of whether or not the [Board](./00-overview.md#board) is paused; These include [AnimationMechanics](#core-mechanic-animationmechanics) and [MenuMechanics](#core-mechanic-menumechanics). World Mechanics only execute when the [Board](./00-overview.md#component-board) is unpaused.
+Mechanics are divided into [World Mechanics](#mechanics-world) and [Core Mechanics](#mechanics-core). Core Mechanics execute every single [Engine loop](./00-overview.md#component-engine), regardless of whether or not the [Board](./00-overview.md#component-board) is paused; These include [AnimationMechanics](#core-mechanic-animationmechanics) and [MenuMechanics](#core-mechanic-menumechanics). World Mechanics only execute when the [Board](./00-overview.md#component-board) is unpaused.
 
 The order in which Mechanics are specified in the schema becomes the order of execution in the [Engine loop](./00-overview.md#component-engine).
 
@@ -378,7 +378,7 @@ Executors are Services made available to Mechanics that register to receive them
 
 * `plot`: Executor for evaluating the conditions for [Plot Transitions](./08-plots.md).
 * `intention`: Executor for evaluating the conditions for [Intention Transitions](./04-intentions.md)
-* `actuator`: Executor for generating [Fluid](./01-assets.md#fluids) and [Shoreline](./01-assets.md#shorelines) Assets.
+* `actuator`: Executor for generating [Fluid](./01-assets.md#effect-fluids) and [Shoreline](./01-assets.md#shorelines) Assets.
 * `annual`: Executor evaluating [Resource Stage](./01-assets.md#resources) transitions for annual lifespans.
 * `perennial`: Executor evaluating [Resource Stage](./01-assets.md#resources)transitions for perennial lifespans.
 * `centennial`: Executor evalutating [Resource Stage](./01-assets.md#resources) transitions for centennial lifespans.
@@ -387,7 +387,7 @@ Executors are Services made available to Mechanics that register to receive them
 
 Relations are static mappings configured at runtime. Available Relations are enumerated below,
 
-* `shorelines`: A map of [Shoreline Geography Asset IDs](./01-assets.md#shorelines) to a compound index of [Tile Asset IDs](./01-assets.md#tiles) and [Fluid Asset ID](./01-assets.md#fluids). This relation maps Fluid Shorelines to the Tiles in which they are embedded, e.g. `grassy-shore` Shorelines are mapped to `grass` Tiles and `water` Fluids. 
+* `shorelines`: A map of [Shoreline Geography Asset IDs](./01-assets.md#shorelines) to a compound index of [Tile Asset IDs](./01-assets.md#category-tiles) and [Fluid Asset ID](./01-assets.md#effect-fluids). This relation maps Fluid Shorelines to the Tiles in which they are embedded, e.g. `grassy-shore` Shorelines are mapped to `grass` Tiles and `water` Fluids. 
 * `materials`: TODO
 
 ## Modules

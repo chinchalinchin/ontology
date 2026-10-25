@@ -55,12 +55,12 @@ Blueprints describe specific structural implementations of a Craft. Blueprints a
 
 **Behavior: Multiplication**
 
-Each Blueprint Schema has a unique Multiplication Strategy associated with it in the [Materials Configuration](./appendices/01-schemas.md#configuration-materials) that determines how its `multiple` will be expanded during [Board](./00-overview.md#board) hydration.
+Each Blueprint Schema has a unique Multiplication Strategy associated with it in the [Materials Configuration](./appendices/01-schemas.md#configuration-materials) that determines how its `multiple` will be expanded during [Board](./00-overview.md#component-board) hydration.
 
-- `simple`: TODO
-- `expansion`: TODO
-- `oriented`: TODO
-- `perimeter`: TODO
+- `simple`: $(x_0 + i \cdot w, y_0 + j \cdot l) \mid i \leq n_x, j \leq n_y$ 
+- `expansion`: $\text{crown} = (x_0, y_0)$, $n_y$, $\text{shafts, base} = (x_0, y_0 + (n_y + 1) \cdot l)$; $\text{anchor} = \text{base.y} + \text{base.l}$
+- `oriented`: $(x + i \cdot w, y) \mid i \leq n_x \lor (x, y + j \cdot l) \mid j \leq n_y$ .
+- `perimeter`: hollow perimeter of $2(n_x + n_y + 4)$ segments with superimposed `L`-corners and `north` baseline anchor adjustment
 
 ### Craft: Struts 
 
@@ -125,9 +125,9 @@ In other words, Root Struts provided a *frame of reference* for their components
 
 To achieve this, Compositions have a *Pseudo State* and a *Deployed State*. A Pseudo State is a formula for constructing the State of its component Assets from the Deployed State of the Composition's [Root Strut](#root-struts). The Pseudo State of a Composition is configured in the Composition directory, whereas the Deployed State is set in the State directory, alongside the other Asset States.
 
-The State files specify Compositions to deploy. The game converts these Compositions into ingame Assets that belong to the [Asset Hierarchy](./01-assets.md#asset-hierarchy). When Compositions are unpacked by the [Orchestrator](./00-overview.md#orchestrator) during the [bootstrapping](./11-architecture.md#initialization), each Asset in a Composition is appended to the [Board](./00-overview.md#board) state dynamically. In other words, the Assets in Compositions, once unpacked, are treated separately by the Engine, as if they had been specified in the state directory individually.
+The State files specify Compositions to deploy. The game converts these Compositions into ingame Assets that belong to the [Asset Hierarchy](./01-assets.md#asset-hierarchy). When Compositions are unpacked by the [Orchestrator](./00-overview.md#orchestrator) during the [bootstrapping](./11-architecture.md#specification-initialization), each Asset in a Composition is appended to the [Board](./00-overview.md#component-board) state dynamically. In other words, the Assets in Compositions, once unpacked, are treated separately by the Engine, as if they had been specified in the state directory individually.
 
-Components of Compositions have a [Pseudo State](#pseudo-state). During the [application bootstrap](./11-architecture.md#initialization), each component's Pseudo State is hydrated into an actual Asset State and injected into the [Board](./00-overview.md#board).
+Components of Compositions have a [Pseudo State](#pseudo-state). During the [application bootstrap](./11-architecture.md#specification-initialization), each component's Pseudo State is hydrated into an actual Asset State and injected into the [Board](./00-overview.md#component-board).
 
 **Model: CompositionPseudoState**
 
@@ -194,7 +194,7 @@ compositions:
 !!! note "Anchor Macro"
     The Doors in this Configuration utilize the `anchor` macro to ensure they are rendered on top of their parent Struts. The `anchor` macro applies the formula, `anchor(self, target) = (target.y - target.l) - (self.y + self.l)` to dynamically calculate the rendering order, i.e. this ensures the Door is rendered on top of the parent Strut. 
 
-    See [Rendering](./11-architecture.md#rendering) for more information on rendering order.
+    See [Rendering](./11-architecture.md#rendering-sort) for more information on rendering order.
     
 This is a formula for a `brick-house` composed of two Struts on different [Layers](./00-overview.md#layers), each of which have their own [Door](./01-assets.md#doors), each Door being linked to one another through a circuit (`'house-layer' <-> root.layer`). In this way, the "inside" of Assets can be traversed. In other words, each Composition may be composed of separate, independent Layers. 
 
@@ -274,7 +274,7 @@ Compositions are not processed by the same hydration algorithm as the other Asse
 
 #### Process: Initialization
 
-The Decomposer is a standalone Service instantiated *before* the [Board and Cradle](./00-overview.md#component-board); it is used during the initial Asset hydration phase of the bootstrapping **and** it is employed by [Mechanics](./05-mechanics.md) through the [Board's Cradle interface](./00-overview.md#board) to instantiate Compositions.
+The Decomposer is a standalone Service instantiated *before* the [Board and Cradle](./00-overview.md#component-board); it is used during the initial Asset hydration phase of the bootstrapping **and** it is employed by [Mechanics](./05-mechanics.md) through the [Board's Cradle interface](./00-overview.md#component-board) to instantiate Compositions.
 
 Because the Decomposer inherently generates Asset Instances, it acts as a higher-level orchestrator of the Factory. To accomplish this, it needs access to the global [Asset Properties](./01-assets.md#concept-mutability), [Recipes](./appendices/01-schemas.md#configuration-recipes) and Composition Configuration.
 

@@ -2,8 +2,8 @@
 @domain.logic
 @app.services
 @workflow.generation
+@workflow.fluids
 @workflow.ecology
-@workflow.seasons
 
 # Ontology: Source - app.services.generators.game.actuator
 

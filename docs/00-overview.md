@@ -19,21 +19,21 @@
 
 ### Core: Assets
 
-Assets are the foundation of the Engine. They are, fundamentally, a class for binding image atlases on the fileystem to entities stored on the [Board](#components-board) and shown on the [Screen](#component-screen).
+Assets are the foundation of the Engine. They are, fundamentally, a class for binding image atlases on the fileystem to entities stored on the [Board](#component-board) and shown on the [Screen](#component-screen).
 
 All Assets have an *ID* and *properties*. Most, but not all, Assets have *State*. 
 
 Assets are divided into non-overlapping (Category, Instance) nodes, known as the [Asset Hierarchy](./01-assets.md#asset-hierarchy). Different Categories of Assets expand the base Properties and States in various ways. In brief, the Asset categories are,
 
-* [Crafts](./01-assets.md#crafts)
-* [Cursors](./01-assets.md#cursors)
-* [Effects](./01-assets.md#effects)
-* [Geography](./01-assets.md#geography)
-* [Objects](./01-assets.md#objects)
-* [Sheets](./01-assets.md#sheets)
+* [Crafts](./01-assets.md#category-crafts)
+* [Cursors](./01-assets.md#category-cursors)
+* [Effects](./01-assets.md#category-effects)
+* [Geography](./01-assets.md#category-geography)
+* [Objects](./01-assets.md#category-objects)
+* [Sheets](./01-assets.md#category-sheets)
 * [Sounds](./07-sounds.md)
-* [Resources](./01-assets.md#resources)
-* [Tiles](./01-assets.md#tiles)
+* [Resources](./01-assets.md#category-resources)
+* [Tiles](./01-assets.md#category-tiles)
 * [Widgets](./06-widgets.md)
 
 Assets are placed in the `/src/assets/<category>/` directory and then registered in a Asset Category index `/src/assets/<category>/**/*.yaml` file. The YAML index schema for each Asset configures its *Properties*, i.e. the static attributes that are constant and do not change as a result of gameplay. 
@@ -46,17 +46,17 @@ See [Asset Schema](./appendices/01-schemas.md#model-properties) for more informa
 
 * Location: `/src/data/state/`
 
-An [Asset](./01-assets.md) is deployed onto a [Board](#board), where it acquires its State, i.e. the dynamic attributes which change as a result of [Mechanics](./05-mechanics.md). The Application ingests and stores this information in the State directory.
+An [Asset](./01-assets.md) is deployed onto a [Board](#component-board), where it acquires its State, i.e. the dynamic attributes which change as a result of [Mechanics](./05-mechanics.md). The Application ingests and stores this information in the State directory.
 
-An [Asset Category](./01-assets.md#asset-hierarchy) has a single schema for Properties that each Instance utilizes, but each individual [Asset Instance](./01-assets.md#asset-hierarchy) has a unique State, particular to its deployment. For example, a [Chest](./01-assets.md#chests) is configured once by its Properties (its width, length, etc.), but each instance of a [Chest](./01-assets.md#chests) on the [Board](#board) is given a unique state (its Position, Content, etc.).
+An [Asset Category](./01-assets.md#asset-hierarchy) has a single schema for Properties that each Instance utilizes, but each individual [Asset Instance](./01-assets.md#asset-hierarchy) has a unique State, particular to its deployment. For example, a [Chest](./01-assets.md#object-chests) is configured once by its Properties (its width, length, etc.), but each instance of a [Chest](./01-assets.md#object-chests) on the [Board](#component-board) is given a unique state (its Position, Content, etc.).
 
 ### Core: Configuration
 
 * Location: `/src/data/config`
 
-Mechanics, Relations and other components of the [Engine](#engine) utilize Configuration stored in the Configuration directory:
+Mechanics, Relations and other components of the [Engine](#component-engine) utilize Configuration stored in the Configuration directory:
 
-* [Actions](./01-assets.md#sheets)
+* [Actions](./01-assets.md#category-sheets)
 * [Compositions](./03-compositions.md)
 * [Intentions](./04-intentions.md)
 * [Library](./08-plots.md)
@@ -131,7 +131,7 @@ The Board exposes interfaces for querying the game state:
     2. `board.weights(layer)`: Returns a list of Assets with non-negative mass ($m \ge 0$) on the given layer (includes static and dynamic bodies; excludes sensors).
     3. `board.obstacles(layer)`: Returns a list of Assets that qualify as Obstacles.
 * Environment Queries
-    1. `board.tile(layer, position, instance)`: Retrieves background or foreground [Tiles](./01-assets.md#tiles) via $O(1)$ spatial hash lookup.
+    1. `board.tile(layer, position, instance)`: Retrieves background or foreground [Tiles](./01-assets.md#category-tiles) via $O(1)$ spatial hash lookup.
     2. `board.shorelines(layer=None)`: Retrieves active procedural shoreline assets for a specific layer or across all layers.
     1. `board.moisture(layer, x, y)`: Queries scalar soil moisture potential $\Phi(x, y)$ from the layer's compiled `MoistureField`.
 
@@ -140,7 +140,7 @@ The Board exposes interfaces for querying the game state:
 THe Board exposes predicates for asserting conditions of the Board state.
 
 * Environment Predicates
-    1. `board.fluid(layer, position, exclude=None)`: Evaluates whether a coordinate intersects any active [Fluid](./01-assets.md#fluids) stream or annular pool across the layer, with an optional entity exclusion filter.
+    1. `board.fluid(layer, position, exclude=None)`: Evaluates whether a coordinate intersects any active [Fluid](./01-assets.md#effect-fluids) stream or annular pool across the layer, with an optional entity exclusion filter.
 
 **Service: Cradle**
 

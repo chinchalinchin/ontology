@@ -9,3 +9,4 @@ $$
 * Treat `tests.unit.fixtures` as a test bed for constructing application objects. Fixtures should not be created in an adhoc manner; instead, fixtures should exemplify and construct the application dependency tree prior to the execution of tests.  
 * If a test requires a specific edge case, request the fixture and mutate its attributes explicitly in the test setup.
 * The only actions that should be mocked are filesystem access and image rendering.
+

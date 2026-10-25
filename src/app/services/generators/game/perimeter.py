@@ -1,7 +1,6 @@
 """
 @domain.logic
 @app.services
-@workflow.generation
 @workflow.collisions
 
 # Ontology: Source - app.services.generators.game.perimeter
