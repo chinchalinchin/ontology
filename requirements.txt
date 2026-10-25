@@ -16,6 +16,7 @@ music21==10.5.0
 mkdocs
 mkdocs-material
 mkdocstrings[python]
+python-mermaid
 ## Analysis
 pydeps
 vulture

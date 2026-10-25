@@ -8,7 +8,6 @@ materials:
     shorelines: -2
     bridges: -1
     stairs: -1
-
   # ---------------------------------------------------
   # ORDERED MATERIAL GENERA (Columns c in [0, C))
   # ---------------------------------------------------

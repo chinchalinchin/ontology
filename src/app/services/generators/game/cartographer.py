@@ -256,6 +256,7 @@ class Cartographer:
 
         return False
 
+
     @classmethod
     def _coalesce_segments(
         cls,

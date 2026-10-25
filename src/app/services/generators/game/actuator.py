@@ -329,6 +329,7 @@ class Actuator:
 
         return field
 
+
     def propagate(self, fluid: Asset, board: Board) -> Tuple[int, Optional[Pool], List[Hitbox]]:
         """
         Truncates fluid corridor against map bounds and static obstacles, expands annular
