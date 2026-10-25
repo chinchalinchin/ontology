@@ -240,6 +240,8 @@ class Provider:
             columns = int(target_dict.get("columns", 4))
 
             state = CollectionState(
+                id=pane.id,
+                name=pane.name,
                 position=Position(x=0, y=0),
                 layout=layout,
                 alignment=alignment,
@@ -266,6 +268,8 @@ class Provider:
             )
         else:
             state = PaneState(
+                id=pane.id,
+                name=pane.name,
                 position=Position(x=0, y=0),
                 layout=layout,
                 alignment=alignment,

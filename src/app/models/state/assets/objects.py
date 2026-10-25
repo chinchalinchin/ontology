@@ -39,26 +39,26 @@ class ObjectState(AssetState):
     material: Optional[str] = None
 
 @dataclass(slots=True)
-class MotiveState(AssetState):
+class MotiveState(ObjectState):
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
 
 @dataclass(slots=True)
-class ContainerState(AssetState):
+class ContainerState(ObjectState):
     content: Optional[List[str]] = field(default_factory=list)
     switch: Optional[bool] = False
 
 @dataclass(slots=True)
-class DoorState(AssetState):
+class DoorState(ObjectState):
     out: Optional[Position] = None # type: ignore
     outlayer: Optional[str] = None
     projection: str = LayerProjections.IN.value
 
 @dataclass(slots=True)
-class SwitchState(AssetState):
+class SwitchState(ObjectState):
     link: Optional[str] = None
     switch: Optional[bool] = False
 
 @dataclass(slots=True)
-class DialogueState(AssetState):
+class DialogueState(ObjectState):
     persona: Optional[str] = None
     lexicon: Optional[str] = None
