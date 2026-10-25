@@ -18,9 +18,9 @@ flowchart TD
       direction TB
         CythonNarrow --> ConfirmedPair["Intersecting Attacker & Target Pair"]
         ConfirmedPair --> ReactableTrigger["ReactableState.active = True"]
-        ReactableTrigger --> AnimTick["FrequencyAnimation.animate(): frame += 1"]
+        ReactableTrigger --> AnimTick["LifecycleAnimation.animate(): frame += 1"]
         AnimTick --> Clamp["Clamp to Final Frame: persist=True"]
-        Clamp --> CooldownStep["FrequencyAnimation.cooldown(state, props): cooldown -= 1"]
+        Clamp --> CooldownStep["LifecycleAnimation.cooldown(state, props): cooldown -= 1"]
         CooldownStep --> Reset["cooldown <= 0: active = False, frame = 0, cooldown = default"]
     end
 

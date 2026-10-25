@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -532,6 +532,95 @@
   
     <nav class="md-nav" aria-label="Cost">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#struts-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Struts Hierarchy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Struts Hierarchy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#materials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Materials
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#purposes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purposes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Purposes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#purpose-decor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purpose: Decor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#purpose-structures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purpose: Structures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#purpose-surfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purpose: Surfaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#purpose-walls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purpose: Walls
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#cost_1" class="md-nav__link">
@@ -1417,6 +1506,95 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#struts-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Struts Hierarchy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Struts Hierarchy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#materials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Materials
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#purposes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purposes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Purposes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#purpose-decor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purpose: Decor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#purpose-structures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purpose: Structures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#purpose-surfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purpose: Surfaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#purpose-walls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purpose: Walls
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#cost_1" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1494,8 +1672,7 @@
 <ul>
 <li><code>dimensions: Dimensions</code></li>
 <li><code>hitboxes: List[Hitbox]</code></li>
-<li><code>materials: List[str]</code></li>
-<li><code>blueprints: List[str]</code></li>
+<li><code>cost: Cost</code></li>
 <li><code>mass: int</code></li>
 <li><code>priority: int</code></li>
 </ul>
@@ -1503,112 +1680,18 @@
 <p><em>Struts</em> are inanimate, immutable Assets. Struts are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. In other words, they possess an <code>owner</code>. </p>
 <p>Struts may be placed on the Board through the state files manually, but they are generally instantiated ingame through the <code>build</code> <a href="../04-intentions/">Intention</a>. </p>
 <p>Struts are closely related to <a href="./">Asset Compositions</a>, as they provide a "foundation" upon which configurations of Assets can be built. In other words, a Strut's main purpose is to provide a coordinate system for the relative positioning of reusable Asset configurations. </p>
-<p><strong>Strut Hierarchy</strong></p>
-<p>Struts are the basic element of Compositions. They are classified according to Material and Blueprint. All Struts are functionally equivalent (but may differ in the declaration of their properties), yet serve different atmospheric, vanity or aesthetic purposes; Material and Blueprint describe the axes of this "<em>aesthetic</em>" space.</p>
-<p>A Blueprint is constant along the axis of Material, and Material is constant along the axis of Blueprints.</p>
-<p><strong>Materials</strong></p>
-<p>Material serves mainly to alter the color and shading of the Strut. A Material must have implemenations for every Blueprint in a Strut atlas.</p>
-<ul>
-<li>Organics: <code>wood</code>, <code>thatches</code></li>
-<li>Geologics: <code>brick</code>, <code>granite</code>, <code>marble</code>, <code>stone</code>, <code>sandstone</code></li>
-<li>Metallics: <code>copper</code>, <code>iron</code>, <code>gold</code></li>
-<li>Chromatics: <code>white</code>, <code>red</code>, <code>blue</code>, <code>yellow</code>, <code>green</code></li>
-</ul>
-<p><strong>Material Palette</strong></p>
-<table>
-<thead>
-<tr>
-<th>Material</th>
-<th>Hexcodes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>brick</code></td>
-<td>#B14E45, #BA6C4C</td>
-</tr>
-<tr>
-<td><code>canvas</code></td>
-<td>-</td>
-</tr>
-<tr>
-<td><code>concrete</code></td>
-<td>#9A8F8F</td>
-</tr>
-<tr>
-<td><code>copper</code></td>
-<td>#9D5427, #7B2008 #973C23</td>
-</tr>
-<tr>
-<td><code>clay</code></td>
-<td>#C4B59F, #B19998, #9D8080</td>
-</tr>
-<tr>
-<td><code>gold</code></td>
-<td>#DEB573, #B87E3A, #9C6B31</td>
-</tr>
-<tr>
-<td><code>granite</code></td>
-<td>#8AAAAB, #748DA4, #5C6C89,</td>
-</tr>
-<tr>
-<td><code>iron</code></td>
-<td>#2E2533</td>
-</tr>
-<tr>
-<td><code>marble</code></td>
-<td>#C39753, #AE764B, #D9B75C</td>
-</tr>
-<tr>
-<td><code>sandstone</code></td>
-<td>#CCBD7B</td>
-</tr>
-<tr>
-<td><code>slate</code></td>
-<td>#818B8B, #4A5057, #31313E</td>
-</tr>
-<tr>
-<td><code>stone</code></td>
-<td>#E5E6C7, #C4B59F, #B19998</td>
-</tr>
-<tr>
-<td><code>wood</code></td>
-<td>#9D6639, #8F5030, #62351C</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Blueprints</strong></p>
-<p>Blueprints describe specific structural implementations of a Strut. A Blueprint must have implementations for every Material in a Strut atlas.</p>
-<ul>
-<li>Building Blueprints:<ul>
-<li><code>floors</code>: Interior ground surfaces.</li>
-<li><code>walls</code>: Exterior support surfaces.</li>
-<li><code>flats</code>: Elevated surfaces.</li>
-<li><code>roofs</code>: Building enclosures.</li>
-<li><code>paths</code>: Exterior ground surfaces.</li>
-<li><code>halls</code>: Interior support surfaces.</li>
-</ul>
-</li>
-<li>Interior Blueprints:<ul>
-<li><code>carpets</code></li>
-<li><code>wallpapers</code></li>
-</ul>
-</li>
-</ul>
 <p><strong>Animation: None</strong></p>
 <p>N/A</p>
-<p><strong>Frame: MaterialFrame</strong></p>
+<p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>keys(id, state): returns [ (f"{id}-{state.material}-{state.blueprint}", 0, 0) ]</code></li>
-<li><code>index(id, properties): returns { f"{id}-{properties.materials.*}-{properties.blueprints.*}: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, state): returns [ (id, 0, 0) ]</code></li>
+<li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: PropertyState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
 <li><code>elevaiton: int</code></li>
 <li><code>position: Position</code></li>
-<li><code>material: str</code></li>
-<li><code>blueprint: str</code></li>
 <li><code>owner: str</code></li>
 </ul>
 <p><strong>Hitbox: StaticHitbox</strong></p>
@@ -1919,6 +2002,120 @@
 </ol>
 <div class="arithmatex">\[
 \]</div>
+<h4 id="struts-hierarchy">Struts Hierarchy</h4>
+<p>Struts are the basic element of Compositions. They are classified according to Material and Purpose. All Struts are functionally equivalent (but may differ in the declaration of their properties), yet serve different atmospheric, vanity or aesthetic purposes; Material and Purpose describe the axes of this "<em>aesthetic</em>" space.</p>
+<h5 id="materials">Materials</h5>
+<p>Material serves mainly to alter the color and shading of the Strut.</p>
+<p><strong>Palette</strong></p>
+<table>
+<thead>
+<tr>
+<th>Material</th>
+<th>Hexcodes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>brick</code></td>
+<td>#B14E45, #BA6C4C</td>
+</tr>
+<tr>
+<td><code>canvas</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>concrete</code></td>
+<td>#9A8F8F</td>
+</tr>
+<tr>
+<td><code>copper</code></td>
+<td>#9D5427, #7B2008 #973C23</td>
+</tr>
+<tr>
+<td><code>clay</code></td>
+<td>#C4B59F, #B19998, #9D8080</td>
+</tr>
+<tr>
+<td><code>gold</code></td>
+<td>#DEB573, #B87E3A, #9C6B31</td>
+</tr>
+<tr>
+<td><code>granite</code></td>
+<td>#8AAAAB, #748DA4, #5C6C89,</td>
+</tr>
+<tr>
+<td><code>iron</code></td>
+<td>#2E2533</td>
+</tr>
+<tr>
+<td><code>marble</code></td>
+<td>#C39753, #AE764B, #D9B75C</td>
+</tr>
+<tr>
+<td><code>sandstone</code></td>
+<td>#CCBD7B</td>
+</tr>
+<tr>
+<td><code>slate</code></td>
+<td>#818B8B, #4A5057, #31313E</td>
+</tr>
+<tr>
+<td><code>stone</code></td>
+<td>#E5E6C7, #C4B59F, #B19998</td>
+</tr>
+<tr>
+<td><code>wood</code></td>
+<td>#9D6639, #8F5030, #62351C</td>
+</tr>
+</tbody>
+</table>
+<h5 id="purposes">Purposes</h5>
+<h6 id="purpose-decor">Purpose: Decor</h6>
+<ul>
+<li><strong>Summary</strong>: Living space decorations.</li>
+<li><strong>Partitions</strong>:<ul>
+<li><code>fixtures</code>: Common household items.</li>
+<li><code>shelves</code>: Cabinetry and shelving items.</li>
+<li><code>tables</code>: Areas for storage and eating.</li>
+<li><code>vanities</code>: Decals and adornments.</li>
+<li><code>windows</code>: Glass panes and frames.</li>
+</ul>
+</li>
+</ul>
+<h6 id="purpose-structures">Purpose: Structures</h6>
+<ul>
+<li><strong>Summary</strong>: Ancillary features of buildings.</li>
+<li><strong>Partitions</strong>:<ul>
+<li><code>additions</code>: Unique structures.</li>
+<li><code>buttresses</code>: Load-bearing structures.</li>
+<li><code>enclosures</code>: Covered structures.</li>
+<li><code>pillars</code>: Columnar structures.</li>
+<li><code>towers</code>: Constructed structures.</li>
+<li><code>windows</code>: Glass structures.</li>
+</ul>
+</li>
+</ul>
+<h6 id="purpose-surfaces">Purpose: Surfaces</h6>
+<ul>
+<li><strong>Summary</strong>: Planes of movement.</li>
+<li><strong>Partitions</strong>:<ul>
+<li><code>floors</code>: Interior surfaces.</li>
+<li><code>streets</code>: Exterior surfaces.</li>
+<li><code>roofs</code>: Elevated surfaces.</li>
+</ul>
+</li>
+</ul>
+<h6 id="purpose-walls">Purpose: Walls</h6>
+<ul>
+<li><strong>Summary</strong>: Intentional obstructions.</li>
+<li><strong>Partitions</strong>:<ul>
+<li><code>raw</code>: Basic material walls.</li>
+<li><code>refined</code>: Crafted and refined walls.</li>
+<li><code>frames</code>: Premade walls with roofs.</li>
+<li><code>interior</code>: Interior, dressed walls.</li>
+</ul>
+</li>
+</ul>
 <h4 id="cost_1">Cost</h4>
 <p><strong>Formula</strong></p>
 <div class="arithmatex">\[
@@ -2002,7 +2199,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Blueprint</strong></p>
+<p><strong>Purpose</strong></p>
 <table>
 <thead>
 <tr>
@@ -2339,10 +2536,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.c21346df.min.js"></script>
       
         <script src="../static/js/mathjax.js"></script>
       
