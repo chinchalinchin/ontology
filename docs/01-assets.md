@@ -316,23 +316,30 @@ There must be precisely *two* Grid tiles:
 
 Objects are Assets that encapsulate interaction and reaction. Objects participate in [CollisionMechanics](./05-mechanics.md#collisionmechanics) and may undergo instantaneous changes of their state due to environmental factors. However, Objects do not implement an Animation; All changes of an Object's Frame are handled through the mutation of State attributes. 
 
+**Field: Count**
+
+Objects have different States. `count` enumerates the number of possible States into which an Object may enter.
+
+* *Unary Objects (`count = 1`)*: Crates, Doors, Signs 
+* *Binary Objects (`count = 2`)*: Chests, Gates, Plates
+
 **Atlas: (row: Count, column: Material)**
 
-- columns: `^(?:ceramics|chromatics|geologics|metallics|organics)`
-- row: `^[0-9]`
+* columns: `^(?:ceramics|chromatics|geologics|metallics|organics)`
+* row: `^[0-9]`
 
 **Properties: ObjectProperties(AssetProperties)**
 
 * `hitboxes: List[Hitbox]` 
 * `count: int = 1`
 * `mass: int`
-* `materials: str`
+* `materials: Materials`
 
 **State: ObjectState(AssetState)**
 
-* `material: str` 
+* `material: Material` 
 
-All Objects extend this base class.
+All Objects extend this base Model..
 
 **Frame: ObjectFrame**
 
@@ -374,6 +381,10 @@ Crates are Objects who state can be altered by collisions. When acted upon by an
 ### Object: Doors
 
 Doors are Objects that alter a Sprite's `layer`. When a Sprite interacts (`state.intention = 'interact'`) with the hitbox of a Door, the `sprite.state.layer` is changed to the `door.state.outlayer` and `sprite.state.position` is changed to the `door.state.out` Position.
+
+**Behavior: Projection**
+
+During hydration, each Door automatically projects a reciprocal shadow footprint onto its `state.outlayer` at `state.out`, rendered on a dedicated Substrate (`substrate = -1`) with a Frame Channel used to filter its appearance.
 
 **State: DoorState**
 

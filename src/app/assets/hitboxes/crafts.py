@@ -3,6 +3,7 @@
 @app.asset
 @asset.hitbox
 @category.crafts
+@modality.material
 @workflow.compositions
 
 # Ontology: Source - app.assets.hitboxes.crafts

@@ -39,13 +39,13 @@ def construct(root: Path):
     parser.add_argument("--software", action="store_true", default=False)
 
     # State Dump Filter Arguments (Regex enabled, comma-delimited)
-    parser.add_argument("--instances", type=str, default=None,
+    parser.add_argument("--instance", type=str, default=None,
                         help="Comma-separated regex patterns to filter asset instances (e.g. 'sprites,crate.*').")
-    parser.add_argument("--categories", type=str, default=None,
+    parser.add_argument("--category", type=str, default=None,
                         help="Comma-separated regex patterns to filter asset categories (e.g. 'sheets,objects').")
-    parser.add_argument("--ids", type=str, default=None,
+    parser.add_argument("--id", type=str, default=None,
                         help="Comma-separated regex patterns to filter asset IDs.")
-    parser.add_argument("--names", type=str, default=None,
+    parser.add_argument("--name", type=str, default=None,
                         help="Comma-separated regex patterns to filter asset names.")
 
     subparsers = parser.add_subparsers(dest="command", required=True)

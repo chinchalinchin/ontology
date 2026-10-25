@@ -1,27 +1,31 @@
 crafts:
   bridges:
-    - id: bridge-wood
+    - id: suspension
+      material: wood
+      blueprint: horizontal
       name: the-bridge-of-tears-left
       position:
         x: 50
         y: 280
       multiple:
-        nx: 1
+        nx: 2
         ny: 0
       owner: evil-empress-jasilynn
-      orientation: horizontal
-    - id: bridge-wood
+    - id: suspension
       name: the-bridge-of-tears-right
+      material: wood
+      blueprint: horizontal
       position:
         x: 550
         y: 280
       multiple:
-        nx: 1
+        nx: 4
         ny: 0
       owner: evil-empress-jasilynn
-      orientation: horizontal
-    - id: bridge-wood
+    - id: suspension
       name: the-downtown-bridge
+      material: wood
+      blueprint: vertical
       position:
         x: 850
         y: 425
@@ -29,9 +33,10 @@ crafts:
         nx: 0
         ny: 3
       owner: evil-empress-jasilynn
-      orientation: vertical
-    - id: bridge-wood
+    - id: suspension
       name: the-harvest-bridge
+      material: wood
+      blueprint: horizontal
       position:
         x: 160
         y: 1200
@@ -39,4 +44,3 @@ crafts:
         nx: 2
         ny: 0
       owner: evil-empress-jasilynn
-      orientation: horizontal

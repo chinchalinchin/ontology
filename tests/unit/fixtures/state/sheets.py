@@ -17,7 +17,7 @@ from app.config.enums import (
 from app.models.state import (
     # -------- MODELS
     SpriteState,
-    PlayerState,
+    SheetState,
     AnimationState,
     # -------- FIELDS
     Inventory,
@@ -40,8 +40,8 @@ from libs.core.models import (
 
 
 @pytest.fixture
-def mock_player_state() -> PlayerState:
-    return PlayerState(
+def mock_player_state() -> SheetState:
+    return SheetState(
         id="player",
         name="player_1",
         layer="0",

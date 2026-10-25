@@ -128,14 +128,20 @@ class PlayerMechanics(Mechanic):
                 player.state.goal.position
             )
 
-        if player.state.intention == Intentions.ATTACK:
-            logger.info(f"PlayerState(intention=attack, "
-                        f"action={player.state.animation.action})")
+        if player.state.intention == Intentions.ATTACK.value:
             eq = player.state.inventory.equipment
-            logger.info(f"Equipment("
-                        f"weapon={eq.weapon}, "
-                        f"armor={eq.armor}, "
-                        f"shield={eq.shield}, "
-                        f"tool={eq.tool}, "
-                        f"utility={eq.utility})"
+            logger.info(
+                f"SheetState(",
+                f"id={player.id}"
+                f"name={player.name},"
+                f"intention={player.state.intention},"
+                f"action={player.state.animation.action})"
+            )
+            logger.info(
+                f"Equipment("
+                f"weapon={eq.weapon}, "
+                f"armor={eq.armor}, "
+                f"shield={eq.shield}, "
+                f"tool={eq.tool}, "
+                f"utility={eq.utility})"
             )

@@ -18,13 +18,13 @@ Use the following template to create docstrings for Python modules,
 
 * Tags:
     * Domain Tags:
-        * `domain.abstract`
-        * `domain.concrete`
-        * `domain.graphics`
-        * `domain.logic`
-        * `domain.model`
-        * `domain.system`
-        * `domain.user`
+        * `domain.abstract` (*Abstract Interfaces*)
+        * `domain.concrete` (*Implementations*)
+        * `domain.graphics` (*SDL & Rendering*)
+        * `domain.logic` (*Algorithms*)
+        * `domain.model` (*Data Structures*)
+        * `domain.system` (*Support Systems*)
+        * `domain.user` (*User Interfaces*)
     * Predicate Tags:
         * Hierarchy Tags:
             * Asset Tags:
@@ -43,32 +43,35 @@ Use the following template to create docstrings for Python modules,
                 * `category.sheets`
                 * `category.tiles`
                 * `category.widgets`
+            * Modality Tags
+                * `modality.material`
         * Source Tags:
             * Application Tags:
-                * `app.base`
-                * `app.core` 
-                * `app.component`
+                * `app.base` (*Base Implementations*)
+                * `app.core` (*Core Implementations*)
+                * `app.component` (*Engine Subsystems*)
                 * `app.config`
                 * `app.devices`
+                * `app.library` (*Cython Libraries*)
                 * `app.mechanics`
-                * `app.module`
+                * `app.module` (*Static Logical Modules*)
                 * `app.schema`
-                * `app.semantics`
+                * `app.semantics` (*Application Terminology*)
                 * `app.services`
             * Main Tags
-                * `main.cli`
-                * `main.hydration`
-                * `main.injection`
+                * `main.cli` 
+                * `main.hydration` (*State Migration*)
+                * `main.injection` (*Dependency Injection Pipeline*)
             * Physics Tags:
-                * `physics.fields`
-                * `physics.motion`
-                * `physics.space`
+                * `physics.fields` (*Vector Fields*)
+                * `physics.motion` (*Kinematics, Momentum, Collisions*)
+                * `physics.space` (*Spatial Grid Hashing*)
             * Workflow Tags: 
                 * `workflow.collisions`
                 * `workflow.combat`
                 * `workflow.compositions`
                 * `workflow.ecology`
-                * `workflow.generation`
+                * `workflow.generation` (*Procedural Generation*)
                 * `workflow.gravity`
                 * `workflow.fluids`
                 * `workflow.intentions`

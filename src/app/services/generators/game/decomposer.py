@@ -1,6 +1,7 @@
 """
 @domain.logic
 @app.services
+@modality.material
 @workflow.compositions
 
 # Ontology: Source - app.services.generators.game.decomposer
@@ -281,11 +282,19 @@ class Decomposer:
         if kwargs.get("elevation") is None:
             kwargs["elevation"] = parent_context.get("elevation", 0)
 
-        # 2. Resolve Outlayer for Doors/Portals
+        # 2. Resolve Intra-Elevation Substrate from MaterialIndex
+        if kwargs.get("substrate") is None:
+            kwargs["substrate"] = self.materials.substrate(
+                inst_key,
+                blueprint=kwargs.get("blueprint"),
+                projection=kwargs.get("projection")
+            )
+
+        # 3. Resolve Outlayer for Doors/Portals
         if "outlayer" in kwargs and kwargs["outlayer"]:
             kwargs["outlayer"] = self._resolve_layer(kwargs["outlayer"], root_layer, inc, layer_map)
 
-        # 3. Layer Transition Boundary: If moving to an independent layer, reset local origin
+        # 4. Layer Transition Boundary: If moving to an independent layer, reset local origin
         is_cross_layer = str(kwargs.get("layer")) != str(parent_context.get("layer"))
         base_pos = Position(0, 0) if is_cross_layer else parent_context["position"]
 
@@ -341,11 +350,15 @@ class Decomposer:
         state: AssetState,
         substrate: Optional[int] = None
     ) -> Asset:
-        state.substrate = (
-            substrate
-            if substrate is not None
-            else self.materials.substrate(instance)
-        )
+        if state.substrate is None:
+            blueprint = state.blueprint if isinstance(state, CraftState) else None
+            projection = state.projection if isinstance(state, DoorState) else None
+            state.substrate = self.materials.substrate(
+                inst_key,
+                blueprint=blueprint,
+                projection=projection
+            )
+
         cat_recipes = getattr(self.recipes, cat_key)
         recipe = getattr(cat_recipes, instance)
 
@@ -360,11 +373,11 @@ class Decomposer:
         inst_props = getattr(cat_props, prop_instance_key)
         props = inst_props.get(state.id)
 
-        taxonomy    = Factory.taxonomy(
-            id      =state.id, 
-            name    =state.name, 
-            category=cat_key, 
-            instance=instance
+        taxonomy = Factory.taxonomy(
+            state.id, 
+            state.name, 
+            cat_key, 
+            instance
         )
         frame = Factory.frame(recipe.frame)
         animation = Factory.animation(recipe.animation)

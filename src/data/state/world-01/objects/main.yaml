@@ -1,20 +1,23 @@
 objects:
   crates: 
-    - id: wood-barrel
+    - id: box
       name: castle-dawn-barrel-00
+      material: wood
       layer: '0'
       position:
         x: 180
         y: 250
   signs:
-    - id: bulletin
-      name: castle-dawn-sign-board-00
+    - id: plaque
+      name: castle-dawn-sign-00
       layer: '0'
       persona: castle-dawn-sign
       lexicon: spring
+      material: limestone
       position:
         x: 430
         y: 330
+  # ----- TODO: removal
   obstacles:
     - id: gray-rock-00
       name: jasilynns-rock

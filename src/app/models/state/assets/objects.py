@@ -3,6 +3,7 @@
 @app.asset
 @asset.state
 @category.objects
+@modality.material
 
 # Ontology: Source - app.models.state.objects
 

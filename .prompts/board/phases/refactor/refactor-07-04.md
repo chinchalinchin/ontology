@@ -348,8 +348,6 @@ Implement `Decomposer.multiply()` to handle both 2D `simple` tiling (`buildings`
 * [~] Subtask: Relocate non-Strut decor and bespoke structures (`decor`, `structures`) to their dedicated Craft instances.
 * [!] Subtask: Refactor `src/data/config/compositions/main.yml` (`C000`, `C001`, `C002`) and `/src/data/state/**` to use the new `(id, blueprint, material, multiple)` Strut schema.
 
----
-
 ##### Architectural Analysis III
 
 ###### 1. Why Dynamic `anchor`/`priority` Resolution Breaks Down
@@ -406,8 +404,6 @@ This resolves every static and dynamic case across all elevations without touchi
 | `0` | `Substrates.STANDARD` | `sprites`, `players`, `objects`, `effects`, `decor`, `structures`, `platforms`, `railings`, `struts` (`walls`, `halls`, `bases`, `shafts`, `crowns`) | Sorted by $\text{ground\_y} = y + l + \text{anchor}$ and tied-broken by `priority`. |
 
 > **Why `crowns` and `shafts` stay at `Substrates.STANDARD (0)**`: A Sprite walking *in front* of a pillar (`sprite.ground_y` greater than `base.ground_y`) must occlude the pillar's shaft/crown, whereas a Sprite walking *behind* the pillar (`sprite.ground_y` less than `base.ground_y`) must be occluded by the pillar's shaft/crown. Keeping `bases`, `shafts`, and `crowns` at $\sigma = 0$ while locking `shaft` and `crown` anchors to `base.ground_y` in `Decomposer.multiply()` preserves true 2.5D occlusion in both directions.
-
----
 
 ##### Task
 
@@ -1088,7 +1084,7 @@ All changes accepted, except it is not clear where to set the substrate in Migra
 
 ##### Tasks: Addendum IV
 
-**1. `src/app/services/orchestration/migrator.py`**
+1. `src/app/services/orchestration/migrator.py`
 
 * [x] Injects `materials: Optional[MaterialIndex] = None` into `Migrator.__init__()` (defaulting to `MaterialIndex.from_configuration(self.configurations.materials)` when not explicitly supplied by `Builder`), passes the same `MaterialIndex` instance to the fallback `Decomposer`, and hydrates `state_obj.substrate = self.materials.substrate(instance_key)` directly in the standalone asset branch of `_build_generator()`.
 
@@ -1096,119 +1092,15 @@ All changes accepted, except it is not clear where to set the substrate in Migra
 
 * [x] Resolves `state.substrate` without duck-typing across `_spawn_unit()`, `project_door()`, and `_create_asset()`, restores full `range(ny + 2)` corner superimposition in `_multiply_perimeter()`, ensures idempotent reload behavior for serialized units (`multiple=None`), and computes strategy-aware vertical span lengths in `_get_span_length()` for `anchor()` macros.
 
-###### 3. `src/app/models/properties/core.py` & `src/app/services/orchestration/builder.py`
+3. `src/app/models/properties/core.py` & `src/app/services/orchestration/builder.py`
 
 * [x] Removes the deleted `settings.MATERIAL_PARTITIONS` / `settings.CHROMATIC_HOSTS` import from `src/app/models/properties/core.py` by validating chromatic host membership directly against `(Organics, Ceramics)` enums, and updates `Builder.build_board()` and `Builder.build_registry()` so `MaterialIndex` is always compiled and injected into both `Decomposer` and `Migrator`.
 
-##### Self Review II
+##### User Review VIII
 
-###### Overview
+Making `substrate` part of the state was a mistake. 
 
-An exhaustive pre-UAT audit of all Phase 07.04 changes across `enums`, `settings`, `models`, `relations`, `frames`, `hitboxes`, `decomposer`, `migrator`, `builder`, `orchestrator`, `board`, and `materializer` confirms that the unified 2D `(Function_Row x Material_Col)` atlasing model, 4-key `(elevation, substrate, ground_y, priority)` rendering pipeline, inanimate Object projection, and `MaterialIndex` relational service are logically cohesive. Three subtle edge-case bugs were isolated during this final pass (documented in the Bug Reports below and resolved in the code above):
-
-1. **Import/Bootstrap Order Decoupling (`Bug B022`)**: Removing `MATERIAL_PARTITIONS` and `CHROMATIC_HOSTS` from `settings.py` required `Material.__post_init__` in `src/app/models/properties/core.py` to validate against `(Organics, Ceramics)` enums rather than an uncompiled `MaterialIndex` or deleted `settings` symbols during `Loader.load_properties()`.
-2. **Enclosure Corner Closure & Valuation Count (`Bug B023`)**: `palisade` enclosure cells (`96x96`) rely on orthogonal strip hitboxes (`north`/`south`: `96x16`; `west`/`east`: `8x96`) superimposing at the 4 corners $(0, 0)$, $(n_x + 1, 0)$, $(0, n_y + 1)$, and $(n_x + 1, n_y + 1)$ to form sealed `L`-corners. Restricting `west`/`east` to `range(1, ny + 1)` left $80\text{px}$ vertical gaps in all 4 corner cells. Restoring `range(ny + 2)` and updating `Materializer._total_units()` for `PERIMETER` to `2 * (nx + ny + 4)` seals the corners and aligns valuation with the exact spawned unit count.
-3. **Save/Load Serialization Idempotency (`Bug B024`)**: Unpacked `EXPANSION` (`columns`) and `PERIMETER` (`enclosures`) units and projected `OUT` Door shadows would re-expand or re-project upon loading a serialized save file unless `_spawn_unit()` sets `multiple=None`, `_multiply_expansion`/`_multiply_perimeter` guard against already-unpacked leaf segments, and `Board.serialize()` skips derived `LayerProjections.OUT` Door shadows.
-
-###### Review: Implementation
-
-* **2D Craft & Object Atlasing**: `MaterialFrame`, `ObjectFrame`, and `BinaryFrame` all index columns along `MaterialIndex().materials(properties.material.genus)` and rows along their category-specific structural or switch dimension (`MaterialIndex().blueprints(properties.blueprints)` for Crafts; `range(properties.count)` for Objects).
-* **Inanimate Object Frame Projection**: `BinaryFrame.keys()` maps `state.switch` directly to `Switches.ON` (`1`) or `Switches.OFF` (`0`) without `BinaryAnimation` or `AnimationState` overhead.
-* **Dynamic Gate & Layered Door Hitboxes**: `SwitchHitbox` resolves **Bug B008** by returning `[]` when `state.switch == True`. `LayeredHitbox` isolates physical facade collision (`in`) from floor-level threshold sensing (`out`), while preserving Sprite Intention invariants (`InteractionMechanics` only resets `Intentions.IDLE` on `AssetInstances.PLAYERS`).
-
-###### Review: Quality
-
-* **Zero Duck-Typing**: All `getattr`/`hasattr` calls on typed `AssetState`, `PropertyState`, `CraftState`, `DoorState`, and `StateSchema` models in `Decomposer` and `Migrator` have been eliminated. `state.substrate` is resolved strictly from typed parameters in `_spawn_unit()`, `project_door()`, `_create_asset()`, and `Migrator._build_generator()`.
-* **Strategy Dispatch**: `Decomposer.multiply()` delegates to `_multiply_simple`, `_multiply_oriented`, `_multiply_expansion`, and `_multiply_perimeter` via `self._strategies`.
-
-###### Review: Logic
-
-* **4-Key Fibered Topological Sort**: Because `AssetState.substrate` is hydrated to an integer $\sigma \in [-4, 0]$ at creation time and `Asset.elevation` always returns $E \in \mathbb{Z}_{\ge 0}$, `Screen._sort` evaluates `(asset.elevation, asset.substrate, ground_y, asset.properties.priority)` deterministically across all macro-elevations.
-* **Procedural Shoreline Substrate Consistency**: Because `Shoreline` assets are spawned procedurally by `Cartographer` inside `Actuator.pump()` during Phase 3 of `Migrator._build_generator()` (bypassing the Phase 2 task loop), `ShorelineState` in `src/app/models/state/assets/geography.py` should default `substrate: int = Substrates.SURFACES.value` (`-2`), and `FluidState` should default `substrate: int = Substrates.FLUIDS.value` (`-3`).
-
-###### Review: Architecture
-
-* **Purified `app.config.settings**`: `settings.py` now contains only `os.getenv()` runtime environment scalars and filesystem paths. All relational mappings reside in `/src/data/config/materials/main.yaml` (`MaterialConfiguration`) and compile into `MaterialIndex` inside `Builder.build_relations()`.
-
-###### Review: Optimization
-
-* **O(1) Slot Access in `Screen._sort**`: Hydrating `state.substrate` during `Decomposer` / `Migrator` unpacking eliminates per-frame dictionary lookups inside `Asset.substrate` during the 60 Hz rendering sort.
-* **Singleton Hoisting in `Decomposer.multiply()**`: `Factory.frame()`, `Factory.animation()`, and `Factory.hitbox()` are resolved once per `multiply()` invocation rather than once per $(i_x, i_y)$ grid cell.
-
----
-
-#### Draft: Fibered Substrate Sorting, Inanimate Objects & Unified Craft Atlasing
-
-* **Page**: `docs/01-assets.md`
-* **Heading**: `Elevation, Perspective & Priority`, `Asset Hierarchy`, `Objects`, and `Crafts`
-
-##### Drift
-
-1. **Elevation & Substrates**: `docs/01-assets.md` still describes the 3-key sort `(elevation, ground, priority)` where `Substrates` are negative `elevation` values collapsed to `0`. In the current implementation, `elevation` ($E \ge 0$) and `substrate` ($\sigma \in [-4, 0]$) are orthogonal state attributes evaluated via a 4-key sort `(elevation, substrate, ground_y, priority)`.
-2. **Asset Hierarchy Tables**:
-* `Crafts` properties still list `Cost` instead of `Material, Blueprints`.
-* `Objects` properties omit `Material, Count`, and `Objects` state rows still list `Animation` on `Chest`, `Gate`, and `Plate` (which are now inanimate and resolved directly via `BinaryFrame`), while omitting `Material` on `Object` states and `Projection` on `DoorState`.
-* `Craft` instances still list `Railing` as a separate instance instead of unifying `orientations` and `enclosures` under `Strut`.
-
-
-3. **Objects Section**:
-* Documents horizontal `(2w, h)` binary frames (`IterableFrame` + `BinaryAnimation`) and `SingleFrame` for `Crates`, `Doors`, and `Signs`. All materialized `Objects` now use 2D `(Function_Row x Material_Col)` atlases indexed by `ObjectFrame` (`count = 1`) and `BinaryFrame` (`count = 2`, `0: closed`, `1: open`) with `animation: none`.
-* `Gates` now use `SwitchHitbox` (emitting `[]` when open) instead of `StaticHitbox`.
-* `Doors` now use `LayeredHitbox` and automatic `outlayer` shadow projection (`LayerProjections.OUT`, `ChannelTypes.TINT`, `Substrates.OVERLAYS = -1`).
-
-
-4. **Crafts Section**:
-* Documents `Cost` on `CraftProperties` and `OrientedFrame`/`OrientedState` on `Bridges`. `Bridges`, `Stairs`, and `Struts` now share `(frame: material, animation: none, hitbox: material)` and `CraftState(material, blueprint, multiple)`.
-
-
-
-
----
-
-## Objects
-
-- Property File: `/src/assets/objects/**/*.yaml`
-
-Objects are inanimate, mutable Assets encapsulating interactive and reactive entities. Because Object state transitions (`switch`) occur instantaneously upon interaction or collision rather than evolving continuously over time, all Objects configure `animation: none`.
-
-**2D `(Function_Row x Material_Col)` Atlasing**
-
-Materialized Objects organize their sprite sheets with **Material Genus partitions along columns ($c \in [0, C)$)** and **functional switch states along rows ($r \in [0, \text{count})$)**:
-
-- **Single-State Objects (`count = 1`, `ObjectFrame`)**: `crates`, `doors`, `signs`. Indexed at `(c * w, 0, w, l)` under key `{id}-{material}`.
-- **Binary Objects (`count = 2`, `BinaryFrame`)**: `chests`, `gates`, `plates`. Row `0` is `off` (`closed`, `switch = False`) at `(c * w, 0, w, l)` and Row `1` is `on` (`open`, `switch = True`) at `(c * w, l, w, l)` under key `{id}-{0|1}-{material}`.
-
-**Properties: ObjectProperties**
-
-- `dimensions: Dimensions`
-- `priority: int = 0`
-- `mass: int = 0`
-- `count: int = 1`
-- `material: Optional[Material] = None`
-- `hitboxes: Optional[Union[Dict[str, List[Hitbox]], List[Hitbox]]] = None`
-
-### Doors
-
-Doors transition an interacting Sprite or Player from `state.layer` to `state.outlayer` at coordinate `state.out`.
-
-During hydration (`Decomposer.project_door`), each Door automatically projects a reciprocal shadow footprint onto `state.outlayer` at `state.out` with `projection = 'out'`, rendered on `Substrates.OVERLAYS (-1)` with an alpha-darkened `ChannelTypes.TINT` directive.
-
-**Hitbox: LayeredHitbox**
-
-- On `projection == 'in'` (the upright Door facade on `state.layer`): participates in `CollisionMechanics` and emits `properties.hitboxes['in']`.
-- On `projection == 'out'` (the shadow footprint on `state.outlayer`): returns `[]` from `elevations()` (passable to `CollisionMechanics`) and emits a threshold sensor strip `properties.hitboxes['out']` disjoint from the arrival coordinate to prevent infinite teleportation loops.
-
-### Gates
-
-Gates are binary obstacles linked to `Plates`.
-
-**Hitbox: SwitchHitbox**
-
-- Emits `[]` from `elevations()` and `get()` when `state.switch == True` (open), and emits `properties.hitboxes` when `state.switch == False` (closed).
-
-```
-
----
+1. It is fundamentally not part of the state. It never changes. That is the point of shifting all of the this information into the `materials.yaml` and the MaterialIndex. It shouldn't be a state field at all. By detaching it from the lazy-loading of settings and setting the substrate on the state, the process is now broken for things that aren't compositions because the substrate never gets hydrated anywhere. Now, instead of the substrate coming from settings, it needs to be set on the Asset somehow. Now the hydration needs a step for processing substrates.
 
 #### Draft: Unified Craft Schemas, Multiplication Strategies & `Materializer`
 

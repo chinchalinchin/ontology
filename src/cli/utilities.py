@@ -59,11 +59,11 @@ def filter(
     # 2. Compile active regex pattern sequences
     active_filters: Dict[str, List[re.Pattern]] = {}
 
-    for filter_key, filter_name in Filters:
+    for filter_key in Filters:
         raw_val = filters.get(filter_key)
         if raw_val:
             patterns = [p.strip() for p in raw_val.split(",") if p.strip()]
-            active_filters[filter_name] = [re.compile(p) for p in patterns]
+            active_filters[filter_key] = [re.compile(p) for p in patterns]
 
     if not active_filters:
         return non_widgets

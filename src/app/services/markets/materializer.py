@@ -1,4 +1,6 @@
 """
+@app.service
+@modality.material
 @workflow.compositions
 
 # Ontology: Source - app.services.markets.materializer

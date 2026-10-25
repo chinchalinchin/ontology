@@ -30,7 +30,7 @@ class Dumps(str, Enum):
     SDL         = "sdl"
 
 class Filters(str, Enum):
-    INSTANCES   = "instance"
-    CATEGORIES  = "category"
-    IDS         = "id"
-    NAMES       = "name"
+    INSTANCE    = "instance"
+    CATEGORY    = "category"
+    ID          = "id"
+    NAME        = "name"

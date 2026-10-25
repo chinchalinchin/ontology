@@ -97,10 +97,10 @@ def commandline():
     if args.dump_state:
         # State Query Filter Configuration
         state_filters = {
-            "instances": args.instances,
-            "categories": args.categories,
-            "ids": args.ids,
-            "names": args.names
+            "instance": args.instance,
+            "category": args.category,
+            "id": args.id,
+            "name": args.name
         }
         utilities.dump(
             args.board, 

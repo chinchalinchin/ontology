@@ -190,6 +190,9 @@
 {% endif -%}
 {% if asset.state is defined and asset.state is not none -%}
 - **State:**
+{% if asset.state.substrate is defined and asset.state.substrate is not none -%}
+  - Substrate: `{{ asset.state.substrate }}`
+{% endif -%}
 {% if asset.state.layer is defined and asset.state.layer is not none -%}
   - Layer: `{{ asset.state.layer }}`
 {% endif -%}

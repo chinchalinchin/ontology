@@ -3,6 +3,7 @@
 @app.asset
 @asset.hitbox
 @category.objects
+@modality.material
 
 # Ontology: Source - app.assets.hitboxes.objects
 

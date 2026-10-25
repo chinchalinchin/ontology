@@ -16,7 +16,7 @@ from app.config.enums import (
 )
 from app.models.state import (
     SpriteState, 
-    PlayerState, 
+    SheetState, 
     Character, 
     Meters, 
     Meter, 
@@ -63,7 +63,7 @@ from app.models.properties import (
 def _create_player_attacker(x=10, y=10, action="slash", direction="right", frame=3, strength=20):
     tax = Taxonomy("player-1", "hero", AssetCategories.SHEETS.value, AssetInstances.PLAYERS.value)
     props = SheetProperties(dimensions=Dimensions(w=64, l=64), mass=10)
-    state = PlayerState(
+    state = SheetState(
         id="player-1",
         name="hero",
         layer="0",

@@ -150,7 +150,7 @@ __all__ = [
     'DeviceContexts',
     # ------
     'Intentions',
-   ' BlockingIntentions',
+    'BlockingIntentions',
     'AnimatedIntentions',
     'StaticIntentions',
     'NavigationIntentions',

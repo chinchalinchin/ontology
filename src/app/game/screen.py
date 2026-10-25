@@ -1,5 +1,5 @@
 """
-@domain.systems
+@domain.system
 @app.core
 @app.component
 @workflow.rendering
@@ -26,8 +26,7 @@ from app.static.semantics import (
 )
 from app.models.state import (
     CalendarState,
-    SpriteState,
-    PlayerState,
+    SheetState,
     DisplayState,
     PaneState
 )
@@ -256,10 +255,7 @@ class Screen:
                 tex_data = self.registry.image(frame_key)
 
                 if not tex_data: 
-                    if not (
-                        isinstance(asset.state, SpriteState) or 
-                        isinstance(asset.state, PlayerState)
-                    ):
+                    if not isinstance(asset.state, SheetState):
                         logger.warning(f"Registry MISS! Frame key not found: '{frame_key}'")
                     continue 
 

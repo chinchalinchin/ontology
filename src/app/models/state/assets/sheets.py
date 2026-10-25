@@ -135,25 +135,14 @@ class SheetState(AssetState):
     position: Optional[Position] = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
     animation: AnimationState = field(default_factory=AnimationState)
-
-@dataclass(slots=True)
-class SpriteState(AssetState):
-    intention: Optional[Intentions] = None
-    goal: Optional[Goal] = field(default_factory=Goal)
+    intention: Optional[Intentions] = Intentions.IDLE.value
     character: Optional[Character] = field(default_factory=Character)
     inventory: Optional[Inventory] = field(default_factory=Inventory)
     meters: Optional[Meters] = field(default_factory=Meters)
+    goal: Optional[Goal] = field(default_factory=Goal)
+
+@dataclass(slots=True)
+class SpriteState(SheetState):
     memory: Optional[Memory] = field(default_factory=Memory)
     psyche: Optional[Psyche] = field(default_factory=Psyche)
     trajectory: Trajectory = field(default_factory=Trajectory)
-
-@dataclass(slots=True)
-class PlayerState(AssetState):
-    position: Optional[Position] = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
-    character: Optional[Character] = field(default_factory=Character)
-    inventory: Optional[Inventory] = field(default_factory=Inventory)
-    meters: Optional[Meters] = field(default_factory=Meters)
-    goal: Optional[Goal] = field(default_factory=Goal)
-    intention: Optional[Intentions] = Intentions.IDLE.value
-    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
-    animation: AnimationState = field(default_factory=AnimationState)

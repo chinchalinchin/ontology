@@ -3,6 +3,7 @@
 @app.asset
 @asset.frame
 @category.objects
+@modality.material
 
 # Ontology: Source - app.assets.frames.objects
 

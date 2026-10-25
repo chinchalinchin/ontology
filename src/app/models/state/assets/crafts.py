@@ -3,6 +3,7 @@
 @app.asset
 @asset.state
 @category.crafts
+@modality.material
 @workflow.compositions
 
 # Ontology: Source - app.models.state.crafts
@@ -29,6 +30,7 @@ from app.static.semantics import (
     # --- MATERIAL GENERA
     Ceramics,
     Geologics,
+    Organics,
     Metallics,
     Chromatics
 )
@@ -48,6 +50,7 @@ class CraftState(AssetState):
         Ceramics,
         Chromatics,
         Geologics,
+        Organics,
         Metallics
     ]] = None
     blueprint: Optional[Union[

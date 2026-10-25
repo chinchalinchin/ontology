@@ -86,7 +86,7 @@ tools:
     # ------------------------ TOOL VIEWS: MANAGER
     # --------------------------------------------
     manager:
-      board: false
+      board: true
       specs: false
       docs: true
     # --------------------------------------------
@@ -189,18 +189,18 @@ tools:
                 app: [ core, component ]
                 domain: [ system ]
             # ------------------------------------
-            - title: Implementations
+            - title: Material Implementations
               strategy: AND
               scan:
                 app: [ asset ]
                 domain: [ concrete ]
-                category: [ crafts ]
+                modality: [ material ]
             # ------------------------------------
-            - title: Models
+            - title: Material Models
               strategy: AND
               scan:
                 domain: [ model ]
-                category: [ crafts ]
+                modality: [ material ]
             # ------------------------------------
             - title: Composition Logic
               strategy: AND 
@@ -220,7 +220,7 @@ tools:
         #                   resources, sheets, sounds
         #                   tiles, widgets
         # ]
-        properties: [ crafts ]
+        properties: [ ]
         # state: [
         #                   crafts, effects, objects
         #                   objects, resources, sheets,
@@ -233,7 +233,7 @@ tools:
         #                   mechanics, menus, plots,
         #                   recipes, stages
         # ]
-        configurations: [ materials, recipes]
+        configurations: [ materials ]
         # templates: [
         #                   menu-dump, registry-dump, sdl-dump, 
         #                   state-dump
