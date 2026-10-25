@@ -282,19 +282,11 @@ class Decomposer:
         if kwargs.get("elevation") is None:
             kwargs["elevation"] = parent_context.get("elevation", 0)
 
-        # 2. Resolve Intra-Elevation Substrate from MaterialIndex
-        if kwargs.get("substrate") is None:
-            kwargs["substrate"] = self.materials.substrate(
-                inst_key,
-                blueprint=kwargs.get("blueprint"),
-                projection=kwargs.get("projection")
-            )
-
-        # 3. Resolve Outlayer for Doors/Portals
+        # 2. Resolve Outlayer for Doors/Portals
         if "outlayer" in kwargs and kwargs["outlayer"]:
             kwargs["outlayer"] = self._resolve_layer(kwargs["outlayer"], root_layer, inc, layer_map)
 
-        # 4. Layer Transition Boundary: If moving to an independent layer, reset local origin
+        # 3. Layer Transition Boundary: If moving to an independent layer, reset local origin
         is_cross_layer = str(kwargs.get("layer")) != str(parent_context.get("layer"))
         base_pos = Position(0, 0) if is_cross_layer else parent_context["position"]
 
@@ -343,21 +335,14 @@ class Decomposer:
         return type(state_obj)(**kwargs)
 
 
-    def _create_asset(
-        self,
+    def _create_asset(self,
         cat_key: str,
         instance: str,
         state: AssetState,
         substrate: Optional[int] = None
     ) -> Asset:
-        if state.substrate is None:
-            blueprint = state.blueprint if isinstance(state, CraftState) else None
-            projection = state.projection if isinstance(state, DoorState) else None
-            state.substrate = self.materials.substrate(
-                inst_key,
-                blueprint=blueprint,
-                projection=projection
-            )
+        if substrate is None:
+            substrate = self.materials.substrate(instance)
 
         cat_recipes = getattr(self.recipes, cat_key)
         recipe = getattr(cat_recipes, instance)
@@ -389,7 +374,8 @@ class Decomposer:
             state       =state, 
             frame       =frame, 
             animation   =animation, 
-            hitbox      =hitbox
+            hitbox      =hitbox,
+            substrate   =substrate
         )
 
 
@@ -416,8 +402,7 @@ class Decomposer:
             position=pos,
             blueprint=blueprint,
             multiple=Multiple(1, 1),
-            anchor=anchor,
-            substrate=unit_substrate
+            anchor=anchor
         )
         return Asset(
             taxonomy=Factory.taxonomy(state.id, unit_name, category, instance),
@@ -425,7 +410,8 @@ class Decomposer:
             state=unit_state,
             frame=frame,
             animation=animation,
-            hitbox=hitbox
+            hitbox=hitbox,
+            substrate=unit_substrate
         )
 
     # ---------------------------------------------------------

@@ -25,6 +25,7 @@ from app.static.semantics import (
     AssetInstances, 
     AssetCategories
 )
+from app.game.logic.relations import MaterialIndex
 from app.services.generators.game.factory import Factory
 from app.models.config import RecipeConfiguration
 from app.models.groups import SpawnableGroup
@@ -44,7 +45,6 @@ from app.models.state import (
 
 if TYPE_CHECKING:
     from app.services.generators.game.decomposer import Decomposer
-    from app.models.properties import Cost
 
 from libs.core.models import (
     Position, 
@@ -65,15 +65,19 @@ class Cradle:
     recipes: RecipeConfiguration
     spawnables: SpawnableGroup
     decomposer: 'Decomposer'
+    materials: MaterialIndex
 
     def __init__(self, 
         spawnables: SpawnableGroup, 
         recipes: RecipeConfiguration, 
+        materials: MaterialIndex,
         decomposer: Decomposer
     ):
         self.spawnables = spawnables
         self.recipes = recipes
+        self.materials = materials
         self.decomposer = decomposer
+
 
     @staticmethod
     def name() -> str:
@@ -137,8 +141,17 @@ class Cradle:
             category = AssetCategories.CURSORS.value, 
             instance = AssetInstances.PROJECTILES.value
         )
+        substrate = self.materials.substrate(AssetInstances.PROJECTILES.value)
         
-        return Asset(taxonomy, properties, state, frame, animation, hitbox)
+        return Asset(
+            taxonomy, 
+            properties, 
+            state, 
+            frame, 
+            animation, 
+            hitbox, 
+            substrate=substrate
+        )
 
 
     def spawn_collectable(self, 
@@ -167,7 +180,17 @@ class Cradle:
             category=AssetCategories.EFFECTS.value,
             instance=AssetInstances.COLLECTABLES.value
         )
-        return Asset(taxonomy, properties, state, frame, animation, hitbox)
+        substrate = self.materials.substrate(AssetInstances.COLLECTABLES.value)
+
+        return Asset(
+            taxonomy, 
+            properties, 
+            state, 
+            frame, 
+            animation, 
+            hitbox, 
+            substrate=substrate
+        )
 
 
     def spawn_hazard(self, 
@@ -196,7 +219,17 @@ class Cradle:
             category=AssetCategories.EFFECTS.value,
             instance=AssetInstances.HAZARDS.value
         )
-        return Asset(taxonomy, properties, state, frame, animation, hitbox)
+        substrate = self.materials.substrate(AssetInstances.HAZARDS.value)
+
+        return Asset(
+            taxonomy, 
+            properties, 
+            state, 
+            frame, 
+            animation, 
+            hitbox, 
+            substrate=substrate
+        )
 
 
     def spawn_passive(self, id: str, layer: str, position: Position) -> Asset:
@@ -220,7 +253,17 @@ class Cradle:
             category=AssetCategories.EFFECTS.value,
             instance=AssetInstances.PASSIVE.value
         )
-        return Asset(taxonomy, properties, state, frame, animation, hitbox)
+        substrate = self.materials.substrate(AssetInstances.PASSIVE.value)
+
+        return Asset(
+            taxonomy, 
+            properties, 
+            state, 
+            frame, 
+            animation, 
+            hitbox, 
+            substrate=substrate
+        )
 
 
     def spawn_strut(self, 
@@ -249,8 +292,20 @@ class Cradle:
             category    = AssetCategories.CRAFTS.value, 
             instance    = AssetInstances.STRUTS.value
         )
+        substrate = self.materials.substrate(
+            AssetInstances.STRUTS.value, 
+            blueprint=state.blueprint
+        )
         
-        return Asset(taxonomy, properties, state, frame, animation, hitbox)
+        return Asset(
+            taxonomy, 
+            properties, 
+            state, 
+            frame, 
+            animation, 
+            hitbox, 
+            substrate=substrate
+        )
 
 
     def spawn_shoreline(self,
@@ -288,7 +343,17 @@ class Cradle:
             category=AssetCategories.GEOGRAPHY.value,
             instance=AssetInstances.SHORELINES.value
         )
-        return Asset(taxonomy, properties, state, frame, animation, hitbox)
+        substrate = self.materials.substrate(AssetInstances.SHORELINES.value)
+
+        return Asset(
+            taxonomy, 
+            properties, 
+            state, 
+            frame, 
+            animation, 
+            hitbox, 
+            substrate=substrate
+        )
 
 
     def spawn_composition(self, 
@@ -333,10 +398,8 @@ class Cradle:
             multiple=multiple,
             owner=owner
         )
-        return self.decomposer.bridge(bridge_state)
-
-    def cost(self, id: str) -> List[Cost]:
-        """
-        Delegates compositional cost aggregation to the Decomposer tree traverse utilities.
-        """
-        return self.decomposer.cost(id)
+        return self.decomposer.multiply(
+            bridge_state, 
+            AssetCategories.CRAFTS.value,
+            AssetInstances.BRIDGES.value
+        )

@@ -73,7 +73,8 @@ class Migrator:
         self.decomposer = decomposer or Decomposer(
             compositions=self.configurations.compositions,
             properties=self.properties,
-            recipes=self.configurations.recipes
+            recipes=self.configurations.recipes,
+            materials=self.materials
         )
         self.target: Optional[str] = None
         self.state = None
@@ -168,9 +169,6 @@ class Migrator:
                 _, category_key, instance_key, state_obj = task
                 asset_id = state_obj.id
                 asset_name = state_obj.name
-
-                # Hydrate intra-tier substrate from MaterialIndex
-                state_obj.substrate = self.materials.substrate(instance_key)
                 
                 cat_recipes = getattr(self.configurations.recipes, category_key, None)
                 recipe = getattr(cat_recipes, instance_key, None)
@@ -197,7 +195,8 @@ class Migrator:
                     state           = state_obj,
                     frame           = Factory.frame(recipe.frame),
                     animation       = Factory.animation(recipe.animation),
-                    hitbox          = Factory.hitbox(recipe.hitbox)
+                    hitbox          = Factory.hitbox(recipe.hitbox),
+                    substrate       = self.materials.substrate(instance_key)
                 )
                 self.board.add([asset])
             

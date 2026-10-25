@@ -53,7 +53,8 @@ from app.models.config import (
 from app.services.generators.game import (
     Factory,
     Decomposer,
-    Actuator
+    Actuator,
+    Cradle
 )
 from app.services.generators.menus import (
     Provider, 
@@ -254,9 +255,10 @@ class Builder:
             struts=self.context.properties.crafts.struts,
             shorelines=self.context.properties.geography.shorelines
         )
-        cradle = Factory.cradle(
+        cradle = Cradle(
             spawnable_groups, 
             self.context.configurations.recipes, 
+            self.relations[Relations.MATERIALS.value],
             self.decomposer
         )
         self.board.set_cradle(cradle)

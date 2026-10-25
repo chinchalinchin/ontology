@@ -25,7 +25,8 @@ from typing import (
 
 # Application Libraries
 from app.static.semantics import (
-    ChannelTypes
+    ChannelTypes,
+    Substrates
 )
 from app.models.properties import (
     AssetProperties
@@ -161,6 +162,8 @@ class Asset:
     state: AssetState
     frame:  Frame
     animation: Animation
+    hitbox: HitboxSchema
+    substrate: int
 
     def __init__(self,
         taxonomy: Taxonomy,
@@ -169,6 +172,7 @@ class Asset:
         frame: Frame=None, 
         animation: Animation=None,
         hitbox: HitboxSchema=None,
+        substrate: int = Substrates.STANDARD.value
     ):
         self.taxonomy = taxonomy
         self.properties = properties
@@ -176,6 +180,7 @@ class Asset:
         self.frame = frame
         self.animation = animation
         self.hitbox = hitbox
+        self.substrate = substrate
 
     @property
     def id(self) -> str: 
@@ -206,14 +211,6 @@ class Asset:
     @elevation.setter
     def elevation(self, value: Optional[int]) -> None:
         self.state.elevation = value
-
-    @property
-    def substrate(self) -> int:
-        return self.state.substrate
-
-    @substrate.setter
-    def substrate(self, value: int) -> None:
-        self.state.substrate = value
 
     @property
     def hitboxes(self) -> List[Hitbox]:

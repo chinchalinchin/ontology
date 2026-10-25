@@ -224,13 +224,6 @@ class Factory:
         target_cls = Factory.DEVICE_MAP.get(dev, Keyboard)
         return target_cls(mapping)
 
-
-    @staticmethod
-    def cradle(spawnables: SpawnableGroup, recipes: RecipeConfiguration, decomposer: Any):
-        from app.services.generators.game.cradle import Cradle
-        return Cradle(spawnables, recipes, decomposer)
-
-
     @staticmethod 
     def mechanics(
         config: MechanicsInstance, 
@@ -299,8 +292,3 @@ class Factory:
     def translator(translation: str):
         target_cls = Factory.TRANSLATOR_MAP.get(translation, LambdaTranslator)
         return target_cls()
-
-    @staticmethod
-    def context(menu: str, **kwargs):
-        # TODO
-        pass
