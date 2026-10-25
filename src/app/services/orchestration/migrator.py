@@ -135,12 +135,18 @@ class Migrator:
         
         # 2. Yield through component injection
         for task in tasks:
-
+            # A. Composition Processing
             if task[0] == Shortcuts.COMPOSITIONS.value:
                 comp_state = task[1]
                 expanded_assets = self.decomposer.unpack(comp_state)
                 self.board.add(expanded_assets)
 
+            # B. Plot Processing
+            elif task[0] == Shortcuts.PLOTS.value:
+                plot = task[1]
+                self.board.set_plot(plot)
+
+            # C. Multiplication Processing
             elif (
                 task[0] == Shortcuts.ASSETS.value 
                 and task[2] in MultipliedAssets
@@ -154,16 +160,13 @@ class Migrator:
                 )
                 self.board.add(multiplied_asset)
 
+            # D. Door Projection Processing
             elif (
                 task[0] == Shortcuts.ASSETS.value
                 and task[2] == AssetInstances.DOORS.value
             ):
                 door_state = task[3]
-                self.board.add(self.decomposer.project_door(door_state))
-
-            elif task[0] == Shortcuts.PLOTS.value:
-                plot = task[1]
-                self.board.set_plot(plot)
+                self.board.add(self.decomposer.project(door_state))
 
             else:
                 _, category_key, instance_key, state_obj = task

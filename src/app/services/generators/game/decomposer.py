@@ -109,6 +109,7 @@ class Decomposer:
             return 0
         return props.dimensions.l
 
+
     def _get_span_length(
         self,
         cat_key: str,
@@ -822,7 +823,7 @@ class Decomposer:
                     if inst_key in MultipliedAssets:
                         assets.extend(self.multiply(new_state, cat_key, inst_key))
                     elif inst_key == AssetInstances.DOORS.value:
-                        assets.extend(self.project_door(new_state))
+                        assets.extend(self.project(new_state))
                     else:
                         assets.append(self._create_asset(cat_key, inst_key, new_state))
 
@@ -830,7 +831,7 @@ class Decomposer:
     # ------------------------------------------ PUBLIC METHODS
     # ---------------------------------------------------------
 
-    def project_door(self, state: DoorState) -> List[Asset]:
+    def project(self, state: DoorState) -> List[Asset]:
         """
         Instantiates a primary Door on state.layer (Substrates.STANDARD) and its
         reciprocal shadow footprint on state.outlayer (Substrates.OVERLAYS).
