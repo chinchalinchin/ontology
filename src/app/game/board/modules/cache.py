@@ -25,7 +25,7 @@ from app.static.semantics import (
     AssetInstances,
     Directions
 )
-from ontology.src.app.game.board.modules.predicates import is_weight
+from app.game.board.modules.predicates import is_weight
 
 # Cython Libraries
 from libs.core.models import Position

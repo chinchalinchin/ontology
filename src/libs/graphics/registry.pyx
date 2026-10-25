@@ -9,7 +9,7 @@ import logging
 import dataclasses
 
 # Application Libraries
-import app.config.settings as settings
+import app.static.settings as settings
 
 # Cython Libraries
 from libs.graphics.render cimport (

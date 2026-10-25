@@ -6,7 +6,7 @@
 
 * Location: `src/data/template/{{ name }}`
 
-{% for tmp in yaml('src/data/templates/' ~ name, recursive=True) | sort %}
+{% for tmp in yamls('src/data/templates/' ~ name, recursive=True) | sort %}
 **{{ tmp }}**
 
 ```yaml

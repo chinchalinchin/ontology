@@ -1,0 +1,7 @@
+defaults:
+  template: main.md.j2
+  vars: main.yaml
+  output: build
+  file: prompt.md
+  data: data
+  templates: tasks

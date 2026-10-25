@@ -5,7 +5,7 @@
 
 * Location: `src/data/state/{{ board }}`
 
-{% for state in yaml('src/data/state/' ~ s, recursive=True) | sort %}
+{% for state in yamls('src/data/state/' ~ s, recursive=True) | sort %}
 **{{ state }}**
 
 ```yaml

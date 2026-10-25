@@ -79,7 +79,7 @@ from app.static.semantics.menus import (
     Selections,
     Statuses
 )
-from ontology.src.app.static.semantics.config import (
+from app.static.semantics.config import (
     FrameRecipe,
     AnimationRecipe,
     HitboxRecipe

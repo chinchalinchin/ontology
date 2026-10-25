@@ -5,7 +5,7 @@
 
 * Location: `src/assets/{{ property }}`
 
-{% for prop in yaml('src/assets/' ~ property, recursive=True) | sort %}
+{% for prop in yamls('src/assets/' ~ property, recursive=True) | sort %}
 
 **{{ prop }}**
 

@@ -226,7 +226,7 @@ tools:
         #                   objects, resources, sheets,
         #                   tiles, world
         # ]
-        state: []
+        state: [ ]
         # configurations: [
         #                   actions, compositions, intentions,
         #                   library, mappings, materials,

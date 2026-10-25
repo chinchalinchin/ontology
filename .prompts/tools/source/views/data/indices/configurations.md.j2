@@ -5,7 +5,7 @@
 
 * Location: `src/data/config/{{ config }}`
 
-{% for f in yaml('src/data/config/' ~ config, recursive=True) | sort %}
+{% for f in yamls('src/data/config/' ~ config, recursive=True) | sort %}
 **{{ f }}**
 
 ```yaml
