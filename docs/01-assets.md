@@ -120,7 +120,7 @@ See [Rendering documentation](./11-architecture.md#rendering-sort) for more info
 
 **Substrates**
 
-Certain Assets have a dedicated Substrate to preserve the fidelity of their rendering order. These values hydrated onto `Asset.substrate` via [MaterialIndex](./appendices/01-schemas.md#configuration-materials).
+Certain Assets have a dedicated Substrate to preserve the fidelity of their rendering order. These values are hydrated onto Asset directly via [MaterialIndex](./appendices/01-schemas.md#configuration-materials).
 
 --8<-- "static/md/asset-substrates.md"
 
@@ -137,16 +137,16 @@ The *Material Space* is further subdivded into non-overlapping Genera,
 
 --8<-- "static/md/material-genera.md"
 
-`chromatics`, being a discrete shade of color, requires a `host` material to accept its payload.
+Each Genera refers to a range of Material Value. An Asset with the modality of Material declares a Genera in its Properties and then binds to a Material Value in its State. In other words, If an Asset indexes its Frame space over Material through its Properties, then its Asset State must specify which Material it should instantiate when deployed.
 
-If an Asset indexes its Frame space over Material, then its Asset State must have a `material` field to specify which Material it should instantiate when deployed.
+Chromatics, being a discrete shade of color, requires a Host Material. to accept its payload. 
 
 See [Material documentation](./03-compositions.md#material) for more information.
 
 **Model: Material**
 
-- `genus: str`: Partition of Material Space.
-- `host: str`: Host Material for Chromatic Genera.
+- `genus: MaterialGenera`: Partition of Material Space.
+- `host: Optional[Union[Ceramics, Organics]]`: Host Material for Chromatic Genera.
 
 ### Asset: Hierarchy
 
@@ -336,13 +336,14 @@ Objects have different States. `count` enumerates the number of possible States 
 
 **State: ObjectState(AssetState)**
 
+- `position: Position`
 * `material: Union[Ceramics, Chromatics, Geologics, Metallics, Organics]` 
 
 All Objects extend this base Model..
 
 **Frame: ObjectFrame**
 
-* `index(id, properties): returns { "{id}-{i}": (j * properties.dimension.w, 0, properties.dimensions.w, properties.dimension.l )} for i in properties.material`
+* `index(id, properties): returns { "{id}-{i}": (j * properties.dimension.w, 0, properties.dimensions.w, properties.dimension.l )} for i in partition(properties.material)`
 * `keys(id, state): returns "{id}-{state.material}"`
 
 **Animation: None**
@@ -395,9 +396,11 @@ During hydration, each Door automatically projects a reciprocal shadow footprint
 
 * `outlayer: str`
 * `out: Position`
+* `projection: LayerProjection`
 
 **Hitbox: LayeredHitbox**
 
+- `elevations(properties, state): returns [] if state.projection == LayerProjection.OUT.value else [max(0, state.elevation or 0)]`
 * `get(properties, state, elevation, frame): returns properties.hitboxes[state.layer] if LayerProjection.IN.value else properties.hitboxes[state.outlayer]`
 
 ### Object: Gates
@@ -499,7 +502,7 @@ Signs utilize `persona` and `lexicon` keys to grab the appropriate content from 
 
 * Property File: `/src/assets/crafts/**/*.yaml`
 
-Crafts are Assets instantiated through [Game Mechanics](./05-mechanics.md) or utilized in [Compositions](./03-compositions.md). They encapsulate structures and topologies in the game. Crafts are used to establish boundaries, impose perimeters and stamp decals onto the [Screen](./00-overview.md#screen).
+Crafts are Assets instantiated through [Mechanics](./05-mechanics.md) or utilized in [Compositions](./03-compositions.md). They encapsulate structures and topologies on the [Board](./00-overview.md#component-board). Crafts are used to establish boundaries, impose perimeters and stamp decals onto the [Screen](./00-overview.md#screen).
 
 Many Crafts are inherently bound to the process of [Composition](./03-compositions.md). Several specifications (Struts, Decor) are covered in more detail in the [Composition documentation](./03-compositions.md#asset-specifications)
 
@@ -510,8 +513,6 @@ Craft Asset files are organized into a (Blueprint, Material) atlas, where each r
 Crafts introduce the notion of *ownership*. Each Craft possesses an `owner`. An `owner` is a key that references the `name` of a [Sprite](./02-sprites.md).
 
 **Model: Blueprint**
-
-* `schema: str`
 
 Just as the Material space is partitioned into Genera, the *Blueprint Space* is furthered subdivded into non-overlapping partitions of Schema.
 
@@ -526,11 +527,12 @@ Just as the Material space is partitioned into Genera, the *Blueprint Space* is 
 
 * `mass: int = 0`
 * `material: Optional[Material] = None`
-* `blueprints: Optional[str] = None` 
+* `blueprints: Optional[BlueprintSchemas] = None` 
 * `hitboxes: Optional[Dict[str, List[Hitbox]]] = None`
 
 **State: CraftState(AssetState)**
 
+* `position: Position`
 * `material: Union[Ceramics, Chromatics, Geologics, Metallics, Organics]` 
 * `blueprint: Union[Buildings, Corridors, Columns, Directions, Enclosures, Inclines, Orientations]`
 * `multiple: Multiple`
@@ -539,8 +541,8 @@ All Crafts inherit fields from this State model.
 
 **Frame: MaterialFrame**
 
-* `keys(id, state): returns [ (f"{id}-{state.material}-{state.blueprint}", 0, 0) ]`
-* `index(id, properties): returns { f"{id}-{i}-{j}: (i * properties.dimensions.w, j * properties.dimensions.l, properties.dimension.w, properties.dimensions.l) } for i, j in product(properties.blueprints, properties.materials)`
+* `keys(id, state): returns [ (f"{id}-{state.blueprint}-{state.material}", 0, 0) ]`
+* `index(id, properties): returns { f"{id}-{i}-{j}: (i * properties.dimensions.w, j * properties.dimensions.l, properties.dimension.w, properties.dimensions.l) } for i, j in product(partition(properties.blueprints), partition(properties.materials))`
 
 **Hitbox: MaterialHitbox**
 
@@ -571,20 +573,17 @@ Stairs are Crafts that transition the elevation of dynamic Assets.
 
 **Behavior: Elevation**
 
-The direction of the elevation transition calculation is dependent on the direction of the transitioning Asset's velocity. For example, once an Asset intersects a Stair, the following conditions are elevated,
+The direction of the elevation transition calculation is dependent on the direction of the transitioning Asset's velocity,
 
-- `stairs.state.direction == 'right' and asset.state.velocity.vx < 0: asset.state.elevation += stairs.state.delta`
-- `stairs.state.direction == 'right' and asset.state.velocity.vx > 0: asset.state.elevation -= stairs.state.delta`
-- `stairs.state.direction == 'left' and asset.state.velocity.vx < 0: asset.state.elevation -= stairs.state.delta`
-- `stairs.state.direction == 'left' and asset.state.velocity.vx > 0: asset.state.elevation += stairs.state.delta`
-- `stairs.state.direction == 'up' and asset.state.velocity.vy < 0: asset.state.elevation += stairs.state.delta`
-- `stairs.state.direction == 'up' and asset.state.velocity.vx > 0: asset.state.elevation -= stairs.state.delta`
-- `stairs.state.direction == 'down' and asset.state.velocity.vy > 0: asset.state.elevation += stairs.state.delta`
-- `stairs.state.direction == 'down' and asset.state.velocity.vx < 0: asset.state.elevation -= stairs.state.delta`
+- `stairs.state.blueprint == Directions.RIGHT and asset.state.velocity.vx < 0: asset.state.elevation += stairs.state.delta`
+- `stairs.state.blueprint == Directions.RIGHT  and asset.state.velocity.vx > 0: asset.state.elevation -= stairs.state.delta`
+- `stairs.state.blueprint == Directions.LEFT and asset.state.velocity.vx < 0: asset.state.elevation -= stairs.state.delta`
+- `stairs.state.blueprint == Directions.LEFT and asset.state.velocity.vx > 0: asset.state.elevation += stairs.state.delta`
+- `stairs.state.blueprint == Directions.DOWN and asset.state.velocity.vy < 0: asset.state.elevation += stairs.state.delta`
+- `stairs.state.blueprint == DIRECTION.DOWN and asset.state.velocity.vy > 0: asset.state.elevation -= stairs.state.delta`
 
 **State: StairState**
 
-* `direction: str` (`up`, `down`, `left`, `right`)
 * `delta: int = 1`
 
 ## Category: Cursors

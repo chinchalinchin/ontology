@@ -36,7 +36,7 @@ Blueprints describe specific structural implementations of a Craft. Blueprints a
 * `buildings`:
     * `halls`, `walls`: Support surfaces.
     * `roofs`, `flats`: Elevated surfaces.
-    * `paths`, `floor`: Ground surfaces.
+    * `paths`, `floors`: Ground surfaces.
 * `corridors`:
     * `solids`, `stripes, `designs`: Ground surfaces 
 * `columns`:
@@ -44,7 +44,7 @@ Blueprints describe specific structural implementations of a Craft. Blueprints a
     * `shafts`: Multiplicand for multiplcation.
     * `bases`: Lower cap for multiplcation.
 * `directions`:
-    * `up`, `left, `down`, `right`: Directed obstructions.
+    * `up`, `left`, `down`, `right`: Directed obstructions and carpentry.
 * `enclosures`:
     * `north`, `south`: End cap for vertical multiplcation, edges for horizontal multiplcation.
     * `east`, `west`:  End cap for horizontal multiplcation, edge for vertical multiplcation.
@@ -57,14 +57,14 @@ Blueprints describe specific structural implementations of a Craft. Blueprints a
 
 Each Blueprint Schema has a unique Multiplication Strategy associated with it in the [Materials Configuration](./appendices/01-schemas.md#configuration-materials) that determines how its `multiple` will be expanded during [Board](./00-overview.md#component-board) hydration.
 
-- `simple`: $(x_0 + i \cdot w, y_0 + j \cdot l) \mid i \leq n_x, j \leq n_y$ 
-- `expansion`: $\text{crown} = (x_0, y_0)$, $n_y$, $\text{shafts, base} = (x_0, y_0 + (n_y + 1) \cdot l)$; $\text{anchor} = \text{base.y} + \text{base.l}$
-- `oriented`: $(x + i \cdot w, y) \mid i \leq n_x \lor (x, y + j \cdot l) \mid j \leq n_y$ .
-- `perimeter`: hollow perimeter of $2(n_x + n_y + 4)$ segments with superimposed `L`-corners and `north` baseline anchor adjustment
+* `simple`: $(x_0 + i \cdot w, y_0 + j \cdot l) \mid i \leq n_x, j \leq n_y$ 
+* `expansion`: $\text{crown} = (x_0, y_0)$, $n_y$, $\text{shafts, base} = (x_0, y_0 + (n_y + 1) \cdot l)$; $\text{anchor} = \text{base.y} + \text{base.l}$
+* `oriented`: $(x + i \cdot w, y) \mid i \leq n_x \lor (x, y + j \cdot l) \mid j \leq n_y$ .
+* `perimeter`: hollow perimeter of $2(n_x + n_y + 4)$ segments with superimposed `L`-corners and `north` baseline anchor adjustment
 
 ### Craft: Struts 
 
-*Struts* are structural Assets that encapsulate architecture. Struts may be placed on the Board through the State files manually, but they are generally instantiated during the [Engine](./00-overview.md#component-engine) loop through the `build` [Intention](./04-intentions.md).
+*Struts* are structural Assets that encapsulate architecture. Struts may be placed on the Board through the State files manually, but they are generally instantiated during the [Engine Loop](./00-overview.md#component-engine) through the `build` [Intention](./04-intentions.md).
 
 **Behavior: Composability**
 
@@ -103,11 +103,11 @@ Platforms have two kinds of hitboxes: baseline hitboxes and elevated hitboxes, w
 
 ### Definition: Composition
 
-From the perspective of the [State files](./00-overview.md#core-state), Compositions are another type of Asset that can be deployed onto the Board. However, they are a "*virtual*" Asset composed of other Assets, i.e. they do not have Properties of their own nor are they localized to a single image on the fileystem. 
+From the perspective of the [State files](./00-overview.md#core-state), Compositions are another type of Asset that can be deployed onto the [Board](./00-overview.md#component-board). However, they are a "*virtual*" Asset composed of other Assets, i.e. they do not have Properties of their own nor are they localized to a single image on the fileystem. 
 
 Compositions are collections of multiple Assets. When a Composition is deployed onto the [Board](./00-overview.md#component-board), its individual Assets are added to the appropriate (Category, Instance)-nodes in the [Asset Hierarchy](./01-assets.md#asset-hierarchy) by the [Decomposer Service](#service-decomposer).
 
-A Composition is a way to reuse common Asset configurations in the state without having to specify their individual components each time they are deployed. Functionally, Compositions serve no purpose from the Board's perspective. They only serve to simplify the amount of state boilerplate that is required to fully declare a complex, high-level game entites on the [Board](./00-overview.md#component-board).
+A Composition is a way to reuse common Asset configurations in the state without having to specify their individual components each time they are deployed. Functionally, Compositions serve no purpose from the [Board](./00-overview.md#component-board)'s perspective. They only serve to simplify the amount of State File boilerplate that is required to fully declare a complex, high-level entity on the [Board](./00-overview.md#component-board).
 
 Compositions are organized around [Struts](#craft-struts). They serve as abstract containers (or wrappers) for Struts. Compositions, in a sense, are the *realization* of a Strut. While Struts can be deployed individually onto the Board, their true purpose is to provide a "root" for other Assets in a Composition.
 
@@ -115,17 +115,17 @@ Compositions are organized around [Struts](#craft-struts). They serve as abstrac
 
 Every Composition has atleast one [Strut](./01-assets.md#struts), known as the Root Strut. If it has more than one Strut, the other Struts are known as Branch Struts. 
 
-A Composition contains other Assets in predefined configurations, known as the Composition Components. Each Strut in a Composition has Components.
+A Composition contains other Assets in predefined configurations, known as the Composition Components. Each Strut in a Composition has its own Components.
 
-For example, a `brick-house` Composition might contain a `wall` Strut as its root Strut and then a `panel` Door as a component Asset. The Composition specifies the relative position of the `panel` with respect to the origin of the `wall`, i.e. all Component Assets in a Composition have their positions unpacked relative to the Root Strut's deployed Position. 
+For example, a `brick-house` Composition might contain a `wall` Strut as its root Strut and then a `panel` Door as a component Asset. The Composition specifies the relative position of the `panel` with respect to the origin of the `wall`, i.e. all Component Assets in a Composition have their Positions unpacked relative to the Root Strut's deployed Position. 
 
-In other words, Root Struts provided a *frame of reference* for their components.
+In other words, Root Struts provide a *frame of reference* for their Components.
 
 ### Definition: PseudoState
 
-To achieve this, Compositions have a *Pseudo State* and a *Deployed State*. A Pseudo State is a formula for constructing the State of its component Assets from the Deployed State of the Composition's [Root Strut](#root-struts). The Pseudo State of a Composition is configured in the Composition directory, whereas the Deployed State is set in the State directory, alongside the other Asset States.
+To achieve this, Compositions have a *Pseudo State* and a *Deployed State*. A Pseudo State is a formula for constructing the State of its Component Assets from the Deployed State of the Composition's [Root Strut](#root-struts). The Pseudo State of a Composition is configured in the Composition directory, whereas the Deployed State is set in the State directory, alongside the other Asset States.
 
-The State files specify Compositions to deploy. The game converts these Compositions into ingame Assets that belong to the [Asset Hierarchy](./01-assets.md#asset-hierarchy). When Compositions are unpacked by the [Orchestrator](./00-overview.md#orchestrator) during the [bootstrapping](./11-architecture.md#specification-initialization), each Asset in a Composition is appended to the [Board](./00-overview.md#component-board) state dynamically. In other words, the Assets in Compositions, once unpacked, are treated separately by the Engine, as if they had been specified in the state directory individually.
+The State files specify Compositions to deploy. The [Application](./00-overview.md#application) converts these Compositions into Assets in the [Asset Hierarchy](./01-assets.md#asset-hierarchy). When Compositions are unpacked by the [Orchestrator](./00-overview.md#orchestrator) during the [bootstrapping](./11-architecture.md#specification-initialization), each Asset in a Composition is appended to the [Board](./00-overview.md#component-board) state dynamically. In other words, the Assets in Compositions, once unpacked, are treated separately by the Engine, as if they had been specified in the State directory individually.
 
 Components of Compositions have a [Pseudo State](#pseudo-state). During the [application bootstrap](./11-architecture.md#specification-initialization), each component's Pseudo State is hydrated into an actual Asset State and injected into the [Board](./00-overview.md#component-board).
 

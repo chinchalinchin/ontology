@@ -1,11 +1,11 @@
-compositions: []
-#   - id: brick-house
-#     name: suburbs-00
-#     layer: '0'
-#     owner: player
-#     position:
-#       x: 650
-#       y: 750
+compositions:
+  - id: brick-house
+    name: suburbs-00
+    layer: '0'
+    owner: player
+    position:
+      x: 650
+      y: 800
 #   - id: brick-house
 #     name: suburbs-01
 #     layer: '0'

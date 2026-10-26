@@ -76,6 +76,7 @@ Tags are meant to capture logically related slices of the Application.
                 * `workflow.gravity`
                 * `workflow.hydration` (*Initialization*)
                 * `workflow.intentions`
+                * `workflow.interactions`
                 * `workflow.main` (*Entrypoint*)
                 * `workflow.menus`
                 * `workflow.injection` (*Dependency Injection Pipeline*)

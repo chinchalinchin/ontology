@@ -5,7 +5,7 @@
 @app.mechanics
 @physics.space
 @workflow.collisions
-
+@workflow.interactions
 # Ontology: Source - app.game.logic.mechanics.spatial.base
 
 SpatialMechanic implementation base class.
