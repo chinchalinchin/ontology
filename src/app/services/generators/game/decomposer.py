@@ -76,6 +76,11 @@ logger = logging.getLogger(__name__)
 # --------------------------------------------------------------
 
 class Decomposer:
+    """
+    Service for unpacking Composition configurations, hydrating PseudoStates,
+    projecting Door footprints, and dispatching Craft multiplication strategies.
+    """
+    
     compositions: Dict[str, CompositionConfiguration]
     properties: PropertiesSchema
     materials: MaterialIndex
@@ -170,6 +175,8 @@ class Decomposer:
         layer_map: Dict[str, str]
     ) -> Optional[str]:
         """
+        Namespaces internal composition layers per deployment increment while
+        preserving references to the root board layer.
         """
         if layer is None or str(layer) == str(root_layer):
             return layer
@@ -191,6 +198,7 @@ class Decomposer:
         parent_context: Dict[str, Any]
     ) -> Any:
         """
+        Resolves bind(parent.*) and bind(root.*) macros against active contexts.
         """
         if not isinstance(val, str):
             return val
@@ -240,10 +248,10 @@ class Decomposer:
         target_y = 0
         target_l = 0
 
-        if target_ref  == "parent":
+        if target_ref in ("parent", parent_context.get("pseudo_name")):
             target_y = 0
             target_l = parent_context.get("length", 0)
-        elif target_ref == "root":
+        elif target_ref in ("root", root_context.get("pseudo_name")):
             target_y = 0
             target_l = root_context.get("length", 0)
         elif target_ref in scope_lookup:
@@ -273,6 +281,7 @@ class Decomposer:
         scope_lookup: Optional[Dict[str, Tuple[AssetState, str, str]]] = None
     ) -> AssetState:
         """
+        Hydrates a component or strut PseudoState into a concrete AssetState.
         """
         if layer_map is None:
             layer_map = root_context.setdefault("_layer_map", {})
@@ -338,6 +347,22 @@ class Decomposer:
             root_context
         )
 
+        # 6. Resolve SwitchState link namespacing
+        if "link" in kwargs and kwargs["link"]:
+            link_target = str(kwargs["link"])
+            link_map = root_context.get("_link_map", {})
+            if scope_lookup and link_target in scope_lookup:
+                _, _, target_inst = scope_lookup[link_target]
+                target_base = target_inst[:-1] if target_inst.endswith("s") else target_inst
+                kwargs["link"] = settings.SEPARATOR.join([
+                    target_base,
+                    parent_context["name"],
+                    link_target,
+                    str(inc)
+                ])
+            elif link_target in link_map:
+                kwargs["link"] = link_map[link_target]
+
         base_inst = inst_key[:-1] if inst_key.endswith("s") else inst_key
 
         if is_strut:
@@ -388,6 +413,50 @@ class Decomposer:
     # ------------------------------------- EXPANSION UTILITIES
     # ---------------------------------------------------------
 
+    def _links(
+        self,
+        comp_config: CompositionConfiguration,
+        root_context: Dict[str, Any],
+        inc: int
+    ) -> None:
+        """
+        Pre-indexes hydrated component names across root and branch nodes into
+        root_context['_link_map'] so cross-node SwitchState.link references resolve.
+        """
+        link_map = root_context.setdefault("_link_map", {})
+        nodes = [comp_config.root]
+        if comp_config.branches:
+            nodes.extend(comp_config.branches)
+
+        for node in nodes:
+            if not node or not node.components:
+                continue
+            b_name = node.strut.name or root_context["name"]
+            parent_name = settings.SEPARATOR.join(["strut", b_name, str(inc)])
+
+            for cat_field in dataclasses.fields(node.components):
+                cat_key = cat_field.name
+                if cat_key in Shortcuts:
+                    continue
+                cat_data = getattr(node.components, cat_key)
+                if not cat_data:
+                    continue
+                for inst_field in dataclasses.fields(cat_data):
+                    inst_key = inst_field.name
+                    inst_list = getattr(cat_data, inst_key)
+                    if not inst_list:
+                        continue
+                    base_inst = inst_key[:-1] if inst_key.endswith("s") else inst_key
+                    for pseudo_state in inst_list:
+                        if pseudo_state.name:
+                            link_map[pseudo_state.name] = settings.SEPARATOR.join([
+                                base_inst,
+                                parent_name,
+                                pseudo_state.name,
+                                str(inc)
+                            ])
+
+
     def _node(
         self,
         node: Any,
@@ -431,14 +500,31 @@ class Decomposer:
             "layer": strut_state.layer,
             "owner": strut_state.owner,
             "name": strut_state.name,
+            "pseudo_name": node.strut.name,
             "elevation": strut_state.elevation
         }
 
         if is_root:
             root_context["elevation"] = strut_state.elevation
             root_context["length"] = strut_len
+            root_context["pseudo_name"] = node.strut.name
 
-        self._components(node.components, root_context, node_context, inc, assets)
+        initial_scope: Dict[str, Tuple[AssetState, str, str]] = {}
+        if node.strut.name:
+            initial_scope[node.strut.name] = (
+                dataclasses.replace(strut_state, position=Position(0, 0)),
+                AssetCategories.CRAFTS.value,
+                AssetInstances.STRUTS.value
+            )
+
+        self._components(
+            node.components, 
+            root_context, 
+            node_context, 
+            inc, 
+            assets,
+            initial_scope
+        )
         return assets
 
 
@@ -448,15 +534,17 @@ class Decomposer:
         root_context: Dict[str, Any],
         parent_context: Dict[str, Any],
         inc: int,
-        assets: List[Asset]
+        assets: List[Asset],
+        initial_scope: Optional[Dict[str, Tuple[AssetState, str, str]]] = None
     ) -> None:
         if not components:
             return
 
         layer_map = root_context.setdefault("_layer_map", {})
+        link_map = root_context.setdefault("_link_map", {})
 
         # PASS 1: Scope Indexing (collect all named siblings)
-        scope_lookup: Dict[str, Tuple[AssetState, str, str]] = {}
+        scope_lookup: Dict[str, Tuple[AssetState, str, str]] = dict(initial_scope or {})
 
         for cat_field in dataclasses.fields(components):
             cat_key = cat_field.name
@@ -473,11 +561,18 @@ class Decomposer:
                 if not inst_list:
                     continue
 
+                base_inst = inst_key[:-1] if inst_key.endswith("s") else inst_key
                 for pseudo_state in inst_list:
                     if pseudo_state.name:
                         scope_lookup[pseudo_state.name] = (pseudo_state, cat_key, inst_key)
+                        link_map[pseudo_state.name] = settings.SEPARATOR.join([
+                            base_inst,
+                            parent_context["name"],
+                            pseudo_state.name,
+                            str(inc)
+                        ])
 
-        # PASS 2: Hydration with Anchor Resolution
+        # PASS 2: Hydration with Anchor & Link Resolution
         for cat_field in dataclasses.fields(components):
             cat_key = cat_field.name
             if cat_key in Shortcuts:
@@ -549,6 +644,11 @@ class Decomposer:
         if not state.outlayer or not state.out:
             return doors
 
+        door_l = self._get_length(
+            AssetCategories.OBJECTS.value,
+            AssetInstances.DOORS.value,
+            state.id
+        )
         shadow_name = settings.SEPARATOR.join([
             state.name or state.id,
             LayerProjections.OUT.value
@@ -559,7 +659,7 @@ class Decomposer:
             layer=state.outlayer,
             position=Position(state.out.x, state.out.y),
             outlayer=state.layer,
-            out=Position(state.position.x, state.position.y),
+            out=Position(state.position.x, state.position.y + door_l),
             anchor=0,
             projection=LayerProjections.OUT.value
         )
@@ -590,8 +690,11 @@ class Decomposer:
             "owner": deployed_state.owner,
             "position": deployed_state.position or Position(0, 0),
             "elevation": deployed_state.elevation if deployed_state.elevation is not None else 0,
-            "_layer_map": {}
+            "_layer_map": {},
+            "_link_map": {}
         }
+
+        self._links(comp_config, root_context, inc)
 
         assets.extend(self._node(comp_config.root, root_context, root_context, inc, is_root=True))
 
@@ -629,8 +732,8 @@ class Decomposer:
         base_name = state.name or state.id
 
         strategy_key = self.materials.strategy(props.blueprints)
-        handler = self._strategies.get(strategy_key, SimpleMultiplier(self.materials).multiply)
-
+        handler = self._strategies.get(strategy_key, self._strategies[MultiplicationStrategies.SIMPLE.value])
+        
         cat_recipes = getattr(self.recipes, category)
         recipe = getattr(cat_recipes, instance)
 

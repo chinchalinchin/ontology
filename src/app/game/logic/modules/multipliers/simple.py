@@ -1,7 +1,6 @@
 """
 @domain.concrete
 @domain.logic
-@app.core
 @app.module
 @category.crafts
 @workflow.compositions

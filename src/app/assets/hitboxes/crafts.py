@@ -98,7 +98,5 @@ class MaterialHitbox(HitboxSchema):
                 return [Hitbox(Position(0, 0), properties.dimensions)]
             return []
 
-        if isinstance(properties.hitboxes, dict):
-            return properties.hitboxes.get(state.blueprint, []) or []
+        return properties.hitboxes.get(state.blueprint, []) or []
 
-        return properties.hitboxes

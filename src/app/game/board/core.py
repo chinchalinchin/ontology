@@ -203,7 +203,7 @@ class Board:
         self.overlays = overlays
 
 
-    def set_plot(self, plot: str) -> None:
+    def set_plot(self, plot: PlotState) -> None:
         self.plot = plot
 
 
@@ -436,7 +436,6 @@ class Board:
                 continue
 
             if asset.category == AssetCategories.EFFECTS.value:
-                frequency = getattr(asset.properties, "frequency", None)
                 if asset.properties.frequency and \
                     asset.properties.frequency.type == Frequencies.TEMPORARY.value and \
                     not asset.properties.frequency.persist:
