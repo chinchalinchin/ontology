@@ -1,6 +1,5 @@
 """
 @domain.concrete
-@app.asset
 @asset.hitbox
 @category.objects
 @modality.material
@@ -111,10 +110,11 @@ class LayeredHitbox(HitboxSchema):
         l = properties.dimensions.l
 
         if projection == LayerProjections.OUT.value:
+            sensor_l = min(l, DEFAULT_OUT_SENSOR_THICKNESS)
             return [
                 Hitbox(
-                    Position(0, 0),
-                    Dimensions(w, min(l, DEFAULT_OUT_SENSOR_THICKNESS))
+                    Position(0, l - sensor_l),
+                    Dimensions(w, sensor_l)
                 )
             ]
 

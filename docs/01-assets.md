@@ -66,7 +66,6 @@ All Asset Properties inherit fields from this model.
 * `layer: str`: Board Layer key.
 * `elevation: int`: The Z-axis of the Asset.
 * `anchor: int`: Offset for ground perspective render sort-key.
-* `substrate: int`: Intra-elevation render sort-key.
 * `mutators: Mutators`: General behavioral flags for rendering and logic.
 
 All Asset States inherit fields from this model.
@@ -121,7 +120,7 @@ See [Rendering documentation](./11-architecture.md#rendering-sort) for more info
 
 **Substrates**
 
-Certain Assets have a dedicated Substrate to preserve the fidelity of their rendering order. These values hydrated onto `state.substrate` via [MaterialIndex](./appendices/01-schemas.md#configuration-materials).
+Certain Assets have a dedicated Substrate to preserve the fidelity of their rendering order. These values hydrated onto `Asset.substrate` via [MaterialIndex](./appendices/01-schemas.md#configuration-materials).
 
 --8<-- "static/md/asset-substrates.md"
 
@@ -333,17 +332,18 @@ Objects have different States. `count` enumerates the number of possible States 
 * `hitboxes: List[Hitbox]` 
 * `count: int = 1`
 * `mass: int`
-* `materials: Materials`
+* `materials: Material`
 
 **State: ObjectState(AssetState)**
 
-* `material: Material` 
+* `material: Union[Ceramics, Chromatics, Geologics, Metallics, Organics]` 
 
 All Objects extend this base Model..
 
 **Frame: ObjectFrame**
 
-* `index(id, properties): returns { "{id}-{i}-{j}": (j * properties.dimension.w, i * properties.dimensions.l, properties.dimensions.w, properties.dimension.l )} for i,j in product(properties.count, properties.material)`
+* `index(id, properties): returns { "{id}-{i}": (j * properties.dimension.w, 0, properties.dimensions.w, properties.dimension.l )} for i in properties.material`
+* `keys(id, state): returns "{id}-{state.material}"`
 
 **Animation: None**
 
@@ -365,6 +365,11 @@ When interacting with a Chest, the [Player](./02-sprites.md#player) is shown the
 **Hitbox: StaticHitbox**
 
 * `get(properties, state, elevation, frame): returns properties.hitboxes`
+
+**Frame: BinaryFrame**
+
+* `index(id, properties): returns { "{id}-{i}-{j}": (j * properties.dimension.w, i * properties.dimensions.l, properties.dimensions.w, properties.dimension.l )} for i,j in product(properties.count, properties.material)`
+* `keys(id, state): returns "{id}-{state.material}-{Switches.ON.value}" if state.switch else {id}-{state.material}-{Switches.OFF.value}"`
 
 ### Object: Crates
 
@@ -415,6 +420,11 @@ Gates do not switch their states of their own accord. A Plate automatically upda
 
 * `get(properties, state, elevation, frame): returns [] if state.switch else properties.hitboxes`
 
+**Frame: BinaryFrame**
+
+* `index(id, properties): returns { "{id}-{i}-{j}": (j * properties.dimension.w, i * properties.dimensions.l, properties.dimensions.w, properties.dimension.l )} for i,j in product(properties.count, properties.material)`
+* `keys(id, state): returns "{id}-{state.material}-{Switches.ON.value}" if state.switch else {id}-{state.material}-{Switches.OFF.value}"`
+
 ### Object: Obstacles
 
 !!! @TODO(11)
@@ -442,9 +452,14 @@ Plates are Objects with a binary state. Furthermore, that state can be instantan
 
 * `switch: bool`
 
-**Hitbox: SwitchHitbox**
+**Hitbox: StaticHitbox**
 
-* `get(properties, state, elevation, frame): returns [] if state.switch else properties.hitboxes`
+* `get(properties, state, elevation, frame): returns properties.hitboxes`
+
+**Frame: BinaryFrame**
+
+* `index(id, properties): returns { "{id}-{i}-{j}": (j * properties.dimension.w, i * properties.dimensions.l, properties.dimensions.w, properties.dimension.l )} for i,j in product(properties.count, properties.material)`
+* `keys(id, state): returns "{id}-{state.material}-{Switches.ON.value}" if state.switch else {id}-{state.material}-{Switches.OFF.value}"`
 
 ### Object: Rafts
 
@@ -516,9 +531,9 @@ Just as the Material space is partitioned into Genera, the *Blueprint Space* is 
 
 **State: CraftState(AssetState)**
 
-* `material: str`
-* `blueprint: str`
-* `multiple: str`
+* `material: Union[Ceramics, Chromatics, Geologics, Metallics, Organics]` 
+* `blueprint: Union[Buildings, Corridors, Columns, Directions, Enclosures, Inclines, Orientations]`
+* `multiple: Multiple`
 
 All Crafts inherit fields from this State model.
 

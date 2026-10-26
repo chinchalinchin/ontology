@@ -9,6 +9,10 @@
 # Ontology: Source - app.assets.frames.crafts
 
 Craft Frame implementations.
+
+## TODOs
+
+1. Not a fan of the hidden dependence on MaterialIndex.
 """
 # Standard Libraries
 from typing import (
@@ -29,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 class MaterialFrame(Frame):
     """
-    Indexes 2D Craft Sheet atlases where rows correspond to Blueprint partitions
+    Indexes 2D Craft Sheet atlases where rows correspond to Blueprint schema partitions
     and columns correspond to Material genus partitions.
     """
 

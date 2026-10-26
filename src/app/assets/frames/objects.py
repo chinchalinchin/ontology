@@ -8,6 +8,11 @@
 # Ontology: Source - app.assets.frames.objects
 
 Object Frame implementations.
+
+## TODOs
+
+1. Not a fan of the hidden dependence on MaterialIndex.
+
 """
 # Standard Libraries
 from typing import (
