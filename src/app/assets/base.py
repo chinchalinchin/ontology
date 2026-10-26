@@ -9,10 +9,7 @@
 Base Asset Interfaces.
 """
 # Standard Libraries
-from abc import (
-    ABC, 
-    abstractmethod
-)
+from abc import abstractmethod
 from dataclasses import dataclass
 from typing import (
     Dict,
@@ -40,7 +37,9 @@ from libs.core.models import (
     Dimensions, 
     Hitbox, 
 )
-    
+
+# -------------------------------------------------
+
 @dataclass(slots=True)
 class Taxonomy:
     id: str

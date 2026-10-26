@@ -85,7 +85,9 @@ class Provider:
         self.binder = binder
         self.fabricator = fabricator or Fabricator()
 
-    # --------------------------- STATE HYDRATION UTILITIES
+    # --------------------------------------------------
+    # ------------------------ ASSET HYDRATION UTILITIES
+    # --------------------------------------------------
 
     def _page(self, 
         cfg: MenuNode, 
@@ -153,8 +155,6 @@ class Provider:
             status              = status_val,
             animation           = AnimationState(action=status_val)
         )
-
-    # ------------------------ ASSET INSTANTIAION UTILITIES
     
     def _widget(self, 
         cfg: MenuNode, 
@@ -179,6 +179,10 @@ class Provider:
         state = delegator[instance_key](cfg, binding)
 
         return AssetFactory.widget(cfg, properties, state, recipe, binding)
+
+    # --------------------------------------------------
+    # ------------------------------ RECURSION UTILITIES
+    # --------------------------------------------------
 
     def _unpack_node(self, 
         cfg: MenuNode, 
@@ -276,26 +280,6 @@ class Provider:
         for child in children:
             self._unpack_node(child, context, widgets, font)
 
-    def _focus(self, 
-        id: str, 
-        widgets: Dict[str, Asset], 
-        graph: dict
-    ) -> Optional[str]:
-        if id == Menus.VIEW.value or not graph:
-            return None
-        
-        focus_names = iter(graph.keys())
-        focus = next(focus_names, None)
-
-        while focus is not None:
-            if widgets[focus].state.status != Statuses.DISABLED.value:
-                widgets[focus].state.status = Statuses.ACTIVE.value
-                widgets[focus].state.animation.action = Statuses.ACTIVE.value
-                return focus
-            focus = next(focus_names, None)
-
-        return None
-
     def _expand(self, node: MenuNode, context: MenuContext) -> MenuNode:
         """
         Recursively compiles virtual macro nodes (gizmos) into concrete pane subtrees.
@@ -330,6 +314,34 @@ class Provider:
             )
 
         return node
+
+    # --------------------------------------------------
+    # ----------------------------------- MENU UTILITIES
+    # --------------------------------------------------
+
+    def _focus(self, 
+        id: str, 
+        widgets: Dict[str, Asset], 
+        graph: dict
+    ) -> Optional[str]:
+        if id == Menus.VIEW.value or not graph:
+            return None
+        
+        focus_names = iter(graph.keys())
+        focus = next(focus_names, None)
+
+        while focus is not None:
+            if widgets[focus].state.status != Statuses.DISABLED.value:
+                widgets[focus].state.status = Statuses.ACTIVE.value
+                widgets[focus].state.animation.action = Statuses.ACTIVE.value
+                return focus
+            focus = next(focus_names, None)
+
+        return None
+
+    # --------------------------------------------------
+    # --------------------------------- PUBLIC INTERFACE
+    # --------------------------------------------------
 
     def unpack(self, 
         id: str, 

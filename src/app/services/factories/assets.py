@@ -9,7 +9,7 @@
 Factory for instantiating Assets, flyweight Asset components, and Menu Controllers.
 """
 # Standard Libraries
-from typing import Any
+from typing import Optional
 
 # Application Libraries
 from app.assets.base import (
