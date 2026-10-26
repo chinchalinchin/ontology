@@ -1,4 +1,4 @@
-{% if tools.views.tests.values() | select | list | length > 0 %}
+{% if tools.views.tests is defined and tools.views.tests.values() | select | list | length > 0 %}
 # Tool: Tests
 
 The **Tests Tool** provides **Views** into the application testing bed. 

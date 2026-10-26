@@ -1,4 +1,4 @@
-# compositions:
+compositions:
 #   - id: brick-house
 #     name: suburbs-00
 #     layer: '0'
@@ -20,13 +20,13 @@
 #     position:
 #       x: 650
 #       y: 1100
-#   - id: castle-dawn
-#     name: the-capital
-#     owner: the-government
-#     layer: '0'
-#     position:
-#       x: 280
-#       y: 250
+  - id: castle-dawn
+    name: the-capital
+    owner: the-government
+    layer: '0'
+    position:
+      x: 280
+      y: 250
 #   - id: citadel-of-trials
 #     name: level-01
 #     owner: the-government

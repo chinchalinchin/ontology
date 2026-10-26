@@ -1,0 +1,144 @@
+# ----------------------------------------------------
+properties:
+  # --------------------------------------------
+  files:
+    index: index.md
+    mkdocs: mkdocs.yml
+  # --------------------------------------------
+  paths:
+    # ---------------------------------------
+    root: /Users/gmoore/Home/projects/ontology/
+    # root: /home/grant/Projects/ontology/
+    # ---------------------------------------
+    actions: .githubs/workflows/
+    # ---------------------------------------
+    blocks: .prompts/tasks/.blocks/
+    board: .prompts/board/
+    config: src/data/config
+    docs: docs/
+    diagrams: docs/static/mmd/
+    dumps: src/data/dumps/
+    fixtures: tests/unit/fixtures/
+    logs: src/data/logs/
+    phases: .prompts/board/phases/
+    tables: docs/static/md/
+    templates: .prompts/board/templates
+    tests: tests/unit/
+  # --------------------------------------------
+  project:
+    title: ontology
+  # --------------------------------------------
+  user:
+    username: grant
+    ssh: /home/gmoore/.ssh/id_ed25519
+    hostname: skynet
+  # --------------------------------------------
+  urls: 
+    github: github.com/chinchalinchin
+# ----------------------------------------------------
+task:
+  template: design/structure/composition.md.j2
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: MANAGER
+    # --------------------------------------------
+    manager:
+      board: true
+      docs: true
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: SOURCE
+    # --------------------------------------------
+    source:
+      data: true
+      filter: true
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: SHELL
+    # --------------------------------------------
+    shell:
+      directory: true
+# ----------------------------------------------------
+  parameters:
+    # --------------------------------------------
+    # ------------------------ PARAMETERS: MANAGER
+    # --------------------------------------------
+    manager:
+      board:
+        phase: 'c000'
+        action: design
+      docs:
+        exclude:
+          - index.md
+          - 02-sprites.md
+          - 04-intentions.md
+          - 05-mechanics.md
+          - 06-widgets.md
+          - 07-sounds.md
+          - 08-plots.md
+          - 09-ecology.md
+          - 10-emergence.md
+      specs: []
+    # --------------------------------------------
+    # ------------------------ PARAMETERS: SOURCE
+    # --------------------------------------------
+    source:
+      filter:
+        default: AND
+        queries:
+            # ------------------------------------
+            - title: Asset Abstracts
+              strategy: AND
+              scan:
+                app: [ asset ]
+                domain: [ abstract ]
+            # ------------------------------------
+            - title: System Components
+              strategy: AND
+              scan:
+                app: [ core, component ]
+                domain: [ system ]
+            # ------------------------------------
+            - title: Material Implementations
+              strategy: AND
+              scan:
+                app: [ asset ]
+                domain: [ concrete ]
+                modality: [ material ]
+            # ------------------------------------
+            - title: Material Models
+              strategy: AND
+              scan:
+                domain: [ model ]
+                modality: [ material ]
+            # ------------------------------------
+            - title: Composition Logic
+              strategy: AND 
+              scan:
+                domain: [ logic ]
+                app: [ module ]
+                workflows: [ compositions ]
+            # ------------------------------------
+            - title: Composition Services
+              strategy: AND
+              scan:
+                app: [ services ]
+                workflows: [ compositions ]
+            # ------------------------------------
+            - title: Plot Services
+              strategy: AND
+              scan:
+                domain: [ system ]
+                app: [ services ]
+                workflows: [ plot ]
+      data: 
+        properties: [ crafts, objects ]
+        configurations: [ materials ]
+        templates: [  ]
+    # --------------------------------------------
+    # ------------------------ PARAMETERS: SHELL
+    # --------------------------------------------
+    shell:
+      directory: |
+        tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"

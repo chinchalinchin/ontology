@@ -10,41 +10,6 @@ library:
       summer: Summer must Simmer
       autumn: Autumn has Fallen
       winter: Winter must Enter
-    galleria-exterior-sign:
-      spring: "Regalia Galleria: Spring Vernissage — Entry by Royal Writ Only"
-      summer: "Regalia Galleria: Midsummer Exhibition — Sealed by Order of the Crown"
-      autumn: "Regalia Galleria: Autumn Retrospective — Restricted Access"
-      winter: "Regalia Galleria: Winter Salon — Gates Under Guard"
-    galleria-study-bulletin:
-      spring: "Directory: North Wing — Reactions, Elevations, Passivity, Vanity. South Wing — Study & Annexes I–III."
-      summer: "Directory: Summer Humidity Advisory in the Hall of Passivity."
-      autumn: "Directory: Autumn Inventory Audit in the Hall of Vanity."
-      winter: "Directory: Winter Frost Precautions on the Hall of Elevations."
-    galleria-study-poster:
-      spring: "Notice: Do not strike the Spinning Dummies without proper stance."
-      summer: "Notice: Classical Doric, Ionic, and Corinthian orders on display."
-      autumn: "Notice: Royal portraits hung in the Hall of Vanity."
-      winter: "Notice: Keep gallery doors shut against the draft."
-    galleria-study-chalkboard:
-      spring: "Lecture I: Painter's Algorithm — Sort by (elevation, ground_y, priority)."
-      summer: "Lecture II: Coplanar Tie-Breaking — Substrates (-1), Uprights (0), Decals (1)."
-      autumn: "Lecture III: Decomposer Hydration — Relative offsets and cross-layer origins."
-      winter: "Lecture IV: Elevated Hitboxes — Tier-indexed collision planes."
-    galleria-study-post:
-      spring: "North: Concourse Exit | West: Chalkboard | East: Lapidary Exhibits"
-      summer: "North: Concourse Exit | West: Chalkboard | East: Lapidary Exhibits"
-      autumn: "North: Concourse Exit | West: Chalkboard | East: Lapidary Exhibits"
-      winter: "North: Concourse Exit | West: Chalkboard | East: Lapidary Exhibits"
-    galleria-study-bevel:
-      spring: "Inscribed Plinth: 'Here rests the first prototype, claimed by Spring thaw.'"
-      summer: "Inscribed Plinth: 'Beneath the summer sun, static properties endure.'"
-      autumn: "Inscribed Plinth: 'Leaves fall; immutable schemas remain.'"
-      winter: "Inscribed Plinth: 'Cold stone preserves the old architecture.'"
-    galleria-study-headstone:
-      spring: "Epitaph: 'In memory of Legacy Renderer — superseded in Phase 01.'"
-      summer: "Epitaph: 'Here lies Duck-Typing — felled by strict schema validation.'"
-      autumn: "Epitaph: 'Rest in peace, Heap Allocations in the Inner Loop.'"
-      winter: "Epitaph: 'Zero-Allocation Cython stands watch through the winter.'"
   castle-dawn-unlocked:
     empress-jasilynn:
       busy: Away with you! I am engaged in endeavors!
@@ -56,41 +21,6 @@ library:
       summer: Travelling Circus In Town
       autumn: Harvest Festival Soon
       winter: Road Blocked
-    galleria-exterior-sign:
-      spring: "Welcome to the Regalia Galleria — Spring Exhibition Open to All Patrons"
-      summer: "Welcome to the Regalia Galleria — Summer Grand Tour in Session"
-      autumn: "Welcome to the Regalia Galleria — Harvest Patronage Exhibition"
-      winter: "Welcome to the Regalia Galleria — Winter Hearth & Architecture Salon"
-    galleria-study-bulletin:
-      spring: "Directory: North Wing — Reactions, Elevations, Passivity, Vanity. South Wing — Study & Annexes I–III."
-      summer: "Directory: Patrons are invited to ascend the Corinthian terrace in Room II."
-      autumn: "Directory: New Royal Portraits unveiled in Room IV."
-      winter: "Directory: Hearth lit in the Hall of Vanity."
-    galleria-study-poster:
-      spring: "Curator's Note: Please test your weapons gently in the Hall of Reactions."
-      summer: "Curator's Note: Observe the periodic birdbaths in the Hall of Passivity."
-      autumn: "Curator's Note: Annexes I–III are prepared for upcoming installations."
-      winter: "Curator's Note: Mind the stone steps in the Hall of Elevations."
-    galleria-study-chalkboard:
-      spring: "Theorem: anchor(target) = (target.y + target.l) - (self.y + self.l)."
-      summer: "Corollary: Cross-layer doors decouple from parent world coordinates."
-      autumn: "Lemma: Sensor bodies (m = -1) register overlap without momentum transfer."
-      winter: "Axiom: Emergence requires initial state configuration without scripting."
-    galleria-study-post:
-      spring: "North: Concourse Exit | West: Chalkboard | East: Lapidary Exhibits"
-      summer: "North: Concourse Exit | West: Chalkboard | East: Lapidary Exhibits"
-      autumn: "North: Concourse Exit | West: Chalkboard | East: Lapidary Exhibits"
-      winter: "North: Concourse Exit | West: Chalkboard | East: Lapidary Exhibits"
-    galleria-study-bevel:
-      spring: "Inscribed Plinth: 'Commissioned upon the opening of Castle Dawn in Spring.'"
-      summer: "Inscribed Plinth: 'Carved from fine quarried stone in high Summer.'"
-      autumn: "Inscribed Plinth: 'Dedicated to the guild of masons at Autumn harvest.'"
-      winter: "Inscribed Plinth: 'Enduring through the Winter solstice.'"
-    galleria-study-headstone:
-      spring: "Epitaph: 'In memory of Legacy Renderer — superseded in Phase 01.'"
-      summer: "Epitaph: 'Here lies Duck-Typing — felled by strict schema validation.'"
-      autumn: "Epitaph: 'Rest in peace, Heap Allocations in the Inner Loop.'"
-      winter: "Epitaph: 'Zero-Allocation Cython stands watch through the winter.'"
   castle-dawn-hostile:
     empress-jasilynn:
       busy: Go away!
@@ -102,74 +32,3 @@ library:
       summer: NO TRAVELLERS WANTED
       autumn: NO TRESPASSERS
       winter: ALL INTRUDERS WILL BE EXECUTED
-    galleria-exterior-sign:
-      spring: "REGALIA GALLERIA CLOSED — TRESPASSERS WILL BE PROSECUTED"
-      summer: "MARTIAL DECREE: GALLERY SEIZED BY THE CROWN"
-      autumn: "NO ENTRY — VIOLATORS SUBJECT TO IMMEDIATE ARREST"
-      winter: "GALLERY SEALED UNDER WINTER SIEGE"
-    galleria-study-bulletin:
-      spring: "NOTICE: All exhibitions suspended until order is restored."
-      summer: "NOTICE: Gallery guards authorized to use force."
-      autumn: "NOTICE: Curatorial staff evacuated to the Citadel."
-      winter: "NOTICE: All annexes locked by royal decree."
-    galleria-study-poster:
-      spring: "WANTED: Intruder defacing royal property."
-      summer: "WARNING: Do not touch the royal portraits."
-      autumn: "DECREE: Curfew in effect across all gallery wings."
-      winter: "ORDER: Report all unauthorized visitors immediately."
-    galleria-study-chalkboard:
-      spring: "Scrawled in chalk: 'The Empress's guards patrol the outer plaza.'"
-      summer: "Scrawled in chalk: 'Retreat through the North doorway to the concourse.'"
-      autumn: "Scrawled in chalk: 'Hold the elevated platforms for high ground.'"
-      winter: "Scrawled in chalk: 'Leave no trace in the annexes.'"
-    galleria-study-post:
-      spring: "North: Concourse Exit — PROCEED WITH CAUTION"
-      summer: "North: Concourse Exit — PROCEED WITH CAUTION"
-      autumn: "North: Concourse Exit — PROCEED WITH CAUTION"
-      winter: "North: Concourse Exit — PROCEED WITH CAUTION"
-    galleria-study-bevel:
-      spring: "Inscribed Plinth: 'Even in times of strife, art outlives empire.'"
-      summer: "Inscribed Plinth: 'Stone bears witness to the siege.'"
-      autumn: "Inscribed Plinth: 'The gallery stands defiant in Autumn.'"
-      winter: "Inscribed Plinth: 'Silent stone beneath the Winter martial law.'"
-    galleria-study-headstone:
-      spring: "Epitaph: 'Here lies the last trespasser who crossed the Empress.'"
-      summer: "Epitaph: 'Felled in the Summer uprising.'"
-      autumn: "Epitaph: 'Remembered in the Autumn of discontent.'"
-      winter: "Epitaph: 'Buried beneath the Winter frost.'"
-  town-unlocked:
-    galleria-exterior-sign:
-      spring: "Regalia Galleria: Free Municipal Exhibition — Spring Opening"
-      summer: "Regalia Galleria: Town Festival Art Showcase"
-      autumn: "Regalia Galleria: Autumn Commons Collection"
-      winter: "Regalia Galleria: Winter Civic Gallery"
-    galleria-study-bulletin:
-      spring: "Directory: North Wing — Reactions, Elevations, Passivity, Vanity. South Wing — Study & Annexes I–III."
-      summer: "Directory: Open civic workshops in Annexes I-III."
-      autumn: "Directory: Public lectures held daily in the Hall of Study."
-      winter: "Directory: Warm hearth open to townsfolk in Room IV."
-    galleria-study-poster:
-      spring: "Civic Notice: Gallery admission is free to all townsfolk."
-      summer: "Civic Notice: Contributions to the Annex exhibitions welcome."
-      autumn: "Civic Notice: Respect the historical artifacts on display."
-      winter: "Civic Notice: Mind your step on the elevated stone terraces."
-    galleria-study-chalkboard:
-      spring: "Public Lecture: Introduction to World Simulation & Emergence."
-      summer: "Public Lecture: Spatial Hashing and O(1) Broad-Phase Lookups."
-      autumn: "Public Lecture: Topographical Elevations and Stair Transitions."
-      winter: "Public Lecture: Seasonal Calendar Cycles and Lexicon Bindings."
-    galleria-study-post:
-      spring: "North: Concourse Exit | West: Chalkboard | East: Lapidary Exhibits"
-      summer: "North: Concourse Exit | West: Chalkboard | East: Lapidary Exhibits"
-      autumn: "North: Concourse Exit | West: Chalkboard | East: Lapidary Exhibits"
-      winter: "North: Concourse Exit | West: Chalkboard | East: Lapidary Exhibits"
-    galleria-study-bevel:
-      spring: "Inscribed Plinth: 'Rededicated to the Free Town in Spring.'"
-      summer: "Inscribed Plinth: 'Preserved by the Guild of Artisans.'"
-      autumn: "Inscribed Plinth: 'A monument to civic craftsmanship.'"
-      winter: "Inscribed Plinth: 'Enduring through the seasons.'"
-    galleria-study-headstone:
-      spring: "Epitaph: 'In memory of the old guard.'"
-      summer: "Epitaph: 'Peace restored in Summer.'"
-      autumn: "Epitaph: 'Honored at the Autumn vigil.'"
-      winter: "Epitaph: 'At rest beneath the Winter snow.'"

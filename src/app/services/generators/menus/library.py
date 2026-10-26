@@ -1,4 +1,8 @@
 """
+@domain.system
+@app.services
+@workflow.plot
+
 # Ontology: Source - app.services.generators.library
 
 Package for indexing and retrieving dialogue.

@@ -77,7 +77,7 @@ TODO
 ### Craft: Platforms
 
 !!! @TODO(07-03)
-    To be subsumed and rendered obsolete by the introduction of Gravity. Slated for removal.
+    To be subsumed and rendered obsolete by the introduction of Gravity. Slated for removal. Should be using elevated surfaces instead.
 
 Platforms are inanimate, immutable Assets that model elevated surfaces. In order to be traversed, the Asset traversing must be on the same elevation as the Platform. 
 

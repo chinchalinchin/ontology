@@ -27,7 +27,6 @@ from app.models.properties import CraftProperties
 
 logger = logging.getLogger(__name__)
 
-
 class MaterialFrame(Frame):
     """
     Indexes 2D Craft Sheet atlases where rows correspond to Blueprint partitions

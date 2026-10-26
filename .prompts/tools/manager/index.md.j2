@@ -1,4 +1,4 @@
-{% if tools.views.manager.values() | select | list | length > 0 %}
+{% if tools.views.manager is defined and tools.views.manager.values() | select | list | length > 0 %}
 # Tool: Manager
 
 The **Manager Tool** provides **Views** into project planning, architectural designs and other high-level documents.

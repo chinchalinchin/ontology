@@ -1,4 +1,4 @@
-{% if tools.views.source.values() | select | list | length > 0 %}
+{% if tools.views.source is defined and tools.views.source.values() | select | list | length > 0 %}
 # Tool: Source
 
 The **Source Tool** provides **Views** into the application codebase. 

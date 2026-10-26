@@ -346,7 +346,7 @@ def file(file_path: str) -> str:
 
 
 @macro
-def annotations(directory: str, tags: Union[str, List[str]], strategy: str = "OR") -> List[Dict[str, Any]]:
+def annotations(directory: str, tags: List[str], strategy: str = "OR") -> List[Dict[str, Any]]:
     """
     Scans a directory for Python files containing `@tags` in their docstring.
     Groups matching files by package, sorting packages and modules hierarchically.
@@ -362,8 +362,7 @@ def annotations(directory: str, tags: Union[str, List[str]], strategy: str = "OR
         raise ValueError(f"Invalid strategy '{strategy}'. Supported strategies are 'OR' and 'AND'.")
 
     root = Path(directory).resolve()
-    tag_list = [tags] if isinstance(tags, str) else list(tags)
-    target_tokens = {f"@{t.lstrip('@')}" for t in tag_list}
+    target_tokens = {f"@{t.lstrip('@')}" for t in tags}
 
     package_groups: Dict[str, list] = defaultdict(list)
 

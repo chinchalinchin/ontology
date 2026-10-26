@@ -2,7 +2,6 @@
 @domain.system
 @app.services
 @workflow.injections
-@workflow.compositions
 
 # Ontology: Source - app.services.generators.game.factory
 
