@@ -1105,3 +1105,53 @@ Making `substrate` part of the state was a mistake.
 ##### Tasks: Addendum
 
 * [x] Decouple `substrate` from `state`. Rewire the Asset base class and dependnecy injection pipeline to hydrate substrate correctly from configuration.
+
+##### Bug Reports
+
+###### Bug B018: Stairs Only Emit Hitboxes at Base Elevation Preventing Descent
+
+**STATUS**: OPEN
+**SEVERITY**: MEDIUM
+
+**Description**
+
+In `app/assets/hitboxes/crafts.py`, `MaterialHitbox.elevations()` and `MaterialHitbox.get()` only emit hitboxes at `target_e = max(0, state.elevation)`. When a Sprite ascends a `steps` asset (`StairState`) from `elevation = 0` with `delta = 1`, the Sprite's elevation becomes `1`. Because the stair's `MaterialHitbox` returns `[]` for `elevation = 1`, the Sprite can no longer intersect the stair sensor at `elevation = 1` to descend back to `elevation = 0` (and in `Ontology Docs: Assets`, the descent velocity condition for `up` and `down` stairs also typos `vx` instead of `vy`).
+
+**Steps to Replicate**
+
+1. Deploy a `steps` Craft (`elevation = 0, delta = 1, blueprint = 'up'`) leading to an `elevation = 1` surface.
+2. Move a Sprite north (`vy` less than `0`) onto `steps` so its `elevation` transitions from `0` to `1`.
+3. Move the Sprite south (`vy` greater than `0`) onto `steps` from `elevation = 1` and observe that `steps.hitbox.get(properties, state, elevation=1)` returns `[]`, preventing descent.
+
+**Proposed Remeditation**
+
+In `MaterialHitbox.elevations()` and `MaterialHitbox.get()` (or a dedicated `StairHitbox` schema), include both endpoints of `StairState` transitions (`base_e` and `base_e + state.delta`):
+
+```python
+if isinstance(state, StairState):
+    base_e = max(0, state.elevation if state.elevation is not None else 0)
+    return [base_e, max(0, base_e + state.delta)]
+```
+
+##### Bug B019: `Decomposer._hydrate_state` Fails to Namespace `SwitchState.link`
+
+**STATUS**: OPEN
+**SEVERITY**: MEDIUM
+
+**Description**
+
+When `Decomposer._hydrate_state()` unpacks components in a Composition, it rewrites each component's `name` to `<base_inst>-<parent_name>-<comp_name>-<inc>` (e.g., `gate-strut-castle-foundation-1-atrium-main-gate-1`). However, `_hydrate_state()` does not transform the `link` attribute on `SwitchState` (`Gate` and `Plate` assets), leaving `state.link` as the raw pseudo-state string (`atrium-main-gate`). Consequently, plates and gates unpacked from a Composition cannot resolve their linked target on the `Board`.
+
+**Steps to Replicate**
+
+1. Add a `Plate` (`link: my-gate`) and a `Gate` (`name: my-gate`) to a Composition.
+2. Unpack the Composition onto the `Board`.
+3. Observe that the `Gate` is named `gate-strut-<root>-1-my-gate-1`, while `plate.state.link` remains `'my-gate'`, causing lookup of the linked gate to fail.
+
+**Proposed Remeditation**
+
+In `Decomposer._unpack_components()`, resolve `SwitchState.link` against `scope_lookup` (or across a composition-wide component name map) and format `kwargs["link"]` using the target component's hydrated `<base_inst>-<parent_name>-<target_name>-<inc>` nomenclature.
+
+##### User Review IX
+
+- The proposed solution to B018 is incoherent and makes no sense. Reject the proposed solution. Issue is the Hitbox elevation. Deferred until Phase 07.03. Do not engage or analyze this bug. 

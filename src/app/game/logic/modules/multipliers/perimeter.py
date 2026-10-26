@@ -15,7 +15,7 @@ from typing import List
 # Application Libraries
 import app.static.settings as settings
 from app.assets.base import Asset
-from app.game.logic.modules.multipliers import Multiplier
+from app.game.logic.modules.multipliers import SimpleMultiplier
 from app.models.state import CraftState
 from app.models.properties import CraftProperties
 from app.models.config import Recipe
@@ -26,7 +26,7 @@ from libs.core.models import Position
 
 # ---------------------------------------------------
 
-class PerimeterMultiplier(Multiplier):
+class PerimeterMultiplier(SimpleMultiplier):
     """
     Interface for Multiplier implementation of MultiplicationStrategies
     """
@@ -46,6 +46,19 @@ class PerimeterMultiplier(Multiplier):
     ) -> List[Asset]:
         """
         """
+        if state.multiple is None and state.blueprint in self.materials.blueprints(props.blueprints):
+            return super().multiply(
+                state,
+                props,
+                recipe,
+                category,
+                instance,
+                base_pos,
+                layer,
+                base_name,
+                1,
+                1
+            )
         w = props.dimensions.w
         l = props.dimensions.l
         units: List[Asset] = []

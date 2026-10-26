@@ -1,6 +1,6 @@
 """
 @domain.system
-@main.cli
+@workflow.cli
 
 # Ontology: cli.arguments
 

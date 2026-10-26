@@ -1,10 +1,8 @@
 """
 @domain.abstract
 @app.base
-@app.core
-@category.crafts
-
 @app.module
+@category.crafts
 @workflow.compositions
 
 # Ontology: Source - app.game.logic.modules.multipliers.base
@@ -21,11 +19,13 @@ from typing import (
 
 # Application Libraries
 from app.assets.base import Asset
+from app.game.logic.relations import MaterialIndex
 from app.models.state import CraftState
 from app.models.properties import CraftProperties
 from app.models.config import Recipe
 from app.models.abstracts import Singleton  
 from app.services.factories.assets import AssetFactory
+
 # Cython Libraries
 from libs.core.models import (
     Position,
@@ -38,6 +38,10 @@ class Multiplier(Singleton):
     """
     Interface for Multiplier implementations of Multiplication Strategies
     """
+    materials: MaterialIndex
+
+    def __init__(self, materials: MaterialIndex):
+        self.materials = materials
 
     def _unit(
         self,
@@ -52,6 +56,8 @@ class Multiplier(Singleton):
         blueprint: Optional[str],
         anchor: int
     ) -> Asset:
+        """
+        """
         unit_substrate = self.materials.substrate(instance, blueprint=blueprint)
         unit_state = dataclasses.replace(
             state,
@@ -70,6 +76,7 @@ class Multiplier(Singleton):
             recipe=recipe,
             substrate=unit_substrate
         )
+    
     @abstractmethod
     def multiply(
         self,

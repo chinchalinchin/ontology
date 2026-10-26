@@ -28,10 +28,10 @@ The Filter View *queries* the codebase based on the **Active Tags** and the **Fi
 * **Active Tags**: `{{ tags | join('`, `') }}`
 
 {% for pkg in annotations(properties.paths.root ~ 'src', tags, strategy) %}
-{{ '#' * (pkg.depth + 2) }} {{ pkg.package }}
+##### Matched Package: {{ pkg.package }}
 
 {% for mod in pkg.modules %}
-**{{ mod.paths.relative }}**
+**Matched Module: `src/{{ mod.paths.relative }}`**
 
 ```{{ typehint(mod.paths.relative) }}
 {{ file(mod.paths.absolute) }}

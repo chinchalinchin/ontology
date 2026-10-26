@@ -38,8 +38,6 @@ from app.assets.base import Asset
 from app.static.semantics import (
     AssetCategories,
     AssetInstances,
-    Columns,
-    Enclosures,
     LayerProjections,
     Orientations,
     MultipliedAssets,
@@ -61,7 +59,6 @@ from app.models.config import (
 )
 from app.models.properties import (
     PropertiesSchema,
-    CraftProperties,
 )
 from app.models.state import (
     PropertyState,
@@ -100,10 +97,10 @@ class Decomposer:
         self.materials = materials
         self._increment = 0
         self._strategies = {
-            MultiplicationStrategies.SIMPLE.value: SimpleMultiplier.multiply,
-            MultiplicationStrategies.ORIENTED.value: OrientedMultiplier.multiply,
-            MultiplicationStrategies.EXPANSION.value: self._multiply_expansion,
-            MultiplicationStrategies.PERIMETER.value: self._multiply_perimeter,
+            MultiplicationStrategies.SIMPLE.value: SimpleMultiplier(self.materials).multiply,
+            MultiplicationStrategies.ORIENTED.value: OrientedMultiplier(self.materials).multiply,
+            MultiplicationStrategies.EXPANSION.value: ExpansionMultiplier(self.materials).multiply,
+            MultiplicationStrategies.PERIMETER.value: PerimeterMultiplier(self.materials).multiply,
         }
 
     # ---------------------------------------------------------
@@ -166,7 +163,7 @@ class Decomposer:
     # ------------------------------------- HYDRATION UTILITIES
     # ---------------------------------------------------------
 
-    def _resolve_layer(
+    def _layer(
         self,
         layer: Optional[str],
         root_layer: Optional[str],
@@ -188,7 +185,7 @@ class Decomposer:
         return layer_map[layer_str]
 
 
-    def _resolve_bind(
+    def _bind(
         self,
         val: Any,
         root_context: Dict[str, Any],
@@ -212,7 +209,7 @@ class Decomposer:
         return val
 
 
-    def _resolve_anchor(
+    def _anchor(
         self,
         anchor_val: Any,
         self_state: AssetState,
@@ -264,7 +261,7 @@ class Decomposer:
         return int((target_y + target_l) - (self_y + self_l))
 
 
-    def _hydrate_state(
+    def _state(
         self,
         state_obj: AssetState,
         root_context: Dict[str, Any],
@@ -284,14 +281,14 @@ class Decomposer:
         kwargs = {}
         for f in dataclasses.fields(state_obj):
             val = getattr(state_obj, f.name)
-            kwargs[f.name] = self._resolve_bind(val, root_context, parent_context)
+            kwargs[f.name] = self._bind(val, root_context, parent_context)
 
         root_layer = root_context.get("layer")
 
         # 1. Resolve Layer Namespacing
         if "layer" in kwargs:
             if kwargs["layer"]:
-                kwargs["layer"] = self._resolve_layer(kwargs["layer"], root_layer, inc, layer_map)
+                kwargs["layer"] = self._layer(kwargs["layer"], root_layer, inc, layer_map)
             else:
                 kwargs["layer"] = parent_context["layer"]
 
@@ -303,7 +300,7 @@ class Decomposer:
 
         # 2. Resolve Outlayer for Doors/Portals
         if "outlayer" in kwargs and kwargs["outlayer"]:
-            kwargs["outlayer"] = self._resolve_layer(kwargs["outlayer"], root_layer, inc, layer_map)
+            kwargs["outlayer"] = self._layer(kwargs["outlayer"], root_layer, inc, layer_map)
 
         # 3. Layer Transition Boundary: If moving to an independent layer, reset local origin
         is_cross_layer = str(kwargs.get("layer")) != str(parent_context.get("layer"))
@@ -332,7 +329,7 @@ class Decomposer:
 
         # 5. Resolve Anchor Macro (guarantees integer downcast)
         raw_anchor = kwargs.get("anchor", 0)
-        kwargs["anchor"] = self._resolve_anchor(
+        kwargs["anchor"] = self._anchor(
             raw_anchor,
             state_obj,
             cat_key,
@@ -388,130 +385,11 @@ class Decomposer:
         )
 
 
-    def _spawn_unit(
-        self,
-        state: CraftState,
-        props: CraftProperties,
-        recipe: Any,
-        category: str,
-        instance: str,
-        unit_name: str,
-        layer: str,
-        pos: Position,
-        blueprint: Optional[str],
-        anchor: int
-    ) -> Asset:
-        unit_substrate = self.materials.substrate(instance, blueprint=blueprint)
-        unit_state = dataclasses.replace(
-            state,
-            name=unit_name,
-            layer=layer,
-            position=pos,
-            blueprint=blueprint,
-            multiple=Multiple(1, 1),
-            anchor=anchor
-        )
-        return AssetFactory.asset(
-            category=category,
-            instance=instance,
-            properties=props,
-            state=unit_state,
-            recipe=recipe,
-            substrate=unit_substrate
-        )
-
-    # ---------------------------------------------------------
-    # ------------------------------- MULTIPLICATION STRATEGIES
-    # ---------------------------------------------------------
-
-    def _multiply_expansion(
-        self,
-        state: CraftState,
-        props: CraftProperties,
-        recipe: Any,
-        category: str,
-        instance: str,
-        base_pos: Position,
-        layer: str,
-        base_name: str,
-        nx: int,
-        ny: int
-    ) -> List[Asset]:
-        # Guard against re-expanding already-unpacked column segments on state reload
-        if state.multiple is None and state.blueprint in self.materials.blueprints(props.blueprints):
-            return self._multiply_simple(
-                state,
-                props,
-                recipe,
-                category,
-                instance,
-                base_pos,
-                layer,
-                base_name,
-                1,
-                1
-            )
-
-        return ExpansionMultiplier.multiply(
-            state,
-            props,
-            recipe,
-            category,
-            instance,
-            base_pos,
-            layer,
-            base_name,
-            nx,
-            ny
-        )
-
-
-    def _multiply_perimeter(
-        self,
-        state: CraftState,
-        props: CraftProperties,
-        recipe: Any,
-        category: str,
-        instance: str,
-        base_pos: Position,
-        layer: str,
-        base_name: str,
-        nx: int,
-        ny: int
-    ) -> List[Asset]:
-        # Guard against re-expanding already-unpacked enclosure segments on state reload
-        if state.multiple is None and state.blueprint in self.materials.blueprints(props.blueprints):
-            return self._multiply_simple(
-                state,
-                props,
-                recipe,
-                category,
-                instance,
-                base_pos,
-                layer,
-                base_name,
-                1,
-                1
-            )
-
-        return PerimeterMultiplier.multiply(
-            state,
-            props,
-            recipe,
-            category,
-            instance,
-            base_pos,
-            layer,
-            base_name,
-            nx,
-            ny
-        )
-
     # ---------------------------------------------------------
     # ------------------------------------- EXPANSION UTILITIES
     # ---------------------------------------------------------
 
-    def _unpack_node(
+    def _node(
         self,
         node: Any,
         root_context: Dict[str, Any],
@@ -522,7 +400,7 @@ class Decomposer:
         assets: List[Asset] = []
         layer_map = root_context.setdefault("_layer_map", {})
 
-        strut_state = self._hydrate_state(
+        strut_state = self._state(
             node.strut,
             root_context,
             parent_context,
@@ -561,11 +439,11 @@ class Decomposer:
             root_context["elevation"] = strut_state.elevation
             root_context["length"] = strut_len
 
-        self._unpack_components(node.components, root_context, node_context, inc, assets)
+        self._components(node.components, root_context, node_context, inc, assets)
         return assets
 
 
-    def _unpack_components(
+    def _components(
         self,
         components: Any,
         root_context: Dict[str, Any],
@@ -617,7 +495,7 @@ class Decomposer:
                     continue
 
                 for pseudo_state in inst_list:
-                    new_state = self._hydrate_state(
+                    new_state = self._state(
                         pseudo_state,
                         root_context,
                         parent_context,
@@ -716,11 +594,11 @@ class Decomposer:
             "_layer_map": {}
         }
 
-        assets.extend(self._unpack_node(comp_config.root, root_context, root_context, inc, is_root=True))
+        assets.extend(self._node(comp_config.root, root_context, root_context, inc, is_root=True))
 
         if comp_config.branches:
             for branch in comp_config.branches:
-                assets.extend(self._unpack_node(branch, root_context, root_context, inc, is_root=False))
+                assets.extend(self._node(branch, root_context, root_context, inc, is_root=False))
 
         return assets
 
@@ -752,7 +630,7 @@ class Decomposer:
         base_name = state.name or state.id
 
         strategy_key = self.materials.strategy(props.blueprints)
-        handler = self._strategies.get(strategy_key, self._multiply_simple)
+        handler = self._strategies.get(strategy_key, SimpleMultiplier(self.materials).multiply)
 
         cat_recipes = getattr(self.recipes, category)
         recipe = getattr(cat_recipes, instance)

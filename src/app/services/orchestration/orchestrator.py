@@ -1,6 +1,7 @@
 """
 @domain.system
-@workflow.initialization
+@app.services
+@workflow.injection
 
 # Ontology: Source - app.services.orchestration.orchestrator
 

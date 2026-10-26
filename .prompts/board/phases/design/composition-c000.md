@@ -5,69 +5,6 @@
 
 ### 4. Codebase Bug Reports
 
-##### Bug B018: Stairs Only Emit Hitboxes at Base Elevation Preventing Descent
-
-**STATUS**: OPEN
-**SEVERITY**: HIGH
-
-**Description**
-
-In `app/assets/hitboxes/crafts.py`, `MaterialHitbox.elevations()` and `MaterialHitbox.get()` only emit hitboxes at `target_e = max(0, state.elevation)`. When a Sprite ascends a `steps` asset (`StairState`) from `elevation = 0` with `delta = 1`, the Sprite's elevation becomes `1`. Because the stair's `MaterialHitbox` returns `[]` for `elevation = 1`, the Sprite can no longer intersect the stair sensor at `elevation = 1` to descend back to `elevation = 0` (and in `Ontology Docs: Assets`, the descent velocity condition for `up` and `down` stairs also typos `vx` instead of `vy`).
-
-**Steps to Replicate**
-
-1. Deploy a `steps` Craft (`elevation = 0, delta = 1, blueprint = 'up'`) leading to an `elevation = 1` surface.
-2. Move a Sprite north (`vy` less than `0`) onto `steps` so its `elevation` transitions from `0` to `1`.
-3. Move the Sprite south (`vy` greater than `0`) onto `steps` from `elevation = 1` and observe that `steps.hitbox.get(properties, state, elevation=1)` returns `[]`, preventing descent.
-
-**Proposed Remeditation**
-
-In `MaterialHitbox.elevations()` and `MaterialHitbox.get()` (or a dedicated `StairHitbox` schema), include both endpoints of `StairState` transitions (`base_e` and `base_e + state.delta`):
-
-```python
-if isinstance(state, StairState):
-    base_e = max(0, state.elevation if state.elevation is not None else 0)
-    return [base_e, max(0, base_e + state.delta)]
-```
-
-##### Bug B019: Decomposer `anchor(parent)` Double-Counts Branch `pseudo_y`
-
-**STATUS**: OPEN
-**SEVERITY**: MEDIUM
-
-**Description**
-
-In `app/services/generators/game/decomposer.py`, `_resolve_anchor()` computes `self_y = self_state.position.y`, which for a component of a branch strut is already expressed in the local coordinate frame of `parent` (where the parent strut's local origin is `y = 0`). However, when `target_ref == "parent"`, `_resolve_anchor()` sets `target_y = parent_context.get("pseudo_y", 0)` instead of `0`. This shifts the computed `anchor` of every component using `anchor(parent)` inside a branch strut by `parent.pseudo_y`, corrupting its `ground_y` sort order whenever `parent.pseudo_y != 0`.
-
-**Steps to Replicate**
-
-1. Define a Composition branch whose `strut` has `position: { x: 0, y: 200 }` and `dimensions.l = 96`.
-2. Add a child component on that branch with `position: { x: 0, y: 48 }`, `dimensions.l = 48`, and `anchor: anchor(parent)`.
-3. Unpack the Composition via `Decomposer.unpack()` and observe that `component.state.anchor` resolves to `200` instead of `0`, yielding `ground_y = 596` instead of `396`.
-
-**Proposed Remeditation**
-
-In `Decomposer._resolve_anchor()`, set `target_y = 0` when `target_ref == "parent"` (since `self_y` is already relative to `parent`), and when `target_ref == "root"` on a same-layer branch component, account for `parent_context.get("pseudo_y", 0)` in the child's offset from `root`.
-
-##### Bug B020: Decomposer `_multiply_expansion` and `_multiply_perimeter` Overwrite `state.anchor`
-
-**STATUS**: OPEN
-**SEVERITY**: MEDIUM
-
-**Description**
-
-In `app/services/generators/game/decomposer.py`, `_multiply_simple()` preserves `base_anchor = int(state.anchor or 0)`, but `_multiply_expansion()` sets `seg_anchor = int(base_ground - (seg_y + l))` and `_multiply_perimeter()` sets `north_anchor = int(north_bottom - l)` (and `0` for `south`, `east`, `west`) without adding `int(state.anchor or 0)`. Any explicit `anchor` or `anchor(...)` macro configured on `columns` (`pillar`, `tower`) or `enclosures` (`palisade`) is discarded during multiplication.
-
-**Steps to Replicate**
-
-1. Configure a `pillar` or `tower` component in a Composition with a non-zero `anchor` (e.g., `anchor: 32` or `anchor: anchor(parent)`).
-2. Unpack via `Decomposer.multiply()` and inspect the spawned `crowns`, `shafts`, and `bases` units.
-3. Observe that `state.anchor` on the parent state was ignored rather than added to each segment's `seg_anchor`.
-
-**Proposed Remeditation**
-
-In `_multiply_expansion()` and `_multiply_perimeter()`, compute `base_anchor = int(state.anchor or 0)` and add `base_anchor` to the segment anchor passed to `self._spawn_unit()`.
-
 ##### Bug B021: `Decomposer._hydrate_state` Fails to Namespace `SwitchState.link`
 
 **STATUS**: OPEN

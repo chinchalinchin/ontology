@@ -42,7 +42,7 @@ task:
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
   # template: maintain/console/patch.md.j2
-  template: maintain/console/session.md.j2
+  # template: maintain/console/session.md.j2
   # template: maintain/script.md.j2
   # --------------------------------------------
   # --------------------------- TEMPLATES: DUMPS 
@@ -56,7 +56,7 @@ task:
   # template: iterate/grooming.md.j2
   # template: iterate/implementation.md.j2
   # template: iterate/coverage.md.j2
-  # template: iterate/review.md.j2
+  template: iterate/review.md.j2
   # template: iterate/conclusion.md.j2
   # --------------------------------------------
   # -------------------------- TEMPLATES: DESIGN
@@ -177,13 +177,19 @@ tools:
             #               telemetry 
             #     ]
             # ------------------------------------
-            - title: Abstracts
+            - title: Abstract Components
               strategy: AND
               scan:
                 app: [ component ]
                 domain: [ abstract ]
             # ------------------------------------
-            - title: Components
+            - title: Abstract Modules
+              strategy: AND
+              scan:
+                app: [ module ]
+                domain: [ abstract ]
+            # ------------------------------------
+            - title: System Components
               strategy: AND
               scan:
                 app: [ core, component ]
@@ -214,6 +220,12 @@ tools:
               scan:
                 app: [ services ]
                 workflows: [ compositions ]
+            # -----------------------------------
+            - title: Injection Services
+              strategy: AND
+              scan:
+                app: [ services ]
+                workflows: [ injection ]
             # # ------------------------------------
             # - title: Procedural Generation Services
             #   strategy: AND

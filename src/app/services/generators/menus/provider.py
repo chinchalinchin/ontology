@@ -1,7 +1,6 @@
 """
 @domain.system
 @app.services
-@workflow.injection
 @workflow.menu
 
 # Ontology: Source - app.services.generators.provider

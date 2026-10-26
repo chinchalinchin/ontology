@@ -13,6 +13,7 @@ from __future__ import annotations
 from typing import (
     TYPE_CHECKING, 
     List,
+    Union,
     Optional
 )
 import logging 
@@ -24,7 +25,20 @@ from app.assets.base import Asset
 from app.static.semantics import (
     AssetInstances, 
     AssetCategories,
-    Directions
+    Orientations,
+    Directions,
+    # ---------
+    Ceramics,
+    Chromatics,
+    Geologics,
+    Metallics,
+    Organics,
+    # ---------
+    Buildings,
+    Corridors,
+    Columns,
+    Enclosures,
+    Inclines,
 )
 from app.game.logic.relations import MaterialIndex
 from app.services.factories.assets import AssetFactory
@@ -205,32 +219,6 @@ class Cradle:
         )
 
 
-    def spawn_strut(self, 
-        id: str, 
-        position: Position,  # type: ignore
-        layer: str, 
-        owner: str
-    ) -> Asset:
-        state = PropertyState(
-            id          = id, 
-            name        = self.name(), 
-            layer       = layer, 
-            position    = position, 
-            owner       = owner
-        )
-        return AssetFactory.asset(
-            category=AssetCategories.CRAFTS.value,
-            instance=AssetInstances.STRUTS.value,
-            properties=self.spawnables.struts.get(id),
-            state=state,
-            recipe=self.recipes.crafts.struts,
-            substrate=self.materials.substrate(
-                AssetInstances.STRUTS.value,
-                blueprint=state.blueprint
-            )
-        )
-
-
     def spawn_shoreline(self,
         id: str,
         layer: str,
@@ -266,7 +254,9 @@ class Cradle:
 
     def spawn_composition(self, 
         id: str, 
-        position: Position,  # type: ignore
+        position: Position,  # type: ignore,
+        material: Union[Ceramics,Chromatics,Geologics,Metallics,Organics],
+        blueprint: Union[Buildings,Corridors,Columns,Enclosures,Orientations,Inclines,Directions],
         layer: str, 
         owner: str
     ) -> List[Asset]:
@@ -288,7 +278,8 @@ class Cradle:
         id: str,
         layer: str,
         position: Position,
-        orientation: str,
+        material: Union[Geologics,Metallics,Organics],
+        blueprint: Orientations,
         multiple: Multiple
     ) -> List[Asset]:
         """
@@ -299,7 +290,8 @@ class Cradle:
             name=self.name(),
             layer=layer,
             position=position,
-            blueprint=orientation,
+            material=material,
+            blueprint=blueprint,
             multiple=multiple
         )
         return self.decomposer.multiply(

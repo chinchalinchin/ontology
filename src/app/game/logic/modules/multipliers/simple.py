@@ -73,6 +73,7 @@ class SimpleMultiplier(Multiplier):
                 )
         return units
 
+
 class OrientedMultiplier(SimpleMultiplier):
     """
     """

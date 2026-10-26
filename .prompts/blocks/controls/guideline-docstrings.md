@@ -71,12 +71,13 @@ Use the following template to create docstrings for Python modules,
                 * `workflow.combat`
                 * `workflow.compositions`
                 * `workflow.ecology`
+                * `workflow.fluids`
                 * `workflow.generation` (*Procedural Generation*)
                 * `workflow.gravity`
-                * `workflow.fluids`
+                * `workflow.hydration` (*Initialization*)
                 * `workflow.intentions`
                 * `workflow.menus`
-                * `workflow.initialization`
+                * `workflow.injection` (*Dependency Injection Pipeline*)
                 * `workflow.navigation`
                 * `workflow.plot`
                 * `workflow.rendering`

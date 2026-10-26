@@ -1,7 +1,7 @@
 """
 @domain.model
 @asset.property
-@main.injection
+@workflow.injection
 
 # Ontology: Source - app.models.groups
 

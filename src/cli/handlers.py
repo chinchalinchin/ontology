@@ -1,6 +1,6 @@
 """
 @domain.logic
-@main.cli
+@workflow.cli
 
 # Ontology: cli
 

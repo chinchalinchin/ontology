@@ -211,4 +211,3 @@ class AssetFactory:
             animation=animation,
             binding=binding
         )
-        pass
