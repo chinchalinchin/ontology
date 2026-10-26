@@ -7,6 +7,17 @@
 # Ontology: Source - app.services.generators.game.decomposer
 
 Package for decomposing Compositions into their constituent Assets.
+
+## TODOs
+
+1. Induct the terminology into app.static.semantics once it is clear what the terminology is.
+    * Composition Context:
+        - parent
+        - root
+    * Composition Macros:
+        - bind
+        - anchor
+2. MultiplicationStrategies needs decoupled from the Decomposer. Should be an abstract interface whose implementations are called from the Decomposer.
 """
 # Standard Libraries
 import re
@@ -38,6 +49,12 @@ from app.static.semantics import (
 )
 from app.services.factories.assets import AssetFactory
 from app.game.logic.relations import MaterialIndex
+from app.game.logic.modules.multipliers import (
+    SimpleMultiplier,
+    OrientedMultiplier,
+    ExpansionMultiplier,
+    PerimeterMultiplier,
+)
 from app.models.config import (
     CompositionConfiguration,
     RecipeConfiguration
@@ -83,8 +100,8 @@ class Decomposer:
         self.materials = materials
         self._increment = 0
         self._strategies = {
-            MultiplicationStrategies.SIMPLE.value: self._multiply_simple,
-            MultiplicationStrategies.ORIENTED.value: self._multiply_oriented,
+            MultiplicationStrategies.SIMPLE.value: SimpleMultiplier.multiply,
+            MultiplicationStrategies.ORIENTED.value: OrientedMultiplier.multiply,
             MultiplicationStrategies.EXPANSION.value: self._multiply_expansion,
             MultiplicationStrategies.PERIMETER.value: self._multiply_perimeter,
         }
@@ -94,13 +111,16 @@ class Decomposer:
     # ---------------------------------------------------------
 
     def _get_length(self, cat_key: str, inst_key: str, asset_id: str) -> int:
-        """Retrieves static length (l) property for an asset ID."""
+        """
+        Retrieves static length (l) property for an asset ID.
+        """
         cat_props = getattr(self.properties, cat_key)
         inst_props = getattr(cat_props, inst_key)
         props = inst_props.get(asset_id)
         if not props or not props.dimensions:
             return 0
         return props.dimensions.l
+
 
     def _get_span_length(
         self,
@@ -109,7 +129,7 @@ class Decomposer:
         state_obj: AssetState
     ) -> int:
         """
-        Computes total vertical footprint length (L) for an AssetState,
+        Computes total vertical footprint length (l) for an AssetState,
         accounting for Craft multiplication strategies when resolving anchors.
         """
         unit_l = self._get_length(cat_key, inst_key, state_obj.id)
@@ -153,6 +173,8 @@ class Decomposer:
         inc: int,
         layer_map: Dict[str, str]
     ) -> Optional[str]:
+        """
+        """
         if layer is None or str(layer) == str(root_layer):
             return layer
 
@@ -172,6 +194,8 @@ class Decomposer:
         root_context: Dict[str, Any],
         parent_context: Dict[str, Any]
     ) -> Any:
+        """
+        """
         if not isinstance(val, str):
             return val
 
@@ -220,8 +244,8 @@ class Decomposer:
         target_y = 0
         target_l = 0
 
-        if target_ref == "parent":
-            target_y = parent_context.get("pseudo_y", 0)
+        if target_ref  == "parent":
+            target_y = 0
             target_l = parent_context.get("length", 0)
         elif target_ref == "root":
             target_y = 0
@@ -252,6 +276,8 @@ class Decomposer:
         layer_map: Optional[Dict[str, str]] = None,
         scope_lookup: Optional[Dict[str, Tuple[AssetState, str, str]]] = None
     ) -> AssetState:
+        """
+        """
         if layer_map is None:
             layer_map = root_context.setdefault("_layer_map", {})
 
@@ -328,7 +354,7 @@ class Decomposer:
         return type(state_obj)(**kwargs)
 
 
-    def _create_asset(
+    def _asset(
         self,
         cat_key: str,
         instance: str,
@@ -398,78 +424,6 @@ class Decomposer:
     # ------------------------------- MULTIPLICATION STRATEGIES
     # ---------------------------------------------------------
 
-    def _multiply_simple(
-        self,
-        state: CraftState,
-        props: CraftProperties,
-        recipe: Any,
-        category: str,
-        instance: str,
-        base_pos: Position,
-        layer: str,
-        base_name: str,
-        nx: int,
-        ny: int
-    ) -> List[Asset]:
-        w = props.dimensions.w
-        l = props.dimensions.l
-        base_anchor = int(state.anchor or 0)
-        units: List[Asset] = []
-        idx = 0
-
-        for iy in range(ny):
-            for ix in range(nx):
-                seg_pos = Position(base_pos.x + ix * w, base_pos.y + iy * l)
-                unit_name = settings.SEPARATOR.join([base_name, str(idx)])
-                idx += 1
-                units.append(
-                    self._spawn_unit(
-                        state,
-                        props,
-                        recipe,
-                        category,
-                        instance,
-                        unit_name,
-                        layer,
-                        seg_pos,
-                        state.blueprint,
-                        base_anchor
-                    )
-                )
-        return units
-
-
-    def _multiply_oriented(
-        self,
-        state: CraftState,
-        props: CraftProperties,
-        recipe: Any,
-        category: str,
-        instance: str,
-        base_pos: Position,
-        layer: str,
-        base_name: str,
-        nx: int,
-        ny: int
-    ) -> List[Asset]:
-        if state.blueprint == Orientations.HORIZONTAL.value:
-            ny = 1
-        else:
-            nx = 1
-        return self._multiply_simple(
-            state,
-            props,
-            recipe,
-            category,
-            instance,
-            base_pos,
-            layer,
-            base_name,
-            nx,
-            ny
-        )
-
-
     def _multiply_expansion(
         self,
         state: CraftState,
@@ -498,44 +452,18 @@ class Decomposer:
                 1
             )
 
-        w = props.dimensions.w
-        l = props.dimensions.l
-        units: List[Asset] = []
-        idx = 0
-
-        for ix in range(nx):
-            col_x = base_pos.x + ix * w
-            base_y = base_pos.y + (ny + 1) * l
-            base_ground = base_y + l
-
-            segments: List[Tuple[str, int]] = [
-                (Columns.CROWNS.value, base_pos.y)
-            ]
-            for k in range(ny):
-                segments.append(
-                    (Columns.SHAFTS.value, base_pos.y + (k + 1) * l)
-                )
-            segments.append((Columns.BASES.value, base_y))
-
-            for bp_part, seg_y in segments:
-                unit_name = settings.SEPARATOR.join([base_name, bp_part, str(idx)])
-                idx += 1
-                seg_anchor = int(base_ground - (seg_y + l))
-                units.append(
-                    self._spawn_unit(
-                        state,
-                        props,
-                        recipe,
-                        category,
-                        instance,
-                        unit_name,
-                        layer,
-                        Position(col_x, seg_y),
-                        bp_part,
-                        seg_anchor
-                    )
-                )
-        return units
+        return ExpansionMultiplier.multiply(
+            state,
+            props,
+            recipe,
+            category,
+            instance,
+            base_pos,
+            layer,
+            base_name,
+            nx,
+            ny
+        )
 
 
     def _multiply_perimeter(
@@ -566,90 +494,18 @@ class Decomposer:
                 1
             )
 
-        w = props.dimensions.w
-        l = props.dimensions.l
-        units: List[Asset] = []
-        idx = 0
-
-        north_hbs = props.hitboxes.get(Enclosures.NORTH.value, []) if props.hitboxes else []
-        north_bottom = max((hb.position.y + hb.dimensions.l for hb in north_hbs), default=l)
-        north_anchor = int(north_bottom - l)
-
-        # Horizontal caps/shafts across [0, nx + 1]
-        for ix in range(nx + 2):
-            seg_x = base_pos.x + ix * w
-            n_name = settings.SEPARATOR.join([base_name, Enclosures.NORTH.value, str(idx)])
-            idx += 1
-            units.append(
-                self._spawn_unit(
-                    state,
-                    props,
-                    recipe,
-                    category,
-                    instance,
-                    n_name,
-                    layer,
-                    Position(seg_x, base_pos.y),
-                    Enclosures.NORTH.value,
-                    north_anchor
-                )
-            )
-
-            s_name = settings.SEPARATOR.join([base_name, Enclosures.SOUTH.value, str(idx)])
-            idx += 1
-            units.append(
-                self._spawn_unit(
-                    state,
-                    props,
-                    recipe,
-                    category,
-                    instance,
-                    s_name,
-                    layer,
-                    Position(seg_x, base_pos.y + (ny + 1) * l),
-                    Enclosures.SOUTH.value,
-                    0
-                )
-            )
-
-        # Vertical caps/shafts across [0, ny + 1] (superimposes at corners to seal L-hitboxes)
-        for iy in range(ny + 2):
-            seg_y = base_pos.y + iy * l
-            w_name = settings.SEPARATOR.join([base_name, Enclosures.WEST.value, str(idx)])
-            idx += 1
-            units.append(
-                self._spawn_unit(
-                    state,
-                    props,
-                    recipe,
-                    category,
-                    instance,
-                    w_name,
-                    layer,
-                    Position(base_pos.x, seg_y),
-                    Enclosures.WEST.value,
-                    0
-                )
-            )
-
-            e_name = settings.SEPARATOR.join([base_name, Enclosures.EAST.value, str(idx)])
-            idx += 1
-            units.append(
-                self._spawn_unit(
-                    state,
-                    props,
-                    recipe,
-                    category,
-                    instance,
-                    e_name,
-                    layer,
-                    Position(base_pos.x + (nx + 1) * w, seg_y),
-                    Enclosures.EAST.value,
-                    0
-                )
-            )
-
-        return units
+        return PerimeterMultiplier.multiply(
+            state,
+            props,
+            recipe,
+            category,
+            instance,
+            base_pos,
+            layer,
+            base_name,
+            nx,
+            ny
+        )
 
     # ---------------------------------------------------------
     # ------------------------------------- EXPANSION UTILITIES
@@ -776,15 +632,15 @@ class Decomposer:
                     if inst_key in MultipliedAssets:
                         assets.extend(self.multiply(new_state, cat_key, inst_key))
                     elif inst_key == AssetInstances.DOORS.value:
-                        assets.extend(self.project_door(new_state))
+                        assets.extend(self.project(new_state))
                     else:
-                        assets.append(self._create_asset(cat_key, inst_key, new_state))
+                        assets.append(self._asset(cat_key, inst_key, new_state))
 
     # ---------------------------------------------------------
     # ------------------------------------------ PUBLIC METHODS
     # ---------------------------------------------------------
 
-    def project_door(self, state: DoorState) -> List[Asset]:
+    def project(self, state: DoorState) -> List[Asset]:
         """
         Instantiates a primary Door on state.layer (Substrates.STANDARD) and its
         reciprocal shadow footprint on state.outlayer (Substrates.OVERLAYS).
@@ -792,7 +648,7 @@ class Decomposer:
         """
         if state.projection == LayerProjections.OUT.value:
             return [
-                self._create_asset(
+                self._asset(
                     AssetCategories.OBJECTS.value,
                     AssetInstances.DOORS.value,
                     state,
@@ -805,7 +661,7 @@ class Decomposer:
             projection=LayerProjections.IN.value
         )
         doors = [
-            self._create_asset(
+            self._asset(
                 AssetCategories.OBJECTS.value,
                 AssetInstances.DOORS.value,
                 primary_state,
@@ -831,7 +687,7 @@ class Decomposer:
             projection=LayerProjections.OUT.value
         )
         doors.append(
-            self._create_asset(
+            self._asset(
                 AssetCategories.OBJECTS.value,
                 AssetInstances.DOORS.value,
                 shadow_state,

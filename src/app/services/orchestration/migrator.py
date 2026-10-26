@@ -147,7 +147,7 @@ class Migrator:
                 and task[2] == AssetInstances.DOORS.value
             ):
                 door_state = task[3]
-                self.board.add(self.decomposer.project_door(door_state))
+                self.board.add(self.decomposer.project(door_state))
 
             elif task[0] == Shortcuts.PLOTS.value:
                 plot = task[1]

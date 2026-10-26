@@ -75,10 +75,13 @@ class ObjectFrame(Frame):
     ) -> List[Tuple]:
         directives = super().channels(id, state, properties)
         if isinstance(state, DoorState) and state.projection == LayerProjections.OUT.value:
+            w = properties.dimensions.w if properties.dimensions else 0
+            l = properties.dimensions.l if properties.dimensions else 0
             directives.append((
                 ChannelTypes.TINT.value,
-                (0, 0, 0, 0, 110)
+                (0, 0, w, l, 0, 0, 0, 110)
             ))
+
         return directives
 
 

@@ -47,6 +47,7 @@ from app.models.config import (
     ConfigurationSchema, 
     MechanicsInstance
 )
+from app.services.markets import Materializer
 from app.services.factories import MechanicFactory
 from app.services.generators.game import (
     Cradle,
@@ -98,6 +99,7 @@ class Builder:
         self.binder: Binder = None
         self.fabricator: Fabricator = None
         self.provider: Provider = None
+        self.materializer: Materializer = None
         self.screens: Dict[str, Screen] = {}
         self.core: List[Mechanic] = []
         self.world: List[Mechanic] = []
@@ -202,6 +204,10 @@ class Builder:
 
         materials = self.relations[Relations.MATERIALS.value]
 
+        self.materializer = Materializer(
+            materials=materials
+        )
+        
         self.decomposer = Decomposer(
             compositions=self.context.configurations.compositions,
             properties=self.context.properties,

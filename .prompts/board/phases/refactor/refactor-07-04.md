@@ -1101,3 +1101,7 @@ All changes accepted, except it is not clear where to set the substrate in Migra
 Making `substrate` part of the state was a mistake. 
 
 1. It is fundamentally not part of the state. It never changes. That is the point of shifting all of the this information into the `materials.yaml` and the MaterialIndex. It shouldn't be a state field at all. By detaching it from the lazy-loading of settings and setting the substrate on the state, the process is now broken for things that aren't compositions because the substrate never gets hydrated anywhere. Now, instead of the substrate coming from settings, it needs to be set on the Asset somehow. Now the hydration needs a step for processing substrates.
+
+##### Tasks: Addendum
+
+* [x] Decouple `substrate` from `state`. Rewire the Asset base class and dependnecy injection pipeline to hydrate substrate correctly from configuration.

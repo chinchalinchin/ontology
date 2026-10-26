@@ -64,7 +64,7 @@ class Fabricator:
             raise ValueError(f"Gizmo '{node.name}' declared without a binding schema.")
 
         handlers: Dict[str, Callable[[MenuNode, MenuContext, WidgetProperties], MenuNode]] = {
-            Bindings.COLLECTION.value: cls._expand_collection,
+            Bindings.COLLECTION.value: cls._collection,
         }
 
         handler = handlers.get(node.bind.schema)
@@ -77,7 +77,7 @@ class Fabricator:
 
 
     @classmethod
-    def _expand_collection(
+    def _collection(
         cls,
         node: MenuNode,
         context: MenuContext,

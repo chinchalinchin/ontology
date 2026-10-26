@@ -34,7 +34,8 @@ from app.static.loader import Loader
 from app.game.board.modules.fields import MoistureField
 from app.game.devices import Device
 from app.game.menus.core import Menu
-from app.services.generators.game.cradle import Cradle
+from app.services.markets import Materializer
+from app.services.generators.game import Cradle
 from app.models.state.core import (
     PlotState,
     CalendarState
@@ -97,6 +98,7 @@ class Board:
         self.plot = None
         self.device = None
         self.cradle = None
+        self.materializer = None
         self.migrator = None
         self.calendar = CalendarState()
         self.menus = []
@@ -207,7 +209,7 @@ class Board:
 
     def set_migrator(self, migrator: Migrator) -> None:
         self.migrator = migrator
-    
+
     # ------------------------------------------------ GETTERS
 
     def player(self, slot: int = 0) -> Optional[Asset]:

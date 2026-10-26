@@ -86,9 +86,9 @@ tools:
     # ------------------------ TOOL VIEWS: MANAGER
     # --------------------------------------------
     manager:
-      board: false
+      board: true
       specs: false
-      docs: false
+      docs: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
@@ -107,7 +107,7 @@ tools:
     tests:  
       pipeline: false
       fixtures: false
-      session: true
+      session: false
       workflow: false
 # ----------------------------------------------------
   parameters:
@@ -177,43 +177,43 @@ tools:
             #               telemetry 
             #     ]
             # ------------------------------------
-            # - title: Abstracts
-            #   strategy: AND
-            #   scan:
-            #     app: [ component ]
-            #     domain: [ abstract ]
+            - title: Abstracts
+              strategy: AND
+              scan:
+                app: [ component ]
+                domain: [ abstract ]
             # ------------------------------------
-            # - title: Components
-            #   strategy: AND
-            #   scan:
-            #     app: [ core, component ]
-            #     domain: [ system ]
+            - title: Components
+              strategy: AND
+              scan:
+                app: [ core, component ]
+                domain: [ system ]
             # ------------------------------------
-            # - title: Material Implementations
-            #   strategy: AND
-            #   scan:
-            #     app: [ asset ]
-            #     domain: [ concrete ]
-            #     modality: [ material ]
+            - title: Material Implementations
+              strategy: AND
+              scan:
+                app: [ asset ]
+                domain: [ concrete ]
+                modality: [ material ]
             # ------------------------------------
-            # - title: Material Models
-            #   strategy: AND
-            #   scan:
-            #     domain: [ model ]
-            #     modality: [ material ]
+            - title: Material Models
+              strategy: AND
+              scan:
+                domain: [ model ]
+                modality: [ material ]
             # ------------------------------------
-            # - title: Composition Logic
-            #   strategy: AND 
-            #   scan:
-            #     domain: [ logic ]
-            #     app: [ module ]
-            #     workflows: [ compositions ]
+            - title: Composition Logic
+              strategy: AND 
+              scan:
+                domain: [ logic ]
+                app: [ module ]
+                workflows: [ compositions ]
             # ------------------------------------
-            # - title: Composition Services
-            #   strategy: AND
-            #   scan:
-            #     app: [ services ]
-            #     workflows: [ compositions ]
+            - title: Composition Services
+              strategy: AND
+              scan:
+                app: [ services ]
+                workflows: [ compositions ]
             # # ------------------------------------
             # - title: Procedural Generation Services
             #   strategy: AND
