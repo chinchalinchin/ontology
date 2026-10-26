@@ -1,7 +1,7 @@
 """
 @domain.system
 @app.services
-@workflow.injections
+@workflow.injection
 @workflow.compositions
 
 # Ontology: Source - app.services.factories.assets

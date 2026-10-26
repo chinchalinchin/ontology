@@ -5,7 +5,7 @@
 @category.crafts
 @workflow.compositions
 
-# Ontology: Source - app.game.logic.modules.multiplers.perimeter
+# Ontology: Source - app.game.logic.modules.multipliers.perimeter
 
 Perimeter multiplication strategy implementation.
 """

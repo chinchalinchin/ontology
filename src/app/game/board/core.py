@@ -2,6 +2,7 @@
 @domain.system
 @app.core
 @app.component
+@workflow.main
 
 # Ontology: Source - app.game.board.core
 
@@ -34,7 +35,6 @@ from app.static.loader import Loader
 from app.game.board.modules.fields import MoistureField
 from app.game.devices import Device
 from app.game.menus.core import Menu
-from app.services.markets import Materializer
 from app.services.generators.game import Cradle
 from app.models.state.core import (
     PlotState,

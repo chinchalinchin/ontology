@@ -5,7 +5,7 @@
 @category.crafts
 @workflow.compositions
 
-# Ontology: Source - app.game.logic.modules.multiplers.expansion
+# Ontology: Source - app.game.logic.modules.multipliers.expansion
 
 Expansion multiplication strategy implementation.
 """

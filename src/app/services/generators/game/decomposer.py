@@ -17,7 +17,6 @@ Package for decomposing Compositions into their constituent Assets.
     * Composition Macros:
         - bind
         - anchor
-2. MultiplicationStrategies needs decoupled from the Decomposer. Should be an abstract interface whose implementations are called from the Decomposer.
 """
 # Standard Libraries
 import re
@@ -68,13 +67,13 @@ from app.models.state import (
 )
 
 # Cython Libraries
-from libs.core.models import (
-    Position,
-    Multiple
-)
+from libs.core.models import Position
+
+# --------------------------------------------------------------
 
 logger = logging.getLogger(__name__)
 
+# --------------------------------------------------------------
 
 class Decomposer:
     compositions: Dict[str, CompositionConfiguration]

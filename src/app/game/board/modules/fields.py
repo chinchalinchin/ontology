@@ -8,9 +8,10 @@
 
 Superpositions Fields on the Board.
 
-## TODO
+## TODOs
 
 1. Anything that uses `math` should be using Cython libraries.
+2. This should probably be in `app.game.logic.modules.fields`
 """
 # Standard Libraries
 import math
