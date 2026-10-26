@@ -266,7 +266,7 @@ cdef class Registry:
         """
         Indexes frame coordinates by mapping Category and Instance dataclass fields.
         """
-        from app.services.generators.game.factory import Factory
+        from app.services.factories import AssetFactory
 
         logger.debug("Indexing Frame Keys to Texture Crops using native data models...")
         for cat_field in dataclasses.fields(self.properties):
@@ -289,7 +289,7 @@ cdef class Registry:
                 if not inst_dict or not isinstance(inst_dict, dict):
                     continue
 
-                frame_worker = Factory.frame(recipe.frame)
+                frame_worker = AssetFactory.frame(recipe.frame)
                 for item_id, item_props in inst_dict.items():
                     if item_id not in self._filepaths and item_id not in self._stacks:
                         continue

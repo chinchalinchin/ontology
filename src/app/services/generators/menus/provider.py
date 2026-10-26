@@ -1,4 +1,9 @@
 """
+@domain.system
+@app.services
+@workflow.injection
+@workflow.menu
+
 # Ontology: Source - app.services.generators.provider
 
 Package for ingame Menu instantiation.
@@ -26,7 +31,7 @@ from app.static.semantics import (
     Bindings,
     Shortcuts
 )
-from app.services.generators.game.factory import Factory
+from app.services.factories.assets import AssetFactory
 from app.models.properties import WidgetProperties
 from app.models.state import (
     DisplayState, 
@@ -80,7 +85,9 @@ class Provider:
         self.binder = binder
         self.fabricator = fabricator or Fabricator()
 
-    def _unpack_page(self, 
+    # --------------------------- STATE HYDRATION UTILITIES
+
+    def _page(self, 
         cfg: MenuNode, 
         binding: Binding, 
         font: Fonts
@@ -107,7 +114,7 @@ class Provider:
             canvas              = canvas_ptr
         )
 
-    def _unpack_meter(self, 
+    def _meter(self, 
         cfg: MenuNode, 
         binding: Binding
     ) -> MeterState:
@@ -122,7 +129,7 @@ class Provider:
             state.animation.frame = max(0, min(100, int(round((state.reading / state.unit) * 100))))
         return state
 
-    def _unpack_icon(self, 
+    def _icon(self, 
         cfg: MenuNode, 
         binding: Binding
     ) -> IconState:
@@ -133,7 +140,7 @@ class Provider:
             icon_function       = icon_function
         )
 
-    def _unpack_button(self, 
+    def _button(self, 
         cfg: MenuNode, 
         binding: Binding
     ) -> TraversalState:
@@ -147,7 +154,9 @@ class Provider:
             animation           = AnimationState(action=status_val)
         )
 
-    def _unpack_widget(self, 
+    # ------------------------ ASSET INSTANTIAION UTILITIES
+    
+    def _widget(self, 
         cfg: MenuNode, 
         context: MenuContext, 
         font: Fonts,
@@ -161,31 +170,15 @@ class Provider:
         binding = self.binder.binding(cfg.bind, context, widgets=widgets)
 
         delegator = {
-            AssetInstances.PAGES.value: lambda c, b: self._unpack_page(c, b, font),
-            AssetInstances.METERS.value: self._unpack_meter,
-            AssetInstances.BUTTONS.value: self._unpack_button,
-            AssetInstances.ICONS.value: self._unpack_icon
+            AssetInstances.PAGES.value: lambda c, b: self._page(c, b, font),
+            AssetInstances.METERS.value: self._meter,
+            AssetInstances.BUTTONS.value: self._button,
+            AssetInstances.ICONS.value: self._icon
         }
 
         state = delegator[instance_key](cfg, binding)
 
-        frame = Factory.frame(recipe.frame)
-        animation = Factory.animation(recipe.animation)
-        taxonomy = Factory.taxonomy(
-            cfg.id, 
-            cfg.name, 
-            AssetCategories.WIDGETS.value, 
-            cfg.instance
-        )
-
-        return Widget(
-            taxonomy            = taxonomy,
-            properties          = properties,
-            state               = state,
-            frame               = frame,
-            animation           = animation,
-            binding             = binding
-        )
+        return AssetFactory.widget(cfg, properties, state, recipe, binding)
 
     def _unpack_node(self, 
         cfg: MenuNode, 
@@ -196,8 +189,7 @@ class Provider:
         if cfg.instance == AssetInstances.PANES.value:
             self._unpack_pane(cfg, context, widgets, font)
         else:
-            widgets[cfg.name] = self._unpack_widget(cfg, context, font, widgets)
-
+            widgets[cfg.name] = self._widget(cfg, context, font, widgets)
 
     def _unpack_pane(self, 
         pane: MenuNode, 
@@ -253,18 +245,12 @@ class Provider:
                 offset=0
             )
 
-            pane_asset = Widget(
-                taxonomy=Factory.taxonomy(
-                    id=pane.id,
-                    name=pane.name,
-                    category=AssetCategories.WIDGETS.value,
-                    instance=AssetInstances.PANES.value
-                ),
-                properties=props,
-                state=state,
-                frame=Factory.frame(recipe.frame),
-                animation=Factory.animation(recipe.animation),
-                binding=binding
+            pane_asset = AssetFactory.widget(
+                pane, 
+                props, 
+                state, 
+                recipe, 
+                binding
             )
         else:
             state = PaneState(
@@ -277,24 +263,18 @@ class Provider:
                 margins=margins
             )
 
-            pane_asset = Asset(
-                taxonomy=Factory.taxonomy(
-                    id=pane.id,
-                    name=pane.name,
-                    category=AssetCategories.WIDGETS.value,
-                    instance=AssetInstances.PANES.value
-                ),
-                properties=props,
-                state=state,
-                frame=Factory.frame(recipe.frame),
-                animation=Factory.animation(recipe.animation)
+            pane_asset = AssetFactory.asset(
+                AssetCategories.WIDGETS.value, 
+                AssetInstances.PANES.value, 
+                props, 
+                state, 
+                recipe
             )
 
         widgets[pane.name] = pane_asset
 
         for child in children:
             self._unpack_node(child, context, widgets, font)
-
 
     def _focus(self, 
         id: str, 
@@ -316,14 +296,13 @@ class Provider:
 
         return None
 
-
-    def _expand_tree(self, node: MenuNode, context: MenuContext) -> MenuNode:
+    def _expand(self, node: MenuNode, context: MenuContext) -> MenuNode:
         """
         Recursively compiles virtual macro nodes (gizmos) into concrete pane subtrees.
         """
         if node.instance == Shortcuts.GIZMOS.value:
             expanded = self.fabricator.expand(node, context, self.properties)
-            return self._expand_tree(expanded, context)
+            return self._expand(expanded, context)
 
         if node.instance == AssetInstances.PANES.value:
             params = node.parameters
@@ -331,7 +310,7 @@ class Provider:
                 logger.warning(f"Pane Node does not have Pane Parameters: {node.name}")
                 return
             
-            new_children = [self._expand_tree(child, context) for child in params.children]
+            new_children = [self._expand(child, context) for child in params.children]
             new_params = PaneParameters(
                 layout=params.layout,
                 alignment=params.alignment,
@@ -362,7 +341,7 @@ class Provider:
         widgets = {}
 
         # Phase 1: Pure AST Macro Expansion Pass
-        expanded_roots = [self._expand_tree(root, context) for root in config.roots]
+        expanded_roots = [self._expand(root, context) for root in config.roots]
 
         # Phase 2: ECS Asset & Widget Hydration Pass
         for root in expanded_roots:
@@ -373,7 +352,7 @@ class Provider:
         flattened_list, graph = layout.compute(expanded_roots, widgets)
 
         ordered_widgets = {w.name: w for w in flattened_list}
-        ctrl = Factory.controller(config.controller)
+        ctrl = AssetFactory.controller(config.controller)
         focus = self._focus(id, ordered_widgets, graph)
 
         return Menu(

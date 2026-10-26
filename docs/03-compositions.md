@@ -222,6 +222,9 @@ Other than Position, any state attribute *not* specified in a Component Asset's 
 
 Unique names are generated for each component Asset of a Composition according to the schema: `<instance.name>-<strut.name>-<component.name>-<increment>`, where `<increment>` is an index to track the number of unique Compositions deployed on the Board to ensure each has a correspondingly unique name.
 
+!!! warning
+    Compositions need to be designed from the *outside-in*, i.e. the Root Strut should correspond to the exterior that gets deployed onto the Board.
+    
 ### Bindings
 
 !!! @TODO(07-04)

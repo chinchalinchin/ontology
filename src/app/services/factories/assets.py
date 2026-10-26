@@ -55,6 +55,8 @@ from app.assets.hitboxes import (
     StaticHitbox,
     SwitchHitbox
 )
+from app.game.menus.bindings import Binding
+from app.game.menus.core import Widget
 from app.game.menus.controllers import (
     DisplayController,
     InventoryController,
@@ -64,9 +66,20 @@ from app.game.menus.controllers import (
     PauseController,
     ScrollController
 )
-from app.models.properties import AssetProperties
-from app.models.state import AssetState
+from app.models.config import (
+    Recipe,
+    MenuNode
+)
+from app.models.properties import (
+    AssetProperties,
+    WidgetProperties
+)
+from app.models.state import (
+    AssetState,
+    WidgetState
+)
 from app.static.semantics import (
+    AssetCategories,
     AnimationRecipe,
     Controllers,
     FrameRecipe,
@@ -143,35 +156,29 @@ class AssetFactory:
     def hitbox(cls, recipe: str) -> HitboxSchema:
         return cls._HITBOXES.get(recipe, cls._HITBOXES[HitboxRecipe.STATIC.value])
 
-    @staticmethod
-    def taxonomy(id: str, name: str, category: str, instance: str) -> Taxonomy:
-        return Taxonomy(id=id, name=name, category=category, instance=instance)
-
     @classmethod
-    def asset(
-        cls,
+    def asset(cls,
         category: str,
         instance: str,
         properties: AssetProperties,
         state: AssetState,
-        recipe: Any,
+        recipe: Recipe,
         substrate: int = Substrates.STANDARD.value
     ) -> Asset:
         """
         Unified point of instantiation for all in-game Assets.
         """
+        animation = cls.animation(recipe.animation)
+        frame = cls.frame(recipe.frame)
+        hitbox = cls.hitbox(recipe.hitbox)
+        taxonomy = Taxonomy(state.id, state.name, category, instance)
         return Asset(
-            taxonomy=cls.taxonomy(
-                id=state.id,
-                name=state.name,
-                category=category,
-                instance=instance
-            ),
+            taxonomy=taxonomy,
             properties=properties,
             state=state,
-            frame=cls.frame(recipe.frame),
-            animation=cls.animation(recipe.animation),
-            hitbox=cls.hitbox(recipe.hitbox),
+            frame=frame,
+            animation=animation,
+            hitbox=hitbox,
             substrate=substrate
         )
 
@@ -179,3 +186,29 @@ class AssetFactory:
     def controller(cls, kind: str):
         target_cls = cls.CONTROLLER_MAP.get(kind, ScrollController)
         return target_cls()
+
+    @classmethod
+    def widget(cls,
+        node: MenuNode,
+        properties: WidgetProperties,
+        state: WidgetState,
+        recipe: Recipe,
+        binding: Optional[Binding] = None           
+    ):
+        animation = cls.animation(recipe.animation)
+        frame = cls.frame(recipe.frame)
+        taxonomy = Taxonomy(
+            node.id, 
+            node.name, 
+            AssetCategories.WIDGETS.value, 
+            node.instance
+        )
+        return Widget(
+            taxonomy=taxonomy,
+            properties=properties,
+            state=state,
+            frame=frame,
+            animation=animation,
+            binding=binding
+        )
+        pass

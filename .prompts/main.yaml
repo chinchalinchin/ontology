@@ -177,42 +177,38 @@ tools:
             #               telemetry 
             #     ]
             # ------------------------------------
-            - title: Fluid Mechanics
-              strategy: AND
-              scan: 
-                domain: [ logic ]
-                workflows: [ fluids ]
             # - title: Abstracts
             #   strategy: AND
             #   scan:
             #     app: [ component ]
             #     domain: [ abstract ]
-            # # ------------------------------------
+            # ------------------------------------
             # - title: Components
             #   strategy: AND
             #   scan:
             #     app: [ core, component ]
             #     domain: [ system ]
-            # # ------------------------------------
+            # ------------------------------------
             # - title: Material Implementations
             #   strategy: AND
             #   scan:
             #     app: [ asset ]
             #     domain: [ concrete ]
             #     modality: [ material ]
-            # # ------------------------------------
+            # ------------------------------------
             # - title: Material Models
             #   strategy: AND
             #   scan:
             #     domain: [ model ]
             #     modality: [ material ]
-            # # ------------------------------------
+            # ------------------------------------
             # - title: Composition Logic
             #   strategy: AND 
             #   scan:
             #     domain: [ logic ]
             #     app: [ module ]
             #     workflows: [ compositions ]
+            # ------------------------------------
             # - title: Composition Services
             #   strategy: AND
             #   scan:
@@ -224,6 +220,12 @@ tools:
             #   scan:
             #     app: [ services ]
             #     workflows: [ ecology, generation ]
+            # ------------------------------------
+            # - title: Fluids
+            #   strategy: AND
+            #   scan: 
+            #     workflows: [ fluids ]
+            # ------------------------------------
       data: 
         # properties: [ 
         #                   crafts, cursors, effects,

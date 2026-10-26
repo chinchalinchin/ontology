@@ -1,4 +1,8 @@
 """
+@domain.system
+@app.services
+@workflow.menus
+
 # Ontology: Source - app.services.generators.binder
 
 Factory for generating and preparing Binding components.
