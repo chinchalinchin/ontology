@@ -2,7 +2,7 @@
 | - | - |
 | Tiles | Base, Friction |
 | Cursors | Base |
-| Objects | Base, Hitboxes, Mass, Material, Count |
+| Objects | Base, Hitboxes, Mass, Materials, Count |
 | Effects | Base, Hitboxes, Mass, Lifecycle, Count|
 | Geography | Base, Hitboxes, Mass, Tile, Fluid, Thickness | 
 | Resources | Base, Hitboxes, Mass, Lifespan, Loot |

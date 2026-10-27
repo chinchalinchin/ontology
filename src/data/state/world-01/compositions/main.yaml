@@ -6,13 +6,13 @@ compositions:
     position:
       x: 650
       y: 800
-#   - id: brick-house
-#     name: suburbs-01
-#     layer: '0'
-#     owner: archaxes
-#     position:
-#       x: 400
-#       y: 750
+  - id: brick-house
+    name: suburbs-01
+    layer: '0'
+    owner: archaxes
+    position:
+      x: 400
+      y: 800
 #   - id: regalia-galleria
 #     name: the-gallery
 #     layer: '0'

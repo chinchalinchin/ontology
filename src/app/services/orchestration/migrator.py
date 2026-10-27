@@ -184,7 +184,6 @@ class Migrator:
 
         # 3. Post-Hydration Phase: Procedural Boundaries & Steady-State Fluid
         for layer in self.board.layers():
-            print(layer)
             self.board.perimeters[layer] = Perimeter.generate(self.board, layer)
 
         fluids = self.board.instances(AssetInstances.FLUIDS.value)

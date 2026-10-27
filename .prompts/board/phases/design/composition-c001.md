@@ -1,4 +1,4 @@
-#### Design: Composition C001 - Citadel of Trials
+#### Design: Composition C001 - Temple of Trials
 
 * **Purpose**: 
 * **Description**: 
@@ -6,7 +6,12 @@
 ##### Composition: Model
 
 ```yaml
-# TODO
+compositions:
+    temple-of-trials:
+        root:
+            strut: TODO
+            components: TOODO
+        branches: TODO
 ```
 
 ##### Composition: Tasks

@@ -115,8 +115,8 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     * [x]: [Goal 10: Dependency Injection](./phases/achieve/goal-11.md)
   - **Design:**
     * [~]: [Composition C000: Castle Dawn](./phases/design/composition-c000.md)
-    * [~]: [Composition C001: Citadel of Trials](./phases/design/composition-c001.md)
-    * [~]: [Composition C002: Regalia Galleria](./phases/design/composition-c002.md)
+    * [ ]: [Composition C001: Temple of Trials](./phases/design/composition-c001.md)
+    * [ ]: [Composition C002: Regalia Galleria](./phases/design/composition-c002.md)
 - **Backlog:**
   * [~]: [TODO T000: Telemetry Module](./backlog/todo-t000.md)
   * [ ]: [TODO T001: Telemetry Menu](./backlog/todo-t001.md)

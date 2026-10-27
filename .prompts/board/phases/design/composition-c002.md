@@ -6,7 +6,12 @@
 ##### Composition: Model
 
 ```yaml
-# TODO
+compositions:
+    regalia-galleria:
+        root:
+            strut: TODO
+            components: TOODO
+        branches: TODO
 ```
 
 ##### Composition: Tasks
