@@ -74,7 +74,7 @@ class AssetState:
     name: Optional[str] = None
     layer: Optional[str] = None
     elevation: Optional[int] = None
-    anchor: Union[int, str] = 0
+    anchor: Optional[int] = 0
     mutators: Mutators = field(default_factory=Mutators)
 
 @dataclass(slots=True)

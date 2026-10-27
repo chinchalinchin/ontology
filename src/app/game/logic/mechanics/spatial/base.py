@@ -6,6 +6,7 @@
 @physics.space
 @workflow.collisions
 @workflow.interactions
+
 # Ontology: Source - app.game.logic.mechanics.spatial.base
 
 SpatialMechanic implementation base class.
@@ -92,7 +93,10 @@ class SpatialMechanic(Mechanic):
             if not base_hbs and asset.dimensions:
                 base_hbs = [Hitbox(position=Position(x=0, y=0), dimensions=asset.dimensions)]
 
-            if asset.instance in (AssetInstances.PLAYERS.value, AssetInstances.SPRITES.value):
+            if asset.instance in (
+                AssetInstances.PLAYERS.value, 
+                AssetInstances.SPRITES.value
+            ):
                 padded_hbs = [
                     Hitbox(
                         position=Position(x=hb.position.x - 2, y=hb.position.y - 2),

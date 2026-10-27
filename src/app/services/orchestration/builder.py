@@ -139,7 +139,7 @@ class Builder:
         State hydration is deferred to the Migrator.
         """
         self.context.properties = Loader.load_properties()
-        self.context.configurations = Loader.load_configurations()
+        self.context.configurations = Loader.load_configurations(self.context.properties)
         self._actions()
 
 

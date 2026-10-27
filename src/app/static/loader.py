@@ -1,12 +1,20 @@
 """
 # Ontology: Source - app.config.loader
 """
-from typing import Any
+# Standard Libraries
+from typing import (
+    Any,
+    Optional
+)
 import logging
+
+# External Libraries
 import yaml
 from pydantic import TypeAdapter
 
+# Application Libraries
 import app.static.settings as settings
+from app.static.macros.compositions import CompositionCompiler
 from app.models.state import StateSchema
 from app.models.properties import PropertiesSchema
 from app.models.config import ConfigurationSchema
@@ -15,18 +23,21 @@ logger = logging.getLogger(__name__)
 
 class Loader:
     @staticmethod
-    def merge(target: dict[str, Any], source: dict[str, Any]) -> dict[str, Any]:
-        for key, value in source.items():
-            if key in target:
-                if isinstance(target[key], dict) and isinstance(value, dict):
-                    Loader.merge(target[key], value)
-                elif isinstance(target[key], list) and isinstance(value, list):
-                    target[key].extend(value)
-                else:
-                    target[key] = value
+    def merge(base: dict[str, Any], incoming: dict[str, Any]) -> dict[str, Any]:
+        """
+        Recursively merges incoming YAML dictionaries so multi-file top-level
+        keys (e.g., 'menus.load' and 'menus.main') do not overwrite each other.
+        """
+        for key, val in incoming.items():
+            if (
+                key in base
+                and isinstance(base[key], dict)
+                and isinstance(val, dict)
+            ):
+                Loader.merge(base[key], val)
             else:
-                target[key] = value
-        return target
+                base[key] = val
+        return base
 
     @staticmethod
     def load_state(state: str) -> StateSchema:
@@ -58,19 +69,22 @@ class Loader:
         return TypeAdapter(PropertiesSchema).validate_python(merged_data)
 
     @staticmethod
-    def load_configurations() -> ConfigurationSchema:
+    def load_configurations(properties: Optional[PropertiesSchema] = None) -> ConfigurationSchema:
         target_dir = settings.CONFIG_DIR.expanduser()
         merged_data: dict[str, Any] = {}
         logger.info("Loading YAML configurations...")
-        
+
         for file_path in target_dir.rglob("*.yaml"):
             with file_path.open("r", encoding="utf-8") as f:
                 data = yaml.safe_load(f)
                 if isinstance(data, dict):
                     merged_data = Loader.merge(merged_data, data)
-                    
-        return TypeAdapter(ConfigurationSchema).validate_python(merged_data)
 
+        if properties is not None:
+            merged_data = CompositionCompiler.compile(merged_data, properties)
+
+        return TypeAdapter(ConfigurationSchema).validate_python(merged_data)
+    
     @staticmethod
     def save_state(slot: str, state_data: dict[str, Any]) -> None:
         """

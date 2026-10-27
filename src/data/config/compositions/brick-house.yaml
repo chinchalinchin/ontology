@@ -1,52 +1,52 @@
 compositions:
-    brick-house:
-        root:
-            strut: 
-                id: home
-                name: house-exterior
-                material: feldspar
-                blueprint: walls
-            components:
-                objects:
-                  doors:
-                    - id: panel
-                      name: house-door
-                      anchor: anchor(house-exterior)
-                      material: neutral
-                      outlayer: house-layer
-                      position:
-                          x: 35
-                          y: 45
-                      out:
-                          x: 10
-                          y: 10
-                crafts:
-                  struts:
-                    - id: home
-                      name: house-roof
-                      material: granite
-                      blueprint: roofs
-                      position: 
-                        x: 0
-                        y: -96
-        branches:
-          -   strut: 
-                id: hallway
-                name: house-interior
-                material: blue
-                blueprint: solids
+  brick-house:
+    root:
+      strut:
+        id: home
+        name: house-roof
+        material: granite
+        blueprint: roofs
+      components:
+        objects:
+          doors:
+            - id: panel
+              name: house-door
+              anchor: anchor(house-exterior)
+              material: neutral
+              outlayer: house-layer
+              position:
+                x: (bind(parent.dimensions.w) - bind(self.dimensions.w)) // 2
+                y: bind(house-exterior.position.y) + bind(house-exterior.dimensions.l) - bind(self.dimensions.l)
+              out:
+                x: bind(house-interior.position.x) + (bind(house-interior.dimensions.w) - bind(self.dimensions.w)) // 2
+                y: bind(house-interior.position.y) + bind(house-floor.position.y) + bind(house-floor.dimensions.l) - bind(self.dimensions.l)
+        crafts:
+          struts:
+            - id: home
+              name: house-exterior
+              material: feldspar
+              blueprint: walls
+              position:
+                x: 0
+                y: bind(parent.dimensions.l)
+    branches:
+      - strut:
+          id: hallway
+          name: house-interior
+          material: blue
+          blueprint: solids
+          layer: house-layer
+          position:
+            x: 10
+            y: 10
+        components:
+          crafts:
+            struts:
+              - id: carpet
+                name: house-floor
                 layer: house-layer
+                material: blue
+                blueprint: designs
                 position:
-                  x: 10
-                  y: 10
-              components:
-                crafts:
-                  struts:
-                    - id: carpet
-                      name: house-floor
-                      layer: house-layer
-                      material: blue
-                      blueprint: designs
-                      position:
-                        x: 0
-                        y: 20
+                  x: 0
+                  y: bind(parent.dimensions.l)
