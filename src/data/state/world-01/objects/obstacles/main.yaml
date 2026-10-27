@@ -1,0 +1,14 @@
+objects:
+  obstacles:
+    - id: gray-rock-00
+      name: jasilynns-rock
+      layer: '0'
+      position:
+        x: 68
+        y: 600
+    - id: gray-rock-00
+      name: jasilynns-other-rock
+      layer: '0'
+      position:
+        x: 632
+        y: 600

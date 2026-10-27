@@ -1,0 +1,9 @@
+objects:
+  crates: 
+    - id: box
+      name: castle-dawn-barrel-00
+      material: wood
+      layer: '0'
+      position:
+        x: 200
+        y: 240

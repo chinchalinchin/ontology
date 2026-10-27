@@ -1,0 +1,11 @@
+objects:
+  signs:
+    - id: plaque
+      name: castle-dawn-sign-00
+      layer: '0'
+      persona: castle-dawn-sign
+      lexicon: spring
+      material: limestone
+      position:
+        x: 430
+        y: 330
