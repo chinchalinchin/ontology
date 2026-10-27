@@ -185,11 +185,12 @@ crafts:
     # ----------------------------------- DECOR
     # -----------------------------------------
     banner:
-      # - neutral: Unicorn Crest
-      # - blue: Eagle Crest
-      # - red: Lion Crest
-      # - yellow: Plain Canvas
-      # - green: Dragon Crest
+      # description(partition):
+      #   - neutral: Unicorn Crest
+      #   - blue: Eagle Crest
+      #   - red: Lion Crest
+      #   - yellow: Plain Canvas
+      #   - green: Dragon Crest
       dimensions:
         w: 32
         l: 64
@@ -233,7 +234,7 @@ crafts:
       hitboxes: null
     # -----------------------------------------
     palette:
-      # description:
+      # description(partition):
       #   - neutral: Empty wooden palette.
       #   - blue: Palette with blue boxes.
       #   - red: Palette with red boxes.
@@ -250,7 +251,7 @@ crafts:
       hitboxes: null
     # -----------------------------------------
     painting:
-      # description:
+      # description(partition):
       #   - neutral: Sailboat on the Ocean
       #   - blue: Winter Tundra during Blizzard
       #   - red: Fire Raging out of Control
@@ -267,7 +268,7 @@ crafts:
       hitboxes: null
     # -----------------------------------------
     portrait:
-      # description:
+      # description(partition):
       #   - neutral: King
       #   - blue: Prince
       #   - red: Queen
@@ -288,6 +289,23 @@ crafts:
         w: 63
         l: 54
       mass: 0
+      material:
+        genus: chromatics
+        host: wood
+      blueprint: decor
+      hitboxes: null
+    # -----------------------------------------
+    taxidermy:
+      # description(partition):
+      #   - neutral: Elk head.
+      #   - blue: Blue head.
+      #   - red: Boar head.
+      #   - yellow: Pig head.
+      #   - green: Fish.
+      dimensions:
+        w: 31
+        l: 31
+      mass: -1
       material:
         genus: chromatics
         host: wood
