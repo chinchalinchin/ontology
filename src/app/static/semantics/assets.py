@@ -241,6 +241,7 @@ class Blueprints(str, Enum):
     BUILDINGS       = "buildings"
     CORRIDORS       = "corridors"
     COLUMNS         = "columns"
+    DECOR           = "decor"
     DIRECTIONS      = "directions"
     ENCLOSURES      = "enclosures"
     ORIENTATIONS    = "orientations"
@@ -264,6 +265,9 @@ class Columns(str, Enum):
     SHAFTS          = "shafts"
     BASES           = "bases"
 
+class Decor(str, Enum):
+    DECOR           = "decor"
+    
 class Enclosures(str, Enum):
     NORTH           = "north"
     EAST            = "east"

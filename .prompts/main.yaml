@@ -1,41 +1,4 @@
 # ----------------------------------------------------
-properties:
-  # --------------------------------------------
-  files:
-    index: index.md
-    mkdocs: mkdocs.yml
-  # --------------------------------------------
-  paths:
-    # ---------------------------------------
-    root: /Users/gmoore/Home/projects/ontology/
-    # root: /home/grant/Projects/ontology/
-    # ---------------------------------------
-    actions: .githubs/workflows/
-    # ---------------------------------------
-    blocks: .prompts/tasks/.blocks/
-    board: .prompts/board/
-    config: src/data/config
-    docs: docs/
-    diagrams: docs/static/mmd/
-    dumps: src/data/dumps/
-    fixtures: tests/unit/fixtures/
-    logs: src/data/logs/
-    phases: .prompts/board/phases/
-    tables: docs/static/md/
-    templates: .prompts/board/templates
-    tests: tests/unit/
-  # --------------------------------------------
-  project:
-    title: ontology
-  # --------------------------------------------
-  user:
-    username: grant
-    ssh: /home/gmoore/.ssh/id_ed25519
-    hostname: skynet
-  # --------------------------------------------
-  urls: 
-    github: github.com/chinchalinchin
-# ----------------------------------------------------
 task:
 # ----------------------------------------------------
   # --------------------------------------------
@@ -47,8 +10,8 @@ task:
   # --------------------------------------------
   # --------------------------- TEMPLATES: DUMPS 
   # --------------------------------------------
-  # template: dump/menus.md.j2
-  # template: dump/state.md.j2
+  # template: report/menus.md.j2
+  # template: report/state.md.j2
   # --------------------------------------------
   # ----------------------- TEMPLATES: ITERATION
   # --------------------------------------------
@@ -64,13 +27,10 @@ task:
   # template: design/structure/menu.md.j2
   # template: design/structure/composition.md.j2
   # template: design/structure/score.md.j2
-  # --------------------------------------------
-  # ----------------------- TEMPLATES: ARTIFACTS
-  # --------------------------------------------
   # template: design/diagram/hierarchy.md.j2
   # template: design/diagram/automata.md.j2
-  # template: diagram/stages.md.j2
-  # template: style/mermaid.md.j2
+  # template: design/diagram/stages.md.j2
+  # template: design/style/mermaid.md.j2
 # ----------------------------------------------------
   # PLACEHOLDER UNTIL STRUCTURE EMERGES FOR TOOL
   parameters:
@@ -320,4 +280,4 @@ tools:
         # - structures
       session:
         description: |
-          Player is unable to traverse into `house-layer`, despite currently intersecting the Door in the [State Dump](#session-state-dump).
+          description

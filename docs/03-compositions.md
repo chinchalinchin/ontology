@@ -41,6 +41,8 @@ Blueprints describe specific structural implementations of a Craft. Blueprints a
     * `crowns`: Upper cap for multiplication.
     * `shafts`: Multiplicand for multiplication.
     * `bases`: Lower cap for multiplication.
+* Decor:
+    * `decor`: Singleton partition for static decals (paintings, fixtures, etc.)
 * Directions:
     * `up`, `left`, `down`, `right`: Directed obstructions and carpentry.
 * Enclosures:
@@ -69,12 +71,6 @@ Each Blueprint Schema has a unique Multiplication Strategy associated with it in
 **Behavior: Composability**
 
 Struts are the "*bedrock*" upon which Compositions of Assets can be built. A Strut's main purpose is to provide a coordinate system for the relative positioning of Assets in a Composition. 
-
-### Craft: Decor
-
-*Decor* is a purely aesthetic Asset. It has no purpose and no other funcionality beyond dressing the [Board](./00-overview.md#component-board).
-
-TODO
 
 ### Craft: Platforms
 

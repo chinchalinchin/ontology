@@ -39,6 +39,7 @@ from app.static.semantics.assets import (
     Buildings,
     Corridors,
     Columns,
+    Decor,
     Enclosures,
     Inclines
 )
@@ -139,6 +140,7 @@ __all__ = [
     'Buildings',
     'Corridors',
     'Columns',
+    'Decor',
     'Enclosures',
     'Inclines',
     # ------
