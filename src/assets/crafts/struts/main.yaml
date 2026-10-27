@@ -148,6 +148,16 @@ crafts:
         host: wood
       blueprints: directions
       hitboxes: null
+    throne:
+      dimensions:
+        w: 32
+        l: 75
+      mass: 0
+      material:
+        genus: chromatics
+        host: wood
+      blueprint: directions
+      hitboxes: null
     # -----------------------------------------
     # ------------------------------ ENCLOSURES
     # -----------------------------------------
