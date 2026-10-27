@@ -62,6 +62,7 @@ class AppContext(BaseModel):
     defaults: Dict[str, Any] = Field(default_factory=dict)
     queries: Dict[str, Any] = Field(default_factory=dict)
     typehints: Dict[str, str] = Field(default_factory=dict)
+    properties: Dict[str, Any] = Field(default_factory=dict)
 
     @model_validator(mode="before")
     @classmethod
@@ -693,7 +694,8 @@ def render(template_path: str, output_path: str, vars_path: str, context: AppCon
 
         # Load context files
         vars_data = _load(vars_path)
-
+        vars_data.update(context.properties)
+        
         template = env.get_template(template_path)
         rendered_output = template.render(**vars_data)
         output_dir = os.path.dirname(output_path)

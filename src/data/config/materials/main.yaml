@@ -15,8 +15,8 @@ materials:
     organics:
       hosts: []
       partitions:
-        cotton: 1.0
-        thatches: 1.5
+        cotton: 5.0
+        thatches: 1.0
         wood: 2.0
     ceramics:
       hosts: []
@@ -71,6 +71,10 @@ materials:
         crowns:  { delta: 1.5, substrate:  0, obstacle: false }
         shafts:  { delta: 1.0, substrate:  0, obstacle: false }
         bases:   { delta: 1.5, substrate:  0, obstacle: true  }
+    decor: 
+      strategy: simple
+      partitions:
+        decor: { delta: 3.0, subtrate: 0, obstacle: false }
     enclosures:
       strategy: perimeter
       partitions:

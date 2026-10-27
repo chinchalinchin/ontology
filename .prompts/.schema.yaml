@@ -1,33 +1,4 @@
 # ----------------------------------------------------
-properties:
-  files:
-    index: index.md
-    mkdocs: mkdocs.yaml
-  paths:
-    # ---------------------------------------
-    root: <path>
-    # ---------------------------------------
-    actions: .githubs/workflows/
-    # ---------------------------------------
-    blocks: .prompts/tasks/blocks/
-    board: .prompts/board/
-    docs: docs/
-    diagrams: docs/static/mmd/
-    dumps: src/data/dumps/
-    fixtures: tests/unit/fixtures/
-    logs: src/data/logs/
-    phases: .prompts/board/phases/
-    templates: .prompts/board/templates
-    tests: tests/unit/
-  project:
-    title: ontology
-  user:
-    username: <username>
-    ssh: <keypath>
-    hostname: <hostname>
-  urls: 
-    github: github.com/chinchalinchin
-# ----------------------------------------------------
 task:
 # ----------------------------------------------------
   template: <path>/<file>.md.j2
@@ -39,16 +10,20 @@ task:
 tools:
 # ----------------------------------------------------
   views:
+    # ------------------------------------------------
     manager:
       board: false
       specs: false
       docs: false
+    # ------------------------------------------------
     source:
       data: false
       filter: false
+    # ------------------------------------------------
     shell:
       directory: false
       commands: false
+    # ------------------------------------------------
     tests:  
       console: false
       fixtures: false
@@ -56,6 +31,7 @@ tools:
       workflow: false
 # ----------------------------------------------------
   parameters:
+    # ------------------------------------------------
     manager:
       board:
         phase: <phase>
@@ -65,7 +41,7 @@ tools:
           - <doc-page>.md
       specs:
         - <spec-page>.md
-    source:
+    # ------------------------------------------------
     source:
       filter:
         default: <AND | OR>
@@ -73,11 +49,7 @@ tools:
             - title: <title>
               strategy: <AND | OR>
               scan: 
-                app: [ <app-tag> ]
-                asset: [ <asset-tag> ]
-                category: [ <category-tag> ]
-                main: [ <main-tag> ]
-                workflows: [ <workflow-tag> ]
+                <tag-prefix>: [ <tag> ]
       data:
         configurations: 
           - <configuration>
@@ -85,9 +57,11 @@ tools:
           - <property>
         state: 
           - <state>
+    # ------------------------------------------------
     shell:
       directory: <cmd>
       commands: []
+    # ------------------------------------------------
     tests:
       console:
         pytest: pytest -m 

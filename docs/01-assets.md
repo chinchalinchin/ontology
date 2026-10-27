@@ -521,7 +521,7 @@ Just as the Material space is partitioned into Genera, the *Blueprint Space* is 
 **Atlas: (row: Blueprints, column: Materials)**
 
 * columns: `^(?:ceramics|chromatics|geologics|metallics|organics)`
-* rows: `^[?:buildings|corridors|columns|directions|enclosures|orientations|inclines]`
+* rows: `^[?:buildings|corridors|columns|decor|directions|enclosures|orientations|inclines]`
 
 **Properties: CraftProperties(AssetProperties)**
 

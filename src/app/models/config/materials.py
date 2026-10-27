@@ -33,6 +33,7 @@ from app.static.semantics import (
     Buildings,
     Corridors,
     Columns,
+    Decor,
     Enclosures,
     Orientations,
     Inclines,
@@ -75,6 +76,7 @@ class BlueprintSpace:
         Enclosures,
         Orientations,
         Directions,
+        Decor,
         Inclines
     ], BlueprintPartition] = field(default_factory=dict)
 

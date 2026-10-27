@@ -148,6 +148,29 @@ crafts:
         host: wood
       blueprints: directions
       hitboxes: null
+    # -----------------------------------------
+    chair:
+      dimensions:
+        w: 26
+        l: 32
+      mass: 0
+      material:
+        genus: chromatics
+        host: wood
+      blueprints: directions
+      hitboxes: null
+    # -----------------------------------------
+    sofa:
+      dimensions:
+        w: 64
+        l: 64
+      mass: 0
+      material:
+        genus: chromatics
+        host: wood
+      blueprints: directions
+      hitboxes: null 
+    # -----------------------------------------
     throne:
       dimensions:
         w: 32
@@ -156,30 +179,141 @@ crafts:
       material:
         genus: chromatics
         host: wood
-      blueprint: directions
+      blueprints: directions
+      hitboxes: null
+    # -----------------------------------------
+    # ----------------------------------- DECOR
+    # -----------------------------------------
+    banner:
+      # - neutral: Unicorn Crest
+      # - blue: Eagle Crest
+      # - red: Lion Crest
+      # - yellow: Plain Canvas
+      # - green: Dragon Crest
+      dimensions:
+        w: 32
+        l: 64
+      mass: -1
+      material:
+        genus: chromatics
+        host: cotton
+      blueprint: decor
+      hitboxes: null
+    # -----------------------------------------
+    curtain:
+      dimensions:
+        w: 32
+        l: 94
+      mass: -1
+      material:
+        genus: chromatics
+        host: cotton
+      blueprints: decor
+      hitboxes: null
+    # -----------------------------------------
+    dresser:
+      dimensions:
+        w: 32
+        l: 53
+      mass: 0
+      material:
+        genus: chromatics
+        host: wood
+      blueprints: decor
+      hitboxes: null
+    # -----------------------------------------
+    fireplace:
+      dimensions:
+        w: 72
+        l: 70
+      mass: 0
+      material:
+        genus: geologics
+      blueprints: decor
+      hitboxes: null
+    # -----------------------------------------
+    palette:
+      # description:
+      #   - neutral: Empty wooden palette.
+      #   - blue: Palette with blue boxes.
+      #   - red: Palette with red boxes.
+      #   - yellow: Palette with yellow boxes.
+      #   - green: Pallete with green cans.
+      dimension:
+        w: 63
+        l: 58
+      mass: 0
+      material:
+        genus: chromatics
+        host: wood
+      blueprints: decor
+      hitboxes: null
+    # -----------------------------------------
+    painting:
+      # description:
+      #   - neutral: Sailboat on the Ocean
+      #   - blue: Winter Tundra during Blizzard
+      #   - red: Fire Raging out of Control
+      #   - yellow: Bouquet of Flowers
+      #   - green: Secluded Forest Meadow
+      dimensions:
+        w: 31
+        l: 39
+      mass: -1
+      material:
+        genus: chromatics
+        host: cotton
+      blueprint: decor
+      hitboxes: null
+    # -----------------------------------------
+    portrait:
+      # description:
+      #   - neutral: King
+      #   - blue: Prince
+      #   - red: Queen
+      #   - yellow: Princess
+      #   - green: Knight
+      dimensions:
+        w: 29
+        l: 49
+      mass: -1
+      material:
+        genus: chromatics
+        host: cotton
+      blueprint: decor
+      hitboxes: null
+    # -----------------------------------------
+    table:
+      dimensions:
+        w: 63
+        l: 54
+      mass: 0
+      material:
+        genus: chromatics
+        host: wood
+      blueprint: decor
       hitboxes: null
     # -----------------------------------------
     # ------------------------------ ENCLOSURES
     # -----------------------------------------
-
-# NOTE: Asset File not yet ready for testing.
-#
-#     palisade:
-#       dimensions: { w: 96, l: 96 }
-#       mass: 0
-#       material:
-#         genus: organics
-#       blueprints: enclosures
-#       hitboxes:
-#         north:
-#           - position: { x: 0, y: 0 }
-#             dimensions: { w: 96, l: 16 }
-#         south:
-#           - position: { x: 0, y: 80 }
-#             dimensions: { w: 96, l: 16 }
-#         west:
-#           - position: { x: 0, y: 0 }
-#             dimensions: { w: 8, l: 96 }
-#         east:
-#           - position: { x: 88, y: 0 }
-#             dimensions: { w: 8, l: 96 }
+    # NOTE: Asset File not yet ready for testing.
+    #
+    #     palisade:
+    #       dimensions: { w: 96, l: 96 }
+    #       mass: 0
+    #       material:
+    #         genus: organics
+    #       blueprints: enclosures
+    #       hitboxes:
+    #         north:
+    #           - position: { x: 0, y: 0 }
+    #             dimensions: { w: 96, l: 16 }
+    #         south:
+    #           - position: { x: 0, y: 80 }
+    #             dimensions: { w: 96, l: 16 }
+    #         west:
+    #           - position: { x: 0, y: 0 }
+    #             dimensions: { w: 8, l: 96 }
+    #         east:
+    #           - position: { x: 88, y: 0 }
+    #             dimensions: { w: 8, l: 96 }
