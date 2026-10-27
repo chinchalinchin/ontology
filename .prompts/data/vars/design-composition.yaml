@@ -110,7 +110,6 @@ tools:
             # ------------------------------------
             - title: Plot Services
               scan:
-                domain: [ system ]
                 app: [ services ]
                 workflows: [ plot ]
       data: 

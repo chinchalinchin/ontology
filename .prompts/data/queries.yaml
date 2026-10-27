@@ -1,32 +1,28 @@
 queries:
   compositions:
-    - title: Abstracts
-      strategy: AND
-      scan:
-        app: [ component ]
-        domain: [ abstract ]
-    # ------------------------------------
-    - title: Implementations
+    - title: Asset Abstracts
       strategy: AND
       scan:
         app: [ asset ]
-        domain: [ concrete ]
-        category: [ crafts ]
+        domain: [ abstract ]
     # ------------------------------------
-    - title: Models
-      strategy: AND
+    - title: Material Implementations
+      scan:
+        app: [ asset ]
+        domain: [ concrete ]
+        modality: [ material ]
+    # ------------------------------------
+    - title: Material Models
       scan:
         domain: [ model ]
-        category: [ crafts ]
+        modality: [ material ]
     # ------------------------------------
     - title: Composition Logic
-      strategy: AND 
       scan:
         domain: [ logic ]
-        app: [ module ]
         workflows: [ compositions ]
-    - title: Composition Services
-      strategy: AND
+    # ------------------------------------
+    - title: Plot Services
       scan:
         app: [ services ]
-        workflows: [ compositions ]
+        workflows: [ plot ]
