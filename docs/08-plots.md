@@ -2,15 +2,17 @@
 
 Due to the nature of the Ontology game engine, a Plot is not scripted, in the sense that Sprite Actions are hardcoded and pre-determined down to the pixel. Conditions are reached to change the World state, which causes the [Board's](./00-overview.md#component-board) `plot` attribute to update. This in turn affects what dialogue keys can be reached by the gameplay loop. 
 
+## Plots: Overview
+
 [Sprites](./02-sprites.md) retain a Expression in their [Psyche](./02-sprites.md#psyche). This Expression is a Lexicon key to access content in the [Library](#library). It is used in conjunction with the Sprite's `persona` and the [Board's](./00-overview.md#component-board) `plot` key to unlock the appropriate content.
 
 As a simple example, a Plot state might be defined to change conditional on the existence of Sprite (perhaps whether a character is alive or dead), call it `<plot>`.
 
 A Sprite, whose `psyche.persona = <persona>` is defined through state files, when entering into a `speak` Intention with `psyche.expression = <lexicon>` (arrived at through [Intention transitions](./04-intentions.md) and [World Mechanics](./05-mechanics.md)), would then retrieve the `<plot>.<persona>.<lexicon>` dialogue from the Library. 
 
-## Library
+## Service: Library
 
-* Location: `src/data/config/library/main.yaml`
+* Address: `src/data/config/library/main.yaml`
 
 The Library reads in the dialogue scripts stored in `src/data/config/library/main.yaml`, otherwise known as the *library directory*.
 
@@ -27,17 +29,15 @@ library:
 - `persona-key`: Persona binding for Sprite or Signs. Determined by the Asset.
 - `lexicon-key`: Dynamic key for ingame modulation. 
 
-## Plot States
+## State: Plot
 
 The Plot is an Asset-less State. It is instantiated during [initialization](./11-architecture.md#specification-initialization) and injected into the Board. 
 
-TODO
+## Mechanics: Plot
 
-## Plot Mechanics
+PlotMechanics are a [World Mechanic](./05-mechanics.md#mechanics-world) that manages the Plot State. It does so through the medium of the *Plot Transition Matrix*.
 
-PlotMechanics are a [World Mechanic](./05-mechanics.md) that manages the Plot State. It does so through the medium of the *Plot Transition Matrix*.
-
-### Transition Matrix
+### Transition Matrix: Plots
 
 Similar to [Intentions](./04-intentions.md), the Plot utilizes a Transition Matrix to determine where the current node of the Plot State resides, and whether or not conditions have been met to transition to the next node.
 
@@ -85,5 +85,3 @@ plots:
         - sprites.get('evil-empress-jasiylnn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value)
         - sprites.get('evil-empress-jasilynn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value) != constants.Relationships.FOE
 ```
-
-TODO

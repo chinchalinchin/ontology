@@ -76,7 +76,6 @@ tools:
           - 05-mechanics.md
           - 06-widgets.md
           - 07-sounds.md
-          - 08-plots.md
           - 09-ecology.md
           - 10-emergence.md
       specs: []
@@ -89,52 +88,34 @@ tools:
         queries:
             # ------------------------------------
             - title: Asset Abstracts
-              strategy: AND
               scan:
                 app: [ asset ]
                 domain: [ abstract ]
             # ------------------------------------
-            - title: System Components
-              strategy: AND
-              scan:
-                app: [ core, component ]
-                domain: [ system ]
-            # ------------------------------------
             - title: Material Implementations
-              strategy: AND
               scan:
                 app: [ asset ]
                 domain: [ concrete ]
                 modality: [ material ]
             # ------------------------------------
             - title: Material Models
-              strategy: AND
               scan:
                 domain: [ model ]
                 modality: [ material ]
             # ------------------------------------
             - title: Composition Logic
-              strategy: AND 
               scan:
                 domain: [ logic ]
-                app: [ module ]
-                workflows: [ compositions ]
-            # ------------------------------------
-            - title: Composition Services
-              strategy: AND
-              scan:
-                app: [ services ]
                 workflows: [ compositions ]
             # ------------------------------------
             - title: Plot Services
-              strategy: AND
               scan:
                 domain: [ system ]
                 app: [ services ]
                 workflows: [ plot ]
       data: 
-        properties: [ crafts, objects ]
-        configurations: [ materials ]
+        properties: [ effects, crafts, objects ]
+        configurations: [ compositions, materials, library ]
         templates: [  ]
     # --------------------------------------------
     # ------------------------ PARAMETERS: SHELL
