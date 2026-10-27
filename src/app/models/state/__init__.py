@@ -15,7 +15,6 @@ from app.models.state.core import (
 from app.models.state.assets import (
     # ---- CRAFT STATES
     PropertyState,
-    PlatformState,
     StairState,
     CraftState,
     # ---- CURSOR STATES
@@ -104,7 +103,6 @@ __all__ = [
     'PropertyState',
     'StairState',
     'CraftState',
-    'PlatformState',
     # CURSOR STATES
     'MotorState',
     'AttachmentState',

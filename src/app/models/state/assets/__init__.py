@@ -3,7 +3,6 @@ from app.models.state.assets.crafts import (
     PropertyState,
     StairState,
     CraftState,
-    PlatformState
 )
 from app.models.state.assets.cursors import (
     MotorState,
@@ -72,7 +71,6 @@ __all__ = [
     'PropertyState',
     'StairState',
     'CraftState',
-    'PlatformState',
     # CURSOR STATES
     'MotorState',
     'AttachmentState',

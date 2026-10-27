@@ -41,7 +41,6 @@ class CursorPropertyInstances:
 class CraftPropertyInstances:
     struts: Dict[str, CraftProperties] = field(default_factory=dict)
     bridges: Dict[str, CraftProperties] = field(default_factory=dict)
-    platforms: Dict[str, CraftProperties] = field(default_factory=dict)
     stairs: Dict[str, CraftProperties] = field(default_factory=dict)
 
 @dataclass(slots=True)

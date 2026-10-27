@@ -79,9 +79,4 @@ class StairState(CraftState):
 
     @property
     def direction(self) -> Optional[str]:
-        return self.blueprint                      
-
-
-@dataclass(slots=True)
-class PlatformState(PropertyState):
-    elevation: int = 0
+        return self.blueprint
