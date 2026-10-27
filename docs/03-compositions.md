@@ -16,39 +16,37 @@ Material alters the color and hue of Assets that possess [Materiality](./01-asse
 
 **Enum: Genera**
 
-The Partitions of Material space are organized into Genera.
+The Partitions of Material space are organized into Genera. Each Genera contains a range of Material Values. Asset specify a Genera in their Properties and then bind to a Material Value in that Genera in their State.
 
-* `ceramics`: 
-    * `clay`
-* `organics`: 
-    * `cotton`, `wood`, `thatches`
-* `geologics`: 
-    * `limestone`, `feldspar`, `granite`, `marble`
-* `metallics`: 
-    * `copper`, `iron`, `gold`
-* `chromatics`: 
-    * `neutral`, `red`, `blue`, `yellow`, `green`
+* Cermaics: `clay`
+* Organics:  `cotton`, `wood`, `thatches`
+* Geologics: `limestone`, `feldspar`, `granite`, `marble`
+* Metallics:  `copper`, `iron`, `gold`
+* Chromatics: `neutral`, `red`, `blue`, `yellow`, `green`
 
 **Enum: Schema**
 
-Blueprints describe specific structural implementations of a Craft. Blueprints are partioned in Schema. A Blueprint Schema must have implementations for every Material in a Craft atlas.
+Blueprints describe specific structural implementations of a Craft. Blueprints are partioned in Schema. Each Schema contains a range of Blueprint Values. A Blueprint Schema must have implementations for every Material in a Craft atlas. Assets specify a Schema in their Properties and then bind to a Blueprint Value in their State.
  
-* `buildings`:
-    * `halls`, `walls`: Support surfaces.
-    * `roofs`, `flats`: Elevated surfaces.
-    * `paths`, `floors`: Ground surfaces.
-* `corridors`:
-    * `solids`, `stripes, `designs`: Ground surfaces 
-* `columns`:
-    * `crowns`: Upper cap for multiplcation.
-    * `shafts`: Multiplicand for multiplcation.
-    * `bases`: Lower cap for multiplcation.
-* `directions`:
+* Buildings:
+    * `halls`: Interior support surfaces.
+    * `walls`: Exterior support surfaces.
+    * `roofs`: Exterior, non-walkable elevated surfaces.
+    * `flats`: Exterior, walkable elevated surfaces.
+    * `paths`: Exterior ground surfaces.
+    * `floors`: Interior ground surfaces.
+* Corridors:
+    * `solids`, `stripes`, `designs`: Ground surfaces.
+* Columns:
+    * `crowns`: Upper cap for multiplication.
+    * `shafts`: Multiplicand for multiplication.
+    * `bases`: Lower cap for multiplication.
+* Directions:
     * `up`, `left`, `down`, `right`: Directed obstructions and carpentry.
-* `enclosures`:
-    * `north`, `south`: End cap for vertical multiplcation, edges for horizontal multiplcation.
-    * `east`, `west`:  End cap for horizontal multiplcation, edge for vertical multiplcation.
-* `inclines`:
+* Enclosures:
+    * `north`, `south`: End cap for vertical multiplication, edges for horizontal multiplication.
+    * `east`, `west`:  End cap for horizontal multiplication, edge for vertical multiplication.
+* Inclines:
     * `up`: starts along south edge, rises to north edge.
     * `left`: starts in southeast corner, rises to northwest corner.
     * `right`: starts in southwest corner, rises to northeast corner
@@ -72,12 +70,14 @@ Struts are the "*bedrock*" upon which Compositions of Assets can be built. A Str
 
 ### Craft: Decor
 
+*Decor* is a purely aesthetic Asset. It has no purpose and no other funcionality beyond dressing the [Board](./00-overview.md#component-board).
+
 TODO
 
 ### Craft: Platforms
 
 !!! @TODO(07-03)
-    To be subsumed and rendered obsolete by the introduction of Gravity. Slated for removal. Should be using elevated surfaces instead.
+    To be subsumed and rendered obsolete by the introduction of Gravity. Slated for removal. Should be using elevated surfaces instead. "Platforming" should fall naturally out of the physics.
 
 Platforms are inanimate, immutable Assets that model elevated surfaces. In order to be traversed, the Asset traversing must be on the same elevation as the Platform. 
 
@@ -138,54 +138,72 @@ Components of Compositions have a [Pseudo State](#pseudo-state). During the [app
     * `strut: PropertyState`
     * `components: StateSchema`
 
+### Definition: Macros
+
+Compositions abstract the non-dynamic relationships of Assets into formulaic Macros. A Macro binds an Asset to bind to other Assets in a Composition. Using this procedure, a Composition can be made into a purely formal container of references.
+
+**Interface: Composition Macros**
+
+* `anchor(<name>)`: Calculates and returns the value of an Asset's Anchor such that it's offset will equal `name`, i.e. $\text{anchor}(A) = A.\text{position}.y + A.\text{dimensions}.,l - (\text{self}.\text{position}.y + \text{self}.\text{dimensions}.l) $
+* `bind(<name>.<field>)`: Returns the value of `name`'s `field`. 
+
 ## Example
 
 Consider the following Composition configuration,
 
 ```yaml
 compositions:
-    brick-house:
-        root:
-            strut: 
-                id: home
-                name: house-exterior
-                material: feldspar
-                blueprint: walls
-            components:
-                objects:
-                    doors:
-                        -   id: panel
-                            name: house-door
-                            anchor: anchor(house-exterior)
-                            material: neutral
-                            outlayer: house-layer
-                            position:
-                                x: 20
-                                y: 20
-                            out:
-                                x: 10
-                                y: 10
-        branches:
-            -   strut: 
-                    id: hallway
-                    name: house-interior
-                    material: blue
-                    blueprint: solid
-                    layer: house-layer
-                    position:
-                        x: 10
-                        y: 10
-                components:
-                    crafts:
-                        struts:
-                            -   id: carpet
-                                name: house-floor
-                                layer: house-layer
-                                material: blue
-                                blueprint: design
-                                position:
-                                    x: 0
-                                    y: bind(parent.dimensions.l)
+  brick-house:
+    root:
+      strut:
+        id: home
+        name: roof
+        material: granite
+        blueprint: roofs
+      components:
+        objects:
+          doors:
+            - id: panel
+              name: door
+              anchor: anchor(exterior)
+              material: neutral
+              outlayer: house-layer
+              position:
+                x: (bind(parent.dimensions.w) - bind(self.dimensions.w)) // 2
+                y: bind(exterior.position.y) + bind(exterior.dimensions.l) - bind(self.dimensions.l)
+              out:
+                x: bind(interior.position.x) + (bind(interior.dimensions.w) - bind(self.dimensions.w)) // 2
+                y: bind(interior.position.y) + bind(floor.position.y) + bind(floor.dimensions.l) - bind(self.dimensions.l)
+        crafts:
+          struts:
+            - id: home
+              name: exterior
+              material: feldspar
+              blueprint: walls
+              position:
+                x: 0
+                y: bind(parent.dimensions.l)
+    branches:
+      - strut:
+          id: hallway
+          name: interior
+          material: blue
+          blueprint: solids
+          layer: house-layer
+          position:
+            x: 10
+            y: 10
+        components:
+          crafts:
+            struts:
+              - id: carpet
+                name: floor
+                layer: house-layer
+                material: blue
+                blueprint: designs
+                position:
+                  x: 0
+                  y: bind(parent.dimensions.l)
 ```
 
 !!! note "PseudoState"
@@ -196,10 +214,13 @@ compositions:
 
     See [Rendering](./11-architecture.md#rendering-sort) for more information on rendering order.
     
-This is a formula for a `brick-house` composed of two Struts on different [Layers](./00-overview.md#layers), each of which have their own [Door](./01-assets.md#doors), each Door being linked to one another through a circuit (`'house-layer' <-> root.layer`). In this way, the "inside" of Assets can be traversed. In other words, each Composition may be composed of separate, independent Layers. 
+!!! note "Door Projection"
+    [Doors](./01-assets.md#object-doors) automatically project an image of themselves onto the Layer into which they are projecting Sprites. In other words, when `panel` is deployed it will automatically create a "shadow" of itself on `house-layer`.
+
+This is a formula for a `brick-house` composed of two Branches on different [Layers](./00-overview.md#layers), each of which have their own [Door](./01-assets.md#doors), each Door being linked to one another through a circuit ($\text{house-layer} \leftrightarrow \text{root.layer}$). In this way, the interior of Compositions can be traversed. In other words, each Composition may be composed of separate, independent Layers. 
 
 !!! note "Pseudo State Overrides"
-    Except for Position (see immediately below), the Pseudo State overrides the inherited State of the Root Strut. In this example, the `state.layer` of `house-floor` is `house-layer`, regardless of the `layer` passed to the Root Strut when deployed. 
+    Except for Position (see immediately below), the Pseudo State overrides the inherited State of the Root Strut. In this example, the `state.layer` of `floor` is `house-layer`, regardless of the `layer` passed to the Root Strut when deployed. 
 
 The Root Strut (`brick-house.root`) does not have a Position, whereas the `brick-house.branches` Strut does; this is the defining feature of Composition Pseudo State. The Composition configuration leaves the Root Strut Position State and Layer "empty", so that it can be injected by the State file during deployment. Component Assets and Branching Struts define Pseudo States relative to their hierarchical contexts. 
 
@@ -216,7 +237,7 @@ compositions:
         y: 100
 ```
 
-In this example, the Position, `(100, 100)`, is added to each of the Root Component; *However*, the Components of Branch Struts are positioned *relative to the Branch Parent*. Composition Hydration uses the following rules. See [Decomposition](#process-decomposition) for more information.
+In this example, the Position, `(100, 100)`, is added to each of the Root Component; *However*, the Components of Branch Struts are positioned *relative to the Branch Parent*.  See [Decomposition](#process-decomposition) for the Composition hydration rules.
 
 Other than Position, any state attribute *not* specified in a Component Asset's Pseudo State automatically inherits the Root Strut's Deployed State, if those attributes exist on the Root Strut. 
 
@@ -225,18 +246,6 @@ Unique names are generated for each component Asset of a Composition according t
 !!! warning
     Compositions need to be designed from the *outside-in*, i.e. the Root Strut should correspond to the exterior that gets deployed onto the Board.
     
-### Bindings
-
-!!! @TODO(07-04)
-    Out of date as Phase 07.04. General idea of binding to root and parents is still correct, but Doors now emit shadows on their linked layers, so this example is not correct anymore.
-
-The Pseudo State of Component Assets can be bound to the Root Strut's Deployed State , to allow for the parameterization of relationships. In this example, the Deployed State `layer` is passed down as a reference to the component `door-frame` Asset, which then uses it to specify its (Pseudo State) attribute for `outlayer` through the use of `bind(root.layer)`; This is how the interior Door leads back to the deployed layer, allowing the Player to return from whence they came. In other words, a binding is a formal constraints between Asset states that makes component Asset states dependent on the root Strut state. This constraint is realized during the Composition unpacking and Pseudo State hydration.
-
-All component Assets can `bind()` to a root Strut state attribute injected into the Composition from the state directory files. When component Asset reference `bind(root.layer)` this is a reference to the root Strut's layer. Only state attributes defined on the root Strut can be bound.
-
-* **Contextual Bindings:** Component Pseudo States can bind attributes to either their immediate parent or the root strut context via regex evaluation:
-    * `bind(root.)` or `bind()`: Queries the root deployment context (e.g., `outlayer: bind(root.layer)`).
-
 ## Services
 
 ### Service: Decomposer
@@ -293,7 +302,7 @@ Because the Decomposer inherently generates Asset Instances, it acts as a higher
 
 TODO
 
-### Calculation: Cost 
+#### Calculation: Cost 
 
 The crafting cost $C$ depends on Material attributes and the Asset's area, $w \times l$, normalized to a standard Tile size,
 

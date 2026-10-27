@@ -3,27 +3,27 @@ compositions:
     root:
       strut:
         id: home
-        name: house-roof
+        name: roof
         material: granite
         blueprint: roofs
       components:
         objects:
           doors:
             - id: panel
-              name: house-door
-              anchor: anchor(house-exterior)
+              name: door
+              anchor: anchor(exterior)
               material: neutral
               outlayer: house-layer
               position:
                 x: (bind(parent.dimensions.w) - bind(self.dimensions.w)) // 2
-                y: bind(house-exterior.position.y) + bind(house-exterior.dimensions.l) - bind(self.dimensions.l)
+                y: bind(exterior.position.y) + bind(exterior.dimensions.l) - bind(self.dimensions.l)
               out:
-                x: bind(house-interior.position.x) + (bind(house-interior.dimensions.w) - bind(self.dimensions.w)) // 2
-                y: bind(house-interior.position.y) + bind(house-floor.position.y) + bind(house-floor.dimensions.l) - bind(self.dimensions.l)
+                x: bind(interior.position.x) + (bind(interior.dimensions.w) - bind(self.dimensions.w)) // 2
+                y: bind(interior.position.y) + bind(floor.position.y) + bind(floor.dimensions.l) - bind(self.dimensions.l)
         crafts:
           struts:
             - id: home
-              name: house-exterior
+              name: exterior
               material: feldspar
               blueprint: walls
               position:
@@ -32,7 +32,7 @@ compositions:
     branches:
       - strut:
           id: hallway
-          name: house-interior
+          name: interior
           material: blue
           blueprint: solids
           layer: house-layer
@@ -43,7 +43,7 @@ compositions:
           crafts:
             struts:
               - id: carpet
-                name: house-floor
+                name: floor
                 layer: house-layer
                 material: blue
                 blueprint: designs
