@@ -1,5 +1,6 @@
 objects:
   plates:
+    # -----------------------------------------
     stone-switch:
       mass: -1
       dimensions:
@@ -7,3 +8,4 @@ objects:
         l: 14
       count: 2
       hitboxes: null
+    # -----------------------------------------

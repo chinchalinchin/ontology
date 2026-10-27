@@ -1,5 +1,6 @@
 """
 @domain.concrete
+@app.asset
 @asset.hitbox
 @category.objects
 @modality.material

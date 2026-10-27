@@ -3,7 +3,7 @@
 @app.config
 @workflow.compositions
 
-# Ontology: Source - app.static.compiler
+# Ontology: Source - app.static.macros.compositions
 
 Compile-time macro and algebraic expression resolver for Composition configurations.
 """

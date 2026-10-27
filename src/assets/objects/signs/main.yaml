@@ -3,7 +3,7 @@ objects:
     # -----------------------------------------
     plaque:
       dimensions: { w: 24, l: 24 }
-      mass: 0
+      mass: -1
       count: 1
       material:
         genus: geologics
@@ -11,7 +11,16 @@ objects:
     # -----------------------------------------
     poster:
       dimensions: { w: 30, l: 30 }
-      mass: 0
+      mass: -1
+      count: 1
+      material:
+        genus: chromatics
+        host: cotton
+      hitboxes: null
+    # -----------------------------------------
+    scroll:
+      dimensions: { w: 32, l: 32}
+      mass: -1
       count: 1
       material:
         genus: chromatics

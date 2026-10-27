@@ -1,5 +1,6 @@
 effects:
   hazards:
+    # -----------------------------------------
     lava:
       count: 45
       dimensions:
@@ -9,6 +10,7 @@ effects:
         type: continuous
       hitboxes: null
       mass: -1
+    # -----------------------------------------
     spike:
       count: 7
       dimensions:
@@ -19,6 +21,7 @@ effects:
         frequency: 120
       hitboxes: null
       mass: -1
+    # -----------------------------------------
     bang:
       count: 10
       dimensions:
@@ -28,6 +31,7 @@ effects:
         type: temporary
       hitboxes: null
       mass: -1
+    # -----------------------------------------
     bomb:
       count: 13
       dimensions:

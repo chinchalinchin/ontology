@@ -1,6 +1,6 @@
 objects:
   chests:
-    # ---------------------------
+    # -----------------------------------------
     trunk:
       dimensions:
         w: 32
@@ -10,7 +10,7 @@ objects:
       material:
         genus: metallics
       hitboxes: null
-    # ---------------------------
+    # -----------------------------------------
     container:
       dimensions:
         w: 32
@@ -20,4 +20,4 @@ objects:
       material:
         genus: organics
       hitboxes: null
-    # ---------------------------
+    # -----------------------------------------

@@ -26,25 +26,44 @@ from app.assets.hitboxes import (
     StaticHitbox,
     DynamicHitbox,
     StageHitbox,
-    AttackHitbox,
-    ElevatedHitbox,
     DirectedHitbox,
     NoHitbox
 )
 from app.assets.animations import (
     NoAnimation,
-    BinaryAnimation,
     FrequencyAnimation,
     SpriteAnimation
 )
-from app.config.enums import ( 
+from app.static.semantics import ( 
     AssetCategories, 
     AssetInstances,
 )
 
+from app.services.factories.assets import AssetFactory
+
 # --------------------------------------------------------------------------
 # -------------------------------------------------------------- MOCK ASSETS
 # --------------------------------------------------------------------------
+
+@pytest.fixture
+def asset(
+    mock_properties_schema,
+    mock_state_schema,
+    mock_recipes_configuration
+):
+    def _asset(category, instance) -> Asset:
+        properties = mock_properties_schema[category][instance]
+        state = mock_state_schema[category][instance]
+        recipe = mock_recipes_configuration[category][instance]
+        return AssetFactory.asset(
+            category,
+            instance,
+            properties,
+            state,
+            recipe,
+        )
+
+    return _asset
 
 @pytest.fixture
 def mock_stairs(
@@ -554,24 +573,6 @@ def mock_reactable(
         hitbox = StaticHitbox()
     )
 
-@pytest.fixture
-def mock_platform(
-    mock_craft_properties,
-    mock_platform_state
-) -> Asset:
-    return Asset(
-        taxonomy=Taxonomy(
-            id="platform-marble",
-            name="platform-main",
-            category=AssetCategories.CRAFTS.value,
-            instance=AssetInstances.PLATFORMS.value
-        ),
-        properties=mock_craft_properties.platforms.get("platform-marble"),
-        state=mock_platform_state,
-        frame=SingleFrame(),
-        animation=NoAnimation(),
-        hitbox=ElevatedHitbox()
-    )
 
 @pytest.fixture
 def mock_widget(mock_widget_properties) -> Asset:
@@ -591,6 +592,7 @@ def mock_widget(mock_widget_properties) -> Asset:
         animation=NoAnimation(),
         hitbox=NoHitbox(),
     )
+
 
 @pytest.fixture
 def mock_assets(

@@ -1,5 +1,6 @@
 effects:
   reactables:
+    # -----------------------------------------
     spinning-dummy:
       count: 8
       dimensions:
@@ -18,3 +19,4 @@ effects:
             w: 14
             l: 14
       mass: 0
+    # -----------------------------------------

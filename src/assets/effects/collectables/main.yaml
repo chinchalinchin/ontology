@@ -1,5 +1,6 @@
 effects:
   collectables:
+    # -----------------------------------------
     coin:
       count: 8
       dimensions:
@@ -9,3 +10,4 @@ effects:
         type: continuous
       hitboxes: null
       mass: -1
+    # -----------------------------------------

@@ -3,6 +3,7 @@
 | Buildings | `floors`, `walls`, `flats`, `roofs`, `paths`, `halls` |
 | Corridors | `solids`, `stripes`, `designs` |
 | Columns | `crowns`, `shafts`, `bases` |
+| Decor | `decor` |
 | Directions | `up`, `left`, `down`, `right`  |
 | Enclosures | `north`, `east`, `south`, `west` | 
 | Inclines | `up`, `left`, `right` |
