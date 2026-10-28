@@ -47,7 +47,7 @@ compositions:
                 ny: 2
               position:
                 x: -1 * bind(self.dimensions.w)
-                y: bind(exterior-wall.position.y) + bind(exterior-wall.span.l) - bind(self.span.l)
+                y: bind(exterior-wall.position.y) + bind(exterior-wall.span.l) - bind(self.span.l) - bind(self.dimensions.l)
             - id: tower
               name: exterior-tower-right
               material: *geologic
@@ -59,7 +59,7 @@ compositions:
                 ny: 2
               position:
                 x: bind(parent.span.w)
-                y: bind(exterior-wall.position.y) + bind(exterior-wall.span.l) - bind(self.span.l)
+                y: bind(exterior-wall.position.y) + bind(exterior-wall.span.l) - bind(self.span.l) - bind(self.dimensions.l)
             - id: banner
               name: exterior-banner-left
               material: red
@@ -145,6 +145,18 @@ compositions:
               position:
                 x: bind(parent.span.w) - bind(roof-crenellation-east.dimensions.w) - bind(self.span.w) - 64
                 y: bind(roof-crenellation-north.dimensions.l)
+            # --- COVERING
+            - id: mansion
+              name: roof-covering
+              material: *geologic
+              blueprint: roofs
+              elevation: 3
+              multiple: 
+                nx: 1
+                ny: 1
+              position:
+                x: bind(exterior-wall.position.x) + bind(exterior-wall.dimensions.w)
+                y: bind(roof-pillar-left.position.y) - 0.75 * bind(roof-pillar-left.span.l)
         objects:
           doors:
             - id: pivot
@@ -177,14 +189,14 @@ compositions:
               elevation: 0
               anchor: anchor(exterior-wall)
               position:
-                x: (bind(exterior-wall.span.w) - bind(atrium-entrance-door.dimensions.w)) // 2 - bind(self.dimensions.w) - 4
+                x: (bind(exterior-wall.span.w) - bind(atrium-entrance-door.dimensions.w)) // 2 - 2 * bind(self.dimensions.w)
                 y: bind(exterior-wall.position.y) + 16
             - id: torch
               name: exterior-torch-right
               elevation: 0
               anchor: anchor(exterior-wall)
               position:
-                x: (bind(exterior-wall.span.w) + bind(atrium-entrance-door.dimensions.w)) // 2 + 4
+                x: (bind(exterior-wall.span.w) + bind(atrium-entrance-door.dimensions.w)) // 2 + 2 * bind(self.dimensions.w)
                 y: bind(exterior-wall.position.y) + 16
 
     branches:
