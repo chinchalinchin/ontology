@@ -61,13 +61,21 @@ def mock_asset(
         resolved_state = asset_state or state(category, instance, id=id)
 
         recipe = getattr(
-            getattr(mock_configurations_schema.recipes, category), instance
+            getattr(mock_configurations_schema.recipes, category), 
+            instance
         )
         substrate = mock_material_index.substrate(category, instance)
+
         if instance != AssetInstances.PLAYERS.value:
-            prop_map = getattr(getattr(mock_properties_schema, category), instance)
+            prop_map = getattr(
+                getattr(mock_properties_schema, category), 
+                instance
+            )
         else:
-            prop_map = getattr(getattr(mock_properties_schema, category), AssetInstances.SPRITES.value)
+            prop_map = getattr(
+                getattr(mock_properties_schema, category), 
+                AssetInstances.SPRITES.value
+            )
 
         properties = prop_map[resolved_state.id]
 

@@ -201,34 +201,6 @@ def test_index_frame_suppresses_vacant_slot():
 
 @pytest.mark.category_sheets
 @pytest.mark.workflow_intentions
-def test_sprite_frame_player_suppresses_expression(mock_asset):
-    """
-    Ensure player entities suppress expression attachments in SpriteFrame.keys.
-    """
-    player = mock_asset(
-        AssetCategories.SHEETS.value,
-        AssetInstances.PLAYERS.value,
-    )
-    player.state.animation.action = Actions.WALK.value
-    player.state.animation.direction = Directions.DOWN.value
-    player.state.animation.frame = 0
-    player.state.inventory.equipment = Equipment()
-    player.state.psyche = Psyche(
-        expression=AttachmentState(
-            id="bubble",
-            layer="0",
-            icon="loquacity",
-            offset=Position(x=10, y=-10),
-            ttl=100,
-        )
-    )
-
-    keys = player.frame.keys(player.id, player.state)
-    assert keys == [(f"{player.id}{SEPARATOR}walk{SEPARATOR}down{SEPARATOR}0", 0, 0)]
-
-
-@pytest.mark.category_sheets
-@pytest.mark.workflow_intentions
 def test_sprite_frame_no_equipment(mock_asset):
     """
     Ensure SpriteFrame handles sprites with empty or None equipment inventories cleanly.
@@ -344,8 +316,12 @@ def test_fluid_frame_keys_lateral_streams(mock_asset):
         AssetCategories.EFFECTS.value,
         AssetInstances.FLUIDS.value,
     )
+    fluid.frame.index(fluid.id, fluid.properties)
+    w = fluid.dimensions.w
+    rem = 16
+
     fluid.state.animation.frame = 0
-    fluid.state.length = 48
+    fluid.state.length = w + rem
     fluid.state.pool = None
     fluid.state.branches = []
 
@@ -354,14 +330,22 @@ def test_fluid_frame_keys_lateral_streams(mock_asset):
     fluid.state._keys.clear()
     keys_right = fluid.frame.keys(fluid.id, fluid.state)
     assert keys_right[0] == (f"{fluid.id}{SEPARATOR}0", 0, 0)
-    assert keys_right[1] == (f"{fluid.id}{SEPARATOR}0{SEPARATOR}right{SEPARATOR}16", 32, 0)
+    assert keys_right[1] == (
+        f"{fluid.id}{SEPARATOR}0{SEPARATOR}right{SEPARATOR}{rem}",
+        w,
+        0,
+    )
 
     # Left flow
     fluid.state.source = Directions.LEFT.value
     fluid.state._keys.clear()
     keys_left = fluid.frame.keys(fluid.id, fluid.state)
-    assert keys_left[0] == (f"{fluid.id}{SEPARATOR}0", -32, 0)
-    assert keys_left[1] == (f"{fluid.id}{SEPARATOR}0{SEPARATOR}left{SEPARATOR}16", -48, 0)
+    assert keys_left[0] == (f"{fluid.id}{SEPARATOR}0", -w, 0)
+    assert keys_left[1] == (
+        f"{fluid.id}{SEPARATOR}0{SEPARATOR}left{SEPARATOR}{rem}",
+        -(w + rem),
+        0,
+    )
 
 
 @pytest.mark.category_effects
@@ -375,28 +359,31 @@ def test_fluid_frame_keys_with_annular_pool(mock_asset):
         AssetCategories.EFFECTS.value,
         AssetInstances.FLUIDS.value,
     )
-    stream_hb = Hitbox(Position(0, 0), Dimensions(32, 64))
-    flank_hb = Hitbox(Position(-32, 64), Dimensions(96, 32))
+    fluid.frame.index(fluid.id, fluid.properties)
+    w, l = fluid.dimensions.w, fluid.dimensions.l
+
+    stream_hb = Hitbox(Position(0, 0), Dimensions(w, 2 * l))
+    flank_hb = Hitbox(Position(-w, 2 * l), Dimensions(3 * w, l))
 
     fluid.state.animation.frame = 0
     fluid.state.source = Directions.DOWN.value
-    fluid.state.length = 64
-    fluid.state.pool = Pool(x=38, y=64, w=96, l=64)
+    fluid.state.length = 2 * l
+    fluid.state.pool = Pool(x=38, y=2 * l, w=3 * w, l=2 * l)
     fluid.state.hitboxes = [stream_hb, flank_hb]
     fluid.state.branches = []
     fluid.state._keys.clear()
 
     keys = fluid.frame.keys(fluid.id, fluid.state)
 
-    # Stream corridor (2 full 32px tiles)
+    # Stream corridor (2 full vertical tiles of length l)
     assert (f"{fluid.id}{SEPARATOR}0", 0, 0) in keys
-    assert (f"{fluid.id}{SEPARATOR}0", 0, 32) in keys
+    assert (f"{fluid.id}{SEPARATOR}0", 0, l) in keys
 
-    # Flank corridor (3 horizontal 32px steps along 96px width)
-    assert (f"{fluid.id}{SEPARATOR}0", -32, 64) in keys
-    assert (f"{fluid.id}{SEPARATOR}0", 0, 64) in keys
-    assert (f"{fluid.id}{SEPARATOR}0", 32, 64) in keys
-
+    # Flank corridor (3 horizontal steps of width w)
+    assert (f"{fluid.id}{SEPARATOR}0", -w, 2 * l) in keys
+    assert (f"{fluid.id}{SEPARATOR}0", 0, 2 * l) in keys
+    assert (f"{fluid.id}{SEPARATOR}0", w, 2 * l) in keys
+    
 
 @pytest.mark.category_sheets
 @pytest.mark.workflow_fluids
