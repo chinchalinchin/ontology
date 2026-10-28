@@ -1,6 +1,5 @@
 """
 @domain.logic
-@app.config
 @workflow.compositions
 
 # Ontology: Source - app.static.macros.compositions

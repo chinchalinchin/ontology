@@ -1,10 +1,23 @@
 """
-# Ontology: tests.unit.app.assets.test_animations
+@domain.test 
+@app.asset
+@asset.animation
+
+# Ontology: Tests - tests.unit.app.assets.test_animations
+
+Unit tests for Asset Animation implementations.
 """
 # Standard Libraries
 from unittest.mock import MagicMock
 
 # External Libraries
+import pytest
+
+pytestmark = [
+    pytest.mark.app_asset,
+    pytest.mark.asset_animation,
+]
+
 
 # Application Libraries
 from app.assets.animations.core import (
@@ -34,14 +47,14 @@ from libs.core.models import Dimensions
 
 # TODO: refactor these tests to use fixtures
 
-@pytest.mark.animations
+@pytest.mark.app_core
 def test_no_animation():
     animation = NoAnimation()
     state = AssetState(id="test")
     assert animation.animate(state, None) == state
 
 
-@pytest.mark.animations
+@pytest.mark.app_core
 def test_binary_animation():
     animation = BinaryAnimation()
     state = MagicMock(switch=True, animation=AnimationState())
@@ -54,7 +67,7 @@ def test_binary_animation():
     animation.animate(state, None)
     assert state.animation.frame == 0
 
-@pytest.mark.animations
+@pytest.mark.category_effects
 def test_frequency_animation_inactive():
     animation = FrequencyAnimation()
     frequency = Frequency(type=Frequencies.CONTINUOUS.value, delay=1)
@@ -65,7 +78,7 @@ def test_frequency_animation_inactive():
     assert state.animation.frame == 0
     assert state.animation.tick == 0
 
-@pytest.mark.animations
+@pytest.mark.category_effects
 def test_frequency_animation_continuous():
     animation = FrequencyAnimation()
     frequency = Frequency(type=Frequencies.CONTINUOUS.value, delay=2)
@@ -89,7 +102,8 @@ def test_frequency_animation_continuous():
     assert state.animation.tick == 0
     assert state.animation.frame == 0
 
-@pytest.mark.animations
+
+@pytest.mark.category_effects
 def test_frequency_animation_temporary_non_persisting():
     animation = FrequencyAnimation()
     frequency = Frequency(type=Frequencies.TEMPORARY.value, delay=1, persist=False)
@@ -106,7 +120,7 @@ def test_frequency_animation_temporary_non_persisting():
     assert state.animation.frame == 3
 
 
-@pytest.mark.animations
+@pytest.mark.category_effects
 def test_frequency_animation_temporary_persisting():
     animation = FrequencyAnimation()
     frequency = Frequency(type=Frequencies.TEMPORARY.value, delay=1, persist=True)
@@ -122,7 +136,7 @@ def test_frequency_animation_temporary_persisting():
     assert state.animation.frame == 2
 
 
-@pytest.mark.animations
+@pytest.mark.category_effects
 def test_frequency_animation_periodic():
     animation = FrequencyAnimation()
     frequency = Frequency(type=Frequencies.PERIODIC.value, delay=2, frequency=8)
@@ -148,7 +162,7 @@ def test_frequency_animation_periodic():
     assert state.animation.frame == 0
 
 
-@pytest.mark.animations
+@pytest.mark.category_effects
 def test_frequency_animation_cooldown_and_reset():
     animation = FrequencyAnimation()
     frequency = Frequency(type=Frequencies.TEMPORARY.value, delay=1, cooldown=60, persist=True)
@@ -168,7 +182,7 @@ def test_frequency_animation_cooldown_and_reset():
     assert state.animation.tick == 0
 
 
-@pytest.mark.animations
+@pytest.mark.category_sheets
 def test_state_animation():
     animation = StateAnimation()
     state = SpriteState(id="test")
@@ -197,7 +211,7 @@ def test_state_animation():
     assert state.animation.tick == 0
 
 
-@pytest.mark.animations
+@pytest.mark.category_sheets
 def test_sprite_animation():
     animation = SpriteAnimation()
     state = SpriteState(id="npc")

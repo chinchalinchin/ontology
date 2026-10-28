@@ -1,6 +1,5 @@
 """
 @domain.system
-@app.config
 @workflow.telemetry
 
 # Ontology: Source - app.config.logging

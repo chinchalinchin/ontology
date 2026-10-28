@@ -118,24 +118,24 @@ tools:
     manager:
       board: false
       specs: false
-      docs: false
+      docs: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: true
-      filter: false
+      data: false
+      filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: false
+      directory: true
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
-      configuraiton: false
+      configuration: true
       pipeline: false
       session: false
 # ----------------------------------------------------
@@ -153,7 +153,7 @@ tools:
           # - 00-overview.md
           # - 01-assets.md
           - 02-sprites.md
-          # - 03-compositions.md
+          - 03-compositions.md
           - 04-intentions.md
           - 05-mechanics.md
           - 06-widgets.md
@@ -170,11 +170,37 @@ tools:
       filter:
         default: AND
         queries:
-            # ------------------------------------
-            - title: Asset Models
-              scan: 
-                domain: [ model ]
-            # ------------------------------------
+            - title: Asset Abstracts
+              scan:
+                domain: [ abstract ]
+                app: [ asset ]
+            - title: Asset Implementations
+              scan:
+                domain: [ concrete ]
+                app: [ asset ]
+            - title: Asset Tests
+              scan:
+                domain: [ test ]
+                app: [ asset ]
+            # # ------------------------------------
+            # - title: Application Systems
+            #   scan: 
+            #     app: [ config ]
+            #     domain: [ system ]
+            # # ------------------------------------
+            # - title: Application Core Components
+            #   scan: 
+            #     app: [ core, component ]
+            # # ------------------------------------
+            # - title: Injection Services
+            #   scan: 
+            #     app: [ services ]
+            #     workflows: [ injection ]
+            # # ------------------------------------
+            # - title: Test Fixtures
+            #   scan: 
+            #     test: [ fixtures ]
+            # # ------------------------------------
       data: 
         state: [ world-testbed ]
         configurations: [ ]
@@ -192,7 +218,7 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: collisions
+        marker: app.asset
       session:
         description: |
           description

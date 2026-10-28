@@ -36,7 +36,3 @@ def patch_app_settings(monkeypatch, tmp_path: Path):
     Overrides settings and isolates save-state output to an ephemeral tmp_path.
     """
     monkeypatch.setattr("app.static.settings.SAVE_DIR", tmp_path / "saves")
-
-    monkeypatch.setattr("app.static.settings.FLUID_INVALIDATION_DEBOUNCE_TICKS", 0)
-    monkeypatch.setattr("app.static.settings.BASE_FLOW_SPEED", 20)
-    monkeypatch.setattr("app.static.settings.TILE_HASH_SIZE", 32)

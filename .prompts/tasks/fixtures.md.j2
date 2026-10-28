@@ -1,0 +1,21 @@
+# Task: Ontology - Fixture Refactor
+
+**Priority**
+
+* Inspect the Application `workflow.injection` and `workflow.hydration` pipeline.
+* Refactor the `component`, `structures` and `services` fixtures. Assemble the fixtures for the Application dependency tree.
+
+**Context: Fixtures**
+
+Application fixtures have recently been reorganized and streamlined for reuse, rather than recreating them for every single test. This is an ongoing effort. The goal is to remove all blackbox testing with MagicMocks.
+
+Massive changes were introduced as a result of Phase 07.04. Many of the unit tests are failing as a result. Rather than simply getting the old tests to work in the new Material framework (which now includes HitboxSchema and other fundamental changes, such as elevations and substrates), the entire Fixture framework is being condensed to reduce boilerplate even further. In the current phase, Fixture Factories are being integrated into the test pipeline. 
+
+* `fixtures.schemas` and `fixtures.assets` have been redesigned to load the fixtures from file and a dedicated testbed state. Many of the fixtures present in the other files may be deprecated. 
+* Many services, relations and dependencies may be missing from the fixtures. Add them.
+* Many things are mocked that shouldn't be mocked, e.g. Boundary and `mock_boundary()`. Fixtures should not be in the business of doing anything beyond initializing their respective subsystem, i.e. ensure dependencies are properly injected and the object is reading for testing. Mutations like `field.add_stream(100.0, 100.0, 100.0, 132.0, flow=2)` are not the domain of `test.fixtures`. 
+* Fixtures like Compiler vs. Lambda Engine executors should be set through parameterized Fixture Factories.
+
+{% include 'blocks/controls/guideline-testbed.md' %}
+
+{% include 'blocks/controls/guideline-docstrings.md' %}

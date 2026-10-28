@@ -1,9 +1,11 @@
 """
 @domain.test
-@app.asset
 @test.fixtures
+@app.asset
+@modality.material
+@workflow.injection
 
-# Ontology: Tests - tests.unit.fixtures.assets
+# Ontology: Test - tests.unit.fixtures.assets
 
 Loader-backed Asset factory and aggregate fixtures.
 """
@@ -16,9 +18,13 @@ import pytest
 
 # Application Libraries
 from app.assets.base import Asset
-from app.models.config import RecipeConfiguration
+from app.game.logic.relations import MaterialIndex
+from app.models.config import ConfigurationSchema
 from app.models.properties import PropertiesSchema
-from app.models.state import AssetState, StateSchema
+from app.models.state import (
+    AssetState,
+    StateSchema,
+)
 from app.services.factories.assets import AssetFactory
 from app.static.semantics import AssetCategories
 
@@ -35,8 +41,9 @@ STATE_CATEGORIES = (
 
 @pytest.fixture
 def asset(
-    mock_properties: PropertiesSchema,
-    mock_recipes_configuration: RecipeConfiguration,
+    mock_properties_schema: PropertiesSchema,
+    mock_configurations_schema: ConfigurationSchema,
+    mock_material_index: MaterialIndex,
     state,
 ):
     """
@@ -47,12 +54,22 @@ def asset(
         instance: str,
         id: Optional[str] = None,
         asset_state: Optional[AssetState] = None,
+        substrate: Optional[int] = None,
         **state_overrides,
     ) -> Asset:
-        resolved_state = asset_state or state(category, instance, id=id, **state_overrides)
-        prop_map = getattr(getattr(mock_properties, category), instance)
-        recipe = getattr(getattr(mock_recipes_configuration, category), instance)
+        resolved_state = asset_state or state(
+            category, instance, id=id, **state_overrides
+        )
+        prop_map = getattr(getattr(mock_properties_schema, category), instance)
+        recipe = getattr(
+            getattr(mock_configurations_schema.recipes, category), instance
+        )
         properties = prop_map[resolved_state.id]
+        resolved_substrate = (
+            substrate
+            if substrate is not None
+            else mock_material_index.substrate(category, instance)
+        )
 
         return AssetFactory.asset(
             category,
@@ -60,21 +77,29 @@ def asset(
             properties,
             resolved_state,
             recipe,
+            substrate=resolved_substrate,
         )
 
     return _asset
 
 
 @pytest.fixture
-def mock_assets(asset, mock_state: StateSchema) -> list[Asset]:
+def mock_assets(
+    asset,
+    mock_state_schema: StateSchema,
+) -> list[Asset]:
     """
     Materializes all entities declared in the YAML state test bed into Asset instances.
     """
     assets: list[Asset] = []
     for category in STATE_CATEGORIES:
-        category_node = getattr(mock_state, category)
+        category_node = getattr(mock_state_schema, category, None)
+        if category_node is None:
+            continue
         for instance_field in fields(category_node):
             instance = instance_field.name
             for entity_state in getattr(category_node, instance):
-                assets.append(asset(category, instance, asset_state=entity_state))
+                assets.append(
+                    asset(category, instance, asset_state=entity_state)
+                )
     return assets

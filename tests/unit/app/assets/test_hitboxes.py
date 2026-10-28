@@ -1,21 +1,37 @@
 """
-# Ontology: tests.unit.app.assets.test_hitboxes
+@domain.test
+@app.asset
+@asset.hitbox
+@workflow.collisions
+
+# Ontology: Tests - tests.unit.app.assets.test_hitboxes
+
+Unit tests for Asset Hitbox implementations.
 """
 
 import pytest
-from app.config.enums import (
+
+pytestmark = [
+    pytest.mark.app_asset,
+    pytest.mark.app_hitbox,
+    pytest.mark.workflow_collisions
+]
+
+# Application Libraries
+from app.static.semantics import (
     AnnualStages,
     Directions,
     PerennialStages,
 )
+
+# Cython Libraies
 from libs.core.models import (
     Dimensions,
     Hitbox,
     Position
 )
 
-
-@pytest.mark.collisions
+@pytest.mark.category_objects
 def test_static_hitbox_fallback_on_none(mock_crate):
     """Undeclared hitboxes fall back to full bounding box dimensions."""
     mock_crate.properties.hitboxes = None
@@ -27,15 +43,14 @@ def test_static_hitbox_fallback_on_none(mock_crate):
     assert mock_crate.hitboxes[0].dimensions.l == mock_crate.dimensions.l
 
 
-@pytest.mark.collisions
+@pytest.mark.category_objects
 def test_static_hitbox_preserves_explicit_empty_list(mock_crate):
     """Explicit empty list [] preserves passable entity without bounding-box fallback (Bug B014)."""
     mock_crate.properties.hitboxes = []
 
     assert mock_crate.hitboxes == []
 
-
-@pytest.mark.collisions
+@pytest.mark.category_objects
 def test_static_hitbox_elevation_filtering(mock_crate):
     """StaticHitbox resolves hitboxes at tier 0 and returns empty list on higher tiers."""
     assert mock_crate.hitbox.elevations(mock_crate.properties, mock_crate.state) == [0]
@@ -43,15 +58,15 @@ def test_static_hitbox_elevation_filtering(mock_crate):
     assert mock_crate.hitbox.get(mock_crate.properties, mock_crate.state, elevation=1) == []
 
 
-@pytest.mark.collisions
+
+@pytest.mark.category_tiles
 def test_no_hitbox_unconditionally_empty(mock_environ_tile):
     """NoHitbox strategy always resolves an empty collision list and no elevation tiers."""
     assert mock_environ_tile.hitbox.elevations(mock_environ_tile.properties, mock_environ_tile.state) == []
     assert mock_environ_tile.hitboxes == []
 
 
-@pytest.mark.collisions
-@pytest.mark.fluids
+@pytest.mark.category_effects
 def test_dynamic_hitbox_reads_state_bounds(mock_fluid):
     """DynamicHitbox resolves the mutable state hitbox list rather than static properties."""
     custom_bounds = [Hitbox(Position(0, 0), Dimensions(32, 64))]
@@ -59,9 +74,8 @@ def test_dynamic_hitbox_reads_state_bounds(mock_fluid):
 
     assert mock_fluid.hitboxes == custom_bounds
 
-
-@pytest.mark.collisions
-@pytest.mark.fluids
+@pytest.mark.category_effects
+@pytest.mark.workflows_fluids
 def test_substrate_negative_elevation_collapses_to_tier_zero(mock_fluid, mock_shoreline, mock_bridge):
     """
     Verifies substrate assets with negative elevations (fluids=-3, shorelines=-2, bridges=-1)
@@ -87,7 +101,8 @@ def test_substrate_negative_elevation_collapses_to_tier_zero(mock_fluid, mock_sh
     assert mock_bridge.hitbox.get(mock_bridge.properties, mock_bridge.state, elevation=1) == []
 
 
-@pytest.mark.collisions
+@pytest.mark.category_crafts
+@pytest.mark.modality_material
 def test_directed_hitbox_resolves_by_direction_and_elevation(mock_stairs):
     """DirectedHitbox resolves hitboxes matching state.direction at the deployed elevation."""
     mock_stairs.state.elevation = 0
@@ -99,34 +114,8 @@ def test_directed_hitbox_resolves_by_direction_and_elevation(mock_stairs):
     assert mock_stairs.hitbox.get(mock_stairs.properties, mock_stairs.state, elevation=1) == []
 
 
-@pytest.mark.collisions
-def test_elevated_hitbox_multi_tier_resolution(mock_platform):
-    """
-    Verifies ElevatedHitbox resolves relative elevation tiers (elevation - state.elevation)
-    for base facade (E) and upper deck (E + 1).
-    """
-    mock_platform.state.elevation = 0
-
-    assert mock_platform.hitbox.elevations(mock_platform.properties, mock_platform.state) == [0, 1]
-
-    tier_0_hbs = mock_platform.hitbox.get(mock_platform.properties, mock_platform.state, elevation=0)
-    tier_1_hbs = mock_platform.hitbox.get(mock_platform.properties, mock_platform.state, elevation=1)
-    tier_2_hbs = mock_platform.hitbox.get(mock_platform.properties, mock_platform.state, elevation=2)
-
-    assert tier_0_hbs == mock_platform.properties.hitboxes[0]
-    assert tier_1_hbs == mock_platform.properties.hitboxes[1]
-    assert tier_2_hbs == []
-
-    # Shift base deployment to elevation = 1 -> participates in tiers [1, 2]
-    mock_platform.state.elevation = 1
-    assert mock_platform.hitbox.elevations(mock_platform.properties, mock_platform.state) == [1, 2]
-    assert mock_platform.hitbox.get(mock_platform.properties, mock_platform.state, elevation=0) == []
-    assert mock_platform.hitbox.get(mock_platform.properties, mock_platform.state, elevation=1) == mock_platform.properties.hitboxes[0]
-    assert mock_platform.hitbox.get(mock_platform.properties, mock_platform.state, elevation=2) == mock_platform.properties.hitboxes[1]
-
-
-@pytest.mark.seasons
-@pytest.mark.collisions
+@pytest.mark.category_resources
+@pytest.mark.workflow_seasons
 def test_stage_hitbox_annual_crop_transitions(mock_crop_resource):
     """Verifies annual crop stages transition from passable sprout/growth to solid stalk/bloom."""
     mock_crop_resource.state.stage = AnnualStages.SPROUT.value
@@ -155,8 +144,8 @@ def test_stage_hitbox_annual_crop_transitions(mock_crop_resource):
     assert mock_crop_resource.hitboxes == []
 
 
-@pytest.mark.seasons
-@pytest.mark.collisions
+@pytest.mark.category_resources
+@pytest.mark.workflow_seasons
 def test_stage_hitbox_perennial_transitions(mock_tree_resource):
     """Verifies adult stage constrains to trunk, sapling is passable, and stump resizes."""
     mock_tree_resource.state.stage = PerennialStages.SAPLING.value

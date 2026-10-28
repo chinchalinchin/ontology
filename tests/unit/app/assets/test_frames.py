@@ -1,8 +1,20 @@
 """
+@domain.test
+@app.asset
+@asset.frame
+
 # Ontology: tests.unit.app.assets.test_frames
+
+Unit tests for Asset Frame implementations.
 """
 # External Libraries
 import pytest
+
+pytestmark = [
+    pytest.mark.app_asset,
+    pytest.mark.asset_frame,
+]
+
 
 # Application Libraries
 from app.config.settings import SEPARATOR
@@ -63,9 +75,9 @@ from libs.core.models import (
 )
 
 
-# TODO: refactor these tests to use fixtures
+# TODO: refactor these tests to use fixtures.
 
-@pytest.mark.frames
+@pytest.mark.app_core
 def test_no_frame():
     frame = NoFrame()
     assert frame.keys("test", None) == [("test", 0, 0)]
@@ -73,7 +85,7 @@ def test_no_frame():
     assert frame.index("test", props) == {"test": (0, 0, 0, 0)}
 
 
-@pytest.mark.frames
+@pytest.mark.app_core
 def test_single_frame():
     frame = SingleFrame()
     assert frame.keys("test", None) == [("test", 0, 0)]
@@ -81,7 +93,7 @@ def test_single_frame():
     assert frame.index("test", props) == {"test": (0, 0, 32, 32)}
 
 
-@pytest.mark.frames
+@pytest.mark.category_effects
 def test_iterable_frame():
     frame = IterableFrame()
     state = SpriteState(id="test")
@@ -98,7 +110,7 @@ def test_iterable_frame():
     }
 
 
-@pytest.mark.frames
+@pytest.mark.category_sheets
 def test_state_frame():
     frame = StateFrame()
     state = SpriteState(id="test")
@@ -122,7 +134,7 @@ def test_state_frame():
     assert frame.index("test", props) == expected_index
 
 
-@pytest.mark.frames
+@pytest.mark.category_sheets
 def test_sprite_frame():
     frame = SpriteFrame()
     
@@ -156,8 +168,8 @@ def test_sprite_frame():
     assert keys[6] == (expr_key, 10, -10)
 
 
-@pytest.mark.frames
-@pytest.mark.menus
+@pytest.mark.category_widgets
+@pytest.mark.workflows_menus
 def test_index_frame_indexing():
     frame = IndexFrame()
     props = WidgetProperties(
@@ -170,8 +182,8 @@ def test_index_frame_indexing():
     }
 
 
-@pytest.mark.frames
-@pytest.mark.menus
+@pytest.mark.category_widgets
+@pytest.mark.workflow_menus
 def test_index_frame_suppresses_vacant_slot():
     frame = IndexFrame()
     
@@ -186,8 +198,8 @@ def test_index_frame_suppresses_vacant_slot():
     assert frame.keys("weapons", none_state) == []
 
 
-@pytest.mark.frames
-@pytest.mark.intentions
+@pytest.mark.category_sheets
+@pytest.mark.workflow_intentions
 def test_sprite_frame_player_suppresses_expression():
     """
     Ensure player entities suppress expression attachments in SpriteFrame.keys.
@@ -208,8 +220,8 @@ def test_sprite_frame_player_suppresses_expression():
     assert keys[0] == (f"{RequiredAssets.PLAYER.value}{SEPARATOR}walk{SEPARATOR}down{SEPARATOR}0", 0, 0)
 
 
-@pytest.mark.frames
-@pytest.mark.intentions
+@pytest.mark.category_sheets
+@pytest.mark.workflow_intentions
 def test_sprite_frame_no_equipment():
     """
     Ensure SpriteFrame handles sprites with empty or None equipment inventories cleanly.
@@ -224,9 +236,9 @@ def test_sprite_frame_no_equipment():
     assert keys == [(f"npc{SEPARATOR}walk{SEPARATOR}down{SEPARATOR}0", 0, 0)]
 
 
-@pytest.mark.frames
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.category_effects
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_fluid_frame_indexing():
     """
     Verify FluidFrame generates full tile keys and directional forward/reverse
@@ -257,9 +269,9 @@ def test_fluid_frame_indexing():
     assert crops[f"waterflow{SEPARATOR}0{SEPARATOR}left{SEPARATOR}slice{SEPARATOR}10"] == (22, 0, 10, 32)
 
 
-@pytest.mark.frames
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.category_effects
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_fluid_frame_keys_downward_stream():
     """
     Verify downward stream emits full tile keys plus fractional terminal slice.
@@ -277,9 +289,9 @@ def test_fluid_frame_keys_downward_stream():
     assert keys[1] == (f"waterflow{SEPARATOR}0{SEPARATOR}down{SEPARATOR}16", 0, 32)
 
 
-@pytest.mark.frames
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.category_effects
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_fluid_frame_keys_upward_stream():
     """
     Verify upward stream emits negative Y-coordinate offsets and reverse slice keys.
@@ -297,9 +309,9 @@ def test_fluid_frame_keys_upward_stream():
     assert keys[1] == (f"waterflow{SEPARATOR}0{SEPARATOR}up{SEPARATOR}16", 0, -48)
 
 
-@pytest.mark.frames
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.category_effects
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_fluid_frame_keys_lateral_streams():
     """
     Verify lateral streams emit X-axis offsets for right and left flow vectors.
@@ -319,9 +331,9 @@ def test_fluid_frame_keys_lateral_streams():
     assert keys_left[1] == (f"waterflow{SEPARATOR}0{SEPARATOR}left{SEPARATOR}16", -48, 0)
 
 
-@pytest.mark.frames
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.category_effects
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_fluid_frame_keys_with_annular_pool():
     """
     Verify annular pool hitboxes translate to grid-spaced frame key offsets.
@@ -349,9 +361,9 @@ def test_fluid_frame_keys_with_annular_pool():
     assert (f"waterflow{SEPARATOR}0", 32, 64) in keys
 
 
-@pytest.mark.frames
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.category_sheets
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_sprite_frame_channels_dry():
     """
     Verify SpriteFrame.channels returns an empty list when sprite is not submerged.
@@ -365,9 +377,9 @@ def test_sprite_frame_channels_dry():
     assert directives == []
 
 
-@pytest.mark.frames
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.category_sheets
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_sprite_frame_channels_submerged():
     """
     Verify SpriteFrame.channels emits SUBMERGE directive with half-length split
@@ -386,10 +398,10 @@ def test_sprite_frame_channels_submerged():
     )
 
 
-@pytest.mark.frames
-@pytest.mark.geology
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.category_geography
+@pytest.mark.workflow_geology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_shoreline_frame_indexing():
     """
     Verify CardinalFrame indexes 4 cardinal rows across 4 calendar seasons
@@ -427,10 +439,10 @@ def test_shoreline_frame_indexing():
     assert crops[f"grassy-shore{SEPARATOR}winter{SEPARATOR}right{SEPARATOR}16"] == (96, 96, 32, 16)
 
 
-@pytest.mark.frames
-@pytest.mark.geology
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.category_geography
+@pytest.mark.workflow_geology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_shoreline_frame_keys_horizontal_full_and_slice():
     """
     Verify horizontal banks (UP/DOWN) emit full-tile keys along width and a terminal remainder.
@@ -450,10 +462,10 @@ def test_shoreline_frame_keys_horizontal_full_and_slice():
     assert keys[2] == (f"grassy-shore{SEPARATOR}spring{SEPARATOR}up{SEPARATOR}16", 64, 0)
 
 
-@pytest.mark.frames
-@pytest.mark.geology
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.category_geography
+@pytest.mark.workflow_geology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_shoreline_frame_keys_vertical_full_and_slice():
     """
     Verify vertical banks (LEFT/RIGHT) emit full-tile keys along length and a terminal remainder.
@@ -473,20 +485,20 @@ def test_shoreline_frame_keys_vertical_full_and_slice():
     assert keys[2] == (f"grassy-shore{SEPARATOR}spring{SEPARATOR}left{SEPARATOR}16", 0, 64)
     
 
-@pytest.mark.frames
-@pytest.mark.geology
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.category_geography
+@pytest.mark.workflow_geology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_shoreline_frame_keys_zero_length():
     frame = CardinalFrame()
     state = ShorelineState(id="grassy-shore", length=0)
     assert frame.keys("grassy-shore", state) == []
 
 
-@pytest.mark.frames
-@pytest.mark.geology
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.category_geography
+@pytest.mark.workflow_geology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_shoreline_frame_channels():
     """
     Verify CardinalFrame inherits universal Frame.channels behavior.
@@ -510,8 +522,8 @@ def test_shoreline_frame_channels():
     ]
 
 
-@pytest.mark.frames
-@pytest.mark.seasons
+@pytest.mark.category_tiles
+@pytest.mark.workflow_seasons
 def test_seasonal_frame_indexing(mock_tile_properties):
   """Verify SeasonalFrame generates a complete 36-cell atlas index."""
   frame = SeasonalFrame()
@@ -530,8 +542,8 @@ def test_seasonal_frame_indexing(mock_tile_properties):
   assert crops[winter_key] == (256, 96, 32, 32)
 
 
-@pytest.mark.frames
-@pytest.mark.seasons
+@pytest.mark.category_tiles
+@pytest.mark.workflow_seasons
 def test_seasonal_frame_eras():
     """
     Verify SeasonalFrame.eras maps calendar state to the canonical frame key.
@@ -548,7 +560,7 @@ def test_seasonal_frame_eras():
     assert keys == [(expected_key, 0, 0)]
 
 
-@pytest.mark.frames
+@pytest.mark.category_tiles
 @pytest.mark.seasons
 def test_seasonal_frame_keys_fallback():
     """
@@ -560,8 +572,8 @@ def test_seasonal_frame_keys_fallback():
     assert keys == [(expected_key, 0, 0)]
 
 
-@pytest.mark.frames
-@pytest.mark.seasons
+@pytest.mark.category_resources
+@pytest.mark.workflow_seasons
 def test_stage_frame_indexing_annual(mock_resource_properties):
   """Verify StageFrame dynamically indexes horizontal cells for annual crops."""
   frame = StageFrame()
@@ -574,8 +586,8 @@ def test_stage_frame_indexing_annual(mock_resource_properties):
     assert crops[key] == (i * 32, 0, 32, 22)
 
 
-@pytest.mark.frames
-@pytest.mark.seasons
+@pytest.mark.category_resources
+@pytest.mark.workflow_seasons
 def test_stage_frame_indexing_perennial(mock_resource_properties):
   """Verify StageFrame dynamically indexes horizontal cells for perennial trees."""
   frame = StageFrame()
@@ -588,8 +600,8 @@ def test_stage_frame_indexing_perennial(mock_resource_properties):
     assert crops[key] == (i * 94, 0, 94, 137)
     
 
-@pytest.mark.frames
-@pytest.mark.seasons
+@pytest.mark.category_resources
+@pytest.mark.workflow_seasons
 def test_stage_frame_keys():
     """
     Verify StageFrame resolves frame keys reflexively from state.stage.

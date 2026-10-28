@@ -3,7 +3,7 @@
 @app.config
 @app.semantics
 
-# Ontology: Source - app.config.settings
+# Ontology: Source - app.static.settings
 
 Package for global runtime environment settings.
 """

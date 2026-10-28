@@ -1,7 +1,7 @@
 """
 @domain.system
 @app.services
-@workflow.injection
+@workflow.hydration
 
 # Ontology: Source - app.services.generators.game.cradle
 
@@ -14,7 +14,6 @@ from typing import (
     TYPE_CHECKING, 
     List,
     Union,
-    Optional
 )
 import logging 
 import uuid

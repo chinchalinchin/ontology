@@ -8,7 +8,8 @@ Use the following template to create docstrings for Python modules,
 @{{ tag }}
 {% endfor %}
 
-# Ontology: Source -  {{ module.path }}
+{% set title = 'Source' if module.src else 'Test' %}
+# Ontology: {{ title }} -  {{ module.path }}
 
 {{ module.description }}
 {% endraw %}
@@ -63,6 +64,7 @@ Tags are meant to capture logically related slices of the Application.
                 * `app.schema`
                 * `app.semantics` (*Application Terminology*)
                 * `app.services`
+                * `app.relations`
             * Physics Tags:
                 * `physics.fields` (*Vector Fields*)
                 * `physics.motion` (*Kinematics, Momentum, Collisions*)
@@ -79,6 +81,7 @@ Tags are meant to capture logically related slices of the Application.
                 * `workflow.ecology`
                 * `workflow.fluids`
                 * `workflow.generation` (*Procedural Generation*)
+                * `workflow.geology`
                 * `workflow.gravity`
                 * `workflow.hydration` (*Initialization*)
                 * `workflow.intentions`
@@ -87,7 +90,8 @@ Tags are meant to capture logically related slices of the Application.
                 * `workflow.menus`
                 * `workflow.injection` (*Dependency Injection Pipeline*)
                 * `workflow.navigation` (*RRT Algorithms*)
-                * `workflow.plot`
+                * `workflow.player`
+                * `workflow.plots`
                 * `workflow.rendering`
                 * `workflow.seasons`
                 * `workflow.telemetry`
