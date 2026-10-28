@@ -26,7 +26,10 @@ from app.models.state import (
     StateSchema,
 )
 from app.services.factories.assets import AssetFactory
-from app.static.semantics import AssetCategories
+from app.static.semantics import (
+    AssetCategories,
+    AssetInstances,
+)
 
 STATE_CATEGORIES = (
     AssetCategories.TILES.value,
@@ -56,12 +59,17 @@ def mock_asset(
         asset_state: Optional[AssetState] = None,
     ) -> Asset:
         resolved_state = asset_state or state(category, instance, id=id)
-        prop_map = getattr(getattr(mock_properties_schema, category), instance)
+
         recipe = getattr(
             getattr(mock_configurations_schema.recipes, category), instance
         )
-        properties = prop_map[resolved_state.id]
         substrate = mock_material_index.substrate(category, instance)
+        if instance != AssetInstances.PLAYERS.value:
+            prop_map = getattr(getattr(mock_properties_schema, category), instance)
+        else:
+            prop_map = getattr(getattr(mock_properties_schema, category), AssetInstances.SPRITES.value)
+
+        properties = prop_map[resolved_state.id]
 
         return AssetFactory.asset(
             category,

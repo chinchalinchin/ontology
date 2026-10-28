@@ -448,28 +448,54 @@ def test_shoreline_frame_indexing(mock_properties):
     and forward fractional remainder slices.
     """
     frame = CardinalFrame()
+    id = "temperate-banks"
     props = mock_properties(
         AssetCategories.GEOGRAPHY.value,
         AssetInstances.SHORELINES.value,
     )
-    crops = frame.index("grassy-shore", props)
+    crops = frame.index(id, props)
 
-    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}up"] == (0, 0, 32, 32)
-    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}left"] == (0, 32, 32, 32)
-    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}down"] == (0, 64, 32, 32)
-    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}right"] == (0, 96, 32, 32)
+    assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}up"] == (
+        0, 0, props.dimensions.w,  props.dimensions.l
+    )
+    assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}left"] == (
+        0, props.dimensions.l, props.dimensions.w,  props.dimensions.l
+    )
+    assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}down"] == (
+        0, 2 * props.dimensions.l, props.dimensions.w,  props.dimensions.l
+    )
+    assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}right"] == (
+        0, 3 * props.dimensions.l, props.dimensions.w,  props.dimensions.l
+    )
+    assert crops[f"{id}{SEPARATOR}summer{SEPARATOR}up"] == (
+        props.dimensions.w, 0, props.dimensions.w,  props.dimensions.l
+    )
+    assert crops[f"{id}{SEPARATOR}autumn{SEPARATOR}up"] == (
+        2 * props.dimensions.w, 0, props.dimensions.w,  props.dimensions.l
+    )
+    assert crops[f"{id}{SEPARATOR}winter{SEPARATOR}up"] == (
+        3 * props.dimensions.w, 0, props.dimensions.w,  props.dimensions.l
+    )
 
-    assert crops[f"grassy-shore{SEPARATOR}summer{SEPARATOR}up"] == (32, 0, 32, 32)
-    assert crops[f"grassy-shore{SEPARATOR}autumn{SEPARATOR}up"] == (64, 0, 32, 32)
-    assert crops[f"grassy-shore{SEPARATOR}winter{SEPARATOR}up"] == (96, 0, 32, 32)
+    assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}up{SEPARATOR}16"] == (
+        0, 0, 16, props.dimensions.l
+    )
+    assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}down{SEPARATOR}16"] == (
+        0, 2 * props.dimensions.w, 16, props.dimensions.l
+    )
+    assert crops[f"{id}{SEPARATOR}summer{SEPARATOR}up{SEPARATOR}16"] == (
+        props.dimensions.w, 0, 16, props.dimensions.l
+    )
 
-    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}up{SEPARATOR}16"] == (0, 0, 16, 32)
-    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}down{SEPARATOR}16"] == (0, 64, 16, 32)
-    assert crops[f"grassy-shore{SEPARATOR}summer{SEPARATOR}up{SEPARATOR}16"] == (32, 0, 16, 32)
-
-    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}left{SEPARATOR}16"] == (0, 32, 32, 16)
-    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}right{SEPARATOR}16"] == (0, 96, 32, 16)
-    assert crops[f"grassy-shore{SEPARATOR}winter{SEPARATOR}right{SEPARATOR}16"] == (96, 96, 32, 16)
+    assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}left{SEPARATOR}16"] == (
+        0, props.dimensions.l, props.dimensions.w, 16
+    )
+    assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}right{SEPARATOR}16"] == (
+        0, 3 * props.dimensions.l, props.dimensions.w, 16
+    )
+    assert crops[f"{id}{SEPARATOR}winter{SEPARATOR}right{SEPARATOR}16"] == (
+        3 * props.dimensions.w, 3 * props.dimensions.l, props.dimensions.w, 16
+    )
 
 
 @pytest.mark.category_geography
