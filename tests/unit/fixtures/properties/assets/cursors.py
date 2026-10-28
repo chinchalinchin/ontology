@@ -1,9 +1,13 @@
 """
+@domain.test
 @test.fixtures
+@app.asset
+@asset.property
+@category.cursors
 
-# Ontology: tests.unit.fixtures.properties.cursors
+# Ontology: Tests - tests.unit.fixtures.properties.cursors
 
-Mock Cursor Property fixtures aligned with src/assets/cursors/main.yaml.
+Mock Cursor Property fixtures aligned.
 """
 # External Libraries
 import pytest

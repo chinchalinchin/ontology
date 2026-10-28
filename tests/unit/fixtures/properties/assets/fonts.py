@@ -1,4 +1,10 @@
 """
+@domain.test
+@test.fixtures
+@app.asset
+@asset.property
+@category.fonts
+
 # Ontology: tests.unit.fixtures.properties.fonts
 
 Mock Font Property fixtures.

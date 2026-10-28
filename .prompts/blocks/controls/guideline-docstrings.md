@@ -26,6 +26,7 @@ Tags are meant to capture logically related slices of the Application.
         * `domain.logic` (*Algorithms*)
         * `domain.model` (*Data Structures*)
         * `domain.system` (*Support Systems*)
+        * `domain.test` (*Test Beds*)
         * `domain.user` (*User Interfaces*)
     * Predicate Tags:
         * Hierarchy Tags:
@@ -39,6 +40,7 @@ Tags are meant to capture logically related slices of the Application.
                 * `category.crafts`
                 * `category.cursors`
                 * `category.effects`
+                * `category.fonts`
                 * `category.geography`
                 * `category.objects`
                 * `category.resources`

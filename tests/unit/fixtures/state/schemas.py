@@ -1,118 +1,14 @@
 """
-# Ontology: tests.unit.fixtures.state
+# Ontology: tests.unit.fixtures.state.schemas
 
-Mock Asset State Fixtures
+Root StateSchema fixture aligned with world-01.
 """
 # External Libraries
 import pytest
 
 # Application Libraries
+from app.models.state import StateSchema
 
-from app.models.state import (
-    # -------- SCHEMA
-    StateSchema, 
-    # -------- INSTANCES
-    SheetStateInstances,
-    ObjectStateInstances, 
-    CraftStateInstances,
-    TileStateInstances,
-    EffectStateInstances,
-    ResourceStateInstances
-)
-
-
-# ---------------------------------------------------------- STATE SCHEMAS
-
-@pytest.fixture
-def mock_craft_states(
-    mock_property_state,
-    mock_property_state_alt,
-    mock_property_state_alt2,
-    mock_bridge_state,
-    mock_platform_state,
-    mock_stair_state,
-) -> CraftStateInstances:
-    return CraftStateInstances(
-        stairs = [
-            mock_stair_state
-        ],
-        struts = [
-            mock_property_state,
-            mock_property_state_alt,
-            mock_property_state_alt2
-        ],
-        bridges = [
-            mock_bridge_state
-        ],
-        platforms = [
-            mock_platform_state
-        ]
-    )
-
-
-@pytest.fixture
-def mock_resource_states(
-    mock_tree_state,
-    mock_crop_state
-) -> ResourceStateInstances:
-    return ResourceStateInstances(
-        trees=[mock_tree_state],
-        crops=[mock_crop_state]
-    )
-
-
-@pytest.fixture
-def mock_effect_states(
-    mock_reactable_state,
-    mock_fluid_state,
-    mock_fluid_state_alt,
-    mock_fluid_state_alt2
-) -> EffectStateInstances:
-    return EffectStateInstances(
-        reactables = [ mock_reactable_state ],
-        fluids = [ 
-            mock_fluid_state, 
-            mock_fluid_state_alt, 
-            mock_fluid_state_alt2 
-        ],
-    )
-
-
-@pytest.fixture
-def mock_sheet_states(
-    mock_player_state,
-    mock_sprite_state
-) -> SheetStateInstances:
-    return SheetStateInstances(
-        players = [ mock_player_state ],
-        sprites = [ mock_sprite_state ]
-    )
-
-
-@pytest.fixture
-def mock_tile_states(
-    mock_multiplier_state
-) -> TileStateInstances:
-    return TileStateInstances(
-        environ = [ mock_multiplier_state ]
-    )
-
-
-@pytest.fixture
-def mock_object_states(
-    mock_door_state,
-    mock_container_state,
-    mock_switch_state,
-    mock_switch_state_alt
-) -> ObjectStateInstances:
-    return ObjectStateInstances(
-        doors = [ mock_door_state ],
-        chests = [ mock_container_state ],
-        plates = [ mock_switch_state_alt ],
-        gates = [ mock_switch_state ]
-    )
-
-# ---------------------------------------------------------------------------------
 
 @pytest.fixture
 def mock_state(
@@ -121,13 +17,15 @@ def mock_state(
     mock_craft_states,
     mock_object_states,
     mock_effect_states,
-    mock_resource_states
-):
+    mock_resource_states,
+    mock_plot_state,
+) -> StateSchema:
     return StateSchema(
         effects=mock_effect_states,
         sheets=mock_sheet_states,
         tiles=mock_tile_states,
         crafts=mock_craft_states,
         objects=mock_object_states,
-        resources=mock_resource_states
+        resources=mock_resource_states,
+        plots=mock_plot_state,
     )

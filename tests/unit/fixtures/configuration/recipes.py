@@ -1,5 +1,6 @@
 """
 @test.fixtures
+@app.config
 
 # Ontology: tests.unit.fixtures.configuration.recipes
 

@@ -1,13 +1,18 @@
+"""
+# Ontology: tests.unit.fixtures.state.world
+
+Mock World, Tile, Geography, and Cursor State Fixtures aligned with world-01.
+"""
 # External Libraries
 import pytest
 
 # Application Libraries
-from app.config.enums import ( 
+from app.static.semantics import (
     Directions,
-    Seasons
-
+    Seasons,
 )
 from app.models.state import (
+    TileStateInstances,
     PlotState,
     MultiplierState,
     ShorelineState,
@@ -16,26 +21,21 @@ from app.models.state import (
 
 # Cython Libraries
 from libs.core.models import (
-    Dimensions, 
+    Dimensions,
     Position,
     Multiple,
     Velocity,
     Hitbox,
 )
 
-# --------------------------------------------------------------------------
-# -------------------------------------------------------------- MOCK STATES
-# --------------------------------------------------------------------------
 
 @pytest.fixture
 def mock_plot_state() -> PlotState:
     return PlotState(
-        current="town-locked",
-        previous=[]
+        current="castle-dawn-locked",
+        previous=[],
     )
 
-
-# ------------------------------------------------------------ TILE STATES
 
 @pytest.fixture
 def mock_multiplier_state() -> MultiplierState:
@@ -44,11 +44,16 @@ def mock_multiplier_state() -> MultiplierState:
         name="the-steppe",
         layer="0",
         position=Position(x=0, y=0),
-        multiple=Multiple(nx=10, ny=10)
+        multiple=Multiple(nx=100, ny=100),
     )
 
 
-# -------------------------------------------------------- GEOGRAPHY STATES
+@pytest.fixture
+def mock_tile_states(mock_multiplier_state) -> TileStateInstances:
+    return TileStateInstances(
+        environ=[mock_multiplier_state],
+    )
+
 
 @pytest.fixture
 def mock_shoreline_state() -> ShorelineState:
@@ -59,21 +64,21 @@ def mock_shoreline_state() -> ShorelineState:
         position=Position(x=70, y=0),
         orientation=Directions.LEFT.value,
         season=Seasons.SPRING.value,
-        length=32,
-        thickness=8,
+        length=41,
+        thickness=22,
         bidirectional=True,
         hitboxes=[
-            Hitbox(Position(0, 0), Dimensions(32, 32))
-        ]
+            Hitbox(Position(0, 0), Dimensions(41, 41)),
+        ],
     )
 
-# ------------------------------------------------------- PROJECTILE STATES
 
 @pytest.fixture
 def mock_motor_state() -> MotorState:
     return MotorState(
-        id="arrow-1",
+        id="arrow",
+        name="feathered-arrow",
         layer="0",
         position=Position(x=70, y=50),
-        velocity=Velocity(vx=50.0, vy=0.0)
+        velocity=Velocity(vx=50.0, vy=0.0),
     )

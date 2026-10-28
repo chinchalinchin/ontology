@@ -7,9 +7,9 @@
 #   strategy: AND | OR
 #   scan:
 #     app: [ 
-#             base, core, component,
-#             config, schema, semantics,
-#             input, mechanics 
+#             asset, base, core, 
+#             component, config, devices,
+#             schema, semantics, mechanics 
 #     ]
 #     asset: [ 
 #             property, state, frame,
@@ -24,15 +24,13 @@
 #               geography, objects, resources,
 #               sheets, tiles, widgets 
 #     ]
-#     main: [ 
-#               cli, hydration 
-#     ]
 #     physics: [ 
 #               fields, motion, space 
 #     ]
 #     workflows: [ 
-#               collisions, combat, compositions,
-#               ecology, fluids, intentions,
+#               cli, collisions, combat,
+#               compositions, ecology, fluids,
+#               hydration, intentions, main, 
 #               menus, motion, orchestration,
 #               navgiation, rendering, seasons,
 #               telemetry 

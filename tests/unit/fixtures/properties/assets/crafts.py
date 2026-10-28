@@ -1,9 +1,13 @@
 """
+@domain.test
 @test.fixtures
+@app.asset
+@asset.property
+@category.crafts
 
-# Ontology: tests.unit.fixtures.properties.crafts
+# Ontology: Tests - tests.unit.fixtures.properties.crafts
 
-Mock Craft Property fixtures aligned with src/assets/crafts/.
+Mock Craft Property fixtures.
 """
 # External Libraries
 import pytest
