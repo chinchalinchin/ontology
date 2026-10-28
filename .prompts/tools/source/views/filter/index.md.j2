@@ -28,7 +28,7 @@ The Filter View *queries* the codebase based on the **Active Tags** and the **Fi
 * **Active Tags**: `{{ tags | join('`, `') }}`
 
 {% for pkg in annotations(properties.paths.root ~ 'src', tags, strategy) %}
-##### Matched Package: {{ pkg.package }}
+##### Matched Source Package: {{ pkg.package }}
 
 {% for mod in pkg.modules %}
 **Matched Module: `src/{{ mod.paths.relative }}`**
@@ -39,4 +39,18 @@ The Filter View *queries* the codebase based on the **Active Tags** and the **Fi
 
 {% endfor %}
 {% endfor %}
+
+{% for pkg in annotations(properties.paths.root ~ 'tests/unit', tags, strategy) %}
+##### Matched Test Package: {{ pkg.package }}
+
+{% for mod in pkg.modules %}
+**Matched Module: `tests/unit/{{ mod.paths.relative }}`**
+
+```{{ typehint(mod.paths.relative) }}
+{{ file(mod.paths.absolute) }}
+```
+
+{% endfor %}
+{% endfor %}
+
 {% endfor %}

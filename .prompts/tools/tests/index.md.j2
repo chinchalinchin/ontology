@@ -1,18 +1,16 @@
 {% if tools.views.tests is defined and tools.views.tests.values() | select | list | length > 0 %}
 # Tool: Tests
 
-The **Tests Tool** provides **Views** into the application testing bed. 
+The **Tests Tool** provides **Views** into the [Application](#application) testing bed. 
 
 ## Tests: Views
 
-{% if tools.views.tests.fixtures %}
+{% if tools.views.tests.configuration %}
 {% include 'tools/tests/views/configuration.md.j2' %}
-
-{% include 'tools/tests/views/fixtures.md.j2'%}
 {% endif %}
 
-{% if tools.views.tests.workflow %}
-{% include 'tools/tests/views/workflows/' ~ tools.parameters.tests.workflow ~ '.md.j2' %}
+{% if tools.views.tests.fixtures %}
+{% include 'tools/tests/views/fixtures.md.j2'%}
 {% endif %}
 
 {% if tools.views.tests.pipeline %}

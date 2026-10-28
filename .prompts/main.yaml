@@ -1,6 +1,74 @@
 # ----------------------------------------------------
+# --------------------- TOOLS.PARAMETERS.SOURCE.FILTER
+# ----------------------------------------------------
+# default: AND | OR
+# queries:
+# - title: TITLE
+#   strategy: AND | OR
+#   scan:
+#     app: [ 
+#             base, core, component,
+#             config, schema, semantics,
+#             input, mechanics 
+#     ]
+#     asset: [ 
+#             property, state, frame,
+#             animation, hitbox 
+#     ]
+#     domain: [ 
+#               abstract, concrete, model,
+#               logic, graphics
+#     ]
+#     category: [ 
+#               crafts, cursors, effects,
+#               geography, objects, resources,
+#               sheets, tiles, widgets 
+#     ]
+#     main: [ 
+#               cli, hydration 
+#     ]
+#     physics: [ 
+#               fields, motion, space 
+#     ]
+#     workflows: [ 
+#               collisions, combat, compositions,
+#               ecology, fluids, intentions,
+#               menus, motion, orchestration,
+#               navgiation, rendering, seasons,
+#               telemetry 
+#     ]
+# ----------------------------------------------------
+# ------------------------ TOOL.PARAMETERS.SOURCE.DATA
+# ----------------------------------------------------
+#     properties: [ 
+#               crafts, cursors, effects,
+#               fonts, geography, objects
+#               resources, sheets, sounds
+#               tiles, widgets
+#     ]
+#     state: [
+#               crafts, effects, objects
+#               resources, sheets, tiles, 
+#               world
+#     ]
+#     configurations: [
+#               actions, compositions, intentions,
+#               library, mappings, materials,
+#               mechanics, menus, plots,
+#               recipes, stages
+#     ]
+#     templates: [
+#               menu-dump, registry-dump, sdl-dump, 
+#               state-dump
+#     ]
+# ----------------------------------------------------
+# ----------------------------------------------------
+# ----------------------------------------------- TASK
+# ----------------------------------------------------
+# ----------------------------------------------------
 task:
 # ----------------------------------------------------
+  # template: draft.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
@@ -39,6 +107,10 @@ task:
     diagram: executor-centennial-transitions.mmd
     table: executor-centennial-transitions.md
 # ----------------------------------------------------
+# ----------------------------------------------------
+# ---------------------------------------------- TOOLS
+# ----------------------------------------------------
+# ----------------------------------------------------
 tools:
 # ----------------------------------------------------
   views:
@@ -53,8 +125,8 @@ tools:
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: false
-      filter: true
+      data: true
+      filter: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
@@ -65,10 +137,9 @@ tools:
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
+      configuraiton: false
       pipeline: false
-      fixtures: true
       session: false
-      workflow: false
 # ----------------------------------------------------
   parameters:
     # --------------------------------------------
@@ -99,144 +170,24 @@ tools:
     # --------------------------------------------
     source:
       filter:
-        default: OR
+        default: AND
         queries:
             # ------------------------------------
-            # - title: TITLE
-            #   strategy: AND | OR
-            #   scan:
-            #     app: [ 
-            #             base, core, component,
-            #             config, schema, semantics,
-            #             input, mechanics 
-            #     ]
-            #     asset: [ 
-            #             property, state, frame,
-            #             animation, hitbox 
-            #     ]
-            #     domain: [ 
-            #               abstract, concrete, model,
-            #               logic, graphics
-            #     ]
-            #     category: [ 
-            #               crafts, cursors, effects,
-            #               geography, objects, resources,
-            #               sheets, tiles, widgets 
-            #     ]
-            #     main: [ 
-            #               cli, hydration 
-            #     ]
-            #     physics: [ 
-            #               fields, motion, space 
-            #     ]
-            #     workflows: [ 
-            #               collisions, combat, compositions,
-            #               ecology, fluids, intentions,
-            #               menus, motion, orchestration,
-            #               navgiation, rendering, seasons,
-            #               telemetry 
-            #     ]
-            # ------------------------------------
-            # - title: Interaction Mechanics
-            #   strategy: AND
-            #   scan:
-            #     app: [ mechanics ]
-            #     workflows: [ interactions ]
-            # # ------------------------------------
-            - title: Abstract Asset Components
-              strategy: AND
-              scan:
-                app: [ asset ]
-                domain: [ abstract ]
-            - title: Concrete Asset Components
-              strategy: AND
-              scan:
-                app: [ asset ]
-                domain: [ concrete ]
-            # # ------------------------------------
-            # - title: Abstract Modules
-            #   strategy: AND
-            #   scan:
-            #     app: [ module ]
-            #     domain: [ abstract ]
-            # # ------------------------------------
-            # - title: System Components
-            #   strategy: AND
-            #   scan:
-            #     app: [ core, component ]
-            #     domain: [ system ]
-            # # ------------------------------------
-            # - title: Material Implementations
-            #   strategy: AND
-            #   scan:
-            #     app: [ asset ]
-            #     domain: [ concrete ]
-            #     modality: [ material ]
-            # # ------------------------------------
-            # - title: Material Models
-            #   strategy: AND
-            #   scan:
-            #     domain: [ model ]
-            #     modality: [ material ]
-            # # ------------------------------------
-            # - title: Composition Logic
-            #   strategy: AND 
-            #   scan:
-            #     domain: [ logic ]
-            #     app: [ module ]
-            #     workflows: [ compositions ]
-            # # ------------------------------------
-            # - title: Composition Services
-            #   strategy: AND
-            #   scan:
-            #     app: [ services ]
-            #     workflows: [ compositions ]
-            # # -----------------------------------
-            # - title: Injection Services
-            #   strategy: AND
-            #   scan:
-            #     app: [ services ]
-            #     workflows: [ injection ]
-            # # ------------------------------------
-            # - title: Procedural Generation Services
-            #   strategy: AND
-            #   scan:
-            #     app: [ services ]
-            #     workflows: [ ecology, generation ]
-            # ------------------------------------
             - title: Asset Models
-              strategy: AND
               scan: 
                 domain: [ model ]
             # ------------------------------------
       data: 
-        # properties: [ 
-        #                   crafts, cursors, effects,
-        #                   fonts, geography, objects
-        #                   resources, sheets, sounds
-        #                   tiles, widgets
-        # ]
-        properties: [ crafts, object ]
-        # state: [
-        #                   crafts, effects, objects
-        #                   objects, resources, sheets,
-        #                   tiles, world
-        # ]
-        state: [ ]
-        # configurations: [
-        #                   actions, compositions, intentions,
-        #                   library, mappings, materials,
-        #                   mechanics, menus, plots,
-        #                   recipes, stages
-        # ]
-        configurations: [ compositions ]
-        # templates: [
-        #                   menu-dump, registry-dump, sdl-dump, 
-        #                   state-dump
-        # ]
+        properties: [ 
+          crafts, cursors, effects, 
+          geography, objects, resources, 
+          sheets, tiles, widgets 
+        ]
+        state: [ world-01 ]
+        configurations: [ actions, recipes ]
         templates: [  ]
     # --------------------------------------------
-    # ------------------------ PARAMETERS: SHELL
+    # -------------------------- PARAMETERS: SHELL
     # --------------------------------------------
     shell:
       directory: |
@@ -249,40 +200,6 @@ tools:
       pipeline:
         command: pytest -m
         marker: collisions
-      workflow: collisions
-      fixtures:
-        # ----------------------- FIXTURES: CONFIGURATIONS
-        # - configuration/compositions
-        # - configuration/groups
-        - configuration/recipes
-        # - configuration/transitions
-        # - configuration/schemas
-        # ----------------------- FIXTURES: PROPERTIES
-        - properties/crafts
-        - properties/cursors
-        - properties/effects
-        - properties/fonts
-        - properties/geography
-        - properties/objects
-        - properties/resources
-        - properties/sheets
-        - properties/tiles
-        - properties/widgets
-        - properties/schemas
-        # ----------------------- FIXTURES: STATE
-        - state/crafts
-        - state/effects
-        - state/objects
-        - state/resources
-        - state/sheets
-        - state/world
-        - state/schemas
-        # ----------------------- FIXTURES: APPLICATIONS
-        - assets
-        # - components
-        # - menus
-        # - services
-        # - structures
       session:
         description: |
           description

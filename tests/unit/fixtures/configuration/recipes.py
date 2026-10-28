@@ -1,13 +1,15 @@
 """
+@test.fixtures
+
 # Ontology: tests.unit.fixtures.configuration.recipes
 
-Mock Recipe Configuration fixtures
+Mock Recipe Configuration fixtures aligned with src/data/config/recipes/main.yaml.
 """
 # External Libraries
 import pytest
 
 # Application Libraries
-from app.config.enums import ( 
+from app.config.enums import (
     FrameRecipe,
     AnimationRecipe,
     HitboxRecipe,
@@ -27,187 +29,216 @@ from app.models.config import (
 )
 
 
-
-# --------------------------------------------------------------------------
-# ------------------------------------------------------ MOCK CONFIGURATIONS
-# --------------------------------------------------------------------------
-
 @pytest.fixture
 def mock_recipes_configuration() -> RecipeConfiguration:
-    """Complete RecipeConfiguration matching native engine schemas."""
+    """Complete RecipeConfiguration matching src/data/config/recipes/main.yaml."""
     return RecipeConfiguration(
         tiles=TileRecipe(
-            environ =Recipe(
-                frame=FrameRecipe.SINGLE.value, 
+            environ=Recipe(
+                frame=FrameRecipe.SEASONAL.value,
                 animation=AnimationRecipe.NONE.value,
-                hitbox=HitboxRecipe.NONE.value
+                hitbox=HitboxRecipe.NONE.value,
             ),
-            canopy =Recipe(
-                frame=FrameRecipe.SINGLE.value, 
-                animation=AnimationRecipe.NONE.value,
-                hitbox=HitboxRecipe.NONE.value
-            )
-        ),
-        cursors=CursorRecipe(
-            projectiles=Recipe(
-                frame=FrameRecipe.SINGLE.value, 
-                animation=AnimationRecipe.NONE.value,
-                hitbox=HitboxRecipe.STATIC.value
-            ),
-            expressions=Recipe(
-                frame=FrameRecipe.INDEX.value, 
-                animation=AnimationRecipe.NONE.value,
-                hitbox=HitboxRecipe.NONE.value
-            )
-        ),
-        crafts=CraftRecipe(
-            stairs=Recipe(
-                frame=FrameRecipe.DIRECTED.value,
-                animation=AnimationRecipe.NONE.value,
-                hitbox=HitboxRecipe.DIRECTED.value
-            ),
-            struts=Recipe(
-                frame=FrameRecipe.SINGLE.value, 
-                animation=AnimationRecipe.NONE.value,
-                hitbox=HitboxRecipe.STATIC.value
-            ),
-            bridges=Recipe(
-                frame=FrameRecipe.ORIENTED.value,
-                animation=AnimationRecipe.NONE.value,
-                hitbox=HitboxRecipe.STATIC.value
-            ),
-            platforms=Recipe(
+            canopy=Recipe(
                 frame=FrameRecipe.SINGLE.value,
                 animation=AnimationRecipe.NONE.value,
-                hitbox=HitboxRecipe.ELEVATED.value
-            )
+                hitbox=HitboxRecipe.NONE.value,
+            ),
+            grid=Recipe(
+                frame=FrameRecipe.SINGLE.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.NONE.value,
+            ),
+        ),
+        crafts=CraftRecipe(
+            bridges=Recipe(
+                frame=FrameRecipe.MATERIAL.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.MATERIAL.value,
+            ),
+            struts=Recipe(
+                frame=FrameRecipe.MATERIAL.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.MATERIAL.value,
+            ),
+            stairs=Recipe(
+                frame=FrameRecipe.MATERIAL.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.MATERIAL.value,
+            ),
+        ),
+        cursors=CursorRecipe(
+            expressions=Recipe(
+                frame=FrameRecipe.INDEX.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.NONE.value,
+            ),
+            projectiles=Recipe(
+                frame=FrameRecipe.SINGLE.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.STATIC.value,
+            ),
+        ),
+        geography=GeographyRecipe(
+            shorelines=Recipe(
+                frame=FrameRecipe.CARDINAL.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.DYNAMIC.value,
+            ),
         ),
         effects=EffectRecipe(
             collectables=Recipe(
-                frame=FrameRecipe.ITERABLE.value, 
+                frame=FrameRecipe.ITERABLE.value,
                 animation=AnimationRecipe.FREQUENCY.value,
-                hitbox=HitboxRecipe.STATIC.value
-            ),
-            hazards=Recipe(
-                frame=FrameRecipe.ITERABLE.value, 
-                animation=AnimationRecipe.FREQUENCY.value,
-                hitbox=HitboxRecipe.STATIC.value
-            ),
-            passive=Recipe(
-                frame=FrameRecipe.ITERABLE.value, 
-                animation=AnimationRecipe.FREQUENCY.value,
-                hitbox=HitboxRecipe.NONE.value
+                hitbox=HitboxRecipe.STATIC.value,
             ),
             reactables=Recipe(
-                frame=FrameRecipe.ITERABLE.value, 
+                frame=FrameRecipe.ITERABLE.value,
                 animation=AnimationRecipe.FREQUENCY.value,
-                hitbox=HitboxRecipe.STATIC.value
+                hitbox=HitboxRecipe.STATIC.value,
+            ),
+            hazards=Recipe(
+                frame=FrameRecipe.ITERABLE.value,
+                animation=AnimationRecipe.FREQUENCY.value,
+                hitbox=HitboxRecipe.STATIC.value,
+            ),
+            passive=Recipe(
+                frame=FrameRecipe.ITERABLE.value,
+                animation=AnimationRecipe.FREQUENCY.value,
+                hitbox=HitboxRecipe.NONE.value,
             ),
             fluids=Recipe(
-                frame=FrameRecipe.FLUID.value, 
+                frame=FrameRecipe.FLUID.value,
                 animation=AnimationRecipe.FREQUENCY.value,
-                hitbox=HitboxRecipe.DYNAMIC.value
-            )
+                hitbox=HitboxRecipe.DYNAMIC.value,
+            ),
         ),
         objects=ObjectRecipe(
             chests=Recipe(
-                frame=FrameRecipe.ITERABLE.value, 
-                animation=AnimationRecipe.BINARY.value,
-                hitbox=HitboxRecipe.STATIC.value
+                frame=FrameRecipe.BINARY.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.STATIC.value,
             ),
             crates=Recipe(
-                frame=FrameRecipe.SINGLE.value, 
+                frame=FrameRecipe.OBJECT.value,
                 animation=AnimationRecipe.NONE.value,
-                hitbox=HitboxRecipe.STATIC.value
+                hitbox=HitboxRecipe.STATIC.value,
             ),
             doors=Recipe(
-                frame=FrameRecipe.SINGLE.value, 
+                frame=FrameRecipe.OBJECT.value,
                 animation=AnimationRecipe.NONE.value,
-                hitbox=HitboxRecipe.STATIC.value
+                hitbox=HitboxRecipe.LAYERED.value,
             ),
             gates=Recipe(
-                frame=FrameRecipe.ITERABLE.value, 
-                animation=AnimationRecipe.BINARY.value,
-                hitbox=HitboxRecipe.STATIC.value
+                frame=FrameRecipe.BINARY.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.SWITCH.value,
+            ),
+            obstacles=Recipe(
+                frame=FrameRecipe.SINGLE.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.STATIC.value,
             ),
             plates=Recipe(
-                frame=FrameRecipe.ITERABLE, 
-                animation=AnimationRecipe.BINARY.value,
-                hitbox=HitboxRecipe.STATIC.value
+                frame=FrameRecipe.BINARY.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.STATIC.value,
             ),
             signs=Recipe(
-                frame=FrameRecipe.SINGLE.value, 
+                frame=FrameRecipe.OBJECT.value,
                 animation=AnimationRecipe.NONE.value,
-                hitbox=HitboxRecipe.STATIC.value
-            )
-        ),
-        sheets=SheetRecipe(
-            sprites=Recipe(
-                frame=FrameRecipe.SPRITE.value, 
-                animation=AnimationRecipe.SPRITE.value,
-                hitbox=HitboxRecipe.STATIC.value
+                hitbox=HitboxRecipe.STATIC.value,
             ),
-            players=Recipe(
-                frame=FrameRecipe.SPRITE.value, 
-                animation=AnimationRecipe.SPRITE.value,
-                hitbox=HitboxRecipe.STATIC.value
+            rafts=Recipe(
+                frame=FrameRecipe.SINGLE.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.STATIC.value,
             ),
-            pixies=Recipe(
-                frame=FrameRecipe.STATE.value, 
-                animation=AnimationRecipe.STATE.value,
-                hitbox=HitboxRecipe.STATIC.value
-            )
         ),
         resources=ResourceRecipe(
-            trees=Recipe(
+            crops=Recipe(
                 frame=FrameRecipe.STAGE.value,
                 animation=AnimationRecipe.NONE.value,
-                hitbox=HitboxRecipe.STAGE.value
+                hitbox=HitboxRecipe.STAGE.value,
             ),
             ore=Recipe(
                 frame=FrameRecipe.STAGE.value,
                 animation=AnimationRecipe.NONE.value,
-                hitbox=HitboxRecipe.STAGE.value
+                hitbox=HitboxRecipe.STAGE.value,
             ),
-            crops=Recipe(
+            trees=Recipe(
                 frame=FrameRecipe.STAGE.value,
                 animation=AnimationRecipe.NONE.value,
-                hitbox=HitboxRecipe.STAGE.value
-            )
+                hitbox=HitboxRecipe.STAGE.value,
+            ),
+        ),
+        sheets=SheetRecipe(
+            players=Recipe(
+                frame=FrameRecipe.SPRITE.value,
+                animation=AnimationRecipe.SPRITE.value,
+                hitbox=HitboxRecipe.STATIC.value,
+            ),
+            pixies=Recipe(
+                frame=FrameRecipe.STATE.value,
+                animation=AnimationRecipe.STATE.value,
+                hitbox=HitboxRecipe.STATIC.value,
+            ),
+            sprites=Recipe(
+                frame=FrameRecipe.SPRITE.value,
+                animation=AnimationRecipe.SPRITE.value,
+                hitbox=HitboxRecipe.STATIC.value,
+            ),
+            armor=Recipe(
+                frame=FrameRecipe.STATE.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.NONE.value,
+            ),
+            tools=Recipe(
+                frame=FrameRecipe.STATE.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.NONE.value,
+            ),
+            shields=Recipe(
+                frame=FrameRecipe.STATE.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.NONE.value,
+            ),
+            utilities=Recipe(
+                frame=FrameRecipe.STATE.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.NONE.value,
+            ),
+            weapons=Recipe(
+                frame=FrameRecipe.STATE.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.ATTACK.value,
+            ),
         ),
         widgets=WidgetRecipe(
-            pages=Recipe(
-                frame=FrameRecipe.SINGLE.value, 
-                animation=AnimationRecipe.NONE.value,
-                hitbox=HitboxRecipe.NONE.value
-            ),
             buttons=Recipe(
-                frame=FrameRecipe.TRAVERSAL.value, 
+                frame=FrameRecipe.TRAVERSAL.value,
                 animation=AnimationRecipe.TRAVERSAL.value,
-                hitbox=HitboxRecipe.NONE.value
-            ),
-            meters=Recipe(
-                frame=FrameRecipe.METER.value, 
-                animation=AnimationRecipe.METER.value,
-                hitbox=HitboxRecipe.NONE.value
-            ),
-            panes=Recipe(
-                frame=FrameRecipe.NONE.value, 
-                animation=AnimationRecipe.NONE.value,
-                hitbox=HitboxRecipe.NONE.value
+                hitbox=HitboxRecipe.NONE.value,
             ),
             icons=Recipe(
-                frame=FrameRecipe.INDEX.value, 
+                frame=FrameRecipe.INDEX.value,
                 animation=AnimationRecipe.NONE.value,
-                hitbox=HitboxRecipe.NONE.value
-            )
-        ),
-        geography=GeographyRecipe(
-            shorelines=Recipe(
-                frame=FrameRecipe.CARDINAL.value, 
+                hitbox=HitboxRecipe.NONE.value,
+            ),
+            meters=Recipe(
+                frame=FrameRecipe.METER.value,
+                animation=AnimationRecipe.METER.value,
+                hitbox=HitboxRecipe.NONE.value,
+            ),
+            pages=Recipe(
+                frame=FrameRecipe.SINGLE.value,
                 animation=AnimationRecipe.NONE.value,
-                hitbox=HitboxRecipe.DYNAMIC.value
-            )
+                hitbox=HitboxRecipe.NONE.value,
+            ),
+            panes=Recipe(
+                frame=FrameRecipe.SINGLE.value,
+                animation=AnimationRecipe.NONE.value,
+                hitbox=HitboxRecipe.NONE.value,
+            ),
         ),
     )
-

@@ -13,13 +13,6 @@ compositions:
     position:
       x: 400
       y: 800
-#   - id: regalia-galleria
-#     name: the-gallery
-#     layer: '0'
-#     owner: the-government
-#     position:
-#       x: 650
-#       y: 1100
   - id: castle-dawn
     name: the-capital
     owner: the-government
@@ -27,10 +20,3 @@ compositions:
     position:
       x: 230
       y: 0
-#   - id: citadel-of-trials
-#     name: level-01
-#     owner: the-government
-#     layer: '0'
-#     position:
-#       x: 825
-#       y: 150

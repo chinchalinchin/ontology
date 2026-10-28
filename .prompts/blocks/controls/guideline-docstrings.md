@@ -21,7 +21,7 @@ Tags are meant to capture logically related slices of the Application.
 * Tags:
     * Domain Tags:
         * `domain.abstract` (*Abstract Interfaces*)
-        * `domain.concrete` (*Abstract Implementation*)
+        * `domain.concrete` (*Abstract Implementations*)
         * `domain.graphics` (*SDL & Rendering*)
         * `domain.logic` (*Algorithms*)
         * `domain.model` (*Data Structures*)
@@ -65,6 +65,8 @@ Tags are meant to capture logically related slices of the Application.
                 * `physics.fields` (*Vector Fields*)
                 * `physics.motion` (*Kinematics, Momentum, Collisions*)
                 * `physics.space` (*Spatial Grid Hashing*)
+            * Test Tags:
+                * `test.fixtures`
             * Workflow Tags: 
                 * `workflows.cli`
                 * `workflow.collisions`
