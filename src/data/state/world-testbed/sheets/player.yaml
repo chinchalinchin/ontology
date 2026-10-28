@@ -1,0 +1,35 @@
+sheets:
+  players: 
+    - id: player
+      name: test-player
+      layer: '0'
+      depth: 0
+      position:
+        x: 05
+        y: 80
+      meters:
+        health: 
+          current: 50
+          maximum: 100
+        magic: 
+          current: 100
+          maximum: 100
+      character:
+        strength: 5
+        defense: 5
+        speed: 100
+        impulse: 25
+      mutators:
+        parameters:
+          action:
+            radius: 30
+      inventory: 
+        pack: null
+        pouch: null
+        equipment:
+          armor: null
+          tool: null
+          utility: null
+          weapon: shortsword
+          shield: buckler
+        wallet: 0

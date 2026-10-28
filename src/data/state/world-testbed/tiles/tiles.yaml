@@ -1,0 +1,11 @@
+tiles:
+  environ:
+    - id: temperate
+      name: test-tiles
+      layer: '0'
+      position:
+        x: 0
+        y: 0
+      multiple:
+        nx: 100
+        ny: 100

@@ -1,4 +1,8 @@
 """
+@domain.system
+@app.config
+@app.semantics
+
 # Ontology: Source - app.config.settings
 
 Package for global runtime environment settings.

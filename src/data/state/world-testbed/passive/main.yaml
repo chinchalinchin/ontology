@@ -1,0 +1,9 @@
+effects:
+  passive:
+    - id: torch
+      name: test-passive
+      layer: '0'
+      anchor: 346
+      position:
+        x: 260
+        y: 190

@@ -68,7 +68,9 @@ Tags are meant to capture logically related slices of the Application.
                 * `physics.motion` (*Kinematics, Momentum, Collisions*)
                 * `physics.space` (*Spatial Grid Hashing*)
             * Test Tags:
+                * `test.config`
                 * `test.fixtures`
+                * `test.unit`
             * Workflow Tags: 
                 * `workflows.cli`
                 * `workflow.collisions`

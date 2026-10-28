@@ -66,12 +66,12 @@
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  # template: draft.md.j2
+  template: draft.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
   # template: maintain/console/patch.md.j2
-  template: maintain/console/session.md.j2
+  # template: maintain/console/session.md.j2
   # template: maintain/script.md.j2
   # --------------------------------------------
   # --------------------------- TEMPLATES: DUMPS 
@@ -176,13 +176,8 @@ tools:
                 domain: [ model ]
             # ------------------------------------
       data: 
-        properties: [ 
-          crafts, cursors, effects, 
-          geography, objects, resources, 
-          sheets, tiles, widgets 
-        ]
-        state: [ world-01 ]
-        configurations: [ actions, recipes ]
+        state: [ world-testbed ]
+        configurations: [ ]
         templates: [  ]
     # --------------------------------------------
     # -------------------------- PARAMETERS: SHELL

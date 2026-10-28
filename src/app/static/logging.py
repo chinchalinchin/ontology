@@ -1,9 +1,11 @@
 """
+@domain.system
+@app.config
 @workflow.telemetry
 
 # Ontology: Source - app.config.logging
 
-Centralized logging configuration for the Ontology application.
+Centralized logging configuration.
 """
 # Standard Libraries
 import logging.config

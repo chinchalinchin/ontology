@@ -1,5 +1,8 @@
 """
-# Ontology: Source - app.config.loader
+@domain.system
+@app.config
+
+# Ontology: Source - app.static.loader
 """
 # Standard Libraries
 from typing import (

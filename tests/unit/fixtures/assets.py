@@ -1,7 +1,11 @@
 """
-# Ontology: tests.unit.fixtures.assets
+@domain.test
+@app.asset
+@test.fixtures
 
-Factory-driven Asset fixtures aligned with world-01 and current AssetProperties.
+# Ontology: Tests - tests.unit.fixtures.assets
+
+Loader-backed Asset factory and aggregate fixtures.
 """
 # Standard Libraries
 from dataclasses import fields
@@ -12,52 +16,49 @@ import pytest
 
 # Application Libraries
 from app.assets.base import Asset
-from app.models.state.core import AssetState
+from app.models.config import RecipeConfiguration
+from app.models.properties import PropertiesSchema
+from app.models.state import AssetState, StateSchema
 from app.services.factories.assets import AssetFactory
 from app.static.semantics import AssetCategories
 
-WORLD_ASSET_CATEGORIES = (
+STATE_CATEGORIES = (
     AssetCategories.TILES.value,
     AssetCategories.CRAFTS.value,
+    AssetCategories.CURSORS.value,
     AssetCategories.EFFECTS.value,
     AssetCategories.OBJECTS.value,
     AssetCategories.RESOURCES.value,
     AssetCategories.SHEETS.value,
 )
 
+
 @pytest.fixture
 def asset(
-    mock_properties,
-    mock_state,
-    mock_recipes_configuration,
+    mock_properties: PropertiesSchema,
+    mock_recipes_configuration: RecipeConfiguration,
+    state,
 ):
     """
-    Fixture factory that instantiates an Asset via AssetFactory.asset.
+    Instantiates an Asset via AssetFactory.asset from the YAML-loaded schemas.
     """
     def _asset(
         category: str,
         instance: str,
-        state: Optional[AssetState] = None,
-        name: Optional[str] = None,
+        id: Optional[str] = None,
+        asset_state: Optional[AssetState] = None,
+        **state_overrides,
     ) -> Asset:
+        resolved_state = asset_state or state(category, instance, id=id, **state_overrides)
         prop_map = getattr(getattr(mock_properties, category), instance)
         recipe = getattr(getattr(mock_recipes_configuration, category), instance)
+        properties = prop_map[resolved_state.id]
 
-        if state is None:
-            states = getattr(getattr(mock_state, category), instance)
-            if name is not None:
-                state = next(
-                    s for s in states if s.name == name or s.id == name
-                )
-            else:
-                state = states[0]
-
-        properties = prop_map[state.id]
         return AssetFactory.asset(
             category,
             instance,
             properties,
-            state,
+            resolved_state,
             recipe,
         )
 
@@ -65,15 +66,15 @@ def asset(
 
 
 @pytest.fixture
-def mock_assets(asset, mock_state) -> list[Asset]:
+def mock_assets(asset, mock_state: StateSchema) -> list[Asset]:
     """
-    Projects all world-01 StateSchema entities through the `asset` factory fixture.
+    Materializes all entities declared in the YAML state test bed into Asset instances.
     """
     assets: list[Asset] = []
-    for category in WORLD_ASSET_CATEGORIES:
+    for category in STATE_CATEGORIES:
         category_node = getattr(mock_state, category)
         for instance_field in fields(category_node):
             instance = instance_field.name
-            for state in getattr(category_node, instance):
-                assets.append(asset(category, instance, state=state))
+            for entity_state in getattr(category_node, instance):
+                assets.append(asset(category, instance, asset_state=entity_state))
     return assets
