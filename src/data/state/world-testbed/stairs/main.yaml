@@ -1,0 +1,12 @@
+crafts:
+  stairs:
+    - id: steps
+      name: test-stairs
+      layer: '0'
+      material: granite
+      blueprint: up
+      delta: 1
+      elevation: 0
+      position:
+        x: 1000
+        y: 100

@@ -86,7 +86,8 @@ class ResourceStateInstances:
 class SheetStateInstances:
     sprites: List[SpriteState] = field(default_factory=list)
     players: List[SheetState] = field(default_factory=list)
-
+    pixies: List[SheetState] = field(default_factory=list)
+    
 @dataclass(slots=True)
 class TileStateInstances:
     environ: List[MultiplierState] = field(default_factory=list)

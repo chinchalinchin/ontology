@@ -611,14 +611,16 @@ def test_stage_frame_indexing_annual(mock_asset):
     crop = mock_asset(
         AssetCategories.RESOURCES.value,
         AssetInstances.CROPS.value,
-        id="lettuce",
+        id="maize",
     )
     crops = crop.frame.index(crop.id, crop.properties)
 
     assert len(crops) == len(AnnualStages)
     for i, stage in enumerate(AnnualStages):
-        key = f"lettuce{SEPARATOR}{stage.value}"
-        assert crops[key] == (i * 32, 0, 32, 22)
+        key = f"maize{SEPARATOR}{stage.value}"
+        assert crops[key] == (
+            i * 32, 0, crop.properties.dimensions.w, crop.properties.dimensions.l
+        )
 
 
 @pytest.mark.category_resources

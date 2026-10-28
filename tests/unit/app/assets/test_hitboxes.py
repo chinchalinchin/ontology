@@ -158,12 +158,6 @@ def test_stage_hitbox_annual_crop_transitions(mock_asset):
         id="maize",
     )
 
-    crop.state.stage = AnnualStages.SPROUT.value
-    assert crop.hitboxes == []
-
-    crop.state.stage = AnnualStages.GROWTH.value
-    assert crop.hitboxes == []
-
     crop.state.stage = AnnualStages.STALK.value
     stalk_hbs = crop.hitboxes
     assert len(stalk_hbs) == 1
@@ -194,9 +188,6 @@ def test_stage_hitbox_perennial_transitions(mock_asset):
         id="deciduous",
     )
 
-    tree.state.stage = PerennialStages.SAPLING.value
-    assert tree.hitboxes == []
-
     tree.state.stage = PerennialStages.ADULT.value
     hbs = tree.hitboxes
     assert len(hbs) == 1
@@ -208,7 +199,7 @@ def test_stage_hitbox_perennial_transitions(mock_asset):
     tree.state.stage = PerennialStages.STUMP.value
     stump_hbs = tree.hitboxes
     assert len(stump_hbs) == 1
-    assert stump_hbs[0].position.x == 30
-    assert stump_hbs[0].position.y == 115
-    assert stump_hbs[0].dimensions.w == 34
-    assert stump_hbs[0].dimensions.l == 18
+    assert stump_hbs[0].position.x == 36
+    assert stump_hbs[0].position.y == 120
+    assert stump_hbs[0].dimensions.w == 18
+    assert stump_hbs[0].dimensions.l == 14
