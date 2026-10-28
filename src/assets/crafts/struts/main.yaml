@@ -240,7 +240,7 @@ crafts:
       #   - red: Palette with red boxes.
       #   - yellow: Palette with yellow boxes.
       #   - green: Pallete with green cans.
-      dimension:
+      dimensions:
         w: 63
         l: 58
       mass: 0

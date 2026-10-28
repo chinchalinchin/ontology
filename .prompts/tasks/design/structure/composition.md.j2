@@ -15,7 +15,24 @@
 * **Signs** If adding Signs, ensure the text is stored in the [Library](#library) and accounts for all current [Plot](#ontology-plot) states. Sign Personas may be added freely, but all Sign Personas must have the following Lexicon keys: `spring`, `summer`, `autumn`, `winter`.
 * **Property Indexing** Many Assets may need their properties adjusted to render or behave properly (This does not include `dimensions`; all `dimensions` are accurate.). If using an Asset that is missing properties or has misconfigured properties, set or adjust them accordingly.
 
-## (Blueprint, Material) Space
+## Design: Themes
+
+YAML anchors are processed by `pyyaml` prior to being loaded in the [Application](#application). They should be used like a theme or stylesheet. Declare theme variables (anchors) at the top of each [Composition Model](#composition-model) and reference them to consistently "style" the Composition.
+
+```yaml
+# -------------------- COMPOSITION {{ title}} THEME
+theme:
+  geologic: &geologic granite
+  geologic-alt: &geologic marble
+  chromatic: &chromatic blue
+  chromatic-alt: &chromatic-alt yellow
+layers:
+  atrium: &atrium-layer atrium-layer
+  throne: &throne-layer throne-layer
+# --------------------------------------------------
+```
+
+## Design: (Blueprint, Material) Space
 
 **Material Genera**
 
@@ -25,6 +42,6 @@
 
 {{ file(properties.paths.root + 'docs/static/md/blueprint-schema.md') }}
 
-## Material Pallete
+## Design: Material Pallete
 
 {{ file(properties.paths.root + 'docs/static/md/material-palette.md') }}

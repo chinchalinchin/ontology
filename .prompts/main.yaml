@@ -66,8 +66,8 @@ tools:
     # --------------------------------------------
     tests:  
       pipeline: false
-      fixtures: false
-      session: true
+      fixtures: true
+      session: false
       workflow: false
 # ----------------------------------------------------
   parameters:
@@ -137,17 +137,22 @@ tools:
             #               telemetry 
             #     ]
             # ------------------------------------
-            - title: Interaction Mechanics
-              strategy: AND
-              scan:
-                app: [ mechanics ]
-                workflows: [ interactions ]
-            # # ------------------------------------
-            # - title: Abstract Components
+            # - title: Interaction Mechanics
             #   strategy: AND
             #   scan:
-            #     app: [ component ]
-            #     domain: [ abstract ]
+            #     app: [ mechanics ]
+            #     workflows: [ interactions ]
+            # # ------------------------------------
+            - title: Abstract Asset Components
+              strategy: AND
+              scan:
+                app: [ asset ]
+                domain: [ abstract ]
+            - title: Concrete Asset Components
+              strategy: AND
+              scan:
+                app: [ asset ]
+                domain: [ concrete ]
             # # ------------------------------------
             # - title: Abstract Modules
             #   strategy: AND
@@ -199,10 +204,10 @@ tools:
             #     app: [ services ]
             #     workflows: [ ecology, generation ]
             # ------------------------------------
-            # - title: Fluids
-            #   strategy: AND
-            #   scan: 
-            #     workflows: [ fluids ]
+            - title: Asset Models
+              strategy: AND
+              scan: 
+                domain: [ model ]
             # ------------------------------------
       data: 
         # properties: [ 
@@ -249,32 +254,32 @@ tools:
         # ----------------------- FIXTURES: CONFIGURATIONS
         # - configuration/compositions
         # - configuration/groups
-        # - configuration/recipes
+        - configuration/recipes
         # - configuration/transitions
         # - configuration/schemas
         # ----------------------- FIXTURES: PROPERTIES
-        # - properties/crafts
-        # - properties/cursors
+        - properties/crafts
+        - properties/cursors
         - properties/effects
-        # - properties/fonts
-        # - properties/geography
+        - properties/fonts
+        - properties/geography
         - properties/objects
-        # - properties/resources
+        - properties/resources
         - properties/sheets
         - properties/tiles
-        # - properties/widgets
+        - properties/widgets
         - properties/schemas
         # ----------------------- FIXTURES: STATE
-        # - state/crafts
+        - state/crafts
         - state/effects
         - state/objects
-        # - state/resources
+        - state/resources
         - state/sheets
-        # - state/world
+        - state/world
         - state/schemas
         # ----------------------- FIXTURES: APPLICATIONS
         - assets
-        - components
+        # - components
         # - menus
         # - services
         # - structures

@@ -61,7 +61,8 @@ objects:
       count: 1
       priority: 1
       material:
-        genus: metallics
+        genus: chromatics
+        host: wood
       hitboxes:
         in:
           - position:

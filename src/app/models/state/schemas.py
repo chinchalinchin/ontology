@@ -39,7 +39,6 @@ from app.models.state.assets import (
     SheetState,
     CraftState,
     ResourceState,
-    PlatformState,
     StairState
 )
 

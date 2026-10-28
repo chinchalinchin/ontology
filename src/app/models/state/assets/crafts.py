@@ -25,6 +25,7 @@ from app.static.semantics import (
     Columns,
     Enclosures,
     Inclines,
+    Decor,
     Directions,
     Orientations,
     # --- MATERIAL GENERA
@@ -57,6 +58,7 @@ class CraftState(AssetState):
         Buildings,
         Corridors,
         Columns,
+        Decor,
         Directions,
         Enclosures,
         Inclines,

@@ -1,10 +1,14 @@
+# ------------------------------------------------
+theme:
+  material: &theme granite
+# ------------------------------------------------
 compositions:
   brick-house:
     root:
       strut:
         id: home
         name: roof
-        material: granite
+        material: *theme
         blueprint: roofs
       components:
         objects:

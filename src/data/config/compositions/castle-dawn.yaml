@@ -1,0 +1,761 @@
+# ------------------------------------------------
+theme:
+  geologic: &geologic granite
+  chromatic: &chromatic blue
+  chromatic-alt: &chromatic-alt yellow
+layers:
+  atrium: &atrium-layer atrium-layer
+  stairwell-left: &stairwell-left-layer stairwell-left-layer
+  stairwell-right: &stairwell-right-layer stairwell-right-layer
+  throne: &throne-layer throne-layer
+# ------------------------------------------------
+compositions:
+  castle-dawn:
+    root:
+      strut:
+        id: mansion
+        name: archer-roof
+        material: *geologic
+        blueprint: flats
+        elevation: 2
+        multiple:
+          nx: 3
+          ny: 2
+      components:
+        crafts:
+          struts:
+            # --- GROUND EXTERIOR FACADE & COLUMNS (Elevation 0) ---
+            - id: mansion
+              name: exterior-wall
+              material: granite
+              blueprint: walls
+              elevation: 0
+              multiple:
+                nx: 3
+                ny: 1
+              position:
+                x: 0
+                y: bind(parent.span.l)
+            - id: tower
+              name: exterior-tower-left
+              material: *geologic
+              blueprint: bases
+              elevation: 0
+              anchor: anchor(exterior-wall)
+              multiple:
+                nx: 1
+                ny: 2
+              position:
+                x: -1 * bind(self.dimensions.w)
+                y: bind(exterior-wall.position.y) + bind(exterior-wall.span.l) - bind(self.span.l)
+            - id: tower
+              name: exterior-tower-right
+              material: *geologic
+              blueprint: bases
+              elevation: 0
+              anchor: anchor(exterior-wall)
+              multiple:
+                nx: 1
+                ny: 2
+              position:
+                x: bind(parent.span.w)
+                y: bind(exterior-wall.position.y) + bind(exterior-wall.span.l) - bind(self.span.l)
+            - id: banner
+              name: exterior-banner-left
+              material: red
+              blueprint: decor
+              elevation: 0
+              anchor: anchor(exterior-wall)
+              position:
+                x: bind(exterior-tower-left.span.w) + 16
+                y: bind(exterior-wall.position.y) + 16
+            - id: banner
+              name: exterior-banner-right
+              material: red
+              blueprint: decor
+              elevation: 0
+              anchor: anchor(exterior-wall)
+              position:
+                x: bind(parent.span.w) - bind(exterior-tower-right.span.w) - bind(self.dimensions.w) - 16
+                y: bind(exterior-wall.position.y) + 16
+            # --- ARCHER'S ROOF CRENELLATION & VANITY (Elevation 2) ---
+            - id: crenellation
+              name: roof-crenellation-north
+              material: *geologic
+              blueprint: horizontal
+              elevation: 2
+              multiple:
+                nx: 9
+                ny: 1
+              position:
+                x: 0
+                y: 0
+            - id: crenellation
+              name: roof-crenellation-south
+              material: *geologic
+              blueprint: horizontal
+              elevation: 2
+              multiple:
+                nx: 9
+                ny: 1
+              position:
+                x: 0
+                y: bind(parent.span.l) - bind(self.dimensions.l)
+            - id: crenellation
+              name: roof-crenellation-west
+              material: *geologic
+              blueprint: vertical
+              elevation: 2
+              multiple:
+                nx: 1
+                ny: 6
+              position:
+                x: 0
+                y: 0
+            - id: crenellation
+              name: roof-crenellation-east
+              material: *geologic
+              blueprint: vertical
+              elevation: 2
+              multiple:
+                nx: 1
+                ny: 6
+              position:
+                x: bind(parent.span.w) - bind(self.dimensions.w)
+                y: 0
+            - id: pillar
+              name: roof-pillar-left
+              material: *geologic
+              blueprint: bases
+              elevation: 2
+              multiple:
+                nx: 1
+                ny: 1
+              position:
+                x: bind(roof-crenellation-west.dimensions.w) + 64
+                y: bind(roof-crenellation-north.dimensions.l)
+            - id: pillar
+              name: roof-pillar-right
+              material: *geologic
+              blueprint: bases
+              elevation: 2
+              multiple:
+                nx: 1
+                ny: 1
+              position:
+                x: bind(parent.span.w) - bind(roof-crenellation-east.dimensions.w) - bind(self.span.w) - 64
+                y: bind(roof-crenellation-north.dimensions.l)
+        objects:
+          doors:
+            - id: pivot
+              name: atrium-entrance-door
+              material: *chromatic
+              elevation: 0
+              anchor: anchor(exterior-wall)
+              outlayer: *atrium-layer
+              position:
+                x: (bind(exterior-wall.span.w) - bind(self.dimensions.w)) // 2
+                y: bind(exterior-wall.position.y) + bind(exterior-wall.span.l) - bind(self.dimensions.l)
+              out:
+                x: bind(atrium-wall.position.x) + (bind(atrium-floor.span.w) - bind(self.dimensions.w)) // 2
+                y: bind(atrium-wall.position.y) + bind(atrium-floor.position.y) + bind(atrium-floor.span.l) - bind(self.dimensions.l)
+          signs:
+            - id: plaque
+              name: exterior-sign
+              material: granite
+              persona: castle-dawn-sign
+              lexicon: spring
+              elevation: 0
+              anchor: anchor(exterior-wall)
+              position:
+                x: (bind(exterior-wall.span.w) + bind(atrium-entrance-door.dimensions.w)) // 2 + 8
+                y: bind(exterior-wall.position.y) + bind(exterior-wall.span.l) - bind(self.dimensions.l) - 12
+        effects:
+          passive:
+            - id: torch
+              name: exterior-torch-left
+              elevation: 0
+              anchor: anchor(exterior-wall)
+              position:
+                x: (bind(exterior-wall.span.w) - bind(atrium-entrance-door.dimensions.w)) // 2 - bind(self.dimensions.w) - 4
+                y: bind(exterior-wall.position.y) + 16
+            - id: torch
+              name: exterior-torch-right
+              elevation: 0
+              anchor: anchor(exterior-wall)
+              position:
+                x: (bind(exterior-wall.span.w) + bind(atrium-entrance-door.dimensions.w)) // 2 + 4
+                y: bind(exterior-wall.position.y) + 16
+
+    branches:
+      # ===================================================================
+      # BRANCH 1: ATRIUM (atrium-layer)
+      # ===================================================================
+      - strut:
+          id: mansion
+          name: atrium-wall
+          layer: *atrium-layer
+          material: *geologic
+          blueprint: halls
+          elevation: 0
+          multiple:
+            nx: 7
+            ny: 1
+          position:
+            x: 0
+            y: 0
+        components:
+          crafts:
+            struts:
+              - id: mansion
+                name: atrium-floor
+                layer: *atrium-layer
+                material: *geologic
+                blueprint: floors
+                elevation: 0
+                multiple:
+                  nx: 7
+                  ny: 5
+                position:
+                  x: 0
+                  y: bind(parent.span.l)
+              - id: carpet
+                name: atrium-carpet
+                layer: *atrium-layer
+                material: *chromatic
+                blueprint: designs
+                elevation: 0
+                multiple:
+                  nx: 1
+                  ny: 5
+                position:
+                  x: (bind(parent.span.w) - bind(self.span.w)) // 2
+                  y: bind(parent.span.l)
+              # --- SYMMETRIC ELEVATED SURFACES (Elevation 1) ---
+              - id: mansion
+                name: atrium-platform-left
+                layer: *atrium-layer
+                material: *geologic
+                blueprint: flats
+                elevation: 1
+                multiple:
+                  nx: 2
+                  ny: 2
+                position:
+                  x: 0
+                  y: bind(parent.span.l)
+              - id: mansion
+                name: atrium-platform-right
+                layer: *atrium-layer
+                material: *geologic
+                blueprint: flats
+                elevation: 1
+                multiple:
+                  nx: 2
+                  ny: 2
+                position:
+                  x: bind(parent.span.w) - bind(self.span.w)
+                  y: bind(parent.span.l)
+              # --- ATRIUM COLONNADES & VANITY ---
+              - id: pillar
+                name: atrium-pillar-left-north
+                layer: *atrium-layer
+                material: *geologic
+                blueprint: bases
+                elevation: 0
+                multiple:
+                  nx: 1
+                  ny: 2
+                position:
+                  x: bind(atrium-carpet.position.x) - bind(self.span.w) - 16
+                  y: bind(parent.span.l) + 32
+              - id: pillar
+                name: atrium-pillar-right-north
+                layer: *atrium-layer
+                material: *geologic
+                blueprint: bases
+                elevation: 0
+                multiple:
+                  nx: 1
+                  ny: 2
+                position:
+                  x: bind(atrium-carpet.position.x) + bind(atrium-carpet.span.w) + 16
+                  y: bind(parent.span.l) + 32
+              - id: pillar
+                name: atrium-pillar-left-south
+                layer: *atrium-layer
+                material: *geologic
+                blueprint: bases
+                elevation: 0
+                multiple:
+                  nx: 1
+                  ny: 2
+                position:
+                  x: bind(atrium-carpet.position.x) - bind(self.span.w) - 16
+                  y: bind(parent.span.l) + 256
+              - id: pillar
+                name: atrium-pillar-right-south
+                layer: *atrium-layer
+                material: *geologic
+                blueprint: bases
+                elevation: 0
+                multiple:
+                  nx: 1
+                  ny: 2
+                position:
+                  x: bind(atrium-carpet.position.x) + bind(atrium-carpet.span.w) + 16
+                  y: bind(parent.span.l) + 256
+              - id: banner
+                name: atrium-banner-center-left
+                layer: *atrium-layer
+                material: *chromatic
+                blueprint: decor
+                elevation: 0
+                anchor: anchor(parent)
+                position:
+                  x: bind(atrium-carpet.position.x) - bind(self.dimensions.w) - 8
+                  y: 16
+              - id: banner
+                name: atrium-banner-center-right
+                layer: *atrium-layer
+                material: *chromatic
+                blueprint: decor
+                elevation: 0
+                anchor: anchor(parent)
+                position:
+                  x: bind(atrium-carpet.position.x) + bind(atrium-carpet.span.w) + 8
+                  y: 16
+              - id: curtain
+                name: atrium-curtain-left
+                layer: *atrium-layer
+                material: *chromatic
+                blueprint: decor
+                elevation: 1
+                anchor: anchor(parent)
+                position:
+                  x: bind(atrium-platform-left.position.x) + 16
+                  y: 0
+              - id: curtain
+                name: atrium-curtain-right
+                layer: *atrium-layer
+                material: *chromatic
+                blueprint: decor
+                elevation: 1
+                anchor: anchor(parent)
+                position:
+                  x: bind(atrium-platform-right.position.x) + bind(atrium-platform-right.span.w) - bind(self.dimensions.w) - 16
+                  y: 0
+            stairs:
+              - id: steps
+                name: atrium-stairs-left
+                layer: *atrium-layer
+                material: *geologic
+                blueprint: up
+                delta: 1
+                elevation: 0
+                position:
+                  x: bind(atrium-platform-left.position.x) + (bind(atrium-platform-left.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(atrium-platform-left.position.y) + bind(atrium-platform-left.span.l)
+              - id: steps
+                name: atrium-stairs-right
+                layer: *atrium-layer
+                material: *geologic
+                blueprint: up
+                delta: 1
+                elevation: 0
+                position:
+                  x: bind(atrium-platform-right.position.x) + (bind(atrium-platform-right.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(atrium-platform-right.position.y) + bind(atrium-platform-right.span.l)
+          objects:
+            doors:
+              # --- THRONE ACCESS DOOR (Projects Shadow into throne-layer) ---
+              - id: pivot
+                name: atrium-throne-door
+                layer: *atrium-layer
+                material: *chromatic-alt
+                elevation: 0
+                anchor: anchor(parent)
+                outlayer: throne-layer
+                position:
+                  x: (bind(parent.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(parent.span.l) - bind(self.dimensions.l)
+                out:
+                  x: bind(throne-wall.position.x) + (bind(throne-floor.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(throne-wall.position.y) + bind(throne-floor.position.y) + bind(throne-floor.span.l) - bind(self.dimensions.l)
+              # --- STAIRWELL ACCESS DOORS (Project Shadows into stairwell layers) ---
+              - id: panel
+                name: left-stairwell-door
+                layer: *atrium-layer
+                material: *chromatic
+                elevation: 1
+                anchor: anchor(parent)
+                outlayer: stairwell-left-layer
+                position:
+                  x: bind(atrium-platform-left.position.x) + (bind(atrium-platform-left.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(parent.span.l) - bind(self.dimensions.l)
+                out:
+                  x: bind(stairwell-left-wall.position.x) + (bind(stairwell-left-floor.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(stairwell-left-wall.position.y) + bind(stairwell-left-floor.position.y) + bind(stairwell-left-floor.span.l) - bind(self.dimensions.l)
+              - id: panel
+                name: right-stairwell-door
+                layer: *atrium-layer
+                material: *chromatic
+                elevation: 1
+                anchor: anchor(parent)
+                outlayer: stairwell-right-layer
+                position:
+                  x: bind(atrium-platform-right.position.x) + (bind(atrium-platform-right.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(parent.span.l) - bind(self.dimensions.l)
+                out:
+                  x: bind(stairwell-right-wall.position.x) + (bind(stairwell-right-floor.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(stairwell-right-wall.position.y) + bind(stairwell-right-floor.position.y) + bind(stairwell-right-floor.span.l) - bind(self.dimensions.l)
+          effects:
+            passive:
+              - id: torch
+                name: atrium-torch-left
+                layer: *atrium-layer
+                elevation: 0
+                anchor: anchor(parent)
+                position:
+                  x: (bind(parent.span.w) - bind(atrium-throne-door.dimensions.w)) // 2 - bind(self.dimensions.w) - 8
+                  y: 16
+              - id: torch
+                name: atrium-torch-right
+                layer: *atrium-layer
+                elevation: 0
+                anchor: anchor(parent)
+                position:
+                  x: (bind(parent.span.w) + bind(atrium-throne-door.dimensions.w)) // 2 + 8
+                  y: 16
+
+      # ===================================================================
+      # BRANCH 2: LEFT STAIRWELL (stairwell-left-layer)
+      # ===================================================================
+      - strut:
+          id: mansion
+          name: stairwell-left-wall
+          layer: *stairwell-left-layer
+          material: *geologic
+          blueprint: halls
+          elevation: 2
+          multiple:
+            nx: 1
+            ny: 1
+          position:
+            x: 0
+            y: 0
+        components:
+          crafts:
+            struts:
+              - id: mansion
+                name: stairwell-left-floor
+                layer: *stairwell-left-layer
+                material: *geologic
+                blueprint: floors
+                elevation: 1
+                multiple:
+                  nx: 1
+                  ny: 3
+                position:
+                  x: 0
+                  y: bind(parent.span.l)
+              - id: painting
+                name: stairwell-left-painting
+                layer: *stairwell-left-layer
+                material: *chromatic
+                blueprint: decor
+                elevation: 2
+                anchor: anchor(parent)
+                position:
+                  x: 4
+                  y: 16
+            stairs:
+              - id: steps
+                name: stairwell-left-stairs
+                layer: *stairwell-left-layer
+                material: *geologic
+                blueprint: up
+                delta: 1
+                elevation: 1
+                position:
+                  x: (bind(parent.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(stairwell-left-floor.position.y) + bind(self.dimensions.l)
+          objects:
+            doors:
+              - id: pivot
+                name: stairwell-left-roof-door
+                layer: *stairwell-left-layer
+                material: *chromatic
+                elevation: 2
+                anchor: anchor(parent)
+                outlayer: bind(root.layer)
+                position:
+                  x: (bind(parent.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(parent.span.l) - bind(self.dimensions.l)
+                out:
+                  x: (bind(archer-roof.dimensions.w) - bind(self.dimensions.w)) // 2
+                  y: (bind(archer-roof.span.l) - bind(self.dimensions.l)) // 2
+          effects:
+            passive:
+              - id: torch
+                name: stairwell-left-torch
+                layer: *stairwell-left-layer
+                elevation: 2
+                anchor: anchor(parent)
+                position:
+                  x: bind(parent.span.w) - bind(self.dimensions.w)
+                  y: 16
+
+      # ===================================================================
+      # BRANCH 3: RIGHT STAIRWELL (stairwell-right-layer)
+      # ===================================================================
+      - strut:
+          id: mansion
+          name: stairwell-right-wall
+          layer: *stairwell-right-layer
+          material: *geologic
+          blueprint: halls
+          elevation: 2
+          multiple:
+            nx: 1
+            ny: 1
+          position:
+            x: 0
+            y: 0
+        components:
+          crafts:
+            struts:
+              - id: mansion
+                name: stairwell-right-floor
+                layer: *stairwell-right-layer
+                material: *geologic
+                blueprint: floors
+                elevation: 1
+                multiple:
+                  nx: 1
+                  ny: 3
+                position:
+                  x: 0
+                  y: bind(parent.span.l)
+              - id: painting
+                name: stairwell-right-painting
+                layer: *stairwell-right-layer
+                material: *chromatic
+                blueprint: decor
+                elevation: 2
+                anchor: anchor(parent)
+                position:
+                  x: bind(parent.span.w) - bind(self.dimensions.w) - 4
+                  y: 16
+            stairs:
+              - id: steps
+                name: stairwell-right-stairs
+                layer: *stairwell-right-layer
+                material: *geologic
+                blueprint: up
+                delta: 1
+                elevation: 1
+                position:
+                  x: (bind(parent.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(stairwell-right-floor.position.y) + bind(self.dimensions.l)
+          objects:
+            doors:
+              - id: pivot
+                name: stairwell-right-roof-door
+                layer: stairwell-right-layer
+                material: *chromatic
+                elevation: 2
+                anchor: anchor(parent)
+                outlayer: bind(root.layer)
+                position:
+                  x: (bind(parent.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(parent.span.l) - bind(self.dimensions.l)
+                out:
+                  x: bind(archer-roof.span.w) - (bind(archer-roof.dimensions.w) + bind(self.dimensions.w)) // 2
+                  y: (bind(archer-roof.span.l) - bind(self.dimensions.l)) // 2
+          effects:
+            passive:
+              - id: torch
+                name: stairwell-right-torch
+                layer: *stairwell-right-layer
+                elevation: 2
+                anchor: anchor(parent)
+                position:
+                  x: 0
+                  y: 16
+
+      # ===================================================================
+      # BRANCH 4: THRONE ROOM (throne-layer)
+      # ===================================================================
+      - strut:
+          id: mansion
+          name: throne-wall
+          layer: *throne-layer
+          material: *geologic
+          blueprint: halls
+          elevation: 0
+          multiple:
+            nx: 5
+            ny: 1
+          position:
+            x: 0
+            y: 0
+        components:
+          crafts:
+            struts:
+              - id: mansion
+                name: throne-floor
+                layer: *throne-layer
+                material: *geologic
+                blueprint: floors
+                elevation: 0
+                multiple:
+                  nx: 5
+                  ny: 4
+                position:
+                  x: 0
+                  y: bind(parent.span.l)
+              - id: carpet
+                name: throne-carpet
+                layer: *throne-layer
+                material: *chromatic-alt
+                blueprint: stripes
+                elevation: 0
+                multiple:
+                  nx: 1
+                  ny: 4
+                position:
+                  x: (bind(parent.span.w) - bind(self.span.w)) // 2
+                  y: bind(parent.span.l)
+              - id: throne
+                name: empress-throne
+                layer: *throne-layer
+                material: *chromatic-alt
+                blueprint: down
+                elevation: 0
+                position:
+                  x: (bind(parent.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(parent.span.l) + 16
+              - id: pillar
+                name: throne-pillar-left
+                layer: *throne-layer
+                material: *geologic
+                blueprint: bases
+                elevation: 0
+                multiple:
+                  nx: 1
+                  ny: 2
+                position:
+                  x: bind(throne-carpet.position.x) - bind(self.span.w) - 24
+                  y: bind(parent.span.l) + 16
+              - id: pillar
+                name: throne-pillar-right
+                layer: *throne-layer
+                material: *geologic
+                blueprint: bases
+                elevation: 0
+                multiple:
+                  nx: 1
+                  ny: 2
+                position:
+                  x: bind(throne-carpet.position.x) + bind(throne-carpet.span.w) + 24
+                  y: bind(parent.span.l) + 16
+              - id: portrait
+                name: empress-portrait
+                layer: *throne-layer
+                material: red # LOCKED FOR QUEEN PORTRAIT
+                blueprint: decor
+                elevation: 0
+                anchor: anchor(parent)
+                position:
+                  x: (bind(parent.span.w) - bind(self.dimensions.w)) // 2
+                  y: 16
+              - id: banner
+                name: throne-banner-left
+                layer: *throne-layer
+                material: *chromatic-alt
+                blueprint: decor
+                elevation: 0
+                anchor: anchor(parent)
+                position:
+                  x: bind(throne-carpet.position.x) - bind(self.dimensions.w) - 16
+                  y: 16
+              - id: banner
+                name: throne-banner-right
+                layer: *throne-layer
+                material: *chromatic-alt
+                blueprint: decor
+                elevation: 0
+                anchor: anchor(parent)
+                position:
+                  x: bind(throne-carpet.position.x) + bind(throne-carpet.span.w) + 16
+                  y: 16
+              - id: curtain
+                name: throne-curtain-left
+                layer: *throne-layer
+                material: *chromatic
+                blueprint: decor
+                elevation: 0
+                anchor: anchor(parent)
+                position:
+                  x: 16
+                  y: 0
+              - id: curtain
+                name: throne-curtain-right
+                layer: *throne-layer
+                material: *chromatic
+                blueprint: decor
+                elevation: 0
+                anchor: anchor(parent)
+                position:
+                  x: bind(parent.span.w) - bind(self.dimensions.w) - 16
+                  y: 0
+              - id: fireplace
+                name: throne-fireplace
+                layer: throne-layer
+                material: granite
+                blueprint: decor
+                elevation: 0
+                anchor: anchor(parent)
+                position:
+                  x: bind(parent.dimensions.w)
+                  y: bind(parent.span.l) - bind(self.dimensions.l)
+          objects:
+            chests:
+              - id: trunk
+                name: empress-chest
+                layer: *throne-layer
+                material: gold
+                elevation: 0
+                switch: false
+                content:
+                  - writ-of-dawn
+                position:
+                  x: bind(empress-throne.position.x) + bind(empress-throne.dimensions.w) + 16
+                  y: bind(empress-throne.position.y) + 24
+          effects:
+            passive:
+              - id: grandfather-clock
+                name: throne-clock
+                layer: *throne-layer
+                elevation: 0
+                anchor: anchor(parent)
+                position:
+                  x: bind(parent.span.w) - bind(parent.dimensions.w) - bind(self.dimensions.w)
+                  y: 0
+              - id: torch
+                name: throne-torch-left
+                layer: *throne-layer
+                elevation: 0
+                anchor: anchor(parent)
+                position:
+                  x: (bind(parent.span.w) - bind(empress-portrait.dimensions.w)) // 2 - bind(self.dimensions.w) - 12
+                  y: 16
+              - id: torch
+                name: throne-torch-right
+                layer: *throne-layer
+                elevation: 0
+                anchor: anchor(parent)
+                position:
+                  x: (bind(parent.span.w) + bind(empress-portrait.dimensions.w)) // 2 + 12
+                  y: 16

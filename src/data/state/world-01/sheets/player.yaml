@@ -5,7 +5,7 @@ sheets:
       layer: '0'
       depth: 0
       position:
-        x: 10
+        x: 05
         y: 80
       meters:
         health: 

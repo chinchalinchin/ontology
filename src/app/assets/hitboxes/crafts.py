@@ -25,7 +25,6 @@ from app.assets.base import (
 from app.game.logic.relations import MaterialIndex
 from app.models.properties import CraftProperties
 from app.models.state import (
-    PlatformState,
     CraftState,
 )
 
@@ -44,7 +43,7 @@ class ElevatedHitbox(HitboxSchema):
     def elevations(
         self,
         properties: CraftProperties,
-        state: PlatformState
+        state: CraftState
     ) -> List[int]:
         base_e = state.elevation if state.elevation is not None else 0
         if not properties.hitboxes:
@@ -54,7 +53,7 @@ class ElevatedHitbox(HitboxSchema):
     def get(
         self,
         properties: CraftProperties,
-        state: PlatformState,
+        state: CraftState,
         elevation: int,
         frame: Optional[Frame] = None
     ) -> List[Hitbox]:

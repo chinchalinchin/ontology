@@ -5,8 +5,8 @@ crafts:
       blueprint: horizontal
       name: the-bridge-of-tears-left
       position:
-        x: 60
-        y: 280
+        x: 30
+        y: 290
       multiple:
         nx: 2
         ny: 0
@@ -16,8 +16,8 @@ crafts:
       material: granite
       blueprint: horizontal
       position:
-        x: 540
-        y: 280
+        x: 570
+        y: 290
       multiple:
         nx: 2
         ny: 0
