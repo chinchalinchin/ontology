@@ -155,7 +155,7 @@ tools:
           - 02-sprites.md
           - 03-compositions.md
           - 04-intentions.md
-          - 05-mechanics.md
+          # - 05-mechanics.md
           - 06-widgets.md
           - 07-sounds.md
           - 08-plots.md
@@ -169,11 +169,7 @@ tools:
     source:
       filter:
         default: AND
-        queries:
-            - title: Fluids
-              scan:
-                workflows: [ fluids ]
-      data: 
+        queries: []
         properties: [  ]
         state: [ world-testbed ]
         configurations: [ ]
