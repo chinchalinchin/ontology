@@ -6,7 +6,7 @@
 * **Current Workflow Focus**: `{{ tools.parameters.tests.pipeline.marker }}`
 
 ```bash
-{{ properties.user.username }}@{{ properties.user.hostname }} % {{ test_command }} {{ test_path }}app/assets/
+{{ properties.user.username }}@{{ properties.user.hostname }} % {{ test_command }} {{ test_path }}
 
-{{ command(test_command + ' ' + test_path + 'app/assets') }}
+{{ command(test_command + ' ' + test_path) }}
 ```
