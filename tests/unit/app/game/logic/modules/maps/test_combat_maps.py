@@ -5,14 +5,14 @@
 import pytest
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     Actions,
     Directions
 )
 from app.game.logic.modules.maps import CombatMap
 
 
-@pytest.mark.combat
+@pytest.mark.workflow_combat
 def test_combat_map_attackboxes_unarmed(mock_board):
     player = mock_board.player()
     player.state.inventory.equipment.weapon = None
@@ -23,7 +23,7 @@ def test_combat_map_attackboxes_unarmed(mock_board):
     ) == []
 
 
-@pytest.mark.combat
+@pytest.mark.workflow_combat
 def test_combat_map_attackboxes_missing_weapon_properties(mock_board):
     player = mock_board.player()
     player.state.inventory.equipment.weapon = "non-existent-weapon"
@@ -34,7 +34,7 @@ def test_combat_map_attackboxes_missing_weapon_properties(mock_board):
     ) == []
 
 
-@pytest.mark.combat
+@pytest.mark.workflow_combat
 def test_combat_map_attackboxes_matching_frame(
     mock_board
 ):
@@ -52,7 +52,7 @@ def test_combat_map_attackboxes_matching_frame(
     assert boxes[0] == equipment.weapons['shortsword'].attackboxes['slash-right-3'][0]
 
 
-@pytest.mark.combat
+@pytest.mark.workflow_combat
 def test_combat_map_attackboxes_unmatched_frame(mock_board):
     player = mock_board.player()
     player.state.inventory.equipment.weapon = "shortsword"

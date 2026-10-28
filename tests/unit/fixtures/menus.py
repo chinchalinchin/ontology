@@ -7,7 +7,7 @@ Mock Menu fixtures.
 import pytest
 
 # Application Libraries
-from app.config.enums import ( 
+from app.static.semantics import ( 
     Bindings,
     Shortcuts,
 )
@@ -74,7 +74,7 @@ def mock_aperture_bind():
 @pytest.fixture
 def mock_aperture_bind_alt():
     return MenuBinding(
-        schema = Bindings.APERTURE,
+        schema = Bindings.APERTURE.value,
         target = { 'selector': 'inventory-pack-grid', 'index': '5' }
     )
 

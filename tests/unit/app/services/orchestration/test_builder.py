@@ -8,12 +8,12 @@ from unittest.mock import patch
 import pytest
 
 # Application Libraries
-from app.config.enums import Devices
+from app.static.semantics import Devices
 
 # Cython Libraries
 from libs.core.models import Dimensions
 
-@pytest.mark.orchestration
+@pytest.mark.workflow_injection
 def test_builder_load_data(mock_builder):
     mock_builder.load_data("world-01")
     
@@ -22,7 +22,7 @@ def test_builder_load_data(mock_builder):
     assert mock_builder.context.state is not None
 
 
-@pytest.mark.orchestration
+@pytest.mark.workflow_injection
 @patch('app.services.orchestration.builder.render')
 def test_builder_init_subsystems(mock_render, mock_builder):
     dims = Dimensions(w=1280, l=720)
@@ -34,7 +34,7 @@ def test_builder_init_subsystems(mock_render, mock_builder):
     mock_render.show.assert_called_once()
 
 
-@pytest.mark.orchestration
+@pytest.mark.workflow_injection
 def test_builder_build_board(mock_builder):
     # Setup prerequisite context
     mock_builder.load_data("world-01")
@@ -47,7 +47,7 @@ def test_builder_build_board(mock_builder):
     assert mock_builder.decomposer is not None
 
 
-@pytest.mark.orchestration
+@pytest.mark.workflow_injection
 def test_builder_build_services(mock_builder):
     # Setup prerequisite context
     mock_builder.load_data("world-01")

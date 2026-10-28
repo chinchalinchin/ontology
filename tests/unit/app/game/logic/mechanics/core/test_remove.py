@@ -9,7 +9,7 @@ import collections
 
 # Application Libraries
 from app.game.logic.mechanics.core import  RemoveMechanics
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances, 
     AssetCategories, 
     Frequencies

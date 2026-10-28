@@ -1,7 +1,11 @@
 """
-# Ontology: Source - app.config.enums.sprites
+@app.semantics
+@category.sheets
+@workflow.intentions
 
-Sprite key enumerations.
+# Ontology: Source - app.static.semantics.intentions
+
+Intention semantics enumerations.
 """
 # Standard Libraries
 from enum import Enum

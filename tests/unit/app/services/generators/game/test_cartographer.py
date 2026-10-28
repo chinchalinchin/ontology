@@ -5,7 +5,7 @@
 import pytest
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances,
     Directions
 )
@@ -19,9 +19,9 @@ from app.services.generators.game.cartographer import Cartographer
 from libs.core.models import Position
 
 
-@pytest.mark.fluids
-@pytest.mark.services
-@pytest.mark.ecology
+@pytest.mark.workflow_fluids
+@pytest.mark.app_services
+@pytest.mark.workflow_ecology
 def test_cartographer_collect_water_rectangles(mock_board):
     """
     Verify active stream corridors and annular pools are correctly extracted
@@ -41,9 +41,9 @@ def test_cartographer_collect_water_rectangles(mock_board):
     assert (0, 32, 192, 192) in rects
 
 
-@pytest.mark.fluids
-@pytest.mark.services
-@pytest.mark.ecology
+@pytest.mark.workflow_fluids
+@pytest.mark.app_services
+@pytest.mark.workflow_ecology
 def test_cartographer_generate_and_coalesce_shorelines(
     mock_board, 
     mock_shoreline_index, 
@@ -71,9 +71,9 @@ def test_cartographer_generate_and_coalesce_shorelines(
     assert len(mock_board.shorelines("0")) == 0
 
 
-@pytest.mark.fluids
-@pytest.mark.services
-@pytest.mark.ecology
+@pytest.mark.workflow_fluids
+@pytest.mark.app_services
+@pytest.mark.workflow_ecology
 def test_cartographer_purge_clears_layer_shorelines(
     mock_board, 
     mock_shoreline_index, 
@@ -95,8 +95,8 @@ def test_cartographer_purge_clears_layer_shorelines(
     assert len(mock_board.shorelines("0")) == 0
 
 
-@pytest.mark.fluids
-@pytest.mark.services
+@pytest.mark.workflow_fluids
+@pytest.mark.app_services
 def test_cartographer_coincident_pools_do_not_deadlock(
     mock_board, 
     mock_shoreline_index, 
@@ -136,8 +136,8 @@ def test_cartographer_coincident_pools_do_not_deadlock(
     assert len(shores) > 0
 
 
-@pytest.mark.fluids
-@pytest.mark.services
+@pytest.mark.workflow_fluids
+@pytest.mark.app_services
 def test_cartographer_fluid_meeting_fluid_suppresses_shorelines(
     mock_board, 
     mock_shoreline_index, 
@@ -193,8 +193,8 @@ def test_cartographer_fluid_meeting_fluid_suppresses_shorelines(
     assert not any(s.state.orientation == Directions.RIGHT.value and s.state.position.x == 70 for s in shores)
 
 
-@pytest.mark.fluids
-@pytest.mark.services
+@pytest.mark.workflow_fluids
+@pytest.mark.app_services
 def test_cartographer_empty_fluid_returns_empty(mock_board, mock_shoreline_index):
     """
     Verify layers with no active fluid bodies return an empty list without error.
@@ -203,8 +203,8 @@ def test_cartographer_empty_fluid_returns_empty(mock_board, mock_shoreline_index
     assert shores == []
 
 
-@pytest.mark.fluids
-@pytest.mark.services
+@pytest.mark.workflow_fluids
+@pytest.mark.app_services
 def test_cartographer_board_shoreline_frequency(mock_board, mock_shoreline):
     """
     Verify that Board correctly indexes and tracks procedural shoreline assets
@@ -220,9 +220,9 @@ def test_cartographer_board_shoreline_frequency(mock_board, mock_shoreline):
     assert len(mock_board.shorelines("0")) == 0
 
 
-@pytest.mark.fluids
-@pytest.mark.services
-@pytest.mark.ecology
+@pytest.mark.workflow_fluids
+@pytest.mark.app_services
+@pytest.mark.workflow_ecology
 def test_cartographer_collects_active_branch_rectangles(mock_board):
     """
     Verify Cartographer._collect_water_rectangles compiles bounding boxes for

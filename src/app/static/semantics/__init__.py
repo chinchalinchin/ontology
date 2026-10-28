@@ -85,7 +85,7 @@ from app.static.semantics.config import (
     AnimationRecipe,
     HitboxRecipe
 )
-from app.static.semantics.sprites import (
+from app.static.semantics.intentions import (
     Intentions,
     BlockingIntentions,
     AnimatedIntentions,

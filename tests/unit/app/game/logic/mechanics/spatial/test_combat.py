@@ -9,7 +9,7 @@ import pytest
 
 # Application Libraries
 from app.game.logic.mechanics import CombatMechanics
-from app.config.enums import (
+from app.static.semantics import (
     Intentions, 
     AssetInstances, 
     AssetCategories
@@ -134,7 +134,7 @@ def _create_equipment():
 
 # --------------------------------------------------------------------------------------
 
-@pytest.mark.combat
+@pytest.mark.workflow_combat
 def test_combat_mechanics_melee_resolution(mock_board):
     mechanic = CombatMechanics()
     attacker = _create_player_attacker(x=10, y=10, strength=20)
@@ -151,7 +151,7 @@ def test_combat_mechanics_melee_resolution(mock_board):
     assert target.state.mutators.triggers.dead is False
 
 
-@pytest.mark.combat
+@pytest.mark.workflow_combat
 def test_combat_mechanics_lethal_blow(mock_board):
     mechanic = CombatMechanics()
     attacker = _create_player_attacker(x=10, y=10, strength=100)
@@ -167,7 +167,7 @@ def test_combat_mechanics_lethal_blow(mock_board):
     assert target.state.mutators.triggers.dead is True
 
 
-@pytest.mark.combat
+@pytest.mark.workflow_combat
 def test_combat_mechanics_reactable_trigger(mock_board):
     mechanic = CombatMechanics()
     attacker = _create_player_attacker(x=10, y=10)
@@ -190,7 +190,7 @@ def test_combat_mechanics_reactable_trigger(mock_board):
     assert dummy.state.active is True
 
 
-@pytest.mark.combat
+@pytest.mark.workflow_combat
 def test_combat_mechanics_inactive_attackbox_filtered(mock_board):
     mechanic = CombatMechanics()
     # Frame 0 has no active attackboxes configured
@@ -205,7 +205,7 @@ def test_combat_mechanics_inactive_attackbox_filtered(mock_board):
     assert target.state.meters.health.current == 50
 
 
-@pytest.mark.combat
+@pytest.mark.workflow_combat
 def test_combat_mechanics_unarmed_bypasses_melee(mock_board):
     mechanic = CombatMechanics()
     attacker = _create_player_attacker(x=10, y=10)

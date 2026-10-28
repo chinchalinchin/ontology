@@ -2,9 +2,9 @@
 @app.semantics
 @workflow.rendering
 
-# Ontology: Source - app.config.enums.graphics
+# Ontology: Source - app.static.sematnics.graphics
 
-Enumeration of Graphics semantics.
+Graphics semantics enumerations.
 """
 # Standard Libraries
 from enum import Enum

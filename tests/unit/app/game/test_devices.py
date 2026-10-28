@@ -5,7 +5,7 @@ Unit tests for input polling devices.
 """
 
 from unittest.mock import patch
-from app.config.enums import (
+from app.static.semantics import (
     DeviceContexts,
     Intentions,
     Directions,

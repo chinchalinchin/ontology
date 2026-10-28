@@ -12,7 +12,7 @@ from app.models.config.menus import (
     MenuConfiguration, 
     MenuBinding
 )
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances, 
     Layouts, 
     Alignments, 
@@ -20,8 +20,11 @@ from app.config.enums import (
     Fonts, 
     Bindings, 
 )
-from app.game.menus.bindings.text import TextBinding, paginate
-from app.models.state.widgets import CollectionState
+from app.game.menus.bindings.text import (
+    TextBinding, 
+    paginate
+)
+from app.models.state.assets.widgets import CollectionState
 
 # Cython Libraries
 from libs.core.models import Dimensions, ScreenPosition

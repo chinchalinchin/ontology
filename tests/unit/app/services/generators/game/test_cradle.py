@@ -8,7 +8,7 @@ from unittest.mock import patch
 import pytest
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     AssetCategories, 
     AssetInstances, 
     Reactions, 
@@ -26,7 +26,7 @@ from libs.core.models import (
 )
 
 
-@pytest.mark.services
+@pytest.mark.app_services
 def test_spawn_projectile(mock_cradle):
     pos = Position(x=50, y=50)
     vel = Velocity(vx=15, vy=0)
@@ -48,7 +48,7 @@ def test_spawn_projectile(mock_cradle):
     assert asset.state.initial == pos
 
 
-@pytest.mark.services
+@pytest.mark.app_services
 def test_spawn_strut(mock_cradle):
     pos = Position(x=100, y=100)
     
@@ -68,7 +68,7 @@ def test_spawn_strut(mock_cradle):
     assert asset.state.owner == "player"
 
 
-@pytest.mark.services
+@pytest.mark.app_services
 def test_spawn_collectable(mock_cradle):
     pos = Position(x=32, y=64)
     lot = Lot(
@@ -93,7 +93,7 @@ def test_spawn_collectable(mock_cradle):
     assert asset.state.lot.quantity == 10
 
 
-@pytest.mark.services
+@pytest.mark.app_services
 def test_spawn_hazard(mock_cradle):
     pos = Position(x=120, y=80)
     damage = Damage(
@@ -118,7 +118,7 @@ def test_spawn_hazard(mock_cradle):
     assert asset.state.damage.reaction == Reactions.BOUNCE.value
 
 
-@pytest.mark.services
+@pytest.mark.app_services
 def test_spawn_composition(mock_cradle):
     pos = Position(x=0, y=0)
         

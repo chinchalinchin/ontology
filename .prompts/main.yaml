@@ -66,7 +66,7 @@
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: draft.md.j2
+  # template: draft.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
@@ -84,7 +84,7 @@ task:
   # template: iterate/documentation.md.j2
   # template: iterate/grooming.md.j2
   # template: iterate/implementation.md.j2
-  # template: iterate/coverage.md.j2
+  template: iterate/coverage.md.j2
   # template: iterate/review.md.j2
   # template: iterate/conclusion.md.j2
   # --------------------------------------------
@@ -118,25 +118,25 @@ tools:
     manager:
       board: false
       specs: false
-      docs: true
+      docs: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: false
-      filter: true
+      data: true
+      filter: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: true
+      directory: false
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
-      configuration: true
-      pipeline: false
+      configuration: false
+      pipeline: true
       session: false
 # ----------------------------------------------------
   parameters:
@@ -169,19 +169,22 @@ tools:
     source:
       filter:
         default: AND
-        queries:
-            - title: Asset Abstracts
-              scan:
-                domain: [ abstract ]
-                app: [ asset ]
-            - title: Asset Implementations
-              scan:
-                domain: [ concrete ]
-                app: [ asset ]
-            - title: Asset Tests
-              scan:
-                domain: [ test ]
-                app: [ asset ]
+        queries: []
+            # - title: Asset Abstracts
+            #   scan:
+            #     domain: [ abstract ]
+            #     app: [ asset ]
+            # # ------------------------------------
+            # - title: Asset Implementations
+            #   scan:
+            #     domain: [ concrete ]
+            #     app: [ asset ]
+            # # ------------------------------------
+            # - title: Asset Tests
+            #   scan:
+            #     domain: [ test ]
+            #     test: [ unit ]
+            #     app: [ asset ]
             # # ------------------------------------
             # - title: Application Systems
             #   scan: 
@@ -218,7 +221,7 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: app.asset
+        marker: app_asset
       session:
         description: |
           description

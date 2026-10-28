@@ -5,7 +5,7 @@
 import pytest
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     AssetCategories, 
     AssetInstances,
     Directions
@@ -18,7 +18,7 @@ from libs.core.models import Position
 # ---------------------------------------------------------------------------
 # --------------------------------------------------------------------- TESTS
 
-@pytest.mark.main
+@pytest.mark.workflow_main
 def test_board_initial_caching(mock_board):
     # 1. New Architecture: Board initializes with loaded = False until Migrator finishes
     assert mock_board.loaded is False
@@ -42,7 +42,7 @@ def test_board_initial_caching(mock_board):
     assert len(weights) == 9
 
 
-@pytest.mark.main
+@pytest.mark.workflow_main
 def test_board_relayering_synchronization(mock_board):
     player = mock_board.player()
     
@@ -63,7 +63,7 @@ def test_board_relayering_synchronization(mock_board):
     assert player in mock_board.weights('1')
 
 
-@pytest.mark.main
+@pytest.mark.workflow_main
 def test_board_spatial_hashing(mock_board):
     """
     Tile placed at (0,0) with 32x32 dimensions and 10x10 multiplier spans area (0->320, 0->32-).
@@ -89,8 +89,8 @@ def test_board_spatial_hashing(mock_board):
     assert mock_board.tile('0', Position(x=370, y=370)) is None
 
 
-@pytest.mark.main
-@pytest.mark.compositions
+@pytest.mark.workflow_main
+@pytest.mark.workflow_compositions
 def test_board_size_tileless_layer(mock_board):
     """
     Verify layer extents derive from crafts and physical entities when no tiles are present.
@@ -101,7 +101,7 @@ def test_board_size_tileless_layer(mock_board):
     assert sizes[0].l == 264
 
 
-@pytest.mark.main
+@pytest.mark.workflow_main
 def test_board_size_mixed_layer(mock_board):
     """
     Verify layer extents expand beyond tile boundaries when craft structures exceed terrain.
@@ -112,7 +112,7 @@ def test_board_size_mixed_layer(mock_board):
     assert sizes[0].l == 412
 
 
-@pytest.mark.main
+@pytest.mark.workflow_main
 def test_board_size_empty_layer(mock_board):
     """
     Ensure querying an unpopulated or missing layer returns zero dimensions without raising errors.
@@ -126,7 +126,7 @@ def test_board_size_empty_layer(mock_board):
 # ---------------------------------------------------------------------------
 # ----------------------------------------------- GOAL 10 MODULARIZATION TESTS
 
-@pytest.mark.main
+@pytest.mark.workflow_main
 def test_board_predicates_classification(mock_crate, mock_shoreline, mock_gate):
     """
     Validates pure predicates for physical weights and navigational obstacles.
@@ -141,9 +141,9 @@ def test_board_predicates_classification(mock_crate, mock_shoreline, mock_gate):
     assert predicates.is_obstacle(mock_shoreline) is False
 
 
-@pytest.mark.main
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.workflow_main
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_board_predicates_fluid_containment(mock_fluid):
     """
     Tests pure stream and pool containment predicates without referencing Board.
@@ -166,9 +166,9 @@ def test_board_predicates_fluid_containment(mock_fluid):
     assert predicates.in_fluid(outside_pos, mock_fluid) is False
 
 
-@pytest.mark.main
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.workflow_main
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_board_fluid_spatial_query(mock_board, mock_fluid):
     """
     Tests O(1) broad-phase spatial hash lookups on Board for fluid intersection.
@@ -189,7 +189,7 @@ def test_board_fluid_spatial_query(mock_board, mock_fluid):
     assert mock_board.fluid("0", Position(70, 80), exclude=mock_fluid.name) is False
 
 
-@pytest.mark.main
+@pytest.mark.workflow_main
 def test_board_add_and_remove_frequency(mock_board, mock_crate_alt, mock_shoreline):
     """
     Validates batch entity additions, evictions, and confirms Bug B012 remediation.
@@ -213,7 +213,7 @@ def test_board_add_and_remove_frequency(mock_board, mock_crate_alt, mock_shoreli
     assert mock_shoreline not in mock_board.shorelines("0")
 
 
-@pytest.mark.main
+@pytest.mark.workflow_main
 def test_board_clear_frequency(mock_board):
     """
     Validates full board database wipe and confirms Bug B012 remediation on clear.

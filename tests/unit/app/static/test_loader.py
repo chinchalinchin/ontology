@@ -18,13 +18,18 @@ from dataclasses import fields
 # External Libraries
 import pytest
 
+pytestmark = [
+    pytest.mark.app_config,
+    pytest.mark.workflow_hydration
+]
+
 # Application Libraries
 import app.static.settings as settings
-from app.config.loader import Loader
+from app.static.loader import Loader
+from app.static.semantics import AssetCategories
 from app.models.config import ConfigurationSchema
 from app.models.properties import PropertiesSchema
 from app.models.state import StateSchema
-from app.static.semantics import AssetCategories
 
 # Cython Libraries
 from libs.core.models import Dimensions, Hitbox, Position

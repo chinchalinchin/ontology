@@ -16,7 +16,7 @@ import cli
 # ARGUMENT PARSING TESTS
 # ---------------------------------------------------------
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 def test_arguments_start_defaults():
     test_args = ["cli.py", "start", "level_01"]
     
@@ -40,7 +40,7 @@ def test_arguments_start_defaults():
         assert args.names is None
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 def test_arguments_filter_flags():
     test_args = [
         "cli.py", "--instances", "sprites,player", "--categories", "sheets,objects",
@@ -57,7 +57,7 @@ def test_arguments_filter_flags():
         assert args.names == "evil-.*"
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 def test_arguments_prerender_flags():
     test_args = [
         "cli.py", "--log-level", "DEBUG", "--software", 
@@ -74,7 +74,7 @@ def test_arguments_prerender_flags():
         assert args.layer == "background"
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 def test_arguments_map():
     test_args = ["cli.py", "map", "level_01", "--out", "./out", "--layer", "background"]
     
@@ -86,7 +86,7 @@ def test_arguments_map():
         assert args.layer == "background"
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 def test_arguments_missing_required():
     test_args = ["cli.py", "render", "level_01"]  # Missing --out and --layer
     
@@ -99,7 +99,7 @@ def test_arguments_missing_required():
 # ASSET FILTERING TESTS
 # ---------------------------------------------------------
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 def test_filter_assets_excludes_widgets(mock_assets, mock_widget):
     mixed_assets = mock_assets + [mock_widget]
     result = cli.filter_assets(mixed_assets)
@@ -108,7 +108,7 @@ def test_filter_assets_excludes_widgets(mock_assets, mock_widget):
     assert len(result) == len(mock_assets)
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 def test_filter_assets_by_instance(mock_assets):
     # Single instance pattern
     sprites = cli.filter_assets(mock_assets, {"instances": "sprites"})
@@ -126,14 +126,14 @@ def test_filter_assets_by_instance(mock_assets):
     assert all(a.instance in ("crates", "crops") for a in cr_instances)
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 def test_filter_assets_by_category(mock_assets):
     sheets = cli.filter_assets(mock_assets, {"categories": "sheets"})
     assert len(sheets) > 0
     assert all(a.category == "sheets" for a in sheets)
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 def test_filter_assets_by_id_and_name(mock_assets):
     # Match ID
     jasilynn = cli.filter_assets(mock_assets, {"ids": "jasilynn"})
@@ -146,7 +146,7 @@ def test_filter_assets_by_id_and_name(mock_assets):
     assert npc[0].name == "evil-empress-jasilynn"
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 def test_filter_assets_conjunction(mock_assets):
     # Conjunction of category and instance
     matched = cli.filter_assets(mock_assets, {"categories": "sheets", "instances": "players"})
@@ -159,7 +159,7 @@ def test_filter_assets_conjunction(mock_assets):
     assert len(no_match) == 0
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 def test_filter_assets_no_match(mock_assets):
     result = cli.filter_assets(mock_assets, {"ids": "non_existent_key_12345"})
     assert result == []
@@ -168,7 +168,7 @@ def test_filter_assets_no_match(mock_assets):
 # DUMP FUNCTION TESTS
 # ---------------------------------------------------------
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 @patch("cli.datetime")
 @patch("cli.settings")
 def test_dump_state_success(mock_settings, mock_datetime, mock_board):
@@ -197,7 +197,7 @@ def test_dump_state_success(mock_settings, mock_datetime, mock_board):
         mocked_file().write.assert_called_once_with("Rendered Output")
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 @patch("cli.datetime")
 @patch("cli.settings")
 def test_dump_state_with_filters(mock_settings, mock_datetime, mock_board):
@@ -229,7 +229,7 @@ def test_dump_state_with_filters(mock_settings, mock_datetime, mock_board):
         )
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 @patch("cli.datetime")
 @patch("cli.settings")
 def test_dump_menus_success(mock_settings, mock_datetime, mock_board):
@@ -259,7 +259,7 @@ def test_dump_menus_success(mock_settings, mock_datetime, mock_board):
         mocked_file().write.assert_called_once_with("Rendered Output")
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 @patch("cli.datetime")
 @patch("cli.settings")
 @patch("cli.sysinfo")
@@ -283,7 +283,7 @@ def test_dump_sdl_success(mock_sys_info, mock_settings, mock_datetime, mock_boar
         )
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 @patch("cli.datetime")
 @patch("cli.settings")
 def test_dump_registry_success(mock_settings, mock_datetime):
@@ -313,7 +313,7 @@ def test_dump_registry_success(mock_settings, mock_datetime):
         )
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 @patch("cli.settings")
 def test_dump_missing_template(mock_settings, mock_board, caplog):
     mock_settings.TEMPLATE_DIR = Path("/mock/dir")
@@ -327,7 +327,7 @@ def test_dump_missing_template(mock_settings, mock_board, caplog):
 # HYDRATION TESTS
 # ---------------------------------------------------------
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 @patch("cli.Screen")
 def test_force_hydration(mock_screen_class):
     mock_engine = MagicMock()
@@ -370,7 +370,7 @@ def test_force_hydration(mock_screen_class):
 # HANDLER TESTS
 # ---------------------------------------------------------
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 @patch("cli.hydrate")
 def test_handle_prerender_success(mock_force_hydration):
     args = MagicMock(board_key="level_01", device="keyboard", layer="bg", out="/tmp/out")
@@ -393,7 +393,7 @@ def test_handle_prerender_success(mock_force_hydration):
         assert engine == mock_engine
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 @patch("cli.hydrate")
 def test_handle_render_success(mock_force_hydration):
     args = MagicMock(board_key="level_01", device="keyboard", layer="bg", out="/tmp/out")
@@ -427,7 +427,7 @@ def test_handle_render_success(mock_force_hydration):
         assert engine == mock_engine
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 @patch("cli.hydrate")
 def test_handle_render_full_success(mock_force_hydration):
     args = MagicMock(board_key="level_01", device="keyboard", layer="bg", out="/tmp/out")
@@ -454,7 +454,7 @@ def test_handle_render_full_success(mock_force_hydration):
         assert engine == mock_engine
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 @patch("cli.hydrate")
 def test_handle_render_missing_layer(mock_force_hydration, caplog):
     args = MagicMock(board_key="level_01", device="keyboard", layer="invalid_layer", out="/tmp/out")
@@ -471,7 +471,7 @@ def test_handle_render_missing_layer(mock_force_hydration, caplog):
     assert engine == mock_engine
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 def test_handle_start_keyboard_interrupt(caplog):
     caplog.set_level(logging.INFO)
     
@@ -493,7 +493,7 @@ def test_handle_start_keyboard_interrupt(caplog):
 # MAIN EXECUTION TESTS
 # ---------------------------------------------------------
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 @patch("cli.Orchestrator")
 @patch("cli.quit_sdl")
 @patch("cli.gc.collect")
@@ -514,7 +514,7 @@ def test_main_software_flag(mock_gc, mock_quit_sdl, mock_orchestrator_class):
         mock_quit_sdl.assert_called_once()
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 @patch("cli.Orchestrator")
 @patch("cli.quit_sdl")
 def test_main_dump_flags(mock_quit, mock_orchestrator):
@@ -546,7 +546,7 @@ def test_main_dump_flags(mock_quit, mock_orchestrator):
         mock_dump.assert_any_call("level_01", mock_engine.board, "sdl")
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 @patch("cli.Orchestrator")
 @patch("cli.quit_sdl")
 def test_main_dump_with_filter_flags(mock_quit, mock_orchestrator):
@@ -573,7 +573,7 @@ def test_main_dump_with_filter_flags(mock_quit, mock_orchestrator):
         mock_dump.assert_called_once_with("level_01", mock_engine.board, "state", filters=expected_filters)
 
 
-@pytest.mark.cli
+@pytest.mark.workflow_cli
 @patch("cli.configure_logging")
 @patch("cli.arguments")
 def test_main_unknown_command(mock_arguments, mock_configure_logging, caplog):

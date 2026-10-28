@@ -12,8 +12,8 @@ from libs.core.models import (
 )
 
 
-@pytest.mark.services
-@pytest.mark.collisions
+@pytest.mark.app_services
+@pytest.mark.workflow_collisions
 def test_perimeter_generator_extract(mock_perimeter, mock_board):
     """
     Verifies Perimeter.extract captures static substrates and architecture,
@@ -34,8 +34,8 @@ def test_perimeter_generator_extract(mock_perimeter, mock_board):
     assert (10, 10, 42, 42) not in rects
 
 
-@pytest.mark.services
-@pytest.mark.collisions
+@pytest.mark.app_services
+@pytest.mark.workflow_collisions
 def test_perimeter_generator_extract_platform_elevated_deck(mock_perimeter, mock_board, mock_platform):
     """
     Verifies Perimeter.extract excludes platforms from Tier 0 hulls while synthesizing
@@ -55,8 +55,8 @@ def test_perimeter_generator_extract_platform_elevated_deck(mock_perimeter, mock
     assert expected_rect in rects_e1
 
 
-@pytest.mark.services
-@pytest.mark.collisions
+@pytest.mark.app_services
+@pytest.mark.workflow_collisions
 def test_perimeter_generator_generate(mock_perimeter, mock_board):
     """
     Verifies Perimeter.generate returns perimeters partitioned by elevation tier.
@@ -77,8 +77,8 @@ def test_perimeter_generator_generate(mock_perimeter, mock_board):
         assert isinstance(b.dimensions.l, int)
 
 
-@pytest.mark.services
-@pytest.mark.collisions
+@pytest.mark.app_services
+@pytest.mark.workflow_collisions
 def test_perimeter_generator_empty_layer(mock_perimeter, mock_board):
     """
     Verifies Perimeter.generate returns an empty dict for unpopulated layers.
@@ -87,9 +87,9 @@ def test_perimeter_generator_empty_layer(mock_perimeter, mock_board):
     assert perimeters == {}
 
 
-@pytest.mark.services
-@pytest.mark.compositions
-@pytest.mark.collisions
+@pytest.mark.app_services
+@pytest.mark.workflow_compositions
+@pytest.mark.workflow_collisions
 def test_perimeter_extract_crafts_layer_isolation(mock_perimeter, mock_board):
     """
     Verifies Perimeter.extract isolates architecture strictly within the target layer.
@@ -102,9 +102,9 @@ def test_perimeter_extract_crafts_layer_isolation(mock_perimeter, mock_board):
     assert not any(r[0] == 250 and r[1] == 250 for r in interior_rects)
 
 
-@pytest.mark.services
-@pytest.mark.compositions
-@pytest.mark.collisions
+@pytest.mark.app_services
+@pytest.mark.workflow_compositions
+@pytest.mark.workflow_collisions
 def test_perimeter_generator_composition_layer(mock_perimeter, mock_board):
     """
     Verifies Perimeter.generate builds boundary hulls partitioned by tier for interior layers.

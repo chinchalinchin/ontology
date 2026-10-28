@@ -9,11 +9,11 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 # Application Libraries
-import app.config.settings as settings
+import app.static.settings as settings
 from app.assets.hitboxes import (
     StaticHitbox
 )
-from app.config.enums import (
+from app.static.semantics import (
     Goals, 
     Intentions
 )
@@ -51,7 +51,7 @@ from app.models.properties import (
 from app.assets.frames import SingleFrame
 from app.assets.animations import NoAnimation
 
-from app.config.enums import (
+from app.static.semantics import (
     AssetCategories,
     AssetInstances
 )
@@ -112,8 +112,8 @@ def mock_multi_hitbox_asset():
 # ANCHOR & OBSTACLE TESTS
 # ---------------------------------------------------------------------------
 
-@pytest.mark.intentions
-@pytest.mark.pathfinding
+@pytest.mark.workflow_intentions
+@pytest.mark.workflow_navigation
 def test_navigation_anchor_with_hitbox(mock_sprite):
     # Position: (175, 200), Hitbox: pos=(21, 23), dim=(22, 21)
     # Footprint anchor: x = 175 + 21 + 22 // 2 = 207, y = 200 + 23 + 21 // 2 = 233
@@ -122,8 +122,8 @@ def test_navigation_anchor_with_hitbox(mock_sprite):
     assert anchor.y == 233
 
 
-@pytest.mark.intentions
-@pytest.mark.pathfinding
+@pytest.mark.workflow_intentions
+@pytest.mark.workflow_navigation
 def test_navigation_anchor_fallback_dimensions(mock_crate):
     # Position: (10, 10), Dimensions: (32, 32), default hitbox generated matching dimensions
     anchor = NavigationMechanics.anchor(mock_crate)
@@ -131,8 +131,8 @@ def test_navigation_anchor_fallback_dimensions(mock_crate):
     assert anchor.y == 10 + 32 // 2
 
 
-@pytest.mark.intentions
-@pytest.mark.pathfinding
+@pytest.mark.workflow_intentions
+@pytest.mark.workflow_navigation
 def test_navigation_obstacles_multi_hitbox(mock_board, mock_multi_hitbox_asset):
     # TODO: refactor to use test bed fixtures
     mock_board.add([mock_multi_hitbox_asset])
@@ -147,8 +147,8 @@ def test_navigation_obstacles_multi_hitbox(mock_board, mock_multi_hitbox_asset):
     assert (255.0, 289.0, 203.0, 63.0) in obs
 
 
-@pytest.mark.intentions
-@pytest.mark.pathfinding
+@pytest.mark.workflow_intentions
+@pytest.mark.workflow_navigation
 def test_navigation_obstacles_offset_hitbox(mock_board, mock_offset_hitbox_asset):
     # TODO: refactor to use test bed fixtures
     mock_board.add([mock_offset_hitbox_asset])
@@ -158,8 +158,8 @@ def test_navigation_obstacles_offset_hitbox(mock_board, mock_offset_hitbox_asset
     assert (156.0, 167.0, 116.0, 54.0) in obs
 
 
-@pytest.mark.intentions
-@pytest.mark.pathfinding
+@pytest.mark.workflow_intentions
+@pytest.mark.workflow_navigation
 def test_navigation_obstacles_exclusion_and_perimeters(mock_board, mock_offset_hitbox_asset):
     mock_board.add([mock_offset_hitbox_asset])
     mock_board.perimeters["brick-house-compose-layer"] = {
@@ -177,8 +177,8 @@ def test_navigation_obstacles_exclusion_and_perimeters(mock_board, mock_offset_h
     assert (0.0, 0.0, 10.0, 20.0) in obs
 
 
-@pytest.mark.intentions
-@pytest.mark.pathfinding
+@pytest.mark.workflow_intentions
+@pytest.mark.workflow_navigation
 def test_navigation_obstacles_elevation_partitioning(mock_board, mock_offset_hitbox_asset):
     """
     Verifies NavigationMechanics.obstacles extracts obstacles and perimeters strictly
@@ -217,8 +217,8 @@ def test_navigation_obstacles_elevation_partitioning(mock_board, mock_offset_hit
 # STATE & TARGET ANCHOR TESTS
 # ---------------------------------------------------------------------------
 
-@pytest.mark.intentions
-@pytest.mark.pathfinding
+@pytest.mark.workflow_intentions
+@pytest.mark.workflow_navigation
 def test_navigation_navigating(mock_sprite):
     sprite = mock_sprite
     sprite.state.goal = Goal(name="target", category=Goals.TARGET.value)
@@ -243,8 +243,8 @@ def test_navigation_navigating(mock_sprite):
     assert NavigationMechanics.navigating(sprite) is False
 
 
-@pytest.mark.intentions
-@pytest.mark.pathfinding
+@pytest.mark.workflow_intentions
+@pytest.mark.workflow_navigation
 def test_navigation_clear(mock_sprite):
     mechanic = NavigationMechanics()
 
@@ -260,8 +260,8 @@ def test_navigation_clear(mock_sprite):
     assert sprite.state.trajectory.stalled is False
 
 
-@pytest.mark.intentions
-@pytest.mark.pathfinding
+@pytest.mark.workflow_intentions
+@pytest.mark.workflow_navigation
 def test_navigation_target_same_layer_asset(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
     player = mock_board.player()
@@ -282,8 +282,8 @@ def test_navigation_target_same_layer_asset(mock_board, mock_sprite):
     assert target_anchor.y == expected_anchor.y
 
 
-@pytest.mark.intentions
-@pytest.mark.pathfinding
+@pytest.mark.workflow_intentions
+@pytest.mark.workflow_navigation
 def test_navigation_target_coordinate_displacement(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
     sprite = mock_sprite
@@ -306,8 +306,8 @@ def test_navigation_target_coordinate_displacement(mock_board, mock_sprite):
 # TRAJECTORY PLANNING & PROGRESSION TESTS
 # ---------------------------------------------------------------------------
 
-@pytest.mark.intentions
-@pytest.mark.pathfinding
+@pytest.mark.workflow_intentions
+@pytest.mark.workflow_navigation
 def test_navigation_clear_line_of_sight(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
     sprite = mock_sprite
@@ -327,8 +327,8 @@ def test_navigation_clear_line_of_sight(mock_board, mock_sprite):
     assert sprite.state.trajectory.cooldown == 0
 
 
-@pytest.mark.intentions
-@pytest.mark.pathfinding
+@pytest.mark.workflow_intentions
+@pytest.mark.workflow_navigation
 def test_navigation_occluded_los_generates_waypoints(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
     sprite = mock_sprite
@@ -362,8 +362,8 @@ def test_navigation_occluded_los_generates_waypoints(mock_board, mock_sprite):
     assert sprite.state.trajectory.stalled is False
 
 
-@pytest.mark.intentions
-@pytest.mark.pathfinding
+@pytest.mark.workflow_intentions
+@pytest.mark.workflow_navigation
 def test_navigation_stalled_path_enters_cooldown(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
     sprite = mock_sprite
@@ -384,8 +384,8 @@ def test_navigation_stalled_path_enters_cooldown(mock_board, mock_sprite):
     assert sprite.state.trajectory.cooldown == getattr(settings, "PATH_RETRY_INTERVAL", 60)
 
 
-@pytest.mark.intentions
-@pytest.mark.pathfinding
+@pytest.mark.workflow_intentions
+@pytest.mark.workflow_navigation
 def test_navigation_cooldown_active_bypasses_planner(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
     sprite = mock_sprite
@@ -405,8 +405,8 @@ def test_navigation_cooldown_active_bypasses_planner(mock_board, mock_sprite):
         assert sprite.state.trajectory.cooldown == 9
 
 
-@pytest.mark.intentions
-@pytest.mark.pathfinding
+@pytest.mark.workflow_intentions
+@pytest.mark.workflow_navigation
 def test_navigation_waypoint_arrival_advances_queue(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
     sprite = mock_sprite
@@ -431,8 +431,8 @@ def test_navigation_waypoint_arrival_advances_queue(mock_board, mock_sprite):
     assert sprite.state.trajectory.target == wp2
 
 
-@pytest.mark.intentions
-@pytest.mark.pathfinding
+@pytest.mark.workflow_intentions
+@pytest.mark.workflow_navigation
 def test_navigation_waypoint_arrival_final_sets_goal_target(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
     sprite = mock_sprite
@@ -456,8 +456,8 @@ def test_navigation_waypoint_arrival_final_sets_goal_target(mock_board, mock_spr
     assert sprite.state.trajectory.target == sprite.state.goal.position
 
 
-@pytest.mark.intentions
-@pytest.mark.pathfinding
+@pytest.mark.workflow_intentions
+@pytest.mark.workflow_navigation
 def test_navigation_waypoint_arrival_final_sets_goal_target(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
     sprite = mock_sprite
@@ -481,8 +481,8 @@ def test_navigation_waypoint_arrival_final_sets_goal_target(mock_board, mock_spr
     assert sprite.state.trajectory.target == sprite.state.goal.position
     
 
-@pytest.mark.intentions
-@pytest.mark.pathfinding
+@pytest.mark.workflow_intentions
+@pytest.mark.workflow_navigation
 def test_navigation_dynamic_replan_when_waypoint_blocked(mock_board, mock_sprite):
     mechanic = NavigationMechanics()
     sprite = mock_sprite
@@ -513,8 +513,8 @@ def test_navigation_dynamic_replan_when_waypoint_blocked(mock_board, mock_sprite
     assert sprite.state.trajectory.vertices[0].y == new_wp.y - offset_y
 
 
-@pytest.mark.intentions
-@pytest.mark.pathfinding
+@pytest.mark.workflow_intentions
+@pytest.mark.workflow_navigation
 def test_navigation_update_processes_sprites_skips_player(mock_board):
     mechanic = NavigationMechanics()
     player = mock_board.player()

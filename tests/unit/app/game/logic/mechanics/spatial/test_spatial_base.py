@@ -11,7 +11,7 @@ from libs.core.models import (
 )
 
 
-@pytest.mark.physics
+@pytest.mark.physics_space
 def test_spatial_mechanic_center(mock_collision_mechanics):
     pos = Position(10, 10)
     dim = Dimensions(32, 64)
@@ -21,8 +21,8 @@ def test_spatial_mechanic_center(mock_collision_mechanics):
     assert cy == 42.0
 
 
-@pytest.mark.physics
-@pytest.mark.collisions
+@pytest.mark.physics_space
+@pytest.mark.workflow_collisions
 def test_spatial_mechanic_collisions(mock_collision_mechanics, mock_crate, mock_crate_alt, mock_strut):
     """
     Verifies Space broad-phase hashing and narrow-phase filtering with real fixtures.
@@ -38,8 +38,8 @@ def test_spatial_mechanic_collisions(mock_collision_mechanics, mock_crate, mock_
     assert (mock_crate, mock_strut) not in pairs
 
 
-@pytest.mark.physics
-@pytest.mark.collisions
+@pytest.mark.physics_space
+@pytest.mark.workflow_collisions
 def test_spatial_mechanic_collisions_elevation_filtering(mock_collision_mechanics, mock_crate, mock_crate_alt):
     """
     Verifies SpatialMechanic.collisions filters out entities that have no hitboxes on the queried elevation.
@@ -54,8 +54,8 @@ def test_spatial_mechanic_collisions_elevation_filtering(mock_collision_mechanic
     assert mock_collision_mechanics.collisions([mock_crate, mock_crate_alt], elevation=1) == []
 
 
-@pytest.mark.physics
-@pytest.mark.collisions
+@pytest.mark.physics_space
+@pytest.mark.workflow_collisions
 def test_spatial_mechanic_intersections(mock_collision_mechanics, mock_crate, mock_chest):
     """
     Verifies virtual full-dimension hitbox generation for post-separation interaction checks.
@@ -69,8 +69,8 @@ def test_spatial_mechanic_intersections(mock_collision_mechanics, mock_crate, mo
     assert (mock_crate, mock_chest) in pairs or (mock_chest, mock_crate) in pairs
 
 
-@pytest.mark.physics
-@pytest.mark.collisions
+@pytest.mark.physics_space
+@pytest.mark.workflow_collisions
 def test_spatial_mechanic_proximities(mock_collision_mechanics, mock_sprite, mock_sprite_alt):
     """
     Verifies virtual action-radius padded hitbox intersections for separated entities.
@@ -85,8 +85,8 @@ def test_spatial_mechanic_proximities(mock_collision_mechanics, mock_sprite, moc
     assert (mock_sprite, mock_sprite_alt) in pairs or (mock_sprite_alt, mock_sprite) in pairs
 
 
-@pytest.mark.physics
-@pytest.mark.collisions
+@pytest.mark.physics_space
+@pytest.mark.workflow_collisions
 def test_spatial_mechanic_constrain_elevation_filtering(mock_collision_mechanics, mock_crate, mock_boundary):
     """
     Verifies SpatialMechanic.constrain pairs dynamic assets with boundaries only on active hitbox elevations.

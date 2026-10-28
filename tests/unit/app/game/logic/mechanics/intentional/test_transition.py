@@ -11,7 +11,7 @@ import pytest
 
 # Application Libraries
 from app.game.logic.mechanics import TransitionMechanics
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances,
     Intentions, 
     Actions,
@@ -21,7 +21,7 @@ from app.config.enums import (
 from libs.core.models import Position
 
 
-@pytest.mark.intentions
+@pytest.mark.workflow_intentions
 def test_transition_update_evaluates_executor(mock_engine_with_lambda_transitions):
     engine = mock_engine_with_lambda_transitions
     mechanic = engine.get_mechanic(TransitionMechanics)
@@ -47,7 +47,7 @@ def test_transition_update_evaluates_executor(mock_engine_with_lambda_transition
     assert sprite.state.animation.action == Actions.CAST.value
 
 
-@pytest.mark.intentions
+@pytest.mark.workflow_intentions
 def test_transition_update_skips_without_executor(mock_engine_with_lambda_transitions):
     engine = mock_engine_with_lambda_transitions
     mechanic = engine.get_mechanic(TransitionMechanics)

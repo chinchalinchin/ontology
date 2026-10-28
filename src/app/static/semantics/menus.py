@@ -1,10 +1,11 @@
 """
 @app.semantics
+@category.widgets
 @workflow.menus
 
-# Ontology: Source - app.config.enums.menus
+# Ontology: Source - app.static.semantics.menus
 
-Enumeration of Menu semantics.
+Menu semantics enumerations
 """
 # Standard Libraries
 from enum import Enum

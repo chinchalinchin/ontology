@@ -8,14 +8,14 @@ from unittest.mock import patch
 import pytest
 
 # Application Libraries
-from app.config.enums import Devices, Menus
+from app.static.semantics import Devices, Menus
 from app.game.menus.events import StateEvent, MenuEvent
 
 # Cython Libraries
 from libs.core.models import Dimensions
 
 
-@pytest.mark.orchestration
+@pytest.mark.workflow_injection
 @patch('app.services.orchestration.builder.Screen')
 @patch('app.services.orchestration.builder.render')
 def test_orchestrator_construct(
@@ -50,7 +50,7 @@ def test_orchestrator_construct(
     assert engine.bus[0].id == "world-01"
 
 
-@pytest.mark.orchestration
+@pytest.mark.workflow_injection
 @patch('app.services.orchestration.builder.Screen')
 @patch('app.services.orchestration.builder.render')
 def test_orchestrator_construct_main_menu(

@@ -40,7 +40,7 @@ STATE_CATEGORIES = (
 
 
 @pytest.fixture
-def asset(
+def mock_asset(
     mock_properties_schema: PropertiesSchema,
     mock_configurations_schema: ConfigurationSchema,
     mock_material_index: MaterialIndex,
@@ -54,22 +54,14 @@ def asset(
         instance: str,
         id: Optional[str] = None,
         asset_state: Optional[AssetState] = None,
-        substrate: Optional[int] = None,
-        **state_overrides,
     ) -> Asset:
-        resolved_state = asset_state or state(
-            category, instance, id=id, **state_overrides
-        )
+        resolved_state = asset_state or state(category, instance, id=id)
         prop_map = getattr(getattr(mock_properties_schema, category), instance)
         recipe = getattr(
             getattr(mock_configurations_schema.recipes, category), instance
         )
         properties = prop_map[resolved_state.id]
-        resolved_substrate = (
-            substrate
-            if substrate is not None
-            else mock_material_index.substrate(category, instance)
-        )
+        substrate = mock_material_index.substrate(category, instance)
 
         return AssetFactory.asset(
             category,
@@ -77,7 +69,7 @@ def asset(
             properties,
             resolved_state,
             recipe,
-            substrate=resolved_substrate,
+            substrate=substrate,
         )
 
     return _asset
@@ -85,7 +77,7 @@ def asset(
 
 @pytest.fixture
 def mock_assets(
-    asset,
+    mock_asset,
     mock_state_schema: StateSchema,
 ) -> list[Asset]:
     """
@@ -93,13 +85,11 @@ def mock_assets(
     """
     assets: list[Asset] = []
     for category in STATE_CATEGORIES:
-        category_node = getattr(mock_state_schema, category, None)
-        if category_node is None:
-            continue
+        category_node = getattr(mock_state_schema, category)
         for instance_field in fields(category_node):
             instance = instance_field.name
             for entity_state in getattr(category_node, instance):
                 assets.append(
-                    asset(category, instance, asset_state=entity_state)
+                    mock_asset(category, instance, asset_state=entity_state)
                 )
     return assets

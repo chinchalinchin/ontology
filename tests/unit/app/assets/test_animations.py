@@ -1,17 +1,28 @@
 """
-@domain.test 
+@domain.test
+@test.unit
 @app.asset
 @asset.animation
 
-# Ontology: Tests - tests.unit.app.assets.test_animations
+# Ontology: Test - tests.unit.app.assets.test_animations
 
 Unit tests for Asset Animation implementations.
 """
-# Standard Libraries
-from unittest.mock import MagicMock
-
 # External Libraries
 import pytest
+
+# Application Libraries
+from app.models.properties import Frequency
+from app.models.state import AttachmentState
+from app.static.semantics import (
+    Actions,
+    AssetCategories,
+    AssetInstances,
+    Frequencies,
+)
+
+# Cython Libraries
+from libs.core.models import Position
 
 pytestmark = [
     pytest.mark.app_asset,
@@ -19,216 +30,240 @@ pytestmark = [
 ]
 
 
-# Application Libraries
-from app.assets.animations.core import (
-    NoAnimation, 
-    BinaryAnimation, 
-    FrequencyAnimation, 
-    StateAnimation, 
-    SpriteAnimation
-)
-from app.config.enums import Frequencies
-from app.models.properties import EffectProperties, Frequency
-from app.models.state import (
-    AssetState, 
-    AnimationState, 
-    SpriteState, 
-    EffectState,
-    ReactableState,
-    Psyche, 
-    Mutators, 
-    MutatorTriggers,
-    AttachmentState
-)
-
-# Cython Libraries
-from libs.core.models import Dimensions
-
-
-# TODO: refactor these tests to use fixtures
-
 @pytest.mark.app_core
-def test_no_animation():
-    animation = NoAnimation()
-    state = AssetState(id="test")
-    assert animation.animate(state, None) == state
+def test_no_animation(mock_asset):
+    crate = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+    assert crate.animation.animate(crate.state, crate.properties) == crate.state
 
-
-@pytest.mark.app_core
-def test_binary_animation():
-    animation = BinaryAnimation()
-    state = MagicMock(switch=True, animation=AnimationState())
-    animation.animate(state, None)
-    
-    # Settings ON/OFF mapped to frames 1 and 0
-    assert state.animation.frame == 1
-    
-    state.switch = False
-    animation.animate(state, None)
-    assert state.animation.frame == 0
 
 @pytest.mark.category_effects
-def test_frequency_animation_inactive():
-    animation = FrequencyAnimation()
-    frequency = Frequency(type=Frequencies.CONTINUOUS.value, delay=1)
-    properties = EffectProperties(dimensions=Dimensions(32, 32), count=4, frequency=frequency)
-    state = EffectState(id="effect-1", active=False, animation=AnimationState(frame=2, tick=3))
+def test_frequency_animation_inactive(mock_asset):
+    effect = mock_asset(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.PASSIVE.value,
+    )
+    effect.state.active = False
+    effect.state.animation.frame = 2
+    effect.state.animation.tick = 3
 
-    animation.animate(state, properties)
-    assert state.animation.frame == 0
-    assert state.animation.tick == 0
+    effect.animation.animate(effect.state, effect.properties)
+    assert effect.state.animation.frame == 0
+    assert effect.state.animation.tick == 0
+
 
 @pytest.mark.category_effects
-def test_frequency_animation_continuous():
-    animation = FrequencyAnimation()
-    frequency = Frequency(type=Frequencies.CONTINUOUS.value, delay=2)
-    properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, frequency=frequency)
-    state = EffectState(id="torch", active=True, animation=AnimationState(frame=0, tick=0))
+def test_frequency_animation_continuous(mock_asset):
+    effect = mock_asset(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.PASSIVE.value,
+    )
+    effect.properties.count = 3
+    effect.properties.frequency = Frequency(
+        type=Frequencies.CONTINUOUS.value,
+        delay=2,
+    )
+    effect.state.active = True
+    effect.state.animation.frame = 0
+    effect.state.animation.tick = 0
 
     # Tick 1: Pacing delay threshold not reached
-    animation.animate(state, properties)
-    assert state.animation.tick == 1
-    assert state.animation.frame == 0
+    effect.animation.animate(effect.state, effect.properties)
+    assert effect.state.animation.tick == 1
+    assert effect.state.animation.frame == 0
 
     # Tick 2: Delay reached, frame increments
-    animation.animate(state, properties)
-    assert state.animation.tick == 0
-    assert state.animation.frame == 1
+    effect.animation.animate(effect.state, effect.properties)
+    assert effect.state.animation.tick == 0
+    assert effect.state.animation.frame == 1
 
     # Advance to end of cycle and verify modulo wrap
-    state.animation.frame = 2
-    state.animation.tick = 1
-    animation.animate(state, properties)
-    assert state.animation.tick == 0
-    assert state.animation.frame == 0
+    effect.state.animation.frame = 2
+    effect.state.animation.tick = 1
+    effect.animation.animate(effect.state, effect.properties)
+    assert effect.state.animation.tick == 0
+    assert effect.state.animation.frame == 0
 
 
 @pytest.mark.category_effects
-def test_frequency_animation_temporary_non_persisting():
-    animation = FrequencyAnimation()
-    frequency = Frequency(type=Frequencies.TEMPORARY.value, delay=1, persist=False)
-    properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, frequency=frequency)
-    state = EffectState(id="slash-spark", active=True, animation=AnimationState(frame=0, tick=0))
+def test_frequency_animation_temporary_non_persisting(mock_asset):
+    effect = mock_asset(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.PASSIVE.value,
+    )
+    effect.properties.count = 3
+    effect.properties.frequency = Frequency(
+        type=Frequencies.TEMPORARY.value,
+        delay=1,
+        persist=False,
+    )
+    effect.state.active = True
+    effect.state.animation.frame = 0
+    effect.state.animation.tick = 0
 
     # Advances through frames up to count
-    animation.animate(state, properties)
-    assert state.animation.frame == 1
+    effect.animation.animate(effect.state, effect.properties)
+    assert effect.state.animation.frame == 1
 
-    state.animation.frame = 3
-    animation.animate(state, properties)
+    effect.state.animation.frame = 3
+    effect.animation.animate(effect.state, effect.properties)
     # Beyond count, frame advancement halts for garbage collection
-    assert state.animation.frame == 3
+    assert effect.state.animation.frame == 3
 
 
 @pytest.mark.category_effects
-def test_frequency_animation_temporary_persisting():
-    animation = FrequencyAnimation()
-    frequency = Frequency(type=Frequencies.TEMPORARY.value, delay=1, persist=True)
-    properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, frequency=frequency)
-    state = EffectState(id="dummy", active=True, animation=AnimationState(frame=0, tick=0))
+def test_frequency_animation_temporary_persisting(mock_asset):
+    effect = mock_asset(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.PASSIVE.value,
+    )
+    effect.properties.count = 3
+    effect.properties.frequency = Frequency(
+        type=Frequencies.TEMPORARY.value,
+        delay=1,
+        persist=True,
+    )
+    effect.state.active = True
+    effect.state.animation.frame = 1
+    effect.state.animation.tick = 0
 
-    state.animation.frame = 1
-    animation.animate(state, properties)
-    assert state.animation.frame == 2
+    effect.animation.animate(effect.state, effect.properties)
+    assert effect.state.animation.frame == 2
 
     # Clamps to count - 1 when persist=True
-    animation.animate(state, properties)
-    assert state.animation.frame == 2
+    effect.animation.animate(effect.state, effect.properties)
+    assert effect.state.animation.frame == 2
 
 
 @pytest.mark.category_effects
-def test_frequency_animation_periodic():
-    animation = FrequencyAnimation()
-    frequency = Frequency(type=Frequencies.PERIODIC.value, delay=2, frequency=8)
-    properties = EffectProperties(dimensions=Dimensions(32, 32), count=2, frequency=frequency)
-    state = EffectState(id="geyser", active=True, animation=AnimationState(frame=0, tick=0))
+def test_frequency_animation_periodic(mock_asset):
+    effect = mock_asset(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.PASSIVE.value,
+    )
+    effect.properties.count = 2
+    effect.properties.frequency = Frequency(
+        type=Frequencies.PERIODIC.value,
+        delay=2,
+        frequency=8,
+    )
+    effect.state.active = True
+    effect.state.animation.frame = 0
+    effect.state.animation.tick = 0
 
     # Active duration = 2 * 2 = 4 ticks. Frame 0 during ticks 0-1
-    animation.animate(state, properties) # tick 1
-    assert state.animation.frame == 0
+    effect.animation.animate(effect.state, effect.properties)  # tick 1
+    assert effect.state.animation.frame == 0
 
-    animation.animate(state, properties) # tick 2
-    assert state.animation.frame == 1
+    effect.animation.animate(effect.state, effect.properties)  # tick 2
+    assert effect.state.animation.frame == 1
 
-    animation.animate(state, properties) # tick 3
-    assert state.animation.frame == 1
+    effect.animation.animate(effect.state, effect.properties)  # tick 3
+    assert effect.state.animation.frame == 1
 
-    animation.animate(state, properties) # tick 4 -> idle resting frame
-    assert state.animation.frame == 0
+    effect.animation.animate(effect.state, effect.properties)  # tick 4 -> idle resting frame
+    assert effect.state.animation.frame == 0
 
-    state.animation.tick = 7
-    animation.animate(state, properties) # tick 8 reaches frequency limit
-    assert state.animation.tick == 0
-    assert state.animation.frame == 0
+    effect.state.animation.tick = 7
+    effect.animation.animate(effect.state, effect.properties)  # tick 8 reaches frequency limit
+    assert effect.state.animation.tick == 0
+    assert effect.state.animation.frame == 0
 
 
 @pytest.mark.category_effects
-def test_frequency_animation_cooldown_and_reset():
-    animation = FrequencyAnimation()
-    frequency = Frequency(type=Frequencies.TEMPORARY.value, delay=1, cooldown=60, persist=True)
-    properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, frequency=frequency)
-    state = ReactableState(id="dummy", active=True, cooldown=2, animation=AnimationState(frame=2, tick=0))
+def test_frequency_animation_cooldown_and_reset(mock_asset):
+    reactable = mock_asset(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.REACTABLES.value,
+    )
+    reactable.properties.count = 3
+    reactable.properties.frequency = Frequency(
+        type=Frequencies.TEMPORARY.value,
+        delay=1,
+        cooldown=60,
+        persist=True,
+    )
+    reactable.state.active = True
+    reactable.state.cooldown = 2
+    reactable.state.animation.frame = 2
+    reactable.state.animation.tick = 0
 
     # Frame matches clamp limit (count - 1): decrement cooldown
-    animation.cooldown(state, properties)
-    assert state.cooldown == 1
-    assert state.active is True
+    reactable.animation.cooldown(reactable.state, reactable.properties)
+    assert reactable.state.cooldown == 1
+    assert reactable.state.active is True
 
     # Cooldown expires: resets state and restores base cooldown
-    animation.cooldown(state, properties)
-    assert state.cooldown == 60
-    assert state.active is False
-    assert state.animation.frame == 0
-    assert state.animation.tick == 0
+    reactable.animation.cooldown(reactable.state, reactable.properties)
+    assert reactable.state.cooldown == 60
+    assert reactable.state.active is False
+    assert reactable.state.animation.frame == 0
+    assert reactable.state.animation.tick == 0
 
 
 @pytest.mark.category_sheets
-def test_state_animation():
-    animation = StateAnimation()
-    state = SpriteState(id="test")
-    state.animation = AnimationState(action="walk", frame=0, tick=0)
-    state.mutators = Mutators(triggers=MutatorTriggers(animated=True))
-    
-    action_prop = MagicMock(delay=2, count=3)
-    properties = MagicMock(actions={"walk": action_prop})
-    
-    # Tick 1: Should not advance frame yet due to delay=2
-    animation.animate(state, properties)
-    assert state.animation.tick == 1
-    assert state.animation.frame == 0
-    
-    # Tick 2: Should advance frame and reset tick
-    animation.animate(state, properties)
-    assert state.animation.tick == 0
-    assert state.animation.frame == 1
-    
-    # Test non-animated trigger reset
-    state.mutators.triggers.animated = False
-    state.animation.frame = 2
-    state.animation.tick = 1
-    animation.animate(state, properties)
-    assert state.animation.frame == 0
-    assert state.animation.tick == 0
-
-
-@pytest.mark.category_sheets
-def test_sprite_animation():
-    animation = SpriteAnimation()
-    state = SpriteState(id="npc")
-    state.animation = AnimationState(action="walk", frame=0, tick=0)
-    state.mutators = Mutators(triggers=MutatorTriggers(animated=True))
-    state.psyche = Psyche(
-        expression=AttachmentState(id="bubble", layer="0", icon="loquacity", offset=None, ttl=2)
+def test_state_animation(mock_asset):
+    sprite = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value,
     )
-    
-    action_prop = MagicMock(delay=1, count=3)
-    properties = MagicMock(actions={"walk": action_prop})
-    
+    walk_action = sprite.properties.actions[Actions.WALK.value]
+    walk_action.delay = 2
+    walk_action.count = 3
+
+    sprite.state.animation.action = Actions.WALK.value
+    sprite.state.animation.frame = 0
+    sprite.state.animation.tick = 0
+    sprite.state.mutators.triggers.animated = True
+
+    # Tick 1: Should not advance frame yet due to delay=2
+    sprite.animation.animate(sprite.state, sprite.properties)
+    assert sprite.state.animation.tick == 1
+    assert sprite.state.animation.frame == 0
+
+    # Tick 2: Should advance frame and reset tick
+    sprite.animation.animate(sprite.state, sprite.properties)
+    assert sprite.state.animation.tick == 0
+    assert sprite.state.animation.frame == 1
+
+    # Non-animated trigger reset
+    sprite.state.mutators.triggers.animated = False
+    sprite.state.animation.frame = 2
+    sprite.state.animation.tick = 1
+    sprite.animation.animate(sprite.state, sprite.properties)
+    assert sprite.state.animation.frame == 0
+    assert sprite.state.animation.tick == 0
+
+
+@pytest.mark.category_sheets
+def test_sprite_animation(mock_asset):
+    sprite = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value,
+    )
+    walk_action = sprite.properties.actions[Actions.WALK.value]
+    walk_action.delay = 1
+    walk_action.count = 3
+
+    sprite.state.animation.action = Actions.WALK.value
+    sprite.state.animation.frame = 0
+    sprite.state.animation.tick = 0
+    sprite.state.mutators.triggers.animated = True
+    sprite.state.psyche.expression = AttachmentState(
+        id="bubble",
+        layer="0",
+        icon="loquacity",
+        offset=Position(0, 0),
+        ttl=2,
+    )
+
     # Tick 1: Frame advances, Expression TTL decays
-    animation.animate(state, properties)
-    assert state.psyche.expression is not None
-    assert state.psyche.expression.ttl == 1
-    
+    sprite.animation.animate(sprite.state, sprite.properties)
+    assert sprite.state.psyche.expression is not None
+    assert sprite.state.psyche.expression.ttl == 1
+
     # Tick 2: Frame advances, Expression TTL reaches 0 and is garbage collected
-    animation.animate(state, properties)
-    assert state.psyche.expression is None
+    sprite.animation.animate(sprite.state, sprite.properties)
+    assert sprite.state.psyche.expression is None

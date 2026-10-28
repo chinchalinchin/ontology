@@ -11,11 +11,11 @@ import pytest
 # Application Libraries
 from app.assets.animations import SpriteAnimation, BinaryAnimation
 from app.game.logic.mechanics import AnimationMechanics
-from app.config.enums import AssetCategories, AssetInstances
+from app.static.semantics import AssetCategories, AssetInstances
 from app.models.state import DevicePayload
 
 
-@pytest.mark.animations
+@pytest.mark.asset_animation
 def test_animation_mechanics_update(mock_board):
     """
     Ensure the animate() interface is correctly invoked on the Animation

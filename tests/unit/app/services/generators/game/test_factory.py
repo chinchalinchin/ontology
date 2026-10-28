@@ -8,7 +8,7 @@ from unittest.mock import MagicMock
 import pytest
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances,
     AssetCategories,
     FrameRecipe,
@@ -29,7 +29,6 @@ from app.assets.frames import (
     NoFrame
 )
 from app.assets.animations import (
-    BinaryAnimation,
     FrequencyAnimation,
     StateAnimation,
     SpriteAnimation,
@@ -76,124 +75,109 @@ from app.services.translators import (
     LambdaTranslator, 
     CompilerTranslator
 )
+from app.services.factories import (
+    AssetFactory,
+    MechanicFactory,
+)
 from app.services.generators.game import (
-    Cradle,
-    Factory
+    Cradle
 )
 
 
-@pytest.mark.services
+@pytest.mark.app_services
 def test_factory_frame():
     assert isinstance(
-        Factory.frame(FrameRecipe.SPRITE.value), 
+        AssetFactory.frame(FrameRecipe.SPRITE.value), 
         SpriteFrame
     )
     assert isinstance(
-        Factory.frame(FrameRecipe.SINGLE.value), 
+        AssetFactory.frame(FrameRecipe.SINGLE.value), 
         SingleFrame
     )
     assert isinstance(
-        Factory.frame(FrameRecipe.ITERABLE.value), 
+        AssetFactory.frame(FrameRecipe.ITERABLE.value), 
         IterableFrame
     )
     assert isinstance(
-        Factory.frame(FrameRecipe.STATE.value), 
+        AssetFactory.frame(FrameRecipe.STATE.value), 
         StateFrame
     )
     assert isinstance(
-        Factory.frame(FrameRecipe.TRAVERSAL.value), 
+        AssetFactory.frame(FrameRecipe.TRAVERSAL.value), 
         TraversalFrame
     )
     assert isinstance(
-        Factory.frame(FrameRecipe.METER.value), 
+        AssetFactory.frame(FrameRecipe.METER.value), 
         MeterFrame
     )
     assert isinstance(
-        Factory.frame(FrameRecipe.INDEX.value), 
+        AssetFactory.frame(FrameRecipe.INDEX.value), 
         IndexFrame
     )
     assert isinstance(
-        Factory.frame(FrameRecipe.NONE.value), 
+        AssetFactory.frame(FrameRecipe.NONE.value), 
         NoFrame
     )
     assert isinstance(
-        Factory.frame("unknown_frame"),
+        AssetFactory.frame("unknown_frame"),
         NoFrame
     )
     assert isinstance(
-        Factory.frame(None), 
+        AssetFactory.frame(None), 
         NoFrame
     )
 
 
-@pytest.mark.services
+@pytest.mark.app_services
 def test_factory_animation():
     assert isinstance(
-        Factory.animation(AnimationRecipe.BINARY.value), 
-        BinaryAnimation
-    )
-    assert isinstance(
-        Factory.animation(AnimationRecipe.FREQUENCY.value), 
+        AssetFactory.animation(AnimationRecipe.FREQUENCY.value), 
         FrequencyAnimation
     )
     assert isinstance(
-        Factory.animation(AnimationRecipe.STATE.value), 
+        AssetFactory.animation(AnimationRecipe.STATE.value), 
         StateAnimation
     )
     assert isinstance(
-        Factory.animation(AnimationRecipe.SPRITE.value),
+        AssetFactory.animation(AnimationRecipe.SPRITE.value),
         SpriteAnimation
     )
     assert isinstance(
-        Factory.animation(AnimationRecipe.TRAVERSAL.value), 
+        AssetFactory.animation(AnimationRecipe.TRAVERSAL.value), 
         TraversalAnimation
     )
     assert isinstance(
-        Factory.animation(AnimationRecipe.METER.value), 
+        AssetFactory.animation(AnimationRecipe.METER.value), 
         MeterAnimation
     )
     assert isinstance(
-        Factory.animation(AnimationRecipe.NONE.value), 
+        AssetFactory.animation(AnimationRecipe.NONE.value), 
         NoAnimation
     )
     assert isinstance(
-        Factory.animation("unknown_anim"),
+        AssetFactory.animation("unknown_anim"),
         NoAnimation
     )
     assert isinstance(
-        Factory.animation(None),
+        AssetFactory.animation(None),
         NoAnimation
     )
-
-
-@pytest.mark.services
-def test_factory_taxonomy():
-    tax = Factory.taxonomy(
-        "sheet-1", 
-        "hero", 
-        AssetCategories.SHEETS.value, 
-        AssetInstances.PLAYERS.value
-    )
-    assert tax.id == "sheet-1"
-    assert tax.name == "hero"
-    assert tax.category == AssetCategories.SHEETS.value
-    assert tax.instance == AssetInstances.PLAYERS.value
 
 
 def test_factory_device(mock_mapping_configuration: MappingConfiguration):
-    kb = Factory.device(
+    kb = AssetFactory.device(
         Devices.KEYBOARD.value, 
         mock_mapping_configuration.keyboard
     )
     assert isinstance(kb, Keyboard)
 
-    ctrl = Factory.device(
+    ctrl = AssetFactory.device(
         Devices.CONTROLLER.value, 
         mock_mapping_configuration.controller
     )
     assert isinstance(ctrl, Controller)
 
-    fallback = Factory.device(
+    fallback = AssetFactory.device(
         "unknown_device", 
         mock_mapping_configuration.keyboard
     )
@@ -205,7 +189,7 @@ def test_factory_cradle(
     mock_recipes_configuration,
     mock_decomposer
 ):
-    cradle = Factory.cradle(
+    cradle = AssetFactory.cradle(
         mock_spawnables, 
         mock_recipes_configuration, 
         mock_decomposer
@@ -237,14 +221,14 @@ def test_factory_mechanics():
             key=enum_key,
             executors=[]
         )
-        assert isinstance(Factory.mechanics(instance), cls)
+        assert isinstance(MechanicFactory.mechanics(instance), cls)
 
     unmapped_instance = MechanicsInstance(
         key="unmapped_mechanics",
         executors= []
     )
     assert isinstance(
-        Factory.mechanics(unmapped_instance), 
+        MechanicFactory.mechanics(unmapped_instance), 
         AnimationMechanics
     )
 
@@ -260,24 +244,24 @@ def test_factory_controller():
         Controllers.INVENTORY.value: InventoryController
     }
     for enum_key, cls in mapping.items():
-        assert isinstance(Factory.controller(enum_key), cls)
+        assert isinstance(AssetFactory.controller(enum_key), cls)
 
     assert isinstance(
-        Factory.controller("unmapped_controller"), 
+        AssetFactory.controller("unmapped_controller"), 
         ScrollController
     )
 
 
 def test_factory_translator():
     assert isinstance(
-        Factory.translator(Translators.LAMBDA.value), 
+        MechanicFactory.translator(Translators.LAMBDA.value), 
         LambdaTranslator
     )
     assert isinstance(
-        Factory.translator(Translators.COMPILER.value), 
+        MechanicFactory.translator(Translators.COMPILER.value), 
         CompilerTranslator
     )
     assert isinstance(
-        Factory.translator("unmapped_translator"), 
+        MechanicFactory.translator("unmapped_translator"), 
         LambdaTranslator
     )

@@ -9,7 +9,7 @@ import pytest
 
 # Application Libraries
 from app.game.logic.mechanics import PlayerMechanics
-from app.config.enums import (
+from app.static.semantics import (
     Intentions, 
     PlayerGoals
 )
@@ -34,7 +34,7 @@ def _setup_player(mock_board):
     return player
 
 
-@pytest.mark.player
+@pytest.mark.workflow_player
 def test_player_new_intention_resets_animation(mock_board):
     mechanic = PlayerMechanics()
     player = mock_board.player()
@@ -54,7 +54,7 @@ def test_player_new_intention_resets_animation(mock_board):
     assert player.state.animation.tick == 0
 
 
-@pytest.mark.player
+@pytest.mark.workflow_player
 def test_player_blocking_intention_persists(mock_board):
     mechanic = PlayerMechanics()
     player = mock_board.player()
@@ -73,7 +73,7 @@ def test_player_blocking_intention_persists(mock_board):
     assert player.state.intention == Intentions.ATTACK
 
 
-@pytest.mark.player
+@pytest.mark.workflow_player
 def test_player_blocking_intention_completes(mock_board):
     mechanic = PlayerMechanics()
     player = mock_board.player()
@@ -92,7 +92,7 @@ def test_player_blocking_intention_completes(mock_board):
     assert player.state.intention == Intentions.IDLE
 
 
-@pytest.mark.player
+@pytest.mark.workflow_player
 def test_player_movement_updates_goal(mock_board):
     mechanic = PlayerMechanics()
     player = mock_board.player()

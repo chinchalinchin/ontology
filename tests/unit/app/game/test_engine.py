@@ -64,14 +64,14 @@ class SampleEvent(Event):
 # ---------------------------------------------------------------------------
 # --------------------------------------------------------------------- TESTS
 
-@pytest.mark.main
+@pytest.mark.workflow_main
 def test_engine_time():
     """Test the static time method returns a float from perf_counter."""
     with patch('time.perf_counter', return_value=123.45):
         assert Engine.time() == 123.45
 
 
-@pytest.mark.main
+@pytest.mark.workflow_main
 def test_engine_start(mock_engine_core):
     """
     Ensure the engine loop executes mechanics, renders the screen, 
@@ -95,7 +95,7 @@ def test_engine_start(mock_engine_core):
     assert len(screen.drawn_assets) > 0
 
 
-@pytest.mark.main
+@pytest.mark.workflow_main
 def test_engine_drain_routes_events_to_handlers(mock_engine_core):
     """
     Validates EventBus draining and strategy dispatch to concrete handlers.

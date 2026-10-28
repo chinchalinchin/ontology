@@ -6,7 +6,7 @@ import collections
 from unittest.mock import MagicMock, patch
 
 from app.game.logic.mechanics.spatial.interaction import InteractionMechanics
-from app.config.enums import Intentions, AssetInstances, AssetCategories, Menus
+from app.static.semantics import Intentions, AssetInstances, AssetCategories, Menus
 from app.game.menus.events import MenuEvent
 from app.game.menus.contexts import DialogueContext
 from app.models.state import DevicePayload, DoorState, DialogueState

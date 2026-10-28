@@ -5,7 +5,7 @@
 import pytest
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     Intentions, 
     Goals
 )
@@ -19,8 +19,8 @@ from libs.core.models import (
 )
 
 
-@pytest.mark.motion
-@pytest.mark.intentions
+@pytest.mark.physics_motion
+@pytest.mark.workflow_intentions
 def test_motive_no_intention(mock_board, mock_sprite):
     mock_sprite.state.intention = Intentions.IDLE.value
     mock_sprite.state.velocity.vx = 5.0
@@ -33,8 +33,8 @@ def test_motive_no_intention(mock_board, mock_sprite):
     assert mock_sprite.state.velocity.vy == 0.0
 
 
-@pytest.mark.motion
-@pytest.mark.intentions
+@pytest.mark.physics_motion
+@pytest.mark.workflow_intentions
 def test_motive_at_goal(mock_board, mock_sprite, monkeypatch):
     monkeypatch.setattr(
         'app.game.logic.modules.motion.motive.NavigationIntentions', 
@@ -53,8 +53,8 @@ def test_motive_at_goal(mock_board, mock_sprite, monkeypatch):
     assert mock_sprite.state.velocity.vy == 0.0
 
 
-@pytest.mark.motion
-@pytest.mark.intentions
+@pytest.mark.physics_motion
+@pytest.mark.workflow_intentions
 def test_motive_aims_towards_goal(mock_board, mock_sprite, monkeypatch):
     monkeypatch.setattr(
         'app.game.logic.modules.motion.motive.NavigationIntentions', 
@@ -83,8 +83,8 @@ def test_motive_aims_towards_goal(mock_board, mock_sprite, monkeypatch):
     assert mock_sprite.state.velocity.vy == 0.0
 
 
-@pytest.mark.intentions
-@pytest.mark.motion
+@pytest.mark.workflow_intentions
+@pytest.mark.physics_motion
 def test_motive_rvo_opposing_corridor_steering(
     mock_board, 
     mock_sprite, 

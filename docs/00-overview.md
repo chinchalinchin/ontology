@@ -77,13 +77,13 @@ See [Architecture documentation](./11-architecture.md) for more information.
 
 #### Configuration: Loader
 
-- Address: `app.config.loader`
+- Address: `app.static.loader`
 
 The Loader is responsible for reading in Configurations, Properties and State files from their respective directories, and then validating them into Models via Pydantic TypeAdaptors.
 
-#### Configuration: Enums
+#### Configuration: Semantics
 
-- Address: `app.config.enums`
+- Address: `app.static.semantics`
 
 All semantic terms utilized by the [Application](#application) are enumerated within this package. 
 

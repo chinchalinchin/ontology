@@ -9,24 +9,24 @@ from unittest.mock import patch
 import pytest
 
 # Application Libraries
-import app.config.settings as settings
-from app.config.enums import (
+import app.static.settings as settings
+from app.static.semantics import (
     Orientations
 )
 from app.models.state.assets import PropertyState
-from app.models.state.assets.crafts import OrientedState
+from app.models.state.assets.crafts import CraftState
 from libs.core.models import (
     Multiple, 
     Position
 )
 
 
-@pytest.mark.orchestration
+@pytest.mark.workflow_injection
 def test_migrator_no_target(mock_migrator):
     assert mock_migrator.step(budget_ms=16) is True
 
 
-@pytest.mark.orchestration
+@pytest.mark.workflow_injection
 @patch.object(settings, 'SEPARATOR', new='-')
 @patch('app.services.orchestration.migrator.time.perf_counter')
 @patch('app.services.orchestration.migrator.Loader.load_state')
@@ -59,7 +59,7 @@ def test_migrator_time_slicing(
     assert mock_migrator.current == mock_migrator.maximum
 
 
-@pytest.mark.orchestration
+@pytest.mark.workflow_injection
 @patch.object(settings, 'SEPARATOR', new='-')
 @patch('app.services.orchestration.migrator.Loader.load_state')
 def test_migrator_build_generator_compositions(
@@ -86,7 +86,7 @@ def test_migrator_build_generator_compositions(
     assert mock_migrator.maximum >= 1
 
 
-@pytest.mark.orchestration
+@pytest.mark.workflow_injection
 @patch.object(settings, 'SEPARATOR', new='-')
 @patch('app.services.orchestration.migrator.Loader.load_state')
 def test_migrator_build_generator_bridges(
@@ -95,10 +95,10 @@ def test_migrator_build_generator_bridges(
     mock_state
 ):
     """
-    Verify Migrator expands OrientedState instances via Decomposer into constituent unit assets on the board.
+    Verify Migrator expands CraftState instances via Decomposer into constituent unit assets on the board.
     """
     mock_state.crafts.bridges = [
-        OrientedState(
+        CraftState(
             id="wood-bridge",
             name="test-bridge",
             layer="0",
@@ -122,7 +122,7 @@ def test_migrator_build_generator_bridges(
     assert any(b.name == "test-bridge-2" for b in bridges)
 
 
-@pytest.mark.orchestration
+@pytest.mark.workflow_injection
 @patch.object(settings, 'SEPARATOR', new='-')
 @patch('app.services.orchestration.migrator.Loader.load_state')
 def test_migrator_build_generator_assets(mock_load_state, mock_migrator, mock_state):

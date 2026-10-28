@@ -6,7 +6,7 @@ import dataclasses
 from unittest.mock import patch, MagicMock
 
 # Application Libraries
-from app.config.enums import FrameRecipe
+from app.static.semantics import FrameRecipe
 from app.models.config import (
     Recipe,
     SheetRecipe,

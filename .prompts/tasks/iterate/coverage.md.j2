@@ -1,18 +1,32 @@
 # Task: Ontology - Coverage
 
+Changed accepted, but with the following label changes:
+
+* `asset()` fixture has been renamed to `mock_asset()`.
+* `mechanic()` fixture has been renamed to `mock_mechanic()`
+
 **Priorities**
       
-* Debug the current run of the test pipeline located in the [Test Pipeline](#view-test-pipeline) section
+* Update the provided unit tests and induct them into the new fixture framework. Do not expand coverage; update the old coverage and fix it where necessary.
+* Debug the current run of the test pipeline located in the [Test Pipeline](#view-test-pipeline) section.
+    * Do not worry about failures outside of the provided test code. They are failing due to the Phase 07.04 Refactor. They will be dealt with in due time.
 * Assist in refactoring the test bed fixtures.
+{#
 * (*Optional*) Add unit test coverage for any new functionality implemented.
 * (*Optional*) Add any unit tests for any areas of the code not already covered.
+#}
 
-**Fixture Refactor Context**
+**Context: Fixtures**
 
-Application fixtures have recently been reorganized and streamlined for reuse, rather than recreating them for every single test. This is an ongoing effort. The goal is to remove all blackbox testing with MagicMocks.
+Application fixtures have recently been reorganized and streamlined for reuse, rather than recreating them for every single test. This is an ongoing effort. The goal is to remove all blackbox testing with MagicMocks. All unit tests should be testing live code, with the exception of mocked image rendering.
 
-Massive changes were introduced as a result of Phase 07.04. Many of the unit tests are failing as a result. Rather than simply getting the old tests to work in the new "Material" framework (which now includes HitboxSchema), the entire Fixture framework is being condense to reduce boilerplate even further. In the current phase, Fixture Factories are being integrated into the test pipeline. 
+Massive changes were introduced as a result of Phase 07.04. Many of the unit tests are failing as a result. Rather than simply getting the old tests to work in the new Material framework (which now includes HitboxSchema and other fundamental changes, such as elevations and substrates), the entire Fixture framework is being condensed to reduce boilerplate even further. In the current phase, Fixture Factories are being integrated into the test pipeline. 
+
+
+{% include 'blocks/controls/guideline-fixtures.md' %}
 
 {% include 'blocks/controls/guideline-coverage.md' %}
+
+{% include 'blocks/controls/guideline-testbed.md' %}
 
 {% include 'blocks/controls/constraint-coverage.md' %}

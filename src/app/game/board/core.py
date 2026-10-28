@@ -8,6 +8,8 @@
 
 The Board Database.
 """
+from __future__ import annotations
+
 # Standard Libraries
 import logging
 from typing import (
@@ -35,7 +37,6 @@ from app.static.loader import Loader
 from app.game.board.modules.fields import MoistureField
 from app.game.devices import Device
 from app.game.menus.core import Menu
-from app.services.generators.game import Cradle
 from app.models.state.core import (
     PlotState,
     CalendarState
@@ -45,6 +46,7 @@ from app.models.groups import EquipmentGroup
 from app.game.board.modules.cache import Cache
 
 if TYPE_CHECKING:
+    from app.services.generators.game import Cradle
     from app.services.orchestration.migrator import Migrator
 
 # Cython Libraries

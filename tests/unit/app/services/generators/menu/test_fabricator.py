@@ -10,7 +10,7 @@ from app.models.config.menus import (
     ButtonParameters,
     MenuBinding
 )
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances,
     Layouts,
     Alignments,

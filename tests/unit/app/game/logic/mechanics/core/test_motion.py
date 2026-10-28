@@ -17,8 +17,7 @@ from libs.core.models import (
 )
 
 
-@pytest.mark.motion
-@pytest.mark.physics
+@pytest.mark.physics_motion
 def test_motion_mechanics_update_kinematic_and_frictive(mock_board):
     """
     Verifies MotionMechanics coordinates kinematic integration and tile friction decay.

@@ -1,10 +1,11 @@
 """
-@app.semantics
 @app.core
+@app.asset
+@app.semantics
 
-# Ontology: Source - app.config.enums.asset
+# Ontology: Source - app.static.semantics.assets
 
-Enumeration of Asset semantics.
+Asset semantics enumerations.
 """
 # Standard Libraries
 from enum import Enum

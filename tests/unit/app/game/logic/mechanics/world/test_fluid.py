@@ -5,8 +5,8 @@
 import pytest
 
 # Application Libraries
-import app.config.settings as settings
-from app.config.enums import (
+import app.static.settings as settings
+from app.static.semantics import (
     AssetInstances,
     Relations,
     Directions
@@ -21,7 +21,7 @@ from libs.core.models import (
 )
 
 
-@pytest.mark.fluids
+@pytest.mark.workflow_fluids
 def test_fluid_mechanics_early_exit_no_fluids(mock_board, mock_bus):
     """
     Verify mechanic yields immediately when no fluids are instantiated.
@@ -33,7 +33,7 @@ def test_fluid_mechanics_early_exit_no_fluids(mock_board, mock_bus):
     mechanic.update(mock_board, 0.016, mock_bus, None)
 
 
-@pytest.mark.fluids
+@pytest.mark.workflow_fluids
 def test_fluid_mechanics_steady_state_no_invalidation(mock_board, mock_bus):
     """
     Verify stationary obstacles do not re-flag clean fluids as dirty.
@@ -55,7 +55,7 @@ def test_fluid_mechanics_steady_state_no_invalidation(mock_board, mock_bus):
     assert fluid.state.dirty is False
 
 
-@pytest.mark.fluids
+@pytest.mark.workflow_fluids
 def test_fluid_mechanics_dynamic_bodies_do_not_invalidate_fluid(mock_board, mock_bus):
     """
     Verify dynamic bodies (mass > 0, like Crates) do not invalidate fluid propagation
@@ -80,7 +80,7 @@ def test_fluid_mechanics_dynamic_bodies_do_not_invalidate_fluid(mock_board, mock
     assert fluid.state.dirty is False
 
 
-@pytest.mark.fluids
+@pytest.mark.workflow_fluids
 def test_fluid_mechanics_gate_switch_toggle_invalidates(mock_board, mock_bus):
     """
     Verify static gate switch transitions invalidate fluid flow and re-propagate length.
@@ -107,7 +107,7 @@ def test_fluid_mechanics_gate_switch_toggle_invalidates(mock_board, mock_bus):
     assert fluid.state.length == 319
 
 
-@pytest.mark.fluids
+@pytest.mark.workflow_fluids
 def test_fluid_mechanics_spatially_decoupled_gate_ignored(mock_board, mock_bus):
     """
     Verify gate toggling outside active fluid hitboxes and downstream emission corridor
@@ -132,7 +132,7 @@ def test_fluid_mechanics_spatially_decoupled_gate_ignored(mock_board, mock_bus):
     assert fluid.state.dirty is False
 
 
-@pytest.mark.fluids
+@pytest.mark.workflow_fluids
 def test_fluid_mechanics_debounce_window(mock_board, mock_bus, monkeypatch):
     """
     Verify debounce accumulator delays layer invalidation across rapid gate toggling.
@@ -164,8 +164,8 @@ def test_fluid_mechanics_debounce_window(mock_board, mock_bus, monkeypatch):
     assert fluid.state.length == 319
 
 
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_fluid_mechanics_geometric_shift_detection_skips_regeneration(
     mock_board,
     mock_bus,
@@ -191,8 +191,8 @@ def test_fluid_mechanics_geometric_shift_detection_skips_regeneration(
     assert second_shores[0] is initial_shores[0]
 
 
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_fluid_mechanics_cross_layer_isolation(mock_board, mock_bus):
     """
     Verify obstacle movements on layer 1 do not invalidate fluids on layer 0.
@@ -215,8 +215,8 @@ def test_fluid_mechanics_cross_layer_isolation(mock_board, mock_bus):
     assert fluid.state.dirty is False
 
 
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_fluid_mechanics_two_pass_layer_shorelines(
     mock_board, 
     mock_bus, 
@@ -239,8 +239,8 @@ def test_fluid_mechanics_two_pass_layer_shorelines(
         assert shore.state.layer == "0"
 
 
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_board_fluid_subtile_precision(mock_board):
     """
     Verify Board.fluid broad/narrow spatial hash returns False for coordinates
@@ -263,8 +263,8 @@ def test_board_fluid_subtile_precision(mock_board):
     assert mock_board.fluid("0", Position(102, 10)) is False
 
 
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_board_fluid_spatial_hash_indexes_child_branches(mock_board):
     """
     Verify Board broad/narrow spatial fluid checking detects Cartesian points
@@ -296,7 +296,7 @@ def test_board_fluid_spatial_hash_indexes_child_branches(mock_board):
     assert mock_board.fluid("0", Position(10, 300)) is False
 
 
-@pytest.mark.fluids
+@pytest.mark.workflow_fluids
 def test_board_bridges_query_excludes_obstacles_and_weights(mock_board, mock_bridge):
     """
     Verify Board.bridges() returns sensor bridge assets while strictly excluding
@@ -312,7 +312,7 @@ def test_board_bridges_query_excludes_obstacles_and_weights(mock_board, mock_bri
     assert mock_bridge not in mock_board.weights("0")
 
 
-@pytest.mark.fluids
+@pytest.mark.workflow_fluids
 def test_fluid_frame_keys_memoization(mock_fluid):
     """
     Verify FluidFrame.keys memoizes results by animation frame index.
@@ -329,7 +329,7 @@ def test_fluid_frame_keys_memoization(mock_fluid):
     assert keys_pass_2 is keys_pass_1
 
 
-@pytest.mark.fluids
+@pytest.mark.workflow_fluids
 def test_cardinal_frame_keys_memoization(mock_shoreline):
     """
     Verify CardinalFrame.keys memoizes static shoreline slice keys in O(1) time.

@@ -8,7 +8,7 @@ hydrological moisture diffusion, and declarative biological stage progression.
 import pytest
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     Seasons,
     Cycles,
     AnnualStages,
@@ -27,8 +27,8 @@ from libs.core.models import (
     Hitbox
 )
 
-@pytest.mark.seasons
-@pytest.mark.ecology
+@pytest.mark.workflow_seasons
+@pytest.mark.workflow_ecology
 def test_season_mechanics_temporal_period_cycle_advancement(
     mock_board, mock_season_mechanics, mock_bus
 ):
@@ -59,8 +59,8 @@ def test_season_mechanics_temporal_period_cycle_advancement(
   assert mock_board.calendar.cycle == Cycles.PEAK.value
   assert mock_board.calendar.season == Seasons.SPRING.value
 
-@pytest.mark.seasons
-@pytest.mark.ecology
+@pytest.mark.workflow_seasons
+@pytest.mark.workflow_ecology
 def test_season_mechanics_temporal_season_year_rollover(
     mock_board,
     mock_bus
@@ -88,8 +88,8 @@ def test_season_mechanics_temporal_season_year_rollover(
     assert isinstance(mock_bus.popleft(), SeasonEvent)
 
 
-@pytest.mark.seasons
-@pytest.mark.ecology
+@pytest.mark.workflow_seasons
+@pytest.mark.workflow_ecology
 def test_season_mechanics_hydrological_diffusion_near_water(
     mock_board,
     mock_crop_resource,
@@ -115,8 +115,8 @@ def test_season_mechanics_hydrological_diffusion_near_water(
     assert mock_crop_resource.state.retention == pytest.approx(15.0, rel=1e-3)
 
 
-@pytest.mark.seasons
-@pytest.mark.ecology
+@pytest.mark.workflow_seasons
+@pytest.mark.workflow_ecology
 def test_season_mechanics_hydrological_evaporation_dry_soil(
     mock_board,
     mock_crop_resource,
@@ -142,8 +142,8 @@ def test_season_mechanics_hydrological_evaporation_dry_soil(
     assert mock_crop_resource.state.retention == pytest.approx(17.0, rel=1e-3)
 
 
-@pytest.mark.seasons
-@pytest.mark.ecology
+@pytest.mark.workflow_seasons
+@pytest.mark.workflow_ecology
 def test_season_mechanics_annual_crop_stage_transition(
     mock_board, mock_season_mechanics, mock_bus
 ):
@@ -159,8 +159,8 @@ def test_season_mechanics_annual_crop_stage_transition(
   assert crop.state.stage == AnnualStages.GROWTH.value
 
 
-@pytest.mark.seasons
-@pytest.mark.ecology
+@pytest.mark.workflow_seasons
+@pytest.mark.workflow_ecology
 def test_season_mechanics_annual_crop_winter_decay(
     mock_board,
     mock_crop_resource,
@@ -190,8 +190,8 @@ def test_season_mechanics_annual_crop_winter_decay(
     assert mock_crop_resource.state.stage == AnnualStages.STUMP.value
 
 
-@pytest.mark.seasons
-@pytest.mark.ecology
+@pytest.mark.workflow_seasons
+@pytest.mark.workflow_ecology
 def test_season_mechanics_perennial_tree_genesis_progression(
     mock_board, mock_season_mechanics, mock_bus
 ):
@@ -207,8 +207,8 @@ def test_season_mechanics_perennial_tree_genesis_progression(
   assert tree.state.stage == PerennialStages.BUSH.value
 
 
-@pytest.mark.seasons
-@pytest.mark.ecology
+@pytest.mark.workflow_seasons
+@pytest.mark.workflow_ecology
 def test_season_mechanics_perennial_tree_homeostasis_apoptosis(
     mock_board,
     mock_tree_resource,
@@ -237,8 +237,8 @@ def test_season_mechanics_perennial_tree_homeostasis_apoptosis(
     assert mock_tree_resource.state.stage == PerennialStages.DYING.value
 
 
-@pytest.mark.seasons
-@pytest.mark.ecology
+@pytest.mark.workflow_seasons
+@pytest.mark.workflow_ecology
 def test_season_mechanics_perennial_tree_apoptosis_recovery(
     mock_board,
     mock_tree_resource,
@@ -267,7 +267,7 @@ def test_season_mechanics_perennial_tree_apoptosis_recovery(
     assert mock_tree_resource.state.stage == PerennialStages.VIBRANT.value
 
 
-@pytest.mark.seasons
+@pytest.mark.workflow_seasons
 def test_season_event_handler_reconstructs_screens(
     mock_board, mock_screen, mock_provider, mock_bus
 ):
@@ -291,8 +291,8 @@ def test_season_event_handler_reconstructs_screens(
   assert mock_screen.reconstructed_calendar.period == 1
   
 
-@pytest.mark.seasons
-@pytest.mark.ecology
+@pytest.mark.workflow_seasons
+@pytest.mark.workflow_ecology
 def test_season_mechanics_stage_evaluation_throttling(
     mock_board,
     mock_crop_resource,

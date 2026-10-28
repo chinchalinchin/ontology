@@ -25,7 +25,7 @@ from app.models.state import (
     Equipment,
     CalendarState
 )
-from app.config.enums import (
+from app.static.semantics import (
     AssetCategories, 
     Actions, 
     Directions,
@@ -41,7 +41,7 @@ from libs.core.models import (
 )
 
 
-@pytest.mark.rendering
+@pytest.mark.workflow_rendering
 def test_screen_initialization(mock_screen):
     """Test screen canvas initialization and geometry construction mapping."""
     assert mock_screen.screensize.w == 320
@@ -51,7 +51,7 @@ def test_screen_initialization(mock_screen):
     assert mock_screen.bg_canvas is not None
     assert mock_screen.fg_canvas is not None
 
-@pytest.mark.rendering
+@pytest.mark.workflow_rendering
 def test_screen_camera_clamping(mock_screen):
     """Test that the camera clamps firmly to the board boundaries."""
     mock_screen.screensize = Dimensions(w=800, l=600)
@@ -73,8 +73,8 @@ def test_screen_camera_clamping(mock_screen):
     assert pos.y == 316  # 600 + 16 - 300
 
 
-@pytest.mark.rendering
-@pytest.mark.frames
+@pytest.mark.workflow_rendering
+@pytest.mark.asset_frame
 def test_frame_keys_generation():
     """Ensure keys() methods calculate correctly for all possible Frame implementations."""
     # TODO: use fixtures
@@ -116,7 +116,7 @@ def test_frame_keys_generation():
     assert keys == expected_keys
 
 
-@pytest.mark.rendering
+@pytest.mark.workflow_rendering
 def test_screen_draw_culling_and_sorting(
     mock_screen,
     mock_crate,
@@ -164,7 +164,7 @@ def test_screen_draw_culling_and_sorting(
     assert rendered_assets[1][6] == 120  # mock_chest dy
 
 
-@pytest.mark.rendering
+@pytest.mark.workflow_rendering
 def test_screen_camera_centering_sub_viewport(mock_screen):
     """
     Ensure layers smaller than the viewport center correctly using negative camera offsets.
@@ -177,7 +177,7 @@ def test_screen_camera_centering_sub_viewport(mock_screen):
     assert pos.y == -144  # -((480 - 192) // 2)
 
 
-@pytest.mark.rendering
+@pytest.mark.workflow_rendering
 def test_screen_camera_asymmetric_centering(mock_screen):
     """
     Ensure camera centers axes that are smaller than the viewport while clamping larger axes.
@@ -190,7 +190,7 @@ def test_screen_camera_asymmetric_centering(mock_screen):
     assert pos.y == 520   # min(800 + 16 - 240, 1000 - 480)
 
 
-@pytest.mark.rendering
+@pytest.mark.workflow_rendering
 def test_screen_boardsize_preservation_and_canvas_allocation(mock_screen, monkeypatch):
     """
     Ensure Screen retains unpadded board dimensions while allocating canvas textures to viewport bounds.
@@ -214,8 +214,8 @@ def test_screen_boardsize_preservation_and_canvas_allocation(mock_screen, monkey
     assert (480, 480, True) in canvas_calls
 
 
-@pytest.mark.rendering
-@pytest.mark.fluids
+@pytest.mark.workflow_rendering
+@pytest.mark.workflow_fluids
 def test_screen_draw_submerge_channel_splitting(
     mock_screen,
     mock_registry,
@@ -277,7 +277,7 @@ def test_screen_draw_submerge_channel_splitting(
 
 # tests/unit/app/game/test_screen.py
 
-@pytest.mark.rendering
+@pytest.mark.workflow_rendering
 def test_screen_draw_culling_and_sorting(
     mock_screen,
     mock_crate,
@@ -325,7 +325,7 @@ def test_screen_draw_culling_and_sorting(
     assert rendered_assets[1][6] == 120  # mock_chest dy
 
 
-@pytest.mark.rendering
+@pytest.mark.workflow_rendering
 def test_screen_sort_elevation_precedence(mock_crate, mock_strut):
     """
     Verify _sort enforces primary elevation tier ordering: higher elevation assets
@@ -350,7 +350,7 @@ def test_screen_sort_elevation_precedence(mock_crate, mock_strut):
     assert assets[1] is mock_strut
 
 
-@pytest.mark.rendering
+@pytest.mark.workflow_rendering
 def test_screen_sort_ground_perspective_and_anchor(mock_crate, mock_strut):
     """
     Verify _sort evaluates secondary ground perspective (y + l + anchor) and tertiary
@@ -377,7 +377,7 @@ def test_screen_sort_ground_perspective_and_anchor(mock_crate, mock_strut):
     assert assets[1] is mock_strut
 
 
-@pytest.mark.rendering
+@pytest.mark.workflow_rendering
 def test_screen_sort_coplanar_priority_tie_breaker(mock_crate, mock_strut):
     """
     Verify _sort uses properties.priority to resolve tie-breakers between
@@ -405,7 +405,7 @@ def test_screen_sort_coplanar_priority_tie_breaker(mock_crate, mock_strut):
     assert assets[1] is mock_crate
 
 
-@pytest.mark.rendering
+@pytest.mark.workflow_rendering
 def test_screen_sort_substrate_hierarchy(
     mock_environ_tile,
     mock_fluid,
@@ -435,8 +435,8 @@ def test_screen_sort_substrate_hierarchy(
     assert assets[4] is mock_crate      # elevation 0
 
 
-@pytest.mark.rendering
-@pytest.mark.seasons
+@pytest.mark.workflow_rendering
+@pytest.mark.workflow_seasons
 def test_screen_initialization_with_calendar(mock_registry, monkeypatch):
     """
     Ensure Screen compiles initial tile canvases with the provided CalendarState.
@@ -477,8 +477,8 @@ def test_screen_initialization_with_calendar(mock_registry, monkeypatch):
     assert len(construct_calls) == 2
 
 
-@pytest.mark.rendering
-@pytest.mark.seasons
+@pytest.mark.workflow_rendering
+@pytest.mark.workflow_seasons
 def test_screen_reconstruct_updates_canvases_without_reallocating(
     mock_screen,
     monkeypatch

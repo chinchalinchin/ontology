@@ -1,7 +1,10 @@
 """
-# Ontology: Source - app.config.enums.recipes
+@app.config
+@app.semantics
 
-Enumeration of Configuration semantics.
+# Ontology: Source - app.static.semantics.config
+
+Configuration semantics enumerations.
 """
 # Standard Libraries
 from enum import Enum

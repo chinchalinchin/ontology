@@ -11,7 +11,7 @@ import math
 import pytest
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     AssetCategories,
     Lifespans
 )
@@ -26,9 +26,9 @@ from app.assets.animations import NoAnimation
 from libs.core.models import Position, Dimensions
 
 
-@pytest.mark.ecology
-@pytest.mark.fluids
-@pytest.mark.seasons
+@pytest.mark.workflow_ecology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_seasons
 def test_moisture_field_linear_stream_attenuation():
     """
     Verify linear stream corridors produce exponential moisture attenuation
@@ -51,9 +51,9 @@ def test_moisture_field_linear_stream_attenuation():
     assert beyond_cutoff == 0.0
 
 
-@pytest.mark.ecology
-@pytest.mark.fluids
-@pytest.mark.seasons
+@pytest.mark.workflow_ecology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_seasons
 def test_moisture_field_annular_pool_radial_attenuation():
     """
     Verify annular pool disks produce radial exponential attenuation
@@ -81,9 +81,9 @@ def test_moisture_field_annular_pool_radial_attenuation():
     assert beyond == 0.0
 
 
-@pytest.mark.ecology
-@pytest.mark.fluids
-@pytest.mark.seasons
+@pytest.mark.workflow_ecology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_seasons
 def test_moisture_field_linear_superposition():
     """
     Verify multiple stream corridors and pools sum linearly by superposition.
@@ -98,9 +98,9 @@ def test_moisture_field_linear_superposition():
     assert total == pytest.approx(3.0, rel=1e-3)
 
 
-@pytest.mark.ecology
-@pytest.mark.fluids
-@pytest.mark.seasons
+@pytest.mark.workflow_ecology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_seasons
 def test_board_set_moisture_field_precomputes_resource_flux(mock_board):
     """
     Verify Board.set_moisture_field caches the field and precomputes
@@ -144,9 +144,9 @@ def test_board_set_moisture_field_precomputes_resource_flux(mock_board):
     assert mock_board.moisture("0", 100, 100) == pytest.approx(2.0, rel=1e-3)
 
 
-@pytest.mark.ecology
-@pytest.mark.fluids
-@pytest.mark.seasons
+@pytest.mark.workflow_ecology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_seasons
 def test_board_moisture_query_unpopulated_layer(mock_board):
     """
     Verify querying moisture on a layer without an active field returns 0.0.

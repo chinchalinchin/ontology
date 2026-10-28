@@ -5,7 +5,7 @@
 import pytest
 
 # Application Libraries
-from app.config.enums import Directions
+from app.static.semantics import Directions
 
 # Cython Libraries
 from libs.core.models import (
@@ -16,8 +16,8 @@ from libs.core.models import (
 )
 
 
-@pytest.mark.physics
-@pytest.mark.collisions
+@pytest.mark.physics_motion
+@pytest.mark.workflow_collisions
 def test_collision_mechanics_update(mock_collision_mechanics, mock_board, mock_bus):
     """
     Verifies the two-phase collision pipeline: Environmental Constraints (Phase 1)
@@ -46,8 +46,8 @@ def test_collision_mechanics_update(mock_collision_mechanics, mock_board, mock_b
     assert player.state.position.x != npc.state.position.x or player.state.position.y != npc.state.position.y
 
 
-@pytest.mark.physics
-@pytest.mark.collisions
+@pytest.mark.physics_motion
+@pytest.mark.workflow_collisions
 def test_collision_mechanics_resolve(mock_collision_mechanics, mock_player, mock_crate):
     """
     Verifies Phase 2 narrow-phase AABB overlap resolution and spatial separation.
@@ -61,8 +61,8 @@ def test_collision_mechanics_resolve(mock_collision_mechanics, mock_player, mock
     assert mock_crate.state.position.y != initial_crate_y
 
 
-@pytest.mark.physics
-@pytest.mark.collisions
+@pytest.mark.physics_motion
+@pytest.mark.workflow_collisions
 def test_collision_mechanics_resolve_no_collision(mock_collision_mechanics, mock_player, mock_crate):
     """
     Verifies Phase 2 bypasses resolution when hitboxes do not intersect.
@@ -78,8 +78,8 @@ def test_collision_mechanics_resolve_no_collision(mock_collision_mechanics, mock
     assert mock_crate.state.position.y == initial_y
 
 
-@pytest.mark.physics
-@pytest.mark.collisions
+@pytest.mark.physics_motion
+@pytest.mark.workflow_collisions
 def test_collision_mechanics_resolve_boundary(mock_collision_mechanics, mock_crate, mock_boundary):
     """
     Verifies Phase 1 narrow-phase environmental constraint resolution on dynamic bodies (m > 0).
@@ -96,8 +96,8 @@ def test_collision_mechanics_resolve_boundary(mock_collision_mechanics, mock_cra
     assert mock_crate.state.velocity.vy == 10.0
 
 
-@pytest.mark.physics
-@pytest.mark.collisions
+@pytest.mark.physics_motion
+@pytest.mark.workflow_collisions
 def test_collision_mechanics_resolve_boundary_no_collision(mock_collision_mechanics, mock_crate, mock_boundary):
     """
     Verifies Phase 1 ignores boundary constraint when entity is clear.
@@ -114,8 +114,8 @@ def test_collision_mechanics_resolve_boundary_no_collision(mock_collision_mechan
     assert mock_crate.state.velocity.vy == -10.0
 
 
-@pytest.mark.physics
-@pytest.mark.collisions
+@pytest.mark.physics_motion
+@pytest.mark.workflow_collisions
 def test_collision_mechanics_resolve_boundary_static_mass_zero_ignored(mock_collision_mechanics, mock_strut, mock_boundary):
     """
     Verifies Phase 1 environmental boundary constraints bypass static bodies (m = 0),
@@ -133,8 +133,8 @@ def test_collision_mechanics_resolve_boundary_static_mass_zero_ignored(mock_coll
     assert mock_strut.state.position.y == initial_y
 
 
-@pytest.mark.physics
-@pytest.mark.collisions
+@pytest.mark.physics_motion
+@pytest.mark.workflow_collisions
 def test_collision_mechanics_resolve_boundary_kinematic_player(mock_collision_mechanics, mock_player, mock_boundary):
     """
     Verifies Phase 1 environmental boundary constraints enforce spatial bounds on kinematic
@@ -152,8 +152,8 @@ def test_collision_mechanics_resolve_boundary_kinematic_player(mock_collision_me
     assert mock_player.state.position.y > 0
 
 
-@pytest.mark.physics
-@pytest.mark.collisions
+@pytest.mark.physics_motion
+@pytest.mark.workflow_collisions
 def test_collision_mechanics_update_static_vs_dynamic_boundary_filtering(mock_collision_mechanics, mock_board, mock_bus):
     """
     Verifies live Board Phase 1 boundary filtering excludes static architecture (m = 0)
@@ -185,8 +185,8 @@ def test_collision_mechanics_update_static_vs_dynamic_boundary_filtering(mock_co
     assert crate.state.velocity.vx == 10.0
 
 
-@pytest.mark.physics
-@pytest.mark.collisions
+@pytest.mark.physics_motion
+@pytest.mark.workflow_collisions
 def test_collision_mechanics_elevation_tier_isolation(mock_collision_mechanics, mock_board, mock_bus):
     """
     Verifies dynamic entities on different elevation tiers bypass overlap resolution.
@@ -210,8 +210,8 @@ def test_collision_mechanics_elevation_tier_isolation(mock_collision_mechanics, 
     assert crate.state.position.y == 100
 
 
-@pytest.mark.physics
-@pytest.mark.collisions
+@pytest.mark.physics_motion
+@pytest.mark.workflow_collisions
 def test_collision_mechanics_boundary_elevation_isolation(mock_collision_mechanics, mock_board, mock_bus):
     """
     Verifies dynamic entities with elevation >= 1 do not interact with Tier 0 perimeters.
@@ -229,8 +229,8 @@ def test_collision_mechanics_boundary_elevation_isolation(mock_collision_mechani
     assert crate.state.velocity.vx == -10.0
 
 
-@pytest.mark.physics
-@pytest.mark.collisions
+@pytest.mark.physics_motion
+@pytest.mark.workflow_collisions
 def test_collision_mechanics_platform_tier_0_facade_obstruction(mock_collision_mechanics, mock_board, mock_platform, mock_bus):
     """
     Subtask 6.1: Asserts an entity at E = 0 is obstructed by a platform's tier 0 facade.
@@ -257,8 +257,8 @@ def test_collision_mechanics_platform_tier_0_facade_obstruction(mock_collision_m
     assert mock_platform.state.position.y == 100
 
 
-@pytest.mark.physics
-@pytest.mark.collisions
+@pytest.mark.physics_motion
+@pytest.mark.workflow_collisions
 def test_collision_mechanics_platform_tier_1_deck_traversal(mock_collision_mechanics, mock_board, mock_platform, mock_bus):
     """
     Subtask 6.2: Asserts an entity at E = 1 traverses the platform deck unhindered by the tier 0 facade.
@@ -283,8 +283,8 @@ def test_collision_mechanics_platform_tier_1_deck_traversal(mock_collision_mecha
     assert crate.state.position.x == 120
     assert crate.state.position.y == 160
 
-@pytest.mark.physics
-@pytest.mark.collisions
+@pytest.mark.physics_motion
+@pytest.mark.workflow_collisions
 def test_collision_mechanics_stair_ascent_to_platform_deck_containment(
     mock_collision_mechanics,
     mock_board,

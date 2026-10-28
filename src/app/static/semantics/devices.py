@@ -1,9 +1,9 @@
 """
 @domain.user
-@app.semantics
 @app.devices
+@app.semantics
 
-# Ontology: Source - app.config.enums.devices
+# Ontology: Source - app.static.semantics.devices
 
 Enumeration of Device semanatics.
 """
