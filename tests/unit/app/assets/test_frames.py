@@ -64,16 +64,18 @@ def test_no_frame(mock_asset):
     assert frame.index(crate.id, crate.properties) == {crate.id: (0, 0, 0, 0)}
 
 
-@pytest.mark.app_core
-def test_single_frame(mock_asset):
-    canopy = mock_asset(
-        AssetCategories.TILES.value,
-        AssetInstances.CANOPY.value,
+@pytest.mark.category_objects
+def test_object_frame(mock_asset):
+    crate = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
     )
-    assert canopy.frame.keys(canopy.id, canopy.state) == [(canopy.id, 0, 0)]
-    assert canopy.frame.index(canopy.id, canopy.properties) == {
-        canopy.id: (0, 0, canopy.dimensions.w, canopy.dimensions.l)
-    }
+    assert crate.frame.keys(crate.id, crate.state) == [(
+        f"{crate.id}-{crate.state.material}", 0, 0)
+    ]
+    assert (
+        0, 0, crate.dimensions.w, crate.dimensions.l
+    ) in crate.frame.index(crate.id, crate.properties).values()
 
 
 @pytest.mark.category_effects

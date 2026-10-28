@@ -155,7 +155,7 @@ def test_stage_hitbox_annual_crop_transitions(mock_asset):
     crop = mock_asset(
         AssetCategories.RESOURCES.value,
         AssetInstances.CROPS.value,
-        id="lettuce",
+        id="maize",
     )
 
     crop.state.stage = AnnualStages.SPROUT.value

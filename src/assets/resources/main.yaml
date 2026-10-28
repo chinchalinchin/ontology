@@ -1,3 +1,27 @@
+# ------------------------------------------------------------
+hitboxes:
+  tree-adult: &tree-adult
+    position:
+      x: 36
+      y: 110
+    dimensions:
+      w: 22
+      l: 24
+  crop-sprout: &crop-sprout
+    position:
+      x: 0
+      y: 15
+    dimensions:
+      w: 32
+      l: 10
+  crop-adult: &crop-adult
+    position:
+      x: 0
+      y: 10
+    dimensions:
+      w: 32
+      l: 15
+# ------------------------------------------------------------
 resources:
   trees:
     deciduous:
@@ -23,68 +47,28 @@ resources:
               w: 22
               l: 20
         branch:
-          - position:
-              x: 36
-              y: 110
-            dimensions:
-              w: 22
-              l: 24
+          - *tree-adult
         adult:
-          - position:
-              x: 36
-              y: 110
-            dimensions:
-              w: 22
-              l: 24
+          - *tree-adult
         vibrant:
-          - position:
-              x: 36
-              y: 110
-            dimensions:
-              w: 22
-              l: 24
+          - *tree-adult
         healthy:
-          - position:
-              x: 36
-              y: 110
-            dimensions:
-              w: 22
-              l: 24
+          - *tree-adult
         abscise:
-          - position:
-              x: 36
-              y: 110
-            dimensions:
-              w: 22
-              l: 24
+          - *tree-adult
         snowcapt:
-          - position:
-              x: 36
-              y: 110
-            dimensions:
-              w: 22
-              l: 24
+          - *tree-adult
         dying:
-          - position:
-              x: 36
-              y: 110
-            dimensions:
-              w: 22
-              l: 24
+          - *tree-adult
         dead:
-          - position:
-              x: 36
-              y: 110
-            dimensions:
-              w: 22
-              l: 24
+          - *tree-adult
         stump:
           - position:
               x: 36
-              y: 110
+              y: 120
             dimensions:
               w: 22
-              l: 24
+              l: 14
   crops:
     lettuce:
       dimensions:
@@ -94,11 +78,16 @@ resources:
       loot: lettuce
       mass: 0
       hitboxes:
-        sprout: null
-        growth: null
-        stalk: null
-        bloom: null
-        stump: null
+        sprout: 
+          - *crop-sprout
+        growth: 
+          - *crop-adult
+        stalk: 
+          - *crop-adult
+        bloom: 
+          - *crop-adult
+        stump: 
+          - *crop-adult
     maize:
       dimensions:
         w: 32
@@ -107,11 +96,16 @@ resources:
       loot: maize
       mass: 0
       hitboxes:
-        sprout: null
-        growth: null
-        stalk: null
-        bloom: null
-        stump: null
+        sprout: 
+          - *crop-sprout
+        growth: 
+          - *crop-adult
+        stalk: 
+          - *crop-adult
+        bloom: 
+          - *crop-adult
+        stump: 
+          - *crop-adult
   ore:
     gold:
       dimensions:

@@ -205,6 +205,7 @@ tools:
             #     test: [ fixtures ]
             # # ------------------------------------
       data: 
+        properties: [ effects, sprites ]
         state: [ world-testbed ]
         configurations: [ ]
         templates: [  ]

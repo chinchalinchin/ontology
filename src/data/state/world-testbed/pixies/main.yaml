@@ -1,0 +1,9 @@
+sheets:
+  pixies:
+    - id: giant-rat
+      name: test-pixie
+      elevation: 0
+      layer: '0'
+      position: 
+        x: 600
+        y: 600
