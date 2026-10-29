@@ -1,138 +1,100 @@
 """
+@domain.test
+@test.unit
+@app.services
+@workflow.injection
+@workflow.hydration
+
 # Ontology: tests.unit.app.services.orchestration.test_migrator
 """
-# Standard Libraries
-import dataclasses
-from unittest.mock import patch
-
 # External Libraries
 import pytest
 
 # Application Libraries
-import app.static.settings as settings
-from app.static.semantics import (
-    Orientations
-)
-from app.models.state.assets import PropertyState
-from app.models.state.assets.crafts import CraftState
-from libs.core.models import (
-    Multiple, 
-    Position
-)
+from app.static.semantics import AssetInstances
+
+# ------------------------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_services,
+    pytest.mark.workflow_hydration,
+    pytest.mark.workflow_injection,
+]
+
+# ------------------------------------------------------------------
 
 
-@pytest.mark.workflow_injection
 def test_migrator_no_target(mock_migrator):
     assert mock_migrator.step(budget_ms=16) is True
 
 
-@pytest.mark.workflow_injection
-@patch.object(settings, 'SEPARATOR', new='-')
-@patch('app.services.orchestration.migrator.time.perf_counter')
-@patch('app.services.orchestration.migrator.Loader.load_state')
-def test_migrator_time_slicing(
-    mock_load_state, 
-    mock_perf_counter, 
-    mock_migrator, 
-    mock_state
-):
-    # Clone an existing valid sprite state to preserve layer assignment
-    base_sprite = mock_state.sheets.sprites[0]
-    mock_state.sheets.sprites.append(
-        dataclasses.replace(base_sprite, name="sprite_clone_1")
+def test_migrator_time_slicing(mock_migrator, testbed, monkeypatch):
+    mock_migrator.board.clear()
+    mock_migrator.target = testbed
+
+    # Step 1: exceed budget after first task (start=0.0, check1=0.001 -> runs 1 task, check2=1.0 -> 1000ms > 16ms)
+    times_step_1 = iter([0.0, 0.001, 1.0])
+    monkeypatch.setattr(
+        "app.services.orchestration.migrator.time.perf_counter",
+        lambda: next(times_step_1, 1.0),
     )
-    mock_load_state.return_value = mock_state
-    mock_migrator.target = "world-01"
-
-    # Step 1: exceed budget after first iteration (start=0.0, check1=0.001 -> executes task, check2=1.0 -> 1000ms > 16ms)
-    mock_perf_counter.side_effect = [0.0, 0.001, 1.0]
     assert mock_migrator.step(budget_ms=16) is False
-    assert mock_migrator.target == "world-01"
+    assert mock_migrator.target == testbed
     assert mock_migrator._generator is not None
-    assert mock_migrator.current >= 1
+    assert mock_migrator.current == 1
 
-    # Step 2: process remaining tasks within budget (0.5ms per iteration across tasks)
-    mock_perf_counter.side_effect = [0.0] + [0.0005 * i for i in range(1, 50)]
+    # Step 2: complete remaining tasks within budget
+    monkeypatch.setattr(
+        "app.services.orchestration.migrator.time.perf_counter",
+        lambda: 0.0,
+    )
     assert mock_migrator.step(budget_ms=16) is True
     assert mock_migrator.target is None
     assert mock_migrator._generator is None
     assert mock_migrator.current == mock_migrator.maximum
 
 
-@pytest.mark.workflow_injection
-@patch.object(settings, 'SEPARATOR', new='-')
-@patch('app.services.orchestration.migrator.Loader.load_state')
-def test_migrator_build_generator_compositions(
-    mock_load_state, 
-    mock_migrator, 
-    mock_state
-):
-    mock_state.compositions = [
-        PropertyState(
-            id="brick-house", 
-            name="house_instance", 
-            layer="0"
-        )
-    ]
-    mock_load_state.return_value = mock_state
-    mock_migrator.target = "world-01"
+@pytest.mark.workflow_compositions
+def test_migrator_build_generator_compositions(mock_migrator, testbed):
+    mock_migrator.board.clear()
+    mock_migrator.target = testbed
 
-    initial_asset_count = len(mock_migrator.board.assets())
-    gen = mock_migrator._build_generator()
-    for _ in gen:
+    for _ in mock_migrator._build_generator():
         pass
 
-    assert len(mock_migrator.board.assets()) > initial_asset_count
-    assert mock_migrator.maximum >= 1
+    struts = mock_migrator.board.instances(AssetInstances.STRUTS.value, "0")
+    doors = mock_migrator.board.instances(AssetInstances.DOORS.value, "0")
+    assert len(struts) > 0
+    assert len(doors) > 0
 
 
-@pytest.mark.workflow_injection
-@patch.object(settings, 'SEPARATOR', new='-')
-@patch('app.services.orchestration.migrator.Loader.load_state')
-def test_migrator_build_generator_bridges(
-    mock_load_state,
-    mock_migrator,
-    mock_state
-):
+@pytest.mark.category_crafts
+def test_migrator_build_generator_bridges(mock_migrator, testbed):
     """
-    Verify Migrator expands CraftState instances via Decomposer into constituent unit assets on the board.
+    Verify Migrator expands CraftState bridge instances in the testbed via Decomposer
+    into constituent unit assets on the board.
     """
-    mock_state.crafts.bridges = [
-        CraftState(
-            id="wood-bridge",
-            name="test-bridge",
-            layer="0",
-            position=Position(x=100, y=100),
-            orientation=Orientations.HORIZONTAL.value,
-            multiple=Multiple(nx=3, ny=1)
-        )
-    ]
-    mock_load_state.return_value = mock_state
-    mock_migrator.target = "world-01"
+    mock_migrator.board.clear()
+    mock_migrator.target = testbed
 
-    initial_bridge_count = len(mock_migrator.board.bridges("0"))
-    gen = mock_migrator._build_generator()
-    for _ in gen:
+    for _ in mock_migrator._build_generator():
         pass
 
     bridges = mock_migrator.board.bridges("0")
-    assert len(bridges) == initial_bridge_count + 3
-    assert any(b.name == "test-bridge-0" for b in bridges)
-    assert any(b.name == "test-bridge-1" for b in bridges)
-    assert any(b.name == "test-bridge-2" for b in bridges)
+    assert len(bridges) == 6
+    assert any(b.name == "test-horizontal-bridge-0" for b in bridges)
+    assert any(b.name == "test-horizontal-bridge-1" for b in bridges)
+    assert any(b.name == "test-verical-bridge-0" for b in bridges)
 
 
-@pytest.mark.workflow_injection
-@patch.object(settings, 'SEPARATOR', new='-')
-@patch('app.services.orchestration.migrator.Loader.load_state')
-def test_migrator_build_generator_assets(mock_load_state, mock_migrator, mock_state):
-    mock_load_state.return_value = mock_state
-    mock_migrator.target = "world-01"
+def test_migrator_build_generator_assets(mock_migrator, testbed):
+    mock_migrator.board.clear()
+    mock_migrator.target = testbed
 
-    initial_asset_count = len(mock_migrator.board.assets())
-    gen = mock_migrator._build_generator()
-    for _ in gen:
+    for _ in mock_migrator._build_generator():
         pass
 
-    assert len(mock_migrator.board.assets()) > initial_asset_count
-    assert mock_migrator.maximum >= 1
+    assert len(mock_migrator.board.assets()) > 0
+    assert mock_migrator.current == mock_migrator.maximum
+    assert mock_migrator.board.player() is not None
+    assert len(mock_migrator.board.perimeters.get("0", [])) > 0

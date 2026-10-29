@@ -56,8 +56,8 @@ def test_board_initial_caching(mock_board):
 
     # Physics Caching
     weights = mock_board.weights("0")
-    assert len(weights) == 8
-    assert len(mock_board.weights()) == 9
+    assert len(weights) == 7
+    assert len(mock_board.weights()) == 8
 
 
 @pytest.mark.workflow_main

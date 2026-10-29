@@ -31,7 +31,7 @@ pytestmark = [
 def test_animation_mechanics_update(mock_board, mock_mechanic, mock_bus):
     """
     Ensure AnimationMechanics mutates animation frames on active Sheets and Effects
-    and decrements Reactable cooldowns on the Board when unpaused.
+    and processes Reactable cooldowns on the Board when unpaused.
     """
     mechanic = mock_mechanic(Mechanics.ANIMATION.value)
     payload = mock_board.device.poll()
@@ -55,9 +55,12 @@ def test_animation_mechanics_update(mock_board, mock_mechanic, mock_bus):
     torch.state.animation.frame = 0
     torch.state.animation.tick = torch.properties.frequency.delay
 
-    # 3. Reactable cooldowns
+    # 3. Reactable animation & cooldown at terminal frame
     dummy = mock_board.instances(AssetInstances.REACTABLES.value)[0]
     dummy.state.active = True
+    dummy.state.mutators.triggers.animated = True
+    dummy.state.animation.frame = dummy.properties.count - 1
+    dummy.state.animation.tick = dummy.properties.frequency.delay
     initial_cooldown = dummy.state.cooldown
 
     mechanic.update(mock_board, 0.016, mock_bus, payload)
@@ -67,8 +70,7 @@ def test_animation_mechanics_update(mock_board, mock_mechanic, mock_bus):
     assert player.state.animation.frame == 1
     assert player.state.animation.tick == 0
     assert torch.state.animation.frame == 1
-    assert dummy.state.cooldown != initial_cooldown or dummy.state.active is False
-
+    assert dummy.state.cooldown < initial_cooldown or dummy.state.active is False
 
 def test_animation_mechanics_paused_board_noop(mock_board, mock_mechanic, mock_bus):
     """

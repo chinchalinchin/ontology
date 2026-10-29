@@ -124,7 +124,7 @@ tools:
     # --------------------------------------------
     source:
       data: false
-      filter: true
+      filter: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
@@ -170,9 +170,11 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Injection Workflow
+          - title: Injection Workflow Tests
             scan:
+              domain: [ test ]
               app: [ services ]
+              test: [ unit ]
               workflows: [ injection ]
       data:
         properties: [ objects, effects, resources ]
@@ -193,7 +195,7 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: '"app_core or app_board"'
+        marker: 'workflow_injection'
       session:
         description: |
           description
