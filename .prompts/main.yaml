@@ -66,7 +66,7 @@
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: draft.md.j2
+  # template: draft.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
@@ -84,7 +84,7 @@ task:
   # template: iterate/documentation.md.j2
   # template: iterate/grooming.md.j2
   # template: iterate/implementation.md.j2
-  # template: iterate/coverage.md.j2
+  template: iterate/coverage.md.j2
   # template: iterate/review.md.j2
   # template: iterate/conclusion.md.j2
   # --------------------------------------------
@@ -124,7 +124,7 @@ tools:
     # --------------------------------------------
     source:
       data: false
-      filter: false
+      filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
@@ -170,12 +170,9 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Injection Workflow Tests
+          - title: Command Line Interface
             scan:
-              domain: [ test ]
-              app: [ services ]
-              test: [ unit ]
-              workflows: [ injection ]
+              workflows: [ cli ]
       data:
         properties: [ objects, effects, resources ]
         state: [ world-testbed ]
@@ -195,7 +192,7 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: 'workflow_injection'
+        marker: 'workflow_cli'
       session:
         description: |
           description

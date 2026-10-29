@@ -2,9 +2,9 @@
 @workflow.cli
 @workflow.entrypoints
 
-# Ontology: cli
+# Ontology: Source - Main
 
-Package for command line interface.
+Application entrypoints.
 """
 # Standard Libraries
 import sys
@@ -27,7 +27,7 @@ if str(PROJECT_ROOT) not in sys.path:
 import cli.handlers as handlers
 import cli.arguments as arguments
 import cli.utilities as utilities
-from cli.enums import (
+from cli.semantics import (
     Commands,
     EngineCommands,
     Dumps,
@@ -97,10 +97,10 @@ def commandline():
     if args.dump_state:
         # State Query Filter Configuration
         state_filters = {
-            "instance": args.instance,
-            "category": args.category,
-            "id": args.id,
-            "name": args.name
+            Filters.INSTANCE.value: args.instance,
+            Filters.CATEGORY.value: args.category,
+            Filters.ID.value: args.id,
+            Filters.NAME.value: args.name
         }
         utilities.dump(
             args.board, 

@@ -2,9 +2,9 @@
 @domain.system
 @workflow.cli
 
-# Ontology: cli.arguments
+# Ontology: Source - cli.arguments
 
-Package for command line interface.
+Command Line arguments.
 """
 # Standard Libraries
 import argparse
@@ -13,6 +13,7 @@ from pathlib import Path
 
 # Application Libraries
 from app.static.semantics import Devices
+from cli.semantics import Filters
 
 # ------------------------------------------------------
 
@@ -39,13 +40,13 @@ def construct(root: Path):
     parser.add_argument("--software", action="store_true", default=False)
 
     # State Dump Filter Arguments (Regex enabled, comma-delimited)
-    parser.add_argument("--instance", type=str, default=None,
+    parser.add_argument(f"--{Filters.INSTANCE.value}", type=str, default=None,
                         help="Comma-separated regex patterns to filter asset instances (e.g. 'sprites,crate.*').")
-    parser.add_argument("--category", type=str, default=None,
+    parser.add_argument(f"--{Filters.CATEGORY.value}", type=str, default=None,
                         help="Comma-separated regex patterns to filter asset categories (e.g. 'sheets,objects').")
-    parser.add_argument("--id", type=str, default=None,
+    parser.add_argument(f"--{Filters.ID.value}", type=str, default=None,
                         help="Comma-separated regex patterns to filter asset IDs.")
-    parser.add_argument("--name", type=str, default=None,
+    parser.add_argument(f"--{Filters.NAME.value}", type=str, default=None,
                         help="Comma-separated regex patterns to filter asset names.")
 
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -74,7 +75,7 @@ def construct(root: Path):
         "--target",
         type=str,
         default="all",
-        choices=["all", "state", "properties", "config"],
+        choices=["all", "state", "properties", "configurations"],
         help="Target model schema to export (default: 'all')."
     )
     p_schema.add_argument(

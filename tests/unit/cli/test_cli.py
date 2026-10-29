@@ -1,588 +1,684 @@
 """
-# Ontology: tests.test_cli.py
+@domain.test
+@test.unit
+@workflow.cli
 
-Unit tests for the ontology CLI tools.
+# Ontology: Tests - tests.unit.cli.test_cli
+
+Unit tests for CLI argument parsing, utilities, command handlers, and main entrypoint.
 """
-import sys
-import os
+# Standard Libraries
+import argparse
+import json
 import logging
-import pytest
+import os
+import sys
 from pathlib import Path
-from unittest.mock import patch, MagicMock, mock_open
 
-import cli
+# External Libraries
+import pytest
+import yaml
 
-# ---------------------------------------------------------
-# ARGUMENT PARSING TESTS
-# ---------------------------------------------------------
+# CLI Libraries
+import main
+import cli.arguments as arguments
+import cli.handlers as handlers
+import cli.utilities as utilities
+from cli.semantics import (
+    Commands,
+    Dumps,
+    Filters,
+)
 
-@pytest.mark.workflow_cli
-def test_arguments_start_defaults():
-    test_args = ["cli.py", "start", "level_01"]
-    
-    with patch.object(sys, "argv", test_args):
-        args = cli.arguments()
-        
-        assert args.command == "start"
-        assert args.board_key == "level_01"
-        assert args.width == 480
-        assert args.height == 480
-        assert args.device == "keyboard"
-        assert args.log_level == "INFO"
-        assert args.dump_state is False
-        assert args.dump_menus is False
-        assert args.dump_sdl is False
-        assert args.dump_registry is False
-        assert args.software is False
-        assert args.instances is None
-        assert args.categories is None
-        assert args.ids is None
-        assert args.names is None
+# Application Libraries
+from app.assets.base import Taxonomy
+from app.models.state import StateSchema
+from app.static.semantics import (
+    AssetCategories,
+    AssetInstances,
+    Devices,
+)
+
+# Cython Libraries
+from libs.core.models import (
+    Dimensions,
+    Position,
+)
+
+# ---------------------------------------------------------------------------
+
+pytestmark = [
+    pytest.mark.workflow_cli,
+]
+
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------- ARGUMENTS
+# ---------------------------------------------------------------------------
 
 
-@pytest.mark.workflow_cli
-def test_arguments_filter_flags():
+def test_arguments_start_defaults(monkeypatch, tmp_path: Path):
+    monkeypatch.setattr(sys, "argv", ["main.py", "start", "world-testbed"])
+
+    args = arguments.construct(tmp_path)
+
+    assert args.command == Commands.START.value
+    assert args.board == "world-testbed"
+    assert args.width == arguments.SCREENSIZE
+    assert args.length == arguments.SCREENSIZE
+    assert args.device == Devices.KEYBOARD.value
+    assert args.log_level == "INFO"
+    assert args.software is False
+    assert args.dump_state is False
+    assert args.dump_menus is False
+    assert args.dump_sdl is False
+    assert args.dump_registry is False
+
+
+def test_arguments_start_optional_board(monkeypatch, tmp_path: Path):
+    monkeypatch.setattr(sys, "argv", ["main.py", "start"])
+
+    args = arguments.construct(tmp_path)
+
+    assert args.command == Commands.START.value
+    assert args.board is None
+
+
+def test_arguments_filter_flags(monkeypatch, tmp_path: Path):
     test_args = [
-        "cli.py", "--instances", "sprites,player", "--categories", "sheets,objects",
-        "--ids", "jasilynn", "--names", "evil-.*",
-        "start", "level_01"
+        "main.py",
+        "--instance", "sprites,players",
+        "--category", "sheets,objects",
+        "--id", "jasilynn",
+        "--name", "test-.*",
+        "start",
+        "world-testbed",
     ]
-    
-    with patch.object(sys, "argv", test_args):
-        args = cli.arguments()
-        
-        assert args.instances == "sprites,player"
-        assert args.categories == "sheets,objects"
-        assert args.ids == "jasilynn"
-        assert args.names == "evil-.*"
+    monkeypatch.setattr(sys, "argv", test_args)
+
+    args = arguments.construct(tmp_path)
+
+    assert args.instance == "sprites,players"
+    assert args.category == "sheets,objects"
+    assert args.id == "jasilynn"
+    assert args.name == "test-.*"
 
 
-@pytest.mark.workflow_cli
-def test_arguments_prerender_flags():
+def test_arguments_prerender_flags(monkeypatch, tmp_path: Path):
     test_args = [
-        "cli.py", "--log-level", "DEBUG", "--software", 
-        "prerender", "level_01", "--out", "./out", "--layer", "background"
+        "main.py",
+        "--log-level", "DEBUG",
+        "--software",
+        "prerender",
+        "world-testbed",
+        "--out", "./out",
+        "--layer", "0",
     ]
-    
-    with patch.object(sys, "argv", test_args):
-        args = cli.arguments()
-        
-        assert args.command == "prerender"
-        assert args.log_level == "DEBUG"
-        assert args.software is True
-        assert args.out == "./out"
-        assert args.layer == "background"
+    monkeypatch.setattr(sys, "argv", test_args)
+
+    args = arguments.construct(tmp_path)
+
+    assert args.command == Commands.PRERENDER.value
+    assert args.log_level == "DEBUG"
+    assert args.software is True
+    assert args.board == "world-testbed"
+    assert args.out == "./out"
+    assert args.layer == "0"
 
 
-@pytest.mark.workflow_cli
-def test_arguments_map():
-    test_args = ["cli.py", "map", "level_01", "--out", "./out", "--layer", "background"]
-    
-    with patch.object(sys, "argv", test_args):
-        args = cli.arguments()
-        
-        assert args.command == "map"
-        assert args.out == "./out"
-        assert args.layer == "background"
+def test_arguments_map(monkeypatch, tmp_path: Path):
+    test_args = [
+        "main.py",
+        "map",
+        "world-testbed",
+        "--out", "./out",
+        "--layer", "0",
+    ]
+    monkeypatch.setattr(sys, "argv", test_args)
+
+    args = arguments.construct(tmp_path)
+
+    assert args.command == Commands.MAP.value
+    assert args.board == "world-testbed"
+    assert args.out == "./out"
+    assert args.layer == "0"
 
 
-@pytest.mark.workflow_cli
-def test_arguments_missing_required():
-    test_args = ["cli.py", "render", "level_01"]  # Missing --out and --layer
-    
-    with patch.object(sys, "argv", test_args):
-        with pytest.raises(SystemExit) as exc_info:
-            cli.arguments()
-        assert exc_info.value.code == 2
+def test_arguments_schema_and_tags(monkeypatch, tmp_path: Path):
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["main.py", "schema", "--target", "state", "--format", "json", "--out", "out.json"],
+    )
+    schema_args = arguments.construct(tmp_path)
 
-# ---------------------------------------------------------
-# ASSET FILTERING TESTS
-# ---------------------------------------------------------
+    assert schema_args.command == Commands.SCHEMA.value
+    assert schema_args.target == "state"
+    assert schema_args.format == "json"
+    assert schema_args.out == "out.json"
 
-@pytest.mark.workflow_cli
-def test_filter_assets_excludes_widgets(mock_assets, mock_widget):
-    mixed_assets = mock_assets + [mock_widget]
-    result = cli.filter_assets(mixed_assets)
-    
-    assert mock_widget not in result
-    assert len(result) == len(mock_assets)
+    monkeypatch.setattr(sys, "argv", ["main.py", "tags"])
+    tags_args = arguments.construct(tmp_path)
+
+    assert tags_args.command == Commands.TAGS.value
+    assert tags_args.directory == tmp_path
 
 
-@pytest.mark.workflow_cli
+def test_arguments_missing_required(monkeypatch, tmp_path: Path):
+    monkeypatch.setattr(sys, "argv", ["main.py", "render", "world-testbed"])
+
+    with pytest.raises(SystemExit):
+        arguments.construct(tmp_path)
+
+
+# ---------------------------------------------------------------------------
+# --------------------------------------------------------- UTILITIES: FILTER
+# ---------------------------------------------------------------------------
+
+
+def test_filter_assets_excludes_widgets(mock_assets, mock_asset):
+    widget_asset = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+    widget_asset.taxonomy = Taxonomy(
+        id="button",
+        name="test-widget",
+        category=AssetCategories.WIDGETS.value,
+        instance=AssetInstances.BUTTONS.value,
+    )
+
+    filtered = utilities.filter(mock_assets + [widget_asset])
+
+    assert widget_asset not in filtered
+    assert len(filtered) == len(mock_assets)
+
+
 def test_filter_assets_by_instance(mock_assets):
-    # Single instance pattern
-    sprites = cli.filter_assets(mock_assets, {"instances": "sprites"})
-    assert len(sprites) > 0
-    assert all(a.instance == "sprites" for a in sprites)
-    
-    # Comma-separated instances
-    sprites_and_crates = cli.filter_assets(mock_assets, {"instances": "sprites,crates"})
-    assert all(a.instance in ("sprites", "crates") for a in sprites_and_crates)
-    assert any(a.instance == "sprites" for a in sprites_and_crates)
-    assert any(a.instance == "crates" for a in sprites_and_crates)
-    
-    # Regex matching
-    cr_instances = cli.filter_assets(mock_assets, {"instances": "^cr.*"})
-    assert all(a.instance in ("crates", "crops") for a in cr_instances)
+    sprites = utilities.filter(
+        mock_assets,
+        {Filters.INSTANCE.value: "sprites"},
+    )
+    assert len(sprites) == 1
+    assert all(a.instance == AssetInstances.SPRITES.value for a in sprites)
+
+    multi = utilities.filter(
+        mock_assets,
+        {Filters.INSTANCE.value: "sprites,crate.*"},
+    )
+    assert len(multi) == 2
+    assert {a.instance for a in multi} == {
+        AssetInstances.SPRITES.value,
+        AssetInstances.CRATES.value,
+    }
 
 
-@pytest.mark.workflow_cli
 def test_filter_assets_by_category(mock_assets):
-    sheets = cli.filter_assets(mock_assets, {"categories": "sheets"})
-    assert len(sheets) > 0
-    assert all(a.category == "sheets" for a in sheets)
+    sheets = utilities.filter(
+        mock_assets,
+        {Filters.CATEGORY.value: "sheets"},
+    )
+    assert len(sheets) == 3
+    assert all(a.category == AssetCategories.SHEETS.value for a in sheets)
 
 
-@pytest.mark.workflow_cli
 def test_filter_assets_by_id_and_name(mock_assets):
-    # Match ID
-    jasilynn = cli.filter_assets(mock_assets, {"ids": "jasilynn"})
+    jasilynn = utilities.filter(
+        mock_assets,
+        {Filters.ID.value: "jasilynn"},
+    )
     assert len(jasilynn) == 1
     assert jasilynn[0].id == "jasilynn"
-    
-    # Match Name regex
-    npc = cli.filter_assets(mock_assets, {"names": "evil-empress-.*"})
-    assert len(npc) == 1
-    assert npc[0].name == "evil-empress-jasilynn"
+
+    obstacles = utilities.filter(
+        mock_assets,
+        {Filters.NAME.value: "test-obstacle-.*"},
+    )
+    assert len(obstacles) == 2
+    assert all(a.name.startswith("test-obstacle-") for a in obstacles)
 
 
-@pytest.mark.workflow_cli
 def test_filter_assets_conjunction(mock_assets):
-    # Conjunction of category and instance
-    matched = cli.filter_assets(mock_assets, {"categories": "sheets", "instances": "players"})
+    matched = utilities.filter(
+        mock_assets,
+        {
+            Filters.CATEGORY.value: "sheets",
+            Filters.INSTANCE.value: "players",
+        },
+    )
     assert len(matched) == 1
-    assert matched[0].instance == "players"
-    assert matched[0].category == "sheets"
-    
-    # Non-intersecting criteria yields empty result
-    no_match = cli.filter_assets(mock_assets, {"categories": "objects", "instances": "players"})
-    assert len(no_match) == 0
+    assert matched[0].instance == AssetInstances.PLAYERS.value
 
 
-@pytest.mark.workflow_cli
 def test_filter_assets_no_match(mock_assets):
-    result = cli.filter_assets(mock_assets, {"ids": "non_existent_key_12345"})
+    result = utilities.filter(
+        mock_assets,
+        {Filters.ID.value: "non_existent_key_12345"},
+    )
     assert result == []
 
-# ---------------------------------------------------------
-# DUMP FUNCTION TESTS
-# ---------------------------------------------------------
 
-@pytest.mark.workflow_cli
-@patch("cli.datetime")
-@patch("cli.settings")
-def test_dump_state_success(mock_settings, mock_datetime, mock_board):
-    mock_datetime.datetime.now.return_value.strftime.return_value = "20260101_120000"
-    mock_settings.TEMPLATE_DIR = Path("/mock/dir")
-    mock_settings.DUMP_TEMPLATES = {"state": "state_template.md"}
-    mock_settings.DUMP_DIR = Path("/mock/dump")
-    
-    mock_template_str = "Template: {{ board_key }} {{ timestamp }}"
-    
-    with patch("pathlib.Path.exists", return_value=True), \
-         patch("builtins.open", mock_open(read_data=mock_template_str)) as mocked_file, \
-         patch("cli.jinja2.Template.render", return_value="Rendered Output") as mock_render:
-         
-        cli.dump("level_01", mock_board, "state")
-        
-        mock_render.assert_called_once_with(
-            board_key="level_01", 
-            timestamp="20260101_120000",
-            assets=mock_board.assets(),
-            perimeters=mock_board.perimeters,
-            calendar=mock_board.calendar,
-            plot=mock_board.plot
-        )
-        assert mocked_file.call_count == 2
-        mocked_file().write.assert_called_once_with("Rendered Output")
+# ---------------------------------------------------------------------------
+# ----------------------------------------------------------- UTILITIES: DUMP
+# ---------------------------------------------------------------------------
 
 
-@pytest.mark.workflow_cli
-@patch("cli.datetime")
-@patch("cli.settings")
-def test_dump_state_with_filters(mock_settings, mock_datetime, mock_board):
-    mock_datetime.datetime.now.return_value.strftime.return_value = "20260101_120000"
-    mock_settings.TEMPLATE_DIR = Path("/mock/dir")
-    mock_settings.DUMP_TEMPLATES = {"state": "state_template.md"}
-    mock_settings.DUMP_DIR = Path("/mock/dump")
-    
-    mock_template_str = "Template: {{ board_key }} {{ timestamp }}"
-    filters = {"categories": "sheets", "instances": "players"}
-    
-    with patch("pathlib.Path.exists", return_value=True), \
-         patch("builtins.open", mock_open(read_data=mock_template_str)), \
-         patch("cli.jinja2.Template.render", return_value="Rendered Output") as mock_render:
-         
-        cli.dump("level_01", mock_board, "state", filters=filters)
-        
-        expected_assets = [
-            a for a in mock_board.assets() 
-            if a.category == "sheets" and a.instance == "players"
-        ]
-        mock_render.assert_called_once_with(
-            board_key="level_01", 
-            timestamp="20260101_120000",
-            assets=expected_assets,
-            perimeters=mock_board.perimeters,
-            calendar=mock_board.calendar,
-            plot=mock_board.plot
-        )
+def test_dump_state_success(mock_board, testbed, monkeypatch, tmp_path: Path):
+    monkeypatch.setattr("app.static.settings.DUMP_DIR", tmp_path)
+
+    utilities.dump(testbed, mock_board, Dumps.STATE.value)
+
+    dumps = list(tmp_path.glob("*.state-dump.md"))
+    assert len(dumps) == 1
+    content = dumps[0].read_text(encoding="utf-8")
+    assert "test-player" in content
+    assert "test-crate" in content
 
 
-@pytest.mark.workflow_cli
-@patch("cli.datetime")
-@patch("cli.settings")
-def test_dump_menus_success(mock_settings, mock_datetime, mock_board):
-    mock_datetime.datetime.now.return_value.strftime.return_value = "20260101_120000"
-    mock_settings.TEMPLATE_DIR = Path("/mock/dir")
-    mock_settings.DUMP_TEMPLATES = {"menus": "menus_template.md"}
-    mock_settings.DUMP_DIR = Path("/mock/dump")
-    
-    mock_board.menus = ["menu1"]
-    mock_board.overlays = ["overlay1"]
+def test_dump_state_with_filters(mock_board, testbed, monkeypatch, tmp_path: Path):
+    monkeypatch.setattr("app.static.settings.DUMP_DIR", tmp_path)
 
-    mock_template_str = "Template: {{ board_key }} {{ timestamp }}"
-    
-    with patch("pathlib.Path.exists", return_value=True), \
-         patch("builtins.open", mock_open(read_data=mock_template_str)) as mocked_file, \
-         patch("cli.jinja2.Template.render", return_value="Rendered Output") as mock_render:
-         
-        cli.dump("level_01", mock_board, "menus")
-        
-        mock_render.assert_called_once_with(
-            board_key="level_01", 
-            timestamp="20260101_120000",
-            menus=["menu1"],
-            overlays=["overlay1"]
-        )
-        assert mocked_file.call_count == 2
-        mocked_file().write.assert_called_once_with("Rendered Output")
+    utilities.dump(
+        testbed,
+        mock_board,
+        Dumps.STATE.value,
+        filters={Filters.ID.value: "jasilynn"},
+    )
+
+    dumps = list(tmp_path.glob("*.state-dump.md"))
+    assert len(dumps) == 1
+    content = dumps[0].read_text(encoding="utf-8")
+    assert "jasilynn" in content
+    assert "test-crate" not in content
 
 
-@pytest.mark.workflow_cli
-@patch("cli.datetime")
-@patch("cli.settings")
-@patch("cli.sysinfo")
-def test_dump_sdl_success(mock_sys_info, mock_settings, mock_datetime, mock_board):
-    mock_datetime.datetime.now.return_value.strftime.return_value = "20260101_120000"
-    mock_settings.TEMPLATE_DIR = Path("/mock/dir")
-    mock_settings.DUMP_TEMPLATES = {"sdl": "sdl_template.md"}
-    mock_settings.DUMP_DIR = Path("/mock/dump")
-    mock_sys_info.return_value = {"os": "Linux", "renderer": "opengl"}
-    
-    with patch("pathlib.Path.exists", return_value=True), \
-         patch("builtins.open", mock_open(read_data="")) as mocked_file, \
-         patch("cli.jinja2.Template.render", return_value="Output") as mock_render:
-         
-        cli.dump("level_01", mock_board, "sdl")
-        
-        mock_render.assert_called_once_with(
-            board_key="level_01", 
-            timestamp="20260101_120000",
-            sys_info={"os": "Linux", "renderer": "opengl"}
-        )
+def test_dump_menus_success(mock_board, testbed, monkeypatch, tmp_path: Path):
+    monkeypatch.setattr("app.static.settings.DUMP_DIR", tmp_path)
+
+    utilities.dump(testbed, mock_board, Dumps.MENUS.value)
+
+    dumps = list(tmp_path.glob("*.menus-dump.md"))
+    assert len(dumps) == 1
 
 
-@pytest.mark.workflow_cli
-@patch("cli.datetime")
-@patch("cli.settings")
-def test_dump_registry_success(mock_settings, mock_datetime):
-    mock_datetime.datetime.now.return_value.strftime.return_value = "20260101_120000"
-    mock_settings.TEMPLATE_DIR = Path("/mock/dir")
-    mock_settings.DUMP_TEMPLATES = {"registry": "registry_template.md"}
-    mock_settings.DUMP_DIR = Path("/mock/dump")
-    
-    mock_screen = MagicMock()
-    mock_screen.registry._frames = {"frame_1": ("item_1", 0, 0, 32, 32)}
-    mock_screen.registry._textures = {"tex_1": "pointer"}
-    
-    mock_engine = MagicMock()
-    mock_engine.screens = {"layer_0": mock_screen}
-    
-    with patch("pathlib.Path.exists", return_value=True), \
-         patch("builtins.open", mock_open(read_data="")) as mocked_file, \
-         patch("cli.jinja2.Template.render", return_value="Output") as mock_render:
-         
-        cli.dump("level_01", mock_engine, "registry")
-        
-        mock_render.assert_called_once_with(
-            board_key="level_01", 
-            timestamp="20260101_120000",
-            textures=["tex_1"],
-            frames={"frame_1": {"item_id": "item_1", "crop_x": 0, "crop_y": 0, "crop_w": 32, "crop_l": 32}}
-        )
+def test_dump_sdl_success(mock_board, mock_registry, testbed, monkeypatch, tmp_path: Path):
+    monkeypatch.setattr("app.static.settings.DUMP_DIR", tmp_path)
+
+    utilities.dump(testbed, mock_board, Dumps.SDL.value)
+
+    dumps = list(tmp_path.glob("*.sdl-dump.md"))
+    assert len(dumps) == 1
 
 
-@pytest.mark.workflow_cli
-@patch("cli.settings")
-def test_dump_missing_template(mock_settings, mock_board, caplog):
-    mock_settings.TEMPLATE_DIR = Path("/mock/dir")
-    mock_settings.DUMP_TEMPLATES = {"state": "state_template.md"}
-    
-    with patch("pathlib.Path.exists", return_value=False):
-        cli.dump("level_01", mock_board, "state")
-        assert "Dump template not found" in caplog.text
+def test_dump_registry_success(mock_engine, testbed, monkeypatch, tmp_path: Path):
+    monkeypatch.setattr("app.static.settings.DUMP_DIR", tmp_path)
 
-# ---------------------------------------------------------
-# HYDRATION TESTS
-# ---------------------------------------------------------
+    utilities.dump(testbed, mock_engine, Dumps.REGISTRY.value)
 
-@pytest.mark.workflow_cli
-@patch("cli.Screen")
-def test_force_hydration(mock_screen_class):
-    mock_engine = MagicMock()
-    
-    # 1. Setup Migrator
-    mock_migrator = MagicMock()
-    mock_migrator.step.side_effect = [False, False, True]
-    mock_engine.board.migrator = mock_migrator
-    
-    # 2. Setup Registry prewarming
-    mock_registry = MagicMock()
-    mock_registry.prewarm.side_effect = [False, True]
-    
-    # 3. Setup Screens and Board data
-    mock_old_screen = MagicMock()
-    mock_old_screen.registry = mock_registry
-    mock_engine.screens = {"layer_0": mock_old_screen}
-    
-    mock_engine.board.layers.return_value = ["layer_0", "layer_1"]
-    mock_engine.board.categories.return_value = ["tile_asset_1"]
-    mock_engine.board.size.return_value = [MagicMock()]
-    mock_screensize = MagicMock()
-    
-    # Execute
-    cli.hydrate(mock_engine, "level_01", mock_screensize)
-    
-    # Assertions
-    assert mock_migrator.step.call_count == 3
-    assert mock_registry.prewarm.call_count == 2
-    
-    mock_old_screen.rebake.assert_called_once()
-    assert mock_engine.screens["layer_0"] == mock_old_screen
-    
-    mock_screen_class.assert_called_once()
-    assert mock_engine.screens["layer_1"] == mock_screen_class.return_value
-    
+    dumps = list(tmp_path.glob("*.registry-dump.md"))
+    assert len(dumps) == 1
+
+
+def test_dump_missing_template(mock_board, testbed, monkeypatch, tmp_path: Path, caplog):
+    monkeypatch.setattr("app.static.settings.TEMPLATE_DIR", tmp_path / "missing_templates")
+    monkeypatch.setattr("app.static.settings.DUMP_DIR", tmp_path)
+
+    with caplog.at_level(logging.ERROR):
+        utilities.dump(testbed, mock_board, Dumps.STATE.value)
+
+    assert "Dump template not found" in caplog.text
+    assert list(tmp_path.glob("*.md")) == []
+
+
+# ---------------------------------------------------------------------------
+# ---------------------------------------------- UTILITIES: HYDRATE & SCHEMA
+# ---------------------------------------------------------------------------
+
+
+def test_force_hydration(mock_engine, mock_migrator, testbed, monkeypatch):
+    mock_engine.board.clear()
+    mock_engine.board.loaded = False
+    monkeypatch.setattr(mock_engine.registry, "prewarm", lambda budget_ms=99999: True)
+
+    screensize = Dimensions(w=480, l=480)
+    utilities.hydrate(mock_engine, testbed, screensize)
+
     assert mock_engine.board.loaded is True
-
-# ---------------------------------------------------------
-# HANDLER TESTS
-# ---------------------------------------------------------
-
-@pytest.mark.workflow_cli
-@patch("cli.hydrate")
-def test_handle_prerender_success(mock_force_hydration):
-    args = MagicMock(board_key="level_01", device="keyboard", layer="bg", out="/tmp/out")
-    screensize = MagicMock()
-    
-    mock_orchestrator = MagicMock()
-    mock_engine = MagicMock()
-    mock_screen = MagicMock()
-    
-    mock_orchestrator.orchestrate.return_value = mock_engine
-    mock_engine.screens = {"bg": mock_screen}
-    
-    with patch("pathlib.Path.mkdir") as mock_mkdir:
-        engine = cli.handle_prerender(args, mock_orchestrator, screensize)
-        
-        mock_force_hydration.assert_called_once_with(mock_engine, "level_01", screensize)
-        mock_mkdir.assert_called_once_with(parents=True, exist_ok=True)
-        mock_screen.export_background.assert_called_once()
-        
-        assert engine == mock_engine
+    assert len(mock_engine.board.assets()) > 0
+    assert "0" in mock_engine.screens
 
 
-@pytest.mark.workflow_cli
-@patch("cli.hydrate")
-def test_handle_render_success(mock_force_hydration):
-    args = MagicMock(board_key="level_01", device="keyboard", layer="bg", out="/tmp/out")
-    screensize = MagicMock()
-    
-    mock_orchestrator = MagicMock()
-    mock_engine = MagicMock()
-    mock_screen = MagicMock()
-    
-    mock_orchestrator.orchestrate.return_value = mock_engine
-    mock_engine.screens = {"bg": mock_screen}
-    mock_engine.board.renderables.return_value = ["asset1", "asset2"]
-    
-    mock_player = MagicMock()
-    mock_player.state.position = MagicMock()
-    mock_player.dimensions = MagicMock()
-    mock_engine.board.player.return_value = mock_player
-    
-    with patch("pathlib.Path.mkdir") as mock_mkdir:
-        engine = cli.handle_render(args, mock_orchestrator, screensize)
-        
-        mock_force_hydration.assert_called_once_with(mock_engine, "level_01", screensize)
-        mock_mkdir.assert_called_once_with(parents=True, exist_ok=True)
-        
-        mock_screen.export_render.assert_called_once_with(
-            "/tmp/out/level_01-bg.png", 
-            ["asset1", "asset2"], 
-            mock_player.state.position, 
-            mock_player.dimensions
-        )
-        assert engine == mock_engine
+def test_serialize_schema_formats():
+    yaml_out = utilities.serialize(StateSchema, "yaml")
+    json_out = utilities.serialize(StateSchema, "json")
+
+    parsed_yaml = yaml.safe_load(yaml_out)
+    parsed_json = json.loads(json_out)
+
+    assert isinstance(parsed_yaml, dict)
+    assert parsed_yaml == parsed_json
+    assert "properties" in parsed_json or "$defs" in parsed_json
 
 
-@pytest.mark.workflow_cli
-@patch("cli.hydrate")
-def test_handle_render_full_success(mock_force_hydration):
-    args = MagicMock(board_key="level_01", device="keyboard", layer="bg", out="/tmp/out")
-    screensize = MagicMock()
-    
-    mock_orchestrator = MagicMock()
-    mock_engine = MagicMock()
-    mock_screen = MagicMock()
-    
-    mock_orchestrator.orchestrate.return_value = mock_engine
-    mock_engine.screens = {"bg": mock_screen}
-    mock_engine.board.renderables.return_value = ["asset1", "asset2"]
-    
-    with patch("pathlib.Path.mkdir") as mock_mkdir:
-        engine = cli.handle_map(args, mock_orchestrator, screensize)
-        
-        mock_force_hydration.assert_called_once_with(mock_engine, "level_01", screensize)
-        mock_mkdir.assert_called_once_with(parents=True, exist_ok=True)
-        
-        mock_screen.export_map.assert_called_once_with(
-            "/tmp/out/level_01-bg-full.png", 
-            ["asset1", "asset2"]
-        )
-        assert engine == mock_engine
+# ---------------------------------------------------------------------------
+# ----------------------------------------------------------------- HANDLERS
+# ---------------------------------------------------------------------------
 
 
-@pytest.mark.workflow_cli
-@patch("cli.hydrate")
-def test_handle_render_missing_layer(mock_force_hydration, caplog):
-    args = MagicMock(board_key="level_01", device="keyboard", layer="invalid_layer", out="/tmp/out")
-    screensize = MagicMock()
-    
-    mock_orchestrator = MagicMock()
-    mock_engine = MagicMock()
-    mock_orchestrator.orchestrate.return_value = mock_engine
-    mock_engine.screens = {"bg": MagicMock()}
-    
-    engine = cli.handle_render(args, mock_orchestrator, screensize)
-    
-    assert "Layer 'invalid_layer' not found" in caplog.text
-    assert engine == mock_engine
+def test_handle_prerender_success(
+    mock_engine,
+    mock_orchestrator,
+    mock_render,
+    testbed,
+    monkeypatch,
+    tmp_path: Path,
+):
+    monkeypatch.setattr(mock_orchestrator, "orchestrate", lambda **kwargs: mock_engine)
+    monkeypatch.setattr(utilities, "hydrate", lambda eng, brd, sz: None)
+
+    args = argparse.Namespace(
+        board=testbed,
+        layer="0",
+        out=str(tmp_path),
+        device=Devices.KEYBOARD.value,
+    )
+    screensize = Dimensions(w=320, l=240)
+
+    engine = handlers.handle_prerender(args, mock_orchestrator, screensize)
+
+    expected_path = str(tmp_path / f"{testbed}-0-background.png")
+    assert engine is mock_engine
+    mock_render.save.assert_called_once_with(
+        expected_path,
+        mock_engine.screens["0"].boardsize.w,
+        mock_engine.screens["0"].boardsize.l,
+        target=mock_engine.screens["0"].bg_canvas,
+    )
 
 
-@pytest.mark.workflow_cli
-def test_handle_start_keyboard_interrupt(caplog):
-    caplog.set_level(logging.INFO)
-    
-    args = MagicMock(board_key="level_01", device="keyboard", dump_sdl=False, dump_registry=False)
-    screensize = MagicMock()
-    
-    mock_orchestrator = MagicMock()
-    mock_engine = MagicMock()
-    mock_orchestrator.orchestrate.return_value = mock_engine
-    
-    mock_engine.start.side_effect = KeyboardInterrupt()
-    
-    engine = cli.handle_start(args, mock_orchestrator, screensize)
-    
+def test_handle_render_success(
+    mock_engine,
+    mock_orchestrator,
+    mock_render,
+    testbed,
+    monkeypatch,
+    tmp_path: Path,
+):
+    monkeypatch.setattr(mock_orchestrator, "orchestrate", lambda **kwargs: mock_engine)
+    monkeypatch.setattr(utilities, "hydrate", lambda eng, brd, sz: None)
+
+    args = argparse.Namespace(
+        board=testbed,
+        layer="0",
+        out=str(tmp_path),
+        device=Devices.KEYBOARD.value,
+    )
+    screensize = Dimensions(w=320, l=240)
+
+    engine = handlers.handle_render(args, mock_orchestrator, screensize)
+
+    expected_path = str(tmp_path / f"{testbed}-0.png")
+    assert engine is mock_engine
+    assert mock_render.render.called
+    mock_render.save.assert_called_once_with(
+        expected_path,
+        mock_engine.screens["0"].screensize.w,
+        mock_engine.screens["0"].screensize.l,
+    )
+
+
+def test_handle_render_full_success(
+    mock_engine,
+    mock_orchestrator,
+    mock_render,
+    testbed,
+    monkeypatch,
+    tmp_path: Path,
+):
+    monkeypatch.setattr(mock_orchestrator, "orchestrate", lambda **kwargs: mock_engine)
+    monkeypatch.setattr(utilities, "hydrate", lambda eng, brd, sz: None)
+
+    args = argparse.Namespace(
+        board=testbed,
+        layer="0",
+        out=str(tmp_path),
+        device=Devices.KEYBOARD.value,
+    )
+    screensize = Dimensions(w=320, l=240)
+
+    engine = handlers.handle_map(args, mock_orchestrator, screensize)
+
+    expected_path = str(tmp_path / f"{testbed}-0-full.png")
+    assert engine is mock_engine
+    assert mock_render.save.called
+    assert mock_render.save.call_args[0][0] == expected_path
+
+
+def test_handle_render_missing_layer(
+    mock_engine,
+    mock_orchestrator,
+    mock_render,
+    testbed,
+    monkeypatch,
+    tmp_path: Path,
+    caplog,
+):
+    monkeypatch.setattr(mock_orchestrator, "orchestrate", lambda **kwargs: mock_engine)
+    monkeypatch.setattr(utilities, "hydrate", lambda eng, brd, sz: None)
+
+    args = argparse.Namespace(
+        board=testbed,
+        layer="nonexistent_layer",
+        out=str(tmp_path),
+        device=Devices.KEYBOARD.value,
+    )
+    screensize = Dimensions(w=320, l=240)
+
+    with caplog.at_level(logging.ERROR):
+        handlers.handle_render(args, mock_orchestrator, screensize)
+
+    assert "Layer 'nonexistent_layer' not found" in caplog.text
+    mock_render.save.assert_not_called()
+
+
+def test_handle_start_keyboard_interrupt(
+    mock_engine,
+    mock_orchestrator,
+    testbed,
+    monkeypatch,
+    caplog,
+):
+    monkeypatch.setattr(mock_orchestrator, "orchestrate", lambda **kwargs: mock_engine)
+
+    def _raise_interrupt(*args, **kwargs):
+        raise KeyboardInterrupt()
+
+    monkeypatch.setattr(mock_engine, "start", _raise_interrupt)
+
+    args = argparse.Namespace(
+        board=testbed,
+        device=Devices.KEYBOARD.value,
+    )
+    screensize = Dimensions(w=320, l=240)
+
+    with caplog.at_level(logging.INFO):
+        engine = handlers.handle_start(args, mock_orchestrator, screensize)
+
+    assert engine is mock_engine
     assert "Game engine loop interrupted by user." in caplog.text
-    assert engine == mock_engine
-
-# ---------------------------------------------------------
-# MAIN EXECUTION TESTS
-# ---------------------------------------------------------
-
-@pytest.mark.workflow_cli
-@patch("cli.Orchestrator")
-@patch("cli.quit_sdl")
-@patch("cli.gc.collect")
-@patch.dict(os.environ, {}, clear=True)
-def test_main_software_flag(mock_gc, mock_quit_sdl, mock_orchestrator_class):
-    test_args = ["cli.py", "--software", "start", "level_01"]
-    
-    mock_handler = MagicMock()
-    
-    with patch.object(sys, "argv", test_args), \
-         patch.dict("cli.COMMAND_REGISTRY", {"start": mock_handler}):
-        
-        cli.main()
-        
-        assert os.environ.get("SDL_RENDER_DRIVER") == "software"
-        mock_handler.assert_called_once()
-        mock_gc.assert_called_once()
-        mock_quit_sdl.assert_called_once()
 
 
-@pytest.mark.workflow_cli
-@patch("cli.Orchestrator")
-@patch("cli.quit_sdl")
-def test_main_dump_flags(mock_quit, mock_orchestrator):
-    test_args = [
-        "cli.py", "--dump-state", "--dump-menus", "--dump-sdl", "--dump-registry", 
-        "prerender", "level_01", "--out", "./out", "--layer", "bg"
+def test_handle_tags_scans_docstrings(tmp_path: Path):
+    pkg = tmp_path / "pkg"
+    pkg.mkdir()
+    (pkg / "__init__.py").write_text('"""\n@domain.system\n@workflow.cli\n"""\n', encoding="utf-8")
+    (pkg / "module_a.py").write_text('"""\n@app.core\n@workflow.cli\n"""\n', encoding="utf-8")
+    (pkg / "_ignored.py").write_text('"""\n@should.ignore\n"""\n', encoding="utf-8")
+
+    venv_dir = tmp_path / ".venv"
+    venv_dir.mkdir()
+    (venv_dir / "lib.py").write_text('"""\n@venv.ignore\n"""\n', encoding="utf-8")
+
+    args = argparse.Namespace(directory=str(tmp_path))
+    tags = handlers.handle_tags(args)
+
+    assert tags == ["app.core", "domain.system", "workflow.cli"]
+
+
+def test_handle_tags_missing_directory(tmp_path: Path):
+    args = argparse.Namespace(directory=str(tmp_path / "missing_dir"))
+    assert handlers.handle_tags(args) == []
+
+
+def test_handle_schema_stdout_and_files(tmp_path: Path, capsys):
+    # 1. Single schema to stdout
+    stdout_args = argparse.Namespace(target="state", format="json", out=None)
+    handlers.handle_schema(stdout_args)
+    captured = capsys.readouterr()
+    assert json.loads(captured.out)
+
+    # 2. Single schema to file
+    single_file = tmp_path / "state_schema.yaml"
+    file_args = argparse.Namespace(target="state", format="yaml", out=str(single_file))
+    handlers.handle_schema(file_args)
+    assert single_file.exists()
+    assert yaml.safe_load(single_file.read_text(encoding="utf-8"))
+
+    # 3. All schemas to directory
+    out_dir = tmp_path / "schemas"
+    dir_args = argparse.Namespace(target="all", format="yaml", out=str(out_dir))
+    handlers.handle_schema(dir_args)
+    assert (out_dir / "schema-state.yaml").exists()
+    assert (out_dir / "schema-properties.yaml").exists()
+    assert (out_dir / "schema-configurations.yaml").exists()
+
+
+# ---------------------------------------------------------------------------
+# --------------------------------------------------------- MAIN ENTRYPOINT
+# ---------------------------------------------------------------------------
+
+
+def test_main_software_flag(mock_engine, testbed, monkeypatch):
+    monkeypatch.setattr(sys, "argv", ["main.py", "--software", "start", testbed])
+    monkeypatch.delenv("SDL_RENDER_DRIVER", raising=False)
+    monkeypatch.setitem(
+        main.COMMAND_REGISTRY,
+        Commands.START.value,
+        lambda args, orch, sz: mock_engine,
+    )
+    monkeypatch.setattr(mock_engine, "stop", lambda: None)
+    monkeypatch.setattr(main, "quit_sdl", lambda: None)
+
+    main.commandline()
+
+    assert os.environ.get("SDL_RENDER_DRIVER") == "software"
+
+
+def test_main_dump_flags(mock_engine, testbed, monkeypatch):
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "main.py",
+            "--dump-state",
+            "--dump-menus",
+            "--dump-sdl",
+            "--dump-registry",
+            "start",
+            testbed,
+        ],
+    )
+    monkeypatch.setitem(
+        main.COMMAND_REGISTRY,
+        Commands.START.value,
+        lambda args, orch, sz: mock_engine,
+    )
+    monkeypatch.setattr(mock_engine, "stop", lambda: None)
+    monkeypatch.setattr(main, "quit_sdl", lambda: None)
+
+    dump_calls = []
+    monkeypatch.setattr(
+        utilities,
+        "dump",
+        lambda board, ctx, temp, filters=None: dump_calls.append((board, temp, filters)),
+    )
+
+    main.commandline()
+
+    dumped_types = [call[1] for call in dump_calls]
+    assert dumped_types == [
+        Dumps.STATE.value,
+        Dumps.MENUS.value,
+        Dumps.SDL.value,
+        Dumps.REGISTRY.value,
     ]
-    
-    mock_handler = MagicMock()
-    
-    with patch.object(sys, "argv", test_args), \
-         patch.dict("cli.COMMAND_REGISTRY", {"prerender": mock_handler}), \
-         patch("cli.dump") as mock_dump:
-        
-        cli.main()
-        
-        assert mock_dump.call_count == 4
-        
-        mock_engine = mock_handler.return_value
-        expected_filters = {
-            "instances": None,
-            "categories": None,
-            "ids": None,
-            "names": None
-        }
-        
-        mock_dump.assert_any_call("level_01", mock_engine.board, "state", filters=expected_filters)
-        mock_dump.assert_any_call("level_01", mock_engine.board, "menus")
-        mock_dump.assert_any_call("level_01", mock_engine.board, "sdl")
 
 
-@pytest.mark.workflow_cli
-@patch("cli.Orchestrator")
-@patch("cli.quit_sdl")
-def test_main_dump_with_filter_flags(mock_quit, mock_orchestrator):
-    test_args = [
-        "cli.py", "--dump-state", "--instances", "sprites,player", "--categories", "sheets",
-        "prerender", "level_01", "--out", "./out", "--layer", "bg"
-    ]
-    
-    mock_handler = MagicMock()
-    
-    with patch.object(sys, "argv", test_args), \
-         patch.dict("cli.COMMAND_REGISTRY", {"prerender": mock_handler}), \
-         patch("cli.dump") as mock_dump:
-        
-        cli.main()
-        
-        mock_engine = mock_handler.return_value
-        expected_filters = {
-            "instances": "sprites,player",
-            "categories": "sheets",
-            "ids": None,
-            "names": None
-        }
-        mock_dump.assert_called_once_with("level_01", mock_engine.board, "state", filters=expected_filters)
+def test_main_dump_with_filter_flags(mock_engine, testbed, monkeypatch):
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "main.py",
+            "--dump-state",
+            "--instance", "sprites",
+            "--category", "sheets",
+            "--id", "jasilynn",
+            "--name", "test-sprite",
+            "start",
+            testbed,
+        ],
+    )
+    monkeypatch.setitem(
+        main.COMMAND_REGISTRY,
+        Commands.START.value,
+        lambda args, orch, sz: mock_engine,
+    )
+    monkeypatch.setattr(mock_engine, "stop", lambda: None)
+    monkeypatch.setattr(main, "quit_sdl", lambda: None)
+
+    captured_filters = {}
+    monkeypatch.setattr(
+        utilities,
+        "dump",
+        lambda board, ctx, temp, filters=None: captured_filters.update(filters or {}),
+    )
+
+    main.commandline()
+
+    assert captured_filters == {
+        Filters.INSTANCE.value: "sprites",
+        Filters.CATEGORY.value: "sheets",
+        Filters.ID.value: "jasilynn",
+        Filters.NAME.value: "test-sprite",
+    }
 
 
-@pytest.mark.workflow_cli
-@patch("cli.configure_logging")
-@patch("cli.arguments")
-def test_main_unknown_command(mock_arguments, mock_configure_logging, caplog):
-    mock_args = MagicMock(command="invalid_cmd", log_level="INFO", software=False)
-    mock_arguments.return_value = mock_args
-    
-    with patch("cli.Orchestrator"):
+def test_main_standalone_command(monkeypatch, tmp_path: Path):
+    monkeypatch.setattr(sys, "argv", ["main.py", "tags", str(tmp_path)])
+
+    quit_called = False
+
+    def _quit():
+        nonlocal quit_called
+        quit_called = True
+
+    monkeypatch.setattr(main, "quit_sdl", _quit)
+
+    main.commandline()
+
+    assert quit_called is False
+
+
+def test_main_unknown_command(monkeypatch, caplog):
+    monkeypatch.setattr(
+        arguments,
+        "construct",
+        lambda root: argparse.Namespace(command="unknown_cmd", log_level="INFO"),
+    )
+
+    with caplog.at_level(logging.ERROR):
         with pytest.raises(SystemExit) as exc_info:
-            cli.main()
-            
-        assert exc_info.value.code == 1
-        assert "Unknown command received: invalid_cmd" in caplog.text
+            main.commandline()
+
+    assert exc_info.value.code == 1
+    assert "Unknown Command: unknown_cmd" in caplog.text

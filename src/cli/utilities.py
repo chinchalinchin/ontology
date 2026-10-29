@@ -2,8 +2,9 @@
 @domain.logic
 @workflow.cli
 
-# Ontology: cli.utilities
+# Ontology: Source - cli.utilities
 
+Command Line utilities.
 """
 # Standard Libraries
 import json
@@ -22,7 +23,7 @@ import yaml
 from pydantic import TypeAdapter
 
 # CLI Libraries
-from cli.enums import (
+from cli.semantics import (
     Dumps,
     Filters
 )

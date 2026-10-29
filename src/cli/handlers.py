@@ -2,9 +2,9 @@
 @domain.logic
 @workflow.cli
 
-# Ontology: cli
+# Ontology: Source - cli.handlers
 
-Package for command line interface.
+Command Line handlers.
 """
 # Standard Libraries
 import ast
@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 SCHEMA_TARGETS = {
     "state": StateSchema,
     "properties": PropertiesSchema,
-    "configuration": ConfigurationSchema,
+    "configurations": ConfigurationSchema,
 }
 
 # ---------------------------------------------------------
@@ -199,6 +199,9 @@ def handle_start(args, orchestrator, screensize):
 
 
 def handle_telemetry(args):
+    """
+    NOTE: no unit tests for this yet. has not yet been fully implemented!
+    """
     client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     try:
         client.connect("/tmp/ontology.sock")

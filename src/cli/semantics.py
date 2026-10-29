@@ -3,7 +3,9 @@
 @app.semantics
 @workflow.cli
 
-# Ontology: cli.enums
+# Ontology: Source - cli.semantics
+
+Command Line semantics.
 """
 
 from enum import Enum
