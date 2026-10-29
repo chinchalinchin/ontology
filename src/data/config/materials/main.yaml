@@ -74,7 +74,7 @@ materials:
     decor: 
       strategy: simple
       partitions:
-        decor: { delta: 3.0, subtrate: 0, obstacle: false }
+        decor: { delta: 3.0, substrate: 0, obstacle: false }
     enclosures:
       strategy: perimeter
       partitions:

@@ -31,13 +31,10 @@ from app.assets.base import Asset
 from app.static.semantics import (
     AssetInstances,
     Directions,
-    Executors,
     Relations
 )
 from app.game.logic.mechanics import Mechanic
 from app.models.state import DevicePayload
-from app.services.generators.game.actuator import Actuator
-from app.services.generators.game.cartographer import Cartographer
 
 if TYPE_CHECKING:
     from app.game.board import Board
@@ -132,6 +129,12 @@ class FluidMechanics(Mechanic):
         bus: collections.deque,
         payload: DevicePayload
     ) -> None:
+        # TODO: figure out why these need to be imported at method level
+        #       has to do with the eager loading in __init__.py of 
+        #       app.services.
+        from app.services.generators.game.actuator import Actuator
+        from app.services.generators.game.cartographer import Cartographer
+
         fluids = board.instances(AssetInstances.FLUIDS.value)
         if not fluids:
             return

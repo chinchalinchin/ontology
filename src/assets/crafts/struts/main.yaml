@@ -198,7 +198,7 @@ crafts:
       material:
         genus: chromatics
         host: cotton
-      blueprint: decor
+      blueprints: decor
       hitboxes: null
     # -----------------------------------------
     curtain:
@@ -264,7 +264,7 @@ crafts:
       material:
         genus: chromatics
         host: cotton
-      blueprint: decor
+      blueprints: decor
       hitboxes: null
     # -----------------------------------------
     portrait:
@@ -281,7 +281,7 @@ crafts:
       material:
         genus: chromatics
         host: cotton
-      blueprint: decor
+      blueprints: decor
       hitboxes: null
     # -----------------------------------------
     table:
@@ -292,7 +292,7 @@ crafts:
       material:
         genus: chromatics
         host: wood
-      blueprint: decor
+      blueprints: decor
       hitboxes: null
     # -----------------------------------------
     taxidermy:
@@ -309,7 +309,7 @@ crafts:
       material:
         genus: chromatics
         host: wood
-      blueprint: decor
+      blueprints: decor
       hitboxes: null
     # -----------------------------------------
     # ------------------------------ ENCLOSURES

@@ -81,7 +81,6 @@ class ApplicationContext:
 
 # -------------------------------------------------
 
-
 class Builder:
     """
     Constructs the discrete subsystems of the Ontology engine.

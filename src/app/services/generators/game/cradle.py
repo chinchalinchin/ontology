@@ -1,7 +1,7 @@
 """
 @domain.system
 @app.services
-@workflow.hydration
+@workflow.injection
 
 # Ontology: Source - app.services.generators.game.cradle
 
