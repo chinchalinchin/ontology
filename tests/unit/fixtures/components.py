@@ -14,6 +14,7 @@ Concrete application component, device, registry, mechanic, and engine fixtures.
 # Standard Libraries
 import collections
 from typing import Any
+from unittest.mock import MagicMock
 
 # External Libraries
 import pytest
@@ -47,7 +48,7 @@ from libs.core.models import Dimensions
 from libs.graphics.registry import Registry
 
 # ---------------------------------------------------------------------------
-# --------------------------------------------- SUBSYSTEMS & ASSET REGISTRY
+# ----------------------------------------------- SUBSYSTEMS & ASSET REGISTRY
 # ---------------------------------------------------------------------------
 
 
@@ -66,13 +67,26 @@ def mock_registry(
     registry.clear()
 
 
+@pytest.fixture
+def mock_render(monkeypatch) -> MagicMock:
+    """
+    Patches Cython SDL rendering calls on app.game.screen.render so no
+    textures are rendered during unit tests.
+    """
+    mock = MagicMock()
+    mock.canvas.side_effect = lambda w, l, opaque=False: MagicMock(
+        w=w, l=l, opaque=opaque
+    )
+    monkeypatch.setattr("app.game.screen.render", mock)
+    return mock
+
 # ---------------------------------------------------------------------------
-# ------------------------------------------------------------------ DEVICES
+# ------------------------------------------------------------------- DEVICES
 # ---------------------------------------------------------------------------
 
 
 @pytest.fixture
-def device(mock_configurations_schema: ConfigurationSchema):
+def mock_device(mock_configurations_schema: ConfigurationSchema):
     """
     Fixture factory instantiating an input Device via MechanicFactory.
     """
@@ -84,8 +98,8 @@ def device(mock_configurations_schema: ConfigurationSchema):
 
 
 @pytest.fixture
-def mock_keyboard(device) -> Keyboard:
-    return device(Devices.KEYBOARD.value)
+def mock_keyboard(mock_device) -> Keyboard:
+    return mock_device(Devices.KEYBOARD.value)
 
 
 # ---------------------------------------------------------------------------
@@ -97,6 +111,7 @@ def mock_keyboard(device) -> Keyboard:
 def mock_screen(
     mock_registry: Registry,
     mock_state_schema: StateSchema,
+    mock_render: MagicMock,
 ) -> Screen:
     screen = Screen(
         screensize=Dimensions(320, 240),
@@ -142,7 +157,7 @@ def mock_board(
 
 @pytest.fixture
 def mock_mechanic(
-    executors,
+    mock_executors,
     mock_relations: dict[str, Any],
 ):
     """
@@ -154,7 +169,7 @@ def mock_mechanic(
     ) -> Mechanic:
         return MechanicFactory.mechanics(
             MechanicsInstance(name),
-            executors(implementation),
+            mock_executors(implementation),
             mock_relations,
         )
 
@@ -172,14 +187,14 @@ def mock_bus() -> collections.deque:
 
 
 @pytest.fixture
-def engine(
+def mock_engine(
     mock_board: Board,
     mock_screen: Screen,
     mock_configurations_schema: ConfigurationSchema,
     mock_relations: dict[str, Any],
     mock_provider: Provider,
     mock_registry: Registry,
-    executors,
+    mock_executors,
 ):
     """
     Fixture factory constructing an Engine parameterized by translator implementation ('lambda' or 'compiler').
@@ -187,7 +202,7 @@ def engine(
     def _engine(
         implementation: str = settings.TRANSLATOR_IMPLEMENTATION,
     ) -> Engine:
-        compiled_executors = executors(implementation)
+        compiled_executors = mock_executors(implementation)
         core = [
             MechanicFactory.mechanics(m, compiled_executors, mock_relations)
             for m in mock_configurations_schema.mechanics.core
@@ -205,9 +220,4 @@ def engine(
             registry=mock_registry,
         )
 
-    return _engine
-
-
-@pytest.fixture
-def mock_engine(engine) -> Engine:
-    return engine()
+    return _engine()

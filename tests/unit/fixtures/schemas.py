@@ -79,7 +79,7 @@ def mock_properties(mock_properties_schema: PropertiesSchema):
 
 
 @pytest.fixture
-def state(mock_state_schema: StateSchema):
+def mock_state(mock_state_schema: StateSchema):
     """
     Fixture factory to retrieve an AssetState by (category, instance, id) with optional field overrides.
     """
@@ -92,6 +92,6 @@ def state(mock_state_schema: StateSchema):
         cat_node = getattr(mock_state_schema, category)
         bucket: list[AssetState] = getattr(cat_node, instance)
         base = next((s for s in bucket if id is None or s.id == id), bucket[0])
-        return replace(base, **overrides) if overrides else base
+        return replace(base, **overrides)
 
     return _state

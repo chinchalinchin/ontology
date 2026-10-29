@@ -1,13 +1,8 @@
 # Task: Ontology - Coverage
 
-Changed accepted, but with the following label changes:
-
-* `asset()` fixture has been renamed to `mock_asset()`.
-* `mechanic()` fixture has been renamed to `mock_mechanic()`
-
 **Priorities**
       
-* Update the provided unit tests and induct them into the new fixture framework. Do not expand coverage; update the old coverage and fix it where necessary. Do not enforce backwards compatibility or try to juryrig the old tests. Do not populate the new fixture framework to fix failures. If the tests are failing due to fundamental incompatibilities, break them cleanly and refactor them. Determine what the intent of the test was and port it into the new framework.
+* Update the provided unit tests and induct them into the new fixture framework. Do not expand coverage; update the old coverage and fix it where necessary. Do not enforce backwards compatibility or try to juryrig the old tests. Do not pollute the new fixture framework to fix failures. If the tests are failing due to fundamental incompatibilities, break them cleanly and refactor them. Determine what the intent of the test was and port it into the new framework.
 * Debug the current run of the test pipeline located in the [Test Pipeline](#view-test-pipeline) section.
     * Do not worry about failures outside of the provided test code. They are failing due to the Phase 07.04 Refactor. They will be dealt with in due time.
 * Assist in refactoring the test bed fixtures, if necessary.

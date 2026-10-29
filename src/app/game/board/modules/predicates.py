@@ -1,5 +1,6 @@
 """
 @domain.logic
+@app.board
 @app.module
 
 # Ontology: Source - app.game.board.predicates

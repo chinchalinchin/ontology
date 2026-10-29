@@ -55,7 +55,7 @@ from libs.graphics.registry import Registry
 
 
 @pytest.fixture
-def translator():
+def mock_translator():
     """
     Parameterized fixture factory for instantiating an ISL translator ('lambda' or 'compiler').
     """
@@ -68,9 +68,9 @@ def translator():
 
 
 @pytest.fixture
-def executors(
+def mock_executors(
     mock_configurations_schema: ConfigurationSchema,
-    translator,
+    mock_translator,
 ):
     """
     Parameterized fixture factory compiling intention, plot, and stage executors.
@@ -78,7 +78,7 @@ def executors(
     def _executors(
         implementation: str = settings.TRANSLATOR_IMPLEMENTATION,
     ) -> dict[str, Any]:
-        trans = translator(implementation)
+        trans = mock_translator(implementation)
         compiled: dict[str, Any] = {
             Executors.INTENTION.value: trans.compile(
                 mock_configurations_schema.intentions
@@ -97,14 +97,6 @@ def executors(
         return compiled
 
     return _executors
-
-
-@pytest.fixture
-def mock_executors(executors) -> dict[str, Any]:
-    """
-    Default compiled executors dictionary using settings.TRANSLATOR_IMPLEMENTATION.
-    """
-    return executors()
 
 
 # ---------------------------------------------------------------------------
@@ -239,7 +231,7 @@ def mock_provider(
 
 
 @pytest.fixture
-def migrator(
+def mock_migrator(
     mock_board: Board,
     mock_properties_schema: PropertiesSchema,
     mock_configurations_schema: ConfigurationSchema,
@@ -261,15 +253,7 @@ def migrator(
         active_board.set_migrator(instance)
         return instance
 
-    return _migrator
-
-
-@pytest.fixture
-def mock_migrator(migrator) -> Migrator:
-    """
-    Default Migrator instance bound to mock_board.
-    """
-    return migrator()
+    return _migrator()
 
 
 @pytest.fixture

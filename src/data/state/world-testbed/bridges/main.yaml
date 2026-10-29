@@ -4,6 +4,7 @@ crafts:
       material: granite
       blueprint: horizontal
       name: test-horizontal-bridge
+      layer: '0'
       position:
         x: 30
         y: 290
@@ -14,6 +15,7 @@ crafts:
       name: test-verical-bridge
       material: wood
       blueprint: vertical
+      layer: '0'
       position:
         x: 850
         y: 425

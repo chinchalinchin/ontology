@@ -10,16 +10,16 @@ This is the Task Board for the project. Below is a backlog of completed and pend
   `[!]`: DO NOT COMPLETE
 
 !!! "Phase Actions"
-  - **Implement**: Complex, multi-task development of new functionality.
-  - **Refactor**: Complex, multi-task iteration of existing functionality.
-  - **Patch**: Tasks for fixing logical bugs or errors in the codebase.
-  - **Achieve**: Short, encapsulated tasks for either new or existing functionality.
-  - **Design**: Short, encapsulated tasks for creating data structures.
+  * **Implement**: Complex, multi-task development of new functionality.
+  * **Refactor**: Complex, multi-task iteration of existing functionality.
+  * **Patch**: Tasks for fixing logical bugs or errors in the codebase.
+  * **Achieve**: Short, encapsulated tasks for either new or existing functionality.
+  * **Design**: Short, encapsulated tasks for creating data structures.
 
 **Table of Contents**
 
 -**Actions:**
-  - **Implement:**
+  * **Implement:**
     * [x]: [Phase 01: Renderer](./phases/implement/phase-01.md)
     * [x]: [Phase 02: Game](./phases/implement/phase-02.md)
     * [x]: [Phase 03: Physics](./phases/implement/phase-03.md)
@@ -34,10 +34,10 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     * [ ]: [Phase n-1: Sound](./phases/implement/phase-n-1.md)
     * [ ]: [Phase n: Commerce](./phases/implement/phase-n.md)
     * [ ]: [Phase n+1: Towns](./phase/implement/phase-n+1.md)
-  - **Refactor:**
-    - *Phase 01:*
+  * **Refactor:**
+    * *Phase 01:*
       * [x]: [Phase 01.01: Orchestration](./phases/refactor/refactor-01-01.md)
-    - *Phase 02:*
+    * *Phase 02:*
       * [x]: [Phase 02.01: Frames](./phases/refactor/refactor-02-01.md)
       * [x]: [Phase 02.02: Registry](./phases/refactor/refactor-02-02.md)
       * [x]: [Phase 02.03: Equipment](./phases/refactor/refactor-02-03.md)
@@ -45,31 +45,32 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       * [x]: [Phase 02.05: Finetuning](./phases/refactor/refactor-02-05.md)
       * [x]: [Phase 02.06: Effects](./phases/refactor/refactor-02-06.md)
       * [x]: [Phase 02.07: Registry Data Structures](./phases/refactor/refactor-02-07.md)
-    - *Phase 03:*
+    * *Phase 03:*
       * [x]: [Phase 03.01: Mechanics](./phases/refactor/refactor-03-01.md)
       * [x]: [Phase 03.02: Consolidation](./phases/refactor/refactor-03-02.md)
       * [x]: [Phase 03.03: Motion](./phases/refactor/refactor-03-03.md)
       * [ ]: [Phase 03.04: Projectiles](./phases/refactor/refactor-03-04.md)
-    - *Phase 04:*
+    * *Phase 04:*
       * [x]: [Phase 04.01: Typography](./phases/refactor/refactor-04-01.md)
       * [x]: [Phase 04.02: Simplification](./phases/refactor/refactor-04-02.md)
       * [x]: [Phase 04.03: EventHandlers](./phases/refactor/refactor-04-03.md)
       * [x]: [Phase 04.04: MenuContext](./phases/refactor/refactor-04-04.md)
       * [x]: [Phase 04.05: Gizmos](./phases/refactor/refactor-04-05.md)
-    - *Phase 06:*
+    * *Phase 06:*
       * [x]: [Phase 06.01: Expressions](./phases/refactor/refactor-06-01.md)
       * [ ]: [Phase 06.01: Cursors](./phases/refactor/refactor-06-02.md)
-    - *Phase 07:*
+    * *Phase 07:*
       * [x]: [Phase 07.01: Elevation Sorting](./phases/refactor/refactor-07-01.md)
       * [x]: [Phase 07.02: Platforms & Elevated Hitboxes](./phases/refactor/refactor-07-02.md)
       * [ ]: [Phase 07.03: Gravity](./phases/refactor/refactor-07-03.md)
       * [x]: [Phase 07.04: Materialization](./phases/refactor/refactor-07-04.md)
-    - *Phase 08:*
+      * [ ]: [Phase 07.05: Composite Compositions](./phases/refactor/refactor-07-05.md)
+    * *Phase 08:*
       * [x]: [Phase 08.01: Obstable Geometry](./phases/refactor/refactor-08-01.md)
       * [x]: [Phase 08.02: NavigationMechanics](./phases/refactor/refactor-08-02.md)
       * [x]: [Phase 08.03: Trajectory Optimization](./phases/refactor/refactor-08-03.md)
       * [ ]: [Phase 08.04: Mutators](./phases/refactor/refactor-08-04.md)
-    - *Phase 09:*
+    * *Phase 09:*
       * [x]: [Phase 09.01: Fluid Flows](./phases/refactor/refactor-09-01.md)
       * [x]: [Phase 09.02: Shorelines & Geography](./phases/refactor/refactor-09-02.md)
       * [x]: [Phase 09.03: Consolidation](./phases/refactor/refactor-09-03.md)
@@ -78,13 +79,13 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       * [x]: [Phase 09.06: Cythonization](./phases/refactor/refactor-09-06.md)
       * [x]: [Phase 09.07: Frame Caching](./phases/refactor/refactor-09-07.md)
       * [ ]: [Phase 09.08: Transverse Fluid Submersion](./phases/refactor/refactor-09-08.md)
-    - *Phase 10:*
+    * *Phase 10:*
       * [x]: [Phase 10.01: Stage Hitboxes](./phases/refactor/refactor-10-01.md)
       * [x]: [Phase 10.02: Shoreline Seasonal Indexing](./phases/refactor/refactor-10-02.md)
       * [ ]: [Phase 10.03: Flowers, Pixies & Reproduction](./phases/refactor/refactor-10-03.md)
       * [ ]: [Phase 10.04: Cythonization](./phases/refactor/refactor-10-04.md)
       * [ ]: [Phase 10.05: Seasonality](./phases/refactor/refactor-10-05.md)
-  - **Patch:**
+  * **Patch:**
     * [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
     * [ ]: [Bug B001: Relayering Instantiated Assets](./phases/patch/bug-b001.md)
     * [ ]: [Bug B002: Board Cache Wipe](./phases/patch/bug-b002.md)
@@ -93,16 +94,16 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     * [x]: [Bug B005: Speak Regression](./phases/patch/bug-b005.md)
     * [x]: [Bug B006: Raycast Boundary Grazing](./phases/patch/bug-b006.md)
     * [x]: [Bug B007: Cradle Spawning](./phases/patch/bug-b007.md)
-    * [~: review(post phase 07.04)]: [Bug B008: Open Gate Obstruction](./phases/patch/bug-b008.md)
+    * [x]: [Bug B008: Open Gate Obstruction](./phases/patch/bug-b008.md)
     * [x]: [Bug B009: Irregular Composition Behavior](./phases/patch/bug-b009.md)
     * [x]: [Bug B010: Overlapping Fluid Shorelines](./phases/patch/bug-b010.md)
     * [x]: [Bug B011: Stream and Annular Pool Texture Overdraw](./phases/patch/bug-b011.md)
     * [x]: [Bug B012: Composition Duplication](./phases/patch/bug-b012.md)
     * [ ]: [Bug B013: Canvas Bleed on Fore Tiles](./phases/patch/bug-b013.md)
     * [x]: [Bug B014: Stair Railing Hitbox Traversal Block](./phases/patch/bug-b014.md)
-    * [~: review(post phase 07.04)]: [Bug B015: Decomposer Macro Scope](./phases/patch/bug-b015.md)
-    * [~: review(post phase 07.04)]: [Bug B016: Decomposer Elevation Inheritance](./phases/patch/bug-b016.md)
-  - **Achieve:**
+    * [x]: [Bug B015: Decomposer Macro Scope](./phases/patch/bug-b015.md)
+    * [x]: [Bug B016: Decomposer Elevation Inheritance](./phases/patch/bug-b016.md)
+  * **Achieve:**
     * [x]: [Goal 01: Boundaries](./phases/achieve/goal-01.md)
     * [x]: [Goal 02: ScrollController, Library & Plots](./phases/achieve/goal-02)
     * [ ]: [Goal 03: ExchangeController & Loot](./phases/achieve/goal-03.md)
@@ -113,11 +114,11 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     * [x]: [Goal 08: CLI Handling](./phases/achieve/goal-08.md)
     * [x]: [Goal 09: Board Modularization](./phases/achieve/goal-09.md)
     * [x]: [Goal 10: Dependency Injection](./phases/achieve/goal-11.md)
-  - **Design:**
-    * [~]: [Composition C000: Castle Dawn](./phases/design/composition-c000.md)
+  * **Design:**
+    * [x]: [Composition C000: Castle Dawn](./phases/design/composition-c000.md)
     * [ ]: [Composition C001: Temple of Trials](./phases/design/composition-c001.md)
     * [ ]: [Composition C002: Regalia Galleria](./phases/design/composition-c002.md)
-- **Backlog:**
+* **Backlog:**
   * [~]: [TODO T000: Telemetry Module](./backlog/todo-t000.md)
   * [ ]: [TODO T001: Telemetry Menu](./backlog/todo-t001.md)
   * [ ]: [TODO T002: Bouyancy](./backlog/todo-t002.md)

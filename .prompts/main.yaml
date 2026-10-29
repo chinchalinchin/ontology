@@ -130,13 +130,13 @@ tools:
     # --------------------------------------------
     shell:
       directory: false
-      commands: true
+      commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
       configuration: false
-      pipeline: false
+      pipeline: true
       session: false
 # ----------------------------------------------------
   parameters:
@@ -168,13 +168,14 @@ tools:
     # --------------------------------------------
     source:
       filter:
-        default: OR
+        default: AND
         queries:
-          - title:
+          - title: Injection Workflow
             scan:
-              workflows: [ injection, fluids ] 
+              app: [ services ]
+              workflows: [ injection ]
       data:
-        properties: [  ]
+        properties: [ objects, effects, resources ]
         state: [ world-testbed ]
         configurations: [ ]
         templates: [  ]
@@ -192,7 +193,7 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: app_asset
+        marker: '"app_core or app_board"'
       session:
         description: |
           description

@@ -47,7 +47,7 @@ def mock_asset(
     mock_properties_schema: PropertiesSchema,
     mock_configurations_schema: ConfigurationSchema,
     mock_material_index: MaterialIndex,
-    state,
+    mock_state,
 ):
     """
     Instantiates an Asset via AssetFactory.asset from the YAML-loaded schemas.
@@ -58,13 +58,13 @@ def mock_asset(
         id: Optional[str] = None,
         asset_state: Optional[AssetState] = None,
     ) -> Asset:
-        resolved_state = asset_state or state(category, instance, id=id)
+        resolved_state = asset_state or mock_state(category, instance, id=id)
 
         recipe = getattr(
             getattr(mock_configurations_schema.recipes, category), 
             instance
         )
-        substrate = mock_material_index.substrate(category, instance)
+        substrate = mock_material_index.substrate(instance)
 
         if instance != AssetInstances.PLAYERS.value:
             prop_map = getattr(

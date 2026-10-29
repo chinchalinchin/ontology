@@ -1,6 +1,7 @@
 """
 @domain.system
 @app.module
+@app.board
 
 # Ontology: Source - app.game.board.modules.caches
 
@@ -32,6 +33,7 @@ from libs.core.models import Position
 
 logger = logging.getLogger(__name__)
 
+# -------------------------------------------
 
 class Cache:
     """

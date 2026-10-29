@@ -1,5 +1,6 @@
 """
 @domain.system
+@app.board
 @app.core
 @app.component
 @workflow.main

@@ -1,6 +1,7 @@
 """
 @domain.logic
 @app.modules
+@app.board
 @physics.fields
 @workflow.seasons
 

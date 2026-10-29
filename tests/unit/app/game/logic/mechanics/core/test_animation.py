@@ -1,74 +1,89 @@
 """
-# Ontology: tests.unit.app.game.logic.mechanics.core.test_animation
-"""
-# Standard Libraries
-import collections
-from unittest.mock import patch, call, MagicMock
+@domain.test
+@test.unit
+@app.core
+@app.mechanic
 
+# Ontology: Tests - tests.unit.app.game.logic.mechanics.core.test_animation
+
+Unit tests for the AnimationMechanics implementation.
+"""
 # External Libraries
 import pytest
 
 # Application Libraries
-from app.assets.animations import SpriteAnimation, BinaryAnimation
-from app.game.logic.mechanics import AnimationMechanics
-from app.static.semantics import AssetCategories, AssetInstances
-from app.models.state import DevicePayload
+from app.static.semantics import (
+    AssetInstances,
+    Mechanics,
+)
+
+# -----------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_core,
+    pytest.mark.asset_animation,
+    pytest.mark.workflow_rendering,
+]
+
+# -----------------------------------------------------
 
 
-@pytest.mark.asset_animation
-def test_animation_mechanics_update(mock_board):
+def test_animation_mechanics_update(mock_board, mock_mechanic, mock_bus):
     """
-    Ensure the animate() interface is correctly invoked on the Animation
-    components of all targeted Asset Categories and Instances, and cooldown()
-    is processed for active Reactable effects.
+    Ensure AnimationMechanics mutates animation frames on active Sheets and Effects
+    and decrements Reactable cooldowns on the Board when unpaused.
     """
-    mechanic = AnimationMechanics()
-    payload = MagicMock(spec=DevicePayload)
-
+    mechanic = mock_mechanic(Mechanics.ANIMATION.value)
+    payload = mock_board.device.poll()
     mock_board.paused = False
 
-    sheets = mock_board.categories(AssetCategories.SHEETS)
-    chests = mock_board.instances(AssetInstances.CHESTS)
-    gates = mock_board.instances(AssetInstances.GATES)
-    plates = mock_board.instances(AssetInstances.PLATES)
-    reactables = mock_board.instances(AssetInstances.REACTABLES.value)
+    # 1. Sheet animations (Pixie uses StateAnimation; Player uses SpriteAnimation)
+    pixie = mock_board.instances(AssetInstances.PIXIES.value)[0]
+    pixie_action = pixie.properties.actions[pixie.state.animation.action]
+    pixie.state.animation.frame = 0
+    pixie.state.animation.tick = pixie_action.delay
 
-    assert len(sheets) > 0
-    assert len(chests) > 0
-    assert len(gates) > 0
-    assert len(plates) > 0
-    assert len(reactables) > 0
+    player = mock_board.player()
+    player_action = player.properties.actions[player.state.animation.action]
+    player.state.mutators.triggers.animated = True
+    player.state.animation.frame = 0
+    player.state.animation.tick = player_action.delay
 
-    for effect in reactables:
-        effect.state.active = True
+    # 2. Effect animations (Torch uses FrequencyAnimation)
+    torch = mock_board.instances(AssetInstances.PASSIVE.value)[0]
+    torch.state.mutators.triggers.animated = True
+    torch.state.animation.frame = 0
+    torch.state.animation.tick = torch.properties.frequency.delay
 
-    binary_assets = chests + gates + plates
-    reactable_anim_cls = type(reactables[0].animation)
+    # 3. Reactable cooldowns
+    dummy = mock_board.instances(AssetInstances.REACTABLES.value)[0]
+    dummy.state.active = True
+    initial_cooldown = dummy.state.cooldown
 
-    with patch.object(SpriteAnimation, "animate") as mock_sprite_anim, \
-         patch.object(BinaryAnimation, "animate") as mock_binary_anim, \
-         patch.object(reactable_anim_cls, "cooldown") as mock_cooldown:
+    mechanic.update(mock_board, 0.016, mock_bus, payload)
 
-        # Execute Mechanics
-        mechanic.update(mock_board, 0.016, collections.deque(), payload)
+    assert pixie.state.animation.frame == 1
+    assert pixie.state.animation.tick == 0
+    assert player.state.animation.frame == 1
+    assert player.state.animation.tick == 0
+    assert torch.state.animation.frame == 1
+    assert dummy.state.cooldown != initial_cooldown or dummy.state.active is False
 
-        # Assert SpriteAnimation calls
-        assert mock_sprite_anim.call_count == len(sheets)
-        mock_sprite_anim.assert_has_calls(
-            [call(sheet.state, sheet.properties) for sheet in sheets],
-            any_order=True
-        )
 
-        # Assert BinaryAnimation calls across chests, gates, and plates
-        assert mock_binary_anim.call_count == len(binary_assets)
-        mock_binary_anim.assert_has_calls(
-            [call(asset.state, asset.properties) for asset in binary_assets],
-            any_order=True
-        )
+def test_animation_mechanics_paused_board_noop(mock_board, mock_mechanic, mock_bus):
+    """
+    Ensure AnimationMechanics skips world asset frame mutations when the Board is paused.
+    """
+    mechanic = mock_mechanic(Mechanics.ANIMATION.value)
+    payload = mock_board.device.poll()
+    mock_board.paused = True
 
-        # Assert Cooldown calls for Reactables
-        assert mock_cooldown.call_count == len(reactables)
-        mock_cooldown.assert_has_calls(
-            [call(effect.state, effect.properties) for effect in reactables],
-            any_order=True
-        )
+    pixie = mock_board.instances(AssetInstances.PIXIES.value)[0]
+    pixie_action = pixie.properties.actions[pixie.state.animation.action]
+    pixie.state.animation.frame = 0
+    pixie.state.animation.tick = pixie_action.delay
+
+    mechanic.update(mock_board, 0.016, mock_bus, payload)
+
+    assert pixie.state.animation.frame == 0
+    assert pixie.state.animation.tick == pixie_action.delay

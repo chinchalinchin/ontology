@@ -54,6 +54,7 @@ Tags are meant to capture logically related slices of the Application.
             * Application Tags:
                 * `app.asset` (*Asset Implementations*)
                 * `app.base` (*Base Implementations*)
+                * `app.board` (*Application Board Database*)
                 * `app.core` (*Core Implementations*)
                 * `app.component` (*Engine Subsystems*)
                 * `app.config`

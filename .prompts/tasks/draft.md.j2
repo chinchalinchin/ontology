@@ -1,2 +1,44 @@
 # Task - Ontology: Unit Tests
 
+**Priority**: Debug the unit tests.
+
+For the last failure, it seems like the fixtures are not hydrating the substrate properly. I just confirmed the Substrate is correctly populated in the actual game engine through a state dump.
+
+```markdown
+he-steppe
+
+- **Substrate**: `Substrates.ENVIRON`
+- **Taxonomy:**
+  - Category: `tiles`
+  - Instance: `environ`
+  - ID: `temperate`
+  - Name: `the-steppe`
+- **Components:**
+  - Animation: `NoAnimation`
+  - Frame: `SeasonalFrame`
+  - Hitbox: `NoHitbox`
+- **Properties:**
+- Dimensions:
+    - Width: 32
+    - Length: 32
+- Priority: -4
+- Friction: 100.0
+- **State:**
+- Layer: `0`
+- Elevation: 0
+- Anchor: 0
+- Position: (0, 0)
+- Multiple:
+    - nx: 100
+    - ny: 100
+- Mutators:
+- Triggers:
+      - Animated: False
+      - Frightened: False
+      - Dead: False
+      - Vision: False
+      - Submerged: False
+```
+
+
+Examine the application dependency injection pipeline and determine why the unit test fixtures are not behaving the same way.

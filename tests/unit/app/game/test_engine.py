@@ -1,5 +1,10 @@
 """
-# Ontology: tests.unit.app.game.test_engine
+@domain.test
+@test.unit
+@app.core
+@app.component
+
+# Ontology: Tests - tests.unit.app.game.test_engine
 
 Unit tests for the core Engine loop and time management.
 """
@@ -15,6 +20,16 @@ from app.game.logic.mechanics.base import Mechanic
 from app.game.menus.events import Event
 from app.game.menus.handlers import EventHandler
 
+# ---------------------------------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_core,
+    pytest.mark.app_component,
+    pytest.mark.workflow_main,
+]
+
+# ---------------------------------------------------------------------------
+
 
 class IncrementalTime:
     """
@@ -24,7 +39,7 @@ class IncrementalTime:
     def __init__(self, step: float = 0.017):
         self.t = 0.0
         self.step = step
-        
+
     def __call__(self) -> float:
         self.t += self.step
         return self.t
@@ -64,51 +79,50 @@ class SampleEvent(Event):
 # ---------------------------------------------------------------------------
 # --------------------------------------------------------------------- TESTS
 
-@pytest.mark.workflow_main
+
 def test_engine_time():
     """Test the static time method returns a float from perf_counter."""
-    with patch('time.perf_counter', return_value=123.45):
+    with patch("time.perf_counter", return_value=123.45):
         assert Engine.time() == 123.45
 
 
-@pytest.mark.workflow_main
-def test_engine_start(mock_engine_core):
+def test_engine_start(mock_engine, mock_render):
     """
-    Ensure the engine loop executes mechanics, renders the screen, 
+    Ensure the engine loop executes mechanics, renders the screen,
     and handles pacing correctly using live components and stubbed rendering.
     """
-    mock_engine_core.board.loaded = True
-    mock_engine_core.board.paused = False
+    mock_engine.board.loaded = True
+    mock_engine.board.paused = False
 
-    mechanic = TerminatingMechanic(mock_engine_core)
-    mock_engine_core.core = [mechanic]
+    mechanic = TerminatingMechanic(mock_engine)
+    mock_engine.core = [mechanic]
+    mock_engine.world = []
 
-    screen = mock_engine_core.screens["0"]
-
-    with patch.object(Engine, 'time', side_effect=IncrementalTime(step=0.017)):
-        with patch('time.sleep'):
-            mock_engine_core.start()
+    with patch.object(Engine, "time", side_effect=IncrementalTime(step=0.017)):
+        with patch("time.sleep"):
+            mock_engine.start()
 
     assert mechanic.executed is True
-    assert screen.cleared is True
-    assert screen.presented is True
-    assert len(screen.drawn_assets) > 0
+    assert mock_render.clear.called
+    assert mock_render.render.called
+    assert mock_render.present.called
+    rendered_assets = mock_render.render.call_args[0][2]
+    assert len(rendered_assets) > 0
 
 
-@pytest.mark.workflow_main
-def test_engine_drain_routes_events_to_handlers(mock_engine_core):
+def test_engine_drain_routes_events_to_handlers(mock_engine):
     """
     Validates EventBus draining and strategy dispatch to concrete handlers.
     """
     spy_handler = SpyEventHandler()
-    mock_engine_core.handlers[SampleEvent] = spy_handler
+    mock_engine.handlers[SampleEvent] = spy_handler
 
     event = SampleEvent()
-    mock_engine_core.bus.append(event)
+    mock_engine.bus.append(event)
 
-    mock_engine_core._drain()
+    mock_engine._drain()
 
-    assert len(mock_engine_core.bus) == 0
+    assert len(mock_engine.bus) == 0
     assert len(spy_handler.handled_events) == 1
     assert spy_handler.handled_events[0] is event
-    assert spy_handler.handled_contexts[0] == mock_engine_core.context
+    assert spy_handler.handled_contexts[0] == mock_engine.context
