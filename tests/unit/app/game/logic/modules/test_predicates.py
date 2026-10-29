@@ -2,14 +2,11 @@
 @domain.test
 @domain.logic
 @test.unit
-@app.board
-@app.core
-@app.component
 @app.semantics
 
-# Ontology: Tests - tests.unit.app.game.board.test_board_predicates
+# Ontology: Tests - tests.unit.app.game.logic.modules.test_predicates
 
-Unit tests for the Board Predicates module.
+Predicate Unit tests.
 """
 # External Libraries
 import pytest

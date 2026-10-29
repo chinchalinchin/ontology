@@ -8,7 +8,7 @@
 @workflow.fluids
 @workflow.ecology
 
-# Ontology: Tests - tests.unit.app.game.board.test_board_fields
+# Ontology: Tests - tests.unit.app.game.board.logic.modules.fields
 
 Unit tests verifying continuous MoistureField potential modeling,
 distance attenuation, superposition, and Board-level flux caching.
@@ -28,9 +28,7 @@ from libs.core.models import Position
 # -----------------------------------------------------
 
 pytestmark = [
-    pytest.mark.app_board,
-    pytest.mark.app_core,
-    pytest.mark.app_component,
+    pytest.mark.app_module,
     pytest.mark.physics_fields,
     pytest.mark.workflow_fluids,
     pytest.mark.workflow_ecology,

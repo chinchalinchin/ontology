@@ -118,12 +118,12 @@ tools:
     manager:
       board: false
       specs: false
-      docs: false
+      docs: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: false
+      data: true
       filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
@@ -159,7 +159,7 @@ tools:
           - 06-widgets.md
           - 07-sounds.md
           - 08-plots.md
-          - 09-ecology.md
+          # - 09-ecology.md
           - 10-emergence.md
           # - 11-architecture.md
       specs: []
@@ -170,11 +170,15 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Command Line Interface
+          - title: Fluids
             scan:
-              workflows: [ cli ]
+              app: [ asset ]
+              category: [ effects ]
+          - title: Fluids Workflow
+            scan:
+              workflows: [ fluids ]
       data:
-        properties: [ objects, effects, resources ]
+        properties: [ effects ]
         state: [ world-testbed ]
         configurations: [ ]
         templates: [  ]
@@ -192,7 +196,7 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: 'workflow_cli'
+        marker: workflow_fluids
       session:
         description: |
           description

@@ -19,7 +19,7 @@ import pytest
 
 # Application Libraries
 import app.static.settings as settings
-from app.game.board.modules.fields import MoistureField
+from app.game.logic.modules.fields import MoistureField
 from app.game.logic.relations import (
     MaterialIndex,
     ShorelineIndex,

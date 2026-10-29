@@ -21,8 +21,8 @@ from typing import (
 )
 
 # Application Libraries
+import app.game.logic.predicates as predicates
 from app.assets.base import Asset
-from app.game.board.modules import predicates
 from app.static.semantics import (
     AssetCategories,
     AssetInstances,

@@ -20,13 +20,13 @@ from typing import (
 
 # Application Libraries
 import app.static.settings as settings
+import app.game.logic.predicates as predicates
 from app.assets.base import Asset
 from app.static.semantics import (
     AssetCategories,
     AssetInstances,
     Directions
 )
-from app.game.board.modules.predicates import is_weight
 
 # Cython Libraries
 from libs.core.models import Position
@@ -190,7 +190,7 @@ class Cache:
             if cat != AssetCategories.TILES.value:
                 self.cached_renderables[layer].append(asset)
 
-            if is_weight(asset):
+            if predicates.is_weight(asset):
                 self.cached_weights[layer].append(asset)
 
             if cat == AssetCategories.SHEETS.value and inst in (
@@ -369,7 +369,7 @@ class Cache:
         if cat != AssetCategories.TILES.value:
             self.cached_renderables[new_layer].append(asset)
 
-        if is_weight(asset):
+        if predicates.is_weight(asset):
             self.cached_weights[new_layer].append(asset)
 
         if inst == AssetInstances.SHORELINES.value:

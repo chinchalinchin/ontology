@@ -25,7 +25,7 @@ from dataclasses import asdict
 
 # Application Libraries
 import app.static.settings as settings
-import app.game.board.modules.predicates as predicates
+import app.game.logic.predicates as predicates
 
 from app.assets.base import Asset
 from app.static.semantics import (
@@ -35,7 +35,7 @@ from app.static.semantics import (
     Shortcuts
 )
 from app.static.loader import Loader
-from app.game.board.modules.fields import MoistureField
+from app.game.logic.modules.fields import MoistureField
 from app.game.devices import Device
 from app.game.menus.core import Menu
 from app.models.state.core import (

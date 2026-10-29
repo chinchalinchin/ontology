@@ -200,7 +200,7 @@ An Asset's order in the Asset Hierarchy is encoded into its Taxonomy. These attr
 
 The State and Property model of an Asset can be calculated (and is, during [application bootstrapping](./11-architecture.md#specification-initialization) via Pydantic) from its (Category, Instance)-node, but (Animation, Frame, Hitbox) are independent of the node in the Asset Hierarchy. These components must be specified through a [Recipe](./appendices/01-schemas.md#configuration-recipes).
 
-### Asset Architecture
+### Asset: Architecture
 
 Every physical entity in the game is an instance of the unified Asset class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. Behaviors are decoupled from Assets and managed entirely by *Mechanic* classes that iterate over the [Board](./00-overview.md#component-board) Assets. See [Mechanics documentation](./05-mechanics.md) for more information.
 

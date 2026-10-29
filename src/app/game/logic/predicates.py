@@ -1,11 +1,10 @@
 """
 @domain.logic
-@app.board
 @app.module
 
-# Ontology: Source - app.game.board.predicates
+# Ontology: Source - app.game.logic.modules.predicates
 
-Stateless Predicates for making assertions on the Board.
+Stateless Predicates for making assertions of Assets.
 """
 # Standard Libraries
 from typing import (

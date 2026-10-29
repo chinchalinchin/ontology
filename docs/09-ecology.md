@@ -4,23 +4,21 @@ The Ecology of the [Board](./00-overview.md#component-board) is a collection of 
 
 **References**
 
-- See [FluidMechanics](./05-mechanics.md#fluidmechanics) for more information on Fluid logic.
-- See [SeasonMechanics](./05-mechanics.md#seasonmechanics) for more information on Season mechanics.
+* See [FluidMechanics](./05-mechanics.md#world-mechanic-fluidmechanics) for more information on Fluid logic.
+* See [SeasonMechanics](./05-mechanics.md#world-mechanic-seasonmechanics) for more information on Season mechanics.
 
-## Asset Specifications
+## Category: Effects
 
-### Category: Effects
-
-#### Effect: Fluids
+### Effect: Fluids
 
 Fluids are directional Effects that project along a `source` Direction until obstructed by an obstacle. Once obstructed, Fluids form Pools around the obstacle and bifuricate into secondary streams.
 
 !!! note "Fluid Rendering"
     Because Fluid Asset span multiple grid units, they bypass standard geometric height calculation (`pos.y + dim.l`).
 
-**Z-Ordering & Sorting**
+**Behavior: Rendering**
 
-Fluids declare an explicit `height: 0` and `depth: -1`. This ensures the [rendering pipeline](./11-architecture.md#graphics) sorts the resulting stream above Tiles but underneath other mutable Assets.
+Fluids belong to a dedicated [Substrate](./01-assets.md#concept-appearance), `substrate = -3`, to ensure they always render above [Environ Tiles](./01-assets.md#tile-environ) but below all other Assets.
 
 **Frame: FluidFrame**
 
@@ -50,36 +48,35 @@ Fluids declare an explicit `height: 0` and `depth: -1`. This ensures the [render
 
 * `get(properties, state, frame): returns state.hitboxes`
 
-### Category: Geographies
+## Category: Geography
 
 **Behavior: Procedural**
 
-Geographies are procedural entities generated via Service classes (e.g. the *Cartographer* spawns [Shorelines](#geography-shorelines)). 
+Geographies are procedural Assets generated via Service classes (e.g. the *Cartographer* spawns [Shorelines](#geography-shorelines)). 
 
-Frame keys are computed and cached on `state._keys`. When [SeasonMechanics](./05-mechanics.md#world) emits a SeasonEvent, active Shoreline state seasons are synchronized and frame caches invalidated (`state._keys = None`) without triggering geometric regeneration.
+### Geography: Shorelines
 
-#### Geography: Shorelines
+Shorelines are Geographic sensors instantiated along Fluid margins. Shorelines are derived after the Board had been initiated with a Fluid Flow. [FluidMechanics](./05-mechanics.md#world-mechanic-fluidmechanics) aggregates all active Fluid streams and uses the resulting perimeter to generate Shorelines.
 
-Shorelines are procedural, inanimate Geography sensors instantiated along unoccluded environmental water margins. Rather than belonging to individual fluid emitters, Shorelines are derived at the layer level: [FluidMechanics](./05-mechanics.md#fluidmechanics) aggregates all active fluid streams and annular pools on a layer, derives the outer perimeter hull via `geometry.contours()`, samples bordering substrate tiles from `Board`, and coalesces contiguous segments into cohesive shoreline entities.
+**Behavior: Seasonal Caching**
+
+Frame keys are computed and cached on Geography Stat`. When [SeasonMechanics](./05-mechanics.md#world) emits a SeasonEvent, active Shorelines are synchronized and their frame caches invalidated and repopulated.
 
 **Relation: ShorelineIndex**
 
-Shoreline Assets act as relational bridges across environmental Categories and Instances. Specifically, Shorelines declare secondary keys referencing the [Environ Tile](#environ) and optionally [Fluid Effect](#effect-fluids) Assets they border:
-
-* `tile: str`: Asset ID of the [Environ Tile](#environ) to which the Shoreline binds.
-* `fluid: Optional[str]`: Optional Asset ID of the [Fluid Effect](#effect-fluids) required to activate this Shoreline.
-
-Formally, this relation is expressed,
+Shoreline Assets act as relational bridges across environmental Categories and Instances. Specifically, Shorelines declare secondary keys referencing the [Environ Tile](#environ) and (*optionally*) [Fluid Effect](#effect-fluids) Assets they border:
 
 $
 \text{Index}[(tile_id, fluid_id)] \to shoreline_id
 $
 
+* `tile: str`: Asset ID of the [Environ Tile](#environ) to which the Shoreline binds.
+* `fluid: Optional[str]`: Optional Asset ID of the [Fluid Effect](#effect-fluids) required to activate this Shoreline.
+
 **Atlas: (row: Direction, column: Season)**
 
 * columns: `^(?:[spring|summer|autumn|winter])`
 * rows: `^(?:[up|left|down|right])`
-
 
 **Frame: CardinalFrame**
 
@@ -104,15 +101,19 @@ $
 
 * `get(properties, state, frame): returns state.hitboxes`
 
-### Category: Resources
+## Category: Resources
 
-Resources are mutable assets deployed onto the Board that progress through discrete structural or biological stages governed by macro-temporal seasons and hydrological fluid diffusion.
+Resources are biological Assets deployed onto the Board that progress through discrete structural stages governed by macroscopic factors.
 
-All resource instances (`crops`, `trees`, `ore`) share a unified, slotted state model, Resource State.
+**Executor: StageExecutors**
 
-Stage transitions are evaluated through discrete `Executor` instances mapped to the asset's immutable `properties.lifespan` (`annual`, `perennial`, `centennial`).
+* `annual`:
+* `perennial`:
+* `centennial`: 
 
 **State: ResourceState**
+
+All resource instances share a a unified Resource State.
 
 * `layer: str`: Current board layer.
 * `position: Position`: Physical coordinate.
@@ -127,21 +128,21 @@ Stage transitions are evaluated through discrete `Executor` instances mapped to 
 
 * `get(properties, state, frame): returns properties[state.stage].hitboxes`
 
-#### Instance: Crops
+### Resource: Crops
 
-Crops are biological resources whose stage transitions are governed by macro-temporal seasons and soil fluid retention.
+**Enum: AnnualStages**
 
-- Crop Stages: `sprout`, `growth`, `stalk`, `bloom`, `stump`
+* `sprout`, `growth`, `stalk`, `bloom`, `stump`
 
-#### Instance: Trees
+### Resources: Trees
 
-Trees are perennial biological resources that cycle through three life phases (Genesis, Homeostasis, and Apoptosis) based on seasonal calendars and moisture retention thresholds.
+**Enum: PerennialStages**
 
-- Tree Stages: `sapling`, `bush`, `branch`, `adult`, `vibrant`, `healthy`, `abscise`, `snowcapt`, `dying`, `dead`, `stump`
+* `sapling`, `bush`, `branch`, `adult`, `vibrant`, `healthy`, `abscise`, `snowcapt`, `dying`, `dead`, `stump`
 
-**Epicycles**
+**Behavior: Epicycles**
 
-A natural feature of Tree Stage Transitions is the cyclic topology of a finite automata embodying a perennial lifespans, i.e. Trees changing colors during the progression of Seasons or possibly dying due to environmental circumstances. Based on the conditions defined in the [Stage Configuration](./appendices/01-schemas.md#configuration-stage), the Tree life cycle is composed of three distinct *epicycles*,
+A benefifical consequence of Tree Stage Transitions being modeled as a finite automata is the cyclic loops in the automata corresponding to its perennial Lifespan. In other words, Trees change colors as Season progress and iterate over this cycle, unless entering into a `death` branch of their automata due to environmental circumstances. Based on the conditions defined in the [Stage Configuration](./appendices/01-schemas.md#configuration-stage), the Tree life cycle is composed of three distinct *epicycles*,
 
 - Genesis
 - Homeostasis

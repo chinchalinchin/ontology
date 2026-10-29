@@ -1,5 +1,13 @@
 """
-# Ontology: tests.unit.app.game.logic.modules.motion.test_fields
+@domain.test
+@test.unit
+@physics.motion
+@physics.fields
+@workflow.fluids
+
+# Ontology: Tests - tests.unit.app.game.logic.modules.motion.test_field_motion
+
+Unit Tests for Field motion calculations.
 """
 # Standard Libraries
 from unittest.mock import patch
@@ -22,9 +30,16 @@ from libs.core.models import (
     Velocity
 )
 
+# -----------------------------------------------------
+
+pytestmark = [
+    pytest.mark.physics_motion,
+    pytest.mark.physics_fields
+]
+
+# -----------------------------------------------------
 
 @pytest.mark.workflow_fluids
-@pytest.mark.physics_motion
 def test_direction_vectors():
     """
     Verify normalized direction vector mapping across cardinal directions.
@@ -37,7 +52,6 @@ def test_direction_vectors():
 
 
 @pytest.mark.workflow_fluids
-@pytest.mark.physics_motion
 def test_shoreline_normals():
     """
     Verify inward water normal vectors across cardinal bank orientations.
@@ -50,7 +64,6 @@ def test_shoreline_normals():
 
 
 @pytest.mark.workflow_fluids
-@pytest.mark.physics_motion
 def test_fluid_velocity(mock_fluid):
     """
     Verify current velocity calculation based on emitter source and flow intensity.
@@ -63,7 +76,6 @@ def test_fluid_velocity(mock_fluid):
 
 
 @pytest.mark.workflow_fluids
-@pytest.mark.physics_motion
 def test_raft_passively_drifts_in_fluid(mock_board, mock_raft, mock_fluid):
     """
     Verify raft intersecting an active fluid corridor acquires current velocity.
@@ -80,7 +92,6 @@ def test_raft_passively_drifts_in_fluid(mock_board, mock_raft, mock_fluid):
 
 
 @pytest.mark.workflow_fluids
-@pytest.mark.physics_motion
 def test_raft_halts_when_outside_fluid(mock_board, mock_raft):
     """
     Verify raft halts to zero velocity when not intersecting any fluid.
@@ -95,7 +106,6 @@ def test_raft_halts_when_outside_fluid(mock_board, mock_raft):
 
 
 @pytest.mark.workflow_fluids
-@pytest.mark.physics_motion
 def test_surface_interception_passenger_on_raft(mock_board, mock_raft, mock_fluid):
     """
     Verify passenger on a raft inherits raft drift and suppresses submersion.
@@ -123,7 +133,6 @@ def test_surface_interception_passenger_on_raft(mock_board, mock_raft, mock_flui
 
 
 @pytest.mark.workflow_fluids
-@pytest.mark.physics_motion
 def test_direct_immersion_in_fluid_adds_velocity_and_spawns_splash(mock_board):
     """
     Verify un-rafted entity entering fluid acquires current velocity,
@@ -157,7 +166,6 @@ def test_direct_immersion_in_fluid_adds_velocity_and_spawns_splash(mock_board):
 
 
 @pytest.mark.workflow_fluids
-@pytest.mark.physics_motion
 def test_entity_leaving_fluid_clears_submersion(mock_board):
     """
     Verify entity leaving fluid corridor clears submerged trigger.
@@ -175,7 +183,6 @@ def test_entity_leaving_fluid_clears_submersion(mock_board):
 
 
 @pytest.mark.workflow_fluids
-@pytest.mark.physics_motion
 def test_lateral_fluid_flow_left(mock_board):
     """
     Verify lateral leftward fluid flow correctly imparts negative X velocity.
@@ -196,7 +203,6 @@ def test_lateral_fluid_flow_left(mock_board):
 
 
 @pytest.mark.workflow_fluids
-@pytest.mark.physics_motion
 def test_projectiles_bypass_field_forces(mock_board, mock_projectile):
     """
     Verify ballistic projectiles ignore environmental fluid fields.
@@ -215,7 +221,6 @@ def test_projectiles_bypass_field_forces(mock_board, mock_projectile):
 
 
 @pytest.mark.workflow_fluids
-@pytest.mark.physics_motion
 def test_fields_shoreline_entry_nudge_and_submerge(mock_board, mock_shoreline):
     """
     Verify crossing shoreline into water applies orthogonal step-down displacement
@@ -245,7 +250,6 @@ def test_fields_shoreline_entry_nudge_and_submerge(mock_board, mock_shoreline):
 
 
 @pytest.mark.workflow_fluids
-@pytest.mark.physics_motion
 def test_fields_shoreline_sheer_ledge_blocks_exit(mock_board, mock_shoreline):
     """
     Verify non-bidirectional sheer ledges nullify velocities directed against the bank.
@@ -268,7 +272,6 @@ def test_fields_shoreline_sheer_ledge_blocks_exit(mock_board, mock_shoreline):
 
 
 @pytest.mark.workflow_fluids
-@pytest.mark.physics_motion
 def test_surface_interception_bridge_deck_crossings(mock_board, mock_bridge, mock_fluid):
     """
     Verify entities traversing a bridge deck suppress submersion, bypass fluid current
@@ -298,7 +301,6 @@ def test_surface_interception_bridge_deck_crossings(mock_board, mock_bridge, moc
 
 
 @pytest.mark.workflow_fluids
-@pytest.mark.physics_motion
 def test_surface_interception_bridge_preempts_shoreline(mock_board, mock_bridge, mock_shoreline):
     """
     Verify bridge deck surface interception evaluates before shoreline edge crossing,
@@ -321,7 +323,6 @@ def test_surface_interception_bridge_preempts_shoreline(mock_board, mock_bridge,
 
 
 @pytest.mark.workflow_fluids
-@pytest.mark.physics_motion
 @pytest.mark.parametrize(
     "orientation,init_x,init_y,vx,vy,expected_x,expected_y",
     [
@@ -371,7 +372,6 @@ def test_fields_shoreline_entry_nudge_cardinal_axes(
 
 
 @pytest.mark.workflow_fluids
-@pytest.mark.physics_motion
 def test_fields_bipartite_heterogeneous_resolution(
     mock_board, 
     mock_bridge, 

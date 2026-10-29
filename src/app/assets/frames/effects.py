@@ -3,7 +3,6 @@
 @app.asset
 @asset.frame
 @category.effects
-@workflow.fluids
 
 # Ontology: Source - app.assets.frames.effects
 
