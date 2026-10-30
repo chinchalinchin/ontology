@@ -30,6 +30,9 @@ from app.services.translators.lamb import (
     LambdaExecutor
 )
 
+# Cython Libraries
+from libs.core.models import Position
+
 # -----------------------------------------------------
 
 pytestmark = [
@@ -200,6 +203,7 @@ def test_executor_evaluation_with_plot_metadata(
     assert result == "castle-dawn-unlocked"
 
 
+@pytest.mark.workflow_intentions
 @pytest.mark.parametrize("implementation", [
     (Translators.COMPILER.value, CompilerExecutor),
     (Translators.LAMBDA.value, LambdaExecutor)
@@ -226,33 +230,36 @@ def test_compiler_evaluation_attribute_error_handling(
 
 
 @pytest.mark.workflow_intentions
+@pytest.mark.parametrize("implementation", [
+    (Translators.COMPILER.value, CompilerExecutor),
+    (Translators.LAMBDA.value, LambdaExecutor)
+])
 def test_compiler_evaluation_with_environ_functions(
-    mock_intention_configuration, 
-    mock_sprite_state, 
-    mock_sprite_state_alt
+    implementation,
+    mock_translator,
+    mock_configurations_schema, 
+    mock_state
 ):
-    translator = CompilerTranslator()
-    executor = translator.compile(mock_intention_configuration)
-    
-    mock_sprite_state.goal.name = "npc"
+    translator = mock_translator(implementation[0])  
+    executor = translator.compile(mock_configurations_schema.intentions)
+
+    mock_sprite_state = mock_state(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value
+    )
+    mock_sprite_state.goal = Goal(
+        name = "test-goal",
+        layer = mock_sprite_state.layer,
+        category = Goals.OBJECT.value,
+        position = Position(x=1, y=1)
+    )
     mock_sprite_state.position.x = 0
     mock_sprite_state.position.y = 0
     
-    mock_sprite_state_alt.position.x = 5
-    mock_sprite_state_alt.position.y = 5
-    
-    # Provide a simple explicit runtime stub for environmental function injections 
-    class _MockFunctions:
-        def is_near(self, p1, p2, dist):
-            return True
 
     result = executor.evaluate(
         Intentions.FIND.value, 
-        {
-            "sprite": mock_sprite_state, 
-            "sprites": {"npc": mock_sprite_state_alt},
-            "functions": _MockFunctions()
-        }
+        { "sprite": mock_sprite_state }
     )
     assert result == Intentions.INTERACT.value
 
