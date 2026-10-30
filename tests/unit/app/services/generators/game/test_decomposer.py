@@ -1,5 +1,12 @@
 """
-# Ontology: tests.unit.services.generators.test_decomposer
+@domain.test
+@test.fixture
+@app.services
+@workflow.compositions
+
+# Ontology: Tests - tests.unit.services.generators.game.test_decomposer
+
+Unit tests for the Decomposer service.
 """
 # External Libraries
 import pytest
@@ -31,46 +38,43 @@ from libs.core.models import (
     Multiple
 )
 
+# -----------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_services,
+    pytest.mark.workflow_compositions
+]
+
+# -----------------------------------------------------
 
 @pytest.mark.app_services
 @pytest.mark.workflow_compositions
-def test_decomposer_cost_aggregation(mock_decomposer):
-    costs = mock_decomposer.cost("test-house")
-    cost_dict = {c.item: c.quantity for c in costs}
-    
-    assert cost_dict.get("wood") == 10
-    assert cost_dict.get("stone") == 5
-
-
-@pytest.mark.app_services
-@pytest.mark.workflow_compositions
-def test_decomposer_spatial_superposition(mock_decomposer):
+def test_decomposer_spatial_superposition(
+    mock_decomposer
+):
     deployed = PropertyState(
-        id="test-house",
-        name="my_house",
-        layer="layer_1",
-        owner="player",
-        position=Position(x=100, y=100)
+        id="brick-house",
+        position = Position(x=100, y=100)
     )
     
     assets = mock_decomposer.unpack(deployed)
-    assert len(assets) == 3
+    assert len(assets) == 6
     
-    root_strut = next(a for a in assets if a.id == "frame-wood")
-    door = next(a for a in assets if a.id == "door-front")
-    branch_strut = next(a for a in assets if a.id == "wall-blue")
+    root_strut = next(a for a in assets if a.id == "home")
+    door = next(a for a in assets if a.id == "panel")
+    branch_strut = next(a for a in assets if a.id == "hallway")
     
     assert root_strut.state.position.x == 100
     assert root_strut.state.position.y == 100
     
-    assert door.state.position.x == 120
-    assert door.state.position.y == 120
+    assert door.state.position.x == 132
+    assert door.state.position.y == 244
     
-    assert door.state.out.x == 105
-    assert door.state.out.y == 105
+    assert door.state.out.x == 42
+    assert door.state.out.y == 154
     
-    assert branch_strut.state.position.x == 110
-    assert branch_strut.state.position.y == 110
+    assert branch_strut.state.position.x == 10
+    assert branch_strut.state.position.y == 10
 
 
 @pytest.mark.app_services

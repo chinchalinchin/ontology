@@ -468,6 +468,7 @@ class Decomposer:
         """
         assets: List[Asset] = []
         comp_config = self.compositions.get(deployed_state.id)
+        print(comp_config)
         if not comp_config:
             return assets
 
