@@ -47,11 +47,7 @@ pytestmark = [
 
 # -----------------------------------------------------
 
-@pytest.mark.app_services
-@pytest.mark.workflow_compositions
-def test_decomposer_spatial_superposition(
-    mock_decomposer
-):
+def test_decomposer_spatial_superposition(mock_decomposer):
     deployed = PropertyState(
         id="brick-house",
         position = Position(x=100, y=100)
@@ -77,55 +73,53 @@ def test_decomposer_spatial_superposition(
     assert branch_strut.state.position.y == 10
 
 
-@pytest.mark.app_services
-@pytest.mark.workflow_compositions
 def test_decomposer_late_binding(mock_decomposer):
     deployed = PropertyState(
-        id="test-house",
-        name="my_house",
-        layer="layer_1",
-        owner="player",
-        position=Position(x=100, y=100)
+        id="brick-house",
+        layer="binded-layer",
+        owner="binded-owner",
+        position = Position(x=100, y=100)
     )
     
     assets = mock_decomposer.unpack(deployed)
-    door = next(a for a in assets if a.id == "door-front")
-    branch_strut = next(a for a in assets if a.id == "wall-blue")
-    
-    assert door.state.outlayer == "layer_1"
-    assert branch_strut.state.owner == "player"
+
+    root_strut = next(a for a in assets if a.id == "home")
+    door = next(a for a in assets if a.id == "panel")
+    branch_strut = next(a for a in assets if a.id == "hallway")
+
+    assert root_strut.state.layer == "binded-layer"
+    assert door.state.outlayer == "house-layer-1"
+    assert branch_strut.state.owner == "binded-owner"
 
 
-@pytest.mark.app_services
-@pytest.mark.workflow_compositions
 def test_decomposer_nomenclature_generation(mock_decomposer):
-    deployed1 = PropertyState(
-        id="test-house",
-        name="home", 
-        layer="0", 
-        position=Position(0, 0)
+    deployed_1 = PropertyState(
+        id="brick-house",
+        layer="binded-layer",
+        owner="binded-owner",
+        position = Position(x=0, y=0)
     )
-    deployed2 = PropertyState(
-        id="test-house",
-        name="home", 
-        layer="0", 
-        position=Position(0, 0)
+    deployed_2 = PropertyState(
+        id="brick-house",
+        layer="binded-layer",
+        owner="binded-owner",
+        position = Position(x=300, y=300)
     )
     
-    assets1 = mock_decomposer.unpack(deployed1)
-    assets2 = mock_decomposer.unpack(deployed2)
     
-    root1 = next(a for a in assets1 if a.id == "frame-wood")
-    root2 = next(a for a in assets2 if a.id == "frame-wood")
-    door1 = next(a for a in assets1 if a.id == "door-front")
-    door2 = next(a for a in assets2 if a.id == "door-front")
+    assets1 = mock_decomposer.unpack(deployed_1)
+    assets2 = mock_decomposer.unpack(deployed_2)
     
-    assert root1.name == "strut-base_house-1"
-    assert root2.name == "strut-base_house-2"
+    root1 = next(a for a in assets1 if a.id == "home")
+    root2 = next(a for a in assets2 if a.id == "home")
+    door1 = next(a for a in assets1 if a.id == "panel")
+    door2 = next(a for a in assets2 if a.id == "panel")
     
-    # Preserves component configuration name: <instance>-<parent_name>-<comp_name>-<increment>
-    assert door1.name == "door-strut-base_house-1-entrance-1"
-    assert door2.name == "door-strut-base_house-2-entrance-2"
+    assert root1.name == "strut-roof-1-0"
+    assert root2.name == "strut-roof-2-0"
+    
+    assert door1.name == "door-strut-roof-1-door-1"
+    assert door2.name == "door-strut-roof-2-door-2"
 
 
 @pytest.mark.app_services
