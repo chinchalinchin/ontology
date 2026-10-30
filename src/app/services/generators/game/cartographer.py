@@ -29,6 +29,12 @@ from app.static.semantics import (
     AssetInstances,
     Directions,
 )
+
+if TYPE_CHECKING:
+    from app.game.board import Board
+    from app.game.logic.relations.shorelines import ShorelineIndex
+
+# Cython Libraries
 from libs.core.math import geometry
 from libs.core.models import (
     Dimensions,
@@ -36,14 +42,15 @@ from libs.core.models import (
     Position,
 )
 
-if TYPE_CHECKING:
-    from app.game.board import Board
-    from app.game.logic.relations.shorelines import ShorelineIndex
+# -----------------------------------------------------
 
 logger = logging.getLogger(__name__)
 
+# -----------------------------------------------------
+
 STEP_SIZE = 32
 
+# -----------------------------------------------------
 
 class Cartographer:
     """

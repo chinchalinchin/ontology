@@ -1,21 +1,86 @@
-# Task: Ontology - Test Fixture Refactor
+# Task: Ontology - Strata Generation
 
-**Priorities**
-      
-* **DEBUGGING**: Debug the current run of the test pipeline located in the [Test Pipeline](#view-test-pipeline) section.
-* **REFACTORING** Update the provided unit tests and induct them into the new fixture framework. Update the old coverage and fix it where necessary. Do not enforce backwards compatibility or try to juryrig the old tests. Do not pollute the new fixture framework to fix failures. If the tests are failing due to fundamental incompatibilities, break them cleanly and refactor them. Determine what the intent of the test was and port it into the new framework.
-* **BUGHUNTING** (*Optional*) Be on the lookout for bugs. Use the [Bug Report Template](#template-bug-report) to raise any issues you find.
+**Priority** Use the [Backlog Template](#template-backlog) to draft a proposal for a new Instance of Geography, Strata.
+    * Since this is the proposal phase (`grooming = True`), be sure to highlight what systems will be affected that are not currently in the context.
 
-{% include 'blocks/context/context-fixtures.md' %}
+**Goal** A new Instance of Geography, Strata, and its corresponding procedural generation in the Cartographer.
 
-{% include 'blocks/controls/guideline-fixtures.md' %}
+**Spec: Strata**
 
-{% include 'blocks/controls/guideline-coverage.md' %}
+* Shorelines bind to Tile and Fluid. Strata bind to Tile only. 
+* Strata have a Seasonal column atlas: `spring`, `summer`, `autumn` and `winter`.
+* Strata have a Formational row atlas: 
+    * `mesas`: Elevated surface that is deployed one level above specified state elevation, i.e. a surface that can be walked on if the Sprite "falls" on it from above.
+    * `spires`: Obstruction at same elevation as deployment.
+    * `buttes`: Elevated surface with outlet on deployed elevation, i.e. obstructs from three sides, but the down direction is walkable and transitions dynamic asset elevation when traverse, similar to Stairs.
+* Strata are unidirectional, i.e. a Strata does not have directions. It is an obstruction without orientation.
+* Will require 
 
-{% include 'blocks/controls/guideline-testbed.md' %}
+**Behavior: Procedure**
 
-{% include 'blocks/controls/constraint-coverage.md' %}
+* When two Environ Tiles meet, they form a "faultine" along their common edge. 
+* During procedural phase of Board hydration, Strata are generated probabilistically using the faultlines to localize probability around their locations, i.e. faultlines act as "sources" of Strata and they are more likely to spawn near those locations during procedural generation.
+    * Each Formation has relative probabilities assigned to it, i.e. `buttes` are less likely, `mesa` are baseline and `spires` are most likely.
 
-## Templates
+**Considerations**
 
-{% include 'blocks/templates/template-bug.md' %}
+* Similar to how Crafts generalized Material into Genera so that all Craft Properties could declare a universal `material` Property, a similar situation exists with ShorelineStates and the as-yet-unimplemented StrataState, in that their atlases are categorically similar, but semantically distinct, i.e. Shorelines have an `orienttation`, while Strata have a `formation`, both being categorical variables.
+* StrataIndex will need to compile Property `tile` associations and assign the relative probabilties to Formations. The Cartographer should only be in charge of generating fautlines and probabilty distributions, and then sampling those probabiliy distributions.
+
+## Source Files
+
+**src/app/game/logic/relations/shorelines.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/game/logic/relations/shorelines.py')}}
+```
+
+**src/app/models/state/assets/geography.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/state/assets/geography.py')}}
+```
+
+**src/app/models/properties/assets.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/models/properties/assets.py')}}
+```
+
+**src/app/assets/base.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/base.py')}}
+```
+
+**src/app/assets/frames/geography.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/assets/frames/geography.py')}}
+```
+
+**src/app/services/generators/game/perimeter.py**
+
+```python
+{{ file(properties.paths.root + 'src/app/services/generators/game/perimeter.py')}}
+```
+
+## Library Files 
+
+**src/libs/math/core/geometry.pyx**
+
+```cython
+{{ file(properties.paths.root + 'src/libs/core/math/geometry.pyx')}}
+```
+
+## Data Files
+
+**src/data/config/recipes/main.yaml**
+
+```yaml
+{{ file(properties.paths.root + 'src/data/config/recipes/main.yaml')}}
+```
+
+## Template
+
+{% include 'blocks/templates/template-backlog.md' %}
