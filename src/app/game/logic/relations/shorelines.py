@@ -3,6 +3,7 @@
 @app.module
 @category.geography
 @workflows.generation
+@workflow.fluids
 
 # Ontology: Source - app.game.logic.relations.shorelines
 

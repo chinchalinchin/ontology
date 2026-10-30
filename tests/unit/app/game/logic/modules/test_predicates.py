@@ -16,7 +16,7 @@ from app.static.semantics import (
     AssetInstances,
     Directions,
 )
-from app.game.board import predicates
+from app.game.logic import predicates
 
 # Cython Libraries
 from libs.core.models import Position

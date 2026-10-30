@@ -7,7 +7,7 @@
 
 # Ontology: Tests - tests.unit.services.generators.game.test_actuator
 
-Actuator unit tests.
+Unit tests for the Actuator service.
 """
 # External Libraries
 import pytest
@@ -19,10 +19,15 @@ from app.static.semantics import (
 )
 from libs.core.models import Position
 
+# -----------------------------------------------------
 
-@pytest.mark.workflow_fluids
-@pytest.mark.app_services
-@pytest.mark.workflow_ecology
+pytestmark = [
+    pytest.mark.app_services,
+    pytest.mark.workflow_fluids,
+]
+
+# -----------------------------------------------------
+
 def test_actuator_pump_down_to_boundary(mock_board, mock_actuator):
     """
     Verify downward propagation truncates at boundary wall and does not pool.
@@ -41,9 +46,6 @@ def test_actuator_pump_down_to_boundary(mock_board, mock_actuator):
     assert fluid.state.dirty is False
 
 
-@pytest.mark.workflow_fluids
-@pytest.mark.app_services
-@pytest.mark.workflow_ecology
 def test_actuator_upstream_obstacles_ignored(mock_board, mock_actuator):
     """
     Verify obstacles positioned at or behind emitter origin are not struck.
@@ -67,8 +69,6 @@ def test_actuator_upstream_obstacles_ignored(mock_board, mock_actuator):
     assert length == 100
 
 
-@pytest.mark.workflow_fluids
-@pytest.mark.app_services
 def test_actuator_open_gate_not_occluding(mock_board, mock_actuator):
     """
     Verify open gates (switch=True) are bypassed during raycast truncation.
@@ -90,8 +90,6 @@ def test_actuator_open_gate_not_occluding(mock_board, mock_actuator):
     assert length == 120
 
 
-@pytest.mark.workflow_fluids
-@pytest.mark.app_services
 def test_actuator_character_sheets_ignored(mock_board, mock_actuator):
     """
     Verify characters (SHEETS) do not obstruct fluid raycasts.
@@ -112,8 +110,6 @@ def test_actuator_character_sheets_ignored(mock_board, mock_actuator):
     assert length == 120
 
 
-@pytest.mark.workflow_fluids
-@pytest.mark.app_services
 def test_actuator_dynamic_bodies_ignored_as_obstacles(mock_board, mock_crate, mock_actuator):
     """
     Verify dynamic bodies (mass > 0, such as Crates) do not occlude fluids.
@@ -131,9 +127,6 @@ def test_actuator_dynamic_bodies_ignored_as_obstacles(mock_board, mock_crate, mo
     assert pool is None
 
 
-@pytest.mark.workflow_fluids
-@pytest.mark.app_services
-@pytest.mark.workflow_ecology
 def test_actuator_pump_down_to_obstacle_with_pool(mock_board, mock_actuator):
     """
     Verify single-intensity fluid (flow=1) striking a static obstacle truncates at
@@ -169,9 +162,6 @@ def test_actuator_pump_down_to_obstacle_with_pool(mock_board, mock_actuator):
     assert len(fluid.state.branches) == 0
 
 
-@pytest.mark.workflow_fluids
-@pytest.mark.app_services
-@pytest.mark.workflow_ecology
 def test_actuator_bifurcation_downstream_flanks(mock_board, mock_actuator):
     """
     Verify multi-intensity fluid (flow=2) striking a static obstacle forms an annular pool,
@@ -232,8 +222,6 @@ def test_actuator_bifurcation_downstream_flanks(mock_board, mock_actuator):
     assert hitboxes[3].dimensions.l == 127
 
 
-@pytest.mark.workflow_fluids
-@pytest.mark.app_services
 def test_actuator_rafts_ignored_as_obstacles(mock_board, mock_raft, mock_actuator):
     """
     Verify rafts (RAFTS) bypass raycast truncation and do not occlude fluids.
@@ -254,8 +242,6 @@ def test_actuator_rafts_ignored_as_obstacles(mock_board, mock_raft, mock_actuato
     assert length == 120
 
 
-@pytest.mark.workflow_fluids
-@pytest.mark.app_services
 def test_actuator_closed_gate_occludes_stream(mock_board, mock_actuator):
     """
     Verify closed gates (switch=False, mass=0) occlude raycasts and truncate fluid flow.
@@ -275,8 +261,6 @@ def test_actuator_closed_gate_occludes_stream(mock_board, mock_actuator):
     assert fluid.state.length == 60
 
 
-@pytest.mark.workflow_fluids
-@pytest.mark.app_services
 def test_actuator_pump_does_not_mutate_shared_properties(mock_board, mock_actuator):
     """
     Verify Actuator.pump does not mutate shared EffectProperties.hitboxes.
@@ -289,8 +273,6 @@ def test_actuator_pump_does_not_mutate_shared_properties(mock_board, mock_actuat
     assert fluid.properties.hitboxes == []
 
 
-@pytest.mark.workflow_fluids
-@pytest.mark.app_services
 def test_actuator_pump_left_to_obstacle_with_pool(mock_board, mock_actuator):
     """
     Verify westward propagation truncates stream length at East pool margin.
@@ -313,9 +295,6 @@ def test_actuator_pump_left_to_obstacle_with_pool(mock_board, mock_actuator):
     assert hitboxes[0].position.x == -8
 
 
-@pytest.mark.workflow_fluids
-@pytest.mark.app_services
-@pytest.mark.workflow_ecology
 def test_actuator_pump_up_to_obstacle_with_pool(mock_board, mock_actuator):
     """
     Verify northward propagation truncates stream length at South pool margin.
@@ -338,8 +317,6 @@ def test_actuator_pump_up_to_obstacle_with_pool(mock_board, mock_actuator):
     assert hitboxes[0].position.y == -8
 
 
-@pytest.mark.workflow_fluids
-@pytest.mark.app_services
 def test_actuator_propagate_clears_cached_frame_keys(mock_board, mock_actuator):
     """
     Verify Actuator.propagate clears fluid state frame key cache slots (Fix B014).

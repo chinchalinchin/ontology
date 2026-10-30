@@ -1,0 +1,13 @@
+crafts:
+  struts:
+    - id: crenellation
+      name: test-strut
+      layer: '0'
+      material: granite
+      blueprint: horizontal
+      position:
+        x: 400
+        y: 400
+      multiple:
+        nx: 1
+        ny: 1

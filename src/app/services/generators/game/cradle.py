@@ -225,10 +225,8 @@ class Cradle:
         orientation: str,
         length: int,
         hitboxes: List[Hitbox],  # type: ignore
-        bidirectional: bool = True
     ) -> Asset:
         properties = self.spawnables.shorelines.get(id)
-        thickness = properties.thickness if properties else 8
 
         state = ShorelineState(
             id=id,
@@ -237,8 +235,6 @@ class Cradle:
             position=position,
             orientation=orientation,
             length=length,
-            thickness=thickness,
-            bidirectional=bidirectional,
             hitboxes=hitboxes
         )
         return AssetFactory.asset(

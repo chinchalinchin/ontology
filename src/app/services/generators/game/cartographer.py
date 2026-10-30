@@ -3,6 +3,7 @@
 @app.services
 @workflow.generation
 @workflow.ecology
+@workflow.fluids
 
 # Ontology: Source - app.services.generators.game.cartographer
 
@@ -298,8 +299,7 @@ class Cartographer:
                         position=curr_seg['pos'],
                         orientation=curr_seg['orientation'],
                         length=curr_seg['length'],
-                        hitboxes=[hb],
-                        bidirectional=True
+                        hitboxes=[hb]
                     )
                     target_season = curr_seg.get('season') or (board.calendar.season if board.calendar else None)
                     if target_season:

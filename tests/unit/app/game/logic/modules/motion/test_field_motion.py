@@ -250,38 +250,18 @@ def test_fields_shoreline_entry_nudge_and_submerge(mock_board, mock_shoreline):
 
 
 @pytest.mark.workflow_fluids
-def test_fields_shoreline_sheer_ledge_blocks_exit(mock_board, mock_shoreline):
-    """
-    Verify non-bidirectional sheer ledges nullify velocities directed against the bank.
-    """
-    player = mock_board.player()
-    player.state.position = Position(x=70, y=0)
-    player.state.mutators.triggers.submerged = True
-
-    # Configure shoreline as one-way ledge
-    mock_shoreline.state.bidirectional = False
-    # Player trying to move West (-X) out of water (v_dot = -4 * 1 < 0)
-    player.state.velocity = Velocity(vx=-4.0, vy=0.0)
-
-    mock_board.add([mock_shoreline])
-
-    fields.update([player], mock_board, 0.016)
-
-    # Velocity directed against the bank is nullified
-    assert player.state.velocity.vx == 0.0
-
-
-@pytest.mark.workflow_fluids
-def test_surface_interception_bridge_deck_crossings(mock_board, mock_bridge, mock_fluid):
+def test_surface_interception_bridge_deck_crossings(
+    mock_board):
     """
     Verify entities traversing a bridge deck suppress submersion, bypass fluid current
     drift, and do not emit splash particles.
     """
+    mock_fluid = next(iter(mock_board.instances(AssetInstances.FLUIDS.value)))
     mock_fluid.state.length = 100
     mock_fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(32, 100))]
 
+    mock_bridge = next(iter(mock_board.instances(AssetInstances.BRIDGES.value)))
     mock_bridge.state.position = Position(x=70, y=50)
-    mock_board.add([mock_bridge])
 
     player = mock_board.player()
     player.state.position.x = 70

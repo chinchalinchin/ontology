@@ -2,7 +2,7 @@
 {# ------------------------------------------------------------- #}
 {% if tools.parameters.source.data.state | length > 0 %}
 {% for board in tools.parameters.source.data.state %}
-#### State: {{ board | capitalize }}
+#### State: {{ board }}
 
 * Location: `src/data/state/{{ board }}`
 

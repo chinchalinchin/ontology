@@ -248,33 +248,24 @@ def update(
                     vy = asset.state.velocity.vy
                     v_dot = vx * nx + vy * ny
 
-                    if v_dot > 0:
-                        if not asset.state.mutators.triggers.submerged:
-                            t = shore.state.thickness
-                            step_x = int(nx * (t + (asset.dimensions.w // 2))) if nx != 0.0 else 0
-                            step_y = int(ny * (t + (asset.dimensions.l // 2))) if ny != 0.0 else 0
-                            asset.state.position.x += step_x
-                            asset.state.position.y += step_y
-                            asset.state.mutators.triggers.submerged = True
+                    if v_dot > 0 and not asset.state.mutators.triggers.submerged:
+                        t = shore.state.thickness
+                        step_x = int(nx * (t + (asset.dimensions.w // 2))) if nx != 0.0 else 0
+                        step_y = int(ny * (t + (asset.dimensions.l // 2))) if ny != 0.0 else 0
+                        asset.state.position.x += step_x
+                        asset.state.position.y += step_y
+                        asset.state.mutators.triggers.submerged = True
 
-                            if board.cradle:
-                                splash_pos = Position(
-                                    int(asset.state.position.x),
-                                    int(asset.state.position.y + (asset.dimensions.l // 2))
-                                )
-                                splash = board.cradle.spawn_passive(
-                                    EffectsPalette.SPLASH.value, 
-                                    layer, 
-                                    splash_pos
-                                )
-                                board.add([splash])
-
-                    elif v_dot < 0:
-                        if not shore.state.bidirectional:
-                            if nx != 0.0:
-                                asset.state.velocity.vx = 0.0
-                            if ny != 0.0:
-                                asset.state.velocity.vy = 0.0
+                        splash_pos = Position(
+                            int(asset.state.position.x),
+                            int(asset.state.position.y + (asset.dimensions.l // 2))
+                        )
+                        splash = board.cradle.spawn_passive(
+                            EffectsPalette.SPLASH.value, 
+                            layer, 
+                            splash_pos
+                        )
+                        board.add([splash])
 
         # -------------------------------------------------------------
         # 3. DIRECT ENVIRONMENTAL FLUID IMMERSION
@@ -309,7 +300,7 @@ def update(
                 was_submerged = asset.state.mutators.triggers.submerged
                 asset.state.mutators.triggers.submerged = True
 
-                if not was_submerged and board.cradle:
+                if not was_submerged:
                     splash_pos = Position(
                         int(asset.state.position.x),
                         int(asset.state.position.y + (asset.dimensions.l // 2))

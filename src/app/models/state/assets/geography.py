@@ -39,7 +39,5 @@ class ShorelineState(AssetState):
     orientation: Directions = Directions.DOWN.value
     season: Seasons = Seasons.SPRING.value
     length: int = 0
-    thickness: int = 8
-    bidirectional: bool = True
     hitboxes: List[Hitbox] = field(default_factory=list)  # type: ignore
     _keys: Optional[List[Tuple[str, int, int]]] = None

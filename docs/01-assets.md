@@ -844,7 +844,7 @@ A Resource contains a `loot` key. When Resources are mined through the `mine` [I
 
 **Animation: None**
 
-Resources do not cycle through animations. Their appearance updates when [SeasonMechanics](./05-mechanics.md#seasonmechanics) transitions `state.stage`.
+Resources do not cycle through animations. Their appearance updates when [SeasonMechanics](./05-mechanics.md#seasonmechanics) transitions their Stage.
 
 ## Category: Sheets
 

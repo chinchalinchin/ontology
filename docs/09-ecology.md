@@ -7,9 +7,11 @@ The Ecology of the [Board](./00-overview.md#component-board) is a collection of 
 * See [FluidMechanics](./05-mechanics.md#world-mechanic-fluidmechanics) for more information on Fluid logic.
 * See [SeasonMechanics](./05-mechanics.md#world-mechanic-seasonmechanics) for more information on Season mechanics.
 
-## Category: Effects
+## Ecology: Assets
 
-### Effect: Fluids
+### Category: Effects
+
+#### Effect: Fluids
 
 Fluids are directional Effects that project along a `source` Direction until obstructed by an obstacle. Once obstructed, Fluids form Pools around the obstacle and bifuricate into secondary streams.
 
@@ -48,13 +50,13 @@ Fluids belong to a dedicated [Substrate](./01-assets.md#concept-appearance), `su
 
 * `get(properties, state, frame): returns state.hitboxes`
 
-## Category: Geography
+### Category: Geography
 
 **Behavior: Procedural**
 
 Geographies are procedural Assets generated via Service classes (e.g. the *Cartographer* spawns [Shorelines](#geography-shorelines)). 
 
-### Geography: Shorelines
+#### Geography: Shorelines
 
 Shorelines are Geographic sensors instantiated along Fluid margins. Shorelines are derived after the Board had been initiated with a Fluid Flow. [FluidMechanics](./05-mechanics.md#world-mechanic-fluidmechanics) aggregates all active Fluid streams and uses the resulting perimeter to generate Shorelines.
 
@@ -93,7 +95,6 @@ $
 * `position: Position`
 * `orientation: str`
 * `length: int`
-* `thickness: int`
 * `hitboxes: List[Hitbox]`
 * `_keys: Optional[List[Tuple[str, int, int]]] = None` (*Cache for pre-computing frame keys*)
 
@@ -101,19 +102,25 @@ $
 
 * `get(properties, state, frame): returns state.hitboxes`
 
-## Category: Resources
+### Category: Resources
 
 Resources are biological Assets deployed onto the Board that progress through discrete structural stages governed by macroscopic factors.
 
-**Executor: StageExecutors**
+**Field: Stage**
 
-* `annual`:
-* `perennial`:
-* `centennial`: 
+Every Resource has a Stage. As the Resource progresses through its Lifespan, it will undergo Stage Transitions.
+
+**Enum: Lifespans**
+
+Each Resource declares a Lifespan in its Properties. This Lifespan associates a Transition Executor with the Resource. The Transition Executor manages the progression of Resource Stages as the Board accumulates time. When conditions are met, an Executor will transition the Resource Stage to the next node in its finite automata.
+
+* `annual`: A linear, yearly Lifespan that does not repeat.
+* `perennial`: A cyclic Lifespan with different Epicycles.
+* `centennial`: A slow moving yearly Lifespan.
 
 **State: ResourceState**
 
-All resource instances share a a unified Resource State.
+All Resource instances share a a unified Resource State.
 
 * `layer: str`: Current board layer.
 * `position: Position`: Physical coordinate.
@@ -128,13 +135,13 @@ All resource instances share a a unified Resource State.
 
 * `get(properties, state, frame): returns properties[state.stage].hitboxes`
 
-### Resource: Crops
+#### Resource: Crops
 
 **Enum: AnnualStages**
 
 * `sprout`, `growth`, `stalk`, `bloom`, `stump`
 
-### Resources: Trees
+#### Resources: Trees
 
 **Enum: PerennialStages**
 
@@ -144,47 +151,31 @@ All resource instances share a a unified Resource State.
 
 A benefifical consequence of Tree Stage Transitions being modeled as a finite automata is the cyclic loops in the automata corresponding to its perennial Lifespan. In other words, Trees change colors as Season progress and iterate over this cycle, unless entering into a `death` branch of their automata due to environmental circumstances. Based on the conditions defined in the [Stage Configuration](./appendices/01-schemas.md#configuration-stage), the Tree life cycle is composed of three distinct *epicycles*,
 
-- Genesis
-- Homeostasis
-- Apoptosis
+* Genesis: `sapling`, `bush`, `branch`, `adult`
+* Homeostasis: `vibrant`, `healthy`, `abscise`, `snowcapt`,
+* Apoptosis: `dying`, `dead`, `stump`
 
 TODO: mermaid diagram and markdown table
 
-#### Instance: Ores
+#### Resource: Ores
 
 Ores are mineral resources that transition through structural stages when acted upon by geological forces.
 
-- Ore Stages: `trace`, `deposit`, `nugget`, `vein`, `crystal`, `alloy`
+**Enum: CentennialStages**
 
-### Category: Tiles
+* `trace`, `deposit`, `nugget`, `vein`, `crystal`, `alloy`
 
-#### Instance: Environ
-
-* **Environ Tiles**: Rendered beneath all dynamic entities. Represent soil, turf, rock, and water substrates.
-* **Temporal Invalidation**: Tile atlases contain 36 cells ($4_\text{seasons} \times 9_\text{periods}$). When `SeasonMechanics` advances a calendar period, a `SeasonEvent` triggers `Screen.reconstruct(board)`. The screen recompiles the static textures (`bg_canvas` and `fg_canvas`) using the updated seasonal frame keys.
-
-**State: MultiplerState**
-
-* `layer: str`
-* `depth: int`
-* `height: int`
-* `position: Position`
-* `multiple: Multiple`
-
-**Hitbox: StaticHitbox**
-
-* `get(properties, state, frame): returns properties.hitboxes`
-
-## Principles
+## Ecology: Principles
 
 This section contains the Ecological Principles of the game engine.
 
-### Seasonality
+### Principle: Seasonality
 
+* Governed by [SeasonMechanics](./05-mechanics.md#world-mechanic-seasonmechanics)
 Environ Tiles undergo Seasons. 
 
 1. The Board accumulates the passage of time. 
-2. A Season is approximately one hour in realtime. This can be adjusted in `app.config.settings`.
+2. A Season is approximately one hour in realtime. This can be adjusted in `app.static.settings`.
 3. Seasons iterate continuously through `spring`, `summer`, `autumn` and `winter`. 
 4. Each Season has a Cycle: `onset`, `peak`, `decline`.
 5. Each Cycle has an Period. A Period is three frames.
@@ -192,35 +183,24 @@ Environ Tiles undergo Seasons.
 
 The Season imposed on a Envion Tile has ripple effects on surrounding Assets. 
 
-### Fluid Flow
+### Principle: Fluid Dyanmics
 
-- Governed by [FluidMechanics](./05-mechanics.md#fluidmechanics)
+* Governed by [FluidMechanics](./05-mechanics.md#world-mechanic-seasonmechanics)
 
 1. (**Source**) A Fluid has a `source`. A `source` is a Direction. Fluid flows in the Direction of its `source`. 
 2. (**Obstruction**) Fluids are obstructed by obstacles. Fluids form Annular Pools around obstacles, determined by their `flow` rate.
 3. (**Bifurication**) When a Fluid meets an obstacle, it bifuricates across its orthogonal axes (e.g., a `down` flowing Fluid bifuricates in the `left` and `right` directions) and then continues flowing in its original `source` Direction (e.g. `down`). The number of times a Fluid may bifuricate is equal to its `flow`, e.g. a `flow = 3` means the Fluid may bifuricate three times. In other words, everytime a Fluid bifuricates, its `flow` decreases by 1.
 4. (**Fields**) When dynamic Assets (Sprites, Crates, etc.) intersect a Fluid, they acquire a Velocity in the Direction of `source`, getting "swept" away. The speed imparted to an Asset by a Fluid is proportional to its `flow`, i.e. the higher the `flow`, the faster the resulting speed of the "swept" Asset.
 
-#### Moisture Fields
+#### Corollary: Moisture Fields
 
-In continuous 2D soil hydrology with uniform transmissivity $D$ and surface evaporation/sink rate $\gamma$, the steady-state moisture concentration $\Phi(\mathbf{x})$ outside active bodies satisfies the screened Poisson equation:
+In continuous 2D soil hydrology with uniform transmissivity $D$ and surface evaporation rate $\gamma$, the steady-state moisture concentration $\Phi(\mathbf{x})$ outside active bodies satisfies the screened Poisson equation:
 
 $$
 \nabla^2 \Phi(\mathbf{x}) - \kappa^2 \Phi(\mathbf{x}) = -S(\mathbf{x})
 $$
 
 where $\kappa = \sqrt{\gamma / D}$ is the inverse diffusion length and $S(\mathbf{x})$ represents fluid injection sources.
-
-```
-       Linear Stream Source (S_i)           Annular Pool Source (P_j)
-      [============================]                 /-----\
-                     \                             |   Q_j   |
-                      \ d(x, segment)               \-----/
-                       \                               /
-                        \                             / d(x, pool)
-                         v                           v
-                     Resource Coordinate x: Phi(x) = Sum Phi_i(x)
-```
 
 **Linear Stream Corridors (Finite Line Segments)**
 
@@ -266,9 +246,11 @@ $$
 \Phi(\mathbf{x}) = \sum_{i \in \text{Streams}} \Phi_i(\mathbf{x}) + \sum_{j \in \text{Pools}} \Phi_j(\mathbf{x})
 $$
 
-### Crop Growth
+### Principle: Ontogenesis
 
-- Governed by [SeasonMechanics](./05-mechanics.md#seasonmechanics)
+#### Corollary: Crop Growth
+
+* Governed by [SeasonMechanics](./05-mechanics.md#seasonmechanics)
 
 1. Crops begin the first Stage of their lifecycle in the first Period of `spring-onset`.
 2. Crops end the last Stage of their lifecycle in last Period of `autumn-decline`.
@@ -285,30 +267,30 @@ $$
 
 --8<-- "static/md/executor-annual-transitions.md"
 
-### Tree Epicycles
+#### Corollary: Tree Epicycles
 
-- Governed by [SeasonMechanics](./05-mechanics.md#seasonmechanics)
+* Governed by [SeasonMechanics](./05-mechanics.md#seasonmechanics)
 
 Trees cycle through three epicycles:
 
 1. **Genesis**:
-    - $\text{sapling} \to \text{bush} \iff (\text{season} = \text{Spring}) \land (\text{cycle} = \text{Peak}) \land (\text{retention} \ge 15.0)$
-    - $\text{bush} \to \text{branch} \iff (\text{season} = \text{Spring}) \land (\text{cycle} = \text{Decline}) \land (\text{retention} \ge 20.0)$
-    - $\text{branch} \to \text{adult} \iff (\text{season} = \text{Summer}) \land (\text{cycle} = \text{Onset}) \land (\text{retention} \ge 25.0)$ 
-    - $\text{adult} \to \text{healthy} \iff (\text{season} = \text{Summer}) \land (\text{cycle} = \text{Peak}) \land (\text{retention} \ge 25.0)$
+    * $\text{sapling} \to \text{bush} \iff (\text{season} = \text{Spring}) \land (\text{cycle} = \text{Peak}) \land (\text{retention} \ge 15.0)$
+    * $\text{bush} \to \text{branch} \iff (\text{season} = \text{Spring}) \land (\text{cycle} = \text{Decline}) \land (\text{retention} \ge 20.0)$
+    * $\text{branch} \to \text{adult} \iff (\text{season} = \text{Summer}) \land (\text{cycle} = \text{Onset}) \land (\text{retention} \ge 25.0)$ 
+    * $\text{adult} \to \text{healthy} \iff (\text{season} = \text{Summer}) \land (\text{cycle} = \text{Peak}) \land (\text{retention} \ge 25.0)$
 2. **Homeostasis**:
-    - $\text{healthy} \to \text{abscise} \iff (\text{season} = \text{Autumn}) \land (\text{retention} \ge 15.0)$     
-    - $\text{abscise} \to \text{snowcapt} \iff (\text{season} = \text{Winter}) \land (\text{retention} \ge 10.0)$
-    - $\text{snowcapt} \to \text{vibrant} \iff (\text{season} = \text{Spring}) \land (\text{retention} \ge 15.0)$     
-    - $\text{vibrant} \to \text{healthy} \iff (\text{season} = \text{Summer}) \land (\text{retention} \ge 20.0)$
+    * $\text{healthy} \to \text{abscise} \iff (\text{season} = \text{Autumn}) \land (\text{retention} \ge 15.0)$     
+    * $\text{abscise} \to \text{snowcapt} \iff (\text{season} = \text{Winter}) \land (\text{retention} \ge 10.0)$
+    * $\text{snowcapt} \to \text{vibrant} \iff (\text{season} = \text{Spring}) \land (\text{retention} \ge 15.0)$     
+    * $\text{vibrant} \to \text{healthy} \iff (\text{season} = \text{Summer}) \land (\text{retention} \ge 20.0)$
 3. **Apoptosis**:
-    - $S_{\text{homeo}} = \{\text{vibrant}, \text{healthy}, \text{abscise}, \text{snowcapt}\}$
-    - $\forall s \in S_{\text{homeo}}, \quad s \to \text{dying} \iff \text{retention} < 5.0$
-    - $\text{dying} \to \text{vibrant} \iff (\text{season} = \text{Spring}) \land (\text{retention} \ge 20.0)$
-    - $\text{dying} \to \text{healthy} \iff (\text{season} = \text{Summer}) \land (\text{retention} \ge 20.0)$     
-    - $\text{dying} \to \text{dead} \iff (\text{season} = \text{Autumn}) \land (\text{retention} < 5.0)$     
-    - $\text{dead} \to \text{stump} \iff \text{season} = \text{Winter}$     
-    - $\text{stump} \to \text{sapling} \iff (\text{season} = \text{Spring}) \land (\text{cycle} = \text{Onset}) \land (\text{period} = 0) \land (\text{retention} \ge 15.0)$
+    * $S_{\text{homeo}} = \{\text{vibrant}, \text{healthy}, \text{abscise}, \text{snowcapt}\}$
+    * $\forall s \in S_{\text{homeo}}, \quad s \to \text{dying} \iff \text{retention} < 5.0$
+    * $\text{dying} \to \text{vibrant} \iff (\text{season} = \text{Spring}) \land (\text{retention} \ge 20.0)$
+    * $\text{dying} \to \text{healthy} \iff (\text{season} = \text{Summer}) \land (\text{retention} \ge 20.0)$     
+    * $\text{dying} \to \text{dead} \iff (\text{season} = \text{Autumn}) \land (\text{retention} < 5.0)$     
+    * $\text{dead} \to \text{stump} \iff \text{season} = \text{Winter}$     
+    * $\text{stump} \to \text{sapling} \iff (\text{season} = \text{Spring}) \land (\text{cycle} = \text{Onset}) \land (\text{period} = 0) \land (\text{retention} \ge 15.0)$
 
 ```mermaid
 --8<-- "static/mmd/executor-perennial-transitions.mmd"
@@ -318,7 +300,7 @@ Trees cycle through three epicycles:
 
 ### Ore Veining
 
-TODO
+* Governed by [SeasonMechanics](./05-mechanics.md#seasonmechanics)
 
 ```mermaid
 --8<-- "static/mmd/executor-centennial-transitions.mmd"

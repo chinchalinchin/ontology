@@ -135,7 +135,7 @@ tools:
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
-      configuration: false
+      configuration: true
       pipeline: true
       session: false
 # ----------------------------------------------------
@@ -170,15 +170,22 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Fluids
+          - title: Effect Assets
             scan:
               app: [ asset ]
               category: [ effects ]
+          - title: Geography Assets
+            scan:
+              app: [ asset ]
+              category: [ geography ]
           - title: Fluids Workflow
             scan:
               workflows: [ fluids ]
+          - title: Test Fixtures
+            scan:
+              test: [ fixtures ]
       data:
-        properties: [ effects ]
+        properties: [ effects, geography, gates, crafts, sheets, objects, tiles, resources ]
         state: [ world-testbed ]
         configurations: [ ]
         templates: [  ]

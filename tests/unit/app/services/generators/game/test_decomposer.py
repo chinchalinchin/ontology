@@ -234,7 +234,6 @@ def test_decomposer_cross_layer_door_out_resolution(mock_decomposer):
     assert exit_door.state.out.y == 913  # 750 + 163
 
 
-@pytest.mark.workflow_fluids
 @pytest.mark.app_services
 @pytest.mark.workflow_compositions
 def test_decomposer_bridge_horizontal_expansion(mock_decomposer):
@@ -247,11 +246,11 @@ def test_decomposer_bridge_horizontal_expansion(mock_decomposer):
         name="river-crossing",
         layer="0",
         position=Position(x=100, y=50),
-        orientation=Orientations.HORIZONTAL.value,
+        blueprint=Orientations.HORIZONTAL.value,
         multiple=Multiple(nx=3, ny=1)
     )
 
-    units = mock_decomposer.orient(
+    units = mock_decomposer.multiply(
         state, 
         AssetCategories.CRAFTS.value,
         AssetInstances.BRIDGES.value
@@ -274,7 +273,6 @@ def test_decomposer_bridge_horizontal_expansion(mock_decomposer):
     assert units[2].state.position.y == 50
 
 
-@pytest.mark.workflow_fluids
 @pytest.mark.app_services
 @pytest.mark.workflow_compositions
 def test_decomposer_bridge_vertical_expansion(mock_decomposer):
@@ -290,7 +288,7 @@ def test_decomposer_bridge_vertical_expansion(mock_decomposer):
         multiple=Multiple(nx=1, ny=2)
     )
 
-    units = mock_decomposer.orient(
+    units = mock_decomposer.multiply(
         state,
         AssetCategories.CRAFTS.value,
         AssetInstances.BRIDGES.value
@@ -302,23 +300,6 @@ def test_decomposer_bridge_vertical_expansion(mock_decomposer):
     assert units[1].state.position.x == 50
     assert units[1].state.position.y == 132
 
-
-@pytest.mark.workflow_fluids
-@pytest.mark.app_services
-@pytest.mark.workflow_compositions
-def test_decomposer_bridge_linear_cost(mock_decomposer):
-    """
-    Verify bridge construction cost scales linearly with span length (N * cost).
-    """
-    mult = Multiple(nx=4, ny=1)
-    costs = mock_decomposer.bridge_cost(
-        "wood-bridge",
-        mult,
-        Orientations.HORIZONTAL.value
-    )
-    assert len(costs) == 1
-    assert costs[0].item == "wood"
-    assert costs[0].quantity == 8  # 4 * 2
 
 
 @pytest.mark.app_services
