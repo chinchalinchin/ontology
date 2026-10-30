@@ -118,12 +118,12 @@ tools:
     manager:
       board: false
       specs: false
-      docs: true
+      docs: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: true
+      data: false
       filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
@@ -135,7 +135,7 @@ tools:
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
-      configuration: true
+      configuration: false
       pipeline: true
       session: false
 # ----------------------------------------------------
@@ -153,13 +153,13 @@ tools:
           # - 00-overview.md
           # - 01-assets.md
           - 02-sprites.md
-          - 03-compositions.md
+          # - 03-compositions.md
           - 04-intentions.md
-          # - 05-mechanics.md
+          - 05-mechanics.md
           - 06-widgets.md
           - 07-sounds.md
           - 08-plots.md
-          # - 09-ecology.md
+          - 09-ecology.md
           - 10-emergence.md
           # - 11-architecture.md
       specs: []
@@ -169,22 +169,11 @@ tools:
     source:
       filter:
         default: AND
-        queries:
-          - title: Test Fixtures
-            scan:
-              test: [ fixtures ]
-          - title: Fluid Services
-            scan:
-              app: [ services ]
-              workflows: [ generation, fluids ]
-          - title: Fluid Mechanics
-            scan:
-              app: [ mechanics ]
-              workflows: [ fluids ]
+        queries: []
       data:
-        properties: [ effects, geography, sheets, objects, tiles ]
-        state: [ world-testbed ]
-        configurations: [ ]
+        properties: [  ]
+        state: [  ]
+        configurations: []
         templates: [  ]
     # --------------------------------------------
     # -------------------------- PARAMETERS: SHELL
@@ -200,8 +189,8 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: workflow_fluids
-        scope: '**/test_{actuator,cartographer}.py'
+        marker: workflow_compositions
+        # scope: '**/test_{actuator,cartographer}.py'
       session:
         description: |
           description

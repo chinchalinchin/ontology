@@ -28,6 +28,7 @@ pytestmark = [
 
 # -----------------------------------------------------
 
+
 def test_actuator_pump_down_to_boundary(mock_board, mock_actuator):
     """
     Verify unobstructed downward propagation truncates at boundary wall and does not pool.
@@ -129,7 +130,8 @@ def test_actuator_dynamic_bodies_ignored_as_obstacles(mock_board, mock_actuator)
 def test_actuator_pump_down_to_obstacle_with_pool(mock_board, mock_actuator):
     """
     Verify single-intensity fluid (flow=1) striking a static obstacle truncates at
-    the pool margin and emits non-overlapping stream and annular pool hitboxes without branching.
+    the pool margin, clamps pool coordinates to layer bounds (Fix B017), and emits
+    non-overlapping stream and annular pool hitboxes without branching.
     """
     fluid = mock_board.instances(AssetInstances.FLUIDS.value, "0")[0]
     fluid.state.position = Position(x=70, y=0)
@@ -144,9 +146,9 @@ def test_actuator_pump_down_to_obstacle_with_pool(mock_board, mock_actuator):
 
     assert length == 64
     assert pool is not None
-    assert pool.x == -96
+    assert pool.x == 0
     assert pool.y == 64
-    assert pool.w == 384
+    assert pool.w == 288
     assert pool.l == 128
 
     assert len(hitboxes) == 2
@@ -161,9 +163,9 @@ def test_actuator_pump_down_to_obstacle_with_pool(mock_board, mock_actuator):
 
 def test_actuator_bifurcation_downstream_flanks(mock_board, mock_actuator):
     """
-    Verify multi-intensity fluid (flow=2) striking a static obstacle forms an annular pool,
-    discharges child streams along lateral flanks from the downstream pool margin, and
-    compiles compound relative hitboxes.
+    Verify multi-intensity fluid (flow=2) striking a static obstacle forms a clamped
+    annular pool (Fix B017), discharges child streams along lateral flanks from the
+    downstream pool margin, and compiles compound relative hitboxes.
     """
     fluid = mock_board.instances(AssetInstances.FLUIDS.value, "0")[0]
     fluid.state.position = Position(x=70, y=0)
@@ -179,16 +181,16 @@ def test_actuator_bifurcation_downstream_flanks(mock_board, mock_actuator):
 
     assert length == 32
     assert pool is not None
-    assert pool.x == -192
+    assert pool.x == 0
     assert pool.y == 32
-    assert pool.w == 576
+    assert pool.w == 384
     assert pool.l == 192
 
     assert len(hitboxes) == 4
     assert len(fluid.state.branches) == 2
 
     left_branch, right_branch = fluid.state.branches
-    assert left_branch.position.x == pool.x
+    assert left_branch.position.x == 0
     assert left_branch.position.y == pool.y + pool.l
     assert left_branch.source == Directions.DOWN.value
     assert left_branch.flow == 1
@@ -212,6 +214,33 @@ def test_actuator_bifurcation_downstream_flanks(mock_board, mock_actuator):
     assert hitboxes[3].position.y == right_branch.position.y - fluid.state.position.y
     assert hitboxes[3].dimensions.w == fw
     assert hitboxes[3].dimensions.l == right_branch.length
+
+
+def test_actuator_recursive_bifurcation_multi_stage(mock_board, mock_actuator):
+    """
+    Verify recursive bifurcation (Fix B016): a fluid with flow=3 striking an initial
+    obstacle discharges flow=2 branches, which recursively pool and discharge flow=1
+    sub-branches upon striking a downstream static obstacle.
+    """
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value, "0")[0]
+    fluid.state.position = Position(x=400, y=0)
+    fluid.state.source = Directions.DOWN.value
+    fluid.state.flow = 3
+
+    gate = mock_board.instances(AssetInstances.GATES.value, "0")[0]
+    gate.state.switch = False
+    gate.state.position = Position(x=400, y=128)
+
+    # Place a downstream static obstacle in the path of the left flow=2 branch
+    obstacle = mock_board.instances(AssetInstances.OBSTACLES.value, "0")[0]
+    obstacle.state.position = Position(x=96, y=450)
+
+    mock_actuator.pump(fluid, mock_board)
+
+    flows = [b.flow for b in fluid.state.branches]
+    assert 2 in flows
+    assert 1 in flows
+    assert len(fluid.state.branches) == 6
 
 
 def test_actuator_rafts_ignored_as_obstacles(mock_board, mock_actuator):

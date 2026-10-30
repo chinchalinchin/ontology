@@ -4,41 +4,41 @@ resources:
       name: imperial-cornfield-00
       layer: '0'
       position:
-        x: 48
+        x: 93
         y: 770
       stage: sprout
     - id: maize
       name: imperial-cornfield-01
       layer: '0'
       position:
-        x: 80
+        x: 125
         y: 770
       stage: sprout
     - id: maize
       name: imperial-cornfield-02
       layer: '0'
       position:
-        x: 114
+        x: 159
         y: 770
       stage: sprout
     - id: maize
       name: imperial-cornfield-03
       layer: '0'
       position:
-        x: 48
+        x: 93
         y: 834
       stage: sprout
     - id: maize
       name: imperial-cornfield-04
       layer: '0'
       position:
-        x: 80
+        x: 125
         y: 834
       stage: sprout
     - id: maize
       name: imperial-cornfield-05
       layer: '0'
       position:
-        x: 114
+        x: 159
         y: 834
       stage: sprout

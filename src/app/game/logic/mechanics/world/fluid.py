@@ -17,24 +17,24 @@ from __future__ import annotations
 import collections
 import logging
 from typing import (
-    Dict, 
-    Set, 
-    Optional,
-    Tuple,
+    Dict,
     List,
-    TYPE_CHECKING
+    Optional,
+    Set,
+    Tuple,
+    TYPE_CHECKING,
 )
 
 # Application Libraries
 import app.static.settings as settings
 from app.assets.base import Asset
+from app.game.logic.mechanics import Mechanic
+from app.models.state import DevicePayload
 from app.static.semantics import (
     AssetInstances,
     Directions,
-    Relations
+    Relations,
 )
-from app.game.logic.mechanics import Mechanic
-from app.models.state import DevicePayload
 
 if TYPE_CHECKING:
     from app.game.board import Board
@@ -67,8 +67,12 @@ def _obstacle_intersects_fluid(gate: Asset, fluid: Asset) -> bool:
         hl = hb.dimensions.l
 
         # Non-strict AABB overlap (touching counts as linked)
-        if (gx <= hx + hw and gx + gw >= hx and
-            gy <= hy + hl and gy + gl >= hy):
+        if (
+            gx <= hx + hw
+            and gx + gw >= hx
+            and gy <= hy + hl
+            and gy + gl >= hy
+        ):
             return True
 
     # 2. Forward emission corridor check (obstacle directly downstream of emitter)
@@ -127,11 +131,8 @@ class FluidMechanics(Mechanic):
         board: Board,
         delta: float,
         bus: collections.deque,
-        payload: DevicePayload
+        payload: DevicePayload,
     ) -> None:
-        # TODO: figure out why these need to be imported at method level
-        #       has to do with the eager loading in __init__.py of 
-        #       app.services.
         from app.services.generators.game.actuator import Actuator
         from app.services.generators.game.cartographer import Cartographer
 
@@ -178,7 +179,7 @@ class FluidMechanics(Mechanic):
                             settings.SEPARATOR.join([
                                 "Telemetry:FluidMechanics",
                                 "Invalidation:Gate",
-                                gate.name
+                                gate.name,
                             ]) + f" switch: {curr_switch}"
                         )
             else:
@@ -209,9 +210,11 @@ class FluidMechanics(Mechanic):
                     f"pool={f.state.pool}"
                 )
                 Actuator.propagate(f, board)
-            
-            # Delegate layer water cache synchronization to FluidMechanics
+
+            # Synchronize layer water cache and compile hydrological superposition field once per layer (Fix B019)
             board.update_fluid_cache(layer)
+            moisture_field = Actuator.compile_moisture_field(layer, board)
+            board.set_moisture_field(layer, moisture_field)
 
             post_sig = self._fluid_signature(layer_fluids)
             has_shorelines = bool(board.shorelines(layer))

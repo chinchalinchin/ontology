@@ -1,0 +1,207 @@
+# ----------------------------------------------------
+# --------------------- TOOLS.PARAMETERS.SOURCE.FILTER
+# ----------------------------------------------------
+# default: AND | OR
+# queries:
+# - title: TITLE
+#   strategy: AND | OR
+#   scan:
+#     app: [ 
+#             asset, base, core, 
+#             component, config, devices,
+#             schema, semantics, mechanics 
+#     ]
+#     asset: [ 
+#             property, state, frame,
+#             animation, hitbox 
+#     ]
+#     domain: [ 
+#               abstract, concrete, model,
+#               logic, graphics
+#     ]
+#     category: [ 
+#               crafts, cursors, effects,
+#               geography, objects, resources,
+#               sheets, tiles, widgets 
+#     ]
+#     physics: [ 
+#               fields, motion, space 
+#     ]
+#     workflows: [ 
+#               cli, collisions, combat,
+#               compositions, ecology, fluids,
+#               hydration, intentions, main, 
+#               menus, motion, orchestration,
+#               navgiation, rendering, seasons,
+#               telemetry 
+#     ]
+# ----------------------------------------------------
+# ------------------------ TOOL.PARAMETERS.SOURCE.DATA
+# ----------------------------------------------------
+#     properties: [ 
+#               crafts, cursors, effects,
+#               fonts, geography, objects
+#               resources, sheets, sounds
+#               tiles, widgets
+#     ]
+#     state: [
+#               crafts, effects, objects
+#               resources, sheets, tiles, 
+#               world
+#     ]
+#     configurations: [
+#               actions, compositions, intentions,
+#               library, mappings, materials,
+#               mechanics, menus, plots,
+#               recipes, stages
+#     ]
+#     templates: [
+#               menu-dump, registry-dump, sdl-dump, 
+#               state-dump
+#     ]
+# ----------------------------------------------------
+# ----------------------------------------------------
+# ----------------------------------------------- TASK
+# ----------------------------------------------------
+# ----------------------------------------------------
+task:
+# ----------------------------------------------------
+  template: draft.md.j2
+  # --------------------------------------------
+  # --------------------- TEMPLATES: MAINTENANCE
+  # --------------------------------------------
+  # template: maintain/console/patch.md.j2
+  # template: maintain/console/session.md.j2
+  # template: maintain/script.md.j2
+  # --------------------------------------------
+  # --------------------------- TEMPLATES: DUMPS 
+  # --------------------------------------------
+  # template: report/menus.md.j2
+  # template: report/state.md.j2
+  # --------------------------------------------
+  # ----------------------- TEMPLATES: ITERATION
+  # --------------------------------------------
+  # template: iterate/documentation.md.j2
+  # template: iterate/grooming.md.j2
+  # template: iterate/implementation.md.j2
+  # template: iterate/coverage.md.j2
+  # template: iterate/review.md.j2
+  # template: iterate/conclusion.md.j2
+  # --------------------------------------------
+  # -------------------------- TEMPLATES: DESIGN
+  # --------------------------------------------
+  # template: design/structure/menu.md.j2
+  # template: design/structure/composition.md.j2
+  # template: design/structure/score.md.j2
+  # template: design/diagram/hierarchy.md.j2
+  # template: design/diagram/automata.md.j2
+  # template: design/diagram/stages.md.j2
+  # template: design/style/mermaid.md.j2
+# ----------------------------------------------------
+  # PLACEHOLDER UNTIL STRUCTURE EMERGES FOR TOOL
+  parameters:
+    automata: stages 
+    composition: castle-dawn
+    diagram: executor-centennial-transitions.mmd
+    table: executor-centennial-transitions.md
+# ----------------------------------------------------
+# ----------------------------------------------------
+# ---------------------------------------------- TOOLS
+# ----------------------------------------------------
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: MANAGER
+    # --------------------------------------------
+    manager:
+      board: false
+      specs: false
+      docs: true
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: SOURCE
+    # --------------------------------------------
+    source:
+      data: true
+      filter: true
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: SHELL
+    # --------------------------------------------
+    shell:
+      directory: false
+      commands: false
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: TESTS
+    # --------------------------------------------
+    tests:  
+      configuration: true
+      pipeline: true
+      session: false
+# ----------------------------------------------------
+  parameters:
+    # --------------------------------------------
+    # ------------------------ PARAMETERS: MANAGER
+    # --------------------------------------------
+    manager:
+      board:
+        phase: '07-04'
+        action: refactor
+      docs:
+        exclude:
+          - index.md
+          # - 00-overview.md
+          # - 01-assets.md
+          - 02-sprites.md
+          # - 03-compositions.md
+          - 04-intentions.md
+          - 05-mechanics.md
+          - 06-widgets.md
+          - 07-sounds.md
+          - 08-plots.md
+          - 09-ecology.md
+          - 10-emergence.md
+          # - 11-architecture.md
+      specs: []
+    # --------------------------------------------
+    # ------------------------ PARAMETERS: SOURCE
+    # --------------------------------------------
+    source:
+      filter:
+        default: AND
+        queries:
+          - title: Test Fixtures
+            scan:
+              test: [ fixtures ]
+          - title: Composition Services
+            scan:
+              app: [ services ]
+              workflows: [ compositions ]
+          - title: Perimeter Services
+            scan:
+              app: [ services ]
+              workflows: [ generation, collisions ]
+      data:
+        properties: [ crafts ]
+        state: [ world-testbed ]
+        configurations: [ compositions/brick-house ]
+        templates: [  ]
+    # --------------------------------------------
+    # -------------------------- PARAMETERS: SHELL
+    # --------------------------------------------
+    shell:
+      directory: |
+        tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
+      commands: 
+        - python /Users/gmoore/Home/projects/ontology/src/main.py start
+    # --------------------------------------------
+    # ------------------------ PARAMETERS: TESTS
+    # --------------------------------------------
+    tests:
+      pipeline:
+        command: pytest -m
+        marker: workflow_compositions
+        # scope: '**/test_{actuator,cartographer}.py'
+      session:
+        description: |
+          description

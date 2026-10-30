@@ -249,7 +249,7 @@ def update(
                     v_dot = vx * nx + vy * ny
 
                     if v_dot > 0 and not asset.state.mutators.triggers.submerged:
-                        t = shore.state.thickness
+                        t = shore.properties.thickness
                         step_x = int(nx * (t + (asset.dimensions.w // 2))) if nx != 0.0 else 0
                         step_y = int(ny * (t + (asset.dimensions.l // 2))) if ny != 0.0 else 0
                         asset.state.position.x += step_x

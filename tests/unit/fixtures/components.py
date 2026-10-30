@@ -136,7 +136,6 @@ def mock_screen(
 # -------------------------------------------------------------------- BOARD
 # ---------------------------------------------------------------------------
 
-
 @pytest.fixture
 def mock_board(
     mock_assets: list[Asset],
@@ -163,6 +162,10 @@ def mock_board(
         for fluid in board.instances(AssetInstances.FLUIDS.value, layer):
             mock_actuator.propagate(fluid, board)
         board.update_fluid_cache(layer)
+        board.set_moisture_field(
+            layer,
+            mock_actuator.compile_moisture_field(layer, board),
+        )
         shores = Cartographer.generate(layer, board, mock_shoreline_index)
         if shores:
             board.add(shores)

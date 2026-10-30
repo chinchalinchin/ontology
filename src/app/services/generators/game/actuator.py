@@ -12,29 +12,29 @@ Package for constructing Fluid Effect flows and radial pools.
 from __future__ import annotations
 
 # Standard Libraries
-import math
 import logging
+import math
 from typing import (
-    List, 
-    Optional, 
-    Tuple, 
-    TYPE_CHECKING
+    List,
+    Optional,
+    Tuple,
+    TYPE_CHECKING,
 )
 
 # Application Libraries
 from app.assets.base import Asset
+from app.game.logic.modules.fields import MoistureField
+from app.models.state import (
+    Branch,
+    Pool,
+)
 from app.static.semantics import (
     AssetCategories,
     AssetInstances,
-    Directions
-)
-from app.game.logic.modules.fields import MoistureField
-from app.models.state import (
-    Pool, 
-    Branch
+    Directions,
 )
 
-if TYPE_CHECKING: 
+if TYPE_CHECKING:
     from app.game.board import Board
 
 # Cython Libraries
@@ -42,7 +42,7 @@ from libs.core.math import geometry
 from libs.core.models import (
     Dimensions,
     Hitbox,
-    Position
+    Position,
 )
 
 logger = logging.getLogger(__name__)
@@ -56,12 +56,12 @@ class Actuator:
 
     @classmethod
     def _collect_obstacles(
-        cls, 
-        fluid: Asset, 
-        board: Board, 
+        cls,
+        fluid: Asset,
+        board: Board,
         direction: str,
         origin_x: Optional[int] = None,
-        origin_y: Optional[int] = None
+        origin_y: Optional[int] = None,
     ) -> List[Tuple]:
         layer = fluid.state.layer
         elevation = fluid.elevation if fluid.elevation > 0 else 0
@@ -74,23 +74,27 @@ class Actuator:
         for b in perimeters:
             if direction == Directions.DOWN.value and (
                 b.position.y <= fy
-            ): continue
+            ):
+                continue
             elif direction == Directions.UP.value and (
                 (b.position.y + b.dimensions.l) >= fy
-            ): continue
+            ):
+                continue
             elif direction == Directions.RIGHT.value and (
                 b.position.x <= fx
-            ): continue
+            ):
+                continue
             elif direction == Directions.LEFT.value and (
                 (b.position.x + b.dimensions.w) >= fx
-            ): continue
+            ):
+                continue
 
             obstacle_tuples.append((
                 b.position.x,
                 b.position.y,
                 b.dimensions.w,
                 b.dimensions.l,
-                None
+                None,
             ))
 
         # 2. Environmental physical assets strictly restricted to immovable static bodies (mass == 0)
@@ -98,18 +102,22 @@ class Actuator:
         candidates.update(board.obstacles(layer, elevation=elevation))
 
         for asset in candidates:
-            if asset is fluid: continue
+            if asset is fluid:
+                continue
 
             if asset.category in (
-                AssetCategories.SHEETS.value, 
-                AssetCategories.EFFECTS.value
-            ): continue
+                AssetCategories.SHEETS.value,
+                AssetCategories.EFFECTS.value,
+            ):
+                continue
 
-            if asset.instance == AssetInstances.RAFTS.value: continue
+            if asset.instance == AssetInstances.RAFTS.value:
+                continue
 
             if asset.instance == AssetInstances.GATES.value and (
                 asset.state.switch
-            ): continue
+            ):
+                continue
 
             if asset.properties.mass != 0:
                 continue
@@ -122,16 +130,20 @@ class Actuator:
 
                 if direction == Directions.UP.value and (
                     oy >= fy
-                ): continue
+                ):
+                    continue
                 elif direction == Directions.DOWN.value and (
                     (oy + ol) <= fy
-                ): continue
+                ):
+                    continue
                 elif direction == Directions.LEFT.value and (
                     ox >= fx
-                ): continue
+                ):
+                    continue
                 elif direction == Directions.RIGHT.value and (
                     (ox + ow) <= fx
-                ): continue
+                ):
+                    continue
 
                 obstacle_tuples.append((ox, oy, ow, ol, asset))
 
@@ -139,12 +151,12 @@ class Actuator:
 
     @classmethod
     def _calculate_max_distance(
-        cls, 
-        x: int, 
-        y: int, 
-        board: Board, 
-        layer: str, 
-        direction: str
+        cls,
+        x: int,
+        y: int,
+        board: Board,
+        layer: str,
+        direction: str,
     ) -> int:
         sizes = board.size(layer)
         layer_size = sizes[0] if sizes else None
@@ -165,11 +177,11 @@ class Actuator:
 
     @classmethod
     def _build_stream_hitbox(
-        cls, 
-        direction: str, 
-        length: int, 
-        fw: int, 
-        fl: int
+        cls,
+        direction: str,
+        length: int,
+        fw: int,
+        fl: int,
     ) -> Optional[Hitbox]:
         if length <= 0:
             return None
@@ -190,11 +202,12 @@ class Actuator:
         cls,
         obstacle: Asset,
         fluid: Asset,
-        flow: int
+        flow: int,
+        board: Optional[Board] = None,
     ) -> Tuple[Pool, List[Hitbox]]:
         """
         Calculates an annular pool boundary surrounding an obstacle struck by fluid.
-        Snaps pool boundaries to tile grid multiples.
+        Snaps pool boundaries to tile grid multiples and clamps to layer bounds (Fix B017).
         """
         ox = obstacle.state.position.x
         oy = obstacle.state.position.y
@@ -212,59 +225,217 @@ class Actuator:
         raw_max_x = ox + ow + flow * fw
         raw_max_y = oy + ol + flow * fl
 
-        pool_x = int((raw_min_x // fw) * fw)
-        pool_y = int((raw_min_y // fl) * fl)
+        pool_x = max(0, int((raw_min_x // fw) * fw))
+        pool_y = max(0, int((raw_min_y // fl) * fl))
         pool_end_x = int(((raw_max_x + fw - 1) // fw) * fw)
         pool_end_y = int(((raw_max_y + fl - 1) // fl) * fl)
 
-        pool_w = pool_end_x - pool_x
-        pool_l = pool_end_y - pool_y
+        if board is not None:
+            sizes = board.size(fluid.state.layer)
+            layer_size = sizes[0] if sizes else None
+            if layer_size and layer_size.w > 0 and layer_size.l > 0:
+                pool_end_x = min(layer_size.w, pool_end_x)
+                pool_end_y = min(layer_size.l, pool_end_y)
+
+        pool_w = max(0, pool_end_x - pool_x)
+        pool_l = max(0, pool_end_y - pool_y)
 
         pool_bounds = Pool(x=pool_x, y=pool_y, w=pool_w, l=pool_l)
-        pool_hitboxes = [
-            Hitbox(Position(pool_x - fx, pool_y - fy), Dimensions(pool_w, pool_l))
-        ]
+        pool_hitboxes = (
+            [Hitbox(Position(pool_x - fx, pool_y - fy), Dimensions(pool_w, pool_l))]
+            if pool_w > 0 and pool_l > 0
+            else []
+        )
 
         return pool_bounds, pool_hitboxes
 
     @classmethod
     def _calculate_branch_discharges(
         cls,
-        pool: Pool, 
-        direction: str, 
-        flow: int, 
-        fw: int, 
-        fl: int
+        pool: Pool,
+        direction: str,
+        flow: int,
+        fw: int,
+        fl: int,
     ) -> List[Tuple[Position, str, int]]:
         """
         Derives secondary stream discharge coordinates flush with the downstream
         margin and lateral flanks of the annular pool.
         """
         child_flow = flow - 1
-        if child_flow <= 0:
+        if child_flow <= 0 or pool.w <= 0 or pool.l <= 0:
             return []
 
         if direction == Directions.DOWN.value:
             y = pool.y + pool.l
             left_pos = Position(pool.x, y)
-            right_pos = Position(pool.x + pool.w - fw, y)
+            right_pos = Position(max(pool.x, pool.x + pool.w - fw), y)
             return [(left_pos, direction, child_flow), (right_pos, direction, child_flow)]
         elif direction == Directions.UP.value:
             y = pool.y
             left_pos = Position(pool.x, y)
-            right_pos = Position(pool.x + pool.w - fw, y)
+            right_pos = Position(max(pool.x, pool.x + pool.w - fw), y)
             return [(left_pos, direction, child_flow), (right_pos, direction, child_flow)]
         elif direction == Directions.RIGHT.value:
             x = pool.x + pool.w
             top_pos = Position(x, pool.y)
-            bottom_pos = Position(x, pool.y + pool.l - fl)
+            bottom_pos = Position(x, max(pool.y, pool.y + pool.l - fl))
             return [(top_pos, direction, child_flow), (bottom_pos, direction, child_flow)]
         elif direction == Directions.LEFT.value:
             x = pool.x
             top_pos = Position(x, pool.y)
-            bottom_pos = Position(x, pool.y + pool.l - fl)
+            bottom_pos = Position(x, max(pool.y, pool.y + pool.l - fl))
             return [(top_pos, direction, child_flow), (bottom_pos, direction, child_flow)]
         return []
+
+    @classmethod
+    def _truncate_length_at_pool(
+        cls,
+        origin_x: int,
+        origin_y: int,
+        direction: str,
+        pool_bounds: Pool,
+    ) -> int:
+        if direction == Directions.DOWN.value:
+            return max(0, pool_bounds.y - origin_y)
+        elif direction == Directions.UP.value:
+            return max(0, origin_y - (pool_bounds.y + pool_bounds.l))
+        elif direction == Directions.RIGHT.value:
+            return max(0, pool_bounds.x - origin_x)
+        elif direction == Directions.LEFT.value:
+            return max(0, origin_x - (pool_bounds.x + pool_bounds.w))
+        return 0
+
+    @classmethod
+    def _build_relative_branch_hitbox(
+        cls,
+        origin_pos: Position,
+        fx: int,
+        fy: int,
+        branch_dir: str,
+        b_len: int,
+        fw: int,
+        fl: int,
+    ) -> Optional[Hitbox]:
+        if b_len <= 0:
+            return None
+        if branch_dir == Directions.DOWN.value:
+            return Hitbox(Position(origin_pos.x - fx, origin_pos.y - fy), Dimensions(fw, b_len))
+        elif branch_dir == Directions.UP.value:
+            return Hitbox(Position(origin_pos.x - fx, origin_pos.y - fy - b_len), Dimensions(fw, b_len))
+        elif branch_dir == Directions.RIGHT.value:
+            return Hitbox(Position(origin_pos.x - fx, origin_pos.y - fy), Dimensions(b_len, fl))
+        elif branch_dir == Directions.LEFT.value:
+            return Hitbox(Position(origin_pos.x - fx - b_len, origin_pos.y - fy), Dimensions(b_len, fl))
+        return None
+
+    @classmethod
+    def _propagate_branches(
+        cls,
+        fluid: Asset,
+        board: Board,
+        parent_pool: Pool,
+        direction: str,
+        flow: int,
+        branches: List[Branch],
+        branch_compound_hitboxes: List[Hitbox],
+    ) -> None:
+        """
+        Recursively raycasts flank continuation branches, partitioning secondary pools
+        and discharging child branches until flow is exhausted (Fix B016).
+        """
+        fw = fluid.properties.dimensions.w
+        fl = fluid.properties.dimensions.l
+        fx = fluid.state.position.x
+        fy = fluid.state.position.y
+        layer = fluid.state.layer
+
+        discharges = cls._calculate_branch_discharges(
+            parent_pool,
+            direction,
+            flow,
+            fw,
+            fl,
+        )
+        for origin_pos, branch_dir, child_flow in discharges:
+            branch_obstacles = cls._collect_obstacles(
+                fluid,
+                board,
+                branch_dir,
+                origin_x=origin_pos.x,
+                origin_y=origin_pos.y,
+            )
+            b_max_dist = cls._calculate_max_distance(
+                origin_pos.x,
+                origin_pos.y,
+                board,
+                layer,
+                branch_dir,
+            )
+            b_len, b_struck = geometry.raycast(
+                origin_pos.x,
+                origin_pos.y,
+                fw,
+                fl,
+                branch_dir,
+                branch_obstacles,
+                b_max_dist,
+            )
+
+            b_pool_bounds: Optional[Pool] = None
+            b_pool_hitboxes: List[Hitbox] = []
+
+            if isinstance(b_struck, Asset) and child_flow > 1:
+                b_pool_bounds, b_pool_hitboxes = cls._partition_pool(
+                    b_struck,
+                    fluid,
+                    child_flow,
+                    board=board,
+                )
+                b_len = cls._truncate_length_at_pool(
+                    origin_pos.x,
+                    origin_pos.y,
+                    branch_dir,
+                    b_pool_bounds,
+                )
+
+            if b_len > 0:
+                b_hb = cls._build_stream_hitbox(branch_dir, b_len, fw, fl)
+                b_hitboxes = [b_hb] if b_hb else []
+                branches.append(
+                    Branch(
+                        position=origin_pos,
+                        source=branch_dir,
+                        flow=child_flow,
+                        length=b_len,
+                        hitboxes=b_hitboxes,
+                    )
+                )
+                rel_hb = cls._build_relative_branch_hitbox(
+                    origin_pos,
+                    fx,
+                    fy,
+                    branch_dir,
+                    b_len,
+                    fw,
+                    fl,
+                )
+                if rel_hb:
+                    branch_compound_hitboxes.append(rel_hb)
+
+            if b_pool_hitboxes:
+                branch_compound_hitboxes.extend(b_pool_hitboxes)
+
+            if b_pool_bounds is not None and child_flow > 1:
+                cls._propagate_branches(
+                    fluid,
+                    board,
+                    b_pool_bounds,
+                    branch_dir,
+                    child_flow,
+                    branches,
+                    branch_compound_hitboxes,
+                )
 
     @classmethod
     def compile_moisture_field(cls, layer: str, board: Board) -> MoistureField:
@@ -323,10 +494,10 @@ class Actuator:
                     elif b_dir_val == Directions.RIGHT.value:
                         field.add_stream(bx, b_mid_y, bx + branch.length, b_mid_y, branch.flow)
                     elif b_dir_val == Directions.LEFT.value:
-                        field.add_stream(bx, b_mid_y, bx - branch.length, branch.flow)
+                        field.add_stream(bx, b_mid_y, bx - branch.length, b_mid_y, branch.flow)
 
         return field
-    
+
     @classmethod
     def propagate(cls, fluid: Asset, board: Board) -> Tuple[int, Optional[Pool], List[Hitbox]]:
         """
@@ -354,7 +525,7 @@ class Actuator:
             fl,
             direction,
             obstacle_tuples,
-            max_dist
+            max_dist,
         )
 
         pool_bounds: Optional[Pool] = None
@@ -364,80 +535,30 @@ class Actuator:
 
         # 1. Expand pool and truncate parent corridor at pool boundary
         if isinstance(struck_obstacle, Asset) and flow > 0:
-            pool_bounds, pool_hitboxes = cls._partition_pool(struck_obstacle, fluid, flow)
-            
-            if direction == Directions.DOWN.value:
-                stream_length = max(0, pool_bounds.y - fy)
-            elif direction == Directions.UP.value:
-                stream_length = max(0, fy - (pool_bounds.y + pool_bounds.l))
-            elif direction == Directions.RIGHT.value:
-                stream_length = max(0, pool_bounds.x - fx)
-            elif direction == Directions.LEFT.value:
-                stream_length = max(0, fx - (pool_bounds.x + pool_bounds.w))
+            pool_bounds, pool_hitboxes = cls._partition_pool(
+                struck_obstacle,
+                fluid,
+                flow,
+                board=board,
+            )
+            stream_length = cls._truncate_length_at_pool(
+                fx,
+                fy,
+                direction,
+                pool_bounds,
+            )
 
-            # 2. Bifurcate downstream flank continuation streams
+            # 2. Recursively bifurcate downstream flank continuation streams
             if flow > 1:
-                discharges = cls._calculate_branch_discharges(
+                cls._propagate_branches(
+                    fluid,
+                    board,
                     pool_bounds,
                     direction,
                     flow,
-                    fw,
-                    fl
+                    branches,
+                    branch_compound_hitboxes,
                 )
-                for origin_pos, branch_dir, child_flow in discharges:
-                    branch_obstacles = cls._collect_obstacles(
-                        fluid,
-                        board,
-                        branch_dir,
-                        origin_x=origin_pos.x,
-                        origin_y=origin_pos.y
-                    )
-                    b_max_dist = cls._calculate_max_distance(
-                        origin_pos.x,
-                        origin_pos.y,
-                        board,
-                        layer,
-                        branch_dir
-                    )
-                    b_len, _ = geometry.raycast(
-                        origin_pos.x,
-                        origin_pos.y,
-                        fw,
-                        fl,
-                        branch_dir,
-                        branch_obstacles,
-                        b_max_dist
-                    )
-                    if b_len > 0:
-                        b_hb = cls._build_stream_hitbox(branch_dir, b_len, fw, fl)
-                        b_hitboxes = [b_hb] if b_hb else []
-                        branches.append(
-                            Branch(
-                                position=origin_pos,
-                                source=branch_dir,
-                                flow=child_flow,
-                                length=b_len,
-                                hitboxes=b_hitboxes
-                            )
-                        )
-
-                        # Compound hitbox relative to fluid origin (fx, fy)
-                        if branch_dir == Directions.DOWN.value:
-                            branch_compound_hitboxes.append(
-                                Hitbox(Position(origin_pos.x - fx, origin_pos.y - fy), Dimensions(fw, b_len))
-                            )
-                        elif branch_dir == Directions.UP.value:
-                            branch_compound_hitboxes.append(
-                                Hitbox(Position(origin_pos.x - fx, origin_pos.y - fy - b_len), Dimensions(fw, b_len))
-                            )
-                        elif branch_dir == Directions.RIGHT.value:
-                            branch_compound_hitboxes.append(
-                                Hitbox(Position(origin_pos.x - fx, origin_pos.y - fy), Dimensions(b_len, fl))
-                            )
-                        elif branch_dir == Directions.LEFT.value:
-                            branch_compound_hitboxes.append(
-                                Hitbox(Position(origin_pos.x - fx - b_len, origin_pos.y - fy), Dimensions(b_len, fl))
-                            )
 
         # 3. Assemble compound relative hitboxes
         hitboxes: List[Hitbox] = []
@@ -456,10 +577,6 @@ class Actuator:
         fluid.state.dirty = False
         fluid.state._keys.clear()
 
-        # 4. Compile and assign continuous hydrological superposition field to Board
-        moisture_field = cls.compile_moisture_field(layer, board)
-        board.set_moisture_field(layer, moisture_field)
-
         return stream_length, pool_bounds, hitboxes
 
     @classmethod
@@ -467,4 +584,8 @@ class Actuator:
         """
         Unified execution interface for isolated fluid propagation.
         """
-        return cls.propagate(fluid, board)
+        result = cls.propagate(fluid, board)
+        layer = fluid.state.layer
+        moisture_field = cls.compile_moisture_field(layer, board)
+        board.set_moisture_field(layer, moisture_field)
+        return result

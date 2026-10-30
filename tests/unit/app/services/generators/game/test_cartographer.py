@@ -56,6 +56,7 @@ def test_cartographer_generate_and_coalesce_shorelines(
 ):
     """
     Verify Cartographer sweeps fluid contours, samples substrate tiles,
+    aligns shoreline hitboxes to ShorelineProperties.dimensions (Fix B018),
     and returns coalesced Shoreline assets without mutating board state.
     """
     Cartographer.purge("0", mock_board)
@@ -69,6 +70,11 @@ def test_cartographer_generate_and_coalesce_shorelines(
         assert shore.state.layer == "0"
         assert shore.state.length > 0
         assert len(shore.hitboxes) == 1
+        hb = shore.hitboxes[0]
+        if shore.state.orientation == Directions.DOWN.value:
+            assert hb.position.y == shore.dimensions.l - shore.properties.thickness
+        elif shore.state.orientation == Directions.RIGHT.value:
+            assert hb.position.x == shore.dimensions.w - shore.properties.thickness
 
     assert len(mock_board.shorelines("0")) == 0
 
@@ -123,7 +129,7 @@ def test_cartographer_fluid_meeting_fluid_suppresses_shorelines(
 ):
     """
     Verify that interior fluid-to-fluid thresholds between adjacent streams
-    do not generate dividing shorelines.
+    do not generate dividing shorelines and outer margins align with shoreline dimensions (Fix B018).
     """
     fluid1, fluid2 = mock_board.instances(AssetInstances.FLUIDS.value, "0")[:2]
     fw = fluid1.properties.dimensions.w
@@ -159,14 +165,18 @@ def test_cartographer_fluid_meeting_fluid_suppresses_shorelines(
     assert all(s.state.position.x == x1 for s in left_shores)
 
     assert len(right_shores) > 0
-    assert all(s.state.position.x == x2 + fw - 32 for s in right_shores)
+    assert all(
+        s.state.position.x == x2 + fw - s.dimensions.w
+        for s in right_shores
+    )
 
     assert not any(
         s.state.orientation == Directions.LEFT.value and s.state.position.x == x2
         for s in shores
     )
     assert not any(
-        s.state.orientation == Directions.RIGHT.value and s.state.position.x == x2 - 32
+        s.state.orientation == Directions.RIGHT.value
+        and s.state.position.x == x2 - s.dimensions.w
         for s in shores
     )
 

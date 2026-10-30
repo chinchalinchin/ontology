@@ -67,7 +67,7 @@ compositions:
               elevation: 0
               anchor: anchor(exterior-wall)
               position:
-                x: bind(exterior-tower-left.span.w) + 16
+                x: bind(exterior-tower-left.span.w)
                 y: bind(exterior-wall.position.y) + 16
             - id: banner
               name: exterior-banner-right
@@ -76,7 +76,7 @@ compositions:
               elevation: 0
               anchor: anchor(exterior-wall)
               position:
-                x: bind(parent.span.w) - bind(exterior-tower-right.span.w) - bind(self.dimensions.w) - 16
+                x: bind(parent.span.w) - bind(exterior-tower-right.span.w) - bind(self.dimensions.w)
                 y: bind(exterior-wall.position.y) + 16
             # --- ARCHER'S ROOF CRENELLATION & VANITY (Elevation 2) ---
             - id: crenellation
@@ -180,8 +180,8 @@ compositions:
               elevation: 0
               anchor: anchor(exterior-wall)
               position:
-                x: (bind(exterior-wall.span.w) + bind(atrium-entrance-door.dimensions.w)) // 2 + 8
-                y: bind(exterior-wall.position.y) + bind(exterior-wall.span.l) - bind(self.dimensions.l) - 12
+                x: (bind(exterior-wall.span.w) + bind(atrium-entrance-door.dimensions.w)) // 2 + 5
+                y: bind(exterior-wall.position.y) + bind(exterior-wall.span.l) - bind(self.dimensions.l) - 5
         effects:
           passive:
             - id: torch
@@ -189,14 +189,14 @@ compositions:
               elevation: 0
               anchor: anchor(exterior-wall)
               position:
-                x: (bind(exterior-wall.span.w) - bind(atrium-entrance-door.dimensions.w)) // 2 - 2 * bind(self.dimensions.w)
+                x: (bind(exterior-wall.span.w) - bind(atrium-entrance-door.dimensions.w)) // 2 - 3 * bind(self.dimensions.w) - 16
                 y: bind(exterior-wall.position.y) + 16
             - id: torch
               name: exterior-torch-right
               elevation: 0
               anchor: anchor(exterior-wall)
               position:
-                x: (bind(exterior-wall.span.w) + bind(atrium-entrance-door.dimensions.w)) // 2 + 2 * bind(self.dimensions.w)
+                x: (bind(exterior-wall.span.w) + bind(atrium-entrance-door.dimensions.w)) // 2 + 2 * bind(self.dimensions.w) + 16
                 y: bind(exterior-wall.position.y) + 16
 
     branches:
