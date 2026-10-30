@@ -2,7 +2,9 @@
 @domain.test
 @test.unit
 @workflow.fluids
-# Ontology: tests.unit.app.game.logic.mechanics.world.test_fluid.py
+
+# Ontology: Tests - tests.unit.app.game.logic.mechanics.world.test_fluid.py
+
 """
 # External Libraries
 import pytest
@@ -221,15 +223,13 @@ def test_fluid_mechanics_cross_layer_isolation(mock_board, mock_bus):
 def test_fluid_mechanics_two_pass_layer_shorelines(
     mock_board, 
     mock_bus, 
-    mock_actuator, 
-    mock_shoreline_index
+    mock_mechanic
 ):
     """
     Verify FluidMechanics executes coordinated two-pass update, synthesizing
     layer-wide shorelines on Board via Cartographer.
     """
-    mechanic = FluidMechanics(actuator=mock_actuator)
-    mechanic.set_relation(Relations.SHORELINES.value, mock_shoreline_index)
+    mechanic = mock_mechanic(Mechanics.FLUID.value)
 
     mechanic.update(mock_board, 0.016, mock_bus, None)
 
@@ -268,7 +268,7 @@ def test_board_fluid_spatial_hash_indexes_child_branches(mock_board):
     Verify Board broad/narrow spatial fluid checking detects Cartesian points
     located inside active child branch corridors.
     """
-    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid = next(iter(mock_board.instances(AssetInstances.FLUIDS.value)[0]))
     fluid.state.position = Position(x=70, y=0)
     fluid.state.source = Directions.DOWN.value
     fluid.state.length = 32

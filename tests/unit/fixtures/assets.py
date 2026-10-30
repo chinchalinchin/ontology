@@ -108,4 +108,5 @@ def mock_assets(
                 assets.append(
                     mock_asset(category, instance, asset_state=entity_state)
                 )
+    # TODO: need to generate shorelines and fluids
     return assets

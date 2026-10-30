@@ -62,6 +62,7 @@ class ObjectRecipe:
     obstacles: Recipe = None
     plates: Recipe = None
     signs: Recipe = None
+    rafts: Recipe = None
 
 @dataclass(slots=True, frozen=True)
 class ResourceRecipe:

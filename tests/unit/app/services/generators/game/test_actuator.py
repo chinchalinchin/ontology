@@ -222,18 +222,19 @@ def test_actuator_bifurcation_downstream_flanks(mock_board, mock_actuator):
     assert hitboxes[3].dimensions.l == 127
 
 
-def test_actuator_rafts_ignored_as_obstacles(mock_board, mock_raft, mock_actuator):
+def test_actuator_rafts_ignored_as_obstacles(mock_board, mock_actuator):
     """
-    Verify rafts (RAFTS) bypass raycast truncation and do not occlude fluids.
+    Verify Rafts bypass raycast truncation and do not occlude fluids.
     """
-    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid = next(iter(mock_board.instances(AssetInstances.FLUIDS.value)))
     fluid.state.flow = 0
     fluid.state.position = Position(x=70, y=0)
     fluid.state.source = Directions.DOWN.value
 
-    mock_raft.state.position = Position(x=70, y=40)
+    raft = next(iter(mock_board.instances(AssetInstances.RAFTS.value)))
+    raft.state.position = Position(x=70, y=40)
 
-    gate = mock_board.instances(AssetInstances.GATES.value)[0]
+    gate = next(iter(mock_board.instances(AssetInstances.GATES.value)))
     gate.state.switch = False
     gate.state.position = Position(x=70, y=120)
 

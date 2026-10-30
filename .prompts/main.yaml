@@ -66,7 +66,7 @@
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  # template: draft.md.j2
+  template: draft.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
@@ -84,7 +84,7 @@ task:
   # template: iterate/documentation.md.j2
   # template: iterate/grooming.md.j2
   # template: iterate/implementation.md.j2
-  template: iterate/coverage.md.j2
+  # template: iterate/coverage.md.j2
   # template: iterate/review.md.j2
   # template: iterate/conclusion.md.j2
   # --------------------------------------------
@@ -118,13 +118,13 @@ tools:
     manager:
       board: false
       specs: false
-      docs: true
+      docs: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
       data: true
-      filter: true
+      filter: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
@@ -170,17 +170,6 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Effect Assets
-            scan:
-              app: [ asset ]
-              category: [ effects ]
-          - title: Geography Assets
-            scan:
-              app: [ asset ]
-              category: [ geography ]
-          - title: Fluids Workflow
-            scan:
-              workflows: [ fluids ]
           - title: Test Fixtures
             scan:
               test: [ fixtures ]

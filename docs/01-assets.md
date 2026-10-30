@@ -466,6 +466,9 @@ Plates are Objects with a binary state. Furthermore, that state can be instantan
 
 ### Object: Rafts
 
+!!! @TODO(09-08)
+    Rafts need inducted into the Materiality framework **and** they need to orient themselves (rotate) to the direction of Fluid flow.
+
 Rafts are kinematics Objects that allow other Assets to traverse [Fluid](#effect-fluids) streams without entering the `submerged` state or being swept away individually. Rafts do not obstruct [Fluid flow](#effect-fluids), meaning they still acquire velocity in the [Fluid stream](#effect-fluids).
 
 * When deployed in a Fluid corridor, a Raft drifts along the Fluid's `source` vector at a speed proportional to `flow`.
