@@ -9,7 +9,7 @@
 
 # Ontology: Tests - tests.unit.app.services.translators.test_compiler
 
-Unit tests for the Compiler implementation of Transition Translation.
+Unit tests for the implementations of the Transition Translation subsystem.
 """
 # External Libraries
 import pytest
@@ -24,11 +24,9 @@ from app.static.semantics import (
 )
 from app.models.state.assets.sheets import Goal
 from app.services.translators.compiler import (
-    CompilerTranslator, 
     CompilerExecutor,
 )
 from app.services.translators.lamb import (
-    LambdaTranslator,
     LambdaExecutor
 )
 
@@ -41,12 +39,11 @@ pytestmark = [
 
 # -----------------------------------------------------
 
-@pytest.mark.workflow_intentions
 @pytest.mark.parametrize("implementation", [
     (Translators.COMPILER.value, CompilerExecutor),
     (Translators.LAMBDA.value, LambdaExecutor)
 ])
-def test_executor_compiles_successfully(
+def test_executor_compiles(
     implementation,
     mock_translator,
     mock_configurations_schema
@@ -55,6 +52,21 @@ def test_executor_compiles_successfully(
     executor = translator.compile(mock_configurations_schema.intentions)
     
     assert isinstance(executor, implementation[1])
+
+
+@pytest.mark.workflow_intentions
+@pytest.mark.parametrize("implementation", [
+    (Translators.COMPILER.value, CompilerExecutor),
+    (Translators.LAMBDA.value, LambdaExecutor)
+])
+def test_executor_compiles_intentions(
+    implementation,
+    mock_translator,
+    mock_configurations_schema
+):
+    translator = mock_translator(implementation[0])
+    executor = translator.compile(mock_configurations_schema.intentions)
+    
     assert Intentions.IDLE.value in executor.transitions
     assert len(executor.transitions[Intentions.IDLE.value]) == 5
     assert executor.transitions[Intentions.IDLE.value][0].next == Intentions.WANDER.value
@@ -125,7 +137,7 @@ def test_intention_executor_matches_hunt(
     (Translators.COMPILER.value, CompilerExecutor),
     (Translators.LAMBDA.value, LambdaExecutor)
 ])
-def test_compiler_evaluation_with_dictionary_lookup(
+def test_executor_evaluation_with_dictionary_lookup(
     implementation,
     mock_translator,
     mock_configurations_schema,
@@ -162,25 +174,53 @@ def test_compiler_evaluation_with_dictionary_lookup(
 
 
 @pytest.mark.workflow_plots
-def test_compiler_evaluation_with_plot_metadata(mock_plot_configuration, mock_plot_state):
-    translator = CompilerTranslator()
-    executor = translator.compile(mock_plot_configuration)
+@pytest.mark.parametrize("implementation", [
+    (Translators.COMPILER.value, CompilerExecutor),
+    (Translators.LAMBDA.value, LambdaExecutor)
+])
+def test_executor_evaluation_with_plot_metadata(
+    implementation,
+    mock_translator,
+    mock_configurations_schema,
+    mock_state_schema
+):
+    translator = mock_translator(implementation[0])    
+    executor = translator.compile(mock_configurations_schema.plots)
+
+    mock_player_state = mock_state_schema.sheets.players[0]
+    mock_plot_state = mock_state_schema.plots
+    mock_player_state.inventory.pack['writ-of-dawn'] = 1
     
-    mock_plot_state.previous.append("mayor_bribed")
-    
-    result = executor.evaluate("town-locked", {"plot": mock_plot_state})
-    assert result == "town-unlocked"
+    result = executor.evaluate(mock_plot_state.current, 
+        { 
+            "plot": mock_plot_state ,
+            "sprites": { "player": mock_player_state } 
+        }
+    )
+    assert result == "castle-dawn-unlocked"
 
 
-@pytest.mark.workflow_intentions
-def test_compiler_evaluation_attribute_error_handling(mock_intention_configuration, mock_positional_state):
-    translator = CompilerTranslator()
-    executor = translator.compile(mock_intention_configuration)
-    
+@pytest.mark.parametrize("implementation", [
+    (Translators.COMPILER.value, CompilerExecutor),
+    (Translators.LAMBDA.value, LambdaExecutor)
+])
+def test_compiler_evaluation_attribute_error_handling(
+    implementation,
+    mock_configurations_schema,
+    mock_translator,
+    mock_state
+):
+    translator = mock_translator(implementation[0])  
+    executor = translator.compile(mock_configurations_schema.intentions)
+
+    mock_crate_state = mock_state(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value
+    )
     # MotiveState has no 'meters' attribute, so 'sprite.meters.health.current' safely trips AttributeError handling
     result = executor.evaluate(
         Intentions.IDLE.value, 
-        {"sprite": mock_positional_state}
+        {"sprite": mock_crate_state }
     )
     assert result is None
 
