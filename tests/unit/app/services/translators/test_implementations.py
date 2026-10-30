@@ -7,7 +7,7 @@
 @workflow.seasons
 @workflow.transitions
 
-# Ontology: Tests - tests.unit.app.services.translators.test_compiler
+# Ontology: Tests - tests.unit.app.services.translators.test_implementations
 
 Unit tests for the implementations of the Transition Translation subsystem.
 """
@@ -23,6 +23,7 @@ from app.static.semantics import (
     Goals
 )
 from app.models.state.assets.sheets import Goal
+from app.services.translators.base import Transition
 from app.services.translators.compiler import (
     CompilerExecutor,
 )
@@ -208,7 +209,7 @@ def test_executor_evaluation_with_plot_metadata(
     (Translators.COMPILER.value, CompilerExecutor),
     (Translators.LAMBDA.value, LambdaExecutor)
 ])
-def test_compiler_evaluation_attribute_error_handling(
+def test_executor_evaluation_attribute_error_handling(
     implementation,
     mock_configurations_schema,
     mock_translator,
@@ -234,7 +235,7 @@ def test_compiler_evaluation_attribute_error_handling(
     (Translators.COMPILER.value, CompilerExecutor),
     (Translators.LAMBDA.value, LambdaExecutor)
 ])
-def test_compiler_evaluation_with_environ_functions(
+def test_executor_evaluation_with_environ_functions(
     implementation,
     mock_translator,
     mock_configurations_schema, 
@@ -256,7 +257,6 @@ def test_compiler_evaluation_with_environ_functions(
     mock_sprite_state.position.x = 0
     mock_sprite_state.position.y = 0
     
-
     result = executor.evaluate(
         Intentions.FIND.value, 
         { "sprite": mock_sprite_state }
@@ -264,17 +264,36 @@ def test_compiler_evaluation_with_environ_functions(
     assert result == Intentions.INTERACT.value
 
 
-@pytest.mark.workflow_intentions
-def test_compiler_evaluation_unknown_state(mock_intention_configuration):
-    translator = CompilerTranslator()
-    executor = translator.compile(mock_intention_configuration)
+@pytest.mark.parametrize("implementation", [
+    (Translators.COMPILER.value, CompilerExecutor),
+    (Translators.LAMBDA.value, LambdaExecutor)
+])
+def test_executor_evaluation_with_bad_arguments(
+    implementation,
+    mock_translator,
+    mock_configurations_schema
+):
+    translator = mock_translator(implementation[0])  
+    executor = translator.compile(mock_configurations_schema.intentions)
+
     result = executor.evaluate("unknown", {})
     assert result is None
  
 
-@pytest.mark.workflow_intentions
-def test_compiler_ignores_bad_syntax(mock_intention_configuration):
-    translator = CompilerTranslator()
-    executor = translator.compile(mock_intention_configuration)
+@pytest.mark.parametrize("implementation", [
+    (Translators.COMPILER.value, CompilerExecutor),
+    (Translators.LAMBDA.value, LambdaExecutor)
+])
+def test_compiler_evaluation_with_bad_conditions(
+    implementation,
+    mock_translator,
+    mock_configurations_schema
+):
+    translator = mock_translator(implementation[0])  
+    mock_configurations_schema.intentions['bad_syntax']  = [Transition(
+        next = "more-bad-syntax",
+        conditions = [ 'not thing nor any(this for this in thing)']
+    )]
+    executor = translator.compile(mock_configurations_schema.intentions)
     
     assert len(executor.transitions["bad_syntax"][0].conditions) == 0
