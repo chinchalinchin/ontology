@@ -42,6 +42,8 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+STEP_SIZE = 32
+
 
 class Cartographer:
     """
@@ -93,24 +95,22 @@ class Cartographer:
                 rects.append((pool.x, pool.y, pool.x + pool.w, pool.y + pool.l))
 
             # 3. Child branch corridors
-            branches = getattr(fluid.state, "branches", None)
-            if branches:
-                for branch in branches:
-                    if branch.length <= 0:
-                        continue
-                    bx = branch.position.x
-                    by = branch.position.y
-                    b_dir = branch.source
-                    b_dir_str = b_dir.value if hasattr(b_dir, "value") else str(b_dir)
+            for branch in getattr(fluid.state, "branches", None) or []:
+                if branch.length <= 0:
+                    continue
+                bx = branch.position.x
+                by = branch.position.y
+                b_dir = branch.source
+                b_dir_str = b_dir.value if hasattr(b_dir, "value") else str(b_dir)
 
-                    if b_dir_str == Directions.DOWN.value:
-                        rects.append((bx, by, bx + fw, by + branch.length))
-                    elif b_dir_str == Directions.UP.value:
-                        rects.append((bx, by - branch.length, bx + fw, by))
-                    elif b_dir_str == Directions.RIGHT.value:
-                        rects.append((bx, by, bx + branch.length, by + fl))
-                    elif b_dir_str == Directions.LEFT.value:
-                        rects.append((bx - branch.length, by, bx, by + fl))
+                if b_dir_str == Directions.DOWN.value:
+                    rects.append((bx, by, bx + fw, by + branch.length))
+                elif b_dir_str == Directions.UP.value:
+                    rects.append((bx, by - branch.length, bx + fw, by))
+                elif b_dir_str == Directions.RIGHT.value:
+                    rects.append((bx, by, bx + branch.length, by + fl))
+                elif b_dir_str == Directions.LEFT.value:
+                    rects.append((bx - branch.length, by, bx, by + fl))
 
             # 4. Compound hitboxes (captures secondary pools from recursive bifurcations)
             for hb in getattr(fluid.state, "hitboxes", None) or []:
@@ -136,10 +136,11 @@ class Cartographer:
         water_coord: int,
     ) -> Optional[str]:
         """
-        Identifies the fluid entity occupying the interior water coordinate adjacent to the margin (Fix B018).
+        Identifies the fluid entity occupying the interior water coordinate adjacent to the margin.
         """
         water_pos = Position(sample_c, water_coord) if axis == 'x' else Position(water_coord, sample_c)
         fluids = board.instances(AssetInstances.FLUIDS.value, layer)
+
         for fluid in fluids:
             fx = fluid.state.position.x
             fy = fluid.state.position.y
@@ -161,23 +162,6 @@ class Cartographer:
             if fluid.state.length > 0 and predicates.in_stream(water_pos, fluid):
                 return fluid.id
 
-            for branch in getattr(fluid.state, "branches", None) or []:
-                if branch.length <= 0:
-                    continue
-                bx = branch.position.x
-                by = branch.position.y
-                fw = fluid.properties.dimensions.w
-                fl = fluid.properties.dimensions.l
-                b_dir = branch.source.value if hasattr(branch.source, "value") else str(branch.source)
-                if b_dir == Directions.DOWN.value and bx <= water_pos.x <= bx + fw and by <= water_pos.y <= by + branch.length:
-                    return fluid.id
-                elif b_dir == Directions.UP.value and bx <= water_pos.x <= bx + fw and by - branch.length <= water_pos.y <= by:
-                    return fluid.id
-                elif b_dir == Directions.RIGHT.value and bx <= water_pos.x <= bx + branch.length and by <= water_pos.y <= by + fl:
-                    return fluid.id
-                elif b_dir == Directions.LEFT.value and bx - branch.length <= water_pos.x <= bx and by <= water_pos.y <= by + fl:
-                    return fluid.id
-
         return None
 
     @classmethod
@@ -189,10 +173,10 @@ class Cartographer:
         dimensions: Optional[Dimensions] = None,
     ) -> Hitbox:
         """
-        Constructs a narrow sensor strip aligned along the water perimeter threshold (Fix B018).
+        Constructs a narrow sensor strip aligned along the water perimeter threshold.
         """
-        tile_w = dimensions.w if dimensions is not None else 32
-        tile_l = dimensions.l if dimensions is not None else 32
+        tile_w = dimensions.w if dimensions is not None else STEP_SIZE
+        tile_l = dimensions.l if dimensions is not None else STEP_SIZE
 
         if orientation == Directions.UP.value:
             return Hitbox(Position(0, 0), Dimensions(length, thickness))
@@ -216,11 +200,9 @@ class Cartographer:
     ) -> bool:
         """
         Samples whether the 1D interval along active axis intersects water on the layer.
-        Evaluates the midpoint and boundaries to prevent sub-tile alignment mismatch.
         """
         mid_c = start_c + length // 2
-        samples = [mid_c, start_c + 1, start_c + length - 1]
-        for c in samples:
+        for c in (mid_c, start_c + 1, start_c + length - 1):
             pos = Position(c, fixed_coord) if axis == 'x' else Position(fixed_coord, c)
             if board.fluid(layer, pos):
                 return True
@@ -248,57 +230,139 @@ class Cartographer:
             if x < 0 or y < 0 or (x + w) > layer_size.w or (y + l) > layer_size.l:
                 return True
 
-        # Extract boundaries strictly for the specified elevation tier (defaults to 0 for substrate shorelines)
         perimeters = board.perimeters.get(layer, {}).get(elevation, [])
-        perim_obstacles: List[Tuple[int, int, int, int]] = []
-        for b in perimeters:
-            bx = b.position.x
-            by = b.position.y
-            bw = b.dimensions.w
-            bl = b.dimensions.l
-
-            if axis == 'y' and bl == 1:
-                continue
-            if axis == 'x' and bw == 1:
-                continue
-
-            perim_obstacles.append((bx, by, bw, bl))
-
+        perim_obstacles = [
+            (b.position.x, b.position.y, b.dimensions.w, b.dimensions.l)
+            for b in perimeters
+            if not (axis == 'y' and b.dimensions.l == 1)
+            and not (axis == 'x' and b.dimensions.w == 1)
+        ]
         if perim_obstacles and geometry.occluded(x, y, w, l, perim_obstacles):
             return True
 
-        # Extract static obstacles strictly belonging to the target elevation tier
         candidates = set(board.weights(layer, elevation=elevation))
         candidates.update(board.obstacles(layer, elevation=elevation))
         candidate_obstacles: List[Tuple[int, int, int, int]] = []
 
         for asset in candidates:
-            if asset.category in (
-                AssetCategories.SHEETS.value,
-                AssetCategories.EFFECTS.value,
-            ):
+            if asset.category in (AssetCategories.SHEETS.value, AssetCategories.EFFECTS.value):
                 continue
-
             if asset.instance == AssetInstances.RAFTS.value:
                 continue
-
             if asset.instance == AssetInstances.GATES.value and asset.state.switch:
                 continue
-
             if hasattr(asset.properties, "mass") and asset.properties.mass != 0:
                 continue
 
             for hb in asset.hitboxes:
-                ox = asset.state.position.x + hb.position.x
-                oy = asset.state.position.y + hb.position.y
-                ow = hb.dimensions.w
-                ol = hb.dimensions.l
-                candidate_obstacles.append((ox, oy, ow, ol))
+                candidate_obstacles.append((
+                    asset.state.position.x + hb.position.x,
+                    asset.state.position.y + hb.position.y,
+                    hb.dimensions.w,
+                    hb.dimensions.l,
+                ))
 
-        if candidate_obstacles and geometry.occluded(x, y, w, l, candidate_obstacles):
-            return True
+        return bool(candidate_obstacles and geometry.occluded(x, y, w, l, candidate_obstacles))
 
-        return False
+    @classmethod
+    def _resolve_step(
+        cls,
+        desc: Dict,
+        c: int,
+        step_len: int,
+        layer: str,
+        board: Board,
+        index: ShorelineIndex,
+        season: Optional[str],
+    ) -> Optional[str]:
+        """
+        Evaluates a single step along a contour descriptor and returns the resolved
+        shoreline Asset ID, or None if the step is submerged, occluded, or unmapped.
+        """
+        axis = desc['axis']
+        probe_coord = desc['probe_coord']
+        water_coord = desc.get('water_coord', desc['margin_coord'] + 16)
+
+        # 1. Water-to-water junction: skip if land-side probe intersects water
+        if cls.is_step_fluid(board, layer, axis, c, step_len, probe_coord):
+            logger.info(
+                f"Telemetry:Cartographer:SkipWaterJunction orientation={desc['orientation']} "
+                f"axis={axis} c={c} probe_coord={probe_coord}"
+            )
+            return None
+
+        # 2. Boundary or static obstacle occlusion on bordering substrate
+        if axis == 'x':
+            probe_x, probe_y, probe_w, probe_l = c, probe_coord, step_len, 1
+        else:
+            probe_x, probe_y, probe_w, probe_l = probe_coord, c, 1, step_len
+
+        if cls._detect_flank_occlusions(probe_x, probe_y, probe_w, probe_l, layer, board, axis=axis):
+            return None
+
+        # 3. Adjacent background substrate tile at step midpoint
+        sample_c = c + step_len // 2
+        probe_pos = Position(sample_c, probe_coord) if axis == 'x' else Position(probe_coord, sample_c)
+        tile = board.tile(layer, probe_pos)
+        if not tile:
+            return None
+
+        # 4. Relational shoreline lookup for (tile, fluid, season)
+        fluid_id = cls._resolve_fluid_id(board, layer, axis, sample_c, water_coord)
+        return index.resolve(tile.id, fluid_id, season=season)
+
+    @classmethod
+    def _shoreline_position(
+        cls,
+        orientation: str,
+        c: int,
+        margin_coord: int,
+        dimensions: Dimensions,
+    ) -> Position:
+        """
+        Computes the top-left world coordinate for a shoreline segment.
+        """
+        if orientation == Directions.UP.value:
+            return Position(c, margin_coord)
+        elif orientation == Directions.DOWN.value:
+            return Position(c, margin_coord - dimensions.l)
+        elif orientation == Directions.LEFT.value:
+            return Position(margin_coord, c)
+        return Position(margin_coord - dimensions.w, c)
+
+    @classmethod
+    def _spawn_segment(
+        cls,
+        segment: Dict,
+        layer: str,
+        board: Board,
+    ) -> Asset:
+        """
+        Instantiates a coalesced Shoreline Asset via the Board's Cradle service.
+        """
+        hb = cls._build_shoreline_hitbox(
+            segment['orientation'],
+            segment['length'],
+            segment['thickness'],
+            dimensions=segment['dimensions'],
+        )
+        shore_asset = board.cradle.spawn_shoreline(
+            id=segment['id'],
+            layer=layer,
+            position=segment['pos'],
+            orientation=segment['orientation'],
+            length=segment['length'],
+            hitboxes=[hb],
+        )
+        if segment['season']:
+            shore_asset.state.season = segment['season']
+
+        logger.debug(
+            f"Cartographer: Spawned shoreline '{shore_asset.name}' "
+            f"(id='{shore_asset.id}', orientation='{segment['orientation']}', "
+            f"length={segment['length']}, season='{shore_asset.state.season}')"
+        )
+        return shore_asset
 
     @classmethod
     def _coalesce_segments(
@@ -315,152 +379,84 @@ class Cartographer:
         if not board.cradle:
             return []
 
+        season = board.calendar.season if board.calendar else None
         new_shorelines: List[Asset] = []
 
         for desc in descriptors:
-            orientation = desc['orientation']
-            axis = desc['axis']
-            start = desc['start']
-            end = desc['end']
-            margin_coord = desc['margin_coord']
-            probe_coord = desc['probe_coord']
-            water_coord = desc['water_coord']
+            curr_seg: Optional[Dict] = None
 
-            curr_seg = None
+            for c in range(desc['start'], desc['end'], STEP_SIZE):
+                step_len = min(STEP_SIZE, desc['end'] - c)
+                shoreline_id = cls._resolve_step(desc, c, step_len, layer, board, index, season)
 
-            def commit_segment():
-                nonlocal curr_seg
-                if curr_seg:
-                    hb = cls._build_shoreline_hitbox(
-                        curr_seg['orientation'],
-                        curr_seg['length'],
-                        curr_seg['thickness'],
-                        dimensions=curr_seg['dimensions'],
-                    )
-                    shore_asset = board.cradle.spawn_shoreline(
-                        id=curr_seg['id'],
-                        layer=layer,
-                        position=curr_seg['pos'],
-                        orientation=curr_seg['orientation'],
-                        length=curr_seg['length'],
-                        hitboxes=[hb],
-                    )
-                    target_season = curr_seg.get('season') or (board.calendar.season if board.calendar else None)
-                    if target_season:
-                        shore_asset.state.season = target_season
-
-                    logger.debug(
-                        f"Cartographer: Spawned shoreline '{shore_asset.name}' "
-                        f"(id='{shore_asset.id}', orientation='{curr_seg['orientation']}', "
-                        f"length={curr_seg['length']}, season='{shore_asset.state.season}')"
-                    )
-                    new_shorelines.append(shore_asset)
-                    curr_seg = None
-
-            c = start
-            while c < end:
-                step_len = min(32, end - c)
-                if axis == 'x':
-                    probe_w, probe_l = step_len, 1
-                else:
-                    probe_w, probe_l = 1, step_len
-
-                # 1. Water-to-water junction: skip if land-side probe intersects water
-                if cls.is_step_fluid(
-                    board,
-                    layer,
-                    axis,
-                    c,
-                    step_len,
-                    probe_coord,
-                ):
-                    logger.info(
-                        f"Telemetry:Cartographer:SkipWaterJunction orientation={orientation} "
-                        f"axis={axis} c={c} probe_coord={probe_coord}"
-                    )
-                    commit_segment()
-                    c += step_len
-                    continue
-
-                # 2. Skip if bordering substrate is occluded by boundary or obstacle (Fix B012)
-                probe_x = c if axis == 'x' else probe_coord
-                probe_y = probe_coord if axis == 'x' else c
-                if cls._detect_flank_occlusions(
-                    probe_x,
-                    probe_y,
-                    probe_w,
-                    probe_l,
-                    layer,
-                    board,
-                    axis=axis,
-                ):
-                    commit_segment()
-                    c += step_len
-                    continue
-
-                # 3. Query adjacent background substrate tile at step midpoint
-                sample_c = c + step_len // 2
-                probe_pos = Position(sample_c, probe_coord) if axis == 'x' else Position(probe_coord, sample_c)
-                tile = board.tile(layer, probe_pos)
-                if not tile:
-                    commit_segment()
-                    c += step_len
-                    continue
-
-                # 4. Resolve shoreline asset key from secondary relational index with season
-                fluid_id = cls._resolve_fluid_id(
-                    board,
-                    layer,
-                    axis,
-                    sample_c,
-                    water_coord,
-                )
-                season = board.calendar.season if board.calendar else None
-                shoreline_id = index.resolve(tile.id, fluid_id, season=season)
                 if not shoreline_id:
-                    commit_segment()
-                    c += step_len
+                    if curr_seg is not None:
+                        new_shorelines.append(cls._spawn_segment(curr_seg, layer, board))
+                        curr_seg = None
                     continue
+
+                if curr_seg is not None and curr_seg['id'] == shoreline_id:
+                    curr_seg['length'] += step_len
+                    continue
+
+                if curr_seg is not None:
+                    new_shorelines.append(cls._spawn_segment(curr_seg, layer, board))
 
                 shore_props = board.cradle.spawnables.shorelines.get(shoreline_id)
-                thickness = shore_props.thickness
-                shore_dims = shore_props.dimensions
+                curr_seg = {
+                    'id': shoreline_id,
+                    'pos': cls._shoreline_position(
+                        desc['orientation'],
+                        c,
+                        desc['margin_coord'],
+                        shore_props.dimensions,
+                    ),
+                    'length': step_len,
+                    'orientation': desc['orientation'],
+                    'thickness': shore_props.thickness,
+                    'dimensions': shore_props.dimensions,
+                    'season': season,
+                }
 
-                if orientation == Directions.UP.value:
-                    shore_x, shore_y = c, margin_coord
-                elif orientation == Directions.DOWN.value:
-                    shore_x, shore_y = c, margin_coord - shore_dims.l
-                elif orientation == Directions.LEFT.value:
-                    shore_x, shore_y = margin_coord, c
-                else:
-                    shore_x, shore_y = margin_coord - shore_dims.w, c
-
-                # 5. Coalesce contiguous runs
-                if (
-                    curr_seg is not None
-                    and curr_seg['id'] == shoreline_id
-                    and curr_seg['expected_next'] == c
-                ):
-                    curr_seg['length'] += step_len
-                    curr_seg['expected_next'] += step_len
-                else:
-                    commit_segment()
-                    curr_seg = {
-                        'id': shoreline_id,
-                        'pos': Position(shore_x, shore_y),
-                        'length': step_len,
-                        'orientation': orientation,
-                        'thickness': thickness,
-                        'dimensions': shore_dims,
-                        'season': season,
-                        'expected_next': c + step_len,
-                    }
-
-                c += step_len
-
-            commit_segment()
+            if curr_seg is not None:
+                new_shorelines.append(cls._spawn_segment(curr_seg, layer, board))
 
         return new_shorelines
+
+    @classmethod
+    def _build_descriptor(
+        cls,
+        x: int,
+        y: int,
+        w: int,
+        l: int,
+        orientation: str,
+    ) -> Dict:
+        """
+        Translates a raw (x, y, w, l, orientation) contour tuple into a 1D sweep descriptor.
+        """
+        if orientation in (Directions.UP.value, Directions.DOWN.value):
+            is_up = orientation == Directions.UP.value
+            return {
+                'orientation': orientation,
+                'axis': 'x',
+                'start': x,
+                'end': x + w,
+                'margin_coord': y,
+                'probe_coord': y - 1 if is_up else y + 1,
+                'water_coord': y + 1 if is_up else y - 1,
+            }
+
+        is_left = orientation == Directions.LEFT.value
+        return {
+            'orientation': orientation,
+            'axis': 'y',
+            'start': y,
+            'end': y + l,
+            'margin_coord': x,
+            'probe_coord': x - 1 if is_left else x + 1,
+            'water_coord': x + 1 if is_left else x - 1,
+        }
 
     @classmethod
     def generate(
@@ -477,57 +473,9 @@ class Cartographer:
         if not water_rects:
             return []
 
-        logger.info(
-            f"Telemetry:Cartographer:{layer}:CollectedWaterRects={water_rects}"
-        )
-
+        logger.info(f"Telemetry:Cartographer:{layer}:CollectedWaterRects={water_rects}")
         boundaries = geometry.contours(water_rects)
+        logger.info(f"Telemetry:Cartographer:{layer}:DerivedContours={boundaries}")
 
-        logger.info(
-            f"Telemetry:Cartographer:{layer}:DerivedContours={boundaries}"
-        )
-
-        descriptors = []
-        for x, y, w, l, orientation in boundaries:
-            if orientation == Directions.UP.value:
-                descriptors.append({
-                    'orientation': orientation,
-                    'axis': 'x',
-                    'start': x,
-                    'end': x + w,
-                    'margin_coord': y,
-                    'probe_coord': y - 1,
-                    'water_coord': y + 1,
-                })
-            elif orientation == Directions.DOWN.value:
-                descriptors.append({
-                    'orientation': orientation,
-                    'axis': 'x',
-                    'start': x,
-                    'end': x + w,
-                    'margin_coord': y,
-                    'probe_coord': y + 1,
-                    'water_coord': y - 1,
-                })
-            elif orientation == Directions.LEFT.value:
-                descriptors.append({
-                    'orientation': orientation,
-                    'axis': 'y',
-                    'start': y,
-                    'end': y + l,
-                    'margin_coord': x,
-                    'probe_coord': x - 1,
-                    'water_coord': x + 1,
-                })
-            elif orientation == Directions.RIGHT.value:
-                descriptors.append({
-                    'orientation': orientation,
-                    'axis': 'y',
-                    'start': y,
-                    'end': y + l,
-                    'margin_coord': x,
-                    'probe_coord': x + 1,
-                    'water_coord': x - 1,
-                })
-
+        descriptors = [cls._build_descriptor(*b) for b in boundaries]
         return cls._coalesce_segments(descriptors, layer, board, index)
