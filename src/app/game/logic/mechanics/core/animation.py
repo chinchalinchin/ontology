@@ -51,13 +51,6 @@ class AnimationMechanics(Mechanic):
                 asset.animation.animate(asset.state, asset.properties)
             for asset in board.categories(AssetCategories.SHEETS):
                 asset.animation.animate(asset.state, asset.properties)
-            # --------------------------------- INSTANCE ANIMATIONS
-            for asset in board.instances(AssetInstances.CHESTS):
-                asset.animation.animate(asset.state, asset.properties)
-            for asset in board.instances(AssetInstances.GATES):
-                asset.animation.animate(asset.state, asset.properties)
-            for asset in board.instances(AssetInstances.PLATES):
-                asset.animation.animate(asset.state, asset.properties)
             # --------------------------------- SPECIAL ANIMATIONS
             for effect in board.instances(AssetInstances.REACTABLES.value):
                 if effect.state.active:
