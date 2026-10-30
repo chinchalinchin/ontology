@@ -8,8 +8,8 @@
 import pytest
 
 # Application Libraries
-import app.static.settings as settings
 from app.static.semantics import (
+    AssetCategories,
     AssetInstances,
     Relations,
     Directions,
@@ -294,12 +294,12 @@ def test_board_fluid_spatial_hash_indexes_child_branches(mock_board):
     assert mock_board.fluid("0", Position(10, 300)) is False
 
 
-def test_board_bridges_query_excludes_obstacles_and_weights(mock_board, mock_bridge):
+def test_board_bridges_query_excludes_obstacles_and_weights(mock_board):
     """
     Verify Board.bridges() returns sensor bridge assets while strictly excluding
     them from board.obstacles() and board.weights().
     """
-    mock_board.add([mock_bridge])
+    mock_bridge = next(iter(mock_board.instances(AssetInstances.BRIDGES.value)))
 
     bridges = mock_board.bridges("0")
     assert mock_bridge in bridges
@@ -309,10 +309,14 @@ def test_board_bridges_query_excludes_obstacles_and_weights(mock_board, mock_bri
     assert mock_bridge not in mock_board.weights("0")
 
 
-def test_fluid_frame_keys_memoization(mock_fluid):
+def test_fluid_frame_keys_memoization(mock_asset):
     """
     Verify FluidFrame.keys memoizes results by animation frame index.
     """
+    mock_fluid = mock_asset(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.FLUIDS.value
+    )
     mock_fluid.state.length = 64
     mock_fluid.state.animation.frame = 0
 

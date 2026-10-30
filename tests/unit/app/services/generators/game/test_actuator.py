@@ -110,18 +110,18 @@ def test_actuator_character_sheets_ignored(mock_board, mock_actuator):
     assert length == 120
 
 
-def test_actuator_dynamic_bodies_ignored_as_obstacles(mock_board, mock_crate, mock_actuator):
+def test_actuator_dynamic_bodies_ignored_as_obstacles(mock_board, mock_actuator):
     """
     Verify dynamic bodies (mass > 0, such as Crates) do not occlude fluids.
     """
-    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid = next(iter(mock_board.instances(AssetInstances.FLUIDS.value)))
     fluid.state.position = Position(x=70, y=0)
     fluid.state.source = Directions.DOWN.value
 
+    mock_crate = next(iter(mock_board.instances(AssetInstances.CRATES.value)))
     mock_crate.state.position = Position(x=70, y=96)
-    mock_board.add([mock_crate])
 
-    length, pool, hitboxes = mock_actuator.pump(fluid, mock_board)
+    length, pool, _ = mock_actuator.pump(fluid, mock_board)
 
     assert length == 319
     assert pool is None

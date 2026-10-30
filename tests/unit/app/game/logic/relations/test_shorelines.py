@@ -57,8 +57,3 @@ def test_shoreline_index_from_properties(
     )
     assert index.resolve("temperate", "waterflow") == "temperate-banks"
     assert index.resolve("unregistered-tile", "waterflow") is None
-
-def test_shoreline_index_from_properties(mock_geography_properties):
-    index = ShorelineIndex.from_properties(mock_geography_properties.shorelines)
-    assert index.resolve("temperate", "waterflow-01") == "temperate-banks"
-    assert index.resolve("unregistered-tile", "waterflow-01") is None

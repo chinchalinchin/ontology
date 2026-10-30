@@ -17,6 +17,7 @@ import pytest
 
 # Application Libraires
 from app.static.semantics import (
+    AssetCategories,
     AssetInstances,
     Directions
 )
@@ -64,15 +65,18 @@ def test_shoreline_normals():
 
 
 @pytest.mark.workflow_fluids
-def test_fluid_velocity(mock_fluid):
+@patch('app.static.settings.BASE_FLOW_SPEED', 20)
+def test_fluid_velocity(mock_asset):
     """
     Verify current velocity calculation based on emitter source and flow intensity.
     """
-    mock_fluid.state.flow = 2
-    with patch('app.static.settings.BASE_FLOW_SPEED', 20):
-        vx, vy = fields._fluid_velocity(mock_fluid)
-        assert vx == 0.0
-        assert vy == 40.0  # 2 * BASE_FLOW_SPEED (20.0)
+    mock_fluid = mock_asset(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.FLUIDS.value
+    )
+    vx, vy = fields._fluid_velocity(mock_fluid)
+    assert vx == 0.0
+    assert vy == 40.0  # 2 * BASE_FLOW_SPEED (20.0)
 
 
 @pytest.mark.workflow_fluids
