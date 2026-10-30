@@ -28,7 +28,6 @@ pytestmark = [
 
 # -----------------------------------------------------
 
-
 def test_actuator_pump_down_to_boundary(mock_board, mock_actuator):
     """
     Verify unobstructed downward propagation truncates at boundary wall and does not pool.

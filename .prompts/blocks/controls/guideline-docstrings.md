@@ -96,6 +96,7 @@ Tags are meant to capture logically related slices of the Application.
                 * `workflow.rendering`
                 * `workflow.seasons`
                 * `workflow.telemetry`
+                * `workflow.transitions`: (*Transition Translation and Execution*)
                 * `workflow.typography`
 
 

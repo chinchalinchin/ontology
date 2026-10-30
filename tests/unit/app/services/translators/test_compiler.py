@@ -1,47 +1,87 @@
 """
-# Ontology: tests.unit.app.services.translators.test_compiler
+@domain.test
+@test.unit
+@app.services
+@workflow.intentions
+@workflow.plots
+@workflow.seasons
+@workflow.transitions
+
+# Ontology: Tests - tests.unit.app.services.translators.test_compiler
+
+Unit tests for the Compiler implementation of Transition Translation.
 """
 # External Libraries
 import pytest
 
 # Application Libraries
-from app.static.semantics import Intentions
+from app.static.semantics import (
+    AssetCategories,
+    AssetInstances,
+    Intentions,
+    Translators,
+    Goals
+)
+from app.models.state.assets.sheets import Goal
 from app.services.translators.compiler import (
     CompilerTranslator, 
-    CompilerExecutor
+    CompilerExecutor,
+)
+from app.services.translators.lamb import (
+    LambdaTranslator,
+    LambdaExecutor
 )
 
+# -----------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_services,
+    pytest.mark.workflow_transitions
+]
+
+# -----------------------------------------------------
+
 @pytest.mark.workflow_intentions
-def test_compiler_compiles_successfully(mock_intention_configuration):
-    translator = CompilerTranslator()
-    executor = translator.compile(mock_intention_configuration)
+@pytest.mark.parametrize("implementation", [
+    (Translators.COMPILER.value, CompilerExecutor),
+    (Translators.LAMBDA.value, LambdaExecutor)
+])
+def test_executor_compiles_successfully(
+    implementation,
+    mock_translator,
+    mock_configurations_schema
+):
+    translator = mock_translator(implementation[0])
+    executor = translator.compile(mock_configurations_schema.intentions)
     
-    assert isinstance(executor, CompilerExecutor)
+    assert isinstance(executor, implementation[1])
     assert Intentions.IDLE.value in executor.transitions
-    assert len(executor.transitions[Intentions.IDLE.value]) == 2
-    assert executor.transitions[Intentions.IDLE.value][0].next == Intentions.ATTACK.value
+    assert len(executor.transitions[Intentions.IDLE.value]) == 5
+    assert executor.transitions[Intentions.IDLE.value][0].next == Intentions.WANDER.value
 
 
 @pytest.mark.workflow_intentions
-def test_compiler_evaluation_matches_first_condition(mock_intention_configuration, mock_sprite_state):
-    translator = CompilerTranslator()
-    executor = translator.compile(mock_intention_configuration)
-    
-    mock_sprite_state.meters.health.current = 30
-    
-    result = executor.evaluate(
-        Intentions.IDLE.value, 
-        {"sprite": mock_sprite_state}
+@pytest.mark.parametrize("implementation", [
+    (Translators.COMPILER.value, CompilerExecutor),
+    (Translators.LAMBDA.value, LambdaExecutor)
+])
+def test_intention_executor_evaluation_matches_wander(
+    implementation,
+    mock_translator,
+    mock_configurations_schema,
+    mock_state
+):
+    translator = mock_translator(implementation[0])
+    executor = translator.compile(mock_configurations_schema.intentions)
+
+    mock_sprite_state = mock_state(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value
     )
-    assert result == Intentions.ATTACK.value
-
-
-@pytest.mark.workflow_intentions
-def test_compiler_evaluation_matches_second_condition(mock_intention_configuration, mock_sprite_state):
-    translator = CompilerTranslator()
-    executor = translator.compile(mock_intention_configuration)
-    
-    mock_sprite_state.meters.health.current = 60
+    mock_sprite_state.goal = Goal(
+        category = Goals.POSITION.value,
+        layer = mock_sprite_state.layer
+    )
     
     result = executor.evaluate(
         Intentions.IDLE.value, 
@@ -51,17 +91,74 @@ def test_compiler_evaluation_matches_second_condition(mock_intention_configurati
 
 
 @pytest.mark.workflow_intentions
-def test_compiler_evaluation_with_dictionary_lookup(mock_intention_configuration, mock_sprite_state_alt):
-    translator = CompilerTranslator()
-    executor = translator.compile(mock_intention_configuration)
-    
-    mock_sprite_state_alt.mutators.triggers.dead = True
+@pytest.mark.parametrize("implementation", [
+    (Translators.COMPILER.value, CompilerExecutor),
+    (Translators.LAMBDA.value, LambdaExecutor)
+])
+def test_intention_executor_matches_hunt(
+    implementation,
+    mock_translator,
+    mock_configurations_schema,
+    mock_state
+):
+    translator = mock_translator(implementation[0])
+    executor = translator.compile(mock_configurations_schema.intentions)
+
+    mock_sprite_state = mock_state(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value
+    )
+    mock_sprite_state.goal = Goal(
+        category = Goals.TARGET.value,
+        layer = mock_sprite_state.layer
+    )
     
     result = executor.evaluate(
-        Intentions.ATTACK.value, 
-        {"sprites": {"enemy": mock_sprite_state_alt}}
+        Intentions.IDLE.value, 
+        {"sprite": mock_sprite_state}
     )
-    assert result == Intentions.IDLE.value
+    assert result == Intentions.HUNT.value
+
+
+@pytest.mark.workflow_intentions
+@pytest.mark.parametrize("implementation", [
+    (Translators.COMPILER.value, CompilerExecutor),
+    (Translators.LAMBDA.value, LambdaExecutor)
+])
+def test_compiler_evaluation_with_dictionary_lookup(
+    implementation,
+    mock_translator,
+    mock_configurations_schema,
+    mock_state
+):
+    translator = mock_translator(implementation[0])
+    executor = translator.compile(mock_configurations_schema.intentions)
+
+    mock_sprite_state = mock_state(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value    
+    )
+    mock_sprite_state.goal = Goal(
+        name = "enemy",
+        category = Goals.TARGET.value,
+        layer = mock_sprite_state.layer,
+    )
+
+    mock_enemy_state = mock_state(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value,
+        name="enemy"
+    )
+    mock_enemy_state.mutators.triggers.dead = True
+        
+    result = executor.evaluate(
+        Intentions.ATTACK.value, 
+        {   
+            "sprite": mock_sprite_state,
+            "sprites": {"enemy": mock_enemy_state }
+        }
+    )
+    assert result == Intentions.SCAVENGE.value
 
 
 @pytest.mark.workflow_plots

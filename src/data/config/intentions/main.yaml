@@ -6,6 +6,7 @@ intentions:
         - sprite.goal
         - sprite.goal.category == constants.Goals.TARGET.value
         - sprite.layer == sprite.goal.layer
+        - not sprites.get(sprite.goal.name).mutators.triggers.dead
     - next: hunt
       conditions: 
         - not sprite.goal
