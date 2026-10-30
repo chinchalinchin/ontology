@@ -118,13 +118,13 @@ tools:
     manager:
       board: false
       specs: false
-      docs: false
+      docs: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
       data: true
-      filter: false
+      filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
@@ -173,8 +173,16 @@ tools:
           - title: Test Fixtures
             scan:
               test: [ fixtures ]
+          - title: Fluid Services
+            scan:
+              app: [ services ]
+              workflows: [ generation, fluids ]
+          - title: Fluid Mechanics
+            scan:
+              app: [ mechanics ]
+              workflows: [ fluids ]
       data:
-        properties: [ effects, geography, gates, crafts, sheets, objects, tiles, resources ]
+        properties: [ effects, geography, sheets, objects, tiles ]
         state: [ world-testbed ]
         configurations: [ ]
         templates: [  ]
@@ -193,6 +201,7 @@ tools:
       pipeline:
         command: pytest -m
         marker: workflow_fluids
+        scope: '**/test_{actuator,cartographer}.py'
       session:
         description: |
           description

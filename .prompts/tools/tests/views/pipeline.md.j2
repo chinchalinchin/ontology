@@ -1,5 +1,8 @@
 {% set test_command = tools.parameters.tests.pipeline.command + ' ' + tools.parameters.tests.pipeline.marker %}
 {% set test_path = properties.paths.root + properties.paths.tests %}
+{% set test_path = test_path + tools.parameters.tests.pipeline.scope 
+                    if tools.parameters.tests.pipeline.scope is defined else 
+                    test_path %}
 {# ----------------------------------------------------------------------  #}
 ### View: Test Pipeline
 

@@ -47,6 +47,7 @@ import yaml as pyyaml
 
 OUTPUT_DIR                      = os.environ.get('OUTPUT_DIR', 'build')
 DATA_DIR                        = os.environ.get('DATA_DIR', 'data')
+SHELL                           = os.environ.get('SHELL', '/bin/bash')
 
 # ----------------------------------------------------------------
 # ------------------------------------ APP CONTEXT & MACRO REGISTRY
@@ -313,6 +314,7 @@ def command(command_str: str) -> str:
             command_str,
             shell=True,
             stderr=subprocess.STDOUT,
+            executable=SHELL,
             text=True
         )
         return result.strip()

@@ -29,6 +29,7 @@ from app.game.devices import (
 )
 from app.game.engine import Engine
 from app.game.logic.mechanics import Mechanic
+from app.game.logic.relations import ShorelineIndex
 from app.game.screen import Screen
 from app.models.config import (
     ConfigurationSchema,
@@ -38,9 +39,16 @@ from app.models.groups import EquipmentGroup
 from app.models.properties import PropertiesSchema
 from app.models.state import StateSchema
 from app.services.factories import MechanicFactory
-from app.services.generators.game import Cradle
+from app.services.generators.game import (
+    Actuator,
+    Cartographer,
+    Cradle,
+)
 from app.services.generators.menus import Provider
-from app.static.semantics import Devices
+from app.static.semantics import (
+    AssetInstances,
+    Devices,
+)
 
 # Cython Libraries
 import libs.graphics.render as render
@@ -137,6 +145,8 @@ def mock_board(
     mock_equipment: EquipmentGroup,
     mock_cradle: Cradle,
     mock_keyboard: Keyboard,
+    mock_actuator: Actuator,
+    mock_shoreline_index: ShorelineIndex,
 ) -> Board:
     board = Board(
         assets=mock_assets,
@@ -147,6 +157,16 @@ def mock_board(
     board.set_plot(mock_state_schema.plots)
     board.set_cradle(mock_cradle)
     board.set_device(mock_keyboard)
+
+    fluids = board.instances(AssetInstances.FLUIDS.value)
+    for layer in {f.state.layer for f in fluids}:
+        for fluid in board.instances(AssetInstances.FLUIDS.value, layer):
+            mock_actuator.propagate(fluid, board)
+        board.update_fluid_cache(layer)
+        shores = Cartographer.generate(layer, board, mock_shoreline_index)
+        if shores:
+            board.add(shores)
+
     return board
 
 

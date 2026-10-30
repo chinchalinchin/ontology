@@ -61,20 +61,20 @@ def mock_asset(
         resolved_state = asset_state or mock_state(category, instance, id=id)
 
         recipe = getattr(
-            getattr(mock_configurations_schema.recipes, category), 
-            instance
+            getattr(mock_configurations_schema.recipes, category),
+            instance,
         )
         substrate = mock_material_index.substrate(instance)
 
         if instance != AssetInstances.PLAYERS.value:
             prop_map = getattr(
-                getattr(mock_properties_schema, category), 
-                instance
+                getattr(mock_properties_schema, category),
+                instance,
             )
         else:
             prop_map = getattr(
-                getattr(mock_properties_schema, category), 
-                AssetInstances.SPRITES.value
+                getattr(mock_properties_schema, category),
+                AssetInstances.SPRITES.value,
             )
 
         properties = prop_map[resolved_state.id]
@@ -108,5 +108,4 @@ def mock_assets(
                 assets.append(
                     mock_asset(category, instance, asset_state=entity_state)
                 )
-    # TODO: need to generate shorelines and fluids
     return assets

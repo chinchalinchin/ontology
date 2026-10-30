@@ -7,21 +7,17 @@
 
 # Ontology: Tests - tests.unit.services.generators.game.test_cartographer
 
-Unit tests for the Cartographer services.
+Unit tests for the Cartographer service.
 """
 # External Libraries
 import pytest
 
 # Application Libraries
+from app.services.generators.game.cartographer import Cartographer
 from app.static.semantics import (
     AssetInstances,
-    Directions
+    Directions,
 )
-from app.models.state import (
-    Branch,
-    Pool
-)
-from app.services.generators.game.cartographer import Cartographer
 
 # Cython Libraries
 from libs.core.models import Position
@@ -35,38 +31,35 @@ pytestmark = [
 
 # -----------------------------------------------------
 
+
 def test_cartographer_collect_water_rectangles(mock_board):
     """
     Verify active stream corridors and annular pools are correctly extracted
     into primitive (min_x, min_y, max_x, max_y) AABB tuples.
     """
-    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
-    fluid.state.position = Position(x=70, y=0)
-    fluid.state.source = Directions.DOWN.value
-    fluid.state.length = 96
-    fluid.state.pool = Pool(x=0, y=32, w=192, l=160)
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value, "0")[0]
+    fw = fluid.properties.dimensions.w
+    fx = fluid.state.position.x
+    fy = fluid.state.position.y
+    pool = fluid.state.pool
 
     rects = Cartographer._collect_water_rectangles("0", mock_board)
 
-    # Corridor: (70, 0, 70 + 32, 0 + 96) -> (70, 0, 102, 96)
-    assert (70, 0, 102, 96) in rects
-    # Pool: (0, 32, 0 + 192, 32 + 160) -> (0, 32, 192, 192)
-    assert (0, 32, 192, 192) in rects
+    assert (fx, fy, fx + fw, fy + fluid.state.length) in rects
+    assert pool is not None
+    assert (pool.x, pool.y, pool.x + pool.w, pool.y + pool.l) in rects
 
 
 def test_cartographer_generate_and_coalesce_shorelines(
-    mock_board, 
-    mock_shoreline_index, 
-    mock_actuator
+    mock_board,
+    mock_shoreline_index,
 ):
     """
     Verify Cartographer sweeps fluid contours, samples substrate tiles,
     and returns coalesced Shoreline assets without mutating board state.
     """
-    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
-    fluid.state.position = Position(x=70, y=0)
-    fluid.state.source = Directions.DOWN.value
-    mock_actuator.propagate(fluid, mock_board)
+    Cartographer.purge("0", mock_board)
+    assert len(mock_board.shorelines("0")) == 0
 
     shores = Cartographer.generate("0", mock_board, mock_shoreline_index)
 
@@ -77,25 +70,13 @@ def test_cartographer_generate_and_coalesce_shorelines(
         assert shore.state.length > 0
         assert len(shore.hitboxes) == 1
 
-    # Verify board state is not mutated by generate()
     assert len(mock_board.shorelines("0")) == 0
 
 
-def test_cartographer_purge_clears_layer_shorelines(
-    mock_board, 
-    mock_shoreline_index, 
-    mock_actuator
-):
+def test_cartographer_purge_clears_layer_shorelines(mock_board):
     """
     Verify Cartographer.purge disposes of all procedural shorelines on the target layer.
     """
-    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
-    fluid.state.position = Position(x=70, y=0)
-    fluid.state.source = Directions.DOWN.value
-    mock_actuator.propagate(fluid, mock_board)
-
-    shores = Cartographer.generate("0", mock_board, mock_shoreline_index)
-    mock_board.add(shores)
     assert len(mock_board.shorelines("0")) > 0
 
     Cartographer.purge("0", mock_board)
@@ -103,97 +84,91 @@ def test_cartographer_purge_clears_layer_shorelines(
 
 
 def test_cartographer_coincident_pools_do_not_deadlock(
-    mock_board, 
-    mock_shoreline_index, 
-    mock_actuator, 
-    mock_fluid_alt2
+    mock_board,
+    mock_shoreline_index,
+    mock_actuator,
 ):
     """
     Verify Bug B015 fix: two parallel fluid streams forming identical/overlapping
     annular pools merge through contour analysis without mutual exclusion deadlock.
     """
-    fluid1 = mock_board.instances(AssetInstances.FLUIDS.value)[0]
-    fluid1.state.position = Position(x=70, y=0)
+    fluid1, fluid2 = mock_board.instances(AssetInstances.FLUIDS.value, "0")[:2]
+    fw = fluid1.properties.dimensions.w
+
+    fluid1.state.position = Position(x=200, y=0)
     fluid1.state.source = Directions.DOWN.value
     fluid1.state.flow = 2
 
-    # Remove pre-existing secondary fluids to isolate the test
-    other_fluids = [f for f in mock_board.instances(AssetInstances.FLUIDS.value, "0") if f is not fluid1]
-    mock_board.remove(other_fluids)
+    fluid2.state.position = Position(x=200 + fw, y=0)
+    fluid2.state.source = Directions.DOWN.value
+    fluid2.state.flow = 2
 
-    # Add parallel adjacent fluid stream
-    mock_fluid_alt2.state.position = Position(x=102, y=0)
-    mock_fluid_alt2.state.source = Directions.DOWN.value
-    mock_fluid_alt2.state.flow = 2
-    mock_board.add([mock_fluid_alt2])
-
-    # Static barrier struck by both fluids at y=96
-    gate = mock_board.instances(AssetInstances.GATES.value)[0]
+    gate = mock_board.instances(AssetInstances.GATES.value, "0")[0]
     gate.state.switch = False
-    gate.state.position = Position(x=70, y=96)
+    gate.state.position = Position(x=264, y=150)
 
     mock_actuator.propagate(fluid1, mock_board)
-    mock_actuator.propagate(mock_fluid_alt2, mock_board)
+    mock_actuator.propagate(fluid2, mock_board)
+    mock_board.update_fluid_cache("0")
 
     shores = Cartographer.generate("0", mock_board, mock_shoreline_index)
 
-    # Shorelines must be synthesized around the composite pool perimeter
     assert len(shores) > 0
 
 
 def test_cartographer_fluid_meeting_fluid_suppresses_shorelines(
-    mock_board, 
-    mock_shoreline_index, 
-    mock_actuator, 
-    mock_fluid_alt2
+    mock_board,
+    mock_shoreline_index,
+    mock_actuator,
 ):
     """
     Verify that interior fluid-to-fluid thresholds between adjacent streams
     do not generate dividing shorelines.
     """
-    fluid1 = mock_board.instances(AssetInstances.FLUIDS.value)[0]
-    fluid1.state.position = Position(x=70, y=0)
+    fluid1, fluid2 = mock_board.instances(AssetInstances.FLUIDS.value, "0")[:2]
+    fw = fluid1.properties.dimensions.w
+    x1 = 1200
+    x2 = x1 + fw
+
+    fluid1.state.position = Position(x=x1, y=0)
     fluid1.state.source = Directions.DOWN.value
+    fluid1.state.flow = 0
 
-    # Remove pre-existing secondary fluids to isolate the two parallel streams
-    other_fluids = [
-        f for f in mock_board.instances(AssetInstances.FLUIDS.value, "0") 
-        if f is not fluid1
-    ]
-    mock_board.remove(other_fluids)
-
-    # Fluid 2 placed directly along East margin of Fluid 1 (x=70 + 32 = 102)
-    mock_fluid_alt2.state.position = Position(x=102, y=0)
-    mock_fluid_alt2.state.source = Directions.DOWN.value
-    mock_board.add([mock_fluid_alt2])
+    fluid2.state.position = Position(x=x2, y=0)
+    fluid2.state.source = Directions.DOWN.value
+    fluid2.state.flow = 0
 
     mock_actuator.propagate(fluid1, mock_board)
-    mock_actuator.propagate(mock_fluid_alt2, mock_board)
+    mock_actuator.propagate(fluid2, mock_board)
+    mock_board.update_fluid_cache("0")
 
     shores = Cartographer.generate("0", mock_board, mock_shoreline_index)
 
     left_shores = [
-        s for s in shores 
+        s for s in shores
         if s.state.orientation == Directions.LEFT.value
+        and s.state.position.x >= x1
     ]
     right_shores = [
-        s for s in shores 
+        s for s in shores
         if s.state.orientation == Directions.RIGHT.value
+        and s.state.position.x >= x1
     ]
 
-    # Outer West margin (x=70) generates West shorelines
     assert len(left_shores) > 0
-    assert all(s.state.position.x == 70 for s in left_shores)
+    assert all(s.state.position.x == x1 for s in left_shores)
 
-    # Outer East margin (x=102..134) generates East shorelines positioned at x=102
     assert len(right_shores) > 0
-    assert all(s.state.position.x == 102 for s in right_shores)
+    assert all(s.state.position.x == x2 + fw - 32 for s in right_shores)
 
-    # Dividing seam at x=102 must NOT generate an internal West shoreline (orientation=LEFT)
-    assert not any(s.state.orientation == Directions.LEFT.value and s.state.position.x == 102 for s in shores)
-
-    # Dividing seam at x=102 must NOT generate an internal East shoreline (orientation=RIGHT at x=70)
-    assert not any(s.state.orientation == Directions.RIGHT.value and s.state.position.x == 70 for s in shores)
+    assert not any(
+        s.state.orientation == Directions.LEFT.value and s.state.position.x == x2
+        for s in shores
+    )
+    assert not any(
+        s.state.orientation == Directions.RIGHT.value and s.state.position.x == x2 - 32
+        for s in shores
+    )
 
 
 def test_cartographer_empty_fluid_returns_empty(mock_board, mock_shoreline_index):
@@ -204,19 +179,21 @@ def test_cartographer_empty_fluid_returns_empty(mock_board, mock_shoreline_index
     assert shores == []
 
 
-def test_cartographer_board_shoreline_frequency(mock_board, mock_shoreline):
+def test_cartographer_board_shoreline_frequency(mock_board):
     """
     Verify that Board correctly indexes and tracks procedural shoreline assets
-    in board.shorelines[layer] on add and remove.
+    in board.shorelines(layer) on add and remove.
     """
+    shores = list(mock_board.shorelines("0"))
+    assert len(shores) > 0
+
+    target_shore = shores[0]
+    mock_board.remove(shores)
     assert len(mock_board.shorelines("0")) == 0
 
-    mock_board.add([mock_shoreline])
+    mock_board.add([target_shore])
     assert len(mock_board.shorelines("0")) == 1
-    assert mock_board.shorelines("0")[0] is mock_shoreline
-
-    mock_board.remove([mock_shoreline])
-    assert len(mock_board.shorelines("0")) == 0
+    assert mock_board.shorelines("0")[0] is target_shore
 
 
 def test_cartographer_collects_active_branch_rectangles(mock_board):
@@ -224,33 +201,16 @@ def test_cartographer_collects_active_branch_rectangles(mock_board):
     Verify Cartographer._collect_water_rectangles compiles bounding boxes for
     parent streams, annular pools, and active child branch corridors.
     """
-    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
-    fluid.state.position = Position(x=70, y=0)
-    fluid.state.source = Directions.DOWN.value
-    fluid.state.length = 32
-    fluid.state.pool = Pool(x=0, y=32, w=192, l=160)
-    fluid.state.branches = [
-        Branch(
-            position=Position(x=0, y=192),
-            source=Directions.DOWN.value,
-            flow=1,
-            length=127
-        ),
-        Branch(
-            position=Position(x=160, y=192),
-            source=Directions.DOWN.value,
-            flow=1,
-            length=127
-        )
-    ]
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value, "0")[0]
+    fw = fluid.properties.dimensions.w
 
     rects = Cartographer._collect_water_rectangles("0", mock_board)
 
-    # Parent stream
-    assert (70, 0, 102, 32) in rects
-    # Annular pool
-    assert (0, 32, 192, 192) in rects
-    # Left branch corridor: (0, 192, 32, 192 + 127) -> (0, 192, 32, 319)
-    assert (0, 192, 32, 319) in rects
-    # Right branch corridor: (160, 192, 192, 192 + 127) -> (160, 192, 192, 319)
-    assert (160, 192, 192, 319) in rects
+    assert len(fluid.state.branches) == 2
+    for branch in fluid.state.branches:
+        assert (
+            branch.position.x,
+            branch.position.y,
+            branch.position.x + fw,
+            branch.position.y + branch.length,
+        ) in rects

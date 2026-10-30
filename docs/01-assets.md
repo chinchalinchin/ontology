@@ -1,16 +1,16 @@
 # Ontology Docs: Assets
 
-This document serves to specify the Asset architecture and provide key definition for game terminology.
+This document serves to specify the Asset architecture and provide key definition for [Application](./00-overview.md#application) terminology.
 
 !!! note "Definition"
     An Asset is an image file.
 
 !!! note "Liberated Pixel Cup"
-    [LPC](https://lpc.opengameart.org/) Assets are bundled with the application by default.
+    [LPC](https://lpc.opengameart.org/) Assets are bundled with the [Application](./00-overview.md#application) by default.
 
 ## Overview 
 
-The Asset directory (and all subdirectories) contains Asset Image Files (`*.png`) and Asset Property indices (`*.yaml`). The [initialization](./11-architecture.md#specification-initialization) reads in all of these files recursively and then use the property indices to index each Asset file into the [Registry](./00-overview.md#library-registry). Each image file that appears in the Asset directories must be configured in a YAML file to get indexed and injected into the game. The property configuration in the `*.yaml` files must conform to the [Asset property schema](./appendices/01-schemas.md#model-properties) of the respective Asset Category it is configuring. 
+The Asset directory (and all subdirectories) contains Asset Image Files (`*.png`) and Asset Property indices (`*.yaml`). The [initialization](./11-architecture.md#specification-initialization) reads in all of these files recursively and then use the Property indices to index each Asset file into the [Registry](./00-overview.md#library-registry). Each image file that appears in the Asset directories must be configured in a YAML file to get indexed and injected into the [Application](./00-overview.md#application) . The Property configuration in the `*.yaml` files must conform to the [Asset Property schema](./appendices/01-schemas.md#model-properties) of the respective Asset Category it is configuring. 
 
 !!! important "Schema Merge"
     All `*.yaml` files in the Asset directories are merged into a single schema, so every key must be unique. If two image files have the same name, one of them will be overwritten during [Registry indexing](./00-overview.md#library-registry).
@@ -21,11 +21,11 @@ The Asset directory (and all subdirectories) contains Asset Image Files (`*.png`
 
 **IDs & Names**
 
-IDs are used to map Asset Files to images loaded into the [Registry](./00-overview.md#library-registry), to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, IDs uniquely identify a physical Asset File, but not in-game entities.
+IDs are used to map Asset Files to images loaded into the [Registry](./00-overview.md#library-registry), to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, IDs uniquely identify a physical Asset File, but not rendered entities.
 
-Names are used to uniquely identify an ingame entity. A single Asset ID may have multiple Names. A Name corresponds to a particular deployment of an Asset onto a Board. 
+Names are used to uniquely identify an instance of the Asset file. A single Asset ID may have multiple Names. A Name corresponds to a particular deployment of an Asset onto the [Board](./00-overview.md#component-board). 
 
-In short, a Name identifies an Asset's deployment. A ID is what binds a deployed Asset to its Asset File.
+In short, a Name identifies an Asset's deployment. A ID is what binds a deployed Asset to its image file.
 
 #### Concept: Mutability
 
@@ -33,7 +33,7 @@ In short, a Name identifies an Asset's deployment. A ID is what binds a deployed
 
 *Properties* are static and never changed by [Mechanics](./05-mechanics.md). Properties determine the immutable characteristics of Assets, e.g. their dimensions and hitboxes. They are loaded side-by-side with the Asset files in the `/src/assets/**` directory. All Assets have, at bare minumum, a Dimension property, specifying their respective width and length, and a Priority property, that specifies the [statically configured sort key](./11-architecture.md#rendering-sort) for their relative rendering order. Dimension is a Cartesian coordinate (tuple), whereas Priority is an integer.
 
-*State* is dynamic and can be changed by [Mechanics](./05-mechanics.md). State determines the mutable characteristics of an Asset, e.g. the current Position of an Asset, the current Animation, etc. All Assets have: *Position* State, given as a Cartesian coordinate (tuple); a Layer, given as a categorical variable'; an Elevation, representing their Z-axis, given as an integer; a Substrate, used for sorting and rendering Assets at the same elevation; an Anchor, used to augment the perspective-based render sorting, given as an integer.
+*State* is dynamic and can be changed by [Mechanics](./05-mechanics.md). State determines the mutable characteristics of an Asset, e.g. the current Position of an Asset, the current Animation, etc. All Assets have: *Position* State, given as a Cartesian coordinate (tuple); a Layer, given as a categorical variable'; an Elevation, representing their Z-axis, given as an integer; an Anchor, used to augment the perspective-based render sorting, given as an integer.
 
 !!! @TODO(08-04)
     Mutators are polymorphic. Because of this, they have attributes that are not utilized by every Asset that is instantiated. They are one of the core ambiguities in the entire Asset model. They are mainly utilized by Sprites to signal their states have internally reached certain conditions, e.g. `vision` is triggered when the Sprite is in sight of its Goal. 
@@ -74,30 +74,30 @@ All Asset States inherit fields from this model.
 
 **Frames & Animations**
 
-A *Frame *represents the binding of an Asset to a particular partitioning of its raw image file into a *Frame space*. Frames expose interfaces for *indexing* the Frame space via Asset Properties, and they also expose interfaces for *accessing* Frame space via Asset State.
+A *Frame* represents the binding of an Asset to a particular partitioning of its raw image file into a *Frame space*. Frames expose interfaces for *indexing* the Frame space via Asset Properties, and they also expose interfaces for *accessing* Frame space via Asset State.
 
 In other words, Asset Properties determine the metric used by the Engine to measure the Asset's Frame space, whereas Asset State determines where in its Frame space the Asset currently resides. 
 
 This is the reason for distinguishing Asset Categories and Asset Instances in the Hierarchy: Frames in a Sprite Sheet represent Actions, Frames in a Resource represent Lifespan Stages, Frames in an Effect represent Periodicity, etc. These are different stateful dispositions for an Asset to assume that are categorically distinct and manifest in the atlasing strategy used by the image file. This space is described by the particular configuration of an Asset's Properties, and furthermore, to exist on the [Board](./00-overview.md#component-board), an Asset must have a strategy for associating its State with a particular Frame described by its Properties.
 
-To extend the analogy, an *Animation* represents a strategy for navigating the Frame space over time (hence its interface depends on a time delta). Animations projects the internal state changes in an Asset onto a particular trajectory through its Frame space.
+To extend the analogy, an *Animation* represents a strategy for navigating the Frame space over time. Animations project the internal State changes in an Asset onto a particular trajectory through its Frame space.
 
-When an Asset implements an Animation, this is accompanied by its State possessing an `animation` field. The purpose of this field is mutate over time and thus describe the trajectory of the Asset through its Frame space.
+When an Asset implements an Animation, this is accompanied by its State possessing an `animation` field. The purpose of this field is to mutate over time and thus describe the trajectory of the Asset through its Frame space.
 
 **Model: AnimationState**
 
-- `action`: Action key of Animation.
-- `direction`: Directiony key of Animation.
-- `frame`: Frame index of Animation.
-- `tick`: Engine tick accumulator. Used in conjunction with Action `delay` to control the speed of the Animation.
+* `action`: Action key of Animation.
+* `direction`: Directiony key of Animation.
+* `frame`: Frame index of Animation.
+* `tick`: Engine tick accumulator. Used to control the speed of the Animation.
 
 #### Concept: Physicality
 
-Many Asset Categories have a Mass Property. Only Assets with Mass can participate in collisions and other kinematic events. An Asset's mass determines its behavior within the physics of the game,
+Many Asset Categories have a Mass Property. Only Assets with Mass can participate in collisions and other kinematic events. In other words, An Asset's Mass determines its behavior within the physics of the game,
  
-- $m > 0$: **Dynamic Body**. Participates in momentum calculations.
-- $m = 0$: **Static Body**. Treated as having infinite mass ($m \to \infty$) in physical models. Its Velocity is unaffected by collisions, but its immobility forces dynamic Assets to resolve overlap.
-- $m = -1$: **Sensor**. The Engine detects the spatial collisions for logical conditions, but ignores it entirely during collision resolution.
+* $m > 0$: **Dynamic Body**. Participates in momentum calculations.
+* $m = 0$: **Static Body**. Treated as having infinite mass ($m \to \infty$) in physical models. Its Velocity is unaffected by collisions, but its immobility forces dynamic Assets to resolve overlap.
+* $m = -1$: **Sensor**. The Engine detects the spatial collisions for logical conditions, but ignores it entirely during collision resolution.
 
 See [SpatialMechanics](./05-mechanics.md#mechanics-spatial) for more information.
 
@@ -108,19 +108,19 @@ See [SpatialMechanics](./05-mechanics.md#mechanics-spatial) for more information
 World rendering evaluates spatial geometry using discrete macro-elevations, intra-elevation substrate planes, ground perspective, and coplanar priority, known respectively as Elevation, Substrates, Perspective and Priority,
 
 $$
-\text{sort_key}(x) = \Big(x.\text{elevation},\; x.\text{substrate},\; \text{ground_y}(x),\; x.\text{properties.priority}\Big)
+\text{sort_key}(A) = \Big(A.\text{elevation},\; A.\text{substrate},\; \text{ground}(A),\; A.\text{properties.priority}\Big)
 $$
 
-1. **Primary Key (`x.elevation` $\in \mathbb{Z}_{\ge 0}$)**: Discrete topological story or platform tier (`0`, `1`, `2`, ...).
-2. **Secondary Key (`x.substrate` $\in \mathbb{Z}_{\le 0}$)**: Intra-elevation rendering plane within macro-elevation $E$.
-3. **Tertiary Key (`ground_y` $\in \mathbb{Z}$)**: Continuous geometric perspective: $\text{ground_y} = \text{int}(x.\text{state.position.y} + x.\text{dimensions.l} + x.\text{state.anchor})$.
-4. **Quaternary Key (`priority` $\in \mathbb{Z}$)**: Coplanar tie-breaker declared on immutable `AssetProperties`.
+1. **Primary Key (`A.elevation` $\in \mathbb{Z}_{\ge 0}$)**: Discrete topological story or platform tier (`0`, `1`, `2`, ...).
+2. **Secondary Key (`A.substrate` $\in \mathbb{Z}_{\le 0}$)**: Intra-elevation rendering plane within macro-elevation $E$.
+3. **Tertiary Key (`ground(A)` $\in \mathbb{Z}$)**: Continuous geometric perspective: $\text{ground(A)} = \text{int}(A.\text{state.position.y} + A.\text{dimensions.l} + A.\text{state.anchor})$.
+4. **Quaternary Key (`A.properties.priority` $\in \mathbb{Z}$)**: Coplanar tie-breaker declared on immutable `AssetProperties`.
 
 See [Rendering documentation](./11-architecture.md#rendering-sort) for more information.
 
 **Substrates**
 
-Certain Assets have a dedicated Substrate to preserve the fidelity of their rendering order. These values are hydrated onto Asset directly via [MaterialIndex](./appendices/01-schemas.md#configuration-materials).
+Certain Assets have a dedicated Substrate to preserve the fidelity of their rendering order. These values are hydrated onto the Asset directly via [MaterialIndex](./appendices/01-schemas.md#configuration-materials) during [hydration](./11-architecture.md#phase-2-hydration).
 
 --8<-- "static/md/asset-substrates.md"
 
@@ -137,26 +137,26 @@ The *Material Space* is further subdivded into non-overlapping Genera,
 
 --8<-- "static/md/material-genera.md"
 
-Each Genera refers to a range of Material Value. An Asset with the modality of Material declares a Genera in its Properties and then binds to a Material Value in its State. In other words, If an Asset indexes its Frame space over Material through its Properties, then its Asset State must specify which Material it should instantiate when deployed.
+Each Genera refers to a range of Material Value. An Asset with the modality of Material declares a Genera in its Properties and then binds to a Material Value in its State. In other words, if an Asset indexes its Frame space over Material through its Properties, then its Asset State must specify which Material it should instantiate when deployed.
 
-Chromatics, being a discrete shade of color, requires a Host Material. to accept its payload. 
+Chromatics, being a discrete shade of color, requires a Host Material, to accept its payload. 
 
 See [Material documentation](./03-compositions.md#material) for more information.
 
 **Model: Material**
 
-- `genus: MaterialGenera`: Partition of Material Space.
-- `host: Optional[Union[Ceramics, Organics]]`: Host Material for Chromatic Genera.
+* `genus: MaterialGenera`: Partition of Material Space.
+* `host: Optional[Union[Ceramics, Organics]]`: Host Material for Chromatic Genera.
 
 ### Asset: Hierarchy
 
-While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to a strict hierarchy of Categories and Instances. The property and state [schemas](./appendices/01-schemas.md) encode Asset Categories and Instances into their top-level keys.
+While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to a strict hierarchy of Categories and Instances. The Property and State [schemas](./appendices/01-schemas.md) encode Asset Categories and Instances into their top-level keys.
 
 !!! note "Abstraction"
     The Asset Hierarchy can be thought of as a data abstraction governing the schemas, which in turn drive the ECS instantiation. 
 
 !!! note "Metaphysics"
-    An analogy may be drawn from the Asset Hierarchy to Edward Zalta's Metaphysics: properties *encode* an Asset, state *exemplifies* an Asset. 
+    An analogy may be drawn from the Asset Hierarchy to Edward Zalta's Metaphysics: Properties *encode* an Asset, State *exemplifies* an Asset. 
 
 ```mermaid
 --8<-- "static/mmd/asset-hierarchy.mmd"
@@ -164,60 +164,60 @@ While Assets are instantiated by injecting a common root class with component be
 
 #### Hierarchy: Category
 
-Asset *Categories* form the top layer of the hierarchy. Each Asset Category is defined by its static properties; an Asset's Category determines what type of properties it will parse from the property files and inject into its deployment. 
+Asset *Categories* form the top layer of the hierarchy. Each Asset Category is defined by its static Properties; an Asset's Category determines what type of Properties it will parse from the Property files and inject into its deployment. 
 
 Each Category is differentiated by its purpose and place in the semantics of the Engine.
 
-- Tiles: Environmental. These Assets determine the background and macro-level processes that underlie the Engine.
-- Object: Functional. These Assets perform functions and alter their states. 
-- Effects: Periodic. These Assets undergo changes in their state according to fundamental frequencies.
-- Geography: Procedural. These Assets are generated via physical principles embodied by the Engine.
-- Resources: Biological. These Assets undergo lifecycles and have reactive states that change as the result of the environment.
-- Crafts: Structural. These Assets provide the foundation and topology of the Board.
-- Sheets: Intentional. These Assets perform Actions and engage Intentionally with the Board.
-- Widgets: Metalogical. These Assets display metadata about the world to the User.
+* Tiles: Environmental. These Assets determine the background and macro-level processes that underlie the Engine.
+* Object: Functional. These Assets perform functions and alter their states. 
+* Effects: Periodic. These Assets undergo changes in their state according to fundamental frequencies.
+* Geography: Procedural. These Assets are generated via physical principles embodied by the Engine.
+* Resources: Biological. These Assets undergo lifecycles and have reactive states that change as the result of the environment.
+* Crafts: Structural. These Assets provide the foundation and topology of the Board.
+* Sheets: Intentional. These Assets perform Actions and engage Intentionally with the Board.
+* Widgets: Metalogical. These Assets display metadata about the world to the User.
 
 --8<-- "static/md/asset-categories.md"
 
 #### Hierarchy: Instance
 
-Each Category has Instances. Asset *Instances* form the bottom of the Asset Hierarchy. Each Asset Instance is defined by its dynamic nature; an Asset's Instance determines what type of state it will parse from the state files and inject into its deployment. 
+Each Category has Instances. Asset *Instances* form the bottom of the Asset Hierarchy. Each Asset Instance is defined by its dynamic nature; an Asset's Instance determines what type of State it will parse from the State files and inject into its deployment. 
 
-Each Instance is differentiated by its State, Frame and Animation.
+Each Instance is differentiated by its State, HitboxSchema, Frame and Animation.
 
 --8<-- "static/md/asset-instances.md"
 
 #### Hierarchy: Taxonomy
 
-An Asset's order in the Asset Hierarchy is encoded into its Taxonomy. These attributes exist on every Asset instantiated within the game. A Taxonomy is neither a state, a configuration or a property. Taxonomy represents the full, unambiguous identity of a deployed Asset,
+An Asset's order in the Asset Hierarchy is encoded into its Taxonomy. These attributes exist on every Asset instantiated within the game. A Taxonomy is neither a State, a Configuration or a Property. Taxonomy represents the full, unambiguous identity of a deployed Asset,
 
-- `id: str`: Uniquely identifies the Asset file. It must match a file found in the `src/assets/**` directory.
-- `name: str`: Uniquely identifies the physical deployment of the Asset. Every Asset Instance deployed onto a Board has a unique `name`.
-- `category: str`: Determines what Property model is employed by the Asset. The Category must be configured by a `src/assets/<category>/**/*.yaml` property index file.
-- `instance: str`: Determines what State model is employed by the Asset. An Asset's state is hydrated from the `data/state/<board>/**/*.yaml` directory.
+* `id: str`: Uniquely identifies the Asset file. It must match a file found in the `src/assets/**` directory.
+* `name: str`: Uniquely identifies the physical deployment of the Asset. Every Asset Instance deployed onto a Board has a unique `name`.
+* `category: str`: Determines what Property model is employed by the Asset. The Category must be configured by a `src/assets/<category>/**/*.yaml` property index file.
+* `instance: str`: Determines what State model is employed by the Asset. An Asset's state is hydrated from the `data/state/<board>/**/*.yaml` directory.
 
-`(category, instance)` collectively map to the components `(frame, animation, hitbox, properties, state)` injected into an Asset class during the [application initialization](./11-architecture.md#specification-initialization). More specifically, Category maps to properties ($\text{category} \to \text{properties}$), and Instance maps to the remaining components ($\text{instance} \to (\text{frame}, \text{animation}, text{hitbox}, \text{state})$).
+`(category, instance)` collectively map to the components `(frame, animation, hitbox, properties, state)` injected into an Asset class during the [application initialization](./11-architecture.md#specification-initialization). More specifically, Category maps to properties ($\text{category} \to \text{properties}$), and Instance maps the remaining components ($\text{instance} \to (\text{frame}, \text{animation}, text{hitbox}, \text{state})$).
 
 The State and Property model of an Asset can be calculated (and is, during [application bootstrapping](./11-architecture.md#specification-initialization) via Pydantic) from its (Category, Instance)-node, but (Animation, Frame, Hitbox) are independent of the node in the Asset Hierarchy. These components must be specified through a [Recipe](./appendices/01-schemas.md#configuration-recipes).
 
 ### Asset: Architecture
 
-Every physical entity in the game is an instance of the unified Asset class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. Behaviors are decoupled from Assets and managed entirely by *Mechanic* classes that iterate over the [Board](./00-overview.md#component-board) Assets. See [Mechanics documentation](./05-mechanics.md) for more information.
+Every rendered entity in the [Application](./00-overview.md#application) is an instance of the unified Asset class. The distinction between a [Tile](#category-tiles), an [Object](#category-objects), or a [Sheet](#category-sheets) is determined entirely by the data models and components injected into them. Behaviors are decoupled from Assets and managed entirely by *Mechanic* classes that iterate over the [Board](./00-overview.md#component-board) Assets. See [Mechanics documentation](./05-mechanics.md) for more information.
 
-The Recipe for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in the [Recipe](./appendices/01-schemas.md#configuration-recipes) configuration file. The components of each Assets are enumerated below,
+The formula for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in its [Recipe](./appendices/01-schemas.md#configuration-recipes) configuration file. The components of each Assets are enumerated below,
 
 1. **Model: Properties** A model defining immutable data.
 2. **Model: State** A model defining mutable data.
 3. **Behavior: Animation** Stateless strategies injected into the Asset. These contain the specific logic for updating Animation frames.
-    - `animate(state, properties)`: Interface for applying animation logic to Asset state.
+    * `animate(state, properties)`: Interface for applying animation logic to Asset state.
 4. **Behavior: Frame:** A static schema calculation used by the renderer to determine the correct texture string keys. 
-    - `index(id: str, properties: AssetProperties) -> Dict[str, Tuple[int, int, int, int]]`: Interface for indexing Asset frames in Registry.
-    - `keys(id: str, state: AssetState) -> List[Tuple[str, int, int]]`: Reflexive intrinsic state projection for dynamic 60 Hz draw passes.
-    - `eras(id: str, calendar: CalendarState) -> List[Tuple[str, int, int]]`: Macro-temporal epochal projection for static pre-rendered canvas baking.
-    - `channels(id: str, state: AssetState, properties: AssetProperties) -> List[Tuple]`: Emits auxiliary shader and texture modulation directives.
+    * `index(id: str, properties: AssetProperties) -> Dict[str, Tuple[int, int, int, int]]`: Interface for indexing Asset frames in Registry.
+    * `keys(id: str, state: AssetState) -> List[Tuple[str, int, int]]`: Reflexive intrinsic state projection for dynamic 60 Hz draw passes.
+    * `eras(id: str, calendar: CalendarState) -> List[Tuple[str, int, int]]`: Macro-temporal epochal projection for static pre-rendered canvas baking.
+    * `channels(id: str, state: AssetState, properties: AssetProperties) -> List[Tuple]`: Emits auxiliary shader and texture modulation directives.
 5. **Behavior: Hitbox:** Stateless collision boundary resolution strategies injected via Recipes. Resolves active physical obstacles dynamically without mutating cached properties:
-    - `elevations(properties: AssetProperties, state: AssetState) -> List[int]`: Emits the discrete elevation tiers the entity participates in.
-    - `get(properties: AssetProperties, state: AssetState, elevation: int, frame: Optional[Frame] = None) -> List[Hitbox]`: Emits active physical collision footprints at the requested elevation, accounting for animation frame states (e.g., Attackboxes).
+    * `elevations(properties: AssetProperties, state: AssetState) -> List[int]`: Emits the discrete elevation tiers the entity participates in.
+    * `get(properties: AssetProperties, state: AssetState, elevation: int, frame: Optional[Frame] = None) -> List[Hitbox]`: Emits active physical collision footprints at the requested elevation, accounting for animation frame states (e.g., Attackboxes).
 
 !!! note "Stacks and Offsets"
     An Asset can be a single logical entity composed of multiple superimposed rendered textures, i.e. [Sheets](#category-sheets), therefore a Frame component returns a `List[(str, int, int)]` rather than a single `str`. The tuple `(int, int)` controls how much the frame is offset from its origin (mainly used in [Expressions](#expressions) to pin a [Cursor Expressions](#cursors) to the relative Position of a Sprite).
