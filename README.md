@@ -117,34 +117,8 @@ To ensure the Pylance linter correctly resolves the compiled Cython libraries fr
 
 ```json
 {
-  "python.analysis.extraPaths": [
-    "./src/lib"
-  ]
+  "python.analysis.extraPaths": [ "./src/libs" ]
 }
-```
-
-### Scripts
-
-Useful scripts for editing asset files in batches are provided in the `/scripts/` directory.
-
-```bash
-# 1. Concatenate: Take all images in a directory and concatenate horizontally into a single row of frames.
-python ./scripts/concatenate/main.py \
-  -d /path/ \
-  -o /path/result.png
-
-# 2. Transpose: Convert a vertical column of frames into a horizontal row of frames.
-python ./scripts/concatenate/main.py \
-  -v int \
-  -f /path/ \
-  -o /path/result.png
-```
-
-#### Strip Corrupted Chunks
-
-```bash
-sudo snap install pngcrush --edge
-find src/assets/ -name "*.png" -exec pngcrush -ow -rem allb -reduce {} \;
 ```
 
 ## Index
@@ -167,6 +141,28 @@ Batch scripts.
 * `/scripts/unpack`: Pillow script to unpack a grid of frames into a horizontal row of grames.
 * `/scripts/dependencies`: BASH script for generating `pydeps` dependency tree graphs.
 * `/scripts/synthesize`: Cython script for synthesizing musical scores from YAML. See [README](./scripts/synthesize/README.md) for more information.
+
+```bash
+# 1. Concatenate: Take all images in a directory and concatenate horizontally into a single row of frames.
+python ./scripts/concatenate/main.py \
+  -d /path/ \
+  -o /path/result.png
+
+# 2. Transpose: Convert a vertical column of frames into a horizontal row of frames.
+python ./scripts/concatenate/main.py \
+  -v int \
+  -f /path/ \
+  -o /path/result.png
+```
+
+#### Useful Commands
+
+```bash
+sudo snap install pngcrush --edge
+
+# 1. strip corrupted chunks from images
+find src/assets/ -name "*.png" -exec pngcrush -ow -rem allb -reduce {} \;
+```
 
 ### /src
 
