@@ -12,3 +12,15 @@ objects:
       position:
         x: 632
         y: 600
+    - id: gray-rock-00
+      name: jasilynns-first-rock
+      layer: '0'
+      position:
+        x: 1800
+        y: 200
+    - id: gray-rock-00
+      name: jasilynns-second-rock
+      layer: '0'
+      position:
+        x: 2351
+        y: 955

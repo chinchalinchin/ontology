@@ -1,78 +1,29 @@
-# Task: Ontology - Strata Generation
+{# -------------------------------------------------------------  #}
+# Task: Ontology - 
 
-**Priority** Use the [Backlog Template](#template-backlog) to draft a proposal for a new Instance of Geography, Strata.
-    * Since this is the proposal phase (`grooming = True`), be sure to highlight what systems will be affected that are not currently in the context.
 
-**Goal** A new Instance of Geography, Strata, and its corresponding procedural generation in the Cartographer.
-
-**Spec: Strata**
-
-* Shorelines bind to Tile and Fluid. Strata bind to Tile only. 
-* Strata have a Seasonal column atlas: `spring`, `summer`, `autumn` and `winter`.
-* Strata have a Formational row atlas: 
-    * `mesas`: Elevated surface that is deployed one level above specified state elevation, i.e. a surface that can be walked on if the Sprite "falls" on it from above.
-    * `spires`: Obstruction at same elevation as deployment.
-    * `buttes`: Elevated surface with outlet on deployed elevation, i.e. obstructs from three sides, but the down direction is walkable and transitions dynamic asset elevation when traverse, similar to Stairs.
-* Strata are unidirectional, i.e. a Strata does not have directions. It is an obstruction without orientation.
-* Will require 
-
-**Behavior: Procedure**
-
-* When two Environ Tiles meet, they form a "faultine" along their common edge. 
-* During procedural phase of Board hydration, Strata are generated probabilistically using the faultlines to localize probability around their locations, i.e. faultlines act as "sources" of Strata and they are more likely to spawn near those locations during procedural generation.
-    * Each Formation has relative probabilities assigned to it, i.e. `buttes` are less likely, `mesa` are baseline and `spires` are most likely.
-
-**Considerations**
-
-* Similar to how Crafts generalized Material into Genera so that all Craft Properties could declare a universal `material` Property, a similar situation exists with ShorelineStates and the as-yet-unimplemented StrataState, in that their atlases are categorically similar, but semantically distinct, i.e. Shorelines have an `orienttation`, while Strata have a `formation`, both being categorical variables.
-* StrataIndex will need to compile Property `tile` associations and assign the relative probabilties to Formations. The Cartographer should only be in charge of generating fautlines and probabilty distributions, and then sampling those probabiliy distributions.
-
+{# -------------------------------------------------------------  #}
+{% set source_files = [
+    ''
+] %}
 ## Source Files
 
-**src/app/game/logic/relations/shorelines.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/game/logic/relations/shorelines.py')}}
-```
-
-**src/app/models/state/assets/geography.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/models/state/assets/geography.py')}}
-```
-
-**src/app/models/properties/assets.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/models/properties/assets.py')}}
-```
-
-**src/app/assets/base.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/assets/base.py')}}
-```
-
-**src/app/assets/frames/geography.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/assets/frames/geography.py')}}
-```
-
-**src/app/services/generators/game/perimeter.py**
-
-```python
-{{ file(properties.paths.root + 'src/app/services/generators/game/perimeter.py')}}
-```
-
+{# -------------------------------------------------------------  #}
+{% set library = [ 
+    ''
+] %}
 ## Library Files 
 
-**src/libs/math/core/geometry.pyx**
+{% for lib in library %}
+**{{ file }}**
 
-```cython
-{{ file(properties.paths.root + 'src/libs/core/math/geometry.pyx')}}
+```python
+{{ }}
 ```
 
+{% endfor %}
+
+{# -------------------------------------------------------------  #}
 ## Data Files
 
 **src/data/config/recipes/main.yaml**

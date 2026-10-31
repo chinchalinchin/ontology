@@ -9,7 +9,15 @@ effects:
       flow: 2
       source: down
     - id: waterflow
-      name: jasilynns-tears-03
+      name: jasilynns-tears-01
+      layer: '0'
+      position:
+        x: 1800
+        y: 0
+      flow: 5
+      source: down
+    - id: waterflow
+      name: jasilynns-tears-02
       layer: '0'
       flow: 4
       position:

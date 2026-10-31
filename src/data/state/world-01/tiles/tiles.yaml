@@ -1,11 +1,20 @@
 tiles:
   environ:
     - id: temperate
-      name: the-steppe
+      name: jasilynns-steppe
       layer: '0'
       position:
         x: 0
         y: 0
+      multiple:
+        nx: 100
+        ny: 100
+    - id: highland
+      name: jasilynns-highland
+      layer: '0'
+      position:
+        x: 0
+        y: 3200
       multiple:
         nx: 100
         ny: 100
