@@ -30,7 +30,6 @@ from app.game.logic.mechanics.spatial import SpatialMechanic
 from app.game.logic.modules.maps import CombatMap
 
 # Cython Libraries
-import libs.core.math.geometry as geometry
 import libs.core.math.physics as physics
 
 logger = logging.getLogger(__name__)

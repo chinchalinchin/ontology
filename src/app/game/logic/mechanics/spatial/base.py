@@ -2,9 +2,11 @@
 @domain.concrete
 @domain.logic
 @app.base
-@app.mechanics
+@app.mechanic
+@physics.motion
 @physics.space
 @workflow.collisions
+@workflow.combat
 @workflow.interactions
 
 # Ontology: Source - app.game.logic.mechanics.spatial.base
