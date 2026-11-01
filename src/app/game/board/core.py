@@ -431,7 +431,7 @@ class Board:
 
     # ------------------------------------------------ EXPORTERS
 
-    def serialize(self, slot: str) -> None:
+    def serialize(self, world: str, slot: str) -> None:
         dump: Dict[str, Any] = {}
 
         for asset in self._assets:
@@ -467,4 +467,4 @@ class Board:
         if self.plot:
             dump[Shortcuts.PLOTS.value] = asdict(self.plot) if hasattr(self.plot, "__dataclass_fields__") else self.plot
 
-        Loader.save_state(slot, dump)
+        Loader.save_state(world, slot, dump)

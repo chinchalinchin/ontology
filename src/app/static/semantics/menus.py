@@ -1,4 +1,6 @@
 """
+@domain.logic
+@domain.user
 @app.semantics
 @category.widgets
 @workflow.menus

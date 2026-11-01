@@ -1,4 +1,5 @@
 """
+@domain.model
 @app.config
 
 # Ontology: Source - app.models.config.core

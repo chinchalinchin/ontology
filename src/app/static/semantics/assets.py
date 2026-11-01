@@ -1,4 +1,5 @@
 """
+@domain.logic
 @app.core
 @app.asset
 @app.semantics

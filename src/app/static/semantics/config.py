@@ -1,4 +1,5 @@
 """
+@domain.logic
 @app.config
 @app.semantics
 

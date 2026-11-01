@@ -1,5 +1,7 @@
 """
+@domain.model
 @app.config
+@category.sheetw
 @workflow.intentions
 
 # Ontology: Source - app.models.config.actions

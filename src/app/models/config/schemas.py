@@ -1,7 +1,11 @@
 """
+@domain.model
+@app.config
+@app.schema
+
 # Ontology: Source - app.models.config.schemas
 
-Models for typing the configuration schema.
+Models for typing Configuration schemas.
 """
 # Standard Libraries
 from typing import (

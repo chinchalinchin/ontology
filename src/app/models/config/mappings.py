@@ -1,8 +1,10 @@
 
 """
+@domain.model
 @domain.user
 @app.config
 @app.devices
+@workflow.player
 
 # Ontology: Source - app.models.config.mappings
 

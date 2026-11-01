@@ -1,7 +1,8 @@
 """
+@domain.model
 @app.core
 @app.config
-@app.mechanics
+@app.mechanic
 
 # Ontology: Source - app.models.config.mechanics
 

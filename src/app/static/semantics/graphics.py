@@ -1,4 +1,7 @@
 """
+@domain.logic
+@domain.system
+@domain.graphics
 @app.semantics
 @workflow.rendering
 

@@ -1,4 +1,5 @@
 """
+@domain.logic
 @app.semantics
 @category.sheets
 @workflow.intentions

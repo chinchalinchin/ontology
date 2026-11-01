@@ -1,4 +1,8 @@
 """
+@domain.model
+@app.asset
+@app.config
+
 # Ontology: Source - app.models.config.recipes
 
 Models for typing the configuration attributes of Asset Recipes. 

@@ -33,15 +33,6 @@ from libs.core.models import (
 )
 
 # ---------------------------------------------------------------------------
-# --------------------------------------------------------------------- TYPES
-
-E = TypeVar("E", bound=Enum)
-
-# 1. Validates input against Enum `E`
-# 2. Immediately extracts `.value` so the dataclass stores a raw `str`
-Enumerated = Annotated[E, AfterValidator(lambda v: v.value)]
-
-# ---------------------------------------------------------------------------
 # --------------------------------------------------------------- DESERIALIZE
 
 def parse_pos(v: Any) -> Any:
@@ -69,6 +60,9 @@ def parse_sp(v: Any) -> Any:
 
 # ---------------------------------------------------------------------------
 # ----------------------------------------------------------------- SERIALIZE
+
+def serialize_enum(v: Any) -> Any:
+    return v.value if isinstance(v, Enum) else v
 
 def serialize_pos(v: Any) -> Any:
     if v is None or isinstance(v, dict):
@@ -104,6 +98,19 @@ def serialize_sp(v: Any) -> Any:
     if v is None or isinstance(v, dict):
         return v
     return {"px": v.px, "py": v.py}
+
+# ---------------------------------------------------------------------------
+# --------------------------------------------------------------------- TYPES
+
+E = TypeVar("E", bound=Enum)
+
+# 1. Validates input against Enum `E`
+# 2. Immediately extracts `.value` so the dataclass stores a raw `str`
+Enumerated = Annotated[
+    E,
+    AfterValidator(lambda v: v.value),
+    PlainSerializer(serialize_enum, when_used="unless-none"),
+]
 
 # ---------------------------------------------------------------------------
 # ------------------------------------------------------------------- EXPORTS

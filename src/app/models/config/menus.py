@@ -1,4 +1,9 @@
 """
+@domain.model
+@app.config
+@category.widgets
+@workflow.menus
+
 # Ontology: Source - app.models.config.menus
 
 Models for typing the configuration attributes of Menus.

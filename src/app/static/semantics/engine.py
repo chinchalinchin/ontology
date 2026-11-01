@@ -1,4 +1,6 @@
 """
+@domain.logic
+@domain.system
 @app.core
 @app.semantics
 @app.mechanics

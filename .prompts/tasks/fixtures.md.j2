@@ -5,7 +5,12 @@
 * **DEBUGGING**: Debug the current run of the test pipeline located in the [Test Pipeline](#view-test-pipeline) section.
 * **REFACTORING** Update the provided unit tests and induct them into the new fixture framework. Update the old coverage and fix it where necessary. Do not enforce backwards compatibility or try to juryrig the old tests. Do not pollute the new fixture framework to fix failures. If the tests are failing due to fundamental incompatibilities, break them cleanly and refactor them. Determine what the intent of the test was and port it into the new framework.
 * **BUGHUNTING** (*Optional*) Be on the lookout for bugs. Use the [Bug Report Template](#template-bug-report) to raise any issues you find.
+* Add any unit tests for any areas of the code not already covered.
 
+
+**Context: Loader**
+
+Loader was one of the first component of the application written. Its unit tests have only been updated once, many Phases ago. The tests need an overhaul. The Loader tests should validate the entire application schema, ensuring everything has been hydrated into the proper data models. It needs to test the Cython adapters, as well as the Enumerated type decorator.
 
 {% include 'blocks/context/context-fixtures.md' %}
 

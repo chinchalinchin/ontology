@@ -1,4 +1,11 @@
 """
+@domain.model
+@app.config
+@workflow.intentions
+@workflow.plots
+@workflow.seasons
+@workflow.transitions
+
 # Ontology: Source - app.models.config.transitions
 
 Models for typing the transition configuration attributes of game components.

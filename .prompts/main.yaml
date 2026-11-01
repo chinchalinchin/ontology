@@ -58,13 +58,13 @@ tools:
     manager:
       board: false
       specs: false
-      docs: false
+      docs: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: false
-      filter: false
+      data: true
+      filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
@@ -110,12 +110,32 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Application Physics
+          - title: Application Models
             scan:
-              physics: [ motion ]
+              domain: [ model ]
+          - title: Application Config
+            scan:
+              domain: [ system ]
+              app: [ config ]
+          - title: Application Semantics
+            scan:
+              domain: [ logic ]
+              app: [ semantics ]
+          - title: Config Tests
+            scan:
+              domain: [ test ]
+              app: [ config ]
+              workflows: [ hydration ]
+          - title: Semantic Tests
+            scan:
+              domain: [ test ]
+              app: [ semantics ]
+          - title: Test Fixtures
+            scan:
+              test: [ fixtures ]
       data:
         properties: [  ]
-        state: [ ]
+        state: [ world-testbed ]
         configurations: [ ]
         templates: [ ]
     # --------------------------------------------
@@ -132,7 +152,7 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: physics_motion
+        marker: app_config
         # scope: '**/test_{actuator,cartographer}.py'
       session:
         description: |
