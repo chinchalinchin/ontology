@@ -82,7 +82,7 @@ def test_provider_unpack_widget_page(mock_provider_render, mock_bindings_render,
     )
     context = {"text": "Hello World"}
     
-    widget = mock_provider._unpack_widget(cfg, context, Fonts.DIALOGUE.value, {})
+    widget = mock_provider._widget(cfg, context, Fonts.DIALOGUE.value, {})
     
     assert widget.id == "test-page"
     assert widget.name == "page-1"
@@ -97,7 +97,7 @@ def test_provider_unpack_widget_traversal(mock_provider):
         instance=AssetInstances.BUTTONS.value,
         parameters=ButtonParameters(status=Statuses.DISABLED.value)
     )
-    widget = mock_provider._unpack_widget(cfg, {}, Fonts.MENU.value, {})
+    widget = mock_provider._widget(cfg, {}, Fonts.MENU.value, {})
     assert widget.state.status == Statuses.DISABLED.value
     assert widget.state.animation.action == Statuses.DISABLED.value
 
@@ -114,7 +114,7 @@ def test_provider_unpack_widget_meter(mock_provider):
         current = 75
         maximum = 100
     
-    widget = mock_provider._unpack_widget(cfg, {"hp": MockHP()}, Fonts.MENU.value, {})
+    widget = mock_provider._widget(cfg, {"hp": MockHP()}, Fonts.MENU.value, {})
     assert widget.state.reading == 75
     assert widget.state.unit == 100
     assert widget.state.animation.frame == 75
@@ -131,7 +131,7 @@ def test_provider_unpack_widget_icon(mock_provider):
         )
     )
     
-    widget = mock_provider._unpack_widget(cfg, {"equipped_item": "sword"}, Fonts.MENU.value, {})
+    widget = mock_provider._widget(cfg, {"equipped_item": "sword"}, Fonts.MENU.value, {})
     assert widget.state.icon == "sword"
     assert widget.state.position.x == 0
     assert widget.state.position.y == 0
@@ -139,7 +139,7 @@ def test_provider_unpack_widget_icon(mock_provider):
 
 def test_provider_expand_tree_gizmo(mock_provider, mock_gizmo_node):
     context = {"inventory": {"pack": ["shortsword"]}}
-    expanded = mock_provider._expand_tree(mock_gizmo_node, context)
+    expanded = mock_provider._expand(mock_gizmo_node, context)
 
     assert expanded.instance == AssetInstances.PANES.value
     assert isinstance(expanded.parameters, PaneParameters)
