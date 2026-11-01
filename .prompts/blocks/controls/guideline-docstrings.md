@@ -74,6 +74,7 @@ Tags are meant to capture logically related slices of the Application.
                 * `test.config`
                 * `test.fixtures`
                 * `test.unit`
+                * `test.integration`
             * Workflow Tags: 
                 * `workflows.cli`
                 * `workflow.collisions`

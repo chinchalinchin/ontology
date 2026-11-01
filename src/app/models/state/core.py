@@ -72,7 +72,7 @@ class AssetState:
     id: str
     name: Optional[str] = None
     layer: Optional[str] = None
-    elevation: Optional[int] = None
+    elevation: Optional[int] = 0
     anchor: Optional[int] = 0
     mutators: Mutators = field(default_factory=Mutators)
 

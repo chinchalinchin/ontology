@@ -13,7 +13,10 @@ Concrete application component, device, registry, mechanic, and engine fixtures.
 """
 # Standard Libraries
 import collections
-from typing import Any
+from typing import (
+    Any,
+    List
+)
 from unittest.mock import MagicMock
 
 # External Libraries
@@ -41,16 +44,24 @@ from app.models.config import (
 from app.models.groups import EquipmentGroup
 from app.models.properties import PropertiesSchema
 from app.models.state import StateSchema
+from app.models.state.devices import (
+    DevicePayload, 
+    WorldPayload, 
+    MenuPayload
+)
+
 from app.services.factories import MechanicFactory
 from app.services.generators.game import (
     Actuator,
     Cartographer,
     Cradle,
+    Perimeter
 )
 from app.services.generators.menus import Provider
 from app.static.semantics import (
     AssetInstances,
     Devices,
+    PlayerGoals
 )
 
 # Cython Libraries
@@ -131,6 +142,19 @@ def mock_keyboard(mock_device) -> Keyboard:
     return mock_device(Devices.KEYBOARD.value)
 
 
+@pytest.fixture
+def mock_payload():
+    def _payload(goals: List[str] = [], intention: str = None):
+        return DevicePayload(
+                world=WorldPayload(
+                    goals=goals,
+                    intention=intention
+                ),
+                menu=MenuPayload()
+            )
+
+    return _payload
+            
 # ---------------------------------------------------------------------------
 # ------------------------------------------------------------------- SCREEN
 # ---------------------------------------------------------------------------
@@ -177,6 +201,9 @@ def mock_board(
     board.set_plot(mock_state_schema.plots)
     board.set_cradle(mock_cradle)
     board.set_device(mock_keyboard)
+
+    for layer in board.layers():
+        board.perimeters[layer] = Perimeter.generate(board, layer)
 
     fluids = board.instances(AssetInstances.FLUIDS.value)
     for layer in {f.state.layer for f in fluids}:
