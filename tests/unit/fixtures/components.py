@@ -105,6 +105,7 @@ def mock_registry(
         recipes=mock_configurations_schema.recipes,
     )
     yield registry
+    registry._textures.clear()
     registry.clear()
 
 

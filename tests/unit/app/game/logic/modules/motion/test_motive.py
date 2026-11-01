@@ -6,6 +6,7 @@ import pytest
 
 # Application Libraries
 from app.static.semantics import (
+    AssetInstances,
     Intentions, 
     Goals
 )
@@ -18,10 +19,21 @@ from libs.core.models import (
     Velocity
 )
 
+# -----------------------------------------------------
 
-@pytest.mark.physics_motion
-@pytest.mark.workflow_intentions
-def test_motive_no_intention(mock_board, mock_sprite):
+pytestmark = [
+    pytest.mark.physics_motion,
+    pytest.mark.category_sheets,
+    pytest.mark.workflow_intentions
+]
+
+# -----------------------------------------------------
+
+
+def test_motive_no_intention(mock_board):
+    mock_sprite = mock_board.instances(
+        AssetInstances.SPRITES.value
+    )[0]
     mock_sprite.state.intention = Intentions.IDLE.value
     mock_sprite.state.velocity.vx = 5.0
     mock_sprite.state.velocity.vy = 5.0
@@ -33,13 +45,10 @@ def test_motive_no_intention(mock_board, mock_sprite):
     assert mock_sprite.state.velocity.vy == 0.0
 
 
-@pytest.mark.physics_motion
-@pytest.mark.workflow_intentions
-def test_motive_at_goal(mock_board, mock_sprite, monkeypatch):
-    monkeypatch.setattr(
-        'app.game.logic.modules.motion.motive.NavigationIntentions', 
-        [ Intentions.FIND.value ]
-    )
+def test_motive_at_goal(mock_board):
+    mock_sprite = mock_board.instances(
+        AssetInstances.SPRITES.value
+    )[0]
     mock_sprite.state.intention = Intentions.FIND.value
     mock_sprite.state.position.x = 10
     mock_sprite.state.position.y = 10
@@ -53,13 +62,10 @@ def test_motive_at_goal(mock_board, mock_sprite, monkeypatch):
     assert mock_sprite.state.velocity.vy == 0.0
 
 
-@pytest.mark.physics_motion
-@pytest.mark.workflow_intentions
-def test_motive_aims_towards_goal(mock_board, mock_sprite, monkeypatch):
-    monkeypatch.setattr(
-        'app.game.logic.modules.motion.motive.NavigationIntentions', 
-        [ Intentions.FIND.value ]
-    )
+def test_motive_aims_towards_goal(mock_board):
+    mock_sprite = mock_board.instances(
+        AssetInstances.SPRITES.value
+    )[0]
     mock_sprite.state.intention = Intentions.FIND.value
     
     # Reposition player outside squeeze radius (30) so path is clear of neighbors
@@ -83,18 +89,10 @@ def test_motive_aims_towards_goal(mock_board, mock_sprite, monkeypatch):
     assert mock_sprite.state.velocity.vy == 0.0
 
 
-@pytest.mark.workflow_intentions
-@pytest.mark.physics_motion
-def test_motive_rvo_opposing_corridor_steering(
-    mock_board, 
-    mock_sprite, 
-    mock_sprite_alt,
-    monkeypatch
-):
-    monkeypatch.setattr(
-        'app.game.logic.modules.motion.motive.NavigationIntentions', 
-        [ Intentions.FIND.value ]
-    )
+def test_motive_rvo_opposing_corridor_steering(mock_board):
+    mock_sprite = mock_board.instances(
+        AssetInstances.SPRITES.value
+    )[0]
     mock_sprite.state.layer = "0"
     mock_sprite.state.intention = Intentions.FIND.value
     mock_sprite.state.position = Position(0, 50)
@@ -108,6 +106,9 @@ def test_motive_rvo_opposing_corridor_steering(
     mock_sprite.state.character.speed = 10
     mock_sprite.state.velocity = Velocity(10.0, 0.0)
 
+    mock_sprite_alt = mock_board.instances(
+        AssetInstances.SPRITES.value
+    )[1]
     mock_sprite_alt.state.layer='0'
     mock_sprite_alt.state.position = Position(70, 50)
     mock_sprite_alt.state.mutators.parameters.squeeze.radius = 100  # Expand sensory footprint

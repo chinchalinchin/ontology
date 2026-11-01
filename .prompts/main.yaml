@@ -190,7 +190,7 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: workflow_rendering
+        marker: physics_motion
         # scope: '**/test_{actuator,cartographer}.py'
       session:
         description: |

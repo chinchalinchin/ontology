@@ -115,8 +115,13 @@ def test_registry_stack_assembly(mock_registry, mock_render, mock_asset):
     assert player.id in mock_registry._textures
     mock_render.compose.assert_called_once()
     base_tex, overlay_texs = mock_render.compose.call_args[0]
+    expected_overlays = [
+        layer
+        for layer in player.properties.stack[1:]
+        if layer in mock_registry._filepaths
+    ]
     assert base_tex is not None
-    assert len(overlay_texs) == len(player.properties.stack) - 1
+    assert len(overlay_texs) == len(expected_overlays)
 
 
 @pytest.mark.category_sheets
