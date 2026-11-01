@@ -1,9 +1,9 @@
 """
 @domain.abstract
 
-# Ontology: Source - app.assets.base
+# Ontology: Source - app.models.abstracts
 
-Base Asset Interfaces.
+Generalized Abstract Classes
 """
 # Standard Libraries
 from abc import ABC

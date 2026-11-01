@@ -95,11 +95,11 @@ tools:
           - 02-sprites.md
           - 03-compositions.md
           - 04-intentions.md
-          - 05-mechanics.md
+          # - 05-mechanics.md
           - 06-widgets.md
           - 07-sounds.md
           - 08-plots.md
-          - 09-ecology.md
+          # - 09-ecology.md
           - 10-emergence.md
           # - 11-architecture.md
       specs: []
@@ -110,33 +110,24 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Application Models
-            scan:
-              domain: [ model ]
-          - title: Application Config
+          - title: Application Core Components
             scan:
               domain: [ system ]
-              app: [ config ]
-          - title: Application Semantics
+              app: [ core, component ]
+          - title: Application Abstracts
             scan:
-              domain: [ logic ]
-              app: [ semantics ]
-          - title: Config Tests
+              app: [ component ]
+              domain: [ abstract ]
+          - title: Seasons Workflow
             scan:
-              domain: [ test ]
-              app: [ config ]
-              workflows: [ hydration ]
-          - title: Semantic Tests
-            scan:
-              domain: [ test ]
-              app: [ semantics ]
+              workflows: [ seasons ]
           - title: Test Fixtures
             scan:
               test: [ fixtures ]
       data:
-        properties: [  ]
+        properties: [ resources, tiles, effects ]
         state: [ world-testbed ]
-        configurations: [ ]
+        configurations: [ stages ]
         templates: [ ]
     # --------------------------------------------
     # -------------------------- PARAMETERS: SHELL
@@ -152,7 +143,7 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: app_config
+        marker: workflow_seasons
         # scope: '**/test_{actuator,cartographer}.py'
       session:
         description: |

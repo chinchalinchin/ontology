@@ -1,6 +1,7 @@
 """
 @domain.test
 @test.unit
+@app.mechanic
 @workflow.fluids
 
 # Ontology: Tests - tests.unit.app.game.logic.mechanics.world.test_fluid.py

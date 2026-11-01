@@ -2,7 +2,9 @@
 @domain.logic
 @app.modules
 @physics.fields
+@workflow.ecology
 @workflow.fluids
+@workflow.seasons
 
 # Ontology: Source - app.game.logic.modules.fields
 

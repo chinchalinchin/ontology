@@ -1,6 +1,6 @@
 """
 @domain.test
-@test.fixture
+@test.unit
 @app.services
 @workflow.compositions
 

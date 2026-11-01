@@ -228,18 +228,29 @@ def mock_board(
 
 @pytest.fixture
 def mock_mechanic(
+    mock_configurations_schema: ConfigurationSchema,
     mock_executors,
     mock_relations: dict[str, Any],
 ):
     """
     Fixture factory instantiating a Mechanic by name and translator implementation.
+    Resolves configured executors and relations from ConfigurationSchema.mechanics.
     """
+    configured_mechanics = {
+        m.key: m
+        for m in (
+            mock_configurations_schema.mechanics.core
+            + mock_configurations_schema.mechanics.world
+        )
+    }
+
     def _mechanic(
         name: str,
         implementation: str = settings.TRANSLATOR_IMPLEMENTATION,
     ) -> Mechanic:
+        instance_cfg = configured_mechanics.get(name, MechanicsInstance(name))
         return MechanicFactory.mechanics(
-            MechanicsInstance(name),
+            instance_cfg,
             mock_executors(implementation),
             mock_relations,
         )
@@ -248,7 +259,7 @@ def mock_mechanic(
 
 
 # ---------------------------------------------------------------------------
-# --------------------------------------------------------------- ENGINE & BUS
+# -------------------------------------------------------------- ENGINE & BUS
 # ---------------------------------------------------------------------------
 
 
