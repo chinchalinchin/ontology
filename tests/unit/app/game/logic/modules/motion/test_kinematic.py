@@ -73,7 +73,7 @@ def test_kinematic_no_movement(
     mock_player.state.velocity.vy = 5.0
     
     # Input ceases
-    payload = mock_payload(goals=[], intentions=[], menus=[])
+    payload = mock_payload(goals=[], intention=None, menus=[])
     
     kinematic.update([mock_player], payload, 1.0)
     

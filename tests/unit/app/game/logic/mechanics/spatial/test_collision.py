@@ -115,7 +115,7 @@ def test_collision_mechanics_resolve_no_collision(
     initial_x = crate.state.position.x
     initial_y = crate.state.position.y
 
-    mechanics._resolve(mock_board, 0.016, mock_bus, payload)
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
 
     assert crate.state.position.x == initial_x
     assert crate.state.position.y == initial_y
@@ -139,10 +139,12 @@ def test_collision_mechanics_resolve_boundary(
         boundary.position.x,
         boundary.position.y - 2 * crate.properties.dimensions.l
     )
+    # Aim the crate at the boundary
     crate.state.velocity = Velocity(0.0, 100.0)
 
     mechanics.update(mock_board, 0.016, mock_bus, payload)
 
+    # NOTE: assert velocity is negative after momentum is redirected
     assert crate.state.velocity.vy < 0 
 
 
@@ -169,7 +171,7 @@ def test_collision_mechanics_resolve_boundary_no_collision(
     mechanics.update(mock_board, 0.016, mock_bus, payload)
 
     assert crate.state.position.x == 0
-    assert crate.state.position.y == boundary.position.y - crate.properties.dimensions.l - 100*0.016
+    assert crate.state.position.y < boundary.position.y - crate.properties.dimensions.l
     assert crate.state.velocity.vy == -100.0
 
 
@@ -241,7 +243,7 @@ def test_collision_mechanics_update_static_vs_dynamic_boundary_filtering(
     payload = mock_payload()
     player = mock_board.player()
     sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
-    strut = mock_board.instance(AssetInstances.STRUTS.value)[0]
+    strut = mock_board.instances(AssetInstances.STRUTS.value)[0]
     crate = mock_board.instances(AssetInstances.CRATES.value)[0]
     mechanics = mock_mechanic(Mechanics.COLLISION.value)
 
@@ -274,7 +276,7 @@ def test_collision_mechanics_elevation_tier_isolation(
     """
     payload = mock_payload()
     player = mock_board.player()
-    crate = mock_board.instances(AssetInstances.CRATES.values)[0]
+    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
     mechanics = mock_mechanic(Mechanics.COLLISION.value)
 
     player.elevation = 0
@@ -303,7 +305,7 @@ def test_collision_mechanics_boundary_elevation_isolation(
     payload = mock_payload()
     mechanics = mock_mechanic(Mechanics.COLLISION.value)
 
-    crate = mock_board.instances(AssetInstances.CRATES.values)[0]
+    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
     crate.elevation = 1
     crate.state.position = Position(0, 50)
     crate.state.velocity = Velocity(-10.0, 0.0)

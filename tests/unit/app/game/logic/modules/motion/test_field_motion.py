@@ -1,7 +1,6 @@
 """
 @domain.test
 @test.unit
-@physics.motion
 @physics.fields
 @workflow.fluids
 
@@ -34,7 +33,6 @@ from libs.core.models import (
 # -----------------------------------------------------
 
 pytestmark = [
-    pytest.mark.physics_motion,
     pytest.mark.physics_fields
 ]
 
