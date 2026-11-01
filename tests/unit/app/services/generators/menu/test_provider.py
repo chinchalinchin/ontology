@@ -1,8 +1,19 @@
 """
-# Ontology: tests.unit.test_app_services_generators_menus_provider
+@domain.test
+@test.unit
+@app.services
+@category.widgets
+@workflow.menus
+
+# Ontology: Tests - tests.unit.app.services.generators.menu.test_provider
+
+Unit tests for the Provider service.
 """
 # Standard Libraries
 from unittest.mock import MagicMock, patch
+
+# External Libraries
+import pytest
 
 # Application Libraries
 from app.models.config.menus import (
@@ -27,7 +38,20 @@ from app.game.menus.bindings.text import (
 from app.models.state.assets.widgets import CollectionState
 
 # Cython Libraries
-from libs.core.models import Dimensions, ScreenPosition
+from libs.core.models import (
+    Dimensions, 
+    ScreenPosition
+)
+
+# ---------------------------------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_services,
+    pytest.mark.category_widgets,
+    pytest.mark.workflow_menus
+]
+
+# ---------------------------------------------------------------------------
 
 
 def test_provider_resolve():

@@ -1,5 +1,13 @@
 """
-# Ontology: tests.unit.test_app_services_generators_menus_binder
+@domain.test
+@test.unit
+@app.services
+@category.widgets
+@workflow.menus
+
+# Ontology: Tests - tests.unit.app.services.generators.menus.binder
+
+Unit tests for the Binder service.
 """
 # Standard Libraries
 from unittest.mock import MagicMock
@@ -22,7 +30,17 @@ from app.models.config.menus import MenuBinding
 from app.models.state.assets.widgets import CollectionState
 
 
-@pytest.mark.workflow_menus
+# ---------------------------------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_services,
+    pytest.mark.category_widgets,
+    pytest.mark.workflow_menus
+]
+
+# ---------------------------------------------------------------------------
+
+
 def test_binding_library(mock_binder, mock_library_bind):
     binding = mock_binder.binding(
         mock_library_bind, 
@@ -34,19 +52,16 @@ def test_binding_library(mock_binder, mock_library_bind):
     assert binding.library == mock_binder.library
 
 
-@pytest.mark.workflow_menus
 def test_binding_meter(mock_binder, mock_meter_bind):
     binding = mock_binder.binding(mock_meter_bind, {'health': {}})
     assert isinstance(binding, MeterBinding)
 
 
-@pytest.mark.workflow_menus
 def test_binding_icon(mock_binder, mock_icon_bind):
     binding = mock_binder.binding(mock_icon_bind, {'item': {}})
     assert isinstance(binding, IconBinding)
 
 
-@pytest.mark.workflow_menus
 def test_binding_select(mock_binder, mock_select_bind):
     binding = mock_binder.binding(mock_select_bind, {})
     assert isinstance(binding, SelectBinding)
@@ -54,13 +69,11 @@ def test_binding_select(mock_binder, mock_select_bind):
     assert binding.selector == mock_select_bind.target['selector']
 
 
-@pytest.mark.workflow_menus
 def test_binding_collection(mock_binder, mock_collection_bind):
     binding = mock_binder.binding(mock_collection_bind, {'inventory': {'pack': ['sword']}})
     assert isinstance(binding, CollectionBinding)
 
 
-@pytest.mark.workflow_menus
 def test_binding_aperture(
     mock_binder, 
     mock_collection_state,
@@ -76,7 +89,6 @@ def test_binding_aperture(
     assert binding.get_item() == "shortsword"
 
 
-@pytest.mark.workflow_menus
 def test_binding_aperture_vacant(
     mock_binder, 
     mock_collection_state,
@@ -91,7 +103,6 @@ def test_binding_aperture_vacant(
     assert vacant_binding.get_item() == ""
 
 
-@pytest.mark.workflow_menus
 def test_binding_fallback_text(mock_binder):
     bind_cfg = MenuBinding(
         schema='unknown', 
@@ -101,6 +112,5 @@ def test_binding_fallback_text(mock_binder):
     assert isinstance(binding, TextBinding)
 
 
-@pytest.mark.workflow_menus
 def test_binding_none(mock_binder):
     assert mock_binder.binding(None, {}) is None
