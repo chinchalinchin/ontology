@@ -35,7 +35,8 @@ from app.static.semantics import (
     Blueprints
 )
 from app.models.adapters import (
-    PydanticHitbox as Hitbox
+    PydanticHitbox as Hitbox,
+    Enumerated
 )
 from app.models.properties.core import (
     AssetProperties,
@@ -50,7 +51,7 @@ from app.models.properties.core import (
 class CraftProperties(AssetProperties):
     mass: int = 0
     material: Optional[Material] = None
-    blueprints: Optional[Blueprints] = None
+    blueprints: Optional[Enumerated[Blueprints]] = None
     hitboxes: Optional[Union[
         Dict[int, List[Hitbox]],                                    # type: ignore
         Dict[str, Optional[List[Hitbox]]],                          # type: ignore
@@ -99,7 +100,7 @@ class ObjectProperties(AssetProperties):
 @dataclass(slots=True)
 class ResourceProperties(AssetProperties):
     loot: str = None
-    lifespan: Lifespans = Lifespans.ANNUAL.value
+    lifespan: Enumerated[Lifespans] = Lifespans.ANNUAL.value
     mass: int = 0
     hitboxes: Dict[str, Optional[List[Hitbox]]] = None              # type: ignore
 
@@ -111,7 +112,10 @@ class ResourceProperties(AssetProperties):
 class SheetProperties(AssetProperties):
     stack: List[str] = field(default_factory=list)
     mass: int = 1
-    actions: Union[str, Dict[Actions, Action]] = field(default_factory=dict)
+    actions: Union[
+        str, 
+        Dict[Enumerated[Actions], Action]
+    ] = field(default_factory=dict)
     attackboxes: Optional[
         Dict[str, List[Hitbox]]                                     # type: ignore
     ] = field(default_factory=dict)

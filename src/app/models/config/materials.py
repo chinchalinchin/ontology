@@ -40,6 +40,7 @@ from app.static.semantics import (
     Directions,
     Substrates
 )
+from app.models.adapters import Enumerated
 from app.models.config.core import Configuration
 
 # ---------------------------------------------------------
@@ -51,37 +52,46 @@ class Cost:
 
 @dataclass(slots=True, frozen=True)
 class MaterialSpace:
-    host: Optional[Materials] = None
+    host: Optional[Enumerated[Materials]] = None
     partitions: Dict[Union[
-        Organics, 
-        Chromatics, 
-        Ceramics, 
-        Metallics,
-        Geologics
+        Enumerated[Organics], 
+        Enumerated[Chromatics], 
+        Enumerated[Ceramics], 
+        Enumerated[Metallics],
+        Enumerated[Geologics]
     ], float] = field(default_factory=dict)
 
 @dataclass(slots=True, frozen=True)
 class BlueprintPartition:
     delta: float = 1.0
-    substrate: Substrates = Substrates.STANDARD.value
+    substrate: Enumerated[Substrates] = Substrates.STANDARD.value
     obstacle: bool = False
 
 @dataclass(slots=True, frozen=True)
 class BlueprintSpace:
     strategy: MultiplicationStrategies = MultiplicationStrategies.SIMPLE.value
     partitions: Dict[Union[
-        Buildings,
-        Corridors,
-        Columns,
-        Enclosures,
-        Orientations,
-        Directions,
-        Decor,
-        Inclines
+        Enumerated[Buildings],
+        Enumerated[Corridors],
+        Enumerated[Columns],
+        Enumerated[Enclosures],
+        Enumerated[Orientations],
+        Enumerated[Directions],
+        Enumerated[Decor],
+        Enumerated[Inclines]
     ], BlueprintPartition] = field(default_factory=dict)
 
 @dataclass(slots=True, frozen=True)
 class MaterialsConfiguration(Configuration):
-    genera: Dict[Materials, MaterialSpace] = field(default_factory=dict)
-    blueprints: Dict[Blueprints, BlueprintSpace] = field(default_factory=dict)
-    substrates: Dict[AssetInstances, Substrates] = field(default_factory=dict)
+    genera: Dict[
+        Enumerated[Materials], 
+        MaterialSpace
+    ] = field(default_factory=dict)
+    blueprints: Dict[
+        Enumerated[Blueprints], 
+        BlueprintSpace
+    ] = field(default_factory=dict)
+    substrates: Dict[
+        Enumerated[AssetInstances], 
+        Substrates
+    ] = field(default_factory=dict)

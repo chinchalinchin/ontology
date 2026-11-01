@@ -24,7 +24,8 @@ from app.static.semantics import (
 )
 from app.models.adapters import (
     PydanticPosition as Position, 
-    PydanticHitbox as Hitbox
+    PydanticHitbox as Hitbox,
+    Enumerated
 )
 from app.models.state.core import (
     AssetState
@@ -36,8 +37,8 @@ from app.models.state.core import (
 class ShorelineState(AssetState):
     # Shoreline fields
     position: Optional[Position] = None  # type: ignore
-    orientation: Directions = Directions.DOWN.value
-    season: Seasons = Seasons.SPRING.value
+    orientation: Enumerated[Directions] = Directions.DOWN.value
+    season: Enumerated[Seasons] = Seasons.SPRING.value
     length: int = 0
     hitboxes: List[Hitbox] = field(default_factory=list)  # type: ignore
     _keys: Optional[List[Tuple[str, int, int]]] = None

@@ -2,25 +2,17 @@
 @app.config
 @workflow.intentions
 
-# Ontology: Source - app.models.config.core
+# Ontology: Source - app.models.config.actions
 
 Action Configuration Models.
 """
 # Standard Libraries
-from typing import (
-    Dict
-)
-from dataclasses import (
-    dataclass, 
-)
+from typing import Dict
+from dataclasses import dataclass
 
 # Application Libraries
-from app.models.config import (
-    Configuration
-)
-from app.models.properties import (
-    Action
-)
+from app.models.config import Configuration
+from app.models.properties import Action
 
 # ---------------------------------------------------------
 

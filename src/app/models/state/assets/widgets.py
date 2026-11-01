@@ -28,6 +28,7 @@ from app.static.semantics import (
 )
 from app.models.adapters import (
     PydanticPosition as Position, 
+    Enumerated
 )
 from app.models.state.core import (
     AssetState,
@@ -59,15 +60,15 @@ class IconState(WidgetState):
 
 @dataclass(slots=True)
 class TraversalState(WidgetState):
-    status: Statuses = Statuses.IDLE.value
+    status: Enumerated[Statuses] = Statuses.IDLE.value
     animation: AnimationState = field(default_factory=AnimationState)
 
 # ------------------------------------------------------------
 
 @dataclass(slots=True)
 class PaneState(WidgetState):
-    layout: Layouts = Layouts.STACK.value
-    alignment: Alignments = Alignments.CENTER.value
+    layout: Enumerated[Layouts] = Layouts.STACK.value
+    alignment: Enumerated[Alignments] = Alignments.CENTER.value
     gap: Optional[int] = 0
     margins: Optional[int] = 0
 
@@ -94,7 +95,7 @@ class DisplayState(WidgetState):
     content_function: Callable[[], Union[str, List[str]]] = field(default_factory=Callable)
     pageindex: int = 0
     pagesize: int = 1
-    font: str = Fonts.DIALOGUE.value
+    font: Enumerated[Fonts] = Fonts.DIALOGUE.value
     canvas: Any = None
 
     @property

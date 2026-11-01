@@ -29,7 +29,10 @@ from app.game.devices import (
 )
 from app.game.engine import Engine
 from app.game.logic.mechanics import Mechanic
-from app.game.logic.relations import ShorelineIndex
+from app.game.logic.relations import (
+    MaterialIndex,
+    ShorelineIndex,
+)
 from app.game.screen import Screen
 from app.models.config import (
     ConfigurationSchema,
@@ -51,9 +54,11 @@ from app.static.semantics import (
 )
 
 # Cython Libraries
-import libs.graphics.render as render
 from libs.core.models import Dimensions
-from libs.graphics.registry import Registry
+from libs.graphics.registry import (
+    Registry,
+    TTFFont,
+)
 
 # ---------------------------------------------------------------------------
 # ----------------------------------------------- SUBSYSTEMS & ASSET REGISTRY
@@ -61,32 +66,47 @@ from libs.graphics.registry import Registry
 
 
 @pytest.fixture
-def mock_registry(
-    mock_properties_schema: PropertiesSchema,
-    mock_configurations_schema: ConfigurationSchema,
-) -> Registry:
-    render.init(320, 240, True)
-    registry = Registry(
-        properties=mock_properties_schema,
-        recipes=mock_configurations_schema.recipes,
-        typography=mock_properties_schema.fonts,
-    )
-    yield registry
-    registry.clear()
-
-
-@pytest.fixture
 def mock_render(monkeypatch) -> MagicMock:
     """
-    Patches Cython SDL rendering calls on app.game.screen.render so no
-    textures are rendered during unit tests.
+    Patches Cython SDL rendering calls on app.game.screen.render and
+    libs.graphics.registry.render so no textures are rendered during unit tests.
     """
     mock = MagicMock()
     mock.canvas.side_effect = lambda w, l, opaque=False: MagicMock(
         w=w, l=l, opaque=opaque
     )
+    mock.compose.side_effect = lambda base, overlays: MagicMock(
+        w=getattr(base, "w", 64),
+        l=getattr(base, "l", 64),
+    )
     monkeypatch.setattr("app.game.screen.render", mock)
+    monkeypatch.setattr("libs.graphics.registry.render", mock)
     return mock
+
+
+@pytest.fixture
+def mock_registry(
+    monkeypatch,
+    mock_render: MagicMock,
+    mock_material_index: MaterialIndex,
+    mock_properties_schema: PropertiesSchema,
+    mock_configurations_schema: ConfigurationSchema,
+) -> Registry:
+    monkeypatch.setattr(
+        "libs.graphics.registry._sys_load_image",
+        MagicMock(side_effect=lambda *args, **kwargs: MagicMock(w=64, l=64)),
+    )
+    monkeypatch.setattr(
+        "libs.graphics.registry._sys_load_font",
+        MagicMock(side_effect=lambda *args, **kwargs: TTFFont()),
+    )
+    registry = Registry(
+        properties=mock_properties_schema,
+        recipes=mock_configurations_schema.recipes,
+    )
+    yield registry
+    registry.clear()
+
 
 # ---------------------------------------------------------------------------
 # ------------------------------------------------------------------- DEVICES

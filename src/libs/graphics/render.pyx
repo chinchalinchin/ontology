@@ -5,9 +5,9 @@
 @app.library
 @workflow.rendering
 
-# Ontology: libs.graphics.render
+# Ontology: Libraries - libs.graphics.render
 
-Directly interfaces with SDL2 C-Headers to execute headless rendering, bypassing the Python Global Interpreter Lock (GIL) and ctypes overhead.
+SDL Interfaces for rendering Assets.
 """
 # Standard Libraries
 import logging

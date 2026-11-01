@@ -3,6 +3,7 @@
 @test.unit
 @app.core
 @app.mechanic
+@workflow.rendering
 
 # Ontology: Tests - tests.unit.app.game.logic.mechanics.core.test_animation
 

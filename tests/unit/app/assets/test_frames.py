@@ -3,6 +3,7 @@
 @test.unit
 @app.asset
 @asset.frame
+@workflow.rendering
 
 # Ontology: Test - tests.unit.app.assets.test_frames
 
@@ -17,13 +18,29 @@ from app.assets.frames import (
     IndexFrame,
     NoFrame,
 )
+from app.assets.frames.core import (
+    DirectedFrame,
+    OrientedFrame,
+    SingleFrame,
+)
+from app.assets.frames.crafts import MaterialFrame
+from app.assets.frames.objects import (
+    BinaryFrame,
+    ObjectFrame,
+)
+from app.assets.frames.widgets import (
+    MeterFrame,
+    TraversalFrame,
+)
 from app.models.state import (
     AttachmentState,
     CalendarState,
+    ContainerState,
+    CraftState,
+    DoorState,
     Equipment,
     IconState,
     Pool,
-    Psyche,
     ShorelineState,
 )
 from app.static.semantics import (
@@ -35,8 +52,13 @@ from app.static.semantics import (
     Cycles,
     Directions,
     ExpressionsPalette,
+    Gauges,
+    LayerProjections,
+    Orientations,
     PerennialStages,
     Seasons,
+    Statuses,
+    Switches,
 )
 from app.static.settings import SEPARATOR
 
@@ -50,6 +72,7 @@ from libs.core.models import (
 pytestmark = [
     pytest.mark.app_asset,
     pytest.mark.asset_frame,
+    pytest.mark.workflow_rendering,
 ]
 
 
@@ -64,18 +87,146 @@ def test_no_frame(mock_asset):
     assert frame.index(crate.id, crate.properties) == {crate.id: (0, 0, 0, 0)}
 
 
+@pytest.mark.app_core
+def test_single_frame(mock_asset):
+    crate = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+    frame = SingleFrame()
+    w, l = crate.dimensions.w, crate.dimensions.l
+    assert frame.keys(crate.id, crate.state) == [(crate.id, 0, 0)]
+    assert frame.index(crate.id, crate.properties) == {crate.id: (0, 0, w, l)}
+
+
+@pytest.mark.app_core
+def test_oriented_frame(mock_properties):
+    frame = OrientedFrame()
+    props = mock_properties(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+    w, l = props.dimensions.w, props.dimensions.l
+    crops = frame.index("beam", props)
+
+    for i, orientation in enumerate(Orientations):
+        assert crops[f"beam{SEPARATOR}{orientation}"] == (i * w, 0, w, l)
+
+    state = ShorelineState(id="beam", orientation=Orientations.HORIZONTAL.value)
+    assert frame.keys("beam", state) == [
+        (f"beam{SEPARATOR}{Orientations.HORIZONTAL.value}", 0, 0)
+    ]
+
+
+@pytest.mark.app_core
+def test_directed_frame(mock_properties):
+    frame = DirectedFrame()
+    props = mock_properties(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+    w, l = props.dimensions.w, props.dimensions.l
+    crops = frame.index("arrow", props)
+
+    for i, direction in enumerate(Directions):
+        assert crops[f"arrow{SEPARATOR}{direction}"] == (i * w, 0, w, l)
+
+
 @pytest.mark.category_objects
 def test_object_frame(mock_asset):
     crate = mock_asset(
         AssetCategories.OBJECTS.value,
         AssetInstances.CRATES.value,
     )
-    assert crate.frame.keys(crate.id, crate.state) == [(
-        f"{crate.id}-{crate.state.material}", 0, 0)
+    assert crate.frame.keys(crate.id, crate.state) == [
+        (f"{crate.id}-{crate.state.material}", 0, 0)
     ]
     assert (
         0, 0, crate.dimensions.w, crate.dimensions.l
     ) in crate.frame.index(crate.id, crate.properties).values()
+
+
+@pytest.mark.category_objects
+def test_object_frame_door_out_projection_channels(mock_properties):
+    frame = ObjectFrame()
+    props = mock_properties(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+    w, l = props.dimensions.w, props.dimensions.l
+
+    in_state = DoorState(
+        id="door",
+        outlayer="0",
+        out=Position(0, 0),
+        projection=LayerProjections.IN.value,
+    )
+    assert frame.channels("door", in_state, props) == []
+
+    out_state = DoorState(
+        id="door",
+        outlayer="0",
+        out=Position(0, 0),
+        projection=LayerProjections.OUT.value,
+    )
+    assert frame.channels("door", out_state, props) == [
+        (ChannelTypes.TINT.value, (0, 0, w, l, 0, 0, 0, 110))
+    ]
+
+
+@pytest.mark.category_objects
+def test_binary_frame(mock_properties, mock_material_index):
+    frame = BinaryFrame()
+    props = mock_properties(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CHESTS.value,
+    )
+    w, l = props.dimensions.w, props.dimensions.l
+    materials = mock_material_index.materials(props.material.genus)
+    crops = frame.index("chest", props)
+
+    for r_idx in range(props.count):
+        for c_idx, mat in enumerate(materials):
+            key = f"chest{SEPARATOR}{mat}{SEPARATOR}{r_idx}"
+            assert crops[key] == (c_idx * w, r_idx * l, w, l)
+
+    mat = materials[0]
+    closed_state = ContainerState(id="chest", material=mat, switch=False, content=[])
+    open_state = ContainerState(id="chest", material=mat, switch=True, content=[])
+
+    assert frame.keys("chest", closed_state) == [
+        (f"chest{SEPARATOR}{mat}{SEPARATOR}{Switches.OFF.value}", 0, 0)
+    ]
+    assert frame.keys("chest", open_state) == [
+        (f"chest{SEPARATOR}{mat}{SEPARATOR}{Switches.ON.value}", 0, 0)
+    ]
+
+
+@pytest.mark.category_crafts
+def test_material_frame(mock_properties, mock_material_index):
+    frame = MaterialFrame()
+    props = mock_properties(
+        AssetCategories.CRAFTS.value,
+        AssetInstances.STRUTS.value,
+    )
+    w, l = props.dimensions.w, props.dimensions.l
+    rows = mock_material_index.blueprints(props.blueprints)
+    cols = mock_material_index.materials(props.material.genus)
+    crops = frame.index("strut", props)
+
+    for r_idx, bp in enumerate(rows):
+        for c_idx, mat in enumerate(cols):
+            assert crops[f"strut{SEPARATOR}{bp}{SEPARATOR}{mat}"] == (
+                c_idx * w,
+                r_idx * l,
+                w,
+                l,
+            )
+
+    state = CraftState(id="strut", blueprint=rows[0], material=cols[0])
+    assert frame.keys("strut", state) == [
+        (f"strut{SEPARATOR}{rows[0]}{SEPARATOR}{cols[0]}", 0, 0)
+    ]
 
 
 @pytest.mark.category_effects
@@ -197,6 +348,58 @@ def test_index_frame_suppresses_vacant_slot():
 
     none_state = IconState(id="weapons", icon_function=lambda: None)
     assert frame.keys("weapons", none_state) == []
+
+
+@pytest.mark.category_widgets
+@pytest.mark.workflow_menus
+def test_traversal_frame_indexing_and_keys(mock_properties, mock_state):
+    frame = TraversalFrame()
+    props = mock_properties(
+        AssetCategories.WIDGETS.value,
+        "buttons",
+    )
+    w, l = props.dimensions.w, props.dimensions.l
+    crops = frame.index("ui_btn", props)
+
+    assert crops[f"ui_btn{SEPARATOR}{Statuses.IDLE.value}"] == (0, 0, w, l)
+    assert crops[f"ui_btn{SEPARATOR}{Statuses.ACTIVE.value}"] == (w, 0, w, l)
+    assert crops[f"ui_btn{SEPARATOR}{Statuses.SELECTED.value}"] == (2 * w, 0, w, l)
+    assert crops[f"ui_btn{SEPARATOR}{Statuses.DISABLED.value}"] == (3 * w, 0, w, l)
+
+    state = mock_state(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.PASSIVE.value,
+    )
+    state.animation.action = Statuses.ACTIVE.value
+    assert frame.keys("ui_btn", state) == [
+        (f"ui_btn{SEPARATOR}{Statuses.ACTIVE.value}", 0, 0)
+    ]
+
+
+@pytest.mark.category_widgets
+@pytest.mark.workflow_menus
+def test_meter_frame_indexing_and_keys(mock_properties, mock_state):
+    frame = MeterFrame()
+    props = mock_properties(
+        AssetCategories.WIDGETS.value,
+        "meters",
+    )
+    w, l = props.dimensions.w, props.dimensions.l
+    crops = frame.index("health_bar", props)
+
+    assert crops[f"health_bar{SEPARATOR}{Gauges.EMPTY.value}"] == (0, 0, w, l)
+    assert crops[f"health_bar{SEPARATOR}50"] == (w, 0, int(w * 0.5), l)
+    assert crops[f"health_bar{SEPARATOR}100"] == (w, 0, w, l)
+
+    state = mock_state(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.PASSIVE.value,
+    )
+    state.animation.frame = 50
+    assert frame.keys("health_bar", state) == [
+        (f"health_bar{SEPARATOR}{Gauges.EMPTY.value}", 0, 0),
+        (f"health_bar{SEPARATOR}50", 0, 0),
+    ]
 
 
 @pytest.mark.category_sheets
@@ -383,7 +586,7 @@ def test_fluid_frame_keys_with_annular_pool(mock_asset):
     assert (f"{fluid.id}{SEPARATOR}0", -w, 2 * l) in keys
     assert (f"{fluid.id}{SEPARATOR}0", 0, 2 * l) in keys
     assert (f"{fluid.id}{SEPARATOR}0", w, 2 * l) in keys
-    
+
 
 @pytest.mark.category_sheets
 @pytest.mark.workflow_fluids
@@ -443,25 +646,25 @@ def test_shoreline_frame_indexing(mock_properties):
     crops = frame.index(id, props)
 
     assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}up"] == (
-        0, 0, props.dimensions.w,  props.dimensions.l
+        0, 0, props.dimensions.w, props.dimensions.l
     )
     assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}left"] == (
-        0, props.dimensions.l, props.dimensions.w,  props.dimensions.l
+        0, props.dimensions.l, props.dimensions.w, props.dimensions.l
     )
     assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}down"] == (
-        0, 2 * props.dimensions.l, props.dimensions.w,  props.dimensions.l
+        0, 2 * props.dimensions.l, props.dimensions.w, props.dimensions.l
     )
     assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}right"] == (
-        0, 3 * props.dimensions.l, props.dimensions.w,  props.dimensions.l
+        0, 3 * props.dimensions.l, props.dimensions.w, props.dimensions.l
     )
     assert crops[f"{id}{SEPARATOR}summer{SEPARATOR}up"] == (
-        props.dimensions.w, 0, props.dimensions.w,  props.dimensions.l
+        props.dimensions.w, 0, props.dimensions.w, props.dimensions.l
     )
     assert crops[f"{id}{SEPARATOR}autumn{SEPARATOR}up"] == (
-        2 * props.dimensions.w, 0, props.dimensions.w,  props.dimensions.l
+        2 * props.dimensions.w, 0, props.dimensions.w, props.dimensions.l
     )
     assert crops[f"{id}{SEPARATOR}winter{SEPARATOR}up"] == (
-        3 * props.dimensions.w, 0, props.dimensions.w,  props.dimensions.l
+        3 * props.dimensions.w, 0, props.dimensions.w, props.dimensions.l
     )
 
     assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}up{SEPARATOR}16"] == (

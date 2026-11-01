@@ -23,20 +23,21 @@ from app.static.semantics import (
     Interactions,
     Traversal
 )
+from app.models.adapters import Enumerated
 from app.models.config.core import Configuration
 
 # ---------------------------------------------------------
 
 @dataclass(slots=True, frozen=True)
 class WorldMapping:
-    menus: Dict[Menus, int] = field(default_factory=dict)
-    intentions: Dict[Intentions, int] = field(default_factory=dict)
-    goals: Dict[PlayerGoals, int] = field(default_factory=dict)
+    menus: Dict[Enumerated[Menus], int] = field(default_factory=dict)
+    intentions: Dict[Enumerated[Intentions], int] = field(default_factory=dict)
+    goals: Dict[Enumerated[PlayerGoals], int] = field(default_factory=dict)
 
 @dataclass(slots=True, frozen=True)
 class MenuMapping:
-    traversal: Dict[Traversal, int] = field(default_factory=dict)
-    interactions: Dict[Interactions, int] = field(default_factory=dict)
+    traversal: Dict[Enumerated[Traversal], int] = field(default_factory=dict)
+    interactions: Dict[Enumerated[Interactions], int] = field(default_factory=dict)
 
 @dataclass(slots=True, frozen=True)
 class DeviceMapping:

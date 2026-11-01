@@ -7,8 +7,21 @@
 
 Pydantic adapters for instantiating Cython structs across the GIL during YAML parsing.
 """
-from typing import Annotated, Any, TYPE_CHECKING
-from pydantic import PlainValidator, PlainSerializer  # type: ignore
+# Standard Libraries
+from enum import Enum
+from typing import (
+    Annotated, 
+    Any, 
+    TypeVar, 
+    TYPE_CHECKING
+)
+
+# External Libraries
+from pydantic import (
+    PlainValidator, 
+    PlainSerializer,
+    AfterValidator
+)
 
 from libs.core.models import (
     Position, 
@@ -18,6 +31,15 @@ from libs.core.models import (
     Velocity, 
     ScreenPosition
 )
+
+# ---------------------------------------------------------------------------
+# --------------------------------------------------------------------- TYPES
+
+E = TypeVar("E", bound=Enum)
+
+# 1. Validates input against Enum `E`
+# 2. Immediately extracts `.value` so the dataclass stores a raw `str`
+Enumerated = Annotated[E, AfterValidator(lambda v: v.value)]
 
 # ---------------------------------------------------------------------------
 # --------------------------------------------------------------- DESERIALIZE

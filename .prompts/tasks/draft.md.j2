@@ -1,36 +1,53 @@
 {# -------------------------------------------------------------  #}
+{% set source = [
+    ''
+] %}
+{% set libraries = [ 
+    'src/libs/graphics/registry.pyx',
+    'src/libs/graphics/render.pyx'
+] %}
+{% set data = [ 
+    ''
+] %}
+{# -------------------------------------------------------------  #}
 # Task: Ontology - 
 
 
 {# -------------------------------------------------------------  #}
-{% set source_files = [
-    ''
-] %}
 ## Source Files
 
-{# -------------------------------------------------------------  #}
-{% set library = [ 
-    ''
-] %}
-## Library Files 
-
-{% for lib in library %}
+{% for src in source %}
 **{{ file }}**
 
 ```python
-{{ }}
+{{ properties(properties.paths.root + src )}}
 ```
 
 {% endfor %}
 
 {# -------------------------------------------------------------  #}
+## Library Files 
+
+{% for lib in libraries %}
+**{{ file }}**
+
+```python
+{{ properties(properties.paths.root + lib )}}
+```
+
+{% endfor %}
+
 ## Data Files
 
-**src/data/config/recipes/main.yaml**
+{% for datum in data %}
+**{{ file }}**
 
-```yaml
-{{ file(properties.paths.root + 'src/data/config/recipes/main.yaml')}}
+```python
+{{ properties(properties.paths.root + lib )}}
 ```
+
+{% endfor %}
+
 
 ## Template
 
