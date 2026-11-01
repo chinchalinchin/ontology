@@ -201,6 +201,7 @@ def test_inventory_controller_pagination():
     bus = deque()
 
     col_state = CollectionState(
+        id="test-collection",
         collection_function=lambda: [f"item-{i}" for i in range(12)],
         capacity=8,
         columns=4,
@@ -264,6 +265,7 @@ def test_inventory_controller_slot_equip():
     bus = deque()
 
     col_state = CollectionState(
+        id="test-collection",
         collection_function=lambda: ["shortsword"],
         capacity=8,
         columns=4,
@@ -317,6 +319,7 @@ def test_inventory_controller_focus_recovery():
 
     # 10 items: at offset 0, slot 7 (index 7) is occupied; at offset 4, slot 7 (index 11) is vacant
     col_state = CollectionState(
+        id="test-collection",
         collection_function=lambda: [f"item-{i}" for i in range(10)],
         capacity=8,
         columns=4,

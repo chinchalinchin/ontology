@@ -96,7 +96,7 @@ def test_provider_unpack_widget_page(mock_provider_render, mock_bindings_render,
     mock_bindings_render.measure.return_value = (10, 10)
     
     cfg = MenuNode(
-        id="test-page",
+        id="text-label",
         name="page-1",
         instance=AssetInstances.PAGES.value,
         bind=MenuBinding(
@@ -108,7 +108,7 @@ def test_provider_unpack_widget_page(mock_provider_render, mock_bindings_render,
     
     widget = mock_provider._widget(cfg, context, Fonts.DIALOGUE.value, {})
     
-    assert widget.id == "test-page"
+    assert widget.id == "text-label"
     assert widget.name == "page-1"
     assert widget.state.content == ["Hello World"] 
     assert widget.state.canvas == "mock_canvas_ptr"

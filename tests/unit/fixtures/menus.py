@@ -106,6 +106,7 @@ def mock_gizmo_node(mock_collection_bind):
 @pytest.fixture
 def mock_collection_state():
     return CollectionState(
+        id="test-collection",
         collection_function=lambda: ["shortsword", "dagger", "buckler"],
         capacity=8,
         columns=4,

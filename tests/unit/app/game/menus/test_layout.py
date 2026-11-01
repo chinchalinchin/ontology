@@ -56,7 +56,12 @@ def test_layout_compute_anchor():
         )
     )
     mock_pane = MagicMock()
-    mock_pane.state = PaneState(position=Position(x=0, y=0), layout=Layouts.OVERLAY, alignment=Alignments.CENTER, gap=0)
+    mock_pane.state = PaneState(
+        id="test-pane",
+        position=Position(x=0, y=0), 
+        layout=Layouts.OVERLAY, 
+        alignment=Alignments.CENTER, gap=0
+    )
     widgets = {"p1": mock_pane}
     
     layout.compute([root_cfg], widgets)
@@ -131,18 +136,29 @@ def test_layout_dock_with_explicit_dimensions():
     root_pane = Asset(
         taxonomy=Taxonomy("neutral", "root", "widgets", AssetInstances.PANES.value),
         properties=WidgetProperties(dimensions=Dimensions(w=318, l=180)),
-        state=PaneState(position=Position(x=0, y=0), margins=10, gap=10)
+        state=PaneState(
+            id="test-pane-00",
+            position=Position(x=0, y=0), 
+            margins=10, 
+            gap=10
+        )
     )
 
     grid_pane = Asset(
         taxonomy=Taxonomy("transparent-slot", "grid", "widgets", AssetInstances.PANES.value),
         properties=WidgetProperties(dimensions=Dimensions(w=175, l=85)),
-        state=PaneState(margins=0)
+        state=PaneState(
+            id="test-pane-01",
+            margins=0
+        )
     )
     scroll_pane = Asset(
         taxonomy=Taxonomy("transparent-slot", "controls", "widgets", AssetInstances.PANES.value),
         properties=WidgetProperties(dimensions=Dimensions(w=24, l=85)),
-        state=PaneState(margins=0)
+        state=PaneState(
+            id="test-pane-02",
+            margins=0
+        )
     )
 
     layout._layout_dock(root_pane, [grid_pane, scroll_pane], Alignments.CENTER, gap=10)
