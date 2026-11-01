@@ -1,7 +1,7 @@
 """
 @domain.concrete
 @domain.logic
-@app.mechanics
+@app.mechanic
 @workflow.plot
 
 # Ontology: Source - app.game.logic.mechanics.world.plot

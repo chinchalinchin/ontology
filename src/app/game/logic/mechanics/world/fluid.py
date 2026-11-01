@@ -1,7 +1,7 @@
 """
 @domain.concrete
 @domain.logic
-@app.mechanics
+@app.mechanic
 @physics.fields
 @category.effects
 @workflow.fluids

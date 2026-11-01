@@ -1,65 +1,4 @@
 # ----------------------------------------------------
-# --------------------- TOOLS.PARAMETERS.SOURCE.FILTER
-# ----------------------------------------------------
-# default: AND | OR
-# queries:
-# - title: TITLE
-#   strategy: AND | OR
-#   scan:
-#     app: [ 
-#             asset, base, core, 
-#             component, config, devices,
-#             schema, semantics, mechanics 
-#     ]
-#     asset: [ 
-#             property, state, frame,
-#             animation, hitbox 
-#     ]
-#     domain: [ 
-#               abstract, concrete, model,
-#               logic, graphics
-#     ]
-#     category: [ 
-#               crafts, cursors, effects,
-#               geography, objects, resources,
-#               sheets, tiles, widgets 
-#     ]
-#     physics: [ 
-#               fields, motion, space 
-#     ]
-#     workflows: [ 
-#               cli, collisions, combat,
-#               compositions, ecology, fluids,
-#               hydration, intentions, main, 
-#               menus, motion, orchestration,
-#               navgiation, rendering, seasons,
-#               telemetry 
-#     ]
-# ----------------------------------------------------
-# ------------------------ TOOL.PARAMETERS.SOURCE.DATA
-# ----------------------------------------------------
-#     properties: [ 
-#               crafts, cursors, effects,
-#               fonts, geography, objects
-#               resources, sheets, sounds
-#               tiles, widgets
-#     ]
-#     state: [
-#               crafts, effects, objects
-#               resources, sheets, tiles, 
-#               world
-#     ]
-#     configurations: [
-#               actions, compositions, intentions,
-#               library, mappings, materials,
-#               mechanics, menus, plots,
-#               recipes, stages
-#     ]
-#     templates: [
-#               menu-dump, registry-dump, sdl-dump, 
-#               state-dump
-#     ]
-# ----------------------------------------------------
 # ----------------------------------------------------
 # ----------------------------------------------- TASK
 # ----------------------------------------------------
@@ -125,7 +64,7 @@ tools:
     # --------------------------------------------
     source:
       data: false
-      filter: true
+      filter: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
@@ -188,7 +127,7 @@ tools:
       commands: 
         - python /Users/gmoore/Home/projects/ontology/src/main.py start
     # --------------------------------------------
-    # ------------------------ PARAMETERS: TESTS
+    # -------------------------- PARAMETERS: TESTS
     # --------------------------------------------
     tests:
       pipeline:

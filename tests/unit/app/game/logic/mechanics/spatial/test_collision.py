@@ -15,31 +15,31 @@ import pytest
 # Application Libraries
 from app.static.semantics import (
     AssetInstances,
-    Mechanics
+    Mechanics,
 )
 
 # Cython Libraries
 from libs.core.models import (
     Position,
-    Dimensions,
-    Velocity
+    Velocity,
 )
 
 # ---------------------------------------------------------------------------
 
 pytestmark = [
+    pytest.mark.app_mechanic,
     pytest.mark.physics_motion,
-    pytest.mark.workflow_collisions
+    pytest.mark.workflow_collisions,
 ]
 
 # ---------------------------------------------------------------------------
 
 
 def test_collision_mechanics_update(
-    mock_mechanic, 
-    mock_board, 
-    mock_bus, 
-    mock_payload
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
 ):
     """
     Verifies the two-phase collision pipeline: Environmental Constraints (Phase 1)
@@ -67,19 +67,21 @@ def test_collision_mechanics_update(
     assert crate.state.velocity.vx == 10.0
 
     # Phase 2 Assertion: Overlapping dynamic bodies resolve overlap
-    assert player.state.position.x != sprite.state.position.x or player.state.position.y != sprite.state.position.y
+    assert (
+        player.state.position.x != sprite.state.position.x
+        or player.state.position.y != sprite.state.position.y
+    )
 
 
 def test_collision_mechanics_resolve(
-    mock_mechanic, 
-    mock_board, 
-    mock_bus, 
-    mock_payload
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
 ):
     """
     Verifies Phase 2 narrow-phase AABB overlap resolution and spatial separation.
     """
-    # Setup Phase 0: Fixtures
     player = mock_board.player()
     crate = mock_board.instances(AssetInstances.CRATES.value)[0]
     payload = mock_payload()
@@ -95,15 +97,14 @@ def test_collision_mechanics_resolve(
 
 
 def test_collision_mechanics_resolve_no_collision(
-    mock_mechanic, 
-    mock_board, 
-    mock_bus, 
-    mock_payload
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
 ):
     """
     Verifies Phase 2 bypasses resolution when hitboxes do not intersect.
     """
-    # Setup Phase 0: Fixtures
     player = mock_board.player()
     crate = mock_board.instances(AssetInstances.CRATES.value)[0]
     payload = mock_payload()
@@ -125,7 +126,7 @@ def test_collision_mechanics_resolve_boundary(
     mock_mechanic,
     mock_board,
     mock_bus,
-    mock_payload
+    mock_payload,
 ):
     """
     Verifies Phase 1 narrow-phase environmental constraint resolution on dynamic bodies (m > 0).
@@ -135,24 +136,25 @@ def test_collision_mechanics_resolve_boundary(
     boundary = mock_board.perimeters[crate.state.layer][crate.state.elevation][0]
     mechanics = mock_mechanic(Mechanics.COLLISION.value)
 
+    hb = crate.hitboxes[0]
     crate.state.position = Position(
-        boundary.position.x,
-        boundary.position.y - 2 * crate.properties.dimensions.l
+        boundary.position.x + 10 - hb.position.x,
+        boundary.position.y - hb.position.y,
     )
-    # Aim the crate at the boundary
+    initial_y = crate.state.position.y
     crate.state.velocity = Velocity(0.0, 100.0)
 
     mechanics.update(mock_board, 0.016, mock_bus, payload)
 
-    # NOTE: assert velocity is negative after momentum is redirected
-    assert crate.state.velocity.vy < 0 
+    assert crate.state.position.y > initial_y
+    assert crate.state.velocity.vy < 0
 
 
 def test_collision_mechanics_resolve_boundary_no_collision(
     mock_mechanic,
     mock_board,
     mock_bus,
-    mock_payload
+    mock_payload,
 ):
     """
     Verifies Phase 1 ignores boundary constraint when entity is clear.
@@ -164,13 +166,13 @@ def test_collision_mechanics_resolve_boundary_no_collision(
 
     crate.state.position = Position(
         boundary.position.x,
-        boundary.position.y - crate.properties.dimensions.l
+        boundary.position.y - 2 * crate.properties.dimensions.l,
     )
     crate.state.velocity = Velocity(0.0, -100.0)
 
     mechanics.update(mock_board, 0.016, mock_bus, payload)
 
-    assert crate.state.position.x == 0
+    assert crate.state.position.x == boundary.position.x
     assert crate.state.position.y < boundary.position.y - crate.properties.dimensions.l
     assert crate.state.velocity.vy == -100.0
 
@@ -179,7 +181,7 @@ def test_collision_mechanics_resolve_boundary_static_mass_zero_ignored(
     mock_mechanic,
     mock_board,
     mock_bus,
-    mock_payload
+    mock_payload,
 ):
     """
     Verifies Phase 1 environmental boundary constraints bypass static bodies (m = 0),
@@ -190,10 +192,9 @@ def test_collision_mechanics_resolve_boundary_static_mass_zero_ignored(
     boundary = mock_board.perimeters[strut.state.layer][strut.state.elevation][0]
     mechanics = mock_mechanic(Mechanics.COLLISION.value)
 
-    strut.state.position = Position(10, 0)
     strut.state.position = Position(
         boundary.position.x,
-        boundary.position.y - strut.properties.dimensions.l / 2 
+        int(boundary.position.y - strut.properties.dimensions.l // 2),
     )
     initial_x = strut.state.position.x
     initial_y = strut.state.position.y
@@ -208,33 +209,36 @@ def test_collision_mechanics_resolve_boundary_kinematic_player(
     mock_mechanic,
     mock_board,
     mock_bus,
-    mock_payload
+    mock_payload,
 ):
     """
     Verifies Phase 1 environmental boundary constraints enforce spatial bounds on kinematic
-    players despite m = 0, shifting position out of the boundary hull.
+    players, shifting position out of the boundary hull without inverting velocity.
     """
     player = mock_board.player()
     payload = mock_payload()
     boundary = mock_board.perimeters[player.state.layer][player.state.elevation][0]
     mechanics = mock_mechanic(Mechanics.COLLISION.value)
 
+    hb = player.hitboxes[0]
     player.state.position = Position(
-        boundary.position.x,
-        boundary.position.y - player.properties.dimensions.l
+        boundary.position.x + 10 - hb.position.x,
+        boundary.position.y - hb.position.y,
     )
+    initial_y = player.state.position.y
     player.state.velocity = Velocity(0.0, 10.0)
 
     mechanics.update(mock_board, 0.016, mock_bus, payload)
 
-    assert player.state.velocity.vy < 0
+    assert player.state.position.y > initial_y
+    assert player.state.velocity.vy == 10.0
 
 
 def test_collision_mechanics_update_static_vs_dynamic_boundary_filtering(
-    mock_mechanic, 
-    mock_board, 
+    mock_mechanic,
+    mock_board,
     mock_bus,
-    mock_payload
+    mock_payload,
 ):
     """
     Verifies live Board Phase 1 boundary filtering excludes static architecture (m = 0)
@@ -266,10 +270,10 @@ def test_collision_mechanics_update_static_vs_dynamic_boundary_filtering(
 
 
 def test_collision_mechanics_elevation_tier_isolation(
-    mock_mechanic, 
-    mock_board, 
+    mock_mechanic,
+    mock_board,
     mock_bus,
-    mock_payload
+    mock_payload,
 ):
     """
     Verifies dynamic entities on different elevation tiers bypass overlap resolution.
@@ -294,10 +298,10 @@ def test_collision_mechanics_elevation_tier_isolation(
 
 
 def test_collision_mechanics_boundary_elevation_isolation(
-    mock_mechanic, 
-    mock_board, 
+    mock_mechanic,
+    mock_board,
     mock_bus,
-    mock_payload
+    mock_payload,
 ):
     """
     Verifies dynamic entities with elevation >= 1 do not interact with Tier 0 perimeters.

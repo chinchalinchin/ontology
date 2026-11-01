@@ -1,7 +1,7 @@
 """
 @domain.concrete
 @domain.user
-@app.mechanics
+@app.mechanic
 @category.sheets
 
 # Ontology: Source - app.game.logic.mechanics.intentional.player

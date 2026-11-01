@@ -16,7 +16,9 @@ import pytest
 
 # Application Libraries
 from app.static.semantics import (
-    Mechanics
+    AssetCategories,
+    AssetInstances,
+    Mechanics,
 )
 
 # Cython Libraries
@@ -28,11 +30,13 @@ from libs.core.models import (
 # ---------------------------------------------------------------------------
 
 pytestmark = [
+    pytest.mark.app_mechanic,
     pytest.mark.physics_motion,
-    pytest.mark.physics_space
+    pytest.mark.physics_space,
 ]
 
 # ---------------------------------------------------------------------------
+
 
 def test_spatial_mechanic_center(mock_mechanic):
     mechanics = mock_mechanic(Mechanics.COLLISION.value)
@@ -44,108 +48,134 @@ def test_spatial_mechanic_center(mock_mechanic):
     assert cy == 42.0
 
 
+@pytest.mark.app_asset
 @pytest.mark.workflow_collisions
 @pytest.mark.workflow_combat
-def test_spatial_mechanic_collisions(
-    mock_mechanic, 
-    mock_crate, 
-    mock_crate_alt, 
-    mock_strut
-):
+def test_spatial_mechanic_collisions(mock_mechanic, mock_asset):
     """
     Verifies Space broad-phase hashing and narrow-phase filtering with real fixtures.
     """
     mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    crate_a = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+    crate_b = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+    strut = mock_asset(
+        AssetCategories.CRAFTS.value,
+        AssetInstances.STRUTS.value,
+    )
 
-    mock_crate.state.position = Position(10, 10)
-    mock_crate_alt.state.position = Position(20, 20)
-    mock_strut.state.position = Position(200, 200)
+    crate_a.state.position = Position(10, 10)
+    crate_b.state.position = Position(20, 20)
+    strut.state.position = Position(200, 200)
 
-    pairs = mechanics.collisions([mock_crate, mock_crate_alt, mock_strut])
+    pairs = mechanics.collisions([crate_a, crate_b, strut])
 
     assert len(pairs) == 1
-    assert (mock_crate, mock_crate_alt) in pairs or (mock_crate_alt, mock_crate) in pairs
-    assert (mock_crate, mock_strut) not in pairs
+    assert (crate_a, crate_b) in pairs or (crate_b, crate_a) in pairs
+    assert (crate_a, strut) not in pairs
 
 
+@pytest.mark.app_asset
 @pytest.mark.workflow_collisions
-def test_spatial_mechanic_collisions_elevation_filtering(
-    mock_mechanic, 
-    mock_crate, 
-    mock_crate_alt
-):
+def test_spatial_mechanic_collisions_elevation_filtering(mock_mechanic, mock_asset):
     """
     Verifies SpatialMechanic.collisions filters out entities that have no hitboxes on the queried elevation.
     """
     mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    crate_a = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+    crate_b = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
 
-    mock_crate.elevation = 0
-    mock_crate.state.position = Position(10, 10)
+    crate_a.elevation = 0
+    crate_a.state.position = Position(10, 10)
 
-    mock_crate_alt.elevation = 1
-    mock_crate_alt.state.position = Position(10, 10)
+    crate_b.elevation = 1
+    crate_b.state.position = Position(10, 10)
 
-    assert mechanics.collisions([mock_crate, mock_crate_alt], elevation=0) == []
-    assert mechanics.collisions([mock_crate, mock_crate_alt], elevation=1) == []
+    assert mechanics.collisions([crate_a, crate_b], elevation=0) == []
+    assert mechanics.collisions([crate_a, crate_b], elevation=1) == []
 
 
+@pytest.mark.app_asset
 @pytest.mark.workflow_interactions
-def test_spatial_mechanic_intersections(
-    mock_mechanic, 
-    mock_crate, 
-    mock_chest
-):
+def test_spatial_mechanic_intersections(mock_mechanic, mock_asset):
     """
     Verifies virtual full-dimension hitbox generation for post-separation interaction checks.
     """
     mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    crate = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+    chest = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CHESTS.value,
+    )
 
-    mock_crate.state.position = Position(10, 10)
-    mock_chest.state.position = Position(20, 20)
+    crate.state.position = Position(10, 10)
+    chest.state.position = Position(20, 20)
 
-    pairs = mechanics.intersections([mock_crate, mock_chest])
+    pairs = mechanics.intersections([crate, chest])
 
     assert len(pairs) == 1
-    assert (mock_crate, mock_chest) in pairs or (mock_chest, mock_crate) in pairs
+    assert (crate, chest) in pairs or (chest, crate) in pairs
 
 
+@pytest.mark.app_asset
 @pytest.mark.workflow_interactions
-def test_spatial_mechanic_proximities(
-    mock_mechanic, 
-    mock_sprite, 
-    mock_sprite_alt
-):
+def test_spatial_mechanic_proximities(mock_mechanic, mock_asset):
     """
     Verifies virtual action-radius padded hitbox intersections for separated entities.
     """
     mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    sprite_a = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value,
+    )
+    sprite_b = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value,
+    )
 
     # Separated by 70px horizontally; each 64x64 sprite has action.radius = 25 (padded width = 114)
-    mock_sprite.state.position = Position(10, 10)
-    mock_sprite_alt.state.position = Position(80, 10)
+    sprite_a.state.position = Position(10, 10)
+    sprite_b.state.position = Position(80, 10)
 
-    pairs = mechanics.proximities([mock_sprite, mock_sprite_alt])
+    pairs = mechanics.proximities([sprite_a, sprite_b])
 
     assert len(pairs) == 1
-    assert (mock_sprite, mock_sprite_alt) in pairs or (mock_sprite_alt, mock_sprite) in pairs
+    assert (sprite_a, sprite_b) in pairs or (sprite_b, sprite_a) in pairs
 
 
+@pytest.mark.app_component
 @pytest.mark.workflow_collisions
-def test_spatial_mechanic_constrain_elevation_filtering(
-    mock_mechanic, 
-    mock_crate, 
-    mock_boundary
-):
+def test_spatial_mechanic_constrain_elevation_filtering(mock_mechanic, mock_board):
     """
     Verifies SpatialMechanic.constrain pairs dynamic assets with boundaries only on active hitbox elevations.
     """
     mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
+    boundary = mock_board.perimeters[crate.state.layer][0][0]
 
-    mock_crate.elevation = 0
-    mock_crate.state.position = Position(10, 0)
+    crate.elevation = 0
+    hb = crate.hitboxes[0]
+    crate.state.position = Position(
+        boundary.position.x - hb.position.x,
+        boundary.position.y - hb.position.y,
+    )
 
-    pairs_e0 = mechanics.constrain([mock_crate], [mock_boundary], elevation=0)
-    pairs_e1 = mechanics.constrain([mock_crate], [mock_boundary], elevation=1)
+    pairs_e0 = mechanics.constrain([crate], [boundary], elevation=0)
+    pairs_e1 = mechanics.constrain([crate], [boundary], elevation=1)
 
-    assert pairs_e0 == [(mock_crate, mock_boundary)]
+    assert pairs_e0 == [(crate, boundary)]
     assert pairs_e1 == []

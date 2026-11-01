@@ -1,7 +1,7 @@
 """
 @domain.logic
 @domain.concrete
-@app.mechanics
+@app.mechanic
 @physics.motion
 
 # Ontology: Source - app.game.logic.mechanics.core.motion

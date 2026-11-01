@@ -1,7 +1,7 @@
 """
 @domain.concrete
 @domain.logic
-@app.mechanics
+@app.mechanic
 @category.sheets
 @workflow.navigation
 @workflow.intentions
