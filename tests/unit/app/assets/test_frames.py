@@ -110,7 +110,7 @@ def test_oriented_frame(mock_properties):
     crops = frame.index("beam", props)
 
     for i, orientation in enumerate(Orientations):
-        assert crops[f"beam{SEPARATOR}{orientation}"] == (i * w, 0, w, l)
+        assert crops[f"beam{SEPARATOR}{orientation.value}"] == (i * w, 0, w, l)
 
     state = ShorelineState(id="beam", orientation=Orientations.HORIZONTAL.value)
     assert frame.keys("beam", state) == [
@@ -129,7 +129,7 @@ def test_directed_frame(mock_properties):
     crops = frame.index("arrow", props)
 
     for i, direction in enumerate(Directions):
-        assert crops[f"arrow{SEPARATOR}{direction}"] == (i * w, 0, w, l)
+        assert crops[f"arrow{SEPARATOR}{direction.value}"] == (i * w, 0, w, l)
 
 
 @pytest.mark.category_objects
