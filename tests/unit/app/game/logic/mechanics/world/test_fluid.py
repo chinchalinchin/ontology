@@ -292,14 +292,14 @@ def test_fluid_mechanics_two_pass_layer_shorelines(
 @pytest.mark.parametrize(
     "source,gate_pos,expected",
     [
-        (Directions.DOWN.value, Position(60, 200), True),
-        (Directions.DOWN.value, Position(200, 200), False),
-        (Directions.UP.value, Position(60, 20), True),
-        (Directions.UP.value, Position(60, 200), False),
-        (Directions.RIGHT.value, Position(200, 100), True),
-        (Directions.RIGHT.value, Position(10, 100), False),
-        (Directions.LEFT.value, Position(10, 100), True),
-        (Directions.LEFT.value, Position(200, 100), False),
+        (Directions.DOWN.value, Position(200, 300), True),
+        (Directions.DOWN.value, Position(400, 300), False),
+        (Directions.UP.value, Position(200, 20), True),
+        (Directions.UP.value, Position(200, 300), False),
+        (Directions.RIGHT.value, Position(300, 200), True),
+        (Directions.RIGHT.value, Position(10, 200), False),
+        (Directions.LEFT.value, Position(10, 200), True),
+        (Directions.LEFT.value, Position(300, 200), False),
     ],
 )
 def test_obstacle_intersects_fluid_corridors(
@@ -313,7 +313,7 @@ def test_obstacle_intersects_fluid_corridors(
     emission corridors across all four cardinal directions.
     """
     fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
-    fluid.state.position = Position(x=60, y=100)
+    fluid.state.position = Position(x=200, y=200)
     fluid.state.source = source
     fluid.state.hitboxes = []
 
@@ -329,23 +329,27 @@ def test_board_fluid_subtile_precision(mock_board):
     Verify Board.fluid broad/narrow spatial hash returns False for coordinates
     sharing a 32px tile bucket with fluid but falling outside exact stream bounds.
     """
-    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
+    fluids = list(mock_board.instances(AssetInstances.FLUIDS.value))
+    mock_board.remove(fluids[1:])
+
+    fluid = fluids[0]
+    fw = fluid.properties.dimensions.w
     fluid.state.position = Position(x=70, y=0)
     fluid.state.source = Directions.DOWN.value
     fluid.state.length = 64
     fluid.state.pool = None
     fluid.state.branches = []
-    fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(32, 64))]
+    fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(fw, 64))]
 
     mock_board.update_fluid_cache("0")
 
-    # Inside stream corridor: x in [70, 102), y in [0, 64)
+    # Inside stream corridor: x in [70, 70 + fw), y in [0, 64)
     assert mock_board.fluid("0", Position(70, 10)) is True
-    assert mock_board.fluid("0", Position(101, 10)) is True
+    assert mock_board.fluid("0", Position(70 + fw - 1, 10)) is True
 
-    # Same tile buckets (cx = 69 // 32 = 2 and cx = 105 // 32 = 3) but outside corridor
+    # Same 32px tile buckets as the left/right edges, but strictly outside corridor
     assert mock_board.fluid("0", Position(69, 10)) is False
-    assert mock_board.fluid("0", Position(105, 10)) is False
+    assert mock_board.fluid("0", Position(70 + fw + 1, 10)) is False
 
 
 @pytest.mark.app_component
@@ -354,12 +358,16 @@ def test_board_fluid_spatial_hash_indexes_child_branches(mock_board):
     Verify Board broad/narrow spatial fluid checking detects Cartesian points
     located inside active child branch corridors.
     """
-    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
+    fluids = list(mock_board.instances(AssetInstances.FLUIDS.value))
+    mock_board.remove(fluids[1:])
+
+    fluid = fluids[0]
+    fw = fluid.properties.dimensions.w
     fluid.state.position = Position(x=70, y=0)
     fluid.state.source = Directions.DOWN.value
     fluid.state.length = 32
     fluid.state.pool = None
-    fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(32, 32))]
+    fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(fw, 32))]
 
     # Attach secondary child branch discharging at (0, 192) flowing DOWN
     fluid.state.branches = [
@@ -368,18 +376,18 @@ def test_board_fluid_spatial_hash_indexes_child_branches(mock_board):
             source=Directions.DOWN.value,
             flow=1,
             length=100,
-            hitboxes=[Hitbox(Position(0, 0), Dimensions(32, 100))],
+            hitboxes=[Hitbox(Position(0, 0), Dimensions(fw, 100))],
         )
     ]
 
     mock_board.update_fluid_cache("0")
 
-    # Coordinate inside child branch corridor: x in [0, 32), y in [192, 292)
+    # Coordinate inside child branch corridor: x in [0, fw), y in [192, 292)
     assert mock_board.fluid("0", Position(10, 200)) is True
     assert mock_board.fluid("0", Position(0, 192)) is True
 
-    # Coordinate outside branch corridor
-    assert mock_board.fluid("0", Position(35, 200)) is False
+    # Coordinates outside branch corridor
+    assert mock_board.fluid("0", Position(fw + 10, 200)) is False
     assert mock_board.fluid("0", Position(10, 300)) is False
 
 

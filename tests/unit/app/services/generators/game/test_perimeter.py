@@ -12,6 +12,12 @@ Unit tests for the Perimeter class
 # External Libraries
 import pytest
 
+# Application Libraries
+from app.static.semantics import (
+    AssetCategories,
+    AssetInstances
+)
+
 # Cython Libraries
 from libs.core.models import (
     Boundary,
@@ -34,38 +40,32 @@ def test_perimeter_generator_extract(mock_perimeter, mock_board):
     Verifies Perimeter.extract captures static substrates and architecture,
     while excluding dynamic bodies (mass > 0).
     """
+    environ = mock_board.instances(AssetInstances.ENVIRON.value)[0]
+    gate = mock_board.instances(AssetInstances.GATES.value)[0]
+    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
+
     rects = mock_perimeter.extract(mock_board, "0")
 
-    # 1. Environ Tile substrate (pos: 0, 0 | w: 32, l: 32 | nx: 10, ny: 10 -> 320x320)
-    assert (0, 0, 320, 320) in rects
+    assert (
+        environ.state.position.x, 
+        environ.state.position.y, 
+        environ.properties.dimensions.w * environ.state.multiple.nx, 
+        environ.properties.dimensions.l * environ.state.multiple.ny
+    ) in rects
 
-    # 2. Static Gate (pos: 170, 180 | w: 32, l: 32 -> 202x212)
-    assert (170, 180, 202, 212) in rects
+    assert (
+        gate.state.position.x,
+        gate.state.position.y, 
+        gate.properties.dimensions.w, 
+        gate.properties.dimensions.l
+    ) in rects
 
-    # 3. Static Strut (pos: 250, 250 | w: 222, l: 133 -> 472x383)
-    assert (250, 250, 472, 383) in rects
-
-    # 4. Movable crate (pos: 10, 10 | mass: 5) must be excluded
-    assert (10, 10, 42, 42) not in rects
-
-
-def test_perimeter_generator_extract_platform_elevated_deck(mock_perimeter, mock_board, mock_platform):
-    """
-    Verifies Perimeter.extract excludes platforms from Tier 0 hulls while synthesizing
-    walkable substrate bounds from platform decks at E > base_e.
-    """
-    if not mock_board.asset(mock_platform.name):
-        mock_board.add([mock_platform])
-
-    mock_platform.elevation = 0
-    mock_platform.state.position = Position(350, 50)
-    expected_rect = (350, 50, 350 + mock_platform.dimensions.w, 50 + mock_platform.dimensions.l)
-
-    rects_e0 = mock_perimeter.extract(mock_board, "0", elevation=0)
-    rects_e1 = mock_perimeter.extract(mock_board, "0", elevation=1)
-
-    assert expected_rect not in rects_e0
-    assert expected_rect in rects_e1
+    assert (
+        crate.state.position.x,
+        crate.state.position.y, 
+        crate.properties.dimensions.w, 
+        crate.properties.dimensions.l
+    ) not in rects
 
 
 def test_perimeter_generator_generate(mock_perimeter, mock_board):

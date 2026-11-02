@@ -391,7 +391,6 @@ def test_fields_shoreline_entry_nudge_cardinal_axes(
     assert player.state.position.y == expected_y
     assert player.state.mutators.triggers.submerged is True
 
-
 def test_fields_bipartite_heterogeneous_resolution(mock_board):
     """
     Verify physics.environment resolves multiple entities across bridges, rafts,
@@ -399,31 +398,26 @@ def test_fields_bipartite_heterogeneous_resolution(mock_board):
     """
     Cartographer.purge("0", mock_board)
 
-    # Active stream corridor along x in [60, 92], y in [0, 350]
+    # Active stream corridor along x in [60, 60 + fw], y in [0, 500]
     fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
-    fluid.state.length = 350
-    fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(32, 350))]
+    fw = fluid.properties.dimensions.w
+    fluid.state.length = 500
+    fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(fw, 500))]
 
-    # Bridge deck spans over stream at (50, 50)
+    # 1. Bridge deck spans over upstream corridor at (50, 20)
     bridge = mock_board.bridges("0")[0]
-    bridge.state.position = Position(x=50, y=50)
-
-    # Raft floats downstream at (70, 150)
-    raft = mock_board.instances(AssetInstances.RAFTS.value)[0]
-    raft.state.position = Position(x=70, y=150)
-    rhb = raft.hitboxes[0]
+    bridge.state.position = Position(x=50, y=20)
 
     # Player on bridge deck: voluntary movement only, submerged=False
     player = mock_board.player()
-    player.state.position = Position(x=50, y=50)
+    player.state.position = Position(x=50, y=20)
     player.state.velocity = Velocity(vx=5.0, vy=0.0)
     player.state.mutators.triggers.submerged = False
 
-    # Crate immersed directly in fluid channel: acquires flow velocity (0, 40)
-    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
-    crate.state.position = Position(x=70, y=250)
-    crate.state.velocity = Velocity(vx=0.0, vy=0.0)
-    crate.state.mutators.triggers.submerged = False
+    # 2. Raft floats downstream at (70, 250), well clear of bridge footprint
+    raft = mock_board.instances(AssetInstances.RAFTS.value)[0]
+    raft.state.position = Position(x=70, y=250)
+    rhb = raft.hitboxes[0]
 
     # NPC Sprite aboard the raft: inherits raft velocity
     sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
@@ -435,6 +429,12 @@ def test_fields_bipartite_heterogeneous_resolution(mock_board):
     )
     sprite.state.velocity = Velocity(vx=0.0, vy=0.0)
     sprite.state.mutators.triggers.submerged = False
+
+    # 3. Crate immersed directly in downstream fluid channel at (70, 400)
+    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
+    crate.state.position = Position(x=70, y=400)
+    crate.state.velocity = Velocity(vx=0.0, vy=0.0)
+    crate.state.mutators.triggers.submerged = False
 
     all_entities = [raft, player, crate, sprite]
     fields.update(all_entities, mock_board, 0.016)
