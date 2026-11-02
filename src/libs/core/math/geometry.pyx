@@ -5,7 +5,7 @@
 @workflow.collisions
 @workflow.navigation
 
-# Ontology: Source - libs.core.math.geometry
+# Ontology: Libraries - libs.core.math.geometry
 
 Cython Library for geometrical calculations and algorithms.
 """

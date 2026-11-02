@@ -59,24 +59,24 @@ tools:
     manager:
       board: false
       specs: false
-      docs: true
+      docs: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
       data: true
-      filter: true
+      filter: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: true
+      directory: false
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
-      configuration: true
+      configuration: false
       pipeline: true
       session: false
 # ----------------------------------------------------
@@ -112,19 +112,23 @@ tools:
       filter:
         default: AND
         queries:
+          - title: Application Core Components
+            scan:
+              app: [ core, component ]
           - title: Application User Devices
             scan:
-              domain: [ user ]
               app: [ device ]
           - title: Player Mechanic Implementation
             scan:
-              domain: [ concrete ]
               app: [ mechanic ]
               workflows: [ player ]
+          - title: Test Fixtures
+            scan:
+              test: [ fixtures ]
       data:
-        properties: [ sheets/sprites ]
-        state: [  world-testbed/sprites ]
-        configurations: [ mappings ]
+        properties: [ ]
+        state: [  ]
+        configurations: [ plots ]
         templates: [ ]
     # --------------------------------------------
     # -------------------------- PARAMETERS: SHELL
@@ -140,7 +144,7 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: '"workflow_player or app_device"'
+        marker: '"workflow_player or app_device or app_core"'
         # scope: '**/test_{actuator,cartographer}.py'
       session:
         description: |

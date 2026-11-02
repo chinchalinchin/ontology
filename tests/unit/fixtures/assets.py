@@ -1,9 +1,6 @@
 """
 @domain.test
 @test.fixtures
-@app.asset
-@modality.material
-@workflow.injection
 
 # Ontology: Test - tests.unit.fixtures.assets
 

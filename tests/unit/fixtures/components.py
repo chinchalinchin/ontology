@@ -1,13 +1,9 @@
 """
 @domain.test
-@test.fixtures
-@app.core
 @app.component
-@app.device
-@app.mechanic
-@workflow.injection
+@test.fixtures
 
-# Ontology: Test - tests.unit.fixtures.components
+# Ontology: Tests - tests.unit.fixtures.components
 
 Concrete application component, device, registry, mechanic, and engine fixtures.
 """
@@ -15,7 +11,10 @@ Concrete application component, device, registry, mechanic, and engine fixtures.
 import collections
 from typing import (
     Any,
-    List
+    Callable,
+    List,
+    Optional,
+    Set,
 )
 from unittest.mock import MagicMock
 
@@ -45,24 +44,22 @@ from app.models.groups import EquipmentGroup
 from app.models.properties import PropertiesSchema
 from app.models.state import StateSchema
 from app.models.state.devices import (
-    DevicePayload, 
-    WorldPayload, 
-    MenuPayload
+    DevicePayload,
+    MenuPayload,
+    WorldPayload,
 )
-
 from app.services.factories import MechanicFactory
 from app.services.generators.game import (
     Actuator,
     Cartographer,
     Cradle,
     Decomposer,
-    Perimeter
+    Perimeter,
 )
 from app.services.generators.menus import Provider
 from app.static.semantics import (
     AssetInstances,
     Devices,
-    PlayerGoals
 )
 
 # Cython Libraries
@@ -71,17 +68,17 @@ from libs.graphics.registry import (
     Registry,
     TTFFont,
 )
+import libs.graphics.render as sdl_render
 
 # ---------------------------------------------------------------------------
 # ----------------------------------------------- SUBSYSTEMS & ASSET REGISTRY
 # ---------------------------------------------------------------------------
 
-
 @pytest.fixture
 def mock_render(monkeypatch) -> MagicMock:
     """
-    Patches Cython SDL rendering calls on app.game.screen.render and
-    libs.graphics.registry.render so no textures are rendered during unit tests.
+    Patches Cython SDL rendering calls across libs.graphics.render and all
+    consumer modules so no GPU textures are allocated during unit tests.
     """
     mock = MagicMock()
     mock.canvas.side_effect = lambda w, l, opaque=False: MagicMock(
@@ -91,8 +88,15 @@ def mock_render(monkeypatch) -> MagicMock:
         w=getattr(base, "w", 64),
         l=getattr(base, "l", 64),
     )
+    mock.measure.return_value = (64, 16)
+
+    for attr in dir(sdl_render):
+        if not attr.startswith("_"):
+            monkeypatch.setattr(sdl_render, attr, getattr(mock, attr))
+
     monkeypatch.setattr("app.game.screen.render", mock)
     monkeypatch.setattr("libs.graphics.registry.render", mock)
+    monkeypatch.setattr("app.services.generators.menus.provider.render", mock)
     return mock
 
 
@@ -127,6 +131,26 @@ def mock_registry(
 
 
 @pytest.fixture
+def mock_sdl(monkeypatch) -> Callable[[Set[int]], None]:
+    """
+    Fixture factory configuring active SDL scancodes returned by libs.core.input.poll.
+    """
+    active_codes: Set[int] = set()
+
+    def _set_pressed(codes: Optional[Set[int]] = None) -> None:
+        active_codes.clear()
+        if codes:
+            active_codes.update(codes)
+
+    monkeypatch.setattr("app.game.devices.sdl.pump", lambda: None)
+    monkeypatch.setattr(
+        "app.game.devices.sdl.poll",
+        lambda scancodes: tuple(1 if code in active_codes else 0 for code in scancodes),
+    )
+    return _set_pressed
+
+
+@pytest.fixture
 def mock_device(mock_configurations_schema: ConfigurationSchema):
     """
     Fixture factory instantiating an input Device via MechanicFactory.
@@ -145,17 +169,28 @@ def mock_keyboard(mock_device) -> Keyboard:
 
 @pytest.fixture
 def mock_payload():
-    def _payload(goals: List[str] = [], intention: str = None):
+    def _payload(
+        goals: Optional[List[str]] = None,
+        intention: Optional[str] = None,
+        menu: Optional[str] = None,
+        traversal: Optional[str] = None,
+        interaction: Optional[str] = None,
+    ) -> DevicePayload:
         return DevicePayload(
-                world=WorldPayload(
-                    goals=goals,
-                    intention=intention
-                ),
-                menu=MenuPayload()
-            )
+            world=WorldPayload(
+                goals=list(goals) if goals else [],
+                intention=intention,
+                menu=menu,
+            ),
+            menu=MenuPayload(
+                traversal=traversal,
+                interaction=interaction,
+            ),
+        )
 
     return _payload
-            
+
+
 # ---------------------------------------------------------------------------
 # ------------------------------------------------------------------- SCREEN
 # ---------------------------------------------------------------------------
@@ -182,6 +217,7 @@ def mock_screen(
 # -------------------------------------------------------------------- BOARD
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def mock_board(
     mock_assets: list[Asset],
@@ -206,7 +242,7 @@ def mock_board(
 
     for comp_state in mock_state_schema.compositions:
         board.add(mock_decomposer.unpack(comp_state))
-        
+
     for layer in board.layers():
         board.perimeters[layer] = Perimeter.generate(board, layer)
 
@@ -283,7 +319,7 @@ def mock_engine(
     mock_executors,
 ):
     """
-    Fixture factory constructing an Engine parameterized by translator implementation ('lambda' or 'compiler').
+    Fixture constructing an Engine hydrated with live core and world mechanics.
     """
     def _engine(
         implementation: str = settings.TRANSLATOR_IMPLEMENTATION,

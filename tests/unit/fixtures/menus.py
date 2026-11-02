@@ -1,5 +1,8 @@
 """
-# Ontology: tests.unit.fixtures.menus
+@domain.test
+@test.fixtures
+
+# Ontology: Test - tests.unit.fixtures.menus
 
 Mock Menu fixtures.
 """

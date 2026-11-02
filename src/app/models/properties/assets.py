@@ -63,6 +63,7 @@ class CraftProperties(AssetProperties):
 @dataclass(slots=True)
 class CursorProperties(AssetProperties):
     frames: List[str] = field(default_factory=list)
+    hitboxes: Optional[List[Hitbox]] = None                         # type: ignore
 
 # --------------------------------------------------------------
 

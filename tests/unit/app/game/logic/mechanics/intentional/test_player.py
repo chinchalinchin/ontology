@@ -2,6 +2,7 @@
 @domain.test
 @test.unit
 @app.mechanic
+@category.sheets
 @modality.intention
 @workflow.player
 
@@ -21,16 +22,12 @@ from app.static.semantics import (
     Menus,
     PlayerGoals,
 )
-from app.models.state import (
-    DevicePayload,
-    MenuPayload,
-    WorldPayload,
-)
 
 # -----------------------------------------------------
 
 pytestmark = [
     pytest.mark.app_mechanic,
+    pytest.mark.category_sheets,
     pytest.mark.modality_intention,
     pytest.mark.workflow_player,
 ]
@@ -60,6 +57,28 @@ def test_player_new_intention_resets_animation(
     assert player.state.mutators.triggers.animated is True
 
 
+def test_player_attack_intention_maps_weapon_action(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    """
+    Ensure triggering ATTACK with an equipped shortsword maps to SLASH and enables animation.
+    """
+    mechanic = mock_mechanic(Mechanics.PLAYER.value)
+    player = mock_board.player()
+    player.state.intention = Intentions.IDLE.value
+    player.state.inventory.equipment.weapon = "shortsword"
+
+    payload = mock_payload(intention=Intentions.ATTACK.value)
+    mechanic.update(mock_board, 0.016, mock_bus, payload)
+
+    assert player.state.intention == Intentions.ATTACK.value
+    assert player.state.animation.action == Actions.SLASH.value
+    assert player.state.mutators.triggers.animated is True
+
+
 def test_player_blocking_intention_persists(
     mock_mechanic,
     mock_board,
@@ -72,10 +91,19 @@ def test_player_blocking_intention_persists(
     player.state.animation.frame = 1
     player.state.animation.tick = 0
 
-    payload = mock_payload(intention=None, goals=[])
-    mechanic.update(mock_board, 0.016, mock_bus, payload)
-
+    # Persists when no intention is sent
+    mechanic.update(mock_board, 0.016, mock_bus, mock_payload(intention=None, goals=[]))
     assert player.state.intention == Intentions.MINE.value
+
+    # Persists and does not reset frame when a competing intention arrives while locked
+    mechanic.update(
+        mock_board,
+        0.016,
+        mock_bus,
+        mock_payload(intention=Intentions.INTERACT.value, goals=[]),
+    )
+    assert player.state.intention == Intentions.MINE.value
+    assert player.state.animation.frame == 1
 
 
 def test_player_blocking_intention_completes(
@@ -97,7 +125,7 @@ def test_player_blocking_intention_completes(
     assert player.state.mutators.triggers.animated is False
 
 
-def test_player_movement_updates_goal(
+def test_player_movement_updates_and_halts_goal(
     mock_mechanic,
     mock_board,
     mock_bus,
@@ -120,6 +148,12 @@ def test_player_movement_updates_goal(
     assert player.state.goal.position.x == 100 + speed
     assert player.state.goal.position.y == 100 + speed
     assert player.state.mutators.triggers.animated is True
+
+    # Halting movement updates existing goal to current position and disables animation
+    mechanic.update(mock_board, 0.016, mock_bus, mock_payload(goals=[]))
+    assert player.state.goal.position.x == 100
+    assert player.state.goal.position.y == 100
+    assert player.state.mutators.triggers.animated is False
 
 
 def test_player_movement_cardinal_directions(
@@ -145,30 +179,55 @@ def test_player_movement_cardinal_directions(
         mock_board,
         0.016,
         mock_bus,
+        mock_payload(goals=[PlayerGoals.DOWN]),
+    )
+    assert player.state.animation.direction == Directions.DOWN.value
+
+    mechanic.update(
+        mock_board,
+        0.016,
+        mock_bus,
         mock_payload(goals=[PlayerGoals.LEFT]),
     )
     assert player.state.animation.direction == Directions.LEFT.value
+
+    mechanic.update(
+        mock_board,
+        0.016,
+        mock_bus,
+        mock_payload(goals=[PlayerGoals.RIGHT]),
+    )
+    assert player.state.animation.direction == Directions.RIGHT.value
 
 
 def test_player_menu_triggers_emit_events(
     mock_mechanic,
     mock_board,
     mock_bus,
+    mock_payload,
 ):
     mechanic = mock_mechanic(Mechanics.PLAYER.value)
 
-    inv_payload = DevicePayload(
-        world=WorldPayload(menu=Menus.INVENTORY.value),
-        menu=MenuPayload(),
-    )
-    mechanic.update(mock_board, 0.016, mock_bus, inv_payload)
+    mechanic.update(mock_board, 0.016, mock_bus, mock_payload(menu=Menus.INVENTORY.value))
     assert len(mock_bus) == 1
     assert mock_bus[-1].id == Menus.INVENTORY.value
 
-    pause_payload = DevicePayload(
-        world=WorldPayload(menu=Menus.PAUSE.value),
-        menu=MenuPayload(),
-    )
-    mechanic.update(mock_board, 0.016, mock_bus, pause_payload)
+    mechanic.update(mock_board, 0.016, mock_bus, mock_payload(menu=Menus.PAUSE.value))
     assert len(mock_bus) == 2
     assert mock_bus[-1].id == Menus.PAUSE.value
+
+
+def test_player_mechanics_no_player_guard(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    """
+    Ensure PlayerMechanics exits cleanly when no player entity exists on the Board.
+    """
+    mechanic = mock_mechanic(Mechanics.PLAYER.value)
+    mock_board.clear()
+
+    mechanic.update(mock_board, 0.016, mock_bus, mock_payload(menu=Menus.PAUSE.value))
+    assert len(mock_bus) == 0

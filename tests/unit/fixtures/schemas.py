@@ -1,12 +1,6 @@
 """
 @domain.test
 @test.fixtures
-@app.asset
-@app.config
-@app.schema
-@asset.property
-@asset.state
-@workflow.injection
 
 # Ontology: Test - tests.unit.fixtures.schemas
 

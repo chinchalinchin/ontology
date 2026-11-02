@@ -3,6 +3,7 @@
 @test.unit
 @app.core
 @app.component
+@workflow.rendering
 
 # Ontology: Tests - tests.unit.app.game.test_screen
 
@@ -12,26 +13,32 @@ Unit Tests for the Screen class.
 import pytest
 
 # Application Libraries
-from app.game.screen import Screen
 from app.assets.frames import NoFrame
+from app.game.menus.contexts import PauseContext
+from app.game.menus.events import MenuEvent
+from app.game.screen import Screen
 from app.models.state import (
     AnimationState,
     CalendarState,
+    DisplayState,
 )
 from app.static.semantics import (
-    AssetInstances,
     Actions,
-    Directions,
+    AssetCategories,
+    AssetInstances,
     ChannelTypes,
-    Seasons,
     Cycles,
+    Directions,
+    LayerProjections,
+    Menus,
+    Seasons,
     Substrates,
 )
 
 # Cython Libraries
 from libs.core.models import (
-    Position,
     Dimensions,
+    Position,
 )
 
 # ---------------------------------------------------------------------------
@@ -251,6 +258,27 @@ def test_screen_draw_submerge_channel_splitting(mock_screen, mock_board, mock_re
     assert lower[9:] == (r, g, b, a)
 
 
+def test_screen_draw_tint_channel_dispatch(mock_screen, mock_board, mock_render):
+    """
+    Verify Screen.draw forwards ChannelTypes.TINT payloads (such as Door OUT projections)
+    to render.channel.
+    """
+    doors = mock_board.instances(AssetInstances.DOORS.value)
+    if not doors:
+        pytest.skip("No Door assets present in testbed.")
+
+    door = doors[0]
+    door.state.position = Position(x=64, y=64)
+    door.state.projection = LayerProjections.OUT.value
+
+    mock_render.channel.reset_mock()
+    mock_screen.draw([door], focus=Position(x=0, y=0), dim=Dimensions(w=32, l=32))
+
+    channels = door.frame.channels(door.id, door.state, door.properties)
+    if any(c_type == ChannelTypes.TINT.value for c_type, _ in channels):
+        assert mock_render.channel.called
+
+
 def test_screen_sort_elevation_precedence(mock_board):
     """
     Verify _sort enforces primary elevation tier ordering: higher elevation assets
@@ -422,3 +450,91 @@ def test_screen_reconstruct_updates_canvases_without_reallocating(
     assert mock_render.construct.call_count == 2
     _, back_tiles = mock_render.construct.call_args_list[0][0]
     assert len(back_tiles) == 1
+
+
+@pytest.mark.workflow_menus
+def test_screen_interface_and_stamp(mock_engine, mock_screen, mock_render):
+    """
+    Verify Screen.interface dims and superimposes menus/overlays, and Screen.stamp
+    restamps DisplayState widget canvases and writes text.
+    """
+    mock_engine.bus.append(
+        MenuEvent(
+            id=Menus.PAUSE.value,
+            context=PauseContext(board=mock_engine.board),
+        )
+    )
+    mock_engine._drain()
+
+    assert len(mock_engine.board.menus) == 1
+    pause_menu = mock_engine.board.menus[0]
+
+    mock_render.dim.reset_mock()
+    mock_render.superimpose.reset_mock()
+
+    mock_screen.interface(
+        menus=mock_engine.board.menus,
+        overlays=[pause_menu],
+    )
+
+    assert mock_render.dim.called
+    assert mock_render.superimpose.call_count == 2
+
+    display_widget = next(
+        (w for w in pause_menu.widgets.values() if isinstance(w.state, DisplayState)),
+        None,
+    )
+    if display_widget is not None:
+        mock_render.construct.reset_mock()
+        mock_render.write.reset_mock()
+        mock_screen.stamp(display_widget, "Paused")
+        assert mock_render.construct.called
+        assert mock_render.write.called
+
+
+def test_screen_export_methods_and_destroy(
+    mock_screen,
+    mock_board,
+    mock_render,
+    tmp_path,
+):
+    """
+    Validate export_background, export_render, export_map, and explicit destroy cleanup.
+    """
+    bg_path = str(tmp_path / "bg.png")
+    render_path = str(tmp_path / "render.png")
+    map_path = str(tmp_path / "map.png")
+
+    assets = mock_board.renderables("0")
+
+    mock_render.save.reset_mock()
+    mock_screen.export_background(bg_path)
+    mock_render.save.assert_called_once_with(
+        bg_path,
+        mock_screen.boardsize.w,
+        mock_screen.boardsize.l,
+        target=mock_screen.bg_canvas,
+    )
+
+    mock_render.save.reset_mock()
+    mock_screen.export_render(
+        render_path,
+        assets,
+        focus=Position(x=0, y=0),
+        fdim=Dimensions(w=32, l=32),
+    )
+    mock_render.save.assert_called_once_with(
+        render_path,
+        mock_screen.screensize.w,
+        mock_screen.screensize.l,
+    )
+
+    mock_render.save.reset_mock()
+    mock_render.destroy.reset_mock()
+    mock_screen.export_map(map_path, assets)
+    assert mock_render.save.called
+    assert mock_render.destroy.called
+
+    mock_screen.destroy()
+    assert mock_screen.bg_canvas is None
+    assert mock_screen.fg_canvas is None

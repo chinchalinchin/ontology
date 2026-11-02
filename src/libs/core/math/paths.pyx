@@ -4,7 +4,7 @@
 @app.library
 @workflow.navigation
 
-# Ontology: libs.core.math.paths
+# Ontology: Libraries - libs.core.math.paths
 """
 # cython: language_level=3
 from libc.math cimport fabsf, fminf, fmaxf, atan2f, cosf, sinf, hypotf

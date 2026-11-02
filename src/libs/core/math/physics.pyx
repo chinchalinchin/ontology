@@ -5,7 +5,7 @@
 @physics.motion
 @workflow.collisions
 
-# Ontology: libs.core.math.physics
+# Ontology: Libraries - libs.core.math.physics
 
 """
 # cython: language_level=3

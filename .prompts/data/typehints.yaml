@@ -21,6 +21,7 @@ md: markdown
 patch: diff
 php: php
 py: python
+pyx: cython
 r: r
 rb: ruby
 rs: rust

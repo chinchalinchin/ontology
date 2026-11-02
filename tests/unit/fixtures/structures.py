@@ -1,11 +1,6 @@
 """
 @domain.test
 @test.fixtures
-@app.relation
-@modality.material
-@physics.fields
-@physics.space
-@workflow.injection
 
 # Ontology: Tests - tests.unit.fixtures.structures
 
