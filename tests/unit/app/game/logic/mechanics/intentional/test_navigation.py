@@ -562,11 +562,15 @@ def test_navigation_dynamic_replan_when_waypoint_blocked(
 
 def test_navigation_update_processes_sprites_skips_player(
     mock_mechanic,
-    mock_board
+    mock_board,
+    mock_payload,
+    mock_bus
 ):
     mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
     sprite1 = mock_board.instances(AssetInstances.SPRITES.value)[0]
     player = mock_board.player()
+    payload = mock_payload()
+
     sprite1.state.goal = Goal(
         name="target1", 
         category=Goals.POSITION.value, 
@@ -575,12 +579,7 @@ def test_navigation_update_processes_sprites_skips_player(
     sprite1.state.intention = Intentions.FIND
 
     with patch.object(mechanic, "_navigate") as mock_nav:
-        mechanic.update(
-            board=mock_board,
-            delta=1.0 / 60.0,
-            bus=deque(),
-            payload=MagicMock(spec=DevicePayload)
-        )
+        mechanic.update(mock_board, 0.016, mock_bus, payload)
 
         # Verified _navigate called for sprite but not player
         nav_targets = [call.args[0] for call in mock_nav.call_args_list]

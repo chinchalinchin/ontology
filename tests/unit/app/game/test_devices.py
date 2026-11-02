@@ -37,12 +37,12 @@ def test_keyboard_initialization(mock_keyboard: Keyboard):
     assert len(mock_keyboard._last_state) == len(expected_scancodes)
 
 
-def test_controller_initialization(mock_mapping_configuration: MappingConfiguration):
+def test_controller_initialization(mock_configurations_schema):
     """
     Ensure Controller instantiates and retains its mapping configuration.
     """
-    controller = Controller(mock_mapping_configuration.controller)
-    assert controller.mapping == mock_mapping_configuration.controller
+    controller = Controller(mock_configurations_schema.mappings.controller)
+    assert controller.mapping == mock_configurations_schema.mappings.controller
 
 
 def test_keyboard_handles_none_scancodes():

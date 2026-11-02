@@ -8,12 +8,13 @@
 Unit tests for CLI argument parsing, utilities, command handlers, and main entrypoint.
 """
 # Standard Libraries
+from dataclasses import fields
+from pathlib import Path
 import argparse
 import json
 import logging
 import os
 import sys
-from pathlib import Path
 
 # External Libraries
 import pytest
@@ -193,31 +194,46 @@ def test_filter_assets_excludes_widgets(mock_assets, mock_asset):
     assert len(filtered) == len(mock_assets)
 
 
-def test_filter_assets_by_instance(mock_assets):
+def test_filter_assets_by_instance(mock_assets, mock_state_schema):
     sprites = utilities.filter(
         mock_assets,
         {Filters.INSTANCE.value: "sprites"},
     )
-    assert len(sprites) == 1
+    sprite_len = len(getattr(
+        getattr(mock_state_schema,AssetCategories.SHEETS.value),
+        AssetInstances.SPRITES.value
+    ))
+    assert len(sprites) == sprite_len
     assert all(a.instance == AssetInstances.SPRITES.value for a in sprites)
 
+    crate_len = len(getattr(
+        getattr(mock_state_schema,AssetCategories.OBJECTS.value),
+        AssetInstances.CRATES.value
+    ))
     multi = utilities.filter(
         mock_assets,
-        {Filters.INSTANCE.value: "sprites,crate.*"},
+        {Filters.INSTANCE.value: "sprites,crates"},
     )
-    assert len(multi) == 2
+    assert len(multi) == sprite_len + crate_len
     assert {a.instance for a in multi} == {
         AssetInstances.SPRITES.value,
         AssetInstances.CRATES.value,
     }
 
 
-def test_filter_assets_by_category(mock_assets):
+def test_filter_assets_by_category(mock_assets, mock_state_schema):
     sheets = utilities.filter(
         mock_assets,
         {Filters.CATEGORY.value: "sheets"},
     )
-    assert len(sheets) == 3
+    sheet_instances = getattr(mock_state_schema,AssetCategories.SHEETS.value)
+    total_instances = 0 
+    for instance in fields(sheet_instances):
+
+        instances = getattr(sheet_instances, instance.name)
+        total_instances += len(instances)
+           
+    assert len(sheets) == total_instances
     assert all(a.category == AssetCategories.SHEETS.value for a in sheets)
 
 
