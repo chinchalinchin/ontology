@@ -1,78 +1,103 @@
 """
-# Ontology: tests.unit.app.game.logic.modules.maps.test_animation_maps
+@domain.test
+@test.unit
+@app.module
+@modality.action
+@modality.intention
+
+# Ontology: Tests - tests.unit.app.game.logic.modules.maps.test_animation
+
+Unit tests for AnimationMap.
 """
 # External Libraries
 import pytest
 
 # Application Libraries
-from app.game.logic.modules.maps import AnimationMap
+from app.game.logic.modules.maps.animation import AnimationMap
 from app.static.semantics import (
-    Intentions, 
-    Actions, 
-    Directions
+    Actions,
+    AssetCategories,
+    AssetInstances,
+    Directions,
+    Intentions,
 )
 
 # Cython Libraries
 from libs.core.models import Position
 
-@pytest.mark.asset_animation
-def test_animation_map_action_idle(mock_board):
-    player = mock_board.player()
-    player.state.intention = Intentions.IDLE.value
+# -----------------------------------------------------
 
-    assert AnimationMap.action(
-        player.state, 
-        mock_board.equipment
-    ) == Actions.WALK.value
+pytestmark = [
+    pytest.mark.app_module,
+    pytest.mark.modality_action,
+    pytest.mark.modality_intention,
+]
 
-
-@pytest.mark.asset_animation
-def test_animation_map_action_attack_unarmed(mock_board):
-    player = mock_board.player()
-    player.state.intention = Intentions.ATTACK.value
-    player.state.inventory.equipment.weapon = None
-
-    assert AnimationMap.action(
-        player.state, 
-        mock_board.equipment
-    ) == Actions.CAST.value
+# -----------------------------------------------------
 
 
-@pytest.mark.asset_animation
-def test_animation_map_action_attack_armed(mock_board):
-    player = mock_board.player()
-    player.state.intention = Intentions.ATTACK.value
-    player.state.inventory.equipment.weapon = "shortsword"
-    
-    assert AnimationMap.action(
-        player.state, 
-        mock_board.equipment
-    ) == Actions.SLASH.value 
+def test_animation_map_static_intentions(mock_state, mock_equipment):
+    state = mock_state(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value,
+    )
+    for intention in (
+        Intentions.IDLE.value,
+        Intentions.SPEAK.value,
+        Intentions.BARTER.value,
+        Intentions.THREATEN.value,
+    ):
+        state.intention = intention
+        assert AnimationMap.action(state, mock_equipment) == Actions.WALK.value
 
 
-@pytest.mark.asset_animation
-def test_animation_map_direction_down():
-    pos = Position(10, 10)
-    target = Position(10, 20)
-    assert AnimationMap.direction(pos, target) == Directions.DOWN.value
+def test_animation_map_attack_weapons(mock_state, mock_equipment):
+    state = mock_state(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value,
+    )
+    state.intention = Intentions.ATTACK.value
+
+    state.inventory.equipment.weapon = None
+    assert AnimationMap.action(state, mock_equipment) == Actions.CAST.value
+
+    state.inventory.equipment.weapon = "shortsword"
+    assert AnimationMap.action(state, mock_equipment) == Actions.SLASH.value
+
+    state.inventory.equipment.weapon = "spear"
+    assert AnimationMap.action(state, mock_equipment) == Actions.THRUST.value
+
+    state.inventory.equipment.weapon = "longbow"
+    assert AnimationMap.action(state, mock_equipment) == Actions.SHOOT.value
 
 
-@pytest.mark.asset_animation
-def test_animation_map_direction_up():
-    pos = Position(10, 20)
-    target = Position(10, 10)
-    assert AnimationMap.direction(pos, target) == Directions.UP.value
+def test_animation_map_mine_and_build(mock_state, mock_equipment):
+    state = mock_state(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value,
+    )
+
+    state.intention = Intentions.MINE.value
+    state.inventory.equipment.tool = None
+    assert AnimationMap.action(state, mock_equipment) == Actions.THRUST.value
+
+    state.inventory.equipment.tool = "axe"
+    assert AnimationMap.action(state, mock_equipment) == Actions.SLASH.value
+
+    state.inventory.equipment.tool = "pickaxe"
+    assert AnimationMap.action(state, mock_equipment) == Actions.THRUST.value
+
+    state.intention = Intentions.BUILD.value
+    state.inventory.equipment.utility = None
+    assert AnimationMap.action(state, mock_equipment) == Actions.CAST.value
+
+    state.inventory.equipment.utility = "lantern"
+    assert AnimationMap.action(state, mock_equipment) == Actions.CAST.value
 
 
-@pytest.mark.asset_animation
-def test_animation_map_direction_right():
-    pos = Position(10, 10)
-    target = Position(20, 10)
-    assert AnimationMap.direction(pos, target) == Directions.RIGHT.value
-
-
-@pytest.mark.asset_animation
-def test_animation_map_direction_left():
-    pos = Position(20, 10)
-    target = Position(10, 10)
-    assert AnimationMap.direction(pos, target) == Directions.LEFT.value
+def test_animation_map_directions():
+    origin = Position(50, 50)
+    assert AnimationMap.direction(origin, Position(50, 80)) == Directions.DOWN.value
+    assert AnimationMap.direction(origin, Position(50, 20)) == Directions.UP.value
+    assert AnimationMap.direction(origin, Position(20, 50)) == Directions.LEFT.value
+    assert AnimationMap.direction(origin, Position(80, 50)) == Directions.RIGHT.value

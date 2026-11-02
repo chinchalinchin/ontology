@@ -21,10 +21,10 @@ Tags are meant to capture logically related slices of the Application.
 
 * Tags:
     * `app`: Every file should have an Application Tag.
-    * `domain`: Every file should have a Domain tag.
-    * `asset`: Asset Tags are restricted to models, implementation and configuration surrounding the Asset class.
+    * `domain`: Every file should have a Domain Tag.
+    * `asset`: Asset Tags are restricted to models, implementations and configurations surrounding the Asset class.
     * `category`: Category Tags are restricted to Asset Component implementations and models of a specific Category.
-    * `modality`: Modality Tags are restricted to the systems that implement the logic to differentiate the various Asset Modalities. **NOTE**: This Tag does not apply to the data structures or models where the modalities are declared, but the systems which utilize this field and manifest its meaning within the logic of the application. 
+    * `modality`: Modality Tags are restricted to the systems that implement the logic to differentiate the various Asset Modalities. **NOTE**: This Tag does not apply to the data structures or models where the modalities are declared, but the systems which utilize this field and manifest its meaning within the logic of the Application. 
     * `physics`: Physics Tags are restricted to the systems that interface with the Engine's physical calculations.
     * `test`:  Test Tags are restricted to unit tests, integration tests and exploratory tests.
     * `workflow`: Workflow Tags are restricted to Application Mechanics, modules and other logical processes that execute every Engine Loop.
@@ -67,14 +67,14 @@ Tags are meant to capture logically related slices of the Application.
         * Source Names:
             * Application Names:
                 * `app.asset` (*Asset Implementations*)
-                * `app.base` (*Base Implementations*)
+                * `app.base` (*Base Application Implementations*)
                 * `app.board` (*Application Board Database*)
-                * `app.core` (*Core Implementations*)
-                * `app.component` (*Engine Subsystems*)
+                * `app.core` (*Core Application Systems*)
+                * `app.component` (*Application Subsystems*)
                 * `app.config`
-                * `app.device`
+                * `app.device` (*Input Devices*)
                 * `app.library` (*Cython Libraries*)
-                * `app.mechanic`
+                * `app.mechanic` (*Mechanic Implementations*)
                 * `app.module` (*Static Logical Modules*)
                 * `app.schema`
                 * `app.semantics` (*Application Terminology*)

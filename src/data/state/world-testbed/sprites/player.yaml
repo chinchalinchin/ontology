@@ -1,7 +1,7 @@
 sheets:
   players: 
     - id: player
-      name: test-player
+      name: player
       layer: '0'
       depth: 0
       position:

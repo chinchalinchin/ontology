@@ -58,13 +58,13 @@ tools:
     manager:
       board: false
       specs: false
-      docs: true
+      docs: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: true
-      filter: true
+      data: false
+      filter: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
@@ -100,7 +100,8 @@ tools:
           - 07-sounds.md
           - 08-plots.md
           - 09-ecology.md
-          - 10-emergence.md
+          - 10-chemistry.md
+          - 11-emergence.md
           # - 11-architecture.md
       specs: []
     # --------------------------------------------
@@ -136,6 +137,10 @@ tools:
             scan:
               app: [ library ]
               workflows: [ navigation ]
+          # --------------------------------
+          - title: Test Fixtures
+            scan:
+              test: [ fixtures ]
 
       data:
         properties: [ sheets ]

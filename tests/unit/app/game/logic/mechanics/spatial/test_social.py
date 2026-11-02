@@ -1,44 +1,89 @@
 """
-# Ontology: tests.unit.test_app_game_logic_mechanics_social
+@domain.test
+@test.unit
+@app.mechanic
+@category.sheets
+@physics.space
+@modality.intention
+
+# Ontology: Tests - tests.unit.app.game.logic.mechanics.spatial.test_social
+
+Unit tests for SocialMechanics.
 """
+# External Libraries
 import pytest
-from unittest.mock import MagicMock
-from collections import deque
 
-from app.game.logic.mechanics.spatial.social import SocialMechanics
-from app.static.semantics import Goals, Intentions, Expressions, ExpressionsPalette, AssetInstances
+# Application Libraries
+from app.static.semantics import (
+    AssetInstances,
+    Expressions,
+    Goals,
+    Intentions,
+    Mechanics,
+    Menus,
+)
+from app.models.state import Goal
+
+# Cython Libraries
 from libs.core.models import Position
-from app.models.state import Goal, SpriteState, Memory
 
-def test_social_mechanics_npc_to_npc(mock_board):
-    mechanic = SocialMechanics()
-    sprite = mock_board.instances("sprites")[0]
-    
-    # Establish a genuine SpriteState with Memory capabilities
-    target_state = SpriteState(id="target_npc", name="target_npc")
-    if not target_state.memory:
-        target_state.memory = Memory()
-    target_state.memory.rumors = []
-    
-    sprite.state.intention = Intentions.SPEAK.value
-    sprite.state.psyche.dialogue = "secret_rumor"
-    sprite.state.psyche.expression = None
-    sprite.state.goal = Goal(name="target_npc", category=Goals.SUBJECT.value)
-    
-    mock_target = MagicMock()
-    mock_target.instance = AssetInstances.SPRITES.value
-    mock_target.state = target_state
-    
-    mock_board.asset = MagicMock(return_value=mock_target)
-    mock_board.cradle = MagicMock()
-    mock_board.cradle.spawn_expression.return_value = MagicMock(ttl=120)
-    
-    mechanic.update(mock_board, 0.016, deque(), MagicMock())
-    
-    assert "secret_rumor" in target_state.memory.rumors
-    mock_board.cradle.spawn_expression.assert_called_once_with(
-        ExpressionsPalette.BUBBLES.value, 
-        Expressions.LOQUACITY.value, 
-        sprite
+# -----------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_mechanic,
+    pytest.mark.physics_space,
+    pytest.mark.modality_intention,
+]
+
+# -----------------------------------------------------
+
+
+def test_social_player_npc_dialogue_interaction(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    mechanic = mock_mechanic(Mechanics.SOCIAL.value)
+    player = mock_board.player()
+    npc = mock_board.instances(AssetInstances.SPRITES.value, "0")[0]
+
+    player.state.position = Position(100, 100)
+    player.state.intention = Intentions.INTERACT.value
+    npc.state.position = Position(105, 105)
+    npc.state.psyche.dialogue = "greeting"
+
+    mechanic.update(mock_board, 0.016, mock_bus, mock_payload())
+
+    assert len(mock_bus) == 1
+    assert mock_bus[0].id == Menus.DIALOGUE.value
+    assert player.state.intention == Intentions.IDLE.value
+
+
+def test_social_npc_to_npc_rumor_passing_and_expression(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    mechanic = mock_mechanic(Mechanics.SOCIAL.value)
+    sprites = mock_board.instances(AssetInstances.SPRITES.value, "0")
+    speaker, listener = sprites[0], sprites[1]
+
+    speaker.state.intention = Intentions.SPEAK.value
+    speaker.state.psyche.dialogue = "secret-rumor"
+    speaker.state.psyche.expression = None
+    speaker.state.goal = Goal(
+        name=listener.name,
+        category=Goals.SUBJECT.value,
+        layer="0",
+        position=listener.state.position,
     )
-    assert sprite.state.psyche.expression is not None
+    listener.state.memory.rumors.clear()
+
+    mechanic.update(mock_board, 0.016, mock_bus, mock_payload())
+
+    assert "secret-rumor" in listener.state.memory.rumors
+    assert speaker.state.psyche.dialogue is None
+    assert speaker.state.psyche.expression is not None
+    assert speaker.state.psyche.expression.icon == Expressions.LOQUACITY.value

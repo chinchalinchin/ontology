@@ -41,8 +41,8 @@ def test_board_initial_caching(mock_board):
 
     # Layer Indexing (16 on layer '0', 1 on 'brick-house-compose-layer-1')
     assets_layer_0 = mock_board.assets("0")
-    assert len(assets_layer_0) == 39
-    assert len(mock_board.assets()) == 39
+    assert len(assets_layer_0) == 42
+    assert len(mock_board.assets()) == 45
 
     sheets = mock_board.categories(AssetCategories.SHEETS.value, "0")
     tiles = mock_board.categories(AssetCategories.TILES.value, "0")
@@ -51,13 +51,13 @@ def test_board_initial_caching(mock_board):
 
     # Inner Render Loop Indexing (Tiles bypassed)
     renderables = mock_board.renderables("0")
-    assert len(renderables) == 38
+    assert len(renderables) == 41
     assert all(a.category != AssetCategories.TILES.value for a in renderables)
 
     # Physics Caching
     weights = mock_board.weights("0")
-    assert len(weights) == 13
-    assert len(mock_board.weights()) == 13
+    assert len(weights) == 15
+    assert len(mock_board.weights()) == 17
 
 
 @pytest.mark.workflow_main
@@ -116,8 +116,8 @@ def test_board_size_tileless_layer(mock_board):
     """
     sizes = mock_board.size("house-layer-1")
     assert len(sizes) == 1
-    assert sizes[0].w == 79
-    assert sizes[0].l == 79
+    assert sizes[0].w == 106
+    assert sizes[0].l == 202
 
 
 @pytest.mark.workflow_main

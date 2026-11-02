@@ -7,7 +7,7 @@
 @physics.space
 @workflow.injection
 
-# Ontology: Test - tests.unit.fixtures.structures
+# Ontology: Tests - tests.unit.fixtures.structures
 
 Relational indices, property groups, and spatial structure fixtures.
 """
@@ -34,6 +34,11 @@ from app.static.semantics import Relations
 
 # Cython Libraries
 from libs.core.math.space import Space
+from libs.core.models import (
+    Boundary,
+    Dimensions,
+    Position,
+)
 
 # ---------------------------------------------------------------------------
 # -------------------------------------------------------- RELATIONAL INDICES
@@ -110,6 +115,11 @@ def mock_equipment(
 @pytest.fixture
 def mock_space_grid() -> Space:
     return Space(cell_size=64, max_entities=100)
+
+
+@pytest.fixture
+def mock_boundary() -> Boundary:
+    return Boundary(Position(10, 20), Dimensions(30, 40))
 
 
 @pytest.fixture

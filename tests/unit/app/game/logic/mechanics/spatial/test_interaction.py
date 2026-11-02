@@ -1,94 +1,113 @@
 """
-# Ontology: tests.unit.test_app_game_logic_mechanics_spatial_interaction
+@domain.test
+@test.unit
+@app.mechanic
+@physics.space
+@category.sheets
+@category.objects
+@modality.intention
+@workflow.interactions
+
+# Ontology: Tests - tests.unit.app.game.logic.mechanics.spatial.test_interaction
+
+Unit tests for InteractionMechanics.
 """
+# External Libraries
 import pytest
-import collections
-from unittest.mock import MagicMock, patch
 
-from app.game.logic.mechanics.spatial.interaction import InteractionMechanics
-from app.static.semantics import Intentions, AssetInstances, AssetCategories, Menus
-from app.game.menus.events import MenuEvent
-from app.game.menus.contexts import DialogueContext
-from app.models.state import DevicePayload, DoorState, DialogueState
-from libs.core.models import Position, Dimensions
+# Application Libraries
+from app.static.semantics import (
+    AssetInstances,
+    Intentions,
+    Mechanics,
+    Menus,
+)
+
+# Cython Libraries
+from libs.core.models import Position
+
+# -----------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_mechanic,
+    pytest.mark.physics_space,
+    pytest.mark.modality_intention,
+    pytest.mark.workflow_interactions,
+]
+
+# -----------------------------------------------------
 
 
-@pytest.fixture
-def interaction_mechanics():
-    return InteractionMechanics()
+def test_interaction_sprite_door_relayers_and_memorizes(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    mechanic = mock_mechanic(Mechanics.INTERACTION.value)
+    door = mock_board.instances(AssetInstances.DOORS.value, "0")[0]
+    sprite = mock_board.instances(AssetInstances.SPRITES.value, "0")[0]
 
-
-def test_interaction_with_door_relayers_source(interaction_mechanics, mock_board):
-    player = mock_board.player()
-    player.state.intention = Intentions.INTERACT.value
-    player.state.position = Position(x=10, y=10)
-    
-    door = MagicMock()
-    door.name = "door-1"
-    door.category = AssetCategories.OBJECTS.value
-    door.instance = AssetInstances.DOORS.value
-    door.taxonomy.instance = AssetInstances.DOORS.value
-    door.properties.mass = 0
-    door.state = DoorState(
-        id="door-1",
-        layer="0",
-        position=Position(x=10, y=10),
-        outlayer="1",
-        out=Position(x=100, y=100)
+    door_hb = door.hitboxes[0]
+    sprite_hb = sprite.hitboxes[0]
+    sprite.state.position = Position(
+        door.state.position.x + door_hb.position.x - sprite_hb.position.x,
+        door.state.position.y + door_hb.position.y - sprite_hb.position.y,
     )
-    door.dimensions = Dimensions(w=32, l=32)
-    
-    mock_board.add([door])
-    bus = collections.deque()
-    payload = MagicMock(spec=DevicePayload)
-    
-    with patch.object(InteractionMechanics, 'intersections', return_value=[(player, door)]):
-        interaction_mechanics.update(mock_board, 1.0, bus, payload)
-        
-        # Verify the relayering executed based purely on intersection
-        assert player.state.layer == "1"
-        assert player.state.position.x == 100
-        assert player.state.position.y == 100
-        assert player.state.intention == Intentions.IDLE.value
+    sprite.state.intention = Intentions.INTERACT.value
+    sprite.state.memory.doors.clear()
+
+    mechanic.update(mock_board, 0.016, mock_bus, mock_payload())
+
+    assert sprite.state.layer == door.state.outlayer
+    assert sprite.state.position.x == door.state.out.x
+    assert sprite.state.position.y == door.state.out.y
+    assert sprite.state.memory.doors[door.name] == door.state.outlayer
 
 
-def test_interaction_with_sign_dispatches_menu_event(interaction_mechanics, mock_board):
+def test_interaction_player_door_resets_intention(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    mechanic = mock_mechanic(Mechanics.INTERACTION.value)
+    door = mock_board.instances(AssetInstances.DOORS.value, "0")[0]
     player = mock_board.player()
-    player.state.intention = Intentions.INTERACT.value
-    player.state.position = Position(x=10, y=10)
-    
-    mock_board.plot = MagicMock()
-    mock_board.plot.current = "tutorial"
-    
-    sign = MagicMock()
-    sign.name = "sign-1"
-    sign.category = AssetCategories.OBJECTS.value
-    sign.instance = AssetInstances.SIGNS.value
-    sign.taxonomy.instance = AssetInstances.SIGNS.value
-    sign.properties.mass = 0
-    sign.state = DialogueState(
-        id="sign-1",
-        layer="0",
-        position=Position(x=10, y=10),
-        persona="narrator",
-        lexicon="welcome_msg"
+
+    door_hb = door.hitboxes[0]
+    player_hb = player.hitboxes[0]
+    player.state.position = Position(
+        door.state.position.x + door_hb.position.x - player_hb.position.x,
+        door.state.position.y + door_hb.position.y - player_hb.position.y,
     )
-    sign.dimensions = Dimensions(w=32, l=32)
-    
-    mock_board.add([sign])
-    bus = collections.deque()
-    payload = MagicMock(spec=DevicePayload)
-    
-    with patch.object(InteractionMechanics, 'intersections', return_value=[(player, sign)]):
-        interaction_mechanics.update(mock_board, 1.0, bus, payload)
-        
-        assert len(bus) == 1
-        event = bus.popleft()
-        
-        assert isinstance(event, MenuEvent)
-        assert event.id == Menus.TEXT.value
-        assert isinstance(event.context, DialogueContext)
-        assert event.context.plot == mock_board.plot
-        assert event.context.object.persona == "narrator"
-        assert event.context.object.lexicon == "welcome_msg"
-        assert player.state.intention == Intentions.INTERACT.value
+    player.state.intention = Intentions.INTERACT.value
+
+    mechanic.update(mock_board, 0.016, mock_bus, mock_payload())
+
+    assert player.state.layer == door.state.outlayer
+    assert player.state.intention == Intentions.IDLE.value
+
+
+def test_interaction_player_sign_emits_text_menu(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    mechanic = mock_mechanic(Mechanics.INTERACTION.value)
+    sign = mock_board.instances(AssetInstances.SIGNS.value, "0")[0]
+    player = mock_board.player()
+
+    sign_hb = sign.hitboxes[0]
+    player_hb = player.hitboxes[0]
+    player.state.position = Position(
+        sign.state.position.x + sign_hb.position.x - player_hb.position.x,
+        sign.state.position.y + sign_hb.position.y - player_hb.position.y,
+    )
+    player.state.intention = Intentions.INTERACT.value
+
+    mechanic.update(mock_board, 0.016, mock_bus, mock_payload())
+
+    assert len(mock_bus) == 1
+    assert mock_bus[0].id == Menus.TEXT.value

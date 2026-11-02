@@ -286,7 +286,7 @@ def test_dump_state_success(mock_board, testbed, monkeypatch, tmp_path: Path):
     dumps = list(tmp_path.glob("*.state-dump.md"))
     assert len(dumps) == 1
     content = dumps[0].read_text(encoding="utf-8")
-    assert "test-player" in content
+    assert "player" in content
     assert "test-crate" in content
 
 
