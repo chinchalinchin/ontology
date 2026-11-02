@@ -31,6 +31,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     * [x]: [Phase 09: Hydrodynamics](./phases/implement/phase-09.md)
     * [x]: [Phase 10: Seasons](./phases/implement/phase-10.md)
     * [ ]: [Phase 11: Geology](./phases/implement/phase-11.md)
+    * [ ]: [Phase 12: Chemistry](./phases/implement/phase-12.md)
     * [ ]: [Phase n-1: Sound](./phases/implement/phase-n-1.md)
     * [ ]: [Phase n: Commerce](./phases/implement/phase-n.md)
     * [ ]: [Phase n+1: Towns](./phase/implement/phase-n+1.md)

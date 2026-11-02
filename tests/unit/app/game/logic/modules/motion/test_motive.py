@@ -3,8 +3,6 @@
 @test.unit
 @app.module
 @physics.motion
-@category.sheets
-@modality.intention
 
 # Ontology: tests.unit.app.game.logic.modules.motion.test_motive
 

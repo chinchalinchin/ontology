@@ -1,5 +1,13 @@
 """
-# Ontology: tests.unit.logic.mechanics.intentional.test_cognition
+@domain.test
+@test.unit
+@app.mechanic
+@modality.intention
+@workflow.cognition
+
+# Ontology: Tests - tests.unit.logic.mechanics.intentional.test_cognition
+
+Unit tests for CognitionMechanics.
 """
 # External Libraries
 import pytest
@@ -20,7 +28,18 @@ from app.models.state import Goal
 from libs.core.models import Position
 
 
-@pytest.mark.modality_intention
+
+# -----------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_mechanic,
+    pytest.mark.modality_intention,
+    pytest.mark.workflow_cognition
+]
+
+# -----------------------------------------------------
+
+
 def test_cognition_track_target_in_range(mock_board):
     mechanic = CognitionMechanics()
     sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
@@ -46,7 +65,6 @@ def test_cognition_track_target_in_range(mock_board):
     assert sprite.state.goal.position.y == 30
 
 
-@pytest.mark.modality_intention
 def test_cognition_track_target_out_of_range(mock_board):
     mechanic = CognitionMechanics()
     sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
@@ -71,7 +89,6 @@ def test_cognition_track_target_out_of_range(mock_board):
     assert sprite.state.goal.position.y == 0
 
 
-@pytest.mark.modality_intention
 def test_cognition_resolve_target_dead(mock_board):
     mechanic = CognitionMechanics()
     sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
@@ -91,7 +108,6 @@ def test_cognition_resolve_target_dead(mock_board):
     assert player.name not in sprite.state.memory.goals
 
 
-@pytest.mark.modality_intention
 def test_cognition_resolve_subject_no_dialogue(mock_board):
     mechanic = CognitionMechanics()
     sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
@@ -108,7 +124,6 @@ def test_cognition_resolve_subject_no_dialogue(mock_board):
     assert sprite.state.goal is None
 
 
-@pytest.mark.modality_intention
 def test_cognition_resolve_position_goal(mock_board):
     mechanic = CognitionMechanics()
     sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
@@ -125,11 +140,10 @@ def test_cognition_resolve_position_goal(mock_board):
     assert sprite.state.goal is None
 
 
-@pytest.mark.modality_intention
 def test_cognition_resolve_object_door_transition(mock_board):
     mechanic = CognitionMechanics()
     sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
-    sprite.state.layer = "brick-house-compose-layer"
+    sprite.state.layer = "house-layer-0"
 
     sprite.state.goal = Goal(
         name="door-1",
@@ -144,7 +158,6 @@ def test_cognition_resolve_object_door_transition(mock_board):
     assert "door-1" not in sprite.state.memory.goals
 
 
-@pytest.mark.modality_intention
 def test_cognition_ideate_dialogue_target(mock_board):
     mechanic = CognitionMechanics()
     sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
@@ -169,7 +182,6 @@ def test_cognition_ideate_dialogue_target(mock_board):
     assert sprite.state.goal.name == player.name
     assert WANDER in sprite.state.memory.goals
 
-@pytest.mark.modality_intention
 def test_cognition_remember_idle_only(mock_board):
     mechanic = CognitionMechanics()
     sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
@@ -190,7 +202,6 @@ def test_cognition_remember_idle_only(mock_board):
     assert sprite.state.goal.name == "old_goal"
 
 
-@pytest.mark.modality_intention
 def test_cognition_door_finder(mock_board):
     door = mock_board.instances(AssetInstances.DOORS.value)[0]
     sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
@@ -209,7 +220,6 @@ def test_cognition_door_finder(mock_board):
     assert door.name == "wood-door"
 
 
-@pytest.mark.modality_intention
 def test_cognition_track_cross_layer_subsumption(mock_board):
     mechanic = CognitionMechanics()
     sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
@@ -220,7 +230,7 @@ def test_cognition_track_cross_layer_subsumption(mock_board):
     sprite.state.goal = Goal(
         name="evil-wizard",
         category=Goals.TARGET.value,
-        layer="brick-house-compose-layer",
+        layer="house-layer-0",
         position=Position(500, 500)
     )
 
@@ -228,7 +238,7 @@ def test_cognition_track_cross_layer_subsumption(mock_board):
 
     # Overarching goal subsumed into episodic memory
     assert "evil-wizard" in sprite.state.memory.goals
-    assert sprite.state.memory.goals["evil-wizard"].layer == "brick-house-compose-layer"
+    assert sprite.state.memory.goals["evil-wizard"].layer == "house-layer-0"
 
     # Prerequisite OBJECT door goal injected into active slot
     assert sprite.state.goal.name == "wood-door"
@@ -236,7 +246,6 @@ def test_cognition_track_cross_layer_subsumption(mock_board):
     assert sprite.state.goal.layer == sprite.state.layer
 
 
-@pytest.mark.modality_intention
 def test_cognition_project_escape(mock_board):
     mechanic = CognitionMechanics()
     sprite = mock_board.instances("sprites")[0]
@@ -256,7 +265,6 @@ def test_cognition_project_escape(mock_board):
     assert sprite.state.goal.position.y == 300
 
 
-@pytest.mark.modality_intention
 def test_cognition_project_wander(mock_board):
     mechanic = CognitionMechanics()
     sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
@@ -273,7 +281,6 @@ def test_cognition_project_wander(mock_board):
     assert sprite.state.goal.layer == sprite.state.layer
 
 
-@pytest.mark.modality_intention
 def test_cognition_complete(mock_board):
     sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
     sprite.state.goal = None

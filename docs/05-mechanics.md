@@ -290,7 +290,7 @@ NavigationMechanics acts as the Sprite's tactical navigator, bridging strategic 
 
 * `Planner(start, target, obstacles).plan(): returns [Position]`
 
-The Planner is a wrapper around a Cython implementation of the Rapidly-Exploring Random Tree path-finding algorithm. See [Library: Math](./11-architecture.md#library-math) for more information.
+The Planner is a wrapper around a Cython implementation of the Rapidly-Exploring Random Tree path-finding algorithm. See [Library: Math](./12-architecture.md#library-math) for more information.
 
 **Model: Trajectory**
 

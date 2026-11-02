@@ -2,7 +2,7 @@
 @domain.test
 @test.unit
 @app.mechanic
-@category.sheets
+@modality.intention
 @workflow.navigation
 
 # Ontology: Tests - tests.unit.game.logic.mechanics.intentional.test_navigation
@@ -10,8 +10,7 @@
 Unit tests for NavigationMechanics.
 """
 # Standard Libraries
-from collections import deque
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 # External Libraries
 import pytest
@@ -29,10 +28,7 @@ from app.static.semantics import (
     Mechanics
 )
 from app.game.logic.mechanics import NavigationMechanics
-from app.models.state import (
-    Goal, 
-    DevicePayload
-)
+from app.models.state import Goal
 
 # Cython Libraries
 from libs.core.models import (
@@ -40,6 +36,16 @@ from libs.core.models import (
     Boundary, 
     Dimensions
 )
+
+# -----------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_mechanic,
+    pytest.mark.modality_intention,
+    pytest.mark.workflow_cognition
+]
+
+# -----------------------------------------------------
 
 
 ## TODO: MOVE FIXTURES AND THEIR DEPENDENCIES INTO DEDICATED MODULE
@@ -69,14 +75,6 @@ from app.static.semantics import (
 
 # Cython Libraries
 from libs.core.models import Hitbox
-
-# -----------------------------------------------------
-
-pytestmark = [
-    pytest.mark.workflow_navigation
-]
-
-# -----------------------------------------------------
 
 # -----------------------------------------------------------------------------
 # -------------------------------------------------------- PATHFINDING FIXTURES

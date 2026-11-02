@@ -58,12 +58,12 @@ tools:
     manager:
       board: false
       specs: false
-      docs: false
+      docs: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: false
+      data: true
       filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
@@ -92,14 +92,14 @@ tools:
           - index.md
           # - 00-overview.md
           # - 01-assets.md
-          - 02-sprites.md
+          # - 02-sprites.md
           - 03-compositions.md
-          - 04-intentions.md
+          # - 04-intentions.md
           # - 05-mechanics.md
           - 06-widgets.md
           - 07-sounds.md
           - 08-plots.md
-          # - 09-ecology.md
+          - 09-ecology.md
           - 10-emergence.md
           # - 11-architecture.md
       specs: []
@@ -129,8 +129,14 @@ tools:
               modality: [ action, intention ]
           - title: Navigation Modules
             scan:
+              app: [ module ]
               domain: [ logic ]
               workflows: [ navigation ]
+          - title: Navigation Libraries
+            scan:
+              app: [ library ]
+              workflows: [ navigation ]
+
       data:
         properties: [ sheets ]
         state: [  world-testbed ]
@@ -150,7 +156,7 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: modality_intention
+        marker: '"modality_intention or workflow_navigation"'
         # scope: '**/test_{actuator,cartographer}.py'
       session:
         description: |

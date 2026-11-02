@@ -4,7 +4,6 @@
 @app.library
 @physics.motion
 @workflow.collisions
-@workflow.navigation
 
 # Ontology: libs.core.math.physics
 

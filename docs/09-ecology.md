@@ -7,7 +7,7 @@ The Ecology of the [Board](./00-overview.md#component-board) is a collection of 
 * See [FluidMechanics](./05-mechanics.md#world-mechanic-fluidmechanics) for more information on Fluid logic.
 * See [SeasonMechanics](./05-mechanics.md#world-mechanic-seasonmechanics) for more information on Season mechanics.
 
-## Ecology: Assets
+## Specification: Ecology
 
 ### Category: Effects
 
@@ -110,7 +110,7 @@ Resources are biological Assets deployed onto the Board that progress through di
 
 Every Resource has a Stage. As the Resource progresses through its Lifespan, it will undergo Stage Transitions.
 
-**Enum: Lifespans**
+**Semantics: Lifespans**
 
 Each Resource declares a Lifespan in its Properties. This Lifespan associates a Transition Executor with the Resource. The Transition Executor manages the progression of Resource Stages as the Board accumulates time. When conditions are met, an Executor will transition the Resource Stage to the next node in its finite automata.
 
@@ -137,13 +137,13 @@ All Resource instances share a a unified Resource State.
 
 #### Resource: Crops
 
-**Enum: AnnualStages**
+**Semantics: AnnualStages**
 
 * `sprout`, `growth`, `stalk`, `bloom`, `stump`
 
 #### Resources: Trees
 
-**Enum: PerennialStages**
+**Semantics: PerennialStages**
 
 * `sapling`, `bush`, `branch`, `adult`, `vibrant`, `healthy`, `abscise`, `snowcapt`, `dying`, `dead`, `stump`
 
@@ -161,7 +161,7 @@ TODO: mermaid diagram and markdown table
 
 Ores are mineral resources that transition through structural stages when acted upon by geological forces.
 
-**Enum: CentennialStages**
+**Semantics: CentennialStages**
 
 * `trace`, `deposit`, `nugget`, `vein`, `crystal`, `alloy`
 

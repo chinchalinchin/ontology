@@ -1,11 +1,14 @@
 """
+@domain.test
+@test.unit
+@app.mechanic
+@modality.intention
+@workflow.transitions
+
 # Ontology: tests.unit.app.game.logic.mechanics.intentional.test_transition
 
 Unit tests for TransitionMechanics.
 """
-# Standard Libraries
-import collections
-
 # External Libraries
 import pytest
 

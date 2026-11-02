@@ -1,5 +1,13 @@
 """
-# Ontology: tests.unit.libs.core.math.test_geometry
+@domain.test
+@test.unit
+@app.library
+@workflow.collisions
+@workflow.navigation
+
+# Ontology: Tests - tests.unit.libs.core.math.test_geometry
+
+Unit tests for Geometry Cython Library.
 """
 # External Libraries
 import pytest
@@ -11,6 +19,16 @@ from libs.core.models import (
     Hitbox
 )
 from libs.core.math import geometry
+
+# -----------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_library,
+    pytest.mark.workflow_collisions,
+    pytest.mark.workflow_navigation
+]
+
+# -----------------------------------------------------
 
 # ----------------------------------------------------------------------------------------
 # BASIC GEOMETRY TESTS

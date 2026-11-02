@@ -279,7 +279,7 @@ $$
 \text{Channel Tuple} = (\text{channel\_type: int},\, \text{ox: int},\, \text{oy: int},\, \text{ow: int},\, \text{ol: int},\, \text{r: int},\, \text{g: int},\, \text{b: int},\, \text{a: int})
 $$
 
-Where `channel_type` maps to an engine enum:
+Where `channel_type` maps to an engine Semantics:
 
 * `ChannelTypes.TINT = 0`: Solid alpha-blended color fill rect.
 * `ChannelTypes.MODULATE = 1`: Multiplicative color filter over existing texture pixels.

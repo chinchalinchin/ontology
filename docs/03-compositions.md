@@ -14,7 +14,7 @@ Material alters the color and hue of Assets that possess [Materiality](./01-asse
 
 --8<-- "static/md/material-palette.md"
 
-**Enum: Genera**
+**Semantics: Genera**
 
 The Partitions of Material space are organized into Genera. Each Genus contains an ordered partition of Material values. Assets specify a Genus in their Properties and bind to a Material value in that Genus in their State.
 
@@ -24,7 +24,7 @@ The Partitions of Material space are organized into Genera. Each Genus contains 
 * Metallics:  `copper`, `iron`, `gold`
 * Chromatics: `neutral`, `red`, `blue`, `yellow`, `green`
 
-**Enum: Schema**
+**Semantics: Schema**
 
 Blueprints describe specific structural implementations of a Craft. Blueprints are partioned in Schema. Each Schema contains an ordered partition of Blueprint values. A Blueprint Schema must have implementations for every Material in a Craft atlas. Assets specify a Schema in their Properties and then bind to a Blueprint value in their State.
  
@@ -123,7 +123,7 @@ In other words, Root and Branch Struts provide a *frame of reference* for their 
 
 To achieve this, Compositions have a *Pseudo State* and a *Deployed State*. A Pseudo State is a formula for constructing the State of its Component Assets from the Deployed State of the Composition's [Root Strut](#definition-roots--branches). The Pseudo State of a Composition is configured in the Composition directory, whereas the Deployed State is set in the State directory, alongside the other Asset States.
 
-The State files specify Compositions to deploy. The [Application](./00-overview.md#application) converts these Compositions into Assets in the [Asset Hierarchy](./01-assets.md#asset-hierarchy). When Compositions are unpacked by the [Orchestrator](./00-overview.md#orchestrator) during the [bootstrapping](./11-architecture.md#specification-initialization), each Asset in a Composition is appended to the [Board](./00-overview.md#component-board) state dynamically. In other words, the Assets in Compositions, once unpacked, are treated separately by the [Engine](./00-overview.md#component-engine), as if they had been specified in the State directory individually.
+The State files specify Compositions to deploy. The [Application](./00-overview.md#application) converts these Compositions into Assets in the [Asset Hierarchy](./01-assets.md#asset-hierarchy). When Compositions are unpacked by the [Orchestrator](./00-overview.md#orchestrator) during the [bootstrapping](./12-architecture.md#specification-initialization), each Asset in a Composition is appended to the [Board](./00-overview.md#component-board) state dynamically. In other words, the Assets in Compositions, once unpacked, are treated separately by the [Engine](./00-overview.md#component-engine), as if they had been specified in the State directory individually.
 
 **Model: CompositionPseudoState**
 
@@ -225,7 +225,7 @@ compositions:
 !!! note "Anchor Macro"
     The Door in this Configuration utilizes the `anchor` macro to ensure it renders in front of `exterior`. The `anchor` macro applies the formula `anchor(self, target) = (target.y + target.span.l) - (self.y + self.span.l)` at compile time so the Door's perspective baseline matches the bottom edge of `exterior`.
 
-    See [Rendering](./11-architecture.md#rendering-sort) for more information on rendering order.
+    See [Rendering](./12-architecture.md#rendering-sort) for more information on rendering order.
     
 !!! note "Door Projection"
     [Doors](./01-assets.md#object-doors) automatically project a reciprocal shadow footprint onto their `outlayer` at `out` (`Substrates.OVERLAYS = -1`, `ChannelTypes.TINT`). When `door` (`panel`) is deployed on the Root Layer, the [Decomposer](#service-decomposer) automatically instantiates its reciprocal return shadow Door on `house-layer` without requiring a second Door declaration in `branches`.
@@ -268,7 +268,7 @@ Compositions are processed in two stages: **Compile-Time Macro Evaluation** duri
 
 * Address: `app.static.macros.compositions`
 
-The CompositionCompiler runs during [bootstrapping](./11-architecture.md#specification-initialization) after all configuration YAML files are merged and the Property Schema is loaded, but *prior* to model validation to ensure all fields resolve to their required types.
+The CompositionCompiler runs during [bootstrapping](./12-architecture.md#specification-initialization) after all configuration YAML files are merged and the Property Schema is loaded, but *prior* to model validation to ensure all fields resolve to their required types.
 
 #### CompositionCompiler: Evaluation
 

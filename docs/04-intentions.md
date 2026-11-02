@@ -23,7 +23,7 @@ For Sprites, Intention is an attribute that controls state transitions and actio
 
 It may indirectly alter the Sprite state changes or other properties of the Sprites, e.g. entering into the `sprint` state increases the velocity of the `(walk, *)` states, but does not factor into the animation speed or the frame indexing scheme. Similarly, entering into the `interact` state does not alter the Sprite's current animation in any way, but instead allows, for example, the Sprite to open a Chest or Door.
 
-**Enum: Intentions**
+**Semantics: Intentions**
 
 * `attack`: Initiate an Attack Animation.
 * `attract`: Attract a Sprite for interaction.
@@ -44,7 +44,7 @@ It may indirectly alter the Sprite state changes or other properties of the Spri
 * `wander`: Move to randomized positions.
 
 !!! note "Thrust Polymorphism"
-    `mine` is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows. This is resolved by [Action Sets](./appendices/01-schemas.md#configuration-actions) and [AnimationMaps](./11-architecture.md#maps).
+    `mine` is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows. This is resolved by [Action Sets](./appendices/01-schemas.md#configuration-actions) and [AnimationMaps](./12-architecture.md#maps).
 
 **Intention Groups**
 

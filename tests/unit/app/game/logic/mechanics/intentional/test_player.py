@@ -1,5 +1,13 @@
 """
-# Ontology: tests.unit.logic.mechanics.intentional.test_player
+@domain.test
+@test.unit
+@app.mechanic
+@modality.intention
+@workflow.player
+
+# Ontology: Tests - tests.unit.logic.mechanics.intentional.test_player
+
+Unit tests for PlayerMechanics.
 """
 # Standard Libraries
 from unittest.mock import MagicMock
@@ -24,17 +32,17 @@ from app.models.state import (
     Character
 )
 
-def _setup_player(mock_board):
-    player = mock_board.player()
-    player.state.inventory = Inventory(equipment=Equipment())
-    player.state.mutators = Mutators(triggers=MutatorTriggers())
-    player.state.character = Character(speed=5)
-    player.state.animation.frame = 0
-    player.state.animation.tick = 0
-    return player
+# -----------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_mechanic,
+    pytest.mark.modality_intention,
+    pytest.mark.workflow_player
+]
+
+# -----------------------------------------------------
 
 
-@pytest.mark.workflow_player
 def test_player_new_intention_resets_animation(mock_board):
     mechanic = PlayerMechanics()
     player = mock_board.player()
@@ -54,7 +62,6 @@ def test_player_new_intention_resets_animation(mock_board):
     assert player.state.animation.tick == 0
 
 
-@pytest.mark.workflow_player
 def test_player_blocking_intention_persists(mock_board):
     mechanic = PlayerMechanics()
     player = mock_board.player()
@@ -73,7 +80,6 @@ def test_player_blocking_intention_persists(mock_board):
     assert player.state.intention == Intentions.ATTACK
 
 
-@pytest.mark.workflow_player
 def test_player_blocking_intention_completes(mock_board):
     mechanic = PlayerMechanics()
     player = mock_board.player()
@@ -92,7 +98,6 @@ def test_player_blocking_intention_completes(mock_board):
     assert player.state.intention == Intentions.IDLE
 
 
-@pytest.mark.workflow_player
 def test_player_movement_updates_goal(mock_board):
     mechanic = PlayerMechanics()
     player = mock_board.player()

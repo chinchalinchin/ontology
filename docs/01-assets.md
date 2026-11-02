@@ -10,7 +10,7 @@ This document serves to specify the Asset architecture and provide key definitio
 
 ## Overview 
 
-The Asset directory (and all subdirectories) contains Asset Image Files (`*.png`) and Asset Property indices (`*.yaml`). The [initialization](./11-architecture.md#specification-initialization) reads in all of these files recursively and then use the Property indices to index each Asset file into the [Registry](./00-overview.md#library-registry). Each image file that appears in the Asset directories must be configured in a YAML file to get indexed and injected into the [Application](./00-overview.md#application) . The Property configuration in the `*.yaml` files must conform to the [Asset Property schema](./appendices/01-schemas.md#model-properties) of the respective Asset Category it is configuring. 
+The Asset directory (and all subdirectories) contains Asset Image Files (`*.png`) and Asset Property indices (`*.yaml`). The [initialization](./12-architecture.md#specification-initialization) reads in all of these files recursively and then use the Property indices to index each Asset file into the [Registry](./00-overview.md#library-registry). Each image file that appears in the Asset directories must be configured in a YAML file to get indexed and injected into the [Application](./00-overview.md#application) . The Property configuration in the `*.yaml` files must conform to the [Asset Property schema](./appendices/01-schemas.md#model-properties) of the respective Asset Category it is configuring. 
 
 !!! important "Schema Merge"
     All `*.yaml` files in the Asset directories are merged into a single schema, so every key must be unique. If two image files have the same name, one of them will be overwritten during [Registry indexing](./00-overview.md#library-registry).
@@ -31,7 +31,7 @@ In short, a Name identifies an Asset's deployment. A ID is what binds a deployed
 
 **Properties & State**
 
-*Properties* are static and never changed by [Mechanics](./05-mechanics.md). Properties determine the immutable characteristics of Assets, e.g. their dimensions and hitboxes. They are loaded side-by-side with the Asset files in the `/src/assets/**` directory. All Assets have, at bare minumum, a Dimension property, specifying their respective width and length, and a Priority property, that specifies the [statically configured sort key](./11-architecture.md#rendering-sort) for their relative rendering order. Dimension is a Cartesian coordinate (tuple), whereas Priority is an integer.
+*Properties* are static and never changed by [Mechanics](./05-mechanics.md). Properties determine the immutable characteristics of Assets, e.g. their dimensions and hitboxes. They are loaded side-by-side with the Asset files in the `/src/assets/**` directory. All Assets have, at bare minumum, a Dimension property, specifying their respective width and length, and a Priority property, that specifies the [statically configured sort key](./12-architecture.md#rendering-sort) for their relative rendering order. Dimension is a Cartesian coordinate (tuple), whereas Priority is an integer.
 
 *State* is dynamic and can be changed by [Mechanics](./05-mechanics.md). State determines the mutable characteristics of an Asset, e.g. the current Position of an Asset, the current Animation, etc. All Assets have: *Position* State, given as a Cartesian coordinate (tuple); a Layer, given as a categorical variable'; an Elevation, representing their Z-axis, given as an integer; an Anchor, used to augment the perspective-based render sorting, given as an integer.
 
@@ -116,11 +116,11 @@ $$
 3. **Tertiary Key (`ground(A)` $\in \mathbb{Z}$)**: Continuous geometric perspective: $\text{ground(A)} = \text{int}(A.\text{state.position.y} + A.\text{dimensions.l} + A.\text{state.anchor})$.
 4. **Quaternary Key (`A.properties.priority` $\in \mathbb{Z}$)**: Coplanar tie-breaker declared on immutable `AssetProperties`.
 
-See [Rendering documentation](./11-architecture.md#rendering-sort) for more information.
+See [Rendering documentation](./12-architecture.md#rendering-sort) for more information.
 
 **Substrates**
 
-Certain Assets have a dedicated Substrate to preserve the fidelity of their rendering order. These values are hydrated onto the Asset directly via [MaterialIndex](./appendices/01-schemas.md#configuration-materials) during [hydration](./11-architecture.md#phase-2-hydration).
+Certain Assets have a dedicated Substrate to preserve the fidelity of their rendering order. These values are hydrated onto the Asset directly via [MaterialIndex](./appendices/01-schemas.md#configuration-materials) during [hydration](./12-architecture.md#phase-2-hydration).
 
 --8<-- "static/md/asset-substrates.md"
 
@@ -131,7 +131,7 @@ During [CollisionMechanics](./05-mechanics.md#spatial-mechanic-collisionmechanic
 
 #### Concept: Materiality
 
-Many Assets have their Frame space defined over a Material partition. Material affects the color palette of an Asset and has other consequences in the [Economy](./10-emergence.md#economy).
+Many Assets have their Frame space defined over a Material partition. Material affects the color palette of an Asset and has other consequences in the [Economy](./11-emergence.md#economy).
 
 The *Material Space* is further subdivded into non-overlapping Genera,
 
@@ -196,9 +196,9 @@ An Asset's order in the Asset Hierarchy is encoded into its Taxonomy. These attr
 * `category: str`: Determines what Property model is employed by the Asset. The Category must be configured by a `src/assets/<category>/**/*.yaml` property index file.
 * `instance: str`: Determines what State model is employed by the Asset. An Asset's state is hydrated from the `data/state/<board>/**/*.yaml` directory.
 
-`(category, instance)` collectively map to the components `(frame, animation, hitbox, properties, state)` injected into an Asset class during the [application initialization](./11-architecture.md#specification-initialization). More specifically, Category maps to properties ($\text{category} \to \text{properties}$), and Instance maps the remaining components ($\text{instance} \to (\text{frame}, \text{animation}, text{hitbox}, \text{state})$).
+`(category, instance)` collectively map to the components `(frame, animation, hitbox, properties, state)` injected into an Asset class during the [application initialization](./12-architecture.md#specification-initialization). More specifically, Category maps to properties ($\text{category} \to \text{properties}$), and Instance maps the remaining components ($\text{instance} \to (\text{frame}, \text{animation}, text{hitbox}, \text{state})$).
 
-The State and Property model of an Asset can be calculated (and is, during [application bootstrapping](./11-architecture.md#specification-initialization) via Pydantic) from its (Category, Instance)-node, but (Animation, Frame, Hitbox) are independent of the node in the Asset Hierarchy. These components must be specified through a [Recipe](./appendices/01-schemas.md#configuration-recipes).
+The State and Property model of an Asset can be calculated (and is, during [application bootstrapping](./12-architecture.md#specification-initialization) via Pydantic) from its (Category, Instance)-node, but (Animation, Frame, Hitbox) are independent of the node in the Asset Hierarchy. These components must be specified through a [Recipe](./appendices/01-schemas.md#configuration-recipes).
 
 ### Asset: Architecture
 
@@ -260,7 +260,7 @@ A Environ Tile represents the environment. They participate in climatic events a
 
 Tiles have the lowest terrain Substrate; They are always rendered underneath the other Assets in the Hierarchy, regardless any calculations involving `elevation`, `substrate`, `ground`, or `priority`. 
 
-Moreover, they are not included in the core rendering loop; Instead, they are prerendered once and drawn from cache. See [Rendering documentation](./11-architecture.md#specification-graphics) for more information.
+Moreover, they are not included in the core rendering loop; Instead, they are prerendered once and drawn from cache. See [Rendering documentation](./12-architecture.md#specification-graphics) for more information.
 
 **Behavior: Seasonality**
 
@@ -268,7 +268,7 @@ Environ Tiles undergo Frame changes based on the accumulation of time on the [Bo
 
 For this reason, Environ Tiles leverage a SeasonalFrame and event-driven reconstruction triggered as the Board undergoes Seasons. See [Ecology documentation](./09-ecology.md) for more information.
 
-**Enum: Seasons**
+**Semantics: Seasons**
 
 * `spring`
 * `summer`
@@ -409,7 +409,7 @@ Gates are Objects with a binary state linked to Plates. When a Gate is on (open)
 
 Gates do not switch their states of their own accord. A Plate automatically updates the `state.switched` of its linked Gate, so when the Plate is on, the Gate is on, and when the Plate is off, the Gate is off.
 
-**Enum: Switches**
+**Semantics: Switches**
 
 * `on`: The Gate is open.
 * `off`: The Gate is closed.
@@ -568,7 +568,7 @@ To achieve the functionality of suppressing [Fluids fields](#effect-fluids), bro
 
 **Behavior: Rendering**
 
-Bridges belong to a dedicated [Substrate](#concept-appearance), `substrate = -1`. This guarantees that Bridge areas render above [Environ Tiles](#tile-environ), [Fluids](#effect-fluids), and [Shorelines](#category-geography), while allowing dynamic Assets crossing their area to render above the Bridge via their baseline footprint ($y + l$) and [the Painter's Algorithm](./11-architecture.md#rendering-sort).
+Bridges belong to a dedicated [Substrate](#concept-appearance), `substrate = -1`. This guarantees that Bridge areas render above [Environ Tiles](#tile-environ), [Fluids](#effect-fluids), and [Shorelines](#category-geography), while allowing dynamic Assets crossing their area to render above the Bridge via their baseline footprint ($y + l$) and [the Painter's Algorithm](./12-architecture.md#rendering-sort).
 
 ### Craft: Stairs
 
@@ -719,7 +719,7 @@ N/A
 
 Hazard Effects deal damage to intersecting Assets (e.g., lava, floor spikes, poison gas clouds).
 
-**Enum: Reactions**
+**Semantics: Reactions**
 
 * `bounce`: 
 * `hinder`: 
@@ -825,7 +825,7 @@ Resources are biological Assets deployed onto the Board that progress through di
 
 Resources form the core of [SeasonMechanics](./05-mechanics.md#seasonmechanics) and possess many unique interactions across Asset classes. They are covered in more detail in the [Ecology documentation](./09-ecology.md#category-resources)
 
-**Enum: Loot**
+**Semantics: Loot**
 
 A Resource contains a `loot` key. When Resources are mined through the `mine` [Intention](./04-intentions.md), they are converted into [Collectables](#effect-collectables). The `loot` key from the Resource is passed to the Collectable via the [Cradle](./00-overview.md#component-board) when it is instantiated as a byproduct of `mine`.
 
@@ -853,15 +853,15 @@ Resources do not cycle through animations. Their appearance updates when [Season
 
 * Property File: `/src/assets/sheets/**/*.yaml`
 
-*Sheets* are intentional Assets whose Frames organized into Actions and Directions. Sheets form the core Asset of the [Engine](./00-overview.md#component-engine) loop; they are used to encapsulate character entities, such as the Player and Non-Playable Sprites. Most of the application is scaffolding for the complex interactions and calculations that occur when Sheet Assets interact.
+*Sheets* are intentional Assets whose Frames are organized into Actions and Directions. Sheets form the core Asset of the [Engine Loop](./00-overview.md#component-engine); they are used to encapsulate character entities, such as the Player and Non-Playable Sprites. Most of the application is scaffolding for the complex interactions and calculations that occur when Sheet Assets interact with each other and their environment.
 
-**Enum: Directions**
+**Semantics: Directions**
 
 * Directions: `up`, `left`, `down`, `right`
 
 Direction is part of the Animation State.
 
-**Enum: Actions**
+**Semantics: Actions**
 
 * Action: `cast`, `thrust`, `walk`, `slash`, `shoot`, `die`
 
@@ -892,25 +892,15 @@ A Sheet Asset is partitioned along the axes of *Direction*, *Action* and *Count*
     - `shoot`: Count = 13
     - `die`: Count = 6
 
-    Two important points regarding the LPC and worth drawing attention are given below,
+    Two important points regarding the LPC and worth drawing attention to are given below,
 
     1. `die` is only associated with a single row in the LPC specification, i.e. it is a "Directionless" State. By default, the Engine labels it with an `up` direction.
-
-    2. The `thrust` Action plays double-duty for spears and shovels. The spear is a Weapon, whereas the shovel is a Tool. With LPC assets, the animations of these pieces of Equipment are governed by the `thrust` state. In other words, different types of Equipment do not necessarily map to different Action states. The Engine accounts for this by treating the Equipment Group of Assets as "stateless" and inherently bound to the state of a Sprite Sheet Asset. See [Equipment documentation](./02-sprites.md#equipment) for more information.
+    2. The `thrust` Action plays double-duty for `spear` and `shovel`. The `spear` is a Weapon, whereas the `shovel` is a Tool. With LPC Assets, the Animations of these pieces of Equipment are governed by the `thrust` Action State. In other words, different types of Equipment do not necessarily map to different Action States. The Engine accounts for this by treating the Equipment Group of Assets as "stateless" and inherently bound to the State of a Sprite Sheet Asset. See [Equipment documentation](./02-sprites.md#equipment) for more information.
 
 !!! note "Sheet Rows"
     The row indexing starts at 0.
 
-**Configuration: ActionSets**
-
-Many Sheet Assets reuse the same Action specification. Common Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as *ActionSets*. Each Sheet specifies an Action Set in its Property index file, to use in the indexing of its Frame space. See [Action Configuration Schema](./appendices/01-schemas.md#configuration-actions) for more details. 
-
-**Hitbox: Attackboxes**
-
-!!! @TODO(10-01)
-    The Hitbox interface has been formally codified into a component of an Asset. Attackboxes are the last remaining legacy hitbox implementation that needs migrated to the new paradigm.
-
-An Attackbox is a special type of hitbox unique to Sheet Assets. It is mapped to a canonical `<action>-<direction>-<frame>` key (where `setting.SEPARATOR = "-"`) and applied during the animation state identified by this key. Attackboxes are used to augment the Sheet's basic hitbox collision detection during [CombatMechanics](./05-mechanics.md#mechanics-spatial). While any Sprite can alter its Attackbox properties, this property is utilized mainly by [Equipment](./02-sprites.md#equipment).
+**Model: Action**
 
 This snippet from the [Schemas](./appendices/01-schemas.md#configuration-actions) shows the general structure of an Action,
 
@@ -926,13 +916,24 @@ This snippet from the [Schemas](./appendices/01-schemas.md#configuration-actions
 * `<action-key>: str` - Ranges over `cast, thrust, walk, slash, shoot, die` (LPC)
 * `<direction-key> : str` -  Ranges over  `up, left, down, right` (LPC)
 * `count: int` - is the number of frames in the Action row grouping. 
-- `delay`: (*Optional*) Number of Engine ticks to accumulate before a frame update. Used to control the speed of the animation. Defaults to 1. 
+* `delay`: (*Optional*) Number of Engine ticks to accumulate before a frame update. Used to control the speed of the animation. Defaults to 1. 
+
+**Configuration: ActionSets**
+
+Many Sheet Assets reuse the same Action specification. Common Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as *ActionSets*. Each Sheet may specify an ActionSet in its Property index file to use in the construction of its Frame space. See [Action Configuration Schema](./appendices/01-schemas.md#configuration-actions) for more details. 
+
+**Hitbox: Attackboxes**
+
+!!! @TODO(10-01)
+    The Hitbox interface has been formally codified into a component of an Asset. Attackboxes are the last remaining legacy hitbox implementation that needs migrated to the new paradigm. They are complicated by their relationship with Equipment and specific Frames in an Animation.
+
+An Attackbox is a special type of hitbox unique to Sheet Assets. It is mapped to a canonical `<action>-<direction>-<frame>` key (where `setting.SEPARATOR = "-"`) and applied during the animation state identified by this key. Attackboxes are used to augment the Sheet's basic hitbox collision detection during [CombatMechanics](./05-mechanics.md#mechanics-spatial). While any Sprite can alter its Attackbox properties, this property is utilized mainly by [Equipment](./02-sprites.md#equipment).
 
 **Model: Stack**
 
 A Stack is a list of Sheet Asset IDs to superimpose over one another to form the resultant Sheet displayed on the [Screen](./00-overview.md#component-screen). A Sheet Stack is drawn in the order it is specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.
 
-For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.png` might be stacked on top of `src/assets/sheets/<sheet-category>/skins/male-dark-human.png` to create a new Sheet asset used in the game. This Sprite stack is assembled in the [Registry](./00-overview.md#library-registry) using the `stack` property during the [application bootstrap](./11-architecture.md#specification-initialization). The assembled `stack` is saved as a Sheet Asset, using the `<sheet-id>` as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.
+For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.png` might be stacked on top of `src/assets/sheets/<sheet-category>/skins/male-dark-human.png` to create a new Sheet asset used in the game. This Sprite stack is assembled in the [Registry](./00-overview.md#library-registry) using the `stack` property during the [application bootstrap](./12-architecture.md#specification-initialization). The assembled `stack` is saved as a Sheet Asset, using the `<sheet-id>` as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.
 
 !!! note "Sheet Stacks"
     It is assumed all Sheets in a Stack conform to the same (Action, Direction) row mapping.
@@ -993,6 +994,6 @@ Widgets are covered in the [Widget documentation](./06-widgets.md).
 
 ## Category: Fonts
 
-Fonts are stateless Assets initialized at [runtime](./11-architecture.md#specification-initialization). Rather than being deployed onto the Board, Fonts are loaded into the [Registry](./00-overview.md#library-registry) and utilized by the [Screen](./00-overview.md#screen) to rasterize text canvases for Widgets and dialogue modals.
+Fonts are stateless Assets initialized at [runtime](./12-architecture.md#specification-initialization). Rather than being deployed onto the Board, Fonts are loaded into the [Registry](./00-overview.md#library-registry) and utilized by the [Screen](./00-overview.md#screen) to rasterize text canvases for Widgets and dialogue modals.
 
-See [Fonts documentation](./11-architecture.md#rendering-typography) for more information.
+See [Fonts documentation](./12-architecture.md#rendering-typography) for more information.

@@ -1,12 +1,34 @@
 """
-# Ontology: tests.unit.libs.core.math.physics
+@domain.tests
+@test.unit
+@app.library
+@physics.motion
+@workflow.collisions
+
+# Ontology: Tests - tests.unit.libs.core.math.tests_physics
+
+Unit tests for the Cython Physics Library.
 """
 # External Libraries
-
 import pytest
-from libs.core.models import Position, Dimensions, Hitbox, Velocity
-from libs.core.math import geometry, physics, space
 
+# Cython Libraries
+from libs.core.models import (
+    Position, 
+    Dimensions, 
+    Hitbox, 
+    Velocity
+)
+from libs.core.math import physics
+
+
+# -----------------------------------------------------
+
+pytestmark = [
+    pytest.mark.physics_motion
+]
+
+# -----------------------------------------------------
 
 # ----------------------------------------------------------------------------------------
 # PHYSICS TESTS

@@ -40,6 +40,11 @@ queries:
         domain: [ abstract ]
         app: [ asset ]
     # ------------------------------------
+    - title: Sheet Models
+      scan:
+        domain: [ model ]
+        category: [ sheets ]
+    # ------------------------------------
     - title: Sheet Implementations
       scan:
         domain: [ concrete ]
@@ -53,6 +58,11 @@ queries:
     # ------------------------------------
     - title: Navigation Modules
       scan:
+        app: [ module ]
         domain: [ logic ]
         workflows: [ navigation ]
     # ------------------------------------
+    - title: Navigation Libraries
+      scan:
+        app: [ library ]
+        workflows: [ navigation ]
