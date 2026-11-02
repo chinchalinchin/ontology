@@ -58,13 +58,13 @@ tools:
     manager:
       board: false
       specs: false
-      docs: true
+      docs: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: true
-      filter: true
+      data: false
+      filter: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
@@ -110,24 +110,23 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Application Core Components
+          - title: Fluid Mechanics
             scan:
-              domain: [ system ]
-              app: [ core, component ]
-          - title: Application Abstracts
+              app: [ mechanic ]
+              workflows: [ fluids ]
+          - title: Fluid Services
             scan:
-              app: [ component ]
-              domain: [ abstract ]
-          - title: Seasons Workflow
+              domain: [ logic ]
+              app: [ services ]
+              workflows: [ fluids ]
+          - title: Field Modules
             scan:
-              workflows: [ seasons ]
-          - title: Test Fixtures
-            scan:
-              test: [ fixtures ]
+              app: [ module ]
+              physics: [ fields ]
       data:
-        properties: [ resources, tiles, effects ]
-        state: [ world-testbed ]
-        configurations: [ stages ]
+        properties: [ geography, sheets ]
+        state: [  ]
+        configurations: [ ]
         templates: [ ]
     # --------------------------------------------
     # -------------------------- PARAMETERS: SHELL
@@ -143,7 +142,7 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: workflow_seasons
+        marker: workflow_fluids
         # scope: '**/test_{actuator,cartographer}.py'
       session:
         description: |

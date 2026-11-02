@@ -1,6 +1,7 @@
 """
 @domain.test
 @test.unit
+@app.module
 @physics.motion
 @category.sheets
 @workflow.intentions

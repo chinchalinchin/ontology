@@ -443,6 +443,7 @@ def test_season_mechanics_perennial_tree_apoptosis_death_and_rebirth(
 
 
 @pytest.mark.workflow_rendering
+@pytest.mark.workflow_menus
 def test_season_event_handler_reconstructs_screens(
     mock_board,
     mock_screen,

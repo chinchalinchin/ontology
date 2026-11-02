@@ -15,11 +15,7 @@ cursors:
         - surprise
         - tired
   projectiles:
-    arrow:
+    cannonball:
       dimensions:
-        w: 30
-        l: 21
-    bolt:
-      dimensions:
-        w: 32
-        l: 10
+        w: 16
+        l: 16

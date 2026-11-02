@@ -234,9 +234,8 @@ def mock_mechanic(
 ):
     """
     Fixture factory instantiating a Mechanic by name and translator implementation.
-    Resolves configured executors and relations from ConfigurationSchema.mechanics.
     """
-    configured_mechanics = {
+    configured = {
         m.key: m
         for m in (
             mock_configurations_schema.mechanics.core
@@ -248,7 +247,7 @@ def mock_mechanic(
         name: str,
         implementation: str = settings.TRANSLATOR_IMPLEMENTATION,
     ) -> Mechanic:
-        instance_cfg = configured_mechanics.get(name, MechanicsInstance(name))
+        instance_cfg = configured.get(name, MechanicsInstance(name))
         return MechanicFactory.mechanics(
             instance_cfg,
             mock_executors(implementation),

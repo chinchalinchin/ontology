@@ -1,6 +1,7 @@
 """
 @domain.test
 @test.unit
+@app.module
 @physics.motion
 
 # Ontology: Tests - tests.unit.game.logic.modules.motion.test_frictive
