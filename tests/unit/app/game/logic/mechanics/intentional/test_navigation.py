@@ -1,5 +1,13 @@
 """
-# Ontology: tests.unit.game.logic.mechanics.intentional.test_navigation
+@domain.test
+@test.unit
+@app.mechanic
+@category.sheets
+@workflow.navigation
+
+# Ontology: Tests - tests.unit.game.logic.mechanics.intentional.test_navigation
+
+Unit tests for NavigationMechanics.
 """
 # Standard Libraries
 from collections import deque
@@ -14,8 +22,11 @@ from app.assets.hitboxes import (
     StaticHitbox
 )
 from app.static.semantics import (
+    AssetCategories,
+    AssetInstances,
     Goals, 
-    Intentions
+    Intentions,
+    Mechanics
 )
 from app.game.logic.mechanics import NavigationMechanics
 from app.models.state import (
@@ -59,10 +70,19 @@ from app.static.semantics import (
 # Cython Libraries
 from libs.core.models import Hitbox
 
+# -----------------------------------------------------
+
+pytestmark = [
+    pytest.mark.workflow_navigation
+]
+
+# -----------------------------------------------------
+
 # -----------------------------------------------------------------------------
 # -------------------------------------------------------- PATHFINDING FIXTURES
 # -----------------------------------------------------------------------------
 
+# TODO: remove this
 @pytest.fixture
 def mock_offset_hitbox_asset():
     """
@@ -72,7 +92,6 @@ def mock_offset_hitbox_asset():
     hb = Hitbox(Position(6, 17), Dimensions(116, 54))
     props = CraftProperties(
         dimensions=Dimensions(w=128, l=96),
-        cost=[],
         mass=0,
         hitboxes=[hb]
     )
@@ -85,6 +104,7 @@ def mock_offset_hitbox_asset():
     return Asset(tax, props, state, SingleFrame(), NoAnimation(), StaticHitbox())
 
 
+# TODO: remove this
 @pytest.fixture
 def mock_multi_hitbox_asset():
     """
@@ -96,7 +116,6 @@ def mock_multi_hitbox_asset():
     hb3 = Hitbox(Position(5, 39), Dimensions(203, 63))
     props = CraftProperties(
         dimensions=Dimensions(w=222, l=133),
-        cost=[],
         mass=0,
         hitboxes=[hb1, hb2, hb3]
     )
@@ -112,27 +131,33 @@ def mock_multi_hitbox_asset():
 # ANCHOR & OBSTACLE TESTS
 # ---------------------------------------------------------------------------
 
-@pytest.mark.workflow_intentions
-@pytest.mark.workflow_navigation
-def test_navigation_anchor_with_hitbox(mock_sprite):
+def test_navigation_anchor_with_hitbox(mock_asset):
     # Position: (175, 200), Hitbox: pos=(21, 23), dim=(22, 21)
     # Footprint anchor: x = 175 + 21 + 22 // 2 = 207, y = 200 + 23 + 21 // 2 = 233
-    anchor = NavigationMechanics.anchor(mock_sprite)
-    assert anchor.x == 207
-    assert anchor.y == 233
+    sprite = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value
+    )
+    anchor = NavigationMechanics.anchor(sprite)
+    assert anchor.x == (
+        sprite.state.position.x + sprite.hitboxes[0].position.x + sprite.hitboxes[0].dimensions.w // 2
+    )
+    assert anchor.y == (
+        sprite.state.position.y + sprite.hitboxes[0].position.y + sprite.hitboxes[0].dimensions.l // 2
+    )
 
 
-@pytest.mark.workflow_intentions
-@pytest.mark.workflow_navigation
-def test_navigation_anchor_fallback_dimensions(mock_crate):
+def test_navigation_anchor_fallback_dimensions(mock_asset):
     # Position: (10, 10), Dimensions: (32, 32), default hitbox generated matching dimensions
-    anchor = NavigationMechanics.anchor(mock_crate)
-    assert anchor.x == 10 + 32 // 2
-    assert anchor.y == 10 + 32 // 2
+    crate = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value
+    )
+    anchor = NavigationMechanics.anchor(crate)
+    assert anchor.x == crate.state.position.x + crate.dimensions.w // 2
+    assert anchor.y == crate.state.position.y + crate.dimensions.l // 2
 
 
-@pytest.mark.workflow_intentions
-@pytest.mark.workflow_navigation
 def test_navigation_obstacles_multi_hitbox(mock_board, mock_multi_hitbox_asset):
     # TODO: refactor to use test bed fixtures
     mock_board.add([mock_multi_hitbox_asset])
@@ -147,8 +172,6 @@ def test_navigation_obstacles_multi_hitbox(mock_board, mock_multi_hitbox_asset):
     assert (255.0, 289.0, 203.0, 63.0) in obs
 
 
-@pytest.mark.workflow_intentions
-@pytest.mark.workflow_navigation
 def test_navigation_obstacles_offset_hitbox(mock_board, mock_offset_hitbox_asset):
     # TODO: refactor to use test bed fixtures
     mock_board.add([mock_offset_hitbox_asset])
@@ -158,8 +181,6 @@ def test_navigation_obstacles_offset_hitbox(mock_board, mock_offset_hitbox_asset
     assert (156.0, 167.0, 116.0, 54.0) in obs
 
 
-@pytest.mark.workflow_intentions
-@pytest.mark.workflow_navigation
 def test_navigation_obstacles_exclusion_and_perimeters(mock_board, mock_offset_hitbox_asset):
     mock_board.add([mock_offset_hitbox_asset])
     mock_board.perimeters["brick-house-compose-layer"] = {
@@ -177,8 +198,6 @@ def test_navigation_obstacles_exclusion_and_perimeters(mock_board, mock_offset_h
     assert (0.0, 0.0, 10.0, 20.0) in obs
 
 
-@pytest.mark.workflow_intentions
-@pytest.mark.workflow_navigation
 def test_navigation_obstacles_elevation_partitioning(mock_board, mock_offset_hitbox_asset):
     """
     Verifies NavigationMechanics.obstacles extracts obstacles and perimeters strictly
@@ -217,10 +236,11 @@ def test_navigation_obstacles_elevation_partitioning(mock_board, mock_offset_hit
 # STATE & TARGET ANCHOR TESTS
 # ---------------------------------------------------------------------------
 
-@pytest.mark.workflow_intentions
-@pytest.mark.workflow_navigation
-def test_navigation_navigating(mock_sprite):
-    sprite = mock_sprite
+def test_navigation_navigating(mock_asset):
+    sprite = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value
+    )
     sprite.state.goal = Goal(name="target", category=Goals.TARGET.value)
 
     sprite.state.intention = Intentions.FIND
@@ -243,12 +263,17 @@ def test_navigation_navigating(mock_sprite):
     assert NavigationMechanics.navigating(sprite) is False
 
 
-@pytest.mark.workflow_intentions
-@pytest.mark.workflow_navigation
-def test_navigation_clear(mock_sprite):
+def test_navigation_clear(
+    mock_mechanic,
+    mock_asset
+):
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
     mechanic = NavigationMechanics()
 
-    sprite = mock_sprite
+    sprite = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value
+    )
     sprite.state.trajectory.target = Position(10, 10)
     sprite.state.trajectory.vertices = [Position(10, 10), Position(20, 20)]
     sprite.state.trajectory.stalled = True
@@ -260,33 +285,38 @@ def test_navigation_clear(mock_sprite):
     assert sprite.state.trajectory.stalled is False
 
 
-@pytest.mark.workflow_intentions
-@pytest.mark.workflow_navigation
-def test_navigation_target_same_layer_asset(mock_board, mock_sprite):
-    mechanic = NavigationMechanics()
+def test_navigation_target_same_layer_asset(    
+    mock_mechanic,
+    mock_board
+):
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
     player = mock_board.player()
-    mock_board.relayer(player, mock_sprite.state.layer)
+
+    mock_board.relayer(player, sprite.state.layer)
     player.state.position = Position(300, 300)
 
-    mock_sprite.state.goal = Goal(
+    sprite.state.goal = Goal(
         name=player.name,
         category=Goals.TARGET.value,
         layer=player.state.layer,
         position=Position(300, 300)
     )
 
-    target_anchor = mechanic._target(mock_sprite, mock_board)
+    target_anchor = mechanic._target(sprite, mock_board)
     expected_anchor = NavigationMechanics.anchor(player)
 
     assert target_anchor.x == expected_anchor.x
     assert target_anchor.y == expected_anchor.y
 
 
-@pytest.mark.workflow_intentions
-@pytest.mark.workflow_navigation
-def test_navigation_target_coordinate_displacement(mock_board, mock_sprite):
-    mechanic = NavigationMechanics()
-    sprite = mock_sprite
+def test_navigation_target_coordinate_displacement(
+    mock_mechanic,
+    mock_board
+):
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+
     sprite.state.goal = Goal(
         name=None,
         category=Goals.POSITION.value,
@@ -306,11 +336,14 @@ def test_navigation_target_coordinate_displacement(mock_board, mock_sprite):
 # TRAJECTORY PLANNING & PROGRESSION TESTS
 # ---------------------------------------------------------------------------
 
-@pytest.mark.workflow_intentions
-@pytest.mark.workflow_navigation
-def test_navigation_clear_line_of_sight(mock_board, mock_sprite):
-    mechanic = NavigationMechanics()
-    sprite = mock_sprite
+
+def test_navigation_clear_line_of_sight(
+    mock_mechanic,
+    mock_board
+):
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+
     sprite.state.goal = Goal(
         name="open-space",
         category=Goals.POSITION.value,
@@ -327,11 +360,13 @@ def test_navigation_clear_line_of_sight(mock_board, mock_sprite):
     assert sprite.state.trajectory.cooldown == 0
 
 
-@pytest.mark.workflow_intentions
-@pytest.mark.workflow_navigation
-def test_navigation_occluded_los_generates_waypoints(mock_board, mock_sprite):
-    mechanic = NavigationMechanics()
-    sprite = mock_sprite
+def test_navigation_occluded_los_generates_waypoints(
+    mock_mechanic,
+    mock_board
+):
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+
     sprite.state.goal = Goal(
         name="behind-wall",
         category=Goals.POSITION.value,
@@ -362,11 +397,13 @@ def test_navigation_occluded_los_generates_waypoints(mock_board, mock_sprite):
     assert sprite.state.trajectory.stalled is False
 
 
-@pytest.mark.workflow_intentions
-@pytest.mark.workflow_navigation
-def test_navigation_stalled_path_enters_cooldown(mock_board, mock_sprite):
-    mechanic = NavigationMechanics()
-    sprite = mock_sprite
+def test_navigation_stalled_path_enters_cooldown(
+    mock_mechanic,
+    mock_board
+):
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+
     sprite.state.goal = Goal(
         name="unreachable",
         category=Goals.POSITION.value,
@@ -384,11 +421,13 @@ def test_navigation_stalled_path_enters_cooldown(mock_board, mock_sprite):
     assert sprite.state.trajectory.cooldown == getattr(settings, "PATH_RETRY_INTERVAL", 60)
 
 
-@pytest.mark.workflow_intentions
-@pytest.mark.workflow_navigation
-def test_navigation_cooldown_active_bypasses_planner(mock_board, mock_sprite):
-    mechanic = NavigationMechanics()
-    sprite = mock_sprite
+def test_navigation_cooldown_active_bypasses_planner(
+    mock_mechanic,
+    mock_board
+):
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+
     sprite.state.goal = Goal(
         name="unreachable",
         category=Goals.POSITION.value,
@@ -405,11 +444,13 @@ def test_navigation_cooldown_active_bypasses_planner(mock_board, mock_sprite):
         assert sprite.state.trajectory.cooldown == 9
 
 
-@pytest.mark.workflow_intentions
-@pytest.mark.workflow_navigation
-def test_navigation_waypoint_arrival_advances_queue(mock_board, mock_sprite):
-    mechanic = NavigationMechanics()
-    sprite = mock_sprite
+def test_navigation_waypoint_arrival_advances_queue(
+    mock_mechanic,
+    mock_board
+):
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+
     sprite.state.position = Position(100, 100)
     sprite.state.goal = Goal(
         name="destination",
@@ -431,11 +472,13 @@ def test_navigation_waypoint_arrival_advances_queue(mock_board, mock_sprite):
     assert sprite.state.trajectory.target == wp2
 
 
-@pytest.mark.workflow_intentions
-@pytest.mark.workflow_navigation
-def test_navigation_waypoint_arrival_final_sets_goal_target(mock_board, mock_sprite):
-    mechanic = NavigationMechanics()
-    sprite = mock_sprite
+def test_navigation_waypoint_arrival_final_sets_goal_target(
+    mock_mechanic,
+    mock_board
+):
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+
     sprite.state.position = Position(150, 150)
     sprite.state.goal = Goal(
         name="destination",
@@ -456,11 +499,13 @@ def test_navigation_waypoint_arrival_final_sets_goal_target(mock_board, mock_spr
     assert sprite.state.trajectory.target == sprite.state.goal.position
 
 
-@pytest.mark.workflow_intentions
-@pytest.mark.workflow_navigation
-def test_navigation_waypoint_arrival_final_sets_goal_target(mock_board, mock_sprite):
-    mechanic = NavigationMechanics()
-    sprite = mock_sprite
+def test_navigation_waypoint_arrival_final_sets_goal_target(
+    mock_mechanic,
+    mock_board
+):
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+
     sprite.state.position = Position(150, 150)
     sprite.state.goal = Goal(
         name="destination",
@@ -481,11 +526,13 @@ def test_navigation_waypoint_arrival_final_sets_goal_target(mock_board, mock_spr
     assert sprite.state.trajectory.target == sprite.state.goal.position
     
 
-@pytest.mark.workflow_intentions
-@pytest.mark.workflow_navigation
-def test_navigation_dynamic_replan_when_waypoint_blocked(mock_board, mock_sprite):
-    mechanic = NavigationMechanics()
-    sprite = mock_sprite
+def test_navigation_dynamic_replan_when_waypoint_blocked(
+    mock_mechanic,
+    mock_board
+):
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+
     sprite.state.goal = Goal(
         name="destination",
         category=Goals.POSITION.value,
@@ -513,14 +560,18 @@ def test_navigation_dynamic_replan_when_waypoint_blocked(mock_board, mock_sprite
     assert sprite.state.trajectory.vertices[0].y == new_wp.y - offset_y
 
 
-@pytest.mark.workflow_intentions
-@pytest.mark.workflow_navigation
-def test_navigation_update_processes_sprites_skips_player(mock_board):
-    mechanic = NavigationMechanics()
+def test_navigation_update_processes_sprites_skips_player(
+    mock_mechanic,
+    mock_board
+):
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite1 = mock_board.instances(AssetInstances.SPRITES.value)[0]
     player = mock_board.player()
-
-    sprite1 = mock_board.instances("sprites")[0]
-    sprite1.state.goal = Goal(name="target1", category=Goals.POSITION.value, position=Position(100, 100))
+    sprite1.state.goal = Goal(
+        name="target1", 
+        category=Goals.POSITION.value, 
+        position=Position(100, 100)
+    )
     sprite1.state.intention = Intentions.FIND
 
     with patch.object(mechanic, "_navigate") as mock_nav:
