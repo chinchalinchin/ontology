@@ -55,6 +55,7 @@ from app.services.generators.game import (
     Actuator,
     Cartographer,
     Cradle,
+    Decomposer,
     Perimeter
 )
 from app.services.generators.menus import Provider
@@ -190,6 +191,7 @@ def mock_board(
     mock_cradle: Cradle,
     mock_keyboard: Keyboard,
     mock_actuator: Actuator,
+    mock_decomposer: Decomposer,
     mock_shoreline_index: ShorelineIndex,
 ) -> Board:
     board = Board(
@@ -202,6 +204,9 @@ def mock_board(
     board.set_cradle(mock_cradle)
     board.set_device(mock_keyboard)
 
+    for comp_state in mock_state_schema.compositions:
+        board.add(mock_decomposer.unpack(comp_state))
+        
     for layer in board.layers():
         board.perimeters[layer] = Perimeter.generate(board, layer)
 

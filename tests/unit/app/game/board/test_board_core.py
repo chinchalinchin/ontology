@@ -41,23 +41,23 @@ def test_board_initial_caching(mock_board):
 
     # Layer Indexing (16 on layer '0', 1 on 'brick-house-compose-layer-1')
     assets_layer_0 = mock_board.assets("0")
-    assert len(assets_layer_0) == 16
-    assert len(mock_board.assets()) == 17
+    assert len(assets_layer_0) == 39
+    assert len(mock_board.assets()) == 39
 
     sheets = mock_board.categories(AssetCategories.SHEETS.value, "0")
     tiles = mock_board.categories(AssetCategories.TILES.value, "0")
-    assert len(sheets) == 2
+    assert len(sheets) == 4
     assert len(tiles) == 1
 
     # Inner Render Loop Indexing (Tiles bypassed)
     renderables = mock_board.renderables("0")
-    assert len(renderables) == 15
+    assert len(renderables) == 38
     assert all(a.category != AssetCategories.TILES.value for a in renderables)
 
     # Physics Caching
     weights = mock_board.weights("0")
-    assert len(weights) == 7
-    assert len(mock_board.weights()) == 8
+    assert len(weights) == 13
+    assert len(mock_board.weights()) == 13
 
 
 @pytest.mark.workflow_main
@@ -114,7 +114,7 @@ def test_board_size_tileless_layer(mock_board):
     """
     Verify layer extents derive from physical entities when no tiles are present.
     """
-    sizes = mock_board.size("brick-house-compose-layer-1")
+    sizes = mock_board.size("house-layer-1")
     assert len(sizes) == 1
     assert sizes[0].w == 79
     assert sizes[0].l == 79
