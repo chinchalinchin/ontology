@@ -3,7 +3,6 @@
 @domain.model
 @app.config
 @modality.material
-@workflow.compositions
 
 # Ontology: Source - app.models.config.materials
 

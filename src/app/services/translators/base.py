@@ -1,8 +1,8 @@
 """
 @domain.abstract
 @app.base
-@app.services
-@workflow.intentions
+@app.service
+@modality.intention
 @workflow.plot
 @workflow.seasons
 

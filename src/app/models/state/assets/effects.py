@@ -3,7 +3,6 @@
 @app.asset
 @asset.state
 @category.effects
-@workflows.fluids
 
 # Ontology: Source - app.models.state.effects
 

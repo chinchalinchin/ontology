@@ -4,7 +4,7 @@
 @app.mechanic
 @category.sheets
 @physics.space
-@workflow.intentions
+@modality.intention
 
 # Ontology: Source - app.game.logic.mechanics.spatial.social
 """

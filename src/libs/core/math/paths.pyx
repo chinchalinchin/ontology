@@ -1,6 +1,7 @@
 """
 @domain.system
 @domain.logic
+@app.library
 @workflow.intentions
 @workflow.navigation
 

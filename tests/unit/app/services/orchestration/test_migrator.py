@@ -1,7 +1,7 @@
 """
 @domain.test
 @test.unit
-@app.services
+@app.service
 @workflow.injection
 @workflow.hydration
 

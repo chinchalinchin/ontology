@@ -18,7 +18,7 @@ from libs.core.math.paths import rrt
 from libs.core.models import Position
 
 
-@pytest.mark.workflow_intentions
+@pytest.mark.modality_intention
 @pytest.mark.workflow_navigation
 def test_node_initialization():
     node = Node(10.5, 20.25)
@@ -27,7 +27,7 @@ def test_node_initialization():
     assert node.parent is None
 
 
-@pytest.mark.workflow_intentions
+@pytest.mark.modality_intention
 @pytest.mark.workflow_navigation
 def test_planner_initialization():
     start = Position(x=10, y=10)
@@ -50,7 +50,7 @@ def test_planner_initialization():
     assert planner.max_iter == 100
 
 
-@pytest.mark.workflow_intentions
+@pytest.mark.modality_intention
 @pytest.mark.workflow_navigation
 def test_rrt_direct_clear_path():
     path = rrt(0.0, 0.0, 30.0, 0.0, [], step_size=15.0, max_iter=50)
@@ -60,7 +60,7 @@ def test_rrt_direct_clear_path():
     assert all(isinstance(p, Position) for p in path)
 
 
-@pytest.mark.workflow_intentions
+@pytest.mark.modality_intention
 @pytest.mark.workflow_navigation
 def test_rrt_direct_obstacle_avoidance():
     # Target directly on the X axis, blocked by a wall at x=25
@@ -75,7 +75,7 @@ def test_rrt_direct_obstacle_avoidance():
     assert deviated is True
 
 
-@pytest.mark.workflow_intentions
+@pytest.mark.modality_intention
 @pytest.mark.workflow_navigation
 def test_rrt_direct_unreachable_returns_empty():
     # Impenetrable enclosure around the target
@@ -84,14 +84,14 @@ def test_rrt_direct_unreachable_returns_empty():
     assert path == []
 
 
-@pytest.mark.workflow_intentions
+@pytest.mark.modality_intention
 @pytest.mark.workflow_navigation
 def test_rrt_direct_zero_max_iter():
     path = rrt(0.0, 0.0, 100.0, 0.0, [], step_size=10.0, max_iter=0)
     assert path == []
 
 
-@pytest.mark.workflow_intentions
+@pytest.mark.modality_intention
 @pytest.mark.workflow_navigation
 def test_planner_plan_clear_path():
     start = Position(0, 0)
@@ -111,7 +111,7 @@ def test_planner_plan_clear_path():
     assert all(isinstance(p, Position) for p in path)
 
 
-@pytest.mark.workflow_intentions
+@pytest.mark.modality_intention
 @pytest.mark.workflow_navigation
 def test_planner_plan_unreachable_returns_empty():
     start = Position(0, 0)
@@ -127,7 +127,7 @@ def test_planner_plan_unreachable_returns_empty():
     assert path == []
 
 
-@pytest.mark.workflow_intentions
+@pytest.mark.modality_intention
 @pytest.mark.workflow_navigation
 def test_planner_delegates_to_rrt():
     start = Position(10, 20)
@@ -150,7 +150,7 @@ def test_planner_delegates_to_rrt():
         assert result == [target]
 
 
-@pytest.mark.workflow_intentions
+@pytest.mark.modality_intention
 @pytest.mark.workflow_navigation
 def test_rrt_path_pruning_straightens_obstructed_corridor():
     # Obstacle forcing RRT around a corner, with greedy string-pulling collapsing redundant vertices

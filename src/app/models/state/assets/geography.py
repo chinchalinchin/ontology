@@ -3,7 +3,6 @@
 @app.asset
 @asset.state
 @category.geography
-@workflow.generation
 
 # Ontology: Source - app.models.state.geography
 

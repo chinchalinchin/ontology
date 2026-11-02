@@ -3,7 +3,6 @@
 @app.asset
 @asset.state
 @category.widgets
-@workflow.menus
 
 # Ontology: Source - app.models.state.widget
 

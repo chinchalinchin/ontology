@@ -1,7 +1,7 @@
 """
 @domain.concrete
 @domain.logic
-@workflow.intentions
+@modality.intention
 @workflow.plot
 @workflow.seasons
 

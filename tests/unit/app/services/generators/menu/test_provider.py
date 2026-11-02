@@ -1,7 +1,7 @@
 """
 @domain.test
 @test.unit
-@app.services
+@app.service
 @category.widgets
 @workflow.menus
 

@@ -1,6 +1,6 @@
 """
 @domain.system
-@app.services
+@app.service
 @workflow.injection
 @workflow.compositions
 

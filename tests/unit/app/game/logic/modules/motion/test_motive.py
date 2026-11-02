@@ -4,7 +4,7 @@
 @app.module
 @physics.motion
 @category.sheets
-@workflow.intentions
+@modality.intention
 
 # Ontology: tests.unit.app.game.logic.modules.motion.test_motive
 
@@ -33,7 +33,7 @@ from libs.core.models import (
 pytestmark = [
     pytest.mark.physics_motion,
     pytest.mark.category_sheets,
-    pytest.mark.workflow_intentions
+    pytest.mark.modality_intention
 ]
 
 # -----------------------------------------------------

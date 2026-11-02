@@ -1,6 +1,6 @@
 """
 @domain.system
-@app.services
+@app.service
 @workflow.menu
 
 # Ontology: Source - app.services.generators.provider

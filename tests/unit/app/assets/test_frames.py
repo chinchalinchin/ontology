@@ -403,7 +403,7 @@ def test_meter_frame_indexing_and_keys(mock_properties, mock_state):
 
 
 @pytest.mark.category_sheets
-@pytest.mark.workflow_intentions
+@pytest.mark.modality_intention
 def test_sprite_frame_no_equipment(mock_asset):
     """
     Ensure SpriteFrame handles sprites with empty or None equipment inventories cleanly.

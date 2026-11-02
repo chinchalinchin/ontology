@@ -3,8 +3,6 @@
 @app.asset
 @asset.state
 @category.sheets
-@workflow.intentions
-@workflow.combat
 
 # Ontology: Source - app.models.state.sheets
 

@@ -64,7 +64,7 @@ tools:
     # --------------------------------------------
     source:
       data: false
-      filter: false
+      filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
@@ -110,23 +110,31 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Fluid Mechanics
+          - title: Asset Abstract
             scan:
-              app: [ mechanic ]
-              workflows: [ fluids ]
-          - title: Fluid Services
+              domain: [ abstract ]
+              app: [ asset ]
+          - title: Sheet Models
+            scan:
+              domain: [ model ]
+              category: [ sheets ]
+          - title: Sheet Implementations
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              category: [ sheets ]
+          - title: Action and Intention Modality
+            strategy: OR
+            scan:
+              modality: [ action, intention ]
+          - title: Navigation Modules
             scan:
               domain: [ logic ]
-              app: [ services ]
-              workflows: [ fluids ]
-          - title: Field Modules
-            scan:
-              app: [ module ]
-              physics: [ fields ]
+              workflows: [ navigation ]
       data:
-        properties: [ geography, sheets ]
-        state: [  ]
-        configurations: [ ]
+        properties: [ sheets ]
+        state: [  world-testbed ]
+        configurations: [ actions, intentions ]
         templates: [ ]
     # --------------------------------------------
     # -------------------------- PARAMETERS: SHELL
@@ -142,7 +150,7 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: workflow_fluids
+        marker: modality_intention
         # scope: '**/test_{actuator,cartographer}.py'
       session:
         description: |

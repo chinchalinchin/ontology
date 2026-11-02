@@ -1,10 +1,8 @@
 """
 @domain.model
 @app.config
-@workflow.intentions
-@workflow.plots
-@workflow.seasons
-@workflow.transitions
+@modality.intention
+@modality.lifespan
 
 # Ontology: Source - app.models.config.transitions
 

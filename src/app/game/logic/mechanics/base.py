@@ -2,7 +2,7 @@
 @domain.abstract
 @app.base
 @app.component
-@app.mechanics
+@app.mechanic
 
 # Ontology: Source - app.game.logic.mechanics.base
 

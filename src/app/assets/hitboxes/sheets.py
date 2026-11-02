@@ -3,7 +3,6 @@
 @app.asset
 @asset.hitbox
 @category.sheets
-@workflow.combat
 
 # Ontology: Source - app.assets.hitboxes.sheets
 

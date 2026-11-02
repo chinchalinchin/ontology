@@ -1,7 +1,7 @@
 """
 @domain.test
 @test.fixtures
-@app.relations
+@app.relation
 @modality.material
 @physics.fields
 @physics.space

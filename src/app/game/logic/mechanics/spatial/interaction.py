@@ -5,7 +5,7 @@
 @physics.space
 @category.sheets
 @category.objects
-@workflow.intentions
+@modality.intention
 @workflow.interactions
 
 # Ontology: Source - app.game.logic.mechanics.spatial.interaction

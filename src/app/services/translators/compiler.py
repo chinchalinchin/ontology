@@ -1,8 +1,8 @@
 """
 @domain.concrete
 @domain.logic
-@app.services
-@workflow.intentions
+@app.service
+@modality.intention
 @workflow.plot
 @workflow.seasons
 

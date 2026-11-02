@@ -2,7 +2,7 @@
 @domain.logic
 @app.semantics
 @category.sheets
-@workflow.intentions
+@modality.intention
 
 # Ontology: Source - app.static.semantics.intentions
 

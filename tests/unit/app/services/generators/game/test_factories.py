@@ -1,7 +1,7 @@
 """
 @domain.test
 @test.unit
-@app.services
+@app.service
 @workflow.injection
 
 # Ontology: Tests - tests.unit.app.services.generators.game.test_factories
@@ -261,7 +261,7 @@ def test_factory_controller():
 
 
 @pytest.mark.workflow_ecology
-@pytest.mark.workflow_intentions
+@pytest.mark.modality_intention
 @pytest.mark.workflow_plots
 @pytest.mark.workflow_seasons
 def test_factory_translator():

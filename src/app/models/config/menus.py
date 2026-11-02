@@ -2,7 +2,6 @@
 @domain.model
 @app.config
 @category.widgets
-@workflow.menus
 
 # Ontology: Source - app.models.config.menus
 

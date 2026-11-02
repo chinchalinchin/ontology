@@ -3,8 +3,8 @@
 @test.fixtures
 @app.core
 @app.component
-@app.devices
-@app.mechanics
+@app.device
+@app.mechanic
 @workflow.injection
 
 # Ontology: Test - tests.unit.fixtures.components

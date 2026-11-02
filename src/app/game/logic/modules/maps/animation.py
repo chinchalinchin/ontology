@@ -1,7 +1,7 @@
 """
 @domain.logic
 @app.module
-@workflow.intentions
+@modality.intention
 
 # Ontology: Source - app.game.maps.animation
 

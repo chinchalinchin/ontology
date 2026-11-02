@@ -3,7 +3,7 @@
 @domain.system
 @app.core
 @app.semantics
-@app.mechanics
+@app.mechanic
 
 # Ontology: Source - app.static.semantics.enums
 

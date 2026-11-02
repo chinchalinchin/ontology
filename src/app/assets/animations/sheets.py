@@ -2,8 +2,7 @@
 @domain.concrete
 @app.asset
 @asset.animation
-@workflow.intentions
-@workflow.combat
+@category.sheets
 
 # Ontology: Source - app.asset.animations.sheets
 

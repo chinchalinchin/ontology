@@ -1,20 +1,24 @@
 queries:
+  # -------------------------------------------------------
+  # ------------------------ QUERY: COMPOSITION SOURCE CODE
+  # -------------------------------------------------------
   compositions:
+    # ------------------------------------
     - title: Asset Abstracts
       strategy: AND
       scan:
-        app: [ asset ]
         domain: [ abstract ]
+        app: [ asset ]
+    # ------------------------------------
+    - title: Material Modality
+      scan:
+        domain: [ model ]
+        modality: [ material ]
     # ------------------------------------
     - title: Material Implementations
       scan:
         app: [ asset ]
         domain: [ concrete ]
-        modality: [ material ]
-    # ------------------------------------
-    - title: Material Models
-      scan:
-        domain: [ model ]
         modality: [ material ]
     # ------------------------------------
     - title: Composition Logic
@@ -26,3 +30,29 @@ queries:
       scan:
         app: [ services ]
         workflows: [ plot ]
+  # -------------------------------------------------------
+  # ----------------------------- QUERY: SPRITE SOURCE CODE
+  # -------------------------------------------------------
+  sprites:
+    # ------------------------------------
+    - title: Asset Abstracts
+      scan:
+        domain: [ abstract ]
+        app: [ asset ]
+    # ------------------------------------
+    - title: Sheet Implementations
+      scan:
+        domain: [ concrete ]
+        app: [ asset ]
+        category: [ sheets ]
+    # ------------------------------------
+    - title: Action and Intention Modality
+      strategy: OR
+      scan:
+        modality: [ action, intention ]
+    # ------------------------------------
+    - title: Navigation Modules
+      scan:
+        domain: [ logic ]
+        workflows: [ navigation ]
+    # ------------------------------------

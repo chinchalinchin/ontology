@@ -1,8 +1,7 @@
 """
 @domain.model
 @app.config
-@category.sheetw
-@workflow.intentions
+@modality.action
 
 # Ontology: Source - app.models.config.actions
 

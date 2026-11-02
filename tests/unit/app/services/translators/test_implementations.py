@@ -1,8 +1,8 @@
 """
 @domain.test
 @test.unit
-@app.services
-@workflow.intentions
+@app.service
+@modality.intention
 @workflow.plots
 @workflow.seasons
 @workflow.transitions
@@ -58,7 +58,7 @@ def test_executor_compiles(
     assert isinstance(executor, implementation[1])
 
 
-@pytest.mark.workflow_intentions
+@pytest.mark.modality_intention
 @pytest.mark.parametrize("implementation", [
     (Translators.COMPILER.value, CompilerExecutor),
     (Translators.LAMBDA.value, LambdaExecutor)
@@ -76,7 +76,7 @@ def test_executor_compiles_intentions(
     assert executor.transitions[Intentions.IDLE.value][0].next == Intentions.WANDER.value
 
 
-@pytest.mark.workflow_intentions
+@pytest.mark.modality_intention
 @pytest.mark.parametrize("implementation", [
     (Translators.COMPILER.value, CompilerExecutor),
     (Translators.LAMBDA.value, LambdaExecutor)
@@ -106,7 +106,7 @@ def test_intention_executor_evaluation_matches_wander(
     assert result == Intentions.WANDER.value
 
 
-@pytest.mark.workflow_intentions
+@pytest.mark.modality_intention
 @pytest.mark.parametrize("implementation", [
     (Translators.COMPILER.value, CompilerExecutor),
     (Translators.LAMBDA.value, LambdaExecutor)
@@ -136,7 +136,7 @@ def test_intention_executor_matches_hunt(
     assert result == Intentions.HUNT.value
 
 
-@pytest.mark.workflow_intentions
+@pytest.mark.modality_intention
 @pytest.mark.parametrize("implementation", [
     (Translators.COMPILER.value, CompilerExecutor),
     (Translators.LAMBDA.value, LambdaExecutor)
@@ -204,7 +204,7 @@ def test_executor_evaluation_with_plot_metadata(
     assert result == "castle-dawn-unlocked"
 
 
-@pytest.mark.workflow_intentions
+@pytest.mark.modality_intention
 @pytest.mark.parametrize("implementation", [
     (Translators.COMPILER.value, CompilerExecutor),
     (Translators.LAMBDA.value, LambdaExecutor)
@@ -230,7 +230,7 @@ def test_executor_evaluation_attribute_error_handling(
     assert result is None
 
 
-@pytest.mark.workflow_intentions
+@pytest.mark.modality_intention
 @pytest.mark.parametrize("implementation", [
     (Translators.COMPILER.value, CompilerExecutor),
     (Translators.LAMBDA.value, LambdaExecutor)

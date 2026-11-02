@@ -24,7 +24,7 @@ from libs.core.models import Position
 # -----------------------------------------------------
 
 pytestmark = [
-    pytest.mark.workflow_intentions,
+    pytest.mark.modality_intention,
     pytest.mark.workflow_transitions
 ]
 

@@ -3,8 +3,6 @@
 @app.asset
 @asset.frame
 @category.sheets
-@workflow.intentions
-@workflow.combat
 
 # Ontology: Source - app.assets.frames.sheets
 

@@ -3,8 +3,12 @@
 @domain.user
 @app.mechanic
 @category.sheets
+@modality.intention
+@workflow.player
 
 # Ontology: Source - app.game.logic.mechanics.intentional.player
+
+Unit Tests for PlayerMechanics
 """
 # Standard Libraries
 from __future__ import annotations
@@ -39,8 +43,11 @@ from app.game.menus.contexts import (
 # Cython Libraries
 from libs.core.models import Position
 
+# --------------------------------------------------------------
+
 logger = logging.getLogger(__name__)
 
+# --------------------------------------------------------------
 
 class PlayerMechanics(Mechanic):
 
