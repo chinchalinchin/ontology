@@ -3,7 +3,7 @@
 @domain.model
 @domain.user
 @app.config
-@app.devices
+@app.device
 
 # Ontology: Source - app.models.config.mappings
 

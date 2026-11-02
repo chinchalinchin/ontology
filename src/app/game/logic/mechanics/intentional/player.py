@@ -138,7 +138,7 @@ class PlayerMechanics(Mechanic):
         if player.state.intention == Intentions.ATTACK.value:
             eq = player.state.inventory.equipment
             logger.info(
-                f"SheetState(",
+                f"SheetState("
                 f"id={player.id}"
                 f"name={player.name},"
                 f"intention={player.state.intention},"

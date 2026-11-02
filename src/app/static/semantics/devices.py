@@ -1,7 +1,7 @@
 """
 @domain.logic
 @domain.user
-@app.devices
+@app.device
 @app.semantics
 
 # Ontology: Source - app.static.semantics.devices

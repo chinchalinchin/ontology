@@ -6,6 +6,7 @@
 task:
 # ----------------------------------------------------
   # template: draft.md.j2
+  # template: enumerations.md.j2
   template: fixtures.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
@@ -58,24 +59,24 @@ tools:
     manager:
       board: false
       specs: false
-      docs: false
+      docs: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: false
-      filter: false
+      data: true
+      filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: false
+      directory: true
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
-      configuration: false
+      configuration: true
       pipeline: true
       session: false
 # ----------------------------------------------------
@@ -111,41 +112,19 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Asset Abstract
+          - title: Application User Devices
             scan:
-              domain: [ abstract ]
-              app: [ asset ]
-          - title: Sheet Models
-            scan:
-              domain: [ model ]
-              category: [ sheets ]
-          - title: Sheet Implementations
+              domain: [ user ]
+              app: [ device ]
+          - title: Player Mechanic Implementation
             scan:
               domain: [ concrete ]
-              app: [ asset ]
-              category: [ sheets ]
-          - title: Action and Intention Modality
-            strategy: OR
-            scan:
-              modality: [ action, intention ]
-          - title: Navigation Modules
-            scan:
-              app: [ module ]
-              domain: [ logic ]
-              workflows: [ navigation ]
-          - title: Navigation Libraries
-            scan:
-              app: [ library ]
-              workflows: [ navigation ]
-          # --------------------------------
-          - title: Test Fixtures
-            scan:
-              test: [ fixtures ]
-
+              app: [ mechanic ]
+              workflows: [ player ]
       data:
-        properties: [ sheets ]
-        state: [  world-testbed ]
-        configurations: [ actions, intentions ]
+        properties: [ sheets/sprites ]
+        state: [  world-testbed/sprites ]
+        configurations: [ mappings ]
         templates: [ ]
     # --------------------------------------------
     # -------------------------- PARAMETERS: SHELL
@@ -161,7 +140,7 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: '"modality_intention or workflow_navigation"'
+        marker: '"workflow_player or app_device"'
         # scope: '**/test_{actuator,cartographer}.py'
       session:
         description: |

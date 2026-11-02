@@ -5,6 +5,7 @@
 @physics.motion
 @physics.space
 @workflow.collisions
+@workflow.combat
 @workflow.interactions
 
 # Ontology: Tests - tests.unit.app.game.logic.mechanics.spatial.test_spatial

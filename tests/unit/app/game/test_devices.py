@@ -1,27 +1,42 @@
 """
-# Ontology: tests.unit.test_app_game_devices
+@domain.test
+@test.unit
+@app.device
 
-Unit tests for input polling devices.
+# Ontology: tests.unit.app.game.test_devices
+
+Unit tests for Device classes.
 """
-
+# Standard Libraries
 from unittest.mock import patch
+
+# External Libraries
+import pytest
+
+# Application Libraries
 from app.static.semantics import (
     DeviceContexts,
     Intentions,
     Directions,
     Interactions,
     Traversal,
-    Menus
 )
 from app.game.devices import Keyboard, Controller
 from app.models.config import (
     DeviceMapping,
     WorldMapping, 
     MenuMapping,
-    MappingConfiguration
-
 )
 from app.models.state import DevicePayload
+
+# -----------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_device,
+    pytest.mark.workflow_player
+]
+
+# -----------------------------------------------------
 
 
 def test_keyboard_initialization(mock_keyboard: Keyboard):

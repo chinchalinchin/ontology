@@ -2,7 +2,9 @@
 @domain.test
 @test.config
 
-# Ontology: tests.unit.conftest
+# Ontology: Tests - tests.unit.conftest
+
+Unit test configuration.
 """
 # Standard Libraries
 import sys
