@@ -59,24 +59,24 @@ tools:
     manager:
       board: false
       specs: false
-      docs: false
+      docs: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: false
-      filter: false
+      data: true
+      filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: false
+      directory: true
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
-      configuration: false
+      configuration: true
       pipeline: true
       session: false
 # ----------------------------------------------------
@@ -112,21 +112,26 @@ tools:
       filter:
         default: AND
         queries:
-          - title: CLI
+          - title: Core Asset Models
             scan:
-              workflows: [ cli ]
-          - title: Registry
+              domain: [ model ]
+              app: [ asset, core ]
+          - title: Cython Model Adapters
             scan:
-              app: [ library ]
-              workflows: [ rendering ]
-          - title: Logging
+              domain: [ model ]
+              app: [ library, config ]
+          - title: Application Schemas
             scan:
-              app: [ config ]
-              domain: [ system ]
-              workflows: [ telemetry ]
+              app: [ schema ]
+          - title: Hydration Workflow
+            scan:
+              workflows: [ hydration ]
+          - title: Test Fixtures
+            scan:
+              test: [ fixtures ]
       data:
         properties: [ ]
-        state: [  ]
+        state: [ world-testbed  ]
         configurations: [  ]
         templates: [ ]
     # --------------------------------------------
@@ -143,7 +148,7 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: '"workflow_cli or workflow_rendering"'
+        marker: '"workflow_hydration"'
         # scope: '**/test_{actuator,cartographer}.py'
       session:
         description: |

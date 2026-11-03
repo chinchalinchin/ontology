@@ -1,8 +1,11 @@
 """
 @domain.system
 @app.config
+@workflow.hydration
 
 # Ontology: Source - app.static.loader
+
+Loader class for loading and saving Applicaiton YAML files.
 """
 # Standard Libraries
 from typing import (

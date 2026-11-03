@@ -1,7 +1,6 @@
 """
 @domain.user
 @domain.model
-@app.schema
 @category.widgets
 @workflow.menus
 

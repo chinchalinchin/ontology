@@ -2,6 +2,7 @@
 @domain.model
 @domain.system
 @app.config
+@app.library
 
 # Ontology: Source - app.models.adapters
 

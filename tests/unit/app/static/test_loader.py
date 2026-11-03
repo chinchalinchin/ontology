@@ -4,9 +4,6 @@
 @test.unit
 @app.config
 @app.schema
-@app.asset
-@asset.state
-@asset.property
 @workflow.hydration
 
 # Ontology: Tests - tests.unit.app.static.test_loader
