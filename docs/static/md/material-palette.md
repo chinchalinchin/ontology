@@ -1,5 +1,5 @@
 | Genera | Material | Hexcodes |
-| - | - | 
+| - | - | - |
 | `chromatics` | `blue` | #8AAAAB, #253A5E |
 | `chromatics` | `red` | #973C23, #F39A9A| 
 | `chromatics` | `yellow` | #B78C41, #FDF5CC |
