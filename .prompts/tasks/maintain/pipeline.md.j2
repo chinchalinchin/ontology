@@ -1,0 +1,79 @@
+### View: Pipeline
+
+The **Pipeline View** provides **Views** into the Continuous Integration processes that maintain the [Application](#application).
+
+### Configurations
+
+#### Configuration: Dockerfile
+
+**Dockerfile**
+
+```dockerfile
+{{ file(properties.paths.root + 'Dockerfile')}}
+```
+
+#### Configuration: Python
+
+**requirements.txt**
+
+```text
+{{ file(properties.paths.root + 'requirements.txt')}}
+```
+
+**pyproject.toml**
+
+```toml
+{{ file(properties.paths.root + 'pyproject.toml')}}
+```
+
+#### Configuration: Cython
+
+**setup.cicd.py**
+
+```python
+{{ file(properties.paths.root + 'setup.cicd.py')}}
+```
+
+#### Configuration: Mkdocs
+
+**mkdocs.yml**
+
+```yaml
+{{ file(properties.paths.root + 'mkdocs.yml')}}
+```
+
+#### Pipelines
+
+##### Pipline: Image
+
+**.github/workflows/image.yml**
+
+```yaml
+{{ file(properties.paths.root + '.github/workflows/image.yml')}}
+```
+
+##### Pipeline: Docs
+
+**.github/workflows/docs.yml**
+
+```yaml
+{{ file(properties.paths.root + '.github/workflows/docs.yml')}}
+```
+
+##### Pipeline: Tests
+
+**.github/workflows/tests.yml**
+
+```yaml
+{{ file(properties.paths.root + '.github/workflows/tests.yml')}}
+```
+
+# Task - Ontology: maintain(pipeline)
+
+**Goal**
+
+Introduce a step in the [Docs Pipeline](#pipeline-docs) that performs the following step:
+
+```bash
+gprof2dot -f pstats docs/static/pstats/latest.pstats --node-thres=1.0 --edge-thres=0.5 | dot -Tsvg -o docs/static/svg/engine-profile.svg
+```

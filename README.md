@@ -96,8 +96,8 @@ sudo apt install graphviz
 #### Profile Tracing
 
 ```bash
-python -m cProfile -o engine_run.pstats src/main.py start world-01
-gprof2dot -f pstats engine_run.pstats --node-thres=1.0 --edge-thres=0.5 | dot -Tsvg -o engine-run.svg
+python -m cProfile -o docs/static/pstats/latest.pstats src/main.py start world-01
+gprof2dot -f pstats docs/static/pstats/latest.pstats --node-thres=1.0 --edge-thres=0.5 | dot -Tsvg -o docs/static/svg/engine-profile.svg
 ```
 
 #### Dependency Trees

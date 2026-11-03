@@ -1,19 +1,25 @@
 # ----------------------------------------------------
+context: true
+# ----------------------------------------------------
 # ----------------------------------------------------
 # ----------------------------------------------- TASK
 # ----------------------------------------------------
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: draft.md.j2
-  # template: enumerations.md.j2
-  # template: fixtures.md.j2
+  # template: draft.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
+  # template: analysis/automaton.md.j2
+  # template: analysis/pstats.md.j2
+  # --------------------------------------------
+  # --------------------- TEMPLATES: MAINTENANCE
+  # --------------------------------------------
+  # template: maintain/console/enumeration.md.j2
   # template: maintain/console/patch.md.j2
   # template: maintain/console/session.md.j2
-  # template: maintain/analysis/pstats.md.j2
+  template: maintain/pipeline.md.j2
   # template: maintain/script.md.j2
   # --------------------------------------------
   # --------------------------- TEMPLATES: DUMPS 
@@ -59,8 +65,8 @@ tools:
     # --------------------------------------------
     manager:
       board: false
-      specs: true
-      docs: true
+      specs: false
+      docs: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
     # --------------------------------------------
@@ -70,13 +76,13 @@ tools:
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: true
-      filter: true
+      data: false
+      filter: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: false
+      directory: true
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
@@ -96,20 +102,19 @@ tools:
         action: refactor
       docs:
         exclude:
-
           # - 00-overview
-          # - 01-assets
-          # - 02-sprites
+          - 01-assets
+          - 02-sprites
           - 03-compositions
-          # - 04-intentions
-          # - 05-mechanics
+          - 04-intentions
+          - 05-mechanics
           - 06-widgets
           - 07-sounds
           - 08-plots
           - 09-ecology
           - 10-chemistry
           - 11-emergence
-          - 12-architecture
+          # - 12-architecture
       specs:
         - 00-dialogue
         - 01-interaction

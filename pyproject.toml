@@ -28,7 +28,7 @@ docs = [
     "mkdocstrings[python]",
 ]
 analysis = [
-    "gprof2dot"
+    "gprof2dot",
     "pydeps",
     "vulture"
 ]

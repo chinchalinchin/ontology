@@ -64,6 +64,11 @@ jobs:
           mkdir -p docs/static/yaml
           PYTHONPATH=src uv run python src/cli.py schema --target all --format yaml --out docs/static/yaml
 
+      - name: generate-profile
+        run: |
+          mkdir -p docs/static/svg
+          uv run gprof2dot -f pstats docs/static/pstats/latest.pstats --node-thres=1.0 --edge-thres=0.5 | dot -Tsvg -o docs/static/svg/engine-profile.svg
+
       - name: documentation
         run: |
           git config --global user.name 'github-actions[bot]'
