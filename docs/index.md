@@ -31,4 +31,13 @@
     
 ## Index: Quality Control
 
+### Quality Control: Tests 
+
 [![ontology-tests](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml)
+
+### Quality Control: Application Profile
+
+![Application Profile](../static/svg/engine-profile.svg)
+/// caption
+Runtime call graph and execution profile generated from `pstats` via `gprof2dot`.
+///
