@@ -28,8 +28,6 @@ pytestmark = [
     pytest.mark.workflow_navigation,
 ]
 
-# -----------------------------------------------------
-
 # ----------------------------------------------------------------------------------------
 # BASIC GEOMETRY TESTS
 # ----------------------------------------------------------------------------------------
@@ -60,6 +58,21 @@ def test_geometry_intersects_disjoint_and_empty():
 
     assert geometry.intersects(pos1, dim1, hb1, pos2, dim2, hb2) is None
     assert geometry.intersects(pos1, dim1, [], pos2, dim2, hb2) is None
+    assert geometry.intersects(pos1, dim1, hb1, pos2, dim2, []) is None
+
+
+def test_geometry_intersects_multi_hitbox_second_match():
+    pos1 = Position(0, 0)
+    dim1 = Dimensions(64, 64)
+    hb1_miss = Hitbox(Position(0, 0), Dimensions(10, 10))
+    hb1_hit = Hitbox(Position(40, 40), Dimensions(20, 20))
+
+    pos2 = Position(45, 45)
+    dim2 = Dimensions(32, 32)
+    hb2 = [Hitbox(Position(0, 0), Dimensions(16, 16))]
+
+    result = geometry.intersects(pos1, dim1, [hb1_miss, hb1_hit], pos2, dim2, hb2)
+    assert result == (hb1_hit, hb2[0])
 
 
 def test_geometry_onscreen():
@@ -83,10 +96,14 @@ def test_geometry_cone():
     assert geometry.cone(0, 0, 10, 0, 100, 0.5, "right") is True
     assert geometry.cone(0, 0, 0, 0, 100, 0.5, "down") is True
     assert geometry.cone(0, 0, 200, 0, 100, 0.5, "right") is False
+    # Inside radius, outside angular threshold
+    assert geometry.cone(0, 0, 10, 0, 100, 0.5, "left") is False
+    assert geometry.cone(0, 0, 10, 0, 100, 0.5, "invalid") is False
 
 
 def test_geometry_nearby():
     assert geometry.nearby(0, 0, 3, 4, 10) is True
+    assert geometry.nearby(0, 0, 3, 4, 5) is False
     assert geometry.nearby(0, 0, 10, 10, 5) is False
 
 
@@ -97,6 +114,7 @@ def test_geometry_bounded():
 
     miss = geometry.bounded(10, 10, [hb], 100, 100, 10, 10)
     assert miss is None
+    assert geometry.bounded(10, 10, [], 20, 20, 10, 10) is None
 
 
 # ----------------------------------------------------------------------------------------
@@ -118,6 +136,14 @@ def test_geometry_punctures_origin_inside_box():
 
 def test_geometry_punctures_parallel_outside():
     assert geometry.punctures(0.0, -10.0, 100.0, -10.0, 40.0, 0.0, 20.0, 20.0) is False
+    assert geometry.punctures(10.0, 0.0, 10.0, 100.0, 40.0, 0.0, 20.0, 20.0) is False
+
+
+def test_geometry_punctures_diagonal_and_corner_miss():
+    # Diagonal segment passing cleanly through the box interior
+    assert geometry.punctures(0.0, 0.0, 100.0, 100.0, 40.0, 40.0, 20.0, 20.0) is True
+    # Diagonal segment intersecting X slab [40, 60] at u in [0.4, 0.6], but Y slab [80, 100] at u in [0.8, 1.0] (u1 >= u2)
+    assert geometry.punctures(0.0, 0.0, 100.0, 100.0, 40.0, 80.0, 20.0, 20.0) is False
 
 
 def test_geometry_los_unobstructed():
@@ -179,6 +205,16 @@ def test_geometry_raycast_lateral_directions():
     assert hit_l == "crate-left"
 
 
+def test_geometry_raycast_closest_obstacle_and_tuple_fallback():
+    obs = [
+        (10, 200, 32, 32, "far-crate"),
+        (10, 80, 32, 32),
+    ]
+    dist, hit = geometry.raycast(10, 0, 32, 32, "down", obs, 500)
+    assert dist == 80
+    assert hit == (10, 80, 32, 32)
+
+
 def test_geometry_raycast_miss():
     obstacles = [(100, 100, 32, 32, "distant-crate")]
     dist, hit = geometry.raycast(0, 0, 32, 32, "down", obstacles, 300)
@@ -216,6 +252,21 @@ def test_geometry_contours_overlapping_rects():
     assert (0, 64, 96, 1, "down") in contours
     assert (0, 0, 1, 64, "left") in contours
     assert (96, 0, 1, 64, "right") in contours
+
+
+def test_geometry_contours_disjoint_and_nested_intervals():
+    # Two vertically separated rectangles sharing X bounds + one nested sub-rectangle
+    rects = [
+        (0, 0, 64, 32),
+        (0, 8, 64, 24),
+        (0, 64, 64, 96),
+    ]
+    contours = geometry.contours(rects)
+    assert (0, 0, 1, 32, "left") in contours
+    assert (0, 64, 1, 32, "left") in contours
+    assert (64, 0, 1, 32, "right") in contours
+    assert (64, 64, 1, 32, "right") in contours
+    assert geometry.contours([]) == []
 
 
 # ----------------------------------------------------------------------------------------

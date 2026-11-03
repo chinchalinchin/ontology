@@ -40,8 +40,6 @@ pytestmark = [
     pytest.mark.workflow_navigation,
 ]
 
-# -----------------------------------------------------
-
 # ---------------------------------------------------------------------------
 # ANCHOR & OBSTACLE TESTS
 # ---------------------------------------------------------------------------
@@ -177,14 +175,16 @@ def test_navigation_navigating(mock_asset):
     )
     sprite.state.goal = Goal(name="target", category=Goals.TARGET.value)
 
-    sprite.state.intention = Intentions.FIND
-    assert NavigationMechanics.navigating(sprite) is True
-
-    sprite.state.intention = Intentions.HUNT
-    assert NavigationMechanics.navigating(sprite) is True
-
-    sprite.state.intention = Intentions.WANDER
-    assert NavigationMechanics.navigating(sprite) is True
+    for nav_intention in (
+        Intentions.FIND,
+        Intentions.FOLLOW,
+        Intentions.HUNT,
+        Intentions.ESCAPE,
+        Intentions.WANDER,
+        Intentions.RETURN,
+    ):
+        sprite.state.intention = nav_intention
+        assert NavigationMechanics.navigating(sprite) is True
 
     sprite.state.intention = Intentions.IDLE
     assert NavigationMechanics.navigating(sprite) is False
@@ -214,6 +214,17 @@ def test_navigation_clear(mock_mechanic, mock_asset):
     assert sprite.state.trajectory.stalled is False
 
 
+def test_navigation_target_none_when_no_goal(mock_mechanic, mock_asset, mock_board):
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value,
+    )
+    sprite.state.goal = None
+
+    assert mechanic._target(sprite, mock_board) is None
+
+
 def test_navigation_target_same_layer_asset(mock_mechanic, mock_board):
     mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
     sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
@@ -234,6 +245,31 @@ def test_navigation_target_same_layer_asset(mock_mechanic, mock_board):
 
     assert target_anchor.x == expected_anchor.x
     assert target_anchor.y == expected_anchor.y
+
+
+def test_navigation_target_cross_layer_asset_falls_back_to_displacement(
+    mock_mechanic,
+    mock_board,
+):
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+    player = mock_board.player()
+
+    mock_board.relayer(player, "house-layer")
+    sprite.state.goal = Goal(
+        name=player.name,
+        category=Goals.TARGET.value,
+        layer=sprite.state.layer,
+        position=Position(80, 90),
+    )
+
+    anchor = NavigationMechanics.anchor(sprite)
+    offset_x = anchor.x - sprite.state.position.x
+    offset_y = anchor.y - sprite.state.position.y
+
+    target_anchor = mechanic._target(sprite, mock_board)
+    assert target_anchor.x == 80 + offset_x
+    assert target_anchor.y == 90 + offset_y
 
 
 def test_navigation_target_coordinate_displacement(mock_mechanic, mock_board):
@@ -258,6 +294,44 @@ def test_navigation_target_coordinate_displacement(mock_mechanic, mock_board):
 # ---------------------------------------------------------------------------
 # TRAJECTORY PLANNING & PROGRESSION TESTS
 # ---------------------------------------------------------------------------
+
+
+def test_navigation_inactive_intention_clears_trajectory(mock_mechanic, mock_board):
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+
+    sprite.state.intention = Intentions.IDLE.value
+    sprite.state.trajectory.target = Position(100, 100)
+    sprite.state.trajectory.vertices = [Position(100, 100)]
+    sprite.state.trajectory.stalled = True
+
+    mechanic._navigate(sprite, mock_board)
+
+    assert sprite.state.trajectory.target is None
+    assert sprite.state.trajectory.vertices == []
+    assert sprite.state.trajectory.stalled is False
+
+
+def test_navigation_cross_layer_goal_clears_trajectory(mock_mechanic, mock_board):
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+
+    sprite.state.intention = Intentions.FIND.value
+    sprite.state.goal = Goal(
+        name="remote-target",
+        category=Goals.POSITION.value,
+        layer="house-layer",
+        position=Position(100, 100),
+    )
+    sprite.state.trajectory.target = Position(50, 50)
+    sprite.state.trajectory.vertices = [Position(50, 50)]
+    sprite.state.trajectory.stalled = True
+
+    mechanic._navigate(sprite, mock_board)
+
+    assert sprite.state.trajectory.target is None
+    assert sprite.state.trajectory.vertices == []
+    assert sprite.state.trajectory.stalled is False
 
 
 def test_navigation_clear_line_of_sight(mock_mechanic, mock_board):
@@ -426,9 +500,9 @@ def test_navigation_dynamic_replan_when_waypoint_blocked(mock_mechanic, mock_boa
     sprite.state.trajectory.vertices = [old_wp]
     sprite.state.trajectory.target = old_wp
 
-    # Place an obstacle between sprite (x=100) and old_wp (x=200)
+    # Place an obstacle intersecting the footprint anchor ray (y=541) between x=132 and x=232
     mock_board.perimeters["0"] = {
-        0: [Boundary(Position(160, 510), Dimensions(24, 24))],
+        0: [Boundary(Position(160, 530), Dimensions(24, 24))],
     }
 
     mechanic._navigate(sprite, mock_board)
@@ -436,6 +510,38 @@ def test_navigation_dynamic_replan_when_waypoint_blocked(mock_mechanic, mock_boa
     assert len(sprite.state.trajectory.vertices) >= 1
     assert sprite.state.trajectory.vertices[0] != old_wp
     assert sprite.state.trajectory.target == sprite.state.trajectory.vertices[0]
+
+
+def test_navigation_dynamic_replan_stalls_when_enclosed(mock_mechanic, mock_board):
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+
+    sprite.state.position = Position(100, 500)
+    sprite.state.intention = Intentions.FIND.value
+    sprite.state.goal = Goal(
+        name="destination",
+        category=Goals.POSITION.value,
+        layer=sprite.state.layer,
+        position=Position(300, 500),
+    )
+
+    old_wp = Position(260, 500)
+    sprite.state.trajectory.vertices = [old_wp]
+    sprite.state.trajectory.target = old_wp
+
+    # Enclose both old_wp and destination inside an impassable box blocking y=541
+    mock_board.perimeters["0"] = {
+        0: [Boundary(Position(160, 450), Dimensions(250, 200))],
+    }
+
+    mechanic._navigate(sprite, mock_board)
+
+    assert sprite.state.trajectory.stalled is True
+    assert sprite.state.trajectory.target is None
+    assert sprite.state.trajectory.vertices == []
+    assert sprite.state.trajectory.cooldown == getattr(
+        settings, "PATH_RETRY_INTERVAL", 60
+    )
 
 
 def test_navigation_update_processes_sprites_skips_player(

@@ -19,7 +19,7 @@ task:
   # template: maintain/console/enumeration.md.j2
   # template: maintain/console/patch.md.j2
   # template: maintain/console/session.md.j2
-  template: maintain/pipeline.md.j2
+  # template: maintain/pipeline.md.j2
   # template: maintain/script.md.j2
   # --------------------------------------------
   # --------------------------- TEMPLATES: DUMPS 
@@ -32,7 +32,7 @@ task:
   # template: iterate/documentation.md.j2
   # template: iterate/grooming.md.j2
   # template: iterate/implementation.md.j2
-  # template: iterate/coverage.md.j2
+  template: iterate/coverage.md.j2
   # template: iterate/review.md.j2
   # template: iterate/conclusion.md.j2
   # --------------------------------------------
@@ -66,7 +66,7 @@ tools:
     manager:
       board: false
       specs: false
-      docs: false
+      docs: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
     # --------------------------------------------
@@ -76,8 +76,8 @@ tools:
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: false
-      filter: false
+      data: true
+      filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
@@ -88,8 +88,8 @@ tools:
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
-      configuration: false
-      pipeline: false
+      configuration: true
+      pipeline: true
       session: false
 # ----------------------------------------------------
   parameters:
@@ -104,10 +104,10 @@ tools:
         exclude:
           # - 00-overview
           - 01-assets
-          - 02-sprites
+          # - 02-sprites
           - 03-compositions
-          - 04-intentions
-          - 05-mechanics
+          # - 04-intentions
+          # - 05-mechanics
           - 06-widgets
           - 07-sounds
           - 08-plots
@@ -132,13 +132,33 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Application Automata
+          - title: Asset Abstract
+            scan: 
+              domain: [ abstract ]
+              app: [ asset ]
+          - title: Mechanic Abstract
             scan:
-              domain: [ automata ]
+              domain: [ abstract ]
+              app: [ mechanic ]
+          - title: Sheet Implementations
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              category: [ sheets ]
+          - title: Sheet Models
+            scan:
+              domain: [ model ]
+              category: [ sheets ]
+          - title: Navigation Workflow
+            scan:
+              workflows: [ navigation ]
+          - title: Test Fixtures
+            scan:
+              test: [ fixtures ]
       data:
-        properties: [ ]
-        state: [  ]
-        configurations: [ intentions ]
+        properties: [ sheets/sprites ]
+        state: [ world-testbed ]
+        configurations: [ ]
         templates: [ ]
     # --------------------------------------------
     # -------------------------- PARAMETERS: SHELL
@@ -154,7 +174,7 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: '"workflow_hydration"'
+        marker: workflow_navigation
         # scope: '**/test_{actuator,cartographer}.py'
       session:
         description: |

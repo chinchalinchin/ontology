@@ -7,7 +7,6 @@
 # Ontology: Tests - tests.unit.game.logic.modules.test_paths
 
 Unit tests for the RRT Path wrapper class.
-
 """
 # Standard Library
 from unittest.mock import patch
@@ -17,8 +16,8 @@ import pytest
 
 # Application Libraries
 from app.game.logic.modules.paths.plan import (
-    Node, 
-    Planner
+    Node,
+    Planner,
 )
 
 # Cython Libraries
@@ -27,7 +26,7 @@ from libs.core.models import Position
 
 pytestmark = [
     pytest.mark.app_module,
-    pytest.mark.workflow_navigation
+    pytest.mark.workflow_navigation,
 ]
 
 
@@ -45,11 +44,11 @@ def test_planner_initialization():
     step_size = 16.0
 
     planner = Planner(
-        start=start, 
-        target=target, 
-        obstacles=obstacles, 
-        step_size=step_size, 
-        max_iter=100
+        start=start,
+        target=target,
+        obstacles=obstacles,
+        step_size=step_size,
+        max_iter=100,
     )
 
     assert planner.start == start
@@ -92,15 +91,36 @@ def test_rrt_direct_zero_max_iter():
     assert path == []
 
 
+def test_rrt_culls_obstacles_outside_search_window():
+    # Far obstacles fall completely outside the search bounding box (culled_count == 0)
+    distant_obstacles = [
+        (2000.0, 2000.0, 50.0, 50.0),
+        (3000.0, 3000.0, 100.0, 100.0),
+    ]
+    path = rrt(100.0, 100.0, 130.0, 100.0, distant_obstacles, step_size=15.0, max_iter=50)
+    assert len(path) > 0
+    assert path[-1].x == 130
+    assert path[-1].y == 100
+
+
+def test_rrt_positive_search_bounds_no_origin_clamp():
+    # Coordinates well above (0, 0) so min_x >= 0 and min_y >= 0 without fallback clamping
+    wall = (530.0, 480.0, 10.0, 40.0)
+    path = rrt(500.0, 500.0, 560.0, 500.0, [wall], step_size=15.0, max_iter=300)
+    assert len(path) > 0
+    assert path[-1].x == 560
+    assert path[-1].y == 500
+
+
 def test_planner_plan_clear_path():
     start = Position(0, 0)
     target = Position(30, 0)
     planner = Planner(
-        start=start, 
-        target=target, 
-        obstacles=[], 
-        step_size=15.0, 
-        max_iter=50
+        start=start,
+        target=target,
+        obstacles=[],
+        step_size=15.0,
+        max_iter=50,
     )
 
     path = planner.plan()
@@ -115,9 +135,11 @@ def test_planner_plan_unreachable_returns_empty():
     target = Position(100, 0)
     wall = (-50.0, -50.0, 200.0, 200.0)
     planner = Planner(
-        start=start, 
-        target=target, 
-        obstacles=[wall], step_size=10.0, max_iter=10
+        start=start,
+        target=target,
+        obstacles=[wall],
+        step_size=10.0,
+        max_iter=10,
     )
 
     path = planner.plan()
@@ -130,15 +152,16 @@ def test_planner_delegates_to_rrt():
     obstacles = [(30.0, 40.0, 10.0, 10.0)]
 
     with patch(
-        "app.game.logic.modules.paths.plan.rrt", 
-        return_value=[target]
+        "app.game.logic.modules.paths.plan.rrt",
+        return_value=[target],
     ) as mock_rrt:
         planner = Planner(
-            start=start, 
-            target=target, 
-            obstacles=obstacles, 
-            step_size=20.0, 
-            max_iter=150)
+            start=start,
+            target=target,
+            obstacles=obstacles,
+            step_size=20.0,
+            max_iter=150,
+        )
         result = planner.plan()
 
         mock_rrt.assert_called_once_with(10.0, 20.0, 100.0, 200.0, obstacles, 20.0, 150)

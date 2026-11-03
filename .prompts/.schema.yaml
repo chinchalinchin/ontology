@@ -39,16 +39,18 @@
 #   scan:
 #     app: [ 
 #             asset, base, core, 
-#             component, config, devices,
-#             schema, semantics, mechanics 
+#             component, config, device,
+#             schema, semantics, service, 
+#             mechanic 
 #     ]
 #     asset: [ 
 #             property, state, frame,
 #             animation, hitbox 
 #     ]
 #     domain: [ 
-#               abstract, concrete, model,
-#               logic, graphics, test
+#               abstract, automata, concrete, 
+#               model, logic, graphics, 
+#               test, system, user
 #     ]
 #     category: [ 
 #               crafts, cursors, effects,
@@ -60,14 +62,14 @@
 #     ]
 #     test: [
 #               unit, integration
-#   ]
+#     ]
 #     workflows: [ 
 #               cli, collisions, combat,
-#               compositions, ecology, fluids,
-#               hydration, intentions, interactions, 
+#               compositions, cognition, ecology, 
+#               fluids, hydration, interactions, 
 #               main, menus, orchestration,
 #               navgiation, rendering, seasons,
-#               telemetry 
+#               telemetry, transitions
 #     ]
 # ----------------------------------------------------
 # ------------------------ TOOL.PARAMETERS.SOURCE.DATA
