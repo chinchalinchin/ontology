@@ -1,3 +1,4 @@
+# cython: language_level=3
 """
 @domain.logic
 @domain.system

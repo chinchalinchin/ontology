@@ -538,3 +538,47 @@ def test_screen_export_methods_and_destroy(
     mock_screen.destroy()
     assert mock_screen.bg_canvas is None
     assert mock_screen.fg_canvas is None
+
+@pytest.mark.workflow_fluids
+def test_screen_export_map_submerge_channel_splitting(
+    mock_screen,
+    mock_board,
+    mock_render,
+    tmp_path,
+):
+    """
+    Verify Screen.export_map applies ChannelTypes.SUBMERGE texture slicing
+    consistent with Screen.draw (Bug B017 remediation).
+    """
+    player = mock_board.player()
+    player.state.position = Position(x=100, y=100)
+    player.state.inventory.equipment.armor = None
+    player.state.inventory.equipment.weapon = None
+    player.state.inventory.equipment.shield = None
+    player.state.inventory.equipment.tool = None
+    player.state.inventory.equipment.utility = None
+    player.state.mutators.triggers.submerged = True
+
+    channels = player.frame.channels(player.id, player.state, player.properties)
+    submerge_payload = next(
+        payload for c_type, payload in channels if c_type == ChannelTypes.SUBMERGE.value
+    )
+    split_y, r, g, b, a = submerge_payload
+    rem_l = player.dimensions.l - split_y
+
+    mock_render.render.reset_mock()
+    out_path = str(tmp_path / "map_submerged.png")
+    mock_screen.export_map(out_path, [player])
+
+    active_assets = mock_render.render.call_args[0][2]
+    assert len(active_assets) == 2
+
+    upper = active_assets[0]
+    assert upper[4] == split_y
+    assert upper[8] == split_y
+    assert upper[9:] == (255, 255, 255, 255)
+
+    lower = active_assets[1]
+    assert lower[4] == rem_l
+    assert lower[8] == rem_l
+    assert lower[9:] == (r, g, b, a)

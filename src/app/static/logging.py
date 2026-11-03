@@ -1,5 +1,6 @@
 """
 @domain.system
+@app.config
 @workflow.telemetry
 
 # Ontology: Source - app.config.logging
@@ -11,6 +12,7 @@ import logging.config
 import re
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 # Application Libraries
 import app.static.settings as settings
@@ -33,13 +35,18 @@ def _get_session_log_filename(log_dir: Path = settings.LOG_DIR) -> str:
     next_index = max_index + 1
     return f"ontology_{date_str}-{next_index}.log"
 
+
 def configure_logging(
-    log_level: str = settings.LOG_LEVEL, 
-    log_dir: Path = settings.LOG_DIR
+    log_level: Optional[str] = None, 
+    log_dir: Optional[Path] = None
 ) -> None:
     """
     Configures the application to write logs to both stdout and a rotating file.
     """
+    # Default to settings dynamically.
+    log_level = log_level or settings.LOG_LEVEL
+    log_dir = log_dir or settings.LOG_DIR
+
     log_dir.mkdir(parents=True, exist_ok=True)
     
     # Calculate the dynamic session filename

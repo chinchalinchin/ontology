@@ -38,3 +38,5 @@ def patch_app_settings(monkeypatch, tmp_path: Path):
     Overrides settings and isolates save-state output to an ephemeral tmp_path.
     """
     monkeypatch.setattr("app.static.settings.SAVE_DIR", tmp_path / "saves")
+    monkeypatch.setattr("app.static.settings.LOG_DIR", tmp_path / "logs")
+    monkeypatch.setattr("app.static.settings.DUMP_DIR", tmp_path / "dumps")

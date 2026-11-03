@@ -66,3 +66,21 @@ queries:
       scan:
         app: [ library ]
         workflows: [ navigation ]
+  # -------------------------------------------------------
+  # ----------------------------- QUERY: DEVICE SOURCE CODE
+  # -------------------------------------------------------
+  devices:
+    # ------------------------------------
+    - title: Application Core Components
+      scan:
+        app: [ core, component ]
+    # ------------------------------------
+    - title: Application Devices
+      scan:
+        app: [ device ]
+    # ------------------------------------
+    - title: Player Mechanic Implementation
+      scan:
+        app: [ mechanic ]
+        workflows: [ player ]
+    # ------------------------------------

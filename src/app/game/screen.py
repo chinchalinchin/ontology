@@ -13,37 +13,39 @@ Implementation of the Screen, an abstraction over the Cython SDL rendering inter
 # Standard Libraries
 import logging
 from typing import (
-    List, 
-    Union
+    List,
+    Tuple,
+    Union,
 )
 
 # Application Libraries
 from app.assets.base import Asset
-from app.static.semantics import (
-    AssetInstances, 
-    AssetCategories,
-    ChannelTypes
-)
+from app.game.menus.core import Menu
 from app.models.state import (
     CalendarState,
-    SheetState,
     DisplayState,
-    PaneState
+    PaneState,
+    SheetState,
 )
-from app.game.menus.core import Menu
+from app.static.semantics import (
+    AssetCategories,
+    AssetInstances,
+    ChannelTypes,
+)
 
 # Cython Libraries
 import libs.graphics.render as render
 from libs.core.models import (
-    Position, 
-    Dimensions
+    Dimensions,
+    Position,
 )
 from libs.graphics.registry import (
-    Registry, 
-    TexturePtr
+    Registry,
+    TexturePtr,
 )
 
 logger = logging.getLogger(__name__)
+
 
 class Screen:
     """
@@ -55,12 +57,13 @@ class Screen:
     fg_canvas: TexturePtr
     registry: Registry
 
-    def __init__(self, 
+    def __init__(
+        self,
         screensize: Dimensions,
         boardsize: Dimensions,
         tiles: List[Asset],
         registry: Registry,
-        calendar: CalendarState
+        calendar: CalendarState,
     ):
         self.screensize = screensize
         self.boardsize = boardsize
@@ -71,24 +74,25 @@ class Screen:
         canvas_l = max(boardsize.l, screensize.l)
 
         logger.info(
-            f"Initializing Screen (Viewport: {self.screensize.w}x{self.screensize.l} |" 
+            f"Initializing Screen (Viewport: {self.screensize.w}x{self.screensize.l} |"
             f"Board: {self.boardsize.w}x{self.boardsize.l})"
         )
-        
+
         is_opaque = len(tiles) == 0
 
         self.bg_canvas = render.canvas(canvas_w, canvas_l, opaque=is_opaque)
         self.fg_canvas = render.canvas(canvas_w, canvas_l)
-        
+
         back_tiles, fore_tiles = self._prerender(tiles, calendar)
         render.construct(self.bg_canvas, back_tiles)
         render.construct(self.fg_canvas, fore_tiles)
 
 
-    def _prerender(self, 
-        tiles: List[Asset], 
-        calendar: CalendarState
-    ) -> tuple[list, list]:
+    def _prerender(
+        self,
+        tiles: List[Asset],
+        calendar: CalendarState,
+    ) -> Tuple[ list, list ]:
         back_tiles, fore_tiles = [], []
 
         for tile in tiles:
@@ -106,7 +110,7 @@ class Screen:
                     tile.state.position.x + ox,
                     tile.state.position.y + oy,
                     tile.dimensions.w, tile.dimensions.l,
-                    tile.state.multiple.nx, tile.state.multiple.ny
+                    tile.state.multiple.nx, tile.state.multiple.ny,
                 )
 
                 if tile.taxonomy.instance == AssetInstances.ENVIRON.value:
@@ -118,12 +122,97 @@ class Screen:
 
 
     @staticmethod
-    def _sort(asset: Asset) -> tuple[int, int, int]:
+    def _sort(asset: Asset) -> Tuple[int, int, int, int]:
         dim_l = asset.dimensions.l if asset.dimensions else 0
         ground_y = int(asset.state.position.y + dim_l + asset.state.anchor)
         return (asset.elevation, asset.substrate, ground_y, asset.properties.priority)
 
-    
+
+    def _assemble(
+        self,
+        assets: List[Asset],
+        pov: Position,
+        bounds: Dimensions,
+    ) -> Tuple[list, list]:
+        """
+        Height-sorts assets, culls geometry outside the target bounds,
+        and assembles render primitives and auxiliary channel operations.
+        """
+        active_assets = []
+        active_channels = []
+
+        # Height-sort the assets directly prior to querying asset.frame.keys()
+        assets.sort(key=self._sort)
+
+        for asset in assets:
+            if asset.category == AssetCategories.TILES.value:
+                continue
+
+            frame_keys = asset.frame.keys(asset.id, asset.state)
+            channels = asset.frame.channels(asset.id, asset.state, asset.properties)
+            submerge_channel = next(
+                (
+                    op for op in channels
+                    if op[0] == ChannelTypes.SUBMERGE.value
+                ),
+                None,
+            )
+
+            for frame_key, ox, oy in frame_keys:
+                tex_data = self.registry.image(frame_key)
+
+                if not tex_data:
+                    if not isinstance(asset.state, SheetState):
+                        logger.warning(f"Registry MISS! Frame key not found: '{frame_key}'")
+                    continue
+
+                # Flatten mapping to C-level PRIMITIVE INTEGERS for destination logic
+                tex, sx, sy, sw, sl = tex_data
+                dx, dy = asset.state.position.x + ox, asset.state.position.y + oy
+                dw, dl = sw, sl
+
+                # Strict Culling: Only pass geometry if intersecting the target frame
+                if (
+                    dx + dw >= pov.x and dx <= pov.x + bounds.w and
+                    dy + dl >= pov.y and dy <= pov.y + bounds.l
+                ):
+                    if submerge_channel is None:
+                        active_assets.append((
+                            tex, sx, sy, sw, sl,
+                            dx, dy, dw, dl,
+                            255, 255, 255, 255,
+                        ))
+                    else:
+                        split_y, r, g, b, a = submerge_channel[1]
+                        # Upper slice: normal rendering
+                        active_assets.append((
+                            tex, sx, sy, sw, split_y,
+                            dx, dy, dw, split_y,
+                            255, 255, 255, 255,
+                        ))
+                        # Lower slice: submerged texture modulation
+                        rem_l = sl - split_y
+                        active_assets.append((
+                            tex, sx, sy + split_y, sw, rem_l,
+                            dx, dy + split_y, dw, rem_l,
+                            r, g, b, a,
+                        ))
+
+                # 2. Auxiliary Channel Tuples
+                for c_type, payload in channels:
+                    if c_type == ChannelTypes.TINT.value:
+                        cx, cy, cw, cl, r, g, b, a = payload
+                        active_channels.append((
+                            c_type,
+                            asset.state.position.x + cx,
+                            asset.state.position.y + cy,
+                            cw, cl,
+                            r, g, b, a,
+                        ))
+
+        return active_assets, active_channels
+
+
     def _widgets(self, menus: List[Menu]) -> None:
         """Helper to collect and superimpose widget primitives for a set of menus."""
         widgets = []
@@ -138,7 +227,7 @@ class Screen:
                 primitives.append((
                     tex, 0, 0, tex.w, tex.l,
                     widget.state.position.x, widget.state.position.y,
-                    widget.dimensions.w, widget.dimensions.l
+                    widget.dimensions.w, widget.dimensions.l,
                 ))
                 continue
 
@@ -159,19 +248,18 @@ class Screen:
                     primitives.append((
                         tex, sx, sy, sw, sl,
                         widget.state.position.x + ox, widget.state.position.y + oy,
-                        sw, sl
+                        sw, sl,
                     ))
 
         if primitives:
             render.superimpose(primitives)
 
 
-    def _flatten(self, 
-        menus: List[Menu], 
-        overlays: List[Menu]
+    def _flatten(
+        self,
+        menus: List[Menu],
+        overlays: List[Menu],
     ) -> List[Asset]:
-        """
-        """
         widgets = []
         for menu in overlays:
             if menu.widgets:
@@ -181,13 +269,14 @@ class Screen:
                 widgets.extend(menu.widgets.values())
         return widgets
 
-    
-    def camera(self, 
-        focus: Position, 
-        dim: Dimensions
+
+    def camera(
+        self,
+        focus: Position,
+        dim: Dimensions,
     ) -> Position:
         """
-        Calculates camera viewport coordinates. 
+        Calculates camera viewport coordinates.
         Centers layers smaller than viewport dimensions via negative offsets.
         """
         if self.boardsize.w < self.screensize.w:
@@ -207,10 +296,12 @@ class Screen:
         return Position(x=cam_x, y=cam_y)
 
 
-    def clear(self) -> None: render.clear()
+    def clear(self) -> None:
+        render.clear()
 
 
-    def present(self) -> None: render.present()
+    def present(self) -> None:
+        render.present()
 
 
     def destroy(self) -> None:
@@ -223,83 +314,24 @@ class Screen:
         if self.fg_canvas:
             render.destroy(self.fg_canvas)
             self.fg_canvas = None
-            
+
     # ------------------------------------------------ CANVAS METHODS
 
-    def draw(self, 
-        assets: List[Asset], 
+    def draw(
+        self,
+        assets: List[Asset],
         focus: Position,
-        dim: Dimensions
+        dim: Dimensions,
     ) -> None:
         """
         Calculates viewport positioning, culls non-visible items, and routes data to the renderer.
         """
         pov = self.camera(focus, dim)
-        active_assets = []
-        active_channels = []
-
-        # Height-sort the assets directly prior to querying asset.frame.keys()
-        assets.sort(key=self._sort)
-
-        for asset in assets:
-            if asset.category == AssetCategories.TILES.value: continue
-
-            frame_keys = asset.frame.keys(asset.id, asset.state)
-            channels = asset.frame.channels(asset.id, asset.state, asset.properties)
-            submerge_channel = next((
-                op for op in channels 
-                if op[0] == ChannelTypes.SUBMERGE.value
-            ), None)
-
-            for frame_key, ox, oy in frame_keys:
-                tex_data = self.registry.image(frame_key)
-
-                if not tex_data: 
-                    if not isinstance(asset.state, SheetState):
-                        logger.warning(f"Registry MISS! Frame key not found: '{frame_key}'")
-                    continue 
-
-                # Flatten mapping to C-level PRIMITIVE INTEGERS for destination logic
-                tex, sx, sy, sw, sl = tex_data
-                dx, dy = asset.state.position.x + ox, asset.state.position.y + oy
-                dw, dl = sw, sl
-
-                # Strict Camera Culling: Only pass geometry if intersecting the camera frame 
-                if (dx + dw >= pov.x and dx <= pov.x + self.screensize.w and
-                    dy + dl >= pov.y and dy <= pov.y + self.screensize.l):
-                    if submerge_channel is None:
-                        active_assets.append((
-                            tex, sx, sy, sw, sl, 
-                            dx, dy, dw, dl,
-                            255, 255, 255, 255
-                        ))
-                    else:
-                        split_y, r, g, b, a = submerge_channel[1]
-                        # Upper slice: normal rendering
-                        active_assets.append((
-                            tex, sx, sy, sw, split_y,
-                            dx, dy, dw, split_y,
-                            255, 255, 255, 255
-                        ))
-                        # Lower slice: submerged texture modulation
-                        rem_l = sl - split_y
-                        active_assets.append((
-                            tex, sx, sy + split_y, sw, rem_l,
-                            dx, dy + split_y, dw, rem_l,
-                            r, g, b, a
-                        ))
-
-                # 2. Auxiliary Channel Tuples
-                for c_type, payload in channels:
-                    if c_type == ChannelTypes.TINT.value:
-                        ox, oy, ow, ol, r, g, b, a = payload
-                        active_channels.append((
-                            c_type,
-                            asset.state.position.x + ox,
-                            asset.state.position.y + oy,
-                            ow, ol,
-                            r, g, b, a
-                        ))
+        active_assets, active_channels = self._assemble(
+            assets,
+            pov,
+            self.screensize,
+        )
 
         logger.debug(
             f"Render Payload: Camera({pov.x}, {pov.y}) | "
@@ -308,13 +340,13 @@ class Screen:
 
         # Pass purely native integers to bypass heavy object allocation
         render.render(
-            self.bg_canvas, 
+            self.bg_canvas,
             self.fg_canvas,
-            active_assets, 
-            pov.x, 
-            pov.y, 
-            self.screensize.w, 
-            self.screensize.l
+            active_assets,
+            pov.x,
+            pov.y,
+            self.screensize.w,
+            self.screensize.l,
         )
 
         if active_channels:
@@ -323,11 +355,11 @@ class Screen:
 
     def stamp(self, widget: Asset, content: Union[str, List[str]]) -> None:
         """
-        Dynamically restamps background and bakes updated text for O(N) runtime rendering. 
+        Dynamically restamps background and bakes updated text for O(N) runtime rendering.
         """
         if not isinstance(widget.state, DisplayState):
             return
-            
+
         tex = widget.state.canvas
         base_keys = widget.frame.keys(widget.id, widget.state)
         base_key, ox, oy = base_keys[0]  # Just unpack the first element
@@ -338,10 +370,10 @@ class Screen:
             return
 
         base_ptr, sx, sy, sw, sl = tex_data
-        
+
         # 1. Fetch and stamp clean background
         render.construct(tex, [(base_ptr, sx, sy, sw, sl, 0, 0, sw, sl, 1, 1)])
-        
+
         # 2. Re-write the font over the cleared canvas
         if isinstance(content, str) and content:
             font_key = widget.state.font
@@ -352,11 +384,11 @@ class Screen:
                 )
                 return
             render.write((tex, 0, 0, sw, sl, 0, 0, sw, sl), content, font)
-               
+
 
     def interface(self, menus: List[Menu], overlays: List[Menu]) -> None:
-        """       
-        Renders HUD overlays, dims the background if modal menus exist, 
+        """
+        Renders HUD overlays, dims the background if modal menus exist,
         and renders modal menus on top.
         """
         # 1. Render HUD / Overlays over the raw world
@@ -381,12 +413,14 @@ class Screen:
         back_tiles, fore_tiles = self._prerender(tiles, calendar)
         render.construct(self.bg_canvas, back_tiles)
         render.construct(self.fg_canvas, fore_tiles)
-        
-    def rebake(self, 
-        tiles: List[Asset], 
+
+
+    def rebake(
+        self,
+        tiles: List[Asset],
         boardsize: Dimensions,
         calendar: CalendarState,
-        screensize: Dimensions = None
+        screensize: Dimensions = None,
     ) -> None:
         if self.bg_canvas:
             render.destroy(self.bg_canvas)
@@ -416,18 +450,19 @@ class Screen:
         """
         logger.info(f"Dumping pre-constructed map textures (bg_canvas) to file system -> {out_path}")
         render.save(
-            out_path, 
-            self.boardsize.w, 
-            self.boardsize.l, 
-            target=self.bg_canvas
+            out_path,
+            self.boardsize.w,
+            self.boardsize.l,
+            target=self.bg_canvas,
         )
 
 
-    def export_render(self, 
-        out_path: str, 
-        assets: List[Asset], 
-        focus: Position, 
-        fdim: Dimensions
+    def export_render(
+        self,
+        out_path: str,
+        assets: List[Asset],
+        focus: Position,
+        fdim: Dimensions,
     ) -> None:
         """
         Draws a composited snapshot of the frame and extracts the VRAM buffer to disk.
@@ -435,9 +470,9 @@ class Screen:
         logger.info(f"Extracting VRAM view buffer representing full composition to file system -> {out_path}")
         self.draw(assets, focus, fdim)
         render.save(
-            out_path, 
-            self.screensize.w, 
-            self.screensize.l
+            out_path,
+            self.screensize.w,
+            self.screensize.l,
         )
 
 
@@ -447,53 +482,37 @@ class Screen:
         bypassing the viewport camera culling.
         """
         logger.info(f"Extracting full board VRAM view buffer to file system -> {out_path}")
-        active_assets = []
-        
-        # Height-sort the assets directly prior to querying asset.frame.keys()
-        assets.sort(key=self._sort)
+        pov = Position(x=0, y=0)
+        active_assets, active_channels = self._assemble(
+            assets,
+            pov,
+            self.boardsize,
+        )
 
-        for asset in assets:
-            if asset.category == AssetCategories.TILES.value: continue
-
-            frame_keys = asset.frame.keys(asset.id, asset.state)
-            for frame_key, ox, oy in frame_keys:
-                tex_data = self.registry.image(frame_key)
-                if not tex_data: continue 
-
-                tex, sx, sy, sw, sl = tex_data
-                dx, dy = asset.state.position.x + ox, asset.state.position.y + oy
-                dw, dl = sw, sl
-
-                if (dx + dw >= 0 and dx <= self.boardsize.w and
-                    dy + dl >= 0 and dy <= self.boardsize.l):
-                    active_assets.append((
-                        tex, 
-                        sx, sy, sw, sl, 
-                        dx, dy, dw, dl,
-                        255, 255, 255, 255
-                    ))
-        
         # 1. Allocate a temporary canvas matching the absolute board dimensions
         full_target = render.canvas(
-            self.boardsize.w, 
-            self.boardsize.l, 
-            opaque=True
+            self.boardsize.w,
+            self.boardsize.l,
+            opaque=True,
         )
 
         # 2. Render directly onto the transient target instead of the default viewport
         render.render(
-            self.bg_canvas, 
+            self.bg_canvas,
             self.fg_canvas,
-            active_assets, 
-            0, 
-            0, 
-            self.boardsize.w, 
+            active_assets,
+            pov.x,
+            pov.y,
+            self.boardsize.w,
             self.boardsize.l,
-            target=full_target # Invokes the Cython update
+            target=full_target,  # Invokes the Cython update
         )
-        
+
+        if active_channels:
+            render.channel(active_channels, pov.x, pov.y)
+
         # 3. Read the pixels strictly from the custom target
         render.save(out_path, self.boardsize.w, self.boardsize.l, target=full_target)
-        
+
         # 4. Explicitly free the GPU memory to prevent memory leaks
         render.destroy(full_target)

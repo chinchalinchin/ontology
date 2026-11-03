@@ -64,7 +64,7 @@ tools:
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: true
+      data: false
       filter: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
@@ -93,9 +93,9 @@ tools:
           - index.md
           # - 00-overview.md
           # - 01-assets.md
-          # - 02-sprites.md
-          - 03-compositions.md
-          # - 04-intentions.md
+          - 02-sprites.md
+          # - 03-compositions.md
+          - 04-intentions.md
           # - 05-mechanics.md
           - 06-widgets.md
           - 07-sounds.md
@@ -112,23 +112,22 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Application Core Components
+          - title: CLI
             scan:
-              app: [ core, component ]
-          - title: Application User Devices
+              workflows: [ cli ]
+          - title: Registry
             scan:
-              app: [ device ]
-          - title: Player Mechanic Implementation
+              app: [ library ]
+              workflows: [ rendering ]
+          - title: Logging
             scan:
-              app: [ mechanic ]
-              workflows: [ player ]
-          - title: Test Fixtures
-            scan:
-              test: [ fixtures ]
+              app: [ config ]
+              domain: [ system ]
+              workflows: [ telemetry ]
       data:
         properties: [ ]
         state: [  ]
-        configurations: [ plots ]
+        configurations: [  ]
         templates: [ ]
     # --------------------------------------------
     # -------------------------- PARAMETERS: SHELL
@@ -144,7 +143,7 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: '"workflow_player or app_device or app_core"'
+        marker: '"workflow_cli or workflow_rendering"'
         # scope: '**/test_{actuator,cartographer}.py'
       session:
         description: |

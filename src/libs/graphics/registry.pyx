@@ -1,6 +1,6 @@
 # cython: language_level=3
 """
-@domain.systems
+@domain.system
 @domain.graphics
 @app.library
 @workflow.rendering
@@ -346,10 +346,15 @@ cdef class Registry:
         self._textures.clear()
 
         for font_obj in list(self._fonts.values()):
-            if font_obj is not None and font_obj.ptr != NULL:
-                if TTF_WasInit():
-                    TTF_CloseFont(font_obj.ptr)
-                font_obj.ptr = NULL
+            if font_obj is not None:
+                if font_obj.ptr != NULL:
+                    if TTF_WasInit():
+                        TTF_CloseFont(font_obj.ptr)
+                    font_obj.ptr = NULL
+                if font_obj.outline_ptr != NULL:
+                    if TTF_WasInit():
+                        TTF_CloseFont(font_obj.outline_ptr)
+                    font_obj.outline_ptr = NULL
         self._fonts.clear()
 
         self._frames.clear()
