@@ -1,8 +1,0 @@
-actions:
-  - id: <spec-id>
-    data:
-      <action-key>:
-        count: Frame Count
-        directions:
-          <direction-key>:
-            row: Row Index

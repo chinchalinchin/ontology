@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#ontology-widgets" class="md-skip">
+        <a href="#ontology-docs-widgets" class="md-skip">
           Skip to content
         </a>
       
@@ -769,7 +769,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../10-emergence/" class="md-nav__link">
+      <a href="../10-emergence.md" class="md-nav__link">
         
   
   
@@ -796,7 +796,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../11-architecture/" class="md-nav__link">
+      <a href="../11-architecture.md" class="md-nav__link">
         
   
   
@@ -1505,7 +1505,7 @@
   
 
 
-<h1 id="ontology-widgets">Ontology: Widgets</h1>
+<h1 id="ontology-docs-widgets">Ontology Docs: Widgets</h1>
 <p>Widgets are a type of <a href="../01-assets/">Asset</a>; however, they reside outside of the core loop and have a special place in the application flow.</p>
 <h2 id="overview">Overview</h2>
 <p>Widgets are components of Menus. Or put another way, Menus are assembled from schemas of Widgets; the branches of this configuration are sometimes referred to as the <em>Menu Tree</em>. Like most Assets, Widgets have properties that configure their static attributes and state that describes their dynamic attributes. However, their state is not updated in concert with the game loop. Instead, Menus and Widgets are managed through the flow of Events.</p>
@@ -1530,7 +1530,7 @@
 </ul>
 <p>Widget selection does not emit a bus event. When <code>MenuMechanics</code> detects an <code>Interactions.SELECT</code> payload, it invokes <code>active_menu.controller.select(name, menu, board, bus)</code> synchronously. The controller executes domain logic and optionally registers <code>UpdateEvent</code> or <code>TerminalEvent</code> payloads on the bus.</p>
 <p><strong>Engine Bus &amp; Event Processing</strong></p>
-<p>The <a href="../00-overview/#engine">Engine</a> contains a <code>bus</code> field that accumulates Events emitted by the game loop. </p>
+<p>The <a href="../00-overview/#component-engine">Engine</a> contains a <code>bus</code> field that accumulates Events emitted by the game loop. </p>
 <p>During the Engine loop, it passes this bus down through the Mechanics. Mechanics then register events on this bus and MenuMechanics translates their input and passes it to a Controller, for example, a ScrollController. </p>
 <p>In this case, the ScrollController updates the content displayed on a Page Widget, determines the new text string, and pushes a UpdateEvent to the Engine's bus.</p>
 <p>At the end of the tick, before the rendering phase, the Engine drains its bus:</p>
@@ -1538,7 +1538,7 @@
 <li>If MenuEvent: The Engine pauses the Board, calls the Provider to instantiate the Menu, and pushes it to board.menus.</li>
 <li>If State Event: The Engine begins migrating state from the file system into the Board.</li>
 <li>If TerminalEvent: The Engine pops the Menu off the stack and unpauses the Board.</li>
-<li>If UpdateEvent: The Engine pulls the clean background and the font (e.g., <code>render.construct()</code> and <code>render.write()</code> <a href="../11-architecture/#cython">Cython interfaces</a>), and overwrites the Widget's TexturePtr in VRAM.</li>
+<li>If UpdateEvent: The Engine pulls the clean background and the font (e.g., <code>render.construct()</code> and <code>render.write()</code> <a href="../12-architecture/#cython">Cython interfaces</a>), and overwrites the Widget's TexturePtr in VRAM.</li>
 </ul>
 <p>Finally, the <a href="../00-overview/#screen">Screen</a> iterates over the Widgets and passes it to Cython. </p>
 <p><strong>MenuMechanics</strong></p>
@@ -1607,7 +1607,7 @@
 <li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <div class="admonition important">
-<p class="admonition-title">Important</p>
+<p class="admonition-title">Pane Layouts</p>
 <p>A Pane at runtime is just a background Asset with layout metadata. A Position has already been injected into from the Provider, after the Menu ScreenPositions have been unpacked into absolute coordinates.</p>
 </div>
 <h3 id="buttons">Buttons</h3>
@@ -1836,7 +1836,7 @@
 </ul>
 <h3 id="provider">Provider</h3>
 <p>The Provider, similiar to the <a href="../03-compositions/#decomposer">Decomposer</a>, is responsible for unpacking Menu configurations into flat lists of Assets for the Engine. However, unlike the Decomposer, the Provider must also generate a traversal graph, inject bindings into Widgets and pass the result to a Menu.</p>
-<p>To start, ScreenPosition is a <em>configuration-time</em> concept, not a <em>runtime</em> concept. When the Provider and Layout engine instantiate a Menu, they must calculate the absolute pixel values <code>(px * screensize.w, py * screensize.l)</code> and inject a Position into the Widget state. By flattening the Menu tree and translating all percentages to absolute <code>Positions</code>, <code>Screen.draw()</code> can consume Widgets exactly like world Assets, satisfying the <a href="../11-architecture/#cython">zero-allocation principle</a>.</p>
+<p>To start, ScreenPosition is a <em>configuration-time</em> concept, not a <em>runtime</em> concept. When the Provider and Layout engine instantiate a Menu, they must calculate the absolute pixel values <code>(px * screensize.w, py * screensize.l)</code> and inject a Position into the Widget state. By flattening the Menu tree and translating all percentages to absolute <code>Positions</code>, <code>Screen.draw()</code> can consume Widgets exactly like world Assets, satisfying the <a href="../12-architecture/#cython">zero-allocation principle</a>.</p>
 <h3 id="controllers">Controllers</h3>
 <p>Every Menu has a Controller that handles Menu-specific logic. </p>
 <p><strong>Selection Logic</strong></p>
@@ -1980,7 +1980,7 @@
 <p>The resultant graph is saved in <code>Menu.graph</code>.</p>
 <p>When the <a href="../05-mechanics/#core">MenuMechanics</a> <code>update()</code> method fires, it does not care about spatial layout. It simply looks at <code>focus</code> (e.g., <code>'a'</code>), checks the Device poll for a <code>EAST</code> command, looks up <code>graph['a'][EAST]</code>, and updates the focus to <code>'b'</code>. This entirely decouples Menu visual layout from Menu logical input.</p>
 <h3 id="overlays">Overlays</h3>
-<p>The <a href="../00-overview/#board">Board</a> maintains an <code>overlay</code> and <code>menus</code> field to separate the responsiblities of different Menus. </p>
+<p>The <a href="../00-overview/#component-board">Board</a> maintains an <code>overlay</code> and <code>menus</code> field to separate the responsiblities of different Menus. </p>
 <p>The HUD is always painted on top of all dynamic Assets; as such, it is stored in <code>overlays</code> and treated separately by the rendering loop. The <code>menus</code> field on the Board holds a mutable stack of Menus that are instantiated on the fly during the game loop. When a MenuEvent is emitted by game loop, it will cause the game to pause as a precondition for these Menus to be displayed. These differences are summarized below,</p>
 <ul>
 <li><code>board.menus: List[Menu]</code>: A LIFO stack for <em>Modal</em> interfaces (Inventory, Dialogue, Trade). When <code>len(board.menus) &gt; 0</code>, world mechanics are paused, and <code>MenuMechanics</code> intercepts device polling for traversal.</li>

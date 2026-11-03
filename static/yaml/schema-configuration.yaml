@@ -1,0 +1,2727 @@
+$defs:
+  Action:
+    properties:
+      count:
+        title: Count
+        type: integer
+      directions:
+        additionalProperties:
+          $ref: '#/$defs/Direction'
+        propertyNames:
+          $ref: '#/$defs/Directions'
+        title: Directions
+        type: object
+      delay:
+        default: 1
+        title: Delay
+        type: integer
+    required:
+    - count
+    - directions
+    title: Action
+    type: object
+  ActionConfiguration:
+    properties:
+      id:
+        title: Id
+        type: string
+      data:
+        additionalProperties:
+          $ref: '#/$defs/Action'
+        title: Data
+        type: object
+    required:
+    - id
+    - data
+    title: ActionConfiguration
+    type: object
+  Alignments:
+    enum:
+    - start
+    - end
+    - center
+    title: Alignments
+    type: string
+  AnimationRecipe:
+    enum:
+    - none
+    - state
+    - sprite
+    - meter
+    - traversal
+    - frequency
+    title: AnimationRecipe
+    type: string
+  AnimationState:
+    properties:
+      action:
+        default: walk
+        title: Action
+        type: string
+      direction:
+        default: down
+        title: Direction
+        type: string
+      frame:
+        default: 0
+        title: Frame
+        type: integer
+      tick:
+        default: 1
+        title: Tick
+        type: integer
+    title: AnimationState
+    type: object
+  AttachmentState:
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      icon:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Icon
+      ttl:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: 120
+        title: Ttl
+      offset:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Offset
+    required:
+    - id
+    title: AttachmentState
+    type: object
+  BlueprintPartition:
+    properties:
+      delta:
+        default: 1.0
+        title: Delta
+        type: number
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      obstacle:
+        default: false
+        title: Obstacle
+        type: boolean
+    title: BlueprintPartition
+    type: object
+  BlueprintSpace:
+    properties:
+      strategy:
+        $ref: '#/$defs/MultiplicationStrategies'
+        default: simple
+      partitions:
+        additionalProperties:
+          $ref: '#/$defs/BlueprintPartition'
+        title: Partitions
+        type: object
+    title: BlueprintSpace
+    type: object
+  Blueprints:
+    enum:
+    - buildings
+    - corridors
+    - columns
+    - directions
+    - enclosures
+    - orientations
+    - inclines
+    title: Blueprints
+    type: string
+  Branch:
+    properties:
+      position:
+        title: Position
+      source:
+        title: Source
+        type: string
+      flow:
+        title: Flow
+        type: integer
+      length:
+        default: 0
+        title: Length
+        type: integer
+      hitboxes:
+        items: {}
+        title: Hitboxes
+        type: array
+    required:
+    - position
+    - source
+    - flow
+    title: Branch
+    type: object
+  ButtonParameters:
+    description: State parameters for traversable interactive button widgets.
+    properties:
+      status:
+        $ref: '#/$defs/Statuses'
+        default: idle
+    title: ButtonParameters
+    type: object
+  CalendarState:
+    properties:
+      year:
+        default: 1
+        title: Year
+        type: integer
+      season:
+        default: spring
+        title: Season
+        type: string
+      cycle:
+        default: onset
+        title: Cycle
+        type: string
+      period:
+        default: 0
+        title: Period
+        type: integer
+      elapsed:
+        default: 0.0
+        title: Elapsed
+        type: number
+    title: CalendarState
+    type: object
+  Character:
+    properties:
+      strength:
+        default: 10
+        title: Strength
+        type: integer
+      defense:
+        default: 10
+        title: Defense
+        type: integer
+      speed:
+        default: 10
+        title: Speed
+        type: integer
+      impulse:
+        default: 10
+        title: Impulse
+        type: integer
+    title: Character
+    type: object
+  CollectableState:
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      position:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Position
+      animation:
+        $ref: '#/$defs/AnimationState'
+      active:
+        default: true
+        title: Active
+        type: boolean
+      lot:
+        $ref: '#/$defs/Lot'
+    required:
+    - id
+    title: CollectableState
+    type: object
+  CompositionConfiguration:
+    properties:
+      root:
+        $ref: '#/$defs/CompositionPseudoState'
+      branches:
+        anyOf:
+        - items:
+            $ref: '#/$defs/CompositionPseudoState'
+          type: array
+        - type: 'null'
+        title: Branches
+    required:
+    - root
+    title: CompositionConfiguration
+    type: object
+  CompositionPseudoState:
+    properties:
+      strut:
+        $ref: '#/$defs/PropertyState'
+      components:
+        $ref: '#/$defs/StateSchema'
+    required:
+    - strut
+    - components
+    title: CompositionPseudoState
+    type: object
+  ContainerState:
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      content:
+        anyOf:
+        - items:
+            type: string
+          type: array
+        - type: 'null'
+        title: Content
+      switch:
+        anyOf:
+        - type: boolean
+        - type: 'null'
+        default: false
+        title: Switch
+    required:
+    - id
+    title: ContainerState
+    type: object
+  CraftRecipe:
+    properties:
+      bridges:
+        $ref: '#/$defs/Recipe'
+        default: null
+      platforms:
+        $ref: '#/$defs/Recipe'
+        default: null
+      stairs:
+        $ref: '#/$defs/Recipe'
+        default: null
+      struts:
+        $ref: '#/$defs/Recipe'
+        default: null
+    title: CraftRecipe
+    type: object
+  CraftState:
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      position:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Position
+      material:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Material
+      blueprint:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Blueprint
+      multiple:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Multiple
+    required:
+    - id
+    title: CraftState
+    type: object
+  CraftStateInstances:
+    properties:
+      stairs:
+        items:
+          $ref: '#/$defs/StairState'
+        title: Stairs
+        type: array
+      struts:
+        items:
+          $ref: '#/$defs/CraftState'
+        title: Struts
+        type: array
+      bridges:
+        items:
+          $ref: '#/$defs/CraftState'
+        title: Bridges
+        type: array
+      platforms:
+        items:
+          $ref: '#/$defs/PlatformState'
+        title: Platforms
+        type: array
+    title: CraftStateInstances
+    type: object
+  CursorRecipe:
+    properties:
+      expressions:
+        $ref: '#/$defs/Recipe'
+        default: null
+      projectiles:
+        $ref: '#/$defs/Recipe'
+        default: null
+    title: CursorRecipe
+    type: object
+  CursorStateInstances:
+    properties:
+      expressions:
+        items:
+          $ref: '#/$defs/AttachmentState'
+        title: Expressions
+        type: array
+      projectiles:
+        items:
+          $ref: '#/$defs/MotorState'
+        title: Projectiles
+        type: array
+    title: CursorStateInstances
+    type: object
+  Damage:
+    properties:
+      amount:
+        default: 0
+        title: Amount
+        type: integer
+      duration:
+        default: 0
+        title: Duration
+        type: integer
+      reaction:
+        $ref: '#/$defs/Reactions'
+        default: bounce
+    title: Damage
+    type: object
+  DeviceMapping:
+    properties:
+      world:
+        $ref: '#/$defs/WorldMapping'
+      menu:
+        $ref: '#/$defs/MenuMapping'
+    required:
+    - world
+    - menu
+    title: DeviceMapping
+    type: object
+  DialogueState:
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      persona:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Persona
+      lexicon:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Lexicon
+    required:
+    - id
+    title: DialogueState
+    type: object
+  Direction:
+    properties:
+      row:
+        title: Row
+        type: integer
+    required:
+    - row
+    title: Direction
+    type: object
+  Directions:
+    enum:
+    - up
+    - left
+    - down
+    - right
+    title: Directions
+    type: string
+  DoorState:
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      out:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Out
+      outlayer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Outlayer
+      projection:
+        default: in
+        title: Projection
+        type: string
+    required:
+    - id
+    title: DoorState
+    type: object
+  EffectRecipe:
+    properties:
+      hazards:
+        $ref: '#/$defs/Recipe'
+        default: null
+      passive:
+        $ref: '#/$defs/Recipe'
+        default: null
+      collectables:
+        $ref: '#/$defs/Recipe'
+        default: null
+      reactables:
+        $ref: '#/$defs/Recipe'
+        default: null
+      fluids:
+        $ref: '#/$defs/Recipe'
+        default: null
+    title: EffectRecipe
+    type: object
+  EffectState:
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      position:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Position
+      animation:
+        $ref: '#/$defs/AnimationState'
+      active:
+        default: true
+        title: Active
+        type: boolean
+    required:
+    - id
+    title: EffectState
+    type: object
+  EffectStateInstances:
+    properties:
+      hazards:
+        items:
+          $ref: '#/$defs/HazardState'
+        title: Hazards
+        type: array
+      passive:
+        items:
+          $ref: '#/$defs/EffectState'
+        title: Passive
+        type: array
+      collectables:
+        items:
+          $ref: '#/$defs/CollectableState'
+        title: Collectables
+        type: array
+      reactables:
+        items:
+          $ref: '#/$defs/ReactableState'
+        title: Reactables
+        type: array
+      fluids:
+        items:
+          $ref: '#/$defs/FluidState'
+        title: Fluids
+        type: array
+    title: EffectStateInstances
+    type: object
+  Equipment:
+    properties:
+      armor:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Armor
+      weapon:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Weapon
+      tool:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Tool
+      utility:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Utility
+      shield:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Shield
+    title: Equipment
+    type: object
+  FearParameters:
+    properties:
+      radius:
+        default: 30
+        title: Radius
+        type: integer
+      limit:
+        default: 0.5
+        title: Limit
+        type: number
+      enemy:
+        default: 5
+        title: Enemy
+        type: integer
+    title: FearParameters
+    type: object
+  FluidState:
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      position:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Position
+      animation:
+        $ref: '#/$defs/AnimationState'
+      active:
+        default: true
+        title: Active
+        type: boolean
+      length:
+        default: 0
+        title: Length
+        type: integer
+      pool:
+        anyOf:
+        - $ref: '#/$defs/Pool'
+        - type: 'null'
+        default: null
+      branches:
+        items:
+          $ref: '#/$defs/Branch'
+        title: Branches
+        type: array
+      hitboxes:
+        items: {}
+        title: Hitboxes
+        type: array
+      dirty:
+        default: true
+        title: Dirty
+        type: boolean
+      flow:
+        default: 1
+        title: Flow
+        type: integer
+      source:
+        $ref: '#/$defs/Directions'
+        default: down
+      _keys:
+        additionalProperties:
+          items:
+            maxItems: 3
+            minItems: 3
+            prefixItems:
+            - type: string
+            - type: integer
+            - type: integer
+            type: array
+          type: array
+        title: Keys
+        type: object
+    required:
+    - id
+    title: FluidState
+    type: object
+  FrameRecipe:
+    enum:
+    - binary
+    - cardinal
+    - directed
+    - fluid
+    - index
+    - iterable
+    - material
+    - meter
+    - none
+    - object
+    - oriented
+    - single
+    - seasonal
+    - sprite
+    - stage
+    - state
+    - traversal
+    title: FrameRecipe
+    type: string
+  GeographyRecipe:
+    properties:
+      shorelines:
+        $ref: '#/$defs/Recipe'
+        default: null
+    title: GeographyRecipe
+    type: object
+  GizmoParameters:
+    description: Macro expansion configuration for virtual collection gizmos.
+    properties:
+      capacity:
+        title: Capacity
+        type: integer
+      columns:
+        title: Columns
+        type: integer
+      pane:
+        title: Pane
+        type: string
+      button:
+        title: Button
+        type: string
+      gap:
+        default: 5
+        title: Gap
+        type: integer
+    required:
+    - capacity
+    - columns
+    - pane
+    - button
+    title: GizmoParameters
+    type: object
+  Goal:
+    properties:
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      category:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Category
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      position:
+        anyOf:
+        - {}
+        - type: 'null'
+        title: Position
+    title: Goal
+    type: object
+  HazardState:
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      position:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Position
+      animation:
+        $ref: '#/$defs/AnimationState'
+      active:
+        default: true
+        title: Active
+        type: boolean
+      damage:
+        $ref: '#/$defs/Damage'
+    required:
+    - id
+    title: HazardState
+    type: object
+  HitboxRecipe:
+    enum:
+    - attack
+    - directed
+    - dynamic
+    - elevated
+    - layered
+    - material
+    - none
+    - oriented
+    - stage
+    - static
+    - switch
+    title: HitboxRecipe
+    type: string
+  IntentionConfiguration:
+    description: '    '
+    properties:
+      next:
+        title: Next
+        type: string
+      conditions:
+        items:
+          type: string
+        title: Conditions
+        type: array
+    required:
+    - next
+    title: IntentionConfiguration
+    type: object
+  Intentions:
+    enum:
+    - attack
+    - attract
+    - barter
+    - build
+    - escape
+    - find
+    - follow
+    - hunt
+    - idle
+    - interact
+    - mine
+    - mock
+    - return
+    - scavenge
+    - speak
+    - sprint
+    - threaten
+    - wander
+    title: Intentions
+    type: string
+  Interactions:
+    enum:
+    - select
+    - cancel
+    - pause
+    title: Interactions
+    type: string
+  Inventories:
+    enum:
+    - equipment
+    - pouch
+    - pack
+    - wallet
+    title: Inventories
+    type: string
+  Inventory:
+    properties:
+      pack:
+        anyOf:
+        - additionalProperties:
+            type: integer
+          type: object
+        - type: 'null'
+        title: Pack
+      pouch:
+        anyOf:
+        - additionalProperties:
+            type: integer
+          type: object
+        - type: 'null'
+        title: Pouch
+      equipment:
+        anyOf:
+        - $ref: '#/$defs/Equipment'
+        - type: 'null'
+      wallet:
+        default: 0
+        title: Wallet
+        type: integer
+    title: Inventory
+    type: object
+  Layouts:
+    enum:
+    - dock
+    - stack
+    - overlay
+    title: Layouts
+    type: string
+  Lot:
+    properties:
+      inventory:
+        $ref: '#/$defs/Inventories'
+        default: equipment
+      item:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Item
+      quantity:
+        default: 0
+        title: Quantity
+        type: integer
+    title: Lot
+    type: object
+  MappingConfiguration:
+    properties:
+      keyboard:
+        $ref: '#/$defs/DeviceMapping'
+      controller:
+        $ref: '#/$defs/DeviceMapping'
+        default: null
+    required:
+    - keyboard
+    title: MappingConfiguration
+    type: object
+  MaterialSpace:
+    properties:
+      host:
+        items:
+          $ref: '#/$defs/Materials'
+        title: Host
+        type: array
+      partitions:
+        additionalProperties:
+          type: number
+        title: Partitions
+        type: object
+    title: MaterialSpace
+    type: object
+  Materials:
+    enum:
+    - ceramics
+    - chromatics
+    - organics
+    - geologics
+    - metallics
+    title: Materials
+    type: string
+  MaterialsConfiguration:
+    properties:
+      genera:
+        additionalProperties:
+          $ref: '#/$defs/MaterialSpace'
+        propertyNames:
+          $ref: '#/$defs/Materials'
+        title: Genera
+        type: object
+      blueprints:
+        additionalProperties:
+          $ref: '#/$defs/BlueprintSpace'
+        propertyNames:
+          $ref: '#/$defs/Blueprints'
+        title: Blueprints
+        type: object
+      substrates:
+        additionalProperties:
+          type: integer
+        title: Substrates
+        type: object
+    title: MaterialsConfiguration
+    type: object
+  MechanicsConfiguration:
+    properties:
+      core:
+        items:
+          $ref: '#/$defs/MechanicsInstance'
+        title: Core
+        type: array
+      world:
+        items:
+          $ref: '#/$defs/MechanicsInstance'
+        title: World
+        type: array
+    title: MechanicsConfiguration
+    type: object
+  MechanicsInstance:
+    properties:
+      key:
+        title: Key
+        type: string
+      executors:
+        items:
+          type: string
+        title: Executors
+        type: array
+      relations:
+        items:
+          type: string
+        title: Relations
+        type: array
+    required:
+    - key
+    title: MechanicsInstance
+    type: object
+  Memory:
+    properties:
+      goals:
+        anyOf:
+        - additionalProperties:
+            $ref: '#/$defs/Goal'
+          type: object
+        - type: 'null'
+        title: Goals
+      rumors:
+        anyOf:
+        - items:
+            type: string
+          type: array
+        - type: 'null'
+        default: null
+        title: Rumors
+      prices:
+        anyOf:
+        - additionalProperties:
+            type: number
+          type: object
+        - type: 'null'
+        default: null
+        title: Prices
+      relationships:
+        anyOf:
+        - additionalProperties:
+            $ref: '#/$defs/Relationships'
+          type: object
+        - type: 'null'
+        default: null
+        title: Relationships
+      property:
+        anyOf:
+        - additionalProperties: true
+          type: object
+        - type: 'null'
+        default: null
+        title: Property
+      sprites:
+        anyOf:
+        - additionalProperties: true
+          type: object
+        - type: 'null'
+        default: null
+        title: Sprites
+      doors:
+        anyOf:
+        - additionalProperties:
+            type: string
+          type: object
+        - type: 'null'
+        default: null
+        title: Doors
+    title: Memory
+    type: object
+  MenuBinding:
+    description: Associates UI controls or panes with runtime context paths or commands.
+    properties:
+      schema:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Schema
+      target:
+        anyOf:
+        - type: string
+        - additionalProperties:
+            type: string
+          type: object
+        - type: 'null'
+        default: null
+        title: Target
+    title: MenuBinding
+    type: object
+  MenuConfiguration:
+    description: Root menu configuration containing high-level controller and node
+      hierarchy.
+    properties:
+      controller:
+        title: Controller
+        type: string
+      roots:
+        items:
+          $ref: '#/$defs/MenuNode'
+        title: Roots
+        type: array
+    required:
+    - controller
+    - roots
+    title: MenuConfiguration
+    type: object
+  MenuMapping:
+    properties:
+      traversal:
+        additionalProperties:
+          type: integer
+        propertyNames:
+          $ref: '#/$defs/Traversal'
+        title: Traversal
+        type: object
+      interactions:
+        additionalProperties:
+          type: integer
+        propertyNames:
+          $ref: '#/$defs/Interactions'
+        title: Interactions
+        type: object
+    title: MenuMapping
+    type: object
+  MenuNode:
+    description: Unified AST node representing panes, widgets, and virtual macro gizmos.
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        title: Name
+        type: string
+      instance:
+        title: Instance
+        type: string
+      bind:
+        anyOf:
+        - $ref: '#/$defs/MenuBinding'
+        - type: 'null'
+        default: null
+      parameters:
+        anyOf:
+        - $ref: '#/$defs/PaneParameters'
+        - $ref: '#/$defs/GizmoParameters'
+        - $ref: '#/$defs/ButtonParameters'
+        - type: 'null'
+        default: null
+        title: Parameters
+    required:
+    - id
+    - name
+    - instance
+    title: MenuNode
+    type: object
+  Menus:
+    enum:
+    - dialogue
+    - inventory
+    - load
+    - main
+    - options
+    - pause
+    - text
+    - trade
+    - view
+    title: Menus
+    type: string
+  Meter:
+    properties:
+      current:
+        default: 100
+        title: Current
+        type: integer
+      maximum:
+        default: 100
+        title: Maximum
+        type: integer
+    title: Meter
+    type: object
+  Meters:
+    properties:
+      health:
+        $ref: '#/$defs/Meter'
+      magic:
+        $ref: '#/$defs/Meter'
+    title: Meters
+    type: object
+  MotiveState:
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      velocity:
+        anyOf:
+        - {}
+        - type: 'null'
+        title: Velocity
+    required:
+    - id
+    title: MotiveState
+    type: object
+  MotorState:
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      position:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Position
+      initial:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Initial
+      direction:
+        $ref: '#/$defs/Directions'
+        default: down
+      speed:
+        default: 10
+        title: Speed
+        type: integer
+      velocity:
+        anyOf:
+        - {}
+        - type: 'null'
+        title: Velocity
+    required:
+    - id
+    title: MotorState
+    type: object
+  MultiplicationStrategies:
+    enum:
+    - simple
+    - expansion
+    - oriented
+    - perimeter
+    title: MultiplicationStrategies
+    type: string
+  MultiplierState:
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      position:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Position
+      multiple:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Multiple
+    required:
+    - id
+    title: MultiplierState
+    type: object
+  MutatorParameters:
+    properties:
+      fear:
+        anyOf:
+        - $ref: '#/$defs/FearParameters'
+        - type: 'null'
+      vision:
+        anyOf:
+        - $ref: '#/$defs/RadialParameters'
+        - type: 'null'
+      action:
+        anyOf:
+        - $ref: '#/$defs/RadialParameters'
+        - type: 'null'
+      squeeze:
+        anyOf:
+        - $ref: '#/$defs/RadialParameters'
+        - type: 'null'
+    title: MutatorParameters
+    type: object
+  MutatorTriggers:
+    properties:
+      animated:
+        default: false
+        title: Animated
+        type: boolean
+      frightened:
+        default: false
+        title: Frightened
+        type: boolean
+      dead:
+        default: false
+        title: Dead
+        type: boolean
+      vision:
+        default: false
+        title: Vision
+        type: boolean
+      submerged:
+        default: false
+        title: Submerged
+        type: boolean
+    title: MutatorTriggers
+    type: object
+  Mutators:
+    properties:
+      triggers:
+        $ref: '#/$defs/MutatorTriggers'
+      parameters:
+        anyOf:
+        - $ref: '#/$defs/MutatorParameters'
+        - type: 'null'
+        default: null
+    title: Mutators
+    type: object
+  ObjectRecipe:
+    properties:
+      chests:
+        $ref: '#/$defs/Recipe'
+        default: null
+      crates:
+        $ref: '#/$defs/Recipe'
+        default: null
+      doors:
+        $ref: '#/$defs/Recipe'
+        default: null
+      gates:
+        $ref: '#/$defs/Recipe'
+        default: null
+      obstacles:
+        $ref: '#/$defs/Recipe'
+        default: null
+      plates:
+        $ref: '#/$defs/Recipe'
+        default: null
+      signs:
+        $ref: '#/$defs/Recipe'
+        default: null
+    title: ObjectRecipe
+    type: object
+  ObjectStateInstances:
+    properties:
+      chests:
+        items:
+          $ref: '#/$defs/ContainerState'
+        title: Chests
+        type: array
+      crates:
+        items:
+          $ref: '#/$defs/MotiveState'
+        title: Crates
+        type: array
+      doors:
+        items:
+          $ref: '#/$defs/DoorState'
+        title: Doors
+        type: array
+      gates:
+        items:
+          $ref: '#/$defs/SwitchState'
+        title: Gates
+        type: array
+      obstacles:
+        items:
+          $ref: '#/$defs/MotiveState'
+        title: Obstacles
+        type: array
+      plates:
+        items:
+          $ref: '#/$defs/SwitchState'
+        title: Plates
+        type: array
+      signs:
+        items:
+          $ref: '#/$defs/DialogueState'
+        title: Signs
+        type: array
+      rafts:
+        items:
+          $ref: '#/$defs/MotiveState'
+        title: Rafts
+        type: array
+    title: ObjectStateInstances
+    type: object
+  PaneParameters:
+    description: Structural and spatial layout parameters for container panes.
+    properties:
+      layout:
+        $ref: '#/$defs/Layouts'
+        default: stack
+      alignment:
+        $ref: '#/$defs/Alignments'
+        default: start
+      gap:
+        default: 0
+        title: Gap
+        type: integer
+      margins:
+        default: 0
+        title: Margins
+        type: integer
+      position:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Position
+      dimensions:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Dimensions
+      font:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Font
+      children:
+        items:
+          $ref: '#/$defs/MenuNode'
+        title: Children
+        type: array
+    title: PaneParameters
+    type: object
+  PlatformState:
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        default: 0
+        title: Elevation
+        type: integer
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      position:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Position
+      material:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Material
+      blueprint:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Blueprint
+      multiple:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Multiple
+      owner:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Owner
+    required:
+    - id
+    title: PlatformState
+    type: object
+  PlayerGoals:
+    enum:
+    - up
+    - left
+    - down
+    - right
+    title: PlayerGoals
+    type: string
+  PlayerState:
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      position:
+        anyOf:
+        - {}
+        - type: 'null'
+        title: Position
+      character:
+        anyOf:
+        - $ref: '#/$defs/Character'
+        - type: 'null'
+      inventory:
+        anyOf:
+        - $ref: '#/$defs/Inventory'
+        - type: 'null'
+      meters:
+        anyOf:
+        - $ref: '#/$defs/Meters'
+        - type: 'null'
+      goal:
+        anyOf:
+        - $ref: '#/$defs/Goal'
+        - type: 'null'
+      intention:
+        anyOf:
+        - $ref: '#/$defs/Intentions'
+        - type: 'null'
+        default: idle
+      velocity:
+        anyOf:
+        - {}
+        - type: 'null'
+        title: Velocity
+      animation:
+        $ref: '#/$defs/AnimationState'
+    required:
+    - id
+    title: PlayerState
+    type: object
+  PlotConfiguration:
+    description: '    '
+    properties:
+      next:
+        title: Next
+        type: string
+      conditions:
+        items:
+          type: string
+        title: Conditions
+        type: array
+    required:
+    - next
+    title: PlotConfiguration
+    type: object
+  PlotState:
+    properties:
+      current:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Current
+      previous:
+        items:
+          type: string
+        title: Previous
+        type: array
+    title: PlotState
+    type: object
+  Pool:
+    properties:
+      x:
+        title: X
+        type: integer
+      y:
+        title: Y
+        type: integer
+      w:
+        title: W
+        type: integer
+      l:
+        title: L
+        type: integer
+    required:
+    - x
+    - y
+    - w
+    - l
+    title: Pool
+    type: object
+  PropertyState:
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      position:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Position
+      material:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Material
+      blueprint:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Blueprint
+      multiple:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Multiple
+      owner:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Owner
+    required:
+    - id
+    title: PropertyState
+    type: object
+  Psyche:
+    properties:
+      persona:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Persona
+      motivation:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Motivation
+      expression:
+        anyOf:
+        - $ref: '#/$defs/AttachmentState'
+        - type: 'null'
+        default: null
+      dialogue:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Dialogue
+    title: Psyche
+    type: object
+  RadialParameters:
+    properties:
+      radius:
+        default: 30
+        title: Radius
+        type: integer
+    title: RadialParameters
+    type: object
+  ReactableState:
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      position:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Position
+      animation:
+        $ref: '#/$defs/AnimationState'
+      active:
+        default: false
+        title: Active
+        type: boolean
+      intention:
+        default: interact
+        title: Intention
+        type: string
+      cooldown:
+        default: 60
+        title: Cooldown
+        type: integer
+    required:
+    - id
+    title: ReactableState
+    type: object
+  Reactions:
+    enum:
+    - bounce
+    - hinder
+    title: Reactions
+    type: string
+  Recipe:
+    properties:
+      frame:
+        $ref: '#/$defs/FrameRecipe'
+        default: null
+      animation:
+        $ref: '#/$defs/AnimationRecipe'
+        default: null
+      hitbox:
+        anyOf:
+        - $ref: '#/$defs/HitboxRecipe'
+        - type: 'null'
+        default: static
+    title: Recipe
+    type: object
+  RecipeConfiguration:
+    description: '    '
+    properties:
+      tiles:
+        $ref: '#/$defs/TileRecipe'
+        default: null
+      crafts:
+        $ref: '#/$defs/CraftRecipe'
+        default: null
+      cursors:
+        $ref: '#/$defs/CursorRecipe'
+        default: null
+      effects:
+        $ref: '#/$defs/EffectRecipe'
+        default: null
+      geography:
+        $ref: '#/$defs/GeographyRecipe'
+        default: null
+      objects:
+        $ref: '#/$defs/ObjectRecipe'
+        default: null
+      sheets:
+        $ref: '#/$defs/SheetRecipe'
+        default: null
+      resources:
+        $ref: '#/$defs/ResourceRecipe'
+        default: null
+      widgets:
+        $ref: '#/$defs/WidgetRecipe'
+        default: null
+    title: RecipeConfiguration
+    type: object
+  Relationships:
+    enum:
+    - family
+    - foe
+    - friend
+    - stranger
+    title: Relationships
+    type: string
+  ResourceRecipe:
+    properties:
+      crops:
+        $ref: '#/$defs/Recipe'
+        default: null
+      ore:
+        $ref: '#/$defs/Recipe'
+        default: null
+      trees:
+        $ref: '#/$defs/Recipe'
+        default: null
+    title: ResourceRecipe
+    type: object
+  ResourceState:
+    description: Unified state representation for Resource entities across all lifespans.
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      stage:
+        default: stump
+        title: Stage
+        type: string
+      position:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Position
+      retention:
+        default: 0.0
+        title: Retention
+        type: number
+      moisture_flux:
+        default: 0.0
+        title: Moisture Flux
+        type: number
+      harvested:
+        default: false
+        title: Harvested
+        type: boolean
+    required:
+    - id
+    title: ResourceState
+    type: object
+  ResourceStateInstances:
+    properties:
+      crops:
+        items:
+          $ref: '#/$defs/ResourceState'
+        title: Crops
+        type: array
+      ore:
+        items:
+          $ref: '#/$defs/ResourceState'
+        title: Ore
+        type: array
+      trees:
+        items:
+          $ref: '#/$defs/ResourceState'
+        title: Trees
+        type: array
+    title: ResourceStateInstances
+    type: object
+  SheetRecipe:
+    properties:
+      pixies:
+        $ref: '#/$defs/Recipe'
+        default: null
+      sprites:
+        $ref: '#/$defs/Recipe'
+        default: null
+      players:
+        $ref: '#/$defs/Recipe'
+        default: null
+      weapons:
+        $ref: '#/$defs/Recipe'
+        default: null
+      utilities:
+        $ref: '#/$defs/Recipe'
+        default: null
+      armor:
+        $ref: '#/$defs/Recipe'
+        default: null
+      tools:
+        $ref: '#/$defs/Recipe'
+        default: null
+      shields:
+        $ref: '#/$defs/Recipe'
+        default: null
+    title: SheetRecipe
+    type: object
+  SheetStateInstances:
+    properties:
+      sprites:
+        items:
+          $ref: '#/$defs/SpriteState'
+        title: Sprites
+        type: array
+      players:
+        items:
+          $ref: '#/$defs/PlayerState'
+        title: Players
+        type: array
+    title: SheetStateInstances
+    type: object
+  SpriteState:
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      intention:
+        anyOf:
+        - $ref: '#/$defs/Intentions'
+        - type: 'null'
+        default: null
+      goal:
+        anyOf:
+        - $ref: '#/$defs/Goal'
+        - type: 'null'
+      position:
+        anyOf:
+        - {}
+        - type: 'null'
+        title: Position
+      character:
+        anyOf:
+        - $ref: '#/$defs/Character'
+        - type: 'null'
+      inventory:
+        anyOf:
+        - $ref: '#/$defs/Inventory'
+        - type: 'null'
+      meters:
+        anyOf:
+        - $ref: '#/$defs/Meters'
+        - type: 'null'
+      memory:
+        anyOf:
+        - $ref: '#/$defs/Memory'
+        - type: 'null'
+      psyche:
+        anyOf:
+        - $ref: '#/$defs/Psyche'
+        - type: 'null'
+      velocity:
+        anyOf:
+        - {}
+        - type: 'null'
+        title: Velocity
+      animation:
+        $ref: '#/$defs/AnimationState'
+      trajectory:
+        $ref: '#/$defs/Trajectory'
+    required:
+    - id
+    title: SpriteState
+    type: object
+  StageConfiguration:
+    properties:
+      next:
+        title: Next
+        type: string
+      conditions:
+        items:
+          type: string
+        title: Conditions
+        type: array
+      phase:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Phase
+    required:
+    - next
+    title: StageConfiguration
+    type: object
+  StairState:
+    description: 'State representation for walkable incline transitions.
+
+      Inherits material, blueprint (''up'', ''left'', ''right''), and multiple from
+      CraftState.'
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      position:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Position
+      material:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Material
+      blueprint:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Blueprint
+      multiple:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Multiple
+      delta:
+        default: 1
+        title: Delta
+        type: integer
+    required:
+    - id
+    title: StairState
+    type: object
+  StateSchema:
+    properties:
+      crafts:
+        $ref: '#/$defs/CraftStateInstances'
+      cursors:
+        $ref: '#/$defs/CursorStateInstances'
+      effects:
+        $ref: '#/$defs/EffectStateInstances'
+      objects:
+        $ref: '#/$defs/ObjectStateInstances'
+      resources:
+        $ref: '#/$defs/ResourceStateInstances'
+      sheets:
+        $ref: '#/$defs/SheetStateInstances'
+      tiles:
+        $ref: '#/$defs/TileStateInstances'
+      compositions:
+        items:
+          $ref: '#/$defs/PropertyState'
+        title: Compositions
+        type: array
+      plots:
+        $ref: '#/$defs/PlotState'
+      calendar:
+        $ref: '#/$defs/CalendarState'
+    title: StateSchema
+    type: object
+  Statuses:
+    enum:
+    - active
+    - idle
+    - selected
+    - disabled
+    title: Statuses
+    type: string
+  SwitchState:
+    properties:
+      id:
+        title: Id
+        type: string
+      name:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Name
+      layer:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Layer
+      elevation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Elevation
+      anchor:
+        anyOf:
+        - type: integer
+        - type: string
+        default: 0
+        title: Anchor
+      substrate:
+        default: 0
+        title: Substrate
+        type: integer
+      mutators:
+        $ref: '#/$defs/Mutators'
+      link:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Link
+      switch:
+        anyOf:
+        - type: boolean
+        - type: 'null'
+        default: false
+        title: Switch
+    required:
+    - id
+    title: SwitchState
+    type: object
+  TileRecipe:
+    properties:
+      canopy:
+        $ref: '#/$defs/Recipe'
+        default: null
+      environ:
+        $ref: '#/$defs/Recipe'
+        default: null
+      grid:
+        $ref: '#/$defs/Recipe'
+        default: null
+    title: TileRecipe
+    type: object
+  TileStateInstances:
+    properties:
+      environ:
+        items:
+          $ref: '#/$defs/MultiplierState'
+        title: Environ
+        type: array
+      canopy:
+        items:
+          $ref: '#/$defs/MultiplierState'
+        title: Canopy
+        type: array
+      grid:
+        items:
+          $ref: '#/$defs/MultiplierState'
+        title: Grid
+        type: array
+    title: TileStateInstances
+    type: object
+  Trajectory:
+    properties:
+      target:
+        anyOf:
+        - {}
+        - type: 'null'
+        default: null
+        title: Target
+      vertices:
+        items: {}
+        title: Vertices
+        type: array
+      stalled:
+        default: false
+        title: Stalled
+        type: boolean
+      cooldown:
+        default: 0
+        title: Cooldown
+        type: integer
+    title: Trajectory
+    type: object
+  Traversal:
+    enum:
+    - north
+    - south
+    - east
+    - west
+    title: Traversal
+    type: string
+  WidgetRecipe:
+    properties:
+      buttons:
+        $ref: '#/$defs/Recipe'
+        default: null
+      icons:
+        $ref: '#/$defs/Recipe'
+        default: null
+      meters:
+        $ref: '#/$defs/Recipe'
+        default: null
+      pages:
+        $ref: '#/$defs/Recipe'
+        default: null
+      panes:
+        $ref: '#/$defs/Recipe'
+        default: null
+    title: WidgetRecipe
+    type: object
+  WorldMapping:
+    properties:
+      menus:
+        additionalProperties:
+          type: integer
+        propertyNames:
+          $ref: '#/$defs/Menus'
+        title: Menus
+        type: object
+      intentions:
+        additionalProperties:
+          type: integer
+        propertyNames:
+          $ref: '#/$defs/Intentions'
+        title: Intentions
+        type: object
+      goals:
+        additionalProperties:
+          type: integer
+        propertyNames:
+          $ref: '#/$defs/PlayerGoals'
+        title: Goals
+        type: object
+    title: WorldMapping
+    type: object
+properties:
+  actions:
+    items:
+      $ref: '#/$defs/ActionConfiguration'
+    title: Actions
+    type: array
+  compositions:
+    additionalProperties:
+      $ref: '#/$defs/CompositionConfiguration'
+    title: Compositions
+    type: object
+  intentions:
+    additionalProperties:
+      items:
+        $ref: '#/$defs/IntentionConfiguration'
+      type: array
+    propertyNames:
+      $ref: '#/$defs/Intentions'
+    title: Intentions
+    type: object
+  library:
+    additionalProperties:
+      additionalProperties:
+        additionalProperties:
+          type: string
+        type: object
+      type: object
+    title: Library
+    type: object
+  mappings:
+    $ref: '#/$defs/MappingConfiguration'
+  materials:
+    $ref: '#/$defs/MaterialsConfiguration'
+  mechanics:
+    $ref: '#/$defs/MechanicsConfiguration'
+  plots:
+    additionalProperties:
+      items:
+        $ref: '#/$defs/PlotConfiguration'
+      type: array
+    title: Plots
+    type: object
+  stages:
+    additionalProperties:
+      additionalProperties:
+        items:
+          $ref: '#/$defs/StageConfiguration'
+        type: array
+      type: object
+    title: Stages
+    type: object
+  recipes:
+    $ref: '#/$defs/RecipeConfiguration'
+  menus:
+    additionalProperties:
+      $ref: '#/$defs/MenuConfiguration'
+    title: Menus
+    type: object
+title: ConfigurationSchema
+type: object
