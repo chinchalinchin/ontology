@@ -62,7 +62,7 @@ jobs:
       - name: generate-schemas
         run: |
           mkdir -p docs/static/yaml
-          PYTHONPATH=src uv run python src/cli.py schema --target all --format yaml --out docs/static/yaml
+          PYTHONPATH=src uv run python src/main.py schema --target all --format yaml --out docs/static/yaml
 
       - name: generate-profile
         run: |
