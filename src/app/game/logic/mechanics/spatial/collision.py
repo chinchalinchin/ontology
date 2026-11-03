@@ -5,7 +5,6 @@
 @category.crafts
 @category.objects
 @category.sheets
-@physics.motion
 @physics.space
 @workflow.collisions
 

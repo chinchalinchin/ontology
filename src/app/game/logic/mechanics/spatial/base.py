@@ -3,7 +3,6 @@
 @domain.logic
 @app.base
 @app.mechanic
-@physics.motion
 @physics.space
 @workflow.collisions
 @workflow.combat

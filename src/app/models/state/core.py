@@ -47,6 +47,7 @@ class MutatorTriggers:
     dead: bool = False
     vision: bool = False
     submerged: bool = False
+    falling: bool = False
 
 @dataclass(slots=True)
 class MutatorParameters:
@@ -54,6 +55,7 @@ class MutatorParameters:
     vision: Optional[RadialParameters] = field(default_factory=RadialParameters)
     action: Optional[RadialParameters] = field(default_factory=RadialParameters)
     squeeze: Optional[RadialParameters] = field(default_factory=RadialParameters)
+    descension: Optional[float] = 0.0
     
 @dataclass(slots=True)
 class Mutators:

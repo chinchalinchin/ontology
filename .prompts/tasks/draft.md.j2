@@ -1,20 +1,19 @@
-# Task - Ontology: Finite Automaton Analysis
+# Task - Ontology: Backlog Grooming
 
-Analyze this finite automaton. How would one go about formalizing its regular lanaguage? How would it be classified in terms of the automata discussed? Are there any general theorems that can be applied to the automaton to deduce its properties? 
+Use the previous analysis to adjust Refactor Phase 07.03 where necessary, using the [Backlog Template](#template-backlog) as a guide. Do not implement anything; instead step back and examine the big picture. Focus on the logical flow of the application. Suggest improvements, if applicable. Discuss what needs modified in the task backlog, if changes are required. Ensure tasking aligns with architecture. Break everything down, step-by-step.
 
-I am concerned about the consistency of the automata, as its propositional capacity is quite rich. Sprites are complex data structures, and the assertions being made of them in the automata conditions are hard to analyze from the perspective of "stable" automata loops.
+**Constraint: Ignore Combat**
 
+Ignore Attackbox as there is a concurrent Phase ongoing to address deficiencies in CombatMechanics and hitbox resolution therein.
 
-## Automaton: Visualizations
+{% include 'blocks/controls/guideline-design.md' %}
 
-**docs/static/mmd/executor-intention-transitions.mmd**
+{% include 'blocks/controls/guideline-models.md' %}
 
-```mermaid
-{{ file(properties.paths.root + 'docs/static/mmd/executor-intention-transitions.mmd')}}
-```
+{% include 'blocks/controls/guideline-documentation.md' %}
 
-**docs/static/md/executor-intention-transitions.md**
+{% include 'blocks/controls/constraint-changes.md' %}
 
-```markdown
-{{ file(properties.paths.root + 'docs/static/md/executor-intention-transitions.md')}}
-```
+## Task: Templates
+
+{% include 'blocks/templates/template-backlog.md' %} 

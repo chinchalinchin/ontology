@@ -109,6 +109,9 @@ tools:
       specs: false
       docs: false
     # ------------------------------------------------
+    metrics:
+      pstats: false
+    # ------------------------------------------------
     source:
       data: false
       filter: false
@@ -134,6 +137,11 @@ tools:
           - <doc-page>.md
       specs:
         - <spec-page>.md
+    # ------------------------------------------------
+    metrics:
+      pstats:
+        run: <run-command>
+        dot: <dot-command>
     # ------------------------------------------------
     source:
       filter:
