@@ -21,6 +21,7 @@ from app.static.semantics import (
 from app.models.adapters import (
     PydanticPosition as Position, 
     PydanticVelocity as Velocity,
+    Enumerated
 )
 from app.models.state.core import (
     AssetState
@@ -35,7 +36,7 @@ from libs.core.models import Velocity as CoreVelocity
 class MotorState(AssetState):
     position: Optional[Position] = None # type: ignore
     initial: Optional[Position] = None # type: ignore
-    direction: Directions = Directions.DOWN.value
+    direction: Enumerated[Directions] = Directions.DOWN.value
     speed: int = 10
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
 
