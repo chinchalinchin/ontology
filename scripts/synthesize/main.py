@@ -1,5 +1,8 @@
 """
+@domain.script
 @script.synthesize
+
+# Ontology: Script - scripts.synthesize.main
 
 CLI entry point for procedural synthesis and music21 score ingestion.
 """

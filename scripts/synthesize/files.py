@@ -1,5 +1,8 @@
 """
+@domain.script
 @script.synthesize
+
+# Ontology: Script - scripts.synthesize.files
 
 File resolution and schema validation module for synthesizer configuration.
 """

@@ -1,0 +1,17 @@
+
+{# ------------------------------------------------------------- #}
+{% for script in tools.parameters.source.data.scripts %}
+#### Scripts: {{ script }}
+
+* Location: `scripts/{{ script }}`
+
+{% for datum in yamls('scripts/' ~ script, recursive=False) | sort %}
+
+**{{ datum }}**
+
+```yaml
+{{ file(properties.paths.root ~ 'scripts/' ~ script ~ '/' ~ datum) }}
+```
+
+{% endfor %}
+{% endfor %}

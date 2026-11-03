@@ -1,5 +1,8 @@
 """
+@domain.script
 @script.synthesize
+
+# Ontology: Script - scripts.synthesize.loader
 
 Music21 corpus parser and metadata extraction module.
 """

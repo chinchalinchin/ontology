@@ -1,5 +1,8 @@
 """
+@domain.script
 @script.synthesize
+
+# Ontology: Script - scripts.synthesize.models
 
 Data models and serialization DTOs for the audio synthesis pipeline.
 """

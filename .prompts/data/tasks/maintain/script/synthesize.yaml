@@ -1,0 +1,69 @@
+# ----------------------------------------------------
+context: true
+# ----------------------------------------------------
+task:
+# ----------------------------------------------------
+  template: index.md.j2
+  parameters:
+    title: synthesize(score)
+    description: |
+      Using the `score.yaml` as a base, craft a representation of Chopin's Nocturne Op 9 No 2. Maximize the fidelity of the Score model to the non-accompanied version of Nocturne. Attempt to create the most accurate data structure possible.
+# ----------------------------------------------------
+
+tools:
+# ----------------------------------------------------
+  views:
+    # --------------------------------------------
+    manager:
+      board: false
+      docs: false
+    # --------------------------------------------
+    source:
+      data: true
+      filter: true
+    # --------------------------------------------
+    shell:
+      directory: true
+      commands: false
+# ----------------------------------------------------
+  parameters:
+    # --------------------------------------------
+    manager:
+      board:
+        phase: '07-04'
+        action: refactor
+      docs:
+        exclude:
+          # - 00-overview
+          # - 01-assets
+          - 02-sprites
+          - 03-compositions
+          - 04-intentions
+          - 05-mechanics
+          - 06-widgets
+          # - 07-sounds
+          - 08-plots
+          - 09-ecology
+          - 10-chemistry
+          - 11-emergence
+          # - 12-architecture
+    # --------------------------------------------
+    source:
+      filter:
+        default: AND
+        queries:
+          - title: Synthesize Script
+            scan:
+              domain: [ script ]
+              script: [ synthesize ]
+      data:
+        properties: [ ]
+        state: [ ]
+        configurations: [ ]
+        templates: [ ]
+        scripts: [ synthesize ]
+    # --------------------------------------------
+    shell:
+      directory: |
+        tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
+      commands: []

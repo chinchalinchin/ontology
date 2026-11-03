@@ -1,5 +1,8 @@
 """
+@domain.script
 @script.synthesize
+
+# Ontology: Script - scripts.synthesize.compile
 
 Time-domain score compilation engine.
 """

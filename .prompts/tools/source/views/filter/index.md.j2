@@ -16,6 +16,7 @@ The Filter View *queries* the codebase based on the **Active Tags** and the **Fi
     ('modality.', query.scan.modality),
     ('physics.', query.scan.physics),
     ('test.', query.scan.test),
+    ('script.', query.scan.script),
     ('workflow.', query.scan.workflows)
 ] %}
 {% for item in items %}
@@ -46,6 +47,19 @@ The Filter View *queries* the codebase based on the **Active Tags** and the **Fi
 
 {% for mod in pkg.modules %}
 **Matched Module: `tests/unit/{{ mod.paths.relative }}`**
+
+```{{ typehint(mod.paths.relative) }}
+{{ file(mod.paths.absolute) }}
+```
+
+{% endfor %}
+{% endfor %}
+
+{% for pkg in annotations(properties.paths.root ~ 'scripts/', tags, strategy) %}
+##### Matched Script Package: {{ pkg.package }}
+
+{% for mod in pkg.modules %}
+**Matched Module: `scripts/{{ mod.paths.relative }}`**
 
 ```{{ typehint(mod.paths.relative) }}
 {{ file(mod.paths.absolute) }}

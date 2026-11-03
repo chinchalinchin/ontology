@@ -1,0 +1,12 @@
+{% if tools.views.package is defined and tools.views.package.values() | select | list | length > 0 %}
+# Tool: Package
+
+The **Package Tool** provides **Views** into the [Application](#application) distribution infrastructure.
+
+## Package: Views
+
+{% if tools.views.package.pipeline %}
+{% include 'tools/package/views/pipeline.md.j2' %}
+{% endif %}
+
+{% endif %}

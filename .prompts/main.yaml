@@ -7,20 +7,19 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
+  # template: index.md.j2
   # template: draft.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
-  # template: analysis/automaton.md.j2
-  # template: analysis/pstats.md.j2
+  # template: analyze/automaton.md.j2
+  # template: analyze/pstats.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
-  # template: maintain/console/enumeration.md.j2
-  # template: maintain/console/patch.md.j2
-  # template: maintain/console/session.md.j2
-  template: maintain/pipeline.md.j2
-  # template: maintain/script.md.j2
+  # template: maintain/codebase.md.j2
+  # template: maintain/patch.md.j2
+  # template: maintain/session.md.j2
   # --------------------------------------------
   # --------------------------- TEMPLATES: DUMPS 
   # --------------------------------------------
@@ -50,6 +49,8 @@ task:
   parameters:
     automata: stages 
     composition: castle-dawn
+    description: |
+      <description>
     diagram: executor-centennial-transitions.mmd
     table: executor-centennial-transitions.md
 # ----------------------------------------------------

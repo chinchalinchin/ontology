@@ -1,4 +1,12 @@
 # cython: language_level=3
+"""
+@domain.script
+@script.synthesize
+
+# Ontology: Script - scripts.synthesize.sound
+
+Cython SDL Audio interface.
+"""
 from libc.stdint cimport uint8_t, uint16_t, uint32_t
 from libc.math cimport sin, exp, powf, M_PI
 from libc.stdlib cimport malloc, free

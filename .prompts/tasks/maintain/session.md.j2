@@ -1,0 +1,15 @@
+# Task: Ontology - Debug Session
+
+{% if task.parameters.description is defined %}
+{{ task.parameters.description }}
+{% endif %}
+
+**Priority**
+
+Assist in debugging the issue. Further information related to the execution can be found in the [Test Session](#view-test-session) console.
+
+{% include 'blocks/controls/guideline-debugging.md' %}
+
+{% include 'blocks/controls/constraint-changes.md' %}
+
+{% include 'blocks/controls/constraint-quality.md' %}
