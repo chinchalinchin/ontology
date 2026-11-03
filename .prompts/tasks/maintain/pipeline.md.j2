@@ -1,10 +1,16 @@
+# Tool: Package
+
+The **Package Tool** provides **Views** into the [Application](#application) distribution.
+
+## Package: Views
+
 ### View: Pipeline
 
 The **Pipeline View** provides **Views** into the Continuous Integration processes that maintain the [Application](#application).
 
-### Configurations
+#### Pipeline: Configurations
 
-#### Configuration: Dockerfile
+##### Configuration: Dockerfile
 
 **Dockerfile**
 
@@ -12,7 +18,7 @@ The **Pipeline View** provides **Views** into the Continuous Integration process
 {{ file(properties.paths.root + 'Dockerfile')}}
 ```
 
-#### Configuration: Python
+##### Configuration: Python
 
 **requirements.txt**
 
@@ -26,7 +32,7 @@ The **Pipeline View** provides **Views** into the Continuous Integration process
 {{ file(properties.paths.root + 'pyproject.toml')}}
 ```
 
-#### Configuration: Cython
+##### Configuration: Cython
 
 **setup.cicd.py**
 
@@ -34,7 +40,7 @@ The **Pipeline View** provides **Views** into the Continuous Integration process
 {{ file(properties.paths.root + 'setup.cicd.py')}}
 ```
 
-#### Configuration: Mkdocs
+##### Configuration: Mkdocs
 
 **mkdocs.yml**
 
@@ -42,9 +48,9 @@ The **Pipeline View** provides **Views** into the Continuous Integration process
 {{ file(properties.paths.root + 'mkdocs.yml')}}
 ```
 
-#### Pipelines
+#### Pipeline: Workflows
 
-##### Pipline: Image
+##### Workflow: Image
 
 **.github/workflows/image.yml**
 
@@ -52,7 +58,7 @@ The **Pipeline View** provides **Views** into the Continuous Integration process
 {{ file(properties.paths.root + '.github/workflows/image.yml')}}
 ```
 
-##### Pipeline: Docs
+##### Workflow: Docs
 
 **.github/workflows/docs.yml**
 
@@ -60,7 +66,7 @@ The **Pipeline View** provides **Views** into the Continuous Integration process
 {{ file(properties.paths.root + '.github/workflows/docs.yml')}}
 ```
 
-##### Pipeline: Tests
+##### Workflow: Tests
 
 **.github/workflows/tests.yml**
 
@@ -70,10 +76,6 @@ The **Pipeline View** provides **Views** into the Continuous Integration process
 
 # Task - Ontology: maintain(pipeline)
 
-**Goal**
+The unit tests take far longer to run in the pipeline than they do locally. I am wondering if some of the SDL calls aren't being mocked properly, and if the application might be rendering things headlessly.
 
-Introduce a step in the [Docs Pipeline](#pipeline-docs) that performs the following step:
-
-```bash
-gprof2dot -f pstats docs/static/pstats/latest.pstats --node-thres=1.0 --edge-thres=0.5 | dot -Tsvg -o docs/static/svg/engine-profile.svg
-```
+Look for general optimizations that can be applied in the CI workflows.

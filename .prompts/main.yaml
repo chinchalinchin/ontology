@@ -19,7 +19,7 @@ task:
   # template: maintain/console/enumeration.md.j2
   # template: maintain/console/patch.md.j2
   # template: maintain/console/session.md.j2
-  # template: maintain/pipeline.md.j2
+  template: maintain/pipeline.md.j2
   # template: maintain/script.md.j2
   # --------------------------------------------
   # --------------------------- TEMPLATES: DUMPS 
@@ -32,7 +32,7 @@ task:
   # template: iterate/documentation.md.j2
   # template: iterate/grooming.md.j2
   # template: iterate/implementation.md.j2
-  template: iterate/coverage.md.j2
+  # template: iterate/coverage.md.j2
   # template: iterate/review.md.j2
   # template: iterate/conclusion.md.j2
   # --------------------------------------------
@@ -76,7 +76,7 @@ tools:
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: true
+      data: false
       filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
@@ -89,7 +89,7 @@ tools:
     # --------------------------------------------
     tests:  
       configuration: true
-      pipeline: true
+      pipeline: false
       session: false
 # ----------------------------------------------------
   parameters:
@@ -103,11 +103,11 @@ tools:
       docs:
         exclude:
           # - 00-overview
-          - 01-assets
-          # - 02-sprites
+          # - 01-assets
+          - 02-sprites
           - 03-compositions
-          # - 04-intentions
-          # - 05-mechanics
+          - 04-intentions
+          - 05-mechanics
           - 06-widgets
           - 07-sounds
           - 08-plots
@@ -132,32 +132,42 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Asset Abstract
+          # - title: Asset Abstract
+          #   scan: 
+          #     domain: [ abstract ]
+          #     app: [ asset ]
+          # - title: Mechanic Abstract
+          #   scan:
+          #     domain: [ abstract ]
+          #     app: [ mechanic ]
+          # - title: Sheet Implementations
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ asset ]
+          #     category: [ sheets ]
+          # - title: Sheet Models
+          #   scan:
+          #     domain: [ model ]
+          #     category: [ sheets ]
+          # - title: Navigation Workflow
+          #   scan:
+          #     workflows: [ navigation ]
+
+          - title: Cython Subsystems
+            scan:
+              domain: [ system ]
+              app: [ library ]
+              workflows: [ rendering ]
+          - title: Application Orchestration
             scan: 
-              domain: [ abstract ]
-              app: [ asset ]
-          - title: Mechanic Abstract
-            scan:
-              domain: [ abstract ]
-              app: [ mechanic ]
-          - title: Sheet Implementations
-            scan:
-              domain: [ concrete ]
-              app: [ asset ]
-              category: [ sheets ]
-          - title: Sheet Models
-            scan:
-              domain: [ model ]
-              category: [ sheets ]
-          - title: Navigation Workflow
-            scan:
-              workflows: [ navigation ]
+              domain: [ system ]
+              app: [ orchestration ]
           - title: Test Fixtures
             scan:
               test: [ fixtures ]
       data:
-        properties: [ sheets/sprites ]
-        state: [ world-testbed ]
+        properties: [ ]
+        state: [ ]
         configurations: [ ]
         templates: [ ]
     # --------------------------------------------

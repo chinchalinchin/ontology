@@ -8,10 +8,15 @@ Unit test configuration.
 """
 # Standard Libraries
 import sys
+import os
 from pathlib import Path
 
 # External Libraries
 import pytest
+
+os.environ["SDL_VIDEODRIVER"] = "dummy"
+os.environ["SDL_AUDIODRIVER"] = "dummy"
+os.environ["SDL_RENDER_DRIVER"] = "software"
 
 UNIT_DIR = Path(__file__).resolve().parent
 ROOT_DIR = UNIT_DIR.parent.parent

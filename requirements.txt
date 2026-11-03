@@ -1,25 +1,27 @@
-# Application
+# Dependencies: Application
 Cython==3.2.8
 pydantic==2.13.4
 pydantic-settings[yaml]==2.14.2
 PyYAML==6.0.3
+# Dependencies: CLI
 Jinja2==3.1.6
-# Build
+# Dependencies: Build
 setuptools==83.0.0
-# Testing
+# Dependencies: Testing
 pytest==9.1.1
 pytest-cov==7.1.0
-# Scripts
+pytest-xdist==3.8.0
+# Dependencies: Scripts
 pillow==12.3.0
 music21==10.5.0
-# Documentation
+# Dependencies: Documentation
 mkdocs
 mkdocs-material
 mkdocstrings[python]
 python-mermaid
-# Analysis
+# Dependencies: Analysis
 gprof2dot
 pydeps
 vulture
-# Prompts
+# Dependencies: Prompts
 panflute
