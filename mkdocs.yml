@@ -26,8 +26,9 @@ nav:
   - Sounds: 07-sounds.md
   - Plots: 08-plots.md
   - Ecology: 09-ecology.md
-  - Emergence: 10-emergence.md
-  - Architecture: 11-architecture.md
+  - Chemistry: 10-chemistry.md
+  - Emergence: 11-emergence.md
+  - Architecture: 12-architecture.md
   - Specifications:
     - Index: specs/index.md
     - Dialogue Loop: specs/00-dialogue.md
@@ -63,11 +64,13 @@ exclude:
   - '**/.*.md'
   - '**/.drafts/**'
   - 'static/assets/**'
+  - 'static/md/**'
 
 exclude_docs: |
   **/.*.md
   **/.drafts/**
   static/assets/**
+  static/md/**
   
 extra_javascript:
   - static/js/mathjax.js

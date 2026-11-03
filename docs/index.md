@@ -37,7 +37,7 @@
 
 ### Quality Control: Application Profile
 
-![Application Profile](../static/svg/engine-profile.svg)
+![Application Profile](./static/svg/engine-profile.svg)
 /// caption
 Runtime call graph and execution profile generated from `pstats` via `gprof2dot`.
 ///
