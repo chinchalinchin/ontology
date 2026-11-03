@@ -1,8 +1,12 @@
 """
-# Ontology: app.assets.frames.resources
+@domain.concrete
+@app.asset
+@asset.frame
+@category.resources
 
-Package for Resource Frame implementations. 
+# Ontology: Source - app.assets.frames.resources
 
+Resource Frame implementations. 
 """
 # Stamdard Libraries
 from typing import (
@@ -13,8 +17,8 @@ from typing import (
 import logging
 
 # Application Libraries
-import app.config.settings as settings
-from app.config.enums import (
+import app.static.settings as settings
+from app.static.semantics import (
     Lifespans,
     AnnualStages,
     PerennialStages,

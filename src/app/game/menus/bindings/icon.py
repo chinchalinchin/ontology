@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.bindings.icon
+# Ontology: Source - app.game.menus.bindings.icon
 
 Icon Widget Binding implementation.
 """
@@ -7,7 +7,7 @@ Icon Widget Binding implementation.
 from typing import Callable,Tuple
 
 # Application Libraries
-import app.config.settings as settings
+import app.static.settings as settings
 from app.game.menus.bindings.base import Binding
 
 class IconBinding(Binding):

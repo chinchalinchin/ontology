@@ -1,52 +1,125 @@
 """
-# Ontology: tests.unit.fixtures.structures
+@domain.test
+@test.fixtures
 
-Application component fixtures
+# Ontology: Tests - tests.unit.fixtures.structures
+
+Relational indices, property groups, and spatial structure fixtures.
 """
+# Standard Libraries
+from typing import Any
+
 # External Libraries
 import pytest
 
-from app.game.board.fields import MoistureField
-from app.game.logic.relations import ShorelineIndex
+# Application Libraries
+import app.static.settings as settings
+from app.game.logic.modules.fields import MoistureField
+from app.game.logic.relations import (
+    MaterialIndex,
+    ShorelineIndex,
+)
+from app.models.config import ConfigurationSchema
+from app.models.groups import (
+    EquipmentGroup,
+    SpawnableGroup,
+)
+from app.models.properties import PropertiesSchema
+from app.static.semantics import Relations
 
 # Cython Libraries
-from libs.core.models import (
-    Dimensions, 
-    Position, 
-    Boundary
-)
 from libs.core.math.space import Space
+from libs.core.models import (
+    Boundary,
+    Dimensions,
+    Position,
+)
 
 # ---------------------------------------------------------------------------
-# ----------------------------------------------------------- MOCK STRUCTURES
+# -------------------------------------------------------- RELATIONAL INDICES
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
-def mock_boundary() -> Boundary:
-    """Boundary spatial constraint fixture."""
-    return Boundary(Position(10, 20), Dimensions(30, 40))
+def mock_shoreline_index(
+    mock_properties_schema: PropertiesSchema,
+) -> ShorelineIndex:
+    return ShorelineIndex.from_properties(
+        mock_properties_schema.geography.shorelines
+    )
+
+
+@pytest.fixture
+def mock_material_index(
+    mock_configurations_schema: ConfigurationSchema,
+) -> MaterialIndex:
+    return MaterialIndex.from_configuration(
+        mock_configurations_schema.materials
+    )
+
+
+@pytest.fixture
+def mock_relations(
+    mock_shoreline_index: ShorelineIndex,
+    mock_material_index: MaterialIndex,
+) -> dict[str, Any]:
+    return {
+        Relations.SHORELINES.value: mock_shoreline_index,
+        Relations.MATERIALS.value: mock_material_index,
+    }
+
+
+# ---------------------------------------------------------------------------
+# ----------------------------------------------------------- PROPERTY GROUPS
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def mock_spawnables(
+    mock_properties_schema: PropertiesSchema,
+) -> SpawnableGroup:
+    return SpawnableGroup(
+        projectiles=mock_properties_schema.cursors.projectiles,
+        expressions=mock_properties_schema.cursors.expressions,
+        collectables=mock_properties_schema.effects.collectables,
+        hazards=mock_properties_schema.effects.hazards,
+        passive=mock_properties_schema.effects.passive,
+        struts=mock_properties_schema.crafts.struts,
+        shorelines=mock_properties_schema.geography.shorelines,
+    )
+
+
+@pytest.fixture
+def mock_equipment(
+    mock_properties_schema: PropertiesSchema,
+) -> EquipmentGroup:
+    return EquipmentGroup(
+        armor=mock_properties_schema.sheets.armor,
+        weapons=mock_properties_schema.sheets.weapons,
+        tools=mock_properties_schema.sheets.tools,
+        utilities=mock_properties_schema.sheets.utilities,
+        shields=mock_properties_schema.sheets.shields,
+    )
+
+
+# ---------------------------------------------------------------------------
+# ---------------------------------------------- SPATIAL & FIELD STRUCTURES
+# ---------------------------------------------------------------------------
 
 
 @pytest.fixture
 def mock_space_grid() -> Space:
-    """
-    Fixture providing an initialized Cython Space grid for testing 
-    O(1) bucket lookups and broad-phase physics.
-    """
     return Space(cell_size=64, max_entities=100)
 
 
 @pytest.fixture
-def mock_shoreline_index(mock_geography_properties):
-    """ShorelineIndex fixture compiled from mock properties."""
-    return ShorelineIndex.from_properties(mock_geography_properties.shorelines)
+def mock_boundary() -> Boundary:
+    return Boundary(Position(10, 20), Dimensions(30, 40))
 
 
 @pytest.fixture
 def mock_moisture_field() -> MoistureField:
-    """
-    Continuous hydrological potential field fixture obeying superposition.
-    """
-    field = MoistureField(sigma=64.0, phi_0=1.0)
-    field.add_stream(100.0, 100.0, 100.0, 132.0, flow=2)
-    return field
+    return MoistureField(
+        sigma=settings.MOISTURE_DECAY_SIGMA,
+        phi_0=settings.BASE_MOISTURE_POTENTIAL,
+    )

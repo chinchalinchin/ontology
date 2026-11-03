@@ -168,7 +168,7 @@ libpng warning: iCCP: known incorrect sRGB profile
 2026-09-10 10:58:29,553 - INFO - app.game.logic.mechanics.intentional.transition - Transitioning evil-empress-jasilynn from Intentions.INTERACT to Intentions.IDLE
 2026-09-10 10:58:29,570 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn recalled goal from memory: subject(player)
 2026-09-10 10:58:29,570 - INFO - app.game.logic.mechanics.intentional.transition - Transitioning evil-empress-jasilynn from Intentions.IDLE to Intentions.FIND
-2026-09-10 10:58:37,595 - INFO - app.game.engine - [TELEMETRY] Avg FPS: 53.1 |Avg UPS (Ticks): 59.8
+2026-09-10 10:58:37,595 - INFO - app.game.engine * [TELEMETRY] Avg FPS: 53.1 |Avg UPS (Ticks): 59.8
 ^C2026-09-10 10:58:37,803 - INFO - __main__ - Game engine loop interrupted by user.
 2026-09-10 10:58:37,804 - INFO - __main__ - Generating state dump...
 2026-09-10 10:58:37,922 - INFO - __main__ - State dump successfully written to /home/grant/Projects/ontology/20260910_105837.state-dump.md

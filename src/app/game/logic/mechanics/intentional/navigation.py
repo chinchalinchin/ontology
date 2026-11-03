@@ -1,7 +1,14 @@
 """
-# Ontology: app.game.logic.mechanics.intentional.navigation
+@domain.concrete
+@domain.logic
+@app.mechanic
+@category.sheets
+@modality.intention
+@workflow.navigation
 
-Package for managing tactical pathfinding trajectories and steering waypoints.
+# Ontology: Source - app.game.logic.mechanics.intentional.navigation
+
+NavigationMechanics implementation. Manages Sprite Trajectories.
 """
 from __future__ import annotations
 
@@ -19,11 +26,11 @@ if TYPE_CHECKING:
 
 # Application Libraries
 from app.assets.base import Asset
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances,
     NavigationIntentions,
 )
-import app.config.settings as settings
+import app.static.settings as settings
 from app.game.logic.mechanics import Mechanic
 from app.game.logic.modules.paths.plan import Planner
 from app.models.state import DevicePayload
@@ -32,8 +39,11 @@ from app.models.state import DevicePayload
 import libs.core.math.geometry as geometry
 from libs.core.models import Position
 
+# -----------------------------------------------------
+
 logger = logging.getLogger(__name__)
 
+# -----------------------------------------------------
 
 class NavigationMechanics(Mechanic):
     """
@@ -182,7 +192,7 @@ class NavigationMechanics(Mechanic):
         
     def _navigate(self, sprite: Asset, board: Board) -> None:
         """
-        Tactical trajectory update lifecycle for an individual sprite.
+        Tactical trajectory update frequency for an individual sprite.
         """
         # 1. Goal Verification
         if not self.navigating(sprite):

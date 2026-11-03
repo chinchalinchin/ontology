@@ -1,8 +1,13 @@
 # cython: language_level=3
 """
-# Ontology: libs.graphics.render
+@domain.system
+@domain.graphics
+@app.library
+@workflow.rendering
 
-Directly interfaces with SDL2 C-Headers to execute headless rendering, bypassing the Python Global Interpreter Lock (GIL) and ctypes overhead.
+# Ontology: Libraries - libs.graphics.render
+
+SDL Interfaces for rendering Assets.
 """
 # Standard Libraries
 import logging
@@ -173,7 +178,7 @@ cdef SDL_Window* _window = NULL
 # Public Python/Cython API
 # -----------------------------------------------------------------------------
 
-def get_system_info() -> dict:
+def sysinfo() -> dict:
     """Retrieves low-level SDL context and driver details."""
     cdef SDL_RendererInfo info
     cdef dict sys_info = {

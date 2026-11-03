@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.handlers.state
+# Ontology: Source - app.game.menus.handlers.state
 
 State event handling implementation.
 """
@@ -7,7 +7,7 @@ State event handling implementation.
 import logging
 
 # Application Libraries
-from app.config.enums import Menus
+from app.static.semantics import Menus
 from app.game.menus.events import (
     MenuEvent, 
     StateEvent,

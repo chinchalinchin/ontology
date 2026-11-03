@@ -1,0 +1,9 @@
+objects:
+  rafts:
+    # -----------------------------------------
+    rowboat:
+      mass: 15
+      dimensions: 
+        w: 93
+        l: 33
+      hitboxes: null

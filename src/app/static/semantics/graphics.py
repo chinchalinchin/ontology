@@ -1,0 +1,24 @@
+"""
+@domain.logic
+@domain.system
+@domain.graphics
+@app.semantics
+@workflow.rendering
+
+# Ontology: Source - app.static.sematnics.graphics
+
+Graphics semantics enumerations.
+"""
+# Standard Libraries
+from enum import Enum
+
+class ChannelTypes(int, Enum):
+    """Enumeration of Frame Channels"""
+    TINT            = 0
+    SUBMERGE        = 1
+
+class Fonts(str, Enum):
+    """Enumeration of Font Assets."""
+    DIALOGUE        = "dialogue"
+    MENU            = "menu"
+    TITLE           = "title"

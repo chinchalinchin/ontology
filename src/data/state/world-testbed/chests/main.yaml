@@ -1,0 +1,13 @@
+objects:
+  chests:
+    - id: trunk
+      name: empress-chest
+      layer: '0'
+      material: gold
+      elevation: 0
+      switch: false
+      content:
+        - writ-of-dawn
+      position:
+        x: 450
+        y: 450

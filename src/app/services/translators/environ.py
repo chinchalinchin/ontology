@@ -1,13 +1,22 @@
 """
-# Ontology: app.services.translators.environ
+@domain.automata
+@domain.concrete
+@domain.logic
+@modality.intention
+@workflow.plot
+@workflow.seasons
+@workflow.transitions
 
-Helper functions for ISL conditions.
+# Ontology: Source - app.services.translators.environ
+
+Helper functions for Transition conditions.
+
 """
 # Standard Libraries
 from typing import Dict, List
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     RequiredAssets,
     AssetInstances, 
     AssetCategories,

@@ -10,10 +10,10 @@
 
 *Objective*: TODO
 
-- [] Subtask: TODO
+* [] Subtask: TODO
 
 **2. Task: TODO**
 
 *Objective*: TODO
 
-- [] Subtask: TODO
+* [] Subtask: TODO

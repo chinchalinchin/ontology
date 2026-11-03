@@ -1,7 +1,12 @@
 """
-# Ontology: app.models.state.objects
+@domain.model
+@app.asset
+@asset.state
+@category.objects
 
-Python data models for typing Object state attributes.
+# Ontology: Source - app.models.state.objects
+
+Object State Models.
 """
 # Standard Libraries
 from typing import ( 
@@ -16,50 +21,45 @@ from dataclasses import (
 # Application Libraries
 from app.models.adapters import (
     PydanticPosition as Position, 
-    PydanticMultiple as Multiple, 
     PydanticVelocity as Velocity,
+    Enumerated
 )
-from app.models.state.core import (
-    AnimationState,
-    AssetState
-)
+from app.models.state.core import AssetState
+from app.static.semantics import LayerProjections
 
 # Cython Libraries
 from libs.core.models import (
     Velocity as CoreVelocity
 )
 
-# ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------- OBJECT STATES
-# ---------------------------------------------------------------------------------------
+# -----------------------------------------------------
 
 @dataclass(slots=True)
-class PositionalState(AssetState):
+class ObjectState(AssetState):
     position: Optional[Position] = None # type: ignore
+    material: Optional[str] = None
+
+@dataclass(slots=True)
+class MotiveState(ObjectState):
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
 
 @dataclass(slots=True)
-class ContainerState(AssetState):
+class ContainerState(ObjectState):
     content: Optional[List[str]] = field(default_factory=list)
-    position: Optional[Position] = None # type: ignore
     switch: Optional[bool] = False
-    animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
-class DoorState(AssetState):
-    position: Optional[Position] = None # type: ignore
+class DoorState(ObjectState):
     out: Optional[Position] = None # type: ignore
     outlayer: Optional[str] = None
+    projection: Enumerated[LayerProjections] = LayerProjections.IN.value
 
 @dataclass(slots=True)
-class SwitchState(AssetState):
+class SwitchState(ObjectState):
     link: Optional[str] = None
-    position: Optional[Position] = None # type: ignore
     switch: Optional[bool] = False
-    animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
-class DialogueState(AssetState):
-    position: Optional[Position] = None # type: ignore
+class DialogueState(ObjectState):
     persona: Optional[str] = None
     lexicon: Optional[str] = None

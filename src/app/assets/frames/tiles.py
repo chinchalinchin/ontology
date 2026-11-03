@@ -1,5 +1,10 @@
 """
-# Ontology: app.assets.frames.tiles
+@domain.concrete
+@app.asset
+@asset.frame
+@category.tiles
+
+# Ontology: Source - app.assets.frames.tiles
 
 Package for Tile Frame implementations. 
 
@@ -13,13 +18,10 @@ from typing import (
 import logging
 
 # Application Libraries
-import app.config.settings as settings
-from app.config.enums import (
+import app.static.settings as settings
+from app.static.semantics import (
     Seasons,
-    Cycles,
-    AnnualStages,
-    PerennialStages,
-    CentennialStages
+    Cycles
 )
 from app.assets.base import Frame
 from app.models.state import (

@@ -1,5 +1,11 @@
 """
-# Ontology: app.game.logic.mechanics.world.seasons
+@domain.concrete
+@domain.logic
+@app.mechanic
+@workflow.ecology
+@workflow.seasons
+
+# Ontology: Source - app.game.logic.mechanics.world.seasons
 
 Mechanic implementation governing macro-temporal progression,
 continuous soil moisture flux integration, and throttled biological stage transitions.
@@ -12,8 +18,8 @@ import logging
 from typing import TYPE_CHECKING
 
 # Application Libraries
-import app.config.settings as settings
-from app.config.enums import (
+import app.static.settings as settings
+from app.static.semantics import (
     AssetCategories,
     Seasons,
     Cycles,

@@ -1,5 +1,13 @@
+# cython: language_level=3
 """
-# Ontology: libs.core.math.space
+@domain.logic
+@domain.system
+@app.library
+@physics.space
+@workflow.collisions
+@workflow.space
+
+# Ontology: Libraries - libs.core.math.space
 """
 # cython: language_level=3
 from libc.stdlib cimport malloc, free

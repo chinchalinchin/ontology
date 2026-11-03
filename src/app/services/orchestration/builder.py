@@ -1,7 +1,12 @@
 """
-# Ontology: app.services.orchestration.builder
+@domain.system
+@app.service
+@app.orchestration
+@workflow.injection
 
-Classes for constructing game objects.
+# Ontology: Source - app.services.orchestration.builder
+
+Dependency Injection systems.
 """
 from __future__ import annotations
 
@@ -15,36 +20,38 @@ from typing import (
 )
 
 # Application Libraries
-import app.config.settings as settings
-from app.config.loader import Loader
-from app.config.enums import (
+import app.static.settings as settings
+from app.static.loader import Loader
+from app.static.semantics import (
     Devices, 
     Mechanics,
-    AssetCategories,
     Executors,
-    Lifespans
+    Lifespans,
+    Relations
 )
 from app.game.board import Board
+from app.game.devices import Device
 from app.game.engine import Engine
 from app.game.screen import Screen
-from app.game.logic.mechanics import (
-    Mechanic,
+from app.game.logic.mechanics import Mechanic
+from app.game.logic.relations import (
+    ShorelineIndex,
+    MaterialIndex
 )
-from app.game.logic.relations.shorelines import ShorelineIndex
 from app.models.groups import (
     SpawnableGroup, 
     EquipmentGroup
 )
-from app.models.state import StateSchema
 from app.models.properties import PropertiesSchema
 from app.models.config import (
     ConfigurationSchema, 
     MechanicsInstance
 )
+from app.services.markets import Materializer
+from app.services.factories import MechanicFactory
 from app.services.generators.game import (
-    Factory,
-    Decomposer,
-    Actuator
+    Cradle,
+    Decomposer
 )
 from app.services.generators.menus import (
     Provider, 
@@ -52,6 +59,7 @@ from app.services.generators.menus import (
     Binder,
     Fabricator
 )
+from app.services.orchestration.migrator import Migrator
 
 # Cython Libraries
 import libs.graphics.render as render
@@ -60,17 +68,19 @@ from libs.graphics.registry import Registry
 
 logger = logging.getLogger(__name__)
 
+# -------------------------------------------------
+
 @dataclasses.dataclass
 class ApplicationContext:
     """
     Isolates raw data configurations before they are hydrated into Engine components.
     """
     properties: PropertiesSchema = None
-    state: StateSchema = None
     configurations: ConfigurationSchema = None
     screensize: Dimensions = None
     headless: bool = False
 
+# -------------------------------------------------
 
 class Builder:
     """
@@ -81,8 +91,14 @@ class Builder:
         self.context = ApplicationContext()
         self.registry: Registry = None
         self.board: Board = None
-        self.provider: Provider = None
+        self.device: Device = None
+        self.decomposer: Decomposer = None
+        self.cradle: Cradle = None
+        self.library: Library = None
+        self.binder: Binder = None
         self.fabricator: Fabricator = None
+        self.provider: Provider = None
+        self.materializer: Materializer = None
         self.screens: Dict[str, Screen] = {}
         self.core: List[Mechanic] = []
         self.world: List[Mechanic] = []
@@ -117,32 +133,25 @@ class Builder:
         )
 
 
-    def load_data(self, state_key: str = None) -> None:
+    def load_data(self) -> None:
         """
         Loads YAML configuration data for properties and global configurations.
-        If state_key is None, state hydration is deferred to the Main Menu.
+        State hydration is deferred to the Migrator.
         """
         self.context.properties = Loader.load_properties()
-        self.context.configurations = Loader.load_configurations()
-        if state_key is not None:
-            logger.info(f"Loading YAML data for target state: {state_key} ...")
-            self.context.state = Loader.load_state(state_key)
-        else:
-            logger.info("No state key provided. Booting in unhydrated mode for Main Menu...")
-            self.context.state = None
+        self.context.configurations = Loader.load_configurations(self.context.properties)
+        self._actions()
 
 
     def build_executors(self) -> None:
         logger.info("Compiling master mechanic executors...")
-        translator = Factory.translator(settings.ISL_TRANSLATOR)
+        translator = MechanicFactory.translator(settings.TRANSLATOR_IMPLEMENTATION)
         intention_executor = translator.compile(self.context.configurations.intentions)
         plot_executor = translator.compile(self.context.configurations.plots)
-        actuator_executor = Actuator()
 
         self.executors = {
             Executors.INTENTION.value: intention_executor,
             Executors.PLOT.value: plot_executor,
-            Executors.ACTUATOR.value: actuator_executor
         }
 
         # Compile independent stage executors keyed by Lifespan enum values
@@ -151,12 +160,15 @@ class Builder:
             if stage_rules:
                 self.executors[lifespan.value] = translator.compile(stage_rules)
 
+
     def build_relations(self) -> None:
         logger.info("Compiling relational indices...")
-        from app.config.enums import Relations
         self.relations = {
             Relations.SHORELINES.value: ShorelineIndex.from_properties(
                 self.context.properties.geography.shorelines
+            ),
+            Relations.MATERIALS.value: MaterialIndex.from_configuration(
+                self.context.configurations.materials
             )
         }
 
@@ -172,40 +184,6 @@ class Builder:
             render.show()
 
 
-    def build_board(self) -> None:
-        logger.info("Constructing Empty Board and Migrator subsystem...")
-        self._actions()
-
-        if not self.executors:
-            self.build_executors()
-
-        # 1. Instantiate Decomposer ahead of standard Asset migrations
-        self.decomposer = Decomposer(
-            compositions=self.context.configurations.compositions,
-            properties=self.context.properties,
-            recipes=self.context.configurations.recipes
-        )
-
-        equipment = EquipmentGroup(
-            armor=self.context.properties.sheets.armor,
-            weapons=self.context.properties.sheets.weapons,
-            tools=self.context.properties.sheets.tools,
-            utilities=self.context.properties.sheets.utilities,
-            shields=self.context.properties.sheets.shields
-        )
-        
-        self.board = Board([], self.context.configurations, equipment)
-        
-        # Attach Migrator logic for deferred ECS evaluation
-        from app.services.orchestration import Migrator
-        self.board.migrator = Migrator(
-            self.board, 
-            self.context.properties, 
-            self.context.configurations,
-            actuator=self.executors[Executors.ACTUATOR.value]
-        )
-
-
     def build_registry(self) -> None:
         """
         Initializes Registry directly using native application models.
@@ -213,16 +191,27 @@ class Builder:
         logger.info("Initializing Registry with native models...")
         self.registry = Registry(
             properties=self.context.properties,
-            recipes=self.context.configurations.recipes,
-            typography=self.context.properties.fonts
+            recipes=self.context.configurations.recipes
         )
 
 
     def build_services(self, device: Devices) -> None:
-        logger.info("Injecting Generators and Devices into Board...")
+        logger.info("Instantiating Generators, Devices, and UI Providers...")
         device_mapping = getattr(self.context.configurations.mappings, device, None)
-        device_instance = Factory.device(device, device_mapping)
-        self.board.set_device(device_instance)
+        self.device = MechanicFactory.device(device, device_mapping)
+
+        materials = self.relations[Relations.MATERIALS.value]
+
+        self.materializer = Materializer(
+            materials=materials
+        )
+        
+        self.decomposer = Decomposer(
+            compositions=self.context.configurations.compositions,
+            properties=self.context.properties,
+            recipes=self.context.configurations.recipes,
+            materials=materials
+        )
 
         spawnable_groups = SpawnableGroup(
             projectiles=self.context.properties.cursors.projectiles,
@@ -233,41 +222,59 @@ class Builder:
             struts=self.context.properties.crafts.struts,
             shorelines=self.context.properties.geography.shorelines
         )
-        cradle = Factory.cradle(
-            spawnable_groups, 
-            self.context.configurations.recipes, 
-            self.decomposer
+        self.cradle = Cradle(
+            spawnables=spawnable_groups,
+            recipes=self.context.configurations.recipes,
+            materials=materials,
+            decomposer=self.decomposer
         )
-        self.board.set_cradle(cradle)
+
+        self.library = Library(self.context.configurations.library)
+        self.binder = Binder(self.registry, self.library)
+        self.fabricator = Fabricator()
+        self.provider = Provider(
+            self.context.configurations.recipes.widgets,
+            self.context.properties.widgets,
+            self.binder,
+            self.fabricator
+        )
+
+
+    def build_board(self) -> None:
+        logger.info("Constructing Empty Board and Migrator subsystem...")
+        equipment = EquipmentGroup(
+            armor=self.context.properties.sheets.armor,
+            weapons=self.context.properties.sheets.weapons,
+            tools=self.context.properties.sheets.tools,
+            utilities=self.context.properties.sheets.utilities,
+            shields=self.context.properties.sheets.shields
+        )
+
+        self.board = Board([], self.context.configurations, equipment)
+        self.board.set_device(self.device)
+        self.board.set_cradle(self.cradle)
+
+        migrator = Migrator(
+            board=self.board,
+            properties=self.context.properties,
+            configurations=self.context.configurations,
+            decomposer=self.decomposer,
+            materials=self.relations[Relations.MATERIALS.value]
+        )
+        self.board.set_migrator(migrator)
 
 
     def build_pipeline(self) -> None:
-        logger.info("Building rendering pipelines, mechanics, and UI...")
-
-        if not self.relations:
-            self.build_relations()
-
-        if not self.board.layers():
-            self.screens = {
-                'default': Screen(
-                    self.context.screensize, 
-                    self.context.screensize,
-                    [], 
-                    self.registry,
-                    self.board.calendar
-                )
-            }
-        else:
-            self.screens = {}
-            for layer in self.board.layers():
-                layer_size = self.board.size(layer)[0]
-                self.screens[layer] = Screen(
-                    self.context.screensize, 
-                    Dimensions(layer_size.w, layer_size.l),
-                    self.board.categories(AssetCategories.TILES.value, layer),
-                    self.registry,
-                    self.board.calendar
-                )
+        logger.info("Building rendering pipelines and mechanics...")
+        self.screens = {
+            'default': Screen(
+                self.context.screensize, 
+                self.context.screensize,
+                [], 
+                self.registry,
+                self.board.calendar
+            )
+        }
 
         core_cfg = self.context.configurations.mechanics.core or [
             MechanicsInstance(Mechanics.MENU.value), 
@@ -281,19 +288,14 @@ class Builder:
             MechanicsInstance(Mechanics.MOTION.value)
         ]
         
-        self.core = [Factory.mechanics(m, self.executors, self.relations) for m in core_cfg]
-        self.world = [Factory.mechanics(m, self.executors, self.relations) for m in world_cfg]
-
-        self.library = Library(self.context.configurations.library)
-        self.binder = Binder(self.registry, self.library)
-        self.fabricator = Fabricator()
-
-        self.provider = Provider(
-            self.context.configurations.recipes.widgets, 
-            self.context.properties.widgets, 
-            self.binder,
-            self.fabricator
-        )
+        self.core = [
+            MechanicFactory.mechanics(m, self.executors, self.relations) 
+            for m in core_cfg
+        ]
+        self.world = [
+            MechanicFactory.mechanics(m, self.executors, self.relations) 
+            for m in world_cfg
+        ]
 
 
     def get_engine(self) -> Engine:
@@ -303,5 +305,6 @@ class Builder:
             screens=self.screens, 
             core=self.core, 
             world=self.world, 
-            provider=self.provider
+            provider=self.provider,
+            registry=self.registry
         )

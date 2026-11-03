@@ -1,5 +1,13 @@
 """
-# Ontology: tests.unit.test_app_services_generators_menus_fabricator
+@domain.test
+@test.unit
+@app.service
+@category.widgets
+@workflow.menus
+
+# Ontology: Tests - tests.unit.app.services.generators.menus.test_fabricator
+
+Unit tests for the Fabricator service.
 """
 import pytest
 from app.services.generators.menus.fabricator import Fabricator
@@ -7,21 +15,30 @@ from app.models.config.menus import (
     MenuNode,
     GizmoParameters,
     PaneParameters,
-    ButtonParameters,
     MenuBinding
 )
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances,
     Layouts,
-    Alignments,
     Statuses,
     Selections,
     Bindings,
     Shortcuts
 )
 
+# ---------------------------------------------------------------------------
 
-def test_fabricator_expand_collection_dimensions_and_subtrees(mock_widget_properties):
+pytestmark = [
+    pytest.mark.app_services,
+    pytest.mark.category_widgets,
+    pytest.mark.workflow_menus
+]
+
+# ---------------------------------------------------------------------------
+
+def test_fabricator_expand_collection_dimensions_and_subtrees(
+    mock_properties_schema
+):
     """
     Verifies that a valid collection gizmo correctly calculates macro dimensions,
     splits capacity into row panes, and synthesizes child button and icon apertures.
@@ -43,7 +60,7 @@ def test_fabricator_expand_collection_dimensions_and_subtrees(mock_widget_proper
         )
     )
 
-    expanded = Fabricator.expand(node, context={}, properties=mock_widget_properties)
+    expanded = Fabricator.expand(node, context={}, properties=mock_properties_schema.widgets)
 
     assert expanded is not None
     assert expanded.id == "transparent-slot"
@@ -92,7 +109,7 @@ def test_fabricator_expand_collection_dimensions_and_subtrees(mock_widget_proper
     assert icon_node.bind.target["index"] == "0"
 
 
-def test_fabricator_expand_collection_uneven_capacity(mock_widget_properties):
+def test_fabricator_expand_collection_uneven_capacity(mock_properties_schema):
     """
     Verifies that capacity not evenly divisible by columns generates the correct
     number of slots in the trailing row.
@@ -114,7 +131,7 @@ def test_fabricator_expand_collection_uneven_capacity(mock_widget_properties):
         )
     )
 
-    expanded = Fabricator.expand(node, context={}, properties=mock_widget_properties)
+    expanded = Fabricator.expand(node, context={}, properties=mock_properties_schema.widgets)
     params = expanded.parameters
 
     assert len(params.children) == 2
@@ -132,7 +149,7 @@ def test_fabricator_expand_collection_uneven_capacity(mock_widget_properties):
     assert icon.bind.target["index"] == "4"
 
 
-def test_fabricator_expand_missing_binding_raises_value_error(mock_widget_properties):
+def test_fabricator_expand_missing_binding_raises_value_error(mock_properties_schema):
     """
     Verifies that declaring a gizmo without a bind block raises ValueError.
     """
@@ -149,10 +166,10 @@ def test_fabricator_expand_missing_binding_raises_value_error(mock_widget_proper
         )
     )
     with pytest.raises(ValueError, match="declared without a binding schema"):
-        Fabricator.expand(node, context={}, properties=mock_widget_properties)
+        Fabricator.expand(node, context={}, properties=mock_properties_schema.widgets)
 
 
-def test_fabricator_expand_empty_schema_raises_value_error(mock_widget_properties):
+def test_fabricator_expand_empty_schema_raises_value_error(mock_properties_schema):
     """
     Verifies that declaring a gizmo with an empty binding schema raises ValueError.
     """
@@ -169,10 +186,10 @@ def test_fabricator_expand_empty_schema_raises_value_error(mock_widget_propertie
         )
     )
     with pytest.raises(ValueError, match="declared without a binding schema"):
-        Fabricator.expand(node, context={}, properties=mock_widget_properties)
+        Fabricator.expand(node, context={}, properties=mock_properties_schema.widgets)
 
 
-def test_fabricator_expand_unsupported_schema_raises_not_implemented(mock_widget_properties):
+def test_fabricator_expand_unsupported_schema_raises_not_implemented(mock_properties_schema):
     """
     Verifies that passing an unregistered gizmo schema raises NotImplementedError.
     """
@@ -189,10 +206,10 @@ def test_fabricator_expand_unsupported_schema_raises_not_implemented(mock_widget
         )
     )
     with pytest.raises(NotImplementedError, match="Unsupported gizmo schema 'unregistered_schema'"):
-        Fabricator.expand(node, context={}, properties=mock_widget_properties)
+        Fabricator.expand(node, context={}, properties=mock_properties_schema.widgets)
 
 
-def test_fabricator_expand_collection_invalid_parameters_type(mock_widget_properties):
+def test_fabricator_expand_collection_invalid_parameters_type(mock_properties_schema):
     """
     Verifies that a collection schema receiving non-GizmoParameters raises TypeError.
     """
@@ -204,7 +221,7 @@ def test_fabricator_expand_collection_invalid_parameters_type(mock_widget_proper
         parameters=None
     )
     with pytest.raises(TypeError, match="expects GizmoParameters, got <class 'NoneType'>"):
-        Fabricator.expand(node_none, context={}, properties=mock_widget_properties)
+        Fabricator.expand(node_none, context={}, properties=mock_properties_schema.widgets)
 
     node_wrong = MenuNode(
         id="weapons",
@@ -214,7 +231,7 @@ def test_fabricator_expand_collection_invalid_parameters_type(mock_widget_proper
         parameters=PaneParameters()
     )
     with pytest.raises(TypeError, match="expects GizmoParameters"):
-        Fabricator.expand(node_wrong, context={}, properties=mock_widget_properties)
+        Fabricator.expand(node_wrong, context={}, properties=mock_properties_schema.widgets)
 
 
 def test_fabricator_extract_source_path_variants():

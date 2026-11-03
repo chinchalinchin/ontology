@@ -1,7 +1,14 @@
 """
-# Ontology: app.game.logic.mechanics.core.menu
+@domain.user
+@domain.concrete
+@app.mechanic
+@asset.animation
+@category.widgets
+@workflow.menus
 
-Package for MenuMechanics.
+# Ontology: Source - app.game.logic.mechanics.core.menu
+
+MenuMechanics implementation.
 """
 from __future__ import annotations
 
@@ -11,7 +18,7 @@ import collections
 import logging
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     Statuses, 
     Interactions,
     DeviceContexts
@@ -23,9 +30,11 @@ from app.models.state import DevicePayload
 if TYPE_CHECKING:
     from app.game.board import Board
 
+# -----------------------------------------------------
 
 logger = logging.getLogger(__name__)
 
+# -----------------------------------------------------
 
 class MenuMechanics(Mechanic):
 

@@ -1,28 +1,37 @@
 """
-# Ontology: app.asset.animations.widgets
+@domain.concrete
+@app.asset
+@asset.animation
+@category.widgets
 
-Package for Widget Animation implementations.
+# Ontology: Source - app.asset.animations.widgets
+
+Widget Animation implementations.
 """
 # Application Libraries
 from app.assets.base import Animation
-from app.models.properties import AssetProperties
+from app.models.properties import WidgetProperties
 from app.models.state import AssetState
+
+# --------------------------------------------------
 
 class TraversalAnimation(Animation):
     """
     """
 
-    def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
+    def animate(self, state: AssetState, properties: WidgetProperties) -> AssetState:
         """
         """
         state.animation.action = state.status
         return state
 
+# --------------------------------------------------
+
 class MeterAnimation(Animation):
     """
     """
 
-    def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
+    def animate(self, state: AssetState, properties: WidgetProperties) -> AssetState:
         """
         """
         if getattr(state, 'unit', 0) > 0:

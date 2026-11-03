@@ -1,13 +1,17 @@
 """
+@script.context
+
 # Jinja2 Template Renderer
 
 This module automates the generation of context-rich Markdown files. It extends the standard Jinja2 environment with custom hooks for filesystem access and shell command execution, allowing templates to dynamically include the latest project state.
 
 Usage:
-    python task.py [template_file] [--output output_file] [--vars vars_file]
+    python task.py [template] [--output output_file] [--vars vars_file]
 
 Dependencies:
 - jinja2
+- panflute
+- pydantic
 - pyyaml
 
 Security Warning:
@@ -15,74 +19,275 @@ Security Warning:
 """
 
 # Standard Libraries
-
-import argparse
+from collections import defaultdict
+from contextvars import ContextVar
 from datetime import datetime
+from functools import wraps
+from itertools import chain
+from pathlib import Path
+from typing import Union, Any, Dict, List, Callable
+import argparse
+import ast
+import inspect
 import os
 import re
 import subprocess
 import sys
+import traceback
 
 # External Libraries
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 import jinja2
+import panflute as pf
 import yaml as pyyaml
 
-# -------------------- Configuration
+# ----------------------------------------------------------------
+# -------------------------------------------------- CONFIGURATION
+# ----------------------------------------------------------------
 
-DEFAULT_TEMPLATE                = 'main.md.j2'
-DEFAULT_VARS_FILE               = 'main.yaml'
-DEFAULT_OUTPUT_SUBDIR           = ''
-DEFAULT_OUTPUT_FILE             = 'prompt.md'
-TEMPLATES                       = "tasks"
+OUTPUT_DIR                      = os.environ.get('OUTPUT_DIR', 'build')
+DATA_DIR                        = os.environ.get('DATA_DIR', 'data')
+SHELL                           = os.environ.get('SHELL', '/bin/bash')
 
-MARKDOWN_TYPE_HINTS = {
-    'bash': 'bash',
-    'c': 'c',
-    'cc': 'cpp',
-    'cpp': 'cpp',
-    'cs': 'csharp',
-    'css': 'css',
-    'diff': 'diff',
-    'dockerfile': 'dockerfile',
-    'go': 'go',
-    'h': 'c',
-    'hpp': 'cpp',
-    'html': 'html',
-    'ini': 'ini',
-    'java': 'java',
-    'js': 'javascript',
-    'json': 'json',
-    'jsx': 'jsx',
-    'kt': 'kotlin',
-    'lua': 'lua',
-    'md': 'markdown',
-    'patch': 'diff',
-    'php': 'php',
-    'py': 'python',
-    'r': 'r',
-    'rb': 'ruby',
-    'rs': 'rust',
-    'scala': 'scala',
-    'sh': 'bash',
-    'sql': 'sql',
-    'svg': 'xml',
-    'swift': 'swift',
-    'toml': 'toml',
-    'ts': 'typescript',
-    'tsx': 'tsx',
-    'xml': 'xml',
-    'yaml': 'yaml',
-    'yml': 'yaml',
-    'zsh': 'zsh',
+# ----------------------------------------------------------------
+# ------------------------------------ APP CONTEXT & MACRO REGISTRY
+# ----------------------------------------------------------------
+
+class AppContext(BaseModel):
+    """
+    Pydantic model holding all configuration loaded from the `data/` directory,
+    keyed by the YAML filename stem.
+    """
+    model_config = ConfigDict(extra="allow")
+
+    defaults: Dict[str, Any] = Field(default_factory=dict)
+    queries: Dict[str, Any] = Field(default_factory=dict)
+    typehints: Dict[str, str] = Field(default_factory=dict)
+    properties: Dict[str, Any] = Field(default_factory=dict)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _unwrap_typehints(cls, data: Any) -> Any:
+        """
+        Supports `typehints.yaml` whether it is structured with a top-level
+        `MARKDOWN_TYPE_HINTS:` key or as a flat dictionary of extensions.
+        """
+        if isinstance(data, dict) and "typehints" in data:
+            th = data["typehints"]
+            if isinstance(th, dict) and "MARKDOWN_TYPE_HINTS" in th:
+                data["typehints"] = th["MARKDOWN_TYPE_HINTS"]
+        return data
+
+
+_context: ContextVar[AppContext] = ContextVar("active_context", default=AppContext())
+_REGISTRY: Dict[str, Callable] = {}
+
+
+def macro(func: Callable | None = None, *, name: str | None = None) -> Callable:
+    """
+    Decorator that automatically registers a function into the Jinja2 environment
+    and transparently injects `AppContext` if the function's first parameter is
+    named `ctx` or `context` (or annotated with `AppContext`).
+    """
+    def decorator(fn: Callable) -> Callable:
+        macro_name = name or fn.__name__
+        sig = inspect.signature(fn)
+        params = list(sig.parameters.values())
+
+        wants_ctx = bool(
+            params and (
+                params[0].name in ("ctx", "context")
+                or params[0].annotation is AppContext
+            )
+        )
+
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            if wants_ctx:
+                return fn(_context.get(), *args, **kwargs)
+            return fn(*args, **kwargs)
+
+        _REGISTRY[macro_name] = wrapper
+        return wrapper
+
+    if func is not None:
+        return decorator(func)
+    return decorator
+
+# ----------------------------------------------------------------
+# ------------------------------------------------ MARKDOWN MACROS
+# ----------------------------------------------------------------
+
+MD_MODIFIERS = {
+    # Increases or decreases heading levels (clamped between 1 and 6)
+    "header": lambda shift: (
+        lambda elem, _doc: (
+            setattr(elem, "level", min(max(elem.level + int(shift), 1), 6))
+            if isinstance(elem, pf.Header)
+            else None
+        )
+    ),
+    # Example: set fallback language for untyped fenced code blocks
+    "default-codeblock": lambda lang: (
+        lambda elem, _doc: (
+            elem.classes.append(str(lang))
+            if isinstance(elem, pf.CodeBlock) and not elem.classes
+            else None
+        )
+    ),
+    # Prefix all relative URLs with a base repository path
+    "url": lambda prefix: (
+        lambda elem, _doc: (
+            setattr(elem, "url", f"{prefix.rstrip('/')}/{elem.url.lstrip('/')}")
+            if isinstance(elem, pf.Link) and not elem.url.startswith(("http://", "https://", "#"))
+            else None
+        )
+    )
 }
 
-# -------------------- Templating Functions
+# ----------------------------------------------------------------
+# -------------------------------------------- UTILITIES FUNCTIONS
+# ----------------------------------------------------------------
 
-def typehint(filepath: str) -> str:
+def _asterisks(text: str) -> str:
     """
-    Infers a Markdown code block type hint from the file extension of filepath.
+    Converts list bullet markers from '-' to '*' while preserving
+    code blocks and horizontal rules.
+    """
+    in_code_block = False
+    out_lines = []
+    # Matches indentation and optional blockquote prefixes followed by '- '
+    bullet_pattern = re.compile(r"^([ \t]*(?:>[ \t]*)*)-\s+(.*)$")
+
+    for line in text.splitlines():
+        if line.strip().startswith("```"):
+            in_code_block = not in_code_block
+            out_lines.append(line)
+            continue
+
+        if not in_code_block:
+            match = bullet_pattern.match(line)
+            if match:
+                prefix, rest = match.groups()
+                line = f"{prefix}* {rest}"
+
+        out_lines.append(line)
+
+    return "\n".join(out_lines)
+
+
+def _docstring(file_path: Path) -> str | None:
+    """
+    Extracts module-level docstring using AST, falling back to reading
+    the initial triple-quoted string if Cython syntax causes a SyntaxError.
+    """
+    try:
+        content = file_path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        return None
+
+    try:
+        tree = ast.parse(content)
+        return ast.get_docstring(tree)
+    except SyntaxError:
+        # Skip leading comments (e.g. # cython: ...) and empty lines
+        lines = content.splitlines()
+        idx = 0
+        while idx < len(lines) and (not lines[idx].strip() or lines[idx].strip().startswith("#")):
+            idx += 1
+
+        remaining = "\n".join(lines[idx:]).strip()
+        for quote in ('"""', "'''"):
+            if remaining.startswith(quote):
+                end_idx = remaining.find(quote, len(quote))
+                if end_idx != -1:
+                    return remaining[len(quote):end_idx]
+        return None
+
+def _load(loadpath: str | Path) -> dict:
+    """
+    Loads variables from a YAML file.
 
     Args:
+        vars_path (str | Path): Path to the YAML file.
+
+    Returns:
+        dict: The parsed YAML data, or an empty dict if the file 
+              does not exist or cannot be parsed.
+    """
+    if not os.path.exists(loadpath):
+        return {}
+
+    try:
+        with open(loadpath, 'r', encoding='utf-8') as f:
+            data = pyyaml.safe_load(f)
+            print(f"Loaded variables from '{loadpath}'.")
+            return data if data else {}
+    except pyyaml.YAMLError as e:
+        print(f"Error parsing YAML from '{loadpath}': {e}")
+        return {}
+    except Exception as e:
+        print(f"Error reading vars file '{loadpath}': {e}")
+        return {}
+
+
+def _data(data_dir: str | Path) -> Dict[str, Any]:
+    """
+    Loads all YAML (.yaml, .yml) files in `data_dir` into a dictionary
+    keyed by each file's stem (filename without extension).
+    """
+    path = Path(data_dir).expanduser().resolve()
+    if not path.is_dir():
+        return {}
+
+    loaded: Dict[str, Any] = {}
+    for file_path in sorted(chain(path.glob("*.yaml"), path.glob("*.yml"))):
+        if file_path.is_file():
+            loaded[file_path.stem] = _load(file_path)
+
+    return loaded
+
+
+def _validate(content: str, output_path: str = "") -> list[tuple[int, str]]:
+    """
+    Scans rendered output for missing file errors enclosed in triple tick marks (```).
+
+    Args:
+        content (str): The rendered markdown text.
+        output_path (str, optional): Target output path for reporting location.
+
+    Returns:
+        list[tuple[int, str]]: Found occurrences as (line_number, error_message).
+    """
+    block_pattern = re.compile(r"```([\s\S]*?)```")
+    error_pattern = re.compile(r"Error: File not found at [^\n`]+")
+
+    errors = []
+    for block_match in block_pattern.finditer(content):
+        block_text = block_match.group(1)
+        for err_match in error_pattern.finditer(block_text):
+            char_pos = block_match.start(1) + err_match.start()
+            line_no = content[:char_pos].count('\n') + 1
+            err_msg = err_match.group(0).strip()
+            errors.append((line_no, err_msg))
+
+            location = f" in '{output_path}'" if output_path else ""
+            print(f"Error at line {line_no}{location}: {err_msg}")
+
+    return errors
+
+# ----------------------------------------------------------------
+# --------------------------------------------- TEMPLATE FUNCTIONS
+# ----------------------------------------------------------------
+
+@macro
+def typehint(context: AppContext, filepath: str) -> str:
+    """
+    Infers a Markdown code block type hint from the file extension of filepath
+    using the `typehints` configuration in `AppContext`.
+
+    Args:
+        ctx (AppContext): Automatically injected application context.
         filepath (str): The path or filename to evaluate.
 
     Returns:
@@ -90,10 +295,11 @@ def typehint(filepath: str) -> str:
     """
     _, ext = os.path.splitext(filepath)
     cleaned_ext = ext.lstrip('.').lower()
-    return MARKDOWN_TYPE_HINTS.get(cleaned_ext, '')
+    return context.typehints.get(cleaned_ext, '')
 
 
-def command(command_str: str) -> str:
+@macro
+def command(command_str: str, command_env: dict[str, str] | None = None) -> str:
     """
     Executes a shell command and returns the standard output.
 
@@ -107,13 +313,18 @@ def command(command_str: str) -> str:
         str: The stripped stdout of the command, or an error message if execution fails.
              This ensures the template rendering does not crash on a single failed command.
     """
+    env = os.environ.copy()
+    if command_env:
+        env.update(command_env)
+
     try:
-        # Security Note: shell=True is necessary for pipes/complex commands but carries RCE risk.
         result = subprocess.check_output(
             command_str,
             shell=True,
             stderr=subprocess.STDOUT,
-            text=True
+            executable=SHELL,
+            text=True,
+            env=env
         )
         return result.strip()
     except subprocess.CalledProcessError as e:
@@ -122,6 +333,7 @@ def command(command_str: str) -> str:
         return f"Execution failed: {str(e)}"
 
 
+@macro
 def file(file_path: str) -> str:
     """
     Reads a file from the absolute or relative path provided and returns its content.
@@ -145,6 +357,120 @@ def file(file_path: str) -> str:
         return f"Error reading file: {str(e)}"
 
 
+@macro
+def annotations(directory: str, tags: List[str], strategy: str = "OR") -> List[Dict[str, Any]]:
+    """
+    Scans a directory for Python files containing `@tags` in their docstring.
+    Groups matching files by package, sorting packages and modules hierarchically.
+
+    Args:
+        directory: Root directory path to scan.
+        tags: A single tag or list of tags to match.
+        strategy: Matching strategy - "OR" (matches if any tag is present)
+                  or "AND" (matches only if all tags are present).
+    """
+    strat = strategy.upper()
+    if strat not in {"OR", "AND"}:
+        raise ValueError(f"Invalid strategy '{strategy}'. Supported strategies are 'OR' and 'AND'.")
+
+    root = Path(directory).resolve()
+    target_tokens = {f"@{t.lstrip('@')}" for t in tags}
+
+    package_groups: Dict[str, list] = defaultdict(list)
+
+    for file_path in chain(root.rglob("*.py"), root.rglob("*.pyx")):
+        if file_path.name.startswith((".", "_")) and file_path.name != "__init__.py":
+            continue
+
+        docstring = _docstring(file_path)
+        if not docstring:
+            continue
+
+        doc_tokens = set(docstring.split())
+
+        # Evaluate tag match according to selected strategy
+        if strat == "AND":
+            if not target_tokens.issubset(doc_tokens):
+                continue
+        else:
+            if not target_tokens.intersection(doc_tokens):
+                continue
+
+        # Relative paths and package hierarchy
+        rel_file = file_path.relative_to(root)
+        rel_parts = rel_file.with_suffix("").parts
+        if rel_parts[-1] == "__init__":
+            rel_parts = rel_parts[:-1]
+
+        package = ".".join(rel_parts[:-1]) if len(rel_parts) > 1 else ""
+        module = rel_parts[-1] if rel_parts else ""
+        import_path = ".".join(rel_parts)
+
+        package_groups[package].append({
+            "name": file_path.name,
+            "module": module,
+            "import": import_path,
+            "paths": {
+                "relative": rel_file.as_posix(),
+                "absolute": str(file_path.resolve()),
+            }
+        })
+
+    output = []
+    # Sort packages hierarchically: ('app', 'game') comes before ('app', 'game', 'logic')
+    sorted_packages = sorted(package_groups.keys(), key=lambda p: tuple(p.split(".")) if p else ())
+
+    for package in sorted_packages:
+        # Depth equals number of segments: "app.game" -> 2, "app.services.generators" -> 3
+        depth = len(package.split(".")) if package else 1
+        sorted_modules = sorted(package_groups[package], key=lambda m: m["module"])
+
+        output.append({
+            "package": package or "<root>",
+            "depth": depth,
+            "modules": sorted_modules,
+        })
+
+    return output
+
+
+@macro
+def md(file_path: str, modifications: Union[dict, None] = None) -> str:
+    """
+    Loads a Markdown file, applies transformations via MD_MODIFIERS,
+    and returns the rendered Markdown string with '*' bullet lists.
+    """
+    full_path = os.path.expanduser(file_path)
+
+    if not os.path.exists(full_path):
+        return f"Error: File not found at {full_path}"
+
+    try:
+        with open(full_path, "r", encoding="utf-8") as f:
+            content = f.read()
+    except Exception as e:
+        return f"Error reading file: {str(e)}"
+
+    try:
+        doc = pf.convert_text(content, input_format="markdown", standalone=True)
+
+        if modifications and isinstance(modifications, dict):
+            for key, val in modifications.items():
+                if key in MD_MODIFIERS and val is not None:
+                    doc.walk(MD_MODIFIERS[key](val))
+
+        rendered = pf.convert_text(
+            doc,
+            input_format="panflute",
+            output_format="markdown",
+            extra_args=["--wrap=none"]
+        )
+        return _asterisks(rendered.strip())
+    except Exception as e:
+        return f"Error processing markdown with panflute: {str(e)}"
+
+
+@macro
 def dumps(path: str) -> str:
     """
     Scans the path for any state-dump files (yyyymmdd_hhmmss.state-dump.md),
@@ -186,6 +512,7 @@ def dumps(path: str) -> str:
     return file(os.path.join(full_path, latest_filename))
 
 
+@macro
 def logs(path: str) -> str:
     """
     Scans the path for any log files (ontology_yyyy-mm-dd-execution.log),
@@ -229,6 +556,7 @@ def logs(path: str) -> str:
     return file(os.path.join(full_path, latest_filename))
 
 
+@macro
 def markdown(
     path: str, 
     exclude: list | tuple | str | None = None, 
@@ -286,7 +614,8 @@ def markdown(
         return []
 
 
-def yaml(path: str, recursive: bool = False) -> list:
+@macro
+def yamls(path: str, recursive: bool = False) -> list:
     """
     Returns a list of all YAML (.yaml, .yml) files contained in the 
     specified path.
@@ -325,34 +654,8 @@ def yaml(path: str, recursive: bool = False) -> list:
         return []
 
 
-def load(vars_path: str) -> dict:
-    """
-    Loads variables from a YAML file.
-
-    Args:
-        vars_path (str): Path to the YAML file.
-
-    Returns:
-        dict: The parsed YAML data, or an empty dict if the file 
-              does not exist or cannot be parsed.
-    """
-    if not os.path.exists(vars_path):
-        return {}
-
-    try:
-        with open(vars_path, 'r', encoding='utf-8') as f:
-            data = pyyaml.safe_load(f)
-            print(f"Loaded variables from '{vars_path}'.")
-            return data if data else {}
-    except pyyaml.YAMLError as e:
-        print(f"Error parsing YAML from '{vars_path}': {e}")
-        return {}
-    except Exception as e:
-        print(f"Error reading vars file '{vars_path}': {e}")
-        return {}
-
-
-def now(kind: str = None):
+@macro
+def now(kind: str = None) -> str:
     dt = datetime.now()
     if kind == "apache":
         return dt.strftime("%d/%b/%Y:%H:%M:%S")
@@ -360,78 +663,50 @@ def now(kind: str = None):
         return dt.strftime("%Y-%m-%d %H:%M:%S")
     return dt.strftime("%Y-%m-%d %H:%M:%S")
 
+# ----------------------------------------------------------------
+# --------------------------------------------- RENDERING PIPELINE
+# ----------------------------------------------------------------
 
-def _validate(content: str, output_path: str = "") -> list[tuple[int, str]]:
-    """
-    Scans rendered output for missing file errors enclosed in triple tick marks (```).
-
-    Args:
-        content (str): The rendered markdown text.
-        output_path (str, optional): Target output path for reporting location.
-
-    Returns:
-        list[tuple[int, str]]: Found occurrences as (line_number, error_message).
-    """
-    block_pattern = re.compile(r"```([\s\S]*?)```")
-    error_pattern = re.compile(r"Error: File not found at [^\n`]+")
-
-    errors = []
-    for block_match in block_pattern.finditer(content):
-        block_text = block_match.group(1)
-        for err_match in error_pattern.finditer(block_text):
-            char_pos = block_match.start(1) + err_match.start()
-            line_no = content[:char_pos].count('\n') + 1
-            err_msg = err_match.group(0).strip()
-            errors.append((line_no, err_msg))
-
-            location = f" in '{output_path}'" if output_path else ""
-            print(f"Error at line {line_no}{location}: {err_msg}")
-
-    return errors
-
-
-def render(template_path: str, output_path: str, vars_path: str) -> None:
+def render(template_path: str, output_path: str, vars_path: str, context: AppContext) -> None:
     """
     Orchestrates the Jinja2 rendering workflow.
 
     Initializes a Jinja2 Environment with the directory containing this script as the loader.
-    Injects the custom template functions into the global namespace, loads optional 
+    Injects the registered `@macro` functions into the global namespace, loads optional 
     variables from YAML, renders the specified template, and writes the result to disk.
 
     Args:
         template_path (str): The filename of the Jinja2 template to render.
         output_path (str): The absolute or relative path to save the rendered output.
         vars_path (str): The path to the variables YAML file.
+        ctx (AppContext): The loaded application configuration context.
 
     Raises:
         jinja2.TemplateNotFound: If the specified template file does not exist.
         Exception: For generic IO or rendering errors.
     """
+    default_templates = context.defaults.get('templates', 'tasks')
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    templates  = os.path.join(script_dir, TEMPLATES) 
+    templates  = os.path.join(script_dir, default_templates)
 
-    # Set up the Jinja2 environment
-    env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader([script_dir, templates]),
-        autoescape=False,
-        trim_blocks=True,
-        lstrip_blocks=True
-    )
-
-    # Register custom functions into the Jinja globals
-    env.globals['command'] = command
-    env.globals['file'] = file
-    env.globals['markdown'] = markdown
-    env.globals['yaml'] = yaml
-    env.globals['now'] = now
-    env.globals['typehint'] = typehint
-    env.globals['dumps'] = dumps
-    env.globals['logs'] = logs
-
-    # Load context files
-    vars_data = load(vars_path)
+    token = _context.set(context)
 
     try:
+        # Set up the Jinja2 environment
+        env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader([script_dir, templates]),
+            autoescape=False,
+            trim_blocks=True,
+            lstrip_blocks=True
+        )
+
+        # Automatically register all @macro decorated functions
+        env.globals.update(_REGISTRY)
+
+        # Load context files
+        vars_data = _load(vars_path)
+        vars_data.update(context.properties)
+        
         template = env.get_template(template_path)
         rendered_output = template.render(**vars_data)
         output_dir = os.path.dirname(output_path)
@@ -448,40 +723,63 @@ def render(template_path: str, output_path: str, vars_path: str) -> None:
         _validate(rendered_output, output_path)
 
     except jinja2.TemplateNotFound as e:
-        print(f"Error: Could not find template '{e.name}' (called during render of '{template_path}').")
+        print(f"Error: Template not found: '{e.name}' (referenced in '{template_path}')")
+        sys.exit(1)
+    except jinja2.TemplateSyntaxError as e:
+        print(f"Jinja Syntax Error: {e.message}")
+        print(f"  File: {e.filename or template_path}:{e.lineno}")
+        sys.exit(1)
+    except jinja2.TemplateRuntimeError as e:
+        print(f"Jinja Runtime Error in '{template_path}': {e}")
+        traceback.print_exc()
+        sys.exit(1)
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        print(f"Error during rendering of '{template_path}': {e}")
+        traceback.print_exc()
+        sys.exit(1)
+    finally:
+        _context.reset(token)
 
-# -------------------- Entrypoint
+# ----------------------------------------------------------------
+# ----------------------------------------------------- ENTRYPOINT
+# ----------------------------------------------------------------
 
 if __name__ == "__main__":
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    data_dir   = os.path.join(script_dir, DATA_DIR)
+
+    # Load all YAMLs from data/ into AppContext
+    context = AppContext(**_data(data_dir))
+
+    vars_file = context.defaults.get('vars', 'main.yaml')
+    output_file = context.defaults.get('output', 'prompt.md')
+    default_output = os.path.join(script_dir, OUTPUT_DIR, output_file)
+    
     parser = argparse.ArgumentParser(
         description="Render Jinja2 templates into Markdown."
     )
 
     parser.add_argument(
-        "template_file",
+        "template",
         nargs="?", 
-        default=DEFAULT_TEMPLATE,
-        help=f"The Jinja2 template file to render (default: {DEFAULT_TEMPLATE})"
+        default=context.defaults.get('template', 'main.md.j2'),
+        help=f"The Jinja2 template file to render."
     )
 
     parser.add_argument(
-        "-o", "--output",
-        help=f"The output filename. Defaults to '{os.path.join(DEFAULT_OUTPUT_SUBDIR, DEFAULT_OUTPUT_FILE)}' relative to the script directory."
+        "-o", 
+        "--output",
+        help=f"The output filename."
     )
 
     parser.add_argument(
         "-v", "--vars",
-        help=f"Path to a YAML file containing variables (default: {DEFAULT_VARS_FILE} in script directory)."
+        help=f"Path to a YAML file containing variables.."
     )
 
     args = parser.parse_args()
 
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-
-    target_output = args.output \
-        or os.path.join(script_dir, DEFAULT_OUTPUT_SUBDIR, DEFAULT_OUTPUT_FILE)
+    target_output = args.output or default_output
 
     if args.vars:
         target_vars = args.vars
@@ -489,6 +787,6 @@ if __name__ == "__main__":
             print(f"Error: The specified variables file '{target_vars}' does not exist.")
             sys.exit(1)
     else:
-        target_vars = os.path.join(script_dir, DEFAULT_VARS_FILE)
+        target_vars = os.path.join(script_dir, vars_file)
 
-    render(args.template_file, target_output, target_vars)
+    render(args.template, target_output, target_vars, context)

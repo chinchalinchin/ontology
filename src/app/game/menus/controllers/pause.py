@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.controllers.pause
+# Ontology: Source - app.game.menus.controllers.pause
 
 Menu controller handling pause state actions: saving, loading, options, and exiting.
 """
@@ -11,7 +11,7 @@ import logging
 from typing import TYPE_CHECKING
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     Selections,
     Menus
 )
@@ -49,9 +49,10 @@ class PauseController(MenuController):
         selector = widget.binding.selector
 
         if selection == Selections.SAVE.value:
-            slot = selector
-            logger.info(f"Executing save to slot '{slot}'...")
-            board.serialize(slot)
+            world = selector
+            logger.info(f"Executing save of world '{world}'...")
+            # TODO: parameterize slot selection
+            board.serialize(world, '0')
 
         elif selection == Selections.LOAD.value:
             slot = selector

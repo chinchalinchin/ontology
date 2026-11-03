@@ -1,5 +1,11 @@
 """
-# Ontology: app.game.logic.mechanics.spatial.switch
+@domain.concrete
+@domain.logic
+@app.mechanic
+@physics.space
+@category.objects
+
+# Ontology: Source - app.game.logic.mechanics.spatial.switch
 
 Package for SwitchMechanics
 """
@@ -12,7 +18,7 @@ import collections
 if TYPE_CHECKING:
     from app.game.board import Board
 
-from app.config.enums import (
+from app.static.semantics import (
     AssetCategories, 
     AssetInstances
 )

@@ -1,56 +1,133 @@
 # ----------------------------------------------------
-properties:
-  files:
-    index: index.md
-    mkdocs: mkdocs.yaml
-  paths:
-    # ---------------------------------------
-    root: <path>
-    # ---------------------------------------
-    actions: .githubs/workflows/
-    # ---------------------------------------
-    blocks: .prompts/tasks/blocks/
-    board: .prompts/board/
-    docs: docs/
-    diagrams: docs/static/mmd/
-    dumps: src/data/dumps/
-    fixtures: tests/unit/fixtures/
-    logs: src/data/logs/
-    phases: .prompts/board/phases/
-    templates: .prompts/board/templates
-    tests: tests/unit/
-  project:
-    title: ontology
-  user:
-    username: <username>
-    ssh: <keypath>
-    hostname: <hostname>
-  urls: 
-    github: github.com/chinchalinchin
+# -------------------------------------- TASK.TEMPLATE
+# ----------------------------------------------------
+# --------------------- TEMPLATES: ANALYSIS
+# template: analysis/automaton.md.j2
+# template: analysis/engine.md.j2
+# --------------------- TEMPLATES: CONSOLE
+# template: console/enumeration.md.j2
+# template: console/patch.md.j2
+# template: console/session.md.j2
+# --------------------- TEMPLATES: MAINTENANCE
+# template: maintain/pipeline.md.j2
+# template: maintain/script.md.j2
+# --------------------------- TEMPLATES: DUMPS 
+# template: report/menus.md.j2
+# template: report/state.md.j2
+# ----------------------- TEMPLATES: ITERATION
+# template: iterate/documentation.md.j2
+# template: iterate/grooming.md.j2
+# template: iterate/implementation.md.j2
+# template: iterate/coverage.md.j2
+# template: iterate/review.md.j2
+# template: iterate/conclusion.md.j2
+# -------------------------- TEMPLATES: DESIGN
+# template: design/structure/menu.md.j2
+# template: design/structure/composition.md.j2
+# template: design/structure/score.md.j2
+# template: design/diagram/hierarchy.md.j2
+# template: design/diagram/automata.md.j2
+# template: design/diagram/stages.md.j2
+# template: design/style/mermaid.md.j2
+# ----------------------------------------------------
+# --------------------- TOOLS.PARAMETERS.SOURCE.FILTER
+# ----------------------------------------------------
+# default: AND | OR
+# queries:
+# - title: TITLE
+#   strategy: AND | OR
+#   scan:
+#     app: [ 
+#             asset, base, core, 
+#             component, config, device,
+#             schema, semantics, service, 
+#             mechanic 
+#     ]
+#     asset: [ 
+#             property, state, frame,
+#             animation, hitbox 
+#     ]
+#     domain: [ 
+#               abstract, automata, concrete, 
+#               model, logic, graphics, 
+#               test, system, user
+#     ]
+#     category: [ 
+#               crafts, cursors, effects,
+#               geography, objects, resources,
+#               sheets, tiles, widgets 
+#     ]
+#     physics: [ 
+#               fields, motion, space 
+#     ]
+#     test: [
+#               unit, integration
+#     ]
+#     workflows: [ 
+#               cli, collisions, combat,
+#               compositions, cognition, ecology, 
+#               fluids, hydration, interactions, 
+#               main, menus, orchestration,
+#               navgiation, rendering, seasons,
+#               telemetry, transitions
+#     ]
+# ----------------------------------------------------
+# ------------------------ TOOL.PARAMETERS.SOURCE.DATA
+# ----------------------------------------------------
+#     properties: [ 
+#               crafts, cursors, effects,
+#               fonts, geography, objects
+#               resources, sheets, sounds
+#               tiles, widgets
+#     ]
+#     state: [
+#               world-01, world-testbed
+#     ]
+#     configurations: [
+#               actions, compositions, intentions,
+#               library, mappings, materials,
+#               mechanics, menus, plots,
+#               recipes, stages
+#     ]
+#     templates: [
+#               menu-dump, registry-dump, sdl-dump, 
+#               state-dump
+#     ]
+# ----------------------------------------------------
+# ----------------------------------------------- TASK
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: <path>/<file>.md.j2
+  template: <path>
 # ----------------------------------------------------
   parameters:
-    diagram: <diagram>.mmd
-    workflow: <workflow>
+    automata: <automata>
+    composition: <composition>
+    diagram: <diagram>
+    table: <table>
+# ----------------------------------------------------
+# ---------------------------------------------- TOOLS
 # ----------------------------------------------------
 tools:
 # ----------------------------------------------------
   views:
+    # ------------------------------------------------
     manager:
       board: false
       specs: false
       docs: false
+    # ------------------------------------------------
+    metrics:
+      pstats: false
+    # ------------------------------------------------
     source:
       data: false
-      models: false
-      workflow: false
-      script: false
+      filter: false
+    # ------------------------------------------------
     shell:
       directory: false
       commands: false
+    # ------------------------------------------------
     tests:  
       console: false
       fixtures: false
@@ -58,6 +135,7 @@ tools:
       workflow: false
 # ----------------------------------------------------
   parameters:
+    # ------------------------------------------------
     manager:
       board:
         phase: <phase>
@@ -67,28 +145,38 @@ tools:
           - <doc-page>.md
       specs:
         - <spec-page>.md
+    # ------------------------------------------------
+    metrics:
+      pstats:
+        run: <run-command>
+        dot: <dot-command>
+    # ------------------------------------------------
     source:
+      filter:
+        default: <AND | OR>
+        queries:
+            - title: <title>
+              strategy: <AND | OR>
+              scan: 
+                <tag-prefix>: [ <tag> ]
       data:
         configurations: 
           - <configuration>
         properties: 
           - <property>
-      models: 
-        configurations:
-          - <configuration>
-        properties:
-          - <property>
-        state:
+        state: 
           - <state>
-      workflow: <workflow>
-      script: <script>
+    # ------------------------------------------------
     shell:
-      directory: tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
+      directory: <cmd>
       commands: []
+    # ------------------------------------------------
     tests:
       console:
         pytest: pytest -m 
         marker: <workflow>
+        # scope: BASH Expansion Expression
+        scope: <scope>
       fixtures:
         - <fixture>
       workflow: <workflow>

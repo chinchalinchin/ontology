@@ -1,0 +1,56 @@
+### View: Filter
+
+The Filter View *queries* the codebase based on the **Active Tags** and the **Filter Strategy**.
+
+{% for query in tools.parameters.source.filter.queries %}
+{# -------------------------------------------- #}
+{% set query_idx = loop.index %}
+{% set title = query.title %}
+{% set strategy = query.strategy or tools.parameters.source.filter.default %}
+{% set tags = [] %}
+{% for prefix, items in [
+    ('app.', query.scan.app),
+    ('domain.', query.scan.domain),
+    ('asset.', query.scan.asset),
+    ('category.', query.scan.category),
+    ('modality.', query.scan.modality),
+    ('physics.', query.scan.physics),
+    ('test.', query.scan.test),
+    ('workflow.', query.scan.workflows)
+] %}
+{% for item in items %}
+{% set _ = tags.append(prefix ~ item) %}
+{% endfor %}
+{% endfor %}
+{# -------------------------------------------- #}
+#### Query #{{ query_idx }}: {{ title }}
+
+* **Filter Strategy**: `{{ strategy }}`
+* **Active Tags**: `{{ tags | join('`, `') }}`
+
+{% for pkg in annotations(properties.paths.root ~ 'src', tags, strategy) %}
+##### Matched Source Package: {{ pkg.package }}
+
+{% for mod in pkg.modules %}
+**Matched Module: `src/{{ mod.paths.relative }}`**
+
+```{{ typehint(mod.paths.relative) }}
+{{ file(mod.paths.absolute) }}
+```
+
+{% endfor %}
+{% endfor %}
+
+{% for pkg in annotations(properties.paths.root ~ 'tests/unit', tags, strategy) %}
+##### Matched Test Package: {{ pkg.package }}
+
+{% for mod in pkg.modules %}
+**Matched Module: `tests/unit/{{ mod.paths.relative }}`**
+
+```{{ typehint(mod.paths.relative) }}
+{{ file(mod.paths.absolute) }}
+```
+
+{% endfor %}
+{% endfor %}
+{% endfor %}

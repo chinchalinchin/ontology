@@ -5,8 +5,8 @@ sheets:
       layer: '0'
       depth: 0
       position:
-        x: 10
-        y: 80
+        x: 05
+        y: 60
       meters:
         health: 
           current: 50

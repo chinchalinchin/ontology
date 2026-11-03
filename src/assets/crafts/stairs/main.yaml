@@ -1,22 +1,15 @@
 crafts:
   stairs:
-    steps-stone:
+    steps:
       dimensions:
         w: 64
         l: 96
       mass: -1
-      cost:
-        - item: stone
-          quantity: 12
+      material:
+        genus: geologics
+      blueprints: inclines
       hitboxes:
         up:
-          - position:
-              x: 0
-              y: 0
-            dimensions:
-              w: 32
-              l: 96
-        down:
           - position:
               x: 0
               y: 0
@@ -28,12 +21,12 @@ crafts:
               x: 0
               y: 0
             dimensions:
-              w: 96
+              w: 64
               l: 32
         right:
           - position:
               x: 0
               y: 0
-            dimensions:
-              w: 96
+            dimensions: 
+              w: 64
               l: 32

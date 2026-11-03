@@ -1,5 +1,9 @@
 """
-# Ontology: app.services.generators.menus.fabricator
+@domain.system
+@app.service
+@workflow.menus
+
+# Ontology: Source - app.services.generators.menus.fabricator
 
 Package for constructing Gizmos.
 """
@@ -12,7 +16,7 @@ from typing import (
 )
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances,
     Layouts,
     Alignments,
@@ -60,7 +64,7 @@ class Fabricator:
             raise ValueError(f"Gizmo '{node.name}' declared without a binding schema.")
 
         handlers: Dict[str, Callable[[MenuNode, MenuContext, WidgetProperties], MenuNode]] = {
-            Bindings.COLLECTION.value: cls._expand_collection,
+            Bindings.COLLECTION.value: cls._collection,
         }
 
         handler = handlers.get(node.bind.schema)
@@ -73,7 +77,7 @@ class Fabricator:
 
 
     @classmethod
-    def _expand_collection(
+    def _collection(
         cls,
         node: MenuNode,
         context: MenuContext,

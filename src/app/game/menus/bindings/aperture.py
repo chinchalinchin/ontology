@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.bindings.aperture
+# Ontology: Source - app.game.menus.bindings.aperture
 
 Package for binding delegated aperture slot icons to parent Gizmo collection state.
 """

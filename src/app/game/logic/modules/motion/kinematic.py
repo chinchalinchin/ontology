@@ -1,5 +1,9 @@
 """
-# Ontology: app.game.logic.modules.motion.kinematic
+@domain.logic
+@app.module
+@physics.motion
+
+# Ontology: Source - app.game.logic.modules.motion.kinematic
 """
 # Standard Libraries
 from typing import List
@@ -7,7 +11,7 @@ from typing import List
 # Application Libraries
 from app.assets.base import Asset
 from app.models.state.devices import DevicePayload
-from app.config.enums import PlayerGoals
+from app.static.semantics import PlayerGoals
 
 # Cython Libraries
 import libs.core.math.physics as physics

@@ -1,5 +1,11 @@
 """
-# Ontology: app.game.logic.mechanics.spatial.combat
+@domain.logic
+@app.mechanic
+@category.sheets
+@physics.space
+@workflow.combat
+
+# Ontology: Source - app.game.logic.mechanics.spatial.combat
 
 Package for CombatMechanics
 """
@@ -14,7 +20,7 @@ import logging
 if TYPE_CHECKING:
     from app.game.board import Board
 
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances,
     Intentions,
     Actions
@@ -24,7 +30,6 @@ from app.game.logic.mechanics.spatial import SpatialMechanic
 from app.game.logic.modules.maps import CombatMap
 
 # Cython Libraries
-import libs.core.math.geometry as geometry
 import libs.core.math.physics as physics
 
 logger = logging.getLogger(__name__)

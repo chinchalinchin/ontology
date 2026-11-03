@@ -1,5 +1,14 @@
 """
-# Ontology: app.game.logic.mechanics.intentional.player
+@domain.concrete
+@domain.user
+@app.mechanic
+@category.sheets
+@modality.intention
+@workflow.player
+
+# Ontology: Source - app.game.logic.mechanics.intentional.player
+
+Unit Tests for PlayerMechanics
 """
 # Standard Libraries
 from __future__ import annotations
@@ -11,7 +20,7 @@ import collections
 if TYPE_CHECKING:
     from app.game.board import Board
 
-from app.config.enums import (
+from app.static.semantics import (
     Intentions,
     PlayerGoals,
     Goals,
@@ -34,8 +43,11 @@ from app.game.menus.contexts import (
 # Cython Libraries
 from libs.core.models import Position
 
+# --------------------------------------------------------------
+
 logger = logging.getLogger(__name__)
 
+# --------------------------------------------------------------
 
 class PlayerMechanics(Mechanic):
 
@@ -123,14 +135,20 @@ class PlayerMechanics(Mechanic):
                 player.state.goal.position
             )
 
-        if player.state.intention == Intentions.ATTACK:
-            logger.info(f"PlayerState(intention=attack, "
-                        f"action={player.state.animation.action})")
+        if player.state.intention == Intentions.ATTACK.value:
             eq = player.state.inventory.equipment
-            logger.info(f"Equipment("
-                        f"weapon={eq.weapon}, "
-                        f"armor={eq.armor}, "
-                        f"shield={eq.shield}, "
-                        f"tool={eq.tool}, "
-                        f"utility={eq.utility})"
+            logger.info(
+                f"SheetState("
+                f"id={player.id}"
+                f"name={player.name},"
+                f"intention={player.state.intention},"
+                f"action={player.state.animation.action})"
+            )
+            logger.info(
+                f"Equipment("
+                f"weapon={eq.weapon}, "
+                f"armor={eq.armor}, "
+                f"shield={eq.shield}, "
+                f"tool={eq.tool}, "
+                f"utility={eq.utility})"
             )

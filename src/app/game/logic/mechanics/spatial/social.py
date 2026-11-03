@@ -1,5 +1,12 @@
 """
-# Ontology: app.game.logic.mechanics.spatial.social
+@domain.concrete
+@domain.logic
+@app.mechanic
+@category.sheets
+@physics.space
+@modality.intention
+
+# Ontology: Source - app.game.logic.mechanics.spatial.social
 """
 from __future__ import annotations
 # Standard Libraries
@@ -8,7 +15,7 @@ import collections
 import logging
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     Intentions, 
     AssetInstances, 
     Goals, 

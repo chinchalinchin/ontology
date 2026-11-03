@@ -1,0 +1,147 @@
+"""
+@domain.model
+@app.asset
+@asset.state
+@category.sheets
+
+# Ontology: Source - app.models.state.sheets
+
+Sheet State Models.
+"""
+# Standard Libraries
+from typing import (
+    Dict, 
+    List,
+    Optional
+)
+from dataclasses import dataclass, field
+
+# Application Libraries
+from app.static.semantics import (
+    Intentions, 
+    Relationships,
+)
+from app.models.adapters import (
+    PydanticPosition as Position, 
+    PydanticVelocity as Velocity,
+    Enumerated
+)
+from app.models.state.core import (
+    AnimationState,
+    AssetState
+)
+from app.models.state.assets.cursors import AttachmentState
+
+# Cython Libraries
+from libs.core.models import (
+    Velocity as CoreVelocity, 
+    Position as CorePosition
+)
+
+# ---------------------------------------------------------------------------------------
+# ------------------------------------------------------------------- SPRITE STATE FIELDS
+
+@dataclass(slots=True)
+class Character:
+    strength: int = 10
+    defense: int = 10
+    speed: int = 10
+    impulse: int = 10
+
+# ---------------------------------------------------------------------------------------
+
+@dataclass(slots=True)
+class Meter:
+    current: int = 100
+    maximum: int = 100
+
+@dataclass(slots=True)
+class Meters:
+    health: Meter = field(default_factory=Meter)
+    magic: Meter = field(default_factory=Meter)
+
+# ---------------------------------------------------------------------------------------
+
+@dataclass(slots=True)
+class Equipment:
+    armor: Optional[str] = None
+    weapon: Optional[str] = None
+    tool: Optional[str] = None
+    utility: Optional[str] = None
+    shield: Optional[str] = None
+
+@dataclass(slots=True)
+class Inventory:
+    pack: Optional[Dict[str, int]] = field(default_factory=dict)
+    pouch: Optional[Dict[str, int]] = field(default_factory=dict)
+    equipment: Optional[Equipment] = field(default_factory=Equipment)
+    wallet: int = 0
+
+# ---------------------------------------------------------------------------------------
+
+@dataclass(slots=True)
+class Psyche:
+    persona: Optional[str] = None
+    motivation: Optional[str] = None
+    expression: Optional[AttachmentState] = None
+    dialogue: Optional[str] = None
+
+@dataclass(slots=True)
+class Goal:
+    name: Optional[str] = None
+    category: Optional[str] = None
+    layer: Optional[str] = None 
+    position: Optional[Position] = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
+
+@dataclass(slots=True)
+class Memory:
+    goals: Optional[Dict[str, Goal]] = field(default_factory=dict)
+    rumors: Optional[List[str]] = None
+    prices: Optional[Dict[str, float]] = None
+    relationships: Optional[Dict[str, Enumerated[Relationships]]] = None
+    property: Optional[Dict[str, Position]] = None # type: ignore
+    sprites: Optional[Dict[str, Position]] = None # type: ignore
+    doors: Optional[Dict[str, str]] = None
+
+    def __post_init__(self) -> None:
+        if self.goals is None:
+            self.goals = {}
+        if self.sprites is None:
+            self.sprites = {}
+        if self.relationships is None:
+            self.relationships = {}
+        if self.property is None:
+            self.property = {}
+        if self.rumors is None:
+            self.rumors = []
+        if self.doors is None:
+            self.doors = {} 
+
+@dataclass(slots=True)
+class Trajectory:
+    target: Optional[Position] = None # type: ignore
+    vertices: List[Position] = field(default_factory=list) # type: ignore
+    stalled: bool = False
+    cooldown: int = 0
+
+
+# ---------------------------------------------------
+# -------------------------------------  SHEET STATES
+# ---------------------------------------------------
+
+@dataclass(slots=True)
+class SheetState(AssetState):
+    position: Optional[Position] = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
+    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
+    animation: AnimationState = field(default_factory=AnimationState)
+    intention: Optional[Enumerated[Intentions]] = Intentions.IDLE.value
+    character: Optional[Character] = field(default_factory=Character)
+    inventory: Optional[Inventory] = field(default_factory=Inventory)
+    meters: Optional[Meters] = field(default_factory=Meters)
+    goal: Optional[Goal] = field(default_factory=Goal)
+
+@dataclass(slots=True)
+class SpriteState(SheetState):
+    memory: Optional[Memory] = field(default_factory=Memory)
+    psyche: Optional[Psyche] = field(default_factory=Psyche)
+    trajectory: Trajectory = field(default_factory=Trajectory)

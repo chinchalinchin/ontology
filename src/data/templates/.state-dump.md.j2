@@ -24,6 +24,9 @@
 
 ## {{ asset.name | default(asset.state.name if (asset.state is defined and asset.state.name is defined) else none, true) | default(asset.id, true) }}
 
+{% if asset.substrate is defined and asset.substrate is not none -%}
+- **Substrate**: `{{ asset.substrate }}`
+{% endif -%}
 - **Taxonomy:**
   - Category: `{{ asset.category }}`
   - Instance: `{{ asset.instance }}`

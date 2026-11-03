@@ -1,76 +1,35 @@
 objects:
   signs:
     # -----------------------------------------
-    # ----------------------------------- BOOKS
-    # -----------------------------------------
-    
-    # .. TODO(USER): Index books.
-
-    # -----------------------------------------
-    # --------------------------------- MARKERS
-    # -----------------------------------------
-    bulletin:
-      # description: Wooden bulletin board with postings. 
-      mass: 0
-      dimensions:
-        w: 30
-        l: 32
+    plaque:
+      dimensions: { w: 24, l: 24 }
+      mass: -1
+      count: 1
+      material:
+        genus: geologics
       hitboxes:
         - position:
-            x: 4
-            y: 4
+            x: 0
+            y: 0
           dimensions:
-            w: 22
-            l: 24
-    chalkboard: 
-      # description: Foldable chalkboard sign.
-      mass: 0
-      dimensions:
-        w: 32
-        l: 43
-      hitboxes:
-        - position: { x: 2, y: 15 }
-          dimensions: { w: 28, l: 28 }
+            w: 24
+            l: 30
+    # -----------------------------------------
     poster:
-      # description: Paper posting for a wall.
+      dimensions: { w: 30, l: 30 }
       mass: -1
-      priority: 1
-      dimensions: 
-        w: 15
-        l: 14
-      hitboxes:
-        - position: { x: 0, y: 0 }
-          dimensions: { w: 15, l: 14 }
-    post:
-      # description: Wooden sign post.
-      mass: 0
-      dimensions: 
-        w: 30
-        l: 32
-      hitboxes:
-        - position: { x: 4, y: 8 }
-          dimensions: { w: 22, l: 24 }
+      count: 1
+      material:
+        genus: chromatics
+        host: cotton
+      hitboxes: null
     # -----------------------------------------
-    # ---------------------------------- GRAVES
+    scroll:
+      dimensions: { w: 32, l: 32}
+      mass: -1
+      count: 1
+      material:
+        genus: chromatics
+        host: cotton
+      hitboxes: null
     # -----------------------------------------
-    bevel: 
-      mass: 0
-      dimensions:
-        w: 32
-        l: 32
-      hitboxes:
-        - position: { x: 2, y: 8 }
-          dimensions: { w: 28, l: 24 }
-    burial-mound:
-      mass: 0
-      dimensions:
-        w: 60
-        l: 97
-    headstone:
-      mass: 0
-      dimensions: 
-        w: 45
-        l: 44
-      hitboxes:
-        - position: { x: 4, y: 12 }
-          dimensions: { w: 37, l: 32 }

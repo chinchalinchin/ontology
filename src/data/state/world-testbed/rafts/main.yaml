@@ -1,0 +1,8 @@
+objects:
+  rafts: 
+    - id: rowboat
+      name: test-raft
+      layer: '0'
+      position:
+        x: 200
+        y: 390

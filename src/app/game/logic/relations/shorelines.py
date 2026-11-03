@@ -1,7 +1,13 @@
 """
-# Ontology: app.game.logic.relations.shorelines
+@domain.logic
+@app.module
+@category.geography
+@workflows.generation
+@workflow.fluids
 
-Relational index mapping terrain tiles, fluids, and seasons to shoreline asset IDs.
+# Ontology: Source - app.game.logic.relations.shorelines
+
+Relational index mapping Environ Tiles, Fluid Effects and Seasons to Geography Shorelines.
 """
 from __future__ import annotations
 
@@ -15,13 +21,19 @@ from typing import (
 )
 import logging
 
+# Application Library
+from app.models.abstracts import Singleton
+
 if TYPE_CHECKING:
     from app.models.properties import GeographyProperties
 
+# ---------------------------------------------------
+
 logger = logging.getLogger(__name__)
 
+# ---------------------------------------------------
 
-class ShorelineIndex:
+class ShorelineIndex(Singleton):
     """
     Relational secondary index mapping (tile_id, fluid_id, [season]) to shoreline Asset ID.
     Supports multi-level fallback:
@@ -30,8 +42,8 @@ class ShorelineIndex:
     3. (tile_id, None, season)
     4. (tile_id, None)
     """
-    _map: Dict[Tuple[str, Optional[str], Optional[str]], str]
-    _fallback_map: Dict[Tuple[str, Optional[str]], str]
+    _map: Dict[Tuple[str, Optional[str], Optional[str]], str] = {}
+    _fallback_map: Dict[Tuple[str, Optional[str]], str] = {}
 
     def __init__(self, relations: Optional[Dict[Any, str]] = None):
         self._map = {}

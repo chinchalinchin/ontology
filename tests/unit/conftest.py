@@ -1,55 +1,47 @@
 """
-# Ontology: tests.unit.conftest
+@domain.test
+@test.config
+
+# Ontology: Tests - tests.unit.conftest
+
+Unit test configuration.
 """
 # Standard Libraries
 import sys
+import os
 from pathlib import Path
 
-# External Libraries 
+# External Libraries
 import pytest
 
-# NOTE: Inject the src/ directory into the Python path prior to any local imports
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "src"))
+os.environ["SDL_VIDEODRIVER"] = "dummy"
+os.environ["SDL_AUDIODRIVER"] = "dummy"
+os.environ["SDL_RENDER_DRIVER"] = "software"
+
+UNIT_DIR = Path(__file__).resolve().parent
+ROOT_DIR = UNIT_DIR.parent.parent
+
+# Inject src/ into Python path prior to local imports
+sys.path.insert(0, str(ROOT_DIR / "src"))
 
 pytest_plugins = [
+    "tests.unit.fixtures.schemas",
     "tests.unit.fixtures.assets",
     "tests.unit.fixtures.components",
-    # -------------------------------
-    "tests.unit.fixtures.configuration.compositions",
-    "tests.unit.fixtures.configuration.groups",
-    "tests.unit.fixtures.configuration.recipes",
-    "tests.unit.fixtures.configuration.transitions",
-    "tests.unit.fixtures.configuration.schemas",
-    # -------------------------------
     "tests.unit.fixtures.menus",
-    # -------------------------------
-    "tests.unit.fixtures.properties.cursors",
-    "tests.unit.fixtures.properties.crafts",
-    "tests.unit.fixtures.properties.effects",
-    "tests.unit.fixtures.properties.fonts",
-    "tests.unit.fixtures.properties.geography",
-    "tests.unit.fixtures.properties.objects",
-    "tests.unit.fixtures.properties.tiles",
-    "tests.unit.fixtures.properties.widgets",
-    "tests.unit.fixtures.properties.sheets",
-    "tests.unit.fixtures.properties.resources",
-    "tests.unit.fixtures.properties.schemas",
-    # -------------------------------
     "tests.unit.fixtures.services",
-    # -------------------------------
-    "tests.unit.fixtures.state.crafts",
-    "tests.unit.fixtures.state.effects",
-    "tests.unit.fixtures.state.objects",
-    "tests.unit.fixtures.state.sheets",
-    "tests.unit.fixtures.state.resources",
-    "tests.unit.fixtures.state.world",
-    "tests.unit.fixtures.state.schemas",
-    # -------------------------------
-    "tests.unit.fixtures.structures"
+    "tests.unit.fixtures.structures",
 ]
 
+@pytest.fixture
+def testbed():
+    return "world-testbed"
+
 @pytest.fixture(autouse=True)
-def patch_app_settings(monkeypatch):
-    monkeypatch.setattr("app.config.settings.FLUID_INVALIDATION_DEBOUNCE_TICKS", 0)
-    monkeypatch.setattr("app.config.settings.BASE_FLOW_SPEED", 20)
-    monkeypatch.setattr("app.config.settings.TILE_HASH_SIZE", 32)
+def patch_app_settings(monkeypatch, tmp_path: Path):
+    """
+    Overrides settings and isolates save-state output to an ephemeral tmp_path.
+    """
+    monkeypatch.setattr("app.static.settings.SAVE_DIR", tmp_path / "saves")
+    monkeypatch.setattr("app.static.settings.LOG_DIR", tmp_path / "logs")
+    monkeypatch.setattr("app.static.settings.DUMP_DIR", tmp_path / "dumps")

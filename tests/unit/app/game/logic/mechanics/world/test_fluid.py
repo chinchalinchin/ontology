@@ -1,40 +1,73 @@
 """
-# Ontology: tests.unit.app.game.logic.mechanics.world.test_fluid.py
+@domain.test
+@test.unit
+@app.mechanic
+@workflow.fluids
+
+# Ontology: Tests - tests.unit.app.game.logic.mechanics.world.test_fluid
+
+Unit tests for FluidMechanics, Actuator propagation, Cartographer shoreline
+synthesis, and Board hydrological spatial caching.
 """
 # External Libraries
 import pytest
 
 # Application Libraries
-import app.config.settings as settings
-from app.config.enums import (
+import app.static.settings as settings
+from app.static.semantics import (
+    AssetCategories,
     AssetInstances,
-    Relations,
-    Directions
+    Directions,
+    Mechanics,
 )
-from app.game.logic.mechanics.world.fluid import FluidMechanics
+from app.game.logic.mechanics.world.fluid import _obstacle_intersects_fluid
 from app.models.state.assets.effects import Branch
+from app.services.generators.game import (
+    Actuator,
+    Cartographer,
+)
 
 # Cython Libraries
 from libs.core.models import (
-    Position, 
-    Velocity
+    Dimensions,
+    Hitbox,
+    Position,
+    Velocity,
 )
 
+# -----------------------------------------------------
 
-@pytest.mark.fluids
-def test_fluid_mechanics_early_exit_no_fluids(mock_board, mock_bus):
+pytestmark = [
+    pytest.mark.app_mechanic,
+    pytest.mark.workflow_fluids,
+    pytest.mark.workflow_ecology,
+]
+
+# -----------------------------------------------------
+
+
+def test_fluid_mechanics_early_exit_no_fluids(
+    mock_board,
+    mock_mechanic,
+    mock_bus,
+):
     """
     Verify mechanic yields immediately when no fluids are instantiated.
     """
-    fluids = mock_board.instances(AssetInstances.FLUIDS.value)
+    fluids = list(mock_board.instances(AssetInstances.FLUIDS.value))
     mock_board.remove(fluids)
 
-    mechanic = FluidMechanics()
+    mechanic = mock_mechanic(Mechanics.FLUID.value)
     mechanic.update(mock_board, 0.016, mock_bus, None)
 
+    assert mock_board.instances(AssetInstances.FLUIDS.value) == []
 
-@pytest.mark.fluids
-def test_fluid_mechanics_steady_state_no_invalidation(mock_board, mock_bus):
+
+def test_fluid_mechanics_steady_state_no_invalidation(
+    mock_board,
+    mock_mechanic,
+    mock_bus,
+):
     """
     Verify stationary obstacles do not re-flag clean fluids as dirty.
     """
@@ -44,9 +77,9 @@ def test_fluid_mechanics_steady_state_no_invalidation(mock_board, mock_bus):
     crate.state.velocity = Velocity(vx=0.0, vy=0.0)
     fluid.state.dirty = False
 
-    mechanic = FluidMechanics()
+    mechanic = mock_mechanic(Mechanics.FLUID.value)
 
-    # Initial frame records state
+    # Initial frame records state and clears dirty flags
     mechanic.update(mock_board, 0.016, mock_bus, None)
     assert fluid.state.dirty is False
 
@@ -55,8 +88,11 @@ def test_fluid_mechanics_steady_state_no_invalidation(mock_board, mock_bus):
     assert fluid.state.dirty is False
 
 
-@pytest.mark.fluids
-def test_fluid_mechanics_dynamic_bodies_do_not_invalidate_fluid(mock_board, mock_bus):
+def test_fluid_mechanics_dynamic_bodies_do_not_invalidate_fluid(
+    mock_board,
+    mock_mechanic,
+    mock_bus,
+):
     """
     Verify dynamic bodies (mass > 0, like Crates) do not invalidate fluid propagation
     when moving (Fix B011).
@@ -64,10 +100,10 @@ def test_fluid_mechanics_dynamic_bodies_do_not_invalidate_fluid(mock_board, mock
     fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
     crate = mock_board.instances(AssetInstances.CRATES.value)[0]
 
-    crate.state.position = Position(x=70, y=96)
+    crate.state.position = Position(x=60, y=96)
     crate.state.velocity = Velocity(vx=0.0, vy=0.0)
 
-    mechanic = FluidMechanics()
+    mechanic = mock_mechanic(Mechanics.FLUID.value)
 
     # Initialize mechanic state on frame 1
     mechanic.update(mock_board, 0.016, mock_bus, None)
@@ -80,35 +116,43 @@ def test_fluid_mechanics_dynamic_bodies_do_not_invalidate_fluid(mock_board, mock
     assert fluid.state.dirty is False
 
 
-@pytest.mark.fluids
-def test_fluid_mechanics_gate_switch_toggle_invalidates(mock_board, mock_bus):
+def test_fluid_mechanics_gate_switch_toggle_invalidates(
+    mock_board,
+    mock_mechanic,
+    mock_bus,
+):
     """
-    Verify static gate switch transitions invalidate fluid flow and re-propagate length.
+    Verify static gate switch transitions invalidate fluid flow after debounce
+    and re-propagate stream length to the next static obstacle (y=600).
     """
     fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
     fluid.state.flow = 0
     gate = mock_board.instances(AssetInstances.GATES.value)[0]
 
-    # Start with closed gate at y=60
+    # Start with closed gate at y=60 intercepting test-fluid-00 (x=60, y=0)
     gate.state.switch = False
     gate.state.position = Position(x=70, y=60)
 
-    mechanic = FluidMechanics()
+    mechanic = mock_mechanic(Mechanics.FLUID.value)
     mechanic.update(mock_board, 0.016, mock_bus, None)
 
     assert fluid.state.dirty is False
     assert fluid.state.length == 60
 
-    # Opening gate invalidates layer and allows stream to propagate to boundary (y=319)
+    # Opening gate invalidates layer once the debounce window completes
     gate.state.switch = True
-    mechanic.update(mock_board, 0.016, mock_bus, None)
+    for _ in range(settings.FLUID_INVALIDATION_DEBOUNCE_TICKS + 1):
+        mechanic.update(mock_board, 0.016, mock_bus, None)
 
-    assert fluid.state.dirty is False 
-    assert fluid.state.length == 319
+    assert fluid.state.dirty is False
+    assert fluid.state.length == 600
 
 
-@pytest.mark.fluids
-def test_fluid_mechanics_spatially_decoupled_gate_ignored(mock_board, mock_bus):
+def test_fluid_mechanics_spatially_decoupled_gate_ignored(
+    mock_board,
+    mock_mechanic,
+    mock_bus,
+):
     """
     Verify gate toggling outside active fluid hitboxes and downstream emission corridor
     does not flag fluid as dirty.
@@ -117,23 +161,27 @@ def test_fluid_mechanics_spatially_decoupled_gate_ignored(mock_board, mock_bus):
     fluid.state.dirty = False
     gate = mock_board.instances(AssetInstances.GATES.value)[0]
 
-    # Position gate spatially distant from fluid corridor at x=70
+    # Position gate spatially distant from both fluid corridors (x=60 and x=595)
     gate.state.position = Position(x=250, y=60)
     gate.state.switch = False
 
-    mechanic = FluidMechanics()
+    mechanic = mock_mechanic(Mechanics.FLUID.value)
     mechanic.update(mock_board, 0.016, mock_bus, None)
     assert fluid.state.dirty is False
 
-    # Mutate switch on decoupled gate
+    # Mutate switch on decoupled gate and step past debounce window
     gate.state.switch = True
-    mechanic.update(mock_board, 0.016, mock_bus, None)
+    for _ in range(settings.FLUID_INVALIDATION_DEBOUNCE_TICKS + 1):
+        mechanic.update(mock_board, 0.016, mock_bus, None)
 
     assert fluid.state.dirty is False
 
 
-@pytest.mark.fluids
-def test_fluid_mechanics_debounce_window(mock_board, mock_bus, monkeypatch):
+def test_fluid_mechanics_debounce_window(
+    mock_board,
+    mock_mechanic,
+    mock_bus,
+):
     """
     Verify debounce accumulator delays layer invalidation across rapid gate toggling.
     """
@@ -143,40 +191,39 @@ def test_fluid_mechanics_debounce_window(mock_board, mock_bus, monkeypatch):
     gate.state.position = Position(x=70, y=60)
     gate.state.switch = False
 
-    mechanic = FluidMechanics()
+    mechanic = mock_mechanic(Mechanics.FLUID.value)
     mechanic.update(mock_board, 0.016, mock_bus, None)
     assert fluid.state.dirty is False
+    assert fluid.state.length == 60
 
     # Mutate switch
     gate.state.switch = True
 
-    # Tick 1: Debounce counter = 2 -> 1 (not invalidated)
+    # Tick 1: Debounce counter = 2 -> 1 (not yet re-propagated)
     mechanic.update(mock_board, 0.016, mock_bus, None)
     assert fluid.state.dirty is False
+    assert fluid.state.length == 60
 
-    # Tick 2: Debounce counter = 1 -> 0 (not invalidated)
+    # Tick 2: Debounce counter = 1 -> 0 (not yet re-propagated)
     mechanic.update(mock_board, 0.016, mock_bus, None)
     assert fluid.state.dirty is False
+    assert fluid.state.length == 60
 
-    # Tick 3: Debounce expired -> invalidated and re-propagated
+    # Tick 3: Debounce expired -> invalidated and re-propagated to test-obstacle-00 (y=600)
     mechanic.update(mock_board, 0.016, mock_bus, None)
     assert fluid.state.dirty is False
-    assert fluid.state.length == 319
+    assert fluid.state.length == 600
 
 
-@pytest.mark.fluids
-@pytest.mark.ecology
 def test_fluid_mechanics_geometric_shift_detection_skips_regeneration(
     mock_board,
+    mock_mechanic,
     mock_bus,
-    mock_actuator,
-    mock_shoreline_index
 ):
     """
     Verify steady-state updates bypass Cartographer regeneration when fluid geometry is invariant.
     """
-    mechanic = FluidMechanics(actuator=mock_actuator)
-    mechanic.set_relation(Relations.SHORELINES.value, mock_shoreline_index)
+    mechanic = mock_mechanic(Mechanics.FLUID.value)
 
     # Initial frame generates layer shorelines
     mechanic.update(mock_board, 0.016, mock_bus, None)
@@ -184,16 +231,21 @@ def test_fluid_mechanics_geometric_shift_detection_skips_regeneration(
     initial_count = len(initial_shores)
     assert initial_count > 0
 
-    # Second frame with invariant fluid geometry retains existing shoreline instances
+    # Dirty fluid without changing obstacle geometry: pre_sig == post_sig retains shorelines
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid.state.dirty = True
     mechanic.update(mock_board, 0.016, mock_bus, None)
+
     second_shores = mock_board.shorelines("0")
     assert len(second_shores) == initial_count
     assert second_shores[0] is initial_shores[0]
 
 
-@pytest.mark.fluids
-@pytest.mark.ecology
-def test_fluid_mechanics_cross_layer_isolation(mock_board, mock_bus):
+def test_fluid_mechanics_cross_layer_isolation(
+    mock_board,
+    mock_mechanic,
+    mock_bus,
+):
     """
     Verify obstacle movements on layer 1 do not invalidate fluids on layer 0.
     """
@@ -202,34 +254,32 @@ def test_fluid_mechanics_cross_layer_isolation(mock_board, mock_bus):
     fluid.state.dirty = False
 
     gate = mock_board.instances(AssetInstances.GATES.value)[0]
-    gate.state.layer = "1"
+    mock_board.relayer(gate, "1")
     gate.state.switch = False
 
-    mechanic = FluidMechanics()
-
+    mechanic = mock_mechanic(Mechanics.FLUID.value)
     mechanic.update(mock_board, 0.016, mock_bus, None)
 
     gate.state.switch = True
-    mechanic.update(mock_board, 0.016, mock_bus, None)
+    for _ in range(settings.FLUID_INVALIDATION_DEBOUNCE_TICKS + 1):
+        mechanic.update(mock_board, 0.016, mock_bus, None)
 
     assert fluid.state.dirty is False
 
 
-@pytest.mark.fluids
-@pytest.mark.ecology
 def test_fluid_mechanics_two_pass_layer_shorelines(
-    mock_board, 
-    mock_bus, 
-    mock_actuator, 
-    mock_shoreline_index
+    mock_board,
+    mock_bus,
+    mock_mechanic,
 ):
     """
     Verify FluidMechanics executes coordinated two-pass update, synthesizing
     layer-wide shorelines on Board via Cartographer.
     """
-    mechanic = FluidMechanics(actuator=mock_actuator)
-    mechanic.set_relation(Relations.SHORELINES.value, mock_shoreline_index)
+    Cartographer.purge("0", mock_board)
+    assert len(mock_board.shorelines("0")) == 0
 
+    mechanic = mock_mechanic(Mechanics.FLUID.value)
     mechanic.update(mock_board, 0.016, mock_bus, None)
 
     shores = mock_board.shorelines("0")
@@ -239,41 +289,85 @@ def test_fluid_mechanics_two_pass_layer_shorelines(
         assert shore.state.layer == "0"
 
 
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.parametrize(
+    "source,gate_pos,expected",
+    [
+        (Directions.DOWN.value, Position(200, 300), True),
+        (Directions.DOWN.value, Position(400, 300), False),
+        (Directions.UP.value, Position(200, 20), True),
+        (Directions.UP.value, Position(200, 300), False),
+        (Directions.RIGHT.value, Position(300, 200), True),
+        (Directions.RIGHT.value, Position(10, 200), False),
+        (Directions.LEFT.value, Position(10, 200), True),
+        (Directions.LEFT.value, Position(300, 200), False),
+    ],
+)
+def test_obstacle_intersects_fluid_corridors(
+    mock_board,
+    source,
+    gate_pos,
+    expected,
+):
+    """
+    Verify _obstacle_intersects_fluid detects gates situated inside downstream
+    emission corridors across all four cardinal directions.
+    """
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
+    fluid.state.position = Position(x=200, y=200)
+    fluid.state.source = source
+    fluid.state.hitboxes = []
+
+    gate = mock_board.instances(AssetInstances.GATES.value)[0]
+    gate.state.position = gate_pos
+
+    assert _obstacle_intersects_fluid(gate, fluid) is expected
+
+
+@pytest.mark.app_component
 def test_board_fluid_subtile_precision(mock_board):
     """
     Verify Board.fluid broad/narrow spatial hash returns False for coordinates
-    sharing a 32px tile bucket with fluid but falling outside exact bounds.
+    sharing a 32px tile bucket with fluid but falling outside exact stream bounds.
     """
-    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
+    fluids = list(mock_board.instances(AssetInstances.FLUIDS.value))
+    mock_board.remove(fluids[1:])
+
+    fluid = fluids[0]
+    fw = fluid.properties.dimensions.w
     fluid.state.position = Position(x=70, y=0)
     fluid.state.source = Directions.DOWN.value
     fluid.state.length = 64
     fluid.state.pool = None
+    fluid.state.branches = []
+    fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(fw, 64))]
 
     mock_board.update_fluid_cache("0")
 
-    # Inside stream corridor: x in [70, 102), y in [0, 64)
+    # Inside stream corridor: x in [70, 70 + fw), y in [0, 64)
     assert mock_board.fluid("0", Position(70, 10)) is True
-    assert mock_board.fluid("0", Position(101, 10)) is True
+    assert mock_board.fluid("0", Position(70 + fw - 1, 10)) is True
 
-    # Same tile bucket (cx = 69 // 32 = 2, cy = 10 // 32 = 0) but outside corridor
+    # Same 32px tile buckets as the left/right edges, but strictly outside corridor
     assert mock_board.fluid("0", Position(69, 10)) is False
-    assert mock_board.fluid("0", Position(102, 10)) is False
+    assert mock_board.fluid("0", Position(70 + fw + 1, 10)) is False
 
 
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.app_component
 def test_board_fluid_spatial_hash_indexes_child_branches(mock_board):
     """
     Verify Board broad/narrow spatial fluid checking detects Cartesian points
     located inside active child branch corridors.
     """
-    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
+    fluids = list(mock_board.instances(AssetInstances.FLUIDS.value))
+    mock_board.remove(fluids[1:])
+
+    fluid = fluids[0]
+    fw = fluid.properties.dimensions.w
     fluid.state.position = Position(x=70, y=0)
     fluid.state.source = Directions.DOWN.value
     fluid.state.length = 32
+    fluid.state.pool = None
+    fluid.state.hitboxes = [Hitbox(Position(0, 0), Dimensions(fw, 32))]
 
     # Attach secondary child branch discharging at (0, 192) flowing DOWN
     fluid.state.branches = [
@@ -281,28 +375,29 @@ def test_board_fluid_spatial_hash_indexes_child_branches(mock_board):
             position=Position(x=0, y=192),
             source=Directions.DOWN.value,
             flow=1,
-            length=100
+            length=100,
+            hitboxes=[Hitbox(Position(0, 0), Dimensions(fw, 100))],
         )
     ]
 
     mock_board.update_fluid_cache("0")
 
-    # Coordinate inside child branch corridor: x in [0, 32), y in [192, 292)
+    # Coordinate inside child branch corridor: x in [0, fw), y in [192, 292)
     assert mock_board.fluid("0", Position(10, 200)) is True
     assert mock_board.fluid("0", Position(0, 192)) is True
 
-    # Coordinate outside branch corridor
-    assert mock_board.fluid("0", Position(35, 200)) is False
+    # Coordinates outside branch corridor
+    assert mock_board.fluid("0", Position(fw + 10, 200)) is False
     assert mock_board.fluid("0", Position(10, 300)) is False
 
 
-@pytest.mark.fluids
-def test_board_bridges_query_excludes_obstacles_and_weights(mock_board, mock_bridge):
+@pytest.mark.app_component
+def test_board_bridges_query_excludes_obstacles_and_weights(mock_board):
     """
     Verify Board.bridges() returns sensor bridge assets while strictly excluding
     them from board.obstacles() and board.weights().
     """
-    mock_board.add([mock_bridge])
+    mock_bridge = mock_board.bridges("0")[0]
 
     bridges = mock_board.bridges("0")
     assert mock_bridge in bridges
@@ -312,11 +407,29 @@ def test_board_bridges_query_excludes_obstacles_and_weights(mock_board, mock_bri
     assert mock_bridge not in mock_board.weights("0")
 
 
-@pytest.mark.fluids
-def test_fluid_frame_keys_memoization(mock_fluid):
+@pytest.mark.app_services
+def test_actuator_pump_compiles_layer_moisture_field(mock_board):
+    """
+    Verify Actuator.pump propagates fluid geometry and compiles the layer MoistureField.
+    """
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value)[0]
+    length, pool, hitboxes = Actuator.pump(fluid, mock_board)
+
+    assert length > 0
+    assert pool is not None
+    assert len(hitboxes) > 0
+    assert mock_board.moisture("0", fluid.state.position.x + 16, 50) > 0.0
+
+
+@pytest.mark.app_asset
+def test_fluid_frame_keys_memoization(mock_asset):
     """
     Verify FluidFrame.keys memoizes results by animation frame index.
     """
+    mock_fluid = mock_asset(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.FLUIDS.value,
+    )
     mock_fluid.state.length = 64
     mock_fluid.state.animation.frame = 0
 
@@ -329,15 +442,18 @@ def test_fluid_frame_keys_memoization(mock_fluid):
     assert keys_pass_2 is keys_pass_1
 
 
-@pytest.mark.fluids
-def test_cardinal_frame_keys_memoization(mock_shoreline):
+@pytest.mark.app_component
+def test_cardinal_frame_keys_memoization(mock_board):
     """
     Verify CardinalFrame.keys memoizes static shoreline slice keys in O(1) time.
     """
-    keys_pass_1 = mock_shoreline.frame.keys(mock_shoreline.id, mock_shoreline.state)
-    assert mock_shoreline.state._keys is not None
-    assert mock_shoreline.state._keys == keys_pass_1
+    shoreline = mock_board.shorelines("0")[0]
+    shoreline.state._keys = None
+
+    keys_pass_1 = shoreline.frame.keys(shoreline.id, shoreline.state)
+    assert shoreline.state._keys is not None
+    assert shoreline.state._keys == keys_pass_1
 
     # Second pass returns memoized list instance
-    keys_pass_2 = mock_shoreline.frame.keys(mock_shoreline.id, mock_shoreline.state)
+    keys_pass_2 = shoreline.frame.keys(shoreline.id, shoreline.state)
     assert keys_pass_2 is keys_pass_1

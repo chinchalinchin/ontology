@@ -1,17 +1,16 @@
-{% set exclude = tools.parameters.manager.docs.exclude  
-                    if tools.parameters.manager.get('docs') 
-                        and tools.parameters.manager.docs.get('exclude') 
-                            else ['index.md']
-%}
+{% set exclude = [] %}
+{% if tools.parameters.manager.docs and tools.parameters.manager.docs.exclude %}
+  {% for doc in tools.parameters.manager.docs.exclude %}
+    {% set _ = exclude.append(doc ~ '.md') %}
+  {% endfor %}
+{% endif %}
+{% set _ = exclude.append('index.md') %}
 ### View: {{ properties.project.title | capitalize }} Documentation 
 
------------ START HEADING BREAK: HEADING LEVELS RESET -----------
-
-{{ file(properties.paths.root + properties.paths.docs + 'index.md') }}
+{{ md(properties.paths.root + properties.paths.docs + 'index.md', { "header": 3}) }}
 
 {% for doc in markdown(properties.paths.root + properties.paths.docs, exclude) %}
-{{ file(properties.paths.root + properties.paths.docs + doc) }}
+{% set doc_path = properties.paths.root + properties.paths.docs + doc %}
+{{ md(doc_path, { "header": 3 }) }}
 
 {% endfor %}
-
------------ END HEADING BREAK: HEADING LEVELS RESUME -----------

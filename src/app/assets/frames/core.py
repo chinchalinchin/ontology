@@ -1,14 +1,19 @@
 """
-# Ontology: app.assets.frames.core
+@domain.concrete
+@app.asset
+@app.core
+@asset.frame
 
-Package for core Asset Frame implementations. 
+# Ontology: Source - app.assets.frames.core
+
+Core Asset Frame implementations. 
 
 **Overview**
 
 Frames exist on the boundary of the Python-Cython interface.
 
--`index()`: This interface is a configuration-time method for generating the Asset Frame space from the Asset properties; this method is called inside of Cython from the Registry. Asset Properties are passed in as dicts.
-- `keys()` interface is a runtime method for accessing the Frame key that corresponds to an Asset Frame state. It is called inside of Python from the Screen. Asset States are passed in as Python objects.
+- `index(id, properties)`: This interface is a configuration-time method for generating the Asset Frame space from the Asset Properties; this method is called inside of Cython from the Registry. Asset Properties are passed in.
+- `keys(id, state)` interface is a runtime method for accessing the Frame key that corresponds to an Asset Frame state. It is called inside of Python from the Screen. Asset States are passed in.
 """
 # Stamdard Libraries
 from typing import (
@@ -19,8 +24,8 @@ from typing import (
 import logging
 
 # Application Libraries
-import app.config.settings as settings
-from app.config.enums import (
+import app.static.settings as settings
+from app.static.semantics import (
     Orientations,
     Directions
 )
@@ -105,6 +110,8 @@ class IterableFrame(Frame):
 
 class OrientedFrame(Frame):
     """
+    ## OrientedFrame
+
     Indexes 2-axis horizontal atlas frames (Horizontal, Vertical) and emits
     the corresponding orientation frame key.
     """
@@ -134,6 +141,8 @@ class OrientedFrame(Frame):
 
 class DirectedFrame(Frame):
     """
+    ## DirectedFrame
+    
     Indexes 2-axis horizontal atlas frames (Horizontal, Vertical) and emits
     the corresponding orientation frame key.
     """

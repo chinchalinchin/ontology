@@ -1,36 +1,54 @@
 """
-# Ontology: app.models.config.schemas
+@domain.model
+@app.config
+@app.schema
 
-Models for typing the configuration schema.
+# Ontology: Source - app.models.config.schemas
+
+Models for typing Configuration schemas.
 """
 # Standard Libraries
 from typing import (
     Dict, 
     List, 
 )
-from dataclasses import dataclass, field
+from dataclasses import (
+    dataclass, 
+    field
+)
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     Intentions
 )
-from app.models.config.core import (
-    ActionConfiguration, 
-    LibraryConfiguration
+from app.models.config.actions import (
+    ActionConfiguration
 )
 from app.models.config.transitions import (
     IntentionConfiguration,
     PlotConfiguration,
     StageConfiguration,
 )
-from app.models.config.compositions import CompositionConfiguration
-from app.models.config.mechanics import MechanicsConfiguration
-from app.models.config.mappings import MappingConfiguration
-from app.models.config.menus import MenuConfiguration
-from app.models.config.recipes import RecipeConfiguration
+from app.models.config.compositions import (
+    CompositionConfiguration
+)
+from app.models.config.mechanics import (
+    MechanicsConfiguration
+)
+from app.models.config.materials import (
+    MaterialsConfiguration
+)
+from app.models.config.mappings import (
+    MappingConfiguration
+)
+from app.models.config.menus import (
+    MenuConfiguration
+)
+from app.models.config.recipes import (
+    RecipeConfiguration
+)
 
-# ---------------------------------------------------------------------------------------
-# --------------------------------------------------------------------------- ROOT SCHEMA
+# ---------------------------------------------------------
 
 @dataclass(slots=True, frozen=True)
 class ConfigurationSchema:
@@ -39,6 +57,7 @@ class ConfigurationSchema:
     intentions: Dict[Intentions, List[IntentionConfiguration]] = field(default_factory=dict)
     library: Dict[str, Dict[str, Dict[str, str]]] = field(default_factory=dict)
     mappings: MappingConfiguration = field(default_factory=MappingConfiguration)
+    materials: MaterialsConfiguration = field(default_factory=MaterialsConfiguration)
     mechanics: MechanicsConfiguration = field(default_factory=MechanicsConfiguration)
     plots: Dict[str, List[PlotConfiguration]] = field(default_factory=dict)
     stages: Dict[str, Dict[str, List[StageConfiguration]]] = field(default_factory=dict)

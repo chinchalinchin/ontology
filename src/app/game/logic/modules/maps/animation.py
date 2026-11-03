@@ -1,9 +1,15 @@
 """
-# Ontology: app.game.maps.animation
+@domain.logic
+@app.module
+@modality.intention
+
+# Ontology: Source - app.game.maps.animation
+
+Animation Maps for mapping SpriteState to Equipment Frames.
 """
 # Application Libraries
-import app.config.settings as settings
-from app.config.enums import (
+import app.static.settings as settings
+from app.static.semantics import (
     Actions, 
     Directions, 
     Intentions,
@@ -96,14 +102,3 @@ class AnimationMap:
         
         # Higher than both diagonals means it is physically UP
         return Directions.RIGHT.value if dy > -dx else Directions.UP.value
-
-    @staticmethod
-    def attackbox(sprite: SpriteState, equipment: EquipmentGroup):
-        frame_key = settings.SEPARATOR.join([
-            sprite.state.animation.action,
-            sprite.state.animation.direction,
-            sprite.state.animation.frame
-        ])
-        weapon_key = sprite.state.inventory.equipment.weapon
-        weapon_props = equipment.weapons.get(weapon_key,{}).attackboxes.get(frame_key)
-

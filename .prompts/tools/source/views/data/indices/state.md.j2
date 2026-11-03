@@ -1,10 +1,18 @@
-{# ------------------------------------------------------------- #}
-{% set state = {
 
-} %}
 {# ------------------------------------------------------------- #}
-{# - 1. START: parameter loop - #}
-{% for s in tools.parameters.source.data.state %}
-#### State: {{ s | capitalize }}
+{% if tools.parameters.source.data.state | length > 0 %}
+{% for board in tools.parameters.source.data.state %}
+#### State: {{ board }}
+
+* Location: `src/data/state/{{ board }}`
+
+{% for state in yamls('src/data/state/' ~ board, recursive=True) | sort %}
+**{{ state }}**
+
+```yaml
+{{ file(properties.paths.root ~ 'src/data/state/' ~ board ~ '/' ~ state) }}
+```
 
 {% endfor %}
+{% endfor %}
+{% endif %}

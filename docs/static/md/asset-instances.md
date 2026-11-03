@@ -1,20 +1,19 @@
 | Asset Category | Asset Instance | State |
 | - | - | - | 
-| Tile | Environ | Base |
-| Tile | Canopy | Base |
-| Tile | Grid | Base |
+| Tile | Environ | Base, Multiple |
+| Tile | Canopy | Base, Multiple |
+| Tile | Grid | Base, Multiple |
 | Object | Crate | Base, Velocity |
 | Object | Obstacle | Base, Velocity |
 | Object | Raft | Base, Velocity |
 | Object | Sign | Base, Persona, Lexicon |
-| Object | Door | Base, OutLayer |
+| Object | Door | Base, Out, OutLayer |
 | Object | Chest | Base, Animation, Switch, Content |
 | Object | Gate | Base, Animation, Switch, Link |
 | Object | Plate | Base, Animation, Switch, Link |
-| Craft | Bridge | Base, Multiple, Orientation, Owner |
-| Craft | Strut | Base, Owner |
-| Craft | Stairs | Base, Direction, Owner |
-| Craft | Platforms | Base, Delta, Owner |
+| Craft | Bridge | Base, Multiple, Material, Blueprint, Owner |
+| Craft | Strut | Base, Multiple, Material, Blueprint, Owner |
+| Craft | Stairs | Base, Multiple, Material, Blueprint, Owner |
 | Craft | Decor | Base, Owner |
 | Craft | Forge | Base, TODO |
 | Craft | Device | Base, TODO |
@@ -37,4 +36,3 @@
 | Widget | Button  | Base, Status, Animation |
 | Widget | Meter | Base, Animation, Reading, Unit |
 | Widget | Page | Base, Animation, Content, Page Index, Page Size, Canvas |
-

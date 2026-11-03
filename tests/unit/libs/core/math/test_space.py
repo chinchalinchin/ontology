@@ -1,11 +1,26 @@
 """
-# Ontology: tests.unit.libs.core.math.test_space
+@domain.test
+@test.unit
+@app.library
+@physics.space
+@workflow.collisions
+
+# Ontology: Tests - tests.unit.libs.core.math.test_space
+
+Unit tests for the Space Cython Library.
 """
 # External Libraries
-
 import pytest
-from libs.core.models import Position, Dimensions, Hitbox, Velocity
-from libs.core.math import geometry, physics, space
+
+# -----------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_library,
+    pytest.mark.workflow_collisions,
+    pytest.mark.workflow_navigation
+]
+
+# -----------------------------------------------------
 
 # ----------------------------------------------------------------------------------------
 # SPACE TESTS

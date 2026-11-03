@@ -1,40 +1,43 @@
 """
-# Ontology: app.models.state.geography
+@domain.model
+@app.asset
+@asset.state
+@category.geography
 
-Python data models for typing Geography state attributes.
+# Ontology: Source - app.models.state.geography
+
+Geography State Models.
 """
 # Standard Libraries
 from typing import ( 
     List,
     Optional,
-    Union,
     Tuple
 )
 from dataclasses import dataclass, field
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     Directions,
     Seasons
 )
 from app.models.adapters import (
     PydanticPosition as Position, 
-    PydanticHitbox as Hitbox
+    PydanticHitbox as Hitbox,
+    Enumerated
 )
 from app.models.state.core import (
     AssetState
 )
 
-# --------------------------------------------------------------------- GEOGRAPHY STATES
+# ------------------------------------------------------------
 
 @dataclass(slots=True)
 class ShorelineState(AssetState):
     # Shoreline fields
     position: Optional[Position] = None  # type: ignore
-    orientation: str = Directions.DOWN.value
-    season: str = Seasons.SPRING.value
+    orientation: Enumerated[Directions] = Directions.DOWN.value
+    season: Enumerated[Seasons] = Seasons.SPRING.value
     length: int = 0
-    thickness: int = 8
-    bidirectional: bool = True
     hitboxes: List[Hitbox] = field(default_factory=list)  # type: ignore
     _keys: Optional[List[Tuple[str, int, int]]] = None

@@ -1,203 +1,308 @@
 """
-# Ontology: tests.unit.fixtures.components
+@domain.test
+@app.component
+@test.fixtures
 
-Mock application component fixtures
+# Ontology: Tests - tests.unit.fixtures.components
+
+Concrete application component, device, registry, mechanic, and engine fixtures.
 """
 # Standard Libraries
-from unittest.mock import (
-    MagicMock, 
-)
 import collections
+from typing import (
+    Any,
+    Callable,
+    List,
+    Optional,
+    Set,
+)
+from unittest.mock import MagicMock
 
 # External Libraries
 import pytest
 
 # Application Libraries
-from app.config.enums import (
-    Relations,
-    Executors
-)
-from app.game.devices import Keyboard
+import app.static.settings as settings
+from app.assets.base import Asset
 from app.game.board import Board
+from app.game.devices import (
+    Device,
+    Keyboard,
+)
 from app.game.engine import Engine
+from app.game.logic.mechanics import Mechanic
+from app.game.logic.relations import (
+    MaterialIndex,
+    ShorelineIndex,
+)
 from app.game.screen import Screen
-from app.models.state import CalendarState
+from app.models.config import (
+    ConfigurationSchema,
+    MechanicsInstance,
+)
+from app.models.groups import EquipmentGroup
+from app.models.properties import PropertiesSchema
+from app.models.state import StateSchema
+from app.models.state.devices import (
+    DevicePayload,
+    MenuPayload,
+    WorldPayload,
+)
+from app.services.factories import MechanicFactory
 from app.services.generators.game import (
-    Factory,
-    Perimeter
+    Actuator,
+    Cartographer,
+    Cradle,
+    Decomposer,
+    Perimeter,
 )
-from app.services.translators import (
-    LambdaTranslator,
-    CompilerTranslator
-)
-from app.game.logic.mechanics import (
-    CollisionMechanics,
-    SeasonMechanics
+from app.services.generators.menus import Provider
+from app.static.semantics import (
+    AssetInstances,
+    Devices,
 )
 
 # Cython Libraries
-from libs.core.models import (
-    Dimensions, 
-    Position,
-    Boundary
+from libs.core.models import Dimensions
+from libs.graphics.registry import (
+    Registry,
+    TTFFont,
 )
+import libs.graphics.render as sdl_render
 
 # ---------------------------------------------------------------------------
-# ----------------------------------------------------------- MOCK COMPONENTS
+# ----------------------------------------------- SUBSYSTEMS & ASSET REGISTRY
 # ---------------------------------------------------------------------------
 
 @pytest.fixture
-def mock_screen(mock_registry, monkeypatch) -> Screen:
-  monkeypatch.setattr(
-      "app.game.screen.render.canvas", lambda w, l, opaque=False: MagicMock()
-  )
-  monkeypatch.setattr(
-      "app.game.screen.render.construct", lambda canvas, tiles: None
-  )
-  monkeypatch.setattr("app.game.screen.render.clear", lambda: None)
-  monkeypatch.setattr("app.game.screen.render.present", lambda: None)
-  monkeypatch.setattr("app.game.screen.render.destroy", lambda canvas: None)
-  monkeypatch.setattr(
-      "app.game.screen.render.render", lambda *args, **kwargs: None
-  )
-  monkeypatch.setattr(
-      "app.game.screen.render.superimpose", lambda *args, **kwargs: None
-  )
-  monkeypatch.setattr(
-      "app.game.screen.render.channel", lambda *args, **kwargs: None
-  )
-  monkeypatch.setattr("app.game.screen.render.dim", lambda *args, **kwargs: None)
+def mock_render(monkeypatch) -> MagicMock:
+    """
+    Patches Cython SDL rendering calls across libs.graphics.render and all
+    consumer modules so no GPU textures are allocated during unit tests.
+    """
+    mock = MagicMock()
+    mock.canvas.side_effect = lambda w, l, opaque=False: MagicMock(
+        w=w, l=l, opaque=opaque
+    )
+    mock.compose.side_effect = lambda base, overlays: MagicMock(
+        w=getattr(base, "w", 64),
+        l=getattr(base, "l", 64),
+    )
+    mock.measure.return_value = (64, 16)
 
-  screen = Screen(
-      screensize=Dimensions(320, 240),
-      boardsize=Dimensions(640, 480),
-      tiles=[],
-      registry=mock_registry,
-      calendar=CalendarState(),
-  )
+    for attr in dir(sdl_render):
+        if not attr.startswith("_"):
+            monkeypatch.setattr(sdl_render, attr, getattr(mock, attr))
 
-  screen.cleared = False
-  screen.presented = False
-  screen.drawn_assets = []
-  screen.reconstructed_tiles = []
-  screen.reconstructed_calendar = None
-
-  real_clear = screen.clear
-
-  def _spy_clear():
-    screen.cleared = True
-    return real_clear()
-
-  monkeypatch.setattr(screen, "clear", _spy_clear)
-
-  real_present = screen.present
-
-  def _spy_present():
-    screen.presented = True
-    return real_present()
-
-  monkeypatch.setattr(screen, "present", _spy_present)
-
-  real_draw = screen.draw
-
-  def _spy_draw(assets, focus, dim):
-    screen.drawn_assets = list(assets)
-    return real_draw(assets, focus, dim)
-
-  monkeypatch.setattr(screen, "draw", _spy_draw)
-
-  real_reconstruct = screen.reconstruct
-
-  def _spy_reconstruct(tiles, calendar):
-    screen.reconstructed_tiles = list(tiles)
-    screen.reconstructed_calendar = calendar
-    return real_reconstruct(tiles, calendar)
-
-  monkeypatch.setattr(screen, "reconstruct", _spy_reconstruct)
-
-  return screen
+    monkeypatch.setattr("app.game.screen.render", mock)
+    monkeypatch.setattr("libs.graphics.registry.render", mock)
+    monkeypatch.setattr("app.services.generators.menus.provider.render", mock)
+    monkeypatch.setattr("app.services.orchestration.builder.render", mock)
+    return mock
 
 
 @pytest.fixture
-def mock_registry() -> MagicMock:
-    registry = MagicMock()
-    registry.image.side_effect = lambda key: (MagicMock(), 0, 0, 32, 32)
-    return registry
+def mock_registry(
+    monkeypatch,
+    mock_render: MagicMock,
+    mock_material_index: MaterialIndex,
+    mock_properties_schema: PropertiesSchema,
+    mock_configurations_schema: ConfigurationSchema,
+) -> Registry:
+    monkeypatch.setattr(
+        "libs.graphics.registry._sys_load_image",
+        MagicMock(side_effect=lambda *args, **kwargs: MagicMock(w=64, l=64)),
+    )
+    monkeypatch.setattr(
+        "libs.graphics.registry._sys_load_font",
+        MagicMock(side_effect=lambda *args, **kwargs: TTFFont()),
+    )
+    registry = Registry(
+        properties=mock_properties_schema,
+        recipes=mock_configurations_schema.recipes,
+    )
+    yield registry
+    registry._textures.clear()
+    registry.clear()
+
+
+# ---------------------------------------------------------------------------
+# ------------------------------------------------------------------- DEVICES
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def mock_sdl(monkeypatch) -> Callable[[Set[int]], None]:
+    """
+    Fixture factory configuring active SDL scancodes returned by libs.core.input.poll.
+    """
+    active_codes: Set[int] = set()
+
+    def _set_pressed(codes: Optional[Set[int]] = None) -> None:
+        active_codes.clear()
+        if codes:
+            active_codes.update(codes)
+
+    monkeypatch.setattr("app.game.devices.sdl.pump", lambda: None)
+    monkeypatch.setattr(
+        "app.game.devices.sdl.poll",
+        lambda scancodes: tuple(1 if code in active_codes else 0 for code in scancodes),
+    )
+    return _set_pressed
+
+
+@pytest.fixture
+def mock_device(mock_configurations_schema: ConfigurationSchema):
+    """
+    Fixture factory instantiating an input Device via MechanicFactory.
+    """
+    def _device(kind: str = Devices.KEYBOARD.value) -> Device:
+        mapping = getattr(mock_configurations_schema.mappings, kind)
+        return MechanicFactory.device(kind, mapping)
+
+    return _device
+
+
+@pytest.fixture
+def mock_keyboard(mock_device) -> Keyboard:
+    return mock_device(Devices.KEYBOARD.value)
+
+
+@pytest.fixture
+def mock_payload():
+    def _payload(
+        goals: Optional[List[str]] = None,
+        intention: Optional[str] = None,
+        menu: Optional[str] = None,
+        traversal: Optional[str] = None,
+        interaction: Optional[str] = None,
+    ) -> DevicePayload:
+        return DevicePayload(
+            world=WorldPayload(
+                goals=list(goals) if goals else [],
+                intention=intention,
+                menu=menu,
+            ),
+            menu=MenuPayload(
+                traversal=traversal,
+                interaction=interaction,
+            ),
+        )
+
+    return _payload
+
+
+# ---------------------------------------------------------------------------
+# ------------------------------------------------------------------- SCREEN
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def mock_screen(
+    mock_registry: Registry,
+    mock_state_schema: StateSchema,
+    mock_render: MagicMock,
+) -> Screen:
+    screen = Screen(
+        screensize=Dimensions(320, 240),
+        boardsize=Dimensions(640, 480),
+        tiles=[],
+        registry=mock_registry,
+        calendar=mock_state_schema.calendar,
+    )
+    yield screen
+    screen.destroy()
+
+
+# ---------------------------------------------------------------------------
+# -------------------------------------------------------------------- BOARD
+# ---------------------------------------------------------------------------
 
 
 @pytest.fixture
 def mock_board(
-    mock_assets, 
-    mock_configurations, 
-    mock_equipment,
-    mock_cradle,
-    mock_keyboard
-) -> Board:    
+    mock_assets: list[Asset],
+    mock_configurations_schema: ConfigurationSchema,
+    mock_state_schema: StateSchema,
+    mock_equipment: EquipmentGroup,
+    mock_cradle: Cradle,
+    mock_keyboard: Keyboard,
+    mock_actuator: Actuator,
+    mock_decomposer: Decomposer,
+    mock_shoreline_index: ShorelineIndex,
+) -> Board:
     board = Board(
-        assets=mock_assets, 
-        configurations=mock_configurations, 
-        equipment=mock_equipment
+        assets=mock_assets,
+        configurations=mock_configurations_schema,
+        equipment=mock_equipment,
     )
-    board.perimeters["0"] = {
-        0: [
-            Boundary(Position(0, 0), Dimensions(320, 1)),
-            Boundary(Position(0, 319), Dimensions(320, 1)),
-            Boundary(Position(0, 0), Dimensions(1, 320)),
-            Boundary(Position(319, 0), Dimensions(1, 320))
-        ]
-    }
+    board.calendar = mock_state_schema.calendar
+    board.set_plot(mock_state_schema.plots)
     board.set_cradle(mock_cradle)
     board.set_device(mock_keyboard)
+
+    for comp_state in mock_state_schema.compositions:
+        board.add(mock_decomposer.unpack(comp_state))
+
+    for layer in board.layers():
+        board.perimeters[layer] = Perimeter.generate(board, layer)
+
+    fluids = board.instances(AssetInstances.FLUIDS.value)
+    for layer in {f.state.layer for f in fluids}:
+        for fluid in board.instances(AssetInstances.FLUIDS.value, layer):
+            mock_actuator.propagate(fluid, board)
+        board.update_fluid_cache(layer)
+        board.set_moisture_field(
+            layer,
+            mock_actuator.compile_moisture_field(layer, board),
+        )
+        shores = Cartographer.generate(layer, board, mock_shoreline_index)
+        if shores:
+            board.add(shores)
+
     return board
 
-@pytest.fixture
-def mock_keyboard(
-    mock_mapping_configuration
-) -> Keyboard:
-    return Keyboard(mock_mapping_configuration.keyboard)
+
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------- MECHANICS
+# ---------------------------------------------------------------------------
 
 
 @pytest.fixture
-def mock_lambda_executors(
-    mock_actuator,
-    mock_configurations,
+def mock_mechanic(
+    mock_configurations_schema: ConfigurationSchema,
+    mock_executors,
+    mock_relations: dict[str, Any],
 ):
-    translator = LambdaTranslator()
-    intention_executor = translator.compile(mock_configurations.intentions)
-    plot_executor = translator.compile(mock_configurations.plots)
-    
-    executors = {
-        Executors.INTENTION.value: intention_executor,
-        Executors.PLOT.value: plot_executor,
-        Executors.ACTUATOR.value: mock_actuator
+    """
+    Fixture factory instantiating a Mechanic by name and translator implementation.
+    """
+    configured = {
+        m.key: m
+        for m in (
+            mock_configurations_schema.mechanics.core
+            + mock_configurations_schema.mechanics.world
+        )
     }
 
-    if mock_configurations.stages:
-        for lifespan_key, rules in mock_configurations.stages.items():
-            executors[lifespan_key] = translator.compile(rules)
+    def _mechanic(
+        name: str,
+        implementation: str = settings.TRANSLATOR_IMPLEMENTATION,
+    ) -> Mechanic:
+        instance_cfg = configured.get(name, MechanicsInstance(name))
+        return MechanicFactory.mechanics(
+            instance_cfg,
+            mock_executors(implementation),
+            mock_relations,
+        )
 
-    return executors
+    return _mechanic
 
-@pytest.fixture
-def mock_compiler_executors(
-    mock_actuator,
-    mock_configurations,
-):
-    translator = CompilerTranslator()
-    intention_executor = translator.compile(mock_configurations.intentions)
-    plot_executor = translator.compile(mock_configurations.plots)
-    
-    executors = {
-        Executors.INTENTION.value: intention_executor,
-        Executors.PLOT.value: plot_executor,
-        Executors.ACTUATOR.value: mock_actuator
-    }
 
-    if mock_configurations.stages:
-        for lifespan_key, rules in mock_configurations.stages.items():
-            executors[lifespan_key] = translator.compile(rules)
+# ---------------------------------------------------------------------------
+# -------------------------------------------------------------- ENGINE & BUS
+# ---------------------------------------------------------------------------
 
-    return executors
 
 @pytest.fixture
 def mock_bus() -> collections.deque:
@@ -205,96 +310,37 @@ def mock_bus() -> collections.deque:
 
 
 @pytest.fixture
-def mock_relations(mock_shoreline_index) -> dict:
-    return {
-        Relations.SHORELINES.value: mock_shoreline_index
-    }
-
-
-@pytest.fixture
-def mock_engine_with_lambda_transitions(
-    mock_board, 
-    mock_mechanics_configuration,
-    mock_lambda_executors,
-    mock_relations,
-    mock_provider
-) -> Engine:
+def mock_engine(
+    mock_board: Board,
+    mock_screen: Screen,
+    mock_configurations_schema: ConfigurationSchema,
+    mock_relations: dict[str, Any],
+    mock_provider: Provider,
+    mock_registry: Registry,
+    mock_executors,
+):
     """
-    Fully constructs the Engine with live Mechanics and Executors
+    Fixture constructing an Engine hydrated with live core and world mechanics.
     """
-    world_mechanics = [
-        Factory.mechanics(m, mock_lambda_executors, mock_relations) 
-        for m in mock_mechanics_configuration.world
-    ]
+    def _engine(
+        implementation: str = settings.TRANSLATOR_IMPLEMENTATION,
+    ) -> Engine:
+        compiled_executors = mock_executors(implementation)
+        core = [
+            MechanicFactory.mechanics(m, compiled_executors, mock_relations)
+            for m in mock_configurations_schema.mechanics.core
+        ]
+        world = [
+            MechanicFactory.mechanics(m, compiled_executors, mock_relations)
+            for m in mock_configurations_schema.mechanics.world
+        ]
+        return Engine(
+            board=mock_board,
+            screens={"0": mock_screen},
+            core=core,
+            world=world,
+            provider=mock_provider,
+            registry=mock_registry,
+        )
 
-    return Engine(
-        board=mock_board,
-        screens={},
-        core=[],
-        world=world_mechanics,
-        provider=mock_provider
-    )
-
-
-@pytest.fixture
-def mock_engine_with_compiler_transitions(
-    mock_board, 
-    mock_mechanics_configuration,
-    mock_compiler_executors,
-    mock_relations,
-    mock_provider
-) -> Engine:
-    """
-    Fully constructs the Engine with live Mechanics and Executors
-    """  
-    world_mechanics = [
-        Factory.mechanics(m, mock_compiler_executors, mock_relations) 
-        for m in mock_mechanics_configuration.world
-    ]
-
-    return Engine(
-        board=mock_board,
-        screens={},
-        core=[],
-        world=world_mechanics,
-        provider=mock_provider
-    )
-
-@pytest.fixture
-def mock_engine_core(
-    mock_board,
-    mock_screen,
-    mock_provider
-) -> Engine:
-    """
-    Constructs an Engine with a live Board, live buses, concrete handlers, and stubbed rendering.
-    """
-
-    return Engine(
-        board=mock_board,
-        screens={"0": mock_screen},
-        core=[],
-        world=[],
-        provider=mock_provider
-    )
-
-@pytest.fixture
-def mock_season_mechanics(mock_lambda_executors) -> SeasonMechanics:
-  """Concrete SeasonMechanics instance pre-configured with compiled stage executors."""
-  mechanic = SeasonMechanics()
-  mechanic.executors = mock_lambda_executors
-  return mechanic
-
-@pytest.fixture
-def mock_collision_mechanics() -> CollisionMechanics:
-    return CollisionMechanics(cell_size=64, max_entities=200)
-
-
-@pytest.fixture
-def mock_perimeter() -> Perimeter:
-    return Perimeter()
-
-
-@pytest.fixture
-def mock_boundary() -> Boundary:
-    return Boundary(Position(0, 0), Dimensions(100, 1))
+    return _engine()

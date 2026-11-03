@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.bindings.meter
+# Ontology: Source - app.game.menus.bindings.meter
 
 Meter Widget Binding implementation.
 """

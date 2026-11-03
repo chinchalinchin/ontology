@@ -49,7 +49,7 @@ To add new Tasks to the backlog, use the following template,
 *Objective*: {{ task.objective }}
 
 {% for subtask in task $}
-- [] Subtask: {{ subtask.description }}
+* [] Subtask: {{ subtask.description }}
 {% endfor %}
 
 {% endfor %}

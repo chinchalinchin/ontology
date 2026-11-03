@@ -1,4 +1,4 @@
-# Ontology: Widgets
+# Ontology Docs: Widgets
 
 Widgets are a type of [Asset](./01-assets.md); however, they reside outside of the core loop and have a special place in the application flow.
 
@@ -41,7 +41,7 @@ Widget selection does not emit a bus event. When `MenuMechanics` detects an `Int
 
 **Engine Bus & Event Processing**
 
-The [Engine](./00-overview.md#engine) contains a `bus` field that accumulates Events emitted by the game loop. 
+The [Engine](./00-overview.md#component-engine) contains a `bus` field that accumulates Events emitted by the game loop. 
 
 During the Engine loop, it passes this bus down through the Mechanics. Mechanics then register events on this bus and MenuMechanics translates their input and passes it to a Controller, for example, a ScrollController. 
 
@@ -52,7 +52,7 @@ At the end of the tick, before the rendering phase, the Engine drains its bus:
 - If MenuEvent: The Engine pauses the Board, calls the Provider to instantiate the Menu, and pushes it to board.menus.
 - If State Event: The Engine begins migrating state from the file system into the Board.
 - If TerminalEvent: The Engine pops the Menu off the stack and unpauses the Board.
-- If UpdateEvent: The Engine pulls the clean background and the font (e.g., `render.construct()` and `render.write()` [Cython interfaces](./11-architecture.md#cython)), and overwrites the Widget's TexturePtr in VRAM.
+- If UpdateEvent: The Engine pulls the clean background and the font (e.g., `render.construct()` and `render.write()` [Cython interfaces](./12-architecture.md#cython)), and overwrites the Widget's TexturePtr in VRAM.
 
 Finally, the [Screen](./00-overview.md#screen) iterates over the Widgets and passes it to Cython. 
 
@@ -135,7 +135,7 @@ Panes may optionally have `headers`. `headers` is a list of Buttons. `len(header
 * `key(asset, state): returns <asset>`
 * `index(self, asset, properties, recipe): returns TODO` 
 
-!!! important
+!!! important "Pane Layouts"
     A Pane at runtime is just a background Asset with layout metadata. A Position has already been injected into from the Provider, after the Menu ScreenPositions have been unpacked into absolute coordinates.
 
 ### Buttons
@@ -390,7 +390,7 @@ The type of state a Gizmo binds to a Pane is dependent on the schema passed into
 
 The Provider, similiar to the [Decomposer](./03-compositions.md#decomposer), is responsible for unpacking Menu configurations into flat lists of Assets for the Engine. However, unlike the Decomposer, the Provider must also generate a traversal graph, inject bindings into Widgets and pass the result to a Menu.
 
-To start, ScreenPosition is a *configuration-time* concept, not a *runtime* concept. When the Provider and Layout engine instantiate a Menu, they must calculate the absolute pixel values `(px * screensize.w, py * screensize.l)` and inject a Position into the Widget state. By flattening the Menu tree and translating all percentages to absolute `Positions`, `Screen.draw()` can consume Widgets exactly like world Assets, satisfying the [zero-allocation principle](./11-architecture.md#cython).
+To start, ScreenPosition is a *configuration-time* concept, not a *runtime* concept. When the Provider and Layout engine instantiate a Menu, they must calculate the absolute pixel values `(px * screensize.w, py * screensize.l)` and inject a Position into the Widget state. By flattening the Menu tree and translating all percentages to absolute `Positions`, `Screen.draw()` can consume Widgets exactly like world Assets, satisfying the [zero-allocation principle](./12-architecture.md#cython).
 
 ### Controllers
 
@@ -559,7 +559,7 @@ When the [MenuMechanics](./05-mechanics.md#core) `update()` method fires, it doe
 
 ### Overlays
 
-The [Board](./00-overview.md#board) maintains an `overlay` and `menus` field to separate the responsiblities of different Menus. 
+The [Board](./00-overview.md#component-board) maintains an `overlay` and `menus` field to separate the responsiblities of different Menus. 
 
 The HUD is always painted on top of all dynamic Assets; as such, it is stored in `overlays` and treated separately by the rendering loop. The `menus` field on the Board holds a mutable stack of Menus that are instantiated on the fly during the game loop. When a MenuEvent is emitted by game loop, it will cause the game to pause as a precondition for these Menus to be displayed. These differences are summarized below,
 

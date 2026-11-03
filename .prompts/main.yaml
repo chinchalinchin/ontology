@@ -1,54 +1,31 @@
 # ----------------------------------------------------
-properties:
-  # --------------------------------------------
-  files:
-    index: index.md
-    mkdocs: mkdocs.yml
-  # --------------------------------------------
-  paths:
-    # ---------------------------------------
-    # root: /Users/gmoore/Home/projects/ontology/
-    root: /home/grant/Projects/ontology/
-    # ---------------------------------------
-    actions: .githubs/workflows/
-    # ---------------------------------------
-    blocks: .prompts/tasks/.blocks/
-    board: .prompts/board/
-    config: src/data/config
-    docs: docs/
-    diagrams: docs/static/mmd/
-    dumps: src/data/dumps/
-    fixtures: tests/unit/fixtures/
-    logs: src/data/logs/
-    phases: .prompts/board/phases/
-    tables: docs/static/md/
-    templates: .prompts/board/templates
-    tests: tests/unit/
-  # --------------------------------------------
-  project:
-    title: ontology
-  # --------------------------------------------
-  user:
-    username: grant
-    ssh: /home/gmoore/.ssh/id_ed25519
-    hostname: skynet
-  # --------------------------------------------
-  urls: 
-    github: github.com/chinchalinchin
+context: true
+# ----------------------------------------------------
+# ----------------------------------------------------
+# ----------------------------------------------- TASK
+# ----------------------------------------------------
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
+  # template: draft.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
+  # template: analysis/automaton.md.j2
+  # template: analysis/pstats.md.j2
+  # --------------------------------------------
+  # --------------------- TEMPLATES: MAINTENANCE
+  # --------------------------------------------
+  # template: maintain/console/enumeration.md.j2
   # template: maintain/console/patch.md.j2
   # template: maintain/console/session.md.j2
+  template: maintain/pipeline.md.j2
   # template: maintain/script.md.j2
   # --------------------------------------------
   # --------------------------- TEMPLATES: DUMPS 
   # --------------------------------------------
-  # template: dump/menus.md.j2
-  # template: dump/state.md.j2
+  # template: report/menus.md.j2
+  # template: report/state.md.j2
   # --------------------------------------------
   # ----------------------- TEMPLATES: ITERATION
   # --------------------------------------------
@@ -62,15 +39,12 @@ task:
   # -------------------------- TEMPLATES: DESIGN
   # --------------------------------------------
   # template: design/structure/menu.md.j2
-  template: design/structure/composition.md.j2
+  # template: design/structure/composition.md.j2
   # template: design/structure/score.md.j2
-  # --------------------------------------------
-  # ----------------------- TEMPLATES: ARTIFACTS
-  # --------------------------------------------
   # template: design/diagram/hierarchy.md.j2
   # template: design/diagram/automata.md.j2
-  # template: diagram/stages.md.j2
-  # template: style/mermaid.md.j2
+  # template: design/diagram/stages.md.j2
+  # template: design/style/mermaid.md.j2
 # ----------------------------------------------------
   # PLACEHOLDER UNTIL STRUCTURE EMERGES FOR TOOL
   parameters:
@@ -79,6 +53,10 @@ task:
     diagram: executor-centennial-transitions.mmd
     table: executor-centennial-transitions.md
 # ----------------------------------------------------
+# ----------------------------------------------------
+# ---------------------------------------------- TOOLS
+# ----------------------------------------------------
+# ----------------------------------------------------
 tools:
 # ----------------------------------------------------
   views:
@@ -86,32 +64,33 @@ tools:
     # ------------------------ TOOL VIEWS: MANAGER
     # --------------------------------------------
     manager:
-      board: true
+      board: false
       specs: false
       docs: true
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: METRICS
+    # --------------------------------------------
+    metrics:
+      pstats: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: true
-      entrypoints: false
-      models: false
-      script: false
-      workflow: true
+      data: false
+      filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: false
+      directory: true
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
+      configuration: true
       pipeline: false
-      fixtures: false
       session: false
-      workflow: false
 # ----------------------------------------------------
   parameters:
     # --------------------------------------------
@@ -119,117 +98,94 @@ tools:
     # --------------------------------------------
     manager:
       board:
-        phase: 'c002'
-        action: design
+        phase: '07-04'
+        action: refactor
       docs:
         exclude:
-          - index.md
-          # - 00-overview.md
-          # - 01-assets.md
-          - 02-sprites.md
-          # - 03-compositions.md
-          - 04-intentions.md
-          - 05-mechanics.md
-          - 06-widgets.md
-          - 07-sounds.md
-          # - 08-plots.md
-          - 09-ecology.md
-          - 10-emergence.md
-          # - 11-architecture.md
-      specs: []
+          # - 00-overview
+          # - 01-assets
+          - 02-sprites
+          - 03-compositions
+          - 04-intentions
+          - 05-mechanics
+          - 06-widgets
+          - 07-sounds
+          - 08-plots
+          - 09-ecology
+          - 10-chemistry
+          - 11-emergence
+          # - 12-architecture
+      specs:
+        - 00-dialogue
+        - 01-interaction
+        - 02-wander
+    metrics:
+      pstats: 
+        run: |
+          python -m cProfile -o $ROOT/engine-run.pstats src/main.py start world-01
+        dot: |
+          gprof2dot -f pstats --node-thres=1.0 --edge-thres=0.5 $ROOT/engine-run.pstats
     # --------------------------------------------
     # ------------------------ PARAMETERS: SOURCE
     # --------------------------------------------
     source:
-      data: 
-        properties:
-          - crafts
-          # - cursors
-          - effects
-          # - fonts
-          # - geography
-          - objects
-          # - resources
-          # - sheets
-          # - sounds
-          # - tiles
-          # - widgets
-        state: []
-          # - crafts
-          # - effects
-          # - objects
-          # - resources
-          # - sheets
-          # - tiles
-          # - world
-        configurations:
-          # - actions
-          # - compositions
-          # - intentions
-          - library
-          # - mappings
-          # - mechanics
-          # - menus
-          # - plots
-          # - recipes
-          # - stages
-      workflow: compositions
-      script: synthesize
-      models: [] 
-        # - 
-      entrypoints: []
-        # -
+      filter:
+        default: AND
+        queries:
+          # - title: Asset Abstract
+          #   scan: 
+          #     domain: [ abstract ]
+          #     app: [ asset ]
+          # - title: Mechanic Abstract
+          #   scan:
+          #     domain: [ abstract ]
+          #     app: [ mechanic ]
+          # - title: Sheet Implementations
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ asset ]
+          #     category: [ sheets ]
+          # - title: Sheet Models
+          #   scan:
+          #     domain: [ model ]
+          #     category: [ sheets ]
+          # - title: Navigation Workflow
+          #   scan:
+          #     workflows: [ navigation ]
+
+          - title: Cython Subsystems
+            scan:
+              domain: [ system ]
+              app: [ library ]
+              workflows: [ rendering ]
+          - title: Application Orchestration
+            scan: 
+              domain: [ system ]
+              app: [ orchestration ]
+          - title: Test Fixtures
+            scan:
+              test: [ fixtures ]
+      data:
+        properties: [ ]
+        state: [ ]
+        configurations: [ ]
+        templates: [ ]
     # --------------------------------------------
-    # ------------------------ PARAMETERS: SHELL
+    # -------------------------- PARAMETERS: SHELL
     # --------------------------------------------
     shell:
       directory: |
         tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
-      commands: []
+      commands: 
+        - python /Users/gmoore/Home/projects/ontology/src/main.py start
     # --------------------------------------------
-    # ------------------------ PARAMETERS: TESTS
+    # -------------------------- PARAMETERS: TESTS
     # --------------------------------------------
     tests:
       pipeline:
         command: pytest -m
-        marker: collisions
-      workflow: collisions
-      fixtures:
-        # ----------------------- FIXTURES: CONFIGURATIONS
-        # - configuration/compositions
-        # - configuration/groups
-        # - configuration/recipes
-        # - configuration/transitions
-        # - configuration/schemas
-        # ----------------------- FIXTURES: PROPERTIES
-        # - properties/crafts
-        # - properties/cursors
-        - properties/effects
-        # - properties/fonts
-        # - properties/geography
-        - properties/objects
-        # - properties/resources
-        - properties/sheets
-        - properties/tiles
-        # - properties/widgets
-        - properties/schemas
-        # ----------------------- FIXTURES: STATE
-        # - state/crafts
-        - state/effects
-        - state/objects
-        # - state/resources
-        - state/sheets
-        # - state/world
-        - state/schemas
-        # ----------------------- FIXTURES: APPLICATIONS
-        - assets
-        - components
-        # - menus
-        # - services
-        # - structures
+        marker: workflow_navigation
+        # scope: '**/test_{actuator,cartographer}.py'
       session:
         description: |
-          - Player is unable to traverse stairs to platform. 
-          - Stairs render on top of Player after (player.state.position.y + player.state.dimensions.l > stairs.state.position.y + stairs.state.dimensions.l)
-
-          **NOTE**: The Stairs functionality has never actually been tested.
+          description

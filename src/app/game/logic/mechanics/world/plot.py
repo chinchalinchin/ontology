@@ -1,5 +1,12 @@
 """
-# Ontology: app.game.logic.mechanics.world.plot
+@domain.concrete
+@domain.logic
+@app.mechanic
+@workflow.plot
+
+# Ontology: Source - app.game.logic.mechanics.world.plot
+
+PlotMechanics implementation.
 """
 from __future__ import annotations
 
@@ -9,7 +16,7 @@ import logging
 from typing import TYPE_CHECKING, Optional
 
 # Application Libraries
-from app.config.enums import Executors
+from app.static.semantics import Executors
 from app.game.logic.mechanics import Mechanic
 from app.models.state import DevicePayload
 from app.services.translators.base import Executor

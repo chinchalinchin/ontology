@@ -1,0 +1,18 @@
+effects:
+  fluids:
+    - id: waterflow
+      name: test-fluid-00
+      layer: '0'
+      position:
+        x: 60
+        y: 0
+      flow: 2
+      source: down
+    - id: waterflow
+      name: test-fluid-01
+      layer: '0'
+      flow: 4
+      position:
+        x: 595
+        y: 0
+      source: down

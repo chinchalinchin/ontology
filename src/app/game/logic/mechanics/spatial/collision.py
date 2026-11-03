@@ -1,7 +1,16 @@
 """
-# Ontology: app.game.logic.mechanics.spatial.collision
+@domain.concrete
+@domain.logic
+@app.mechanic
+@category.crafts
+@category.objects
+@category.sheets
+@physics.space
+@workflow.collisions
 
-Package for CollisionMechanics
+# Ontology: Source - app.game.logic.mechanics.spatial.collision
+
+CollisionMechanics implementation.
 """
 from __future__ import annotations
 
@@ -15,7 +24,7 @@ if TYPE_CHECKING:
     from app.game.board import Board
 
 from app.assets.base import Asset
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances, 
     Directions
 )
@@ -27,7 +36,11 @@ import libs.core.math.physics as physics
 import libs.core.math.geometry as geometry
 from libs.core.models import Boundary
 
+# -----------------------------------------------
+
 logger = logging.getLogger(__name__)
+
+# -----------------------------------------------
 
 class CollisionMechanics(SpatialMechanic):
     """
@@ -68,9 +81,10 @@ class CollisionMechanics(SpatialMechanic):
         foot_y = sprite.state.position.y + dim_l
 
         # -----------------------------------------------------------------
-        # VERTICAL STAIRS (UP / DOWN)
+        # VERTICAL STAIRS (UP)
         # -----------------------------------------------------------------
-        if direction_val in (Directions.UP.value, Directions.DOWN.value):
+        # NOTE: DOWN is impossible due to LPC perspective specification.
+        if direction_val == Directions.UP.value:
             stair_l = stairs.dimensions.l
             if stair_l == 0:
                 return
@@ -82,13 +96,6 @@ class CollisionMechanics(SpatialMechanic):
                 if tread_progress <= 0.85 and vy < 0:
                     sprite.elevation = e_top
                 elif tread_progress >= 0.85 and vy > 0:
-                    sprite.elevation = e_base
-
-            elif direction_val == Directions.DOWN.value:
-                # Ascent moves South (vy > 0); Descent moves North (vy < 0)
-                if tread_progress >= 0.15 and vy > 0:
-                    sprite.elevation = e_top
-                elif tread_progress <= 0.15 and vy < 0:
                     sprite.elevation = e_base
 
         # -----------------------------------------------------------------
@@ -169,6 +176,7 @@ class CollisionMechanics(SpatialMechanic):
         Extract variables logically and defer matrix shifts to Cython,
         resolving hitboxes matching the active collision elevation tier.
         """
+        # TODO: mass and velocity should probably be core Asset properties.
         m1 = getattr(asset_a.properties, 'mass', 0)
         m2 = getattr(asset_b.properties, 'mass', 0)
 

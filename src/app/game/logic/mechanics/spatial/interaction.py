@@ -1,7 +1,16 @@
 """
-# Ontology: app.game.logic.mechanics.spatial.interaction
+@domain.concrete
+@domain.logic
+@app.mechanic
+@physics.space
+@category.sheets
+@category.objects
+@modality.intention
+@workflow.interactions
 
-Package for InteractionMechanics
+# Ontology: Source - app.game.logic.mechanics.spatial.interaction
+
+InteractionMechanics implementation.
 """
 from __future__ import annotations
 from typing import TYPE_CHECKING
@@ -11,7 +20,7 @@ import logging
 if TYPE_CHECKING:
     from app.game.board import Board
 
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances,
     Intentions,
     Menus

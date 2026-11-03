@@ -1,3 +1,4 @@
+# .github/workflows/tests.yml
 name: ontology-tests
 
 on:
@@ -17,12 +18,19 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
+      - name: setup-uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "pyproject.toml"
+
       - name: setup
         run: |
           uv venv --python 3.14
           uv pip install -r pyproject.toml --group build --group test
+          uv pip install pytest-xdist
 
-      - name: cache
+      - name: cache-cython
         id: cache-cython
         uses: actions/cache@v4
         with:
@@ -39,9 +47,10 @@ jobs:
 
       - name: test
         env:
-          COVERAGE_CORE: ctrace
+          SDL_VIDEODRIVER: dummy
+          SDL_AUDIODRIVER: dummy
         run: |
-          uv run pytest --cov=src --cov-report=html:coverage-html tests/unit/
+          uv run pytest -n auto --cov=src --cov-report=html:coverage-html tests/unit/
 
       - name: upload-coverage
         uses: actions/upload-artifact@v4

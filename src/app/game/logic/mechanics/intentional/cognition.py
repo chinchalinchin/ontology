@@ -1,7 +1,14 @@
 """
-# Ontology: app.game.logic.mechanics.intentional.cognition
+@domain.concrete
+@domain.logic
+@app.mechanic
+@category.sheets
+@modality.intention
+@workflow.cognition
 
-Package for handling the Sprite Goal lifecycle.
+# Ontology: Source - app.game.logic.mechanics.intentional.cognition
+
+CognitionMechanics implementation. Manage Sprite Goals.
 """
 from __future__ import annotations
 
@@ -16,7 +23,7 @@ if TYPE_CHECKING:
 
 # Application Libraries
 from app.assets.base import Asset
-from app.config.enums import (
+from app.static.semantics import (
     Intentions, 
     Goals, 
     Motivations,
@@ -34,15 +41,21 @@ from app.models.state import (
 import libs.core.math.geometry as geometry
 from libs.core.models import Position
 
+# -----------------------------------------------------
+
 logger = logging.getLogger(__name__)
 
+# -----------------------------------------------------
+
 WANDER = "wander"
+
+# -----------------------------------------------------
 
 class CognitionMechanics(Mechanic):
     """
     ## CognitionMechanics
 
-    The central Mechanic for managing the lifecycle of Sprite Goals. Acts as the sensory input for Sprites, handling target acquisition, vision radiuses, and goal coordinate updates. 
+    The central Mechanic for managing the frequency of Sprite Goals. Acts as the sensory input for Sprites, handling target acquisition, vision radiuses, and goal coordinate updates. 
     """
 
     @staticmethod

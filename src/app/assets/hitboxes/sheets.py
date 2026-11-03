@@ -1,6 +1,12 @@
 """
-# Ontology: app.assets.hitboxes.sheets
+@domain.concrete
+@app.asset
+@asset.hitbox
+@category.sheets
 
+# Ontology: Source - app.assets.hitboxes.sheets
+
+Sheet HitboxSchema implementations.
 """
 # Standard Libraries
 from typing import (
@@ -18,6 +24,8 @@ from app.models.state import AssetState
 
 # Cython Libraries
 from libs.core.models import Hitbox
+
+# ---------------------------------------------------------
 
 class AttackHitbox(HitboxSchema):
     """

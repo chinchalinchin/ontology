@@ -1,5 +1,9 @@
 """
-# Ontology: app.services.generators.game.cradle
+@domain.system
+@app.service
+@workflow.injection
+
+# Ontology: Source - app.services.generators.game.cradle
 
 Package for ingame Asset instantiation.
 """
@@ -9,24 +13,39 @@ from __future__ import annotations
 from typing import (
     TYPE_CHECKING, 
     List,
-    Optional
+    Union,
 )
 import logging 
 import uuid
 
 # Application Libraries
-import app.config.settings as settings
+import app.static.settings as settings
 from app.assets.base import Asset
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances, 
-    AssetCategories
+    AssetCategories,
+    Orientations,
+    Directions,
+    # ---------
+    Ceramics,
+    Chromatics,
+    Geologics,
+    Metallics,
+    Organics,
+    # ---------
+    Buildings,
+    Corridors,
+    Columns,
+    Enclosures,
+    Inclines,
 )
-from app.services.generators.game.factory import Factory
+from app.game.logic.relations import MaterialIndex
+from app.services.factories.assets import AssetFactory
 from app.models.config import RecipeConfiguration
 from app.models.groups import SpawnableGroup
 from app.models.state import (
     AnimationState,
-    OrientedState,
+    CraftState,
     MotorState, 
     PropertyState,
     AttachmentState,
@@ -40,18 +59,18 @@ from app.models.state import (
 
 if TYPE_CHECKING:
     from app.services.generators.game.decomposer import Decomposer
-    from app.models.properties import Cost
 
 from libs.core.models import (
+    Hitbox,
     Position, 
     Velocity,
     Multiple
 )
 
-# Application Library
 logger = logging.getLogger(__name__)
 
 SPAWN = "spawn"
+
 
 class Cradle:
     """
@@ -60,16 +79,20 @@ class Cradle:
     """
     recipes: RecipeConfiguration
     spawnables: SpawnableGroup
-    decomposer: 'Decomposer'
+    decomposer: Decomposer
+    materials: MaterialIndex
 
     def __init__(self, 
         spawnables: SpawnableGroup, 
         recipes: RecipeConfiguration, 
+        materials: MaterialIndex,
         decomposer: Decomposer
     ):
         self.spawnables = spawnables
         self.recipes = recipes
+        self.materials = materials
         self.decomposer = decomposer
+
 
     @staticmethod
     def name() -> str:
@@ -105,11 +128,8 @@ class Cradle:
         position: Position,  # type: ignore
         layer: str, 
         velocity: Velocity # type: ignore
-    ):
-        recipe = self.recipes.cursors.projectiles
-        properties = self.spawnables.projectiles.get(id)
+    ) -> Asset:
         name = self.name()
-        
         state = MotorState(
             id          = id, 
             name        = name, 
@@ -117,24 +137,21 @@ class Cradle:
             position    = position, 
             initial     = position, 
             # TODO: determine
-            direction   = "down", 
+            direction   = Directions.DOWN.value, 
             # TODO: determine
             speed       = 10
         )
         # Inject velocity for the physics loop
         state.velocity = velocity 
-        
-        frame = Factory.frame(recipe.frame)
-        animation = Factory.animation(recipe.animation)
-        hitbox = Factory.hitbox(recipe.hitbox)
-        taxonomy = Factory.taxonomy(
-            id = id, 
-            name = name, 
-            category = AssetCategories.CURSORS.value, 
-            instance = AssetInstances.PROJECTILES.value
+
+        return AssetFactory.asset(
+            category=AssetCategories.CURSORS.value,
+            instance=AssetInstances.PROJECTILES.value,
+            properties=self.spawnables.projectiles.get(id),
+            state=state,
+            recipe=self.recipes.cursors.projectiles,
+            substrate=self.materials.substrate(AssetInstances.PROJECTILES.value)
         )
-        
-        return Asset(taxonomy, properties, state, frame, animation, hitbox)
 
 
     def spawn_collectable(self, 
@@ -143,27 +160,21 @@ class Cradle:
         position: Position,
         lot: Lot
     ) -> Asset:
-        recipe = self.recipes.effects.collectables
-        properties = self.spawnables.collectables.get(id)
-        name = self.name()
-
         state = CollectableState(
             id=id,
-            name=name,
+            name=self.name(),
             layer=layer,
             position=position,
             lot=lot
         )
-        frame = Factory.frame(recipe.frame)
-        animation = Factory.animation(recipe.animation)
-        hitbox = Factory.hitbox(recipe.hitbox)
-        taxonomy = Factory.taxonomy(
-            id=id,
-            name=name,
+        return AssetFactory.asset(
             category=AssetCategories.EFFECTS.value,
-            instance=AssetInstances.COLLECTABLES.value
+            instance=AssetInstances.COLLECTABLES.value,
+            properties=self.spawnables.collectables.get(id),
+            state=state,
+            recipe=self.recipes.effects.collectables,
+            substrate=self.materials.substrate(AssetInstances.COLLECTABLES.value)
         )
-        return Asset(taxonomy, properties, state, frame, animation, hitbox)
 
 
     def spawn_hazard(self, 
@@ -172,81 +183,39 @@ class Cradle:
         position: Position,
         damage: Damage
     ) -> Asset:
-        recipe = self.recipes.effects.hazards
-        properties = self.spawnables.hazards.get(id)
-        name = self.name()
-
         state = HazardState(
             id=id,
-            name=name,
+            name=self.name(),
             layer=layer,
             position=position,
             damage=damage
         )
-        frame = Factory.frame(recipe.frame)
-        animation = Factory.animation(recipe.animation)
-        hitbox = Factory.hitbox(recipe.hitbox)
-        taxonomy = Factory.taxonomy(
-            id=id,
-            name=name,
+        return AssetFactory.asset(
             category=AssetCategories.EFFECTS.value,
-            instance=AssetInstances.HAZARDS.value
+            instance=AssetInstances.HAZARDS.value,
+            properties=self.spawnables.hazards.get(id),
+            state=state,
+            recipe=self.recipes.effects.hazards,
+            substrate=self.materials.substrate(AssetInstances.HAZARDS.value)
         )
-        return Asset(taxonomy, properties, state, frame, animation, hitbox)
 
 
     def spawn_passive(self, id: str, layer: str, position: Position) -> Asset:
-        recipe = self.recipes.effects.passive
-        properties = self.spawnables.passive.get(id)
-        name = self.name()
-
         state = EffectState(
             id=id,
-            name=name,
+            name=self.name(),
             layer=layer,
             position=position,
             animation=AnimationState()
         )
-        frame = Factory.frame(recipe.frame)
-        animation = Factory.animation(recipe.animation)
-        hitbox = Factory.hitbox(recipe.hitbox)
-        taxonomy = Factory.taxonomy(
-            id=id,
-            name=name,
+        return AssetFactory.asset(
             category=AssetCategories.EFFECTS.value,
-            instance=AssetInstances.PASSIVE.value
+            instance=AssetInstances.PASSIVE.value,
+            properties=self.spawnables.passive.get(id),
+            state=state,
+            recipe=self.recipes.effects.passive,
+            substrate=self.materials.substrate(AssetInstances.PASSIVE.value)
         )
-        return Asset(taxonomy, properties, state, frame, animation, hitbox)
-
-
-    def spawn_strut(self, 
-        id: str, 
-        position: Position,  # type: ignore
-        layer: str, 
-        owner: str
-    ):
-        recipe = self.recipes.crafts.struts
-        properties = self.spawnables.struts.get(id)
-        name = self.name()
-        
-        state = PropertyState(
-            id          = id, 
-            name        = name, 
-            layer       = layer, 
-            position    = position, 
-            owner       = owner
-        )
-        frame = Factory.frame(recipe.frame)
-        animation = Factory.animation(recipe.animation)
-        hitbox = Factory.hitbox(recipe.hitbox)
-        taxonomy = Factory.taxonomy(
-            id          = id, 
-            name        = name, 
-            category    = AssetCategories.CRAFTS.value, 
-            instance    = AssetInstances.STRUTS.value
-        )
-        
-        return Asset(taxonomy, properties, state, frame, animation, hitbox)
 
 
     def spawn_shoreline(self,
@@ -256,49 +225,42 @@ class Cradle:
         orientation: str,
         length: int,
         hitboxes: List[Hitbox],  # type: ignore
-        bidirectional: bool = True
     ) -> Asset:
-        recipe = self.recipes.geography.shorelines
         properties = self.spawnables.shorelines.get(id)
-        name = self.name()
-
-        thickness = properties.thickness if properties else 8
 
         state = ShorelineState(
             id=id,
-            name=name,
+            name=self.name(),
             layer=layer,
             position=position,
             orientation=orientation,
             length=length,
-            thickness=thickness,
-            bidirectional=bidirectional,
             hitboxes=hitboxes
         )
-        frame = Factory.frame(recipe.frame)
-        animation = Factory.animation(recipe.animation)
-        hitbox = Factory.hitbox(recipe.hitbox)
-        taxonomy = Factory.taxonomy(
-            id=id,
-            name=name,
+        return AssetFactory.asset(
             category=AssetCategories.GEOGRAPHY.value,
-            instance=AssetInstances.SHORELINES.value
+            instance=AssetInstances.SHORELINES.value,
+            properties=properties,
+            state=state,
+            recipe=self.recipes.geography.shorelines,
+            substrate=self.materials.substrate(AssetInstances.SHORELINES.value)
         )
-        return Asset(taxonomy, properties, state, frame, animation, hitbox)
+
 
     def spawn_composition(self, 
         id: str, 
-        position: Position,  # type: ignore
+        position: Position,  # type: ignore,
+        material: Union[Ceramics,Chromatics,Geologics,Metallics,Organics],
+        blueprint: Union[Buildings,Corridors,Columns,Enclosures,Orientations,Inclines,Directions],
         layer: str, 
         owner: str
     ) -> List[Asset]:
         """
         Dynamically spawn an entire composition schema through the engine's mechanics flow.
         """
-        name = self.name()
-        pseudo_state    = PropertyState(
+        pseudo_state = PropertyState(
             id          = id, 
-            name        = name, 
+            name        = self.name(), 
             layer       = layer, 
             position    = position, 
             owner       = owner
@@ -311,27 +273,24 @@ class Cradle:
         id: str,
         layer: str,
         position: Position,
-        orientation: str,
-        multiple: Multiple,
-        owner: Optional[str] = None
+        material: Union[Geologics,Metallics,Organics],
+        blueprint: Orientations,
+        multiple: Multiple
     ) -> List[Asset]:
         """
         Spawns and unpacks a bridge configuration via Decomposer.
         """
-        name = self.name()
-        bridge_state = OrientedState(
+        bridge_state = CraftState(
             id=id,
-            name=name,
+            name=self.name(),
             layer=layer,
             position=position,
-            orientation=orientation,
-            multiple=multiple,
-            owner=owner
+            material=material,
+            blueprint=blueprint,
+            multiple=multiple
         )
-        return self.decomposer.bridge(bridge_state)
-
-    def cost(self, id: str) -> List[Cost]:
-        """
-        Delegates compositional cost aggregation to the Decomposer tree traverse utilities.
-        """
-        return self.decomposer.cost(id)
+        return self.decomposer.multiply(
+            bridge_state,
+            AssetCategories.CRAFTS.value,
+            AssetInstances.BRIDGES.value
+        )

@@ -1,5 +1,11 @@
 """
-# Ontology: app.models.config.transitions
+@domain.model
+@domain.automata
+@app.config
+@modality.intention
+@modality.lifespan
+
+# Ontology: Source - app.models.config.transitions
 
 Models for typing the transition configuration attributes of game components.
 """
@@ -17,8 +23,7 @@ from dataclasses import (
 from app.models.config import Configuration
 
 
-# ---------------------------------------------------------------------------------------
-# --------------------------------------------------------------- INTENTION CONFIGURATION
+# ---------------------------------------------------------
 
 @dataclass(slots=True, frozen=True)
 class IntentionConfiguration(Configuration):
@@ -27,8 +32,6 @@ class IntentionConfiguration(Configuration):
     next: str
     conditions: List[str] = field(default_factory=list)
 
-# ---------------------------------------------------------------------------------------
-# -------------------------------------------------------------------- PLOT CONFIGURATION
 
 @dataclass(slots=True, frozen=True)
 class PlotConfiguration(Configuration):
@@ -37,11 +40,8 @@ class PlotConfiguration(Configuration):
     next: str
     conditions: List[str] = field(default_factory=list)
 
-# ---------------------------------------------------------------------------------------
-# -------------------------------------------------------- STAGE TRANSITION CONFIGURATION
 
 @dataclass(slots=True)
-class StageConfiguration:
+class StageConfiguration(Configuration):
     next: str
     conditions: List[str] = field(default_factory=list)
-    phase: Optional[str] = None

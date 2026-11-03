@@ -1,5 +1,15 @@
 """
-# Ontology: app.game.logic.mechanics.intentional.transition
+@domain.automata
+@domain.concrete
+@domain.logic
+@app.mechanic
+@category.sheets
+@modality.intention
+@workflow.transitions
+
+# Ontology: Source - app.game.logic.mechanics.intentional.transition
+
+TransitionMechanics implementation.
 """
 # Standard Libraries
 from __future__ import annotations
@@ -11,7 +21,7 @@ import logging
 if TYPE_CHECKING:
     from app.game.board import Board
 
-from app.config.enums import (
+from app.static.semantics import (
     StaticIntentions,
     AssetInstances,
     Intentions,
@@ -22,8 +32,11 @@ from app.game.logic.mechanics import Mechanic
 from app.models.state import DevicePayload
 from app.services.translators.base import Executor
 
+# --------------------------------------------------------------
+
 logger = logging.getLogger(__name__)
 
+# --------------------------------------------------------------
 
 class TransitionMechanics(Mechanic):
     """

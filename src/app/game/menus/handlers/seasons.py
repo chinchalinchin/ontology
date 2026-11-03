@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.handlers.update
+# Ontology: Source - app.game.menus.handlers.update
 
 Season event handling implementation.
 """
@@ -7,7 +7,7 @@ Season event handling implementation.
 import logging
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     AssetCategories,
     AssetInstances
 )

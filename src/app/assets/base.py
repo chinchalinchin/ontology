@@ -1,29 +1,32 @@
 """
-# Ontology: app.assets.base
+@domain.abstract
+@app.asset
+@app.component
+@app.base
 
-Package for foundational Asset classes and interfaces.
+# Ontology: Source - app.assets.base
+
+Base Asset Interfaces.
 """
 # Standard Libraries
-from abc import (
-    ABC, 
-    abstractmethod
-)
+from abc import abstractmethod
 from dataclasses import dataclass
 from typing import (
     Dict,
     List, 
     Tuple,
     Optional,
-    Type,
-    Any,
 )
 
 # Application Libraries
-import app.config.settings as settings
-from app.config.enums import (
+from app.static.semantics import (
     ChannelTypes,
+    Substrates
 )
-from app.models.properties import AssetProperties
+from app.models.abstracts import Singleton
+from app.models.properties import (
+    AssetProperties
+)
 from app.models.state import (
     AssetState,
     CalendarState
@@ -33,18 +36,10 @@ from app.models.state import (
 from libs.core.models import (
     Dimensions, 
     Hitbox, 
-    Position
 )
 
-class Singleton(ABC):
-    _instances: Dict[Type[Any], Any] = {}
+# -------------------------------------------------
 
-    def __new__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super().__new__(cls)
-        return cls._instances[cls]
-
-    
 @dataclass(slots=True)
 class Taxonomy:
     id: str
@@ -156,6 +151,8 @@ class Asset:
     state: AssetState
     frame:  Frame
     animation: Animation
+    hitbox: HitboxSchema
+    substrate: int
 
     def __init__(self,
         taxonomy: Taxonomy,
@@ -164,6 +161,7 @@ class Asset:
         frame: Frame=None, 
         animation: Animation=None,
         hitbox: HitboxSchema=None,
+        substrate: int = Substrates.STANDARD.value
     ):
         self.taxonomy = taxonomy
         self.properties = properties
@@ -171,6 +169,7 @@ class Asset:
         self.frame = frame
         self.animation = animation
         self.hitbox = hitbox
+        self.substrate = substrate
 
     @property
     def id(self) -> str: 
@@ -195,10 +194,9 @@ class Asset:
 
     @property
     def elevation(self) -> int:
-        if self.state.elevation is not None:
-            return self.state.elevation
-        return settings.SUBSTRATES.get(self.taxonomy.instance, 0)
+        return self.state.elevation if self.state.elevation is not None else 0
 
+    
     @elevation.setter
     def elevation(self, value: Optional[int]) -> None:
         self.state.elevation = value
@@ -208,7 +206,6 @@ class Asset:
         """Default physical footprint resolved at the asset's deployed elevation."""
         return self.hitbox.get(self.properties, self.state, self.elevation, self.frame)
 
-        
     def primitive(self, index: int = 0, hitboxes: List[Hitbox] = None) -> Tuple:
         """
         Extracts spatial attributes into primitive integers for Cython math operations.

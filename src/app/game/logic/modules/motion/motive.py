@@ -1,5 +1,9 @@
 """
-# Ontology: app.game.logic.modules.motion.motive
+@domain.logic
+@app.module
+@physics.motion
+
+# Ontology: Source - app.game.logic.modules.motion.motive
 """
 from __future__ import annotations
 
@@ -8,7 +12,7 @@ from typing import List, TYPE_CHECKING
 
 # Application Libraries
 from app.assets.base import Asset
-from app.config.enums import NavigationIntentions
+from app.static.semantics import NavigationIntentions
 
 if TYPE_CHECKING:
     from app.game.board import Board

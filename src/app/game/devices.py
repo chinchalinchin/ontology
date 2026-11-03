@@ -1,12 +1,14 @@
 """
-# Ontology: app.game.devices
+@domain.user
+@app.device
 
+# Ontology: Source - app.game.devices
 """
 # Standard Libraries
 import logging 
 
 # Application Libraries
-from app.config.enums import DeviceContexts
+from app.static.semantics import DeviceContexts
 from app.models.config import DeviceMapping
 from app.models.state import (
     DevicePayload,
@@ -17,7 +19,11 @@ from app.models.state import (
 # Cython Libraries
 import libs.core.input as sdl
 
+# -------------------------------------------------------
+
 logger = logging.getLogger(__name__)
+
+# -------------------------------------------------------
 
 class Device:
     """

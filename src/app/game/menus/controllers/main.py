@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.controllers.main
+# Ontology: Source - app.game.menus.controllers.main
 """
 from __future__ import annotations
 
@@ -9,8 +9,8 @@ from typing import TYPE_CHECKING
 import logging
 
 # Application Libraries
-import app.config.settings as settings
-from app.config.enums import Selections
+import app.static.settings as settings
+from app.static.semantics import Selections
 from app.game.menus.controllers.base import MenuController
 from app.game.menus.core import Menu
 from app.game.menus.events import (

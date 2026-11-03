@@ -1,7 +1,12 @@
 """
-# Ontology: app.game.logic.mechanics.core.motion
+@domain.logic
+@domain.concrete
+@app.mechanic
+@physics.motion
 
-Package for MotionMechanics
+# Ontology: Source - app.game.logic.mechanics.core.motion
+
+MotionMechanics implementation.
 """
 from __future__ import annotations
 
@@ -11,7 +16,7 @@ import collections
 import logging
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     AssetInstances, 
 )
 from app.game.logic.modules.motion import (

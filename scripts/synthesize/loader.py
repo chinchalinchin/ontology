@@ -1,4 +1,8 @@
-"""Music21 corpus parser and metadata extraction module."""
+"""
+@script.synthesize
+
+Music21 corpus parser and metadata extraction module.
+"""
 
 import logging
 from typing import Dict, List, Optional, Union

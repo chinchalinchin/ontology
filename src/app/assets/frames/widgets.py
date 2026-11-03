@@ -1,5 +1,10 @@
 """
-# Ontology: app.assets.frames
+@domain.concrete
+@app.asset
+@asset.frame
+@category.widgets
+
+# Ontology: Source - app.assets.frames
 
 Package for Widget Frame implementations.
 """
@@ -10,18 +15,20 @@ from typing import (
 import logging
 
 # Application Libraries
-import app.config.settings as settings
+import app.static.settings as settings
 from app.assets.base import Frame
-from app.config.enums import (
+from app.static.semantics import (
     Statuses,
     Gauges
 )
 from app.models.state import AssetState
 from app.models.properties import WidgetProperties
 
+# -------------------------------------------------------------
+
 logger = logging.getLogger(__name__)
 
-# -------------------------------------------------------------------------------------
+# -------------------------------------------------------------
 
 class TraversalFrame(Frame):
     """
@@ -64,7 +71,7 @@ class TraversalFrame(Frame):
             ]): (3*w, 0, w, l)
         }
 
-# -------------------------------------------------------------------------------------
+# -------------------------------------------------------------
 
 class MeterFrame(Frame):
     """

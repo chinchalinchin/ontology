@@ -1,7 +1,9 @@
 # Application Libraries
 from app.models.config.core import (
     Configuration,
-    ActionConfiguration,
+)
+from app.models.config.actions import (
+    ActionConfiguration
 )
 from app.models.config.compositions import (
     CompositionPseudoState,
@@ -12,6 +14,10 @@ from app.models.config.mappings import (
     MenuMapping,
     DeviceMapping,
     MappingConfiguration
+)
+from app.models.config.materials import (
+    Cost,
+    MaterialsConfiguration
 )
 from app.models.config.mechanics import (
     MechanicsInstance,
@@ -76,5 +82,7 @@ __all__ = [
     'RecipeConfiguration',
     'ConfigurationSchema',
     'MenuBinding',
-    'MechanicsInstance'
+    'MechanicsInstance',
+    'Cost',
+    'MaterialsConfiguration',
 ]

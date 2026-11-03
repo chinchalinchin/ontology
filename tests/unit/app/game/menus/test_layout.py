@@ -14,7 +14,7 @@ from app.models.config.menus import (
     PaneParameters,
     ButtonParameters
 )
-from app.config.enums import (
+from app.static.semantics import (
     Layouts, 
     Alignments, 
     Traversal, 
@@ -40,7 +40,7 @@ from libs.core.models import (
 
 # TODO: refactor to use fixtures
 
-@pytest.mark.menus
+@pytest.mark.workflow_menus
 def test_layout_compute_anchor():
     layout = Layout(Dimensions(w=1000, l=1000))
     root_cfg = MenuNode(
@@ -56,7 +56,12 @@ def test_layout_compute_anchor():
         )
     )
     mock_pane = MagicMock()
-    mock_pane.state = PaneState(position=Position(x=0, y=0), layout=Layouts.OVERLAY, alignment=Alignments.CENTER, gap=0)
+    mock_pane.state = PaneState(
+        id="test-pane",
+        position=Position(x=0, y=0), 
+        layout=Layouts.OVERLAY, 
+        alignment=Alignments.CENTER, gap=0
+    )
     widgets = {"p1": mock_pane}
     
     layout.compute([root_cfg], widgets)
@@ -65,7 +70,7 @@ def test_layout_compute_anchor():
     assert mock_pane.state.position.y == 250
 
 
-@pytest.mark.menus
+@pytest.mark.workflow_menus
 def test_layout_overlay():
     layout = Layout(Dimensions(w=1000, l=1000))
     pane = MagicMock()
@@ -82,7 +87,7 @@ def test_layout_overlay():
     assert child.state.position.y == 175
 
 
-@pytest.mark.menus
+@pytest.mark.workflow_menus
 def test_layout_dock_center():
     layout = Layout(Dimensions(w=1000, l=1000))
     pane = MagicMock()
@@ -103,7 +108,7 @@ def test_layout_dock_center():
     assert c2.state.position.y == 40
 
 
-@pytest.mark.menus
+@pytest.mark.workflow_menus
 def test_layout_stack_center():
     layout = Layout(Dimensions(w=1000, l=1000))
     pane = MagicMock()
@@ -124,25 +129,36 @@ def test_layout_stack_center():
     assert c2.state.position.y == 75
 
 
-@pytest.mark.menus
+@pytest.mark.workflow_menus
 def test_layout_dock_with_explicit_dimensions():
     """Validates that adjacent dock containers respect explicit geometry without overlapping."""
     layout = Layout(Dimensions(w=640, l=480))
     root_pane = Asset(
         taxonomy=Taxonomy("neutral", "root", "widgets", AssetInstances.PANES.value),
         properties=WidgetProperties(dimensions=Dimensions(w=318, l=180)),
-        state=PaneState(position=Position(x=0, y=0), margins=10, gap=10)
+        state=PaneState(
+            id="test-pane-00",
+            position=Position(x=0, y=0), 
+            margins=10, 
+            gap=10
+        )
     )
 
     grid_pane = Asset(
         taxonomy=Taxonomy("transparent-slot", "grid", "widgets", AssetInstances.PANES.value),
         properties=WidgetProperties(dimensions=Dimensions(w=175, l=85)),
-        state=PaneState(margins=0)
+        state=PaneState(
+            id="test-pane-01",
+            margins=0
+        )
     )
     scroll_pane = Asset(
         taxonomy=Taxonomy("transparent-slot", "controls", "widgets", AssetInstances.PANES.value),
         properties=WidgetProperties(dimensions=Dimensions(w=24, l=85)),
-        state=PaneState(margins=0)
+        state=PaneState(
+            id="test-pane-02",
+            margins=0
+        )
     )
 
     layout._layout_dock(root_pane, [grid_pane, scroll_pane], Alignments.CENTER, gap=10)
@@ -151,7 +167,7 @@ def test_layout_dock_with_explicit_dimensions():
     assert scroll_pane.state.position.x - (grid_pane.state.position.x + grid_pane.dimensions.w) == 10
 
 
-@pytest.mark.menus
+@pytest.mark.workflow_menus
 def test_layout_build_graph():
     layout = Layout(Dimensions(w=1000, l=1000))
     
@@ -180,7 +196,7 @@ def test_layout_build_graph():
     assert graph["b3"][Traversal.WEST] == "b1"
 
 
-@pytest.mark.menus
+@pytest.mark.workflow_menus
 def test_layout_build_graph_grid_to_controls():
     """Validates that right-column buttons in a 2x2 grid link EAST to adjacent scroll controls."""
     layout = Layout(Dimensions(w=640, l=480))

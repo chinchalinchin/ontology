@@ -1,7 +1,12 @@
 """
-# Ontology: app.models.state.effects
+@domain.model
+@app.asset
+@asset.state
+@category.effects
 
-Python data models for typing Effect state attributes.
+# Ontology: Source - app.models.state.effects
+
+Effect State Models.
 """
 # Standard Libraries
 from typing import ( 
@@ -13,7 +18,7 @@ from typing import (
 from dataclasses import dataclass, field
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     Reactions,
     Directions,
     Intentions,
@@ -21,27 +26,28 @@ from app.config.enums import (
 )
 from app.models.adapters import (
     PydanticPosition as Position, 
-    PydanticHitbox as Hitbox
+    PydanticHitbox as Hitbox,
+    Enumerated
 )
 from app.models.state.core import (
     AnimationState,
     AssetState
 )
 
-# ---------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------- ASSET STATES
 
-# ------------------------------------------------------------------------ EFFECT FIELDS
+# ------------------------------------------------------------
+# ---------------------------------------------- EFFECT FIELDS
+# ------------------------------------------------------------
 
 @dataclass(slots=True)
 class Damage:
     amount: int = 0
     duration: int = 0
-    reaction: Reactions = Reactions.BOUNCE.value
+    reaction: Enumerated[Reactions] = Reactions.BOUNCE.value
 
 @dataclass(slots=True)
 class Lot:
-    inventory: Inventories = Inventories.EQUIPMENT.value
+    inventory: Enumerated[Inventories] = Inventories.EQUIPMENT.value
     item: Optional[str] = None 
     quantity: int = 0
 
@@ -55,12 +61,14 @@ class Pool:
 @dataclass(slots=True)
 class Branch:
     position: Position # type: ignore
-    source: str
+    source: Enumerated[Directions]
     flow: int
     length: int = 0
     hitboxes: List[Hitbox] = field(default_factory=list) # type: ignore
 
-# ------------------------------------------------------------------------ EFFECT STATES
+# ------------------------------------------------------------
+# ---------------------------------------------- EFFECT STATES
+# ------------------------------------------------------------
 
 @dataclass(slots=True)
 class EffectState(AssetState):
@@ -74,7 +82,7 @@ class HazardState(EffectState):
 
 @dataclass(slots=True)
 class ReactableState(EffectState):
-    intention: str = Intentions.INTERACT.value
+    intention: Enumerated[Intentions] = Intentions.INTERACT.value
     cooldown: int = 60
     active: bool = False
 
@@ -91,5 +99,5 @@ class FluidState(EffectState):
     hitboxes: List[Hitbox] = field(default_factory=list) # type: ignore
     dirty: bool = True
     flow: int = 1
-    source: Directions = Directions.DOWN.value
+    source: Enumerated[Directions] = Directions.DOWN.value
     _keys: Dict[int, List[Tuple[str, int, int]]] = field(default_factory=dict)

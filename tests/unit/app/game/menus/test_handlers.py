@@ -7,7 +7,7 @@ import pytest
 import collections
 from unittest.mock import MagicMock
 
-from app.config.enums import Menus
+from app.static.semantics import Menus
 from app.game.menus.events import (
     MenuEvent,
     StateEvent,

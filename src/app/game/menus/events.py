@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.events
+# Ontology: Source - app.game.menus.events
 """
 import collections
 from dataclasses import dataclass

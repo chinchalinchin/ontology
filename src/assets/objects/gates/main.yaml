@@ -1,0 +1,14 @@
+objects:
+  gates:
+    # --------------------------
+    postern:
+      dimensions:
+        w: 64
+        l: 64
+      mass: 0
+      count: 2
+      material:
+        genus: geologics
+      hitboxes: null
+    # --------------------------
+

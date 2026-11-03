@@ -24,4 +24,6 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 # Pre-install Python 3.14
 RUN uv python install 3.14
 
+COPY src /workspace
+
 WORKDIR /workspace

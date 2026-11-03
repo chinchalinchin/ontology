@@ -1,7 +1,12 @@
 """
-# Ontology: app.services.generators.game.perimeter
+@domain.logic
+@app.service
+@workflow.generation
+@workflow.collisions
 
-Package for dynamic environment boundary generation partitioned by elevation tier.
+# Ontology: Source - app.services.generators.game.perimeter
+
+Dynamic perimeter generation partitioned by elevation.
 """
 from __future__ import annotations
 
@@ -15,7 +20,7 @@ from typing import (
 )
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     AssetCategories, 
     AssetInstances
 )
@@ -35,9 +40,11 @@ logger = logging.getLogger(__name__)
 
 class Perimeter:
     """
-    Derives simply-connected outer hulls of an environment partitioned by layer and elevation tier.
+    Derives simply-connected outer hulls of an environment partitioned by layer and elevation.
     """
-    def extract(self, board: Board, layer: str, elevation: Optional[int] = None) -> List[tuple[int, int, int, int]]:
+
+    @classmethod
+    def extract(cls, board: Board, layer: str, elevation: Optional[int] = None) -> List[tuple[int, int, int, int]]:
         rects = []
         
         # 1. Map Tiles (Substrates belong to Tier 0)
@@ -67,6 +74,7 @@ class Perimeter:
                         x1 = int(craft.state.position.x)
                         y1 = int(craft.state.position.y)
                         rects.append((x1, y1, x1 + craft.dimensions.w, y1 + craft.dimensions.l))
+                        
                 elif craft.taxonomy.instance == AssetInstances.STAIRS.value:
                     if base_e + craft.state.delta == elevation:
                         x1 = int(craft.state.position.x)
@@ -114,7 +122,8 @@ class Perimeter:
             
         return rects
 
-    def generate(self, board: Board, layer: str) -> Dict[int, List[Boundary]]:
+    @classmethod
+    def generate(cls, board: Board, layer: str) -> Dict[int, List[Boundary]]:
         weights = board.weights(layer)
         # Collapse all non-positive elevations to Tier 0
         elevations = {
@@ -125,7 +134,7 @@ class Perimeter:
         perimeters_by_tier: Dict[int, List[Boundary]] = {}
 
         for elevation in elevations:
-            rects = self.extract(board, layer, elevation=elevation)
+            rects = cls.extract(board, layer, elevation=elevation)
             if not rects:
                 continue
                 

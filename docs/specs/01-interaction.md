@@ -1,11 +1,8 @@
-#### Ontology Specification: Interaction Loop
+#### Ontology Spec: Interaction Loop
 
 This specification governs how Sprites traverse the environment and manipulate Objects (such as Doors and Chests).
 
-!!! note
-    All information in this section assumes the default values for the [Intention Configuration](../appendices/01-schemas.md#configuration-intentions).
-
-!!! note
+!!! note "Player Exclusion"
     This specification excludes the [Player](../02-sprites.md#player), whose Intentions are handled through input polling and device mapping.
 
 ##### Prologue

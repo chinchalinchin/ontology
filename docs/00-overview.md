@@ -1,4 +1,4 @@
-# Ontology: Overview
+# Ontology Docs: Overview
 
 !!! note "Capitalization"
     Terminology is capitalized to distinguish it from its colloquial connotations.
@@ -11,115 +11,109 @@
 
 !!! note "Width, Length"
     Width is a horizontal displacement, length is a vertical displacement.
-    
-## Assets
 
-All Assets have an *ID* and *properties*. Most, but not all, Assets have *state*. 
+!!! note "Logical Quantification
+    `|` is used as a logical quantifier, e.g. `y | y + x = 3` would mean the set of `y` that lie along the line `3 - x`.
 
-Assets are divided into non-overlapping categories, known as the [Asset Hierarchy](./01-assets.md#asset-hierarchy). Different categories of Assets expand the base properties and states in various ways. In brief, the Asset categories are,
+## Cores
 
-- [Crafts](./01-assets.md#crafts)
-- [Cursors](./01-assets.md#cursors)
-- [Effects](./01-assets.md#effects)
-- [Geography](./01-assets.md#geography)
-- [Objects](./01-assets.md#objects)
-- [Sheets](./01-assets.md#sheets)
-- [Sounds](./07-sounds.md)
-- [Resources](./01-assets.md#resources)
-- [Tiles](./01-assets.md#tiles)
-- [Widgets](./06-widgets.md)
+### Core: Assets
 
-Assets are placed in the `/src/assets/<category>/` directory and then registered in a Asset category index `/src/assets/<category>/**/*.yaml` file. The YAML index schema for each Asset configures its *properties*, i.e. the static attributes that are constant and do not change as a result of gameplay. 
+Assets are the foundation of the Engine. They are, fundamentally, a class for binding image atlases on the fileystem to entities stored on the [Board](#component-board) and shown on the [Screen](#component-screen).
+
+All Assets have an *ID* and *properties*. Most, but not all, Assets have *State*. 
+
+Assets are divided into non-overlapping (Category, Instance) nodes, known as the [Asset Hierarchy](./01-assets.md#asset-hierarchy). Different Categories of Assets expand the base Properties and States in various ways. In brief, the Asset categories are,
+
+* [Crafts](./01-assets.md#category-crafts)
+* [Cursors](./01-assets.md#category-cursors)
+* [Effects](./01-assets.md#category-effects)
+* [Geography](./01-assets.md#category-geography)
+* [Objects](./01-assets.md#category-objects)
+* [Sheets](./01-assets.md#category-sheets)
+* [Sounds](./07-sounds.md)
+* [Resources](./01-assets.md#category-resources)
+* [Tiles](./01-assets.md#category-tiles)
+* [Widgets](./06-widgets.md)
+
+Assets are placed in the `/src/assets/<category>/` directory and then registered in a Asset Category index `/src/assets/<category>/**/*.yaml` file. The YAML index schema for each Asset configures its *Properties*, i.e. the static attributes that are constant and do not change as a result of gameplay. 
 
 The `/src/assets` directory is known as the *asset directory*.
 
-See [Asset Schema](./appendices/01-schemas.md#model-properties) for more information on the Asset property index.
+See [Asset Schema](./appendices/01-schemas.md#model-properties) for more information on the Asset Property index.
 
-## Data
-
-* Location: `/src/data/`
-
-Runtime information is stored in the `/src/data/**` directory, otherwise known as the *data directory*. This information is divided into *state* and *configuration* across the `/src/data/state/*` and the `/src/data/config/*` directories, respectively. These directories are otherwise known as the *state directory* and the *configuration directory*.
-
-### State
+### Core: State
 
 * Location: `/src/data/state/`
 
-An [Asset](./01-assets.md) is deployed onto a [Board](#board), where it acquires its state, i.e. its dynamic attributes that are variable and change as a result of gameplay. The application ingests and stores state in the state directory.
+An [Asset](./01-assets.md) is deployed onto a [Board](#component-board), where it acquires its State, i.e. the dynamic attributes which change as a result of [Mechanics](./05-mechanics.md). The Application ingests and stores this information in the State directory.
 
-An [Asset Category](./01-assets.md#asset-hierarchy) has a single schema for properties that each Instance utilizes, but each individual [Asset Instance](./01-assets.md#asset-hierarchy) has a unique State, particular to its deployment. For example, a [Chest](./01-assets.md#chests) is configured once by its properties (its width, length, etc.), but each instance of a [Chest](./01-assets.md#chests) on the [Board](#board) is given a unique state (its position, content, etc.).
+An [Asset Category](./01-assets.md#asset-hierarchy) has a single schema for Properties that each Instance utilizes, but each individual [Asset Instance](./01-assets.md#asset-hierarchy) has a unique State, particular to its deployment. For example, a [Chest](./01-assets.md#object-chests) is configured once by its Properties (its width, length, etc.), but each instance of a [Chest](./01-assets.md#object-chests) on the [Board](#component-board) is given a unique state (its Position, Content, etc.).
 
-### Configuration
+### Core: Configuration
 
 * Location: `/src/data/config`
 
-Mechanics and other components of the game [Engine](#engine) (e.g. Menus, Actions, etc.) utilize configuration stored in the configuration directory. The following Engine components are configured by the files in this directory.
+Mechanics, Relations and other components of the [Engine](#component-engine) utilize Configuration stored in the Configuration directory:
 
-- [Actions](./01-assets.md#sheets)
-- [Compositions](./03-compositions.md)
-- [Intentions](./04-intentions.md)
-- [Library](./08-plots.md)
-- [Mappings](./02-sprites.md#devices)
-- [Mechanics](./05-mechanics.md)
-- [Menus](./06-widgets.md#menus)
-- [Plots](./08-plots.md)
-- [Recipes](./01-assets.md#asset-concepts)
+* [Actions](./01-assets.md#category-sheets)
+* [Compositions](./03-compositions.md)
+* [Intentions](./04-intentions.md)
+* [Library](./08-plots.md)
+* [Mappings](./02-sprites.md#devices)
+* [Materials](./01-assets.md#concept-materiality)
+* [Mechanics](./05-mechanics.md)
+* [Menus](./06-widgets.md#menus)
+* [Plots](./08-plots.md)
+* [Recipes](./01-assets.md#asset-concepts)
 
 ## Application 
 
-The core components of the application are listed below in this section, in the approximate order they are called in the course of bootstrapping.
+The Application consists of an interconnected and interdependent system of Configurations, Services, Libraries and Components. These system serve to interpret and operate on Asset Properties and Asset State.
 
-See [Architecture documentation](./11-architecture.md) for more information.
+See [Architecture documentation](./12-architecture.md) for more information.
 
-### Loader
+### Configurations
 
-- Package: `app.config.loader`
+#### Configuration: Loader
 
-The Loader is responsible for reading in the configuration files for properties and state, converting them into Python data structures.
+- Address: `app.static.loader`
 
-### Factory
+The Loader is responsible for reading in Configurations, Properties and State files from their respective directories, and then validating them into Models via Pydantic TypeAdaptors.
 
-- Package: `app.services.generators.game.factory`
+#### Configuration: Semantics
 
-The Factory builds Assets and other game components based on Recipes. 
+- Address: `app.static.semantics`
 
-### Orchestrator
+All semantic terms utilized by the [Application](#application) are enumerated within this package. 
 
-- Package: `app.services.orchestration.orchestrator`
+### Services
 
-The Orchestrator is the dependency injection system. It is responsible for converting validated data structures into application data models and supplying them to application classes.
+#### Service: Factory
 
-### Registry
+- Address: `app.services.generators.game.factory`
 
-- Package: `libs.graphics.registry`
+The Factory builds [Assets](./01-assets.md) and other Components based on [Recipes](./appendices/01-schemas.md#configuration-recipes). 
 
-The Registry loads in all of the Asset files when the application bootstraps. The frames are indexed and stored in the memory. 
+#### Service: Orchestrator
 
-### Engine
+- Address: `app.services.orchestration.orchestrator`
 
-- Package: `app.game.engine`
+The Orchestrator is the dependency injection system. It is responsible for converting validated Models into application Components.
 
-The Engine handles the core gameplay loop and framerate calculations. 
+### Libraries
 
-**Component: Bus**
+#### Library: Registry
 
-The Engine contains a Bus for processing Menu Events.
+- Address: `libs.graphics.registry`
 
-**Component: Provider**
+The Registry loads in all of the Asset files while the application bootstraps. Each Asset Frame is indexed and stored in memory. 
 
-The Engine contains a Provider for instantiating Menus.
+### Components
 
-**Component: Binder**
+#### Component: Board
 
-The Provider contains a Binder for binding Widget states to game state.
-
-**Component: Library**
-
-The Provider contains a Library for injecting Widget states with plot-dependent content.
-
-### Board
-
-- Package: `app.game.board`
+- Address: `app.game.board`
 
 The Board acts as the Game's in-memory "database". It holds all in-game Assets and Configurations during the game loop, providing queryable interfaces to the Engine and Mechanics.
 
@@ -137,26 +131,48 @@ The Board exposes interfaces for querying the game state:
     2. `board.weights(layer)`: Returns a list of Assets with non-negative mass ($m \ge 0$) on the given layer (includes static and dynamic bodies; excludes sensors).
     3. `board.obstacles(layer)`: Returns a list of Assets that qualify as Obstacles.
 * Environment Queries
-    1. `board.tile(layer, position, instance)`: Retrieves background or foreground [Tiles](./01-assets.md#tiles) via $O(1)$ spatial hash lookup.
+    1. `board.tile(layer, position, instance)`: Retrieves background or foreground [Tiles](./01-assets.md#category-tiles) via $O(1)$ spatial hash lookup.
     2. `board.shorelines(layer=None)`: Retrieves active procedural shoreline assets for a specific layer or across all layers.
     1. `board.moisture(layer, x, y)`: Queries scalar soil moisture potential $\Phi(x, y)$ from the layer's compiled `MoistureField`.
 
 **Interface: Predicates**
 
-THe Board exposes predicates for asserting conditions on the Board state.
+THe Board exposes predicates for asserting conditions of the Board state.
 
 * Environment Predicates
-    - `board.fluid(layer, position, exclude=None)`: Evaluates whether a coordinate intersects any active [Fluid](./01-assets.md#fluids) stream or annular pool across the layer, with an optional entity exclusion filter.
+    1. `board.fluid(layer, position, exclude=None)`: Evaluates whether a coordinate intersects any active [Fluid](./01-assets.md#effect-fluids) stream or annular pool across the layer, with an optional entity exclusion filter.
 
-**Component: Cradle**
+**Service: Cradle**
 
-The Board posseses a Cradle field for instantiating Assets through game Mechanics, e.g. `CombatMechanics` uses the Cradle to inject new Projectiles into the Board state.
+The Cradle instantiates Assets during the course of the [Engine](#component-engine) loop through the interface of [Mechanics](./05-mechanics.md).
 
-**Component: Migrator**
+**Service: Migrator**
 
-The Board posses a Migrator field for asynchronously loading game state.
+The Migrator asynchronously loads the Board State.
 
-### Screen
+#### Component: Engine
+
+- Package: `app.game.engine`
+
+The Engine handles the core loop and Frame rate calculations. 
+
+**Field: Bus**
+
+The Bus processes asynchronous [Events](./06-widgets.md#events).
+
+**Service: Provider**
+
+The Provider instantiates [Menus](./06-widgets.md#menus).
+
+**Service: Binder**
+
+The Binder for binding [Widget](./06-widgets.md) States to [Asset](./01-assets.md) States.
+
+**Service: Library**
+
+The Provider contains a Library for injecting Widget states with plot-dependent content.
+
+#### Component: Screen
 
 - Package: `app.game.screen`
 
@@ -164,9 +180,9 @@ The Screen acts as a high-level container for a Cythonized SDL rendering interfa
 
 ## Concepts
 
-### Hitboxes
+### Concept: Hitboxes
 
-Many Assets have Hitboxes. Hitboxes definitions are specified as *properties*, i.e., they are static and read before the execution of the game engine. Hitboxes have positions and dimensions. 
+Many Assets have Hitboxes. Hitboxes definitions are static and read before the execution of the [Engine](#component-engine) Hitboxes have positions and dimensions. 
 
 To ensures Hitboxes remain statically configured, Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. Hitbox dimensions are always absolute. The following snippet shows the hitbox schema for an LPC Sprite Frame, with the image below showing how the hitbox translates into the physical image with a blue rectangle,
 
@@ -186,7 +202,7 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 
 While hitboxes are statically confitured, this does not necessarily mean hitboxes are statically accessed. See [Asset Component Architecture](./01-assets.md#asset-architecture) for more information.
 
-### Layers
+### Concept: Layers
 
 All deployed Assets have a Layer. Layers represent a "view" where the Asset is located. When the Screen renders an entire frame, it is rendering a Layer.  
 
@@ -194,6 +210,6 @@ Layers on a board can be traversed through Doors. The coordinate plane of each L
 
 Sprite interactions are constrained by their Layers. Because Layers are superimposed coordinates, all interaction calculations are separated by Layer, to avoid inter-Layer collisions and interactions.
 
-### Sprites
+### Concept: Sprites
 
-NPC and Enemy Sprites are undifferentiated. Conflict is driven entirely by internal Sprite data structures and the gameplay loop. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's state is determined by polling the Player's input device, as opposed to the [Intention Transition Matrix](./04-intentions.md#transition-matrix). However, all state changes of Sprites and the Player are communicated through the medium of [Goals and Intentions](./04-intentions.md).
+[Sprites](./02-sprites.md) are [Intentional](./04-intentions.md) [Assets](./01-assets.md). More formally, Sprite Intentions are driven through a coupled system of finite automata, logic and spatial algorithms. The data structure that drives this process is called the [Intention Transition Matrix](./04-intentions.md#transition-matrix). The processing and handling this mechanism occupies a large part of the application's internal logic.

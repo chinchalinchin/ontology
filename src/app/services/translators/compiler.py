@@ -1,5 +1,16 @@
 """
-# Ontology: app.services.translators.compiler
+@domain.automata
+@domain.concrete
+@domain.logic
+@app.service
+@modality.intention
+@workflow.plot
+@workflow.seasons
+@workflow.transitions
+
+# Ontology: Source - app.services.translators.compiler
+
+Compiler implementations for Transition Executors and Translators.
 """
 import logging
 from types import SimpleNamespace

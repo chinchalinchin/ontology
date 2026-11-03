@@ -1,4 +1,8 @@
-"""File resolution and schema validation module for synthesizer configuration."""
+"""
+@script.synthesize
+
+File resolution and schema validation module for synthesizer configuration.
+"""
 
 from pathlib import Path
 from typing import Union

@@ -1,5 +1,8 @@
 """
-# Ontology: tests.unit.fixtures.menus
+@domain.test
+@test.fixtures
+
+# Ontology: Test - tests.unit.fixtures.menus
 
 Mock Menu fixtures.
 """
@@ -7,7 +10,7 @@ Mock Menu fixtures.
 import pytest
 
 # Application Libraries
-from app.config.enums import ( 
+from app.static.semantics import ( 
     Bindings,
     Shortcuts,
 )
@@ -74,7 +77,7 @@ def mock_aperture_bind():
 @pytest.fixture
 def mock_aperture_bind_alt():
     return MenuBinding(
-        schema = Bindings.APERTURE,
+        schema = Bindings.APERTURE.value,
         target = { 'selector': 'inventory-pack-grid', 'index': '5' }
     )
 
@@ -106,6 +109,7 @@ def mock_gizmo_node(mock_collection_bind):
 @pytest.fixture
 def mock_collection_state():
     return CollectionState(
+        id="test-collection",
         collection_function=lambda: ["shortsword", "dagger", "buckler"],
         capacity=8,
         columns=4,

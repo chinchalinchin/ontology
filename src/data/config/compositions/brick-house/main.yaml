@@ -1,0 +1,56 @@
+# ------------------------------------------------
+theme:
+  material: &theme granite
+# ------------------------------------------------
+compositions:
+  brick-house:
+    root:
+      strut:
+        id: home
+        name: roof
+        material: *theme
+        blueprint: roofs
+      components:
+        objects:
+          doors:
+            - id: panel
+              name: door
+              anchor: anchor(exterior)
+              material: neutral
+              outlayer: house-layer
+              position:
+                x: (bind(parent.dimensions.w) - bind(self.dimensions.w)) // 2
+                y: bind(exterior.position.y) + bind(exterior.dimensions.l) - bind(self.dimensions.l)
+              out:
+                x: bind(interior.position.x) + (bind(interior.dimensions.w) - bind(self.dimensions.w)) // 2
+                y: bind(interior.position.y) + bind(floor.position.y) + bind(floor.dimensions.l) - bind(self.dimensions.l)
+        crafts:
+          struts:
+            - id: home
+              name: exterior
+              material: feldspar
+              blueprint: walls
+              position:
+                x: 0
+                y: bind(parent.dimensions.l)
+    branches:
+      - strut:
+          id: hallway
+          name: interior
+          material: blue
+          blueprint: solids
+          layer: house-layer
+          position:
+            x: 10
+            y: 10
+        components:
+          crafts:
+            struts:
+              - id: carpet
+                name: floor
+                layer: house-layer
+                material: blue
+                blueprint: designs
+                position:
+                  x: 0
+                  y: bind(parent.dimensions.l)

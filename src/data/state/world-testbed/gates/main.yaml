@@ -1,0 +1,11 @@
+objects:
+  gates:
+    - id: postern
+      name: test-gate
+      layer: '0'
+      material: granite
+      switch: true
+      link: test-plate
+      position:
+        x: 60
+        y: 150

@@ -1,5 +1,9 @@
 """
-# Ontology: app.services.generators.binder
+@domain.system
+@app.service
+@workflow.menus
+
+# Ontology: Source - app.services.generators.binder
 
 Factory for generating and preparing Binding components.
 """
@@ -7,7 +11,7 @@ Factory for generating and preparing Binding components.
 from typing import Any, Optional, Dict
 
 # Application Libraries
-from app.config.enums import Bindings
+from app.static.semantics import Bindings
 from app.models.config.menus import MenuBinding
 from app.game.menus.contexts import MenuContext
 from app.game.menus.bindings import (
@@ -21,8 +25,19 @@ from app.game.menus.bindings import (
     ApertureBinding
 )
 
+# ---------------------------------------------------
 
 class Binder:
+    _BINDING_MAP = {
+        Bindings.LIBRARY.value: LibraryBinding,
+        Bindings.METER.value: MeterBinding,
+        Bindings.ICON.value: IconBinding,
+        Bindings.SELECT.value: SelectBinding,
+        Bindings.COLLECTION.value: CollectionBinding,
+        Bindings.APERTURE.value: ApertureBinding,
+        Bindings.TEXT.value: TextBinding
+    }
+
     def __init__(self, registry: Any, library: Any):
         self.registry = registry
         self.library = library
@@ -46,18 +61,6 @@ class Binder:
             'widgets': widgets or {},
             **kwargs
         }
-        
-        if schema == Bindings.LIBRARY.value:
-            return LibraryBinding(target, context, **resolved_kwargs)
-        elif schema == Bindings.METER.value:
-            return MeterBinding(target, context, **resolved_kwargs)
-        elif schema == Bindings.ICON.value:
-            return IconBinding(target, context, **resolved_kwargs)
-        elif schema == Bindings.SELECT.value:
-            return SelectBinding(target, context, **resolved_kwargs)
-        elif schema == Bindings.COLLECTION.value:
-            return CollectionBinding(target, context, **resolved_kwargs)
-        elif schema == Bindings.APERTURE.value:
-            return ApertureBinding(target, context, **resolved_kwargs)
-        else:
-            return TextBinding(target, context, **resolved_kwargs)
+
+        target_cls = self._BINDING_MAP.get(schema, TextBinding)
+        return target_cls(target, context, **resolved_kwargs)

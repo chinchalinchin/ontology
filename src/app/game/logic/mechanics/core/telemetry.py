@@ -1,5 +1,10 @@
 """
-# Ontology: app.game.logic.mechanics.core.telemetry
+@domain.concrete
+@domain.system
+@app.mechanic
+@workflow.telemetry
+
+# Ontology: Source - app.game.logic.mechanics.core.telemetry
 """
 from __future__ import annotations
 

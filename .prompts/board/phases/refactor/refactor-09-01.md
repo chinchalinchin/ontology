@@ -138,7 +138,7 @@ final_vy = locomotion_vy + v_current.vy
 
 ##### Goal: Raft Object Entity & Galvanic Reference Frames
 
-Introduce `rafts` under `AssetCategories.OBJECTS` with `PositionalState`. Rafts drift passively with fluid currents without obstructing fluid raycasts. Sprites boarding a Raft inherit its drift velocity as a baseline reference frame, suppressing the `submerged` mutator.
+Introduce `rafts` under `AssetCategories.OBJECTS` with `MotiveState`. Rafts drift passively with fluid currents without obstructing fluid raycasts. Sprites boarding a Raft inherit its drift velocity as a baseline reference frame, suppressing the `submerged` mutator.
 
 ##### Goal: Solid-Base Annular Pool Rendering
 
@@ -279,7 +279,7 @@ $$
 \text{Channel Tuple} = (\text{channel\_type: int},\, \text{ox: int},\, \text{oy: int},\, \text{ow: int},\, \text{ol: int},\, \text{r: int},\, \text{g: int},\, \text{b: int},\, \text{a: int})
 $$
 
-Where `channel_type` maps to an engine enum:
+Where `channel_type` maps to an engine Semantics:
 
 * `ChannelTypes.TINT = 0`: Solid alpha-blended color fill rect.
 * `ChannelTypes.MODULATE = 1`: Multiplicative color filter over existing texture pixels.
@@ -392,7 +392,7 @@ if channel_primitives:
 
 * [x] Subtask: Add `RAFTS` to `AssetInstances` enum and `ObjectPropertyInstances` schema in `models/properties.py`.
 * [x] Subtask: Add `submerged: bool = False` to `MutatorTriggers` in `models/state/sheets.py`.
-* [x] Subtask: Add recipe for `rafts` (`SingleFrame`, `NoAnimation`, `PositionalState`) in `recipes/main.yaml`.
+* [x] Subtask: Add recipe for `rafts` (`SingleFrame`, `NoAnimation`, `MotiveState`) in `recipes/main.yaml`.
 * [x] Subtask: Ensure `Actuator._collect_obstacles` bypasses `AssetInstances.RAFTS.value`.
 
 **2. Task: Environmental Field Step & Surface Interception**
@@ -646,7 +646,7 @@ effects:
   - ID: `waterflow-00`
   - Name: `jasilynns-tears-00`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.core.FluidFrame'>`
 - **Properties:**
   - Dimensions:
@@ -689,7 +689,7 @@ effects:
   - ID: `waterflow-00`
   - Name: `jasilynns-tears-01`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.core.FluidFrame'>`
 - **Properties:**
   - Dimensions:
@@ -732,7 +732,7 @@ effects:
   - ID: `waterflow-00`
   - Name: `jasilynns-tears-02`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.core.FluidFrame'>`
 - **Properties:**
   - Dimensions:

@@ -1,183 +1,347 @@
 """
-# Ontology: tests.unit.app.assets.test_frames
+@domain.test
+@test.unit
+@app.asset
+@asset.frame
+@workflow.rendering
+
+# Ontology: Test - tests.unit.app.assets.test_frames
+
+Unit tests for Asset Frame implementations.
 """
 # External Libraries
 import pytest
 
 # Application Libraries
-from app.config.settings import SEPARATOR
 from app.assets.frames import (
-    NoFrame, 
-    SingleFrame, 
-    IterableFrame, 
-    StateFrame, 
-    SpriteFrame,
-    IndexFrame,
-    FluidFrame,
     CardinalFrame,
-    SeasonalFrame,
-    StageFrame
+    IndexFrame,
+    NoFrame,
 )
-from app.models.properties import (
-    ObjectProperties,
-    TileProperties,
-    SheetProperties,
-    WidgetProperties,
-    EffectProperties,
-    ResourceProperties,
-    GeographyProperties,
-    Action,
-    Direction
+from app.assets.frames.core import (
+    DirectedFrame,
+    OrientedFrame,
+    SingleFrame,
+)
+from app.assets.frames.crafts import MaterialFrame
+from app.assets.frames.objects import (
+    BinaryFrame,
+    ObjectFrame,
+)
+from app.assets.frames.widgets import (
+    MeterFrame,
+    TraversalFrame,
 )
 from app.models.state import (
-    AnimationState, 
-    SpriteState, 
-    Inventory, 
-    Equipment, 
-    Psyche,
-    IconState,
     AttachmentState,
     CalendarState,
-    ResourceState,
-    FluidState, 
+    ContainerState,
+    CraftState,
+    DoorState,
+    Equipment,
+    IconState,
+    Pool,
     ShorelineState,
-    Pool
 )
-from app.config.enums import (
-    Directions,
-    RequiredAssets,
-    ExpressionsPalette,
-    ChannelTypes,
-    Seasons,
-    Cycles,
-    Lifespans,
+from app.static.semantics import (
+    Actions,
     AnnualStages,
-    PerennialStages
+    AssetCategories,
+    AssetInstances,
+    ChannelTypes,
+    Cycles,
+    Directions,
+    ExpressionsPalette,
+    Gauges,
+    LayerProjections,
+    Orientations,
+    PerennialStages,
+    Seasons,
+    Statuses,
+    Switches,
 )
+from app.static.settings import SEPARATOR
 
 # Cython Libraries
 from libs.core.models import (
-    Position, 
     Dimensions,
-    Hitbox
+    Hitbox,
+    Position,
 )
 
-
-# TODO: refactor these tests to use fixtures
-
-@pytest.mark.frames
-def test_no_frame():
-    frame = NoFrame()
-    assert frame.keys("test", None) == [("test", 0, 0)]
-    props = ObjectProperties(dimensions=Dimensions(w=0, l=0))
-    assert frame.index("test", props) == {"test": (0, 0, 0, 0)}
+pytestmark = [
+    pytest.mark.app_asset,
+    pytest.mark.asset_frame,
+    pytest.mark.workflow_rendering,
+]
 
 
-@pytest.mark.frames
-def test_single_frame():
-    frame = SingleFrame()
-    assert frame.keys("test", None) == [("test", 0, 0)]
-    props = TileProperties(dimensions=Dimensions(w=32, l=32))
-    assert frame.index("test", props) == {"test": (0, 0, 32, 32)}
-
-
-@pytest.mark.frames
-def test_iterable_frame():
-    frame = IterableFrame()
-    state = SpriteState(id="test")
-    state.animation.frame = 1
-    
-    expected_key = f"test{SEPARATOR}1"
-    assert frame.keys("test", state) == [(expected_key, 0, 0)]
-    
-    props = ObjectProperties(dimensions=Dimensions(w=32, l=32), count=2)
-    index = frame.index("test", props)
-    assert index == {
-        f"test{SEPARATOR}0": (0, 0, 32, 32),
-        f"test{SEPARATOR}1": (32, 0, 32, 32)
-    }
-
-
-@pytest.mark.frames
-def test_state_frame():
-    frame = StateFrame()
-    state = SpriteState(id="test")
-    state.animation.action = "walk"
-    state.animation.direction = "down"
-    state.animation.frame = 2
-    
-    expected_key = f"test{SEPARATOR}walk{SEPARATOR}down{SEPARATOR}2"
-    assert frame.keys("test", state) == [(expected_key, 0, 0)]
-
-    props = SheetProperties(
-        dimensions=Dimensions(w=32, l=32),
-        actions={
-            "walk": Action(count=2, directions={"down": Direction(row=0)})
-        }
+@pytest.mark.app_core
+def test_no_frame(mock_asset):
+    crate = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
     )
-    expected_index = {
-        f"test{SEPARATOR}walk{SEPARATOR}down{SEPARATOR}0": (0, 0, 32, 32),
-        f"test{SEPARATOR}walk{SEPARATOR}down{SEPARATOR}1": (32, 0, 32, 32)
+    frame = NoFrame()
+    assert frame.keys(crate.id, crate.state) == [(crate.id, 0, 0)]
+    assert frame.index(crate.id, crate.properties) == {crate.id: (0, 0, 0, 0)}
+
+
+@pytest.mark.app_core
+def test_single_frame(mock_asset):
+    crate = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+    frame = SingleFrame()
+    w, l = crate.dimensions.w, crate.dimensions.l
+    assert frame.keys(crate.id, crate.state) == [(crate.id, 0, 0)]
+    assert frame.index(crate.id, crate.properties) == {crate.id: (0, 0, w, l)}
+
+
+@pytest.mark.app_core
+def test_oriented_frame(mock_properties):
+    frame = OrientedFrame()
+    props = mock_properties(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+    w, l = props.dimensions.w, props.dimensions.l
+    crops = frame.index("beam", props)
+
+    for i, orientation in enumerate(Orientations):
+        assert crops[f"beam{SEPARATOR}{orientation.value}"] == (i * w, 0, w, l)
+
+    state = ShorelineState(id="beam", orientation=Orientations.HORIZONTAL.value)
+    assert frame.keys("beam", state) == [
+        (f"beam{SEPARATOR}{Orientations.HORIZONTAL.value}", 0, 0)
+    ]
+
+
+@pytest.mark.app_core
+def test_directed_frame(mock_properties):
+    frame = DirectedFrame()
+    props = mock_properties(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+    w, l = props.dimensions.w, props.dimensions.l
+    crops = frame.index("arrow", props)
+
+    for i, direction in enumerate(Directions):
+        assert crops[f"arrow{SEPARATOR}{direction.value}"] == (i * w, 0, w, l)
+
+
+@pytest.mark.category_objects
+def test_object_frame(mock_asset):
+    crate = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+    assert crate.frame.keys(crate.id, crate.state) == [
+        (f"{crate.id}-{crate.state.material}", 0, 0)
+    ]
+    assert (
+        0, 0, crate.dimensions.w, crate.dimensions.l
+    ) in crate.frame.index(crate.id, crate.properties).values()
+
+
+@pytest.mark.category_objects
+def test_object_frame_door_out_projection_channels(mock_properties):
+    frame = ObjectFrame()
+    props = mock_properties(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+    w, l = props.dimensions.w, props.dimensions.l
+
+    in_state = DoorState(
+        id="door",
+        outlayer="0",
+        out=Position(0, 0),
+        projection=LayerProjections.IN.value,
+    )
+    assert frame.channels("door", in_state, props) == []
+
+    out_state = DoorState(
+        id="door",
+        outlayer="0",
+        out=Position(0, 0),
+        projection=LayerProjections.OUT.value,
+    )
+    assert frame.channels("door", out_state, props) == [
+        (ChannelTypes.TINT.value, (0, 0, w, l, 0, 0, 0, 110))
+    ]
+
+
+@pytest.mark.category_objects
+def test_binary_frame(mock_properties, mock_material_index):
+    frame = BinaryFrame()
+    props = mock_properties(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CHESTS.value,
+    )
+    w, l = props.dimensions.w, props.dimensions.l
+    materials = mock_material_index.materials(props.material.genus)
+    crops = frame.index("chest", props)
+
+    for r_idx in range(props.count):
+        for c_idx, mat in enumerate(materials):
+            key = f"chest{SEPARATOR}{mat}{SEPARATOR}{r_idx}"
+            assert crops[key] == (c_idx * w, r_idx * l, w, l)
+
+    mat = materials[0]
+    closed_state = ContainerState(id="chest", material=mat, switch=False, content=[])
+    open_state = ContainerState(id="chest", material=mat, switch=True, content=[])
+
+    assert frame.keys("chest", closed_state) == [
+        (f"chest{SEPARATOR}{mat}{SEPARATOR}{Switches.OFF.value}", 0, 0)
+    ]
+    assert frame.keys("chest", open_state) == [
+        (f"chest{SEPARATOR}{mat}{SEPARATOR}{Switches.ON.value}", 0, 0)
+    ]
+
+
+@pytest.mark.category_crafts
+def test_material_frame(mock_properties, mock_material_index):
+    frame = MaterialFrame()
+    props = mock_properties(
+        AssetCategories.CRAFTS.value,
+        AssetInstances.STRUTS.value,
+    )
+    w, l = props.dimensions.w, props.dimensions.l
+    rows = mock_material_index.blueprints(props.blueprints)
+    cols = mock_material_index.materials(props.material.genus)
+    crops = frame.index("strut", props)
+
+    for r_idx, bp in enumerate(rows):
+        for c_idx, mat in enumerate(cols):
+            assert crops[f"strut{SEPARATOR}{bp}{SEPARATOR}{mat}"] == (
+                c_idx * w,
+                r_idx * l,
+                w,
+                l,
+            )
+
+    state = CraftState(id="strut", blueprint=rows[0], material=cols[0])
+    assert frame.keys("strut", state) == [
+        (f"strut{SEPARATOR}{rows[0]}{SEPARATOR}{cols[0]}", 0, 0)
+    ]
+
+
+@pytest.mark.category_effects
+def test_iterable_frame(mock_asset):
+    effect = mock_asset(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.PASSIVE.value,
+    )
+    effect.state.animation.frame = 1
+
+    expected_key = f"{effect.id}{SEPARATOR}1"
+    assert effect.frame.keys(effect.id, effect.state) == [(expected_key, 0, 0)]
+
+    w, l = effect.dimensions.w, effect.dimensions.l
+    index = effect.frame.index(effect.id, effect.properties)
+    assert index == {
+        f"{effect.id}{SEPARATOR}{i}": (i * w, 0, w, l)
+        for i in range(effect.properties.count)
     }
-    assert frame.index("test", props) == expected_index
 
 
-@pytest.mark.frames
-def test_sprite_frame():
-    frame = SpriteFrame()
-    
-    equipment = Equipment(
+@pytest.mark.category_sheets
+def test_state_frame(mock_asset):
+    pixie = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.PIXIES.value,
+    )
+    pixie.state.animation.action = Actions.WALK.value
+    pixie.state.animation.direction = Directions.DOWN.value
+    pixie.state.animation.frame = 2
+
+    expected_key = f"{pixie.id}{SEPARATOR}walk{SEPARATOR}down{SEPARATOR}2"
+    assert pixie.frame.keys(pixie.id, pixie.state) == [(expected_key, 0, 0)]
+
+    crops = pixie.frame.index(pixie.id, pixie.properties)
+    row = (
+        pixie.properties.actions[Actions.WALK.value]
+        .directions[Directions.DOWN.value]
+        .row
+    )
+    w, l = pixie.dimensions.w, pixie.dimensions.l
+    assert crops[f"{pixie.id}{SEPARATOR}walk{SEPARATOR}down{SEPARATOR}0"] == (
+        0,
+        row * l,
+        w,
+        l,
+    )
+    assert crops[f"{pixie.id}{SEPARATOR}walk{SEPARATOR}down{SEPARATOR}1"] == (
+        w,
+        row * l,
+        w,
+        l,
+    )
+
+
+@pytest.mark.category_sheets
+def test_sprite_frame(mock_asset):
+    sprite = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value,
+    )
+    sprite.state.animation.action = Actions.SLASH.value
+    sprite.state.animation.direction = Directions.LEFT.value
+    sprite.state.animation.frame = 3
+    sprite.state.inventory.equipment = Equipment(
         armor="leather_armor",
         utility="lantern",
         tool="pickaxe",
         weapon="sword",
-        shield="buckler"
+        shield="buckler",
     )
-    
-    state = SpriteState(id="npc")
-    state.animation = AnimationState(action="slash", direction="left", frame=3)
-    state.inventory = Inventory(equipment=equipment)
-    state.psyche = Psyche(
-        expression=AttachmentState(
-            id="bubble", layer="0", icon="loquacity", offset=Position(x=10, y=-10), ttl=100
-        )
+    sprite.state.psyche.expression = AttachmentState(
+        id="bubble",
+        layer="0",
+        icon="loquacity",
+        offset=Position(x=10, y=-10),
+        ttl=100,
     )
-    
-    keys = frame.keys("npc", state)
-    
-    assert keys[0] == (f"npc{SEPARATOR}slash{SEPARATOR}left{SEPARATOR}3", 0, 0)
+
+    keys = sprite.frame.keys(sprite.id, sprite.state)
+
+    assert keys[0] == (f"{sprite.id}{SEPARATOR}slash{SEPARATOR}left{SEPARATOR}3", 0, 0)
     assert keys[1] == (f"leather_armor{SEPARATOR}slash{SEPARATOR}left{SEPARATOR}3", 0, 0)
     assert keys[2] == (f"lantern{SEPARATOR}slash{SEPARATOR}left{SEPARATOR}3", 0, 0)
     assert keys[3] == (f"pickaxe{SEPARATOR}slash{SEPARATOR}left{SEPARATOR}3", 0, 0)
     assert keys[4] == (f"sword{SEPARATOR}slash{SEPARATOR}left{SEPARATOR}3", 0, 0)
     assert keys[5] == (f"buckler{SEPARATOR}slash{SEPARATOR}left{SEPARATOR}3", 0, 0)
-    
+
     expr_key = f"{ExpressionsPalette.BUBBLES.value}{SEPARATOR}loquacity"
     assert keys[6] == (expr_key, 10, -10)
 
 
-@pytest.mark.frames
-@pytest.mark.menus
-def test_index_frame_indexing():
+@pytest.mark.category_widgets
+@pytest.mark.workflow_menus
+def test_index_frame_indexing(mock_properties):
     frame = IndexFrame()
-    props = WidgetProperties(
-        dimensions=Dimensions(w=16, l=16),
-        frames=["sword", "shield"]
+    props = mock_properties(
+        AssetCategories.CURSORS.value,
+        AssetInstances.EXPRESSIONS.value,
+        "bubbles",
     )
-    assert frame.index("items", props) == {
-        f"items{SEPARATOR}sword": (0, 0, 16, 16),
-        f"items{SEPARATOR}shield": (16, 0, 16, 16)
-    }
+    w, l = props.dimensions.w, props.dimensions.l
+    crops = frame.index("bubbles", props)
+
+    for i, frame_name in enumerate(props.frames):
+        assert crops[f"bubbles{SEPARATOR}{frame_name}"] == (i * w, 0, w, l)
 
 
-@pytest.mark.frames
-@pytest.mark.menus
+@pytest.mark.category_widgets
+@pytest.mark.workflow_menus
 def test_index_frame_suppresses_vacant_slot():
     frame = IndexFrame()
-    
+
     occupied_state = IconState(id="weapons", icon_function=lambda: "shortsword")
-    keys = frame.keys("weapons", occupied_state)
-    assert keys == [("weapons-shortsword", 0, 0)]
+    assert frame.keys("weapons", occupied_state) == [(f"weapons{SEPARATOR}shortsword", 0, 0)]
 
     empty_state = IconState(id="weapons", icon_function=lambda: "")
     assert frame.keys("weapons", empty_state) == []
@@ -186,251 +350,348 @@ def test_index_frame_suppresses_vacant_slot():
     assert frame.keys("weapons", none_state) == []
 
 
-@pytest.mark.frames
-@pytest.mark.intentions
-def test_sprite_frame_player_suppresses_expression():
-    """
-    Ensure player entities suppress expression attachments in SpriteFrame.keys.
-    """
-    frame = SpriteFrame()
-    state = SpriteState(id=RequiredAssets.PLAYER.value)
-    state.animation = AnimationState(action="walk", direction="down", frame=0)
-    state.inventory = Inventory(equipment=Equipment())
-    state.psyche = Psyche(
-        expression=AttachmentState(
-            id="bubble", layer="0", icon="loquacity", offset=Position(x=10, y=-10), ttl=100
-        )
+@pytest.mark.category_widgets
+@pytest.mark.workflow_menus
+def test_traversal_frame_indexing_and_keys(mock_properties, mock_state):
+    frame = TraversalFrame()
+    props = mock_properties(
+        AssetCategories.WIDGETS.value,
+        "buttons",
     )
-    keys = frame.keys(RequiredAssets.PLAYER.value, state)
-    
-    # Only base persona key should be generated; expression overlay is omitted for player
-    assert len(keys) == 1
-    assert keys[0] == (f"{RequiredAssets.PLAYER.value}{SEPARATOR}walk{SEPARATOR}down{SEPARATOR}0", 0, 0)
+    w, l = props.dimensions.w, props.dimensions.l
+    crops = frame.index("ui_btn", props)
+
+    assert crops[f"ui_btn{SEPARATOR}{Statuses.IDLE.value}"] == (0, 0, w, l)
+    assert crops[f"ui_btn{SEPARATOR}{Statuses.ACTIVE.value}"] == (w, 0, w, l)
+    assert crops[f"ui_btn{SEPARATOR}{Statuses.SELECTED.value}"] == (2 * w, 0, w, l)
+    assert crops[f"ui_btn{SEPARATOR}{Statuses.DISABLED.value}"] == (3 * w, 0, w, l)
+
+    state = mock_state(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.PASSIVE.value,
+    )
+    state.animation.action = Statuses.ACTIVE.value
+    assert frame.keys("ui_btn", state) == [
+        (f"ui_btn{SEPARATOR}{Statuses.ACTIVE.value}", 0, 0)
+    ]
 
 
-@pytest.mark.frames
-@pytest.mark.intentions
-def test_sprite_frame_no_equipment():
+@pytest.mark.category_widgets
+@pytest.mark.workflow_menus
+def test_meter_frame_indexing_and_keys(mock_properties, mock_state):
+    frame = MeterFrame()
+    props = mock_properties(
+        AssetCategories.WIDGETS.value,
+        "meters",
+    )
+    w, l = props.dimensions.w, props.dimensions.l
+    crops = frame.index("health_bar", props)
+
+    assert crops[f"health_bar{SEPARATOR}{Gauges.EMPTY.value}"] == (0, 0, w, l)
+    assert crops[f"health_bar{SEPARATOR}50"] == (w, 0, int(w * 0.5), l)
+    assert crops[f"health_bar{SEPARATOR}100"] == (w, 0, w, l)
+
+    state = mock_state(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.PASSIVE.value,
+    )
+    state.animation.frame = 50
+    assert frame.keys("health_bar", state) == [
+        (f"health_bar{SEPARATOR}{Gauges.EMPTY.value}", 0, 0),
+        (f"health_bar{SEPARATOR}50", 0, 0),
+    ]
+
+
+@pytest.mark.category_sheets
+@pytest.mark.modality_intention
+def test_sprite_frame_no_equipment(mock_asset):
     """
     Ensure SpriteFrame handles sprites with empty or None equipment inventories cleanly.
     """
-    frame = SpriteFrame()
-    state = SpriteState(id="npc")
-    state.animation = AnimationState(action="walk", direction="down", frame=0)
-    state.inventory = Inventory(equipment=None)
-    state.psyche = Psyche()
-    
-    keys = frame.keys("npc", state)
-    assert keys == [(f"npc{SEPARATOR}walk{SEPARATOR}down{SEPARATOR}0", 0, 0)]
+    sprite = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value,
+    )
+    sprite.state.animation.action = Actions.WALK.value
+    sprite.state.animation.direction = Directions.DOWN.value
+    sprite.state.animation.frame = 0
+    sprite.state.inventory.equipment = None
+    sprite.state.psyche.expression = None
+
+    keys = sprite.frame.keys(sprite.id, sprite.state)
+    assert keys == [(f"{sprite.id}{SEPARATOR}walk{SEPARATOR}down{SEPARATOR}0", 0, 0)]
 
 
-@pytest.mark.frames
-@pytest.mark.fluids
-@pytest.mark.ecology
-def test_fluid_frame_indexing():
+@pytest.mark.category_effects
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
+def test_fluid_frame_indexing(mock_asset):
     """
     Verify FluidFrame generates full tile keys and directional forward/reverse
     fractional slices across dimensions and animation frames.
     """
-    frame = FluidFrame()
-    props = EffectProperties(dimensions=Dimensions(w=32, l=32), count=2)
-    crops = frame.index("waterflow", props)
+    fluid = mock_asset(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.FLUIDS.value,
+    )
+    w, l = fluid.dimensions.w, fluid.dimensions.l
+    crops = fluid.frame.index(fluid.id, fluid.properties)
 
     # 1. Base full frames
-    assert crops[f"waterflow{SEPARATOR}0"] == (0, 0, 32, 32)
-    assert crops[f"waterflow{SEPARATOR}1"] == (32, 0, 32, 32)
+    assert crops[f"{fluid.id}{SEPARATOR}0"] == (0, 0, w, l)
+    assert crops[f"{fluid.id}{SEPARATOR}1"] == (w, 0, w, l)
 
     # 2. Forward vertical slicing: down
-    assert crops[f"waterflow{SEPARATOR}0{SEPARATOR}down{SEPARATOR}10"] == (0, 0, 32, 10)
-    assert crops[f"waterflow{SEPARATOR}0{SEPARATOR}down{SEPARATOR}slice{SEPARATOR}10"] == (0, 0, 32, 10)
+    assert crops[f"{fluid.id}{SEPARATOR}0{SEPARATOR}down{SEPARATOR}10"] == (0, 0, w, 10)
+    assert crops[f"{fluid.id}{SEPARATOR}0{SEPARATOR}down{SEPARATOR}slice{SEPARATOR}10"] == (0, 0, w, 10)
 
-    # 3. Reverse vertical slicing: up (anchored at distal edge 32 - 10 = 22)
-    assert crops[f"waterflow{SEPARATOR}0{SEPARATOR}up{SEPARATOR}10"] == (0, 22, 32, 10)
-    assert crops[f"waterflow{SEPARATOR}0{SEPARATOR}up{SEPARATOR}slice{SEPARATOR}10"] == (0, 22, 32, 10)
+    # 3. Reverse vertical slicing: up (anchored at distal edge l - 10)
+    assert crops[f"{fluid.id}{SEPARATOR}0{SEPARATOR}up{SEPARATOR}10"] == (0, l - 10, w, 10)
+    assert crops[f"{fluid.id}{SEPARATOR}0{SEPARATOR}up{SEPARATOR}slice{SEPARATOR}10"] == (0, l - 10, w, 10)
 
     # 4. Forward horizontal slicing: right
-    assert crops[f"waterflow{SEPARATOR}0{SEPARATOR}right{SEPARATOR}10"] == (0, 0, 10, 32)
-    assert crops[f"waterflow{SEPARATOR}0{SEPARATOR}right{SEPARATOR}slice{SEPARATOR}10"] == (0, 0, 10, 32)
+    assert crops[f"{fluid.id}{SEPARATOR}0{SEPARATOR}right{SEPARATOR}10"] == (0, 0, 10, l)
+    assert crops[f"{fluid.id}{SEPARATOR}0{SEPARATOR}right{SEPARATOR}slice{SEPARATOR}10"] == (0, 0, 10, l)
 
-    # 5. Reverse horizontal slicing: left (anchored at distal edge 32 - 10 = 22)
-    assert crops[f"waterflow{SEPARATOR}0{SEPARATOR}left{SEPARATOR}10"] == (22, 0, 10, 32)
-    assert crops[f"waterflow{SEPARATOR}0{SEPARATOR}left{SEPARATOR}slice{SEPARATOR}10"] == (22, 0, 10, 32)
+    # 5. Reverse horizontal slicing: left (anchored at distal edge w - 10)
+    assert crops[f"{fluid.id}{SEPARATOR}0{SEPARATOR}left{SEPARATOR}10"] == (w - 10, 0, 10, l)
+    assert crops[f"{fluid.id}{SEPARATOR}0{SEPARATOR}left{SEPARATOR}slice{SEPARATOR}10"] == (w - 10, 0, 10, l)
 
 
-@pytest.mark.frames
-@pytest.mark.fluids
-@pytest.mark.ecology
-def test_fluid_frame_keys_downward_stream():
+@pytest.mark.category_effects
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
+def test_fluid_frame_keys_downward_stream(mock_asset):
     """
     Verify downward stream emits full tile keys plus fractional terminal slice.
     """
-    frame = FluidFrame(tile_w=32, tile_l=32)
-    state = FluidState(
-        id="waterflow",
-        source=Directions.DOWN,
-        length=48
+    fluid = mock_asset(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.FLUIDS.value,
     )
-    keys = frame.keys("waterflow", state)
+    fluid.state.animation.frame = 0
+    fluid.state.source = Directions.DOWN.value
+    fluid.state.length = 48
+    fluid.state.pool = None
+    fluid.state.branches = []
+    fluid.state._keys.clear()
+
+    keys = fluid.frame.keys(fluid.id, fluid.state)
 
     assert len(keys) == 2
-    assert keys[0] == (f"waterflow{SEPARATOR}0", 0, 0)
-    assert keys[1] == (f"waterflow{SEPARATOR}0{SEPARATOR}down{SEPARATOR}16", 0, 32)
+    assert keys[0] == (f"{fluid.id}{SEPARATOR}0", 0, 0)
+    assert keys[1] == (f"{fluid.id}{SEPARATOR}0{SEPARATOR}down{SEPARATOR}16", 0, 32)
 
 
-@pytest.mark.frames
-@pytest.mark.fluids
-@pytest.mark.ecology
-def test_fluid_frame_keys_upward_stream():
+@pytest.mark.category_effects
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
+def test_fluid_frame_keys_upward_stream(mock_asset):
     """
     Verify upward stream emits negative Y-coordinate offsets and reverse slice keys.
     """
-    frame = FluidFrame(tile_w=32, tile_l=32)
-    state = FluidState(
-        id="waterflow",
-        source=Directions.UP,
-        length=48
+    fluid = mock_asset(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.FLUIDS.value,
     )
-    keys = frame.keys("waterflow", state)
+    fluid.state.animation.frame = 0
+    fluid.state.source = Directions.UP.value
+    fluid.state.length = 48
+    fluid.state.pool = None
+    fluid.state.branches = []
+    fluid.state._keys.clear()
+
+    keys = fluid.frame.keys(fluid.id, fluid.state)
 
     assert len(keys) == 2
-    assert keys[0] == (f"waterflow{SEPARATOR}0", 0, -32)
-    assert keys[1] == (f"waterflow{SEPARATOR}0{SEPARATOR}up{SEPARATOR}16", 0, -48)
+    assert keys[0] == (f"{fluid.id}{SEPARATOR}0", 0, -32)
+    assert keys[1] == (f"{fluid.id}{SEPARATOR}0{SEPARATOR}up{SEPARATOR}16", 0, -48)
 
 
-@pytest.mark.frames
-@pytest.mark.fluids
-@pytest.mark.ecology
-def test_fluid_frame_keys_lateral_streams():
+@pytest.mark.category_effects
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
+def test_fluid_frame_keys_lateral_streams(mock_asset):
     """
     Verify lateral streams emit X-axis offsets for right and left flow vectors.
     """
-    frame = FluidFrame(tile_w=32, tile_l=32)
+    fluid = mock_asset(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.FLUIDS.value,
+    )
+    fluid.frame.index(fluid.id, fluid.properties)
+    w = fluid.dimensions.w
+    rem = 16
+
+    fluid.state.animation.frame = 0
+    fluid.state.length = w + rem
+    fluid.state.pool = None
+    fluid.state.branches = []
 
     # Right flow
-    state_right = FluidState(id="waterflow", source=Directions.RIGHT, length=48)
-    keys_right = frame.keys("waterflow", state_right)
-    assert keys_right[0] == (f"waterflow{SEPARATOR}0", 0, 0)
-    assert keys_right[1] == (f"waterflow{SEPARATOR}0{SEPARATOR}right{SEPARATOR}16", 32, 0)
+    fluid.state.source = Directions.RIGHT.value
+    fluid.state._keys.clear()
+    keys_right = fluid.frame.keys(fluid.id, fluid.state)
+    assert keys_right[0] == (f"{fluid.id}{SEPARATOR}0", 0, 0)
+    assert keys_right[1] == (
+        f"{fluid.id}{SEPARATOR}0{SEPARATOR}right{SEPARATOR}{rem}",
+        w,
+        0,
+    )
 
     # Left flow
-    state_left = FluidState(id="waterflow", source=Directions.LEFT, length=48)
-    keys_left = frame.keys("waterflow", state_left)
-    assert keys_left[0] == (f"waterflow{SEPARATOR}0", -32, 0)
-    assert keys_left[1] == (f"waterflow{SEPARATOR}0{SEPARATOR}left{SEPARATOR}16", -48, 0)
+    fluid.state.source = Directions.LEFT.value
+    fluid.state._keys.clear()
+    keys_left = fluid.frame.keys(fluid.id, fluid.state)
+    assert keys_left[0] == (f"{fluid.id}{SEPARATOR}0", -w, 0)
+    assert keys_left[1] == (
+        f"{fluid.id}{SEPARATOR}0{SEPARATOR}left{SEPARATOR}{rem}",
+        -(w + rem),
+        0,
+    )
 
 
-@pytest.mark.frames
-@pytest.mark.fluids
-@pytest.mark.ecology
-def test_fluid_frame_keys_with_annular_pool():
+@pytest.mark.category_effects
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
+def test_fluid_frame_keys_with_annular_pool(mock_asset):
     """
     Verify annular pool hitboxes translate to grid-spaced frame key offsets.
     """
-    frame = FluidFrame(tile_w=32, tile_l=32)
-    stream_hb = Hitbox(Position(0, 0), Dimensions(32, 64))
-    flank_hb = Hitbox(Position(-32, 64), Dimensions(96, 32))
-
-    state = FluidState(
-        id="waterflow",
-        source=Directions.DOWN,
-        length=64,
-        pool=Pool(x=38, y=64, w=96, l=64),
-        hitboxes=[stream_hb, flank_hb]
+    fluid = mock_asset(
+        AssetCategories.EFFECTS.value,
+        AssetInstances.FLUIDS.value,
     )
-    keys = frame.keys("waterflow", state)
+    fluid.frame.index(fluid.id, fluid.properties)
+    w, l = fluid.dimensions.w, fluid.dimensions.l
 
-    # Stream corridor (2 full 32px tiles)
-    assert (f"waterflow{SEPARATOR}0", 0, 0) in keys
-    assert (f"waterflow{SEPARATOR}0", 0, 32) in keys
+    stream_hb = Hitbox(Position(0, 0), Dimensions(w, 2 * l))
+    flank_hb = Hitbox(Position(-w, 2 * l), Dimensions(3 * w, l))
 
-    # Flank corridor (3 horizontal 32px steps along 96px width)
-    assert (f"waterflow{SEPARATOR}0", -32, 64) in keys
-    assert (f"waterflow{SEPARATOR}0", 0, 64) in keys
-    assert (f"waterflow{SEPARATOR}0", 32, 64) in keys
+    fluid.state.animation.frame = 0
+    fluid.state.source = Directions.DOWN.value
+    fluid.state.length = 2 * l
+    fluid.state.pool = Pool(x=38, y=2 * l, w=3 * w, l=2 * l)
+    fluid.state.hitboxes = [stream_hb, flank_hb]
+    fluid.state.branches = []
+    fluid.state._keys.clear()
+
+    keys = fluid.frame.keys(fluid.id, fluid.state)
+
+    # Stream corridor (2 full vertical tiles of length l)
+    assert (f"{fluid.id}{SEPARATOR}0", 0, 0) in keys
+    assert (f"{fluid.id}{SEPARATOR}0", 0, l) in keys
+
+    # Flank corridor (3 horizontal steps of width w)
+    assert (f"{fluid.id}{SEPARATOR}0", -w, 2 * l) in keys
+    assert (f"{fluid.id}{SEPARATOR}0", 0, 2 * l) in keys
+    assert (f"{fluid.id}{SEPARATOR}0", w, 2 * l) in keys
 
 
-@pytest.mark.frames
-@pytest.mark.fluids
-@pytest.mark.ecology
-def test_sprite_frame_channels_dry():
+@pytest.mark.category_sheets
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
+def test_sprite_frame_channels_dry(mock_asset):
     """
     Verify SpriteFrame.channels returns an empty list when sprite is not submerged.
     """
-    frame = SpriteFrame()
-    state = SpriteState(id="player")
-    state.mutators.triggers.submerged = False
-    props = SheetProperties(dimensions=Dimensions(w=64, l=64))
+    player = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.PLAYERS.value,
+    )
+    player.state.mutators.triggers.submerged = False
 
-    directives = frame.channels("player", state, props)
+    directives = player.frame.channels(player.id, player.state, player.properties)
     assert directives == []
 
 
-@pytest.mark.frames
-@pytest.mark.fluids
-@pytest.mark.ecology
-def test_sprite_frame_channels_submerged():
+@pytest.mark.category_sheets
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
+def test_sprite_frame_channels_submerged(mock_asset):
     """
     Verify SpriteFrame.channels emits SUBMERGE directive with half-length split
     and aquatic modulation payload when sprite is submerged.
     """
-    frame = SpriteFrame()
-    state = SpriteState(id="player")
-    state.mutators.triggers.submerged = True
-    props = SheetProperties(dimensions=Dimensions(w=64, l=64))
-
-    directives = frame.channels("player", state, props)
-    assert len(directives) == 1
-    assert directives[0] == (
-        ChannelTypes.SUBMERGE.value,
-        (32, 40, 110, 180, 170)
+    player = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.PLAYERS.value,
     )
+    player.state.mutators.triggers.submerged = True
+
+    directives = player.frame.channels(player.id, player.state, player.properties)
+    assert directives == [
+        (
+            ChannelTypes.SUBMERGE.value,
+            (player.dimensions.l // 2, 40, 110, 180, 170),
+        )
+    ]
 
 
-@pytest.mark.frames
-@pytest.mark.geology
-@pytest.mark.fluids
-@pytest.mark.ecology
-def test_shoreline_frame_indexing():
+@pytest.mark.category_geography
+@pytest.mark.workflow_geology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
+def test_shoreline_frame_indexing(mock_properties):
     """
     Verify CardinalFrame indexes 4 cardinal rows across 4 calendar seasons
     and forward fractional remainder slices.
     """
     frame = CardinalFrame()
-    props = GeographyProperties(
-        dimensions=Dimensions(w=32, l=32),
-        tile="grass",
-        fluid="water",
-        thickness=8
+    id = "temperate-banks"
+    props = mock_properties(
+        AssetCategories.GEOGRAPHY.value,
+        AssetInstances.SHORELINES.value,
     )
-    crops = frame.index("grassy-shore", props)
+    crops = frame.index(id, props)
 
-    # 1. Base full cardinal tile keys across seasons and cardinal rows
-    # Columns: spring (0), summer (1), autumn (2), winter (3)
-    # Rows: up (0), left (1), down (2), right (3)
-    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}up"] == (0, 0, 32, 32)
-    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}left"] == (0, 32, 32, 32)
-    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}down"] == (0, 64, 32, 32)
-    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}right"] == (0, 96, 32, 32)
+    assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}up"] == (
+        0, 0, props.dimensions.w, props.dimensions.l
+    )
+    assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}left"] == (
+        0, props.dimensions.l, props.dimensions.w, props.dimensions.l
+    )
+    assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}down"] == (
+        0, 2 * props.dimensions.l, props.dimensions.w, props.dimensions.l
+    )
+    assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}right"] == (
+        0, 3 * props.dimensions.l, props.dimensions.w, props.dimensions.l
+    )
+    assert crops[f"{id}{SEPARATOR}summer{SEPARATOR}up"] == (
+        props.dimensions.w, 0, props.dimensions.w, props.dimensions.l
+    )
+    assert crops[f"{id}{SEPARATOR}autumn{SEPARATOR}up"] == (
+        2 * props.dimensions.w, 0, props.dimensions.w, props.dimensions.l
+    )
+    assert crops[f"{id}{SEPARATOR}winter{SEPARATOR}up"] == (
+        3 * props.dimensions.w, 0, props.dimensions.w, props.dimensions.l
+    )
 
-    assert crops[f"grassy-shore{SEPARATOR}summer{SEPARATOR}up"] == (32, 0, 32, 32)
-    assert crops[f"grassy-shore{SEPARATOR}autumn{SEPARATOR}up"] == (64, 0, 32, 32)
-    assert crops[f"grassy-shore{SEPARATOR}winter{SEPARATOR}up"] == (96, 0, 32, 32)
+    assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}up{SEPARATOR}16"] == (
+        0, 0, 16, props.dimensions.l
+    )
+    assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}down{SEPARATOR}16"] == (
+        0, 2 * props.dimensions.w, 16, props.dimensions.l
+    )
+    assert crops[f"{id}{SEPARATOR}summer{SEPARATOR}up{SEPARATOR}16"] == (
+        props.dimensions.w, 0, 16, props.dimensions.l
+    )
 
-    # 2. Horizontal remainder slices across width (UP and DOWN)
-    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}up{SEPARATOR}16"] == (0, 0, 16, 32)
-    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}down{SEPARATOR}16"] == (0, 64, 16, 32)
-    assert crops[f"grassy-shore{SEPARATOR}summer{SEPARATOR}up{SEPARATOR}16"] == (32, 0, 16, 32)
+    assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}left{SEPARATOR}16"] == (
+        0, props.dimensions.l, props.dimensions.w, 16
+    )
+    assert crops[f"{id}{SEPARATOR}spring{SEPARATOR}right{SEPARATOR}16"] == (
+        0, 3 * props.dimensions.l, props.dimensions.w, 16
+    )
+    assert crops[f"{id}{SEPARATOR}winter{SEPARATOR}right{SEPARATOR}16"] == (
+        3 * props.dimensions.w, 3 * props.dimensions.l, props.dimensions.w, 16
+    )
 
-    # 3. Vertical remainder slices across length (LEFT and RIGHT)
-    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}left{SEPARATOR}16"] == (0, 32, 32, 16)
-    assert crops[f"grassy-shore{SEPARATOR}spring{SEPARATOR}right{SEPARATOR}16"] == (0, 96, 32, 16)
-    assert crops[f"grassy-shore{SEPARATOR}winter{SEPARATOR}right{SEPARATOR}16"] == (96, 96, 32, 16)
 
-
-@pytest.mark.frames
-@pytest.mark.geology
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.category_geography
+@pytest.mark.workflow_geology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_shoreline_frame_keys_horizontal_full_and_slice():
     """
     Verify horizontal banks (UP/DOWN) emit full-tile keys along width and a terminal remainder.
@@ -440,7 +701,7 @@ def test_shoreline_frame_keys_horizontal_full_and_slice():
         id="grassy-shore",
         orientation=Directions.UP.value,
         season=Seasons.SPRING.value,
-        length=80  # 32 + 32 + 16
+        length=80,
     )
     keys = frame.keys("grassy-shore", state)
 
@@ -450,10 +711,10 @@ def test_shoreline_frame_keys_horizontal_full_and_slice():
     assert keys[2] == (f"grassy-shore{SEPARATOR}spring{SEPARATOR}up{SEPARATOR}16", 64, 0)
 
 
-@pytest.mark.frames
-@pytest.mark.geology
-@pytest.mark.fluids
-@pytest.mark.ecology
+@pytest.mark.category_geography
+@pytest.mark.workflow_geology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_shoreline_frame_keys_vertical_full_and_slice():
     """
     Verify vertical banks (LEFT/RIGHT) emit full-tile keys along length and a terminal remainder.
@@ -463,7 +724,7 @@ def test_shoreline_frame_keys_vertical_full_and_slice():
         id="grassy-shore",
         orientation=Directions.LEFT.value,
         season=Seasons.SPRING.value,
-        length=80  # 32 + 32 + 16
+        length=80,
     )
     keys = frame.keys("grassy-shore", state)
 
@@ -471,132 +732,142 @@ def test_shoreline_frame_keys_vertical_full_and_slice():
     assert keys[0] == (f"grassy-shore{SEPARATOR}spring{SEPARATOR}left", 0, 0)
     assert keys[1] == (f"grassy-shore{SEPARATOR}spring{SEPARATOR}left", 0, 32)
     assert keys[2] == (f"grassy-shore{SEPARATOR}spring{SEPARATOR}left{SEPARATOR}16", 0, 64)
-    
 
-@pytest.mark.frames
-@pytest.mark.geology
-@pytest.mark.fluids
-@pytest.mark.ecology
+
+@pytest.mark.category_geography
+@pytest.mark.workflow_geology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
 def test_shoreline_frame_keys_zero_length():
     frame = CardinalFrame()
     state = ShorelineState(id="grassy-shore", length=0)
     assert frame.keys("grassy-shore", state) == []
 
 
-@pytest.mark.frames
-@pytest.mark.geology
-@pytest.mark.fluids
-@pytest.mark.ecology
-def test_shoreline_frame_channels():
+@pytest.mark.category_geography
+@pytest.mark.workflow_geology
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
+def test_shoreline_frame_channels(mock_properties):
     """
     Verify CardinalFrame inherits universal Frame.channels behavior.
     """
     frame = CardinalFrame()
     state = ShorelineState(id="grassy-shore")
-    props = GeographyProperties(
-        dimensions=Dimensions(w=32, l=32),
-        tile="grass",
-        fluid="water",
-        thickness=8
+    props = mock_properties(
+        AssetCategories.GEOGRAPHY.value,
+        AssetInstances.SHORELINES.value,
     )
 
-    # 1. Dry state: no channel directives emitted
     assert frame.channels("grassy-shore", state, props) == []
 
-    # 2. Submerged state: emits standard half-split aquatic channel directive
     state.mutators.triggers.submerged = True
     assert frame.channels("grassy-shore", state, props) == [
-        (ChannelTypes.SUBMERGE.value, (16, 40, 110, 180, 170))
+        (ChannelTypes.SUBMERGE.value, (props.dimensions.l // 2, 40, 110, 180, 170))
     ]
 
 
-@pytest.mark.frames
-@pytest.mark.seasons
-def test_seasonal_frame_indexing(mock_tile_properties):
-  """Verify SeasonalFrame generates a complete 36-cell atlas index."""
-  frame = SeasonalFrame()
-  props = mock_tile_properties.environ['temperate']
-  crops = frame.index('temperate', props)
+@pytest.mark.category_tiles
+@pytest.mark.workflow_seasons
+def test_seasonal_frame_indexing(mock_asset):
+    """Verify SeasonalFrame generates a complete 36-cell atlas index."""
+    tile = mock_asset(
+        AssetCategories.TILES.value,
+        AssetInstances.ENVIRON.value,
+        id="temperate",
+    )
+    crops = tile.frame.index(tile.id, tile.properties)
 
-  assert len(crops) == 36
-
-  spring_key = f'temperate{SEPARATOR}spring{SEPARATOR}onset{SEPARATOR}0'
-  assert crops[spring_key] == (0, 0, 32, 32)
-
-  spring_end_key = f'temperate{SEPARATOR}spring{SEPARATOR}decline{SEPARATOR}2'
-  assert crops[spring_end_key] == (256, 0, 32, 32)
-
-  winter_key = f'temperate{SEPARATOR}winter{SEPARATOR}decline{SEPARATOR}2'
-  assert crops[winter_key] == (256, 96, 32, 32)
+    assert len(crops) == 36
+    assert crops[f"temperate{SEPARATOR}spring{SEPARATOR}onset{SEPARATOR}0"] == (0, 0, 32, 32)
+    assert crops[f"temperate{SEPARATOR}spring{SEPARATOR}decline{SEPARATOR}2"] == (256, 0, 32, 32)
+    assert crops[f"temperate{SEPARATOR}winter{SEPARATOR}decline{SEPARATOR}2"] == (256, 96, 32, 32)
 
 
-@pytest.mark.frames
-@pytest.mark.seasons
-def test_seasonal_frame_eras():
+@pytest.mark.category_tiles
+@pytest.mark.workflow_seasons
+def test_seasonal_frame_eras(mock_asset):
     """
     Verify SeasonalFrame.eras maps calendar state to the canonical frame key.
     """
-    frame = SeasonalFrame()
+    tile = mock_asset(
+        AssetCategories.TILES.value,
+        AssetInstances.ENVIRON.value,
+        id="temperate",
+    )
     calendar = CalendarState(
         season=Seasons.AUTUMN.value,
         cycle=Cycles.PEAK.value,
-        period=2
+        period=2,
     )
 
-    keys = frame.eras("temperate", calendar)
-    expected_key = f"temperate{SEPARATOR}autumn{SEPARATOR}peak{SEPARATOR}2"
-    assert keys == [(expected_key, 0, 0)]
+    keys = tile.frame.eras(tile.id, calendar)
+    assert keys == [(f"temperate{SEPARATOR}autumn{SEPARATOR}peak{SEPARATOR}2", 0, 0)]
 
 
-@pytest.mark.frames
-@pytest.mark.seasons
-def test_seasonal_frame_keys_fallback():
+@pytest.mark.category_tiles
+@pytest.mark.workflow_seasons
+def test_seasonal_frame_keys_fallback(mock_asset):
     """
     Verify SeasonalFrame.keys returns the default spring-onset-0 frame key.
     """
-    frame = SeasonalFrame()
-    keys = frame.keys("temperate", None)
-    expected_key = f"temperate{SEPARATOR}spring{SEPARATOR}onset{SEPARATOR}0"
-    assert keys == [(expected_key, 0, 0)]
+    tile = mock_asset(
+        AssetCategories.TILES.value,
+        AssetInstances.ENVIRON.value,
+        id="temperate",
+    )
+    keys = tile.frame.keys(tile.id, tile.state)
+    assert keys == [(f"temperate{SEPARATOR}spring{SEPARATOR}onset{SEPARATOR}0", 0, 0)]
 
 
-@pytest.mark.frames
-@pytest.mark.seasons
-def test_stage_frame_indexing_annual(mock_resource_properties):
-  """Verify StageFrame dynamically indexes horizontal cells for annual crops."""
-  frame = StageFrame()
-  props = mock_resource_properties.crops['lettuce']
-  crops = frame.index('lettuce', props)
+@pytest.mark.category_resources
+@pytest.mark.workflow_seasons
+def test_stage_frame_indexing_annual(mock_asset):
+    """Verify StageFrame dynamically indexes horizontal cells for annual crops."""
+    crop = mock_asset(
+        AssetCategories.RESOURCES.value,
+        AssetInstances.CROPS.value,
+        id="maize",
+    )
+    crops = crop.frame.index(crop.id, crop.properties)
 
-  assert len(crops) == len(AnnualStages)
-  for i, stage in enumerate(AnnualStages):
-    key = f'lettuce{SEPARATOR}{stage.value}'
-    assert crops[key] == (i * 32, 0, 32, 22)
+    assert len(crops) == len(AnnualStages)
+    for i, stage in enumerate(AnnualStages):
+        key = f"maize{SEPARATOR}{stage.value}"
+        assert crops[key] == (
+            i * 32, 0, crop.properties.dimensions.w, crop.properties.dimensions.l
+        )
 
 
-@pytest.mark.frames
-@pytest.mark.seasons
-def test_stage_frame_indexing_perennial(mock_resource_properties):
-  """Verify StageFrame dynamically indexes horizontal cells for perennial trees."""
-  frame = StageFrame()
-  props = mock_resource_properties.trees['deciduous']
-  crops = frame.index('deciduous', props)
+@pytest.mark.category_resources
+@pytest.mark.workflow_seasons
+def test_stage_frame_indexing_perennial(mock_asset):
+    """Verify StageFrame dynamically indexes horizontal cells for perennial trees."""
+    tree = mock_asset(
+        AssetCategories.RESOURCES.value,
+        AssetInstances.TREES.value,
+        id="deciduous",
+    )
+    crops = tree.frame.index(tree.id, tree.properties)
 
-  assert len(crops) == len(PerennialStages)
-  for i, stage in enumerate(PerennialStages):
-    key = f'deciduous{SEPARATOR}{stage.value}'
-    assert crops[key] == (i * 94, 0, 94, 137)
-    
+    assert len(crops) == len(PerennialStages)
+    for i, stage in enumerate(PerennialStages):
+        key = f"deciduous{SEPARATOR}{stage.value}"
+        assert crops[key] == (i * 94, 0, 94, 137)
 
-@pytest.mark.frames
-@pytest.mark.seasons
-def test_stage_frame_keys():
+
+@pytest.mark.category_resources
+@pytest.mark.workflow_seasons
+def test_stage_frame_keys(mock_asset):
     """
     Verify StageFrame resolves frame keys reflexively from state.stage.
     """
-    frame = StageFrame()
-    state = ResourceState(id="deciduous", stage=PerennialStages.ADULT.value)
-    keys = frame.keys("deciduous", state)
+    tree = mock_asset(
+        AssetCategories.RESOURCES.value,
+        AssetInstances.TREES.value,
+        id="deciduous",
+    )
+    tree.state.stage = PerennialStages.ADULT.value
+    keys = tree.frame.keys(tree.id, tree.state)
 
-    expected_key = f"deciduous{SEPARATOR}{PerennialStages.ADULT.value}"
-    assert keys == [(expected_key, 0, 0)]
+    assert keys == [(f"deciduous{SEPARATOR}{PerennialStages.ADULT.value}", 0, 0)]

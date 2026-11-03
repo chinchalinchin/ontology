@@ -1,51 +1,83 @@
 """
-# Ontology: app.models.state.crafts
+@domain.model
+@app.asset
+@asset.state
+@category.crafts
 
-Python data models for typing Craft state attributes.
+# Ontology: Source - app.models.state.crafts
+
+Craft State models.
 """
 # Standard Libraries
 from typing import ( 
     Optional,
+    Union
 )
-from dataclasses import (
-    dataclass,
-)
+from dataclasses import dataclass
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
+    # ---- BLUEPRINT SCHEMAS
+    Buildings,
+    Corridors,
+    Columns,
+    Enclosures,
+    Inclines,
+    Decor,
+    Directions,
     Orientations,
-    Directions
+    # --- MATERIAL GENERA
+    Ceramics,
+    Geologics,
+    Organics,
+    Metallics,
+    Chromatics
 )
 from app.models.adapters import (
     PydanticPosition as Position, 
-    PydanticMultiple as Multiple
+    PydanticMultiple as Multiple,
+    Enumerated
 )
-from app.models.state.core import (
-    AssetState,
-)
+from app.models.state.core import AssetState
 
-# ---------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------- CRAFT STATES
-# ---------------------------------------------------------------------------------------
+# ------------------------------------------------------------
 
 @dataclass(slots=True)
-class PropertyState(AssetState):
-    owner: Optional[str] = None
+class CraftState(AssetState):
     position: Optional[Position] = None # type: ignore
-
-@dataclass(slots=True)
-class OrientedState(PropertyState):
-    orientation: str = Orientations.HORIZONTAL.value
     multiple: Optional[Multiple] = None # type: ignore
+    material: Optional[Union[
+        Enumerated[Ceramics],
+        Enumerated[Chromatics],
+        Enumerated[Geologics],
+        Enumerated[Organics],
+        Enumerated[Metallics]
+    ]] = None
+    blueprint: Optional[Union[
+        Enumerated[Buildings],
+        Enumerated[Corridors],
+        Enumerated[Columns],
+        Enumerated[Decor],
+        Enumerated[Directions],
+        Enumerated[Enclosures],
+        Enumerated[Inclines],
+        Enumerated[Orientations],
+    
+    ]] = None
+
 
 @dataclass(slots=True)
-class StairState(PropertyState):
+class PropertyState(CraftState):
+    owner: Optional[str] = None
+
+
+@dataclass(slots=True)
+class StairState(CraftState):
     """
     State representation for walkable incline transitions.
     """
-    direction: str = Directions.UP.value
-    delta: int = 1                         
+    delta: int = 1
 
-@dataclass(slots=True)
-class PlatformState(PropertyState):
-    elevation: int = 0
+    @property
+    def direction(self) -> Optional[str]:
+        return self.blueprint

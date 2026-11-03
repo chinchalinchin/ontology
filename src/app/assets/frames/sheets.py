@@ -1,5 +1,10 @@
 """
-# Ontology: app.assets.frames.sheets
+@domain.concrete
+@app.asset
+@asset.frame
+@category.sheets
+
+# Ontology: Source - app.assets.frames.sheets
 
 Package for Sheet Frame implementations.
 """
@@ -10,8 +15,8 @@ from typing import (
 import logging
 
 # Application Libraries
-import app.config.settings as settings
-from app.config.enums import (
+import app.static.settings as settings
+from app.static.semantics import (
     Intentions,
     RequiredAssets,
     ExpressionsPalette,

@@ -1,39 +1,13 @@
 """
-# Ontology: app.models.config.core
+@domain.model
+@app.config
 
-Models for typing the core configuration attributes of game components.
+# Ontology: Source - app.models.config.core
+
+Core Configuration Models.
 """
-# Standard Libraries
-from typing import (
-    Dict
-)
-from dataclasses import (
-    dataclass, 
-)
 
-# Application Libraries
-from app.models.properties import Action
-
-# ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------------ CONFIGURATION MODELS
-# ---------------------------------------------------------------------------------------
+# ---------------------------------------------------------
 
 class Configuration:
-    pass
-
-# ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------------ ACTION CONFIGURATION
-
-@dataclass(slots=True, frozen=True)
-class ActionConfiguration(Configuration):
-    id: str
-    data: Dict[str, Action]
-    
-# ---------------------------------------------------------------------------------------
-# ----------------------------------------------------------------- LIBRARY CONFIGURATION
-
-@dataclass(slots=True, frozen=True)
-class LibraryConfiguration:
-    """
-    """
     pass

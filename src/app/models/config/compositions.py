@@ -1,7 +1,11 @@
 """
-# Ontology: app.models.config.compositions
+@domain.model
+@app.config
+@workflow.compositions
 
-Models for typing the configuration attributes of Compositions.
+# Ontology: Source - app.models.config.compositions
+
+Composition Configuration Models.
 """
 # Standard Libraries
 from typing import (
@@ -20,9 +24,7 @@ from app.models.state import (
 )
 from app.models.config.core import Configuration
 
-# ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------- COMPOSITION CONFIGURATION
-# ---------------------------------------------------------------------------------------
+# ---------------------------------------------------------
 
 @dataclass(slots=True, frozen=True)
 class CompositionPseudoState:

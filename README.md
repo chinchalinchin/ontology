@@ -2,7 +2,7 @@
 
 [![ontology-tests](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml)
 
-- [Documentation](https://chinchalinchin.github.io/ontology/)
+* [Documentation](https://chinchalinchin.github.io/ontology/)
 
 ## Setup
 
@@ -84,19 +84,25 @@ python src/cli.py  \
 
 ### Analysis
 
+#### Dependencies
+
+```bash
+# 1. MacOS
+brew install graphviz
+# 2. Debian
+sudo apt install graphviz
+```
+
 #### Profile Tracing
 
 ```bash
-python -m cProfile -o engine_run.pstats src/cli.py start world-01
-gprof2dot -f pstats engine-run.pstats --node-thres=1.0 --edge-thres=0.5 | dot -Tsvg -o engine-run.svg
+python -m cProfile -o docs/static/pstats/latest.pstats src/main.py start world-01
+gprof2dot -f pstats docs/static/pstats/latest.pstats --node-thres=1.0 --edge-thres=0.5 | dot -Tsvg -o docs/static/svg/engine-profile.svg
 ```
 
 #### Dependency Trees
 
 ```bash
-sudo apt install graphviz
-
-chmod +x ./scripts/dependencies/main.sh
 uv run ./scripts/dependencies/main.sh
 ```
 
@@ -117,34 +123,8 @@ To ensure the Pylance linter correctly resolves the compiled Cython libraries fr
 
 ```json
 {
-  "python.analysis.extraPaths": [
-    "./src/lib"
-  ]
+  "python.analysis.extraPaths": [ "./src/libs" ]
 }
-```
-
-### Scripts
-
-Useful scripts for editing asset files in batches are provided in the `/scripts/` directory.
-
-```bash
-# 1. Concatenate: Take all images in a directory and concatenate horizontally into a single row of frames.
-python ./scripts/concatenate/main.py \
-  -d /path/ \
-  -o /path/result.png
-
-# 2. Transpose: Convert a vertical column of frames into a horizontal row of frames.
-python ./scripts/concatenate/main.py \
-  -v int \
-  -f /path/ \
-  -o /path/result.png
-```
-
-#### Strip Corrupted Chunks
-
-```bash
-sudo snap install pngcrush --edge
-find src/assets/ -name "*.png" -exec pngcrush -ow -rem allb -reduce {} \;
 ```
 
 ## Index
@@ -167,6 +147,28 @@ Batch scripts.
 * `/scripts/unpack`: Pillow script to unpack a grid of frames into a horizontal row of grames.
 * `/scripts/dependencies`: BASH script for generating `pydeps` dependency tree graphs.
 * `/scripts/synthesize`: Cython script for synthesizing musical scores from YAML. See [README](./scripts/synthesize/README.md) for more information.
+
+```bash
+# 1. Concatenate: Take all images in a directory and concatenate horizontally into a single row of frames.
+python ./scripts/concatenate/main.py \
+  -d /path/ \
+  -o /path/result.png
+
+# 2. Transpose: Convert a vertical column of frames into a horizontal row of frames.
+python ./scripts/concatenate/main.py \
+  -v int \
+  -f /path/ \
+  -o /path/result.png
+```
+
+#### Useful Commands
+
+```bash
+sudo snap install pngcrush --edge
+
+# 1. strip corrupted chunks from images
+find src/assets/ -name "*.png" -exec pngcrush -ow -rem allb -reduce {} \;
+```
 
 ### /src
 

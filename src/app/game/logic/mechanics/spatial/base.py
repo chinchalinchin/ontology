@@ -1,7 +1,16 @@
 """
-# Ontology: app.game.logic.mechanics.spatial.base
+@domain.concrete
+@domain.logic
+@app.base
+@app.mechanic
+@physics.space
+@workflow.collisions
+@workflow.combat
+@workflow.interactions
 
-Package for SpatialMechanic parent class.
+# Ontology: Source - app.game.logic.mechanics.spatial.base
+
+SpatialMechanic implementation base class.
 """
 # Standard Libraries
 from typing import (
@@ -11,6 +20,8 @@ from typing import (
 )
 import logging
 
+# Application Libraries
+from app.static.semantics import AssetInstances
 from app.assets.base import Asset
 from app.game.logic.mechanics import Mechanic
 
@@ -67,32 +78,42 @@ class SpatialMechanic(Mechanic):
         
     def intersections(self, assets: List[Asset]) -> List[Tuple]:
         """
-        Bypasses standard physics hitboxes, constructing a virtual hitbox that 
-        covers the entire dimension of the Asset. This allows interaction triggers 
-        to succeed even after CollisionMechanics has separated physical bodies.
+        Evaluates spatial intersections across active asset hitboxes, applying a 2px
+        contact margin to motive entities so flush post-collision contact registers
+        while preserving target HitboxSchema geometry (such as LayeredHitbox).
         """
         self.grid.clear()
-        
         if not assets:
             return []
 
         asset_map = dict(enumerate(assets))
         primitive_data = []
-        
+
         for i, asset in enumerate(assets):
-            # Create a virtual hitbox matching the exact dimensions of the asset
-            dim_hb = Hitbox(
-                position=Position(x=0, y=0), 
-                dimensions=asset.dimensions
-            )
-            # Inject the virtual hitbox into the Cython primitive payload
-            primitive_data.append(asset.primitive(i, hitboxes=[dim_hb]))
-            
+            base_hbs = asset.hitboxes
+            if not base_hbs and asset.dimensions:
+                base_hbs = [Hitbox(position=Position(x=0, y=0), dimensions=asset.dimensions)]
+
+            if asset.instance in (
+                AssetInstances.PLAYERS.value, 
+                AssetInstances.SPRITES.value
+            ):
+                padded_hbs = [
+                    Hitbox(
+                        position=Position(x=hb.position.x - 2, y=hb.position.y - 2),
+                        dimensions=Dimensions(w=hb.dimensions.w + 4, l=hb.dimensions.l + 4)
+                    )
+                    for hb in base_hbs
+                ]
+                primitive_data.append(asset.primitive(i, hitboxes=padded_hbs))
+            else:
+                primitive_data.append(asset.primitive(i, hitboxes=base_hbs))
+
         colliding_indices = physics.collisions(primitive_data, self.grid)
         return [(asset_map[id_a], asset_map[id_b]) for id_a, id_b in colliding_indices]
 
 
-    def proximities(self, assets: List[Asset]) -> List[Tuple]:
+    def proximities(self, assets: List[Asset]) -> List[Tuple[Asset]]:
         """
         Bypasses physics hitboxes, constructing a virtual hitbox padded by 
         the entity's action radius. This determines interaction reach.

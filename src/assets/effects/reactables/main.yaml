@@ -1,11 +1,12 @@
 effects:
   reactables:
+    # -----------------------------------------
     spinning-dummy:
       count: 8
       dimensions:
         w: 64
         l: 64
-      lifecycle: 
+      frequency: 
         type: temporary
         persist: True
         delay: 5
@@ -18,3 +19,4 @@ effects:
             w: 14
             l: 14
       mass: 0
+    # -----------------------------------------

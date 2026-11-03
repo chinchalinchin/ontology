@@ -1,7 +1,12 @@
 """
-# Ontology: app.models.state.cursors
+@domain.model
+@app.asset
+@asset.state
+@category.cursors
 
-Python data models for typing Cursors state attributes.
+# Ontology: Source - app.models.state.cursors
+
+Cursors State models.
 """
 # Standard Libraries
 from typing import ( 
@@ -10,12 +15,13 @@ from typing import (
 from dataclasses import dataclass, field
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     Directions,
 )
 from app.models.adapters import (
     PydanticPosition as Position, 
     PydanticVelocity as Velocity,
+    Enumerated
 )
 from app.models.state.core import (
     AssetState
@@ -24,12 +30,13 @@ from app.models.state.core import (
 # Cython Libraries
 from libs.core.models import Velocity as CoreVelocity
 
+# ------------------------------------------------------------
 
 @dataclass(slots=True)
 class MotorState(AssetState):
     position: Optional[Position] = None # type: ignore
     initial: Optional[Position] = None # type: ignore
-    direction: Directions = Directions.DOWN.value
+    direction: Enumerated[Directions] = Directions.DOWN.value
     speed: int = 10
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
 

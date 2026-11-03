@@ -244,7 +244,7 @@ Player enters `brick-house` door.
   - ID: `grandfather-clock`
   - Name: `passive-strut-house-interior-1-1`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.core.IterableFrame'>`
 - **Properties:**
   - Dimensions:
@@ -586,7 +586,7 @@ compositions:
   - ID: `grandfather-clock`
   - Name: `passive-strut-house-interior-1-1`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.core.IterableFrame'>`
 - **Properties:**
   - Dimensions:
@@ -1134,7 +1134,7 @@ The sprite is not visible. But if position is updated to (175, 775), the sprite 
   - ID: `grandfather-clock`
   - Name: `passive-strut-house-interior-1-1`
 - **Components:**
-  - Animation: `<class 'app.assets.animations.core.LifecycleAnimation'>`
+  - Animation: `<class 'app.assets.animations.core.FrequencyAnimation'>`
   - Frame: `<class 'app.assets.frames.core.IterableFrame'>`
 - **Properties:**
   - Dimensions:

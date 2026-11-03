@@ -32,7 +32,7 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
 * [x] *Extend Factory Hydration:* Update `Factory` schemas to parse the new models. Configure `Loader` to ingest `assets/widgets/main.yaml` and `data/config/menus/main.yaml`.
 * [x] *Add Menu Stack* Update `Board` to include `menus: List[Menu]` and `overlays: List[Menu]`.
 * [x] *Refine Menu Schema:* 
-    - [x] Add Action-Reaction bindings to allow Widgets embedded into a Menu, but unpacked into flat Asset lists, to emit signals for other Widgets in the Menu to catch.
+    * [x] Add Action-Reaction bindings to allow Widgets embedded into a Menu, but unpacked into flat Asset lists, to emit signals for other Widgets in the Menu to catch.
 
 **Task 2. Frame & Animation Implementation**
 
@@ -86,9 +86,9 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
 
 * [x] *Menu Time vs World Time*: Update `MenuMechanics.update()` to call `animate()` on all Widgets inside `board.overlays` and the top of `board.menus`, ensuring UI animations run independently of the world state.
 * [x] *Device Context Switching:* Update `Device` mappings to support a `MENU` context, translating raw SDL inputs into UI commands (Up, Down, Left, Right, Select, Cancel).
-    - [x] Add nested attributes, `mappings.<device>.world` and `mappings.<device>.menu`, to the Devive mapping configuration in `data/config/mappings/main.yaml`.
-    - [x] Update MappingConfiguration models in `app.models.config`.
-    - [x] Updated the Device class to initialize and poll using the new mapping data structure.
+    * [x] Add nested attributes, `mappings.<device>.world` and `mappings.<device>.menu`, to the Devive mapping configuration in `data/config/mappings/main.yaml`.
+    * [x] Update MappingConfiguration models in `app.models.config`.
+    * [x] Updated the Device class to initialize and poll using the new mapping data structure.
     - Implement `Keyboard.context(context: str)`. When `context == 'world'`, map `_scancodes` to Intentions/Goals. When `context == 'menu'`, map to Traversal/Interactions. Update `_last_state` accordingly.
 * [x] *Interface*: Update the Mechanic interface to accept the Bus. 
     * [x] Propagate updated interface through previous Mechanics.

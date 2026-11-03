@@ -274,7 +274,7 @@ The loop is perfect, except for the very last step. When the final `TARGET` goal
 
 **Task 1: Update the Intention Matrix (`src/data/config/intentions/main.yaml`)**
 
-- [x] Add the missing transition rule so the Sprite resumes hunting once the path is consumed and the `TARGET` pops out of memory.
+* [x] Add the missing transition rule so the Sprite resumes hunting once the path is consumed and the `TARGET` pops out of memory.
 
 ```yaml
   idle:
@@ -296,7 +296,7 @@ Add two specific LOS evaluations in `_track`:
 
 **Task 3: Handle Memory Scrubbing (`CognitionMechanics._resolve`)**
 
-- [!] If a Goal terminates prematurely (e.g., a `TARGET` dies while the Sprite is navigating a path toward them, or the Sprite gives up), `_resolve` sets `goal = None`. Add one line to strip any residual `path-*` strings from `memory.goals` to ensure ghost-paths don't corrupt the next Intention loop.
+* [!] If a Goal terminates prematurely (e.g., a `TARGET` dies while the Sprite is navigating a path toward them, or the Sprite gives up), `_resolve` sets `goal = None`. Add one line to strip any residual `path-*` strings from `memory.goals` to ensure ghost-paths don't corrupt the next Intention loop.
 
 ##### Bug B009: Infinite Wander Loop via Subverted ISL Transitions
 
@@ -353,22 +353,22 @@ Ensure `CognitionMechanics` reconciles active goals when an entity transitions f
 
 *Objective*: Add a spatial memory query function to `app/services/translators/environ.py`.
 
-- [x] Subtask: Implement `any_memories_visible(sprite, sprites, categories)` in `environ.py`. If the remembered entity is present in `sprites`, validate layer matching and evaluate Euclidean distance against the current character coordinate; otherwise fall back to `goal.position`.
-- [x] Subtask: Expose `any_memories_visible` in `Environ.functions`.
+* [x] Subtask: Implement `any_memories_visible(sprite, sprites, categories)` in `environ.py`. If the remembered entity is present in `sprites`, validate layer matching and evaluate Euclidean distance against the current character coordinate; otherwise fall back to `goal.position`.
+* [x] Subtask: Expose `any_memories_visible` in `Environ.functions`.
 
 **2. Task: Extend Wander Intention Matrix**
 
 *Objective*: Configure outbound transitions in `src/data/config/intentions/main.yaml`.
 
-- [x] Subtask: Add `wander -> hunt` transition conditioned on `functions.any_memories_visible(sprite, sprites, [ constants.Goals.TARGET.value ])`.
-- [x] Subtask: Add `wander -> find` transition conditioned on `functions.any_memories_visible(sprite, sprites, [ constants.Goals.SUBJECT.value, constants.Goals.OBJECT.value ])`.
+* [x] Subtask: Add `wander -> hunt` transition conditioned on `functions.any_memories_visible(sprite, sprites, [ constants.Goals.TARGET.value ])`.
+* [x] Subtask: Add `wander -> find` transition conditioned on `functions.any_memories_visible(sprite, sprites, [ constants.Goals.SUBJECT.value, constants.Goals.OBJECT.value ])`.
 
 **3. Task: Cognition Goal Reconciliation**
 
 *Objective*: Restore real goals upon intention transitions in `app/game/logic/mechanics/intentional/cognition.py`.
 
-- [x] Subtask: In `CognitionMechanics._resolve()`, if `sprite.state.intention in [Intentions.FIND.value, Intentions.HUNT.value]` and `sprite.state.goal.name == "wander"`, clear `sprite.state.goal = None`.
-- [x] Subtask: In `CognitionMechanics._remember()`, expand recall eligibility beyond `IDLE` so that whenever `sprite.state.goal is None` and `sprite.state.intention in [Intentions.IDLE.value, Intentions.FIND.value, Intentions.HUNT.value]`, the relevant goal is popped from 
+* [x] Subtask: In `CognitionMechanics._resolve()`, if `sprite.state.intention in [Intentions.FIND.value, Intentions.HUNT.value]` and `sprite.state.goal.name == "wander"`, clear `sprite.state.goal = None`.
+* [x] Subtask: In `CognitionMechanics._remember()`, expand recall eligibility beyond `IDLE` so that whenever `sprite.state.goal is None` and `sprite.state.intention in [Intentions.IDLE.value, Intentions.FIND.value, Intentions.HUNT.value]`, the relevant goal is popped from 
 
 ##### Final Boss: RRT Path Generation Bug
 
@@ -705,7 +705,7 @@ libpng warning: iCCP: known incorrect sRGB profile
 2026-09-11 20:32:52,426 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): find -> speak
 2026-09-11 20:32:52,443 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): speak -> idle
 2026-09-11 20:32:53,693 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): idle -> find
-2026-09-11 20:32:56,744 - INFO - app.game.engine - [TELEMETRY] Avg FPS: 54.9 |Avg UPS (Ticks): 59.9
+2026-09-11 20:32:56,744 - INFO - app.game.engine * [TELEMETRY] Avg FPS: 54.9 |Avg UPS (Ticks): 59.9
 2026-09-11 20:33:01,429 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): find -> speak
 2026-09-11 20:33:01,446 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): speak -> idle
 2026-09-11 20:33:02,146 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): idle -> find
@@ -713,7 +713,7 @@ libpng warning: iCCP: known incorrect sRGB profile
 2026-09-11 20:33:05,548 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): find -> idle
 2026-09-11 20:33:05,564 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): idle -> wander
 2026-09-11 20:33:05,580 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn randomized Goal(category=position, name = wander, layer = 0, position=(330, 553))
-2026-09-11 20:33:06,752 - INFO - app.game.engine - [TELEMETRY] Avg FPS: 60.0 |Avg UPS (Ticks): 60.0
+2026-09-11 20:33:06,752 - INFO - app.game.engine * [TELEMETRY] Avg FPS: 60.0 |Avg UPS (Ticks): 60.0
 2026-09-11 20:33:08,770 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn resolved Goal(category=position, name = wander, layer = 0, position=(330, 553))
 2026-09-11 20:33:08,770 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn randomized Goal(category=position, name = wander, layer = 0, position=(440, 524))
 2026-09-11 20:33:10,754 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): wander -> find

@@ -1,5 +1,9 @@
 """
-# Ontology: app.game.logic.mechanics.core.remove
+@domain.concrete
+@domain.system
+@app.mechanic
+
+# Ontology: Source - app.game.logic.mechanics.core.remove
 
 Package for RemoveMechanics
 """
@@ -11,10 +15,10 @@ import collections
 import logging
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     AssetCategories, 
     AssetInstances, 
-    Lifecycles,
+    Frequencies,
 )
 from app.game.logic.mechanics import Mechanic
 from app.models.state import DevicePayload
@@ -38,8 +42,8 @@ class RemoveMechanics(Mechanic):
     ) -> None:          
         removals = []
         for effect in board.categories(AssetCategories.EFFECTS):
-            if effect.properties.lifecycle.persist or (
-                effect.properties.lifecycle.type != Lifecycles.TEMPORARY.value
+            if effect.properties.frequency.persist or (
+                effect.properties.frequency.type != Frequencies.TEMPORARY.value
             ): continue
 
             if effect.state.animation.frame >= effect.properties.count:

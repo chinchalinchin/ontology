@@ -1,5 +1,10 @@
 """
-# Ontology: libs.core.input
+@domain.system
+@domain.user
+@app.library
+@app.device
+
+# Ontology: Libraries - libs.core.input
 """
 # cython: language_level=3
 

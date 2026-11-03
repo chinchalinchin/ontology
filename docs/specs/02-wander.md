@@ -1,11 +1,8 @@
-#### Ontology Specification: Wander Loop
+#### Ontology Spec: Wander Loop
 
 This specification governs autonomous exploratory navigation and target reacquisition.
 
-!!! note
-    All information in this section assumes the default values for the [Intention Configuration](../appendices/01-schemas.md#configuration-intentions).
-
-!!! note
+!!! note "Player Exclusion"
     This specification excludes the [Player](../02-sprites.md#player), whose Intentions are handled through input polling and device mapping.
 
 ##### Architectural Note: Loop Taxonomy & Intentional Subsumption

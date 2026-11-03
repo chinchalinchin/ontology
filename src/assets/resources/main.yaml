@@ -1,4 +1,66 @@
+# ------------------------------------------------------------
+hitboxes:
+  # ------------------------------------ HITBOXES: TREE STAGES
+  tree-sapling: &tree-sapling
+    position:
+      x: 42
+      y: 122
+    dimensions:
+      w: 10
+      l: 12
+  tree-bush: &tree-bush
+    position:
+      x: 36
+      y: 114
+    dimensions:
+      w: 20
+      l: 18
+  tree-branch: &tree-branch
+    position:
+      x: 36
+      y: 114
+    dimensions: 
+      w: 22
+      l: 20
+  tree-adult: &tree-adult
+    position:
+      x: 36
+      y: 110
+    dimensions:
+      w: 22
+      l: 24
+  tree-stump: &tree-stump
+    position:
+      x: 36
+      y: 120
+    dimensions:
+      w: 18
+      l: 14
+  # ---------------------------------- HITBOXES: CROP STAGES
+  crop-growth: &crop-growth
+    position:
+      x: 6
+      y: 12
+    dimensions:
+      w: 20
+      l: 8
+  crop-stalk: &crop-stalk
+    position:
+      x: 6
+      y: 10
+    dimensions:
+      w: 20
+      l: 12
+  crop-bloom: &crop-bloom
+    position:
+      x: 4
+      y: 6
+    dimensions:
+      w: 24
+      l: 16
+# ------------------------------------------------------------
 resources:
+# ------------------------------------------------------------
   trees:
     deciduous:
       dimensions:
@@ -9,83 +71,30 @@ resources:
       mass: 0
       hitboxes:
         sapling:
-          - position:
-              x: 42
-              y: 122
-            dimensions:
-              w: 10
-              l: 12
+          - *tree-sapling
         bush:
-          - position:
-              x: 36
-              y: 114
-            dimensions:
-              w: 22
-              l: 20
+          - *tree-bush
         branch:
-          - position:
-              x: 36
-              y: 110
-            dimensions:
-              w: 22
-              l: 24
+          - *tree-branch
         adult:
-          - position:
-              x: 36
-              y: 110
-            dimensions:
-              w: 22
-              l: 24
+          - *tree-adult
         vibrant:
-          - position:
-              x: 36
-              y: 110
-            dimensions:
-              w: 22
-              l: 24
+          - *tree-adult
         healthy:
-          - position:
-              x: 36
-              y: 110
-            dimensions:
-              w: 22
-              l: 24
+          - *tree-adult
         abscise:
-          - position:
-              x: 36
-              y: 110
-            dimensions:
-              w: 22
-              l: 24
+          - *tree-adult
         snowcapt:
-          - position:
-              x: 36
-              y: 110
-            dimensions:
-              w: 22
-              l: 24
+          - *tree-adult
         dying:
-          - position:
-              x: 36
-              y: 110
-            dimensions:
-              w: 22
-              l: 24
+          - *tree-adult
         dead:
-          - position:
-              x: 36
-              y: 110
-            dimensions:
-              w: 22
-              l: 24
+          - *tree-adult
         stump:
-          - position:
-              x: 36
-              y: 110
-            dimensions:
-              w: 22
-              l: 24
+          - *tree-stump
+# ------------------------------------------------------------
   crops:
+    # --------------------------------------------------------
     lettuce:
       dimensions:
         w: 32
@@ -95,10 +104,14 @@ resources:
       mass: 0
       hitboxes:
         sprout: null
-        growth: null
-        stalk: null
-        bloom: null
+        growth: 
+          - *crop-growth
+        stalk: 
+          - *crop-stalk
+        bloom: 
+          - *crop-bloom
         stump: null
+    # --------------------------------------------------------
     maize:
       dimensions:
         w: 32
@@ -108,10 +121,14 @@ resources:
       mass: 0
       hitboxes:
         sprout: null
-        growth: null
-        stalk: null
-        bloom: null
+        growth: 
+          - *crop-growth
+        stalk: 
+          - *crop-stalk
+        bloom: 
+          - *crop-bloom
         stump: null
+# ------------------------------------------------------------
   ore:
     gold:
       dimensions:

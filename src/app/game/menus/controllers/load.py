@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.controllers.load
+# Ontology: Source - app.game.menus.controllers.load
 """
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import logging
 from typing import TYPE_CHECKING
 
 # Application Libraries
-from app.config.enums import AssetCategories
+from app.static.semantics import AssetCategories
 from app.game.menus.controllers.base import MenuController
 from app.game.menus.core import Menu
 from app.game.menus.events import TerminalEvent

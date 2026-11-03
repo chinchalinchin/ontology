@@ -1,32 +1,43 @@
-# Ontology
+# Ontology Docs: Index
 
 *Ontology* is a personal project I have been working on in some form for over a decade, begun shortly after the actual Liberated Pixel Cup concluded. It has been scrapped and remade many times as I learned the mechanics of game development and software engineering. This is my latest attempt to build a highly opinionated, yet entirely configurable and extensible game engine. The general philosophy of the project is: simulation and emergence, at all costs. The goal of the engine is to construct a process that ingests a starting world state and then evolves according to its own internal logic, without scripting. All gameplay is achieved by configuring the initial conditions of the world state and letting it "rip", so to speak.
 
 !!! note "LPC"
     All assets are taken from the [Liberated Pixel Cup](https://lpc.opengameart.org/)
 
-## Sections
+## Index: Sections
 
-- [Overview](./00-overview.md)
-- [Assets](./01-assets.md)
-- [Sprites](./02-sprites.md)
-- [Compositions](./03-compositions.md)
-- [Intentions](./04-intentions.md)
-- [Mechanics](./05-mechanics.md)
-- [Widgets](./06-widgets.md)
-- [Sounds](./07-sounds.md)
-- [Plots](./08-plots.md)
-- [Emergence](./10-emergence.md)
-- [Architecture](./11-architecture.md)
-- [Appendices](./appendices/index.md)
-    - [Appendix O: References](./appendices/00-references.md)
-    - [Appendix I: Schemas](./appendices/01-schemas.md)
-    - [Appendix II: Diagrams](./appendices/02-diagrams.md)
-- [Specifications](./specs/index.md)
-    - [Spec: Dialogue Loop](./specs/00-dialogue.md)
-    - [Spec: Interaction Loop](./specs/01-interaction.md)
-    - [Spec: Wander Loop](./specs/02-wander.md)
+* [Overview](./00-overview.md)
+* [Assets](./01-assets.md)
+* [Sprites](./02-sprites.md)
+* [Compositions](./03-compositions.md)
+* [Intentions](./04-intentions.md)
+* [Mechanics](./05-mechanics.md)
+* [Widgets](./06-widgets.md)
+* [Sounds](./07-sounds.md)
+* [Plots](./08-plots.md)
+* [Ecology](./09-ecology.md)
+* [Chemistry](./10-chemistry.md)
+* [Emergence](./11-emergence.md)
+* [Architecture](./12-architecture.md)
+* [Appendices](./appendices/index.md)
+    * [Appendix O: References](./appendices/00-references.md)
+    * [Appendix I: Schemas](./appendices/01-schemas.md)
+    * [Appendix II: Diagrams](./appendices/02-diagrams.md)
+* [Specifications](./specs/index.md)
+    * [Spec: Dialogue Loop](./specs/00-dialogue.md)
+    * [Spec: Interaction Loop](./specs/01-interaction.md)
+    * [Spec: Wander Loop](./specs/02-wander.md)
     
-## CI/CD
+## Index: Quality Control
+
+### Quality Control: Tests 
 
 [![ontology-tests](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml)
+
+### Quality Control: Application Profile
+
+![Application Profile](../static/svg/engine-profile.svg)
+/// caption
+Runtime call graph and execution profile generated from `pstats` via `gprof2dot`.
+///

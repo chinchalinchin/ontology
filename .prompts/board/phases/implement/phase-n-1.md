@@ -60,34 +60,34 @@ Create `SoundMechanics` within the `world` mechanics pipeline. Calculate sound p
 
 *Objective*: Build the low-level SDL_mixer audio wrapper and non-blocking additive synthesis engine in `libs/audio/mixer.pyx`.
 
-- [ ] Subtask: Configure build pipeline in `setup.py` and `Dockerfile` to link against `SDL2_mixer`.
-- [ ] Subtask: Implement `libs/audio/mixer.pyx` managing `Mix_OpenAudio`, music streaming, and SFX channels.
-- [ ] Subtask: Implement a lock-free SPSC circular queue for thread-safe event passing from Python to the audio thread.
-- [ ] Subtask: Port `sound.pyx` synthesis logic into a `Mix_SetPostMix` callback supporting dynamic voice allocation up to 32 voices.
-- [ ] Subtask: Optimize oscillator math using recursive cosine phasors and Stevens' power law amplitude scaling.
+* [ ] Subtask: Configure build pipeline in `setup.py` and `Dockerfile` to link against `SDL2_mixer`.
+* [ ] Subtask: Implement `libs/audio/mixer.pyx` managing `Mix_OpenAudio`, music streaming, and SFX channels.
+* [ ] Subtask: Implement a lock-free SPSC circular queue for thread-safe event passing from Python to the audio thread.
+* [ ] Subtask: Port `sound.pyx` synthesis logic into a `Mix_SetPostMix` callback supporting dynamic voice allocation up to 32 voices.
+* [ ] Subtask: Optimize oscillator math using recursive cosine phasors and Stevens' power law amplitude scaling.
 
 **2. Task: Sound Models, Asset Schemas & Registry Loading**
 
 *Objective*: Establish data structures for audio configuration and integrate asset prewarming into the application boot sequence.
 
-- [ ] Subtask: Define `SoundProperties`, `TimbreProperties`, `ScoreProperties`, and `AudioEventDTO` models in `app/models/properties.py`.
-- [ ] Subtask: Implement YAML parser logic in `app/config/loader.py` for `/src/assets/sounds/main.yaml`.
-- [ ] Subtask: Update `Registry` to cache `Mix_Chunk` pointers and compile score timelines during boot and prewarming.
-- [ ] Subtask: Integrate sound resource teardown and memory deallocation into `Engine.stop()` and `Registry.clear()`.
+* [ ] Subtask: Define `SoundProperties`, `TimbreProperties`, `ScoreProperties`, and `AudioEventDTO` models in `app/models/properties.py`.
+* [ ] Subtask: Implement YAML parser logic in `app/config/loader.py` for `/src/assets/sounds/main.yaml`.
+* [ ] Subtask: Update `Registry` to cache `Mix_Chunk` pointers and compile score timelines during boot and prewarming.
+* [ ] Subtask: Integrate sound resource teardown and memory deallocation into `Engine.stop()` and `Registry.clear()`.
 
 **3. Task: Interactive Instrument Mechanics & Device Mapping**
 
 *Objective*: Enable in-game musical interaction when characters interact with instrument objects.
 
-- [ ] Subtask: Create `InstrumentMenu` and `InstrumentController` in `app/game/menus/` supporting chromatic scale mappings.
-- [ ] Subtask: Implement device context switching in `PlayerMechanics` when interacting with instrument objects.
-- [ ] Subtask: Emit `MelodyEvent` objects to `Engine.bus` containing pitch, velocity, and world coordinate metadata.
+* [ ] Subtask: Create `InstrumentMenu` and `InstrumentController` in `app/game/menus/` supporting chromatic scale mappings.
+* [ ] Subtask: Implement device context switching in `PlayerMechanics` when interacting with instrument objects.
+* [ ] Subtask: Emit `MelodyEvent` objects to `Engine.bus` containing pitch, velocity, and world coordinate metadata.
 
 **4. Task: SoundMechanics & Psychological Propagation**
 
 *Objective*: Simulate physical sound propagation and evaluate Sprite behavioral responses to music and noise.
 
-- [ ] Subtask: Implement `SoundMechanics` implementing `Mechanic.update()` within the `world` mechanics pipeline.
-- [ ] Subtask: Implement spatial sound attenuation and obstacle occlusion checks using `geometry.c_punctures`.
-- [ ] Subtask: Construct a sliding-window Trie to match active melody sequences against configured song motifs.
-- [ ] Subtask: Connect motif matches and sound amplitudes to Sprite `Mutators` (`frightened`, `calmed`) to trigger intention shifts in `TransitionMechanics`.
+* [ ] Subtask: Implement `SoundMechanics` implementing `Mechanic.update()` within the `world` mechanics pipeline.
+* [ ] Subtask: Implement spatial sound attenuation and obstacle occlusion checks using `geometry.c_punctures`.
+* [ ] Subtask: Construct a sliding-window Trie to match active melody sequences against configured song motifs.
+* [ ] Subtask: Connect motif matches and sound amplitudes to Sprite `Mutators` (`frightened`, `calmed`) to trigger intention shifts in `TransitionMechanics`.

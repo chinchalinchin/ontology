@@ -14,29 +14,25 @@ recipes:
       hitbox: none
   crafts:
     bridges:
-      frame: oriented
+      frame: material
+      animation: none
+      hitbox: material
+    decor:
+      frame: single
       animation: none
       hitbox: static
-    carpentry:
-      frame: directed
-      animation: none
-      hitbox: directed
     platforms: 
       frame: single
       animation: none
       hitbox: elevated
-    railings:
-      frame: oriented
-      animation: none
-      hitbox: oriented
     struts:
-      frame: single
+      frame: material
       animation: none
-      hitbox: static
+      hitbox: material
     stairs:
-      frame: directed
+      frame: material
       animation: none
-      hitbox: directed
+      hitbox: material
   cursors:
     expressions:
       frame: index
@@ -54,51 +50,51 @@ recipes:
   effects:
     collectables:
       frame: iterable
-      animation: lifecycle
+      animation: frequency
       hitbox: static
     reactables:
       frame: iterable
-      animation: lifecycle
+      animation: frequency
       hitbox: static
     hazards:
       frame: iterable
-      animation: lifecycle
+      animation: frequency
       hitbox: static
     passive:
       frame: iterable
-      animation: lifecycle
+      animation: frequency
       hitbox: none
     fluids:
       frame: fluid
-      animation: lifecycle
+      animation: frequency
       hitbox: dynamic
   objects:
     chests:
-      frame: iterable
-      animation: binary
+      frame: binary
+      animation: none
       hitbox: static
     crates:
-      frame: single
+      frame: object
       animation: none
       hitbox: static
     doors:
-      frame: single
+      frame: object
       animation: none
-      hitbox: static
-    gates: 
-      frame: iterable
-      animation: binary
-      hitbox: static
+      hitbox: layered
+    gates:
+      frame: binary
+      animation: none
+      hitbox: switch
     obstacles:
       frame: single
       animation: none
       hitbox: static
     plates:
-      frame: iterable
-      animation: binary
+      frame: binary
+      animation: none
       hitbox: static
     signs:
-      frame: single
+      frame: object
       animation: none
       hitbox: static
     rafts:

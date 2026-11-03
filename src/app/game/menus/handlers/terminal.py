@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus.handlers.terminal
+# Ontology: Source - app.game.menus.handlers.terminal
 
 Terminal event handling implementations.
 """
@@ -7,7 +7,7 @@ Terminal event handling implementations.
 import logging
 
 # Application Libraries
-from app.config.enums import Menus
+from app.static.semantics import Menus
 from app.game.menus.events import (
     TerminalEvent, 
     EventContext

@@ -1,0 +1,9 @@
+resources:
+  trees: 
+    - id: deciduous
+      name: test-tree
+      layer: '0'
+      position: 
+        x: 670
+        y: 15
+      stage: sapling

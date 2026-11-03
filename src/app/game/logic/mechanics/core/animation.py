@@ -1,7 +1,14 @@
 """
-# Ontology: app.game.logic.mechanics.core.animation
+@domain.graphics
+@domain.concrete
+@app.core
+@app.mechanic
+@asset.animation
+@workflow.rendering
 
-Package for AnimationMechanics
+# Ontology: Source - app.game.logic.mechanics.core.animation
+
+AnimationMechanics implementation.
 """
 from __future__ import annotations
 
@@ -11,7 +18,7 @@ import collections
 import logging
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     AssetCategories, 
     AssetInstances
 )
@@ -21,11 +28,11 @@ from app.models.state import DevicePayload
 if TYPE_CHECKING:
     from app.game.board import Board
 
-
-# Cython Libraries
+# -----------------------------------------------------
 
 logger = logging.getLogger(__name__)
 
+# -----------------------------------------------------
 
 class AnimationMechanics(Mechanic):
     """
@@ -43,13 +50,6 @@ class AnimationMechanics(Mechanic):
             for asset in board.categories(AssetCategories.EFFECTS):
                 asset.animation.animate(asset.state, asset.properties)
             for asset in board.categories(AssetCategories.SHEETS):
-                asset.animation.animate(asset.state, asset.properties)
-            # --------------------------------- INSTANCE ANIMATIONS
-            for asset in board.instances(AssetInstances.CHESTS):
-                asset.animation.animate(asset.state, asset.properties)
-            for asset in board.instances(AssetInstances.GATES):
-                asset.animation.animate(asset.state, asset.properties)
-            for asset in board.instances(AssetInstances.PLATES):
                 asset.animation.animate(asset.state, asset.properties)
             # --------------------------------- SPECIAL ANIMATIONS
             for effect in board.instances(AssetInstances.REACTABLES.value):

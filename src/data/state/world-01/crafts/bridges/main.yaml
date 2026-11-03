@@ -1,0 +1,46 @@
+crafts:
+  bridges:
+    - id: arch
+      material: granite
+      blueprint: horizontal
+      name: the-bridge-of-tears-left
+      position:
+        x: 30
+        y: 290
+      multiple:
+        nx: 2
+        ny: 0
+      owner: evil-empress-jasilynn
+    - id: arch
+      name: the-bridge-of-tears-right
+      material: granite
+      blueprint: horizontal
+      position:
+        x: 570
+        y: 290
+      multiple:
+        nx: 2
+        ny: 0
+      owner: evil-empress-jasilynn
+    - id: suspension
+      name: the-downtown-bridge
+      material: wood
+      blueprint: vertical
+      position:
+        x: 850
+        y: 425
+      multiple:
+        nx: 0
+        ny: 4
+      owner: evil-empress-jasilynn
+    - id: suspension
+      name: the-harvest-bridge
+      material: cotton
+      blueprint: horizontal
+      position:
+        x: 140
+        y: 1200
+      multiple:
+        nx: 3
+        ny: 0
+      owner: evil-empress-jasilynn

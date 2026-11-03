@@ -2,11 +2,11 @@ sheets:
   sprites: 
     - id: jasilynn
       name: evil-empress-jasilynn
-      layer: brick-house-compose-layer-1
+      layer: throne-layer-3
       depth: 0
       position:
-        x: 175
-        y: 200
+        x: 15
+        y: 15
       meters:
         health: 
           current: 50

@@ -1,5 +1,9 @@
 """
-# Ontology: app.models.config.recipes
+@domain.model
+@app.asset
+@app.config
+
+# Ontology: Source - app.models.config.recipes
 
 Models for typing the configuration attributes of Asset Recipes. 
 """
@@ -8,16 +12,14 @@ from dataclasses import dataclass
 from typing import Optional
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     FrameRecipe, 
     AnimationRecipe,
     HitboxRecipe
 )
 from app.models.config.core import Configuration
 
-
-# ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------------ RECIPE CONFIGURATION
+# ---------------------------------------------------------
 
 @dataclass(slots=True, frozen=True)
 class Recipe:
@@ -34,9 +36,7 @@ class TileRecipe:
 @dataclass(slots=True, frozen=True)
 class CraftRecipe:
     bridges: Recipe = None
-    carpentry: Recipe = None
     platforms: Recipe = None
-    railings: Recipe = None
     stairs: Recipe = None
     struts: Recipe = None
 
@@ -66,6 +66,7 @@ class ObjectRecipe:
     obstacles: Recipe = None
     plates: Recipe = None
     signs: Recipe = None
+    rafts: Recipe = None
 
 @dataclass(slots=True, frozen=True)
 class ResourceRecipe:

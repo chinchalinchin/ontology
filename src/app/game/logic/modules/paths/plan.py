@@ -1,11 +1,21 @@
 """
-# Ontology: app.game.logic.modules.paths.plan
+@domain.logic
+@app.module
+@workflow.navigation
+
+# Ontology: Source - app.game.logic.modules.paths.plan
 
 Rapidly-exploring Random Tree (RRT) pathfinding interface.
+
 Delegates path generation to the Cythonized rrt() subroutine in libs.core.math.paths.
 """
-from typing import List, Tuple
+# Standard Libraries
+from typing import (
+    List, 
+    Tuple
+)
 
+# Cython Libraries
 from libs.core.models import Position
 from libs.core.math.paths import rrt
 

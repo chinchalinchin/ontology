@@ -1,12 +1,21 @@
+# cython: language_level=3
 """
-# Ontology: libs.core.math.geometry
+@domain.system
+@domain.logic
+@app.library
+@workflow.collisions
+@workflow.navigation
+
+# Ontology: Libraries - libs.core.math.geometry
+
+Cython Library for geometrical calculations and algorithms.
 """
 # cython: language_level=3
 # C Libraries
 from libc.math cimport sqrt
 
 # Application Libraries
-from app.config.enums import Directions
+from app.static.semantics import Directions
 
 # Cython Libraries
 from libs.core.models cimport (

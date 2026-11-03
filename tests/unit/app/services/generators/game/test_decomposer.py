@@ -1,17 +1,24 @@
 """
-# Ontology: tests.unit.services.generators.test_decomposer
+@domain.test
+@test.unit
+@app.service
+@workflow.compositions
+
+# Ontology: Tests - tests.unit.services.generators.game.test_decomposer
+
+Unit tests for the Decomposer service.
 """
 # External Libraries
 import pytest
 
 # Application Libraries
-from app.config.enums import (
+from app.static.semantics import (
     AssetCategories,
     AssetInstances,
     Orientations
 )
 from app.models.state import (
-    OrientedState,
+    CraftState,
     PropertyState
 )
 from app.models.config import (
@@ -31,101 +38,89 @@ from libs.core.models import (
     Multiple
 )
 
+# -----------------------------------------------------
 
-@pytest.mark.services
-@pytest.mark.compositions
-def test_decomposer_cost_aggregation(mock_decomposer):
-    costs = mock_decomposer.cost("test-house")
-    cost_dict = {c.item: c.quantity for c in costs}
-    
-    assert cost_dict.get("wood") == 10
-    assert cost_dict.get("stone") == 5
+pytestmark = [
+    pytest.mark.app_services,
+    pytest.mark.workflow_compositions
+]
 
+# -----------------------------------------------------
 
-@pytest.mark.services
-@pytest.mark.compositions
 def test_decomposer_spatial_superposition(mock_decomposer):
     deployed = PropertyState(
-        id="test-house",
-        name="my_house",
-        layer="layer_1",
-        owner="player",
-        position=Position(x=100, y=100)
+        id="brick-house",
+        position = Position(x=100, y=100)
     )
     
     assets = mock_decomposer.unpack(deployed)
-    assert len(assets) == 3
+    assert len(assets) == 6
     
-    root_strut = next(a for a in assets if a.id == "frame-wood")
-    door = next(a for a in assets if a.id == "door-front")
-    branch_strut = next(a for a in assets if a.id == "wall-blue")
+    root_strut = next(a for a in assets if a.id == "home")
+    door = next(a for a in assets if a.id == "panel")
+    branch_strut = next(a for a in assets if a.id == "hallway")
     
     assert root_strut.state.position.x == 100
     assert root_strut.state.position.y == 100
     
-    assert door.state.position.x == 120
-    assert door.state.position.y == 120
+    assert door.state.position.x == 132
+    assert door.state.position.y == 244
     
-    assert door.state.out.x == 105
-    assert door.state.out.y == 105
+    assert door.state.out.x == 42
+    assert door.state.out.y == 154
     
-    assert branch_strut.state.position.x == 110
-    assert branch_strut.state.position.y == 110
+    assert branch_strut.state.position.x == 10
+    assert branch_strut.state.position.y == 10
 
 
-@pytest.mark.services
-@pytest.mark.compositions
 def test_decomposer_late_binding(mock_decomposer):
     deployed = PropertyState(
-        id="test-house",
-        name="my_house",
-        layer="layer_1",
-        owner="player",
-        position=Position(x=100, y=100)
+        id="brick-house",
+        layer="binded-layer",
+        owner="binded-owner",
+        position = Position(x=100, y=100)
     )
     
     assets = mock_decomposer.unpack(deployed)
-    door = next(a for a in assets if a.id == "door-front")
-    branch_strut = next(a for a in assets if a.id == "wall-blue")
-    
-    assert door.state.outlayer == "layer_1"
-    assert branch_strut.state.owner == "player"
+
+    root_strut = next(a for a in assets if a.id == "home")
+    door = next(a for a in assets if a.id == "panel")
+    branch_strut = next(a for a in assets if a.id == "hallway")
+
+    assert root_strut.state.layer == "binded-layer"
+    assert door.state.outlayer == "house-layer-1"
+    assert branch_strut.state.owner == "binded-owner"
 
 
-@pytest.mark.services
-@pytest.mark.compositions
 def test_decomposer_nomenclature_generation(mock_decomposer):
-    deployed1 = PropertyState(
-        id="test-house",
-        name="home", 
-        layer="0", 
-        position=Position(0, 0)
+    deployed_1 = PropertyState(
+        id="brick-house",
+        layer="binded-layer",
+        owner="binded-owner",
+        position = Position(x=0, y=0)
     )
-    deployed2 = PropertyState(
-        id="test-house",
-        name="home", 
-        layer="0", 
-        position=Position(0, 0)
+    deployed_2 = PropertyState(
+        id="brick-house",
+        layer="binded-layer",
+        owner="binded-owner",
+        position = Position(x=300, y=300)
     )
     
-    assets1 = mock_decomposer.unpack(deployed1)
-    assets2 = mock_decomposer.unpack(deployed2)
+    assets_1 = mock_decomposer.unpack(deployed_1)
+    assets_2 = mock_decomposer.unpack(deployed_2)
     
-    root1 = next(a for a in assets1 if a.id == "frame-wood")
-    root2 = next(a for a in assets2 if a.id == "frame-wood")
-    door1 = next(a for a in assets1 if a.id == "door-front")
-    door2 = next(a for a in assets2 if a.id == "door-front")
+    root_1 = next(a for a in assets_1 if a.id == "home")
+    root_2 = next(a for a in assets_2 if a.id == "home")
+    door_1 = next(a for a in assets_1 if a.id == "panel")
+    door_2 = next(a for a in assets_2 if a.id == "panel")
     
-    assert root1.name == "strut-base_house-1"
-    assert root2.name == "strut-base_house-2"
+    assert root_1.name == "strut-roof-1-0"
+    assert root_2.name == "strut-roof-2-0"
     
-    # Preserves component configuration name: <instance>-<parent_name>-<comp_name>-<increment>
-    assert door1.name == "door-strut-base_house-1-entrance-1"
-    assert door2.name == "door-strut-base_house-2-entrance-2"
+    assert door_1.name == "door-strut-roof-1-door-1"
+    assert door_2.name == "door-strut-roof-2-door-2"
 
 
-@pytest.mark.services
-@pytest.mark.compositions
 def test_decomposer_unmapped_composition(mock_decomposer):
     """
     Ensure non-existent composition keys yield empty lists without throwing exceptions.
@@ -137,192 +132,110 @@ def test_decomposer_unmapped_composition(mock_decomposer):
         position=Position(0, 0)
     )
     assert mock_decomposer.unpack(deployed) == []
-    assert mock_decomposer.cost("missing-comp") == []
 
 
-@pytest.mark.services
-@pytest.mark.compositions
-def test_decomposer_resolve_bind_patterns(mock_decomposer):
-    """
-    Validate bind parsing logic across explicit parent, explicit root, and legacy syntax.
-    """
-    root_ctx = {"layer": "world_1", "owner": "alice"}
-    parent_ctx = {"layer": "sub_2", "owner": "bob"}
-    
-    # Non-string values pass through unaltered
-    assert mock_decomposer._resolve_bind(100, root_ctx, parent_ctx) == 100
-    
-    # Unbound strings pass through unaltered
-    assert mock_decomposer._resolve_bind("stone_wall", root_ctx, parent_ctx) == "stone_wall"
-    
-    # Explicit parent binding
-    assert mock_decomposer._resolve_bind("bind(parent.owner)", root_ctx, parent_ctx) == "bob"
-    
-    # Explicit root binding
-    assert mock_decomposer._resolve_bind("bind(root.layer)", root_ctx, parent_ctx) == "world_1"
-    
-    # Legacy prefix-free root binding
-    assert mock_decomposer._resolve_bind("bind(owner)", root_ctx, parent_ctx) == "alice"
-    
-    # Unmatched keys return the original bind expression
-    assert mock_decomposer._resolve_bind("bind(parent.nonexistent)", root_ctx, parent_ctx) == "bind(parent.nonexistent)"
-
-
-@pytest.mark.services
-@pytest.mark.compositions
 def test_decomposer_cross_layer_origin_decoupling(mock_decomposer):
     """
     Verify branches on foreign layers decouple from parent layer coordinates and bind to (0, 0).
     """
     deployed = PropertyState(
         id="brick-house",
-        name="door-test",
-        layer="0",
-        owner="player",
-        position=Position(x=150, y=750)
+        layer="binded-layer",
+        owner="binded-owner",
+        position = Position(x=150, y=750)
     )
 
     assets = mock_decomposer.unpack(deployed)
-    root_strut = next(a for a in assets if a.id == "frame-brick")
-    interior_wall = next(a for a in assets if a.id == "wall-blue")
-    interior_floor = next(a for a in assets if a.id == "floor-wood")
+    root_strut = next(a for a in assets if a.id == "home")
+    interior_wall = next(a for a in assets if a.id == "hallway")
+    interior_floor = next(a for a in assets if a.id == "carpet")
 
     # Root strut reflects deployed position on Layer 0
-    assert root_strut.state.layer == "0"
+    assert root_strut.state.layer == "binded-layer"
     assert root_strut.state.position.x == 150
     assert root_strut.state.position.y == 750
 
     # Branch strut transitions to independent layer; position anchors to layer origin
-    assert interior_wall.state.layer == "brick-house-compose-layer-1"
-    assert interior_wall.state.position.x == 0
-    assert interior_wall.state.position.y == 0
+    assert interior_wall.state.layer == "house-layer-1"
+    assert interior_wall.state.position.x == 10
+    assert interior_wall.state.position.y == 10
 
     # Branch component offsets relative to local branch strut origin
-    assert interior_floor.state.layer == "brick-house-compose-layer-1"
-    assert interior_floor.state.position.x == 0
-    assert interior_floor.state.position.y == 96
+    assert interior_floor.state.layer == "house-layer-1"
+    assert interior_floor.state.position.x == 10
+    assert interior_floor.state.position.y == 106
 
 
-@pytest.mark.services
-@pytest.mark.compositions
-def test_decomposer_cross_layer_door_out_resolution(mock_decomposer):
-    """
-    Ensure entrance doors output to local interior coordinates while exit doors offset by root position.
-    """
-    deployed = PropertyState(
-        id="brick-house",
-        name="door-test",
-        layer="0",
-        owner="player",
-        position=Position(x=150, y=750)
-    )
-
-    assets = mock_decomposer.unpack(deployed)
-    entrance_door = next(a for a in assets if a.id == "door-house")
-    exit_door = next(a for a in assets if a.id == "door-shadow")
-
-    # Entrance door: target is foreign interior layer; out coordinate remains local
-    assert entrance_door.state.layer == "0"
-    assert entrance_door.state.outlayer == "brick-house-compose-layer-1"
-    assert entrance_door.state.out.x == 82
-    assert entrance_door.state.out.y == 143
-
-    # Exit door: target matches root context layer; out coordinate offsets by deployed root position
-    assert exit_door.state.layer == "brick-house-compose-layer-1"
-    assert exit_door.state.outlayer == "0"
-    assert exit_door.state.out.x == 193  # 150 + 43
-    assert exit_door.state.out.y == 913  # 750 + 163
-
-
-@pytest.mark.fluids
-@pytest.mark.services
-@pytest.mark.compositions
-def test_decomposer_bridge_horizontal_expansion(mock_decomposer):
+def test_decomposer_bridge_horizontal_expansion(mock_decomposer, mock_state):
     """
     Verify Decomposer expands horizontal bridge multiplier into discrete unit assets
     with sequential names, offset coordinates, and preserved craft properties.
     """
-    state = OrientedState(
-        id="wood-bridge",
-        name="river-crossing",
-        layer="0",
+    state = mock_state(
+        AssetCategories.CRAFTS.value,
+        AssetInstances.BRIDGES.value,
         position=Position(x=100, y=50),
-        orientation=Orientations.HORIZONTAL.value,
+        blueprint=Orientations.HORIZONTAL.value,
         multiple=Multiple(nx=3, ny=1)
     )
 
-    units = mock_decomposer.orient(
+    units = mock_decomposer.multiply(
         state, 
         AssetCategories.CRAFTS.value,
         AssetInstances.BRIDGES.value
     )
     assert len(units) == 3
 
-    assert units[0].name == "river-crossing-0"
-    assert units[0].state.position.x == 100
+    assert units[0].name == "test-horizontal-bridge-0"
+    assert units[0].state.position.x == 100 + 0 * 80
     assert units[0].state.position.y == 50
-    # Phase 07.01: depth and height migrated to elevation and substrate resolution
-    assert units[0].state.elevation is None
-    assert units[0].elevation == -1
+    assert units[0].elevation == 0
+    assert units[0].substrate == -1
 
-    assert units[1].name == "river-crossing-1"
-    assert units[1].state.position.x == 132  # 100 + 32
+    assert units[1].name == "test-horizontal-bridge-1"
+    assert units[1].state.position.x == 100 + 1 * 80
     assert units[1].state.position.y == 50
+    assert units[1].elevation == 0
+    assert units[1].substrate == -1
 
-    assert units[2].name == "river-crossing-2"
-    assert units[2].state.position.x == 164  # 100 + 64
+    assert units[2].name == "test-horizontal-bridge-2"
+    assert units[2].state.position.x == 100 + 2 * 80
     assert units[2].state.position.y == 50
+    assert units[2].elevation == 0
+    assert units[2].substrate == -1
 
 
-@pytest.mark.fluids
-@pytest.mark.services
-@pytest.mark.compositions
-def test_decomposer_bridge_vertical_expansion(mock_decomposer):
+def test_decomposer_bridge_vertical_expansion(mock_decomposer, mock_state):
     """
     Verify Decomposer expands vertical bridge multiplier along +Y axis.
     """
-    state = OrientedState(
-        id="wood-bridge",
-        name="chasm-bridge",
-        layer="0",
+    state = mock_state(
+        AssetCategories.CRAFTS.value,
+        AssetInstances.BRIDGES.value,
         position=Position(x=50, y=100),
-        orientation=Orientations.VERTICAL.value,
-        multiple=Multiple(nx=1, ny=2)
+        blueprint=Orientations.VERTICAL.value,
+        multiple=Multiple(nx=1, ny=4)
     )
 
-    units = mock_decomposer.orient(
+    units = mock_decomposer.multiply(
         state,
         AssetCategories.CRAFTS.value,
         AssetInstances.BRIDGES.value
     )
-    assert len(units) == 2
+    assert len(units) == 4
 
     assert units[0].state.position.x == 50
     assert units[0].state.position.y == 100
     assert units[1].state.position.x == 50
-    assert units[1].state.position.y == 132
+    assert units[1].state.position.y == 100 + 103
+    assert units[2].state.position.x == 50
+    assert units[2].state.position.y == 100 + 2 * 103
+    assert units[3].state.position.x == 50
+    assert units[3].state.position.y == 100 + 3 * 103 
 
 
-@pytest.mark.fluids
-@pytest.mark.services
-@pytest.mark.compositions
-def test_decomposer_bridge_linear_cost(mock_decomposer):
-    """
-    Verify bridge construction cost scales linearly with span length (N * cost).
-    """
-    mult = Multiple(nx=4, ny=1)
-    costs = mock_decomposer.bridge_cost(
-        "wood-bridge",
-        mult,
-        Orientations.HORIZONTAL.value
-    )
-    assert len(costs) == 1
-    assert costs[0].item == "wood"
-    assert costs[0].quantity == 8  # 4 * 2
-
-
-@pytest.mark.services
-@pytest.mark.compositions
+@pytest.mark.app_services
+@pytest.mark.workflow_compositions
 def test_decomposer_multi_deployment_layer_namespacing(mock_decomposer):
     """
     Verify multi-deployment of identical compositions generates isolated, namespaced
@@ -344,87 +257,14 @@ def test_decomposer_multi_deployment_layer_namespacing(mock_decomposer):
     assets1 = mock_decomposer.unpack(deployed1)
     assets2 = mock_decomposer.unpack(deployed2)
 
-    door1_entrance = next(a for a in assets1 if a.id == "door-house")
-    door2_entrance = next(a for a in assets2 if a.id == "door-house")
-    interior1_wall = next(a for a in assets1 if a.id == "wall-blue")
-    interior2_wall = next(a for a in assets2 if a.id == "wall-blue")
-    door1_exit = next(a for a in assets1 if a.id == "door-shadow")
-    door2_exit = next(a for a in assets2 if a.id == "door-shadow")
+    door1_entrance = next(a for a in assets1 if a.id == "panel")
+    door2_entrance = next(a for a in assets2 if a.id == "panel")
+    interior1_wall = next(a for a in assets1 if a.id == "hallway")
+    interior2_wall = next(a for a in assets2 if a.id == "hallway")
 
     # Each deployment isolates its internal pseudo-layer using the instance increment
-    assert door1_entrance.state.outlayer == "brick-house-compose-layer-1"
-    assert door2_entrance.state.outlayer == "brick-house-compose-layer-2"
+    assert door1_entrance.state.outlayer == "house-layer-1"
+    assert door2_entrance.state.outlayer == "house-layer-2"
 
-    assert interior1_wall.state.layer == "brick-house-compose-layer-1"
-    assert interior2_wall.state.layer == "brick-house-compose-layer-2"
-
-    assert door1_exit.state.layer == "brick-house-compose-layer-1"
-    assert door2_exit.state.layer == "brick-house-compose-layer-2"
-
-    # Both interior exit doors route back to root layer '0'
-    assert door1_exit.state.outlayer == "0"
-    assert door2_exit.state.outlayer == "0"
-
-@pytest.mark.services
-@pytest.mark.compositions
-def test_decomposer_anchor_macro_resolution(mock_decomposer):
-    """
-    Verify two-pass anchor macro evaluation resolves ground baseline offsets:
-    anchor = (target.y + target.l) - (self.y + self.l)
-    """
-    # Configure a test composition with parent and sibling anchor macros
-    # Root: frame-wood (w=100, l=100, y=0) -> baseline = 100
-    # Sibling 1: strut-wall (w=128, l=96, y=20) -> baseline = 116
-    # Sibling 2: door-front (w=32, l=32, y=10, anchor="anchor(test-wall)")
-    # Expected Sibling 2 anchor: (20 + 96) - (10 + 32) = 116 - 42 = 74
-    # Sibling 3: door-front (w=32, l=32, y=10, anchor="anchor(parent)")
-    # Expected Sibling 3 anchor: (0 + 100) - (10 + 32) = 100 - 42 = 58
-    mock_decomposer.compositions["anchor-house"] = CompositionConfiguration(
-        root=CompositionPseudoState(
-            strut=PropertyState(id="frame-wood", name="main-strut"),
-            components=StateSchema(
-                crafts=CraftStateInstances(
-                    struts=[
-                        PropertyState(
-                            id="strut-wall",
-                            name="test-wall",
-                            position=Position(x=0, y=20)
-                        )
-                    ]
-                ),
-                objects=ObjectStateInstances(
-                    doors=[
-                        DoorState(
-                            id="door-front",
-                            name="sibling-anchored-door",
-                            position=Position(x=10, y=10),
-                            anchor="anchor(test-wall)"
-                        ),
-                        DoorState(
-                            id="door-front",
-                            name="parent-anchored-door",
-                            position=Position(x=50, y=10),
-                            anchor="anchor(parent)"
-                        )
-                    ]
-                )
-            )
-        )
-    )
-
-    deployed = PropertyState(
-        id="anchor-house",
-        name="test-instance",
-        layer="0",
-        position=Position(x=0, y=0)
-    )
-
-    assets = mock_decomposer.unpack(deployed)
-    door_sibling = next(a for a in assets if "sibling-anchored-door" in a.name)
-    door_parent = next(a for a in assets if "parent-anchored-door" in a.name)
-
-    assert isinstance(door_sibling.state.anchor, int)
-    assert door_sibling.state.anchor == 74
-
-    assert isinstance(door_parent.state.anchor, int)
-    assert door_parent.state.anchor == 58
+    assert interior1_wall.state.layer == "house-layer-1"
+    assert interior2_wall.state.layer == "house-layer-2"

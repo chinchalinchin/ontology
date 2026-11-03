@@ -1,5 +1,9 @@
 """
-# Ontology: app.models.groups
+@domain.model
+@asset.property
+@workflow.injection
+
+# Ontology: Source - app.models.groups
 
 Dataclasses for grouping asset properties for injection into generators and registries.
 """

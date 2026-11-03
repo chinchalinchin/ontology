@@ -1,8 +1,16 @@
 """
-# Ontology: app.game.board.core
+@domain.system
+@app.board
+@app.core
+@app.component
+@workflow.main
 
-Module for the game database class, Board.
+# Ontology: Source - app.game.board.core
+
+The Board Database.
 """
+from __future__ import annotations
+
 # Standard Libraries
 import logging
 from typing import (
@@ -10,32 +18,37 @@ from typing import (
     Dict,
     Tuple,
     Any,
-    Optional
+    Optional,
+    TYPE_CHECKING
 )
 from dataclasses import asdict
 
 # Application Libraries
-import app.config.settings as settings
+import app.static.settings as settings
+import app.game.logic.predicates as predicates
+
 from app.assets.base import Asset
-from app.config.enums import (
+from app.static.semantics import (
     AssetCategories,
     AssetInstances,
-    Lifecycles,
+    Frequencies,
     Shortcuts
 )
-from app.config.loader import Loader
-from app.game.board.fields import MoistureField
+from app.static.loader import Loader
+from app.game.logic.modules.fields import MoistureField
 from app.game.devices import Device
 from app.game.menus.core import Menu
-from app.services.generators.game.cradle import Cradle
 from app.models.state.core import (
     PlotState,
     CalendarState
 )
 from app.models.config import ConfigurationSchema
 from app.models.groups import EquipmentGroup
-from app.game.board.cache import Cache
-import app.game.board.predicates as predicates
+from app.game.board.modules.cache import Cache
+
+if TYPE_CHECKING:
+    from app.services.generators.game import Cradle
+    from app.services.orchestration.migrator import Migrator
 
 # Cython Libraries
 from libs.core.models import (
@@ -68,6 +81,7 @@ class Board:
     # Game Components
     device: Device
     cradle: Cradle
+    migrator: Optional[Migrator]
     menus: List[Menu]
     overlays: List[Menu]
     # ------- Private Fields
@@ -87,6 +101,8 @@ class Board:
         self.plot = None
         self.device = None
         self.cradle = None
+        self.materializer = None
+        self.migrator = None
         self.calendar = CalendarState()
         self.menus = []
         self.overlays = []
@@ -190,8 +206,12 @@ class Board:
         self.overlays = overlays
 
 
-    def set_plot(self, plot: str) -> None:
+    def set_plot(self, plot: PlotState) -> None:
         self.plot = plot
+
+
+    def set_migrator(self, migrator: Migrator) -> None:
+        self.migrator = migrator
 
     # ------------------------------------------------ GETTERS
 
@@ -411,7 +431,7 @@ class Board:
 
     # ------------------------------------------------ EXPORTERS
 
-    def serialize(self, slot: str) -> None:
+    def serialize(self, world: str, slot: str) -> None:
         dump: Dict[str, Any] = {}
 
         for asset in self._assets:
@@ -419,8 +439,9 @@ class Board:
                 continue
 
             if asset.category == AssetCategories.EFFECTS.value:
-                lifecycle = getattr(asset.properties, "lifecycle", None)
-                if lifecycle and lifecycle.type == Lifecycles.TEMPORARY.value and not lifecycle.persist:
+                if asset.properties.frequency and \
+                    asset.properties.frequency.type == Frequencies.TEMPORARY.value and \
+                    not asset.properties.frequency.persist:
                     continue
 
             if asset.category == AssetCategories.SHEETS.value and asset.instance not in (
@@ -446,4 +467,4 @@ class Board:
         if self.plot:
             dump[Shortcuts.PLOTS.value] = asdict(self.plot) if hasattr(self.plot, "__dataclass_fields__") else self.plot
 
-        Loader.save_state(slot, dump)
+        Loader.save_state(world, slot, dump)

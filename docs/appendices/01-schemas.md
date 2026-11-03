@@ -1,10 +1,10 @@
-# Ontology: Appendix I - Schemas
+# Ontology Docs: Appendix I - Schemas
 
 ## Hitboxes Schemas
 
 ### Sprites
 
-- [sheet-sprite-walk-down-0](../static/xcf/hitboxes/sheet-sprite-walk-down-0.xcf)
+* [sheet-sprite-walk-down-0](../static/xcf/hitboxes/sheet-sprite-walk-down-0.xcf)
 
 ![sheet-sprite-walk-down-0](../static/png/hitboxes/sheet-sprite-walk-down-0.png)
 /// caption
@@ -13,7 +13,7 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 
 **Attackboxes**
 
-- [sheet-weapon-shortsword-slash-down-3](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-down-3.xcf) | [sheet-weapon-shortsword-slash-down-4](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-down-4.xcf) | [sheet-weapon-shortsword-slash-down-5](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-down-5.xcf)
+* [sheet-weapon-shortsword-slash-down-3](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-down-3.xcf) | [sheet-weapon-shortsword-slash-down-4](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-down-4.xcf) | [sheet-weapon-shortsword-slash-down-5](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-down-5.xcf)
 
 <div class="grid cards" markdown>
 
@@ -23,7 +23,7 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 
 </div>
 
-- [sheet-weapon-shortsword-slash-left-3](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-left-3.xcf) | [sheet-weapon-shortsword-slash-left-4](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-left-4.xcf) | [sheet-weapon-shortsword-slash-left-5](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-left-5.xcf)
+* [sheet-weapon-shortsword-slash-left-3](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-left-3.xcf) | [sheet-weapon-shortsword-slash-left-4](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-left-4.xcf) | [sheet-weapon-shortsword-slash-left-5](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-left-5.xcf)
 
 <div class="grid cards" markdown>
 
@@ -33,7 +33,7 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 
 </div>
 
-- [sheet-weapon-shortsword-slash-up-3](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-up-3.xcf) | [sheet-weapon-shortsword-slash-down-4](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-up-4.xcf) | [sheet-weapon-shortsword-slash-up-5](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-up-5.xcf)
+* [sheet-weapon-shortsword-slash-up-3](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-up-3.xcf) | [sheet-weapon-shortsword-slash-down-4](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-up-4.xcf) | [sheet-weapon-shortsword-slash-up-5](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-up-5.xcf)
 
 <div class="grid cards" markdown>
 
@@ -43,7 +43,7 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 
 </div>
 
-- [sheet-weapon-shortsword-slash-right-3](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-right-3.xcf) | [sheet-weapon-shortsword-slash-right-4](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-right-4.xcf) | [sheet-weapon-shortsword-slash-right-5](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-right-5.xcf)
+* [sheet-weapon-shortsword-slash-right-3](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-right-3.xcf) | [sheet-weapon-shortsword-slash-right-4](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-right-4.xcf) | [sheet-weapon-shortsword-slash-right-5](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-right-5.xcf)
 
 <div class="grid cards" markdown>
 
@@ -55,142 +55,79 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 
 ## Compositions Schemas
 
-- [brick-house](../static/xcf/compositions/brick-house.xcf)
-- [postern-gate](../static/xcf/compositions/postern-gate.xcf)
-- [castle-dawn](../static/xcf/compositions/castle-dawn.xcf)
+* [brick-house](../static/xcf/compositions/brick-house.xcf)
+* [postern-gate](../static/xcf/compositions/postern-gate.xcf)
+* [castle-dawn](../static/xcf/compositions/castle-dawn.xcf)
 
 ### Struts
 
-- [craft-strut-frame-brick](../static/xcf/hitboxes/craft-strut-frame-brick.xcf)
-- [craft-strut-wall-blue](../static/xcf/hitboxes/craft-strut-wall-blue.xcf)
-- [craft-strut-wall-castle](../static/xcf/hitboxes/craft-strut-wall-castle.xcf)
+* [craft-strut-frame-brick](../static/xcf/hitboxes/craft-strut-frame-brick.xcf)
+* [craft-strut-wall-blue](../static/xcf/hitboxes/craft-strut-wall-blue.xcf)
+* [craft-strut-wall-castle](../static/xcf/hitboxes/craft-strut-wall-castle.xcf)
 
 ![Brick Frame Strut Hitboxes](../static/png/hitboxes/craft-strut-frame-brick.png)
 /// caption
 Brick Frame Strut Hitbox
 ///
 
-## File Schemas
+## Schemas
 
-### Configuration: Actions
+### Schema: Configuration
 
-Action Configurations determine the (Action, Direction) partitions employed by a Sheet Asset.
+* [Spec: ConfigurationSchema](../static/yaml/schema-configuration.yaml)
+
+#### Configuration: Actions
 
 * Location: `/src/data/config/actions/main.yaml`
 
-```yaml
---8<-- "static/yaml/data-actions.yaml"
-```
+Action Configurations determine the (Action, Direction) partitions employed by a Sheet Asset.
 
-**Default Action Configuration**
-
-```yaml
---8<-- "static/yaml/examples/default-actions.yaml"
-```
-
-### Configuration: Compositions
-
-Composition Configuration defines a collection of Assets that can be deployed as a unit onto the Board.
+#### Configuration: Compositions
 
 * Location: `/src/data/config/compositions.yaml`
 
-```yaml
---8<-- "static/yaml/data-compositions.yaml"
-```
+Composition Configuration defines a collection of Assets that can be deployed as a unit onto the Board.
 
-### Configuration: Intentions
+#### Configuration: Intentions
     
 * Location: `/src/data/config/intentions/main.yaml`
 
-```yaml
---8<-- "static/yaml/data-intentions.yaml"
-```
 
-**Default Intention Configuration**
-
-```yaml
---8<-- "static/yaml/examples/default-intentions.yaml"
-```
-
-### Configuration: Library
+#### Configuration: Library
 
 * Location: `/src/data/config/library/main.yaml`
 
-TODO
-
-### Configuration: Mapping
+#### Configuration: Mapping
 
 * Location: `/src/data/config/mappings/main.yaml`
 
-```yaml
---8<-- "static/yaml/data-mappings.yaml"
-```
 
-**Defaults**
+#### Configuration: Materials
 
-The default mappings bundled with the game are provided below,
+TODO
 
-```yaml
---8<-- "static/yaml/examples/default-mappings.yaml"
-```
-
-### Configuration: Mechanics
-
-Mechanics Configuration defines what Mechanic classes are instantiated by the game engine. The order in which they are specified in the schema becomes the order of execution in the game engine.
+#### Configuration: Mechanics
 
 * Location: `/src/data/config/mechanics/main.yaml`
 
-```yaml
---8<-- "static/yaml/data-mechanics.yaml"
-```
+Mechanics Configuration defines what Mechanic classes are instantiated by the game engine. The order in which they are specified in the schema becomes the order of execution in the game engine.
 
-**Default Mechanics Configuration**
+#### Configuration: Menus
 
-```yaml
---8<-- "static/yaml/examples/default-mechanics.yaml"
-```
+* Location: `src/data/config/menus/main.yaml`
 
-### Configuration: Menus
+TODO
 
-```yaml
---8<-- "static/yaml/data-menus.yaml"
-```
-
-### Configuration: Recipes
-
-Recipe Configuration files determine the specific (Animation, Frame) components injected into an Asset Category Instance. The Category and Instance key are encoded into the top-level fields of each Recipe.
-
-!!! note
-    The state model can be calculated from (Category, Instance), but (Animation, Frame) is independent of the state assigned to an Asset through the Asset Hierarchy.
+#### Configuration: Recipes
 
 * Location: `/src/data/config/recipes/main.yaml`
 
-```yaml
---8<-- "static/yaml/data-recipes.yaml"
-```
+Recipe Configuration files determine the specific (Animation, Frame, Hitbox) components injected into a (Category, Instance)-node in the Asset Hierarchy. The Category and Instance key are encoded into the top-level fields of each Recipe.
 
-**Default Recipe Configuration**
+### Schema: Properties
 
-```yaml
---8<-- "static/yaml/examples/default-recipes.yaml"
-```
+* [Spec: Property Schema](../static/yaml/schema-property.yaml)
 
-### Model: Properties
+### Schema: State
 
-Asset property index files hydrate the Registry and set the static attributes of Assets.
-
-* Location: `/src/assets/<category>/main.yaml`
-
-```yaml
---8<-- "static/yaml/asset-properties.yaml"
-```
-
-### Model: State
-
-Asset state files populate the [Board](../00-overview.md#board). 
-
-* Location: `/src/data/state/<board-key>/*.yaml`
-
-```yaml
---8<-- "static/yaml/asset-state.yaml"
-```
+* [Spec: State Schema](../static/yaml/schema-state.yaml)

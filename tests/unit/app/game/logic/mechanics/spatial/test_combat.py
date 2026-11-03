@@ -1,5 +1,14 @@
 """
-# Ontology: tests.unit.test_app_game_logic_mechanics_spatial_combat.py
+@domain.test
+@test.unit
+@app.mechanic
+@physics.space
+@category.sheets
+@workflow.combat
+
+# Ontology: Tests - tests.unit.app.game.logic.mechanics.spatial.test_combat
+
+Unit tests for CombatMechanics.
 """
 # Standard Libraries
 from unittest.mock import MagicMock
@@ -9,14 +18,14 @@ import pytest
 
 # Application Libraries
 from app.game.logic.mechanics import CombatMechanics
-from app.config.enums import (
+from app.static.semantics import (
     Intentions, 
     AssetInstances, 
     AssetCategories
 )
 from app.models.state import (
     SpriteState, 
-    PlayerState, 
+    SheetState, 
     Character, 
     Meters, 
     Meter, 
@@ -34,7 +43,17 @@ from libs.core.models import (
     Hitbox
 )
 
-# TODO: MIGRATE ALL OF THIS SLOP INTO PROPER FIXTURES
+# -----------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_mechanic,
+    pytest.mark.physics_space,
+    pytest.mark.workflow_combat
+]
+
+# -----------------------------------------------------
+
+# TODO: MIGRATE ALL OF THIS INTO PROPER FIXTURES
 
 # --------------------------------------------------------------------------------------
 
@@ -52,18 +71,18 @@ from app.assets.hitboxes import (
 )
 from app.assets.animations import (
     SpriteAnimation,
-    LifecycleAnimation
+    FrequencyAnimation
 )
 from app.models.properties import (
     SheetProperties, 
     EffectProperties, 
-    Lifecycle
+    Frequency
 )
 
 def _create_player_attacker(x=10, y=10, action="slash", direction="right", frame=3, strength=20):
     tax = Taxonomy("player-1", "hero", AssetCategories.SHEETS.value, AssetInstances.PLAYERS.value)
     props = SheetProperties(dimensions=Dimensions(w=64, l=64), mass=10)
-    state = PlayerState(
+    state = SheetState(
         id="player-1",
         name="hero",
         layer="0",
@@ -103,7 +122,7 @@ def _create_reactable_target(x=50, y=20):
     props = EffectProperties(
         dimensions=Dimensions(w=64, l=64),
         count=8,
-        lifecycle=Lifecycle(type="temporary", persist=True),
+        frequency=Frequency(type="temporary", persist=True),
         mass=0,
         hitboxes=[Hitbox(Position(0, 0), Dimensions(64, 64))]
     )
@@ -115,7 +134,7 @@ def _create_reactable_target(x=50, y=20):
         intention=Intentions.ATTACK.value,
         active=False
     )
-    return Asset(tax, props, state, IterableFrame(), LifecycleAnimation(), StaticHitbox())
+    return Asset(tax, props, state, IterableFrame(), FrequencyAnimation(), StaticHitbox())
 
 
 def _create_equipment():
@@ -134,7 +153,7 @@ def _create_equipment():
 
 # --------------------------------------------------------------------------------------
 
-@pytest.mark.combat
+@pytest.mark.workflow_combat
 def test_combat_mechanics_melee_resolution(mock_board):
     mechanic = CombatMechanics()
     attacker = _create_player_attacker(x=10, y=10, strength=20)
@@ -151,7 +170,7 @@ def test_combat_mechanics_melee_resolution(mock_board):
     assert target.state.mutators.triggers.dead is False
 
 
-@pytest.mark.combat
+@pytest.mark.workflow_combat
 def test_combat_mechanics_lethal_blow(mock_board):
     mechanic = CombatMechanics()
     attacker = _create_player_attacker(x=10, y=10, strength=100)
@@ -167,7 +186,7 @@ def test_combat_mechanics_lethal_blow(mock_board):
     assert target.state.mutators.triggers.dead is True
 
 
-@pytest.mark.combat
+@pytest.mark.workflow_combat
 def test_combat_mechanics_reactable_trigger(mock_board):
     mechanic = CombatMechanics()
     attacker = _create_player_attacker(x=10, y=10)
@@ -190,7 +209,7 @@ def test_combat_mechanics_reactable_trigger(mock_board):
     assert dummy.state.active is True
 
 
-@pytest.mark.combat
+@pytest.mark.workflow_combat
 def test_combat_mechanics_inactive_attackbox_filtered(mock_board):
     mechanic = CombatMechanics()
     # Frame 0 has no active attackboxes configured
@@ -205,7 +224,7 @@ def test_combat_mechanics_inactive_attackbox_filtered(mock_board):
     assert target.state.meters.health.current == 50
 
 
-@pytest.mark.combat
+@pytest.mark.workflow_combat
 def test_combat_mechanics_unarmed_bypasses_melee(mock_board):
     mechanic = CombatMechanics()
     attacker = _create_player_attacker(x=10, y=10)

@@ -1,7 +1,12 @@
 """
-# Ontology: app.services.orchestration.migrator
+@domain.system
+@app.service
+@workflow.injection
+@workflow.hydration
 
-Package for state hydration and ECS component injection.
+# Ontology: Source - app.services.orchestration.migrator
+
+State Hydration module.
 """
 from __future__ import annotations
 
@@ -9,21 +14,24 @@ from __future__ import annotations
 import time
 import dataclasses
 import logging
-from typing import Optional, TYPE_CHECKING
+from typing import (
+    Optional, 
+    TYPE_CHECKING
+)
 
 # Application Libraries
-from app.assets.base import Asset
-from app.config.loader import Loader
-from app.config.enums import (
+from app.static.loader import Loader
+from app.static.semantics import (
     AssetCategories,
     AssetInstances, 
-    OrientedAssets,
+    MultipliedAssets,
     Shortcuts
 )
+from app.game.logic.relations import MaterialIndex
 from app.models.properties import PropertiesSchema
 from app.models.config import ConfigurationSchema
+from app.services.factories.assets import AssetFactory
 from app.services.generators.game import (
-    Factory, 
     Decomposer,
     Perimeter,
     Actuator
@@ -32,6 +40,7 @@ if TYPE_CHECKING:
     from app.game.board import Board
 
 logger = logging.getLogger(__name__)
+
 
 class Migrator:
     """
@@ -42,24 +51,20 @@ class Migrator:
     decomposer: Decomposer
     configurations: ConfigurationSchema
     properties: PropertiesSchema
-    actuator: Actuator
+    materials: MaterialIndex
 
     def __init__(self, 
         board: Board, 
         properties: PropertiesSchema, 
         configurations: ConfigurationSchema,
-        actuator: Optional[Actuator] = None,
-        decomposer: Optional[Decomposer] = None
+        decomposer: Decomposer,
+        materials: MaterialIndex
     ):
         self.board = board
         self.properties = properties
         self.configurations = configurations
-        self.actuator = actuator or Actuator()
-        self.decomposer = decomposer or Decomposer(
-            compositions=self.configurations.compositions,
-            properties=self.properties,
-            recipes=self.configurations.recipes
-        )
+        self.decomposer = decomposer
+        self.materials = materials
         self.target: Optional[str] = None
         self.state = None
         self._generator = None
@@ -75,29 +80,20 @@ class Migrator:
         
         # 1. Compile the manifest of objects to generate
         tasks = []
-        if hasattr(
-            self.state, 
-            Shortcuts.COMPOSITIONS.value
-        ) and self.state.compositions:
+        if self.state.compositions:
             for comp_state in self.state.compositions:
                 tasks.append((
                     Shortcuts.COMPOSITIONS.value, 
                     comp_state
                 ))
 
-        if hasattr(
-            self.state,
-            Shortcuts.PLOTS.value
-        ) and self.state.plots:
+        if self.state.plots:
             tasks.append((
                 Shortcuts.PLOTS.value, 
                 self.state.plots
             ))
 
-        if hasattr(
-            self.state, 
-            Shortcuts.CALENDAR.value
-        ) and self.state.calendar:
+        if self.state.calendar:
             self.board.calendar = self.state.calendar
             
         for cat_field in dataclasses.fields(self.state):
@@ -134,12 +130,24 @@ class Migrator:
                 expanded_assets = self.decomposer.unpack(comp_state)
                 self.board.add(expanded_assets)
 
-            elif task[0] == Shortcuts.ASSETS.value and \
-                task[2] in OrientedAssets:
+            elif (
+                task[0] == Shortcuts.ASSETS.value 
+                and task[2] in MultipliedAssets
+            ):
+                multiplied_state = task[3]
+                multiplied_asset = self.decomposer.multiply(
+                    multiplied_state, 
+                    task[1], 
+                    task[2]
+                )
+                self.board.add(multiplied_asset)
 
-                oriented_state = task[3]
-                oriented_asset = self.decomposer.orient(oriented_state, task[1], task[2])
-                self.board.add(oriented_asset)
+            elif (
+                task[0] == Shortcuts.ASSETS.value
+                and task[2] == AssetInstances.DOORS.value
+            ):
+                door_state = task[3]
+                self.board.add(self.decomposer.project(door_state))
 
             elif task[0] == Shortcuts.PLOTS.value:
                 plot = task[1]
@@ -147,11 +155,9 @@ class Migrator:
 
             else:
                 _, category_key, instance_key, state_obj = task
-                asset_id = state_obj.id
-                asset_name = state_obj.name
                 
-                cat_recipes = getattr(self.configurations.recipes, category_key, None)
-                recipe = getattr(cat_recipes, instance_key, None)
+                cat_recipes = getattr(self.configurations.recipes, category_key)
+                recipe = getattr(cat_recipes, instance_key)
                 
                 prop_instance_key = instance_key
                 # NOTE: Register Sprite properties as Player properties
@@ -160,22 +166,17 @@ class Migrator:
                 ):
                     prop_instance_key = AssetInstances.SPRITES.value
                     
-                cat_props = getattr(self.properties, category_key, None)
-                inst_props = getattr(cat_props, prop_instance_key, {})
-                props = inst_props.get(asset_id)
+                cat_props = getattr(self.properties, category_key)
+                inst_props = getattr(cat_props, prop_instance_key)
+                props = inst_props.get(state_obj.id)
 
-                asset = Asset(
-                    taxonomy        = Factory.taxonomy(
-                        id          = asset_id, 
-                        name        = asset_name, 
-                        category    = category_key, 
-                        instance    = instance_key
-                    ),
-                    properties      = props,
-                    state           = state_obj,
-                    frame           = Factory.frame(recipe.frame),
-                    animation       = Factory.animation(recipe.animation),
-                    hitbox          = Factory.hitbox(recipe.hitbox)
+                asset = AssetFactory.asset(
+                    category=category_key,
+                    instance=instance_key,
+                    properties=props,
+                    state=state_obj,
+                    recipe=recipe,
+                    substrate=self.materials.substrate(instance_key)
                 )
                 self.board.add([asset])
             
@@ -183,13 +184,12 @@ class Migrator:
             yield True
 
         # 3. Post-Hydration Phase: Procedural Boundaries & Steady-State Fluid
-        perimeter_gen = Perimeter()
         for layer in self.board.layers():
-            self.board.perimeters[layer] = perimeter_gen.generate(self.board, layer)
+            self.board.perimeters[layer] = Perimeter.generate(self.board, layer)
 
         fluids = self.board.instances(AssetInstances.FLUIDS.value)
         for fluid in fluids:
-            self.actuator.pump(fluid, self.board)
+            Actuator.pump(fluid, self.board)
 
 
     def step(self, budget_ms: int = 16) -> bool:

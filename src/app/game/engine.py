@@ -1,16 +1,24 @@
 """
-# Ontology: app.game.engine
+@domain.system
+@app.core
+@app.component
+@workflow.main
+
+# Ontology: Source - app.game.engine
 
 Package for core game loop.
 """
 # Standard Libraries
 import time
 import collections
-from typing import List, Dict
+from typing import (
+    List, 
+    Dict
+)
 import logging
 
 # Application Libraries
-import app.config.settings as settings
+import app.static.settings as settings
 from app.game.board import Board
 from app.game.logic.mechanics import Mechanic
 from app.game.screen import Screen
@@ -32,6 +40,9 @@ from app.game.menus.handlers import (
     EventHandler
 )
 
+# Cython Libraries
+from libs.graphics.registry import Registry
+
 logger = logging.getLogger(__name__)
 
 class Engine:
@@ -46,6 +57,7 @@ class Engine:
     world: List[Mechanic]
     bus: collections.deque
     provider: Provider
+    registry: Registry
     running: bool
     context: EventContext
     handlers: Dict[type, EventHandler]
@@ -55,13 +67,15 @@ class Engine:
         screens: Dict[str, Screen], 
         core: List[Mechanic],
         world: List[Mechanic],
-        provider: Provider
+        provider: Provider,
+        registry: Registry = None
     ):
         self.board = board
         self.screens = screens
         self.core = core
         self.world = world
         self.provider = provider
+        self.registry = registry
         self.bus = collections.deque()
         self.running = False
         
@@ -227,23 +241,13 @@ class Engine:
         self.running = False
         self.bus.clear()
 
-        registry = None
-
-        if self.screens:
-            registry = next(iter(self.screens.values())).registry
-            if registry is not None:
-                registry.clear()
-
-        if self.provider and self.provider.binder:
-            registry = self.provider.binder.registry
-            if registry is not None:
-                registry.clear()
+        if self.registry is not None:
+            self.registry.clear()
 
         for screen in list(self.screens.values()):
             screen.destroy()
             
         self.screens.clear()
-
 
         if self.board is not None:
             self.board.clear()

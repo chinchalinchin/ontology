@@ -509,8 +509,8 @@ In `SeasonMechanics._probes(resource)`, five discrete `Position` dataclass insta
 
 **Proposed Remediation**
 
-- [!] Add `Board.fluid_at(layer: str, x: int, y: int) -> bool` accepting raw integer coordinates, and cache local probe offsets $(dx, dy)$ on `ResourceState` during hydration.
-- [ ] Introduce Moisture Field potential calculations.
+* [!] Add `Board.fluid_at(layer: str, x: int, y: int) -> bool` accepting raw integer coordinates, and cache local probe offsets $(dx, dy)$ on `ResourceState` during hydration.
+* [ ] Introduce Moisture Field potential calculations.
 
 ##### Goals
 

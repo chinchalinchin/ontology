@@ -1,0 +1,76 @@
+"""
+@domain.model
+@app.core
+@app.asset
+@asset.property
+
+# Ontology: Source - app.models.properties.core
+
+Core Property Models.
+"""
+from typing import (
+    Dict,
+    Optional,
+    Union
+)
+from dataclasses import dataclass
+
+# Applicaiton Libraries
+from app.static.semantics import (
+    Directions,
+    Frequencies,
+    Materials,
+    Organics,
+    Ceramics
+)
+from app.models.adapters import (
+    PydanticDimensions as Dimensions, 
+    Enumerated
+)
+
+# --------------------------------------------------------------
+
+@dataclass(slots=True)
+class Direction:
+    row: int
+
+@dataclass(slots=True)
+class Action:
+    count: int
+    directions: Dict[Enumerated[Directions], Direction]
+    delay: int = 1
+
+@dataclass(slots=True)
+class Frequency:
+    type: Enumerated[Frequencies] = Frequencies.CONTINUOUS.value
+    delay: int = 1
+    frequency: int = 0
+    cooldown: int = 60
+    persist: bool = False
+
+@dataclass(slots=True)
+class Material:
+    genus: Enumerated[Materials]
+    host: Optional[Union[
+        Enumerated[Organics], 
+        Enumerated[Ceramics]
+    ]] = None
+
+    def __post_init__(self):
+        if self.genus == Materials.CHROMATICS.value:
+            valid_hosts = (*Organics, *Ceramics)
+            if self.host not in valid_hosts:
+                raise ValueError(
+                    f"Chromatic material requires an organic or ceramic host; got '{self.host}'."
+                )
+        elif self.host is not None:
+            raise ValueError(
+                f"Non-chromatic genus '{self.genus}' cannot declare a host material."
+            )
+            
+# --------------------------------------------------------------
+
+@dataclass(slots=True)
+class AssetProperties:
+    dimensions: Dimensions # type: ignore
+    priority: int = 0
