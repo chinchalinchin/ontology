@@ -31,6 +31,7 @@ Tags are meant to capture logically related slices of the Application.
 * Names:
     * Domain Names:
         * `domain.abstract` (*Abstract Interfaces*)
+        * `domain.automata` (*Finite State Automata*)
         * `domain.concrete` (*Abstract Implementations*)
         * `domain.graphics` (*SDL & Rendering*)
         * `domain.logic` (*Algorithms*)

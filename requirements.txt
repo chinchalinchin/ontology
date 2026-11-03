@@ -17,8 +17,9 @@ mkdocs
 mkdocs-material
 mkdocstrings[python]
 python-mermaid
-## Analysis
+# Analysis
+gprof2dot
 pydeps
 vulture
-## Prompts
+# Prompts
 panflute

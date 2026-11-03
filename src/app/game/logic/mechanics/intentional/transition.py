@@ -1,4 +1,5 @@
 """
+@domain.automata
 @domain.concrete
 @domain.logic
 @app.mechanic

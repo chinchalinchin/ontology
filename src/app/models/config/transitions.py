@@ -1,5 +1,6 @@
 """
 @domain.model
+@domain.automata
 @app.config
 @modality.intention
 @modality.lifespan
@@ -44,4 +45,3 @@ class PlotConfiguration(Configuration):
 class StageConfiguration(Configuration):
     next: str
     conditions: List[str] = field(default_factory=list)
-    phase: Optional[str] = None

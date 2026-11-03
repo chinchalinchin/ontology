@@ -28,8 +28,12 @@ docs = [
     "mkdocstrings[python]",
 ]
 analysis = [
+    "gprof2dot"
     "pydeps",
     "vulture"
+]
+prompts = [
+    "panflute"
 ]
 
 [tool.uv]

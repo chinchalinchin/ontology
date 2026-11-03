@@ -5,14 +5,15 @@
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  # template: draft.md.j2
+  template: draft.md.j2
   # template: enumerations.md.j2
-  template: fixtures.md.j2
+  # template: fixtures.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
   # template: maintain/console/patch.md.j2
   # template: maintain/console/session.md.j2
+  # template: maintain/analysis/pstats.md.j2
   # template: maintain/script.md.j2
   # --------------------------------------------
   # --------------------------- TEMPLATES: DUMPS 
@@ -58,14 +59,19 @@ tools:
     # --------------------------------------------
     manager:
       board: false
-      specs: false
-      docs: false
+      specs: true
+      docs: true
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: METRICS
+    # --------------------------------------------
+    metrics:
+      pstats: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: false
-      filter: false
+      data: true
+      filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
@@ -77,7 +83,7 @@ tools:
     # --------------------------------------------
     tests:  
       configuration: false
-      pipeline: true
+      pipeline: false
       session: false
 # ----------------------------------------------------
   parameters:
@@ -90,21 +96,30 @@ tools:
         action: refactor
       docs:
         exclude:
-          - index.md
-          # - 00-overview.md
-          # - 01-assets.md
-          - 02-sprites.md
-          # - 03-compositions.md
-          - 04-intentions.md
-          # - 05-mechanics.md
-          - 06-widgets.md
-          - 07-sounds.md
-          - 08-plots.md
-          - 09-ecology.md
-          - 10-chemistry.md
-          - 11-emergence.md
-          # - 11-architecture.md
-      specs: []
+
+          # - 00-overview
+          # - 01-assets
+          # - 02-sprites
+          - 03-compositions
+          # - 04-intentions
+          # - 05-mechanics
+          - 06-widgets
+          - 07-sounds
+          - 08-plots
+          - 09-ecology
+          - 10-chemistry
+          - 11-emergence
+          - 12-architecture
+      specs:
+        - 00-dialogue
+        - 01-interaction
+        - 02-wander
+    metrics:
+      pstats: 
+        run: |
+          python -m cProfile -o $ROOT/engine-run.pstats src/main.py start world-01
+        dot: |
+          gprof2dot -f pstats --node-thres=1.0 --edge-thres=0.5 $ROOT/engine-run.pstats
     # --------------------------------------------
     # ------------------------ PARAMETERS: SOURCE
     # --------------------------------------------
@@ -112,27 +127,13 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Core Asset Models
+          - title: Application Automata
             scan:
-              domain: [ model ]
-              app: [ asset, core ]
-          - title: Cython Model Adapters
-            scan:
-              domain: [ model ]
-              app: [ library, config ]
-          - title: Application Schemas
-            scan:
-              app: [ schema ]
-          - title: Hydration Workflow
-            scan:
-              workflows: [ hydration ]
-          - title: Test Fixtures
-            scan:
-              test: [ fixtures ]
+              domain: [ automata ]
       data:
         properties: [ ]
-        state: [ world-testbed  ]
-        configurations: [  ]
+        state: [  ]
+        configurations: [ intentions ]
         templates: [ ]
     # --------------------------------------------
     # -------------------------- PARAMETERS: SHELL

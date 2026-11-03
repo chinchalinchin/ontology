@@ -1,15 +1,7 @@
-{% for task_data in task.tools.github if task_data.views.specs %}
-{% set repo_path = properties.tools.github.groups[task_data.parameters.group] + task_data.parameters.repo %}
-{% set spec_index = properties.tools.github.specs.path + properties.tools.github.specs.index %}
+### View: {{ properties.project.title | capitalize }} Specs
 
-### View: {{ task_data.parameters.repo | capitalize }} Specs
+{% for spec in tools.parameters.manager.specs %}
+{% set spec_path = properties.paths.root + properties.paths.docs + 'specs/' + spec + '.md' %}
+{{ md(spec_path) }}
 
-{{ file(repo_path +  "/" + spec_index) }}
-
-{% for spec_data in task_data.parameters.specs %}
-{% set spec = spec_data | string %}
-{% set spec_path = properties.tools.github.specs.path + spec + ".md" %}
-{{ file(repo_path + "/" + spec_path) }}
-
-{% endfor %}
 {% endfor %}

@@ -299,7 +299,7 @@ def typehint(context: AppContext, filepath: str) -> str:
 
 
 @macro
-def command(command_str: str) -> str:
+def command(command_str: str, command_env: dict[str, str] | None = None) -> str:
     """
     Executes a shell command and returns the standard output.
 
@@ -313,13 +313,18 @@ def command(command_str: str) -> str:
         str: The stripped stdout of the command, or an error message if execution fails.
              This ensures the template rendering does not crash on a single failed command.
     """
+    env = os.environ.copy()
+    if command_env:
+        env.update(command_env)
+
     try:
         result = subprocess.check_output(
             command_str,
             shell=True,
             stderr=subprocess.STDOUT,
             executable=SHELL,
-            text=True
+            text=True,
+            env=env
         )
         return result.strip()
     except subprocess.CalledProcessError as e:

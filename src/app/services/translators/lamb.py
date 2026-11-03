@@ -1,9 +1,11 @@
 """
+@domain.automata
 @domain.concrete
 @domain.logic
 @modality.intention
 @workflow.plot
 @workflow.seasons
+@workflow.transitions
 
 # Ontology: Source - app.services.translators.lamb
 
