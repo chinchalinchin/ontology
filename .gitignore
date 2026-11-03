@@ -16,7 +16,7 @@ site/**
 TODOS.md
 **/*.pstats
 !**/latest.pstats
-**/*.0
+**/*.o
 **/uv.lock
 
 !**/.gitkeep
