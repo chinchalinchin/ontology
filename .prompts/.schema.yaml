@@ -1,9 +1,15 @@
 # ----------------------------------------------------
 # -------------------------------------- TASK.TEMPLATE
 # ----------------------------------------------------
+# --------------------- TEMPLATES: ANALYSIS
+# template: analysis/automaton.md.j2
+# template: analysis/engine.md.j2
+# --------------------- TEMPLATES: CONSOLE
+# template: console/enumeration.md.j2
+# template: console/patch.md.j2
+# template: console/session.md.j2
 # --------------------- TEMPLATES: MAINTENANCE
-# template: maintain/console/patch.md.j2
-# template: maintain/console/session.md.j2
+# template: maintain/pipeline.md.j2
 # template: maintain/script.md.j2
 # --------------------------- TEMPLATES: DUMPS 
 # template: report/menus.md.j2
