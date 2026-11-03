@@ -19,6 +19,7 @@ import warnings
 
 # External Libraries
 import pytest
+import yaml
 from pydantic import TypeAdapter, ValidationError
 
 # Application Libraries
@@ -30,6 +31,13 @@ from app.models.adapters import (
     PydanticPosition,
     PydanticScreenPosition,
     PydanticVelocity,
+     serialize_dim,
+    serialize_enum,
+    serialize_hb,
+    serialize_mul,
+    serialize_pos,
+    serialize_sp,
+    serialize_vel,
 )
 from app.models.config import (
     ActionConfiguration,
@@ -84,6 +92,7 @@ from app.models.state import (
     Memory,
     Meters,
     MotiveState,
+    MotorState,
     MultiplierState,
     Mutators,
     PlotState,
@@ -171,6 +180,27 @@ def test_loader_merge_recursive_dictionaries():
     assert merged["plots"]["current"] == "updated"
 
 
+@pytest.mark.app_schema
+def test_loader_merge_overwrites_non_dict_leaves():
+    """
+    Verifies Loader.merge() replaces scalar or list values when a key is
+    re-declared with a non-dictionary value.
+    """
+    base = {
+        "calendar": {"year": 1, "season": "spring"},
+        "compositions": [{"id": "house-a"}],
+    }
+    incoming = {
+        "calendar": {"year": 2},
+        "compositions": [{"id": "house-b"}],
+    }
+
+    merged = Loader.merge(base, incoming)
+
+    assert merged["calendar"] == {"year": 2, "season": "spring"}
+    assert merged["compositions"] == [{"id": "house-b"}]
+
+
 # ---------------------------------------------------------------------------
 # ------------------------------------------------- CYTHON & ENUMERATED TYPES
 # ---------------------------------------------------------------------------
@@ -228,6 +258,28 @@ def test_cython_adapters_validation_and_serialization():
     assert sp_adapter.dump_python(sp, mode="json") == {"px": 0.25, "py": 0.75}
 
 
+@pytest.mark.app_schema
+def test_cython_serializers_passthrough_none_and_dict():
+    """
+    Verifies serializer functions in app.models.adapters return None and
+    pre-serialized dict objects unchanged, and handle both Enum and str inputs.
+    """
+    for serializer, sample_dict in (
+        (serialize_pos, {"x": 1, "y": 2}),
+        (serialize_dim, {"w": 3, "l": 4}),
+        (serialize_mul, {"nx": 5, "ny": 6}),
+        (serialize_vel, {"vx": 7, "vy": 8}),
+        (serialize_hb, {"position": {"x": 0, "y": 0}, "dimensions": {"w": 1, "l": 1}}),
+        (serialize_sp, {"px": 0.5, "py": 0.5}),
+    ):
+        assert serializer(None) is None
+        assert serializer(sample_dict) is sample_dict
+
+    assert serialize_enum(Seasons.AUTUMN) == "autumn"
+    assert serialize_enum("autumn") == "autumn"
+
+
+@pytest.mark.app_schema
 def test_enumerated_adapter_extracts_primitive_and_validates():
     """
     Verifies Enumerated validates against the target Enum, strips the Enum
@@ -247,6 +299,7 @@ def test_enumerated_adapter_extracts_primitive_and_validates():
     with warnings.catch_warnings():
         warnings.simplefilter("error", UserWarning)
         assert season_adapter.dump_python(from_str, mode="json") == "autumn"
+        assert season_adapter.dump_python(Seasons.AUTUMN, mode="json") == "autumn"
 
     with pytest.raises(ValidationError):
         season_adapter.validate_python("monsoon")
@@ -408,6 +461,7 @@ def test_load_properties_hydrates_entire_schema(
 
 
 @pytest.mark.app_schema
+@pytest.mark.workflow_compositions
 def test_load_configurations_hydrates_entire_schema(
     mock_configurations_schema: ConfigurationSchema,
 ):
@@ -425,12 +479,16 @@ def test_load_configurations_hydrates_entire_schema(
             assert type(action_key) is str
             assert isinstance(action, Action)
 
-    # 2. Compositions (compiled via CompositionCompiler)
+    # 2. Compositions (compiled via CompositionCompiler into concrete Positions/anchors)
     assert "brick-house" in mock_configurations_schema.compositions
     brick_house = mock_configurations_schema.compositions["brick-house"]
     assert isinstance(brick_house, CompositionConfiguration)
     assert isinstance(brick_house.root.strut, PropertyState)
     assert isinstance(brick_house.root.components, StateSchema)
+    door_comp = brick_house.root.components.objects.doors[0]
+    assert isinstance(door_comp.position, Position)
+    assert isinstance(door_comp.out, Position)
+    assert isinstance(door_comp.anchor, int)
 
     # 3. Intentions, Plots, and Stages
     assert len(mock_configurations_schema.intentions) > 0
@@ -540,6 +598,15 @@ def test_load_state_hydrates_models_and_referential_integrity(
     assert isinstance(bridge, CraftState)
     assert isinstance(bridge.multiple, Multiple)
 
+    projectile = mock_state_schema.cursors.projectiles[0]
+    assert isinstance(projectile, MotorState)
+    assert isinstance(projectile.initial, Position)
+    assert isinstance(projectile.velocity, Velocity)
+    assert (
+        projectile.direction == Directions.DOWN.value
+        and type(projectile.direction) is str
+    )
+
     chest = mock_state_schema.objects.chests[0]
     assert isinstance(chest, ContainerState)
     assert chest.material == Metallics.GOLD.value
@@ -645,7 +712,11 @@ def test_save_and_reload_state_roundtrip(
         warnings.simplefilter("error", UserWarning)
         Loader.save_state("world-testbed", "0", mock_state_schema)
 
-    assert (save_root / "world-testbed" / "slot-0.yaml").is_file()
+    slot_file = save_root / "world-testbed" / "slot-0.yaml"
+    assert slot_file.is_file()
+
+    raw_saved = yaml.safe_load(slot_file.read_text(encoding="utf-8"))
+    assert raw_saved["sheets"]["players"][0]["inventory"]["equipment"].get("armor") is None
 
     reloaded = Loader.load_save("world-testbed", "0")
 
@@ -655,6 +726,11 @@ def test_save_and_reload_state_roundtrip(
     assert reloaded.calendar.cycle == mock_state_schema.calendar.cycle
     assert len(reloaded.compositions) == len(mock_state_schema.compositions)
     assert len(reloaded.crafts.bridges) == len(mock_state_schema.crafts.bridges)
+    assert len(reloaded.cursors.projectiles) == len(mock_state_schema.cursors.projectiles)
+    assert (
+        reloaded.cursors.projectiles[0].direction
+        == mock_state_schema.cursors.projectiles[0].direction
+    )
     assert len(reloaded.objects.chests) == len(mock_state_schema.objects.chests)
     assert len(reloaded.resources.crops) == len(mock_state_schema.resources.crops)
     assert len(reloaded.sheets.players) == len(mock_state_schema.sheets.players)
@@ -667,3 +743,59 @@ def test_save_and_reload_state_roundtrip(
         reloaded.sheets.players[0].position.y
         == mock_state_schema.sheets.players[0].position.y
     )
+
+
+@pytest.mark.asset_state
+@pytest.mark.app_schema
+def test_save_state_from_raw_dict_and_rejects_invalid_schema(
+    monkeypatch,
+    tmp_path,
+):
+    """
+    Verifies Loader.save_state() validates raw dictionary payloads before
+    writing to disk and raises ValidationError on invalid enum values.
+    """
+    save_root = tmp_path / "save"
+    monkeypatch.setattr("app.static.settings.SAVE_DIR", save_root)
+
+    valid_payload = {
+        "plots": {"current": "act-1", "previous": []},
+        "calendar": {"year": 3, "season": "winter", "cycle": "peak", "period": 1, "elapsed": 4.5},
+    }
+    Loader.save_state("custom-world", "1", valid_payload)
+
+    reloaded = Loader.load_save("custom-world", "1")
+    assert reloaded.plots.current == "act-1"
+    assert reloaded.calendar.year == 3
+    assert reloaded.calendar.season == Seasons.WINTER.value
+    assert reloaded.calendar.cycle == Cycles.PEAK.value
+
+    with pytest.raises(ValidationError):
+        Loader.save_state(
+            "custom-world",
+            "2",
+            {"calendar": {"season": "invalid-season"}},
+        )
+
+
+@pytest.mark.app_schema
+def test_load_state_ignores_empty_yaml_files(monkeypatch, tmp_path):
+    """
+    Verifies Loader.load_state() skips empty or comment-only YAML files
+    where yaml.safe_load() returns None.
+    """
+    state_root = tmp_path / "state"
+    world_dir = state_root / "sparse-world"
+    world_dir.mkdir(parents=True)
+
+    (world_dir / "empty.yaml").write_text("# comment only\n", encoding="utf-8")
+    (world_dir / "world.yaml").write_text(
+        "plots:\n  current: sparse-start\n  previous: []\n",
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr("app.static.settings.STATE_DIR", state_root)
+    loaded = Loader.load_state("sparse-world")
+
+    assert isinstance(loaded, StateSchema)
+    assert loaded.plots.current == "sparse-start"
