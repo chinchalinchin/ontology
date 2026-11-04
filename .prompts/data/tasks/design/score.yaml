@@ -1,0 +1,35 @@
+# ----------------------------------------------------
+context: true
+# ----------------------------------------------------
+task:
+# ----------------------------------------------------
+  template: design/structure/score.md.j2
+# ----------------------------------------------------
+  parameters:
+    description: null
+    score: wagner-ride-of-the-valkyries
+    title: Richard Wagner's Ride of the Valkyries
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    # --------------------------------------------
+    source:
+      filter: true
+    # --------------------------------------------
+    shell:
+      directory: true
+# ----------------------------------------------------
+  parameters:
+    source:
+      filter:
+        default: AND
+        queries:
+          - title: Synthesize Script
+            scan:
+              domain: [ script ]
+              script: [ synthesize ]
+    # --------------------------------------------
+    shell:
+      directory: |
+        tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"

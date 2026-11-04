@@ -49,10 +49,11 @@ task:
   parameters:
     automata: stages 
     composition: castle-dawn
-    description: |
-      I would like to drill down on how to implement the Instrument Object within the application.
+    description: null
     diagram: executor-centennial-transitions.mmd
     table: executor-centennial-transitions.md
+    score: wagner-ride-of-the-valkyries.yaml
+    title: Richard Wagner's Ride of the Valkyrie
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ---------------------------------------------- TOOLS

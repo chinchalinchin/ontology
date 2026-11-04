@@ -1,0 +1,1545 @@
+score:
+  wagner_ride_of_the_valkyries:
+    signature: "nine-eight"
+    bpm: 135.0
+    tracks:
+      bass:
+        timbre: "piano"
+        default_dynamic: "mf"
+        notes:
+          # ==========================================
+          # INTRO: Measures 1-4 (Storm & B minor gallop ostinato)
+          # ==========================================
+          # Measure 1: Low B minor tonic pedal
+          - note: "B1"
+            beat: "dotted_quarter"
+            dynamic: "p"
+          - note: "B1"
+            beat: "dotted_quarter"
+            dynamic: "p"
+          - note: "B1"
+            beat: "dotted_quarter"
+            dynamic: "mp"
+
+          # Measure 2: Octave bass surge
+          - note: "B1"
+            beat: "dotted_quarter"
+            dynamic: "mp"
+          - note: "F#2"
+            beat: "dotted_quarter"
+            dynamic: "mp"
+          - note: "B2"
+            beat: "dotted_quarter"
+            dynamic: "mf"
+
+          # Measure 3: Dominant F# preparation
+          - note: "F#1"
+            beat: "dotted_quarter"
+            dynamic: "mf"
+          - note: "C#2"
+            beat: "dotted_quarter"
+            dynamic: "mf"
+          - note: "F#1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # Measure 4: Turnaround and dramatic breath before theme
+          - note: "B1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "F#1"
+            beat: "dotted_quarter"
+            dynamic: "mf"
+          - note: "B1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # ==========================================
+          # STATEMENT 1 (Part A): Measures 5-8 (B minor to D major)
+          # ==========================================
+          # Measure 5: B minor tonic foundation
+          - note: "B1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "F#2"
+            beat: "dotted_quarter"
+            dynamic: "mf"
+          - note: "B1"
+            beat: "dotted_quarter"
+            dynamic: "mf"
+
+          # Measure 6: B minor ascending bass
+          - note: "B1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "B2"
+            beat: "dotted_quarter"
+            dynamic: "mf"
+          - note: "F#2"
+            beat: "dotted_quarter"
+            dynamic: "mf"
+
+          # Measure 7: Pivot to V7/III (B - A - C# leading to D)
+          - note: "B1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "A1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "C#2"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # Measure 8: Relative major arrival (D major)
+          - note: "D2"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "A1"
+            beat: "dotted_quarter"
+            dynamic: "mf"
+          - note: "D2"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # ==========================================
+          # STATEMENT 1 (Part B): Measures 9-12 (High apex & B minor return)
+          # ==========================================
+          # Measure 9: Submediant G major surge under B5 peak
+          - note: "D2"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "G1"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "B1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # Measure 10: Subdominant E minor to C# half-diminished
+          - note: "E1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "G1"
+            beat: "dotted_quarter"
+            dynamic: "mf"
+          - note: "C#2"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # Measure 11: Dominant F# major lock
+          - note: "F#1"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "C#2"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "F#1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # Measure 12: Tonic B minor resolution
+          - note: "B1"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "F#1"
+            beat: "dotted_quarter"
+            dynamic: "mf"
+          - note: "B1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # ==========================================
+          # STATEMENT 2: Measures 13-16 (D major expansion & chromatic pivot)
+          # ==========================================
+          # Measure 13: D major foundation
+          - note: "D2"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "A1"
+            beat: "dotted_quarter"
+            dynamic: "mf"
+          - note: "D2"
+            beat: "dotted_quarter"
+            dynamic: "mf"
+
+          # Measure 14: D major rising bass
+          - note: "D2"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "A2"
+            beat: "dotted_quarter"
+            dynamic: "mf"
+          - note: "F#2"
+            beat: "dotted_quarter"
+            dynamic: "mf"
+
+          # Measure 15: G major subdominant surge under D6 peak
+          - note: "G1"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "B1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "D2"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # Measure 16: Chromatic pivot (E - A - F#) back to B minor
+          - note: "E1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "A1"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "F#1"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+
+          # ==========================================
+          # DEVELOPMENT: Measures 17-20 ("Hojotoho!" Valkyrie calls & storm)
+          # ==========================================
+          # Measure 17: G major / E minor storm pedal
+          - note: "G1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "D2"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "G1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # Measure 18: C natural to A minor / F#dim7 descent
+          - note: "C2"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "A1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "E1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # Measure 19: F# dominant pedal build
+          - note: "F#1"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "C#2"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "F#2"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+
+          # Measure 20: Dominant octave lock preparing grand climax
+          - notes: ["F#1", "F#2"]
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - notes: ["C#1", "C#2"]
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - notes: ["F#1", "F#2"]
+            beat: "dotted_quarter"
+            dynamic: "fff"
+
+          # ==========================================
+          # STATEMENT 3: Measures 21-24 (Grand concert-piano climax)
+          # ==========================================
+          # Measure 21: Thunderous B minor octave bass
+          - notes: ["B0", "B1"]
+            beat: "dotted_quarter"
+            dynamic: "fff"
+          - note: "F#1"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "B1"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+
+          # Measure 22: Ascending octave drive
+          - notes: ["B0", "B1"]
+            beat: "dotted_quarter"
+            dynamic: "fff"
+          - note: "F#2"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "B2"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+
+          # Measure 23: VI - iv - V progression (G - E - F#)
+          - notes: ["G1", "G2"]
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - notes: ["E1", "E2"]
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - notes: ["F#1", "F#2"]
+            beat: "dotted_quarter"
+            dynamic: "fff"
+
+          # Measure 24: B major/minor dramatic cadence
+          - notes: ["B1", "B2"]
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "F#1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "B1"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+
+          # ==========================================
+          # CODA: Measures 25-28 (Whirlwind finale & resolution)
+          # ==========================================
+          # Measure 25: B minor pedal return
+          - note: "B1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "B2"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "B1"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # Measure 26: Pre-cadential tension (G - E - F#)
+          - note: "G1"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "E1"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "F#1"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+
+          # Measure 27: Final dominant F# drive
+          - notes: ["F#1", "F#2"]
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "C#2"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - notes: ["F#1", "F#2"]
+            beat: "dotted_quarter"
+            dynamic: "fff"
+
+          # Measure 28: Low contrabass tonic resolution
+          - note: "B1"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - notes: ["B0", "B1"]
+            beat: "dotted_half"
+            dynamic: "fff"
+
+      harmony:
+        timbre: "soft_piano"
+        default_dynamic: "mp"
+        notes:
+          # ==========================================
+          # INTRO: Measures 1-4 (Gallop ostinato buildup)
+          # ==========================================
+          # Measure 1: Muted B minor gallop
+          - notes: ["F#3", "B3"]
+            beat: "dotted_eighth"
+            dynamic: "p"
+          - notes: ["F#3", "B3"]
+            beat: "sixteenth"
+            dynamic: "pp"
+          - notes: ["F#3", "B3"]
+            beat: "eighth"
+            dynamic: "p"
+          - notes: ["F#3", "B3"]
+            beat: "dotted_eighth"
+            dynamic: "p"
+          - notes: ["F#3", "B3"]
+            beat: "sixteenth"
+            dynamic: "pp"
+          - notes: ["F#3", "B3"]
+            beat: "eighth"
+            dynamic: "p"
+          - notes: ["F#3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["F#3", "D4"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["F#3", "D4"]
+            beat: "eighth"
+            dynamic: "mp"
+
+          # Measure 2: B minor crescendo
+          - notes: ["F#3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["F#3", "D4"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["F#3", "D4"]
+            beat: "eighth"
+            dynamic: "mp"
+          - notes: ["F#3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["F#3", "D4"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["F#3", "D4"]
+            beat: "eighth"
+            dynamic: "mp"
+          - notes: ["F#3", "B3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "mf"
+          - notes: ["F#3", "B3", "D4"]
+            beat: "sixteenth"
+            dynamic: "mp"
+          - notes: ["F#3", "B3", "D4"]
+            beat: "eighth"
+            dynamic: "mf"
+
+          # Measure 3: Dominant F#7 gallop
+          - notes: ["F#3", "A#3", "E4"]
+            beat: "dotted_eighth"
+            dynamic: "mf"
+          - notes: ["F#3", "A#3", "E4"]
+            beat: "sixteenth"
+            dynamic: "mp"
+          - notes: ["F#3", "A#3", "E4"]
+            beat: "eighth"
+            dynamic: "mf"
+          - notes: ["F#3", "A#3", "E4"]
+            beat: "dotted_eighth"
+            dynamic: "mf"
+          - notes: ["F#3", "A#3", "E4"]
+            beat: "sixteenth"
+            dynamic: "mp"
+          - notes: ["F#3", "A#3", "E4"]
+            beat: "eighth"
+            dynamic: "mf"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "dotted_eighth"
+            dynamic: "mf"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "sixteenth"
+            dynamic: "mp"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "eighth"
+            dynamic: "mf"
+
+          # Measure 4: Sustained chords clearing space for pickup
+          - notes: ["F#3", "B3", "D4"]
+            beat: "dotted_quarter"
+            dynamic: "mf"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "dotted_quarter"
+            dynamic: "mp"
+          - notes: ["F#3", "B3"]
+            beat: "dotted_quarter"
+            dynamic: "p"
+
+          # ==========================================
+          # STATEMENT 1 (Part A): Measures 5-8 (B minor to D major)
+          # ==========================================
+          # Measure 5: Downbeat support + Beats 2-3 inner gallop
+          - notes: ["D3", "F#3"]
+            beat: "dotted_quarter"
+            dynamic: "mp"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "eighth"
+            dynamic: "mp"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "eighth"
+            dynamic: "mp"
+
+          # Measure 6: B minor continuation
+          - notes: ["F#3", "B3"]
+            beat: "dotted_quarter"
+            dynamic: "mp"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "eighth"
+            dynamic: "mp"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "eighth"
+            dynamic: "mp"
+
+          # Measure 7: B minor into A7 dominant of D major
+          - notes: ["F#3", "B3"]
+            beat: "dotted_quarter"
+            dynamic: "mp"
+          - notes: ["E3", "G3", "C#4"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["E3", "G3", "C#4"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["E3", "G3", "C#4"]
+            beat: "eighth"
+            dynamic: "mp"
+          - notes: ["E3", "G3", "A3"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["E3", "G3", "A3"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["E3", "G3", "A3"]
+            beat: "eighth"
+            dynamic: "mp"
+
+          # Measure 8: D major arrival with inner gallop and arpeggio fill
+          - notes: ["F#3", "A3"]
+            beat: "dotted_quarter"
+            dynamic: "mp"
+          - notes: ["F#3", "A3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["F#3", "A3", "D4"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["F#3", "A3", "D4"]
+            beat: "eighth"
+            dynamic: "mp"
+          - note: "F#3"
+            beat: "eighth"
+            dynamic: "mp"
+          - note: "A3"
+            beat: "eighth"
+            dynamic: "mp"
+          - note: "D4"
+            beat: "eighth"
+            dynamic: "mf"
+
+          # ==========================================
+          # STATEMENT 1 (Part B): Measures 9-12 (G major -> Em -> F# -> Bm)
+          # ==========================================
+          # Measure 9: G major harmony under B5 apex
+          - notes: ["F#3", "A3"]
+            beat: "dotted_quarter"
+            dynamic: "mp"
+          - notes: ["G3", "B3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "mf"
+          - notes: ["G3", "B3", "D4"]
+            beat: "sixteenth"
+            dynamic: "mp"
+          - notes: ["G3", "B3", "D4"]
+            beat: "eighth"
+            dynamic: "mf"
+          - notes: ["G3", "B3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["G3", "B3", "D4"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["G3", "B3", "D4"]
+            beat: "eighth"
+            dynamic: "mp"
+
+          # Measure 10: E minor to C# half-diminished
+          - notes: ["E3", "G3"]
+            beat: "dotted_quarter"
+            dynamic: "mp"
+          - notes: ["E3", "G3", "B3"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["E3", "G3", "B3"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["E3", "G3", "B3"]
+            beat: "eighth"
+            dynamic: "mp"
+          - notes: ["E3", "G3", "A#3"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["E3", "G3", "A#3"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["E3", "G3", "A#3"]
+            beat: "eighth"
+            dynamic: "mp"
+
+          # Measure 11: Dominant F# major
+          - notes: ["F#3", "C#4"]
+            beat: "dotted_quarter"
+            dynamic: "mp"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "eighth"
+            dynamic: "mp"
+          - notes: ["F#3", "A#3", "E4"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["F#3", "A#3", "E4"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["F#3", "A#3", "E4"]
+            beat: "eighth"
+            dynamic: "mp"
+
+          # Measure 12: B minor resolution with arpeggio turnaround to D major
+          - notes: ["D3", "F#3"]
+            beat: "dotted_quarter"
+            dynamic: "mp"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "eighth"
+            dynamic: "mp"
+          - note: "D3"
+            beat: "eighth"
+            dynamic: "mp"
+          - note: "F#3"
+            beat: "eighth"
+            dynamic: "mp"
+          - note: "A3"
+            beat: "eighth"
+            dynamic: "mf"
+
+          # ==========================================
+          # STATEMENT 2: Measures 13-16 (D major expansion)
+          # ==========================================
+          # Measure 13: D major
+          - notes: ["F#3", "A3"]
+            beat: "dotted_quarter"
+            dynamic: "mp"
+          - notes: ["F#3", "A3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["F#3", "A3", "D4"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["F#3", "A3", "D4"]
+            beat: "eighth"
+            dynamic: "mp"
+          - notes: ["F#3", "A3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["F#3", "A3", "D4"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["F#3", "A3", "D4"]
+            beat: "eighth"
+            dynamic: "mp"
+
+          # Measure 14: D major continuation
+          - notes: ["F#3", "D4"]
+            beat: "dotted_quarter"
+            dynamic: "mp"
+          - notes: ["F#3", "A3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["F#3", "A3", "D4"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["F#3", "A3", "D4"]
+            beat: "eighth"
+            dynamic: "mp"
+          - notes: ["F#3", "A3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["F#3", "A3", "D4"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["F#3", "A3", "D4"]
+            beat: "eighth"
+            dynamic: "mp"
+
+          # Measure 15: G major support for high D6
+          - notes: ["G3", "B3"]
+            beat: "dotted_quarter"
+            dynamic: "mf"
+          - notes: ["G3", "B3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "mf"
+          - notes: ["G3", "B3", "D4"]
+            beat: "sixteenth"
+            dynamic: "mp"
+          - notes: ["G3", "B3", "D4"]
+            beat: "eighth"
+            dynamic: "mf"
+          - notes: ["G3", "B3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "mp"
+          - notes: ["G3", "B3", "D4"]
+            beat: "sixteenth"
+            dynamic: "p"
+          - notes: ["G3", "B3", "D4"]
+            beat: "eighth"
+            dynamic: "mp"
+
+          # Measure 16: Em7 -> A7 -> F#7 pivot
+          - notes: ["G3", "B3"]
+            beat: "dotted_quarter"
+            dynamic: "mf"
+          - notes: ["G3", "A3", "C#4"]
+            beat: "dotted_eighth"
+            dynamic: "mf"
+          - notes: ["G3", "A3", "C#4"]
+            beat: "sixteenth"
+            dynamic: "mp"
+          - notes: ["G3", "A3", "C#4"]
+            beat: "eighth"
+            dynamic: "mf"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "dotted_eighth"
+            dynamic: "mf"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "sixteenth"
+            dynamic: "mp"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "eighth"
+            dynamic: "mf"
+
+          # ==========================================
+          # DEVELOPMENT: Measures 17-20 ("Hojotoho!" storm accompaniment)
+          # ==========================================
+          # Measure 17: Driving G major gallop under Valkyrie call
+          - notes: ["G3", "B3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "mf"
+          - notes: ["G3", "B3", "D4"]
+            beat: "sixteenth"
+            dynamic: "mp"
+          - notes: ["G3", "B3", "D4"]
+            beat: "eighth"
+            dynamic: "mf"
+          - notes: ["G3", "B3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "mf"
+          - notes: ["G3", "B3", "D4"]
+            beat: "sixteenth"
+            dynamic: "mp"
+          - notes: ["G3", "B3", "D4"]
+            beat: "eighth"
+            dynamic: "mf"
+          - notes: ["G3", "B3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "mf"
+          - notes: ["G3", "B3", "D4"]
+            beat: "sixteenth"
+            dynamic: "mp"
+          - notes: ["G3", "B3", "D4"]
+            beat: "eighth"
+            dynamic: "mf"
+
+          # Measure 18: C major to A minor / E minor storm chords
+          - notes: ["G3", "C4", "E4"]
+            beat: "dotted_eighth"
+            dynamic: "mf"
+          - notes: ["G3", "C4", "E4"]
+            beat: "sixteenth"
+            dynamic: "mp"
+          - notes: ["G3", "C4", "E4"]
+            beat: "eighth"
+            dynamic: "mf"
+          - notes: ["A3", "C4", "E4"]
+            beat: "dotted_eighth"
+            dynamic: "mf"
+          - notes: ["A3", "C4", "E4"]
+            beat: "sixteenth"
+            dynamic: "mp"
+          - notes: ["A3", "C4", "E4"]
+            beat: "eighth"
+            dynamic: "mf"
+          - notes: ["G3", "B3", "E4"]
+            beat: "dotted_eighth"
+            dynamic: "mf"
+          - notes: ["G3", "B3", "E4"]
+            beat: "sixteenth"
+            dynamic: "mp"
+          - notes: ["G3", "B3", "E4"]
+            beat: "eighth"
+            dynamic: "mf"
+
+          # Measure 19: F#7 dominant tension
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "dotted_eighth"
+            dynamic: "mf"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "sixteenth"
+            dynamic: "mp"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "eighth"
+            dynamic: "mf"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "dotted_eighth"
+            dynamic: "mf"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "sixteenth"
+            dynamic: "mp"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "eighth"
+            dynamic: "mf"
+          - notes: ["F#3", "A#3", "E4"]
+            beat: "dotted_eighth"
+            dynamic: "f"
+          - notes: ["F#3", "A#3", "E4"]
+            beat: "sixteenth"
+            dynamic: "mf"
+          - notes: ["F#3", "A#3", "E4"]
+            beat: "eighth"
+            dynamic: "f"
+
+          # Measure 20: Sustained dominant chords setting up tutti climax
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - notes: ["F#3", "A#3", "E4"]
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - notes: ["F#3", "B3", "D4"]
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # ==========================================
+          # STATEMENT 3: Measures 21-24 (Grand climax accompaniment)
+          # ==========================================
+          # Measure 21: B minor tutti support
+          - notes: ["D3", "F#3", "B3"]
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "dotted_eighth"
+            dynamic: "f"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "sixteenth"
+            dynamic: "mf"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "eighth"
+            dynamic: "f"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "dotted_eighth"
+            dynamic: "f"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "sixteenth"
+            dynamic: "mf"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "eighth"
+            dynamic: "f"
+
+          # Measure 22: B minor continuation
+          - notes: ["D3", "F#3", "B3"]
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - notes: ["F#3", "B3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "f"
+          - notes: ["F#3", "B3", "D4"]
+            beat: "sixteenth"
+            dynamic: "mf"
+          - notes: ["F#3", "B3", "D4"]
+            beat: "eighth"
+            dynamic: "f"
+          - notes: ["F#3", "B3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "f"
+          - notes: ["F#3", "B3", "D4"]
+            beat: "sixteenth"
+            dynamic: "mf"
+          - notes: ["F#3", "B3", "D4"]
+            beat: "eighth"
+            dynamic: "f"
+
+          # Measure 23: G major - E minor - F#7
+          - notes: ["G3", "B3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "f"
+          - notes: ["G3", "B3", "D4"]
+            beat: "sixteenth"
+            dynamic: "mf"
+          - notes: ["G3", "B3", "D4"]
+            beat: "eighth"
+            dynamic: "f"
+          - notes: ["G3", "B3", "E4"]
+            beat: "dotted_eighth"
+            dynamic: "f"
+          - notes: ["G3", "B3", "E4"]
+            beat: "sixteenth"
+            dynamic: "mf"
+          - notes: ["G3", "B3", "E4"]
+            beat: "eighth"
+            dynamic: "f"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "dotted_eighth"
+            dynamic: "f"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "sixteenth"
+            dynamic: "mf"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "eighth"
+            dynamic: "f"
+
+          # Measure 24: B major / B minor cadence chords
+          - notes: ["D#3", "F#3", "B3"]
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - notes: ["E3", "F#3", "A#3"]
+            beat: "dotted_quarter"
+            dynamic: "mf"
+          - notes: ["D3", "F#3", "B3"]
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # ==========================================
+          # CODA: Measures 25-28
+          # ==========================================
+          # Measure 25: B minor gallop return
+          - notes: ["F#3", "B3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "mf"
+          - notes: ["F#3", "B3", "D4"]
+            beat: "sixteenth"
+            dynamic: "mp"
+          - notes: ["F#3", "B3", "D4"]
+            beat: "eighth"
+            dynamic: "mf"
+          - notes: ["F#3", "B3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "mf"
+          - notes: ["F#3", "B3", "D4"]
+            beat: "sixteenth"
+            dynamic: "mp"
+          - notes: ["F#3", "B3", "D4"]
+            beat: "eighth"
+            dynamic: "mf"
+          - notes: ["F#3", "B3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "f"
+          - notes: ["F#3", "B3", "D4"]
+            beat: "sixteenth"
+            dynamic: "mf"
+          - notes: ["F#3", "B3", "D4"]
+            beat: "eighth"
+            dynamic: "f"
+
+          # Measure 26: G - Em - F#
+          - notes: ["G3", "B3", "D4"]
+            beat: "dotted_eighth"
+            dynamic: "f"
+          - notes: ["G3", "B3", "D4"]
+            beat: "sixteenth"
+            dynamic: "mf"
+          - notes: ["G3", "B3", "D4"]
+            beat: "eighth"
+            dynamic: "f"
+          - notes: ["G3", "B3", "E4"]
+            beat: "dotted_eighth"
+            dynamic: "f"
+          - notes: ["G3", "B3", "E4"]
+            beat: "sixteenth"
+            dynamic: "mf"
+          - notes: ["G3", "B3", "E4"]
+            beat: "eighth"
+            dynamic: "f"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "dotted_eighth"
+            dynamic: "f"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "sixteenth"
+            dynamic: "mf"
+          - notes: ["F#3", "A#3", "C#4"]
+            beat: "eighth"
+            dynamic: "f"
+
+          # Measure 27: Final F#7 gallop
+          - notes: ["F#3", "A#3", "C#4", "E4"]
+            beat: "dotted_eighth"
+            dynamic: "f"
+          - notes: ["F#3", "A#3", "C#4", "E4"]
+            beat: "sixteenth"
+            dynamic: "mf"
+          - notes: ["F#3", "A#3", "C#4", "E4"]
+            beat: "eighth"
+            dynamic: "f"
+          - notes: ["F#3", "A#3", "C#4", "E4"]
+            beat: "dotted_eighth"
+            dynamic: "f"
+          - notes: ["F#3", "A#3", "C#4", "E4"]
+            beat: "sixteenth"
+            dynamic: "mf"
+          - notes: ["F#3", "A#3", "C#4", "E4"]
+            beat: "eighth"
+            dynamic: "f"
+          - notes: ["F#3", "A#3", "C#4", "E4"]
+            beat: "dotted_eighth"
+            dynamic: "ff"
+          - notes: ["F#3", "A#3", "C#4", "E4"]
+            beat: "sixteenth"
+            dynamic: "f"
+          - notes: ["F#3", "A#3", "C#4", "E4"]
+            beat: "eighth"
+            dynamic: "ff"
+
+          # Measure 28: Final B minor tonic chord
+          - notes: ["B2", "F#3", "B3"]
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - notes: ["B2", "F#3", "B3", "D4"]
+            beat: "dotted_half"
+            dynamic: "fff"
+
+      melody:
+        timbre: "piano"
+        default_dynamic: "f"
+        notes:
+          # ==========================================
+          # INTRO: Measures 1-4 (Swirling tremolos, whirlwind runs & pickup)
+          # ==========================================
+          # Measure 1: Shimmering upper-register B minor figure
+          - note: "F#4"
+            beat: "eighth"
+            dynamic: "mp"
+          - note: "B4"
+            beat: "eighth"
+            dynamic: "mp"
+          - note: "D5"
+            beat: "eighth"
+            dynamic: "mp"
+          - note: "F#4"
+            beat: "eighth"
+            dynamic: "mp"
+          - note: "B4"
+            beat: "eighth"
+            dynamic: "mf"
+          - note: "D5"
+            beat: "eighth"
+            dynamic: "mf"
+          - note: "G4"
+            beat: "eighth"
+            dynamic: "mf"
+          - note: "F#4"
+            beat: "eighth"
+            dynamic: "mf"
+          - note: "B4"
+            beat: "eighth"
+            dynamic: "mf"
+
+          # Measure 2: Rising arpeggio and 16th-note diatonic whirlwind run
+          - note: "B4"
+            beat: "eighth"
+            dynamic: "mf"
+          - note: "D5"
+            beat: "eighth"
+            dynamic: "mf"
+          - note: "F#5"
+            beat: "eighth"
+            dynamic: "f"
+          - note: "B4"
+            beat: "eighth"
+            dynamic: "mf"
+          - note: "D5"
+            beat: "eighth"
+            dynamic: "f"
+          - note: "F#5"
+            beat: "eighth"
+            dynamic: "f"
+          - note: "G5"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "F#5"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "E5"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "D5"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "C#5"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "B4"
+            beat: "sixteenth"
+            dynamic: "f"
+
+          # Measure 3: Dominant F#7 swirl
+          - note: "A#4"
+            beat: "eighth"
+            dynamic: "f"
+          - note: "C#5"
+            beat: "eighth"
+            dynamic: "f"
+          - note: "E5"
+            beat: "eighth"
+            dynamic: "f"
+          - note: "F#5"
+            beat: "eighth"
+            dynamic: "ff"
+          - note: "E5"
+            beat: "eighth"
+            dynamic: "f"
+          - note: "C#5"
+            beat: "eighth"
+            dynamic: "f"
+          - note: "E5"
+            beat: "eighth"
+            dynamic: "f"
+          - note: "D5"
+            beat: "eighth"
+            dynamic: "f"
+          - note: "C#5"
+            beat: "eighth"
+            dynamic: "f"
+
+          # Measure 4: Dramatic breath and horn/trombone pickup cell
+          - note: "B4"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - note: "REST"
+            beat: "dotted_quarter"
+          - note: "B3"
+            beat: "dotted_eighth"
+            dynamic: "f"
+          - note: "F#4"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "B4"
+            beat: "eighth"
+            dynamic: "ff"
+
+          # ==========================================
+          # STATEMENT 1 (Part A): Measures 5-8 (B minor to D major)
+          # ==========================================
+          # Measure 5: Theme Bar 1 (B4 - F#4 - B4 | D5 | B4)
+          - note: "B4"
+            beat: "dotted_eighth"
+            dynamic: "ff"
+          - note: "F#4"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "B4"
+            beat: "eighth"
+            dynamic: "ff"
+          - note: "D5"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "B4"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # Measure 6: Theme Bar 2 (D5 - B4 - D5 | F#5 | D5)
+          - note: "D5"
+            beat: "dotted_eighth"
+            dynamic: "ff"
+          - note: "B4"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "D5"
+            beat: "eighth"
+            dynamic: "ff"
+          - note: "F#5"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "D5"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # Measure 7: Theme Bar 3 (F#5 - D5 - F#5 | A5 | A4 octave drop)
+          - note: "F#5"
+            beat: "dotted_eighth"
+            dynamic: "ff"
+          - note: "D5"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "F#5"
+            beat: "eighth"
+            dynamic: "ff"
+          - note: "A5"
+            beat: "dotted_quarter"
+            dynamic: "fff"
+          - note: "A4"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # Measure 8: Theme Bar 4 (D5 - A4 - D5 | F#5 sustained arrival in D major)
+          - note: "D5"
+            beat: "dotted_eighth"
+            dynamic: "ff"
+          - note: "A4"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "D5"
+            beat: "eighth"
+            dynamic: "ff"
+          - note: "F#5"
+            beat: "dotted_half"
+            dynamic: "ff"
+
+          # ==========================================
+          # STATEMENT 1 (Part B): Measures 9-12 (B5 apex & B minor return)
+          # ==========================================
+          # Measure 9: Theme Bar 5 (F#5 - D5 - F#5 | B5 apex | G4 tenth drop)
+          - note: "F#5"
+            beat: "dotted_eighth"
+            dynamic: "ff"
+          - note: "D5"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "F#5"
+            beat: "eighth"
+            dynamic: "ff"
+          - note: "B5"
+            beat: "dotted_quarter"
+            dynamic: "fff"
+          - note: "G4"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # Measure 10: Theme Bar 6 (B4 - G4 - B4 | E5 | F#4)
+          - note: "B4"
+            beat: "dotted_eighth"
+            dynamic: "ff"
+          - note: "G4"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "B4"
+            beat: "eighth"
+            dynamic: "ff"
+          - note: "E5"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "F#4"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # Measure 11: Theme Bar 7 (A#4 - F#4 - A#4 | C#5 | F#4 dominant F# major)
+          - note: "A#4"
+            beat: "dotted_eighth"
+            dynamic: "ff"
+          - note: "F#4"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "A#4"
+            beat: "eighth"
+            dynamic: "ff"
+          - note: "C#5"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "F#4"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # Measure 12: Theme Bar 8 (B4 - F#4 - B4 | B4 tonic closure)
+          - note: "B4"
+            beat: "dotted_eighth"
+            dynamic: "ff"
+          - note: "F#4"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "B4"
+            beat: "eighth"
+            dynamic: "ff"
+          - note: "B4"
+            beat: "dotted_half"
+            dynamic: "ff"
+
+          # ==========================================
+          # STATEMENT 2: Measures 13-16 (Soaring D major thematic expansion)
+          # ==========================================
+          # Measure 13: D major statement (D5 - A4 - D5 | F#5 | D5)
+          - note: "D5"
+            beat: "dotted_eighth"
+            dynamic: "ff"
+          - note: "A4"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "D5"
+            beat: "eighth"
+            dynamic: "ff"
+          - note: "F#5"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "D5"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # Measure 14: Rising D major triad (F#5 - D5 - F#5 | A5 | F#5)
+          - note: "F#5"
+            beat: "dotted_eighth"
+            dynamic: "ff"
+          - note: "D5"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "F#5"
+            beat: "eighth"
+            dynamic: "ff"
+          - note: "A5"
+            beat: "dotted_quarter"
+            dynamic: "fff"
+          - note: "F#5"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # Measure 15: High D6 climax and octave drop (A5 - F#5 - A5 | D6 | D5)
+          - note: "A5"
+            beat: "dotted_eighth"
+            dynamic: "ff"
+          - note: "F#5"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "A5"
+            beat: "eighth"
+            dynamic: "ff"
+          - note: "D6"
+            beat: "dotted_quarter"
+            dynamic: "fff"
+          - note: "D5"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # Measure 16: Chromatic pivot call (G5 - E5 - G5 | C#6 | A#5)
+          - note: "G5"
+            beat: "dotted_eighth"
+            dynamic: "ff"
+          - note: "E5"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "G5"
+            beat: "eighth"
+            dynamic: "ff"
+          - note: "C#6"
+            beat: "dotted_quarter"
+            dynamic: "fff"
+          - note: "A#5"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+
+          # ==========================================
+          # DEVELOPMENT: Measures 17-20 ("Hojotoho!" Valkyrie battle cries)
+          # ==========================================
+          # Measure 17: Valkyrie Call 1 ("Ho-jo-to-ho!" with 16th-note turn)
+          - note: "F#5"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "G5"
+            beat: "dotted_quarter"
+            dynamic: "fff"
+          - note: "F#5"
+            beat: "sixteenth"
+            dynamic: "ff"
+          - note: "G5"
+            beat: "sixteenth"
+            dynamic: "ff"
+          - note: "F#5"
+            beat: "sixteenth"
+            dynamic: "ff"
+          - note: "E5"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "D5"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "B4"
+            beat: "sixteenth"
+            dynamic: "f"
+
+          # Measure 18: Valkyrie Call 2 (Higher answer to C6)
+          - note: "A5"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "B5"
+            beat: "dotted_quarter"
+            dynamic: "fff"
+          - note: "C6"
+            beat: "dotted_eighth"
+            dynamic: "fff"
+          - note: "B5"
+            beat: "sixteenth"
+            dynamic: "ff"
+          - note: "A5"
+            beat: "eighth"
+            dynamic: "ff"
+
+          # Measure 19: Descending storm calls over F# dominant pedal
+          - note: "G5"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "F#5"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "E5"
+            beat: "dotted_quarter"
+            dynamic: "f"
+
+          # Measure 20: Dominant lock and octave-doubled pickup into climax
+          - note: "D#5"
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - note: "C#5"
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - notes: ["B3", "B4"]
+            beat: "dotted_eighth"
+            dynamic: "ff"
+          - notes: ["F#4", "F#5"]
+            beat: "sixteenth"
+            dynamic: "ff"
+          - notes: ["B4", "B5"]
+            beat: "eighth"
+            dynamic: "fff"
+
+          # ==========================================
+          # STATEMENT 3: Measures 21-24 (Grand concert-piano octave climax)
+          # ==========================================
+          # Measure 21: Theme Bar 1 in full piano octaves
+          - notes: ["B4", "B5"]
+            beat: "dotted_eighth"
+            dynamic: "fff"
+          - notes: ["F#4", "F#5"]
+            beat: "sixteenth"
+            dynamic: "ff"
+          - notes: ["B4", "B5"]
+            beat: "eighth"
+            dynamic: "fff"
+          - notes: ["D5", "D6"]
+            beat: "dotted_quarter"
+            dynamic: "fff"
+          - notes: ["B4", "B5"]
+            beat: "dotted_quarter"
+            dynamic: "ff"
+
+          # Measure 22: Theme Bar 2 ascending to F#6 octave peak
+          - notes: ["D5", "D6"]
+            beat: "dotted_eighth"
+            dynamic: "fff"
+          - notes: ["B4", "B5"]
+            beat: "sixteenth"
+            dynamic: "ff"
+          - notes: ["D5", "D6"]
+            beat: "eighth"
+            dynamic: "fff"
+          - notes: ["F#5", "F#6"]
+            beat: "dotted_quarter"
+            dynamic: "fff"
+          - notes: ["D5", "D6"]
+            beat: "dotted_quarter"
+            dynamic: "ff"
+
+          # Measure 23: Heroic descending dyads (G5 - F#5 - E5)
+          - notes: ["B4", "G5"]
+            beat: "dotted_quarter"
+            dynamic: "fff"
+          - notes: ["B4", "F#5"]
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - notes: ["A#4", "E5"]
+            beat: "dotted_quarter"
+            dynamic: "ff"
+
+          # Measure 24: B major / B minor dramatic cadence
+          - notes: ["F#4", "D#5"]
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - notes: ["F#4", "C#5"]
+            beat: "dotted_quarter"
+            dynamic: "f"
+          - notes: ["D4", "B4"]
+            beat: "dotted_quarter"
+            dynamic: "ff"
+
+          # ==========================================
+          # CODA: Measures 25-28 (Whirlwind arpeggios & final cadence)
+          # ==========================================
+          # Measure 25: High B minor whirlwind arpeggio return
+          - note: "B4"
+            beat: "eighth"
+            dynamic: "f"
+          - note: "D5"
+            beat: "eighth"
+            dynamic: "f"
+          - note: "F#5"
+            beat: "eighth"
+            dynamic: "f"
+          - note: "B5"
+            beat: "eighth"
+            dynamic: "ff"
+          - note: "F#5"
+            beat: "eighth"
+            dynamic: "f"
+          - note: "D5"
+            beat: "eighth"
+            dynamic: "f"
+          - note: "B4"
+            beat: "eighth"
+            dynamic: "f"
+          - note: "D5"
+            beat: "eighth"
+            dynamic: "ff"
+          - note: "F#5"
+            beat: "eighth"
+            dynamic: "ff"
+
+          # Measure 26: Pre-cadential octave calls (G5 - E5 - F#5)
+          - notes: ["G4", "G5"]
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - notes: ["E4", "E5"]
+            beat: "dotted_quarter"
+            dynamic: "ff"
+          - notes: ["F#4", "F#5"]
+            beat: "dotted_quarter"
+            dynamic: "fff"
+
+          # Measure 27: Final F#7 dominant fanfare
+          - note: "F#4"
+            beat: "dotted_eighth"
+            dynamic: "ff"
+          - note: "A#4"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "C#5"
+            beat: "eighth"
+            dynamic: "ff"
+          - note: "E5"
+            beat: "dotted_eighth"
+            dynamic: "ff"
+          - note: "C#5"
+            beat: "sixteenth"
+            dynamic: "f"
+          - note: "A#4"
+            beat: "eighth"
+            dynamic: "ff"
+          - notes: ["F#4", "F#5"]
+            beat: "dotted_quarter"
+            dynamic: "fff"
+
+          # Measure 28: Final soaring B minor tonic resolution
+          - notes: ["B4", "B5"]
+            beat: "dotted_quarter"
+            dynamic: "fff"
+          - notes: ["B4", "D5", "F#5", "B5"]
+            beat: "dotted_half"
+            dynamic: "fff"

@@ -1,11 +1,11 @@
 """
 @domain.model
 @app.config
-@modality.action
+@modality.auditory
 
-# Ontology: Source - app.models.config.actions
+# Ontology: Source - app.models.config.sounds
 
-Action Configuration Models.
+Sound Configuration models.
 """
 # Standard Libraries
 from typing import Dict
@@ -14,7 +14,13 @@ from dataclasses import dataclass
 # Application Libraries
 from app.models.config import Configuration
 
+# ---------------------------------------------------------
+@dataclass(slots=True, frozen=True)
 class Sound:
+    pass
+
+@dataclass(slots=True, frozen=True)
+class Score:
     pass
 
 # ---------------------------------------------------------
