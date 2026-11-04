@@ -84,3 +84,33 @@ queries:
         app: [ mechanic ]
         workflows: [ player ]
     # ------------------------------------
+  # -------------------------------------------------------
+  # ------------------------- QUERY: NAVIGATION SOURCE CODE
+  # -------------------------------------------------------
+  navigation:
+    # ------------------------------------
+    - title: Asset Abstract
+      scan: 
+        domain: [ abstract ]
+        app: [ asset ]
+    # ------------------------------------
+    - title: Mechanic Abstract
+      scan:
+        domain: [ abstract ]
+        app: [ mechanic ]
+    # ------------------------------------
+    - title: Sheet Implementations
+      scan:
+        domain: [ concrete ]
+        app: [ asset ]
+        category: [ sheets ]
+    # ------------------------------------
+    - title: Sheet Models
+      scan:
+        domain: [ model ]
+        category: [ sheets ]
+    # ------------------------------------
+    - title: Navigation Workflow
+      scan:
+        workflows: [ navigation ]
+    # ------------------------------------

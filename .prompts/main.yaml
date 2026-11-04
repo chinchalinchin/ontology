@@ -7,7 +7,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  # template: index.md.j2
+  template: index.md.j2
   # template: draft.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
@@ -50,7 +50,7 @@ task:
     automata: stages 
     composition: castle-dawn
     description: |
-      <description>
+      I would like to drill down on how to implement the Instrument Object within the application.
     diagram: executor-centennial-transitions.mmd
     table: executor-centennial-transitions.md
 # ----------------------------------------------------
@@ -65,9 +65,10 @@ tools:
     # ------------------------ TOOL VIEWS: MANAGER
     # --------------------------------------------
     manager:
-      board: false
-      specs: false
+      board: true
       docs: true
+      templates: false
+      specs: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
     # --------------------------------------------
@@ -83,13 +84,13 @@ tools:
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: true
+      directory: false
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
-      configuration: true
+      configuration: false
       pipeline: false
       session: false
 # ----------------------------------------------------
@@ -99,8 +100,8 @@ tools:
     # --------------------------------------------
     manager:
       board:
-        phase: '07-04'
-        action: refactor
+        phase: n-1
+        action: implement
       docs:
         exclude:
           # - 00-overview
@@ -110,12 +111,14 @@ tools:
           - 04-intentions
           - 05-mechanics
           - 06-widgets
-          - 07-sounds
+          # - 07-sounds
           - 08-plots
           - 09-ecology
           - 10-chemistry
           - 11-emergence
           # - 12-architecture
+      templates: 
+        - template-backlog
       specs:
         - 00-dialogue
         - 01-interaction
@@ -133,39 +136,18 @@ tools:
       filter:
         default: AND
         queries:
-          # - title: Asset Abstract
-          #   scan: 
-          #     domain: [ abstract ]
-          #     app: [ asset ]
-          # - title: Mechanic Abstract
-          #   scan:
-          #     domain: [ abstract ]
-          #     app: [ mechanic ]
-          # - title: Sheet Implementations
-          #   scan:
-          #     domain: [ concrete ]
-          #     app: [ asset ]
-          #     category: [ sheets ]
-          # - title: Sheet Models
-          #   scan:
-          #     domain: [ model ]
-          #     category: [ sheets ]
-          # - title: Navigation Workflow
-          #   scan:
-          #     workflows: [ navigation ]
-
-          - title: Cython Subsystems
+          - title: Asset Abstract
+            scan:
+              domain: [ abstract ]
+              app: [ asset ]
+          - title: Core Models
+            scan:
+              domain: [ model ]
+              app: [ core ]
+          - title: Core System Components
             scan:
               domain: [ system ]
-              app: [ library ]
-              workflows: [ rendering ]
-          - title: Application Orchestration
-            scan: 
-              domain: [ system ]
-              app: [ orchestration ]
-          - title: Test Fixtures
-            scan:
-              test: [ fixtures ]
+              app: [ core, component ]
       data:
         properties: [ ]
         state: [ ]
@@ -187,6 +169,3 @@ tools:
         command: pytest -m
         marker: workflow_navigation
         # scope: '**/test_{actuator,cartographer}.py'
-      session:
-        description: |
-          description

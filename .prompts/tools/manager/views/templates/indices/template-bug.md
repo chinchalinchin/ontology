@@ -1,4 +1,4 @@
-### Template: Bug Report
+#### Template: Bug Report
 
 For ancillary or tangential bugs detected, use the following template to open new reports,
 

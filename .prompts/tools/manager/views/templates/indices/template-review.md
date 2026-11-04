@@ -1,5 +1,4 @@
-
-### Template: Code Review
+#### Template: Code Review
 
 For reviews and critiques, use the following template,
 

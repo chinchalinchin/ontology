@@ -13,6 +13,10 @@ The **Manager Tool** provides **Views** into project planning, architectural des
 {% include 'tools/manager/views/docs.md.j2' %}
 {% endif %}
 
+{% if tools.views.manager.templates %}
+{% include 'tools/manager/views/templates/index.md.j2' %}
+{% endif %}
+
 {% if tools.views.manager.specs %}
 {% include 'tools/manager/views/specs.md.j2' %}
 {% endif %}

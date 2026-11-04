@@ -1,0 +1,109 @@
+# ----------------------------------------------------
+anchors:
+  title: &title Ontology - Instruments
+  description: &description |
+    TODO
+# ----------------------------------------------------
+context: true
+# ----------------------------------------------------
+task:
+# ----------------------------------------------------
+  template: index.md.j2
+# ----------------------------------------------------
+  parameters:
+    title: *title
+    description: *description
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    # --------------------------------------------
+    manager:
+      board: true
+      docs: true
+      templates: true
+      specs: false
+    # --------------------------------------------
+    metrics:
+      pstats: false
+    # --------------------------------------------
+    source:
+      data: false
+      filter: true
+    # --------------------------------------------
+    shell:
+      directory: false
+      commands: false
+    # --------------------------------------------
+    tests:  
+      configuration: false
+      pipeline: false
+      session: false
+# ----------------------------------------------------
+  parameters:
+    # --------------------------------------------
+    manager:
+      board:
+        phase: n-1
+        action: implement
+      docs:
+        exclude:
+          # - 00-overview
+          # - 01-assets
+          - 02-sprites
+          - 03-compositions
+          - 04-intentions
+          - 05-mechanics
+          # - 06-widgets
+          # - 07-sounds
+          - 08-plots
+          - 09-ecology
+          - 10-chemistry
+          - 11-emergence
+          # - 12-architecture
+      templates: 
+        - template-backlog
+      specs: []
+    metrics:
+      pstats: 
+        run: |
+          python -m cProfile -o $ROOT/engine-run.pstats src/main.py start world-01
+        dot: |
+          gprof2dot -f pstats --node-thres=1.0 --edge-thres=0.5 $ROOT/engine-run.pstats
+    # --------------------------------------------
+    source:
+      filter:
+        default: AND
+        queries:
+          - title: Asset Abstract
+            scan:
+              domain: [ abstract ]
+              app: [ asset ]
+          - title: Core Models
+            scan:
+              domain: [ model ]
+              app: [ core ]
+          - title: Core System Components
+            scan:
+              domain: [ system ]
+              app: [ core, component ]
+          - title: Synthesize Script
+            scan:
+              script: [ synthesize ]
+      data:
+        properties: [ ]
+        state: [ ]
+        configurations: [ ]
+        templates: [ ]
+    # --------------------------------------------
+    shell:
+      directory: |
+        tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
+      commands: 
+        - python /Users/gmoore/Home/projects/ontology/src/main.py start
+    # --------------------------------------------
+    tests:
+      pipeline:
+        command: pytest -m
+        marker: workflow_instrumentation
+        # scope: '**/test_{actuator,cartographer}.py'
