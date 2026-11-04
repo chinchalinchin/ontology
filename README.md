@@ -8,8 +8,8 @@
 
 ### Install
 
-- The application targets Python 3.14, although it should run in any Python 3.7+ environment.
-- Cython needs the actual C development headers to compile against,
+* The application targets Python 3.14, although it should run in any Python 3.7+ environment.
+* Cython needs the actual C development headers to compile against,
 
 ```bash
 # 1. (*Optional*) Install UV
@@ -175,11 +175,11 @@ find src/assets/ -name "*.png" -exec pngcrush -ow -rem allb -reduce {} \;
 Application source code.
 
 * `main.py`: Application entrypoint.
-* `cli.py`: Application command line interface.
-* `/src/libs`: Cython packages.
 * `/src/app`: Application packages.
 * `/src/assets`: Application assets.
+* `/src/cli`: Command Line packages.
 * `/src/data`: Application data.
+* `/src/libs`: Cython packages.
 
 ### /tests
 
@@ -192,5 +192,6 @@ Various test
 ## References
 
 * [Cython](https://pypi.org/project/Cython/)
+* [GIMP](https://www.gimp.org/docs/)
 * [SDL2](https://wiki.libsdl.org/SDL2/FrontPage)
 * [LiberatedPixelCup](https://lpc.opengameart.org/static/LPC-Style-Guide/build/styleguide.html)
