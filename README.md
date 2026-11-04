@@ -1,8 +1,7 @@
 # Ontology
 
-[![ontology-tests](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml)
-
-* [Documentation](https://chinchalinchin.github.io/ontology/)
+* [![ontology-tests](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml)
+* [ontology-docs](https://chinchalinchin.github.io/ontology/)
 
 ## Setup
 
@@ -51,28 +50,28 @@ python setup.py build_ext --inplace
 rm *dump.md
 
 # 1. Configure Command Line Arguments
-export LOG_LEVEL=INFO
-export WORLD=world-01
-export LAYER=0
-export BUILD_DIR=/home/grant/Projects/ontology/build
+export LOG_LEVEL='INFO'
+export WORLD='world-01'
+export LAYER='0'
+export BUILD_DIR=~/ontology/build
 
 # 1. DEBUG: Render Background
-python src/cli.py prerender $WORLD \
+python src/main.py prerender $WORLD \
   --layer $LAYER \
   --out $BUILD_DIR
 
 # 2. DEBUG: Render Stateful Assets
-python src/cli.py render $WORLD \
+python src/main.py render $WORLD \
   --layer $LAYER \
   --out $BUILD_DIR
 
 # 3. DEBUG: Render Entire Map with Stateful Assets
-python src/cli.py map $WORLD \
+python src/main.py map $WORLD \
   --layer $LAYER \
   --out $BUILD_DIR
 
 # 4. APP: Start Game Engine
-python src/cli.py  \
+python src/main.py  \
   # OPTIONAL: DUMPS
   --dump-state \
   --dump-sdl \
