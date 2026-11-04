@@ -1,8 +1,8 @@
 # cython: language_level=3
 """
 @domain.system
-@domain.graphics
 @app.library
+@modality.appearance
 @workflow.rendering
 
 # Ontology: Libraries - libs.graphics.render

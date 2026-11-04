@@ -5,4 +5,5 @@ The **Templates View** defines the structure of Task responses.
 
 {% for template in tools.parameters.manager.templates %}
 {% include 'tools/manager/views/templates/indices/' ~ template ~ '.md' %}
+
 {% endfor %}

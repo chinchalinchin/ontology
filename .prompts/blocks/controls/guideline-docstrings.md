@@ -34,7 +34,6 @@ Tags are meant to capture logically related slices of the Application.
         * `domain.abstract` (*Abstract Interfaces*)
         * `domain.automata` (*Finite State Automata*)
         * `domain.concrete` (*Abstract Implementations*)
-        * `domain.graphics` (*SDL & Rendering*)
         * `domain.logic` (*Algorithms*)
         * `domain.model` (*Data Structures*)
         * `domain.system` (*Support Systems*)
@@ -61,6 +60,8 @@ Tags are meant to capture logically related slices of the Application.
                 * `category.widgets`
             * Asset Modality Names
                 * `modality.action`
+                * `modality.auditory`
+                * `modality.appearance`
                 * `modality.frequency`
                 * `modality.lifespan`
                 * `modality.intention`

@@ -106,13 +106,13 @@ tools:
               app: [ library ]
           - title: Library - Registry
             scan:
-              domain: [ graphics ]
+              domain: [ system, graphics ]
               app: [ library ]
               asset: [ frame ]
       data:
         properties: [ ]
         state: [ ]
-        configurations: [ sounds, score ]
+        configurations: [ sounds, scores ]
         templates: [ ]
     # --------------------------------------------
     shell:

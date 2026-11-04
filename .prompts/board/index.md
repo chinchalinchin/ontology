@@ -32,7 +32,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     * [x]: [Phase 10: Seasons](./phases/implement/phase-10.md)
     * [ ]: [Phase 11: Geology](./phases/implement/phase-11.md)
     * [ ]: [Phase 12: Chemistry](./phases/implement/phase-12.md)
-    * [ ]: [Phase 13: Sound](./phases/implement/phase-13.md)
+    * [~]: [Phase 13: Sound](./phases/implement/phase-13.md)
     * [ ]: [Phase n: Commerce](./phases/implement/phase-n.md)
     * [ ]: [Phase n+1: Towns](./phase/implement/phase-n+1.md)
   * **Refactor:**
@@ -119,7 +119,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
   * **Design:**
     * [x]: [Composition C000: Castle Dawn](./phases/design/composition-c000.md)
     * [ ]: [Composition C001: Temple of Trials](./phases/design/composition-c001.md)
-    * [ ]: [Composition C002: Regalia Galleria](./phases/design/composition-c002.md)
+    * [~]: [Composition C002: Regalia Galleria](./phases/design/composition-c002.md)
 * **Backlog:**
   * [~]: [TODO T000: Telemetry Module](./backlog/todo-t000.md)
   * [ ]: [TODO T001: Telemetry Menu](./backlog/todo-t001.md)

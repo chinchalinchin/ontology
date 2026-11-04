@@ -1,7 +1,7 @@
 """
 @domain.system
-@domain.audio
 @app.library
+@modality.auditory
 @workflow.instrumentation
 
 # Ontology - Library: libs.audio.mixer

@@ -1,7 +1,6 @@
 # cython: language_level=3
 """
 @domain.system
-@domain.graphics
 @app.library
 @asset.frame
 @workflow.rendering
