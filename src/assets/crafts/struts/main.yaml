@@ -194,6 +194,7 @@ crafts:
       dimensions:
         w: 32
         l: 64
+      priority: 1
       mass: -1
       material:
         genus: chromatics
@@ -205,6 +206,7 @@ crafts:
       dimensions:
         w: 32
         l: 94
+      priority: 1
       mass: -1
       material:
         genus: chromatics
@@ -216,6 +218,7 @@ crafts:
       dimensions:
         w: 32
         l: 53
+      priority: 1
       mass: 0
       material:
         genus: chromatics
@@ -227,6 +230,7 @@ crafts:
       dimensions:
         w: 72
         l: 70
+      priority: 1
       mass: 0
       material:
         genus: geologics
@@ -243,6 +247,7 @@ crafts:
       dimensions:
         w: 63
         l: 58
+      priority: 1
       mass: 0
       material:
         genus: chromatics
@@ -260,6 +265,7 @@ crafts:
       dimensions:
         w: 31
         l: 39
+      priority: 1
       mass: -1
       material:
         genus: chromatics
@@ -277,6 +283,7 @@ crafts:
       dimensions:
         w: 29
         l: 49
+      priority: 1
       mass: -1
       material:
         genus: chromatics
@@ -288,6 +295,7 @@ crafts:
       dimensions:
         w: 63
         l: 54
+      priority: 1
       mass: 0
       material:
         genus: chromatics
@@ -305,6 +313,7 @@ crafts:
       dimensions:
         w: 31
         l: 31
+      priority: 1
       mass: -1
       material:
         genus: chromatics

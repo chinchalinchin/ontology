@@ -2,8 +2,10 @@
 # TASK: VARIABLES
 # ----------------------------------------------------
 board: &parameters-board
-  phase: c000
+  phase: c002
   action: design
+# ----------------------------------------------------
+context: true
 # ----------------------------------------------------
 # TASK: CONFIGURATION
 # ----------------------------------------------------
@@ -19,6 +21,8 @@ tools:
     manager:
       board: true
       docs: true
+      specs: false
+      templates: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
@@ -39,14 +43,15 @@ tools:
       board: *parameters-board
       docs:
         exclude:
-          - index.md
-          - 02-sprites.md
-          - 04-intentions.md
-          - 05-mechanics.md
-          - 06-widgets.md
-          - 07-sounds.md
-          - 09-ecology.md
-          - 10-emergence.md
+          - index
+          - 02-sprites
+          - 04-intentions
+          - 05-mechanics
+          - 06-widgets
+          - 07-sounds
+          - 09-ecology
+          - 10-chemistry
+          - 11-emergence
     # --------------------------------------------
     # ------------------------ PARAMETERS: SOURCE
     # --------------------------------------------
@@ -79,11 +84,11 @@ tools:
             - title: Plot Services
               scan:
                 domain: [ system ]
-                app: [ services ]
+                app: [ service ]
                 workflows: [ plot ]
       data: 
         properties: [ effects, crafts, objects ]
-        configurations: [ compositions, materials, library ]
+        configurations: [ compositions/brick-house, materials, library ]
     # --------------------------------------------
     # ------------------------ PARAMETERS: SHELL
     # --------------------------------------------

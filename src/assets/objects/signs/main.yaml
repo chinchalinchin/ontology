@@ -5,6 +5,7 @@ objects:
       dimensions: { w: 24, l: 24 }
       mass: -1
       count: 1
+      priority: 1
       material:
         genus: geologics
       hitboxes:
@@ -19,17 +20,31 @@ objects:
       dimensions: { w: 30, l: 30 }
       mass: -1
       count: 1
+      priority: 1
       material:
         genus: chromatics
         host: cotton
-      hitboxes: null
+      hitboxes:
+        - position:
+            x: 0
+            y: 0
+          dimensions:
+            w: 30
+            l: 36
     # -----------------------------------------
     scroll:
-      dimensions: { w: 32, l: 32}
+      dimensions: { w: 32, l: 32 }
       mass: -1
       count: 1
+      priority: 1
       material:
         genus: chromatics
         host: cotton
-      hitboxes: null
+      hitboxes:
+        - position:
+            x: 0
+            y: 0
+          dimensions:
+            w: 32
+            l: 38
     # -----------------------------------------

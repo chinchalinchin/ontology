@@ -3,6 +3,7 @@
 @app.asset
 @asset.state
 @category.crafts
+@modality.material
 
 # Ontology: Source - app.models.state.crafts
 

@@ -25,7 +25,7 @@ Tags are meant to capture logically related slices of the Application.
     * `asset`: Asset Tags are restricted to models, implementations and configurations surrounding the Asset class.
     * `category`: Category Tags are restricted to Asset Component implementations and models of a specific Category.
     * `menu`: Menu Tags are restricted to user interface systems.
-    * `modality`: Modality Tags are restricted to the systems that implement the logic to differentiate the various Asset Modalities. **NOTE**: This Tag does not apply to the data structures or models where the modalities are declared, but the systems which utilize this field and manifest its meaning within the logic of the Application. 
+    * `modality`: Modality Tags are restricted to the systems that implement the logic to differentiate the various Asset Modalities. 
     * `physics`: Physics Tags are restricted to the systems that interface with the Engine's physical calculations.
     * `test`:  Test Tags are restricted to unit tests, integration tests and exploratory tests.
     * `workflow`: Workflow Tags are restricted to Application Mechanics, modules and other logical processes that execute every Engine Loop.

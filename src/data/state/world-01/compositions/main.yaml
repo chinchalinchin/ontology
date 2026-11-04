@@ -15,8 +15,15 @@ compositions:
       y: 800
   - id: castle-dawn
     name: the-capital
-    owner: the-government
+    owner: the-empire
     layer: '0'
     position:
       x: 230
       y: 0
+  - id: regalia-galleria
+    name: regalia-galleria
+    owner: the-empire
+    layer: '0'
+    position:
+      x: 1950
+      y: 450

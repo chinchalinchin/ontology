@@ -10,6 +10,21 @@ library:
       summer: Summer must Simmer
       autumn: Autumn has Fallen
       winter: Winter must Enter
+    galleria-plaque:
+      spring: "Regalia Galleria: Vernal Exhibition — Closed by Royal Decree"
+      summer: "Regalia Galleria: Estival Exhibition — Closed by Royal Decree"
+      autumn: "Regalia Galleria: Autumnal Exhibition — Closed by Royal Decree"
+      winter: "Regalia Galleria: Hibernal Exhibition — Closed by Royal Decree"
+    galleria-poster:
+      spring: "Notice: Gallery admissions require the Writ of Dawn."
+      summer: "Notice: Summer curation remains restricted."
+      autumn: "Notice: Autumn curation remains restricted."
+      winter: "Notice: Winter curation remains restricted."
+    galleria-scroll:
+      spring: "On the Taxonomy of Forms, Book I: Vernal Genesis."
+      summer: "On the Taxonomy of Forms, Book II: Solar Equilibrium."
+      autumn: "On the Taxonomy of Forms, Book III: Senescence of Matter."
+      winter: "On the Taxonomy of Forms, Book IV: Quiescent Substrates."
   castle-dawn-unlocked:
     empress-jasilynn:
       busy: Away with you! I am engaged in endeavors!
@@ -21,6 +36,21 @@ library:
       summer: Travelling Circus In Town
       autumn: Harvest Festival Soon
       winter: Road Blocked
+    galleria-plaque:
+      spring: "Regalia Galleria: Vernal Exhibition — Open to Patrons"
+      summer: "Regalia Galleria: Estival Exhibition — Open to Patrons"
+      autumn: "Regalia Galleria: Autumnal Exhibition — Open to Patrons"
+      winter: "Regalia Galleria: Hibernal Exhibition — Open to Patrons"
+    galleria-poster:
+      spring: "Featured Installation: The Halls of Reaction, Elevation, Passivity, and Vanity."
+      summer: "Summer Retrospective: Studies in Materiality and Perspective."
+      autumn: "Autumn Salon: Architectural Compositions and Emergent Forms."
+      winter: "Winter Collection: Static Geometry and Periodic Motion."
+    galleria-scroll:
+      spring: "On the Taxonomy of Forms, Book I: Vernal Genesis."
+      summer: "On the Taxonomy of Forms, Book II: Solar Equilibrium."
+      autumn: "On the Taxonomy of Forms, Book III: Senescence of Matter."
+      winter: "On the Taxonomy of Forms, Book IV: Quiescent Substrates."
   castle-dawn-hostile:
     empress-jasilynn:
       busy: Go away!
@@ -32,3 +62,18 @@ library:
       summer: NO TRAVELLERS WANTED
       autumn: NO TRESPASSERS
       winter: ALL INTRUDERS WILL BE EXECUTED
+    galleria-plaque:
+      spring: "Regalia Galleria: Under Martial Lockdown"
+      summer: "Regalia Galleria: Seized by the Crown"
+      autumn: "Regalia Galleria: Trespassers Will Be Prosecuted"
+      winter: "Regalia Galleria: Sealed for the Winter Siege"
+    galleria-poster:
+      spring: "Warning: Vandalism of royal installations is punishable by death."
+      summer: "Warning: The Gallery Guards have been alerted."
+      autumn: "Warning: All patrons must vacate the premises immediately."
+      winter: "Warning: Martial curfew is in effect."
+    galleria-scroll:
+      spring: "On the Taxonomy of Forms, Book I: Vernal Genesis."
+      summer: "On the Taxonomy of Forms, Book II: Solar Equilibrium."
+      autumn: "On the Taxonomy of Forms, Book III: Senescence of Matter."
+      winter: "On the Taxonomy of Forms, Book IV: Quiescent Substrates."

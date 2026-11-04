@@ -3,6 +3,7 @@
 @app.asset
 @asset.frame
 @category.crafts
+@modality.material
 
 # Ontology: Source - app.assets.frames.crafts
 

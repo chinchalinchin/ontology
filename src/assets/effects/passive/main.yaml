@@ -8,31 +8,33 @@ effects:
       dimensions:
         w: 32
         l: 64
-      frequency: 
+      frequency:
         type: periodic
-        frequency: 1200
+        delay: 15
+        amount: 1200
       hitboxes: null
       mass: -1
     # -------------------------------------------------------
     # ------------------------------------ CONTINUOUS EFFECTS
     # -------------------------------------------------------
-    grandfather-clock: 
+    grandfather-clock:
       count: 12
       dimensions:
         w: 32
         l: 96
-      frequency: 
+      frequency:
         type: continuous
         delay: 60
       hitboxes: null
-      mass: 0
+      mass: -1
+      priority: 1
     # -------------------------------------------------------
-    torch: 
+    torch:
       count: 9
       dimensions:
         w: 32
         l: 64
-      frequency: 
+      frequency:
         type: continuous
         delay: 15
       hitboxes: null
@@ -41,12 +43,12 @@ effects:
     # -------------------------------------------------------
     # ------------------------------------- TEMPORARY EFFECTS
     # -------------------------------------------------------
-    splash: 
+    splash:
       count: 3
       dimensions:
         w: 60
         l: 12
-      frequency: 
+      frequency:
         type: temporary
         delay: 15
       hitboxes: null

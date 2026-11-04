@@ -16,10 +16,10 @@ compositions:
 
 ##### Composition: Tasks
 
-* [] **Exterior**
-* [] **Room 1 — The Hall of Reactions**
-* [] **Room 2 — The Hall of Elevations**
-* [] **Room 3 — The Hall of Passivity**
-* [] **Room 4 — The Hall of Vanity**
-* [] **Room 5 — The Hall of Study**
-* [] **Rooms 6, 7 & 8 — Exhibition Annexes I–III**
+* [] **Exterior**: A grand entrance to catch the passerby's eye.
+* [] **Room 1 — The Hall of Reactions**: A room containg spinning dummy Reactables.
+* [] **Room 2 — The Hall of Elevations**: A room of interlocking Stairs and elevated Surfaces.
+* [] **Room 3 — The Hall of Passivity**: A room of various Passive Effects.
+* [] **Room 4 — The Hall of Vanity**: A room of various Decor Struts.
+* [] **Room 5 — The Hall of Study**: A room of various Sign Objects.
+* [] **Rooms 6, 7 & 8 — Exhibition Annexes I–III**: Leave empty.

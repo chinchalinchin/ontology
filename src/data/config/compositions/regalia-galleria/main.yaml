@@ -1,0 +1,721 @@
+# -------------------- COMPOSITION THEME
+theme:
+  geologic: &geologic marble
+  geologic-alt: &geologic-alt granite
+  chromatic: &chromatic red
+  chromatic-alt: &chromatic-alt blue
+  neutral: &neutral neutral
+layers:
+  hallway: &hallway-layer galleria-hallway-layer
+  room-1: &room-1-layer galleria-reactions-layer
+  room-2: &room-2-layer galleria-elevations-layer
+  room-3: &room-3-layer galleria-passivity-layer
+  room-4: &room-4-layer galleria-vanity-layer
+  room-5: &room-5-layer galleria-study-layer
+  room-6: &room-6-layer galleria-annex-1-layer
+  room-7: &room-7-layer galleria-annex-2-layer
+  room-8: &room-8-layer galleria-annex-3-layer
+# --------------------------------------------------
+compositions:
+  regalia-galleria:
+    # ==================================================
+    # EXTERIOR (ROOT)
+    # ==================================================
+    root:
+      strut:
+        id: mansion
+        name: exterior-roof
+        material: *geologic
+        blueprint: roofs
+        multiple:
+          nx: 3
+          ny: 1
+      components:
+        crafts:
+          struts:
+            - id: mansion
+              name: exterior-walls
+              material: *geologic-alt
+              blueprint: walls
+              multiple:
+                nx: 3
+                ny: 1
+              position:
+                x: 0
+                y: bind(parent.span.l)
+            - id: pillar
+              name: exterior-pillar-west
+              material: *geologic
+              blueprint: shafts
+              multiple:
+                nx: 1
+                ny: 1
+              anchor: anchor(exterior-walls)
+              position:
+                x: bind(self.dimensions.w)
+                y: bind(exterior-walls.position.y)
+            - id: pillar
+              name: exterior-pillar-east
+              material: *geologic
+              blueprint: shafts
+              multiple:
+                nx: 1
+                ny: 1
+              anchor: anchor(exterior-walls)
+              position:
+                x: bind(parent.span.w) - (2 * bind(self.dimensions.w))
+                y: bind(exterior-walls.position.y)
+            - id: banner
+              name: exterior-banner-west
+              material: *chromatic
+              blueprint: decor
+              anchor: anchor(exterior-walls)
+              position:
+                x: (bind(parent.dimensions.w) - bind(self.dimensions.w)) // 2
+                y: bind(exterior-walls.position.y) + (bind(exterior-walls.span.l) - bind(self.dimensions.l)) // 2
+            - id: banner
+              name: exterior-banner-east
+              material: *chromatic-alt
+              blueprint: decor
+              anchor: anchor(exterior-walls)
+              position:
+                x: bind(parent.span.w) - (bind(parent.dimensions.w) + bind(self.dimensions.w)) // 2
+                y: bind(exterior-walls.position.y) + (bind(exterior-walls.span.l) - bind(self.dimensions.l)) // 2
+        objects:
+          doors:
+            - id: panel
+              name: entrance-door
+              material: *chromatic
+              anchor: anchor(exterior-walls)
+              outlayer: *hallway-layer
+              position:
+                x: (bind(parent.span.w) - bind(self.dimensions.w)) // 2
+                y: bind(exterior-walls.position.y) + bind(exterior-walls.span.l) - bind(self.dimensions.l)
+              out:
+                x: bind(hallway-wall.position.x) + (bind(hallway-floor.span.w) - bind(self.dimensions.w)) // 2
+                y: bind(hallway-wall.position.y) + bind(hallway-floor.position.y) + bind(hallway-floor.span.l) - bind(self.dimensions.l)
+
+    # ==================================================
+    # INTERIOR BRANCHES
+    # ==================================================
+    branches:
+      # ------------------------------------------------
+      # MAIN GALLERY HALLWAY
+      # ------------------------------------------------
+      - strut:
+          id: mansion
+          name: hallway-wall
+          layer: *hallway-layer
+          material: *geologic
+          blueprint: halls
+          multiple:
+            nx: 3
+            ny: 1
+          position:
+            x: 10
+            y: 10
+        components:
+          crafts:
+            struts:
+              - id: mansion
+                name: hallway-floor
+                layer: *hallway-layer
+                material: *geologic-alt
+                blueprint: floors
+                multiple:
+                  nx: 3
+                  ny: 5
+                position:
+                  x: 0
+                  y: bind(parent.span.l)
+              - id: carpet
+                name: hallway-runner
+                layer: *hallway-layer
+                material: *chromatic
+                blueprint: designs
+                multiple:
+                  nx: 1
+                  ny: 5
+                position:
+                  x: (bind(parent.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(parent.span.l)
+          objects:
+            doors:
+              # --- WEST DOORS (ROOMS 1, 3, 5, 7)
+              - id: panel
+                name: door-room-1
+                layer: *hallway-layer
+                material: *chromatic
+                anchor: anchor(parent)
+                outlayer: *room-1-layer
+                position:
+                  x: 16
+                  y: bind(parent.span.l) - bind(self.dimensions.l)
+                out:
+                  x: bind(room-1-wall.position.x) + (bind(room-1-floor.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(room-1-wall.position.y) + bind(room-1-floor.position.y) + bind(room-1-floor.span.l) - bind(self.dimensions.l)
+              - id: panel
+                name: door-room-3
+                layer: *hallway-layer
+                material: *chromatic
+                outlayer: *room-3-layer
+                position:
+                  x: 16
+                  y: bind(parent.span.l) + bind(parent.dimensions.l) - bind(self.dimensions.l)
+                out:
+                  x: bind(room-3-wall.position.x) + (bind(room-3-floor.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(room-3-wall.position.y) + bind(room-3-floor.position.y) + bind(room-3-floor.span.l) - bind(self.dimensions.l)
+              - id: panel
+                name: door-room-5
+                layer: *hallway-layer
+                material: *chromatic
+                outlayer: *room-5-layer
+                position:
+                  x: 16
+                  y: bind(parent.span.l) + (2 * bind(parent.dimensions.l)) - bind(self.dimensions.l)
+                out:
+                  x: bind(room-5-wall.position.x) + (bind(room-5-floor.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(room-5-wall.position.y) + bind(room-5-floor.position.y) + bind(room-5-floor.span.l) - bind(self.dimensions.l)
+              - id: panel
+                name: door-room-7
+                layer: *hallway-layer
+                material: *neutral
+                outlayer: *room-7-layer
+                position:
+                  x: 16
+                  y: bind(parent.span.l) + (3 * bind(parent.dimensions.l)) - bind(self.dimensions.l)
+                out:
+                  x: bind(room-7-wall.position.x) + (bind(room-7-floor.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(room-7-wall.position.y) + bind(room-7-floor.position.y) + bind(room-7-floor.span.l) - bind(self.dimensions.l)
+              # --- EAST DOORS (ROOMS 2, 4, 6, 8)
+              - id: panel
+                name: door-room-2
+                layer: *hallway-layer
+                material: *chromatic-alt
+                anchor: anchor(parent)
+                outlayer: *room-2-layer
+                position:
+                  x: bind(parent.span.w) - bind(self.dimensions.w) - 16
+                  y: bind(parent.span.l) - bind(self.dimensions.l)
+                out:
+                  x: bind(room-2-wall.position.x) + (bind(room-2-floor.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(room-2-wall.position.y) + bind(room-2-floor.position.y) + bind(room-2-floor.span.l) - bind(self.dimensions.l)
+              - id: panel
+                name: door-room-4
+                layer: *hallway-layer
+                material: *chromatic-alt
+                outlayer: *room-4-layer
+                position:
+                  x: bind(parent.span.w) - bind(self.dimensions.w) - 16
+                  y: bind(parent.span.l) + bind(parent.dimensions.l) - bind(self.dimensions.l)
+                out:
+                  x: bind(room-4-wall.position.x) + (bind(room-4-floor.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(room-4-wall.position.y) + bind(room-4-floor.position.y) + bind(room-4-floor.span.l) - bind(self.dimensions.l)
+              - id: panel
+                name: door-room-6
+                layer: *hallway-layer
+                material: *neutral
+                outlayer: *room-6-layer
+                position:
+                  x: bind(parent.span.w) - bind(self.dimensions.w) - 16
+                  y: bind(parent.span.l) + (2 * bind(parent.dimensions.l)) - bind(self.dimensions.l)
+                out:
+                  x: bind(room-6-wall.position.x) + (bind(room-6-floor.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(room-6-wall.position.y) + bind(room-6-floor.position.y) + bind(room-6-floor.span.l) - bind(self.dimensions.l)
+              - id: panel
+                name: door-room-8
+                layer: *hallway-layer
+                material: *neutral
+                outlayer: *room-8-layer
+                position:
+                  x: bind(parent.span.w) - bind(self.dimensions.w) - 16
+                  y: bind(parent.span.l) + (3 * bind(parent.dimensions.l)) - bind(self.dimensions.l)
+                out:
+                  x: bind(room-8-wall.position.x) + (bind(room-8-floor.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(room-8-wall.position.y) + bind(room-8-floor.position.y) + bind(room-8-floor.span.l) - bind(self.dimensions.l)
+
+      # ------------------------------------------------
+      # ROOM 1 — THE HALL OF REACTIONS
+      # ------------------------------------------------
+      - strut:
+          id: mansion
+          name: room-1-wall
+          layer: *room-1-layer
+          material: *geologic
+          blueprint: halls
+          multiple:
+            nx: 3
+            ny: 1
+          position:
+            x: 10
+            y: 10
+        components:
+          crafts:
+            struts:
+              - id: mansion
+                name: room-1-floor
+                layer: *room-1-layer
+                material: *geologic-alt
+                blueprint: floors
+                multiple:
+                  nx: 3
+                  ny: 3
+                position:
+                  x: 0
+                  y: bind(parent.span.l)
+          effects:
+            reactables:
+              - id: spinning-dummy
+                name: dummy-west
+                layer: *room-1-layer
+                intention: attack
+                position:
+                  x: (bind(parent.dimensions.w) - bind(self.dimensions.w)) // 2
+                  y: bind(room-1-floor.position.y) + bind(parent.dimensions.l)
+              - id: spinning-dummy
+                name: dummy-center
+                layer: *room-1-layer
+                intention: attack
+                position:
+                  x: (bind(room-1-floor.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(room-1-floor.position.y) + (bind(parent.dimensions.l) // 2)
+              - id: spinning-dummy
+                name: dummy-east
+                layer: *room-1-layer
+                intention: attack
+                position:
+                  x: bind(room-1-floor.span.w) - (bind(parent.dimensions.w) + bind(self.dimensions.w)) // 2
+                  y: bind(room-1-floor.position.y) + bind(parent.dimensions.l)
+
+      # ------------------------------------------------
+      # ROOM 2 — THE HALL OF ELEVATIONS
+      # ------------------------------------------------
+      - strut:
+          id: mansion
+          name: room-2-wall
+          layer: *room-2-layer
+          material: *geologic
+          blueprint: halls
+          multiple:
+            nx: 3
+            ny: 1
+          position:
+            x: 10
+            y: 10
+        components:
+          crafts:
+            struts:
+              - id: mansion
+                name: room-2-floor
+                layer: *room-2-layer
+                material: *geologic-alt
+                blueprint: floors
+                elevation: 0
+                multiple:
+                  nx: 3
+                  ny: 3
+                position:
+                  x: 0
+                  y: bind(parent.span.l)
+              - id: mansion
+                name: surface-tier-1-west
+                layer: *room-2-layer
+                material: *geologic
+                blueprint: flats
+                elevation: 1
+                multiple:
+                  nx: 2
+                  ny: 1
+                position:
+                  x: 0
+                  y: bind(room-2-floor.position.y)
+              - id: mansion
+                name: surface-tier-2-east
+                layer: *room-2-layer
+                material: *geologic-alt
+                blueprint: flats
+                elevation: 2
+                multiple:
+                  nx: 1
+                  ny: 1
+                position:
+                  x: bind(surface-tier-1-west.span.w)
+                  y: bind(room-2-floor.position.y)
+              - id: mansion
+                name: surface-tier-1-south
+                layer: *room-2-layer
+                material: *geologic
+                blueprint: flats
+                elevation: 1
+                multiple:
+                  nx: 1
+                  ny: 1
+                position:
+                  x: bind(surface-tier-1-west.span.w)
+                  y: bind(room-2-floor.position.y) + bind(parent.dimensions.l)
+            stairs:
+              - id: steps
+                name: stairs-ground-to-tier-1
+                layer: *room-2-layer
+                material: *geologic
+                blueprint: up
+                elevation: 0
+                delta: 1
+                position:
+                  x: (bind(parent.dimensions.w) - bind(self.dimensions.w)) // 2
+                  y: bind(room-2-floor.position.y) + bind(parent.dimensions.l)
+              - id: steps
+                name: stairs-tier-1-to-tier-2
+                layer: *room-2-layer
+                material: *geologic-alt
+                blueprint: right
+                elevation: 1
+                delta: 1
+                position:
+                  x: bind(surface-tier-1-west.span.w) - bind(self.dimensions.w)
+                  y: bind(surface-tier-1-west.position.y)
+              - id: steps
+                name: stairs-tier-2-to-tier-1
+                layer: *room-2-layer
+                material: *geologic
+                blueprint: up
+                elevation: 1
+                delta: 1
+                position:
+                  x: bind(surface-tier-2-east.position.x) + (bind(surface-tier-2-east.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(surface-tier-2-east.position.y) + bind(surface-tier-2-east.span.l)
+              - id: steps
+                name: stairs-tier-1-to-ground
+                layer: *room-2-layer
+                material: *geologic-alt
+                blueprint: left
+                elevation: 0
+                delta: 1
+                position:
+                  x: bind(surface-tier-1-south.position.x) - bind(self.dimensions.w)
+                  y: bind(surface-tier-1-south.position.y)
+
+      # ------------------------------------------------
+      # ROOM 3 — THE HALL OF PASSIVITY
+      # ------------------------------------------------
+      - strut:
+          id: mansion
+          name: room-3-wall
+          layer: *room-3-layer
+          material: *geologic
+          blueprint: halls
+          multiple:
+            nx: 3
+            ny: 1
+          position:
+            x: 10
+            y: 10
+        components:
+          crafts:
+            struts:
+              - id: mansion
+                name: room-3-floor
+                layer: *room-3-layer
+                material: *geologic-alt
+                blueprint: floors
+                multiple:
+                  nx: 3
+                  ny: 3
+                position:
+                  x: 0
+                  y: bind(parent.span.l)
+          effects:
+            passive:
+              - id: torch
+                name: passivity-torch-west
+                layer: *room-3-layer
+                anchor: anchor(parent)
+                position:
+                  x: (bind(parent.dimensions.w) - bind(self.dimensions.w)) // 2
+                  y: (bind(parent.span.l) - bind(self.dimensions.l)) // 2
+              - id: grandfather-clock
+                name: passivity-clock-center
+                layer: *room-3-layer
+                anchor: anchor(parent)
+                position:
+                  x: (bind(parent.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(parent.span.l) - bind(self.dimensions.l)
+              - id: torch
+                name: passivity-torch-east
+                layer: *room-3-layer
+                anchor: anchor(parent)
+                position:
+                  x: bind(parent.span.w) - (bind(parent.dimensions.w) + bind(self.dimensions.w)) // 2
+                  y: (bind(parent.span.l) - bind(self.dimensions.l)) // 2
+              - id: birdbath
+                name: passivity-birdbath-west
+                layer: *room-3-layer
+                position:
+                  x: (bind(parent.dimensions.w) - bind(self.dimensions.w)) // 2
+                  y: bind(room-3-floor.position.y) + bind(parent.dimensions.l)
+              - id: birdbath
+                name: passivity-birdbath-east
+                layer: *room-3-layer
+                position:
+                  x: bind(room-3-floor.span.w) - (bind(parent.dimensions.w) + bind(self.dimensions.w)) // 2
+                  y: bind(room-3-floor.position.y) + bind(parent.dimensions.l)
+
+      # ------------------------------------------------
+      # ROOM 4 — THE HALL OF VANITY
+      # ------------------------------------------------
+      - strut:
+          id: mansion
+          name: room-4-wall
+          layer: *room-4-layer
+          material: *geologic
+          blueprint: halls
+          multiple:
+            nx: 3
+            ny: 1
+          position:
+            x: 10
+            y: 10
+        components:
+          crafts:
+            struts:
+              - id: mansion
+                name: room-4-floor
+                layer: *room-4-layer
+                material: *geologic-alt
+                blueprint: floors
+                multiple:
+                  nx: 3
+                  ny: 3
+                position:
+                  x: 0
+                  y: bind(parent.span.l)
+              - id: curtain
+                name: vanity-curtain
+                layer: *room-4-layer
+                material: *chromatic
+                blueprint: decor
+                anchor: anchor(parent)
+                position:
+                  x: 8
+                  y: bind(parent.span.l) - bind(self.dimensions.l)
+              - id: banner
+                name: vanity-banner
+                layer: *room-4-layer
+                material: *chromatic-alt
+                blueprint: decor
+                anchor: anchor(parent)
+                position:
+                  x: 48
+                  y: (bind(parent.span.l) - bind(self.dimensions.l)) // 2
+              - id: painting
+                name: vanity-painting
+                layer: *room-4-layer
+                material: *chromatic
+                blueprint: decor
+                anchor: anchor(parent)
+                position:
+                  x: 84
+                  y: (bind(parent.span.l) - bind(self.dimensions.l)) // 2
+              - id: fireplace
+                name: vanity-fireplace
+                layer: *room-4-layer
+                material: *geologic
+                blueprint: decor
+                anchor: anchor(parent)
+                position:
+                  x: (bind(parent.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(parent.span.l) - bind(self.dimensions.l)
+              - id: portrait
+                name: vanity-portrait
+                layer: *room-4-layer
+                material: *chromatic-alt
+                blueprint: decor
+                anchor: anchor(parent)
+                position:
+                  x: 192
+                  y: (bind(parent.span.l) - bind(self.dimensions.l)) // 2
+              - id: taxidermy
+                name: vanity-taxidermy
+                layer: *room-4-layer
+                material: *neutral
+                blueprint: decor
+                anchor: anchor(parent)
+                position:
+                  x: 240
+                  y: (bind(parent.span.l) - bind(self.dimensions.l)) // 2
+              - id: dresser
+                name: vanity-dresser
+                layer: *room-4-layer
+                material: *chromatic
+                blueprint: decor
+                position:
+                  x: 16
+                  y: bind(room-4-floor.position.y) + 16
+              - id: table
+                name: vanity-table
+                layer: *room-4-layer
+                material: *chromatic
+                blueprint: decor
+                position:
+                  x: (bind(room-4-floor.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(room-4-floor.position.y) + bind(parent.dimensions.l)
+              - id: palette
+                name: vanity-palette
+                layer: *room-4-layer
+                material: *chromatic-alt
+                blueprint: decor
+                position:
+                  x: bind(room-4-floor.span.w) - bind(self.dimensions.w) - 16
+                  y: bind(room-4-floor.position.y) + 16
+
+      # ------------------------------------------------
+      # ROOM 5 — THE HALL OF STUDY
+      # ------------------------------------------------
+      - strut:
+          id: mansion
+          name: room-5-wall
+          layer: *room-5-layer
+          material: *geologic
+          blueprint: halls
+          multiple:
+            nx: 3
+            ny: 1
+          position:
+            x: 10
+            y: 10
+        components:
+          crafts:
+            struts:
+              - id: mansion
+                name: room-5-floor
+                layer: *room-5-layer
+                material: *geologic-alt
+                blueprint: floors
+                multiple:
+                  nx: 3
+                  ny: 3
+                position:
+                  x: 0
+                  y: bind(parent.span.l)
+          objects:
+            signs:
+              - id: plaque
+                name: study-plaque
+                layer: *room-5-layer
+                material: *geologic
+                persona: galleria-plaque
+                lexicon: spring
+                anchor: anchor(parent)
+                position:
+                  x: (bind(parent.dimensions.w) - bind(self.dimensions.w)) // 2
+                  y: bind(parent.span.l) - bind(self.dimensions.l)
+              - id: poster
+                name: study-poster
+                layer: *room-5-layer
+                material: *chromatic
+                persona: galleria-poster
+                lexicon: spring
+                anchor: anchor(parent)
+                position:
+                  x: (bind(parent.span.w) - bind(self.dimensions.w)) // 2
+                  y: bind(parent.span.l) - bind(self.dimensions.l)
+              - id: scroll
+                name: study-scroll
+                layer: *room-5-layer
+                material: *chromatic-alt
+                persona: galleria-scroll
+                lexicon: spring
+                anchor: anchor(parent)
+                position:
+                  x: bind(parent.span.w) - (bind(parent.dimensions.w) + bind(self.dimensions.w)) // 2
+                  y: bind(parent.span.l) - bind(self.dimensions.l)
+
+      # ------------------------------------------------
+      # ROOM 6 — EXHIBITION ANNEX I (EMPTY)
+      # ------------------------------------------------
+      - strut:
+          id: mansion
+          name: room-6-wall
+          layer: *room-6-layer
+          material: *geologic
+          blueprint: halls
+          multiple:
+            nx: 3
+            ny: 1
+          position:
+            x: 10
+            y: 10
+        components:
+          crafts:
+            struts:
+              - id: mansion
+                name: room-6-floor
+                layer: *room-6-layer
+                material: *geologic-alt
+                blueprint: floors
+                multiple:
+                  nx: 3
+                  ny: 3
+                position:
+                  x: 0
+                  y: bind(parent.span.l)
+
+      # ------------------------------------------------
+      # ROOM 7 — EXHIBITION ANNEX II (EMPTY)
+      # ------------------------------------------------
+      - strut:
+          id: mansion
+          name: room-7-wall
+          layer: *room-7-layer
+          material: *geologic
+          blueprint: halls
+          multiple:
+            nx: 3
+            ny: 1
+          position:
+            x: 10
+            y: 10
+        components:
+          crafts:
+            struts:
+              - id: mansion
+                name: room-7-floor
+                layer: *room-7-layer
+                material: *geologic-alt
+                blueprint: floors
+                multiple:
+                  nx: 3
+                  ny: 3
+                position:
+                  x: 0
+                  y: bind(parent.span.l)
+
+      # ------------------------------------------------
+      # ROOM 8 — EXHIBITION ANNEX III (EMPTY)
+      # ------------------------------------------------
+      - strut:
+          id: mansion
+          name: room-8-wall
+          layer: *room-8-layer
+          material: *geologic
+          blueprint: halls
+          multiple:
+            nx: 3
+            ny: 1
+          position:
+            x: 10
+            y: 10
+        components:
+          crafts:
+            struts:
+              - id: mansion
+                name: room-8-floor
+                layer: *room-8-layer
+                material: *geologic-alt
+                blueprint: floors
+                multiple:
+                  nx: 3
+                  ny: 3
+                position:
+                  x: 0
+                  y: bind(parent.span.l)
