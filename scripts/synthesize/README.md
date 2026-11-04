@@ -142,7 +142,7 @@ Perceived acoustic loudness scales non-linearly with physical strike velocity:
 
 $$A_{\text{base}} = v^{1.8}$$
 
-*(where $v \in [0.01, 1.0]$).*
+where $v \in [0.01, 1.0]$.
 
 2. **Dynamic Spectral Brightness**:
 
@@ -153,7 +153,7 @@ $$\text{brightness} = v^{0.5}$$
 
 $$w'_h = w_h \cdot (\text{brightness})^h = w_h \cdot v^{0.5h}$$
 
-*(where $h \in [0, N_{\text{harmonics}} - 1]$).*
+where $h \in [0, N_{\text{harmonics}} - 1]$
 
 3. **Envelope Generation**:
 
