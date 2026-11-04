@@ -44,7 +44,7 @@ tools:
     # --------------------------------------------
     manager:
       board:
-        phase: n-1
+        phase: 13
         action: implement
       docs:
         exclude:
