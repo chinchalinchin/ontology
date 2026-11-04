@@ -3,7 +3,6 @@
 @app.asset
 @asset.frame
 @category.widgets
-@workflow.menus
 
 # Ontology: Source - app.assets.frames
 

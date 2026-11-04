@@ -3,8 +3,6 @@
 @app.asset
 @asset.state
 @category.crafts
-@modality.material
-@workflow.compositions
 
 # Ontology: Source - app.models.state.crafts
 
@@ -37,7 +35,8 @@ from app.static.semantics import (
 )
 from app.models.adapters import (
     PydanticPosition as Position, 
-    PydanticMultiple as Multiple
+    PydanticMultiple as Multiple,
+    Enumerated
 )
 from app.models.state.core import AssetState
 
@@ -48,21 +47,21 @@ class CraftState(AssetState):
     position: Optional[Position] = None # type: ignore
     multiple: Optional[Multiple] = None # type: ignore
     material: Optional[Union[
-        Ceramics,
-        Chromatics,
-        Geologics,
-        Organics,
-        Metallics
+        Enumerated[Ceramics],
+        Enumerated[Chromatics],
+        Enumerated[Geologics],
+        Enumerated[Organics],
+        Enumerated[Metallics]
     ]] = None
     blueprint: Optional[Union[
-        Buildings,
-        Corridors,
-        Columns,
-        Decor,
-        Directions,
-        Enclosures,
-        Inclines,
-        Orientations,
+        Enumerated[Buildings],
+        Enumerated[Corridors],
+        Enumerated[Columns],
+        Enumerated[Decor],
+        Enumerated[Directions],
+        Enumerated[Enclosures],
+        Enumerated[Inclines],
+        Enumerated[Orientations],
     
     ]] = None
 

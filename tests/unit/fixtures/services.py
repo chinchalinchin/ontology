@@ -1,8 +1,6 @@
 """
 @domain.test
 @test.fixtures
-@app.services
-@workflow.injection
 
 # Ontology: Test - tests.unit.fixtures.services
 

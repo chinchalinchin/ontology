@@ -1,10 +1,13 @@
 """
+@domain.automata
 @domain.abstract
+@domain.logic
 @app.base
-@app.services
-@workflow.intentions
+@app.service
+@modality.intention
 @workflow.plot
 @workflow.seasons
+@workflow.transitions
 
 # Ontology: Source - app.services.translators.base
 

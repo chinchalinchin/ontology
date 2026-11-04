@@ -1,7 +1,7 @@
 """
 @domain.test
 @test.unit
-@app.services
+@app.service
 @workflow.injection
 
 # Ontology: Tests - tests.unit.services.generators.game.test_cradle

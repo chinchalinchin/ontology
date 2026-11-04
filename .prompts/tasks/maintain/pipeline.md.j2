@@ -1,0 +1,81 @@
+# Tool: Package
+
+The **Package Tool** provides **Views** into the [Application](#application) distribution.
+
+## Package: Views
+
+### View: Pipeline
+
+The **Pipeline View** provides **Views** into the Continuous Integration processes that maintain the [Application](#application).
+
+#### Pipeline: Configurations
+
+##### Configuration: Dockerfile
+
+**Dockerfile**
+
+```dockerfile
+{{ file(properties.paths.root + 'Dockerfile')}}
+```
+
+##### Configuration: Python
+
+**requirements.txt**
+
+```text
+{{ file(properties.paths.root + 'requirements.txt')}}
+```
+
+**pyproject.toml**
+
+```toml
+{{ file(properties.paths.root + 'pyproject.toml')}}
+```
+
+##### Configuration: Cython
+
+**setup.cicd.py**
+
+```python
+{{ file(properties.paths.root + 'setup.cicd.py')}}
+```
+
+##### Configuration: Mkdocs
+
+**mkdocs.yml**
+
+```yaml
+{{ file(properties.paths.root + 'mkdocs.yml')}}
+```
+
+#### Pipeline: Workflows
+
+##### Workflow: Image
+
+**.github/workflows/image.yml**
+
+```yaml
+{{ file(properties.paths.root + '.github/workflows/image.yml')}}
+```
+
+##### Workflow: Docs
+
+**.github/workflows/docs.yml**
+
+```yaml
+{{ file(properties.paths.root + '.github/workflows/docs.yml')}}
+```
+
+##### Workflow: Tests
+
+**.github/workflows/tests.yml**
+
+```yaml
+{{ file(properties.paths.root + '.github/workflows/tests.yml')}}
+```
+
+# Task - Ontology: maintain(pipeline)
+
+The unit tests take far longer to run in the pipeline than they do locally. I am wondering if some of the SDL calls aren't being mocked properly, and if the application might be rendering things headlessly.
+
+Look for general optimizations that can be applied in the CI workflows.

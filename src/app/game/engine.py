@@ -11,7 +11,10 @@ Package for core game loop.
 # Standard Libraries
 import time
 import collections
-from typing import List, Dict
+from typing import (
+    List, 
+    Dict
+)
 import logging
 
 # Application Libraries

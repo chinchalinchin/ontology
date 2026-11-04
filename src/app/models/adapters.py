@@ -2,13 +2,27 @@
 @domain.model
 @domain.system
 @app.config
+@app.library
 
 # Ontology: Source - app.models.adapters
 
 Pydantic adapters for instantiating Cython structs across the GIL during YAML parsing.
 """
-from typing import Annotated, Any, TYPE_CHECKING
-from pydantic import PlainValidator, PlainSerializer  # type: ignore
+# Standard Libraries
+from enum import Enum
+from typing import (
+    Annotated, 
+    Any, 
+    TypeVar, 
+    TYPE_CHECKING
+)
+
+# External Libraries
+from pydantic import (
+    PlainValidator, 
+    PlainSerializer,
+    AfterValidator
+)
 
 from libs.core.models import (
     Position, 
@@ -48,6 +62,9 @@ def parse_sp(v: Any) -> Any:
 # ---------------------------------------------------------------------------
 # ----------------------------------------------------------------- SERIALIZE
 
+def serialize_enum(v: Any) -> Any:
+    return v.value if isinstance(v, Enum) else v
+
 def serialize_pos(v: Any) -> Any:
     if v is None or isinstance(v, dict):
         return v
@@ -82,6 +99,19 @@ def serialize_sp(v: Any) -> Any:
     if v is None or isinstance(v, dict):
         return v
     return {"px": v.px, "py": v.py}
+
+# ---------------------------------------------------------------------------
+# --------------------------------------------------------------------- TYPES
+
+E = TypeVar("E", bound=Enum)
+
+# 1. Validates input against Enum `E`
+# 2. Immediately extracts `.value` so the dataclass stores a raw `str`
+Enumerated = Annotated[
+    E,
+    AfterValidator(lambda v: v.value),
+    PlainSerializer(serialize_enum, when_used="unless-none"),
+]
 
 # ---------------------------------------------------------------------------
 # ------------------------------------------------------------------- EXPORTS

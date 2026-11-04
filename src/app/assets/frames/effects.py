@@ -6,28 +6,22 @@
 
 # Ontology: Source - app.assets.frames.effects
 
-Effect Frame implementations. 
+Effect Frame implementations.
 """
-# Stamdard Libraries
+# Standard Libraries
 from typing import (
+    Dict,
     List,
     Tuple,
-    Dict
 )
 import logging
 
 # Application Libraries
 import app.static.settings as settings
-from app.static.semantics import (
-    Directions
-)
 from app.assets.base import Frame
-from app.models.state import (
-    FluidState
-)
-from app.models.properties import (
-    EffectProperties
-)
+from app.models.properties import EffectProperties
+from app.models.state import FluidState
+from app.static.semantics import Directions
 
 logger = logging.getLogger(__name__)
 
@@ -43,8 +37,14 @@ class FluidFrame(Frame):
     def __init__(self, tile_w: int = 32, tile_l: int = 32):
         self.tile_w = tile_w
         self.tile_l = tile_l
-    
-    def index(self, id: str, properties: EffectProperties) -> Dict[str, Tuple[int, int, int, int]]:
+        if not hasattr(self, "_dimensions"):
+            self._dimensions: Dict[str, Tuple[int, int]] = {}
+
+    def index(
+        self,
+        id: str,
+        properties: EffectProperties,
+    ) -> Dict[str, Tuple[int, int, int, int]]:
         """
         Pre-indexes full animation frames alongside multi-axis forward and reverse
         truncated fractional slices into the Registry crop map.
@@ -55,6 +55,7 @@ class FluidFrame(Frame):
 
         self.tile_w = w
         self.tile_l = l
+        self._dimensions[id] = (w, l)
         crops: Dict[str, Tuple[int, int, int, int]] = {}
 
         for f in range(count):
@@ -68,70 +69,70 @@ class FluidFrame(Frame):
             # 2. Vertical forward slicing: Down (anchored at origin)
             for s in range(1, l):
                 slice_key = settings.SEPARATOR.join([
-                    id, 
-                    frame_str, 
-                    Directions.DOWN.value, 
-                    str(s)
+                    id,
+                    frame_str,
+                    Directions.DOWN.value,
+                    str(s),
                 ])
                 crops[slice_key] = (base_x, 0, w, s)
                 crops[settings.SEPARATOR.join([
-                    id, 
+                    id,
                     frame_str,
-                    Directions.DOWN.value, 
-                    "slice", 
-                    str(s)]
-                )] = (base_x, 0, w, s)
+                    Directions.DOWN.value,
+                    "slice",
+                    str(s),
+                ])] = (base_x, 0, w, s)
 
             # 3. Vertical reverse slicing: Up (anchored at distal edge)
             for s in range(1, l):
                 slice_key = settings.SEPARATOR.join([
-                    id, 
-                    frame_str, 
-                    Directions.UP.value, 
-                    str(s)]
-                )
+                    id,
+                    frame_str,
+                    Directions.UP.value,
+                    str(s),
+                ])
                 crops[slice_key] = (base_x, l - s, w, s)
                 crops[settings.SEPARATOR.join([
-                    id, 
-                    frame_str, 
-                    Directions.UP.value, 
-                    "slice", 
-                    str(s)]
-                )] = (base_x, l - s, w, s)
+                    id,
+                    frame_str,
+                    Directions.UP.value,
+                    "slice",
+                    str(s),
+                ])] = (base_x, l - s, w, s)
 
             # 4. Horizontal forward slicing: Right (anchored at origin)
             for s in range(1, w):
                 slice_key = settings.SEPARATOR.join([
-                    id, 
+                    id,
                     frame_str,
-                    Directions.RIGHT.value, 
-                    str(s)
+                    Directions.RIGHT.value,
+                    str(s),
                 ])
                 crops[slice_key] = (base_x, 0, s, l)
                 crops[settings.SEPARATOR.join([
-                    id, 
-                    frame_str, 
-                    Directions.RIGHT.value, 
-                    "slice", 
-                    str(s)]
-                )] = (base_x, 0, s, l)
+                    id,
+                    frame_str,
+                    Directions.RIGHT.value,
+                    "slice",
+                    str(s),
+                ])] = (base_x, 0, s, l)
 
             # 5. Horizontal reverse slicing: Left (anchored at distal edge)
             for s in range(1, w):
                 slice_key = settings.SEPARATOR.join([
-                    id, 
-                    frame_str, 
-                    Directions.LEFT.value, 
-                    str(s)
+                    id,
+                    frame_str,
+                    Directions.LEFT.value,
+                    str(s),
                 ])
                 crops[slice_key] = (base_x + w - s, 0, s, l)
                 crops[settings.SEPARATOR.join([
-                    id, 
-                    frame_str, 
-                    Directions.LEFT.value, 
-                    "slice", 
-                    str(s)]
-                )] = (base_x + w - s, 0, s, l)
+                    id,
+                    frame_str,
+                    Directions.LEFT.value,
+                    "slice",
+                    str(s),
+                ])] = (base_x + w - s, 0, s, l)
 
         return crops
 
@@ -149,8 +150,7 @@ class FluidFrame(Frame):
         frame_str = str(frame_idx)
         full_key = settings.SEPARATOR.join([id, frame_str])
 
-        w = self.tile_w
-        l = self.tile_l
+        w, l = self._dimensions.get(id, (self.tile_w, self.tile_l))
         direction = state.source
         length = state.length
 
@@ -158,8 +158,8 @@ class FluidFrame(Frame):
         # 1. STREAM CORRIDOR DECOMPOSITION
         # ---------------------------------------------------------
         dim = l if direction in (
-            Directions.DOWN.value, 
-            Directions.UP.value
+            Directions.DOWN.value,
+            Directions.UP.value,
         ) else w
         full_tiles = length // dim
         rem = length % dim
@@ -169,10 +169,10 @@ class FluidFrame(Frame):
                 frame_keys.append((full_key, 0, i * l))
             if rem > 0:
                 slice_key = settings.SEPARATOR.join([
-                    id, 
-                    frame_str, 
-                    Directions.DOWN.value, 
-                    str(rem)
+                    id,
+                    frame_str,
+                    Directions.DOWN.value,
+                    str(rem),
                 ])
                 frame_keys.append((slice_key, 0, full_tiles * l))
 
@@ -181,10 +181,10 @@ class FluidFrame(Frame):
                 frame_keys.append((full_key, 0, -i * l))
             if rem > 0:
                 slice_key = settings.SEPARATOR.join([
-                    id, 
-                    frame_str, 
-                    Directions.UP.value, 
-                    str(rem)
+                    id,
+                    frame_str,
+                    Directions.UP.value,
+                    str(rem),
                 ])
                 frame_keys.append((slice_key, 0, -length))
 
@@ -193,10 +193,10 @@ class FluidFrame(Frame):
                 frame_keys.append((full_key, i * w, 0))
             if rem > 0:
                 slice_key = settings.SEPARATOR.join([
-                    id, 
-                    frame_str, 
-                    Directions.RIGHT.value, 
-                    str(rem)
+                    id,
+                    frame_str,
+                    Directions.RIGHT.value,
+                    str(rem),
                 ])
                 frame_keys.append((slice_key, full_tiles * w, 0))
 
@@ -205,10 +205,10 @@ class FluidFrame(Frame):
                 frame_keys.append((full_key, -i * w, 0))
             if rem > 0:
                 slice_key = settings.SEPARATOR.join([
-                    id, 
-                    frame_str, 
-                    Directions.LEFT.value, 
-                    str(rem)
+                    id,
+                    frame_str,
+                    Directions.LEFT.value,
+                    str(rem),
                 ])
                 frame_keys.append((slice_key, -length, 0))
 
@@ -247,8 +247,8 @@ class FluidFrame(Frame):
                 b_off_y = branch.position.y - pos_y
 
                 b_dim = l if b_dir_val in (
-                    Directions.DOWN.value, 
-                    Directions.UP.value
+                    Directions.DOWN.value,
+                    Directions.UP.value,
                 ) else w
                 b_full = b_len // b_dim
                 b_rem = b_len % b_dim
@@ -261,7 +261,7 @@ class FluidFrame(Frame):
                             id,
                             frame_str,
                             Directions.DOWN.value,
-                            str(b_rem)
+                            str(b_rem),
                         ])
                         frame_keys.append((slice_key, b_off_x, b_off_y + b_full * l))
 
@@ -273,7 +273,7 @@ class FluidFrame(Frame):
                             id,
                             frame_str,
                             Directions.UP.value,
-                            str(b_rem)
+                            str(b_rem),
                         ])
                         frame_keys.append((slice_key, b_off_x, b_off_y - b_len))
 
@@ -285,7 +285,7 @@ class FluidFrame(Frame):
                             id,
                             frame_str,
                             Directions.RIGHT.value,
-                            str(b_rem)
+                            str(b_rem),
                         ])
                         frame_keys.append((slice_key, b_off_x + b_full * w, b_off_y))
 
@@ -297,7 +297,7 @@ class FluidFrame(Frame):
                             id,
                             frame_str,
                             Directions.LEFT.value,
-                            str(b_rem)
+                            str(b_rem),
                         ])
                         frame_keys.append((slice_key, b_off_x - b_len, b_off_y))
 

@@ -8,9 +8,10 @@
 Package for global runtime environment settings.
 """
 # Standard Libraries
-import os
 from pathlib import Path
 from typing import Final
+import os
+import math
 
 # Application Libraries
 from app.static.semantics import Seasons
@@ -94,6 +95,19 @@ MOISTURE_DECAY_SIGMA: Final[float] = float(os.getenv("ONTOLOGY_MOISTURE_DECAY_SI
 
 BASE_MOISTURE_POTENTIAL: Final[float] = float(os.getenv("ONTOLOGY_BASE_MOISTURE_POTENTIAL", "1.0"))
 """"""
+
+PERSPECTIVE_ANGLE_DEG: Final[float] = 60.0
+""""""
+
+TIER_DROP_DISTANCE: Final[int] = int(TILE_HASH_SIZE * math.tan(math.radians(60.0)))
+""""""
+
+GRAVITY_ACCELERATION: Final[float] = 400.0
+""""""
+
+TERMINAL_VELOCITY: Final[float] = 350.0
+""""""
+
 # ---------------------------------------------------
 # -------------------------------- DIRECTORY SETTINGS
 # ---------------------------------------------------

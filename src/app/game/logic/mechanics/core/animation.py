@@ -2,7 +2,7 @@
 @domain.graphics
 @domain.concrete
 @app.core
-@app.mechanics
+@app.mechanic
 @asset.animation
 @workflow.rendering
 

@@ -1,7 +1,7 @@
 """
 @domain.concrete
 @domain.system
-@app.mechanics
+@app.mechanic
 
 # Ontology: Source - app.game.logic.mechanics.core.remove
 

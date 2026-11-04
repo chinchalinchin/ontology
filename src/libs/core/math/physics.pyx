@@ -1,12 +1,12 @@
+# cython: language_level=3
 """
 @domain.system
 @domain.logic
 @app.library
 @physics.motion
 @workflow.collisions
-@workflow.navigation
 
-# Ontology: libs.core.math.physics
+# Ontology: Libraries - libs.core.math.physics
 
 """
 # cython: language_level=3

@@ -1,6 +1,6 @@
 """
 @domain.user
-@app.devices
+@app.device
 
 # Ontology: Source - app.game.devices
 """
@@ -19,7 +19,11 @@ from app.models.state import (
 # Cython Libraries
 import libs.core.input as sdl
 
+# -------------------------------------------------------
+
 logger = logging.getLogger(__name__)
+
+# -------------------------------------------------------
 
 class Device:
     """

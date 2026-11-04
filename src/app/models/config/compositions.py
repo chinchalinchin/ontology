@@ -1,4 +1,5 @@
 """
+@domain.model
 @app.config
 @workflow.compositions
 

@@ -1,7 +1,8 @@
 """
 @domain.user
 @domain.concrete
-@asset.animtion
+@app.mechanic
+@asset.animation
 @category.widgets
 @workflow.menus
 

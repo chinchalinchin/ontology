@@ -1,0 +1,14 @@
+### View: pstats
+
+The following command is run during **User Acceptance Testing**,
+
+```bash
+{{ tools.parameters.metrics.pstats.run }}
+```
+
+#### pstats: Results
+
+
+```bash
+{{ command(tools.parameters.metrics.pstats.dot, {"ROOT": properties.paths.root}) }}
+```

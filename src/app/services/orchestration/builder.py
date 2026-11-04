@@ -1,6 +1,7 @@
 """
 @domain.system
-@app.services
+@app.service
+@app.orchestration
 @workflow.injection
 
 # Ontology: Source - app.services.orchestration.builder
@@ -190,8 +191,7 @@ class Builder:
         logger.info("Initializing Registry with native models...")
         self.registry = Registry(
             properties=self.context.properties,
-            recipes=self.context.configurations.recipes,
-            typography=self.context.properties.fonts
+            recipes=self.context.configurations.recipes
         )
 
 

@@ -1,9 +1,7 @@
 """
 @domain.test
 @test.unit
-@app.board
-@app.core
-@app.component
+@app.module
 @physics.fields
 @workflow.fluids
 @workflow.ecology

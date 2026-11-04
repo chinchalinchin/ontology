@@ -3,7 +3,6 @@
 @app.asset
 @asset.frame
 @category.tiles
-@workflow.seasons
 
 # Ontology: Source - app.assets.frames.tiles
 

@@ -1,6 +1,6 @@
-##### Bug B017: Decomposer Elevation Inheritance
+##### Bug B016: Decomposer Elevation Inheritance
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: MEDIUM
 
 **Description**

@@ -3,23 +3,27 @@
 @app.asset
 @asset.state
 @category.resources
-@workflow.seasons
 
 # Ontology: Source - app.models.state.resources
 
 Resource State Models.
 """
 # Standard Libraries
-from typing import Optional
+from typing import (
+    Optional,
+    Union
+)
 from dataclasses import dataclass
 
 # Application Libraries
 from app.static.semantics.assets import (
-    AnnualStages
+    AnnualStages,
+    PerennialStages,
+    CentennialStages
 )
 from app.models.adapters import (
     PydanticPosition as Position, 
-    PydanticMultiple as Multiple, 
+    Enumerated
 )
 from app.models.state.core import (
     AssetState
@@ -34,7 +38,11 @@ class ResourceState(AssetState):
     """
     Unified state representation for Resource entities across all lifespans.
     """
-    stage: str = AnnualStages.STUMP.value
+    stage: Union[
+        Enumerated[AnnualStages],
+        Enumerated[PerennialStages],
+        Enumerated[CentennialStages]
+    ]= AnnualStages.STUMP.value
     position: Optional[Position] = None  # type: ignore
     retention: float = 0.0
     moisture_flux: float = 0.0

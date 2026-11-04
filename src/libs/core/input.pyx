@@ -2,9 +2,9 @@
 @domain.system
 @domain.user
 @app.library
-@app.devices
+@app.device
 
-# Ontology: libs.core.input
+# Ontology: Libraries - libs.core.input
 """
 # cython: language_level=3
 

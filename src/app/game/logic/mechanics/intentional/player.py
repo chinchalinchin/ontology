@@ -1,10 +1,14 @@
 """
 @domain.concrete
 @domain.user
-@app.mechanics
+@app.mechanic
 @category.sheets
+@modality.intention
+@workflow.player
 
 # Ontology: Source - app.game.logic.mechanics.intentional.player
+
+Unit Tests for PlayerMechanics
 """
 # Standard Libraries
 from __future__ import annotations
@@ -39,8 +43,11 @@ from app.game.menus.contexts import (
 # Cython Libraries
 from libs.core.models import Position
 
+# --------------------------------------------------------------
+
 logger = logging.getLogger(__name__)
 
+# --------------------------------------------------------------
 
 class PlayerMechanics(Mechanic):
 
@@ -131,7 +138,7 @@ class PlayerMechanics(Mechanic):
         if player.state.intention == Intentions.ATTACK.value:
             eq = player.state.inventory.equipment
             logger.info(
-                f"SheetState(",
+                f"SheetState("
                 f"id={player.id}"
                 f"name={player.name},"
                 f"intention={player.state.intention},"

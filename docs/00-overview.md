@@ -71,7 +71,7 @@ Mechanics, Relations and other components of the [Engine](#component-engine) uti
 
 The Application consists of an interconnected and interdependent system of Configurations, Services, Libraries and Components. These system serve to interpret and operate on Asset Properties and Asset State.
 
-See [Architecture documentation](./11-architecture.md) for more information.
+See [Architecture documentation](./12-architecture.md) for more information.
 
 ### Configurations
 

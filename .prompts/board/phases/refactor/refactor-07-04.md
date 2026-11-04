@@ -1113,4 +1113,4 @@ Making `substrate` part of the state was a mistake.
 * [ ] Subtask: Offset the `OUT` sensor hitbox in `LayeredHitbox.get()` to `Position(0, l - sensor_l)` and offset `shadow_state.out` in `Decomposer.project()` clear of the primary `IN` door's solid hitbox (`Bug B023`).
 * [x] Subtask: Register `node.strut` in `scope_lookup` within `Decomposer._unpack_node()` / `_unpack_components()` (`Bug B015`) and namespace `SwitchState.link` in `Decomposer._hydrate_state()` (`Bug B019`).
 * [ ] Subtask: Add `material` and `blueprint` parameters to `Cradle.spawn_strut()` and `material` to `Cradle.spawn_bridge()`, routing `spawn_strut()` through `self.decomposer.multiply()`.
-* [ ] Subtask: Update `01-assets.md`, `03-compositions.md`, and `11-architecture.md` to reflect the finalized Phase 07.04 models and signatures.
+* [ ] Subtask: Update `01-assets.md`, `03-compositions.md`, and `12-architecture.md` to reflect the finalized Phase 07.04 models and signatures.

@@ -13,7 +13,6 @@ Core State Models.
 # Standard Libraries
 from typing import (
     Optional, 
-    Union, 
     List
 )
 from dataclasses import (
@@ -22,12 +21,12 @@ from dataclasses import (
 )
 
 # Application Libraries
+from app.models.adapters import Enumerated
 from app.static.semantics import (
     Actions, 
     Directions,
     Cycles,
-    Seasons,
-    Substrates
+    Seasons
 )
 
 # ---------------------------------------------------------------------------------------
@@ -48,6 +47,7 @@ class MutatorTriggers:
     dead: bool = False
     vision: bool = False
     submerged: bool = False
+    falling: bool = False
 
 @dataclass(slots=True)
 class MutatorParameters:
@@ -55,6 +55,7 @@ class MutatorParameters:
     vision: Optional[RadialParameters] = field(default_factory=RadialParameters)
     action: Optional[RadialParameters] = field(default_factory=RadialParameters)
     squeeze: Optional[RadialParameters] = field(default_factory=RadialParameters)
+    descension: Optional[float] = 0.0
     
 @dataclass(slots=True)
 class Mutators:
@@ -73,14 +74,14 @@ class AssetState:
     id: str
     name: Optional[str] = None
     layer: Optional[str] = None
-    elevation: Optional[int] = None
+    elevation: Optional[int] = 0
     anchor: Optional[int] = 0
     mutators: Mutators = field(default_factory=Mutators)
 
 @dataclass(slots=True)
 class AnimationState:
-    action: str = Actions.WALK.value
-    direction: str = Directions.DOWN.value
+    action: Enumerated[Actions] = Actions.WALK.value
+    direction: Enumerated[Directions] = Directions.DOWN.value
     frame: int = 0
     tick: int = 1
 
@@ -92,7 +93,7 @@ class PlotState:
 @dataclass(slots=True)
 class CalendarState:
     year: int = 1
-    season: str = Seasons.SPRING.value
-    cycle: str = Cycles.ONSET.value
+    season: Enumerated[Seasons] = Seasons.SPRING.value
+    cycle: Enumerated[Cycles]= Cycles.ONSET.value
     period: int = 0
     elapsed: float = 0.0

@@ -1,64 +1,5 @@
 # ----------------------------------------------------
-# --------------------- TOOLS.PARAMETERS.SOURCE.FILTER
-# ----------------------------------------------------
-# default: AND | OR
-# queries:
-# - title: TITLE
-#   strategy: AND | OR
-#   scan:
-#     app: [ 
-#             asset, base, core, 
-#             component, config, devices,
-#             schema, semantics, mechanics 
-#     ]
-#     asset: [ 
-#             property, state, frame,
-#             animation, hitbox 
-#     ]
-#     domain: [ 
-#               abstract, concrete, model,
-#               logic, graphics
-#     ]
-#     category: [ 
-#               crafts, cursors, effects,
-#               geography, objects, resources,
-#               sheets, tiles, widgets 
-#     ]
-#     physics: [ 
-#               fields, motion, space 
-#     ]
-#     workflows: [ 
-#               cli, collisions, combat,
-#               compositions, ecology, fluids,
-#               hydration, intentions, main, 
-#               menus, motion, orchestration,
-#               navgiation, rendering, seasons,
-#               telemetry 
-#     ]
-# ----------------------------------------------------
-# ------------------------ TOOL.PARAMETERS.SOURCE.DATA
-# ----------------------------------------------------
-#     properties: [ 
-#               crafts, cursors, effects,
-#               fonts, geography, objects
-#               resources, sheets, sounds
-#               tiles, widgets
-#     ]
-#     state: [
-#               crafts, effects, objects
-#               resources, sheets, tiles, 
-#               world
-#     ]
-#     configurations: [
-#               actions, compositions, intentions,
-#               library, mappings, materials,
-#               mechanics, menus, plots,
-#               recipes, stages
-#     ]
-#     templates: [
-#               menu-dump, registry-dump, sdl-dump, 
-#               state-dump
-#     ]
+context: true
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ----------------------------------------------- TASK
@@ -66,12 +7,19 @@
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: draft.md.j2
+  # template: draft.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
+  # template: analysis/automaton.md.j2
+  # template: analysis/pstats.md.j2
+  # --------------------------------------------
+  # --------------------- TEMPLATES: MAINTENANCE
+  # --------------------------------------------
+  # template: maintain/console/enumeration.md.j2
   # template: maintain/console/patch.md.j2
   # template: maintain/console/session.md.j2
+  template: maintain/pipeline.md.j2
   # template: maintain/script.md.j2
   # --------------------------------------------
   # --------------------------- TEMPLATES: DUMPS 
@@ -118,24 +66,29 @@ tools:
     manager:
       board: false
       specs: false
-      docs: false
+      docs: true
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: METRICS
+    # --------------------------------------------
+    metrics:
+      pstats: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
       data: false
-      filter: false
+      filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: false
+      directory: true
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
-      configuration: false
+      configuration: true
       pipeline: false
       session: false
 # ----------------------------------------------------
@@ -149,32 +102,74 @@ tools:
         action: refactor
       docs:
         exclude:
-          - index.md
-          # - 00-overview.md
-          # - 01-assets.md
-          - 02-sprites.md
-          # - 03-compositions.md
-          - 04-intentions.md
-          - 05-mechanics.md
-          - 06-widgets.md
-          - 07-sounds.md
-          - 08-plots.md
-          - 09-ecology.md
-          - 10-emergence.md
-          # - 11-architecture.md
-      specs: []
+          # - 00-overview
+          # - 01-assets
+          - 02-sprites
+          - 03-compositions
+          - 04-intentions
+          - 05-mechanics
+          - 06-widgets
+          - 07-sounds
+          - 08-plots
+          - 09-ecology
+          - 10-chemistry
+          - 11-emergence
+          # - 12-architecture
+      specs:
+        - 00-dialogue
+        - 01-interaction
+        - 02-wander
+    metrics:
+      pstats: 
+        run: |
+          python -m cProfile -o $ROOT/engine-run.pstats src/main.py start world-01
+        dot: |
+          gprof2dot -f pstats --node-thres=1.0 --edge-thres=0.5 $ROOT/engine-run.pstats
     # --------------------------------------------
     # ------------------------ PARAMETERS: SOURCE
     # --------------------------------------------
     source:
       filter:
         default: AND
-        queries: []
+        queries:
+          # - title: Asset Abstract
+          #   scan: 
+          #     domain: [ abstract ]
+          #     app: [ asset ]
+          # - title: Mechanic Abstract
+          #   scan:
+          #     domain: [ abstract ]
+          #     app: [ mechanic ]
+          # - title: Sheet Implementations
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ asset ]
+          #     category: [ sheets ]
+          # - title: Sheet Models
+          #   scan:
+          #     domain: [ model ]
+          #     category: [ sheets ]
+          # - title: Navigation Workflow
+          #   scan:
+          #     workflows: [ navigation ]
+
+          - title: Cython Subsystems
+            scan:
+              domain: [ system ]
+              app: [ library ]
+              workflows: [ rendering ]
+          - title: Application Orchestration
+            scan: 
+              domain: [ system ]
+              app: [ orchestration ]
+          - title: Test Fixtures
+            scan:
+              test: [ fixtures ]
       data:
-        properties: [  ]
-        state: [  ]
-        configurations: []
-        templates: [  ]
+        properties: [ ]
+        state: [ ]
+        configurations: [ ]
+        templates: [ ]
     # --------------------------------------------
     # -------------------------- PARAMETERS: SHELL
     # --------------------------------------------
@@ -184,12 +179,12 @@ tools:
       commands: 
         - python /Users/gmoore/Home/projects/ontology/src/main.py start
     # --------------------------------------------
-    # ------------------------ PARAMETERS: TESTS
+    # -------------------------- PARAMETERS: TESTS
     # --------------------------------------------
     tests:
       pipeline:
         command: pytest -m
-        marker: workflow_compositions
+        marker: workflow_navigation
         # scope: '**/test_{actuator,cartographer}.py'
       session:
         description: |

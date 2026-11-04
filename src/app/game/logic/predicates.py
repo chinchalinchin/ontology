@@ -1,6 +1,7 @@
 """
 @domain.logic
 @app.module
+@app.semantics
 
 # Ontology: Source - app.game.logic.modules.predicates
 

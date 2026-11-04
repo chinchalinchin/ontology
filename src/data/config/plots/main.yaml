@@ -3,25 +3,30 @@ plots:
     - next: castle-dawn-unlocked
       conditions:
         - sprites.get(constants.RequiredAssets.PLAYER.value)
+        - sprites.get(constants.RequiredAssets.PLAYER.value).inventory.pack
+        - sprites.get(constants.RequiredAssets.PLAYER.value).inventory.pack.get('writ-of-dawn')
         - sprites.get(constants.RequiredAssets.PLAYER.value).inventory.pack.get('writ-of-dawn') >= 1
     - next: castle-dawn-unlocked
       conditions:
-        - sprites.get('castle-dawn-guard')
-        - sprites.get('castle-dawn-guard').mutators.triggers.dead
+        - sprites.get('castle-dawn-champion')
+        - sprites.get('castle-dawn-champion').mutators.triggers.dead
     - next: castle-dawn-unlocked
       conditions:
         - sprites.get('evil-empress-jasilynn')
-        - sprites.get('evil-empress-jasiylnn').memory.relationships.get(constants.RequiredAssets.PLAYER.value)
+        - sprites.get('evil-empress-jasilynn').memory.relationships
+        - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER.value)
         - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER.value) == constants.Relationships.FRIEND
   castle-dawn-unlocked:
     - next: castle-dawn-hostile
       conditions:
         - sprites.get('evil-empress-jasilynn')
-        - sprites.get('evil-empress-jasiylnn').memory.relationships.get(constants.RequiredAssets.PLAYER.value)
+        - sprites.get('evil-empress-jasilynn').memory.relationships
+        - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER.value)
         - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER.value) == constants.Relationships.FOE
   castle-dawn-hostile:
     - next: castle-dawn-unlocked
       conditions:
         - sprites.get('evil-empress-jasilynn')
-        - sprites.get('evil-empress-jasiylnn').memory.relationships.get(constants.RequiredAssets.PLAYER.value)
+        - sprites.get('evil-empress-jasilynn').memory.relationships
+        - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER.value)
         - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER.value) != constants.Relationships.FOE

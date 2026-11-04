@@ -1,9 +1,11 @@
 """
+@domain.automata
 @domain.concrete
 @domain.logic
-@app.mechanics
+@app.mechanic
 @category.sheets
-@workflow.intentions
+@modality.intention
+@workflow.transitions
 
 # Ontology: Source - app.game.logic.mechanics.intentional.transition
 
@@ -30,8 +32,11 @@ from app.game.logic.mechanics import Mechanic
 from app.models.state import DevicePayload
 from app.services.translators.base import Executor
 
+# --------------------------------------------------------------
+
 logger = logging.getLogger(__name__)
 
+# --------------------------------------------------------------
 
 class TransitionMechanics(Mechanic):
     """

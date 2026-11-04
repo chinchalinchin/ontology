@@ -1,10 +1,10 @@
 """
 @domain.concrete
 @domain.logic
-@app.mechanics
+@app.mechanic
 @category.sheets
+@modality.intention
 @workflow.navigation
-@workflow.intentions
 
 # Ontology: Source - app.game.logic.mechanics.intentional.navigation
 

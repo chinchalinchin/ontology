@@ -25,6 +25,7 @@ from app.static.semantics import (
 )
 from app.models.adapters import (
     PydanticDimensions as Dimensions, 
+    Enumerated
 )
 
 # --------------------------------------------------------------
@@ -36,12 +37,12 @@ class Direction:
 @dataclass(slots=True)
 class Action:
     count: int
-    directions: Dict[Directions, Direction]
+    directions: Dict[Enumerated[Directions], Direction]
     delay: int = 1
 
 @dataclass(slots=True)
 class Frequency:
-    type: Frequencies = Frequencies.CONTINUOUS.value
+    type: Enumerated[Frequencies] = Frequencies.CONTINUOUS.value
     delay: int = 1
     frequency: int = 0
     cooldown: int = 60
@@ -49,8 +50,11 @@ class Frequency:
 
 @dataclass(slots=True)
 class Material:
-    genus: Materials
-    host: Optional[Union[Organics, Ceramics]] = None
+    genus: Enumerated[Materials]
+    host: Optional[Union[
+        Enumerated[Organics], 
+        Enumerated[Ceramics]
+    ]] = None
 
     def __post_init__(self):
         if self.genus == Materials.CHROMATICS.value:

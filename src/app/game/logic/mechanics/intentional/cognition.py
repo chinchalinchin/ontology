@@ -1,9 +1,10 @@
 """
 @domain.concrete
 @domain.logic
-@app.mechanics
+@app.mechanic
 @category.sheets
-@workflow.intentions
+@modality.intention
+@workflow.cognition
 
 # Ontology: Source - app.game.logic.mechanics.intentional.cognition
 

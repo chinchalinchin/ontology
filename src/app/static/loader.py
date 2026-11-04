@@ -1,8 +1,11 @@
 """
 @domain.system
 @app.config
+@workflow.hydration
 
 # Ontology: Source - app.static.loader
+
+Loader class for loading and saving Applicaiton YAML files.
 """
 # Standard Libraries
 from typing import (
@@ -58,6 +61,23 @@ class Loader:
         return TypeAdapter(StateSchema).validate_python(merged_data)
 
     @staticmethod
+    def load_save(world: str, slot: str) -> StateSchema:
+        target_dir = (settings.SAVE_DIR / world).expanduser()
+        merged_data: dict[str, Any] = {}
+        slot_file = f"{settings.SEPARATOR.join(['slot', slot])}.yaml"
+
+        logger.info(f"Loading YAML state configurations from {target_dir} ...")
+
+        for file_path in target_dir.rglob(slot_file):
+            with file_path.open("r", encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+                if isinstance(data, dict):
+                    merged_data = Loader.merge(merged_data, data)
+
+        logger.debug("Validating loaded state natively via Pydantic TypeAdapter.")
+        return TypeAdapter(StateSchema).validate_python(merged_data)
+
+    @staticmethod
     def load_properties() -> PropertiesSchema:
         target_dir = settings.ASSET_DIR.expanduser()
         merged_data: dict[str, Any] = {}
@@ -89,20 +109,20 @@ class Loader:
         return TypeAdapter(ConfigurationSchema).validate_python(merged_data)
     
     @staticmethod
-    def save_state(slot: str, state_data: dict[str, Any]) -> None:
+    def save_state(world: str, slot: str, state: dict[str, Any]) -> None:
         """
         Validates and serializes runtime state to disk matching StateSchema.
         """
         adapter = TypeAdapter(StateSchema)
         
         # 1. Validate structure against StateSchema and coerce to pure primitives
-        validated_schema = adapter.validate_python(state_data)
+        validated_schema = adapter.validate_python(state)
         primitive_dump = adapter.dump_python(validated_schema, mode="json", exclude_none=True)
 
         # 2. Write clean YAML via safe_dump
-        out_dir = settings.SAVE_DIR.expanduser()
+        out_dir = (settings.SAVE_DIR / world).expanduser()
         out_dir.mkdir(parents=True, exist_ok=True)
-        out_path = out_dir / f"{slot}.yaml"
+        out_path = out_dir / f"{settings.SEPARATOR.join(['slot', slot])}.yaml"
 
         logger.info(f"Serializing board state to {out_path} ...")
         with out_path.open("w", encoding="utf-8") as f:

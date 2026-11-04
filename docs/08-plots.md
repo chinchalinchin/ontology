@@ -31,7 +31,7 @@ library:
 
 ## State: Plot
 
-The Plot is an Asset-less State. It is instantiated during [initialization](./11-architecture.md#specification-initialization) and injected into the Board. 
+The Plot is an Asset-less State. It is instantiated during [initialization](./12-architecture.md#specification-initialization) and injected into the Board. 
 
 ## Mechanics: Plot
 

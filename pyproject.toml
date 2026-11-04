@@ -17,6 +17,7 @@ build = [
 test = [
     "pytest==9.1.1",
     "pytest-cov==7.1.0",
+    "pytest-xdist==3.8.0"
 ]
 scripts = [
     "pillow==12.3.0",
@@ -28,8 +29,12 @@ docs = [
     "mkdocstrings[python]",
 ]
 analysis = [
+    "gprof2dot",
     "pydeps",
     "vulture"
+]
+prompts = [
+    "panflute"
 ]
 
 [tool.uv]

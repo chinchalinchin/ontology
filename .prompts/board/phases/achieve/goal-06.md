@@ -140,7 +140,7 @@ Need to come up with a way where `memory.goals` is only processed in the `idle` 
 
 *Objective*: Align the data models and `CognitionMechanics` to support nested, interruptible goals. Fix "Goal Amnesia" by giving CognitionMechanics precise contexts for goal resolution.
 
-* [x] Subtask: Update `Goals` Enum: Replace `SPRITE` with `TARGET` (for combat) and `SUBJECT` (for social). 
+* [x] Subtask: Update `Goals` Semantics: Replace `SPRITE` with `TARGET` (for combat) and `SUBJECT` (for social). 
 * [x] Subtask: Update `app.models.state.sprites.Memory` to type `goals` as `Dict[Goal] = field(default_factory=diict)`.
 * [x] Subtask: Refactor `CognitionMechanics._resolve`. Map `Goals.TARGET` to the existing death check. Map `Goals.SUBJECT` to check `if not sprite.psyche.dialogue`.
 * [x] Subtask: Refactor `CognitionMechanics._remember` to use `.pop()` to retrieve a goal from `memory.goals` when `sprite.state.goal` resolves to `None`.

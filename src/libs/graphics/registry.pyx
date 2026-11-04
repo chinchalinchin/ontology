@@ -1,11 +1,17 @@
 # cython: language_level=3
 """
-@domain.systems
+@domain.system
 @domain.graphics
 @app.library
 @workflow.rendering
 
-# Ontology: libs.graphics.registry
+# Ontology: Libraries - libs.graphics.registry
+
+Registry class for indexing and loading Asset files.
+
+## TODOs
+
+1. Redundancy in the constructor arguments. FontProperties is part of the PropertiesSchema.
 """
 # Standard Libraries
 import os
@@ -134,7 +140,6 @@ def _sys_load_font(filepath: str, object style):
 cdef class Registry:
     cdef public object properties   # PropertiesSchema
     cdef public object recipes      # RecipeConfiguration
-    cdef public dict typography     # Dict[str, FontProperties]
 
     cdef public dict _textures
     cdef public dict _frames
@@ -145,7 +150,7 @@ cdef class Registry:
     cdef public int maximum
     cdef public int current
 
-    def __init__(self, object properties, object recipes, dict typography=None):
+    def __init__(self, object properties, object recipes):
         logger.debug("Initializing Asset Registry with native application models...")
         self._textures = {}
         self._frames = {}
@@ -157,7 +162,6 @@ cdef class Registry:
         self.current = 0
         self.properties = properties
         self.recipes = recipes
-        self.typography = typography if typography is not None else {}
         
         self._cache()
         self._stack()
@@ -234,9 +238,9 @@ cdef class Registry:
 
 
     def _load_font(self, font_key: str, filepath: str):
-        if font_key not in self.typography:
+        if font_key not in self.properties.fonts:
             return None
-        style = self.typography[font_key]
+        style = self.properties.fonts[font_key]
         return _sys_load_font(filepath, style)
 
 
@@ -245,18 +249,16 @@ cdef class Registry:
         Extracts Sheet stack dependencies from SheetPropertyInstances.
         """
         logger.debug("Registering Texture Stacks dependencies from Sheet properties...")
-        if not hasattr(self.properties, "sheets") or not self.properties.sheets:
+        if not self.properties.sheets:
             return
 
         for sheet_field in dataclasses.fields(self.properties.sheets):
             sheet_instances = getattr(self.properties.sheets, sheet_field.name, {})
-            if not isinstance(sheet_instances, dict):
-                continue
             for item_id, item_props in sheet_instances.items():
-                stack = getattr(item_props, "stack", None)
-                if not stack:
+                if not item_props.stack:
                     continue
-                self._stacks[item_id] = stack
+
+                self._stacks[item_id] = item_props.stack
                 if item_id not in self._pending_assets:
                     self._pending_assets.append(item_id)
                     self.maximum += 1
@@ -286,7 +288,7 @@ cdef class Registry:
                     continue
 
                 inst_dict = getattr(cat_props, inst_name, {})
-                if not inst_dict or not isinstance(inst_dict, dict):
+                if not inst_dict:
                     continue
 
                 frame_worker = AssetFactory.frame(recipe.frame)
@@ -344,10 +346,15 @@ cdef class Registry:
         self._textures.clear()
 
         for font_obj in list(self._fonts.values()):
-            if font_obj is not None and font_obj.ptr != NULL:
-                if TTF_WasInit():
-                    TTF_CloseFont(font_obj.ptr)
-                font_obj.ptr = NULL
+            if font_obj is not None:
+                if font_obj.ptr != NULL:
+                    if TTF_WasInit():
+                        TTF_CloseFont(font_obj.ptr)
+                    font_obj.ptr = NULL
+                if font_obj.outline_ptr != NULL:
+                    if TTF_WasInit():
+                        TTF_CloseFont(font_obj.outline_ptr)
+                    font_obj.outline_ptr = NULL
         self._fonts.clear()
 
         self._frames.clear()

@@ -2,14 +2,21 @@
 @domain.test
 @test.config
 
-# Ontology: tests.unit.conftest
+# Ontology: Tests - tests.unit.conftest
+
+Unit test configuration.
 """
 # Standard Libraries
 import sys
+import os
 from pathlib import Path
 
 # External Libraries
 import pytest
+
+os.environ["SDL_VIDEODRIVER"] = "dummy"
+os.environ["SDL_AUDIODRIVER"] = "dummy"
+os.environ["SDL_RENDER_DRIVER"] = "software"
 
 UNIT_DIR = Path(__file__).resolve().parent
 ROOT_DIR = UNIT_DIR.parent.parent
@@ -36,3 +43,5 @@ def patch_app_settings(monkeypatch, tmp_path: Path):
     Overrides settings and isolates save-state output to an ephemeral tmp_path.
     """
     monkeypatch.setattr("app.static.settings.SAVE_DIR", tmp_path / "saves")
+    monkeypatch.setattr("app.static.settings.LOG_DIR", tmp_path / "logs")
+    monkeypatch.setattr("app.static.settings.DUMP_DIR", tmp_path / "dumps")

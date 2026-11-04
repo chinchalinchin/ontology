@@ -16,8 +16,10 @@
 * [Widgets](./06-widgets.md)
 * [Sounds](./07-sounds.md)
 * [Plots](./08-plots.md)
-* [Emergence](./10-emergence.md)
-* [Architecture](./11-architecture.md)
+* [Ecology](./09-ecology.md)
+* [Chemistry](./10-chemistry.md)
+* [Emergence](./11-emergence.md)
+* [Architecture](./12-architecture.md)
 * [Appendices](./appendices/index.md)
     * [Appendix O: References](./appendices/00-references.md)
     * [Appendix I: Schemas](./appendices/01-schemas.md)
@@ -29,4 +31,13 @@
     
 ## Index: Quality Control
 
+### Quality Control: Tests 
+
 [![ontology-tests](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml)
+
+### Quality Control: Application Profile
+
+![Application Profile](../static/svg/engine-profile.svg)
+/// caption
+Runtime call graph and execution profile generated from `pstats` via `gprof2dot`.
+///

@@ -1,0 +1,53 @@
+{# -------------------------------------------------------------  #}
+{% set source = [
+
+] %}
+{% set libraries = [ 
+
+] %}
+{% set data = [ 
+
+] %}
+{# -------------------------------------------------------------  #}
+# Task: Ontology - 
+
+
+{# -------------------------------------------------------------  #}
+## Source Files
+
+{% for src in source %}
+**{{ file }}**
+
+```python
+{{ properties(properties.paths.root + src )}}
+```
+
+{% endfor %}
+
+{# -------------------------------------------------------------  #}
+## Library Files 
+
+{% for lib in libraries %}
+**{{ file }}**
+
+```python
+{{ properties(properties.paths.root + lib )}}
+```
+
+{% endfor %}
+
+## Data Files
+
+{% for datum in data %}
+**{{ file }}**
+
+```python
+{{ properties(properties.paths.root + lib )}}
+```
+
+{% endfor %}
+
+
+## Template
+
+{% include 'blocks/templates/template-backlog.md' %}

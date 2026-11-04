@@ -3,7 +3,6 @@
 @app.asset
 @asset.state
 @category.objects
-@modality.material
 
 # Ontology: Source - app.models.state.objects
 
@@ -23,6 +22,7 @@ from dataclasses import (
 from app.models.adapters import (
     PydanticPosition as Position, 
     PydanticVelocity as Velocity,
+    Enumerated
 )
 from app.models.state.core import AssetState
 from app.static.semantics import LayerProjections
@@ -52,7 +52,7 @@ class ContainerState(ObjectState):
 class DoorState(ObjectState):
     out: Optional[Position] = None # type: ignore
     outlayer: Optional[str] = None
-    projection: str = LayerProjections.IN.value
+    projection: Enumerated[LayerProjections] = LayerProjections.IN.value
 
 @dataclass(slots=True)
 class SwitchState(ObjectState):

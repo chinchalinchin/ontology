@@ -4,8 +4,9 @@
 @app.board
 @app.core
 @app.component
+@workflow.main
 
-# Ontology: Tests - tests.unit.app.game.board
+# Ontology: Tests - tests.unit.app.game.board.test_board_core
 
 Unit tests for the Board class.
 """
@@ -13,10 +14,12 @@ Unit tests for the Board class.
 import pytest
 
 # Application Libraries
+import app.static.settings as settings
 from app.static.semantics import (
     AssetCategories,
     AssetInstances,
     Directions,
+    Shortcuts,
 )
 
 # Cython Libraries
@@ -39,25 +42,25 @@ def test_board_initial_caching(mock_board):
     # 1. Board initializes with loaded = False until Migrator finishes
     assert mock_board.loaded is False
 
-    # Layer Indexing (16 on layer '0', 1 on 'brick-house-compose-layer-1')
+    # Layer Indexing (42 on layer '0', 45 total)
     assets_layer_0 = mock_board.assets("0")
-    assert len(assets_layer_0) == 16
-    assert len(mock_board.assets()) == 17
+    assert len(assets_layer_0) == 42
+    assert len(mock_board.assets()) == 45
 
     sheets = mock_board.categories(AssetCategories.SHEETS.value, "0")
     tiles = mock_board.categories(AssetCategories.TILES.value, "0")
-    assert len(sheets) == 2
+    assert len(sheets) == 4
     assert len(tiles) == 1
 
     # Inner Render Loop Indexing (Tiles bypassed)
     renderables = mock_board.renderables("0")
-    assert len(renderables) == 15
+    assert len(renderables) == 41
     assert all(a.category != AssetCategories.TILES.value for a in renderables)
 
     # Physics Caching
     weights = mock_board.weights("0")
-    assert len(weights) == 7
-    assert len(mock_board.weights()) == 8
+    assert len(weights) == 15
+    assert len(mock_board.weights()) == 17
 
 
 @pytest.mark.workflow_main
@@ -114,10 +117,10 @@ def test_board_size_tileless_layer(mock_board):
     """
     Verify layer extents derive from physical entities when no tiles are present.
     """
-    sizes = mock_board.size("brick-house-compose-layer-1")
+    sizes = mock_board.size("house-layer-1")
     assert len(sizes) == 1
-    assert sizes[0].w == 79
-    assert sizes[0].l == 79
+    assert sizes[0].w == 106
+    assert sizes[0].l == 202
 
 
 @pytest.mark.workflow_main
@@ -212,3 +215,46 @@ def test_board_clear_frequency(mock_board):
     assert len(mock_board.shorelines()) == 0
     assert len(mock_board.menus) == 0
     assert len(mock_board.overlays) == 0
+    assert mock_board.player() is None
+
+
+@pytest.mark.workflow_main
+def test_board_elevation_and_entity_getters(mock_board):
+    """
+    Validate elevation-filtered queries and entity lookup interfaces on Board.
+    """
+    player = mock_board.player()
+    assert mock_board.player(slot=99) is player
+    assert mock_board.asset(player.name) is player
+    assert mock_board.asset(player.name, layer="0") is player
+    assert mock_board.character(player.name) is player.state
+    assert player.name in mock_board.characters()
+
+    crate = mock_board.instances(AssetInstances.CRATES.value, "0")[0]
+    crate.state.elevation = 2
+
+    assert crate in mock_board.assets("0", elevation=2)
+    assert crate not in mock_board.assets("0", elevation=0)
+    assert crate in mock_board.categories(AssetCategories.OBJECTS.value, "0", elevation=2)
+    assert crate in mock_board.instances(AssetInstances.CRATES.value, "0", elevation=2)
+    assert crate in mock_board.weights("0", elevation=2)
+
+    obstacles_e0 = mock_board.obstacles("0", elevation=0)
+    assert len(obstacles_e0) > 0
+    assert len(mock_board.bridges("0")) >= 1
+    assert len(mock_board.shorelines("0")) == len(mock_board.shorelines())
+
+
+@pytest.mark.workflow_main
+@pytest.mark.workflow_ecology
+def test_board_moisture_and_serialization(mock_board):
+    """
+    Validate scalar moisture queries across layers and state serialization to SAVE_DIR.
+    """
+    fluid = mock_board.instances(AssetInstances.FLUIDS.value, "0")[0]
+    assert mock_board.moisture("0", fluid.state.position.x, fluid.state.position.y) >= 0.0
+    assert mock_board.moisture("nonexistent-layer", 0, 0) == 0.0
+
+    mock_board.serialize("test-world", "slot-1")
+    save_file = settings.SAVE_DIR / "test-world" / "slot-1.yaml"
+    assert save_file.exists() or (settings.SAVE_DIR / "test-world").exists()

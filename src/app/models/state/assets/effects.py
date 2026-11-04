@@ -3,7 +3,6 @@
 @app.asset
 @asset.state
 @category.effects
-@workflows.fluids
 
 # Ontology: Source - app.models.state.effects
 
@@ -27,12 +26,14 @@ from app.static.semantics import (
 )
 from app.models.adapters import (
     PydanticPosition as Position, 
-    PydanticHitbox as Hitbox
+    PydanticHitbox as Hitbox,
+    Enumerated
 )
 from app.models.state.core import (
     AnimationState,
     AssetState
 )
+
 
 # ------------------------------------------------------------
 # ---------------------------------------------- EFFECT FIELDS
@@ -42,11 +43,11 @@ from app.models.state.core import (
 class Damage:
     amount: int = 0
     duration: int = 0
-    reaction: Reactions = Reactions.BOUNCE.value
+    reaction: Enumerated[Reactions] = Reactions.BOUNCE.value
 
 @dataclass(slots=True)
 class Lot:
-    inventory: Inventories = Inventories.EQUIPMENT.value
+    inventory: Enumerated[Inventories] = Inventories.EQUIPMENT.value
     item: Optional[str] = None 
     quantity: int = 0
 
@@ -60,7 +61,7 @@ class Pool:
 @dataclass(slots=True)
 class Branch:
     position: Position # type: ignore
-    source: Directions
+    source: Enumerated[Directions]
     flow: int
     length: int = 0
     hitboxes: List[Hitbox] = field(default_factory=list) # type: ignore
@@ -81,7 +82,7 @@ class HazardState(EffectState):
 
 @dataclass(slots=True)
 class ReactableState(EffectState):
-    intention: str = Intentions.INTERACT.value
+    intention: Enumerated[Intentions] = Intentions.INTERACT.value
     cooldown: int = 60
     active: bool = False
 
@@ -98,5 +99,5 @@ class FluidState(EffectState):
     hitboxes: List[Hitbox] = field(default_factory=list) # type: ignore
     dirty: bool = True
     flow: int = 1
-    source: Directions = Directions.DOWN.value
+    source: Enumerated[Directions] = Directions.DOWN.value
     _keys: Dict[int, List[Tuple[str, int, int]]] = field(default_factory=dict)

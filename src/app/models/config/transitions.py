@@ -1,4 +1,10 @@
 """
+@domain.model
+@domain.automata
+@app.config
+@modality.intention
+@modality.lifespan
+
 # Ontology: Source - app.models.config.transitions
 
 Models for typing the transition configuration attributes of game components.
@@ -39,4 +45,3 @@ class PlotConfiguration(Configuration):
 class StageConfiguration(Configuration):
     next: str
     conditions: List[str] = field(default_factory=list)
-    phase: Optional[str] = None

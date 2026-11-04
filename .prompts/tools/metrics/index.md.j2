@@ -1,0 +1,12 @@
+{% if tools.views.metrics is defined and tools.views.metrics.values() | select | list | length > 0 %}
+# Tool: Metrics
+
+The **Metrics Tool** provides **Views** into statistical profile of the Application.
+
+## Metrics: Views
+
+{% if tools.views.metrics.pstats %}
+{% include 'tools/metrics/views/pstats.md.j2' %}
+{% endif %}
+
+{% endif %}

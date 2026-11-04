@@ -1,4 +1,8 @@
 """
+@domain.model
+@app.config
+@category.widgets
+
 # Ontology: Source - app.models.config.menus
 
 Models for typing the configuration attributes of Menus.
@@ -22,7 +26,8 @@ from app.static.semantics import (
 )
 from app.models.adapters import (
     PydanticScreenPosition as ScreenPosition,
-    PydanticDimensions as Dimensions
+    PydanticDimensions as Dimensions,
+    Enumerated
 )
 from app.models.config.core import Configuration
 
@@ -42,8 +47,8 @@ class PaneParameters:
     """
     Structural and spatial layout parameters for container panes.
     """
-    layout: Layouts = Layouts.STACK.value
-    alignment: Alignments = Alignments.START.value
+    layout: Enumerated[Layouts] = Layouts.STACK.value
+    alignment: Enumerated[Alignments] = Alignments.START.value
     gap: int = 0
     margins: int = 0
     position: Optional[ScreenPosition] = None # type: ignore
@@ -79,7 +84,7 @@ class ButtonParameters:
     """
     State parameters for traversable interactive button widgets.
     """
-    status: Statuses = Statuses.IDLE
+    status: Enumerated[Statuses] = Statuses.IDLE
 
 
 @dataclass(slots=True, frozen=True)

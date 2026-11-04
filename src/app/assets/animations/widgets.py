@@ -3,7 +3,6 @@
 @app.asset
 @asset.animation
 @category.widgets
-@workflow.menus
 
 # Ontology: Source - app.asset.animations.widgets
 

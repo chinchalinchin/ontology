@@ -1,7 +1,6 @@
+##### Bug B015: Decomposer Macro Scope
 
-##### Bug B016: Decomposer Macro Scope
-
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: HIGH
 
 **Description**

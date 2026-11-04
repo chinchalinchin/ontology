@@ -1,37 +1,4 @@
-{# -------------------------------------------------------------  #}
-# Task: Ontology - 
+# Task: Ontology - Pipelien Optimizations
 
+Do you see any way to optimize the pipeline workload? The unit tests take far longer to run in the pipeline than they do locally. I am wondering if some of the SDL calls aren't being mocked properly, and if the application might be rendering things headlessly.
 
-{# -------------------------------------------------------------  #}
-{% set source_files = [
-    ''
-] %}
-## Source Files
-
-{# -------------------------------------------------------------  #}
-{% set library = [ 
-    ''
-] %}
-## Library Files 
-
-{% for lib in library %}
-**{{ file }}**
-
-```python
-{{ }}
-```
-
-{% endfor %}
-
-{# -------------------------------------------------------------  #}
-## Data Files
-
-**src/data/config/recipes/main.yaml**
-
-```yaml
-{{ file(properties.paths.root + 'src/data/config/recipes/main.yaml')}}
-```
-
-## Template
-
-{% include 'blocks/templates/template-backlog.md' %}

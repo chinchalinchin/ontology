@@ -3,6 +3,7 @@
 @test.unit
 @app.asset
 @asset.animation
+@workflow.rendering
 
 # Ontology: Test - tests.unit.app.assets.test_animations
 
@@ -27,6 +28,7 @@ from libs.core.models import Position
 pytestmark = [
     pytest.mark.app_asset,
     pytest.mark.asset_animation,
+    pytest.mark.workflow_rendering
 ]
 
 

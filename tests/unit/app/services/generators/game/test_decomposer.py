@@ -1,7 +1,7 @@
 """
 @domain.test
-@test.fixture
-@app.services
+@test.unit
+@app.service
 @workflow.compositions
 
 # Ontology: Tests - tests.unit.services.generators.game.test_decomposer

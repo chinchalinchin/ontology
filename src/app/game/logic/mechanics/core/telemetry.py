@@ -1,7 +1,7 @@
 """
 @domain.concrete
 @domain.system
-@app.mechanics
+@app.mechanic
 @workflow.telemetry
 
 # Ontology: Source - app.game.logic.mechanics.core.telemetry

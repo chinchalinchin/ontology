@@ -1,4 +1,4 @@
-##### Bug B017: Canvas Bleed on Fore Tiles
+##### Bug B013: Canvas Bleed on Fore Tiles
 
 **STATUS**: OPEN
 **SEVERITY**: Medium

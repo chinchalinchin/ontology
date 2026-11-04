@@ -190,17 +190,21 @@ def _docstring(file_path: Path) -> str | None:
         tree = ast.parse(content)
         return ast.get_docstring(tree)
     except SyntaxError:
-        # Fallback for Cython files with cdef/cimport syntax
-        stripped = content.strip()
+        # Skip leading comments (e.g. # cython: ...) and empty lines
+        lines = content.splitlines()
+        idx = 0
+        while idx < len(lines) and (not lines[idx].strip() or lines[idx].strip().startswith("#")):
+            idx += 1
+
+        remaining = "\n".join(lines[idx:]).strip()
         for quote in ('"""', "'''"):
-            if stripped.startswith(quote):
-                end_idx = stripped.find(quote, len(quote))
+            if remaining.startswith(quote):
+                end_idx = remaining.find(quote, len(quote))
                 if end_idx != -1:
-                    return stripped[len(quote):end_idx]
+                    return remaining[len(quote):end_idx]
         return None
 
-
-def _load(vars_path: str | Path) -> dict:
+def _load(loadpath: str | Path) -> dict:
     """
     Loads variables from a YAML file.
 
@@ -211,23 +215,23 @@ def _load(vars_path: str | Path) -> dict:
         dict: The parsed YAML data, or an empty dict if the file 
               does not exist or cannot be parsed.
     """
-    if not os.path.exists(vars_path):
+    if not os.path.exists(loadpath):
         return {}
 
     try:
-        with open(vars_path, 'r', encoding='utf-8') as f:
+        with open(loadpath, 'r', encoding='utf-8') as f:
             data = pyyaml.safe_load(f)
-            print(f"Loaded variables from '{vars_path}'.")
+            print(f"Loaded variables from '{loadpath}'.")
             return data if data else {}
     except pyyaml.YAMLError as e:
-        print(f"Error parsing YAML from '{vars_path}': {e}")
+        print(f"Error parsing YAML from '{loadpath}': {e}")
         return {}
     except Exception as e:
-        print(f"Error reading vars file '{vars_path}': {e}")
+        print(f"Error reading vars file '{loadpath}': {e}")
         return {}
 
 
-def _load_data(data_dir: str | Path) -> Dict[str, Any]:
+def _data(data_dir: str | Path) -> Dict[str, Any]:
     """
     Loads all YAML (.yaml, .yml) files in `data_dir` into a dictionary
     keyed by each file's stem (filename without extension).
@@ -295,7 +299,7 @@ def typehint(context: AppContext, filepath: str) -> str:
 
 
 @macro
-def command(command_str: str) -> str:
+def command(command_str: str, command_env: dict[str, str] | None = None) -> str:
     """
     Executes a shell command and returns the standard output.
 
@@ -309,13 +313,18 @@ def command(command_str: str) -> str:
         str: The stripped stdout of the command, or an error message if execution fails.
              This ensures the template rendering does not crash on a single failed command.
     """
+    env = os.environ.copy()
+    if command_env:
+        env.update(command_env)
+
     try:
         result = subprocess.check_output(
             command_str,
             shell=True,
             stderr=subprocess.STDOUT,
             executable=SHELL,
-            text=True
+            text=True,
+            env=env
         )
         return result.strip()
     except subprocess.CalledProcessError as e:
@@ -740,7 +749,7 @@ if __name__ == "__main__":
     data_dir   = os.path.join(script_dir, DATA_DIR)
 
     # Load all YAMLs from data/ into AppContext
-    context = AppContext(**_load_data(data_dir))
+    context = AppContext(**_data(data_dir))
 
     vars_file = context.defaults.get('vars', 'main.yaml')
     output_file = context.defaults.get('output', 'prompt.md')

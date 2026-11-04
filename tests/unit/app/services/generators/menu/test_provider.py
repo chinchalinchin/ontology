@@ -1,8 +1,19 @@
 """
-# Ontology: tests.unit.test_app_services_generators_menus_provider
+@domain.test
+@test.unit
+@app.service
+@category.widgets
+@workflow.menus
+
+# Ontology: Tests - tests.unit.app.services.generators.menu.test_provider
+
+Unit tests for the Provider service.
 """
 # Standard Libraries
 from unittest.mock import MagicMock, patch
+
+# External Libraries
+import pytest
 
 # Application Libraries
 from app.models.config.menus import (
@@ -27,7 +38,20 @@ from app.game.menus.bindings.text import (
 from app.models.state.assets.widgets import CollectionState
 
 # Cython Libraries
-from libs.core.models import Dimensions, ScreenPosition
+from libs.core.models import (
+    Dimensions, 
+    ScreenPosition
+)
+
+# ---------------------------------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_services,
+    pytest.mark.category_widgets,
+    pytest.mark.workflow_menus
+]
+
+# ---------------------------------------------------------------------------
 
 
 def test_provider_resolve():
@@ -72,7 +96,7 @@ def test_provider_unpack_widget_page(mock_provider_render, mock_bindings_render,
     mock_bindings_render.measure.return_value = (10, 10)
     
     cfg = MenuNode(
-        id="test-page",
+        id="text-label",
         name="page-1",
         instance=AssetInstances.PAGES.value,
         bind=MenuBinding(
@@ -82,9 +106,9 @@ def test_provider_unpack_widget_page(mock_provider_render, mock_bindings_render,
     )
     context = {"text": "Hello World"}
     
-    widget = mock_provider._unpack_widget(cfg, context, Fonts.DIALOGUE.value, {})
+    widget = mock_provider._widget(cfg, context, Fonts.DIALOGUE.value, {})
     
-    assert widget.id == "test-page"
+    assert widget.id == "text-label"
     assert widget.name == "page-1"
     assert widget.state.content == ["Hello World"] 
     assert widget.state.canvas == "mock_canvas_ptr"
@@ -97,7 +121,7 @@ def test_provider_unpack_widget_traversal(mock_provider):
         instance=AssetInstances.BUTTONS.value,
         parameters=ButtonParameters(status=Statuses.DISABLED.value)
     )
-    widget = mock_provider._unpack_widget(cfg, {}, Fonts.MENU.value, {})
+    widget = mock_provider._widget(cfg, {}, Fonts.MENU.value, {})
     assert widget.state.status == Statuses.DISABLED.value
     assert widget.state.animation.action == Statuses.DISABLED.value
 
@@ -114,7 +138,7 @@ def test_provider_unpack_widget_meter(mock_provider):
         current = 75
         maximum = 100
     
-    widget = mock_provider._unpack_widget(cfg, {"hp": MockHP()}, Fonts.MENU.value, {})
+    widget = mock_provider._widget(cfg, {"hp": MockHP()}, Fonts.MENU.value, {})
     assert widget.state.reading == 75
     assert widget.state.unit == 100
     assert widget.state.animation.frame == 75
@@ -131,7 +155,7 @@ def test_provider_unpack_widget_icon(mock_provider):
         )
     )
     
-    widget = mock_provider._unpack_widget(cfg, {"equipped_item": "sword"}, Fonts.MENU.value, {})
+    widget = mock_provider._widget(cfg, {"equipped_item": "sword"}, Fonts.MENU.value, {})
     assert widget.state.icon == "sword"
     assert widget.state.position.x == 0
     assert widget.state.position.y == 0
@@ -139,7 +163,7 @@ def test_provider_unpack_widget_icon(mock_provider):
 
 def test_provider_expand_tree_gizmo(mock_provider, mock_gizmo_node):
     context = {"inventory": {"pack": ["shortsword"]}}
-    expanded = mock_provider._expand_tree(mock_gizmo_node, context)
+    expanded = mock_provider._expand(mock_gizmo_node, context)
 
     assert expanded.instance == AssetInstances.PANES.value
     assert isinstance(expanded.parameters, PaneParameters)

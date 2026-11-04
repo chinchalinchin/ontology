@@ -3,8 +3,6 @@
 @app.asset
 @asset.state
 @category.sheets
-@workflow.intentions
-@workflow.combat
 
 # Ontology: Source - app.models.state.sheets
 
@@ -26,6 +24,7 @@ from app.static.semantics import (
 from app.models.adapters import (
     PydanticPosition as Position, 
     PydanticVelocity as Velocity,
+    Enumerated
 )
 from app.models.state.core import (
     AnimationState,
@@ -99,7 +98,7 @@ class Memory:
     goals: Optional[Dict[str, Goal]] = field(default_factory=dict)
     rumors: Optional[List[str]] = None
     prices: Optional[Dict[str, float]] = None
-    relationships: Optional[Dict[str, Relationships]] = None
+    relationships: Optional[Dict[str, Enumerated[Relationships]]] = None
     property: Optional[Dict[str, Position]] = None # type: ignore
     sprites: Optional[Dict[str, Position]] = None # type: ignore
     doors: Optional[Dict[str, str]] = None
@@ -135,7 +134,7 @@ class SheetState(AssetState):
     position: Optional[Position] = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
     animation: AnimationState = field(default_factory=AnimationState)
-    intention: Optional[Intentions] = Intentions.IDLE.value
+    intention: Optional[Enumerated[Intentions]] = Intentions.IDLE.value
     character: Optional[Character] = field(default_factory=Character)
     inventory: Optional[Inventory] = field(default_factory=Inventory)
     meters: Optional[Meters] = field(default_factory=Meters)

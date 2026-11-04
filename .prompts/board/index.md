@@ -31,6 +31,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     * [x]: [Phase 09: Hydrodynamics](./phases/implement/phase-09.md)
     * [x]: [Phase 10: Seasons](./phases/implement/phase-10.md)
     * [ ]: [Phase 11: Geology](./phases/implement/phase-11.md)
+    * [ ]: [Phase 12: Chemistry](./phases/implement/phase-12.md)
     * [ ]: [Phase n-1: Sound](./phases/implement/phase-n-1.md)
     * [ ]: [Phase n: Commerce](./phases/implement/phase-n.md)
     * [ ]: [Phase n+1: Towns](./phase/implement/phase-n+1.md)
@@ -58,7 +59,8 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       * [x]: [Phase 04.05: Gizmos](./phases/refactor/refactor-04-05.md)
     * *Phase 06:*
       * [x]: [Phase 06.01: Expressions](./phases/refactor/refactor-06-01.md)
-      * [ ]: [Phase 06.01: Cursors](./phases/refactor/refactor-06-02.md)
+      * [ ]: [Phase 06.02: Goals](./phases/refactor/refactor-06-02.md)
+      * [ ]: [Phase 06.03: Combat](./phases/refactor/refactor-06-03.md)
     * *Phase 07:*
       * [x]: [Phase 07.01: Elevation Sorting](./phases/refactor/refactor-07-01.md)
       * [x]: [Phase 07.02: Platforms & Elevated Hitboxes](./phases/refactor/refactor-07-02.md)

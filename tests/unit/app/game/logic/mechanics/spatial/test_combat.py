@@ -1,5 +1,14 @@
 """
-# Ontology: tests.unit.test_app_game_logic_mechanics_spatial_combat.py
+@domain.test
+@test.unit
+@app.mechanic
+@physics.space
+@category.sheets
+@workflow.combat
+
+# Ontology: Tests - tests.unit.app.game.logic.mechanics.spatial.test_combat
+
+Unit tests for CombatMechanics.
 """
 # Standard Libraries
 from unittest.mock import MagicMock
@@ -34,7 +43,17 @@ from libs.core.models import (
     Hitbox
 )
 
-# TODO: MIGRATE ALL OF THIS SLOP INTO PROPER FIXTURES
+# -----------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_mechanic,
+    pytest.mark.physics_space,
+    pytest.mark.workflow_combat
+]
+
+# -----------------------------------------------------
+
+# TODO: MIGRATE ALL OF THIS INTO PROPER FIXTURES
 
 # --------------------------------------------------------------------------------------
 

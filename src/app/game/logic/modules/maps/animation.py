@@ -1,7 +1,7 @@
 """
 @domain.logic
 @app.module
-@workflow.intentions
+@modality.intention
 
 # Ontology: Source - app.game.maps.animation
 
@@ -102,14 +102,3 @@ class AnimationMap:
         
         # Higher than both diagonals means it is physically UP
         return Directions.RIGHT.value if dy > -dx else Directions.UP.value
-
-    @staticmethod
-    def attackbox(sprite: SpriteState, equipment: EquipmentGroup):
-        frame_key = settings.SEPARATOR.join([
-            sprite.state.animation.action,
-            sprite.state.animation.direction,
-            sprite.state.animation.frame
-        ])
-        weapon_key = sprite.state.inventory.equipment.weapon
-        weapon_props = equipment.weapons.get(weapon_key,{}).attackboxes.get(frame_key)
-

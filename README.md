@@ -84,19 +84,25 @@ python src/cli.py  \
 
 ### Analysis
 
+#### Dependencies
+
+```bash
+# 1. MacOS
+brew install graphviz
+# 2. Debian
+sudo apt install graphviz
+```
+
 #### Profile Tracing
 
 ```bash
-python -m cProfile -o engine_run.pstats src/cli.py start world-01
-gprof2dot -f pstats engine-run.pstats --node-thres=1.0 --edge-thres=0.5 | dot -Tsvg -o engine-run.svg
+python -m cProfile -o docs/static/pstats/latest.pstats src/main.py start world-01
+gprof2dot -f pstats docs/static/pstats/latest.pstats --node-thres=1.0 --edge-thres=0.5 | dot -Tsvg -o docs/static/svg/engine-profile.svg
 ```
 
 #### Dependency Trees
 
 ```bash
-sudo apt install graphviz
-
-chmod +x ./scripts/dependencies/main.sh
 uv run ./scripts/dependencies/main.sh
 ```
 

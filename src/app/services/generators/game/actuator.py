@@ -1,6 +1,6 @@
 """
 @domain.logic
-@app.services
+@app.service
 @workflow.generation
 @workflow.fluids
 @workflow.ecology

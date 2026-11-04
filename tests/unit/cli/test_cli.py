@@ -1,6 +1,7 @@
 """
 @domain.test
 @test.unit
+@app.core
 @workflow.cli
 
 # Ontology: Tests - tests.unit.cli.test_cli
@@ -9,26 +10,28 @@ Unit tests for CLI argument parsing, utilities, command handlers, and main entry
 """
 # Standard Libraries
 import argparse
+from dataclasses import fields
 import json
 import logging
 import os
-import sys
 from pathlib import Path
+import signal
+import sys
 
 # External Libraries
 import pytest
 import yaml
 
 # CLI Libraries
-import main
 import cli.arguments as arguments
 import cli.handlers as handlers
-import cli.utilities as utilities
 from cli.semantics import (
     Commands,
     Dumps,
     Filters,
 )
+import cli.utilities as utilities
+import main
 
 # Application Libraries
 from app.assets.base import Taxonomy
@@ -48,6 +51,7 @@ from libs.core.models import (
 # ---------------------------------------------------------------------------
 
 pytestmark = [
+    pytest.mark.app_core,
     pytest.mark.workflow_cli,
 ]
 
@@ -125,6 +129,28 @@ def test_arguments_prerender_flags(monkeypatch, tmp_path: Path):
     assert args.layer == "0"
 
 
+def test_arguments_render_custom_dimensions(monkeypatch, tmp_path: Path):
+    test_args = [
+        "main.py",
+        "render",
+        "world-testbed",
+        "--out", "./out",
+        "--layer", "0",
+        "--width", "640",
+        "--length", "360",
+    ]
+    monkeypatch.setattr(sys, "argv", test_args)
+
+    args = arguments.construct(tmp_path)
+
+    assert args.command == Commands.RENDER.value
+    assert args.board == "world-testbed"
+    assert args.out == "./out"
+    assert args.layer == "0"
+    assert args.width == 640
+    assert args.length == 360
+
+
 def test_arguments_map(monkeypatch, tmp_path: Path):
     test_args = [
         "main.py",
@@ -155,6 +181,12 @@ def test_arguments_schema_and_tags(monkeypatch, tmp_path: Path):
     assert schema_args.target == "state"
     assert schema_args.format == "json"
     assert schema_args.out == "out.json"
+
+    monkeypatch.setattr(sys, "argv", ["main.py", "schema"])
+    schema_defaults = arguments.construct(tmp_path)
+    assert schema_defaults.target == "all"
+    assert schema_defaults.format == "yaml"
+    assert schema_defaults.out is None
 
     monkeypatch.setattr(sys, "argv", ["main.py", "tags"])
     tags_args = arguments.construct(tmp_path)
@@ -193,31 +225,63 @@ def test_filter_assets_excludes_widgets(mock_assets, mock_asset):
     assert len(filtered) == len(mock_assets)
 
 
-def test_filter_assets_by_instance(mock_assets):
+def test_filter_assets_empty_filter_values(mock_assets):
+    filtered = utilities.filter(
+        mock_assets,
+        {
+            Filters.INSTANCE.value: None,
+            Filters.CATEGORY.value: None,
+            Filters.ID.value: None,
+            Filters.NAME.value: None,
+        },
+    )
+
+    assert len(filtered) == len(mock_assets)
+
+
+def test_filter_assets_by_instance(mock_assets, mock_state_schema):
     sprites = utilities.filter(
         mock_assets,
         {Filters.INSTANCE.value: "sprites"},
     )
-    assert len(sprites) == 1
+    sprite_len = len(
+        getattr(
+            getattr(mock_state_schema, AssetCategories.SHEETS.value),
+            AssetInstances.SPRITES.value,
+        )
+    )
+    assert len(sprites) == sprite_len
     assert all(a.instance == AssetInstances.SPRITES.value for a in sprites)
 
+    crate_len = len(
+        getattr(
+            getattr(mock_state_schema, AssetCategories.OBJECTS.value),
+            AssetInstances.CRATES.value,
+        )
+    )
     multi = utilities.filter(
         mock_assets,
-        {Filters.INSTANCE.value: "sprites,crate.*"},
+        {Filters.INSTANCE.value: "sprites,crates"},
     )
-    assert len(multi) == 2
+    assert len(multi) == sprite_len + crate_len
     assert {a.instance for a in multi} == {
         AssetInstances.SPRITES.value,
         AssetInstances.CRATES.value,
     }
 
 
-def test_filter_assets_by_category(mock_assets):
+def test_filter_assets_by_category(mock_assets, mock_state_schema):
     sheets = utilities.filter(
         mock_assets,
         {Filters.CATEGORY.value: "sheets"},
     )
-    assert len(sheets) == 3
+    sheet_instances = getattr(mock_state_schema, AssetCategories.SHEETS.value)
+    total_instances = sum(
+        len(getattr(sheet_instances, instance.name))
+        for instance in fields(sheet_instances)
+    )
+
+    assert len(sheets) == total_instances
     assert all(a.category == AssetCategories.SHEETS.value for a in sheets)
 
 
@@ -270,7 +334,7 @@ def test_dump_state_success(mock_board, testbed, monkeypatch, tmp_path: Path):
     dumps = list(tmp_path.glob("*.state-dump.md"))
     assert len(dumps) == 1
     content = dumps[0].read_text(encoding="utf-8")
-    assert "test-player" in content
+    assert "player" in content
     assert "test-crate" in content
 
 
@@ -334,10 +398,10 @@ def test_dump_missing_template(mock_board, testbed, monkeypatch, tmp_path: Path,
 # ---------------------------------------------------------------------------
 
 
-def test_force_hydration(mock_engine, mock_migrator, testbed, monkeypatch):
+@pytest.mark.workflow_hydration
+def test_force_hydration(mock_engine, mock_migrator, testbed):
     mock_engine.board.clear()
     mock_engine.board.loaded = False
-    monkeypatch.setattr(mock_engine.registry, "prewarm", lambda budget_ms=99999: True)
 
     screensize = Dimensions(w=480, l=480)
     utilities.hydrate(mock_engine, testbed, screensize)
@@ -345,8 +409,12 @@ def test_force_hydration(mock_engine, mock_migrator, testbed, monkeypatch):
     assert mock_engine.board.loaded is True
     assert len(mock_engine.board.assets()) > 0
     assert "0" in mock_engine.screens
+    assert "house-layer-2" in mock_engine.screens
+    assert set(mock_engine.screens.keys()) == set(mock_engine.board.layers())
+    assert len(mock_engine.registry._pending_assets) == 0
 
 
+@pytest.mark.app_schema
 def test_serialize_schema_formats():
     yaml_out = utilities.serialize(StateSchema, "yaml")
     json_out = utilities.serialize(StateSchema, "json")
@@ -364,6 +432,7 @@ def test_serialize_schema_formats():
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.workflow_rendering
 def test_handle_prerender_success(
     mock_engine,
     mock_orchestrator,
@@ -395,6 +464,35 @@ def test_handle_prerender_success(
     )
 
 
+@pytest.mark.workflow_rendering
+def test_handle_prerender_missing_layer(
+    mock_engine,
+    mock_orchestrator,
+    mock_render,
+    testbed,
+    monkeypatch,
+    tmp_path: Path,
+    caplog,
+):
+    monkeypatch.setattr(mock_orchestrator, "orchestrate", lambda **kwargs: mock_engine)
+    monkeypatch.setattr(utilities, "hydrate", lambda eng, brd, sz: None)
+
+    args = argparse.Namespace(
+        board=testbed,
+        layer="nonexistent_layer",
+        out=str(tmp_path),
+        device=Devices.KEYBOARD.value,
+    )
+    screensize = Dimensions(w=320, l=240)
+
+    with caplog.at_level(logging.ERROR):
+        handlers.handle_prerender(args, mock_orchestrator, screensize)
+
+    assert "Layer 'nonexistent_layer' not found" in caplog.text
+    mock_render.save.assert_not_called()
+
+
+@pytest.mark.workflow_rendering
 def test_handle_render_success(
     mock_engine,
     mock_orchestrator,
@@ -426,6 +524,41 @@ def test_handle_render_success(
     )
 
 
+@pytest.mark.workflow_rendering
+def test_handle_render_without_player_focus_fallback(
+    mock_engine,
+    mock_orchestrator,
+    mock_render,
+    testbed,
+    monkeypatch,
+    tmp_path: Path,
+):
+    monkeypatch.setattr(mock_orchestrator, "orchestrate", lambda **kwargs: mock_engine)
+    monkeypatch.setattr(utilities, "hydrate", lambda eng, brd, sz: None)
+
+    players = mock_engine.board.instances(AssetInstances.PLAYERS.value)
+    mock_engine.board.remove(players)
+
+    args = argparse.Namespace(
+        board=testbed,
+        layer="0",
+        out=str(tmp_path),
+        device=Devices.KEYBOARD.value,
+    )
+    screensize = Dimensions(w=320, l=240)
+
+    engine = handlers.handle_render(args, mock_orchestrator, screensize)
+
+    expected_path = str(tmp_path / f"{testbed}-0.png")
+    assert engine is mock_engine
+    mock_render.save.assert_called_once_with(
+        expected_path,
+        mock_engine.screens["0"].screensize.w,
+        mock_engine.screens["0"].screensize.l,
+    )
+
+
+@pytest.mark.workflow_rendering
 def test_handle_render_full_success(
     mock_engine,
     mock_orchestrator,
@@ -453,6 +586,35 @@ def test_handle_render_full_success(
     assert mock_render.save.call_args[0][0] == expected_path
 
 
+@pytest.mark.workflow_rendering
+def test_handle_map_missing_layer(
+    mock_engine,
+    mock_orchestrator,
+    mock_render,
+    testbed,
+    monkeypatch,
+    tmp_path: Path,
+    caplog,
+):
+    monkeypatch.setattr(mock_orchestrator, "orchestrate", lambda **kwargs: mock_engine)
+    monkeypatch.setattr(utilities, "hydrate", lambda eng, brd, sz: None)
+
+    args = argparse.Namespace(
+        board=testbed,
+        layer="nonexistent_layer",
+        out=str(tmp_path),
+        device=Devices.KEYBOARD.value,
+    )
+    screensize = Dimensions(w=320, l=240)
+
+    with caplog.at_level(logging.ERROR):
+        handlers.handle_map(args, mock_orchestrator, screensize)
+
+    assert "Layer 'nonexistent_layer' not found" in caplog.text
+    mock_render.save.assert_not_called()
+
+
+@pytest.mark.workflow_rendering
 def test_handle_render_missing_layer(
     mock_engine,
     mock_orchestrator,
@@ -507,11 +669,40 @@ def test_handle_start_keyboard_interrupt(
     assert "Game engine loop interrupted by user." in caplog.text
 
 
+def test_handle_start_signal_shutdown(
+    mock_engine,
+    mock_orchestrator,
+    testbed,
+    monkeypatch,
+):
+    monkeypatch.setattr(mock_orchestrator, "orchestrate", lambda **kwargs: mock_engine)
+
+    def _trigger_sigterm(*args, **kwargs):
+        mock_engine.running = True
+        active_handler = signal.getsignal(signal.SIGTERM)
+        active_handler(signal.SIGTERM, None)
+
+    monkeypatch.setattr(mock_engine, "start", _trigger_sigterm)
+
+    args = argparse.Namespace(
+        board=testbed,
+        device=Devices.KEYBOARD.value,
+    )
+    screensize = Dimensions(w=320, l=240)
+
+    engine = handlers.handle_start(args, mock_orchestrator, screensize)
+
+    assert engine is mock_engine
+    assert mock_engine.running is False
+
+
 def test_handle_tags_scans_docstrings(tmp_path: Path):
     pkg = tmp_path / "pkg"
     pkg.mkdir()
     (pkg / "__init__.py").write_text('"""\n@domain.system\n@workflow.cli\n"""\n', encoding="utf-8")
-    (pkg / "module_a.py").write_text('"""\n@app.core\n@workflow.cli\n"""\n', encoding="utf-8")
+    (pkg / "module_a.py").write_text('"""\n@app.core,\n@workflow.cli.\n"""\n', encoding="utf-8")
+    (pkg / "no_docstring.py").write_text("x = 1\n", encoding="utf-8")
+    (pkg / "broken_syntax.py").write_text("def broken(:\n", encoding="utf-8")
     (pkg / "_ignored.py").write_text('"""\n@should.ignore\n"""\n', encoding="utf-8")
 
     venv_dir = tmp_path / ".venv"
@@ -529,6 +720,7 @@ def test_handle_tags_missing_directory(tmp_path: Path):
     assert handlers.handle_tags(args) == []
 
 
+@pytest.mark.app_schema
 def test_handle_schema_stdout_and_files(tmp_path: Path, capsys):
     # 1. Single schema to stdout
     stdout_args = argparse.Namespace(target="state", format="json", out=None)
@@ -543,7 +735,13 @@ def test_handle_schema_stdout_and_files(tmp_path: Path, capsys):
     assert single_file.exists()
     assert yaml.safe_load(single_file.read_text(encoding="utf-8"))
 
-    # 3. All schemas to directory
+    # 3. Single schema to directory (no suffix)
+    single_dir = tmp_path / "single_schema_dir"
+    single_dir_args = argparse.Namespace(target="properties", format="json", out=str(single_dir))
+    handlers.handle_schema(single_dir_args)
+    assert (single_dir / "schema-properties.json").exists()
+
+    # 4. All schemas to directory
     out_dir = tmp_path / "schemas"
     dir_args = argparse.Namespace(target="all", format="yaml", out=str(out_dir))
     handlers.handle_schema(dir_args)
@@ -558,6 +756,7 @@ def test_handle_schema_stdout_and_files(tmp_path: Path, capsys):
 
 
 def test_main_software_flag(mock_engine, testbed, monkeypatch):
+    monkeypatch.setattr(main, "configure_logging", lambda **kwargs: None)
     monkeypatch.setattr(sys, "argv", ["main.py", "--software", "start", testbed])
     monkeypatch.delenv("SDL_RENDER_DRIVER", raising=False)
     monkeypatch.setitem(
@@ -565,15 +764,30 @@ def test_main_software_flag(mock_engine, testbed, monkeypatch):
         Commands.START.value,
         lambda args, orch, sz: mock_engine,
     )
-    monkeypatch.setattr(mock_engine, "stop", lambda: None)
-    monkeypatch.setattr(main, "quit_sdl", lambda: None)
+
+    stopped = False
+    sdl_quit = False
+
+    def _stop():
+        nonlocal stopped
+        stopped = True
+
+    def _quit_sdl():
+        nonlocal sdl_quit
+        sdl_quit = True
+
+    monkeypatch.setattr(mock_engine, "stop", _stop)
+    monkeypatch.setattr(main, "quit_sdl", _quit_sdl)
 
     main.commandline()
 
     assert os.environ.get("SDL_RENDER_DRIVER") == "software"
+    assert stopped is True
+    assert sdl_quit is True
 
 
 def test_main_dump_flags(mock_engine, testbed, monkeypatch):
+    monkeypatch.setattr(main, "configure_logging", lambda **kwargs: None)
     monkeypatch.setattr(
         sys,
         "argv",
@@ -614,6 +828,7 @@ def test_main_dump_flags(mock_engine, testbed, monkeypatch):
 
 
 def test_main_dump_with_filter_flags(mock_engine, testbed, monkeypatch):
+    monkeypatch.setattr(main, "configure_logging", lambda **kwargs: None)
     monkeypatch.setattr(
         sys,
         "argv",
@@ -654,6 +869,7 @@ def test_main_dump_with_filter_flags(mock_engine, testbed, monkeypatch):
 
 
 def test_main_standalone_command(monkeypatch, tmp_path: Path):
+    monkeypatch.setattr(main, "configure_logging", lambda **kwargs: None)
     monkeypatch.setattr(sys, "argv", ["main.py", "tags", str(tmp_path)])
 
     quit_called = False
@@ -670,6 +886,7 @@ def test_main_standalone_command(monkeypatch, tmp_path: Path):
 
 
 def test_main_unknown_command(monkeypatch, caplog):
+    monkeypatch.setattr(main, "configure_logging", lambda **kwargs: None)
     monkeypatch.setattr(
         arguments,
         "construct",

@@ -4,7 +4,7 @@
 @app.library
 @workflow.collisions
 
-Ontology: libs.core.models
+# Ontology: Libraries - libs.core.models
 """
 # cython: language_level=3
 
