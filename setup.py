@@ -15,6 +15,11 @@ library_dirs = [
 
 ext_modules = [
     Extension(
+        "libs.core.audio.mixer",
+        sources=["src/libs/core/audio/mixer.py"],
+        libraries=["SDL2", "SDL2_mixer"]
+    ),
+    Extension(
         "libs.core.models",
         sources=["src/libs/core/models.pyx"],
     ),

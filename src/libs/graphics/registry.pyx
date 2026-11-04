@@ -3,6 +3,7 @@
 @domain.system
 @domain.graphics
 @app.library
+@asset.frame
 @workflow.rendering
 
 # Ontology: Libraries - libs.graphics.registry

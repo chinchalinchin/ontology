@@ -128,6 +128,19 @@ Rendering 88 individual `Button` widgets would saturate screen real estate and r
 
 Because modal menus set `board.paused = True` (which suspends the `Engine.world` pipeline while keeping `Engine.core` active), `MelodyEventHandler` executes inside `Engine._drain()`—which runs every tick regardless of `board.paused`. This guarantees instantaneous audio synthesis on every Key Widget selection while the world is paused, while queuing emitted `MelodyEvent` payloads onto `board.acoustics` (or evaluating the motif Trie immediately) so nearby Sprites react to the performance.
 
+##### User Review II
+
+There are several things going on here that need further clarification and disambiguation, as multiple distinct things are being labeled "Assets" in the current specification. 
+
+* Sound Assets: `music`, `noises`, `vocals`
+* Configuration: `sound`, `scores`
+
+In the current spec, the synthesize Sound models are being jammed into the Asset Hierarchy for some reason. There is no physical Asset associated with `sound` or `scores` until the engine compiles the configuration during runtime, so Sound clearly belongs to a different kind of application system.
+
+`sound` should be loaded through configuration. There can be a dedicated step in the dependency pipeline for compiling the sound models and storing them somewhere (not the Registry; logically, the Board Cache would be a prime candidate), as these models should be wrappers around Cython primitive() calls that simply flatten their data struture into tuples for Cython (zero heap). 
+
+`music`, `noises`, `vocals` should be indexed by the Registry, as they will be "stateful" Assets, triggered by Board events and Asset state conditions. However, this raises the question of what interface is doing the indexing, as Frame is not appropriate. However, this will be treated as a secondary problem, as it seems to be a separate matter entirely from Sound.
+
 ##### Goals
 
 ###### Goal: Zero-Allocation Cython Audio Mixer & `sound.pyx` Integration
@@ -278,7 +291,7 @@ Create `SoundMechanics` to drain `board.acoustics` (populated by `MelodyEventHan
 
 *Objective*: Build `libs/audio/mixer.pyx` wrapping `SDL2_mixer` and porting the `scripts/synthesize/sound.pyx` polyphonic additive synthesis engine into a non-blocking callback.
 
-* [ ] Subtask: Configure build pipeline in `setup.py`, `setup.cicd.py`, and `Dockerfile` to link against `SDL2` and `SDL2_mixer`.
+* [x] Subtask: Configure build pipeline in `setup.py`, `setup.cicd.py`, and `Dockerfile` to link against `SDL2` and `SDL2_mixer`.
 * [ ] Subtask: Implement `libs/audio/mixer.pyx` managing `Mix_OpenAudio` (48,000 Hz, `AUDIO_F32SYS`), streaming `Mix_Music` channels, and `Mix_Chunk` SFX channels.
 * [ ] Subtask: Implement a lock-free 256-slot SPSC circular ring buffer (`NoteEvent` C structs) with `push_note()` and `push_score()` Cython interfaces.
 * [ ] Subtask: Port `sound.pyx` voice allocation (`MAX_VOICES = 32`, `MAX_HARMONICS = 8`), Stevens' power law velocity scaling ($v^{1.8}$), dynamic brightness ($v^{0.5h}$), and linear-attack/exponential-decay envelopes into a `Mix_SetPostMix` `nogil` callback.

@@ -1,14 +1,16 @@
 # ----------------------------------------------------
 anchors:
   title: &title Ontology - Instruments
-  description: &description |
-    TODO
+  description: &description TODO
+  board: &board
+    phase: '13'
+    action: implement
 # ----------------------------------------------------
 context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: index.md.j2
+  template: iterate/grooming.md.j2
 # ----------------------------------------------------
   parameters:
     title: *title
@@ -28,7 +30,7 @@ tools:
       pstats: false
     # --------------------------------------------
     source:
-      data: false
+      data: true
       filter: true
     # --------------------------------------------
     shell:
@@ -43,9 +45,7 @@ tools:
   parameters:
     # --------------------------------------------
     manager:
-      board:
-        phase: 13
-        action: implement
+      board: *board
       docs:
         exclude:
           # - 00-overview
@@ -63,6 +63,8 @@ tools:
           # - 12-architecture
       templates: 
         - template-backlog
+        - template-docs
+        - template-bug
       specs: []
     metrics:
       pstats: 
@@ -75,25 +77,42 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Asset Abstract
+          - title: Script - Synthesize
+            scan:
+              script: [ synthesize ]
+          - title: Application - Asset Abstracts
             scan:
               domain: [ abstract ]
               app: [ asset ]
-          - title: Core Models
+          - title: Application - Core Models
             scan:
               domain: [ model ]
               app: [ core ]
-          - title: Core System Components
+          - title: Application - Core System Components
             scan:
               domain: [ system ]
               app: [ core, component ]
-          - title: Synthesize Script
+          - title: Application - Board Cache
             scan:
-              script: [ synthesize ]
+              domain: [ system ]
+              app: [ board, module ]
+          - title: Application - Dependency Injection Pipeline
+            scan:
+              domain: [ system ]
+              app: [ orchestration ]
+          - title: Library - Audio Libraries
+            scan:
+              domain: [ audio ]
+              app: [ library ]
+          - title: Library - Registry
+            scan:
+              domain: [ graphics ]
+              app: [ library ]
+              asset: [ frame ]
       data:
         properties: [ ]
         state: [ ]
-        configurations: [ ]
+        configurations: [ sounds, score ]
         templates: [ ]
     # --------------------------------------------
     shell:
