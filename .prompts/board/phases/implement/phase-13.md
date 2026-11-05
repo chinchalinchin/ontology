@@ -1,4 +1,4 @@
-#### Implement: Phase n-1: Sound
+#### Implement: Phase 13: Sound
 
 **Overview**
 
@@ -236,7 +236,7 @@ class InstrumentController(MenuController):
         if action == Selections.PLAY_NOTE.value:
             # Resolve pitch (e.g. selector="C#" + octave=4 -> "C#4", or "+12" -> "C5")
             pitch_name = self._resolve_pitch(selector, ctx.instrument.octave)
-            note_dto = self.registry.resolve_note(
+            note_dto = ctx.registry.resolve_note(
                 pitch_name=pitch_name,
                 beat_name=ctx.properties.default_beat,
                 dynamic_name=ctx.instrument.dynamic,
