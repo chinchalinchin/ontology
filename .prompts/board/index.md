@@ -46,6 +46,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       * [x]: [Phase 02.05: Finetuning](./phases/refactor/refactor-02-05.md)
       * [x]: [Phase 02.06: Effects](./phases/refactor/refactor-02-06.md)
       * [x]: [Phase 02.07: Registry Data Structures](./phases/refactor/refactor-02-07.md)
+      * [ ]: [Phase 02.08: World Chunks](./phases/refactor/refactor-02-08.md)
     * *Phase 03:*
       * [x]: [Phase 03.01: Mechanics](./phases/refactor/refactor-03-01.md)
       * [x]: [Phase 03.02: Consolidation](./phases/refactor/refactor-03-02.md)

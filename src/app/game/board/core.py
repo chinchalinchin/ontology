@@ -461,7 +461,7 @@ class Board:
 
             dump[cat][inst].append(asdict(asset.state))
 
-        # Serialize abstract world metadata (resolving Bug B015)
+        # Serialize abstract world metadata
         if self.calendar:
             dump[Shortcuts.CALENDAR.value] = asdict(self.calendar)
         if self.plot:
