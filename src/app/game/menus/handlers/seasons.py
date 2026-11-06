@@ -1,4 +1,11 @@
 """
+@domain.user
+@domain.concrete
+@domain.logic
+@app.menu
+@menu.handler
+@workflow.seasons
+
 # Ontology: Source - app.game.menus.handlers.update
 
 Season event handling implementation.

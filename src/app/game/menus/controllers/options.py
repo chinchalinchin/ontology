@@ -1,4 +1,12 @@
 """
+@draft
+@domain.user
+@domain.logic
+@domain.concrete
+@app.menu
+@menu.controller
+@workflow.traversal
+
 # Ontology: Source - app.game.menus.controllers.options
 
 Menu controller stub for the Options menu placeholder.

@@ -53,7 +53,7 @@ from app.game.menus.core import (
 )
 from app.game.menus.contexts import MenuContext
 from app.game.menus.bindings import Binding
-from app.game.menus.layout import Layout
+from app.game.menus.modules import Layout
 from app.services.generators.menus.fabricator import Fabricator
 
 if TYPE_CHECKING:

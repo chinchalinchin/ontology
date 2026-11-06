@@ -34,11 +34,11 @@ from app.models.state import (
     Goal, 
     DevicePayload
 )
-from app.game.menus.events import MenuEvent
-from app.game.menus.contexts import (
+from app.models.menus import (
     InventoryContext,
     PauseContext
 )
+from app.game.menus.events import MenuEvent
 
 # Cython Libraries
 from libs.core.models import Position

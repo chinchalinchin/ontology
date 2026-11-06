@@ -1,4 +1,10 @@
 """
+@domain.user
+@domain.concrete
+@domain.system
+@app.menu
+@menu.handler
+
 # Ontology: Source - app.game.menus.handlers.menu
 
 Menu event handling implemention.

@@ -1,15 +1,26 @@
 """
+@domain.concrete
+@domain.user
+@app.menu
+@menu.binding
+@menu.gizmo
+
 # Ontology: Source - app.game.menus.bindings.collection
 
 Package for binding collection data to Gizmo slots.
 """
 # Standard Libraries
-from typing import Callable, Tuple, Any, List
+from typing import (
+    Callable, 
+    Tuple, 
+    Any, 
+    List
+)
 import logging
 
 # Application Libraries
 from app.game.menus.bindings.base import Binding
-from app.game.menus.contexts import MenuContext
+from app.models.menus import MenuContext
 from app.static.semantics import Statuses
 
 logger = logging.getLogger(__name__)

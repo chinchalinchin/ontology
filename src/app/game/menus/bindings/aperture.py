@@ -1,11 +1,25 @@
 """
+@domain.concrete
+@domain.user
+@app.menu
+@menu.binding
+@menu.gizmo
+
 # Ontology: Source - app.game.menus.bindings.aperture
 
 Package for binding delegated aperture slot icons to parent Gizmo collection state.
 """
-from typing import Tuple, Callable, Dict, Any
+# Standard Libraries
+from typing import (
+    Tuple, 
+    Callable, 
+    Dict, 
+    Any
+)
+
+# Application Libraries
 from app.game.menus.bindings.base import Binding
-from app.game.menus.contexts import MenuContext
+from app.models.menus import MenuContext
 
 
 class ApertureBinding(Binding):

@@ -1,4 +1,11 @@
 """
+@domain.user
+@domain.logic
+@domain.concrete
+@app.menu
+@menu.controller
+@workflow.hydration
+
 # Ontology: Source - app.game.menus.controllers.load
 """
 from __future__ import annotations

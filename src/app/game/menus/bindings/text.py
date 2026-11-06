@@ -1,23 +1,43 @@
 """
+@domain.concrete
+@domain.user
+@app.menu
+@menu.binding
+
+
 # Ontology: Source - app.game.menus.bindings.library
 
 Library Widget Binding implementation.
 """
 # Standard Libraries
-from typing import Callable, Tuple, Any, List
+from typing import (
+    Callable, 
+    Tuple, 
+    Any, 
+    List
+)
 
 # Application Libraries
-from app.game.menus.contexts import MenuContext
 from app.game.menus.bindings.base import Binding
+from app.models.menus import MenuContext
 
 # Cython Libraries
+## NOTE: Uneasy about importing the SDL interface here. 
+##       I don't see any other way of measuring the font, though.
+##       Research should be done into alternate implementations
+##       that don't require over-complicating the application
+##       dependency tree.
 import libs.graphics.render as render
+
+
+# ------------------------------------------------------------------------------
 
 def paginate(text: str, font: Any, w: int, l: int) -> List[str]:
     """Shared utility for formatting text into wrapped pages."""
     if not text or not font:
         return [str(text)] if text else [""]
-        
+
+    # TODO: need to type `font` and get rid of duck-typing.
     margin_w = int(w * font.margins) if hasattr(font, 'margins') else 0
     margin_l = int(l * font.margins) if hasattr(font, 'margins') else 0
     
@@ -87,11 +107,13 @@ class LibraryBinding(Binding):
             
         return (content_function,)
 
+
 class TextBinding(Binding):
     def __init__(self, target: dict, context: MenuContext, **kwargs):
         super().__init__(target, context, **kwargs)
         self.registry = kwargs.get('registry')
         self._cached_pages = None
+
         
     def bind(self, **kwargs) -> Tuple[Callable, ...]:
         w, l = kwargs.get('w', 0), kwargs.get('l', 0)

@@ -1,4 +1,9 @@
 """
+@domain.user
+@domain.abstract
+@app.menu
+@menu.handler
+
 # Ontology: Source - app.game.menus.handlers
 
 Strategy implementations for Event resolution.

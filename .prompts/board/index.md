@@ -57,6 +57,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       * [x]: [Phase 04.03: EventHandlers](./phases/refactor/refactor-04-03.md)
       * [x]: [Phase 04.04: MenuContext](./phases/refactor/refactor-04-04.md)
       * [x]: [Phase 04.05: Gizmos](./phases/refactor/refactor-04-05.md)
+      * [ ]: [Phase 04.06: Consolidation](./phases/refactor/refactor-04-06.md)
     * *Phase 06:*
       * [x]: [Phase 06.01: Expressions](./phases/refactor/refactor-06-01.md)
       * [ ]: [Phase 06.02: Goals](./phases/refactor/refactor-06-02.md)

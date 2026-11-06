@@ -7,7 +7,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: index.md.j2
+  # template: index.md.j2
   # template: draft.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
@@ -32,7 +32,7 @@ task:
   # template: iterate/grooming.md.j2
   # template: iterate/implementation.md.j2
   # template: iterate/coverage.md.j2
-  # template: iterate/review.md.j2
+  template: iterate/review.md.j2
   # template: iterate/conclusion.md.j2
   # --------------------------------------------
   # -------------------------- TEMPLATES: DESIGN
@@ -68,7 +68,7 @@ tools:
     manager:
       board: true
       docs: true
-      templates: false
+      templates: true
       specs: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
@@ -79,7 +79,7 @@ tools:
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: false
+      data: true
       filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
@@ -101,8 +101,8 @@ tools:
     # --------------------------------------------
     manager:
       board:
-        phase: n-1
-        action: implement
+        phase: 04-06
+        action: refactor
       docs:
         exclude:
           # - 00-overview
@@ -111,15 +111,15 @@ tools:
           - 03-compositions
           - 04-intentions
           - 05-mechanics
-          - 06-widgets
-          # - 07-sounds
+          # - 06-widgets
+          - 07-sounds
           - 08-plots
           - 09-ecology
           - 10-chemistry
           - 11-emergence
           # - 12-architecture
       templates: 
-        - template-backlog
+        - template-review
       specs:
         - 00-dialogue
         - 01-interaction
@@ -141,14 +141,10 @@ tools:
             scan:
               domain: [ abstract ]
               app: [ asset ]
-          - title: Core Models
+          - title: Menu Models
             scan:
               domain: [ model ]
-              app: [ core ]
-          - title: Core System Components
-            scan:
-              domain: [ system ]
-              app: [ core, component ]
+              app: [ menu ]
       data:
         properties: [ ]
         state: [ ]

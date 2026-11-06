@@ -1,8 +1,7 @@
 """
+@domain.system
 @domain.model
 @asset.property
-@workflow.rendering
-@workflow.typography
 
 # Ontology: Source - app.models.properties.fonts
 

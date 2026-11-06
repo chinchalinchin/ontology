@@ -1,4 +1,11 @@
 """
+@domain.user
+@domain.concrete
+@domain.system
+@app.menu
+@menu.handler
+@workflow.hydration
+
 # Ontology: Source - app.game.menus.handlers.state
 
 State event handling implementation.
@@ -13,7 +20,7 @@ from app.game.menus.events import (
     StateEvent,
     EventContext
 )
-from app.game.menus.contexts import LoadContext
+from app.models.menus import LoadContext
 from app.game.menus.handlers.base import EventHandler
 
 logger = logging.getLogger(__name__)

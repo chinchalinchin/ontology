@@ -19,7 +19,9 @@ Tags are meant to capture logically related slices of the Application.
 
 **All** module docstrings must be marked with atleast one `@<tag>.<name>` on the very first line. They may optionally have more than one `@<tag>.<name>` on subsequent new lines after the first `@<tag>.<name>`. 
 
-* Tags:
+* Anoynmous Tags:
+    * `draft`: Works in progress.
+* Named Tags:
     * `app`: Every file should have an Application Tag.
     * `domain`: Every file should have a Domain Tag.
     * `asset`: Asset Tags are restricted to models, implementations and configurations surrounding the Asset class.
@@ -62,7 +64,7 @@ Tags are meant to capture logically related slices of the Application.
                 * `modality.action`
                 * `modality.auditory`
                 * `modality.appearance`
-                * `modality.frequency`
+                * `modality.periodicity`
                 * `modality.lifespan`
                 * `modality.intention`
                 * `modality.material`
@@ -88,6 +90,7 @@ Tags are meant to capture logically related slices of the Application.
                 * `menu.binding`
                 * `menu.controller`
                 * `menu.handler`
+                * `menu.gizmo`
             * Physics Names:
                 * `physics.fields` (*Vector Fields*)
                 * `physics.motion` (*Kinematics, Momentum, Collisions*)
@@ -110,7 +113,6 @@ Tags are meant to capture logically related slices of the Application.
                 * `workflow.gravity`
                 * `workflow.hydration` (*Initialization*)
                 * `workflow.interactions`
-                * `workflow.main` (*Entrypoint*)
                 * `workflow.injection` (*Dependency Injection Pipeline*)
                 * `workflow.navigation` (*RRT Algorithms*)
                 * `workflow.player`
@@ -118,7 +120,8 @@ Tags are meant to capture logically related slices of the Application.
                 * `workflow.rendering`
                 * `workflow.seasons`
                 * `workflow.telemetry`
-                * `workflow.transitions`: (*Transition Translation and Execution*)
+                * `workflow.transitions` (*Transition Translation and Execution*)
+                * `workflow.traversal` (*Menu Navigation and Interactions*)
                 * `workflow.typography`
 
 

@@ -1,4 +1,10 @@
 """
+@domain.user
+@domain.concrete
+@domain.system
+@app.menu
+@menu.handler
+
 # Ontology: Source - app.game.menus.handlers.terminal
 
 Terminal event handling implementations.
@@ -12,8 +18,8 @@ from app.game.menus.events import (
     TerminalEvent, 
     EventContext
 )
-from app.game.menus.contexts import ViewContext
 from app.game.menus.handlers.base import EventHandler
+from app.models.menus import ViewContext
 
 logger = logging.getLogger(__name__)
 

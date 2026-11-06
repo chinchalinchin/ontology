@@ -1,7 +1,12 @@
 """
-# Ontology: Source - app.game.menus.bindings
+@domain.concrete
+@domain.user
+@app.menu
+@menu.binding
 
-Package for binding Widget states to game state.
+# Ontology: Source - app.game.menus.bindings.select
+
+Select Binding implementation.
 """
 # Standard Libraries
 from typing import Callable, Tuple

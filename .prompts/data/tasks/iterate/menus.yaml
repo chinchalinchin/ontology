@@ -1,0 +1,94 @@
+# ----------------------------------------------------
+context: true
+# ----------------------------------------------------
+task:
+# ----------------------------------------------------
+  template: iterate/review.md.j2
+# ----------------------------------------------------
+  parameters:
+    description: null
+    title: null
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    # --------------------------------------------
+    manager:
+      board: true
+      docs: true
+      templates: true
+    # --------------------------------------------
+    source:
+      data: true
+      filter: true
+    # --------------------------------------------
+    shell:
+      directory: true
+    # --------------------------------------------
+    tests:  
+      configuration: false
+      pipeline: false
+      session: false
+# -----------------------------------------------------
+  parameters:
+    # --------------------------------------------
+    manager:
+      board:
+        phase: 04-06
+        action: refactor
+      docs:
+        exclude:
+          # - 00-overview
+          # - 01-assets
+          - 02-sprites
+          - 03-compositions
+          - 04-intentions
+          - 05-mechanics
+          # - 06-widgets
+          - 07-sounds
+          - 08-plots
+          - 09-ecology
+          - 10-chemistry
+          - 11-emergence
+          # - 12-architecture
+      templates: 
+        - template-review
+    # --------------------------------------------
+    source:
+      filter:
+        default: AND
+        queries:
+          - title: Application Core Components
+            scan:
+              domain: [ system ]
+              app: [ core, component ]
+          - title: Asset Abstract
+            scan:
+              domain: [ abstract ]
+              app: [ asset ]
+          - title: Menu Abstracts
+            scan:
+              domain: [ abstract ]
+              app: [ menu ]
+          - title: Menu Models
+            scan:
+              domain: [ model ]
+              app: [ menu ]
+          - title: Gizmos
+            scan:
+              menu: [ gizmos ]
+      data:
+        properties: [ ]
+        state: [ ]
+        configurations: [ ]
+        templates: [ ]
+    # --------------------------------------------
+    shell:
+      directory: |
+        tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
+    # --------------------------------------------
+    tests:
+      pipeline:
+        command: pytest -m
+        marker: workflow_navigation
+        # scope: '**/test_{actuator,cartographer}.py'

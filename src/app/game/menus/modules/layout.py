@@ -1,8 +1,8 @@
 """
 @domain.user
 @domain.logic
-@category.widgets
-@workflow.menus
+@app.module
+@app.menu
 
 # Ontology: Source - app.game.menus.layout
 
@@ -31,7 +31,10 @@ from app.models.config.menus import (
 )
 
 # Cython Libraries
-from libs.core.models import Position, Dimensions
+from libs.core.models import (
+    Position, 
+    Dimensions
+)
 
 # --------------------------------------------
 
@@ -56,6 +59,7 @@ class Layout:
             pos = None
             if isinstance(root_cfg.parameters, PaneParameters):
                 pos = root_cfg.parameters.position
+            # TODO: ????
             elif isinstance(root_cfg.parameters, dict):
                 pos = root_cfg.parameters.get("position")
 
@@ -67,7 +71,11 @@ class Layout:
 
             self._compute_recursive(root_cfg, widgets, flattened)
 
-        graph = self._build_graph([w for w in flattened if w.instance == AssetInstances.BUTTONS.value])
+        graph = self._build_graph([
+            w 
+            for w in flattened 
+            if w.instance == AssetInstances.BUTTONS.value
+        ])
         return flattened, graph
 
     def _compute_recursive(self, cfg: MenuNode, widgets: Dict[str, Asset], flattened: List[Asset]) -> None:
@@ -78,6 +86,7 @@ class Layout:
         flattened.append(asset)
 
         # Non-pane endpoints terminate branch recursion
+        # TODO: ???
         if cfg.instance not in (AssetInstances.PANES.value, "panes"):
             return
 
@@ -87,6 +96,8 @@ class Layout:
             alignment = params.alignment
             gap = params.gap
             children = params.children
+
+        # TODO: ??? what is this garbage?
         elif isinstance(params, dict):
             layout = params.get("layout", Layouts.STACK)
             alignment = params.get("alignment", Alignments.START)
@@ -215,8 +226,16 @@ class Layout:
                 if not b2_pos or not b2_dim:
                     continue
 
-                x_overlap = not (b1_pos.x + b1_dim.w <= b2_pos.x or b2_pos.x + b2_dim.w <= b1_pos.x)
-                y_overlap = not (b1_pos.y + b1_dim.l <= b2_pos.y or b2_pos.y + b2_dim.l <= b1_pos.y)
+                x_overlap = not (
+                    b1_pos.x + b1_dim.w <= b2_pos.x 
+                    or 
+                    b2_pos.x + b2_dim.w <= b1_pos.x
+                )
+                y_overlap = not (
+                    b1_pos.y + b1_dim.l <= b2_pos.y 
+                    or 
+                    b2_pos.y + b2_dim.l <= b1_pos.y
+                )
 
                 if x_overlap:
                     if b2_pos.y > b1_pos.y: 

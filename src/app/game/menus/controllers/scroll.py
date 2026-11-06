@@ -1,4 +1,11 @@
 """
+@domain.user
+@domain.logic
+@domain.concrete
+@app.menu
+@menu.controller
+@workflow.traversal
+
 # Ontology: Source - app.game.menus.controllers.scroll
 """
 from __future__ import annotations
@@ -38,10 +45,17 @@ class ScrollController(MenuController):
         
         if selection == Selections.SCROLLDOWN.value:
             page.state.scrolldown()
-            bus.append(UpdateEvent(widget=page, content=page.state.current()))
+            bus.append(UpdateEvent(
+                widget=page, 
+                content=page.state.current()
+            ))
+
         elif selection == Selections.SCROLLUP.value:
             page.state.scrollup()
-            bus.append(UpdateEvent(widget=page, content=page.state.current()))
+            bus.append(UpdateEvent(
+                widget=page, 
+                content=page.state.current()
+            ))
             
     def update(self, menu: Menu, board: Board, bus: collections.deque) -> None:
         """Fires every frame."""

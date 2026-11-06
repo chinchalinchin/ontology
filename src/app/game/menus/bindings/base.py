@@ -1,15 +1,29 @@
 """
-# Ontology: Source - app.game.menus.bindings
+@domain.abstract
+@domain.user
+@app.base
+@app.menu
+@menu.binding
 
-Package for binding Widget states to game state.
+# Ontology: Source - app.game.menus.bindings.base
+
+Abstract interface for binding Widget States to Asset State.
 """
 # Standard Libraries
 import functools
-from abc import ABC, abstractmethod
-from typing import Callable, Any, Tuple, Dict
+from abc import (
+    ABC, 
+    abstractmethod
+)
+from typing import (
+    Callable, 
+    Any, 
+    Tuple, 
+    Dict
+)
 
 # Application Libraries
-from app.game.menus.contexts import MenuContext
+from app.models.menus import MenuContext
 
 
 class Binding(ABC):
@@ -38,6 +52,7 @@ class Binding(ABC):
         self.selection = self.target.get('selection')
         self.selector = self.target.get('selector')
 
+
     def _resolve(self, bind_path: str, context: MenuContext) -> Tuple[Any, str]:
         """Resolves a string path into a (parent, attribute) tuple securely once at init."""
         if not bind_path:
@@ -64,6 +79,7 @@ class Binding(ABC):
         except AttributeError:
             return None, None
 
+
     def _get(self, key: str, default: Any = None) -> Any:
         """Safely extracts the resolved value based on the target key."""
         if key in self.resolved:
@@ -79,6 +95,7 @@ class Binding(ABC):
             return self.target[key]
 
         return default
+
 
     @abstractmethod
     def bind(self, **kwargs) -> Tuple[Callable, ...]:

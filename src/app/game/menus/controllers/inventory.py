@@ -1,4 +1,12 @@
 """
+@draft
+@domain.user
+@domain.logic
+@domain.concrete
+@app.menu
+@menu.controller
+@workflow.traversal
+
 # Ontology: Source - app.game.menus.controllers.inventory
 
 Package for managing the Player Inventory modal menu.

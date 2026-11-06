@@ -1,13 +1,20 @@
 """
+@domain.concrete
+@domain.user
+@app.menu
+@menu.binding
+
 # Ontology: Source - app.game.menus.bindings.icon
 
 Icon Widget Binding implementation.
 """
 # Standard Libraries
-from typing import Callable,Tuple
+from typing import (
+    Callable,
+    Tuple
+)
 
 # Application Libraries
-import app.static.settings as settings
 from app.game.menus.bindings.base import Binding
 
 class IconBinding(Binding):

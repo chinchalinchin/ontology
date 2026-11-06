@@ -1,4 +1,10 @@
 """
+@domain.user
+@domain.concrete
+@app.menu
+@menu.handler
+@workflow.rendering
+
 # Ontology: Source - app.game.menus.handlers.update
 
 Update event handling implementation.

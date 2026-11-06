@@ -1,8 +1,7 @@
 """
 @domain.user
 @domain.model
-@category.widgets
-@workflow.menus
+@app.menu
 
 # Ontology: Source - app.game.menus.contexts
 

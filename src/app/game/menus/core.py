@@ -2,8 +2,7 @@
 @domain.user
 @domain.model
 @app.core
-@category.widgets
-@workflow.menus
+@app.menu
 
 # Ontology: Source - app.game.menus.core
 """
