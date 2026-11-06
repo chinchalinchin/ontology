@@ -3,7 +3,6 @@
 @app.core
 @app.component
 @workflow.rendering
-@workflow.main
 
 # Ontology: Source - app.game.screen
 

@@ -3,7 +3,6 @@
 @app.board
 @app.core
 @app.component
-@workflow.main
 
 # Ontology: Source - app.game.board.core
 

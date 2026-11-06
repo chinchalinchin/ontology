@@ -2,7 +2,6 @@
 @domain.system
 @app.core
 @app.component
-@workflow.main
 
 # Ontology: Source - app.game.engine
 

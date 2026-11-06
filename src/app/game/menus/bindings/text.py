@@ -9,12 +9,15 @@
 
 Library Widget Binding implementation.
 """
+from __future__ import annotations
+
 # Standard Libraries
 from typing import (
     Callable, 
     Tuple, 
     Any, 
-    List
+    List,
+    TYPE_CHECKING
 )
 
 # Application Libraries
@@ -24,7 +27,9 @@ from app.models.config.menus import (
     TextTarget
 )
 from app.models.menus.contexts import MenuContext
-from app.services.generators.menus import Library
+
+if TYPE_CHECKING:
+    from app.services.generators.menus.library import Library
 
 # Cython Libraries
 ## NOTE: Uneasy about importing the SDL interface here. 

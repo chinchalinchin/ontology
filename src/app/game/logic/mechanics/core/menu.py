@@ -2,9 +2,8 @@
 @domain.user
 @domain.concrete
 @app.mechanic
+@app.menu
 @asset.animation
-@category.widgets
-@workflow.menus
 
 # Ontology: Source - app.game.logic.mechanics.core.menu
 

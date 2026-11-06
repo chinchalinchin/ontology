@@ -26,7 +26,10 @@ from app.static.semantics import (
     Layouts,
     Alignments,
     Bindings,
-    Selections
+    Controllers,
+    Selections,
+    Fonts,
+    Widgets
 )
 from app.models.adapters import (
     PydanticScreenPosition as ScreenPosition,
@@ -115,7 +118,7 @@ class PaneParameters:
     margins: int = 0
     position: Optional[ScreenPosition] = None # type: ignore
     dimensions: Optional[Dimensions] = None # type: ignore
-    font: Optional[str] = None
+    font: Optional[Enumerated[Fonts]] = Fonts.DIALOGUE.value
     children: List[MenuNode] = field(default_factory=list)
 
 
@@ -157,7 +160,7 @@ class MenuNode:
     """
     id: str
     name: str
-    instance: str
+    instance: Enumerated[Widgets]
     bind: Optional[MenuBinding] = None
     parameters: Optional[Union[PaneParameters, GizmoParameters, ButtonParameters]] = None
 
@@ -168,5 +171,5 @@ class MenuConfiguration(Configuration):
     """
     Root menu configuration containing high-level controller and node hierarchy.
     """
-    controller: str
+    controller: Enumerated[Controllers]
     roots: List[MenuNode]

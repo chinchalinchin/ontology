@@ -3,9 +3,9 @@
 @app.service
 @app.menu
 @app.asset
-@category.widget
+@category.widgets
 
-# Ontology: Source - app.services.generators.provider
+# Ontology: Source - app.services.generators.menus.provider
 
 Package for ingame Menu instantiation.
 """
@@ -16,7 +16,6 @@ import logging
 from typing import (
     Dict, 
     Any, 
-    Union, 
     Optional, 
     TYPE_CHECKING
 )
@@ -24,12 +23,10 @@ from typing import (
 # Application Libraries
 from app.assets.base import Asset
 from app.static.semantics import (
-    AssetCategories, 
     AssetInstances, 
     Statuses, 
     Menus, 
     Fonts,
-    Bindings,
     Shortcuts
 )
 from app.services.factories.assets import AssetFactory
@@ -54,7 +51,10 @@ from app.game.menus.core import (
     Widget
 )
 from app.models.menus import MenuContext
-from app.game.menus.bindings import Binding
+from app.game.menus.bindings import (
+    Binding,
+    CollectionBinding
+)
 from app.game.menus.modules import Layout
 from app.services.generators.menus.fabricator import Fabricator
 
@@ -196,88 +196,66 @@ class Provider:
         else:
             widgets[cfg.name] = self._widget(cfg, context, font, widgets)
 
-    def _unpack_pane(self, 
-        pane: MenuNode, 
-        context: MenuContext, 
-        widgets: Dict[str, Asset], 
-        font: Union[Fonts, None] = None
+    def _unpack_pane(
+        self,
+        pane: MenuNode,
+        context: MenuContext,
+        widgets: Dict[str, Widget],
+        font: Optional[Fonts] = None
     ) -> None:
-        """
-        """
         params = pane.parameters
-
         if not isinstance(params, PaneParameters):
             logger.warning(f"Pane does not have PaneParameters: {pane.name}")
-            return 
-        
-        layout = params.layout
-        alignment = params.alignment
-        gap = params.gap
-        margins = params.margins
-        dimensions = params.dimensions
-        font = params.font or font
-        children = params.children
+            return
 
+        font = params.font or font
         props = self.properties.panes.get(pane.id)
         recipe = self.recipes.panes
 
-        # Override dimensions on properties if declared on pane parameters
-        if dimensions is not None:
+        if params.dimensions is not None:
             props = WidgetProperties(
-                dimensions=dimensions,
+                dimensions=params.dimensions,
                 frames=props.frames
             )
 
-        # Unpack collection pane state
-        if pane.bind and pane.bind.schema == Bindings.COLLECTION.value:
-            binding = self.binder.binding(pane.bind, context, widgets=widgets)
-            collection_fn = next(iter(binding.bind()))
+        binding = self.binder.binding(pane.bind, context, widgets=widgets)
 
+        if isinstance(binding, CollectionBinding):
             state = CollectionState(
                 id=pane.id,
                 name=pane.name,
                 position=Position(x=0, y=0),
-                layout=layout,
-                alignment=alignment,
-                gap=gap,
-                margins=margins,
-                collection_function=collection_fn,
-                capacity=pane.bind.target.capacity,
-                columns=pane.bind.target.columns,
+                layout=params.layout,
+                alignment=params.alignment,
+                gap=params.gap,
+                margins=params.margins,
+                collection_function=binding.bind(),
+                capacity=binding.target.capacity,
+                columns=binding.target.columns,
                 offset=0
-            )
-
-            pane_asset = AssetFactory.widget(
-                pane, 
-                props, 
-                state, 
-                recipe, 
-                binding
             )
         else:
             state = PaneState(
                 id=pane.id,
                 name=pane.name,
                 position=Position(x=0, y=0),
-                layout=layout,
-                alignment=alignment,
-                gap=gap,
-                margins=margins
+                layout=params.layout,
+                alignment=params.alignment,
+                gap=params.gap,
+                margins=params.margins
             )
 
-            pane_asset = AssetFactory.asset(
-                AssetCategories.WIDGETS.value, 
-                AssetInstances.PANES.value, 
-                props, 
-                state, 
-                recipe
-            )
+        widgets[pane.name] = AssetFactory.widget(
+            pane,
+            props,
+            state,
+            recipe,
+            binding
+        )
 
-        widgets[pane.name] = pane_asset
-
-        for child in children:
+        for child in params.children:
             self._unpack_node(child, context, widgets, font)
-
+            
     def _expand(self, node: MenuNode, context: MenuContext) -> MenuNode:
         """
         Recursively compiles virtual macro nodes (gizmos) into concrete pane subtrees.

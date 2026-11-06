@@ -44,4 +44,4 @@ Scans a directory for any source files that have a `@tag` annotation in their do
 ## Quickstart
 
 1. Adjust variables in `main.yaml`.
-2. Generate prompt with `python .prompts/main.py`
+2. Generate prompt with `python prompts/main.py`

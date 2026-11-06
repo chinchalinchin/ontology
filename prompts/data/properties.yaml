@@ -11,17 +11,17 @@ properties:
     # ---------------------------------------
     actions: .githubs/workflows/
     # ---------------------------------------
-    blocks: .prompts/tasks/.blocks/
-    board: .prompts/board/
+    blocks: prompts/tasks/.blocks/
+    board: prompts/board/
     config: src/data/config
     docs: docs/
     diagrams: docs/static/mmd/
     dumps: src/data/dumps/
     fixtures: tests/unit/fixtures/
     logs: src/data/logs/
-    phases: .prompts/board/phases/
+    phases: prompts/board/phases/
     tables: docs/static/md/
-    templates: .prompts/board/templates
+    templates: prompts/board/templates
     tests: tests/unit/
   # --------------------------------------------
   project:

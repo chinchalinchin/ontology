@@ -4,7 +4,7 @@
 @app.menu
 @menu.binding
 
-# Ontology: Source - app.services.generators.binder
+# Ontology: Source - app.services.generators.menus.binder
 
 Factory for generating and preparing Binding components.
 """

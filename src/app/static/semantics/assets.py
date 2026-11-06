@@ -106,10 +106,20 @@ class Equipment(str, Enum):
     UTILITIES       = "utilities"
     WEAPONS         = "weapons"
 
+class Widgets(str, Enum):
+    """Enumeration of Widgets, physical and virtualized."""
+    BUTTONS         = "buttons"
+    ICONS           = "icons"
+    GIZMOS          = "gizmos"
+    METERS          = "meters"
+    PAGES           = "pages"
+    PANES           = "panes"
+
 class Groups(str, Enum):
     """Enumeration of Asset Groups."""
     EQUIPMENT       = "equipment"
     SPAWNABLES      = "spawnables"
+    WIDGETS         = "widgets"
 
 # -------------------------------------------------------
 # -------------------------------- FRAME SPACE PARTITIONS

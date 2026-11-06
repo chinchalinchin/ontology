@@ -4,7 +4,7 @@
 @asset.animation
 @category.widgets
 
-# Ontology: Source - app.asset.animations.widgets
+# Ontology: Source - app.assets.animations.widgets
 
 Widget Animation implementations.
 """

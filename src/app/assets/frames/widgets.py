@@ -4,7 +4,7 @@
 @asset.frame
 @category.widgets
 
-# Ontology: Source - app.assets.frames
+# Ontology: Source - app.assets.frames.widgets
 
 Package for Widget Frame implementations.
 """

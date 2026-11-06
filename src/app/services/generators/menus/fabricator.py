@@ -10,9 +10,8 @@ Package for constructing Gizmos.
 """
 # Standard Libraries
 from typing import (
-    Optional, 
-    List, 
-    Dict, 
+    List,
+    Dict,
     Callable
 )
 
@@ -30,7 +29,10 @@ from app.models.config.menus import (
     PaneParameters,
     GizmoParameters,
     ButtonParameters,
-    MenuBinding
+    MenuBinding,
+    CollectionTarget,
+    SelectTarget,
+    ApertureTarget
 )
 from app.models.properties import WidgetProperties
 from app.models.menus import MenuContext
@@ -67,7 +69,6 @@ class Fabricator:
 
         return handler(node, context, properties)
 
-
     @classmethod
     def _collection(
         cls,
@@ -76,12 +77,17 @@ class Fabricator:
         properties: WidgetProperties
     ) -> MenuNode:
         params = node.parameters
+        target = node.bind.target
+
         if not isinstance(params, GizmoParameters):
             raise TypeError(
-                f"Gizmo '{node.name}' with collection schema expects GizmoParameters, got {type(params)}"
+                f"Gizmo '{node.name}' expects GizmoParameters, got {type(params)}"
+            )
+        if not isinstance(target, CollectionTarget):
+            raise TypeError(
+                f"Gizmo '{node.name}' expects CollectionTarget, got {type(target)}"
             )
 
-        source_path = node.bind.target.source
         capacity = params.capacity
         columns = params.columns
         gap = params.gap
@@ -106,34 +112,31 @@ class Fabricator:
             slot_panes: List[MenuNode] = []
 
             for slot_idx in range(start_slot, end_slot):
-                button_name = f"{node.name}-slot-{slot_idx}"
-                icon_name = f"{node.name}-icon-{slot_idx}"
-
                 button_node = MenuNode(
                     id=button_id,
-                    name=button_name,
+                    name=f"{node.name}-slot-{slot_idx}",
                     instance=AssetInstances.BUTTONS.value,
                     bind=MenuBinding(
                         schema=Bindings.SELECT.value,
-                        target={
-                            "selection": Selections.SLOT.value,
-                            "selector": node.name,
-                            "index": str(slot_idx)
-                        }
+                        target=SelectTarget(
+                            selection=Selections.SLOT.value,
+                            selector=node.name,
+                            index=slot_idx
+                        )
                     ),
-                    parameters=ButtonParameters(status=Statuses.IDLE)
+                    parameters=ButtonParameters(status=Statuses.IDLE.value)
                 )
 
                 icon_node = MenuNode(
                     id=node.id,
-                    name=icon_name,
+                    name=f"{node.name}-icon-{slot_idx}",
                     instance=AssetInstances.ICONS.value,
                     bind=MenuBinding(
                         schema=Bindings.APERTURE.value,
-                        target={
-                            "selector": node.name,
-                            "index": str(slot_idx)
-                        }
+                        target=ApertureTarget(
+                            selector=node.name,
+                            index=slot_idx
+                        )
                     )
                 )
 
@@ -142,8 +145,8 @@ class Fabricator:
                     name=f"{node.name}-slot-{slot_idx}-pane",
                     instance=AssetInstances.PANES.value,
                     parameters=PaneParameters(
-                        layout=Layouts.OVERLAY,
-                        alignment=Alignments.CENTER,
+                        layout=Layouts.OVERLAY.value,
+                        alignment=Alignments.CENTER.value,
                         gap=0,
                         margins=0,
                         dimensions=Dimensions(w=slot_w, l=slot_l),
@@ -157,8 +160,8 @@ class Fabricator:
                 name=f"{node.name}-row-{row_idx}",
                 instance=AssetInstances.PANES.value,
                 parameters=PaneParameters(
-                    layout=Layouts.DOCK,
-                    alignment=Alignments.START,
+                    layout=Layouts.DOCK.value,
+                    alignment=Alignments.START.value,
                     gap=gap,
                     margins=0,
                     dimensions=Dimensions(w=row_w, l=row_l),
@@ -169,11 +172,11 @@ class Fabricator:
 
         root_binding = MenuBinding(
             schema=Bindings.COLLECTION.value,
-            target={
-                "source": source_path,
-                "capacity": str(capacity),
-                "columns": str(columns)
-            }
+            target=CollectionTarget(
+                source=target.source,
+                capacity=capacity,
+                columns=columns
+            )
         )
 
         return MenuNode(
@@ -182,8 +185,8 @@ class Fabricator:
             instance=AssetInstances.PANES.value,
             bind=root_binding,
             parameters=PaneParameters(
-                layout=Layouts.STACK,
-                alignment=Alignments.START,
+                layout=Layouts.STACK.value,
+                alignment=Alignments.START.value,
                 gap=gap,
                 margins=0,
                 dimensions=Dimensions(w=grid_w, l=grid_l),

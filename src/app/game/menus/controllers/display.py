@@ -7,7 +7,7 @@
 @menu.controller
 @workflow.traversal
 
-# Ontology: Source - app.gane.menus.controllers.display
+# Ontology: Source - app.game.menus.controllers.display
 """
 from __future__ import annotations
 

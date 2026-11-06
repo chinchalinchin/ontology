@@ -3,27 +3,41 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/review.md.j2
+  template: index.md.j2
 # ----------------------------------------------------
   parameters:
-    description: null
-    title: null
+    description: |
+      Okay, now, let's do the following:
+
+      1. Refactor CollectionBinding entirely.
+      2. Refactor the `inventory` menu YAML.
+      3. Refactor inventory controller.
+
+      Idea is thus:
+
+      - three rows: equipment, pouch, pack. each row should have a label. above it.
+      - Players cannot "carry" equipment in a bag or inventory slot. They have to wear it. There will be mechanics that govern the exchange of equipment independent of the inventory menu. inventory menu is only meant to display currently equipped equipment. If no equipment is displayed, slot is empty.
+      - inventory menu should have a row for the pouch, and a row for the pack. Each should bind to the appropriate Sprite field.
+
+      Review the traversal logic. The Widgets should be unpacking into traversal graphs and flat lists in such a way that traversing the pouch and pack should be seamless. Identify any bugs. 
+
+    title: Collection Refactor
 # ----------------------------------------------------
 tools:
 # ----------------------------------------------------
   views:
     # --------------------------------------------
     manager:
-      board: true
-      docs: true
-      templates: true
+      board: false
+      docs: false
+      templates: false
     # --------------------------------------------
     source:
       data: true
-      filter: true
+      filter: false
     # --------------------------------------------
     shell:
-      directory: true
+      directory: false
     # --------------------------------------------
     tests:  
       configuration: false
@@ -94,6 +108,10 @@ tools:
             scan:
               domain: [ system ]
               app: [ service, menu ]
+          - title: Menu Mechanics
+            scan:
+              domain: [ concrete ]
+              app: [ menu, mechanic ]
           - title: Traversal Controllers
             scan:
               domain: [ concrete ]
@@ -107,9 +125,9 @@ tools:
               menu: [ handler ]
               workflows: [ rendering ]
       data:
-        properties: [ ]
+        properties: [ widgets ]
         state: [ ]
-        configurations: [ menus ]
+        # configurations: [ menus/main, menus/inventory, menus/load, menus/dialogue ]
         templates: [ ]
     # --------------------------------------------
     shell:

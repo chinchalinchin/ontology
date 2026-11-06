@@ -11,6 +11,7 @@ from __future__ import annotations
 # Standard Libraries
 from typing import (
     Dict, 
+    Optional,
     TYPE_CHECKING
 )
 from dataclasses import dataclass
@@ -27,15 +28,19 @@ if TYPE_CHECKING:
     from app.game.screen import Screen
     from app.services.generators.menus.provider import Provider
 
+# ---------------------------------------------------------------------
+
 class Widget(Asset):
     """
-    Standard Asset overridden to require the Binding ECS component.
+    Attach Binding to standard Asset base to allow state closure.
     """
-    binding: Binding
+    binding: Optional[Binding]
     
-    def __init__(self, taxonomy, properties, state, frame, animation, binding: Binding):
+    def __init__(self, taxonomy, properties, state, frame, animation, binding: Optional[Binding] = None):
         super().__init__(taxonomy, properties, state, frame, animation)
         self.binding = binding
+
+# ---------------------------------------------------------------------
 
 @dataclass(slots=True)
 class Menu:
@@ -49,6 +54,7 @@ class Menu:
     widgets: Dict[str, Widget]    
     controller: MenuController
 
+# ---------------------------------------------------------------------
 
 @dataclass(slots=True)
 class EventData:

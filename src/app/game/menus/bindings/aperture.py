@@ -9,19 +9,23 @@
 
 Package for binding delegated aperture slot icons to parent Gizmo collection state.
 """
+from __future__ import annotations
+
 # Standard Libraries
 from typing import (
     Callable, 
-    Dict
+    Dict,
+    TYPE_CHECKING
 )
 
 # Application Libraries
-from app.game.menus.core import Widget
 from app.game.menus.bindings.base import Binding
 from app.models.config.menus import ApertureTarget
 from app.models.menus.contexts import MenuContext
 from app.models.state.assets.widgets import CollectionState
 
+if TYPE_CHECKING:
+    from app.game.menus.core import Widget
 
 class ApertureBinding(Binding):
     """

@@ -4,7 +4,7 @@
 @asset.state
 @category.widgets
 
-# Ontology: Source - app.models.state.widget
+# Ontology: Source - app.models.state.assets.widgets
 
 Widget State Models.
 """
@@ -16,7 +16,10 @@ from typing import (
     Any, 
     Callable
 )
-from dataclasses import dataclass, field
+from dataclasses import (
+    dataclass, 
+    field
+)
 
 # Application Libraries
 from app.static.semantics import (
@@ -145,16 +148,15 @@ class CollectionState(PaneState):
     Centralizes windowing offsets, capacity limits, and item retrieval
     for delegated aperture slots.
     """
-    collection_function: Callable[[], List[Any]] = field(default_factory=Callable)
-    capacity: int = 8
+    collection_function: Callable[[], List[str]] = field(default=lambda: [])
+    capacity: int = 4
     columns: int = 4
     offset: int = 0
 
     @property
-    def collection(self) -> List[Any]:
-        """Evaluates the live collection closure safely."""
-        items = self.collection_function() if callable(self.collection_function) else []
-        return items or []
+    def collection(self) -> List[str]:
+        """Evaluates the live collection closure."""
+        return self.collection_function()
 
     def get_item(self, slot_index: int) -> str:
         """
@@ -164,21 +166,12 @@ class CollectionState(PaneState):
         k = self.offset + slot_index
         items = self.collection
         if 0 <= k < len(items):
-            item = items[k]
-            if isinstance(item, str):
-                return item
-            if hasattr(item, "id"):
-                return getattr(item, "id")
-            if hasattr(item, "name"):
-                return getattr(item, "name")
-            if isinstance(item, dict):
-                return item.get("id", item.get("name", ""))
-            return str(item)
+            return items[k]
         return ""
 
     def is_occupied(self, slot_index: int) -> bool:
         """Determines whether a physical aperture index holds an active entity."""
-        return (self.offset + slot_index) < len(self.collection)
+        return 0 <= (self.offset + slot_index) < len(self.collection)
 
     def scrollup(self) -> None:
         """Decrements offset by column count, clamped to the lower bound (0)."""

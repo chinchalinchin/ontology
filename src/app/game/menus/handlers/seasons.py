@@ -6,7 +6,7 @@
 @menu.handler
 @workflow.seasons
 
-# Ontology: Source - app.game.menus.handlers.update
+# Ontology: Source - app.game.menus.handlers.seasons
 
 Season event handling implementation.
 """

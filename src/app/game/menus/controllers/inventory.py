@@ -54,7 +54,10 @@ class InventoryController(MenuController):
             if target_widget and hasattr(target_widget.state, "scrolldown"):
                 target_widget.state.scrolldown()
                 self._recover_focus(menu, target_widget)
-                bus.append(UpdateEvent(widget=target_widget, content=str(target_widget.state.offset)))
+                bus.append(UpdateEvent(
+                    widget=target_widget, 
+                    content=str(target_widget.state.offset)
+                ))
             return
 
         if selection == Selections.SCROLLUP.value:
@@ -62,7 +65,10 @@ class InventoryController(MenuController):
             if target_widget and hasattr(target_widget.state, "scrollup"):
                 target_widget.state.scrollup()
                 self._recover_focus(menu, target_widget)
-                bus.append(UpdateEvent(widget=target_widget, content=str(target_widget.state.offset)))
+                bus.append(UpdateEvent(
+                    widget=target_widget, 
+                    content=str(target_widget.state.offset)
+                ))
             return
 
         if selection == Selections.SLOT.value:
@@ -74,7 +80,10 @@ class InventoryController(MenuController):
                     player = board.player()
                     if player:
                         self._equip_item(item_key, player.state, board)
-                        bus.append(UpdateEvent(widget=widget, content=item_key))
+                        bus.append(UpdateEvent(
+                            widget=widget, 
+                            content=item_key
+                        ))
 
     def update(self, menu: Menu, board: Board, bus: collections.deque) -> None:
         pass
@@ -91,14 +100,14 @@ class InventoryController(MenuController):
             return
 
         focused_widget = menu.widgets.get(menu.focus)
-        if not focused_widget or not getattr(focused_widget, "binding", None):
+        if not focused_widget or not focused_widget.bindinf:
             return
 
         # Focus recovery only triggers when focus resides on a slot button
         if focused_widget.binding.selection != Selections.SLOT.value:
             return
 
-        slot_index = int(focused_widget.binding.target.get("index", 0))
+        slot_index = focused_widget.binding.target.get.index
         if gizmo_pane.state.is_occupied(slot_index):
             return
 

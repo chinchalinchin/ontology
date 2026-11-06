@@ -4,7 +4,7 @@
 @app.menu
 @menu.handler
 
-# Ontology: Source - app.game.menus.handlers
+# Ontology: Source - app.game.menus.handlers.base
 
 Strategy implementations for Event resolution.
 """
