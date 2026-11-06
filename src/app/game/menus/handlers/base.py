@@ -9,15 +9,17 @@
 Strategy implementations for Event resolution.
 """
 # Standard Libraries
-from abc import ABC, abstractmethod
-
-# Application Libraries
-from app.game.menus.events import (
-    Event, 
-    EventContext
+from abc import (
+    ABC, 
+    abstractmethod
 )
 
+# Application Libraries
+from app.models.menus import Event
+from app.game.menus.core import EventData
+
 class EventHandler(ABC):
+    
     @abstractmethod
-    def handle(self, event: Event, context: EventContext) -> None:
+    def handle(self, event: Event, context: EventData) -> None:
         pass

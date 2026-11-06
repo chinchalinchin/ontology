@@ -6,22 +6,14 @@
 # Ontology: Source - app.game.menus.events
 """
 # Standard Libraries
-import collections
 from dataclasses import dataclass
 from typing import (
     Any, 
     Union, 
-    List, 
-    Dict, 
-    TYPE_CHECKING
+    List
 )
 
 from app.models.menus import MenuContext
-
-if TYPE_CHECKING:
-    from app.game.board import Board
-    from app.game.screen import Screen
-    from app.services.generators.menus.provider import Provider
 
 class Event:
     pass
@@ -45,13 +37,3 @@ class SeasonEvent(Event):
 
 class TerminalEvent(Event):
     pass
-
-@dataclass(slots=True)
-class EventContext:
-    """
-    State container passed to EventHandlers during routing.
-    """
-    board: Board
-    screens: Dict[str, Screen]
-    provider: Provider
-    bus: collections.deque

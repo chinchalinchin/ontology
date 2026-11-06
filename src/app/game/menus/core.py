@@ -9,16 +9,23 @@
 from __future__ import annotations
 
 # Standard Libraries
-from typing import Dict, TYPE_CHECKING
+from typing import (
+    Dict, 
+    TYPE_CHECKING
+)
 from dataclasses import dataclass
+import collections
 
 # Application Libraries
 from app.assets.base import Asset
 from app.game.menus.bindings import Binding
-from app.game.menus.contexts import MenuContext
+from app.models.menus import MenuContext
 
 if TYPE_CHECKING:
     from app.game.menus.controllers.base import MenuController
+    from app.game.board import Board
+    from app.game.screen import Screen
+    from app.services.generators.menus.provider import Provider
 
 class Widget(Asset):
     """
@@ -41,3 +48,14 @@ class Menu:
     context: MenuContext
     widgets: Dict[str, Widget]    
     controller: MenuController
+
+
+@dataclass(slots=True)
+class EventContext:
+    """
+    State container passed to EventHandlers during routing.
+    """
+    board: Board
+    screens: Dict[str, Screen]
+    provider: Provider
+    bus: collections.deque

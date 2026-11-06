@@ -23,14 +23,14 @@ from app.game.board import Board
 from app.game.logic.mechanics import Mechanic
 from app.game.screen import Screen
 from app.services.generators.menus.provider import Provider
-from app.game.menus.events import (
+from app.models.menus import (
     MenuEvent, 
     TerminalEvent, 
     UpdateEvent,
     StateEvent,
-    SeasonEvent,
-    EventContext
+    SeasonEvent
 )
+from app.game.menus.core import EventData
 from app.game.menus.handlers import (
     MenuEventHandler,
     StateEventHandler,
@@ -59,7 +59,7 @@ class Engine:
     provider: Provider
     registry: Registry
     running: bool
-    context: EventContext
+    event: EventData
     handlers: Dict[type, EventHandler]
 
     def __init__(self, 
@@ -80,7 +80,7 @@ class Engine:
         self.running = False
         
         # Package Engine dependencies for Event Handler distribution
-        self.context = EventContext(
+        self.event = EventData(
             board=self.board,
             screens=self.screens,
             provider=self.provider,
@@ -112,7 +112,7 @@ class Engine:
             handler = self.handlers.get(type(event))
             
             if handler:
-                handler.handle(event, self.context)
+                handler.handle(event, self.data)
             else:
                 logger.warning(f"No Event Handler registered for type: {type(event)}")
 
