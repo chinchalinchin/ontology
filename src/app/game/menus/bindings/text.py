@@ -133,7 +133,8 @@ class TextBinding(Binding):
     def __init__(self, target: TextTarget, context: MenuContext, registry: Registry = None, **kwargs):
         super().__init__(target, context, **kwargs)
         self.registry = registry
-        
+        self._cached_pages = None
+
     def bind(self, **kwargs) -> Tuple[Callable, ...]:
         w, l = kwargs.get('w', 0), kwargs.get('l', 0)
         
@@ -141,10 +142,10 @@ class TextBinding(Binding):
             if self._cached_pages is not None:
                 return self._cached_pages
                 
-            raw = self._get('content', "")
+            raw = self.target.content
             font = self.registry.font("dialogue") if self.registry else None
             
             self._cached_pages = paginate(str(raw), font, w, l)
             return self._cached_pages
             
-        return (content_function,)
+        return content_function
