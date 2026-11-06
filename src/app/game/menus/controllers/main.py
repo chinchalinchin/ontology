@@ -22,7 +22,7 @@ import app.static.settings as settings
 from app.static.semantics import Selections
 from app.game.menus.controllers.base import MenuController
 from app.game.menus.core import Menu
-from app.game.menus.events import (
+from app.models.menus import (
     StateEvent, 
     TerminalEvent,
     MenuEvent

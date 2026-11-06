@@ -25,7 +25,7 @@ from app.static.semantics import (
     Cycles,
 )
 from app.game.logic.mechanics.base import Mechanic
-from app.game.menus.events import SeasonEvent
+from app.models.menus import SeasonEvent
 from app.models.state import DevicePayload, CalendarState
 
 if TYPE_CHECKING:

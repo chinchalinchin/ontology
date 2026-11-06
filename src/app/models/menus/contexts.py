@@ -3,7 +3,7 @@
 @domain.model
 @app.menu
 
-# Ontology: Source - app.game.menus.contexts
+# Ontology: Source - app.models.menus.contexts
 
 Menu Context models.
 """

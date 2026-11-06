@@ -51,7 +51,7 @@ class Menu:
 
 
 @dataclass(slots=True)
-class EventContext:
+class EventData:
     """
     State container passed to EventHandlers during routing.
     """

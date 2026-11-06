@@ -3,7 +3,7 @@
 @domain.model
 @app.menu
 
-# Ontology: Source - app.game.menus.events
+# Ontology: Source - app.models.menus.events
 """
 # Standard Libraries
 from dataclasses import dataclass

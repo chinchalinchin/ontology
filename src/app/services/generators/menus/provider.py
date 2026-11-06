@@ -1,7 +1,9 @@
 """
 @domain.system
 @app.service
-@workflow.menu
+@app.menu
+@app.asset
+@category.widget
 
 # Ontology: Source - app.services.generators.provider
 
@@ -51,7 +53,7 @@ from app.game.menus.core import (
     Menu, 
     Widget
 )
-from app.game.menus.contexts import MenuContext
+from app.models.menus import MenuContext
 from app.game.menus.bindings import Binding
 from app.game.menus.modules import Layout
 from app.services.generators.menus.fabricator import Fabricator
@@ -101,7 +103,7 @@ class Provider:
         canvas_ptr = render.canvas(w, l)
 
         if binding:
-            content_function = next(iter(binding.bind(w=w, l=w)))
+            content_function = next(iter(binding.bind(w=w, l=l)))
         else:
             content_function = lambda: []
             

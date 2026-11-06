@@ -24,7 +24,7 @@ from app.static.semantics import (
     DeviceContexts
 )
 from app.game.logic.mechanics import Mechanic
-from app.game.menus.events import TerminalEvent
+from app.models.menus import TerminalEvent
 from app.models.state import DevicePayload
 
 if TYPE_CHECKING:

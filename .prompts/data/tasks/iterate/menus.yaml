@@ -40,7 +40,7 @@ tools:
         exclude:
           # - 00-overview
           # - 01-assets
-          - 02-sprites
+          # - 02-sprites
           - 03-compositions
           - 04-intentions
           - 05-mechanics
@@ -53,6 +53,8 @@ tools:
           # - 12-architecture
       templates: 
         - template-review
+        - template-docs
+        - template-bug
     # --------------------------------------------
     source:
       filter:
@@ -66,6 +68,15 @@ tools:
             scan:
               domain: [ abstract ]
               app: [ asset ]
+          - title: Widget Implementations
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              category: [ widgets ]
+          - title: Widget Models
+            scan:
+              domain: [ model ]
+              category: [ widgets ]
           - title: Menu Abstracts
             scan:
               domain: [ abstract ]
@@ -74,13 +85,31 @@ tools:
             scan:
               domain: [ model ]
               app: [ menu ]
-          - title: Gizmos
+          - title: Gizmo Bindings
             scan:
-              menu: [ gizmos ]
+              domain: [ concrete ]
+              app: [ menu ]
+              menu: [ binding, gizmo ]
+          - title: Menu Services
+            scan:
+              domain: [ system ]
+              app: [ service, menu ]
+          - title: Traversal Controllers
+            scan:
+              domain: [ concrete ]
+              app: [ menu ]
+              menu: [ controller ]
+              workflows: [ traversal ]
+          - title: Render Handlers
+            scan:
+              domain: [ concrete ]
+              app: [ menu ]
+              menu: [ handler ]
+              workflows: [ rendering ]
       data:
         properties: [ ]
         state: [ ]
-        configurations: [ ]
+        configurations: [ menus ]
         templates: [ ]
     # --------------------------------------------
     shell:

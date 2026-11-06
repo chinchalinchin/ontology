@@ -24,7 +24,7 @@ from app.static.semantics import (
 )
 from app.game.menus.controllers.base import MenuController
 from app.game.menus.core import Menu
-from app.game.menus.events import UpdateEvent
+from app.models.menus import UpdateEvent
 
 if TYPE_CHECKING:
     from app.game.board import Board

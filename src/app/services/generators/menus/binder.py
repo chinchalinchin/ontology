@@ -1,7 +1,8 @@
 """
 @domain.system
 @app.service
-@workflow.menus
+@app.menu
+@menu.binding
 
 # Ontology: Source - app.services.generators.binder
 
@@ -13,7 +14,7 @@ from typing import Any, Optional, Dict
 # Application Libraries
 from app.static.semantics import Bindings
 from app.models.config.menus import MenuBinding
-from app.game.menus.contexts import MenuContext
+from app.models.menus import MenuContext
 from app.game.menus.bindings import (
     Binding, 
     CollectionBinding,

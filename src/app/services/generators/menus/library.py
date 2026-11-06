@@ -1,6 +1,8 @@
 """
 @domain.system
 @app.service
+@app.menu
+@menu.binding
 @workflow.plot
 
 # Ontology: Source - app.services.generators.library

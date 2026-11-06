@@ -23,7 +23,7 @@ from app.static.semantics import (
     PerennialStages,
     Mechanics,
 )
-from app.game.menus.events import (
+from app.models.menus import (
     SeasonEvent,
     EventContext,
 )

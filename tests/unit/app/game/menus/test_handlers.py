@@ -8,14 +8,17 @@ import collections
 from unittest.mock import MagicMock
 
 from app.static.semantics import Menus
-from app.game.menus.events import (
+from app.models.menus import (
     MenuEvent,
     StateEvent,
     TerminalEvent,
-    UpdateEvent,
-    EventContext
+    UpdateEvent
 )
-from app.game.menus.contexts import MenuContext as BaseMenuContext, LoadContext, ViewContext
+from app.game.menus.core import EventData
+from app.models.menus import (
+    MenuContext, 
+    LoadContext
+)
 from app.game.menus.handlers import (
     MenuEventHandler,
     StateEventHandler,
@@ -25,7 +28,7 @@ from app.game.menus.handlers import (
 
 @pytest.fixture
 def mock_event_context():
-    context = EventContext(
+    context = EventData(
         board=MagicMock(),
         screens={'0': MagicMock()},
         provider=MagicMock(),
@@ -41,7 +44,7 @@ def mock_event_context():
 
 def test_menu_event_handler(mock_event_context):
     handler = MenuEventHandler()
-    event = MenuEvent(id="test_menu", context=BaseMenuContext())
+    event = MenuEvent(id="test_menu", context=MenuContext())
     
     mock_event_context.board.configurations.menus.get.return_value = {"config": "mocked"}
     

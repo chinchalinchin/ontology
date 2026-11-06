@@ -20,20 +20,18 @@ from app.game.menus.controllers import (
     LoadController,
     ScrollController
 )
-from app.game.menus.contexts import (
-    MainContext, 
-    LoadContext
-)
 from app.game.menus.core import (
     Menu, 
     Widget
 )
-from app.game.menus.events import (
+from app.game.menus.bindings import SelectBinding
+from app.models.menus import (
     StateEvent, 
     TerminalEvent, 
-    UpdateEvent
+    UpdateEvent,
+    MainContext, 
+    LoadContext
 )
-from app.game.menus.bindings import SelectBinding
 from app.models.state.assets.widgets import (
     CollectionState, 
     TraversalState

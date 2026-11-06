@@ -14,8 +14,7 @@ from app.models.menus.events import (
     UpdateEvent,
     StateEvent,
     SeasonEvent,
-    TerminalEvent,
-    EventContext
+    TerminalEvent
 )
 
 __all__ = [
@@ -33,6 +32,5 @@ __all__ = [
     'UpdateEvent',
     'StateEvent',
     'SeasonEvent',
-    'TerminalEvent',
-    'EventContext'
+    'TerminalEvent'
 ]

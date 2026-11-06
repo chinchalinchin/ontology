@@ -26,8 +26,10 @@ from app.static.semantics import (
     Menus
 )
 from app.game.logic.mechanics.spatial.base import SpatialMechanic
-from app.game.menus.events import MenuEvent
-from app.models.menus import DialogueContext
+from app.models.menus import (
+    MenuEvent,
+    DialogueContext
+)
 from app.models.state import DevicePayload
 
 logger = logging.getLogger(__name__)

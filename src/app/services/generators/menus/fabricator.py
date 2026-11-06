@@ -1,7 +1,8 @@
 """
 @domain.system
+@app.menu
 @app.service
-@workflow.menus
+@menu.gizmo
 
 # Ontology: Source - app.services.generators.menus.fabricator
 
@@ -32,7 +33,7 @@ from app.models.config.menus import (
     MenuBinding
 )
 from app.models.properties import WidgetProperties
-from app.game.menus.contexts import MenuContext
+from app.models.menus import MenuContext
 
 # Cython Libraries
 from libs.core.models import Dimensions

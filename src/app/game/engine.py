@@ -59,7 +59,7 @@ class Engine:
     provider: Provider
     registry: Registry
     running: bool
-    event: EventData
+    data: EventData
     handlers: Dict[type, EventHandler]
 
     def __init__(self, 
@@ -80,7 +80,7 @@ class Engine:
         self.running = False
         
         # Package Engine dependencies for Event Handler distribution
-        self.event = EventData(
+        self.data = EventData(
             board=self.board,
             screens=self.screens,
             provider=self.provider,
@@ -111,10 +111,11 @@ class Engine:
             event = self.bus.popleft()
             handler = self.handlers.get(type(event))
             
-            if handler:
-                handler.handle(event, self.data)
-            else:
+            if not handler:
                 logger.warning(f"No Event Handler registered for type: {type(event)}")
+                return 
+            
+            handler.handle(event, self.data)
 
 
     def _play(self, delta) -> None:

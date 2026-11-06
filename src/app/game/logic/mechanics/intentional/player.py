@@ -38,7 +38,7 @@ from app.models.menus import (
     InventoryContext,
     PauseContext
 )
-from app.game.menus.events import MenuEvent
+from app.models.menus import MenuEvent
 
 # Cython Libraries
 from libs.core.models import Position

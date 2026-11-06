@@ -11,11 +11,11 @@ Application Dependency Pipeline
 # Application Libraries
 from app.static.semantics import Menus
 from app.game.engine import Engine
-from app.game.menus.events import (
+from app.models.menus import (
     MenuEvent,
-    StateEvent
+    StateEvent,
+    MainContext
 )
-from app.game.menus.contexts import MainContext
 from app.services.orchestration.builder import Builder
 
 # Cython Libraries

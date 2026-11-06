@@ -14,8 +14,10 @@ import pytest
 
 # Application Libraries
 from app.assets.frames import NoFrame
-from app.game.menus.contexts import PauseContext
-from app.game.menus.events import MenuEvent
+from app.models.menus import (
+    MenuEvent,
+    PauseContext
+)
 from app.game.screen import Screen
 from app.models.state import (
     AnimationState,

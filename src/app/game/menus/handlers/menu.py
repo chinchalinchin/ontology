@@ -4,6 +4,7 @@
 @domain.system
 @app.menu
 @menu.handler
+@workflow.rendering
 
 # Ontology: Source - app.game.menus.handlers.menu
 
