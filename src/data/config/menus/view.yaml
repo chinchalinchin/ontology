@@ -61,7 +61,8 @@ menus:
                         - instance: buttons
                           id: slot
                           name: weapon-slot
-                          status: disabled
+                          parameters:
+                            status: disabled
                         # 2. The Foreground Decal
                         - instance: icons
                           id: weapons
@@ -82,7 +83,8 @@ menus:
                         - instance: buttons
                           id: slot
                           name: shield-slot
-                          status: disabled
+                          parameters: 
+                            status: disabled
                         - instance: icons
                           id: shields
                           name: shield-icon

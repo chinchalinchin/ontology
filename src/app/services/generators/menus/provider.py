@@ -232,9 +232,6 @@ class Provider:
         if pane.bind and pane.bind.schema == Bindings.COLLECTION.value:
             binding = self.binder.binding(pane.bind, context, widgets=widgets)
             collection_fn = next(iter(binding.bind()))
-            target_dict = pane.bind.target
-            capacity = int(target_dict.get("capacity", 8))
-            columns = int(target_dict.get("columns", 4))
 
             state = CollectionState(
                 id=pane.id,
@@ -245,8 +242,8 @@ class Provider:
                 gap=gap,
                 margins=margins,
                 collection_function=collection_fn,
-                capacity=capacity,
-                columns=columns,
+                capacity=pane.bind.target.capacity,
+                columns=pane.bind.target.columns,
                 offset=0
             )
 

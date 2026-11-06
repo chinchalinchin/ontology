@@ -19,7 +19,12 @@ from typing import (
 
 # Application Libraries
 from app.game.menus.bindings.base import Binding
-from app.models.menus import MenuContext
+from app.models.config.menus import (
+    LibraryTarget,
+    TextTarget
+)
+from app.models.menus.contexts import MenuContext
+from app.services.generators.menus import Library
 
 # Cython Libraries
 ## NOTE: Uneasy about importing the SDL interface here. 
@@ -28,6 +33,7 @@ from app.models.menus import MenuContext
 ##       that don't require over-complicating the application
 ##       dependency tree.
 import libs.graphics.render as render
+from libs.graphics.registry import Registry
 
 
 # ------------------------------------------------------------------------------
@@ -82,13 +88,21 @@ def paginate(text: str, font: Any, w: int, l: int) -> List[str]:
 
 
 class LibraryBinding(Binding):
-    def __init__(self, target: dict, context: MenuContext, **kwargs):
+    """
+    """
+    
+    target: LibraryTarget
+
+    def __init__(self, target: LibraryTarget, context: MenuContext, library: Library = None, **kwargs):
         super().__init__(target, context, **kwargs)
-        self.registry = kwargs.get('registry')
-        self.library = kwargs.get('library')
-        self._cached_pages = None
+        self.library = library
+        self._plot_ref = self._resolve_path(target.plot, context)
+        self._persona_ref = self._resolve_path(target.persona, context)
+        self._lexicon_ref = self._resolve_path(target.lexicon, context)
         
     def bind(self, **kwargs) -> Tuple[Callable, ...]:
+        """
+        """
         w, l = kwargs.get('w', 0), kwargs.get('l', 0)
         
         def content_function():
@@ -109,11 +123,11 @@ class LibraryBinding(Binding):
 
 
 class TextBinding(Binding):
-    def __init__(self, target: dict, context: MenuContext, **kwargs):
-        super().__init__(target, context, **kwargs)
-        self.registry = kwargs.get('registry')
-        self._cached_pages = None
+    target: TextTarget
 
+    def __init__(self, target: TextTarget, context: MenuContext, registry: Registry = None, **kwargs):
+        super().__init__(target, context, **kwargs)
+        self.registry = registry
         
     def bind(self, **kwargs) -> Tuple[Callable, ...]:
         w, l = kwargs.get('w', 0), kwargs.get('l', 0)

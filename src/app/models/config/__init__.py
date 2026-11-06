@@ -29,7 +29,15 @@ from app.models.config.menus import (
     MenuBinding,
     ButtonParameters,
     PaneParameters,
-    GizmoParameters
+    GizmoParameters,
+    LibraryTarget,
+    MeterTarget,
+    IconTarget,
+    TextTarget,
+    CollectionTarget,
+    ApertureTarget,
+    SelectTarget,
+    BindingTarget
 )
 from app.models.config.recipes import (
     Recipe,
@@ -67,6 +75,14 @@ __all__ = [
     'ButtonParameters',
     'PaneParameters',
     'GizmoParameters',
+    'LibraryTarget',
+    'MeterTarget',
+    'IconTarget',
+    'TextTarget',
+    'CollectionTarget',
+    'ApertureTarget',
+    'SelectTarget',
+    'BindingTarget',
     'MenuNode',
     'MenuConfiguration',
     'Recipe',

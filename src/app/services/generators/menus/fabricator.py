@@ -45,15 +45,6 @@ class Fabricator:
     concrete MenuNode(instance="panes") subtrees based on binding schema.
     """
 
-    @staticmethod
-    def _extract_source_path(bind: Optional[MenuBinding]) -> str:
-        if not bind or not bind.target:
-            return ""
-        if isinstance(bind.target, str):
-            return bind.target
-        return bind.target.get("source", bind.target.get("collection", ""))
-
-
     @classmethod
     def expand(
         cls,
@@ -90,7 +81,7 @@ class Fabricator:
                 f"Gizmo '{node.name}' with collection schema expects GizmoParameters, got {type(params)}"
             )
 
-        source_path = cls._extract_source_path(node.bind)
+        source_path = node.bind.target.source
         capacity = params.capacity
         columns = params.columns
         gap = params.gap

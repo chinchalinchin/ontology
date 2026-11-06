@@ -14,7 +14,7 @@ menus:
           font: dialogue
           alignment: center
           gap: 5
-          margin: 10
+          margins: 10
           children:
             # ------------------------------- PORTRAIT DISPLAY
             - instance: panes

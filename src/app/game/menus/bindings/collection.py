@@ -20,7 +20,8 @@ import logging
 
 # Application Libraries
 from app.game.menus.bindings.base import Binding
-from app.models.menus import MenuContext
+from app.models.config.menus import CollectionTarget
+from app.models.menus.contexts import MenuContext
 from app.static.semantics import Statuses
 
 logger = logging.getLogger(__name__)
@@ -36,30 +37,21 @@ class CollectionBinding(Binding):
     index: int
     offset: int
 
-    def __init__(self, target: dict, context: MenuContext, **kwargs):
+    def __init__(self, target: CollectionTarget, context: MenuContext, **kwargs):
         super().__init__(target, context, **kwargs)
+        self._source_ref = self._resolve_path(target.source, context)
         self.index = int(self.target.get("index", 0))
         self.offset = int(self.target.get("offset", 0))
-
-    def _get_collection(self) -> List[Any]:
-        """Resolves the live collection from the contextual path."""
-        path_key = "source" if "source" in self.resolved else ("collection" if "collection" in self.resolved else None)
-        if path_key:
-            parent, attr = self.resolved[path_key]
-            if parent is not None and attr is not None:
-                val = parent.get(attr) if isinstance(parent, dict) else getattr(parent, attr, None)
-                if isinstance(val, list):
-                    return val
-
-        val = self._get("source", None) or self._get("collection", None)
-        if isinstance(val, list):
-            return val
-        return []
 
 
     def get_collection(self) -> List[Any]:
         """Returns the evaluated collection list."""
-        return self._get_collection()
+        val = self._deref(self._source_ref)
+        if isinstance(val, list):
+            return val
+        if isinstance(val, dict):
+            return [k for k, qty in val.items() if qty > 0]
+        return []
 
 
     def get_effective_index(self) -> int:
@@ -77,7 +69,7 @@ class CollectionBinding(Binding):
         Retrieves the item frame key from the collection at the effective index.
         Returns an empty string for vacant slots to suppress texture rendering.
         """
-        collection = self._get_collection()
+        collection = self.get_collection()
         k = self.get_effective_index()
         if 0 <= k < len(collection):
             item = collection[k]
@@ -95,7 +87,7 @@ class CollectionBinding(Binding):
 
     def get_status(self) -> str:
         """Returns IDLE for populated slots, and DISABLED for vacant slots."""
-        collection = self._get_collection()
+        collection = self.get_collection()
         k = self.get_effective_index()
         if 0 <= k < len(collection):
             return Statuses.IDLE.value
@@ -104,10 +96,10 @@ class CollectionBinding(Binding):
 
     def is_vacant(self) -> bool:
         """Evaluates whether the effective index falls outside the collection bounds."""
-        collection = self._get_collection()
+        collection = self.get_collection()
         k = self.get_effective_index()
         return k < 0 or k >= len(collection)
 
 
-    def bind(self, **kwargs) -> Tuple[Callable[[], List[Any]]]:
-        return (self.get_collection,)
+    def bind(self, **kwargs) -> Callable[[], List[Any]]:
+        return self.get_collection

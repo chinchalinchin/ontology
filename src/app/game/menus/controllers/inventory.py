@@ -68,7 +68,7 @@ class InventoryController(MenuController):
         if selection == Selections.SLOT.value:
             target_widget = menu.widgets.get(target_key)
             if target_widget and hasattr(target_widget.state, "get_item"):
-                slot_index = int(binding.target.get("index", 0)) if isinstance(binding.target, dict) else 0
+                slot_index = binding.target.index
                 item_key = target_widget.state.get_item(slot_index)
                 if item_key:
                     player = board.player()

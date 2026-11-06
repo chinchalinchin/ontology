@@ -14,33 +14,95 @@ from typing import (
     List, 
     Optional, 
     Union, 
-    Dict,
 )
-from dataclasses import dataclass, field
+from dataclasses import (
+    dataclass, 
+    field
+)
 
 # Application Libraries
 from app.static.semantics import (
     Statuses,
     Layouts,
-    Alignments
+    Alignments,
+    Bindings,
+    Selections
 )
 from app.models.adapters import (
     PydanticScreenPosition as ScreenPosition,
     PydanticDimensions as Dimensions,
     Enumerated
 )
-from app.models.config.core import Configuration
+from app.models.config import Configuration
+from app.models.adapters import Enumerated
 
 # ---------------------------------------------------------
+
+@dataclass(slots=True, frozen=True)
+class LibraryTarget:
+    plot: str
+    persona: str
+    lexicon: str
+
+
+@dataclass(slots=True, frozen=True)
+class MeterTarget:
+    meter: str
+
+
+@dataclass(slots=True, frozen=True)
+class IconTarget:
+    icon: str
+
+
+@dataclass(slots=True, frozen=True)
+class TextTarget:
+    content: str
+
+
+@dataclass(slots=True, frozen=True)
+class CollectionTarget:
+    source: str
+    capacity: int = 8
+    columns: int = 4
+
+
+@dataclass(slots=True, frozen=True)
+class ApertureTarget:
+    selector: str
+    index: int = 0
+
+
+@dataclass(slots=True, frozen=True)
+class SelectTarget:
+    selection: Enumerated[Selections]
+    selector: Optional[str] = None
+    index: Optional[int] = None
+
+# ---------------------------------------------------------
+
+BindingTarget = Union[
+    LibraryTarget,
+    MeterTarget,
+    IconTarget,
+    TextTarget,
+    CollectionTarget,
+    ApertureTarget,
+    SelectTarget,
+]
+
+# ---------------------------------------------------------
+
 
 @dataclass(slots=True, frozen=True)
 class MenuBinding:
     """
     Associates UI controls or panes with runtime context paths or commands.
     """
-    schema: Optional[str] = None
-    target: Optional[Union[str, Dict[str, str]]] = None
+    schema: Enumerated[Bindings]
+    target: BindingTarget
 
+# ---------------------------------------------------------
 
 @dataclass(slots=True, frozen=True)
 class PaneParameters:
@@ -84,8 +146,9 @@ class ButtonParameters:
     """
     State parameters for traversable interactive button widgets.
     """
-    status: Enumerated[Statuses] = Statuses.IDLE
+    status: Enumerated[Statuses] = Statuses.IDLE.value
 
+# ---------------------------------------------------------
 
 @dataclass(slots=True, frozen=True)
 class MenuNode:
@@ -98,6 +161,7 @@ class MenuNode:
     bind: Optional[MenuBinding] = None
     parameters: Optional[Union[PaneParameters, GizmoParameters, ButtonParameters]] = None
 
+# ---------------------------------------------------------
 
 @dataclass(slots=True, frozen=True)
 class MenuConfiguration(Configuration):

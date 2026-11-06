@@ -16,15 +16,16 @@ from typing import (
 
 # Application Libraries
 from app.game.menus.bindings.base import Binding
+from app.models.config.menus import MeterTarget
 
 class MeterBinding(Binding):
+    meter: MeterTarget
+
     def bind(self, **kwargs) -> Tuple[Callable, ...]:
         def reading_function():
-            target_state = self._get('meter')
-            return getattr(target_state, 'current', target_state) if target_state is not None else 0
+            return self.target.meter.current
             
         def unit_function():
-            target_state = self._get('meter')
-            return getattr(target_state, 'maximum', 1) if target_state is not None else 1
-            
+            return self.target.meter.maximum
+
         return (reading_function, unit_function)
