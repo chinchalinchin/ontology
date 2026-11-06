@@ -78,7 +78,7 @@ class ApertureTarget:
 
 @dataclass(slots=True, frozen=True)
 class SelectTarget:
-    selection: Enumerated[Selections]
+    selection: Enumerated[Selections] = Statuses.IDLE.value
     selector: Optional[str] = None
     index: Optional[int] = None
 

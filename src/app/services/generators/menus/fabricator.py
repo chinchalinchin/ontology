@@ -57,7 +57,9 @@ class Fabricator:
         if not node.bind or not node.bind.schema:
             raise ValueError(f"Gizmo '{node.name}' declared without a binding schema.")
 
-        handlers: Dict[str, Callable[[MenuNode, MenuContext, WidgetProperties], MenuNode]] = {
+        handlers: Dict[str, Callable[
+            [MenuNode, MenuContext, WidgetProperties], MenuNode
+        ]] = {
             Bindings.COLLECTION.value: cls._collection,
         }
 

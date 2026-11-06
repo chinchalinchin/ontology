@@ -7,7 +7,6 @@ menus:
         name: options-menu
         parameters:
           position:
-            # Centered anchor for 480 x 480 viewport
             px: 0.075
             py: 0.125
           layout: dock
@@ -38,7 +37,7 @@ menus:
                           bind:
                             schema: select
                             target:
-                              selection: option-1
+                              selection: select
                               selector: options-display
                         - instance: pages
                           id: text-label
@@ -61,7 +60,7 @@ menus:
                           bind:
                             schema: select
                             target:
-                              selection: option-2
+                              selection: select
                               selector: options-display
                         - instance: pages
                           id: text-label
@@ -84,7 +83,7 @@ menus:
                           bind:
                             schema: select
                             target:
-                              selection: option-3
+                              selection: select
                               selector: options-display
                         - instance: pages
                           id: text-label
@@ -107,7 +106,7 @@ menus:
                           bind:
                             schema: select
                             target:
-                              selection: option-4
+                              selection: select
                               selector: options-display
                         - instance: pages
                           id: text-label
@@ -124,7 +123,7 @@ menus:
               parameters:
                 layout: overlay
                 alignment: center
-                font: options
+                font: menu
                 children:
                   - instance: pages
                     id: paper-weathered
