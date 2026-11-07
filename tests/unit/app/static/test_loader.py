@@ -1,6 +1,5 @@
 """
 @domain.test
-@domain.system
 @test.unit
 @app.config
 @app.schema

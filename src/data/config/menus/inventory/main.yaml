@@ -2,35 +2,33 @@ menus:
   inventory:
     controller: inventory
     roots:
-      - id: paper-area
+      - id: transparent-area
         name: inventory-menu
         instance: panes
         parameters:
           position:
-            px: 0.015625
-            py: 0.20
+            px: 0.16875
+            py: 0.235
           dimensions:
-            w: 465
-            l: 273
+            w: 318
+            l: 254
           layout: stack
           alignment: center
           font: menu
-          gap: 8
-          margins: 10
+          gap: 10
+          margins: 0
           children:
             # ==========================================
-            # 1. EQUIPMENT SECTION (DISPLAY ONLY)
+            # 1. EQUIPMENT SECTION (318 x 78)
             # ==========================================
-            - id: transparent-block
+            - id: neutral-small
               name: inventory-equipment-section
               instance: panes
               parameters:
-                dimensions:
-                  w: 220
-                  l: 72
                 layout: stack
                 alignment: center
-                gap: 4
+                gap: 2
+                margins: 3
                 children:
                   - id: transparent-label
                     name: inventory-equipment-label-slot
@@ -107,7 +105,7 @@ menus:
                                 instance: buttons
                                 parameters:
                                   status: disabled
-                              - id: armor
+                              - id: shields
                                 name: equipment-armor-icon
                                 instance: icons
                                 bind:
@@ -126,7 +124,7 @@ menus:
                                 instance: buttons
                                 parameters:
                                   status: disabled
-                              - id: tools
+                              - id: weapons
                                 name: equipment-tool-icon
                                 instance: icons
                                 bind:
@@ -145,7 +143,7 @@ menus:
                                 instance: buttons
                                 parameters:
                                   status: disabled
-                              - id: utilities
+                              - id: weapons
                                 name: equipment-utility-icon
                                 instance: icons
                                 bind:
@@ -154,18 +152,16 @@ menus:
                                     icon: context.inventory.equipment.utility
 
             # ==========================================
-            # 2. POUCH SECTION (CONSUMABLES / ITEMS)
+            # 2. POUCH SECTION (318 x 78)
             # ==========================================
-            - id: transparent-block
+            - id: neutral-small
               name: inventory-pouch-section
               instance: panes
               parameters:
-                dimensions:
-                  w: 209
-                  l: 84
                 layout: stack
                 alignment: center
-                gap: 4
+                gap: 2
+                margins: 3
                 children:
                   - id: transparent-label
                     name: inventory-pouch-label-slot
@@ -186,13 +182,13 @@ menus:
                     instance: panes
                     parameters:
                       dimensions:
-                        w: 209
-                        l: 52
+                        w: 233
+                        l: 40
                       layout: dock
                       alignment: center
                       gap: 10
                       children:
-                        - id: loot
+                        - id: weapons
                           name: inventory-pouch-grid
                           instance: gizmos
                           bind:
@@ -210,11 +206,11 @@ menus:
                           instance: panes
                           parameters:
                             dimensions:
-                              w: 24
-                              l: 52
-                            layout: stack
+                              w: 48
+                              l: 40
+                            layout: dock
                             alignment: center
-                            gap: 4
+                            gap: 0
                             children:
                               - id: arrow-up
                                 name: inventory-pouch-scroll-up
@@ -234,18 +230,16 @@ menus:
                                     selector: inventory-pouch-grid
 
             # ==========================================
-            # 3. PACK SECTION (RESOURCES / MATERIALS)
+            # 3. PACK SECTION (318 x 78)
             # ==========================================
-            - id: transparent-block
+            - id: neutral-small
               name: inventory-pack-section
               instance: panes
               parameters:
-                dimensions:
-                  w: 209
-                  l: 84
                 layout: stack
                 alignment: center
-                gap: 4
+                gap: 2
+                margins: 3
                 children:
                   - id: transparent-label
                     name: inventory-pack-label-slot
@@ -266,13 +260,13 @@ menus:
                     instance: panes
                     parameters:
                       dimensions:
-                        w: 209
-                        l: 52
+                        w: 233
+                        l: 40
                       layout: dock
                       alignment: center
                       gap: 10
                       children:
-                        - id: loot
+                        - id: weapons
                           name: inventory-pack-grid
                           instance: gizmos
                           bind:
@@ -290,11 +284,11 @@ menus:
                           instance: panes
                           parameters:
                             dimensions:
-                              w: 24
-                              l: 52
-                            layout: stack
+                              w: 48
+                              l: 40
+                            layout: dock
                             alignment: center
-                            gap: 4
+                            gap: 0
                             children:
                               - id: arrow-up
                                 name: inventory-pack-scroll-up

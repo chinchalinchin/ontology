@@ -7,7 +7,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  # template: index.md.j2
+  template: index.md.j2
   # template: draft.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
@@ -32,7 +32,7 @@ task:
   # template: iterate/grooming.md.j2
   # template: iterate/implementation.md.j2
   # template: iterate/coverage.md.j2
-  template: iterate/review.md.j2
+  # template: iterate/review.md.j2
   # template: iterate/conclusion.md.j2
   # --------------------------------------------
   # -------------------------- TEMPLATES: DESIGN
@@ -47,13 +47,20 @@ task:
 # ----------------------------------------------------
   # PLACEHOLDER UNTIL STRUCTURE EMERGES FOR TOOL
   parameters:
-    automata: stages 
-    composition: castle-dawn
-    description: null
+    description: |
+      Alright, everything is working. Inventory menu looks good. We have touched upon one of the shortcomings of the current Menu and Widget model. Currently all Pane assets are fixed dimensions. 
+
+      As part of Phase 07.04, Compositions were given multiplication strategies to expand them according to schemas. Examine the multiplication strategies. Then examine the application dependency injection pipeline.
+
+      The Goal is the following: Panes should be able to expand to arbitrary sizes (constrained by whatever minimum dimensions the Asset actually supports). Panes are very similar to Strut Enclosures, insofar that they are defined as a perimeter around a geometric area, where the north-south edges are caps for vertical multiplcation and east-west edges are caps for horizontal multiplication.
+
+      Use the [Backlog Template](#template-backlog) to map out a new phase of development. Determine if the existing multiplication strategies can be utilized.
+    title: Menus 
+    # -------------- DESIGN PARAMETERS
     diagram: executor-centennial-transitions.mmd
+    automata: stages 
     table: executor-centennial-transitions.md
     score: wagner-ride-of-the-valkyries.yaml
-    title: Richard Wagner's Ride of the Valkyrie
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ---------------------------------------------- TOOLS
@@ -66,7 +73,7 @@ tools:
     # ------------------------ TOOL VIEWS: MANAGER
     # --------------------------------------------
     manager:
-      board: true
+      board: false
       docs: true
       templates: true
       specs: false
@@ -79,7 +86,7 @@ tools:
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: true
+      data: false
       filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
@@ -105,21 +112,21 @@ tools:
         action: refactor
       docs:
         exclude:
-          # - 00-overview
-          # - 01-assets
+          - 00-overview
+          - 01-assets
           - 02-sprites
-          - 03-compositions
+          # - 03-compositions
           - 04-intentions
           - 05-mechanics
-          # - 06-widgets
+          - 06-widgets
           - 07-sounds
           - 08-plots
           - 09-ecology
           - 10-chemistry
           - 11-emergence
-          # - 12-architecture
+          - 12-architecture
       templates: 
-        - template-review
+        - template-backlog
       specs:
         - 00-dialogue
         - 01-interaction
@@ -137,14 +144,18 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Asset Abstract
+          - title: Composition Logic
             scan:
-              domain: [ abstract ]
-              app: [ asset ]
-          - title: Menu Models
+              domain: [ logic ]
+              workflows: [ compositions ]
+          - title: Orchestration Services
             scan:
-              domain: [ model ]
-              app: [ menu ]
+              domain: [ system ]
+              workflows: [ orchestration ]
+          - title: Hydration Services
+            scan:
+              domain: [ system ]
+              workflows: [ hydration ]
       data:
         properties: [ ]
         state: [ ]

@@ -12,12 +12,17 @@ library_dirs = [
     "/opt/homebrew/lib", 
     "/usr/local/lib"
 ]
+sdl_common = {
+    "include_dirs": include_dirs,
+    "library_dirs": library_dirs,
+}
 
 ext_modules = [
     Extension(
-        "libs.core.audio.mixer",
-        sources=["src/libs/core/audio/mixer.py"],
-        libraries=["SDL2", "SDL2_mixer"]
+        "libs.audio.mixer",
+        sources=["src/libs/audio/mixer.pyx"],
+        libraries=["SDL2", "SDL2_mixer"],
+        **sdl_common,
     ),
     Extension(
         "libs.core.models",
@@ -27,8 +32,7 @@ ext_modules = [
         "libs.core.input",
         sources=["src/libs/core/input.pyx"],
         libraries=["SDL2"],
-        include_dirs=include_dirs,
-        library_dirs=library_dirs
+        **sdl_common,
     ),
     Extension(
         "libs.core.math.geometry",
@@ -44,22 +48,20 @@ ext_modules = [
     ),
     Extension(
         "libs.core.math.paths",
-        sources=["src/libs/core/math/paths.pyx"]
+        sources=["src/libs/core/math/paths.pyx"],
     ),
     Extension(
         "libs.graphics.render",
         sources=["src/libs/graphics/render.pyx"],
         libraries=["SDL2", "SDL2_image", "SDL2_ttf"],
-        include_dirs=include_dirs,
-        library_dirs=library_dirs,
+        **sdl_common,
     ),
     Extension(
         "libs.graphics.registry",
         sources=["src/libs/graphics/registry.pyx"],
         libraries=["SDL2", "SDL2_image", "SDL2_ttf"],
-        include_dirs=include_dirs,
-        library_dirs=library_dirs
-    )
+        **sdl_common,
+    ),
 ]
 
 setup(
