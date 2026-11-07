@@ -1,26 +1,15 @@
 # ----------------------------------------------------
+description: &description |
+  DESCRIPTION GOES HERE
+# ----------------------------------------------------
 context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: index.md.j2
+  template: iterate/grooming.md.j2
 # ----------------------------------------------------
   parameters:
-    description: |
-      Okay, now, let's do the following:
-
-      1. Refactor CollectionBinding entirely.
-      2. Refactor the `inventory` menu YAML.
-      3. Refactor inventory controller.
-
-      Idea is thus:
-
-      - three rows: equipment, pouch, pack. each row should have a label. above it.
-      - Players cannot "carry" equipment in a bag or inventory slot. They have to wear it. There will be mechanics that govern the exchange of equipment independent of the inventory menu. inventory menu is only meant to display currently equipped equipment. If no equipment is displayed, slot is empty.
-      - inventory menu should have a row for the pouch, and a row for the pack. Each should bind to the appropriate Sprite field.
-
-      Review the traversal logic. The Widgets should be unpacking into traversal graphs and flat lists in such a way that traversing the pouch and pack should be seamless. Identify any bugs. 
-
+    description: *description
     title: Collection Refactor
 # ----------------------------------------------------
 tools:
@@ -28,13 +17,13 @@ tools:
   views:
     # --------------------------------------------
     manager:
-      board: false
-      docs: false
-      templates: false
+      board: true
+      docs: true
+      templates: true
     # --------------------------------------------
     source:
       data: true
-      filter: false
+      filter: true
     # --------------------------------------------
     shell:
       directory: false
@@ -54,7 +43,7 @@ tools:
         exclude:
           # - 00-overview
           # - 01-assets
-          # - 02-sprites
+          - 02-sprites
           - 03-compositions
           - 04-intentions
           - 05-mechanics
@@ -66,7 +55,7 @@ tools:
           - 11-emergence
           # - 12-architecture
       templates: 
-        - template-review
+        - template-backlog
         - template-docs
         - template-bug
     # --------------------------------------------
@@ -74,6 +63,10 @@ tools:
       filter:
         default: AND
         queries:
+          - title: Orchestration Services
+            scan:
+              domain: [ system ]
+              workflows: [ orchestration ]
           - title: Application Core Components
             scan:
               domain: [ system ]
@@ -99,11 +92,11 @@ tools:
             scan:
               domain: [ model ]
               app: [ menu ]
-          - title: Gizmo Bindings
-            scan:
-              domain: [ concrete ]
-              app: [ menu ]
-              menu: [ binding, gizmo ]
+          # - title: Gizmo Bindings
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ menu ]
+          #     menu: [ binding, gizmo ]
           - title: Menu Services
             scan:
               domain: [ system ]
@@ -112,22 +105,32 @@ tools:
             scan:
               domain: [ concrete ]
               app: [ menu, mechanic ]
-          - title: Traversal Controllers
+          # - title: Traversal Controllers
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ menu ]
+          #     menu: [ controller ]
+          #     workflows: [ traversal ]
+          # - title: Render Handlers
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ menu ]
+          #     menu: [ handler ]
+          #     workflows: [ rendering ]
+          - title: Multiplier Abstract
             scan:
-              domain: [ concrete ]
-              app: [ menu ]
-              menu: [ controller ]
-              workflows: [ traversal ]
-          - title: Render Handlers
+              domain: [ abstract ]
+              app: [ module ]
+              workflows: [ compositions ]
+          - title: Composition Logic
             scan:
-              domain: [ concrete ]
-              app: [ menu ]
-              menu: [ handler ]
-              workflows: [ rendering ]
+              domain: [ logic ]
+              app: [ module ]
+              workflows: [ compositions ]
       data:
         properties: [ widgets ]
         state: [ ]
-        # configurations: [ menus/main, menus/inventory, menus/load, menus/dialogue ]
+        configurations: [ menus/main, menus/load, menus/dialogue ]
         templates: [ ]
     # --------------------------------------------
     shell:

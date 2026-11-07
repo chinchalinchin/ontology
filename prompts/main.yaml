@@ -144,9 +144,15 @@ tools:
       filter:
         default: AND
         queries:
+          - title: Multiplier Abstract
+            scan:
+              domain: [ abstract ]
+              app: [ module ]
+              workflows: [ compositions ]
           - title: Composition Logic
             scan:
               domain: [ logic ]
+              app: [ module ]
               workflows: [ compositions ]
           - title: Orchestration Services
             scan:
