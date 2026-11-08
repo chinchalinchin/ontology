@@ -3,31 +3,38 @@
 !!! @TODO
     Documentation out of date (slightly, but still mostly accurate) and not formatted to new standards.
 
-Widgets are a type of [Asset](./01-assets.md); however, they reside outside of the core loop and have a special place in the application flow.
+Widgets are a type of specialized [Asset](./01-assets.md) leveraged for user interfaces. Similar to the core [Asset Categories](./01-assets.md#asset-hierarchy), they possess Properties, State and have extensible components injected into their Frame and Animation interfaces. However, they play a unique role in the [Engine Loop](./00-overview.md#component-engine) and have dedicated systems for their processing and deployment.
 
-## Overview
+Widgets are not declared in a [State file](./00-overview.md#core-state) and are thus not migrated onto the [Board](./00-overview.md#component-board) during [hydration](./12-architecture.md#phase-2-hydration). Widgets have their [Bindings](#bindings) and [Layout](#layouts) configured into [Menus](#menus), that are then injected into the [Application](./00-overview.md#application) when [Events](#events) are thrown.
 
-Widgets are components of Menus. Or put another way, Menus are assembled from schemas of Widgets; the branches of this configuration are sometimes referred to as the *Menu Tree*. Like most Assets, Widgets have properties that configure their static attributes and state that describes their dynamic attributes. However, their state is not updated in concert with the game loop. Instead, Menus and Widgets are managed through the flow of Events.
+## Widgets: Overview
 
-**Panes, Controls & Decals**
+Widgets are components of Menus. In other words, Menus are assembled from schemas of Widgets; the branches of this configuration are referred to as the *Menu Tree*. Like most Assets, Widgets have Properties that configure their static attributes and state that describes their dynamic attributes. However, their state is not updated in concert with the game loop. Instead, Menus and Widgets are managed through the flow of Events.
 
-The overarching division of Widgets resides in the functional difference between Panes, Controls & Decals. 
+### Widget: Concepts
 
-Panes are displays; They have Layouts and ScreenPosition, to provide a schema for organizing child Widgets across varying screen sizes in proportionate ways. 
+#### Concept: Recursivity
 
-Controls bind to game state. They are either *active* or *disabled*. When active, they may be *traversed* and *selected*; When disabled, they may passively receive updates to their state to change their display, but they cannot be traversed. Controls receive focus. 
+Panes provide a canvas on which to lay out other Widgets. All Menus must possess atleast one *Root Pane*. 
 
-Decals are painted onto Controls or Panes. They function like embedded frames and exist simply to display content. They do not hold focus and are not traversible.
+All Panes have children. The child of a Pane may also be a Pane. There are no upper bounds (except computational) to the number of Panes that may be Because Menus are defined recursively, an artbitary number of Panes can be nested within one another.
 
-Controls and Decals are the endpoints in the Menu tree, organized in Panes.
+#### Concept: Bindability
 
-**Traversal & Focus**
+Widgets bind to [Asset State](./00-overview.md#core-state) on the [Board](./00-overview.md#component-board) when they are instantiated. A Binding represents a mapping to an address on live [Application](./00-overview.md#application) data structure. Bindings 
 
-A Menu has focus. Focus is a field that points to the currently `active` traversible Widget. When the user issues a command to traverse the Menu, the focus shifts to the next traversible Widget.
+For example, a [Meter Widget](#instance-meter) may bind to [Player Health](./02-sprites.md#instance-player)
+#### Concept: Traversibility
 
-For example, suppose a Menu Pane has two traversible Widgets. Widget A is currently in `active` Status, Widget B is currently `idle` Status. When the user issues the command to traverse, these states will shift so A is `idle` and B is `active`. If the user issues the command to select, the Widget that is `active` will be `selected` and a SelectionEvent will be generated for processing by the MenuMechanics.
+Widgets are *traversible* when they are organized in sequence. In other words, a Menu can be traversed. To accomplish this, a Menu has *`focus`*.
 
-The directions for Traversal are: `NORTH`, `SOUTH`, `EAST` and `WEST`.
+`focus` is a field that points to the currently `active` traversible Widget. When the user issues a command to traverse the Menu, the focus shifts to the next traversible Widget.
+
+For example, suppose a Menu Pane has two traversible Widgets. Widget A is currently in `active` Status, Widget B is currently `idle` Status. When the user issues the command to traverse, these states will shift so A is `idle` and B is `active`. If the user issues the command to select, the Widget that is `active` will be `selected` and a SelectionEvent will be generated and processed by [MenuMechanics](./05-mechanics.md#core-mechanic-menumechanics).
+
+**Enum: Traversal**
+
+* `north`, `south`, `east`, `west`
 
 ### Events
 

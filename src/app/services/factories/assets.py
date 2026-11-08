@@ -23,8 +23,6 @@ from app.assets.animations import (
     FrequencyAnimation,
     StateAnimation,
     SpriteAnimation,
-    TraversalAnimation,
-    MeterAnimation,
     NoAnimation
 )
 from app.assets.frames import (
@@ -114,11 +112,9 @@ class AssetFactory:
 
     _ANIMATIONS = {
         AnimationRecipe.FREQUENCY.value: FrequencyAnimation(),
-        AnimationRecipe.METER.value: MeterAnimation(),
         AnimationRecipe.NONE.value: NoAnimation(),
         AnimationRecipe.SPRITE.value: SpriteAnimation(),
         AnimationRecipe.STATE.value: StateAnimation(),
-        AnimationRecipe.TRAVERSAL.value: TraversalAnimation(),
     }
 
     _HITBOXES = {

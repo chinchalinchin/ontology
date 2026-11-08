@@ -51,8 +51,6 @@ class AnimationRecipe(str, Enum):
     NONE            = "none"
     STATE           = "state"
     SPRITE          = "sprite"
-    METER           = "meter"
-    TRAVERSAL       = "traversal"
     FREQUENCY       = "frequency"
 
 class HitboxRecipe(str, Enum):

@@ -3,11 +3,11 @@
 
 **Overview**
 
-Unify the container and display branches of the `Widgets` hierarchy by deprecating `Pages` (`AssetInstances.PAGES` and `DisplayState`) and subsuming their text-rendering, `canvas` allocation, and pagination capabilities directly into `Panes` (`AssetInstances.PANES` and `PaneState`). Decouple `Panes` from fixed-dimension pixel configurations and `ScreenPosition` coordinates by:
+Unify and simplify the `Widgets` branch of the Asset Hierarchy by:
 
-1. Indexing every `Pane` image implicitly as an in-place $3 \times 3$ (9-slice) grid derived from $\lfloor W / 3 \rfloor \times \lfloor L / 3 \rfloor$ without special sprite atlases or `Multipliers` dependencies.
-2. Specifying `PaneParameters.dimensions` as screen-relative percentages $(w_p, l_p) \in (0.0, 1.0]^2$.
-3. Replacing `ScreenPosition` and 1D alignment with 2-axis `AxisAlignment` (`horizontal: left | center | right`, `vertical: left | center | right`) and `margins`.
+1. Deprecating `Pages` (`AssetInstances.PAGES` and `DisplayState`) and subsuming their typography, `canvas` allocation, and pagination capabilities directly into `Panes` (`AssetInstances.PANES` and `PaneState`).
+2. Eliminating `Widget` animations (`TraversalAnimation`, `MeterAnimation`) and `AnimationState` fields on `Widgets`, projecting instantaneous state changes directly inside `TraversalFrame.keys()` and `MeterFrame.keys()`.
+3. Decoupling `Panes` from fixed-dimension pixel configurations and `ScreenPosition` coordinates via implicit in-place $3 \times 3$ (9-slice) cell indexing (`PaneFrame`), screen-relative fractional `Scale` dimensions $(w_p, l_p) \in (0.0, 1.0]^2$, and 2-axis `AxisAlignment` (`horizontal: left | center | right`, `vertical: left | center | right`).
 
 ##### Specification
 
@@ -45,24 +45,26 @@ $$\Big(\text{f"{id}-{v(i\_y)}-{h(i\_x)}"},\; i_x \cdot w_c,\; i_y \cdot l_c\Big)
 
 4. **Two-Axis Alignment, Justification, and Margins**:
 
-Both horizontal ($X$) and vertical ($Y$, downward positive) axes are parameterized over `Alignments` $\in \{\text{left}, \text{center}, \text{right}\}$, where `left` denotes the origin bound ($0$), `center` denotes the midpoint, and `right` denotes the terminal bound ($L$).
-
-For a parent bounding box $(X_p, Y_p, W_p, L_p)$, an inner content footprint $(W_c, L_c)$, and margin $m \in \mathbb{Z}_{\ge 0}$, the 1D axis resolver $\alpha(p_0, P, C, m, \text{mode})$ is:
+Both horizontal ($X$) and vertical ($Y$, downward positive) axes are parameterized over `Alignments` $\in \{\text{left}, \text{center}, \text{right}\}$. For a parent bounding box $(p_0, P)$, an inner content span $C$, and margin $m \in \mathbb{Z}_{\ge 0}$, the 1D axis resolver $\alpha(p_0, P, C, m, \text{mode})$ is:
 
 $$\alpha(p_0, P, C, m, \text{mode}) = \begin{cases} p_0 + m & \text{if mode} = \text{left} \\ p_0 + \lfloor (P - C) / 2 \rfloor & \text{if mode} = \text{center} \\ p_0 + P - C - m & \text{if mode} = \text{right} \end{cases}$$
 
-* **Root Pane Placement (`justification`)**: A root `Pane` of quantized span $(W_{\text{span}}, L_{\text{span}})$ is placed within the viewport $(0, 0, W_s, L_s)$ at:
+* **Root Pane Placement (`justification`)**: Placed within the viewport $(0, 0, W_s, L_s)$ at:
 
 $$x_{\text{root}} = \alpha(0, W_s, W_{\text{span}}, m, \text{justification.horizontal}), \quad y_{\text{root}} = \alpha(0, L_s, L_{\text{span}}, m, \text{justification.vertical})$$
 
-* **Child Placement (`alignment`)**: Inside a `Pane` at $(x_0, y_0)$ with quantized span $(W_{\text{span}}, L_{\text{span}})$, children $C = \{c_1, \dots, c_k\}$ with inter-child gap $g$ have collective bounding dimensions:
-    * **`Layouts.STACK`**: $W_{\text{group}} = \max_{c \in C}(c.w),\; L_{\text{group}} = \sum_{c \in C} c.l + g \cdot \max(0, \vert{}C\vert{} - 1)$.
-    Each child $c_i$ is placed at $x_i = \alpha(x_0, W_{\text{span}}, c_i.w, m, \text{alignment.horizontal})$, with the vertical sequence starting at $y_{\text{start}} = \alpha(y_0, L_{\text{span}}, L_{\text{group}}, m, \text{alignment.vertical})$.
-    * **`Layouts.DOCK`**: $W_{\text{group}} = \sum_{c \in C} c.w + g \cdot \max(0, \vert{}C\vert{} - 1),\; L_{\text{group}} = \max_{c \in C}(c.l)$.
-    The horizontal sequence starts at $x_{\text{start}} = \alpha(x_0, W_{\text{span}}, W_{\text{group}}, m, \text{alignment.horizontal})$, with each child $c_i$ placed at $y_i = \alpha(y_0, L_{\text{span}}, c_i.l, m, \text{alignment.vertical})$.
-    * **`Layouts.OVERLAY`**: Each child $c_i$ is placed independently at:
+* **Child Placement (`alignment`)**: Inside a `Pane` at $(x_0, y_0)$ with quantized span $(W_{\text{span}}, L_{\text{span}})$, children $C = \{c_1, \dots, c_k\}$ with inter-child gap $g$ are positioned along their layout axis (`STACK`, `DOCK`, or `OVERLAY`) using $\alpha$ along both horizontal and vertical axes.
 
-$$x_i = \alpha(x_0, W_{\text{span}}, c_i.w, m, \text{alignment.horizontal}), \quad y_i = \alpha(y_0, L_{\text{span}}, c_i.l, m, \text{alignment.vertical})$$
+5. **Direct Stateless Frame Projection for `Widgets` (No `Animation` Mediation)**:
+
+In accordance with the `Frame` vs. `Animation` separation of concerns:
+
+$$\text{Frame.index}: \text{Properties} \to \text{Atlas}, \qquad \text{Frame.keys}: \text{State} \to \text{Keys}, \qquad \text{Animation.animate}: \text{State} \times \text{Properties} \to \text{State}$$
+
+An `Animation` component is valid if and only if a non-instantaneous temporal transition (accumulating `tick` over time) must be mediated by `Properties` (such as `EffectProperties.frequency` or `SheetProperties.actions`). Because all `Widget` state transitions (`TraversalState.status`, `MeterState.reading / unit`, `IconState.icon`, `PaneState.pageindex`) are instantaneous and unmediated by `WidgetProperties`, `Widgets` have no `Animation` component:
+
+* **`TraversalFrame.keys(id, state)`**: Projects `state.status` directly to `[(f"{id}-{state.status}", 0, 0)]`.
+* **`MeterFrame.keys(id, state)`**: Evaluates $r = \text{clamp}(\text{round}(100 \cdot \text{state.reading} / \text{state.unit}), 0, 100)$ directly in `keys()`, returning `[(f"{id}-empty", 0, 0), (f"{id}-{r}", 0, 0)]` when $r > 0$ and `[(f"{id}-empty", 0, 0)]` when $r = 0$.
 
 ##### Architectural Analysis I
 
@@ -286,8 +288,6 @@ Under the revised architecture:
 4. **Pure Percentage Subdivision in `Fabricator._collection()`**:
 * Because `PaneParameters.dimensions` is a screen percentage `Scale(pw, pl)`, `Fabricator._collection()` no longer needs `WidgetProperties` to look up pixel sizes. Given a gizmo's `dimensions: Scale(pw, pl)`, `columns`, and `total_rows = ceil(capacity / columns)`, `Fabricator` assigns `Scale(pw=w, pl=pl / total_rows)` to each row `Pane` and `Scale(pw=pw / columns, pl=pl / total_rows)` to each slot `Pane`.
 
-
-
 ```mermaid
 flowchart LR
     A["PaneParameters\ndimensions: Scale(pw, pl)\njustification: AxisAlignment\nalignment: AxisAlignment\nmargins: int"] --> B["Layout.compute\nW_req = int(pw * W_s)\nL_req = int(pl * L_s)"]
@@ -296,7 +296,74 @@ flowchart LR
     D --> E["Provider._bake_pane\nPaneFrame.keys (9-slice grid)\nrender.construct + render.write"]
 ```
 
+##### User Review V
+
+Everything looks good for implementation, except one last point that I noticed on my last review of the codebase. I am looking over Widget Frames, Animations and MenuMechanics:
+
+I wonder if Widget Animations are extraneous. Widget animations really only serve to intercede the Frame logic which already instantaneously alters the Frame based on the Widget state. Atleast for TraversalAnimation. It also seems like MeterFrame could directly calculate the ratio of its reading and unit field.
+
+During a recent refactor, it was established that instantaneous state changes do not require an animation. For example, Objects previously had an animation implementation for Plates and Gates that transformed their `state.switch` into `state.animation`, but this was deemed redundant because all that served to accomplish was adding an extra step to the process.
+
+It seems like an additional tenet for Animation Should be:
+
+Animations only exist if the non-instantaneous change of state must be meditated by properties. in the case of effects, this is the frequency and periodicity that controls the flow of the animation over time. in the case of sheets, this is the action and its frame delay. 
+
+In fact, examining the Frame interface, `keys(state)`, `index(properties)` and the Animation interface, `animation(state, properties)`, this is already manifest. Going further, the separation of Animation and Frame into distinct interfaces seems slightly arbitrary.
+
+I suppose the idea is separate all of the distinct Asset behaviors into interfaces. `keys()` and `index()` are implicitly related (almost inverses of one another, in a certain sense), so they logically get grouped into the Frame interface. While it is tempting to collapse Animation interface into the Frame interface (i.e. add `animate()` to Frame), most Assets would have to pass on its implementation. Which I suppose they do now by specifying `none` in the Recipes. So, really, either approach is valid, it's a matter of what the abstraction is grouping together.
+
+Anyway, whether or not animations get collapsed into the Frame interface for other Assets is irrelevant to the question at hand: I believe Widget Animations are completely extraneous, as Widgets alter their state instantaneously.
+
+
+##### Architectural Analysis V
+
+###### 1. Formalizing the `Animation` vs. `Frame` Boundary
+
+The signatures of `Frame` and `Animation` in `src/app/assets/base.py` encode their mathematical roles:
+
+* `Frame.index(id, properties)` depends purely on `AssetProperties` (partitioning the static image file into named crop regions).
+* `Frame.keys(id, state)` depends purely on `AssetState` (projecting the entity's current state into a list of crop keys).
+* `Animation.animate(state, properties)` is the *only* interface that takes the product $(\text{AssetState}, \text{AssetProperties})$, because advancing a frame index over discrete engine ticks requires comparing a mutable temporal accumulator (`state.animation.tick`, `state.animation.frame`) against immutable timing and topology constraints (`properties.frequency.delay`, `properties.actions[action].count`).
+
+When an asset's visual representation is a pure function of its domain state (`ObjectState.material`, `SwitchState.switch`, `ResourceState.stage`, `TraversalState.status`, `MeterState.reading / unit`), introducing an `Animation` class merely copies data from one field of `state` to `state.animation` so `Frame.keys()` can read `state.animation`. Removing `TraversalAnimation` and `MeterAnimation` yields four immediate architectural improvements:
+
+1. **Eliminates `src/app/assets/animations/widgets.py**`: Both `TraversalAnimation` and `MeterAnimation` are deleted, leaving `Animation` implementations strictly to time-stepped world entities (`FrequencyAnimation` for `Effects`, `StateAnimation` for `Sheets`).
+2. **Simplifies `TraversalState` and `MeterState**`: Neither state model carries an extraneous `animation: AnimationState` dataclass instance. `Provider._button()`, `Provider._meter()`, `Provider._focus()`, and `Provider._sync_collection_slots()` no longer have to synchronize `state.status` with `state.animation.action`.
+3. **Eliminates `MenuMechanics` Per-Tick Widget Loops & Fixes Bug B017**: `MenuMechanics.update()` (`src/app/game/logic/mechanics/core/menu.py`) no longer iterates over `overlay.widgets.values()` or `active_menu.widgets.values()` to call `widget.animation.animate()`. Focus shifts (`active_menu.widgets[new_focus].state.status = Statuses.ACTIVE.value`) are reflected on the very same tick by `TraversalFrame.keys()` without a 1-frame animation lag.
+4. **Fixes Zero-Reading Registry Miss in `MeterFrame.keys()**`: In `src/app/assets/frames/widgets.py`, `MeterFrame.index()` only indexes `res in range(1, 101)`. Previously, when `reading == 0`, `state.animation.frame` was `0` and `MeterFrame.keys()` emitted `f"{id}-0"`, triggering a `Registry MISS` warning in `Screen._widgets()`. Computing `res` directly inside `MeterFrame.keys()` and omitting the second tuple when `res == 0` resolves this cleanly.
+
 ##### Goals
+
+###### Goal: Remove Extraneous `Widget` Animations & Project State Directly in `Widget` Frames
+
+Delete `src/app/assets/animations/widgets.py` (`TraversalAnimation`, `MeterAnimation`), remove `animation: AnimationState` from `TraversalState` and `MeterState`, remove widget animation loops from `MenuMechanics.update()`, and evaluate state directly inside `TraversalFrame.keys()` and `MeterFrame.keys()`:
+
+```python
+class TraversalFrame(Frame):
+
+    def keys(self, id: str, state: TraversalState) -> List[Tuple[str, int, int]]:
+        return [
+            (settings.SEPARATOR.join([id, state.status]), 0, 0)
+        ]
+
+
+class MeterFrame(Frame):
+
+    def keys(self, id: str, state: MeterState) -> List[Tuple[str, int, int]]:
+        unit = state.unit
+        pct = (state.reading / unit) if unit > 0 else 0.0
+        res = max(0, min(100, int(round(pct * 100))))
+
+        frames = [
+            (settings.SEPARATOR.join([id, Gauges.EMPTY.value]), 0, 0)
+        ]
+        if res > 0:
+            frames.append(
+                (settings.SEPARATOR.join([id, str(res)]), 0, 0)
+            )
+        return frames
+
+```
 
 ###### Goal: Implicit 9-Slice `PaneFrame` Indexing & Projection
 
@@ -304,6 +371,16 @@ Implement `PaneFrame(Frame)` in `src/app/assets/frames/widgets.py` to trisect an
 
 ```python
 class PaneFrame(Frame):
+    _VERTICAL = (
+        PanePartitions.TOP.value,
+        PanePartitions.CENTER.value,
+        PanePartitions.BOTTOM.value,
+    )
+    _HORIZONTAL = (
+        Alignments.LEFT.value,
+        Alignments.CENTER.value,
+        Alignments.RIGHT.value,
+    )
 
     def index(
         self,
@@ -313,8 +390,8 @@ class PaneFrame(Frame):
         wc = properties.dimensions.w // 3
         lc = properties.dimensions.l // 3
         crops = {}
-        for r, v in enumerate(Alignments):
-            for c, h in enumerate(Alignments):
+        for r, v in enumerate(self._VERTICAL):
+            for c, h in enumerate(self._HORIZONTAL):
                 key = settings.SEPARATOR.join([id, v, h])
                 crops[key] = (c * wc, r * lc, wc, lc)
         return crops
@@ -332,14 +409,14 @@ class PaneFrame(Frame):
         primitives: List[Tuple[str, int, int]] = []
         for iy in range(ny + 2):
             v = (
-                Alignments.START.value if iy == 0
-                else PanePartitions.END.value if iy == ny + 1
+                PanePartitions.TOP.value if iy == 0
+                else PanePartitions.BOTTOM.value if iy == ny + 1
                 else PanePartitions.CENTER.value
             )
             for ix in range(nx + 2):
                 h = (
-                    Alignments.START.value if ix == 0
-                    else Alignments.END.value if ix == nx + 1
+                    Alignments.LEFT.value if ix == 0
+                    else Alignments.RIGHT.value if ix == nx + 1
                     else Alignments.CENTER.value
                 )
                 key = settings.SEPARATOR.join([id, v, h])
@@ -350,7 +427,7 @@ class PaneFrame(Frame):
 
 ###### Goal: Replace `ScreenPosition` with Fractional `Scale` & 2-Axis `AxisAlignment`
 
-Remove `ScreenPosition` from `libs.core.models` and `app.models.adapters`, replacing it with `Scale(pw: double, pl: double)` (`PydanticScale`), and standardize `Alignments` to `START = "start"`, `CENTER = "center"`, `END = "end"`:
+Remove `ScreenPosition` from `libs.core.models` and `app.models.adapters`, replacing it with `Scale(w: double, l: double)` (`PydanticScale`), and standardize `Alignments` to `LEFT = "left"`, `CENTER = "center"`, `RIGHT = "right"`:
 
 ```python
 @dataclass(slots=True, frozen=True)
@@ -369,16 +446,6 @@ class PaneParameters:
     dimensions: Scale = field(default_factory=lambda: Scale(1.0, 1.0))
     font: Optional[Enumerated[Fonts]] = None
     children: List[MenuNode] = field(default_factory=list)
-
-
-@dataclass(slots=True, frozen=True)
-class GizmoParameters:
-    capacity: int
-    columns: int
-    pane: str
-    button: str
-    dimensions: Scale = field(default_factory=lambda: Scale(1.0, 1.0))
-    gap: int = 5
 
 ```
 
@@ -404,32 +471,24 @@ class PaneState(WidgetState):
 
 ```
 
-###### Goal: Top-Down Screen-Relative Quantization & Unified Canvas Baking
-
-In `Provider._unpack_pane()` / `Layout.compute()`:
-
-1. Resolve target pixels $(W_{\text{req}}, L_{\text{req}}) = (\text{int}(\text{params.dimensions.w} \cdot W_s),\; \text{int}(\text{params.dimensions.l} \cdot L_s))$ directly from `screensize`.
-2. Compute unit cell size $(w_c, l_c) = (\text{props.dimensions.w} // 3,\; \text{props.dimensions.l} // 3)$, quantize $(n_x, n_y)$, and assign `state.multiple = Multiple(nx, ny)` and `state.span = Dimensions((nx + 2) * wc, (ny + 2) * lc)`.
-3. Position root panes within `screensize` via `state.justification` and `state.margins`, and position child widgets within each parent pane's `state.span` via `state.alignment`, `state.layout`, `state.gap`, and `state.margins`.
-4. Bind `state.content_function = binding.bind(w=state.span.w, l=state.span.l, font=state.font)` for text-bound panes and bake the 9-slice backdrop + initial typography onto `state.canvas` via `Screen.stamp()` / `Provider._bake_pane()`.
-
 ##### Tasks
 
 **1. Task: Replace `ScreenPosition` with Fractional `Scale` and Introduce 2-Axis `AxisAlignment`**
 
-*Objective*: Remove `ScreenPosition` across Cython and Pydantic models, update `Alignments` to `start | center | end`, and define `Scale` and `AxisAlignment` on `PaneParameters`.
+*Objective*: Remove `ScreenPosition` across Cython and Pydantic models, update `Alignments` to `left | center | right`, and define `Scale` and `AxisAlignment` on `PaneParameters`.
 
-* [x] Subtask: Replace `ScreenPosition(px, py)` with `Scale(pw: double, pl: double)` in `src/libs/core/models.pxd`, `src/libs/core/models.pyx`, and `src/app/models/adapters.py` (`PydanticScale`).
-* [x] Subtask: Update `Alignments` in `src/app/static/semantics.py` to `START = "start"`, `CENTER = "center"`, `END = "end"`.
+* [x] Subtask: Replace `ScreenPosition(px, py)` with `Scale(w: double, l: double)` in `src/libs/core/models.pxd`, `src/libs/core/models.pyx`, and `src/app/models/adapters.py` (`PydanticScale`).
+* [x] Subtask: Update `Alignments` in `src/app/static/semantics.py` to `LEFT = "START"`, `CENTER = "center"`, `RIGHT = "END"`.
 * [x] Subtask: Define `AxisAlignment(horizontal, vertical)` in `src/app/models/config/menus.py` and update `PaneParameters` to remove `position: Optional[ScreenPosition]`, replace pixel `dimensions` with fractional `dimensions: Scale`, and use `alignment: AxisAlignment` and `justification: AxisAlignment`.
 * [x] Subtask: Add `dimensions: Scale` to `GizmoParameters` (`src/app/models/config/menus.py`) and update `Fabricator._collection()` (`src/app/services/generators/menus/fabricator.py`) to subdivide fractional `Scale` across generated row and slot panes without querying `WidgetProperties`.
 
-**2. Task: Deprecate `Pages` and Implement Implicit 9-Slice `PaneFrame` and `PaneState`**
+**2. Task: Deprecate `Pages`, Remove `Widget` Animations, and Implement 9-Slice `PaneFrame`**
 
-*Objective*: Remove `Pages` (`DisplayState`) from the Asset Hierarchy, merge pagination and canvas fields into `PaneState`, and implement implicit $3 \times 3$ indexing and projection in `PaneFrame`.
+*Objective*: Remove `Pages` (`DisplayState`) and `Widget` animations (`TraversalAnimation`, `MeterAnimation`) from the Asset Hierarchy, merge pagination and canvas fields into `PaneState`, and implement direct state projection across `PaneFrame`, `TraversalFrame`, and `MeterFrame`.
 
-* [x] Subtask: Remove `PAGES = "pages"` from `AssetInstances` and `Widgets` in `src/app/static/semantics.py`, and remove `pages` from `WidgetGroup` / `RecipeGroup` in `src/app/models/groups.py` and `src/data/config/recipes/main.yaml`.
-* [] Subtask: Merge `DisplayState` fields (`content_function`, `pageindex`, `pagesize`, `font`, `canvas`) and pagination methods (`content`, `_pagecount`, `current`, `more`, `less`, `scrollup`, `scrolldown`) into `PaneState` alongside `multiple: Multiple`, `span: Dimensions`, `alignment: AxisAlignment`, and `justification: AxisAlignment`, then delete `DisplayState` from `src/app/models/state/assets/widgets.py`.
+* [x] Subtask: Delete `src/app/assets/animations/widgets.py`, remove `TraversalAnimation` and `MeterAnimation` from `src/app/assets/animations/__init__.py` and `AssetFactory`, and set all `widgets` recipes in `src/data/config/recipes/main.yaml` to `animation: none`.
+* [x] Subtask: Remove `animation: AnimationState` from `TraversalState` and `MeterState` in `src/app/models/state/assets/widgets.py`, update `TraversalFrame.keys()` and `MeterFrame.keys()` in `src/app/assets/frames/widgets.py` to read `state.status` and `state.reading / state.unit` directly, and remove the widget `animate()` loops from `MenuMechanics.update()` (`src/app/game/logic/mechanics/core/menu.py`).
+* [x] Subtask: Remove `PAGES = "pages"` from `AssetInstances` and `Widgets` in `src/app/static/semantics.py`, remove `pages` from `WidgetGroup` / `RecipeGroup` in `src/app/models/groups.py` and `src/data/config/recipes/main.yaml`, and merge `DisplayState` fields and pagination methods into `PaneState` alongside `multiple: Multiple`, `span: Dimensions`, `alignment: AxisAlignment`, and `justification: AxisAlignment`.
 * [] Subtask: Implement `PaneFrame(Frame)` in `src/app/assets/frames/widgets.py` (and register `PaneFrame` on `widgets.panes` in `src/data/config/recipes/main.yaml`) to index 9 cells `(c * wc, r * lc, wc, lc)` where `wc = w // 3, lc = l // 3` and emit $(n_x + 2)(n_y + 2)$ 9-slice tile tuples in `keys(id, state)`.
 * [] Subtask: Override `dimensions` on `Widget` (`src/app/game/menus/core.py`) to return `self.state.span` when `isinstance(self.state, PaneState)`, falling back to `self.properties.dimensions`.
 
@@ -438,7 +497,7 @@ In `Provider._unpack_pane()` / `Layout.compute()`:
 *Objective*: Quantize `Panes` directly from fractional screen dimensions, resolve coordinates via 2-axis `justification` and `alignment`, and unify 9-slice backdrop + text rendering on `PaneState.canvas`.
 
 * [] Subtask: Refactor `Layout.compute()` (`src/app/game/menus/modules/layout.py`) to compute $W_{\text{req}} = \text{int}(w_p \cdot W_s)$ and $L_{\text{req}} = \text{int}(l_p \cdot L_s)$, quantize `state.multiple` and `state.span` via $(w_c, l_c) = (W // 3, L // 3)$, position root panes on `Screen` using `state.justification` and `state.margins`, and position children inside panes across `STACK`, `DOCK`, and `OVERLAY` using `state.alignment`, `state.gap`, and `state.margins`.
-* [] Subtask: Remove `Provider._page()` and update `Provider._unpack_pane()` (`src/app/services/generators/menus/provider.py`) to hydrate `PaneState`, bind `LibraryBinding` / `TextBinding` against quantized `state.span`, and bake `PaneState.canvas` via `render.construct()` and `render.write()`.
+* [] Subtask: Remove `Provider._page()` and `AnimationState` references from `Provider` (`src/app/services/generators/menus/provider.py`), and update `Provider._unpack_pane()` to hydrate `PaneState`, bind `LibraryBinding` / `TextBinding` against quantized `state.span`, and bake `PaneState.canvas` via `render.construct()` and `render.write()`.
 * [] Subtask: Update `Screen._widgets()` and `Screen.stamp()` (`src/app/game/screen.py`), `ScrollController`, `MenuEventHandler`, and `UpdateEventHandler` to operate on `PaneState` (re-stamping all 9-slice tuples from `widget.frame.keys()` onto `PaneState.canvas` before calling `render.write()`).
 * [] Subtask: Add explicit `render.destroy()` cleanup for `PaneState.canvas` in `TerminalEventHandler.handle` (`src/app/game/menus/handlers/terminal.py`) and `Board.clear()` (`src/app/game/board/core.py`).
 
@@ -446,6 +505,153 @@ In `Provider._unpack_pane()` / `Layout.compute()`:
 
 *Objective*: Remove redundant fixed-size `pages` and `panes` definitions, unify menu YAML files onto fractional `dimensions` and 2-axis `alignment`/`justification`, and verify with unit tests.
 
-* [] Subtask: Consolidate `src/assets/widgets/main.yaml` by removing the `pages:` section, moving `paper-*` assets under `panes:`, and replacing fixed-size variants (`dark-small`, `dark-thin`, `dark-dialogue`, `dark-notification`, `dark-portrait`, `neutral-small`, `light-small`, `transparent-slot`, `transparent-block`, `transparent-area`, `transparent-label`) with base pane entries (`dark`, `neutral`, `light`, `transparent`).
+* [x] Subtask: Consolidate `src/assets/widgets/main.yaml` by removing the `pages:` section, moving `paper-*` assets under `panes:`, and replacing fixed-size variants (`dark-small`, `dark-thin`, `dark-dialogue`, `dark-notification`, `dark-portrait`, `neutral-small`, `light-small`, `transparent-slot`, `transparent-block`, `transparent-area`, `transparent-label`) with base pane entries (`dark`, `neutral`, `light`, `transparent`).
 * [] Subtask: Update `main.yaml`, `load.yaml`, `pause.yaml`, `options.yaml`, `dialogue.yaml`, `text.yaml`, `inventory.yaml`, and `view.yaml` in `src/data/config/menus/` to replace `instance: pages` with `instance: panes`, remove `position: { px, py }`, and declare fractional `dimensions: { w, l }`, `justification: { horizontal, vertical }`, and `alignment: { horizontal, vertical }`.
-* [] Subtask: Add unit tests under `tests/unit/app/` verifying `PaneFrame.index()` ($3 \times 3$ trisection), `PaneFrame.keys()` ($(n_x, n_y) = (2, 2)$ 16-cell emission and $(0, 0)$ 4-corner emission), fractional screen quantization, and 2-axis `Layout.compute()` positioning.
+* [] Subtask: Add unit tests under `tests/unit/app/` verifying `PaneFrame.index()`, `PaneFrame.keys()`, stateless `TraversalFrame.keys()` and `MeterFrame.keys()`, fractional screen quantization, and 2-axis `Layout.compute()` positioning.
+
+---
+
+##### Draft: Codify Formal Tenet Separating `Frame` and `Animation`
+
+* **Page**: `docs/01-assets.md`
+* **Heading**: `###### Concept: Animacy`
+
+###### Drift
+
+`docs/01-assets.md` describes `Frames` and `Animations` via a loose spatial analogy without stating the formal invariant that determines when an Asset requires an `Animation` component versus when its visual changes belong exclusively to `Frame.keys()`.
+
+###### Update
+
+```markdown
+###### Concept: Animacy
+
+**Frames & Animations**
+
+The `Frame` and `Animation` interfaces partition visual resolution into three distinct mappings over `AssetProperties` and `AssetState`:
+
+$$\text{Frame.index}: \text{Properties} \to \text{Atlas}, \qquad \text{Frame.keys}: \text{State} \to \text{Keys}, \qquad \text{Animation.animate}: \text{State} \times \text{Properties} \to \text{State}$$
+
+- **Frame (`index` and `keys`)**: A `Frame` binds an Asset's raw image file to a discrete *Frame space*. `Frame.index(id, properties)` uses static `AssetProperties` to partition the image file into named crop regions in the [Registry](./00-overview.md#library-registry). `Frame.keys(id, state)` is the inverse projection at runtime: it maps the Asset's current `AssetState` directly to the active crop key(s) in that Frame space.
+- **Animation (`animate`)**: An `Animation` exists **if and only if** a non-instantaneous, time-stepped transition across Frame space must be mediated by `AssetProperties`:
+  * In [Effects](#category-effects), temporal progression is governed by `EffectProperties.frequency` (`delay`, `amount`, `cooldown`, `persist`).
+  * In [Sheets](#category-sheets), temporal progression is governed by `SheetProperties.actions` (`count`, `delay`).
+
+**Invariant: Instantaneous State Transitions**
+
+If an Asset's visual representation changes instantaneously as a direct function of its domain `State` without temporal mediation by `Properties` (e.g., `SwitchState.switch` on [Gates](#object-gates) and [Plates](#object-plates), `ResourceState.stage` on [Resources](#category-resources), `TraversalState.status` on [Buttons](./06-widgets.md#buttons), or `MeterState.reading / unit` on [Meters](./06-widgets.md#meters)), the Asset **must not** implement an `Animation` or carry an `AnimationState`. Its `Frame.keys(id, state)` implementation projects the domain state directly.
+
+```
+
+##### Draft: Update Widget Specification for Unified 9-Slice `Panes` and Stateless `Widget` Frames
+
+* **Page**: `docs/06-widgets.md`
+* **Heading**: `##### Asset Specification`
+
+###### Drift
+
+`docs/06-widgets.md` still includes the deprecated `Pages` section, references `ScreenPosition` and pixel-sized `Panes`, and specifies `TraversalAnimation` and `MeterAnimation` on `Buttons` and `Meters`.
+
+###### Update
+
+```markdown
+##### Asset Specification
+
+Widgets do not undergo time-stepped animations mediated by `WidgetProperties`; all `Widget` state changes are instantaneous and projected directly by their `Frame.keys()` implementations (`animation: none`).
+
+**Scale & AxisAlignment**
+
+- `Scale`:
+  * `w: double` $\in (0.0, 1.0]$
+  * `l: double` $\in (0.0, 1.0]$
+- `AxisAlignment`:
+  * `horizontal: Alignments` (`left`, `center`, `right`)
+  * `vertical: Alignments` (`left`, `center`, `right`)
+
+###### Panes
+
+**Taxonomy**
+
+- `category: widgets`
+- `instance: panes`
+
+Panes serve simultaneously as layout containers, 9-slice visual backdrops, and paginated typography surfaces.
+
+**Atlas: Implicit $3 \times 3$ (9-Slice) Partitioning**
+
+A `Pane` declares the full pixel dimensions $(W, L)$ of its image file in `WidgetProperties.dimensions`. `PaneFrame.index()` trisects the image in-place into nine cells of size $(w_c, l_c) = (\lfloor W / 3 \rfloor, \lfloor L / 3 \rfloor)$ across `{top, center, bottom} x {left, center, right}`.
+
+Given fractional `PaneParameters.dimensions` $(w_p, l_p)$ and viewport `screensize` $(W_s, L_s)$, `Layout.compute()` resolves target pixels $(W_{\text{req}}, L_{\text{req}}) = (\text{int}(w_p W_s), \text{int}(l_p L_s))$ and quantizes interior multiplicity $(n_x, n_y)$:
+
+$$n_x = \max\!\left(0,\; \left\lceil \frac{W_{\text{req}} - 2w_c}{w_c} \right\rceil\right), \quad n_y = \max\!\left(0,\; \left\lceil \frac{L_{\text{req}} - 2l_c}{l_c} \right\rceil\right)$$
+
+yielding quantized span $W_{\text{span}} = (n_x + 2)w_c,\; L_{\text{span}} = (n_y + 2)l_c$. During menu instantiation and `UpdateEvent` paging, `Provider` / `Screen.stamp()` constructs the $(n_x + 2)(n_y + 2)$ 9-slice tiles onto `PaneState.canvas` via `render.construct()` and stamps any bound text (`LibraryBinding`, `TextBinding`) over the canvas via `render.write()`.
+
+**State: PaneState(WidgetState)**
+
+- `position: Position`
+- `layout: Enumerated[Layouts] = Layouts.STACK.value`
+- `alignment: AxisAlignment`
+- `justification: AxisAlignment`
+- `gap: int = 0`
+- `margins: int = 0`
+- `multiple: Multiple`
+- `span: Dimensions`
+- `content_function: Optional[Callable[[], Union[str, List[str]]]] = None`
+- `pageindex: int = 0`
+- `pagesize: int = 1`
+- `font: Enumerated[Fonts] = Fonts.DIALOGUE.value`
+- `canvas: Optional[TexturePtr] = None`
+
+**Animation: None**
+
+N/A
+
+**Frame: PaneFrame**
+
+- `index(id, properties)`: Returns `{f"{id}-{v}-{h}": (c * wc, r * lc, wc, lc)}` for `r, v` in `enumerate(["top", "center", "bottom"])` and `c, h` in `enumerate(["left", "center", "right"])`.
+- `keys(id, state)`: Emits `(f"{id}-{v(iy)}-{h(ix)}", ix * wc, iy * lc)` for $i_y \in [0, n_y + 1],\; i_x \in [0, n_x + 1]$.
+
+###### Buttons
+
+**Taxonomy**
+
+- `category: widgets`
+- `instance: buttons`
+
+**State: TraversalState(WidgetState)**
+
+- `position: Position`
+- `status: Enumerated[Statuses] = Statuses.IDLE.value`
+
+**Animation: None**
+
+N/A
+
+**Frame: TraversalFrame**
+
+- `index(id, properties)`: Maps `{f"{id}-idle": (0, 0, w, l), f"{id}-active": (w, 0, w, l), f"{id}-selected": (2*w, 0, w, l), f"{id}-disabled": (3*w, 0, w, l)}`.
+- `keys(id, state)`: Returns `[(f"{id}-{state.status}", 0, 0)]`.
+
+###### Meters
+
+**Taxonomy**
+
+- `category: widgets`
+- `instance: meters`
+
+**State: MeterState(WidgetState)**
+
+- `position: Position`
+- `reading_function: Callable[[], Union[int, float]]`
+- `unit_function: Callable[[], Union[int, float]]`
+
+**Animation: None**
+
+N/A
+
+**Frame: MeterFrame**
+
+- `index(id, properties)`: Indexes `{f"{id}-empty": (0, 0, w, l)}` and discrete percentage crops `{f"{id}-{res}": (w, 0, int(w * (res / 100.0)), l)}` for `res` in `1..100`.
+- `keys(id, state)`: Computes `res = max(0, min(100, round(state.reading / state.unit * 100)))` and returns `[(f"{id}-empty", 0, 0), (f"{id}-{res}", 0, 0)]` when `res > 0`, or `[(f"{id}-empty", 0, 0)]` when `res == 0`.
+
+```

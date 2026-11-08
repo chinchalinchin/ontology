@@ -123,21 +123,8 @@ widgets:
       dimensions:
         w: 318 
         l: 180
-    # ----- TRANSPARENT PANES
-    transparent-slot:
+    transparent:
       dimensions:
         w: 40
         l: 40
-    transparent-block:
-      dimensions:
-        w: 80
-        l: 80
-    transparent-area:
-      dimensions:
-        w: 400
-        l: 400
-    transparent-label:
-      dimensions:
-        w: 142
-        l: 28
     

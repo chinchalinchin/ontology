@@ -150,7 +150,7 @@ recipes:
   widgets:
     buttons:
       frame: traversal
-      animation: traversal
+      animation: none
       hitbox: none
     icons:
       frame: index
@@ -158,7 +158,7 @@ recipes:
       hitbox: none
     meters:
       frame: meter
-      animation: meter
+      animation: none
       hitbox: none
     panes:
       frame: single

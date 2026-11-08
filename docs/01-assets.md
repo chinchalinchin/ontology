@@ -8,9 +8,11 @@ This document serves to specify the Asset architecture and provide key definitio
 !!! note "Liberated Pixel Cup"
     [LPC](https://lpc.opengameart.org/) Assets are bundled with the [Application](./00-overview.md#application) by default.
 
-## Overview 
+## Assets: Overview 
 
-The Asset directory (and all subdirectories) contains Asset Image Files (`*.png`) and Asset Property indices (`*.yaml`). The [initialization](./12-architecture.md#specification-initialization) reads in all of these files recursively and then use the Property indices to index each Asset file into the [Registry](./00-overview.md#library-registry). Each image file that appears in the Asset directories must be configured in a YAML file to get indexed and injected into the [Application](./00-overview.md#application) . The Property configuration in the `*.yaml` files must conform to the [Asset Property schema](./appendices/01-schemas.md#model-properties) of the respective Asset Category it is configuring. 
+The Asset directory (and all subdirectories) contains Asset Image Files (`*.png`) and Asset Property indices (`*.yaml`). The [initialization and hydration phases](./12-architecture.md#specification-initialization) of the [Application](./00-overview.md#application) read in all of these files recursively. 
+
+The Property indices are used to index each Asset file into the [Registry](./00-overview.md#library-registry). Each image file that appears in the Asset directories must be configured in a YAML file to get indexed and injected into the [Application](./00-overview.md#application) . The Property configuration in the `*.yaml` files must conform to the [Asset Property schema](./appendices/01-schemas.md#model-properties) of the respective Asset Category it is configuring. 
 
 !!! important "Schema Merge"
     All `*.yaml` files in the Asset directories are merged into a single schema, so every key must be unique. If two image files have the same name, one of them will be overwritten during [Registry indexing](./00-overview.md#library-registry).
