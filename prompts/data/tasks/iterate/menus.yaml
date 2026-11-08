@@ -54,57 +54,66 @@ tools:
           - 10-chemistry
           - 11-emergence
           # - 12-architecture
-      templates: 
+      templates:
         - template-backlog
-        - template-docs
-        - template-bug
     # --------------------------------------------
     source:
       filter:
         default: AND
         queries:
+          # -------------------------------------
           - title: Orchestration Services
             scan:
               domain: [ system ]
-              workflows: [ orchestration ]
+              app: [ orchestration ]
+          # -------------------------------------
           - title: Application Core Components
             scan:
               domain: [ system ]
               app: [ core, component ]
+          # -------------------------------------
           - title: Asset Abstract
             scan:
               domain: [ abstract ]
               app: [ asset ]
+          # -------------------------------------
           - title: Widget Implementations
             scan:
               domain: [ concrete ]
               app: [ asset ]
               category: [ widgets ]
+          # -------------------------------------
           - title: Widget Models
             scan:
               domain: [ model ]
               category: [ widgets ]
+          # -------------------------------------
           - title: Menu Abstracts
             scan:
               domain: [ abstract ]
               app: [ menu ]
+          # -------------------------------------
           - title: Menu Models
             scan:
               domain: [ model ]
               app: [ menu ]
+          # -------------------------------------
           - title: Gizmo Bindings
             scan:
               domain: [ concrete ]
               app: [ menu ]
               menu: [ binding, gizmo ]
+          # -------------------------------------
           - title: Menu Services
             scan:
               domain: [ system ]
               app: [ service, menu ]
+          # -------------------------------------
           - title: Menu Mechanics
             scan:
               domain: [ concrete ]
               app: [ menu, mechanic ]
+          # -------------------------------------
           # - title: Traversal Controllers
           #   scan:
           #     domain: [ concrete ]
@@ -120,7 +129,7 @@ tools:
       data:
         properties: [ widgets ]
         state: [ ]
-        configurations: [ menus/main, menus/load, menus/dialogue ]
+        configurations: [ menus ]
         templates: [ ]
     # --------------------------------------------
     shell:

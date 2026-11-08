@@ -5,7 +5,7 @@
   {% endfor %}
 {% endif %}
 {% set _ = exclude.append('index.md') %}
-### View: {{ properties.project.title | capitalize }} Documentation 
+### View: Documentation 
 
 {{ md(properties.paths.root + properties.paths.docs + 'index.md', { "header": 3}) }}
 

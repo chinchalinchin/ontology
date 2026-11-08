@@ -11,3 +11,4 @@ Changes that violate these constraints will be rejected.
 * Do **not** enforce backwards compatibility. Do **not** turn the code into spaghetti to support outdated data structures. If a change requires breaking an interface, commit to an action and stay the course. Any changes that unnecessarily bend the code to support an old version of *an application in development* will be rejected. 
 * Do **not** delete comments.
 * Do **not** delete docstrings.
+

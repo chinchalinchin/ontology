@@ -157,7 +157,7 @@ tools:
           - title: Orchestration Services
             scan:
               domain: [ system ]
-              workflows: [ orchestration ]
+              app: [ orchestration ]
           - title: Hydration Services
             scan:
               domain: [ system ]

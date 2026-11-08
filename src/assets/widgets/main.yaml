@@ -1,4 +1,7 @@
 widgets:
+  # -----------------------------------------
+  # --------------------------------- BUTTONS
+  # -----------------------------------------
   buttons:
     slot: 
       dimensions:
@@ -29,6 +32,9 @@ widgets:
       dimensions:
         w: 24
         l: 24
+  # -----------------------------------------
+  # ----------------------------------- ICONS
+  # -----------------------------------------
   icons:
     digits:
       dimensions:
@@ -89,6 +95,9 @@ widgets:
         - male-persona-9
         - male-persona-10
         - male-persona-11
+  # -----------------------------------------
+  # ---------------------------------- METERS
+  # -----------------------------------------
   meters:
     health:
       dimensions:
@@ -98,82 +107,22 @@ widgets:
       dimensions:
         w: 72
         l: 20
-  pages:
-    # -------- SOLID PAGES
-    dark-dialogue:
-      dimensions:
-        w: 640
-        l: 96
-    dark-notification:
-      dimensions:
-        w: 192
-        l: 64
-    dark-portrait:
-      dimensions:
-        w: 58
-        l: 69
-    # -------- FAUX PAPER PAGES
-    paper-scroll:
-      dimensions:
-        w: 189
-        l: 192
-    paper-header-torn:
-      dimensions:
-        w: 426
-        l: 163 
-    paper-header:
-      dimensions:
-        w: 330
-        l: 54
-    paper-area:
-      dimensions:
-        w: 465
-        l: 273
-    paper-weathered:
-      dimensions:
-        w: 96
-        l: 95
-    # -------- TRANSPARENT PAGES
-    text-label:
-      dimensions:
-        w: 142
-        l: 28
+  # -----------------------------------------
+  # ----------------------------------- PANES
+  # -----------------------------------------
   panes:
-    # -------- DARK PANES
     dark:
       dimensions:
         w: 318
         l: 180
-    dark-small:
-      dimensions:
-        w: 318
-        l: 78
-    dark-thin:
-      dimensions:
-        w: 173
-        l: 180
-    # --------NEUTRAL PANES
     neutral:
       dimensions:
         w: 318
         l: 180
-    neutral-small:
-      dimensions:
-        w: 318
-        l: 78
-    # -------- LIGHT PANES
     light:
       dimensions:
         w: 318 
         l: 180
-    light-small:
-      dimensions:
-        w: 318
-        l: 78
-    header-pane:
-      dimensions:
-        w: 160
-        l: 140
     # ----- TRANSPARENT PANES
     transparent-slot:
       dimensions:
