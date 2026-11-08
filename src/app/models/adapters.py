@@ -30,7 +30,7 @@ from libs.core.models import (
     Hitbox, 
     Multiple, 
     Velocity, 
-    ScreenPosition
+    Scale
 )
 
 # ---------------------------------------------------------------------------
@@ -56,8 +56,8 @@ def parse_hb(v: Any) -> Any:
         )
     return v
 
-def parse_sp(v: Any) -> Any:
-    return ScreenPosition(**v) if isinstance(v, dict) else v
+def parse_scale(v: Any) -> Any:
+    return Scale(**v) if isinstance(v, dict) else v
 
 # ---------------------------------------------------------------------------
 # ----------------------------------------------------------------- SERIALIZE
@@ -95,10 +95,10 @@ def serialize_hb(v: Any) -> Any:
         "dimensions": serialize_dim(dim)
     }
 
-def serialize_sp(v: Any) -> Any:
+def serialize_scale(v: Any) -> Any:
     if v is None or isinstance(v, dict):
         return v
-    return {"px": v.px, "py": v.py}
+    return {"pw": v.pw, "pl": v.l}
 
 # ---------------------------------------------------------------------------
 # --------------------------------------------------------------------- TYPES
@@ -123,7 +123,7 @@ if TYPE_CHECKING:
     PydanticMultiple = Multiple
     PydanticVelocity = Velocity
     PydanticHitbox = Hitbox
-    PydanticScreenPosition = ScreenPosition
+    PydanticScale = Scale
 # 2. Provide bidirectional validation/serialization to Pydantic at runtime
 else:
     PydanticPosition = Annotated[
@@ -151,8 +151,8 @@ else:
         PlainValidator(parse_hb), 
         PlainSerializer(serialize_hb, when_used="unless-none")
     ]
-    PydanticScreenPosition = Annotated[
+    PydanticScale = Annotated[
         Any, 
-        PlainValidator(parse_sp), 
-        PlainSerializer(serialize_sp, when_used="unless-none")
+        PlainValidator(parse_scale), 
+        PlainSerializer(serialize_scale, when_used="unless-none")
     ]

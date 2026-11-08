@@ -6,7 +6,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/grooming.md.j2
+  template: iterate/implementation.md.j2
 # ----------------------------------------------------
   parameters:
     description: *description
@@ -26,7 +26,7 @@ tools:
       filter: true
     # --------------------------------------------
     shell:
-      directory: false
+      directory: true
     # --------------------------------------------
     tests:  
       configuration: false
@@ -92,11 +92,11 @@ tools:
             scan:
               domain: [ model ]
               app: [ menu ]
-          # - title: Gizmo Bindings
-          #   scan:
-          #     domain: [ concrete ]
-          #     app: [ menu ]
-          #     menu: [ binding, gizmo ]
+          - title: Gizmo Bindings
+            scan:
+              domain: [ concrete ]
+              app: [ menu ]
+              menu: [ binding, gizmo ]
           - title: Menu Services
             scan:
               domain: [ system ]
@@ -117,16 +117,6 @@ tools:
           #     app: [ menu ]
           #     menu: [ handler ]
           #     workflows: [ rendering ]
-          - title: Multiplier Abstract
-            scan:
-              domain: [ abstract ]
-              app: [ module ]
-              workflows: [ compositions ]
-          - title: Composition Logic
-            scan:
-              domain: [ logic ]
-              app: [ module ]
-              workflows: [ compositions ]
       data:
         properties: [ widgets ]
         state: [ ]

@@ -30,8 +30,8 @@ class Layouts(str, Enum):
 
 class Alignments(str, Enum):
     START           = "start"
-    END             = "end"
     CENTER          = "center"
+    END             = "end"
 
 class Bindings(str, Enum):
     APERTURE        = "aperture"

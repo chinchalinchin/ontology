@@ -32,7 +32,7 @@ from app.static.semantics import (
     Widgets
 )
 from app.models.adapters import (
-    PydanticScreenPosition as ScreenPosition,
+    PydanticScale as Scale,
     PydanticDimensions as Dimensions,
     Enumerated
 )
@@ -96,6 +96,10 @@ BindingTarget = Union[
 
 # ---------------------------------------------------------
 
+@dataclass(slots=True, frozen=True)
+class AxisAlignment:
+    horizontal: Enumerated[Alignments] = Alignments.CENTER.value
+    vertical: Enumerated[Alignments] = Alignments.CENTER.value
 
 @dataclass(slots=True, frozen=True)
 class MenuBinding:
@@ -107,18 +111,19 @@ class MenuBinding:
 
 # ---------------------------------------------------------
 
+
 @dataclass(slots=True, frozen=True)
 class PaneParameters:
     """
     Structural and spatial layout parameters for container panes.
     """
     layout: Enumerated[Layouts] = Layouts.STACK.value
-    alignment: Enumerated[Alignments] = Alignments.START.value
+    alignment: AxisAlignment = field(default_factory=AxisAlignment)
+    justification: AxisAlignment = field(default_factory=AxisAlignment)
     gap: int = 0
     margins: int = 0
-    position: Optional[ScreenPosition] = None # type: ignore
-    dimensions: Optional[Dimensions] = None # type: ignore
-    font: Optional[Enumerated[Fonts]] = Fonts.DIALOGUE.value
+    dimensions: Scale = field(default_factory=lambda: Scale(1.0, 1.0)) # type: ignore
+    font: Optional[Enumerated[Fonts]] = None
     children: List[MenuNode] = field(default_factory=list)
 
 
@@ -129,8 +134,9 @@ class GizmoParameters:
     """
     capacity: int
     columns: int
-    pane: str 
+    pane: str
     button: str
+    dimensions: Scale = field(default_factory=lambda: Scale(1.0, 1.0)) # type: ignore
     gap: int = 5
 
     def __post_init__(self):

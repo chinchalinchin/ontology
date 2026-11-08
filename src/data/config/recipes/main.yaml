@@ -160,10 +160,6 @@ recipes:
       frame: meter
       animation: meter
       hitbox: none
-    pages:
-      frame: single
-      animation: none
-      hitbox: none
     panes:
       frame: single
       animation: none

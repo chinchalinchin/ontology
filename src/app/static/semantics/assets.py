@@ -57,7 +57,6 @@ class AssetInstances(str, Enum):
     # CRAFTS
     BRIDGES         = "bridges"
     DECOR           = "decor"
-    PLATFORMS       = "platforms"
     STRUTS          = "struts"
     STAIRS          = "stairs"
     FORGES          = "forges"
@@ -79,7 +78,6 @@ class AssetInstances(str, Enum):
     BUTTONS         = "buttons"
     ICONS           = "icons"
     METERS          = "meters"
-    PAGES           = "pages"
     PANES           = "panes"
 
 # -------------------------------------------------------
@@ -112,7 +110,6 @@ class Widgets(str, Enum):
     ICONS           = "icons"
     GIZMOS          = "gizmos"
     METERS          = "meters"
-    PAGES           = "pages"
     PANES           = "panes"
 
 class Groups(str, Enum):

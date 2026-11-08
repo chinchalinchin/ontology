@@ -1,55 +1,68 @@
+
 #### Refactor: Phase 04.06 - Pane Generation
 
 **Overview**
 
-Unify the container and display branches of the `Widgets` hierarchy by deprecating `Pages` (`AssetInstances.PAGES` and `DisplayState`) and subsuming their text-rendering, `canvas` allocation, and pagination capabilities directly into `Panes` (`AssetInstances.PANES` and `PaneState`). Simultaneously, decouple `Pane` assets from fixed-dimension textures (`dark`, `dark-small`, `dark-thin`, `dark-dialogue`, `dark-notification`, `dark-portrait`, etc.) by inducting `Panes` into the multiplication architecture (`SurfaceMultiplier`), enabling both container and text-bearing `Panes` to expand to arbitrary quantized dimensions using bottom-up layout measurement and pre-baked `TexturePtr` canvases.
+Unify the container and display branches of the `Widgets` hierarchy by deprecating `Pages` (`AssetInstances.PAGES` and `DisplayState`) and subsuming their text-rendering, `canvas` allocation, and pagination capabilities directly into `Panes` (`AssetInstances.PANES` and `PaneState`). Decouple `Panes` from fixed-dimension pixel configurations and `ScreenPosition` coordinates by:
+
+1. Indexing every `Pane` image implicitly as an in-place $3 \times 3$ (9-slice) grid derived from $\lfloor W / 3 \rfloor \times \lfloor L / 3 \rfloor$ without special sprite atlases or `Multipliers` dependencies.
+2. Specifying `PaneParameters.dimensions` as screen-relative percentages $(w_p, l_p) \in (0.0, 1.0]^2$.
+3. Replacing `ScreenPosition` and 1D alignment with 2-axis `AxisAlignment` (`horizontal: left | center | right`, `vertical: left | center | right`) and `margins`.
 
 ##### Specification
 
-A multiplied `Pane` of unit cell dimensions $(w, l)$ and interior multiplicity $(n_x, n_y) \in \mathbb{Z}_{\ge 0}^2$ spans a total bounding box of:
+1. **Implicit $3 \times 3$ Cell Partitioning (`PaneFrame.index`)**:
 
-$$W(n_x) = (n_x + 2) \cdot w, \quad L(n_y) = (n_y + 2) \cdot l$$
+Given a `Pane` asset with total pixel dimensions $(W, L) = (\text{properties.dimensions.w}, \text{properties.dimensions.l})$, the unit cell dimensions $(w_c, l_c)$ are obtained by trisecting each axis:
 
-1. **Minimum Dimensions Constraint**:
+$$w_c = \left\lfloor \frac{W}{3} \right\rfloor, \quad l_c = \left\lfloor \frac{L}{3} \right\rfloor$$
 
-Setting $n_x = 0, n_y = 0$ yields the minimum valid footprint $W_{\min} = 2w,\; L_{\min} = 2l$, where the `north`/`south` and `west`/`east` caps superimpose at the four corners over the `center` backdrop without interior shaft segments.
+Let $V = (\text{top}, \text{center}, \text{bottom})$ and $H = (\text{left}, \text{center}, \text{right})$. `PaneFrame.index(id, properties)` partitions the source texture in-place into nine cells:
 
-2. **Bottom-Up Content Measurement**:
+$$\text{index}(id, \text{properties}) = \Big\{\; \text{f"{id}-{V[r]}-{H[c]}"}: (c \cdot w_c,\; r \cdot l_c,\; w_c,\; l_c) \;\Big\vert{}\; r \in \{0, 1, 2\},\; c \in \{0, 1, 2\} \;\Big\}$$
 
-For a `Pane` with child footprints $C = \{(w_i, l_i)\}_{i=1}^{k}$, uniform margin $m \in \mathbb{Z}_{\ge 0}$, and inter-child spacing $g \in \mathbb{Z}_{\ge 0}$, the required bounding footprint $(W_{\text{req}}, L_{\text{req}})$ is determined by its `Layouts` strategy when $\vert{}C\vert{} > 0$:
+2. **Screen-Relative Quantization**:
 
-* **`Layouts.STACK` (Vertical Column)**:
+Given fractional `PaneParameters.dimensions` $(w_p, l_p) \in (0.0, 1.0]^2$ and viewport `screensize` $(W_s, L_s)$, the target pixel footprint is:
 
-$$W_{\text{req}} = \max_{c \in C}(c.w) + 2m, \quad L_{\text{req}} = \sum_{c \in C} c.l + g \cdot \max(0, \vert{}C\vert{} - 1) + 2m$$
+$$W_{\text{req}} = \text{int}(w_p \cdot W_s), \quad L_{\text{req}} = \text{int}(l_p \cdot L_s)$$
 
-* **`Layouts.DOCK` (Horizontal Row)**:
+The interior multiplicity $(n_x, n_y) \in \mathbb{Z}_{\ge 0}^2$ and quantized pixel span $(W_{\text{span}}, L_{\text{span}})$ are resolved deterministically for every `Pane`:
 
-$$W_{\text{req}} = \sum_{c \in C} c.w + g \cdot \max(0, \vert{}C\vert{} - 1) + 2m, \quad L_{\text{req}} = \max_{c \in C}(c.l) + 2m$$
+$$n_x = \max\!\left(0,\; \left\lceil \frac{W_{\text{req}} - 2w_c}{w_c} \right\rceil\right), \quad n_y = \max\!\left(0,\; \left\lceil \frac{L_{\text{req}} - 2l_c}{l_c} \right\rceil\right)$$
 
-* **`Layouts.OVERLAY` (Sagittal Superimposition)**:
+$$W_{\text{span}}(n_x) = (n_x + 2) \cdot w_c, \quad L_{\text{span}}(n_y) = (n_y + 2) \cdot l_c$$
 
-$$W_{\text{req}} = \max_{c \in C}(c.w) + 2m, \quad L_{\text{req}} = \max_{c \in C}(c.l) + 2m$$
+3. **9-Slice Topological Projection (`PaneFrame.keys`)**:
 
-If `PaneParameters.dimensions` is explicitly configured, $(W_{\text{req}}, L_{\text{req}}) = (\text{params.dimensions.w}, \text{params.dimensions.l})$. For leaf `Panes` ($\vert{}C\vert{} = 0$, such as text-bound display panes) without explicit `PaneParameters.dimensions`, $(W_{\text{req}}, L_{\text{req}}) = (w, l)$ from `WidgetProperties.dimensions`.
+For a `Pane` with `state.multiple = Multiple(nx, ny)`, `PaneFrame.keys(id, state)` iterates over row index $i_y \in [0, n_y + 1]$ and column index $i_x \in [0, n_x + 1]$, selecting:
 
-3. **Quantization of Target Dimensions**:
+$$v(i_y) = \begin{cases} \text{top} & i_y = 0 \\ \text{bottom} & i_y = n_y + 1 \\ \text{center} & 1 \le i_y \le n_y \end{cases}, \qquad h(i_x) = \begin{cases} \text{left} & i_x = 0 \\ \text{right} & i_x = n_x + 1 \\ \text{center} & 1 \le i_x \le n_x \end{cases}$$
 
-Given $(W_{\text{req}}, L_{\text{req}})$:
+and emitting $(n_x + 2)(n_y + 2)$ non-overlapping tile primitives:
 
-* **Multiplied Panes (`properties.strategy is not None`)**: If `PaneParameters.multiple` is explicitly set, $(n_x, n_y) = (\text{multiple.nx}, \text{multiple.ny})$. Otherwise, $(n_x, n_y)$ is resolved via clamped ceiling division:
+$$\Big(\text{f"{id}-{v(i\_y)}-{h(i\_x)}"},\; i_x \cdot w_c,\; i_y \cdot l_c\Big)$$
 
-$$n_x = \max\!\left(0,\; \left\lceil \frac{W_{\text{req}} - 2w}{w} \right\rceil\right), \quad n_y = \max\!\left(0,\; \left\lceil \frac{L_{\text{req}} - 2l}{l} \right\rceil\right)$$
+4. **Two-Axis Alignment, Justification, and Margins**:
 
-setting `pane.state.multiple = Multiple(nx, ny)` and `pane.state.span = Dimensions((nx + 2) * w, (ny + 2) * l)`.
+Both horizontal ($X$) and vertical ($Y$, downward positive) axes are parameterized over `Alignments` $\in \{\text{left}, \text{center}, \text{right}\}$, where `left` denotes the origin bound ($0$), `center` denotes the midpoint, and `right` denotes the terminal bound ($L$).
 
-* **Unmultiplied Panes (`properties.strategy is None`)**: `pane.state.span` resolves to `Dimensions(W_req, L_req)`.
+For a parent bounding box $(X_p, Y_p, W_p, L_p)$, an inner content footprint $(W_c, L_c)$, and margin $m \in \mathbb{Z}_{\ge 0}$, the 1D axis resolver $\alpha(p_0, P, C, m, \text{mode})$ is:
 
-4. **Unified Canvas Compilation (Backdrop + Typography)**:
+$$\alpha(p_0, P, C, m, \text{mode}) = \begin{cases} p_0 + m & \text{if mode} = \text{left} \\ p_0 + \lfloor (P - C) / 2 \rfloor & \text{if mode} = \text{center} \\ p_0 + P - C - m & \text{if mode} = \text{right} \end{cases}$$
 
-A `Pane` allocates a hardware target texture `pane.state.canvas = render.canvas(span.w, span.l)` whenever it possesses a visual backdrop texture in `Registry` (`properties.strategy is not None` or `registry.image(pane.id) is not None`) OR a text binding (`LibraryBinding`, `TextBinding`). Canvas compilation executes in two stages inside `Screen.stamp()` / `Provider._bake_pane()`:
+* **Root Pane Placement (`justification`)**: A root `Pane` of quantized span $(W_{\text{span}}, L_{\text{span}})$ is placed within the viewport $(0, 0, W_s, L_s)$ at:
 
-* **Stage 1 (Backdrop Construction)**: Evaluates `pane.frame.keys(pane.id, pane.state)`—yielding $3\text{-tuples}$ `(frame_key, ox, oy)` from `SurfaceMultiplier.project()` for multiplied panes or `[(pane.id, 0, 0)]` for single-frame panes—and stamps all resolved textures onto `pane.state.canvas` via `render.construct(canvas, primitives)` (clearing the target to `RGBA(0, 0, 0, 0)` first, which provides a clean transparent surface for unbacked text labels).
-* **Stage 2 (Typography Rasterization)**: If `pane.state.content_function is not None` and `content = pane.state.current()` is non-empty, stamps wrapped glyphs over the constructed backdrop via `render.write((canvas, 0, 0, span.w, span.l, 0, 0, span.w, span.l), content, font)`.
+$$x_{\text{root}} = \alpha(0, W_s, W_{\text{span}}, m, \text{justification.horizontal}), \quad y_{\text{root}} = \alpha(0, L_s, L_{\text{span}}, m, \text{justification.vertical})$$
+
+* **Child Placement (`alignment`)**: Inside a `Pane` at $(x_0, y_0)$ with quantized span $(W_{\text{span}}, L_{\text{span}})$, children $C = \{c_1, \dots, c_k\}$ with inter-child gap $g$ have collective bounding dimensions:
+    * **`Layouts.STACK`**: $W_{\text{group}} = \max_{c \in C}(c.w),\; L_{\text{group}} = \sum_{c \in C} c.l + g \cdot \max(0, \vert{}C\vert{} - 1)$.
+    Each child $c_i$ is placed at $x_i = \alpha(x_0, W_{\text{span}}, c_i.w, m, \text{alignment.horizontal})$, with the vertical sequence starting at $y_{\text{start}} = \alpha(y_0, L_{\text{span}}, L_{\text{group}}, m, \text{alignment.vertical})$.
+    * **`Layouts.DOCK`**: $W_{\text{group}} = \sum_{c \in C} c.w + g \cdot \max(0, \vert{}C\vert{} - 1),\; L_{\text{group}} = \max_{c \in C}(c.l)$.
+    The horizontal sequence starts at $x_{\text{start}} = \alpha(x_0, W_{\text{span}}, W_{\text{group}}, m, \text{alignment.horizontal})$, with each child $c_i$ placed at $y_i = \alpha(y_0, L_{\text{span}}, c_i.l, m, \text{alignment.vertical})$.
+    * **`Layouts.OVERLAY`**: Each child $c_i$ is placed independently at:
+
+$$x_i = \alpha(x_0, W_{\text{span}}, c_i.w, m, \text{alignment.horizontal}), \quad y_i = \alpha(y_0, L_{\text{span}}, c_i.l, m, \text{alignment.vertical})$$
 
 ##### Architectural Analysis I
 
@@ -164,25 +177,20 @@ Inspecting `src/app/models/state/assets/widgets.py`, `src/app/game/screen.py`, a
 * `DisplayState` holds `content_function: Callable[[], Union[str, List[str]]]`, `pageindex: int = 0`, `pagesize: int = 1`, `font: Enumerated[Fonts] = Fonts.DIALOGUE.value`, `canvas: Any = None`, and the pagination interface (`content`, `_pagecount`, `current()`, `more()`, `less()`, `scrollup()`, `scrolldown()`).
 * Merging these fields and methods directly into `PaneState` eliminates `DisplayState` without conflicting with `CollectionState(PaneState)`: `CollectionState` already subclasses `PaneState` and overrides `scrollup()` and `scrolldown()` for collection aperture windowing. Consequently, `ScrollController` can invoke `target_widget.state.scrollup()` / `scrolldown()` polymorphically on any `PaneState`.
 
-
 2. **Deferred Text-Binding Hydration After Quantization (`Layout` Pass 1 $\to$ `Binding.bind`)**:
 
 * Previously, `Provider._page()` called `binding.bind(w=w, l=l)` during Phase 2 widget instantiation using raw `properties.dimensions`.
 * When a `Pane` with a `LibraryBinding` or `TextBinding` uses `strategy: surface` (for example, `character-speech` in `dialogue.yaml` using `id: dark` instead of fixed `dark-notification`), its raw `properties.dimensions` is the unit tile size $(w, l)$ (e.g., $16 \times 16$), whereas its actual text-wrapping bounding box is the quantized `pane.state.span` $(W, L)$ computed in `Layout.compute()` Pass 1.
 * **Resolution**: During `Provider._unpack_pane()`, attach the `Binding` instance (`LibraryBinding` or `TextBinding`) to `pane_widget.binding` and store the lexically scoped `font` on `pane.state.font`, but defer invoking `pane.state.content_function = pane_widget.binding.bind(w=pane.dimensions.w, l=pane.dimensions.l, font=pane.state.font)` until **after** `Layout.compute()` Pass 1 has resolved `pane.state.span`.
 
-
 3. **Unifying `PaneFrame.keys()` for `Provider._bake_pane()` and `Screen.stamp()`**:
 
 * When `ScrollController` advances `pageindex` on a dialogue `Pane` and emits `UpdateEvent(widget, content)`, `UpdateEventHandler` invokes `Screen.stamp(widget, content)`.
 * In `src/app/game/screen.py`, `Screen.stamp()` previously assumed the background was a single unmultiplied texture (`base_key, ox, oy = widget.frame.keys(widget.id, widget.state)[0]`). If the dialogue box is now a multiplied `Pane`, `Screen.stamp()` must reconstruct the *multiplied* backdrop before calling `render.write()` so the previous page's glyphs are wiped cleanly.
-
 * **Resolution**: Have `PaneFrame.keys(id, state)` inspect `state.multiple`:
     * If `state.multiple is not None`, `PaneFrame.keys()` delegates to `SurfaceMultiplier.project(w, l, state.multiple.nx, state.multiple.ny)` and returns `[(f"{id}-{part}", ox, oy) for part, ox, oy, _ in projected]`.
     * If `state.multiple is None`, `PaneFrame.keys()` returns `[(id, 0, 0)]`.
-
 * With this `PaneFrame.keys()` contract, `Screen.stamp()` and `Provider._bake_pane()` share the exact same backdrop construction loop: iterate over `widget.frame.keys(widget.id, widget.state)`, collect `(tex_ptr, sx, sy, sw, sl, ox, oy, sw, sl, 1, 1)` for all keys present in `Registry`, call `render.construct(canvas, primitives)`, and—if `content` is non-empty—call `render.write((canvas, 0, 0, canvas.w, canvas.l, 0, 0, canvas.w, canvas.l), content, font)`.
-
 
 4. **Optional `PaneParameters` on Leaf Panes in `menus/*.yaml`**:
 
@@ -190,18 +198,16 @@ Inspecting `src/app/models/state/assets/widgets.py`, `src/app/game/screen.py`, a
 * In `Provider._expand()` and `Provider._unpack_pane()`, `pane.parameters` was strictly checked with `if not isinstance(params, PaneParameters): return`.
 * **Resolution**: Default `params = pane.parameters or PaneParameters()` when `node.instance == AssetInstances.PANES.value` so leaf text-display `Panes` do not require boilerplate `parameters:` blocks in YAML.
 
-
 5. **Fixing Lexical Font Shadowing on `PaneParameters`**:
 
 * In `src/app/models/config/menus.py`, `PaneParameters.font` defaulted to `Fonts.DIALOGUE.value` instead of `None`. When a root pane declared `font: menu` (e.g. `main.yaml`) and a child container pane (`new-game-slot`) omitted `font:`, `params.font or font` evaluated to `"dialogue"`, shadowing the parent's `"menu"` font on all nested text widgets.
 * **Resolution**: Set `PaneParameters.font: Optional[Enumerated[Fonts]] = None`, and resolve `active_font = params.font or font or Fonts.DIALOGUE.value` during tree traversal in `Provider._unpack_pane()`.
 
-
 6. **Asset & Configuration Cleanup (`src/assets/widgets/main.yaml` & `menus/*.yaml`)**:
 
 * **Eliminated Fixed-Size Dark/Neutral/Light Assets**: `dark-dialogue`, `dark-notification`, `dark-portrait` (formerly under `pages:`), and `dark-small`, `dark-thin`, `neutral-small`, `light-small` (under `panes:`) are all replaced by the 3 multiplied base panes: `dark`, `neutral`, and `light`.
 * **Eliminated Duplicate Transparent Label**: `pages.text-label` ($142 \times 28$) is redundant with `panes.transparent-label` ($142 \times 28$) and is removed.
-* **Collapsed Portrait Container in `dialogue.yaml**`: `character-portrait-container` (`transparent-block` wrapping `pages.dark-portrait` + `icons.portraits`) simplifies to a single `instance: panes, id: dark` with `layout: overlay` wrapping `icons.portraits` directly.
+* **Collapsed Portrait Container in `dialogue.yaml`**: `character-portrait-container` (`transparent-block` wrapping `pages.dark-portrait` + `icons.portraits`) simplifies to a single `instance: panes, id: dark` with `layout: overlay` wrapping `icons.portraits` directly.
 * **Migrated Faux-Paper Assets**: `paper-scroll`, `paper-header-torn`, `paper-header`, `paper-area`, and `paper-weathered` move from `widgets.pages` to `widgets.panes` as static single-frame panes (`strategy: None`).
 
 
@@ -220,186 +226,226 @@ flowchart TD
     P --> P4["Transparent Layout Container (transparent-slot, canvas=None)"]
 ```
 
+
+
+
+##### User Review IV
+
+Several poor design choices stick out.
+
+**Incorrect Multiplication Strategy**
+
+Multiplication strategy for Panes seems incorrect. Most likely an artifact of trying to jam Pane expansion in the Composition multiplcation framework. Seems like the base Pane Frame should be broken into nine cells:
+
+* (start, start), (start, center), (top, end)
+* (center, start), (center, center), (center, end)
+* (end, start), (end, center), (end, end)
+
+So when it is multipled by (nx, ny) = (2, 2), say,
+
+* (start, start), (start, center), (start, center), (start, end)
+* (center, start), (center, center), (center, center), (center, end)
+* (center, start), (center, center), (center, center), (center, end)
+* (end, start), (end, center), (end, center), (end, end)
+
+Atlas is implicit in the Pane Asset. Asset does not need to be edited into a special atlas; No special atlas is required at all. To avoid verbose configuration, Pane dimensions should be declared to encompass the entire Asset. Indexing strategy can account for the corner margins by just dividing the image in three along each dimension; except in extreme cases where the Asset wouldn't even be usable in the engine, there is no way for this solution not to work.
+
+**Pointless Property**
+
+`strategy` is pointless, as the only widget that gets multiplied are Panes. Remove it. It is a duck-typing placeholder to circumvent the actual issue, which is touched on next.
+
+**Specification Drift**
+
+The various fallbacks and duck-typing of PaneParameters is undesirable. Eliminate it. The underlying problem is having the width and length of the Pane specified as pixels, while position is percentage of screen width.
+
+Instead of hacking the dimensions to make them work, system needs rethought. Simplest way to make would seem to be: remove screen position altogether, introduce axis alignments/justifications and margins to Panes (e.g. vertical: left | center | right, horizontal: left | center | right), and then specify dimension as percentages of screen width,
+
+* *Note*: Do not worry about Screen resizing events.
+
+##### Architectural Analysis IV
+
+###### 1. Eliminating `Multipliers` Coupling and `WidgetProperties.strategy`
+
+By trisecting any `Pane` texture in-place within `PaneFrame.index()` into the 9 cells `{top, center, bottom} x {left, center, right}`:
+
+* **Zero `Multipliers` Touchpoints**: `src/app/game/logic/modules/multipliers/` remains strictly dedicated to world `Crafts` and `Compositions`. `Panes` do not share or subclass `PerimeterMultiplier` or `SimpleMultiplier`.
+* **Zero Special Atlases**: Existing rectangular `Pane` `.png` assets do not need to be sliced into horizontal strips; `WidgetProperties.dimensions` simply declares the full pixel width and length of the `.png` file.
+* **Zero Property Duck-Typing**: `WidgetProperties` does not need a `strategy` field because *every* `Pane` is indexed and projected via `PaneFrame`'s 9-slice grid. Even transparent layout containers (`transparent`) use the exact same 9-slice math.
+
+###### 2. Eliminating `ScreenPosition` and `PaneParameters` Fallbacks
+
+Previously, `PaneParameters` mixed fractional screen coordinates (`ScreenPosition(px, py)`) with pixel `Dimensions(w, l)`, forcing authors to manually pre-calculate `px = (screensize.w - w) / (2 * screensize.w)` in YAML and requiring fallback chains when `dimensions` or `position` were omitted.
+
+Under the revised architecture:
+
+1. **`ScreenPosition` Removal**: `ScreenPosition` and `PydanticScreenPosition` are removed from `PaneParameters`, `src/app/models/adapters.py`, and `src/libs/core/models.pyx`.
+2. **Fractional `Scale` (`pw: float, pl: float`) for `PaneParameters.dimensions**`: `PaneParameters.dimensions` is always a fractional pair $(w_p, l_p) \in (0.0, 1.0]^2$ (defaulting to `Scale(pw=1.0, pl=1.0)`). `Layout.compute()` converts $(w_p, l_p)$ into target pixels $(W_{\text{req}}, L_{\text{req}}) = (\text{int}(w_p \cdot W_s), \text{int}(l_p \cdot L_s))$ and immediately quantizes `pane.state.multiple = Multiple(nx, ny)` and `pane.state.span = Dimensions((nx + 2) * wc, (ny + 2) * lc)` in a single top-down pass.
+3. **Orthogonal `justification` and `alignment` via `AxisAlignment`**:
+    * Why separate `justification` (self-placement of a root `Pane` within `Screen`) from `alignment` (placement of `children` within the `Pane`)? Because leaf controls (`Buttons`, `Meters`, `Icons`) do not carry `PaneParameters`—their placement is governed by their parent `Pane`'s `alignment`. Meanwhile, a root `Pane` (such as `dialogue-menu`) must be justified at the bottom-center of the `Screen` (`justification: { horizontal: center, vertical: right }`) while centering its own children vertically (`alignment: { horizontal: center, vertical: center }`).
+    * Both fields use the identical `AxisAlignment(horizontal: Alignments, vertical: Alignments)` schema with default `AxisAlignment(horizontal="center", vertical="center")`.
+4. **Pure Percentage Subdivision in `Fabricator._collection()`**:
+* Because `PaneParameters.dimensions` is a screen percentage `Scale(pw, pl)`, `Fabricator._collection()` no longer needs `WidgetProperties` to look up pixel sizes. Given a gizmo's `dimensions: Scale(pw, pl)`, `columns`, and `total_rows = ceil(capacity / columns)`, `Fabricator` assigns `Scale(pw=w, pl=pl / total_rows)` to each row `Pane` and `Scale(pw=pw / columns, pl=pl / total_rows)` to each slot `Pane`.
+
+
+
+```mermaid
+flowchart LR
+    A["PaneParameters\ndimensions: Scale(pw, pl)\njustification: AxisAlignment\nalignment: AxisAlignment\nmargins: int"] --> B["Layout.compute\nW_req = int(pw * W_s)\nL_req = int(pl * L_s)"]
+    B --> C["9-Slice Quantization\nwc = W // 3, lc = L // 3\nnx, ny -> Span((nx+2)wc, (ny+2)lc)"]
+    C --> D["Coordinate Resolution\nRoot via justification\nChildren via alignment"]
+    D --> E["Provider._bake_pane\nPaneFrame.keys (9-slice grid)\nrender.construct + render.write"]
+```
+
 ##### Goals
 
-###### Goal: Decouple Topology Generation from Entity Instantiation in `Multipliers`
+###### Goal: Implicit 9-Slice `PaneFrame` Indexing & Projection
 
-Extract pure `@classmethod` geometric projection and span calculation methods onto the `Multiplier` hierarchy so world `Crafts` (`Decomposer`), compile-time macro evaluation (`CompositionCompiler`), and UI `Panes` (`Provider` / `Layout` / `PaneFrame`) share a single implementation without requiring `MaterialIndex`:
+Implement `PaneFrame(Frame)` in `src/app/assets/frames/widgets.py` to trisect any `Pane` asset of dimensions $(W, L)$ into 9 cells of size $(w_c, l_c) = (W // 3, L // 3)$ and project $(n_x + 2) \times (n_y + 2)$ tile offsets from `PaneState.multiple`:
 
 ```python
-class Multiplier(Singleton):
-    materials: Optional[MaterialIndex] = None
+class PaneFrame(Frame):
 
-    def __init__(self, materials: Optional[MaterialIndex] = None):
-        if materials is not None:
-            self.materials = materials
+    def index(
+        self,
+        id: str,
+        properties: WidgetProperties
+    ) -> dict[str, tuple[int, int, int, int]]:
+        wc = properties.dimensions.w // 3
+        lc = properties.dimensions.l // 3
+        crops = {}
+        for r, v in enumerate(Alignments):
+            for c, h in enumerate(Alignments):
+                key = settings.SEPARATOR.join([id, v, h])
+                crops[key] = (c * wc, r * lc, wc, lc)
+        return crops
 
-    @classmethod
-    @abstractmethod
-    def span(
-        cls,
-        w: int,
-        l: int,
-        nx: int,
-        ny: int,
-        blueprint: Optional[str] = None
-    ) -> Dimensions:
-        """Returns the total bounding Dimensions of the multiplied footprint."""
-        pass
+    def keys(
+        self,
+        id: str,
+        state: PaneState
+    ) -> List[Tuple[str, int, int]]:
+        nx = state.multiple.nx
+        ny = state.multiple.ny
+        wc = state.span.w // (nx + 2)
+        lc = state.span.l // (ny + 2)
 
-    @classmethod
-    @abstractmethod
-    def project(
-        cls,
-        w: int,
-        l: int,
-        nx: int,
-        ny: int,
-        blueprint: Optional[str] = None,
-        base_anchor: int = 0,
-        hitboxes: Optional[Dict[str, List[Hitbox]]] = None
-    ) -> List[Tuple[str, int, int, int]]:
-        """
-        Emits relative placement primitives: (blueprint_part, offset_x, offset_y, seg_anchor).
-        """
-        pass
+        primitives: List[Tuple[str, int, int]] = []
+        for iy in range(ny + 2):
+            v = (
+                Alignments.START.value if iy == 0
+                else PanePartitions.END.value if iy == ny + 1
+                else PanePartitions.CENTER.value
+            )
+            for ix in range(nx + 2):
+                h = (
+                    Alignments.START.value if ix == 0
+                    else Alignments.END.value if ix == nx + 1
+                    else Alignments.CENTER.value
+                )
+                key = settings.SEPARATOR.join([id, v, h])
+                primitives.append((key, ix * wc, iy * lc))
+        return primitives
 
 ```
 
-Introduce `SurfaceMultiplier(PerimeterMultiplier)` (`MultiplicationStrategies.SURFACE = "surface"`), which first tiles `Surfaces.CENTER.value` across $[0, n_x + 1] \times [0, n_y + 1]$ via `SimpleMultiplier.project(w, l, nx + 2, ny + 2, blueprint=Surfaces.CENTER.value)` and then appends `PerimeterMultiplier.project(w, l, nx, ny, ...)`.
+###### Goal: Replace `ScreenPosition` with Fractional `Scale` & 2-Axis `AxisAlignment`
 
-###### Goal: Deprecate `Pages` and Unify `DisplayState` into `PaneState`
-
-Remove `AssetInstances.PAGES`, `Widgets.PAGES`, and `DisplayState`. Consolidate all typography, pagination, multiplication, and `canvas` fields onto `PaneState`:
+Remove `ScreenPosition` from `libs.core.models` and `app.models.adapters`, replacing it with `Scale(pw: double, pl: double)` (`PydanticScale`), and standardize `Alignments` to `START = "start"`, `CENTER = "center"`, `END = "end"`:
 
 ```python
-@dataclass(slots=True)
-class WidgetProperties(AssetProperties):
-    frames: Optional[List[str]] = field(default_factory=list)
-    strategy: Optional[Enumerated[MultiplicationStrategies]] = None
+@dataclass(slots=True, frozen=True)
+class AxisAlignment:
+    horizontal: Enumerated[Alignments] = Alignments.CENTER.value
+    vertical: Enumerated[Alignments] = Alignments.CENTER.value
 
 
 @dataclass(slots=True, frozen=True)
 class PaneParameters:
     layout: Enumerated[Layouts] = Layouts.STACK.value
-    alignment: Enumerated[Alignments] = Alignments.START.value
+    alignment: AxisAlignment = field(default_factory=AxisAlignment)
+    justification: AxisAlignment = field(default_factory=AxisAlignment)
     gap: int = 0
     margins: int = 0
-    position: Optional[ScreenPosition] = None
-    dimensions: Optional[Dimensions] = None
-    multiple: Optional[Multiple] = None
+    dimensions: Scale = field(default_factory=lambda: Scale(1.0, 1.0))
     font: Optional[Enumerated[Fonts]] = None
     children: List[MenuNode] = field(default_factory=list)
 
 
+@dataclass(slots=True, frozen=True)
+class GizmoParameters:
+    capacity: int
+    columns: int
+    pane: str
+    button: str
+    dimensions: Scale = field(default_factory=lambda: Scale(1.0, 1.0))
+    gap: int = 5
+
+```
+
+###### Goal: Consolidate `DisplayState` (`Pages`) into `PaneState` (`Panes`)
+
+Deprecate `Pages` (`AssetInstances.PAGES`, `Widgets.PAGES`, `DisplayState`) and merge all text-binding, pagination, multiplication, and canvas attributes onto `PaneState`:
+
+```python
 @dataclass(slots=True)
 class PaneState(WidgetState):
     layout: Enumerated[Layouts] = Layouts.STACK.value
-    alignment: Enumerated[Alignments] = Alignments.CENTER.value
-    gap: Optional[int] = 0
-    margins: Optional[int] = 0
-    multiple: Optional[Multiple] = None
-    span: Optional[Dimensions] = None
+    alignment: AxisAlignment = field(default_factory=AxisAlignment)
+    justification: AxisAlignment = field(default_factory=AxisAlignment)
+    gap: int = 0
+    margins: int = 0
+    multiple: Multiple = field(default_factory=lambda: Multiple(1, 1))
+    span: Dimensions = field(default_factory=lambda: Dimensions(0, 0))
     content_function: Optional[Callable[[], Union[str, List[str]]]] = None
     pageindex: int = 0
     pagesize: int = 1
     font: Enumerated[Fonts] = Fonts.DIALOGUE.value
     canvas: Any = None
 
-    @property
-    def content(self) -> Union[str, List[str]]:
-        if not self.content_function:
-            return ""
-        return self.content_function()
-
-    @property
-    def _pagecount(self) -> int:
-        content = self.content
-        if not content:
-            return 0
-        if isinstance(content, list):
-            return len(content)
-        return 1
-
-    def current(self) -> str:
-        content = self.content
-        if not content:
-            return ""
-        if isinstance(content, list):
-            if 0 <= self.pageindex < len(content):
-                return content[self.pageindex]
-            return ""
-        return content
-
-    def more(self) -> bool:
-        return self.pageindex < (self._pagecount - 1)
-
-    def less(self) -> bool:
-        return self.pageindex > 0
-
-    def scrollup(self) -> None:
-        if self.less():
-            self.pageindex -= 1
-
-    def scrolldown(self) -> None:
-        if self.more():
-            self.pageindex += 1
-
 ```
 
-###### Goal: Bottom-Up Auto-Sizing, Deferred Text Binding & Unified Canvas Baking
+###### Goal: Top-Down Screen-Relative Quantization & Unified Canvas Baking
 
-1. **Pass 1 (Post-Order Measurement & Quantization in `Layout.compute`)**:
-* Measure child `MenuNode` footprints recursively across `STACK`, `DOCK`, and `OVERLAY` layouts.
-* Resolve $(W_{\text{req}}, L_{\text{req}})$ from explicit `PaneParameters.dimensions`, measured child bounds plus `2 * margins`, or leaf `WidgetProperties.dimensions`.
-* For multiplied panes (`properties.strategy is not None`), quantize $(n_x, n_y)$ via ceiling division and set `pane.state.multiple = Multiple(nx, ny)` and `pane.state.span = strategy.span(w, l, nx, ny)`. For unmultiplied panes, set `pane.state.span = Dimensions(W_req, L_req)`.
+In `Provider._unpack_pane()` / `Layout.compute()`:
 
-
-2. **Pass 2 (Pre-Order Coordinate Assignment & Traversal Graph in `Layout.compute`)**:
-* Position all panes and children using `widget.dimensions` (`pane.state.span`) and construct the AABB traversal graph.
-
-
-3. **Pass 3 (Text Binding Evaluation & Canvas Baking in `Provider._bake_pane` / `Screen.stamp`)**:
-* For panes with a `LibraryBinding` or `TextBinding`, bind `pane.state.content_function = pane.binding.bind(w=pane.dimensions.w, l=pane.dimensions.l, font=pane.state.font)` using the quantized dimensions.
-* For any pane with a valid texture or text binding, allocate `pane.state.canvas = render.canvas(pane.dimensions.w, pane.dimensions.l)`, construct the backdrop from `pane.frame.keys(pane.id, pane.state)`, and write `pane.state.current()` via `render.write()`.
-
-
+1. Resolve target pixels $(W_{\text{req}}, L_{\text{req}}) = (\text{int}(\text{params.dimensions.w} \cdot W_s),\; \text{int}(\text{params.dimensions.l} \cdot L_s))$ directly from `screensize`.
+2. Compute unit cell size $(w_c, l_c) = (\text{props.dimensions.w} // 3,\; \text{props.dimensions.l} // 3)$, quantize $(n_x, n_y)$, and assign `state.multiple = Multiple(nx, ny)` and `state.span = Dimensions((nx + 2) * wc, (ny + 2) * lc)`.
+3. Position root panes within `screensize` via `state.justification` and `state.margins`, and position child widgets within each parent pane's `state.span` via `state.alignment`, `state.layout`, `state.gap`, and `state.margins`.
+4. Bind `state.content_function = binding.bind(w=state.span.w, l=state.span.l, font=state.font)` for text-bound panes and bake the 9-slice backdrop + initial typography onto `state.canvas` via `Screen.stamp()` / `Provider._bake_pane()`.
 
 ##### Tasks
 
-**1. Task: Refactor `Multipliers` to Separate Geometry Projection from Entity Instantiation**
+**1. Task: Replace `ScreenPosition` with Fractional `Scale` and Introduce 2-Axis `AxisAlignment`**
 
-*Objective*: Decouple coordinate/partition math from `Craft` asset hydration and `MaterialIndex` so `Multipliers` can be invoked directly by `CompositionCompiler`, `Decomposer`, `Layout`, `Provider`, and `PaneFrame`.
+*Objective*: Remove `ScreenPosition` across Cython and Pydantic models, update `Alignments` to `start | center | end`, and define `Scale` and `AxisAlignment` on `PaneParameters`.
 
-* [] Subtask: Make `materials: Optional[MaterialIndex] = None` optional in `Multiplier.__init__` (guarding `if materials is not None: self.materials = materials` to preserve singleton state) and add abstract `@classmethod` methods `span(cls, w, l, nx, ny, blueprint=None)` and `project(cls, w, l, nx, ny, blueprint=None, base_anchor=0, hitboxes=None)` in `src/app/game/logic/modules/multipliers/base.py`.
-* [] Subtask: Implement `@classmethod` `span()` and `project()` on `SimpleMultiplier`, `OrientedMultiplier`, `ExpansionMultiplier`, and `PerimeterMultiplier`, refactoring `multiply()` to iterate over `self.project(...)` and invoke `self._unit(...)`.
-* [] Subtask: Add `SURFACE = "surface"` to `MultiplicationStrategies` and define `Surfaces` (`NORTH`, `SOUTH`, `EAST`, `WEST`, `CENTER`) in `src/app/static/semantics.py`, then implement `SurfaceMultiplier(PerimeterMultiplier)` in `src/app/game/logic/modules/multipliers/surface.py` (tiling `center` across $[0, n_x + 1] \times [0, n_y + 1]$ followed by `PerimeterMultiplier.project`).
-* [] Subtask: Replace duplicate span logic in `CompositionCompiler._compute_span` (`src/app/static/macros/compositions.py`) with a call to the corresponding `Multiplier.span()`.
+* [x] Subtask: Replace `ScreenPosition(px, py)` with `Scale(pw: double, pl: double)` in `src/libs/core/models.pxd`, `src/libs/core/models.pyx`, and `src/app/models/adapters.py` (`PydanticScale`).
+* [x] Subtask: Update `Alignments` in `src/app/static/semantics.py` to `START = "start"`, `CENTER = "center"`, `END = "end"`.
+* [x] Subtask: Define `AxisAlignment(horizontal, vertical)` in `src/app/models/config/menus.py` and update `PaneParameters` to remove `position: Optional[ScreenPosition]`, replace pixel `dimensions` with fractional `dimensions: Scale`, and use `alignment: AxisAlignment` and `justification: AxisAlignment`.
+* [x] Subtask: Add `dimensions: Scale` to `GizmoParameters` (`src/app/models/config/menus.py`) and update `Fabricator._collection()` (`src/app/services/generators/menus/fabricator.py`) to subdivide fractional `Scale` across generated row and slot panes without querying `WidgetProperties`.
 
-**2. Task: Deprecate `Pages` and Unify `DisplayState` into `PaneState` and `PaneFrame**`
+**2. Task: Deprecate `Pages` and Implement Implicit 9-Slice `PaneFrame` and `PaneState`**
 
-*Objective*: Remove `Pages` (`AssetInstances.PAGES`, `Widgets.PAGES`, `DisplayState`) from the Asset Hierarchy and consolidate typography, pagination, and partition frame indexing into `Panes`.
+*Objective*: Remove `Pages` (`DisplayState`) from the Asset Hierarchy, merge pagination and canvas fields into `PaneState`, and implement implicit $3 \times 3$ indexing and projection in `PaneFrame`.
 
-* [] Subtask: Remove `PAGES = "pages"` from `AssetInstances` and `Widgets` in `src/app/static/semantics.py`, and remove `pages` fields from `WidgetGroup` / `RecipeGroup` in `src/app/models/groups.py` and `src/data/config/recipes/main.yaml`.
-* [] Subtask: Merge `DisplayState` fields (`content_function`, `pageindex`, `pagesize`, `font`, `canvas`) and pagination methods (`content`, `_pagecount`, `current`, `more`, `less`, `scrollup`, `scrolldown`) into `PaneState` alongside `multiple: Optional[Multiple] = None` and `span: Optional[Dimensions] = None`, then delete `DisplayState` from `src/app/models/state/assets/widgets.py` and `src/app/models/state/__init__.py`.
-* [] Subtask: Add `multiple: Optional[Multiple] = None` and set `font: Optional[Enumerated[Fonts]] = None` on `PaneParameters` (`src/app/models/config/menus.py`), and add `strategy: Optional[Enumerated[MultiplicationStrategies]] = None` to `WidgetProperties` (`src/app/models/properties/assets.py`).
-* [] Subtask: Implement `PaneFrame(Frame)` in `src/app/assets/frames/widgets.py` (and register it on `widgets.panes` in `src/data/config/recipes/main.yaml`) so `index()` maps `{f"{id}-{part}": (i * w, 0, w, l)}` across `Surfaces` when `properties.strategy` is set (or `{id: (0, 0, w, l)}` when `None`), and `keys(id, state)` emits `SurfaceMultiplier.project(w, l, state.multiple.nx, state.multiple.ny)` tuples `(f"{id}-{part}", ox, oy)` when `state.multiple is not None` (or `[(id, 0, 0)]` when `None`).
-* [] Subtask: Override `dimensions` on `Widget` (`src/app/game/menus/core.py`) to return `self.state.span` when present on `PaneState`, falling back to `self.properties.dimensions`.
+* [x] Subtask: Remove `PAGES = "pages"` from `AssetInstances` and `Widgets` in `src/app/static/semantics.py`, and remove `pages` from `WidgetGroup` / `RecipeGroup` in `src/app/models/groups.py` and `src/data/config/recipes/main.yaml`.
+* [] Subtask: Merge `DisplayState` fields (`content_function`, `pageindex`, `pagesize`, `font`, `canvas`) and pagination methods (`content`, `_pagecount`, `current`, `more`, `less`, `scrollup`, `scrolldown`) into `PaneState` alongside `multiple: Multiple`, `span: Dimensions`, `alignment: AxisAlignment`, and `justification: AxisAlignment`, then delete `DisplayState` from `src/app/models/state/assets/widgets.py`.
+* [] Subtask: Implement `PaneFrame(Frame)` in `src/app/assets/frames/widgets.py` (and register `PaneFrame` on `widgets.panes` in `src/data/config/recipes/main.yaml`) to index 9 cells `(c * wc, r * lc, wc, lc)` where `wc = w // 3, lc = l // 3` and emit $(n_x + 2)(n_y + 2)$ 9-slice tile tuples in `keys(id, state)`.
+* [] Subtask: Override `dimensions` on `Widget` (`src/app/game/menus/core.py`) to return `self.state.span` when `isinstance(self.state, PaneState)`, falling back to `self.properties.dimensions`.
 
-**3. Task: Upgrade `Layout`, `Fabricator`, `Provider`, and `Screen` for Unified Pane Baking & Typography**
+**3. Task: Upgrade `Layout`, `Provider`, and `Screen` for 9-Slice Quantization, 2-Axis Alignment, and Canvas Baking**
 
-*Objective*: Measure and quantize `Panes` bottom-up, evaluate text bindings against quantized dimensions, and unify backdrop + typography stamping on `PaneState.canvas`.
+*Objective*: Quantize `Panes` directly from fractional screen dimensions, resolve coordinates via 2-axis `justification` and `alignment`, and unify 9-slice backdrop + text rendering on `PaneState.canvas`.
 
-* [] Subtask: Refactor `Layout.compute()` (`src/app/game/menus/modules/layout.py`) into a bottom-up post-order pass that measures child footprints across `STACK`, `DOCK`, and `OVERLAY` layouts, quantizes `PaneState.multiple` and `PaneState.span` for multiplied panes (and sets `PaneState.span` for unmultiplied panes), followed by the top-down coordinate placement pass.
-* [] Subtask: Remove `Provider._page()` and update `Provider._expand()` and `Provider._unpack_pane()` (`src/app/services/generators/menus/provider.py`) to default `params = pane.parameters or PaneParameters()`, cascade `active_font = params.font or font or Fonts.DIALOGUE.value` onto `PaneState.font`, and support `LibraryBinding` and `TextBinding` alongside `CollectionBinding` on `Panes`.
-* [] Subtask: Implement `Provider._bake_pane(widget)` to bind `content_function = widget.binding.bind(w=widget.dimensions.w, l=widget.dimensions.l, font=widget.state.font)` after `Layout.compute()`, allocate `PaneState.canvas`, stamp `widget.frame.keys()` primitives via `render.construct()`, and rasterize initial `widget.state.current()` text via `render.write()`.
-* [] Subtask: Update `Screen._widgets()` and `Screen.stamp()` (`src/app/game/screen.py`), `ScrollController`, `MenuEventHandler`, and `UpdateEventHandler` to operate on `PaneState` (re-constructing all `widget.frame.keys()` tiles onto `PaneState.canvas` before calling `render.write()` during `Screen.stamp()`).
-* [] Subtask: Remove hardcoded `dimensions` overrides in `Fabricator._collection` (`src/app/services/generators/menus/fabricator.py`) and add explicit `render.destroy()` cleanup for `PaneState.canvas` in `TerminalEventHandler.handle` (`src/app/game/menus/handlers/terminal.py`) and `Board.clear()` (`src/app/game/board/core.py`).
+* [] Subtask: Refactor `Layout.compute()` (`src/app/game/menus/modules/layout.py`) to compute $W_{\text{req}} = \text{int}(w_p \cdot W_s)$ and $L_{\text{req}} = \text{int}(l_p \cdot L_s)$, quantize `state.multiple` and `state.span` via $(w_c, l_c) = (W // 3, L // 3)$, position root panes on `Screen` using `state.justification` and `state.margins`, and position children inside panes across `STACK`, `DOCK`, and `OVERLAY` using `state.alignment`, `state.gap`, and `state.margins`.
+* [] Subtask: Remove `Provider._page()` and update `Provider._unpack_pane()` (`src/app/services/generators/menus/provider.py`) to hydrate `PaneState`, bind `LibraryBinding` / `TextBinding` against quantized `state.span`, and bake `PaneState.canvas` via `render.construct()` and `render.write()`.
+* [] Subtask: Update `Screen._widgets()` and `Screen.stamp()` (`src/app/game/screen.py`), `ScrollController`, `MenuEventHandler`, and `UpdateEventHandler` to operate on `PaneState` (re-stamping all 9-slice tuples from `widget.frame.keys()` onto `PaneState.canvas` before calling `render.write()`).
+* [] Subtask: Add explicit `render.destroy()` cleanup for `PaneState.canvas` in `TerminalEventHandler.handle` (`src/app/game/menus/handlers/terminal.py`) and `Board.clear()` (`src/app/game/board/core.py`).
 
-**4. Task: Re-Atlas Pane Assets, Migrate Faux-Paper Assets, and Consolidate `menus/*.yaml**`
+**4. Task: Consolidate `widgets/main.yaml` and Migrate `menus/*.yaml` to Fractional Dimensions and 2-Axis Alignments**
 
-*Objective*: Consolidate `widgets/main.yaml` and all menu configurations onto the unified `panes` instance and verify with unit tests.
+*Objective*: Remove redundant fixed-size `pages` and `panes` definitions, unify menu YAML files onto fractional `dimensions` and 2-axis `alignment`/`justification`, and verify with unit tests.
 
-* [] Subtask: Re-atlas `dark`, `neutral`, and `light` `.png` files in `src/assets/widgets/panes/` into 5 horizontal unit tiles (`north`, `south`, `east`, `west`, `center`), move `paper-*` assets into `src/assets/widgets/panes/`, remove `src/assets/widgets/pages/` (`dark-dialogue`, `dark-notification`, `dark-portrait`, `text-label`) and fixed-size pane variants (`dark-small`, `dark-thin`, `neutral-small`, `light-small`), and update `src/assets/widgets/main.yaml`.
-* [] Subtask: Update `main.yaml`, `load.yaml`, `pause.yaml`, `options.yaml`, `dialogue.yaml`, `text.yaml`, `inventory.yaml`, and `view.yaml` in `src/data/config/menus/` to replace all `instance: pages` nodes with `instance: panes` (`id: dark`, `id: neutral`, `id: light`, `id: transparent-label`, or `id: paper-*`) and collapse `character-portrait-container` in `dialogue.yaml` into a single `dark` overlay `Pane`.
-* [] Subtask: Add unit tests under `tests/unit/app/` verifying `SurfaceMultiplier.project()`, `SurfaceMultiplier.span()`, `PaneFrame.keys()`, `PaneState` pagination (`current()`, `scrollup()`, `scrolldown()`), and `Layout.compute()` bottom-up quantization for both container and text-bound `Panes`.
+* [] Subtask: Consolidate `src/assets/widgets/main.yaml` by removing the `pages:` section, moving `paper-*` assets under `panes:`, and replacing fixed-size variants (`dark-small`, `dark-thin`, `dark-dialogue`, `dark-notification`, `dark-portrait`, `neutral-small`, `light-small`, `transparent-slot`, `transparent-block`, `transparent-area`, `transparent-label`) with base pane entries (`dark`, `neutral`, `light`, `transparent`).
+* [] Subtask: Update `main.yaml`, `load.yaml`, `pause.yaml`, `options.yaml`, `dialogue.yaml`, `text.yaml`, `inventory.yaml`, and `view.yaml` in `src/data/config/menus/` to replace `instance: pages` with `instance: panes`, remove `position: { px, py }`, and declare fractional `dimensions: { w, l }`, `justification: { horizontal, vertical }`, and `alignment: { horizontal, vertical }`.
+* [] Subtask: Add unit tests under `tests/unit/app/` verifying `PaneFrame.index()` ($3 \times 3$ trisection), `PaneFrame.keys()` ($(n_x, n_y) = (2, 2)$ 16-cell emission and $(0, 0)$ 4-corner emission), fractional screen quantization, and 2-axis `Layout.compute()` positioning.
