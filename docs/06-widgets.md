@@ -17,58 +17,47 @@ Widgets are components of Menus. In other words, Menus are assembled from schema
 
 Panes provide a canvas on which to lay out other Widgets. All Menus must possess atleast one *Root Pane*. 
 
-All Panes have children. The child of a Pane may also be a Pane. There are no upper bounds (except computational) to the number of Panes that may be Because Menus are defined recursively, an artbitary number of Panes can be nested within one another.
+All Panes have children. The child of a Pane may also be a Pane. There are no upper bounds (except computationally) to the number of Panes that may be nested within a Menu; Because [Layouts](#layouts) are defined recursively, an arbitary number of Panes can be nested within one another without issue.
 
 #### Concept: Bindability
 
 Widgets bind to [Asset State](./00-overview.md#core-state) on the [Board](./00-overview.md#component-board) when they are instantiated. A Binding represents a mapping to an address on live [Application](./00-overview.md#application) data structure. Bindings 
 
-For example, a [Meter Widget](#instance-meter) may bind to [Player Health](./02-sprites.md#instance-player)
+For example, a [Meter Widget](#instance-meter) may bind to [Player Health](./02-sprites.md#instance-player). Once bound, any update to the Player Health will automatically be reflected in the Meter's Frame keys.
+
 #### Concept: Traversibility
 
 Widgets are *traversible* when they are organized in sequence. In other words, a Menu can be traversed. To accomplish this, a Menu has *`focus`*.
 
 `focus` is a field that points to the currently `active` traversible Widget. When the user issues a command to traverse the Menu, the focus shifts to the next traversible Widget.
 
-For example, suppose a Menu Pane has two traversible Widgets. Widget A is currently in `active` Status, Widget B is currently `idle` Status. When the user issues the command to traverse, these states will shift so A is `idle` and B is `active`. If the user issues the command to select, the Widget that is `active` will be `selected` and a SelectionEvent will be generated and processed by [MenuMechanics](./05-mechanics.md#core-mechanic-menumechanics).
+For example, suppose a Menu Pane has two traversible Widgets. In this example, Widget A is initially in `active` Status (i.e. it has `focus`), while Widget B is initially in the `idle` Status. When the user issues the command to traverse, these states will shift so A is `idle` and B is `active`. 
 
 **Enum: Traversal**
 
 * `north`, `south`, `east`, `west`
 
-### Events
+#### Concept: Asychronicity
 
-To illustrate Events, consider the following example. A Player may enter into the `barter` [Intention](./04-intentions.md) with another Sprite. This causes the gameplay loop to emit an Event containing the Menu key `trade` along with the Event data, i.e. the Sprite States. When an Event is detected by the gameplay, it causes the Board to pause the game loop and pass the Event to be processed to the Bus. The Bus in turn uses the Event data to construct and display the Menu referenced by the Event's Menu key. 
+Menus (and their component Widgets) are driven through asychronous *Events*.
 
-Menus and Widgets communicate state shifts through the Engine's event bus:
+As an illustration, the [Engine Loop](./00-overview.md#component-engine) may emit an Event containing a [Menu](#menus) key along with Event Data, e.g. Asset State. When an Event is detected by the [Engine](./00-overview.md#component-engine), it causes the [Application](./00-overview.md#application) to pause the [World Loop](./05-mechanics.md#mechanics-world) and switch contexts into the [Menu Loop](./05-mechanics.md#core-mechanic-menumechanics). 
 
-- **MenuEvent**: Signals the Engine to pause the world and push a modal Menu onto `board.menus`.
-- **StateEvent**: Signals the Engine to load and migrate persistent board state from disk.
-- **UpdateEvent**: Signals the rendering subsystem or parent containers that internal state has mutated (e.g., text paging or collection window offset shifts).
-- **TerminalEvent**: Signals the Engine to close the active menu, pop `board.menus`, and unpause simulation.
+Menus (and their component Widgets) communicate state shifts through the Engine's event bus:
 
-Widget selection does not emit a bus event. When `MenuMechanics` detects an `Interactions.SELECT` payload, it invokes `active_menu.controller.select(name, menu, board, bus)` synchronously. The controller executes domain logic and optionally registers `UpdateEvent` or `TerminalEvent` payloads on the bus.
+* **MenuEvent**: Signals the Engine to pause the [World Loop](./05-mechanics.md#mechanics-world) and push a Menu onto the [Board](./00-overview.md#component-board) via the [Provider](#service-provider).
+* **StateEvent**: Signals the Engine to load and migrate [State](./00-overview.md#core-state) from the filesytem into the [Board](./00-overview.md#component-board)
+* **UpdateEvent**: Signals the [Screen](./00-overview.md#component-screen) to recalculate and re-render the Assets on Screen.
+* **TerminalEvent**: Signals the Engine to close the active Menu and switch context back into the [World Loop](./05-mechanics.md#mechanics-world)
 
-**Engine Bus & Event Processing**
+!!! note "Selections"
+    Widget selection does not emit a Event. When [MenuMechanics](./05-mechanics.md#core-mechanic-menumechanics) detects a Selection payload, it invokes the [Controller's](#controllers) `select()` method synchronously. The controller executes domain logic and optionally registers Event Data payloads on the [Engine Bus](./00-overview.md#component-engine).
 
-The [Engine](./00-overview.md#component-engine) contains a `bus` field that accumulates Events emitted by the game loop. 
+#### Concept: Contextuality
 
-During the Engine loop, it passes this bus down through the Mechanics. Mechanics then register events on this bus and MenuMechanics translates their input and passes it to a Controller, for example, a ScrollController. 
+When the Board is paused by a MenuEvent, a dedicated [Mechanic](./05-mechanics.md) takes over. During this phase, [MenuMechanic](./05-mechanics.md) switches [Device Context](./02-sprites.md#device-contexts) contexts and translates the [Device mappings](./02-sprites.md#device) to Widget State changes. 
 
-In this case, the ScrollController updates the content displayed on a Page Widget, determines the new text string, and pushes a UpdateEvent to the Engine's bus.
-
-At the end of the tick, before the rendering phase, the Engine drains its bus:
-
-- If MenuEvent: The Engine pauses the Board, calls the Provider to instantiate the Menu, and pushes it to board.menus.
-- If State Event: The Engine begins migrating state from the file system into the Board.
-- If TerminalEvent: The Engine pops the Menu off the stack and unpauses the Board.
-- If UpdateEvent: The Engine pulls the clean background and the font (e.g., `render.construct()` and `render.write()` [Cython interfaces](./12-architecture.md#cython)), and overwrites the Widget's TexturePtr in VRAM.
-
-Finally, the [Screen](./00-overview.md#screen) iterates over the Widgets and passes it to Cython. 
-
-**MenuMechanics**
-
-When the Board is paused by a MenuEvent, MenuMechanics take over. This [Mechanic](./05-mechanics.md) translates the [Player Device mappings](./02-sprites.md#devices) to Menu state changes. These Menu state changes then map back onto game state changes through Event notifications sent to the Bus. For example, a Player may traverse the Button Widgets in an Inventory Menu and select a new piece of Equipment (see [Inventory Menu](#menus) below for more detail); This generates an StateEvent from the Inventory Menu. This Event is processed by the Bus and the Player state is in turn updated.  
+These State changes then map back onto Asset State changes through Event notifications sent to the Engine Bus. For example, a Player may traverse the Button Widgets in an Inventory Menu and select a new piece of Equipment (see [Inventory Menu](#menus) below for more detail); This generates an StateEvent from the Inventory Menu. This Event is processed by the Bus and the Player state is in turn updated.  
 
 When the Menu enters certain end states, such as the user selecting an Exit Button, the corresponding Widget will emit a TerminalEvent that bubbles up through the Menu and generates a notification to the Bus the MenuEvent has ended. The Board is unpaused, and the game resumes.
 
@@ -396,7 +385,9 @@ The type of state a Gizmo binds to a Pane is dependent on the schema passed into
 
 - Collection: A Collection gizmo is a synthetic grid of Buttons that enumerates and displays a list of Icon strings bound to its `target.source`.
 
-### Provider
+### Services
+
+# ### Service: Provider
 
 The Provider, similiar to the [Decomposer](./03-compositions.md#decomposer), is responsible for unpacking Menu configurations into flat lists of Assets for the Engine. However, unlike the Decomposer, the Provider must also generate a traversal graph, inject bindings into Widgets and pass the result to a Menu.
 
