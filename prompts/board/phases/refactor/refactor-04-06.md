@@ -506,37 +506,4 @@ class PaneState(WidgetState):
 
 * [x] Subtask: Consolidate `src/assets/widgets/main.yaml` by removing the `pages:` section, moving `paper-*` assets under `panes:`, and replacing fixed-size variants (`dark-small`, `dark-thin`, `dark-dialogue`, `dark-notification`, `dark-portrait`, `neutral-small`, `light-small`, `transparent-slot`, `transparent-block`, `transparent-area`, `transparent-label`) with base pane entries (`dark`, `neutral`, `light`, `transparent`).
 * [] Subtask: Update `main.yaml`, `load.yaml`, `pause.yaml`, `options.yaml`, `dialogue.yaml`, `text.yaml`, `inventory.yaml`, and `view.yaml` in `src/data/config/menus/` to replace `instance: pages` with `instance: panes`, remove `position: { px, py }`, and declare fractional `dimensions: { w, l }`, `justification: { horizontal, vertical }`, and `alignment: { horizontal, vertical }`.
-* [] Subtask: Add unit tests under `tests/unit/app/` verifying `PaneFrame.index()`, `PaneFrame.keys()`, stateless `TraversalFrame.keys()` and `MeterFrame.keys()`, fractional screen quantization, and 2-axis `Layout.compute()` positioning.
-
----
-
-##### Draft: Codify Formal Tenet Separating `Frame` and `Animation`
-
-* **Page**: `docs/01-assets.md`
-* **Heading**: `###### Concept: Animacy`
-
-###### Drift
-
-`docs/01-assets.md` describes `Frames` and `Animations` via a loose spatial analogy without stating the formal invariant that determines when an Asset requires an `Animation` component versus when its visual changes belong exclusively to `Frame.keys()`.
-
-###### Update
-
-```markdown
-###### Concept: Animacy
-
-**Frames & Animations**
-
-The `Frame` and `Animation` interfaces partition visual resolution into three distinct mappings over `AssetProperties` and `AssetState`:
-
-$$\text{Frame.index}: \text{Properties} \to \text{Atlas}, \qquad \text{Frame.keys}: \text{State} \to \text{Keys}, \qquad \text{Animation.animate}: \text{State} \times \text{Properties} \to \text{State}$$
-
-- **Frame (`index` and `keys`)**: A `Frame` binds an Asset's raw image file to a discrete *Frame space*. `Frame.index(id, properties)` uses static `AssetProperties` to partition the image file into named crop regions in the [Registry](./00-overview.md#library-registry). `Frame.keys(id, state)` is the inverse projection at runtime: it maps the Asset's current `AssetState` directly to the active crop key(s) in that Frame space.
-- **Animation (`animate`)**: An `Animation` exists **if and only if** a non-instantaneous, time-stepped transition across Frame space must be mediated by `AssetProperties`:
-  * In [Effects](#category-effects), temporal progression is governed by `EffectProperties.frequency` (`delay`, `amount`, `cooldown`, `persist`).
-  * In [Sheets](#category-sheets), temporal progression is governed by `SheetProperties.actions` (`count`, `delay`).
-
-**Invariant: Instantaneous State Transitions**
-
-If an Asset's visual representation changes instantaneously as a direct function of its domain `State` without temporal mediation by `Properties` (e.g., `SwitchState.switch` on [Gates](#object-gates) and [Plates](#object-plates), `ResourceState.stage` on [Resources](#category-resources), `TraversalState.status` on [Buttons](./06-widgets.md#buttons), or `MeterState.reading / unit` on [Meters](./06-widgets.md#meters)), the Asset **must not** implement an `Animation` or carry an `AnimationState`. Its `Frame.keys(id, state)` implementation projects the domain state directly.
-
-```
+* [!: Dependent on User Acceptance Testing] Subtask: Add unit tests under `tests/unit/app/` verifying `PaneFrame.index()`, `PaneFrame.keys()`, stateless `TraversalFrame.keys()` and `MeterFrame.keys()`, fractional screen quantization, and 2-axis `Layout.compute()` positioning.

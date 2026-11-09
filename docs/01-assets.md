@@ -76,20 +76,33 @@ All Asset States inherit fields from this model.
 
 **Frames & Animations**
 
-A *Frame* represents the binding of an Asset to a particular partitioning of its raw image file into a *Frame space*. Frames expose interfaces for *indexing* the Frame space via Asset Properties, and they also expose interfaces for *accessing* Frame space via Asset State.
+* **Frame (`index` and `keys`)**: A Frame binds an Asset's raw image file to a discrete *Frame space*. `Frame.index(id, properties)` uses Asset Properties to partition the image file into named crop regions in the [Registry](./00-overview.md#library-registry). `Frame.keys(id, state)` is the inverse projection at runtime: it maps the Asset's current Asset State directly to the active crop key(s) in that Frame space.
+* **Animation (`animate`)**: An Animation exists **if and only if** a non-instantaneous, time-stepped transition across Frame space must be mediated by Asset Properties:
+  * In [Effects](#category-effects), temporal progression is governed by `frequency` (`delay`, `amount`, `cooldown`, `persist`).
+  * In [Sheets](#category-sheets), temporal progression is governed by `actions` (`count`, `delay`).
 
-In other words, Asset Properties determine the metric used by the Engine to measure the Asset's Frame space, whereas Asset State determines where in its Frame space the Asset currently resides. 
+Frame Space is a representation of the different dispositions assumed by Asset Categories; Frames in a Sprite Sheet represent Actions, Frames in a Resource represent Lifespan Stages, Frames in an Effect represent Periodicity, etc. These are differences are manifested in the atlasing strategy used by Asset Frame. This space is described by the particular configuration of an Asset's Properties, and furthermore, to exist on the [Board](./00-overview.md#component-board), an Asset must have a strategy for associating its State with a particular Frame described by its Properties.
 
-This is the reason for distinguishing Asset Categories and Asset Instances in the Hierarchy: Frames in a Sprite Sheet represent Actions, Frames in a Resource represent Lifespan Stages, Frames in an Effect represent Periodicity, etc. These are different stateful dispositions for an Asset to assume that are categorically distinct and manifest in the atlasing strategy used by the image file. This space is described by the particular configuration of an Asset's Properties, and furthermore, to exist on the [Board](./00-overview.md#component-board), an Asset must have a strategy for associating its State with a particular Frame described by its Properties.
+An *Animation* represents a strategy for navigating the Frame space over time. Animations project the internal State changes in an Asset onto a particular trajectory through its Frame space. When an Asset implements an Animation, this is accompanied by its State possessing an `animation` State field. The purpose of this field is to mutate over time and thus describe the trajectory of the Asset through its Frame space.
 
-To extend the analogy, an *Animation* represents a strategy for navigating the Frame space over time. Animations project the internal State changes in an Asset onto a particular trajectory through its Frame space.
+$$
+\text{Frame.index}: \text{Properties} \to \text{Atlas}
+$$
 
-When an Asset implements an Animation, this is accompanied by its State possessing an `animation` field. The purpose of this field is to mutate over time and thus describe the trajectory of the Asset through its Frame space.
+$$
+\text{Frame.keys}: \text{State} \to \text{Keys}
+$$
+
+$$
+\text{Animation.animate}: \text{State} \times \text{Properties} \to \text{State}
+$$
+
+If an Asset's visual representation changes instantaneously as a direct function of its domain State without temporal mediation by Properties (e.g., `switch` on [Gates](#object-gates) and [Plates](#object-plates), `stage` on [Resources](#category-resources), `status` on [Buttons](./06-widgets.md#buttons), or `reading / unit` on [Meters](./06-widgets.md#meters)), the Asset **does not** implement an Animation or carry an `animation` State. Its Frame implementation projects the domain State directly.
 
 **Model: AnimationState**
 
 * `action`: Action key of Animation.
-* `direction`: Directiony key of Animation.
+* `direction`: Direction key of Animation.
 * `frame`: Frame index of Animation.
 * `tick`: Engine tick accumulator. Used to control the speed of the Animation.
 
