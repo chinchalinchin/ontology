@@ -281,8 +281,8 @@ For this reason, Environ Tiles leverage a SeasonalFrame and event-driven reconst
 
 **Atlas: (Row: Season, Column: Period)**
 
-- columns: `^(?:onset|peak|decline)-[0-9]$`
-- rows: `^(?:spring|summer|autumn|winter)`
+* columns: `^(?:onset|peak|decline)-[0-9]$`
+* rows: `^(?:spring|summer|autumn|winter)`
 
 #### Tile: Canopy
 

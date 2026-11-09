@@ -156,9 +156,10 @@ class Switches(int, Enum):
     ON              = 1
     OFF             = 0
 
-class Gauges(str, Enum):
-    EMPTY           = "0"
-
+class Gauges(int, Enum):
+    EMPTY           = 0
+    FULL            = 101
+    
 class Expressions(str, Enum):
     AGREEMENT       = "agreement"
     ANGER           = "anger"

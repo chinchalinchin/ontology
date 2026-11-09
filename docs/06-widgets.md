@@ -1,8 +1,5 @@
 # Ontology Docs: Widgets
 
-!!! @TODO
-    Documentation out of date (slightly, but still mostly accurate) and not formatted to new standards.
-
 Widgets are a type of specialized [Asset](./01-assets.md) leveraged for user interfaces. Similar to the core [Asset Categories](./01-assets.md#asset-hierarchy), they possess Properties, State and have extensible components injected into their Frame and Animation interfaces. However, they play a unique role in the [Engine Loop](./00-overview.md#component-engine) and have dedicated systems for their processing and deployment.
 
 Widgets are not declared in a [State file](./00-overview.md#core-state) and are thus not migrated onto the [Board](./00-overview.md#component-board) during [hydration](./12-architecture.md#phase-2-hydration). Widgets have their [Bindings](#bindings) and [Layout](#layouts) configured into [Menus](#menus), that are subsequently injected into the [Application](./00-overview.md#application) when [Events](#events) are thrown.
@@ -70,7 +67,7 @@ When the Menu enters certain end states, such as the user selecting an Exit Butt
 
 Panes are Widgets that provide a frame of reference for other Widgets in a Menu. All child Widgets of Pane have their Positions calculated relative to the Position of their parent Pane.
 
-**Atlas: Slicing**
+**Atlas: (row: Alignments, column: Alignments)**
 
 Each Pane is registered in the [Asset Property index](./00-overview.md#core-assets) as a single unified Frame with dimensions $(W,L)$; However, when the Pane is indexed by the [Registry](./00-overview.md#library-registry), the Frame is split according to the following schema:
 
@@ -172,56 +169,41 @@ Panes contain a `canvas` to hold a reference to an [Texture](./12-architecture.m
 
 ### Widget: Buttons
 
-**Taxonomy**
+Buttons are Widgets that are *traversed*. They have a *Status* that changes as they are traversed. When a Button enters into the `selected` Status, they emit Selection events. 
 
-* `category: widgets`
-* `instance: buttons`
+**Enum: Traversal**
 
-Buttons are Widgets that are *traversed*. They have Status that changes as they are traversed. When a Button enters into the `selected` Status, they emit Selection events. 
+* `idle`, `active`, `selected`, `disabled`
 
-Button Statuses are enumerated below,
+**Atlas: (row: Traversal)**
 
-- idle: Button is not currently focused in traversed.
-- active: Button is currently focused in traversal.
-- selected: Button has been selected by traversal.
-- disabled: Button is intraversible.
-
-It assumed Button Asset files are arranged in horizontal rows ordered by their status in the sequence: `idle, active, selected, disabled`, where each frame is `properties.dimensions.w` wide.
+* columns: `^(?:idle|active|selected|disabled)$`
 
 **State: TraversalState**
 
 * `position: Position`
 * `status: Status`
 
-**Animation: TraversalAnimation**
-
-- `if state.status not in [disabled, selected]:`
-    - `if animation.frame == active: animation.frame = idle`
-    - `if animation.frame == idle: animation.frame = active`  
-
 **Frame: TraversalFrame**
 
-* `key(id, state): returns [ "{id}-{state.status}" ]`
+* `key(id, state): returns [ ("{id}-{state.status}", 0, 0) ]`
 * `index(self, id, properties, recipe): returns TODO` 
 
 ### Widget: Meters
 
-**Taxonomy**
+Meters are *continuous* indicators. 
 
-* `category: widget`
-* `instance: meter`
+**Behavior: Gauge**
 
-Meters are "continuous" indicators. They require a `unit` to calibrate their reading and then express a `reading` in terms of the `unit`; All readings are expressed relative to the `unit`, e.g. the ratio of the current value of the Player's health to maximum value of the Player's health is expressed as the proportion of a Meter that is filled.
+Meter require a `unit` to calibrate their reading and then express a `reading` in terms of the `unit`; All readings are expressed relative to the `unit`, e.g. the ratio of the current value of the Player's health to maximum value of the Player's health is expressed as the proportion of a Meter that is filled.
+
+**Atlas: (row: Gauge)**
 
 A Meter Asset has two frames. The first frame is an Empty. The second frame is Filled at 100% (i.e., $\frac{reading}{unit}=1$). Each frame is `dimensions.w` wide and `dimensions.l` long. These two frames are indexed as `<id>-empty` and `<id>-filled`, where `<id>` is the Asset file name.
 
 However, when the game retreives the `-filled` frame, the *amount* of the frame that is returned in the index crop-map is determined by the Meter width. For example, if `state.reading/state.unit = 0.75`, the index crop-map will return the tuple `(0, 0, 0.75w, l)`. The `-filled` frame is then superimposed over top of the `-empty` frame, thus creating the appearance of a "gauge" or "meter".
 
-When the Asset key for Meters is retrieved by the [Screen](./00-overview.md#screen), the current ratio of `reading` and `unit` is rounded to the nearest resolution.
-
-**Animation: MeterAnimation**
-
-- `animation.frame = round(state.reading/state.unit*100)`
+When the Asset key for a Meter is retrieved by the [Screen](./00-overview.md#screen), the current ratio of `reading` and `unit` is rounded to the nearest resolution.
 
 **State: MeterState**
 
@@ -267,20 +249,20 @@ N/A
 - `keys(id: str, state: AssetState): return [(state.icon, 0, 0)]`
 - `index(id, properties: AssetProperties): return [{ }]`
 
-## Menus
+## Configuration: Menus
 
-* Location: `/src/data/menus/main.yaml`
+* Location: `/src/data/menus/**/*.yaml`
 
-Menus are pre-defined arrangements of Widgets. Every Menu contains at least one Pane. 
+Menus are [Configurations](./00-overview.md#core-configuration) of Widgets.
 
-**Fields**
+**Model: Menu**
 
-- `id: str`: Unique Menu Identifier 
-- `focus: str`: Widget that is currently being focused on for traversal.
-- `graph: Dict[str, Dict[str, str]]`: Traversal adjacent graph.
-- `context: MenuContext`: Strictly-typed injected payload (e.g., `ViewContext`, `DialogueContext`).
-- `widgets: Dict[str, Widget]`: Dictionary of instantiated Menu Assets.
-- `controller: MenuController`: MenuController object.
+* `id: str`: Unique Menu Identifier 
+* `focus: str`: Widget that is currently being focused on for traversal.
+* `graph: Dict[str, Dict[str, str]]`: Traversal adjacent graph.
+* `context: MenuContext`: Menu Context data payload.
+* `widgets: Dict[str, Widget]`: Dictionary of instantiated Menu Assets.
+* `controller: MenuController`: MenuController object.
 
 **Nodes**
 

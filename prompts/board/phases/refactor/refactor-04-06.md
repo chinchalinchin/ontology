@@ -468,7 +468,6 @@ class PaneState(WidgetState):
     pagesize: int = 1
     font: Enumerated[Fonts] = Fonts.DIALOGUE.value
     canvas: Any = None
-
 ```
 
 ##### Tasks

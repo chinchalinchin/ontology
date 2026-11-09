@@ -21,7 +21,10 @@ from app.static.semantics import (
     Statuses,
     Gauges
 )
-from app.models.state import AssetState
+from app.models.state import (
+    TraversalState,
+    MeterState
+)
 from app.models.properties import WidgetProperties
 
 # -------------------------------------------------------------
@@ -35,13 +38,13 @@ class TraversalFrame(Frame):
     ## TraversalFrame
     """
     
-    def keys(self, id: str, state: AssetState) -> List[str]:
+    def keys(self, id: str, state: TraversalState) -> List[str]:
         """
         """
         return [ 
             (settings.SEPARATOR.join([
                 id, 
-                state.animation.action
+                state.status
             ]), 0, 0) 
         ]
 
@@ -78,7 +81,7 @@ class MeterFrame(Frame):
     ## MeterFrame
     """
     
-    def keys(self, id: str, state: AssetState) -> List[str]:
+    def keys(self, id: str, state: MeterState) -> List[str]:
         """
         """
         return [
@@ -101,13 +104,13 @@ class MeterFrame(Frame):
         crops = {
            settings.SEPARATOR.join([
                id, 
-               Gauges.EMPTY.value
+               str(Gauges.EMPTY.value)
             ]): (0, 0, w, l)
         }
-        for res in range(1, 101):
+        for res in range(1, Gauges.FULL.value):
             frame_index = settings.SEPARATOR.join([
                 id, 
                 str(res)
             ])
-            crops[frame_index] = (w, 0, int(w * (res / 100.0)), l)
+            crops[frame_index] = (w, 0, int(w * (res / Gauges.FULL.value)), l)
         return crops
