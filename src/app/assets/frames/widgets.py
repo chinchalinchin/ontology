@@ -84,6 +84,10 @@ class MeterFrame(Frame):
     def keys(self, id: str, state: MeterState) -> List[str]:
         """
         """
+
+        pct = state.reading / state.unit
+        res = int(round(pct * 100))
+        key = max(0, min(100, res))
         return [
             (settings.SEPARATOR.join([
                 id, 
@@ -91,7 +95,7 @@ class MeterFrame(Frame):
             ]), 0, 0),
             (settings.SEPARATOR.join([
                 id, 
-                str(state.animation.frame)
+                str(key)
             ]), 0, 0) 
         ]
 

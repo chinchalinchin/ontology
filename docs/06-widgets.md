@@ -171,11 +171,11 @@ Panes contain a `canvas` to hold a reference to an [Texture](./12-architecture.m
 
 Buttons are Widgets that are *traversed*. They have a *Status* that changes as they are traversed. When a Button enters into the `selected` Status, they emit Selection events. 
 
-**Enum: Traversal**
+**Enum: Statuses**
 
 * `idle`, `active`, `selected`, `disabled`
 
-**Atlas: (row: Traversal)**
+**Atlas: (row: Status)**
 
 * columns: `^(?:idle|active|selected|disabled)$`
 
@@ -186,12 +186,12 @@ Buttons are Widgets that are *traversed*. They have a *Status* that changes as t
 
 **Frame: TraversalFrame**
 
-* `key(id, state): returns [ ("{id}-{state.status}", 0, 0) ]`
-* `index(self, id, properties, recipe): returns TODO` 
+* `keys(id, state): returns [ ("{id}-{state.status}", 0, 0) ]`
+* `index(id, properties): { "{id}-{status}": (i*properties.dimensions.w, 0, properties.dimensions.w, properties.dimensions.l) for i, status in enumerate(Statuses)}` 
 
 ### Widget: Meters
 
-Meters are *continuous* indicators. 
+Meters are indicators for displaying continuous changes to Asset State. 
 
 **Behavior: Gauge**
 
@@ -218,27 +218,29 @@ When the Asset key for a Meter is retrieved by the [Screen](./00-overview.md#scr
 
 ### Widget: Icons
 
-**Taxonomy**
+Icons serves the purpose of labelling within the Widget family. 
 
-* `category: widgets`
-* `instance: icons`
+**Atlas: (row: Frames)**
 
-Icons serves the purpose of labelling within the Widget family. Each Icon sheet can be thought of as a dictionary of frames, indexed by their frame keys. The frame keys for each image in a Icon sheet are defined by the `properties.frames` field; The order of frames in this attribute *must* match the order of horizontal frames in the actual Asset file. 
+Each Icon Asset is a horizontal row of Frames, indexed sequentially by the order of the Property, `frames`, where each Frame has the same dimensions `(w, l)`. 
 
-Due to the nature of Icons as representations of other ingame Assets, Icons have unique constraints. The following Icon sheets *must* exist for the game to function properly,
+**Required: Assets**
 
-- `digits`: A sheet of numeric digits 0 - 9, keyed as `zero` - `nine`.
-- `weapons`: A sheet of Weapon icons. Keys *must* match Weapon keys specified in the property index `src/assets/sheets/*.yaml#weapons`.
-- `armor`: A sheet of Armor icons. Keys *must* match Armor keys specified in the property index `src/assets/sheets/*.yaml#armor`.
-- `shields`: A sheet of Shield icons. Keys *must* match Shield keys specified in the property index `src/assets/sheets/*.yaml#shields`
-- `utilities`: A sheet of Utility icons. Keys *must*  match Utility keys specified in the property index `/src/assets/sheets/*.yaml#utilities`
-- `tools`: A sheet of Tool icons. Kes *must* match Tool keys specified in the property index `src/assets/sheets/*.yaml#tools`
-- `portraits`: TODO
-- `loot`: TODO
+Due to the nature of Icons as representations of other Assets, Icons have unique constraints. The following Icon sheets *must* exist for the game to function properly,
 
+* `digits`: A sheet of numeric digits 0 - 9, keyed as `zero` - `nine`.
+* `weapons`: A sheet of Weapon icons. Keys *must* match Weapon keys specified in the property index `src/assets/sheets/**/*.yaml#weapons`.
+* `armor`: A sheet of Armor icons. Keys *must* match Armor keys specified in the property index `src/assets/sheets/**/*.yaml#armor`.
+* `shields`: A sheet of Shield icons. Keys *must* match Shield keys specified in the property index `src/assets/sheets/**/*.yaml#shields`
+* `utilities`: A sheet of Utility icons. Keys *must*  match Utility keys specified in the property index `/src/assets/sheets/**/*.yaml#utilities`
+* `tools`: A sheet of Tool icons. Kes *must* match Tool keys specified in the property index `src/assets/sheets/**/*.yaml#tools`
+* `portraits`: TODO
+* `resources`: TODO
+* `items`: TODO
+ 
 **State: IconState**
 
-- `icon: str`: Frame key (from `properties.frames`) determining which frame from Icon sheet is displayed. 
+* `icon: str`: Key determining which frame from the Icon sheet is displayed. 
 
 **Animation: None**
 
@@ -246,8 +248,8 @@ N/A
 
 **Frame: IndexFrame**
 
-- `keys(id: str, state: AssetState): return [(state.icon, 0, 0)]`
-- `index(id, properties: AssetProperties): return [{ }]`
+- `keys(id: str, state:): return [(state.icon, 0, 0)]`
+- `index(id, properties): return [{ "{id}-{frame}": (i*w, 0, w, l) for i, frame in enumerate(properties.frames)} ]`
 
 ## Configuration: Menus
 
