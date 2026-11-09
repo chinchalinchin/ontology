@@ -100,8 +100,8 @@ class Screen:
 
             for frame_key, ox, oy in frame_keys:
                 tex_data = self.registry.image(frame_key)
-                if not tex_data:
-                    continue
+                
+                if not tex_data: continue
 
                 tex, sx, sy, sw, sl = tex_data
                 tile_tuple = (

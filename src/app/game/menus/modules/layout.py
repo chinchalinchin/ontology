@@ -101,7 +101,7 @@ class Layout:
             gap = params.gap
             children = params.children
 
-        # TODO: ??? what is this garbage?
+        # TODO: ??? what is this?
         elif isinstance(params, dict):
             layout = params.get("layout", Layouts.STACK)
             alignment = params.get("alignment", Alignments.START)
