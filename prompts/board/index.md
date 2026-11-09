@@ -24,7 +24,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     * [x]: [Phase 02: Game](./phases/implement/phase-02.md)
     * [x]: [Phase 03: Physics](./phases/implement/phase-03.md)
     * [x]: [Phase 04: Widgets](./phases/implement/phase-04.md)
-    * [ ]: [Phase 05: Editor](./phases/implement/phase-05.md)
+    * [~]: [Phase 05: Editor](./phases/implement/phase-05.md)
     * [x]: [Phase 06: Intentions](./phases/implement/phase-06.md)
     * [x]: [Phase 07: Compositions](./phases/implement/phase-07.md)
     * [x]: [Phase 08: Pathfinding](./phases/implement/phase-08.md)
@@ -32,7 +32,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     * [x]: [Phase 10: Seasons](./phases/implement/phase-10.md)
     * [ ]: [Phase 11: Geology](./phases/implement/phase-11.md)
     * [ ]: [Phase 12: Chemistry](./phases/implement/phase-12.md)
-    * [~]: [Phase 13: Sound](./phases/implement/phase-13.md)
+    * [~]: [Phase 13: Acoustics](./phases/implement/phase-13.md)
     * [ ]: [Phase n: Commerce](./phases/implement/phase-n.md)
     * [ ]: [Phase n+1: Towns](./phase/implement/phase-n+1.md)
   * **Refactor:**
@@ -113,7 +113,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     * [x]: [Goal 04: Main Menu & Saving](./phases/achieve/goal-04.md)
     * [~]: [Goal 05: InventoryController](./phases/achieve/goal-05.md)
     * [x]: [Goal 06: Speak Intentions](./phases/achieve/goal-06.md)
-    * [x]: [Goal 07: Door Interact Intentions](./phases/achieve/goal-07.md)
+    * [x]: [Goal 07: Interact Intentions](./phases/achieve/goal-07.md)
     * [x]: [Goal 08: CLI Handling](./phases/achieve/goal-08.md)
     * [x]: [Goal 09: Board Modularization](./phases/achieve/goal-09.md)
     * [x]: [Goal 10: Dependency Injection](./phases/achieve/goal-11.md)
@@ -123,5 +123,5 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     * [~]: [Composition C002: Regalia Galleria](./phases/design/composition-c002.md)
 * **Backlog:**
   * [~]: [TODO T000: Telemetry Module](./backlog/todo-t000.md)
-  * [ ]: [TODO T001: Telemetry Menu](./backlog/todo-t001.md)
+  * [~]: [TODO T001: Telemetry Menu](./backlog/todo-t001.md)
   * [ ]: [TODO T002: Bouyancy](./backlog/todo-t002.md)

@@ -5,13 +5,11 @@
 
 Widgets are a type of specialized [Asset](./01-assets.md) leveraged for user interfaces. Similar to the core [Asset Categories](./01-assets.md#asset-hierarchy), they possess Properties, State and have extensible components injected into their Frame and Animation interfaces. However, they play a unique role in the [Engine Loop](./00-overview.md#component-engine) and have dedicated systems for their processing and deployment.
 
-Widgets are not declared in a [State file](./00-overview.md#core-state) and are thus not migrated onto the [Board](./00-overview.md#component-board) during [hydration](./12-architecture.md#phase-2-hydration). Widgets have their [Bindings](#bindings) and [Layout](#layouts) configured into [Menus](#menus), that are then injected into the [Application](./00-overview.md#application) when [Events](#events) are thrown.
+Widgets are not declared in a [State file](./00-overview.md#core-state) and are thus not migrated onto the [Board](./00-overview.md#component-board) during [hydration](./12-architecture.md#phase-2-hydration). Widgets have their [Bindings](#bindings) and [Layout](#layouts) configured into [Menus](#menus), that are subsequently injected into the [Application](./00-overview.md#application) when [Events](#events) are thrown.
 
 ## Widgets: Overview
 
-Widgets are components of Menus. In other words, Menus are assembled from schemas of Widgets; the branches of this configuration are referred to as the *Menu Tree*. Like most Assets, Widgets have Properties that configure their static attributes and state that describes their dynamic attributes. However, their state is not updated in concert with the game loop. Instead, Menus and Widgets are managed through the flow of Events.
-
-### Widget: Concepts
+### Overview: Concepts
 
 #### Concept: Recursivity
 
@@ -61,31 +59,73 @@ These State changes then map back onto Asset State changes through Event notific
 
 When the Menu enters certain end states, such as the user selecting an Exit Button, the corresponding Widget will emit a TerminalEvent that bubbles up through the Menu and generates a notification to the Bus the MenuEvent has ended. The Board is unpaused, and the game resumes.
 
-## Asset Specification
+## Category: Widgets
 
-It is assumed all Widget frames are organized in single row in the Asset image file. The number of frames (i.e. `len(frames)`) multipled by the width of a single frame(i.e. `dimension.w`) must equal the width of the image file.
+**Properties: WidgetProperties(AssetProperties)**
 
-**ScreenPosition**
+* `dimensions: Dimension`: Dimensions of a single frame.
+* `frames: Optional[List[str]]`: List of frame keys. Used for indexing Widget Frames in a horizontal atlas with arbitary keys.
 
-- `ScreenPosition`:
-    - `px: double`
-    - `py: double`
+### Widget: Panes
 
-Pane positions are specified as ScreenPositions. A ScreenPosition is a tuple of percentages relative to the screensize, e.g. the following coordinates denote a position `(0.75w, 0.85h)`, where `(w, h)` is the screensize,
+Panes are Widgets that provide a frame of reference for other Widgets in a Menu. All child Widgets of Pane have their Positions calculated relative to the Position of their parent Pane.
 
-```python
-menu.position.x = 0.75
-menu.position.y = 0.75
-```
+**Atlas: Slicing**
 
-No other Widgets besides Panes have ScreenPosition. All other Widgets have their on screen Positions calculated relative to the Pane in which they are embedded. These Positions are calculated and injected into the Widget from the [Provider](#provider).
+Each Pane is registered in the [Asset Property index](./00-overview.md#core-assets) as a single unified Frame with dimensions $(W,L)$; However, when the Pane is indexed by the [Registry](./00-overview.md#library-registry), the Frame is split according to the following schema:
 
-**Properties: WidgetProperties**
+First, define the Dimensions of a Pane Frame cell as,
 
-- `dimensions: Dimension`: Dimensions of a single frame.
-- `frames: Optional[List[str]]`: List of frame keys. Used for indexing Icon Widget Assets.
+$$
+w_c = \left\lfloor \frac{W}{3} \right\rfloor
+$$
 
-### Panes
+$$
+l_c = \left\lfloor \frac{L}{3} \right\rfloor
+$$
+
+$$
+v(i) = \begin{cases} \text{start} & i = 0 \\ \text{end} & i = n + 1 \\ \text{center} & 1 \le i \le n \end{cases}
+$$
+
+Then, the Pane can be split into a 9-Frame Atlas using the following mapping,
+
+$$
+\text{str(id-v[y]-v[x])} \to (x \cdot w_c, y \cdot l_c)
+$$
+
+Where $(x,y)$ range over,
+
+$$
+x \in \max\!\left(0,\; \left\lceil \frac{W - 2w_c}{w_c} \right\rceil\right), y \in \max\!\left(0,\; \left\lceil \frac{L - 2l_c}{l_c} \right\rceil\right)
+$$
+
+**Behavior: Scaling**
+
+Panes are scaled to a percentage of the underlying [Screen's](./00-overview.md#component-screen) Dimensions. To account for arbitrary scaling of the Screen, 
+**Field: Scale**
+
+* `pw`: Percentage of the [Screen](./00-overview.md#component-screen) width.
+* `pl`: Percentage of the [Screen](./00-overview.md#component-screen) length.
+
+Only Panes have a Scale explicitly set in the [Menu Configuration](#menus). All other Widgets have their [Screen](./00-overview.md#component-screen) Positions calculated relative to the Pane in which they are embedded. These Positions are calculated and injected into the Widget during instantaition in the [Provider service](#provider).
+
+**Field: Justification**
+
+Panes use *Justification* to determine their own rendering location. 
+
+**Field: Alignment**
+
+Panes use *Alignment* to determine the rendering locations of their child Widgets.
+
+**Model: AxisAlignment**
+
+* `alignment: Alignments`
+* `justification: Alignments`
+
+**Enum: Alignments**
+
+* `start`, `center`, `end`
 
 All Menus must have atleast one Pane. Panes are the main Widgets of a Menu around which all child Widgets are laid out. They are the only Widget which can have a ScreenPosition, but not all Panes have ScreenPosition. Only the `root` Pane has ScreenPosition. ScreenPosition for a root Pane is specified in the [Menu Schema](#menus), and is not technically part of the PaneState.
 
@@ -137,7 +177,7 @@ Panes may optionally have `headers`. `headers` is a list of Buttons. `len(header
 !!! important "Pane Layouts"
     A Pane at runtime is just a background Asset with layout metadata. A Position has already been injected into from the Provider, after the Menu ScreenPositions have been unpacked into absolute coordinates.
 
-### Buttons
+### Widget: Buttons
 
 **Taxonomy**
 
@@ -171,7 +211,7 @@ It assumed Button Asset files are arranged in horizontal rows ordered by their s
 * `key(id, state): returns [ "{id}-{state.status}" ]`
 * `index(self, id, properties, recipe): returns TODO` 
 
-### Meters
+### Widget: Meters
 
 **Taxonomy**
 
@@ -387,7 +427,7 @@ The type of state a Gizmo binds to a Pane is dependent on the schema passed into
 
 ### Services
 
-# ### Service: Provider
+#### Service: Provider
 
 The Provider, similiar to the [Decomposer](./03-compositions.md#decomposer), is responsible for unpacking Menu configurations into flat lists of Assets for the Engine. However, unlike the Decomposer, the Provider must also generate a traversal graph, inject bindings into Widgets and pass the result to a Menu.
 

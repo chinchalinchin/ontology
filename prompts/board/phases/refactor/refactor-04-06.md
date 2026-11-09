@@ -17,9 +17,9 @@ Given a `Pane` asset with total pixel dimensions $(W, L) = (\text{properties.dim
 
 $$w_c = \left\lfloor \frac{W}{3} \right\rfloor, \quad l_c = \left\lfloor \frac{L}{3} \right\rfloor$$
 
-Let $V = (\text{top}, \text{center}, \text{bottom})$ and $H = (\text{left}, \text{center}, \text{right})$. `PaneFrame.index(id, properties)` partitions the source texture in-place into nine cells:
+Let $V = (\text{start}, \text{center}, \text{end})$. `PaneFrame.index(id, properties)` partitions the source texture in-place into nine cells:
 
-$$\text{index}(id, \text{properties}) = \Big\{\; \text{f"{id}-{V[r]}-{H[c]}"}: (c \cdot w_c,\; r \cdot l_c,\; w_c,\; l_c) \;\Big\vert{}\; r \in \{0, 1, 2\},\; c \in \{0, 1, 2\} \;\Big\}$$
+$$\text{index}(id, \text{properties}) = \Big\{\; \text{{id}-{V[r]}-{V[c]}}: (c \cdot w_c,\; r \cdot l_c,\; w_c,\; l_c) \;\Big\vert{}\; r \in \{0, 1, 2\},\; c \in \{0, 1, 2\} \;\Big\}$$
 
 2. **Screen-Relative Quantization**:
 
@@ -37,17 +37,17 @@ $$W_{\text{span}}(n_x) = (n_x + 2) \cdot w_c, \quad L_{\text{span}}(n_y) = (n_y 
 
 For a `Pane` with `state.multiple = Multiple(nx, ny)`, `PaneFrame.keys(id, state)` iterates over row index $i_y \in [0, n_y + 1]$ and column index $i_x \in [0, n_x + 1]$, selecting:
 
-$$v(i_y) = \begin{cases} \text{top} & i_y = 0 \\ \text{bottom} & i_y = n_y + 1 \\ \text{center} & 1 \le i_y \le n_y \end{cases}, \qquad h(i_x) = \begin{cases} \text{left} & i_x = 0 \\ \text{right} & i_x = n_x + 1 \\ \text{center} & 1 \le i_x \le n_x \end{cases}$$
+$$v(i) = \begin{cases} \text{start} & i = 0 \\ \text{end} & i = n + 1 \\ \text{center} & 1 \le i \le n \end{cases}$$
 
 and emitting $(n_x + 2)(n_y + 2)$ non-overlapping tile primitives:
 
-$$\Big(\text{f"{id}-{v(i\_y)}-{h(i\_x)}"},\; i_x \cdot w_c,\; i_y \cdot l_c\Big)$$
+$$\Big(\text{id-}v[i_y]\text{-}v[i_x],\; i_x \cdot w_c,\; i_y \cdot l_c\Big)$$
 
 4. **Two-Axis Alignment, Justification, and Margins**:
 
-Both horizontal ($X$) and vertical ($Y$, downward positive) axes are parameterized over `Alignments` $\in \{\text{left}, \text{center}, \text{right}\}$. For a parent bounding box $(p_0, P)$, an inner content span $C$, and margin $m \in \mathbb{Z}_{\ge 0}$, the 1D axis resolver $\alpha(p_0, P, C, m, \text{mode})$ is:
+Both horizontal ($X$) and vertical ($Y$, downward positive) axes are parameterized over `Alignments` $\in \{\text{start}, \text{center}, \text{end}\}$. For a parent bounding box $(p_0, P)$, an inner content span $C$, and margin $m \in \mathbb{Z}_{\ge 0}$, the 1D axis resolver $\alpha(p_0, P, C, m, \text{mode})$ is:
 
-$$\alpha(p_0, P, C, m, \text{mode}) = \begin{cases} p_0 + m & \text{if mode} = \text{left} \\ p_0 + \lfloor (P - C) / 2 \rfloor & \text{if mode} = \text{center} \\ p_0 + P - C - m & \text{if mode} = \text{right} \end{cases}$$
+$$\alpha(p_0, P, C, m, \text{mode}) = \begin{cases} p_0 + m & \text{if mode} = \text{start} \\ p_0 + \lfloor (P - C) / 2 \rfloor & \text{if mode} = \text{center} \\ p_0 + P - C - m & \text{if mode} = \text{end} \end{cases}$$
 
 * **Root Pane Placement (`justification`)**: Placed within the viewport $(0, 0, W_s, L_s)$ at:
 
