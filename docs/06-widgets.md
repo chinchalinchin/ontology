@@ -100,15 +100,19 @@ $$
 x \in \max\!\left(0,\; \left\lceil \frac{W - 2w_c}{w_c} \right\rceil\right), y \in \max\!\left(0,\; \left\lceil \frac{L - 2l_c}{l_c} \right\rceil\right)
 $$
 
-**Behavior: Scaling**
-
-Panes are scaled to a percentage of the underlying [Screen's](./00-overview.md#component-screen) Dimensions. To account for arbitrary scaling of the Screen, 
 **Field: Scale**
+
+Panes are scaled to a percentage of the underlying [Screen's](./00-overview.md#component-screen) Dimensions. 
 
 * `pw`: Percentage of the [Screen](./00-overview.md#component-screen) width.
 * `pl`: Percentage of the [Screen](./00-overview.md#component-screen) length.
 
-Only Panes have a Scale explicitly set in the [Menu Configuration](#menus). All other Widgets have their [Screen](./00-overview.md#component-screen) Positions calculated relative to the Pane in which they are embedded. These Positions are calculated and injected into the Widget during instantaition in the [Provider service](#provider).
+Only Panes have a Scale explicitly set in the [Menu Configuration](#menus). All other Widgets have their [Screen](./00-overview.md#component-screen) Positions calculated relative to the Pane in which they are embedded. These Positions are calculated and injected into the Widget during instantation in the [Provider service](#provider).
+
+**Model: AxisAlignment**
+
+* `horizontal: Alignments`
+* `vertical: Alignments`
 
 **Field: Justification**
 
@@ -116,66 +120,55 @@ Panes use *Justification* to determine their own rendering location.
 
 **Field: Alignment**
 
-Panes use *Alignment* to determine the rendering locations of their child Widgets.
+Panes use *Alignment* to determine the rendering locations of their child Widgets with the Pane's *Layout*.
 
-**Model: AxisAlignment**
-
-* `alignment: Alignments`
-* `justification: Alignments`
+**Field: Layout**
+ 
+Panes use a *Layout* to determine the general shape that child Widgets assumed when deployed. A Layout specifies a type of *axis* to use when arranging child Widgets.
 
 **Enum: Alignments**
 
-* `start`, `center`, `end`
+* `start`: Widgets are aligned at the *start* of the Pane's Layout axis.
+* `center`: Widgets are aligned at the *center* of the Pane's Layout axis.
+* `end`: Widgets are aligned at the *end* of the Pane's Layout axis.
 
-All Menus must have atleast one Pane. Panes are the main Widgets of a Menu around which all child Widgets are laid out. They are the only Widget which can have a ScreenPosition, but not all Panes have ScreenPosition. Only the `root` Pane has ScreenPosition. ScreenPosition for a root Pane is specified in the [Menu Schema](#menus), and is not technically part of the PaneState.
+**Enum: Layouts**
 
-Panes contain other Widgets. A Pane can contain other Panes as well (since a Pane is a Widget). A root Pane's child Widgets have their Positions calculated relative to the `root` ScreenPosition based on the `layout` and `alignment`. `layout` provides the general scheme for constructing the position of its Children, whereas `alignment` applies rules to fit the given child Widgets to that scheme.
+* `overlay`: A sagittal (out-of-the-screen) axis of Widgets.
+* `stack`: A vertical axis of Widgets.
+* `dock`: A horizontal axis of Widgets.
 
-Beyond `layout` and `alignment`, Panes have several styling attributes to control their look and feel. `margins` are applied around the edge of the Pane before aligning children in the layout. For `layout != overlay, alignment != center`, `gap` can be used to add spacing between child Widgets.
+**Field: Canvas**
 
-**Layout**
+Panes contain a `canvas` to hold a reference to an [Texture](./12-architecture.md#library-graphics). The `canvas` is created at runtime as a blank buffer for rendering [Fonts](./12-architecture.md#rendering-typography) without altering the underlying Asset loaded into the [Registry](./00-overview.md#library-registry).
 
-Layouts are enumerated below,
-
-- Overlay: A sagittal axis (out-of-the-screen) of Widgets.
-- Column: A vertical column of Widgets.
-- Row: A horizontal column of Widgets.
-
-**Alignment**
-
-Alignments are enumerated below,
-
-- Start: Widgets are aligned at the start of the Pane.
-- End: Widgets are aligned at the end of the Pane.
-- Center: Widgets are aligned at the center of the Pane.
-
-**Headers**
-
-!!! todo
-    Future state. Get basic Widget handling implemented first.
-
-Panes may optionally have `headers`. `headers` is a list of Buttons. `len(headers) == len(children)` must be the case. A header is composed of intraversible (*disabled*) Buttons whose Status is tied to the Pane's children. When a child Widget has `focus` from a Menu Pane, the header Button which corresponds to it (by having the same index in its list) has `status == active`. When a child Widget does not have `focus` from a Menu, the header Button which corresponds to it has `status == idle`.
-
-**Taxonomy**
-
-* `category: widget`
-* `instance: pane`
- 
 **State: PaneState**
 
-- `position: Position`
-- `layout: Layout`
-- `alignment: Alignment`
-- `gap: int`
-- `margins: Tuple[int, int, int, int]`:
+* `layout: Layout`
+* `alignment: AxisAlignment`
+* `justification: AxisAlignment`
+* `gap: int`
+* `margins: Tuple[int, int, int, int]`:
+* `multiple: Multiple`
+* `span: Dimensions`
+* `content: str`
+* `pageindex: int`
+* `pagesize: int`
+* `font: Fonts`
+* `canvas: TexturePtr`
 
-**Frame: SingleFrame**
+**Frame: PaneFrame**
 
-* `key(asset, state): returns <asset>`
-* `index(self, asset, properties, recipe): returns TODO` 
+* `keys(id, state): returns TODO`
+* `index(id, properties): returns TODO` 
 
-!!! important "Pane Layouts"
-    A Pane at runtime is just a background Asset with layout metadata. A Position has already been injected into from the Provider, after the Menu ScreenPositions have been unpacked into absolute coordinates.
+**Pane: Methods**
+
+* `current(): return content[pageindex]`
+* `less(): return pageindex > 0`
+* `more(): return pageindex < len(content)`
+* `scrolldown(): pageindex++`
+* `scrollup(): pageindex--`
 
 ### Widget: Buttons
 
@@ -241,37 +234,7 @@ When the Asset key for Meters is retrieved by the [Screen](./00-overview.md#scre
 * `key(id, state): returns [ "{id}-{state.animation.frame}" ]`
 * `index(self, id, properties, recipe): returns { "{id}-{resolution}" : (0, 0, properties.dimensions.w * meter, properties.dimensions.l) }` 
 
-### Pages
-
-Pages render text. The amount of text is capable of rendering at once is calculated during Asset initialization. This is used to populate the `pages` and `pagesize` fields.
-
-Pages contain a `canvas` over and above the Asset file loaded into the Registry. The `canvas` is created at runtime as a blank texture to serve as a space for rendering text without altering the underlying Asset loaded into the Registry.
-
-**State: DisplayState**
-
-- `content: Union[str, List[str]`
-- `pageindex: int` = 0
-- `pagesize: int`
-- `canvas: Texture`
-
-**Methods**
-
-- `current(): return content[pageindex*pagesize : max(pageindex*(pagesize+1), len(content))]`
-- `less(): return TODO`
-- `more(): return pageindex < len(content)/pagesize`
-- `scrolldown(): pageindex++`
-- `scrollup(): pageindex--`
-
-**Animation: None**
-
-N/A
-
-**Frame: SingleFrame**
-
-* `keys(id, None): returns [ id ] "`
-* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
-
-### Icons
+### Widget: Icons
 
 **Taxonomy**
 
