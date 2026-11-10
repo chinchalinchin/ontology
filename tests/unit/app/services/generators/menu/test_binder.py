@@ -2,8 +2,9 @@
 @domain.test
 @test.unit
 @app.service
-@category.widgets
-@workflow.menus
+@app.menu
+@menu.binding
+@menu.gizmo
 
 # Ontology: Tests - tests.unit.app.services.generators.menus.binder
 
@@ -33,14 +34,15 @@ from app.models.state.assets.widgets import CollectionState
 # ---------------------------------------------------------------------------
 
 pytestmark = [
-    pytest.mark.app_services,
-    pytest.mark.category_widgets,
-    pytest.mark.workflow_menus
+    pytest.mark.app_service,
+    pytest.mark.app_menu,
+    pytest.mark.menu_binding,
 ]
 
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.workflow_plots
 def test_binding_library(mock_binder, mock_library_bind):
     binding = mock_binder.binding(
         mock_library_bind, 
@@ -69,11 +71,13 @@ def test_binding_select(mock_binder, mock_select_bind):
     assert binding.selector == mock_select_bind.target['selector']
 
 
+@pytest.mark.menu_gizmo
 def test_binding_collection(mock_binder, mock_collection_bind):
     binding = mock_binder.binding(mock_collection_bind, {'inventory': {'pack': ['sword']}})
     assert isinstance(binding, CollectionBinding)
 
 
+@pytest.mark.menu_gizmo
 def test_binding_aperture(
     mock_binder, 
     mock_collection_state,
@@ -89,6 +93,7 @@ def test_binding_aperture(
     assert binding.get_item() == "shortsword"
 
 
+@pytest.mark.menu_gizmo
 def test_binding_aperture_vacant(
     mock_binder, 
     mock_collection_state,

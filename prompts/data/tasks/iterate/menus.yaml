@@ -6,7 +6,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/implementation.md.j2
+  template: iterate/coverage.md.j2
 # ----------------------------------------------------
   parameters:
     description: *description
@@ -29,8 +29,8 @@ tools:
       directory: true
     # --------------------------------------------
     tests:  
-      configuration: false
-      pipeline: false
+      configuration: true
+      pipeline: true
       session: false
 # -----------------------------------------------------
   parameters:
@@ -55,17 +55,17 @@ tools:
           - 11-emergence
           # - 12-architecture
       templates:
-        - template-backlog
+        - template-bug
     # --------------------------------------------
     source:
       filter:
         default: AND
         queries:
           # -------------------------------------
-          - title: Orchestration Services
-            scan:
-              domain: [ system ]
-              app: [ orchestration ]
+          # - title: Orchestration Services
+          #   scan:
+          #     domain: [ system ]
+          #     app: [ orchestration ]
           # -------------------------------------
           - title: Application Core Components
             scan:
@@ -118,22 +118,32 @@ tools:
               domain: [ concrete ]
               app: [ menu, mechanic ]
           # -------------------------------------
-          # - title: Traversal Controllers
-          #   scan:
-          #     domain: [ concrete ]
-          #     app: [ menu ]
-          #     menu: [ controller ]
-          #     workflows: [ traversal ]
-          # - title: Render Handlers
-          #   scan:
-          #     domain: [ concrete ]
-          #     app: [ menu ]
-          #     menu: [ handler ]
-          #     workflows: [ rendering ]
+          - title: Menu Controllers
+            scan:
+              domain: [ concrete ]
+              app: [ menu ]
+              menu: [ controller ]
+          # -------------------------------------
+          - title: Event Handlers
+            scan:
+              domain: [ concrete ]
+              app: [ menu ]
+              menu: [ handler ]
+          # -------------------------------------
+          - title: Test Fixtures
+            scan: 
+              domain: [ test ]
+              test: [ fixtures ]
+          # -------------------------------------
+          - title: Menu Unit Tests
+            scan:
+              domain: [ test ]
+              app: [ menu ]
+          # -------------------------------------
       data:
         properties: [ widgets ]
         state: [ ]
-        configurations: [ menus ]
+        configurations: [ menus/main, menus/dialogue, menus/view ]
         templates: [ ]
     # --------------------------------------------
     shell:
@@ -143,5 +153,5 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: workflow_navigation
+        marker: app_menu
         # scope: '**/test_{actuator,cartographer}.py'

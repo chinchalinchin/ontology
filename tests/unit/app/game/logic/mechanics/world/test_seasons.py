@@ -25,8 +25,8 @@ from app.static.semantics import (
 )
 from app.models.menus import (
     SeasonEvent,
-    EventContext,
 )
+from app.game.menus.core import EventData
 from app.game.menus.handlers.seasons import SeasonEventHandler
 
 # -----------------------------------------------------
@@ -441,9 +441,8 @@ def test_season_mechanics_perennial_tree_apoptosis_death_and_rebirth(
 # ----------------------- THROTTLING & EVENT HANDLERS
 # -----------------------------------------------------
 
-
+@pytest.mark.menu_handler
 @pytest.mark.workflow_rendering
-@pytest.mark.workflow_menus
 def test_season_event_handler_reconstructs_screens(
     mock_board,
     mock_screen,
@@ -456,7 +455,7 @@ def test_season_event_handler_reconstructs_screens(
     mock_board.calendar.cycle = Cycles.PEAK.value
     mock_board.calendar.period = 1
 
-    context = EventContext(
+    data = EventData(
         board=mock_board,
         screens={"0": mock_screen},
         provider=mock_provider,
@@ -464,7 +463,7 @@ def test_season_event_handler_reconstructs_screens(
     )
     mock_render.construct.reset_mock()
 
-    handler.handle(SeasonEvent(), context)
+    handler.handle(SeasonEvent(), data)
 
     assert mock_render.construct.call_count == 2
     bg_canvas, back_tiles = mock_render.construct.call_args_list[0].args

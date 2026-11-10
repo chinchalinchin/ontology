@@ -28,14 +28,14 @@ from app.models.adapters import (
     PydanticHitbox,
     PydanticMultiple,
     PydanticPosition,
-    PydanticScreenPosition,
+    PydanticScale,
     PydanticVelocity,
-     serialize_dim,
+    serialize_dim,
     serialize_enum,
     serialize_hb,
     serialize_mul,
     serialize_pos,
-    serialize_sp,
+    serialize_scale,
     serialize_vel,
 )
 from app.models.config import (
@@ -135,7 +135,7 @@ from libs.core.models import (
     Hitbox,
     Multiple,
     Position,
-    ScreenPosition,
+    Scale,
     Velocity,
 )
 
@@ -216,7 +216,7 @@ def test_cython_adapters_validation_and_serialization():
     mul_adapter = TypeAdapter(PydanticMultiple)
     vel_adapter = TypeAdapter(PydanticVelocity)
     hb_adapter = TypeAdapter(PydanticHitbox)
-    sp_adapter = TypeAdapter(PydanticScreenPosition)
+    sc_adapter = TypeAdapter(PydanticScale)
 
     # 1. Deserialize dicts into Cython extension structs
     pos = pos_adapter.validate_python({"x": 16, "y": 32})
@@ -226,7 +226,7 @@ def test_cython_adapters_validation_and_serialization():
     hb = hb_adapter.validate_python(
         {"position": {"x": 8, "y": 12}, "dimensions": {"w": 16, "l": 20}}
     )
-    sp = sp_adapter.validate_python({"px": 0.25, "py": 0.75})
+    sc = sc_adapter.validate_python({"px": 0.25, "py": 0.75})
 
     assert isinstance(pos, Position) and (pos.x, pos.y) == (16, 32)
     assert isinstance(dim, Dimensions) and (dim.w, dim.l) == (64, 48)
@@ -235,7 +235,7 @@ def test_cython_adapters_validation_and_serialization():
     assert isinstance(hb, Hitbox)
     assert isinstance(hb.position, Position) and (hb.position.x, hb.position.y) == (8, 12)
     assert isinstance(hb.dimensions, Dimensions) and (hb.dimensions.w, hb.dimensions.l) == (16, 20)
-    assert isinstance(sp, ScreenPosition) and (sp.px, sp.py) == (0.25, 0.75)
+    assert isinstance(sc, Scale) and (sc.px, sc.py) == (0.25, 0.75)
 
     # 2. Passthrough validation when given existing Cython instances
     assert pos_adapter.validate_python(pos) is pos
@@ -243,7 +243,7 @@ def test_cython_adapters_validation_and_serialization():
     assert mul_adapter.validate_python(mul) is mul
     assert vel_adapter.validate_python(vel) is vel
     assert hb_adapter.validate_python(hb) is hb
-    assert sp_adapter.validate_python(sp) is sp
+    assert sc_adapter.validate_python(sc) is sc
 
     # 3. Serialize back to primitive dicts
     assert pos_adapter.dump_python(pos, mode="json") == {"x": 16, "y": 32}
@@ -254,7 +254,7 @@ def test_cython_adapters_validation_and_serialization():
         "position": {"x": 8, "y": 12},
         "dimensions": {"w": 16, "l": 20},
     }
-    assert sp_adapter.dump_python(sp, mode="json") == {"px": 0.25, "py": 0.75}
+    assert sc_adapter.dump_python(sc, mode="json") == {"px": 0.25, "py": 0.75}
 
 
 @pytest.mark.app_schema
@@ -269,7 +269,7 @@ def test_cython_serializers_passthrough_none_and_dict():
         (serialize_mul, {"nx": 5, "ny": 6}),
         (serialize_vel, {"vx": 7, "vy": 8}),
         (serialize_hb, {"position": {"x": 0, "y": 0}, "dimensions": {"w": 1, "l": 1}}),
-        (serialize_sp, {"px": 0.5, "py": 0.5}),
+        (serialize_scale, {"px": 0.5, "py": 0.5}),
     ):
         assert serializer(None) is None
         assert serializer(sample_dict) is sample_dict

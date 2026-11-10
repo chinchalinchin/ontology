@@ -1,5 +1,12 @@
 """
-# Ontology: tests.unit.app.game.menus.controllers
+@domain.test
+@test.unit
+@app.menu
+@menu.controller
+
+# Ontology: Tests - tests.unit.app.game.menus.test_controllers
+
+Unit tests for Controller implementations.
 """
 # Standard Libraries
 from unittest.mock import MagicMock
@@ -41,7 +48,17 @@ from app.models.properties import WidgetProperties
 # Cython Libraries
 from libs.core.models import Dimensions
 
-@pytest.mark.workflow_menus
+# ---------------------------------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_menu,
+    pytest.mark.menu_controller
+]
+
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.workflow_traversal
 def test_main_controller_select():
     ctrl = MainController()
     
@@ -76,7 +93,7 @@ def test_main_controller_select():
     assert event2.id == 'world-01'
 
 
-@pytest.mark.workflow_menus
+@pytest.mark.workflow_hydration
 def test_main_controller_update():
     ctrl = MainController()
     menu = MagicMock(spec=Menu)
@@ -89,7 +106,7 @@ def test_main_controller_update():
     mock_registry.prewarm.assert_called_once_with(budget_ms=1)
 
 
-@pytest.mark.workflow_menus
+@pytest.mark.workflow_hydration
 def test_load_controller_update():
     ctrl = LoadController()
     
@@ -130,7 +147,7 @@ def test_load_controller_update():
     assert isinstance(bus[0], TerminalEvent)
 
 
-@pytest.mark.workflow_menus
+@pytest.mark.workflow_hydration
 def test_load_controller_update_not_done():
     ctrl = LoadController()
     
@@ -157,7 +174,7 @@ def test_load_controller_update_not_done():
     assert len(bus) == 0
 
 
-@pytest.mark.workflow_menus
+@pytest.mark.workflow_traversal
 def test_scroll_controller_select():
     ctrl = ScrollController()
     menu = MagicMock(spec=Menu)
@@ -193,7 +210,8 @@ def test_scroll_controller_select():
     assert isinstance(event, UpdateEvent)
 
 
-@pytest.mark.workflow_menus
+@pytest.mark.workflow_traversal
+@pytest.mark.workflow_inventory
 def test_inventory_controller_pagination():
     controller = InventoryController()
     bus = deque()
@@ -257,7 +275,7 @@ def test_inventory_controller_pagination():
     assert len(bus) == 1
 
 
-@pytest.mark.workflow_menus
+@pytest.mark.workflow_inventory
 def test_inventory_controller_slot_equip():
     controller = InventoryController()
     bus = deque()
@@ -310,7 +328,7 @@ def test_inventory_controller_slot_equip():
     assert event.content == "shortsword"
 
 
-@pytest.mark.workflow_menus
+@pytest.mark.workflow_inventory
 def test_inventory_controller_focus_recovery():
     controller = InventoryController()
     bus = deque()

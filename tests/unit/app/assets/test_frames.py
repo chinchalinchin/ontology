@@ -320,7 +320,6 @@ def test_sprite_frame(mock_asset):
 
 
 @pytest.mark.category_widgets
-@pytest.mark.workflow_menus
 def test_index_frame_indexing(mock_properties):
     frame = IndexFrame()
     props = mock_properties(
@@ -336,7 +335,6 @@ def test_index_frame_indexing(mock_properties):
 
 
 @pytest.mark.category_widgets
-@pytest.mark.workflow_menus
 def test_index_frame_suppresses_vacant_slot():
     frame = IndexFrame()
 
@@ -351,7 +349,6 @@ def test_index_frame_suppresses_vacant_slot():
 
 
 @pytest.mark.category_widgets
-@pytest.mark.workflow_menus
 def test_traversal_frame_indexing_and_keys(mock_properties, mock_state):
     frame = TraversalFrame()
     props = mock_properties(
@@ -377,7 +374,6 @@ def test_traversal_frame_indexing_and_keys(mock_properties, mock_state):
 
 
 @pytest.mark.category_widgets
-@pytest.mark.workflow_menus
 def test_meter_frame_indexing_and_keys(mock_properties, mock_state):
     frame = MeterFrame()
     props = mock_properties(

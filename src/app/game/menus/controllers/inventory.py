@@ -100,7 +100,7 @@ class InventoryController(MenuController):
             return
 
         focused_widget = menu.widgets.get(menu.focus)
-        if not focused_widget or not focused_widget.bindinf:
+        if not focused_widget or not focused_widget.binding:
             return
 
         # Focus recovery only triggers when focus resides on a slot button

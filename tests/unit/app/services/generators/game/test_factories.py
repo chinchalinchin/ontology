@@ -40,11 +40,9 @@ from app.assets.frames import (
 )
 from app.assets.animations import (
     FrequencyAnimation,
-    MeterAnimation,
     NoAnimation,
     SpriteAnimation,
     StateAnimation,
-    TraversalAnimation,
 )
 from app.assets.hitboxes import (
     AttackHitbox,
@@ -106,7 +104,7 @@ from app.services.factories import (
 # ------------------------------------------------------------------
 
 pytestmark = [
-    pytest.mark.app_services,
+    pytest.mark.app_service,
     pytest.mark.workflow_injection,
 ]
 
@@ -145,11 +143,9 @@ def test_factory_frame():
 def test_factory_animation():
     mapping = {
         AnimationRecipe.FREQUENCY.value: FrequencyAnimation,
-        AnimationRecipe.METER.value: MeterAnimation,
         AnimationRecipe.NONE.value: NoAnimation,
         AnimationRecipe.SPRITE.value: SpriteAnimation,
         AnimationRecipe.STATE.value: StateAnimation,
-        AnimationRecipe.TRAVERSAL.value: TraversalAnimation,
     }
     for recipe_key, cls in mapping.items():
         assert isinstance(AssetFactory.animation(recipe_key), cls)
@@ -240,7 +236,7 @@ def test_factory_mechanics():
     )
 
 
-@pytest.mark.workflow_menus
+@pytest.mark.menu_controller
 def test_factory_controller():
     mapping = {
         Controllers.DISPLAY.value: DisplayController,

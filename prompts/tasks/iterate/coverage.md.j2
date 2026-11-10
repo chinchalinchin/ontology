@@ -4,7 +4,11 @@
       
 * **DEBUGGING**: Debug the current run of the test pipeline located in the [Test Pipeline](#view-test-pipeline) section.
 * **COVERAGE** Add any unit tests for any areas of the code not already covered.
-* **BUGHUNTING** (*Optional*) Be on the lookout for bugs. Use the [Bug Report Template](#template-bug-report) to raise any issues you find.
+* **BUGHUNTING** (*Optional*) Be on the lookout for bugs in the codebase. Use the [Bug Report Template](#template-bug-report) to raise any issues you find.
+
+**Context: Fixtures**
+
+Fixtures were recently overhauled to streamline the unit test suite, with the exception of Menus and Widgets, i.e. all non-Widget Assets have been updated to be generated through fixture factories that correctly construct the application dependency tree, rather than constructing them in an adhoc manner with the test itself. Menu Unit tests have not yet been inducted into the new framework. They will need their fixtures updated and then refactored.
 
 {% include 'blocks/controls/guideline-fixtures.md' %}
 
@@ -13,7 +17,3 @@
 {% include 'blocks/controls/guideline-testbed.md' %}
 
 {% include 'blocks/controls/constraint-coverage.md' %}
-
-## Task: Templates
-
-{% include 'blocks/templates/template-bug.md' %}

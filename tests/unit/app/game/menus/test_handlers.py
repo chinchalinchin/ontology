@@ -1,7 +1,12 @@
 """
-# Ontology: tests.unit.app.game.menus.test_handlers
+@domain.test
+@test.unit
+@app.menu
+@menu.handler
 
-Test suite covering Event Routing Strategy implementations.
+# Ontology: Tests - tests.unit.app.game.menus.test_handlers
+
+Unit tests for Event Handler implementations.
 """
 import pytest
 import collections
@@ -25,6 +30,16 @@ from app.game.menus.handlers import (
     TerminalEventHandler,
     UpdateEventHandler
 )
+
+# ---------------------------------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_menu,
+    pytest.mark.menu_handler
+]
+
+# ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def mock_event_context():
@@ -99,6 +114,7 @@ def test_terminal_event_handler_popping_load_menu(mock_event_context):
     mock_event_context.provider.unpack.assert_called_once()
     mock_event_context.board.set_overlays.assert_called_once_with([mock_hud])
 
+@pytest.mark.workflow_rendering
 def test_update_event_handler(mock_event_context):
     handler = UpdateEventHandler()
     mock_widget = MagicMock()

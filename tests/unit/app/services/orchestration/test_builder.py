@@ -23,7 +23,7 @@ from libs.core.models import Dimensions
 # ------------------------------------------------------------------
 
 pytestmark = [
-    pytest.mark.app_services,
+    pytest.mark.app_service,
     pytest.mark.workflow_injection,
 ]
 

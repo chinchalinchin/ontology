@@ -2,8 +2,8 @@
 @domain.test
 @test.unit
 @app.service
-@category.widgets
-@workflow.menus
+@app.menu
+@menu.gizmo
 
 # Ontology: Tests - tests.unit.app.services.generators.menus.test_fabricator
 
@@ -29,12 +29,14 @@ from app.static.semantics import (
 # ---------------------------------------------------------------------------
 
 pytestmark = [
-    pytest.mark.app_services,
-    pytest.mark.category_widgets,
-    pytest.mark.workflow_menus
+    pytest.mark.app_service,
+    pytest.mark.app_menu,
+    pytest.mark.menu_gizmo
 ]
 
 # ---------------------------------------------------------------------------
+
+# TODO: use fixtures
 
 def test_fabricator_expand_collection_dimensions_and_subtrees(
     mock_properties_schema

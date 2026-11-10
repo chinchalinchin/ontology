@@ -2,8 +2,8 @@
 @domain.test
 @test.unit
 @app.service
+@app.menu
 @category.widgets
-@workflow.menus
 
 # Ontology: Tests - tests.unit.app.services.generators.menu.test_provider
 
@@ -46,9 +46,9 @@ from libs.core.models import (
 # ---------------------------------------------------------------------------
 
 pytestmark = [
-    pytest.mark.app_services,
-    pytest.mark.category_widgets,
-    pytest.mark.workflow_menus
+    pytest.mark.app_service,
+    pytest.mark.app_menu,
+    pytest.mark.category_widgets
 ]
 
 # ---------------------------------------------------------------------------
