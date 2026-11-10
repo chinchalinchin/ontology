@@ -114,3 +114,67 @@ queries:
       scan:
         workflows: [ navigation ]
     # ------------------------------------
+  # -------------------------------------------------------
+  # ------------------------------- QUERY: MENU SOURCE CODE
+  # -------------------------------------------------------
+  menus:
+    # -------------------------------------
+    - title: Asset Abstract
+      scan:
+        domain: [ abstract ]
+        app: [ asset ]
+    # -------------------------------------
+    - title: Widget Implementations
+      scan:
+        domain: [ concrete ]
+        app: [ asset ]
+        category: [ widgets ]
+    # -------------------------------------
+    - title: Widget Models
+      scan:
+        domain: [ model ]
+        category: [ widgets ]
+    # -------------------------------------
+    - title: Menu Abstracts
+      scan:
+        domain: [ abstract ]
+        app: [ menu ]
+    # -------------------------------------
+    - title: Menu Models
+      scan:
+        domain: [ model ]
+        app: [ menu ]
+    # -------------------------------------
+    - title: Menu Bindings
+      scan:
+        domain: [ concrete ]
+        app: [ menu ]
+        menu: [ binding ]
+    # -------------------------------------
+    # - title: Menu Modules
+    #   scan:
+    #     domain: [ logic ]
+    #     app: [ module, menu ]
+    # -------------------------------------
+    # - title: Menu Mechanics
+    #   scan:
+    #     domain: [ concrete ]
+    #     app: [ menu, mechanic ]
+    # -------------------------------------
+    - title: Menu Controllers
+      scan:
+        domain: [ concrete ]
+        app: [ menu ]
+        menu: [ controller ]
+    # -------------------------------------
+    # - title: Event Handlers
+    #   scan:
+    #     domain: [ concrete ]
+    #     app: [ menu ]
+    #     menu: [ handler ]
+    # -------------------------------------
+    - title: Menu Services
+      scan:
+        domain: [ system ]
+        app: [ service, menu ]
+    # -------------------------------------

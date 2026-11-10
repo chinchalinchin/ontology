@@ -1,40 +1,41 @@
 # ----------------------------------------------------
-description: &description |
-  Updates accepted.
+anchors:
+  description: &description |
+    Updates accepted.
 
-  **Priorities**
-      
-  * **DEBUGGING**: Debug the current run of the test pipeline located in the [Test Pipeline](#view-test-pipeline) section.
-  
+    **Priorities**
+        
+    * **DEBUGGING**: Debug the current run of the test pipeline located in the [Test Pipeline](#view-test-pipeline) section.
+  title: &title Test Debugging
 # ----------------------------------------------------
 context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: index.md.j2
+  template: iterate/coverage.md.j2
 # ----------------------------------------------------
   parameters:
     description: *description
-    title: Test Debugging
+    title: *title
 # ----------------------------------------------------
 tools:
 # ----------------------------------------------------
   views:
     # --------------------------------------------
     manager:
-      board: false
-      docs: false
-      templates: false
+      board: true
+      docs: true
+      templates: true
     # --------------------------------------------
     source:
-      data: false
-      filter: false
+      data: true
+      filter: true
     # --------------------------------------------
     shell:
-      directory: false
+      directory: true
     # --------------------------------------------
     tests:  
-      configuration: false
+      configuration: true
       pipeline: true
       session: false
 # -----------------------------------------------------
@@ -72,10 +73,10 @@ tools:
           #     domain: [ system ]
           #     app: [ orchestration ]
           # -------------------------------------
-          - title: Application Core Components
-            scan:
-              domain: [ system ]
-              app: [ core, component ]
+          # - title: Application Core Components
+          #   scan:
+          #     domain: [ system ]
+          #     app: [ core, component ]
           # -------------------------------------
           - title: Asset Abstract
             scan:
@@ -103,25 +104,21 @@ tools:
               domain: [ model ]
               app: [ menu ]
           # -------------------------------------
-          - title: Gizmo Bindings
+          - title: Menu Bindings
             scan:
               domain: [ concrete ]
               app: [ menu ]
-              menu: [ binding, gizmo ]
+              menu: [ binding ]
           # -------------------------------------
-          - title: Menu Services
-            scan:
-              domain: [ system ]
-              app: [ service, menu ]
-          - title: Menu Modules
-            scan:
-              domain: [ logic ]
-              app: [ module, menu ]
+          # - title: Menu Modules
+          #   scan:
+          #     domain: [ logic ]
+          #     app: [ module, menu ]
           # -------------------------------------
-          - title: Menu Mechanics
-            scan:
-              domain: [ concrete ]
-              app: [ menu, mechanic ]
+          # - title: Menu Mechanics
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ menu, mechanic ]
           # -------------------------------------
           - title: Menu Controllers
             scan:
@@ -129,11 +126,16 @@ tools:
               app: [ menu ]
               menu: [ controller ]
           # -------------------------------------
-          - title: Event Handlers
+          # - title: Event Handlers
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ menu ]
+          #     menu: [ handler ]
+          # -------------------------------------
+          - title: Menu Services
             scan:
-              domain: [ concrete ]
-              app: [ menu ]
-              menu: [ handler ]
+              domain: [ system ]
+              app: [ service, menu ]
           # -------------------------------------
           - title: Test Fixtures
             scan: 
@@ -148,7 +150,7 @@ tools:
       data:
         properties: [ widgets ]
         state: [ ]
-        configurations: [ menus/main, menus/dialogue, menus/view ]
+        configurations: [ menus]
         templates: [ ]
     # --------------------------------------------
     shell:

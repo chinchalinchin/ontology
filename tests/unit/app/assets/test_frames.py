@@ -17,20 +17,15 @@ from app.assets.frames import (
     CardinalFrame,
     IndexFrame,
     NoFrame,
-)
-from app.assets.frames.core import (
     DirectedFrame,
     OrientedFrame,
     SingleFrame,
-)
-from app.assets.frames.crafts import MaterialFrame
-from app.assets.frames.objects import (
+    MaterialFrame,
     BinaryFrame,
     ObjectFrame,
-)
-from app.assets.frames.widgets import (
     MeterFrame,
     TraversalFrame,
+    PaneFrame,
 )
 from app.models.state import (
     AttachmentState,
@@ -45,6 +40,7 @@ from app.models.state import (
 )
 from app.static.semantics import (
     Actions,
+    Alignments,
     AnnualStages,
     AssetCategories,
     AssetInstances,
@@ -67,7 +63,10 @@ from libs.core.models import (
     Dimensions,
     Hitbox,
     Position,
+    Multiple
 )
+
+# -------------------------------------------------------------
 
 pytestmark = [
     pytest.mark.app_asset,
@@ -75,6 +74,7 @@ pytestmark = [
     pytest.mark.workflow_rendering,
 ]
 
+# -------------------------------------------------------------
 
 @pytest.mark.app_core
 def test_no_frame(mock_asset):
@@ -810,7 +810,7 @@ def test_pane_frame_index_trisects_dimensions(mock_asset):
     )
     for r, v in enumerate(partitions):
         for c, h in enumerate(partitions):
-            key = settings.SEPARATOR.join([pane.id, v, h])
+            key = SEPARATOR.join([pane.id, v, h])
             assert key in crops
             assert crops[key] == (c * wc, r * lc, wc, lc)
 
