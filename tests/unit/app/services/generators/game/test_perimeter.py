@@ -21,7 +21,7 @@ from app.static.semantics import (
 # -----------------------------------------------------
 
 pytestmark = [
-    pytest.mark.app_services,
+    pytest.mark.app_service,
     pytest.mark.workflow_generation,
     pytest.mark.workflow_collisions,
 ]

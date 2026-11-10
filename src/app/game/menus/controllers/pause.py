@@ -1,4 +1,11 @@
 """
+@domain.user
+@domain.logic
+@domain.concrete
+@app.menu
+@menu.controller
+@workflow.traversal
+
 # Ontology: Source - app.game.menus.controllers.pause
 
 Menu controller handling pause state actions: saving, loading, options, and exiting.
@@ -17,12 +24,12 @@ from app.static.semantics import (
 )
 from app.game.menus.controllers.base import MenuController
 from app.game.menus.core import Menu
-from app.game.menus.events import (
+from app.models.menus import (
     MenuEvent,
     StateEvent,
     TerminalEvent,
 )
-from app.game.menus.contexts import MainContext
+from app.models.menus import MainContext
 
 if TYPE_CHECKING:
     from app.game.board import Board
@@ -64,14 +71,20 @@ class PauseController(MenuController):
         elif selection == Selections.MENU.value:
             target_menu = selector
             logger.info(f"Opening submenu '{target_menu}'...")
-            bus.append(MenuEvent(id=target_menu, context=menu.context))
+            bus.append(MenuEvent(
+                id=target_menu, 
+                context=menu.context
+            ))
 
         elif selection == Selections.QUIT.value:
             logger.info("Quitting session to main menu...")
             # Clear active world assets and caches
             board.clear()
             registry = getattr(board, "registry", None)
-            bus.append(MenuEvent(id=Menus.MAIN.value, context=MainContext(registry=registry)))
+            bus.append(MenuEvent(
+                id=Menus.MAIN.value, 
+                context=MainContext(registry=registry)
+            ))
 
     def update(self, menu: Menu, board: Board, bus: collections.deque) -> None:
         """Per-tick execution while the pause menu remains top of stack."""

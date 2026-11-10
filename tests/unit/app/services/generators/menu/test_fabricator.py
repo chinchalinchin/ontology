@@ -2,253 +2,230 @@
 @domain.test
 @test.unit
 @app.service
-@category.widgets
-@workflow.menus
+@app.menu
+@menu.gizmo
 
-# Ontology: Tests - tests.unit.app.services.generators.menus.test_fabricator
+# Ontology: Tests - tests.unit.app.services.generators.menu.test_fabricator
 
 Unit tests for the Fabricator service.
 """
+# External Libraries
 import pytest
-from app.services.generators.menus.fabricator import Fabricator
+
+# Application Libraries
 from app.models.config.menus import (
-    MenuNode,
+    ApertureTarget,
+    CollectionTarget,
     GizmoParameters,
+    MenuBinding,
+    MenuNode,
     PaneParameters,
-    MenuBinding
+    SelectTarget,
 )
+from app.services.generators.menus.fabricator import Fabricator
 from app.static.semantics import (
     AssetInstances,
-    Layouts,
-    Statuses,
-    Selections,
     Bindings,
-    Shortcuts
+    Layouts,
+    Selections,
+    Shortcuts,
+    Statuses,
 )
+
+# Cython Libraries
+from libs.core.models import Scale
 
 # ---------------------------------------------------------------------------
 
 pytestmark = [
-    pytest.mark.app_services,
-    pytest.mark.category_widgets,
-    pytest.mark.workflow_menus
+    pytest.mark.app_service,
+    pytest.mark.app_menu,
+    pytest.mark.menu_gizmo,
 ]
 
 # ---------------------------------------------------------------------------
 
-def test_fabricator_expand_collection_dimensions_and_subtrees(
-    mock_properties_schema
+
+def test_fabricator_expand_collection_scales_and_subtrees(
+    mock_fabricator: Fabricator,
+    mock_gizmo_node: MenuNode,
+    mock_menu_context,
 ):
     """
-    Verifies that a valid collection gizmo correctly calculates macro dimensions,
-    splits capacity into row panes, and synthesizes child button and icon apertures.
+    Verifies that a valid collection gizmo subdivides fractional Scale dimensions
+    across row and slot panes and synthesizes button and icon aperture nodes.
     """
-    node = MenuNode(
-        id="weapons",
-        name="inventory-pack-grid",
-        instance=Shortcuts.GIZMOS.value,
-        bind=MenuBinding(
-            schema=Bindings.COLLECTION.value,
-            target={"source": "context.inventory.pack"}
-        ),
-        parameters=GizmoParameters(
-            capacity=8,
-            columns=4,
-            gap=5,
-            pane="transparent-slot",
-            button="slot"
-        )
-    )
+    context = mock_menu_context()
+    expanded = mock_fabricator.expand(mock_gizmo_node, context=context)
 
-    expanded = Fabricator.expand(node, context={}, properties=mock_properties_schema.widgets)
-
-    assert expanded is not None
-    assert expanded.id == "transparent-slot"
+    assert expanded.id == "transparent"
     assert expanded.name == "inventory-pack-grid"
     assert expanded.instance == AssetInstances.PANES.value
     assert expanded.bind.schema == Bindings.COLLECTION.value
-    assert expanded.bind.target["source"] == "context.inventory.pack"
-    assert expanded.bind.target["capacity"] == "8"
-    assert expanded.bind.target["columns"] == "4"
+    assert isinstance(expanded.bind.target, CollectionTarget)
+    assert expanded.bind.target.source == "context.inventory.pack"
+    assert expanded.bind.target.capacity == 8
+    assert expanded.bind.target.columns == 4
 
     params = expanded.parameters
     assert isinstance(params, PaneParameters)
-    assert params.dimensions.w == 175  # 4 * 40 + (4 - 1) * 5
-    assert params.dimensions.l == 85   # 2 * 40 + (2 - 1) * 5
-    assert len(params.children) == 2   # 2 rows
+    assert params.dimensions.pw == pytest.approx(0.60)
+    assert params.dimensions.pl == pytest.approx(0.30)
+    assert len(params.children) == 2  # 8 slots / 4 columns = 2 rows
 
     row_0 = params.children[0]
     assert row_0.instance == AssetInstances.PANES.value
-    assert row_0.parameters.layout == Layouts.DOCK
-    assert row_0.parameters.dimensions.w == 175
-    assert row_0.parameters.dimensions.l == 40
+    assert row_0.parameters.layout == Layouts.DOCK.value
+    assert row_0.parameters.dimensions.pw == pytest.approx(0.60)
+    assert row_0.parameters.dimensions.pl == pytest.approx(0.15)
     assert len(row_0.parameters.children) == 4
 
     slot_0_pane = row_0.parameters.children[0]
-    assert slot_0_pane.parameters.layout == Layouts.OVERLAY
-    assert slot_0_pane.parameters.dimensions.w == 40
-    assert slot_0_pane.parameters.dimensions.l == 40
+    assert slot_0_pane.parameters.layout == Layouts.OVERLAY.value
+    assert slot_0_pane.parameters.dimensions.pw == pytest.approx(0.15)
+    assert slot_0_pane.parameters.dimensions.pl == pytest.approx(0.15)
     button_node, icon_node = slot_0_pane.parameters.children
 
-    # Button node assertion
     assert button_node.instance == AssetInstances.BUTTONS.value
     assert button_node.id == "slot"
     assert button_node.name == "inventory-pack-grid-slot-0"
     assert button_node.bind.schema == Bindings.SELECT.value
-    assert button_node.bind.target["selection"] == Selections.SLOT.value
-    assert button_node.bind.target["selector"] == "inventory-pack-grid"
-    assert button_node.bind.target["index"] == "0"
-    assert button_node.parameters.status == Statuses.IDLE
+    assert isinstance(button_node.bind.target, SelectTarget)
+    assert button_node.bind.target.selection == Selections.SLOT.value
+    assert button_node.bind.target.selector == "inventory-pack-grid"
+    assert button_node.bind.target.index == 0
+    assert button_node.parameters.status == Statuses.IDLE.value
 
-    # Icon aperture assertion
     assert icon_node.instance == AssetInstances.ICONS.value
     assert icon_node.id == "weapons"
     assert icon_node.name == "inventory-pack-grid-icon-0"
     assert icon_node.bind.schema == Bindings.APERTURE.value
-    assert icon_node.bind.target["selector"] == "inventory-pack-grid"
-    assert icon_node.bind.target["index"] == "0"
+    assert isinstance(icon_node.bind.target, ApertureTarget)
+    assert icon_node.bind.target.selector == "inventory-pack-grid"
+    assert icon_node.bind.target.index == 0
 
 
-def test_fabricator_expand_collection_uneven_capacity(mock_properties_schema):
-    """
-    Verifies that capacity not evenly divisible by columns generates the correct
-    number of slots in the trailing row.
-    """
+def test_fabricator_expand_collection_uneven_capacity(
+    mock_fabricator: Fabricator,
+    mock_menu_context,
+):
     node = MenuNode(
         id="weapons",
         name="uneven-grid",
         instance=Shortcuts.GIZMOS.value,
         bind=MenuBinding(
             schema=Bindings.COLLECTION.value,
-            target={"collection": "context.inventory.pack"}
+            target=CollectionTarget(
+                source="context.inventory.pack",
+                capacity=5,
+                columns=4,
+            ),
         ),
         parameters=GizmoParameters(
             capacity=5,
             columns=4,
             gap=5,
-            pane="transparent-slot",
-            button="slot"
-        )
+            pane="transparent",
+            button="slot",
+            dimensions=Scale(0.80, 0.40),
+        ),
     )
 
-    expanded = Fabricator.expand(node, context={}, properties=mock_properties_schema.widgets)
+    expanded = mock_fabricator.expand(node, context=mock_menu_context())
     params = expanded.parameters
 
     assert len(params.children) == 2
-    row_0 = params.children[0]
-    row_1 = params.children[1]
-
+    row_0, row_1 = params.children
     assert len(row_0.parameters.children) == 4
     assert len(row_1.parameters.children) == 1
 
     last_slot = row_1.parameters.children[0]
     btn, icon = last_slot.parameters.children
     assert btn.name == "uneven-grid-slot-4"
-    assert btn.bind.target["index"] == "4"
+    assert btn.bind.target.index == 4
     assert icon.name == "uneven-grid-icon-4"
-    assert icon.bind.target["index"] == "4"
+    assert icon.bind.target.index == 4
 
 
-def test_fabricator_expand_missing_binding_raises_value_error(mock_properties_schema):
-    """
-    Verifies that declaring a gizmo without a bind block raises ValueError.
-    """
-    node = MenuNode(
+def test_fabricator_expand_validation_errors(
+    mock_fabricator: Fabricator,
+    mock_collection_bind: MenuBinding,
+    mock_menu_context,
+):
+    ctx = mock_menu_context()
+    valid_params = GizmoParameters(
+        capacity=8,
+        columns=4,
+        pane="transparent",
+        button="slot",
+    )
+
+    node_no_bind = MenuNode(
         id="weapons",
         name="no-binding-gizmo",
         instance=Shortcuts.GIZMOS.value,
         bind=None,
-        parameters=GizmoParameters(
-            capacity=8,
-            columns=4,
-            pane="transparent-slot",
-            button="slot"
-        )
+        parameters=valid_params,
     )
     with pytest.raises(ValueError, match="declared without a binding schema"):
-        Fabricator.expand(node, context={}, properties=mock_properties_schema.widgets)
+        mock_fabricator.expand(node_no_bind, context=ctx)
 
-
-def test_fabricator_expand_empty_schema_raises_value_error(mock_properties_schema):
-    """
-    Verifies that declaring a gizmo with an empty binding schema raises ValueError.
-    """
-    node = MenuNode(
-        id="weapons",
-        name="empty-schema-gizmo",
-        instance=Shortcuts.GIZMOS.value,
-        bind=MenuBinding(schema=""),
-        parameters=GizmoParameters(
-            capacity=8,
-            columns=4,
-            pane="transparent-slot",
-            button="slot"
-        )
-    )
-    with pytest.raises(ValueError, match="declared without a binding schema"):
-        Fabricator.expand(node, context={}, properties=mock_properties_schema.widgets)
-
-
-def test_fabricator_expand_unsupported_schema_raises_not_implemented(mock_properties_schema):
-    """
-    Verifies that passing an unregistered gizmo schema raises NotImplementedError.
-    """
-    node = MenuNode(
+    node_unknown_schema = MenuNode(
         id="weapons",
         name="unsupported-gizmo",
         instance=Shortcuts.GIZMOS.value,
-        bind=MenuBinding(schema="unregistered_schema"),
-        parameters=GizmoParameters(
-            capacity=8,
-            columns=4,
-            pane="transparent-slot",
-            button="slot"
-        )
+        bind=MenuBinding(
+            schema="unregistered_schema",
+            target=mock_collection_bind.target,
+        ),
+        parameters=valid_params,
     )
-    with pytest.raises(NotImplementedError, match="Unsupported gizmo schema 'unregistered_schema'"):
-        Fabricator.expand(node, context={}, properties=mock_properties_schema.widgets)
+    with pytest.raises(NotImplementedError, match="Unsupported gizmo schema"):
+        mock_fabricator.expand(node_unknown_schema, context=ctx)
 
-
-def test_fabricator_expand_collection_invalid_parameters_type(mock_properties_schema):
-    """
-    Verifies that a collection schema receiving non-GizmoParameters raises TypeError.
-    """
-    node_none = MenuNode(
-        id="weapons",
-        name="none-params-gizmo",
-        instance=Shortcuts.GIZMOS.value,
-        bind=MenuBinding(schema=Bindings.COLLECTION.value),
-        parameters=None
-    )
-    with pytest.raises(TypeError, match="expects GizmoParameters, got <class 'NoneType'>"):
-        Fabricator.expand(node_none, context={}, properties=mock_properties_schema.widgets)
-
-    node_wrong = MenuNode(
+    node_wrong_params = MenuNode(
         id="weapons",
         name="wrong-params-gizmo",
         instance=Shortcuts.GIZMOS.value,
-        bind=MenuBinding(schema=Bindings.COLLECTION.value),
-        parameters=PaneParameters()
+        bind=mock_collection_bind,
+        parameters=PaneParameters(),
     )
     with pytest.raises(TypeError, match="expects GizmoParameters"):
-        Fabricator.expand(node_wrong, context={}, properties=mock_properties_schema.widgets)
+        mock_fabricator.expand(node_wrong_params, context=ctx)
+
+    node_wrong_target = MenuNode(
+        id="weapons",
+        name="wrong-target-gizmo",
+        instance=Shortcuts.GIZMOS.value,
+        bind=MenuBinding(
+            schema=Bindings.COLLECTION.value,
+            target=SelectTarget(),
+        ),
+        parameters=valid_params,
+    )
+    with pytest.raises(TypeError, match="expects CollectionTarget"):
+        mock_fabricator.expand(node_wrong_target, context=ctx)
 
 
-def test_fabricator_extract_source_path_variants():
-    """
-    Verifies source path extraction across string, dictionary, and empty targets.
-    """
-    bind_str = MenuBinding(schema=Bindings.COLLECTION.value, target="context.player.bag")
-    assert Fabricator._extract_source_path(bind_str) == "context.player.bag"
-
-    bind_src = MenuBinding(schema=Bindings.COLLECTION.value, target={"source": "context.player.pouch"})
-    assert Fabricator._extract_source_path(bind_src) == "context.player.pouch"
-
-    bind_col = MenuBinding(schema=Bindings.COLLECTION.value, target={"collection": "context.chest.loot"})
-    assert Fabricator._extract_source_path(bind_col) == "context.chest.loot"
-
-    bind_empty = MenuBinding(schema=Bindings.COLLECTION.value, target={"other": "data"})
-    assert Fabricator._extract_source_path(bind_empty) == ""
-
-    assert Fabricator._extract_source_path(MenuBinding(schema=Bindings.COLLECTION.value, target=None)) == ""
-    assert Fabricator._extract_source_path(None) == ""
+@pytest.mark.parametrize(
+    "capacity, columns, pane, button",
+    [
+        (0, 4, "transparent", "slot"),
+        (8, 0, "transparent", "slot"),
+        (8, 4, "", "slot"),
+        (8, 4, "transparent", ""),
+    ],
+)
+def test_gizmo_parameters_post_init_validation(
+    capacity: int,
+    columns: int,
+    pane: str,
+    button: str,
+):
+    with pytest.raises(ValueError):
+        GizmoParameters(
+            capacity=capacity,
+            columns=columns,
+            pane=pane,
+            button=button,
+        )

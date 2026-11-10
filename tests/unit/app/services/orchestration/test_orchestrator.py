@@ -19,7 +19,7 @@ from app.static.semantics import (
     Devices,
     Menus,
 )
-from app.game.menus.events import (
+from app.models.menus.events import (
     MenuEvent,
     StateEvent,
 )
@@ -30,7 +30,7 @@ from libs.core.models import Dimensions
 # ------------------------------------------------------------------
 
 pytestmark = [
-    pytest.mark.app_services,
+    pytest.mark.app_service,
     pytest.mark.workflow_injection,
 ]
 

@@ -2,6 +2,7 @@
 @domain.test
 @test.unit
 @app.mechanic
+@app.core
 @physics.motion
 
 # Ontology: Tests - tests.unit.app.game.logic.mechanics.core.test_motion
@@ -26,6 +27,8 @@ from libs.core.models import (
 # -----------------------------------------------------
 
 pytestmark = [
+    pytest.mark.app_core,
+    pytest.mark.app_mechanic,
     pytest.mark.physics_motion
 ]
 

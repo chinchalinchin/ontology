@@ -1,11 +1,10 @@
 """
 @domain.logic
-@domain.system
-@domain.graphics
 @app.semantics
+@modality.appearance
 @workflow.rendering
 
-# Ontology: Source - app.static.sematnics.graphics
+# Ontology: Source - app.static.semantics.graphics
 
 Graphics semantics enumerations.
 """

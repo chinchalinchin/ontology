@@ -3,7 +3,6 @@
 @app.board
 @app.core
 @app.component
-@workflow.main
 
 # Ontology: Source - app.game.board.core
 
@@ -42,6 +41,7 @@ from app.models.state.core import (
     PlotState,
     CalendarState
 )
+from app.models.state import PaneState
 from app.models.config import ConfigurationSchema
 from app.models.groups import EquipmentGroup
 from app.game.board.modules.cache import Cache
@@ -56,6 +56,7 @@ from libs.core.models import (
     Position,
     Boundary
 )
+import libs.graphics.render as render
 
 logger = logging.getLogger(__name__)
 
@@ -422,6 +423,15 @@ class Board:
 
 
     def clear(self) -> None:
+        for menu in self.menus + self.overlays:
+            if menu.widgets:
+                for widget in menu.widgets.values():
+                    if isinstance(widget.state, PaneState) and widget.state.canvas is not None:
+                        render.destroy(widget.state.canvas)
+                        widget.state.canvas = None
+
+        self.loaded = False
+        self.paused = False
         self._assets.clear()
         self._cache.clear()
         self.menus.clear()

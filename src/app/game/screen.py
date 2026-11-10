@@ -3,7 +3,6 @@
 @app.core
 @app.component
 @workflow.rendering
-@workflow.main
 
 # Ontology: Source - app.game.screen
 
@@ -23,7 +22,6 @@ from app.assets.base import Asset
 from app.game.menus.core import Menu
 from app.models.state import (
     CalendarState,
-    DisplayState,
     PaneState,
     SheetState,
 )
@@ -101,8 +99,8 @@ class Screen:
 
             for frame_key, ox, oy in frame_keys:
                 tex_data = self.registry.image(frame_key)
-                if not tex_data:
-                    continue
+                
+                if not tex_data: continue
 
                 tex, sx, sy, sw, sl = tex_data
                 tile_tuple = (
@@ -222,7 +220,7 @@ class Screen:
 
         primitives = []
         for widget in widgets:
-            if isinstance(widget.state, DisplayState):
+            if isinstance(widget.state, PaneState) and widget.state.canvas is not None:
                 tex = widget.state.canvas
                 primitives.append((
                     tex, 0, 0, tex.w, tex.l,
@@ -237,10 +235,7 @@ class Screen:
                     tex_data = self.registry.image(key)
 
                     if not tex_data:
-                        if not (
-                            isinstance(widget.state, DisplayState) or
-                            isinstance(widget.state, PaneState)
-                        ):
+                        if not isinstance(widget.state, PaneState):
                             logger.warning(f"Registry MISS: Frame key not found: '{key}'")
                         continue
 
@@ -355,24 +350,24 @@ class Screen:
 
     def stamp(self, widget: Asset, content: Union[str, List[str]]) -> None:
         """
-        Dynamically restamps background and bakes updated text for O(N) runtime rendering.
+        Dynamically restamps 9-slice background and bakes updated text for O(N) runtime rendering.
         """
-        if not isinstance(widget.state, DisplayState):
+        if not isinstance(widget.state, PaneState) or widget.state.canvas is None:
             return
 
         tex = widget.state.canvas
-        base_keys = widget.frame.keys(widget.id, widget.state)
-        base_key, ox, oy = base_keys[0]  # Just unpack the first element
+        primitives = []
 
-        tex_data = self.registry.image(base_key)
-        if not tex_data:
-            logger.warning(f"Registry MISS: Frame key not found: '{base_key}'")
-            return
+        for base_key, ox, oy in widget.frame.keys(widget.id, widget.state):
+            tex_data = self.registry.image(base_key)
+            if not tex_data:
+                continue
 
-        base_ptr, sx, sy, sw, sl = tex_data
+            base_ptr, sx, sy, sw, sl = tex_data
+            primitives.append((base_ptr, sx, sy, sw, sl, ox, oy, sw, sl, 1, 1))
 
-        # 1. Fetch and stamp clean background
-        render.construct(tex, [(base_ptr, sx, sy, sw, sl, 0, 0, sw, sl, 1, 1)])
+        # 1. Clear target canvas and stamp 9-slice background (if any)
+        render.construct(tex, primitives)
 
         # 2. Re-write the font over the cleared canvas
         if isinstance(content, str) and content:
@@ -383,8 +378,7 @@ class Screen:
                     f"Registry MISS: Font '{font_key}' not found for widget '{widget.name}'."
                 )
                 return
-            render.write((tex, 0, 0, sw, sl, 0, 0, sw, sl), content, font)
-
+            render.write((tex, 0, 0, tex.w, tex.l, 0, 0, tex.w, tex.l), content, font)
 
     def interface(self, menus: List[Menu], overlays: List[Menu]) -> None:
         """

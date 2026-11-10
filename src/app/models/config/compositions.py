@@ -7,6 +7,8 @@
 
 Composition Configuration Models.
 """
+from __future__ import annotations
+
 # Standard Libraries
 from typing import (
     List, 
@@ -18,11 +20,11 @@ from dataclasses import (
 )
 
 # Application Libraries
+from app.models.config.core import Configuration
 from app.models.state import (
     PropertyState, 
     StateSchema
 )
-from app.models.config.core import Configuration
 
 # ---------------------------------------------------------
 

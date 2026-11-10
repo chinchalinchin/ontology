@@ -2,9 +2,7 @@
 @domain.user
 @domain.concrete
 @app.mechanic
-@asset.animation
-@category.widgets
-@workflow.menus
+@app.menu
 
 # Ontology: Source - app.game.logic.mechanics.core.menu
 
@@ -19,12 +17,12 @@ import logging
 
 # Application Libraries
 from app.static.semantics import (
-    Statuses, 
+    Statuses,
     Interactions,
     DeviceContexts
 )
 from app.game.logic.mechanics import Mechanic
-from app.game.menus.events import TerminalEvent
+from app.models.menus import TerminalEvent
 from app.models.state import DevicePayload
 
 if TYPE_CHECKING:
@@ -38,17 +36,14 @@ logger = logging.getLogger(__name__)
 
 class MenuMechanics(Mechanic):
 
-    def update(self, 
-        board: Board, 
-        delta: float, 
+    def update(self,
+        board: Board,
+        delta: float,
         bus: collections.deque,
         payload: DevicePayload
     ) -> None:
-        # Animate Overlays (World-time)
+        # Update Overlays (World-time)
         for overlay in board.overlays:
-            for widget in overlay.widgets.values():
-                widget.animation.animate(widget.state, widget.properties)
-
             if overlay.controller:
                 overlay.controller.update(overlay, board, bus)
 
@@ -60,11 +55,6 @@ class MenuMechanics(Mechanic):
         board.device.context(DeviceContexts.MENU.value)
 
         active_menu = board.menus[-1]
-        
-        # Animate Active Menu (Menu-time)
-        for widget in active_menu.widgets.values():
-            widget.animation.animate(widget.state, widget.properties)
-            
         active_menu.controller.update(active_menu, board, bus)
 
         # Input Interception

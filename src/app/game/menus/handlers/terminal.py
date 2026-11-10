@@ -1,4 +1,10 @@
 """
+@domain.user
+@domain.concrete
+@domain.system
+@app.menu
+@menu.handler
+
 # Ontology: Source - app.game.menus.handlers.terminal
 
 Terminal event handling implementations.
@@ -8,37 +14,54 @@ import logging
 
 # Application Libraries
 from app.static.semantics import Menus
-from app.game.menus.events import (
-    TerminalEvent, 
-    EventContext
+from app.models.menus import (
+    TerminalEvent,
+    ViewContext
 )
-from app.game.menus.contexts import ViewContext
+from app.game.menus.core import EventData
 from app.game.menus.handlers.base import EventHandler
+from app.models.state import PaneState
+
+# Cython Libraries
+import libs.graphics.render as render
+
+# ---------------------------------------------------------------
 
 logger = logging.getLogger(__name__)
 
+# ---------------------------------------------------------------
+
 class TerminalEventHandler(EventHandler):
-    def handle(self, event: TerminalEvent, context: EventContext) -> None:
-        if not context.board.menus:
+    def handle(self, event: TerminalEvent, data: EventData) -> None:
+        if not data.board.menus:
             logger.warning("TerminalEvent received, but no Menus running on Board.")
             return 
         
-        popped_menu = context.board.menus.pop()
+        menu = data.board.menus.pop()
             
-        if popped_menu.id == Menus.LOAD.value:
-            player = context.board.player()
-            screen = context.screens.get(
+        if menu.id == Menus.LOAD.value:
+            player = data.board.player()
+            screen = data.screens.get(
                 player.state.layer, 
-                next(iter(context.screens.values()))
+                next(iter(data.screens.values()))
             )
             
-            hud_menu = context.provider.unpack(
+            hud_menu = data.provider.unpack(
                 Menus.VIEW.value, 
-                context.board.configurations.menus.get(Menus.VIEW.value), 
+                data.board.configurations.menus.get(Menus.VIEW.value), 
                 ViewContext(sprite=player.state), 
                 screen.screensize
             )
-            context.board.set_overlays([hud_menu])
+            data.board.set_overlays([hud_menu])
 
-        if not context.board.menus:
-            context.board.paused = False
+        if menu.controller:
+            menu.controller.close(menu, data.board, data.bus)
+
+        if menu.widgets:
+            for widget in menu.widgets.values():
+                if isinstance(widget.state, PaneState) and widget.state.canvas is not None:
+                    render.destroy(widget.state.canvas)
+                    widget.state.canvas = None
+
+        if not data.board.menus:
+            data.board.paused = False

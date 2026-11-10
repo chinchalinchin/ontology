@@ -1,4 +1,12 @@
 """
+@draft
+@domain.user
+@domain.logic
+@domain.concrete
+@app.menu
+@menu.controller
+@workflow.traversal
+
 # Ontology: Source - app.game.menus.controllers.options
 
 Menu controller stub for the Options menu placeholder.
@@ -16,7 +24,8 @@ from app.game.menus.core import (
     Menu,
     Widget
 )
-from app.game.menus.events import UpdateEvent
+from app.game.menus.bindings import SelectBinding
+from app.models.menus import UpdateEvent
 
 if TYPE_CHECKING:
     from app.game.board import Board
@@ -38,13 +47,17 @@ class OptionsController(MenuController):
         "option-4": "Input Bindings (Placeholder)",
     }
 
+    @classmethod
+    def _binding(cls, menu: Menu):
+        return next((
+            widget.binding.selector 
+            for widget in menu.widgets.values() 
+            if isinstance(widget.binding, SelectBinding) and widget.binding.selector
+        ), None)
+
     def open(self, menu: Menu, board: Board, bus: collections.deque) -> None:
         self._last_focus = None
-        self._selector = next((
-            widget.binding.selector for widget 
-            in menu.widgets.values() 
-            if isinstance(widget, Widget)
-        ), None)
+        self._selector = self._binding(menu)
 
     def select(self, name: str, menu: Menu, board: Board, bus: collections.deque) -> None:
         """Fires when pressing SELECT on the focused option."""
@@ -62,16 +75,15 @@ class OptionsController(MenuController):
 
         if parchment:
             content = f"{name.upper()} ACTIVATED\n(Placeholder Action)"
-            bus.append(UpdateEvent(widget=parchment, content=content))
+            bus.append(UpdateEvent(
+                widget=parchment, 
+                content=content
+            ))
 
     def update(self, menu: Menu, board: Board, bus: collections.deque) -> None:
         """Fires per tick; updates parchment preview when focus traverses buttons."""
         if self._selector is None:
-            self._selector = next((
-                widget.binding.selector for widget 
-                in menu.widgets.values() 
-                if isinstance(widget, Widget)
-            ), None)
+            self._selector = self._binding(menu)
 
         if menu.focus != self._last_focus:
             self._last_focus = menu.focus

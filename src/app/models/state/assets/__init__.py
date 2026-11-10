@@ -53,7 +53,6 @@ from app.models.state.assets.widgets import (
     IconState,
     TraversalState,
     PaneState,
-    DisplayState,
     MeterState,
     CollectionState,
     WidgetState
@@ -108,7 +107,6 @@ __all__ = [
     'IconState',
     'TraversalState',
     'PaneState',
-    'DisplayState',
     'MeterState',
     'CollectionState',
     'WidgetState'

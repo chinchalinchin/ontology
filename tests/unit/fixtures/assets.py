@@ -16,16 +16,33 @@ import pytest
 # Application Libraries
 from app.assets.base import Asset
 from app.game.logic.relations import MaterialIndex
-from app.models.config import ConfigurationSchema
-from app.models.properties import PropertiesSchema
+from app.models.config import (
+    ConfigurationSchema,
+    MenuNode,
+)
+from app.models.properties import (
+    AssetProperties,
+    PropertiesSchema,
+)
 from app.models.state import (
     AssetState,
+    IconState,
+    MeterState,
+    PaneState,
     StateSchema,
+    TraversalState,
 )
 from app.services.factories.assets import AssetFactory
 from app.static.semantics import (
     AssetCategories,
     AssetInstances,
+    Statuses,
+)
+
+# Cython Libraries
+from libs.core.models import (
+    Dimensions,
+    Multiple,
 )
 
 STATE_CATEGORIES = (
@@ -39,6 +56,45 @@ STATE_CATEGORIES = (
 )
 
 
+def _default_widget_state(
+    instance: str,
+    asset_id: str,
+    properties: AssetProperties,
+) -> AssetState:
+    if instance == AssetInstances.PANES.value:
+        return PaneState(
+            id=asset_id,
+            name=asset_id,
+            multiple=Multiple(0, 0),
+            span=Dimensions(
+                2 * (properties.dimensions.w // 3),
+                2 * (properties.dimensions.l // 3),
+            ),
+        )
+    if instance == AssetInstances.BUTTONS.value:
+        return TraversalState(
+            id=asset_id,
+            name=asset_id,
+            status=Statuses.IDLE.value,
+        )
+    if instance == AssetInstances.METERS.value:
+        return MeterState(
+            id=asset_id,
+            name=asset_id,
+            reading_function=lambda: 50,
+            unit_function=lambda: 100,
+        )
+    if instance == AssetInstances.ICONS.value:
+        frames = getattr(properties, "frames", None) or []
+        first_icon = frames[0] if frames else ""
+        return IconState(
+            id=asset_id,
+            name=asset_id,
+            icon_function=lambda: first_icon,
+        )
+    raise ValueError(f"Unsupported widget instance: '{instance}'")
+
+
 @pytest.fixture
 def mock_asset(
     mock_properties_schema: PropertiesSchema,
@@ -47,7 +103,7 @@ def mock_asset(
     mock_state,
 ):
     """
-    Instantiates an Asset via AssetFactory.asset from the YAML-loaded schemas.
+    Instantiates an Asset (or Widget for category='widgets') via AssetFactory from the YAML-loaded schemas.
     """
     def _asset(
         category: str,
@@ -55,8 +111,6 @@ def mock_asset(
         id: Optional[str] = None,
         asset_state: Optional[AssetState] = None,
     ) -> Asset:
-        resolved_state = asset_state or mock_state(category, instance, id=id)
-
         recipe = getattr(
             getattr(mock_configurations_schema.recipes, category),
             instance,
@@ -74,6 +128,29 @@ def mock_asset(
                 AssetInstances.SPRITES.value,
             )
 
+        if category == AssetCategories.WIDGETS.value:
+            if asset_state is None:
+                resolved_id = id if id is not None else next(iter(prop_map.keys()))
+                properties = prop_map[resolved_id]
+                resolved_state = _default_widget_state(instance, resolved_id, properties)
+            else:
+                properties = prop_map[asset_state.id]
+                resolved_state = asset_state
+
+            node = MenuNode(
+                id=resolved_state.id,
+                name=resolved_state.name or resolved_state.id,
+                instance=instance,
+            )
+            return AssetFactory.widget(
+                node,
+                properties,
+                resolved_state,
+                recipe,
+                None,
+            )
+
+        resolved_state = asset_state or mock_state(category, instance, id=id)
         properties = prop_map[resolved_state.id]
 
         return AssetFactory.asset(

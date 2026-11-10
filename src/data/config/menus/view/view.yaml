@@ -1,0 +1,115 @@
+menus:
+  view:
+    controller: display
+    roots:
+      - instance: panes
+        id: dark
+        name: hud-menu
+        parameters:
+          dimensions:
+            pw: 0.30
+            pl: 0.25
+          justification:
+            horizontal: center
+            vertical: end
+          alignment:
+            horizontal: center
+            vertical: center
+          layout: dock
+          gap: 10
+          margins: 5
+          children:
+            - instance: panes
+              id: transparent
+              name: hud-meters-pane
+              parameters:
+                dimensions:
+                  pw: 0.16
+                  pl: 0.10
+                layout: stack
+                alignment:
+                  horizontal: center
+                  vertical: center
+                gap: 5
+                children:
+                  - instance: meters
+                    id: health
+                    name: health-meter
+                    bind:
+                      schema: meter
+                      target:
+                        meter: context.sprite.meters.health
+                  - instance: meters
+                    id: magic
+                    name: magic-meter
+                    bind:
+                      schema: meter
+                      target:
+                        meter: context.sprite.meters.magic
+            - instance: panes
+              id: transparent
+              name: hud-slots-pane
+              parameters:
+                dimensions:
+                  pw: 0.18
+                  pl: 0.08
+                layout: dock
+                alignment:
+                  horizontal: start
+                  vertical: center
+                gap: 5
+                children:
+                  # --- bounding box for the slot ---
+                  - instance: panes
+                    id: transparent
+                    name: weapon-slot-container
+                    parameters:
+                      dimensions:
+                        pw: 0.08
+                        pl: 0.08
+                      layout: overlay
+                      alignment:
+                        horizontal: center
+                        vertical: center
+                      gap: 0
+                      children:
+                        # 1. The Background
+                        - instance: buttons
+                          id: slot
+                          name: weapon-slot
+                          parameters:
+                            status: disabled
+                        # 2. The Foreground Decal
+                        - instance: icons
+                          id: weapons
+                          name: weapon-icon
+                          bind:
+                            schema: icon
+                            target:
+                              icon: context.sprite.inventory.equipment.weapon
+                  # --- bounding box for the slot ---
+                  - instance: panes
+                    id: transparent
+                    name: shield-slot-container
+                    parameters:
+                      dimensions:
+                        pw: 0.08
+                        pl: 0.08
+                      layout: overlay
+                      alignment:
+                        horizontal: center
+                        vertical: center
+                      gap: 0
+                      children:
+                        - instance: buttons
+                          id: slot
+                          name: shield-slot
+                          parameters:
+                            status: disabled
+                        - instance: icons
+                          id: shields
+                          name: shield-icon
+                          bind:
+                            schema: icon
+                            target:
+                              icon: context.sprite.inventory.equipment.shield

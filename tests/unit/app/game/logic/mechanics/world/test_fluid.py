@@ -407,7 +407,7 @@ def test_board_bridges_query_excludes_obstacles_and_weights(mock_board):
     assert mock_bridge not in mock_board.weights("0")
 
 
-@pytest.mark.app_services
+@pytest.mark.app_service
 def test_actuator_pump_compiles_layer_moisture_field(mock_board):
     """
     Verify Actuator.pump propagates fluid geometry and compiles the layer MoistureField.

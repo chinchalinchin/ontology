@@ -4,8 +4,18 @@ from Cython.Build import cythonize
 # Homebrew paths for both Apple Silicon (/opt/homebrew) and Intel (/usr/local)
 include_dirs = ["/opt/homebrew/include", "/usr/local/include"]
 library_dirs = ["/opt/homebrew/lib", "/usr/local/lib"]
+sdl_common = {
+    "include_dirs": include_dirs,
+    "library_dirs": library_dirs,
+}
 
 ext_modules = [
+    Extension(
+        "libs.audio.mixer",
+        sources=["src/libs/audio/mixer.pyx"],
+        libraries=["SDL2", "SDL2_mixer"],
+        **sdl_common,
+    ),
     Extension(
         "libs.core.models",
         sources=["src/libs/core/models.pyx"],
@@ -14,6 +24,7 @@ ext_modules = [
         "libs.core.input",
         sources=["src/libs/core/input.pyx"],
         libraries=["SDL2"],
+        **sdl_common,
     ),
     Extension(
         "libs.core.math.geometry",
@@ -35,15 +46,13 @@ ext_modules = [
         "libs.graphics.render",
         sources=["src/libs/graphics/render.pyx"],
         libraries=["SDL2", "SDL2_image", "SDL2_ttf"],
-        include_dirs=include_dirs,
-        library_dirs=library_dirs,
+        **sdl_common,
     ),
     Extension(
         "libs.graphics.registry",
         sources=["src/libs/graphics/registry.pyx"],
         libraries=["SDL2", "SDL2_image", "SDL2_ttf"],
-        include_dirs=include_dirs,
-        library_dirs=library_dirs,
+        **sdl_common,
         define_macros=[('CYTHON_TRACE', '1')] 
     )
 ]

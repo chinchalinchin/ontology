@@ -1,0 +1,165 @@
+# ----------------------------------------------------
+anchors:
+  description: &description |
+    Updates accepted.
+
+    **Priorities**
+        
+    * **DEBUGGING**: Debug the current run of the test pipeline located in the [Test Pipeline](#view-test-pipeline) section.
+  title: &title Test Debugging
+# ----------------------------------------------------
+context: true
+# ----------------------------------------------------
+task:
+# ----------------------------------------------------
+  template: iterate/merge.md.j2
+# ----------------------------------------------------
+  parameters:
+    description: *description
+    title: *title
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    # --------------------------------------------
+    manager:
+      board: true
+      docs: true
+      templates: true
+    # --------------------------------------------
+    source:
+      data: false
+      filter: true
+    # --------------------------------------------
+    shell:
+      directory: true
+    # --------------------------------------------
+    tests:  
+      configuration: false
+      pipeline: true
+      session: false
+# -----------------------------------------------------
+  parameters:
+    # --------------------------------------------
+    manager:
+      board:
+        phase: 04-06
+        action: refactor
+      docs:
+        exclude:
+          # - 00-overview
+          # - 01-assets
+          - 02-sprites
+          - 03-compositions
+          - 04-intentions
+          - 05-mechanics
+          # - 06-widgets
+          - 07-sounds
+          - 08-plots
+          - 09-ecology
+          - 10-chemistry
+          - 11-emergence
+          # - 12-architecture
+      templates:
+        - template-merge
+        - template-bug
+    # --------------------------------------------
+    source:
+      filter:
+        default: AND
+        queries:
+          # -------------------------------------
+          # - title: Orchestration Services
+          #   scan:
+          #     domain: [ system ]
+          #     app: [ orchestration ]
+          # -------------------------------------
+          # - title: Application Core Components
+          #   scan:
+          #     domain: [ system ]
+          #     app: [ core, component ]
+          # -------------------------------------
+          - title: Asset Abstract
+            scan:
+              domain: [ abstract ]
+              app: [ asset ]
+          # -------------------------------------
+          - title: Widget Implementations
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              category: [ widgets ]
+          # -------------------------------------
+          - title: Widget Models
+            scan:
+              domain: [ model ]
+              category: [ widgets ]
+          # -------------------------------------
+          - title: Menu Abstracts
+            scan:
+              domain: [ abstract ]
+              app: [ menu ]
+          # -------------------------------------
+          - title: Menu Models
+            scan:
+              domain: [ model ]
+              app: [ menu ]
+          # -------------------------------------
+          - title: Menu Bindings
+            scan:
+              domain: [ concrete ]
+              app: [ menu ]
+              menu: [ binding ]
+          # -------------------------------------
+          - title: Menu Modules
+            scan:
+              domain: [ logic ]
+              app: [ module, menu ]
+          # -------------------------------------
+          # - title: Menu Mechanics
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ menu, mechanic ]
+          # -------------------------------------
+          - title: Menu Controllers
+            scan:
+              domain: [ concrete ]
+              app: [ menu ]
+              menu: [ controller ]
+          # -------------------------------------
+          # - title: Event Handlers
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ menu ]
+          #     menu: [ handler ]
+          # -------------------------------------
+          - title: Menu Services
+            scan:
+              domain: [ system ]
+              app: [ service, menu ]
+          # -------------------------------------
+          # - title: Test Fixtures
+          #   scan: 
+          #     domain: [ test ]
+          #     test: [ fixtures ]
+          # -------------------------------------
+          # - title: Menu Unit Tests
+          #   scan:
+          #     domain: [ test ]
+          #     app: [ menu ]
+          # -------------------------------------
+      data:
+        properties: [ widgets ]
+        state: [ ]
+        configurations: [ menus ]
+        templates: [ ]
+    # --------------------------------------------
+    shell:
+      directory: |
+        tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
+    # --------------------------------------------
+    tests:
+      pipeline:
+        command: pytest -m
+        marker: app_menu
+        # scope: '**/test_{actuator,cartographer}.py'

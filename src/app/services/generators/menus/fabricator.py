@@ -1,7 +1,8 @@
 """
 @domain.system
+@app.menu
 @app.service
-@workflow.menus
+@menu.gizmo
 
 # Ontology: Source - app.services.generators.menus.fabricator
 
@@ -9,9 +10,8 @@ Package for constructing Gizmos.
 """
 # Standard Libraries
 from typing import (
-    Optional, 
-    List, 
-    Dict, 
+    List,
+    Dict,
     Callable
 )
 
@@ -24,18 +24,21 @@ from app.static.semantics import (
     Selections,
     Bindings
 )
+from app.models.core import AxisAlignment
 from app.models.config.menus import (
     MenuNode,
     PaneParameters,
     GizmoParameters,
     ButtonParameters,
-    MenuBinding
+    MenuBinding,
+    CollectionTarget,
+    SelectTarget,
+    ApertureTarget
 )
-from app.models.properties import WidgetProperties
-from app.game.menus.contexts import MenuContext
+from app.models.menus import MenuContext
 
 # Cython Libraries
-from libs.core.models import Dimensions
+from libs.core.models import Scale
 
 
 class Fabricator:
@@ -44,26 +47,18 @@ class Fabricator:
     concrete MenuNode(instance="panes") subtrees based on binding schema.
     """
 
-    @staticmethod
-    def _extract_source_path(bind: Optional[MenuBinding]) -> str:
-        if not bind or not bind.target:
-            return ""
-        if isinstance(bind.target, str):
-            return bind.target
-        return bind.target.get("source", bind.target.get("collection", ""))
-
-
     @classmethod
     def expand(
         cls,
         node: MenuNode,
-        context: MenuContext,
-        properties: WidgetProperties
+        context: MenuContext
     ) -> MenuNode:
         if not node.bind or not node.bind.schema:
             raise ValueError(f"Gizmo '{node.name}' declared without a binding schema.")
 
-        handlers: Dict[str, Callable[[MenuNode, MenuContext, WidgetProperties], MenuNode]] = {
+        handlers: Dict[str, Callable[
+            [MenuNode, MenuContext], MenuNode
+        ]] = {
             Bindings.COLLECTION.value: cls._collection,
         }
 
@@ -73,38 +68,36 @@ class Fabricator:
                 f"Unsupported gizmo schema '{node.bind.schema}' for node '{node.name}'."
             )
 
-        return handler(node, context, properties)
-
+        return handler(node, context)
 
     @classmethod
     def _collection(
         cls,
         node: MenuNode,
-        context: MenuContext,
-        properties: WidgetProperties
+        context: MenuContext
     ) -> MenuNode:
         params = node.parameters
+        target = node.bind.target
+
         if not isinstance(params, GizmoParameters):
             raise TypeError(
-                f"Gizmo '{node.name}' with collection schema expects GizmoParameters, got {type(params)}"
+                f"Gizmo '{node.name}' expects GizmoParameters, got {type(params)}"
+            )
+        if not isinstance(target, CollectionTarget):
+            raise TypeError(
+                f"Gizmo '{node.name}' expects CollectionTarget, got {type(target)}"
             )
 
-        source_path = cls._extract_source_path(node.bind)
         capacity = params.capacity
         columns = params.columns
         gap = params.gap
         pane_id = params.pane
         button_id = params.button
-
-        slot_props = properties.panes[pane_id]
-        slot_w = slot_props.dimensions.w
-        slot_l = slot_props.dimensions.l
+        grid_scale = params.dimensions
 
         total_rows = (capacity + columns - 1) // columns
-        row_w = columns * slot_w + (columns - 1) * gap
-        row_l = slot_l
-        grid_w = row_w
-        grid_l = total_rows * slot_l + (total_rows - 1) * gap
+        row_scale = Scale(pw=grid_scale.pw, pl=grid_scale.pl / total_rows)
+        slot_scale = Scale(pw=grid_scale.pw / columns, pl=grid_scale.pl / total_rows)
 
         row_panes: List[MenuNode] = []
 
@@ -114,34 +107,31 @@ class Fabricator:
             slot_panes: List[MenuNode] = []
 
             for slot_idx in range(start_slot, end_slot):
-                button_name = f"{node.name}-slot-{slot_idx}"
-                icon_name = f"{node.name}-icon-{slot_idx}"
-
                 button_node = MenuNode(
                     id=button_id,
-                    name=button_name,
+                    name=f"{node.name}-slot-{slot_idx}",
                     instance=AssetInstances.BUTTONS.value,
                     bind=MenuBinding(
                         schema=Bindings.SELECT.value,
-                        target={
-                            "selection": Selections.SLOT.value,
-                            "selector": node.name,
-                            "index": str(slot_idx)
-                        }
+                        target=SelectTarget(
+                            selection=Selections.SLOT.value,
+                            selector=node.name,
+                            index=slot_idx
+                        )
                     ),
-                    parameters=ButtonParameters(status=Statuses.IDLE)
+                    parameters=ButtonParameters(status=Statuses.IDLE.value)
                 )
 
                 icon_node = MenuNode(
                     id=node.id,
-                    name=icon_name,
+                    name=f"{node.name}-icon-{slot_idx}",
                     instance=AssetInstances.ICONS.value,
                     bind=MenuBinding(
                         schema=Bindings.APERTURE.value,
-                        target={
-                            "selector": node.name,
-                            "index": str(slot_idx)
-                        }
+                        target=ApertureTarget(
+                            selector=node.name,
+                            index=slot_idx
+                        )
                     )
                 )
 
@@ -150,11 +140,14 @@ class Fabricator:
                     name=f"{node.name}-slot-{slot_idx}-pane",
                     instance=AssetInstances.PANES.value,
                     parameters=PaneParameters(
-                        layout=Layouts.OVERLAY,
-                        alignment=Alignments.CENTER,
+                        layout=Layouts.OVERLAY.value,
+                        alignment=AxisAlignment(
+                            horizontal=Alignments.CENTER.value,
+                            vertical=Alignments.CENTER.value
+                        ),
                         gap=0,
                         margins=0,
-                        dimensions=Dimensions(w=slot_w, l=slot_l),
+                        dimensions=slot_scale,
                         children=[button_node, icon_node]
                     )
                 )
@@ -165,11 +158,14 @@ class Fabricator:
                 name=f"{node.name}-row-{row_idx}",
                 instance=AssetInstances.PANES.value,
                 parameters=PaneParameters(
-                    layout=Layouts.DOCK,
-                    alignment=Alignments.START,
+                    layout=Layouts.DOCK.value,
+                    alignment=AxisAlignment(
+                        horizontal=Alignments.START.value,
+                        vertical=Alignments.CENTER.value
+                    ),
                     gap=gap,
                     margins=0,
-                    dimensions=Dimensions(w=row_w, l=row_l),
+                    dimensions=row_scale,
                     children=slot_panes
                 )
             )
@@ -177,11 +173,11 @@ class Fabricator:
 
         root_binding = MenuBinding(
             schema=Bindings.COLLECTION.value,
-            target={
-                "source": source_path,
-                "capacity": str(capacity),
-                "columns": str(columns)
-            }
+            target=CollectionTarget(
+                source=target.source,
+                capacity=capacity,
+                columns=columns
+            )
         )
 
         return MenuNode(
@@ -190,11 +186,14 @@ class Fabricator:
             instance=AssetInstances.PANES.value,
             bind=root_binding,
             parameters=PaneParameters(
-                layout=Layouts.STACK,
-                alignment=Alignments.START,
+                layout=Layouts.STACK.value,
+                alignment=AxisAlignment(
+                    horizontal=Alignments.START.value,
+                    vertical=Alignments.CENTER.value
+                ),
                 gap=gap,
                 margins=0,
-                dimensions=Dimensions(w=grid_w, l=grid_l),
+                dimensions=grid_scale,
                 children=row_panes
             )
         )

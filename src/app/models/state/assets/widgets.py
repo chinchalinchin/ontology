@@ -4,53 +4,57 @@
 @asset.state
 @category.widgets
 
-# Ontology: Source - app.models.state.widget
+# Ontology: Source - app.models.state.assets.widgets
 
 Widget State Models.
 """
 # Standard Libraries
 from typing import (
     List,
-    Optional, 
-    Union, 
-    Any, 
+    Optional,
+    Union,
+    Any,
     Callable
 )
-from dataclasses import dataclass, field
+from dataclasses import (
+    dataclass,
+    field
+)
 
 # Application Libraries
 from app.static.semantics import (
     Statuses,
     Layouts,
-    Alignments,
     Fonts
 )
 from app.models.adapters import (
-    PydanticPosition as Position, 
+    PydanticPosition as Position,
+    PydanticDimensions as Dimensions,
+    PydanticMultiple as Multiple,
     Enumerated
 )
-from app.models.state.core import (
-    AssetState,
-    AnimationState
-)
+from app.models.core import AxisAlignment
+from app.models.state.core import AssetState
 
 # Cython Libraries
 from libs.core.models import (
-    Position as CorePosition
+    Position as CorePosition,
+    Dimensions as CoreDimensions,
+    Multiple as CoreMultiple
 )
 
 # ------------------------------------------------------------
 
 @dataclass(slots=True)
 class WidgetState(AssetState):
-    position: Position = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
+    position: Position = field(default_factory=lambda: CorePosition(0, 0)) # type: ignore
 
 # ------------------------------------------------------------
 
 @dataclass(slots=True)
 class IconState(WidgetState):
     icon_function: Callable[[], str] = field(default_factory=Callable)
-    
+
     @property
     def icon(self) -> str:
         return self.icon_function()
@@ -60,38 +64,19 @@ class IconState(WidgetState):
 @dataclass(slots=True)
 class TraversalState(WidgetState):
     status: Enumerated[Statuses] = Statuses.IDLE.value
-    animation: AnimationState = field(default_factory=AnimationState)
 
 # ------------------------------------------------------------
 
 @dataclass(slots=True)
 class PaneState(WidgetState):
     layout: Enumerated[Layouts] = Layouts.STACK.value
-    alignment: Enumerated[Alignments] = Alignments.CENTER.value
-    gap: Optional[int] = 0
-    margins: Optional[int] = 0
-
-# ------------------------------------------------------------
-
-@dataclass(slots=True)
-class MeterState(WidgetState):
-    reading_function: Callable[[], Union[int, float]] = field(default_factory=Callable)
-    unit_function: Callable[[], Union[int, float]] = field(default_factory=Callable)
-    animation: AnimationState = field(default_factory=AnimationState)
-
-    @property
-    def reading(self) -> Union[int, float]:
-        return self.reading_function()
-
-    @property
-    def unit(self) -> Union[int, float]:
-        return self.unit_function()
-
-# ------------------------------------------------------------
-
-@dataclass(slots=True)
-class DisplayState(WidgetState):
-    content_function: Callable[[], Union[str, List[str]]] = field(default_factory=Callable)
+    alignment: AxisAlignment = field(default_factory=AxisAlignment)
+    justification: AxisAlignment = field(default_factory=AxisAlignment)
+    gap: int = 0
+    margins: int = 0
+    multiple: Multiple = field(default_factory=lambda: CoreMultiple(0, 0)) # type: ignore
+    span: Dimensions = field(default_factory=lambda: CoreDimensions(0, 0)) # type: ignore
+    content_function: Optional[Callable[[], Union[str, List[str]]]] = None
     pageindex: int = 0
     pagesize: int = 1
     font: Enumerated[Fonts] = Fonts.DIALOGUE.value
@@ -99,6 +84,8 @@ class DisplayState(WidgetState):
 
     @property
     def content(self) -> Union[str, List[str]]:
+        if self.content_function is None:
+            return ""
         return self.content_function()
 
     @property
@@ -115,24 +102,39 @@ class DisplayState(WidgetState):
         if not content:
             return ""
         if isinstance(content, list):
-            if self.pageindex < len(content):
+            if 0 <= self.pageindex < len(content):
                 return content[self.pageindex]
             return ""
         return content
 
-    def more(self) -> bool: 
+    def more(self) -> bool:
         return self.pageindex < (self._pagecount - 1)
 
     def less(self) -> bool:
         return self.pageindex > 0
 
-    def scrollup(self) -> None: 
+    def scrollup(self) -> None:
         if self.less():
             self.pageindex -= 1
 
     def scrolldown(self) -> None:
         if self.more():
             self.pageindex += 1
+
+# ------------------------------------------------------------
+
+@dataclass(slots=True)
+class MeterState(WidgetState):
+    reading_function: Callable[[], Union[int, float]] = field(default_factory=Callable)
+    unit_function: Callable[[], Union[int, float]] = field(default_factory=Callable)
+
+    @property
+    def reading(self) -> Union[int, float]:
+        return self.reading_function()
+
+    @property
+    def unit(self) -> Union[int, float]:
+        return self.unit_function()
 
 # ------------------------------------------------------------
 
@@ -145,16 +147,15 @@ class CollectionState(PaneState):
     Centralizes windowing offsets, capacity limits, and item retrieval
     for delegated aperture slots.
     """
-    collection_function: Callable[[], List[Any]] = field(default_factory=Callable)
-    capacity: int = 8
+    collection_function: Callable[[], List[str]] = field(default=lambda: [])
+    capacity: int = 4
     columns: int = 4
     offset: int = 0
 
     @property
-    def collection(self) -> List[Any]:
-        """Evaluates the live collection closure safely."""
-        items = self.collection_function() if callable(self.collection_function) else []
-        return items or []
+    def collection(self) -> List[str]:
+        """Evaluates the live collection closure."""
+        return self.collection_function()
 
     def get_item(self, slot_index: int) -> str:
         """
@@ -164,21 +165,12 @@ class CollectionState(PaneState):
         k = self.offset + slot_index
         items = self.collection
         if 0 <= k < len(items):
-            item = items[k]
-            if isinstance(item, str):
-                return item
-            if hasattr(item, "id"):
-                return getattr(item, "id")
-            if hasattr(item, "name"):
-                return getattr(item, "name")
-            if isinstance(item, dict):
-                return item.get("id", item.get("name", ""))
-            return str(item)
+            return items[k]
         return ""
 
     def is_occupied(self, slot_index: int) -> bool:
         """Determines whether a physical aperture index holds an active entity."""
-        return (self.offset + slot_index) < len(self.collection)
+        return 0 <= (self.offset + slot_index) < len(self.collection)
 
     def scrollup(self) -> None:
         """Decrements offset by column count, clamped to the lower bound (0)."""

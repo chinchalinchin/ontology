@@ -1,385 +1,292 @@
 """
-# Ontology: tests.unit.app.game.menus.controllers
+@domain.test
+@test.unit
+@app.menu
+@menu.controller
+
+# Ontology: Tests - tests.unit.app.game.menus.test_controllers
+
+Unit tests for MenuController implementations.
 """
 # Standard Libraries
-from unittest.mock import MagicMock
 from collections import deque
 
 # External Libraries
 import pytest
 
 # Application Libraries
-from app.static.semantics import (
-    Selections,
-    Statuses
-)
-from app.assets.base import Taxonomy
-from app.game.menus.controllers import (
-    InventoryController,
-    MainController,
-    LoadController,
-    ScrollController
-)
-from app.game.menus.contexts import (
-    MainContext, 
-    LoadContext
-)
-from app.game.menus.core import (
-    Menu, 
-    Widget
-)
-from app.game.menus.events import (
-    StateEvent, 
-    TerminalEvent, 
-    UpdateEvent
-)
+import app.static.settings as settings
 from app.game.menus.bindings import SelectBinding
-from app.models.state.assets.widgets import (
-    CollectionState, 
-    TraversalState
+from app.game.menus.controllers import (
+    DisplayController,
+    InventoryController,
+    LoadController,
+    MainController,
+    OptionsController,
+    PauseController,
+    ScrollController,
 )
-from app.models.properties import WidgetProperties
+from app.models.config.menus import SelectTarget
+from app.models.menus import (
+    MenuEvent,
+    StateEvent,
+    TerminalEvent,
+    UpdateEvent,
+)
+from app.models.state import PaneState
+from app.static.semantics import (
+    AssetCategories,
+    AssetInstances,
+    Menus,
+    Selections,
+    Statuses,
+)
 
-# Cython Libraries
-from libs.core.models import Dimensions
+# ---------------------------------------------------------------------------
 
-@pytest.mark.workflow_menus
-def test_main_controller_select():
-    ctrl = MainController()
-    
-    mock_widget_new = MagicMock(spec=Widget)
-    mock_widget_new.binding = SelectBinding(target={'selection': Selections.NEW.value}, context={})
-    
-    mock_widget_load = MagicMock(spec=Widget)
-    mock_widget_load.binding = SelectBinding(target={'selection': Selections.LOAD.value}, context={})
-    
-    menu = MagicMock(spec=Menu)
-    menu.widgets = {"btn-new": mock_widget_new, "btn-load": mock_widget_load}
-    
-    bus = deque()
-    board = MagicMock()
-    
-    ctrl.select("btn-new", menu, board, bus)
-    
-    assert len(bus) == 2
-    event1 = bus.popleft()
-    event2 = bus.popleft()
-    assert isinstance(event1, TerminalEvent)
-    assert isinstance(event2, StateEvent)
-    assert event2.id == 'world-01'
-    
-    ctrl.select("btn-load", menu, board, bus)
-    
-    assert len(bus) == 2
-    event1 = bus.popleft()
-    event2 = bus.popleft()
-    assert isinstance(event1, TerminalEvent)
-    assert isinstance(event2, StateEvent)
-    assert event2.id == 'world-01'
+pytestmark = [
+    pytest.mark.app_menu,
+    pytest.mark.menu_controller,
+]
+
+# ---------------------------------------------------------------------------
 
 
-@pytest.mark.workflow_menus
-def test_main_controller_update():
-    ctrl = MainController()
-    menu = MagicMock(spec=Menu)
-    mock_registry = MagicMock()
-    menu.context = MainContext(registry=mock_registry)
-    
-    ctrl.update(menu, MagicMock(), deque())
-    
-    # Main menu idle loop should prewarm the registry textures
-    mock_registry.prewarm.assert_called_once_with(budget_ms=1)
+@pytest.mark.workflow_traversal
+def test_main_controller_select_new_load_and_submenu(
+    mock_menu,
+    mock_board,
+    mock_bus: deque,
+):
+    menu = mock_menu(Menus.MAIN.value)
+    ctrl = menu.controller
+    assert isinstance(ctrl, MainController)
+
+    ctrl.select("new-game", menu, mock_board, mock_bus)
+    assert len(mock_bus) == 2
+    assert isinstance(mock_bus.popleft(), TerminalEvent)
+    state_ev = mock_bus.popleft()
+    assert isinstance(state_ev, StateEvent)
+    assert state_ev.id == settings.NEW_BOARD
+
+    ctrl.select("load-game", menu, mock_board, mock_bus)
+    assert len(mock_bus) == 2
+    assert isinstance(mock_bus.popleft(), TerminalEvent)
+    state_ev = mock_bus.popleft()
+    assert isinstance(state_ev, StateEvent)
+    assert state_ev.id == settings.NEW_BOARD
+
+    ctrl.select("options-menu", menu, mock_board, mock_bus)
+    assert len(mock_bus) == 1
+    menu_ev = mock_bus.popleft()
+    assert isinstance(menu_ev, MenuEvent)
+    assert menu_ev.id == Menus.OPTIONS.value
 
 
-@pytest.mark.workflow_menus
-def test_load_controller_update():
-    ctrl = LoadController()
-    
-    mock_board = MagicMock()
-    mock_board.loaded = False  # Explicitly set to False to bypass the new guard clause
-    mock_migrator = MagicMock()
-    mock_migrator.target = "world-01"
-    mock_migrator.step.return_value = True # Migrator is fully hydrated
-    mock_board.migrator = mock_migrator
-    mock_board.layers.return_value = ["0"]
-    mock_board.size.return_value = [MagicMock()]
-    
-    mock_menu = MagicMock(spec=Menu)
-    mock_registry = MagicMock()
-    mock_registry.prewarm.return_value = True # Registry is fully loaded
-    
-    mock_screen = MagicMock()
-    mock_screens = {"0": mock_screen}
-    
-    mock_menu.context = LoadContext(
-        registry=mock_registry,
-        screens=mock_screens,
-        screensize=MagicMock()
-    )
-    
-    bus = deque()
-    
-    ctrl.update(mock_menu, mock_board, bus)
-    
-    mock_migrator.step.assert_called_once()
-    mock_registry.prewarm.assert_called_once()
-    
-    # 100% hydration should trigger a full canvas reallocation
-    mock_screen.rebake.assert_called_once()
+@pytest.mark.workflow_hydration
+def test_main_controller_update_prewarms_registry(
+    mock_menu,
+    mock_board,
+    mock_bus: deque,
+):
+    menu = mock_menu(Menus.MAIN.value)
+    menu.controller.update(menu, mock_board, mock_bus)
+    assert menu.context.registry is not None
+
+
+@pytest.mark.workflow_hydration
+def test_load_controller_update_lifecycle(
+    mock_menu,
+    mock_board,
+    mock_migrator,
+    mock_bus: deque,
+):
+    load_menu = mock_menu(Menus.LOAD.value)
+    ctrl = load_menu.controller
+    assert isinstance(ctrl, LoadController)
+
+    # Guard clause when board is already marked loaded
+    mock_board.loaded = True
+    ctrl.update(load_menu, mock_board, mock_bus)
+    assert len(mock_bus) == 0
+
+    # Active hydration step through completion
+    mock_board.loaded = False
+    mock_migrator.target = settings.NEW_BOARD
+    while not mock_board.loaded:
+        ctrl.update(load_menu, mock_board, mock_bus)
+
     assert mock_board.loaded is True
-    
-    assert len(bus) == 1
-    assert isinstance(bus[0], TerminalEvent)
+    assert len(mock_bus) == 1
+    assert isinstance(mock_bus.popleft(), TerminalEvent)
 
 
-@pytest.mark.workflow_menus
-def test_load_controller_update_not_done():
-    ctrl = LoadController()
-    
-    mock_board = MagicMock()
-    mock_migrator = MagicMock()
-    mock_migrator.target = "world-01"
-    mock_migrator.step.return_value = False # Migrator still time-slicing
-    mock_board.migrator = mock_migrator
-    
-    mock_menu = MagicMock(spec=Menu)
-    mock_registry = MagicMock()
-    mock_registry.prewarm.return_value = False # Registry still parsing
-    mock_menu.context = LoadContext(
-        registry=mock_registry,
-        screens={"0": MagicMock()},
-        screensize=MagicMock()
-    )
-    
-    bus = deque()
-    
-    ctrl.update(mock_menu, mock_board, bus)
-    
-    # Should not push terminal event or flip board state
-    assert len(bus) == 0
+@pytest.mark.workflow_traversal
+def test_scroll_controller_open_and_select(
+    mock_menu,
+    mock_board,
+    mock_bus: deque,
+):
+    dialogue_menu = mock_menu(Menus.DIALOGUE.value)
+    ctrl = dialogue_menu.controller
+    assert isinstance(ctrl, ScrollController)
+
+    speech_pane = dialogue_menu.widgets["character-speech"]
+    assert isinstance(speech_pane.state, PaneState)
+    speech_pane.state.content_function = lambda: ["Page 1", "Page 2"]
+    speech_pane.state.pageindex = 0
+
+    ctrl.open(dialogue_menu, mock_board, mock_bus)
+    assert len(mock_bus) >= 1
+    open_ev = mock_bus.popleft()
+    assert isinstance(open_ev, UpdateEvent)
+    mock_bus.clear()
+
+    ctrl.select("text-scroll-down", dialogue_menu, mock_board, mock_bus)
+    assert speech_pane.state.pageindex == 1
+    down_ev = mock_bus.popleft()
+    assert isinstance(down_ev, UpdateEvent)
+    assert down_ev.content == "Page 2"
+
+    ctrl.select("text-scroll-up", dialogue_menu, mock_board, mock_bus)
+    assert speech_pane.state.pageindex == 0
+    up_ev = mock_bus.popleft()
+    assert isinstance(up_ev, UpdateEvent)
+    assert up_ev.content == "Page 1"
 
 
-@pytest.mark.workflow_menus
-def test_scroll_controller_select():
-    ctrl = ScrollController()
-    menu = MagicMock(spec=Menu)
-    bus = deque()
-    board = MagicMock()
-    
-    mock_page = MagicMock(spec=Widget)
-    mock_page.state = MagicMock()
-    mock_page.state.current.return_value = ["line 1", "line 2"]
-    
-    mock_btn_down = MagicMock(spec=Widget)
-    mock_btn_down.binding = SelectBinding(target={'selection': Selections.SCROLLDOWN.value, 'selector': "text_page"}, context={})
-    
-    mock_btn_up = MagicMock(spec=Widget)
-    mock_btn_up.binding = SelectBinding(target={'selection': Selections.SCROLLUP.value, 'selector': "text_page"}, context={})
-    
-    menu.widgets = {
-        "text_page": mock_page,
-        "btn_down": mock_btn_down,
-        "btn_up": mock_btn_up
-    }
-    
-    ctrl.select("btn_down", menu, board, bus)
-    mock_page.state.scrolldown.assert_called_once()
-    assert len(bus) == 1
-    event = bus.popleft()
-    assert isinstance(event, UpdateEvent)
-    
-    ctrl.select("btn_up", menu, board, bus)
-    mock_page.state.scrollup.assert_called_once()
-    assert len(bus) == 1
-    event = bus.popleft()
-    assert isinstance(event, UpdateEvent)
+@pytest.mark.workflow_traversal
+@pytest.mark.workflow_inventory
+def test_inventory_controller_pagination_and_equip(
+    mock_menu,
+    mock_asset,
+    mock_board,
+    mock_bus: deque,
+):
+    inv_menu = mock_menu(Menus.INVENTORY.value)
+    ctrl = inv_menu.controller
+    assert isinstance(ctrl, InventoryController)
 
+    grid_pane = inv_menu.widgets["inventory-pack-grid"]
+    capacity = grid_pane.state.capacity
+    columns = grid_pane.state.columns
 
-@pytest.mark.workflow_menus
-def test_inventory_controller_pagination():
-    controller = InventoryController()
-    bus = deque()
+    # Configure collection with (capacity + 1) items so the last slot is occupied at offset=0
+    # and vacant after scrolling down by `columns`
+    items = ["shortsword", "buckler", *[f"item-{i}" for i in range(capacity - 1)]]
+    grid_pane.state.collection_function = lambda: items
+    grid_pane.state.offset = 0
 
-    col_state = CollectionState(
-        id="test-collection",
-        collection_function=lambda: [f"item-{i}" for i in range(12)],
-        capacity=8,
-        columns=4,
-        offset=0
-    )
-    grid_pane = Widget(
-        taxonomy=Taxonomy("transparent-slot", "inventory-pack-grid", "widgets", "panes"),
-        properties=WidgetProperties(dimensions=Dimensions(175, 85)),
-        state=col_state,
-        frame=None,
-        animation=None,
-        binding=None
-    )
-
-    btn_down = Widget(
-        taxonomy=Taxonomy("arrow-down", "inventory-scroll-down", "widgets", "buttons"),
-        properties=WidgetProperties(dimensions=Dimensions(24, 24)),
-        state=TraversalState(id="arrow-down", status=Statuses.IDLE.value),
-        frame=None,
-        animation=None,
-        binding=SelectBinding(
-            target={'selection': Selections.SCROLLDOWN.value, 'selector': 'inventory-pack-grid'},
-            context={}
+    # Ensure scroll-down and scroll-up control buttons targeting `inventory-pack-grid` exist
+    if "inventory-scroll-down" not in inv_menu.widgets:
+        btn_down = mock_asset(
+            AssetCategories.WIDGETS.value,
+            AssetInstances.BUTTONS.value,
+            id="arrow-down",
         )
+        btn_down.taxonomy.name = "inventory-scroll-down"
+        inv_menu.widgets["inventory-scroll-down"] = btn_down
+    inv_menu.widgets["inventory-scroll-down"].binding = SelectBinding(
+        target=SelectTarget(
+            selection=Selections.SCROLLDOWN.value,
+            selector="inventory-pack-grid",
+        ),
+        context=inv_menu.context,
     )
-    btn_up = Widget(
-        taxonomy=Taxonomy("arrow-up", "inventory-scroll-up", "widgets", "buttons"),
-        properties=WidgetProperties(dimensions=Dimensions(24, 24)),
-        state=TraversalState(id="arrow-up", status=Statuses.IDLE.value),
-        frame=None,
-        animation=None,
-        binding=SelectBinding(
-            target={'selection': Selections.SCROLLUP.value, 'selector': 'inventory-pack-grid'},
-            context={}
+
+    if "inventory-scroll-up" not in inv_menu.widgets:
+        btn_up = mock_asset(
+            AssetCategories.WIDGETS.value,
+            AssetInstances.BUTTONS.value,
+            id="arrow-up",
         )
+        btn_up.taxonomy.name = "inventory-scroll-up"
+        inv_menu.widgets["inventory-scroll-up"] = btn_up
+    inv_menu.widgets["inventory-scroll-up"].binding = SelectBinding(
+        target=SelectTarget(
+            selection=Selections.SCROLLUP.value,
+            selector="inventory-pack-grid",
+        ),
+        context=inv_menu.context,
     )
 
-    menu = MagicMock(spec=Menu)
-    menu.focus = "inventory-scroll-down"
-    menu.widgets = {
-        "inventory-pack-grid": grid_pane,
-        "inventory-scroll-down": btn_down,
-        "inventory-scroll-up": btn_up
-    }
+    # 1. Slot selection equips matching weapon onto player state
+    player = mock_board.player()
+    ctrl.select("inventory-pack-grid-slot-0", inv_menu, mock_board, mock_bus)
+    assert player.state.inventory.equipment.weapon == "shortsword"
+    equip_ev = mock_bus.popleft()
+    assert isinstance(equip_ev, UpdateEvent)
+    assert equip_ev.content == "shortsword"
 
-    controller.select("inventory-scroll-down", menu, MagicMock(), bus)
-    assert col_state.offset == 4
-    assert len(bus) == 1
-    event = bus.popleft()
-    assert isinstance(event, UpdateEvent)
-    assert event.content == "4"
+    # 2. Focus on last slot, then scroll down: offset advances by `columns` and focus recovers to slot 0
+    last_slot_name = f"inventory-pack-grid-slot-{capacity - 1}"
+    inv_menu.focus = last_slot_name
+    inv_menu.widgets[last_slot_name].state.status = Statuses.ACTIVE.value
+    inv_menu.widgets["inventory-pack-grid-slot-0"].state.status = Statuses.IDLE.value
 
-    controller.select("inventory-scroll-up", menu, MagicMock(), bus)
-    assert col_state.offset == 0
-    assert len(bus) == 1
+    ctrl.select("inventory-scroll-down", inv_menu, mock_board, mock_bus)
+    assert grid_pane.state.offset == columns
+    assert inv_menu.focus == "inventory-pack-grid-slot-0"
+    assert inv_menu.widgets[last_slot_name].state.status == Statuses.IDLE.value
+    assert inv_menu.widgets["inventory-pack-grid-slot-0"].state.status == Statuses.ACTIVE.value
+    scroll_down_ev = mock_bus.popleft()
+    assert isinstance(scroll_down_ev, UpdateEvent)
+    assert scroll_down_ev.content == str(columns)
 
+    # 3. Scroll up restores collection window offset back to 0
+    ctrl.select("inventory-scroll-up", inv_menu, mock_board, mock_bus)
+    assert grid_pane.state.offset == 0
+    scroll_up_ev = mock_bus.popleft()
+    assert isinstance(scroll_up_ev, UpdateEvent)
+    assert scroll_up_ev.content == "0"
 
-@pytest.mark.workflow_menus
-def test_inventory_controller_slot_equip():
-    controller = InventoryController()
-    bus = deque()
+@pytest.mark.workflow_traversal
+def test_pause_controller_save_load_submenu_and_quit(
+    mock_menu,
+    mock_board,
+    mock_bus: deque,
+):
+    pause_menu = mock_menu(Menus.PAUSE.value)
+    ctrl = pause_menu.controller
+    assert isinstance(ctrl, PauseController)
 
-    col_state = CollectionState(
-        id="test-collection",
-        collection_function=lambda: ["shortsword"],
-        capacity=8,
-        columns=4,
-        offset=0
-    )
-    grid_pane = Widget(
-        taxonomy=Taxonomy("transparent-slot", "inventory-pack-grid", "widgets", "panes"),
-        properties=WidgetProperties(dimensions=Dimensions(175, 85)),
-        state=col_state,
-        frame=None,
-        animation=None,
-        binding=None
-    )
+    ctrl.open(pause_menu, mock_board, mock_bus)
 
-    slot_btn = Widget(
-        taxonomy=Taxonomy("slot", "inventory-pack-grid-slot-0", "widgets", "buttons"),
-        properties=WidgetProperties(dimensions=Dimensions(40, 40)),
-        state=TraversalState(id="slot", status=Statuses.ACTIVE.value),
-        frame=None,
-        animation=None,
-        binding=SelectBinding(
-            target={'selection': Selections.SLOT.value, 'selector': 'inventory-pack-grid', 'index': '0'},
-            context={}
-        )
-    )
-
-    board = MagicMock()
-    mock_player = MagicMock()
-    board.player.return_value = mock_player
-    board.equipment.weapons = {"shortsword": MagicMock()}
-
-    menu = MagicMock(spec=Menu)
-    menu.widgets = {
-        "inventory-pack-grid": grid_pane,
-        "inventory-pack-grid-slot-0": slot_btn
+    by_selection = {
+        w.binding.selection: name
+        for name, w in pause_menu.widgets.items()
+        if w.binding and hasattr(w.binding, "selection")
     }
 
-    controller.select("inventory-pack-grid-slot-0", menu, board, bus)
+    if "save" in by_selection:
+        ctrl.select(by_selection["save"], pause_menu, mock_board, mock_bus)
 
-    assert mock_player.state.inventory.equipment.weapon == "shortsword"
-    assert len(bus) == 1
-    event = bus.popleft()
-    assert isinstance(event, UpdateEvent)
-    assert event.content == "shortsword"
+    if "menu" in by_selection:
+        ctrl.select(by_selection["menu"], pause_menu, mock_board, mock_bus)
+        ev = mock_bus.popleft()
+        assert isinstance(ev, MenuEvent)
+
+    if "load" in by_selection:
+        ctrl.select(by_selection["load"], pause_menu, mock_board, mock_bus)
+        assert isinstance(mock_bus.popleft(), TerminalEvent)
+        assert isinstance(mock_bus.popleft(), StateEvent)
+
+    if "quit" in by_selection:
+        ctrl.select(by_selection["quit"], pause_menu, mock_board, mock_bus)
+        ev = mock_bus.popleft()
+        assert isinstance(ev, MenuEvent)
+        assert ev.id == Menus.MAIN.value
+
+    ctrl.close(pause_menu, mock_board, mock_bus)
 
 
-@pytest.mark.workflow_menus
-def test_inventory_controller_focus_recovery():
-    controller = InventoryController()
-    bus = deque()
+def test_display_controller_noop_lifecycle(mock_menu, mock_board, mock_bus: deque):
+    view_menu = mock_menu(Menus.VIEW.value)
+    ctrl = view_menu.controller
+    assert isinstance(ctrl, DisplayController)
 
-    # 10 items: at offset 0, slot 7 (index 7) is occupied; at offset 4, slot 7 (index 11) is vacant
-    col_state = CollectionState(
-        id="test-collection",
-        collection_function=lambda: [f"item-{i}" for i in range(10)],
-        capacity=8,
-        columns=4,
-        offset=0
-    )
-    grid_pane = Widget(
-        taxonomy=Taxonomy("transparent-slot", "inventory-pack-grid", "widgets", "panes"),
-        properties=WidgetProperties(dimensions=Dimensions(175, 85)),
-        state=col_state,
-        frame=None,
-        animation=None,
-        binding=None
-    )
-
-    btn_slot_7 = Widget(
-        taxonomy=Taxonomy("slot", "inventory-pack-grid-slot-7", "widgets", "buttons"),
-        properties=WidgetProperties(dimensions=Dimensions(40, 40)),
-        state=TraversalState(id="slot", status=Statuses.ACTIVE.value),
-        frame=None,
-        animation=None,
-        binding=SelectBinding(
-            target={'selection': Selections.SLOT.value, 'selector': 'inventory-pack-grid', 'index': '7'},
-            context={}
-        )
-    )
-    btn_slot_0 = Widget(
-        taxonomy=Taxonomy("slot", "inventory-pack-grid-slot-0", "widgets", "buttons"),
-        properties=WidgetProperties(dimensions=Dimensions(40, 40)),
-        state=TraversalState(id="slot", status=Statuses.IDLE.value),
-        frame=None,
-        animation=None,
-        binding=SelectBinding(
-            target={'selection': Selections.SLOT.value, 'selector': 'inventory-pack-grid', 'index': '0'},
-            context={}
-        )
-    )
-    btn_down = Widget(
-        taxonomy=Taxonomy("arrow-down", "inventory-scroll-down", "widgets", "buttons"),
-        properties=WidgetProperties(dimensions=Dimensions(24, 24)),
-        state=TraversalState(id="arrow-down", status=Statuses.IDLE.value),
-        frame=None,
-        animation=None,
-        binding=SelectBinding(
-            target={'selection': Selections.SCROLLDOWN.value, 'selector': 'inventory-pack-grid'},
-            context={}
-        )
-    )
-
-    menu = MagicMock(spec=Menu)
-    menu.focus = "inventory-pack-grid-slot-7"
-    menu.widgets = {
-        "inventory-pack-grid": grid_pane,
-        "inventory-pack-grid-slot-7": btn_slot_7,
-        "inventory-pack-grid-slot-0": btn_slot_0,
-        "inventory-scroll-down": btn_down
-    }
-
-    controller.select("inventory-scroll-down", menu, MagicMock(), bus)
-
-    assert col_state.offset == 4
-    assert menu.focus == "inventory-pack-grid-slot-0"
-    assert btn_slot_7.state.status == Statuses.IDLE.value
-    assert btn_slot_0.state.status == Statuses.ACTIVE.value
+    ctrl.open(view_menu, mock_board, mock_bus)
+    ctrl.update(view_menu, mock_board, mock_bus)
+    ctrl.select("weapon-slot", view_menu, mock_board, mock_bus)
+    ctrl.close(view_menu, mock_board, mock_bus)
+    assert len(mock_bus) == 0

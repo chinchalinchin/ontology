@@ -69,19 +69,19 @@ cdef class Hitbox:
             "dimensions": self.dimensions.to_dict() if self.dimensions is not None else None
         }
 
-cdef class ScreenPosition:
+cdef class Scale:
     """
     Screen position represented as percentages.
     """
-    cdef public double px
-    cdef public double py
+    cdef public double pw
+    cdef public double pl
 
-    def __init__(self, double px, double py):
-        self.px = px
-        self.py = py
+    def __init__(self, double pw, double pl):
+        self.pw = pw
+        self.pl = pl
 
     def to_dict(self) -> dict:
-        return {"px": self.px, "py": self.py}
+        return {"pw": self.pw, "pl": self.pl}
 
 cdef class Boundary:
     """

@@ -1,7 +1,15 @@
 """
+@draft
+@domain.user
+@domain.logic
+@domain.concrete
+@app.menu
+@menu.controller
+@workflow.traversal
+
 # Ontology: Source - app.game.menus.controllers.inventory
 
-Package for managing the Player Inventory modal menu.
+Implementation for the Inventory Menu Controller
 """
 from __future__ import annotations
 
@@ -16,7 +24,7 @@ from app.static.semantics import (
 )
 from app.game.menus.controllers.base import MenuController
 from app.game.menus.core import Menu
-from app.game.menus.events import UpdateEvent
+from app.models.menus import UpdateEvent
 
 if TYPE_CHECKING:
     from app.game.board import Board
@@ -46,7 +54,10 @@ class InventoryController(MenuController):
             if target_widget and hasattr(target_widget.state, "scrolldown"):
                 target_widget.state.scrolldown()
                 self._recover_focus(menu, target_widget)
-                bus.append(UpdateEvent(widget=target_widget, content=str(target_widget.state.offset)))
+                bus.append(UpdateEvent(
+                    widget=target_widget, 
+                    content=str(target_widget.state.offset)
+                ))
             return
 
         if selection == Selections.SCROLLUP.value:
@@ -54,19 +65,25 @@ class InventoryController(MenuController):
             if target_widget and hasattr(target_widget.state, "scrollup"):
                 target_widget.state.scrollup()
                 self._recover_focus(menu, target_widget)
-                bus.append(UpdateEvent(widget=target_widget, content=str(target_widget.state.offset)))
+                bus.append(UpdateEvent(
+                    widget=target_widget, 
+                    content=str(target_widget.state.offset)
+                ))
             return
 
         if selection == Selections.SLOT.value:
             target_widget = menu.widgets.get(target_key)
             if target_widget and hasattr(target_widget.state, "get_item"):
-                slot_index = int(binding.target.get("index", 0)) if isinstance(binding.target, dict) else 0
+                slot_index = binding.target.index
                 item_key = target_widget.state.get_item(slot_index)
                 if item_key:
                     player = board.player()
                     if player:
                         self._equip_item(item_key, player.state, board)
-                        bus.append(UpdateEvent(widget=widget, content=item_key))
+                        bus.append(UpdateEvent(
+                            widget=widget, 
+                            content=item_key
+                        ))
 
     def update(self, menu: Menu, board: Board, bus: collections.deque) -> None:
         pass
@@ -83,14 +100,14 @@ class InventoryController(MenuController):
             return
 
         focused_widget = menu.widgets.get(menu.focus)
-        if not focused_widget or not getattr(focused_widget, "binding", None):
+        if not focused_widget or not focused_widget.binding:
             return
 
         # Focus recovery only triggers when focus resides on a slot button
         if focused_widget.binding.selection != Selections.SLOT.value:
             return
 
-        slot_index = int(focused_widget.binding.target.get("index", 0))
+        slot_index = int(focused_widget.binding.target.index)
         if gizmo_pane.state.is_occupied(slot_index):
             return
 
@@ -111,9 +128,7 @@ class InventoryController(MenuController):
 
         if new_focus and new_focus != menu.focus:
             focused_widget.state.status = Statuses.IDLE.value
-            focused_widget.state.animation.action = Statuses.IDLE.value
             menu.widgets[new_focus].state.status = Statuses.ACTIVE.value
-            menu.widgets[new_focus].state.animation.action = Statuses.ACTIVE.value
             menu.focus = new_focus
 
     def _equip_item(self, item: str, state: Any, board: Board) -> None:

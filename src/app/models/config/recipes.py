@@ -90,7 +90,6 @@ class WidgetRecipe:
     buttons: Recipe = None
     icons: Recipe = None
     meters: Recipe = None
-    pages: Recipe = None
     panes: Recipe = None
     
 @dataclass(slots=True, frozen=True) 

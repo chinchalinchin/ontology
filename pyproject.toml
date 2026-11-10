@@ -21,7 +21,9 @@ test = [
 ]
 scripts = [
     "pillow==12.3.0",
-    "music21==10.5.0"
+    "music21==10.5.0",
+    "numpy==2.5.4",
+    "matplotlib==3.11.2"
 ]
 docs = [
     "mkdocs",

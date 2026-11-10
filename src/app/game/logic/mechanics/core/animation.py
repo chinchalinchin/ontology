@@ -1,9 +1,9 @@
 """
-@domain.graphics
 @domain.concrete
 @app.core
 @app.mechanic
 @asset.animation
+@modality.appearance
 @workflow.rendering
 
 # Ontology: Source - app.game.logic.mechanics.core.animation

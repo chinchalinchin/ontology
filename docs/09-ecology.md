@@ -7,7 +7,9 @@ The Ecology of the [Board](./00-overview.md#component-board) is a collection of 
 * See [FluidMechanics](./05-mechanics.md#world-mechanic-fluidmechanics) for more information on Fluid logic.
 * See [SeasonMechanics](./05-mechanics.md#world-mechanic-seasonmechanics) for more information on Season mechanics.
 
-## Specification: Ecology
+## Ecology: Overview
+
+## Ecology: Categories
 
 ### Category: Effects
 
@@ -298,7 +300,7 @@ Trees cycle through three epicycles:
 
 --8<-- "static/md/executor-perennial-transitions.md"
 
-### Ore Veining
+#### Corollary: Ore Veining
 
 * Governed by [SeasonMechanics](./05-mechanics.md#seasonmechanics)
 

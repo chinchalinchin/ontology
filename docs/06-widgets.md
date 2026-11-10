@@ -1,198 +1,213 @@
 # Ontology Docs: Widgets
 
-!!! @TODO
-    Documentation out of date (slightly, but still mostly accurate) and not formatted to new standards.
+Widgets are a type of specialized [Asset](./01-assets.md) leveraged for user interfaces. Similar to the core [Asset Categories](./01-assets.md#asset-hierarchy), they possess Properties, State and have extensible components injected into their Frame and Animation interfaces. However, they play a unique role in the [Engine Loop](./00-overview.md#component-engine) and have dedicated systems for their processing and deployment.
 
-Widgets are a type of [Asset](./01-assets.md); however, they reside outside of the core loop and have a special place in the application flow.
+Widgets are not declared in a [State file](./00-overview.md#core-state) and are thus not migrated onto the [Board](./00-overview.md#component-board) during [hydration](./12-architecture.md#phase-2-hydration). Widgets have their [Bindings](#bindings) and [Layout](#layouts) configured into [Menus](#menus), that are subsequently injected into the [Application](./00-overview.md#application) when [Events](#events) are thrown.
 
-## Overview
+## Widgets: Overview
 
-Widgets are components of Menus. Or put another way, Menus are assembled from schemas of Widgets; the branches of this configuration are sometimes referred to as the *Menu Tree*. Like most Assets, Widgets have properties that configure their static attributes and state that describes their dynamic attributes. However, their state is not updated in concert with the game loop. Instead, Menus and Widgets are managed through the flow of Events.
+### Overview: Concepts
 
-**Panes, Controls & Decals**
+#### Concept: Recursivity
 
-The overarching division of Widgets resides in the functional difference between Panes, Controls & Decals. 
+Panes provide a canvas on which to lay out other Widgets. All Menus must possess atleast one *Root Pane*. 
 
-Panes are displays; They have Layouts and ScreenPosition, to provide a schema for organizing child Widgets across varying screen sizes in proportionate ways. 
+All Panes have children. The child of a Pane may also be a Pane. There are no upper bounds (except computationally) to the number of Panes that may be nested within a Menu; Because [Layouts](#layouts) are defined recursively, an arbitary number of Panes can be nested within one another without issue.
 
-Controls bind to game state. They are either *active* or *disabled*. When active, they may be *traversed* and *selected*; When disabled, they may passively receive updates to their state to change their display, but they cannot be traversed. Controls receive focus. 
+#### Concept: Bindability
 
-Decals are painted onto Controls or Panes. They function like embedded frames and exist simply to display content. They do not hold focus and are not traversible.
+Widgets bind to [Asset State](./00-overview.md#core-state) on the [Board](./00-overview.md#component-board) when they are instantiated. A Binding represents a mapping to an address on live [Application](./00-overview.md#application) data structure. Bindings 
 
-Controls and Decals are the endpoints in the Menu tree, organized in Panes.
+For example, a [Meter Widget](#instance-meter) may bind to [Player Health](./02-sprites.md#instance-player). Once bound, any update to the Player Health will automatically be reflected in the Meter's Frame keys.
 
-**Traversal & Focus**
+Widgets that are embedded into Menus have their states altered through action-reaction [Selection Bindings](#bindings) which specify how a SelectionEvent propagates through the Menu. This logic is handled by the Controller.
 
-A Menu has focus. Focus is a field that points to the currently `active` traversible Widget. When the user issues a command to traverse the Menu, the focus shifts to the next traversible Widget.
+#### Concept: Traversibility
 
-For example, suppose a Menu Pane has two traversible Widgets. Widget A is currently in `active` Status, Widget B is currently `idle` Status. When the user issues the command to traverse, these states will shift so A is `idle` and B is `active`. If the user issues the command to select, the Widget that is `active` will be `selected` and a SelectionEvent will be generated for processing by the MenuMechanics.
+Widgets are *traversible* when they are organized in sequence. In other words, a Menu can be traversed. To accomplish this, a Menu has *`focus`*.
 
-The directions for Traversal are: `NORTH`, `SOUTH`, `EAST` and `WEST`.
+`focus` is a field that points to the currently `active` traversible Widget. When the user issues a command to traverse the Menu, the focus shifts to the next traversible Widget.
 
-### Events
+For example, suppose a Menu Pane has two traversible Widgets. In this example, Widget A is initially in `active` Status (i.e. it has `focus`), while Widget B is initially in the `idle` Status. When the user issues the command to traverse, these states will shift so A is `idle` and B is `active`. 
 
-To illustrate Events, consider the following example. A Player may enter into the `barter` [Intention](./04-intentions.md) with another Sprite. This causes the gameplay loop to emit an Event containing the Menu key `trade` along with the Event data, i.e. the Sprite States. When an Event is detected by the gameplay, it causes the Board to pause the game loop and pass the Event to be processed to the Bus. The Bus in turn uses the Event data to construct and display the Menu referenced by the Event's Menu key. 
+**Semantics: Traversal**
 
-Menus and Widgets communicate state shifts through the Engine's event bus:
+* `north`, `south`, `east`, `west`
 
-- **MenuEvent**: Signals the Engine to pause the world and push a modal Menu onto `board.menus`.
-- **StateEvent**: Signals the Engine to load and migrate persistent board state from disk.
-- **UpdateEvent**: Signals the rendering subsystem or parent containers that internal state has mutated (e.g., text paging or collection window offset shifts).
-- **TerminalEvent**: Signals the Engine to close the active menu, pop `board.menus`, and unpause simulation.
+#### Concept: Asychronicity
 
-Widget selection does not emit a bus event. When `MenuMechanics` detects an `Interactions.SELECT` payload, it invokes `active_menu.controller.select(name, menu, board, bus)` synchronously. The controller executes domain logic and optionally registers `UpdateEvent` or `TerminalEvent` payloads on the bus.
+Menus (and their component Widgets) are driven through asychronous *Events*.
 
-**Engine Bus & Event Processing**
+As an illustration, the [Engine Loop](./00-overview.md#component-engine) may emit an Event containing a [Menu](#menus) key along with Event Data, e.g. Asset State. When an Event is detected by the [Engine](./00-overview.md#component-engine), it causes the [Application](./00-overview.md#application) to pause the [World Loop](./05-mechanics.md#mechanics-world) and switch contexts into the [Menu Loop](./05-mechanics.md#core-mechanic-menumechanics). 
 
-The [Engine](./00-overview.md#component-engine) contains a `bus` field that accumulates Events emitted by the game loop. 
+Menus (and their component Widgets) communicate state shifts through the Engine's event bus:
 
-During the Engine loop, it passes this bus down through the Mechanics. Mechanics then register events on this bus and MenuMechanics translates their input and passes it to a Controller, for example, a ScrollController. 
+* **MenuEvent**: Signals the Engine to pause the [World Loop](./05-mechanics.md#mechanics-world) and push a Menu onto the [Board](./00-overview.md#component-board) via the [Provider](#service-provider).
+* **StateEvent**: Signals the Engine to load and migrate [State](./00-overview.md#core-state) from the filesytem into the [Board](./00-overview.md#component-board)
+* **UpdateEvent**: Signals the [Screen](./00-overview.md#component-screen) to recalculate and re-render the Assets on Screen.
+* **TerminalEvent**: Signals the Engine to close the active Menu and switch context back into the [World Loop](./05-mechanics.md#mechanics-world)
 
-In this case, the ScrollController updates the content displayed on a Page Widget, determines the new text string, and pushes a UpdateEvent to the Engine's bus.
+!!! note "Selections"
+    Widget selection does not emit a Event. When [MenuMechanics](./05-mechanics.md#core-mechanic-menumechanics) detects a Selection payload, it invokes the [Controller's](#controllers) `select()` method synchronously. The controller executes domain logic and optionally registers Event Data payloads on the [Engine Bus](./00-overview.md#component-engine).
 
-At the end of the tick, before the rendering phase, the Engine drains its bus:
+#### Concept: Contextuality
 
-- If MenuEvent: The Engine pauses the Board, calls the Provider to instantiate the Menu, and pushes it to board.menus.
-- If State Event: The Engine begins migrating state from the file system into the Board.
-- If TerminalEvent: The Engine pops the Menu off the stack and unpauses the Board.
-- If UpdateEvent: The Engine pulls the clean background and the font (e.g., `render.construct()` and `render.write()` [Cython interfaces](./12-architecture.md#cython)), and overwrites the Widget's TexturePtr in VRAM.
+When the Board is paused by a MenuEvent, a dedicated [Mechanic](./05-mechanics.md) takes over. During this phase, [MenuMechanic](./05-mechanics.md) switches [Device Context](./02-sprites.md#device-contexts) contexts and translates the [Device mappings](./02-sprites.md#device) to Widget State changes. 
 
-Finally, the [Screen](./00-overview.md#screen) iterates over the Widgets and passes it to Cython. 
-
-**MenuMechanics**
-
-When the Board is paused by a MenuEvent, MenuMechanics take over. This [Mechanic](./05-mechanics.md) translates the [Player Device mappings](./02-sprites.md#devices) to Menu state changes. These Menu state changes then map back onto game state changes through Event notifications sent to the Bus. For example, a Player may traverse the Button Widgets in an Inventory Menu and select a new piece of Equipment (see [Inventory Menu](#menus) below for more detail); This generates an StateEvent from the Inventory Menu. This Event is processed by the Bus and the Player state is in turn updated.  
+These State changes then map back onto Asset State changes through Event notifications sent to the Engine Bus. For example, a Player may traverse the Button Widgets in an Inventory Menu and select a new piece of Equipment (see [Inventory Menu](#menus) below for more detail); This generates an StateEvent from the Inventory Menu. This Event is processed by the Bus and the Player state is in turn updated.  
 
 When the Menu enters certain end states, such as the user selecting an Exit Button, the corresponding Widget will emit a TerminalEvent that bubbles up through the Menu and generates a notification to the Bus the MenuEvent has ended. The Board is unpaused, and the game resumes.
 
-## Asset Specification
+## Category: Widgets
 
-It is assumed all Widget frames are organized in single row in the Asset image file. The number of frames (i.e. `len(frames)`) multipled by the width of a single frame(i.e. `dimension.w`) must equal the width of the image file.
+**Properties: WidgetProperties(AssetProperties)**
 
-**ScreenPosition**
+* `dimensions: Dimensions`:
+* `frames: Optional[List[str]]`: List of frame keys. Used for indexing Widget Frames in a horizontal atlas with arbitary keys.
 
-- `ScreenPosition`:
-    - `px: double`
-    - `py: double`
+**Animation: None**
 
-Pane positions are specified as ScreenPositions. A ScreenPosition is a tuple of percentages relative to the screensize, e.g. the following coordinates denote a position `(0.75w, 0.85h)`, where `(w, h)` is the screensize,
+Widgets do not implement Animations. All Widget State changes are instantaneously reflected in the keys returned by the Frame interface.
 
-```python
-menu.position.x = 0.75
-menu.position.y = 0.75
-```
+### Widget: Panes
 
-No other Widgets besides Panes have ScreenPosition. All other Widgets have their on screen Positions calculated relative to the Pane in which they are embedded. These Positions are calculated and injected into the Widget from the [Provider](#provider).
+Panes are Widgets that provide a frame of reference for other Widgets in a Menu. All child Widgets of Pane have their Positions calculated relative to the Position of their parent Pane.
 
-**Properties: WidgetProperties**
+**Atlas: (row: Alignments, column: Alignments)**
 
-- `dimensions: Dimension`: Dimensions of a single frame.
-- `frames: Optional[List[str]]`: List of frame keys. Used for indexing Icon Widget Assets.
+Each Pane is registered in the [Asset Property index](./00-overview.md#core-assets) as a single unified Frame with dimensions $(W,L)$; However, when the Pane is indexed by the [Registry](./00-overview.md#library-registry), the Frame is split according to the following schema:
 
-### Panes
+First, define the Dimensions of a Pane Frame cell as,
 
-All Menus must have atleast one Pane. Panes are the main Widgets of a Menu around which all child Widgets are laid out. They are the only Widget which can have a ScreenPosition, but not all Panes have ScreenPosition. Only the `root` Pane has ScreenPosition. ScreenPosition for a root Pane is specified in the [Menu Schema](#menus), and is not technically part of the PaneState.
+$$
+w_c = \left\lfloor \frac{W}{3} \right\rfloor
+$$
 
-Panes contain other Widgets. A Pane can contain other Panes as well (since a Pane is a Widget). A root Pane's child Widgets have their Positions calculated relative to the `root` ScreenPosition based on the `layout` and `alignment`. `layout` provides the general scheme for constructing the position of its Children, whereas `alignment` applies rules to fit the given child Widgets to that scheme.
+$$
+l_c = \left\lfloor \frac{L}{3} \right\rfloor
+$$
 
-Beyond `layout` and `alignment`, Panes have several styling attributes to control their look and feel. `margins` are applied around the edge of the Pane before aligning children in the layout. For `layout != overlay, alignment != center`, `gap` can be used to add spacing between child Widgets.
+$$
+v(i) = \begin{cases} \text{start} & i = 0 \\ \text{end} & i = n + 1 \\ \text{center} & 1 \le i \le n \end{cases}
+$$
 
-**Layout**
+Then, the Pane can be split into a 9-Frame Atlas using the following mapping,
 
-Layouts are enumerated below,
+$$
+\text{str(id-v[y]-v[x])} \to (x \cdot w_c, y \cdot l_c)
+$$
 
-- Overlay: A sagittal axis (out-of-the-screen) of Widgets.
-- Column: A vertical column of Widgets.
-- Row: A horizontal column of Widgets.
+Where $(x,y)$ range over,
 
-**Alignment**
+$$
+x \in \max\!\left(0,\; \left\lceil \frac{W - 2w_c}{w_c} \right\rceil\right), y \in \max\!\left(0,\; \left\lceil \frac{L - 2l_c}{l_c} \right\rceil\right)
+$$
 
-Alignments are enumerated below,
+**Field: Scale**
 
-- Start: Widgets are aligned at the start of the Pane.
-- End: Widgets are aligned at the end of the Pane.
-- Center: Widgets are aligned at the center of the Pane.
+Panes are scaled to a percentage of the underlying [Screen's](./00-overview.md#component-screen) Dimensions. 
 
-**Headers**
+* `pw`: Percentage of the [Screen](./00-overview.md#component-screen) width.
+* `pl`: Percentage of the [Screen](./00-overview.md#component-screen) length.
 
-!!! todo
-    Future state. Get basic Widget handling implemented first.
+Only Panes have a Scale explicitly set in the [Menu Configuration](#menus). All other Widgets have their [Screen](./00-overview.md#component-screen) Positions calculated relative to the Pane in which they are embedded. These Positions are calculated and injected into the Widget during instantation in the [Provider service](#provider).
 
-Panes may optionally have `headers`. `headers` is a list of Buttons. `len(headers) == len(children)` must be the case. A header is composed of intraversible (*disabled*) Buttons whose Status is tied to the Pane's children. When a child Widget has `focus` from a Menu Pane, the header Button which corresponds to it (by having the same index in its list) has `status == active`. When a child Widget does not have `focus` from a Menu, the header Button which corresponds to it has `status == idle`.
+**Model: AxisAlignment**
 
-**Taxonomy**
+* `horizontal: Alignments`
+* `vertical: Alignments`
 
-* `category: widget`
-* `instance: pane`
+**Field: Justification**
+
+Panes use *Justification* to determine their own rendering location. 
+
+**Field: Alignment**
+
+Panes use *Alignment* to determine the rendering locations of their child Widgets with the Pane's *Layout*.
+
+**Field: Layout**
  
+Panes use a *Layout* to determine the general shape that child Widgets assumed when deployed. A Layout specifies a type of *axis* to use when arranging child Widgets.
+
+**Semantics: Alignments**
+
+* `start`: Widgets are aligned at the *start* of the Pane's Layout axis.
+* `center`: Widgets are aligned at the *center* of the Pane's Layout axis.
+* `end`: Widgets are aligned at the *end* of the Pane's Layout axis.
+
+**Semantics: Layouts**
+
+* `overlay`: A sagittal (out-of-the-screen) axis of Widgets.
+* `stack`: A vertical axis of Widgets.
+* `dock`: A horizontal axis of Widgets.
+
+**Field: Canvas**
+
+Panes contain a `canvas` to hold a reference to an [Texture](./12-architecture.md#library-graphics). The `canvas` is created at runtime as a blank buffer for rendering [Fonts](./12-architecture.md#rendering-typography) without altering the underlying Asset loaded into the [Registry](./00-overview.md#library-registry).
+
 **State: PaneState**
 
-- `position: Position`
-- `layout: Layout`
-- `alignment: Alignment`
-- `gap: int`
-- `margins: Tuple[int, int, int, int]`:
+* `layout: Layout`
+* `alignment: AxisAlignment`
+* `justification: AxisAlignment`
+* `gap: int`
+* `margins: Tuple[int, int, int, int]`:
+* `multiple: Multiple`
+* `span: Dimensions`
+* `content: str`
+* `pageindex: int`
+* `pagesize: int`
+* `font: Fonts`
+* `canvas: TexturePtr`
 
-**Frame: SingleFrame**
+**Frame: PaneFrame**
 
-* `key(asset, state): returns <asset>`
-* `index(self, asset, properties, recipe): returns TODO` 
+* `keys(id, state): returns TODO`
+* `index(id, properties): returns TODO` 
 
-!!! important "Pane Layouts"
-    A Pane at runtime is just a background Asset with layout metadata. A Position has already been injected into from the Provider, after the Menu ScreenPositions have been unpacked into absolute coordinates.
+**Pane: Methods**
 
-### Buttons
+* `current(): return content[pageindex]`
+* `less(): return pageindex > 0`
+* `more(): return pageindex < len(content)`
+* `scrolldown(): pageindex++`
+* `scrollup(): pageindex--`
 
-**Taxonomy**
+### Widget: Buttons
 
-* `category: widgets`
-* `instance: buttons`
+Buttons are *traversible* Widgets. They have a *Status* that changes as they are traversed. 
 
-Buttons are Widgets that are *traversed*. They have Status that changes as they are traversed. When a Button enters into the `selected` Status, they emit Selection events. 
+**Semantics: Statuses**
 
-Button Statuses are enumerated below,
+* `idle`, `active`, `selected`, `disabled`
 
-- idle: Button is not currently focused in traversed.
-- active: Button is currently focused in traversal.
-- selected: Button has been selected by traversal.
-- disabled: Button is intraversible.
+**Atlas: (row: Status)**
 
-It assumed Button Asset files are arranged in horizontal rows ordered by their status in the sequence: `idle, active, selected, disabled`, where each frame is `properties.dimensions.w` wide.
+* columns: `^(?:idle|active|selected|disabled)$`
 
 **State: TraversalState**
 
 * `position: Position`
 * `status: Status`
 
-**Animation: TraversalAnimation**
-
-- `if state.status not in [disabled, selected]:`
-    - `if animation.frame == active: animation.frame = idle`
-    - `if animation.frame == idle: animation.frame = active`  
-
 **Frame: TraversalFrame**
 
-* `key(id, state): returns [ "{id}-{state.status}" ]`
-* `index(self, id, properties, recipe): returns TODO` 
+* `keys(id, state): returns [ ("{id}-{state.status}", 0, 0) ]`
+* `index(id, properties): { "{id}-{status}": (i*properties.dimensions.w, 0, properties.dimensions.w, properties.dimensions.l) for i, status in enumerate(Statuses)}` 
 
-### Meters
+### Widget: Meters
 
-**Taxonomy**
+Meters are indicators for displaying continuous changes to Asset State. 
 
-* `category: widget`
-* `instance: meter`
+**Behavior: Gauge**
 
-Meters are "continuous" indicators. They require a `unit` to calibrate their reading and then express a `reading` in terms of the `unit`; All readings are expressed relative to the `unit`, e.g. the ratio of the current value of the Player's health to maximum value of the Player's health is expressed as the proportion of a Meter that is filled.
+Meter require a `unit` to calibrate. Once calibrated, all `readings` are expressed relative to the `unit`. When Meters render their Frame, `reading` is the proportion of its `unit` Frame that is filled. 
 
-A Meter Asset has two frames. The first frame is an Empty. The second frame is Filled at 100% (i.e., $\frac{reading}{unit}=1$). Each frame is `dimensions.w` wide and `dimensions.l` long. These two frames are indexed as `<id>-empty` and `<id>-filled`, where `<id>` is the Asset file name.
+For example, in the case of Health Meters, the ratio of the current value of the Player's Health is [bound](#concept-bindability) to `reading` and the maximum value of the Player's Health [bound](#concept-bindability) to `unit`. The ratio of these fields is used to determine the length of the Meter's current gauge.
 
-However, when the game retreives the `-filled` frame, the *amount* of the frame that is returned in the index crop-map is determined by the Meter width. For example, if `state.reading/state.unit = 0.75`, the index crop-map will return the tuple `(0, 0, 0.75w, l)`. The `-filled` frame is then superimposed over top of the `-empty` frame, thus creating the appearance of a "gauge" or "meter".
+**Atlas: (row: Gauge)**
 
-When the Asset key for Meters is retrieved by the [Screen](./00-overview.md#screen), the current ratio of `reading` and `unit` is rounded to the nearest resolution.
-
-**Animation: MeterAnimation**
-
-- `animation.frame = round(state.reading/state.unit*100)`
+A Meter Asset has two Frames. The first frame is an Empty. The second frame is Filled at 100% (i.e., $\frac{reading}{unit}=1$). Each Frame is `dimensions.w` wide and `dimensions.l` long. The first Frame is indexed over its dimensions, while the second Frame is sliced and indexed over the *Gauge Resolution*.
 
 **State: MeterState**
 
@@ -205,97 +220,65 @@ When the Asset key for Meters is retrieved by the [Screen](./00-overview.md#scre
 * `key(id, state): returns [ "{id}-{state.animation.frame}" ]`
 * `index(self, id, properties, recipe): returns { "{id}-{resolution}" : (0, 0, properties.dimensions.w * meter, properties.dimensions.l) }` 
 
-### Pages
+### Widget: Icons
 
-Pages render text. The amount of text is capable of rendering at once is calculated during Asset initialization. This is used to populate the `pages` and `pagesize` fields.
+Icons serves the purpose of labelling within the Widget family. 
 
-Pages contain a `canvas` over and above the Asset file loaded into the Registry. The `canvas` is created at runtime as a blank texture to serve as a space for rendering text without altering the underlying Asset loaded into the Registry.
+**Atlas: (row: Frames)**
 
-**State: DisplayState**
+Each Icon Asset is a horizontal row of Frames, indexed sequentially by the order of the Property, `frames`, where each Frame has the same dimensions `(w, l)`. 
 
-- `content: Union[str, List[str]`
-- `pageindex: int` = 0
-- `pagesize: int`
-- `canvas: Texture`
+**Required: Assets**
 
-**Methods**
+Due to the nature of Icons as representations of other Assets, Icons have unique constraints. The following Icon sheets *must* exist for the game to function properly,
 
-- `current(): return content[pageindex*pagesize : max(pageindex*(pagesize+1), len(content))]`
-- `less(): return TODO`
-- `more(): return pageindex < len(content)/pagesize`
-- `scrolldown(): pageindex++`
-- `scrollup(): pageindex--`
-
-**Animation: None**
-
-N/A
-
-**Frame: SingleFrame**
-
-* `keys(id, None): returns [ id ] "`
-* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
-
-### Icons
-
-**Taxonomy**
-
-* `category: widgets`
-* `instance: icons`
-
-Icons serves the purpose of labelling within the Widget family. Each Icon sheet can be thought of as a dictionary of frames, indexed by their frame keys. The frame keys for each image in a Icon sheet are defined by the `properties.frames` field; The order of frames in this attribute *must* match the order of horizontal frames in the actual Asset file. 
-
-Due to the nature of Icons as representations of other ingame Assets, Icons have unique constraints. The following Icon sheets *must* exist for the game to function properly,
-
-- `digits`: A sheet of numeric digits 0 - 9, keyed as `zero` - `nine`.
-- `weapons`: A sheet of Weapon icons. Keys *must* match Weapon keys specified in the property index `src/assets/sheets/*.yaml#weapons`.
-- `armor`: A sheet of Armor icons. Keys *must* match Armor keys specified in the property index `src/assets/sheets/*.yaml#armor`.
-- `shields`: A sheet of Shield icons. Keys *must* match Shield keys specified in the property index `src/assets/sheets/*.yaml#shields`
-- `utilities`: A sheet of Utility icons. Keys *must*  match Utility keys specified in the property index `/src/assets/sheets/*.yaml#utilities`
-- `tools`: A sheet of Tool icons. Kes *must* match Tool keys specified in the property index `src/assets/sheets/*.yaml#tools`
-- `portraits`: TODO
-- `loot`: TODO
-
+* `digits`: A sheet of numeric digits 0 - 9, keyed as `zero` - `nine`.
+* `weapons`: A sheet of Weapon icons. Keys *must* match Weapon keys specified in the property index `src/assets/sheets/**/*.yaml#sheet.weapons`.
+* `armor`: A sheet of Armor icons. Keys *must* match Armor keys specified in the property index `src/assets/sheets/**/*.yaml#sheets.armor`.
+* `shields`: A sheet of Shield icons. Keys *must* match Shield keys specified in the property index `src/assets/sheets/**/*.yaml#sheets.shields`
+* `utilities`: A sheet of Utility icons. Keys *must*  match Utility keys specified in the property index `/src/assets/sheets/**/*.yaml#sheets.utilities`
+* `tools`: A sheet of Tool icons. Keys *must* match Tool keys specified in the property index `src/assets/sheets/**/*.yaml#sheets.tools`
+* `portraits`: TODO
+* `resources`: TODO
+* `items`: TODO
+ 
 **State: IconState**
 
-- `icon: str`: Frame key (from `properties.frames`) determining which frame from Icon sheet is displayed. 
-
-**Animation: None**
-
-N/A
+* `icon: str`: Key determining which frame from the Icon sheet is displayed. 
 
 **Frame: IndexFrame**
 
-- `keys(id: str, state: AssetState): return [(state.icon, 0, 0)]`
-- `index(id, properties: AssetProperties): return [{ }]`
+* `keys(id, state): return [("id-{state.icon}", 0, 0)]`
+* `index(id, properties): return [{ "{id}-{frame}": (i*w, 0, w, l) for i, frame in enumerate(properties.frames)} ]`
 
-## Menus
+## Configuration: Menus
 
-* Location: `/src/data/menus/main.yaml`
+* Location: `/src/data/menus/**/*.yaml`
 
-Menus are pre-defined arrangements of Widgets. Every Menu contains at least one Pane. 
+Menus are [Configurations](./00-overview.md#core-configuration) of Widgets.
 
-**Fields**
+**Model: Menu**
 
-- `id: str`: Unique Menu Identifier 
-- `focus: str`: Widget that is currently being focused on for traversal.
-- `graph: Dict[str, Dict[str, str]]`: Traversal adjacent graph.
-- `context: MenuContext`: Strictly-typed injected payload (e.g., `ViewContext`, `DialogueContext`).
-- `widgets: Dict[str, Widget]`: Dictionary of instantiated Menu Assets.
-- `controller: MenuController`: MenuController object.
+* `id: str`: Unique Menu Identifier 
+* `focus: str`: Widget that is currently being focused on for traversal.
+* `graph: Dict[str, Dict[str, str]]`: Traversal adjacent graph.
+* `context: MenuContext`: Menu Context data payload.
+* `widgets: Dict[str, Widget]`: Dictionary of instantiated Menu Assets.
+* `controller: MenuController`: MenuController object.
 
-**Nodes**
+**Model: MenuNodes**
 
-Menus are structured as trees of declarative `MenuNode` specifications. Every node conforms to a unified schema:
+Menus are structured as trees of declarative MenuNodes.
 
-* `id: str`: Physical asset identifier (e.g., texture reference or proto-widget key).
+* `id: str`: Physical Asset identifier.
 * `name: str`: Unique runtime entity name within the menu instance.
 * `instance: str`: Asset instance type (`panes`, `buttons`, `icons`, `pages`, `meters`, or `gizmos`).
 * `bind: Optional[MenuBinding]`: Declarative state binding target and schema.
 * `parameters: Optional[Union[PaneParameters, GizmoParameters, ButtonParameters]]`: Structural configuration payload.
 
-**Example**
+### Menus: Example
 
-The following example demonstrates how to schematize a simple text display Menu which allows the focus to scroll up and down the content by selecting one of the scroll Buttons:
+The following example demonstrates how to schematize a simple text display Menu which allows the Menu `focus` to scroll up and down the content by selecting one of the scroll Buttons:
 
 ```yaml
 menus:
@@ -349,78 +332,42 @@ menus:
                         selector: text-display
 ```
 
-This example will be referenced throughout the section.
+### Menus: Lifecycle
 
-**Lifecycle**
+* [Orchestrator](./00-overview.md#service-orchestrator) loads the Menu Configuration and injects it into the [Provider](#service-provider).
+* An [Event](#concept-asychronicity) triggers the [Provider](#service-provider) to instantiate a Menu.
+* The [Layout Module](#module-layouts) recursively walks the Menu Tree, calculating absolute $(X,Y)$ coordinates for each Menu Node.
+* The [Layout Module](#module-layouts) flattens the Menu Tree into a list of Widgets, builds a Traversal graph describing the topology of the Menu's [Widget Traversal](#concept-traversibility), and returns the populated Menu.
+* The [Screen](./00-overview.md#component-screen) loops over Menu's flattened list of Widgets and pushes primitive tuples across the [Cython boundary](./12-architecture.md#specification-cython-libraries).
 
-To summarize the lifecycle:
+!!! note "Rendering is $O(N)$"
+    The [Screen](./00-overview.md#component-screen) iterates over a flat list of Assets. 
 
-* Orchestrator loads `data/config/menus/main.yaml` into the MenuConfiguration.
-* An event triggers the Provider to instantiate a Menu.
-* The Layout engine recursively walks the MenuConfiguration tree, calculating absolute $(X,Y)$ coordinates.
-* The Layout engine flattens the tree into a 1D sequence, builds the graph, and returns the populated Menu object.
-* The Screen loops over `menu.widgets` and pushes primitive tuples across the Cython boundary.
+!!! note "Controller Logic is $O(1)$"
+    When Events fire, the Menu Controller looks up Widgets in a pre-compiled Traversal graph. The Traversal graph allows the Menu to shift `focus` without querying the Menu Tree for a Widget's exact MenuNode in complex recursion of a Menu Tree. 
 
-- Rendering is $O(N)$: `Screen.interface()` simply iterates over `menu.widgets`. Because Python 3.7+ dictionaries maintain insertion order, the Provider can guarantee the Painter's Algorithm is respected by inserting Panes into the dictionary first, followed by their children.
-- Controller Logic is $O(1)$: When a SelectionEvent fires, the MenuController must update states. If widgets are stored in a List, the Controller must loop through the list to find `health-meter` every time a player takes damage. With a Dictionary, the Controller executes `menu.widgets["health-meter"].state.reading = new_health` instantly.
-- Traversal is Decoupled: MenuMechanics queries `menu.graph` to determine focus shifts. It does not need to know that Button A and Button B share the same parent Pane; it only needs to know they are spatially adjacent.
+### Menus: Controllers
 
-### Gizmos 
+Every Menu has a Controller for handling domain specific logic. When [MenuMechanics](./05-mechanics.md#core-mechanic-menumechanics) executes, it delegates all processing of Asset State to the appropriate Controlle.
 
-A Gizmo is similar to a [Composition](./03-compositions.md), representing a "virtualized" node of Widgets. A Gizmo is a macro node declared with `instance: gizmos`. Before `Layout.compute()` evaluates spatial geometry, `Provider._expand_tree()` delegates the node to `Fabricator.expand()`, transforming it into concrete nested `panes`, `buttons`, and `icons` with synthesized state attached to the root pane of the Gizmo.
+### Menus: Context
 
-```yaml
-- id: weapons
-  name: inventory-pack-grid
-  instance: gizmos
-  bind:
-    schema: collection
-    target:
-      source: context.inventory.pack
-  parameters:
-    capacity: 8
-    columns: 4
-    gap: 5
-    pane: transparent-slot
-    button: slot
-```
+Every Menu has a Context. When a Menu is instantiated, it receives a MenuContext object. This payload contains direct references to underlying Asset State data models. 
 
-The type of state a Gizmo binds to a Pane is dependent on the schema passed into the Gizmo's `bind`.
+Widgets populate their State by evaluating their [Binding](#menus-binding) paths against their MenuContext. Because the Context holds the State directly, a meter bound to `context.sprite.meters.health` will traverse the Context to retrieve the live `MeterState` without needing to parse the raw Asset. This *Binding* of Asset State to Widget State is referred to as a *State Closure*.
 
-- Collection: A Collection gizmo is a synthetic grid of Buttons that enumerates and displays a list of Icon strings bound to its `target.source`.
+### Menus: Bindings
 
-### Provider
+Widgets display live Asset State information, such as Player Health, slotted Equipment, etc. Moreover, they do so in a declarative (not imperative) style, to prevent complicated user interface logic from overcrowding the codebase. In other words, [Menu Controllers](#controllers) do not have to worry about managing animation states or updating Widget State references.
 
-The Provider, similiar to the [Decomposer](./03-compositions.md#decomposer), is responsible for unpacking Menu configurations into flat lists of Assets for the Engine. However, unlike the Decomposer, the Provider must also generate a traversal graph, inject bindings into Widgets and pass the result to a Menu.
+However, since Menus are unpacked by the Provider into Widgets, otherwise indistinguishable from standard Assets to the [Engine](./00-overview.md#component-engine) and [Screen](./00-overview.md#component-screen), every Widget bound to Asset State declares and utilizes a *Binding*.
 
-To start, ScreenPosition is a *configuration-time* concept, not a *runtime* concept. When the Provider and Layout engine instantiate a Menu, they must calculate the absolute pixel values `(px * screensize.w, py * screensize.l)` and inject a Position into the Widget state. By flattening the Menu tree and translating all percentages to absolute `Positions`, `Screen.draw()` can consume Widgets exactly like world Assets, satisfying the [zero-allocation principle](./12-architecture.md#cython).
+Widget Bindings to Asset State are generated inside of the [Provider](#service-provider) via the [Binder](#service-binder) factory. Each Binding requires a `schema` and a nested `target` dictionary.
 
-### Controllers
+* `schema`: Determines the structure of the Binding. 
+* `target`: A contextual path to the target Asset State in the Menu Context. The Binder resolves these contextual paths into live Asset State references during Menu instantiation, creating State Closures that ensure the bound Widget implicitly mirrors live Asset State data.
 
-Every Menu has a Controller that handles Menu-specific logic. 
-
-**Selection Logic**
-
-Widgets that are embedded into Menus have their states altered through action-reaction [Selection Bindings](#bindings) which specify how a SelectionEvent propagates through the Menu. This logic is handled by the Controller.
-
-### Context
-
-Every Menu has a Context that holds Menu-specific state data. 
-
-When a Menu is instantiated, it receives a MenuContext object (e.g., `ViewContext`, `LoadContext`, `DialogueContext`). This payload contains direct references to underlying game state data models. For example, the `ViewContext` holds a direct reference to the Player's `SpriteState`. 
-
-Widgets populate their state by evaluating their `target` binding paths against this MenuContext. Because the Context holds the state directly, a meter bound to `context.sprite.meters.health` will traverse the `ViewContext` to retrieve the live `MeterState` without needing to parse the raw `Asset`.
-
-### Bindings
-
-Widgets display live game state information, such as Player Health, slotted Equipment, etc. Moreover, they do so in a declarative (not imperative) style, to prevent complicated UI logic from overcrowding the codebase. In other words, [Menu Controllers](#controllers) do not have to worry about managing animation states or updating Widget state references.
-
-However, since Menus are unpacked by the Provider into Widgets—which are otherwise indistinguishable from standard Assets to the rendering engine—an interface is required to abstract the game state references. To facilitate this, every child Widget of a Menu Pane utilizing live data must utilize a *Binding*.
-
-Widget Bindings to game state are generated inside of the Provider via the Binder factory. Each Binding requires a `schema` and a nested `target` dictionary.
-
-- `schema`: Determines which `Binding` subclass is instantiated (e.g., `MeterBinding`, `LibraryBinding`).
-- `target`: A dictionary mapping expected binding keys to string paths in the `MenuContext`. The Binder resolves these string paths into live state references during Menu instantiation, creating runtime closures (Callables) that ensure the bound Widget inherently mirrors live state data.
+**Model: Binding**
 
 ```yaml
 # 1. LibraryBinding
@@ -458,7 +405,7 @@ bind:
 
 ```
 
-Each binding *expects* the nested paths in the `target` dictionary to resolve to valid domain objects based on the schema. For example, if `schema == meter`, the path mapped to `target.meter` must ultimately resolve to a `MeterState` object.
+Each Binding *expects* the nested paths in the `target` dictionary to resolve to valid domain entities in the Menu Context based on the schema. For example, if `schema == meter`, the path mapped to `target.meter` must ultimately resolve to an entity whose data structure exactly matches the Binding schema, i.e. a MeterState.
 
 For example, in the View (HUD) Menu, a Widget is bound to the Player's health meter:
 
@@ -470,7 +417,6 @@ For example, in the View (HUD) Menu, a Widget is bound to the Player's health me
         schema: meter
         target: 
             meter: context.sprite.meters.health
-
 ```
 
 By decoupling the layout from the logic, Widgets do not need to know what is controlling them; they only require a declarative Binding to know what data they are displaying.
@@ -518,21 +464,69 @@ Bindings are enumerated and summarized below:
     * `selections == MENU`: Selector is the target Menu.
     * `selections in [NEW, LOAD]`: TODO
 
-### Layouts
 
-Consider a `nest` Pane with two children `dock` Panes, each with three buttons, represented by the matrix, `[[a,b,c], [d, e, f]]`. Consider the problem of the Menu focus residing on the `b` Button element when the user presses `SOUTH`. In this case, the Menu must shift focus to the `e` element. The `graph` attribute of the Menu holds this relational struture. 
+### Menus: Gizmos 
 
-As this example illustrates, a Menu must have access to the traversal graph. This is generated by the Layout of a Menu. A Layout does two things. When `Factory.menu()` calls the Layout, this class outputs:
+A Gizmo is a macro node declared in the Menu Tree. Before the Layout evaluates spatial geometry, the Provider delegates Gizmo MenuNodes to a specialize *Fabricator Service*, transforming the Gizmo Node into concrete structures of Panes, Buttons, Meters and Icons with a synthesizedState attached to the root pane of the Gizmo.
 
-1. **Render List:** A flat list of `Asset` objects with absolute screen coordinates (for `Screen.draw()`).
-2. **Traversal Graph:** A directed graph (adjacency list) mapping each interactive `Button.name` to its logical neighbors (`NORTH`, `SOUTH`, `EAST` and `WEST`).
+```yaml
+- id: weapons
+  name: inventory-pack-grid
+  instance: gizmos
+  bind:
+    schema: collection
+    target:
+      source: context.inventory.pack
+  parameters:
+    capacity: 8
+    columns: 4
+    gap: 5
+    pane: transparent-slot
+    button: slot
+```
 
-**Render List**
+**Semantics: Gizmo Bindings**
 
-To generate the Render List, when a Menu is triggered, a `Layout` class executes the following sequence:
+The Binding of a Gizmo's synthesized root Pane is determined by the Binding's `schema`.
 
-1. **Resolve Pane Anchors**: Convert `ScreenPosition` (e.g., `px: 0.3`) to absolute pixels using `screensize.w * px`. This becomes the Pane's anchor `(x, y)`.
-2. **Measure Children**: Retrieve the `properties` for the dimensions `(w, l)` of each child Widget.
+* `collections`: A Collection Gizmo is a synthetic grid of Buttons that enumerates and displays a list of Icon strings bound to its `target.source`.
+
+## Menu: Services
+
+### Service: Provider
+
+The Provider, similiar to the [Decomposer](./03-compositions.md#service-decomposer), is responsible for unpacking Menu Configurations into flat lists of Assets for the [Engine](./00-overview.md#component-engine). However, unlike the Decomposer, the Provider must also generate a Traversal graph, inject bindings into Widgets and pass the result to a Menu.
+
+To start, ScreenPosition is a *configuration-time* concept, not a *runtime* concept. When the Provider and Layout engine instantiate a Menu, they must calculate the absolute pixel values `(px * screensize.w, py * screensize.l)` and inject a Position into the Widget state. By flattening the Menu tree and translating all percentages to absolute `Positions`, `Screen.draw()` can consume Widgets exactly like world Assets, satisfying the [zero-allocation principle](./12-architecture.md#cython).
+
+### Service: Binder
+
+The Binder Service instantiates Bindings and generates the callable functions leveraged by Widgets for their State Closures.
+
+### Service: Fabricator
+
+The Fabricator Service synthesizes Gizmo Widgets and their Pane Bindings.
+
+## Menu: Modules
+
+### Module: Layouts
+
+!!! @TODO(04-06)
+    This seems like it should be a Service.
+
+Consider a `stack` Pane with two children `dock` Panes, each with three Buttons, represented by the matrix, `[[a,b,c], [d, e, f]]`. Consider the problem of the Menu `focus` residing on the `b` Button element when the user presses `south`. In this case, the Menu must shift focus to the `e` element. The `graph` attribute of the Menu holds this relational struture. 
+
+As this example illustrates, a Menu must have access to the Traversal graph. This is generated by the Layout of a Menu. A Layout does two things:
+
+1. **Render List:** Calculates a flat list of [Assets](./01-assets.md) with absolute [Screen](./00-overview.md#component-screen) coordinates.
+2. **Traversal Graph:** A directed graph (adjacency list) mapping each interactive Button to its logical neighbors (`north`, `south`, `east` and `west`).
+
+**Interface: Render List**
+
+To generate the Render List, when a Menu is triggered, the Layout Module executes the following sequence:
+
+1. **Resolve Pane Anchors**: Convert its root Pane's Scale and Justification to absolute coordinates. This becomes the Pane's anchor `(x, y)`.
+2. **Align Children**: Use the Pane's anchor to align its children.
 3. **Apply Algorithm**:
     * If `pane.layout == dock`
         * If `alignment == start`: TODO
@@ -545,22 +539,22 @@ To generate the Render List, when a Menu is triggered, a `Layout` class executes
     * If `pane.layout == tab`: Alignments do not apply. Pane children are Panes. Each receives the same ScreenPosition. Algorithm recurses to find the coordinates of the grandchildren.    
 4. **Flatten**: Return a list of standard Asset objects. The engine now treats them exactly like Game Board assets, completely ignoring the Menu hierarchy.
 
-**Traversal Graph**
+**Interface: Traversal Graph**
 
 The prior example oversimplifies considerations; Irregular shaped grids, e.g. `[[a,b,c], [d, e]]`, need to be treated with special care.
 
-To construct the TraversalGraph, the Layout must use an Axis-Aligned Bounding Box (AABB) ray-casting approach after all absolute coordinates are calculated. The algorithm for the Layout to link `SOUTH` from Button A:
+To construct the TraversalGraph, the Layout must use an Axis-Aligned Bounding Box (AABB) ray-casting approach after all absolute coordinates are calculated. The algorithm for the Layout to link `south` from Button A:
 
 * Filter all other Buttons whose absolute `y`-coordinate is strictly greater than Button A's `y`-coordinate.
 * Filter this subset to only include Buttons whose `x`-coordinate domain ($state.position.x$ to $state.position.x + dimensions.w$) overlaps with Button A's `x`-coordinate domain.
 * Find the Button with the minimum `y`-coordinate from this overlapping subset. 
-* This is the `SOUTH` neighbor.Repeat for all cardinal directions.
+* This is the `south` neighbor. Repeat for all cardinal directions.
 
-The resultant graph is saved in `Menu.graph`.
+The resultant graph is saved and returned.
 
-When the [MenuMechanics](./05-mechanics.md#core) `update()` method fires, it does not care about spatial layout. It simply looks at `focus` (e.g., `'a'`), checks the Device poll for a `EAST` command, looks up `graph['a'][EAST]`, and updates the focus to `'b'`. This entirely decouples Menu visual layout from Menu logical input.
+When the [MenuMechanics](./05-mechanics.md#core)fires, it does not care about spatial layout. It simply looks at `focus` (e.g., `'a'`), checks the Device poll for a `east` command, looks up `graph['a']['east']`, and updates the focus to `'b'`, decoupleing Menu Layouts from Menu logical relationships.
 
-### Overlays
+## Board: Overlays
 
 The [Board](./00-overview.md#component-board) maintains an `overlay` and `menus` field to separate the responsiblities of different Menus. 
 
@@ -569,7 +563,7 @@ The HUD is always painted on top of all dynamic Assets; as such, it is stored in
 * `board.menus: List[Menu]`: A LIFO stack for *Modal* interfaces (Inventory, Dialogue, Trade). When `len(board.menus) > 0`, world mechanics are paused, and `MenuMechanics` intercepts device polling for traversal.
 * `board.overlays: List[Menu]`: A flat list for *Non-blocking* interfaces (HUD, Floating Damage Numbers, Action Prompts). These do not pause the board and do not receive input focus. They passively observe `UpdateEvent` emissions from the Event Bus.
 
-### Configurations
+### Menu: Data
 
 1. Dialogue:
     * **Payload**: `DialogueContext(plot: PlotState, sprite: SpriteState, object: DialogueState)`
@@ -596,40 +590,3 @@ The HUD is always painted on top of all dynamic Assets; as such, it is stored in
 8. View: Also known as the Heads-Up Display (HUD). Created during engine bootstrap and stored in `board.overlays` rather than the modal `board.menus` stack. It renders on top of world assets every frame without pausing simulation or intercepting input traversal.
     * **Payload**: `ViewContext(sprite: SpriteState)`
     * **Events**: None (passively evaluates live state bindings each tick)
-
-## Design
-
-### Strategies
-
-**Icon Buttons**
-
-An [Icon](#icons) is not embedded into a Button, in the traditional sense of the Button "containing" the Icon. Instead, Icons and Buttons are overlaid in sequence on top of a transparent root [Pane](#panes) to achieve the effect of an "Icon Button". The following [Menu Configuration](#menus) demonstrates how to formalizes an Icon Button, in this case a Button Slot that displays the equipped Weapon,
-
-```yaml
--   id: transparent-block
-    name: hud-slots-pane
-    layout: dock
-    alignment: start
-    gap: 5
-    children:
-        # --- bounding box for the slot ---
-        -   id: transparent-slot 
-            name: weapon-slot-container
-            layout: overlay
-            alignment: center
-            gap: 0
-            children:
-                # 1. The Background
-                -   instance: buttons
-                    id: slot
-                    name: weapon-slot
-                    status: disabled
-                # 2. The Foreground Decal
-                -   instance: icons
-                    id: weapons
-                    name: weapon-icon
-                    bind:
-                        schema: icon
-                        target: 
-                        icon: context.sprite.inventory.equipment.weapon
-```

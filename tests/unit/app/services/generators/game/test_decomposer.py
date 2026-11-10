@@ -41,7 +41,7 @@ from libs.core.models import (
 # -----------------------------------------------------
 
 pytestmark = [
-    pytest.mark.app_services,
+    pytest.mark.app_service,
     pytest.mark.workflow_compositions
 ]
 
@@ -234,7 +234,7 @@ def test_decomposer_bridge_vertical_expansion(mock_decomposer, mock_state):
     assert units[3].state.position.y == 100 + 3 * 103 
 
 
-@pytest.mark.app_services
+@pytest.mark.app_service
 @pytest.mark.workflow_compositions
 def test_decomposer_multi_deployment_layer_namespacing(mock_decomposer):
     """

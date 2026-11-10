@@ -14,17 +14,18 @@ import pytest
 
 # Application Libraries
 from app.assets.frames import NoFrame
-from app.game.menus.contexts import PauseContext
-from app.game.menus.events import MenuEvent
+from app.models.menus import (
+    MenuEvent,
+    PauseContext
+)
 from app.game.screen import Screen
 from app.models.state import (
     AnimationState,
     CalendarState,
-    DisplayState,
+    PaneState,
 )
 from app.static.semantics import (
     Actions,
-    AssetCategories,
     AssetInstances,
     ChannelTypes,
     Cycles,
@@ -452,7 +453,7 @@ def test_screen_reconstruct_updates_canvases_without_reallocating(
     assert len(back_tiles) == 1
 
 
-@pytest.mark.workflow_menus
+@pytest.mark.menu_handler
 def test_screen_interface_and_stamp(mock_engine, mock_screen, mock_render):
     """
     Verify Screen.interface dims and superimposes menus/overlays, and Screen.stamp
@@ -481,7 +482,7 @@ def test_screen_interface_and_stamp(mock_engine, mock_screen, mock_render):
     assert mock_render.superimpose.call_count == 2
 
     display_widget = next(
-        (w for w in pause_menu.widgets.values() if isinstance(w.state, DisplayState)),
+        (w for w in pause_menu.widgets.values() if isinstance(w.state, PaneState)),
         None,
     )
     if display_widget is not None:

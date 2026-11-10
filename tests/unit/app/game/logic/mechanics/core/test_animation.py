@@ -22,6 +22,7 @@ from app.static.semantics import (
 
 pytestmark = [
     pytest.mark.app_core,
+    pytest.mark.app_mechanic,
     pytest.mark.asset_animation,
     pytest.mark.workflow_rendering,
 ]

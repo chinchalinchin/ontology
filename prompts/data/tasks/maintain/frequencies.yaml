@@ -1,0 +1,65 @@
+# ----------------------------------------------------
+context: true
+# ----------------------------------------------------
+task:
+# ----------------------------------------------------
+  template: index.md.j2
+# ----------------------------------------------------
+  parameters:
+    title: Ontology Script - Fourier Frequency Analysis
+    description: |
+      Read in the `scripts/frequencies/sample/*` data. Create a script that uses Short-Time Fourier Transform (STFT) to analyze the data. 
+
+      **Context: Data**
+
+      There are three female voice profiles in the current sample, `deep`, `medium` and `high`. All three profiles are recorded producing different utterances: `gasp`, `grunt`, `sigh`, `strain`. There are various recordings of each utterance for each profile. Each utterance is no longer than a few seconds.
+
+      Each file name will always follow this schema:
+
+      * Schema: <species>-<gender>-<identifier>-<utterance>-<index>
+        * <species>: human, zombie, minotaur, etc.
+        * <gender>: male, female, androgynous
+        * <identifer>: deep, medium, high
+        * <utterance>: gasp, grunt, sigh, strain
+        * <index>: integer starting at 00.
+
+      **Goal: Command Line**
+
+      - command: `decompose --files file1,file2,...`. Generate the raw frequency analysis data from a command separated list of files. Should accept `*` globs for arguments like `sample/male/*` and expand them. Should default to the entire contents of `sample/*`.
+      - command:  `visualize --files file1,file2...`.  Generate the visual analysis of the profiles. Should accept `*` globs for arguments like `sample/male/*` and expand them. Should default to the entire contents of `sample/*`.
+
+      **Goal: Visualization**
+
+      Use matplotlib to generate visualizations and breakdown of the different `<identifer>` profiles. Write the visualizations as `.png` files to the same directory as the script. 
+
+      **Output: requirements.txt**
+
+      Libraries to install to run the script.
+
+      **Output: README.md**
+
+      Description of how to run the application, its models and dependencies.
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    # --------------------------------------------
+    source:
+      filter: true
+    # --------------------------------------------
+    shell:
+      commands: true
+# ----------------------------------------------------
+  parameters:
+    source:
+      filter:
+        default: AND
+        queries:
+          - title: Frequencies Script
+            scan:
+              domain: [ script ]
+              script: [ frequencies ]
+    # --------------------------------------------
+    shell:
+      commands: 
+        - tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py" scripts/frequencies/

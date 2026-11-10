@@ -1,0 +1,81 @@
+# ----------------------------------------------------
+# TASK: PARAMETERS
+# ----------------------------------------------------
+board: &parameters-board
+  phase: c002
+  action: design
+# ----------------------------------------------------
+context: true
+# ----------------------------------------------------
+task:
+  template: design/structure/composition.md.j2
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    # --------------------------------------------
+    manager:
+      board: true
+      docs: true
+    # --------------------------------------------
+    source:
+      data: true
+      filter: true
+    # --------------------------------------------
+    shell:
+      directory: true
+# ----------------------------------------------------
+  parameters:
+    # --------------------------------------------
+    manager:
+      board: *parameters-board
+      docs:
+        exclude:
+          - index
+          - 02-sprites
+          - 04-intentions
+          - 05-mechanics
+          - 06-widgets
+          - 07-sounds
+          - 09-ecology
+          - 10-chemistry
+          - 11-emergence
+    # --------------------------------------------
+    source:
+      filter:
+        default: AND
+        queries:
+            # ------------------------------------
+            - title: Asset Abstracts
+              scan:
+                app: [ asset ]
+                domain: [ abstract ]
+            # ------------------------------------
+            - title: Material Implementations
+              scan:
+                app: [ asset ]
+                domain: [ concrete ]
+                modality: [ material ]
+            # ------------------------------------
+            - title: Material Models
+              scan:
+                domain: [ model ]
+                modality: [ material ]
+            # ------------------------------------
+            - title: Composition Logic
+              scan:
+                domain: [ logic ]
+                workflows: [ compositions ]
+            # ------------------------------------
+            - title: Plot Services
+              scan:
+                domain: [ system ]
+                app: [ service ]
+                workflows: [ plot ]
+      data: 
+        properties: [ effects, crafts, objects ]
+        configurations: [ compositions/brick-house, materials, library ]
+    # --------------------------------------------
+    shell:
+      directory: |
+        tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"

@@ -40,6 +40,7 @@ class FrameRecipe(str, Enum):
     NONE            = "none"
     OBJECT          = "object"
     ORIENTED        = "oriented"
+    PANE            = "pane"
     SINGLE          = "single"
     SEASONAL        = "seasonal"
     SPRITE          = "sprite"
@@ -51,8 +52,6 @@ class AnimationRecipe(str, Enum):
     NONE            = "none"
     STATE           = "state"
     SPRITE          = "sprite"
-    METER           = "meter"
-    TRAVERSAL       = "traversal"
     FREQUENCY       = "frequency"
 
 class HitboxRecipe(str, Enum):

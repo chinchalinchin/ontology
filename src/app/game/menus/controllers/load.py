@@ -1,4 +1,11 @@
 """
+@domain.user
+@domain.logic
+@domain.concrete
+@app.menu
+@menu.controller
+@workflow.hydration
+
 # Ontology: Source - app.game.menus.controllers.load
 """
 from __future__ import annotations
@@ -12,7 +19,7 @@ from typing import TYPE_CHECKING
 from app.static.semantics import AssetCategories
 from app.game.menus.controllers.base import MenuController
 from app.game.menus.core import Menu
-from app.game.menus.events import TerminalEvent
+from app.models.menus import TerminalEvent
 from app.game.screen import Screen
 
 if TYPE_CHECKING:
