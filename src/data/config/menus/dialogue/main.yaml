@@ -1,4 +1,6 @@
 # ---------------------------------------------------------------------
+# -------------------------------------------------------- MENU: THEMES
+# ---------------------------------------------------------------------
 themes:
   colors:
     pane: &pane dark-solid
@@ -14,6 +16,8 @@ themes:
     slot: &slot
       pw: 0.30
       pl: 0.06
+# ---------------------------------------------------------------------
+# ------------------------------------------------------ MENU: DIALOGUE
 # ---------------------------------------------------------------------
 menus:
   dialogue:
@@ -31,7 +35,9 @@ menus:
           gap: 5
           margins: 10
           children:
+            # ------------------------------------------------
             # ------------------------------- PORTRAIT DISPLAY
+            # ------------------------------------------------
             - instance: panes
               id: dark-texture
               name: character-portrait-container
@@ -50,7 +56,9 @@ menus:
                       schema: icon
                       target:
                         icon: context.sprite.psyche.persona
+            # ------------------------------------------------
             # ------------------------------- DIALOGUE DISPLAY
+            # ------------------------------------------------
             - instance: panes
               id: dark-solid
               name: character-speech
@@ -64,7 +72,9 @@ menus:
                   plot: context.plot.current
                   persona: context.sprite.psyche.persona
                   lexicon: context.sprite.psyche.dialogue
+            # ------------------------------------------------
             # ------------------------------- CONTROL DISPLAY
+            # ------------------------------------------------
             - id: transparent
               name: text-scroll-buttons
               instance: panes

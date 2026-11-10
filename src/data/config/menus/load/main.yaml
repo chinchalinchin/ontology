@@ -1,0 +1,38 @@
+# ---------------------------------------------------------------------
+# -------------------------------------------------------- MENU: THEMES
+# ---------------------------------------------------------------------
+themes:
+  colors:
+    pane: &pane dark-solid
+  alignments:
+    center: &center
+      horizontal: center
+      vertical: center
+  dimensions:
+    root: &root
+      pw: 0.65
+      pl: 0.375
+# ---------------------------------------------------------------------
+# ---------------------------------------------------------- MENU: LOAD
+# ---------------------------------------------------------------------
+menus:
+  load:
+    controller: load
+    roots:
+      - instance: panes
+        id: *pane
+        name: load-menu
+        parameters:
+          dimensions: *root
+          justification: *center
+          alignment: *center
+          layout: stack
+          gap: 10
+          children:
+            - instance: meters
+              id: health
+              name: load-bar
+              bind:
+                schema: meter
+                target:
+                  meter: context.registry

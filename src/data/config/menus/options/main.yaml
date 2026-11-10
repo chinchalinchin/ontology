@@ -1,3 +1,26 @@
+# ---------------------------------------------------------------------
+themes:
+  colors:
+    pane: &pane dark-solid
+    pane-alt: &pane-alt dark-texture
+  alignments:
+    center: &center
+      horizontal: center
+      vertical: center
+  dimensions:
+    root: &root
+      pw: 0.85
+      pl: 0.60
+    child: &child
+      pw: 0.40
+      pl: 0.50
+    slot: &slot
+      pw: 0.30
+      pl: 0.06
+    sidebar: &sidebar
+      pw: 0.35
+      pl: 0.40
+# ---------------------------------------------------------------------
 menus:
   options:
     controller: options
@@ -6,45 +29,34 @@ menus:
         id: transparent
         name: options-menu
         parameters:
-          dimensions:
-            pw: 0.85
-            pl: 0.60
-          justification:
-            horizontal: center
-            vertical: center
-          alignment:
-            horizontal: center
-            vertical: center
+          dimensions: *root
+          justification: *center
+          alignment: *center
           layout: dock
           font: menu
-          gap: 15
+          gap: 10
+          margins: 5
           children:
-            # --- Pane 1: Option Buttons Stack ---
+            # ---------------------------------------------------------
+            # ------------------------------------------ OPTION BUTTONS
+            # ---------------------------------------------------------
             - instance: panes
-              id: dark-solid
+              id: *pane
               name: options-button-pane
               parameters:
-                dimensions:
-                  pw: 0.40
-                  pl: 0.50
+                dimensions: *child
                 layout: stack
                 font: menu
-                alignment:
-                  horizontal: center
-                  vertical: center
+                alignment: *center
                 gap: 8
                 children:
-                  - id: transparent
+                  - instance: panes 
+                    id: transparent
                     name: option-1-slot
-                    instance: panes
                     parameters:
-                      dimensions:
-                        pw: 0.30
-                        pl: 0.06
+                      dimensions: *slot
                       layout: overlay
-                      alignment:
-                        horizontal: center
-                        vertical: center
+                      alignment: *center
                       children:
                         - instance: buttons
                           id: label
@@ -58,9 +70,7 @@ menus:
                           id: transparent
                           name: option-1-text
                           parameters:
-                            dimensions:
-                              pw: 0.30
-                              pl: 0.06
+                            dimensions: *slot
                           bind:
                             schema: text
                             target:
@@ -70,13 +80,9 @@ menus:
                     id: transparent
                     name: option-2-slot
                     parameters:
-                      dimensions:
-                        pw: 0.30
-                        pl: 0.06
+                      dimensions: *slot
                       layout: overlay
-                      alignment:
-                        horizontal: center
-                        vertical: center
+                      alignment: *center
                       children:
                         - instance: buttons
                           id: label
@@ -90,9 +96,7 @@ menus:
                           id: transparent
                           name: option-2-text
                           parameters:
-                            dimensions:
-                              pw: 0.30
-                              pl: 0.06
+                            dimensions: *slot
                           bind:
                             schema: text
                             target:
@@ -102,13 +106,9 @@ menus:
                     id: transparent
                     name: option-3-slot
                     parameters:
-                      dimensions:
-                        pw: 0.30
-                        pl: 0.06
+                      dimensions: *slot
                       layout: overlay
-                      alignment:
-                        horizontal: center
-                        vertical: center
+                      alignment: *center
                       children:
                         - instance: buttons
                           id: label
@@ -122,9 +122,7 @@ menus:
                           id: transparent
                           name: option-3-text
                           parameters:
-                            dimensions:
-                              pw: 0.30
-                              pl: 0.06
+                            dimensions: *slot
                           bind:
                             schema: text
                             target:
@@ -134,13 +132,9 @@ menus:
                     id: transparent
                     name: option-4-slot
                     parameters:
-                      dimensions:
-                        pw: 0.30
-                        pl: 0.06
+                      dimensions: *slot
                       layout: overlay
-                      alignment:
-                        horizontal: center
-                        vertical: center
+                      alignment: *center
                       children:
                         - instance: buttons
                           id: label
@@ -154,35 +148,28 @@ menus:
                           id: transparent
                           name: option-4-text
                           parameters:
-                            dimensions:
-                              pw: 0.30
-                              pl: 0.06
+                            dimensions: *slot
                           bind:
                             schema: text
                             target:
                               content: OPTION 4
-
-            # --- Pane 2: Placeholder Display ---
+            # ---------------------------------------------------------
+            # ------------------------------------------ OPTION DISPLAY
+            # ---------------------------------------------------------
             - instance: panes
-              id: dark-solid
+              id: *pane
               name: options-display-pane
               parameters:
-                dimensions:
-                  pw: 0.40
-                  pl: 0.50
+                dimensions: *child
                 layout: overlay
-                alignment:
-                  horizontal: center
-                  vertical: center
+                alignment: *center
                 font: menu
                 children:
                   - instance: panes
-                    id: dark-texture
+                    id: *pane-alt
                     name: options-display
                     parameters:
-                      dimensions:
-                        pw: 0.35
-                        pl: 0.40
+                      dimensions: *sidebar
                     bind:
                       schema: text
                       target:

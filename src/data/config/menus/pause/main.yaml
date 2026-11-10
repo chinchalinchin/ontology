@@ -1,36 +1,51 @@
+# ---------------------------------------------------------------------
+themes:
+  colors:
+    pane: &pane dark-solid
+    pane-alt: &pane-alt dark-texture
+  alignments:
+    center: &center
+      horizontal: center
+      vertical: center
+  dimensions:
+    root: &root
+      pw: 0.65
+      pl: 0.375
+    child: &child
+      pw: 0.40
+      pl: 0.50
+    slot: &slot
+      pw: 0.30
+      pl: 0.06
+    sidebar: &sidebar
+      pw: 0.35
+      pl: 0.40
+# ---------------------------------------------------------------------
 menus:
   pause:
     controller: pause
     roots:
       - instance: panes
-        id: dark-solid
+        id: *pane
         name: pause-menu
         parameters:
           font: menu
-          dimensions:
-            pw: 0.65
-            pl: 0.375
-          justification:
-            horizontal: center
-            vertical: center
-          alignment:
-            horizontal: center
-            vertical: center
+          dimensions: *root
+          justification: *center
+          alignment: *center
           layout: stack
           gap: 10
           children:
-            # --- SAVE GAME ---
+            # --------------------------------------------------------
+            # --------------------------------------- PAUSE: SAVE GAME
+            # --------------------------------------------------------
             - instance: panes
               id: transparent
               name: pause-save-slot
               parameters:
-                dimensions:
-                  pw: 0.30
-                  pl: 0.06
+                dimensions: *slot
                 layout: overlay
-                alignment:
-                  horizontal: center
-                  vertical: center
+                alignment: *center
                 children:
                   - instance: buttons
                     id: label
@@ -44,9 +59,7 @@ menus:
                     id: transparent
                     name: pause-save-text
                     parameters:
-                      dimensions:
-                        pw: 0.30
-                        pl: 0.06
+                      dimensions: *slot
                     bind:
                       schema: text
                       target:
@@ -57,13 +70,9 @@ menus:
               id: transparent
               name: pause-load-slot
               parameters:
-                dimensions:
-                  pw: 0.30
-                  pl: 0.06
+                dimensions: *slot
                 layout: overlay
-                alignment:
-                  horizontal: center
-                  vertical: center
+                alignment: *center
                 children:
                   - instance: buttons
                     id: label
@@ -77,9 +86,7 @@ menus:
                     id: transparent
                     name: pause-load-text
                     parameters:
-                      dimensions:
-                        pw: 0.30
-                        pl: 0.06
+                      dimensions: *slot
                     bind:
                       schema: text
                       target:
@@ -90,13 +97,9 @@ menus:
               id: transparent
               name: pause-options-slot
               parameters:
-                dimensions:
-                  pw: 0.30
-                  pl: 0.06
+                dimensions: *slot
                 layout: overlay
-                alignment:
-                  horizontal: center
-                  vertical: center
+                alignment: *center
                 children:
                   - instance: buttons
                     id: label
@@ -110,9 +113,7 @@ menus:
                     id: transparent
                     name: pause-options-text
                     parameters:
-                      dimensions:
-                        pw: 0.30
-                        pl: 0.06
+                      dimensions: *slot
                     bind:
                       schema: text
                       target:
@@ -123,13 +124,9 @@ menus:
               id: transparent
               name: pause-quit-slot
               parameters:
-                dimensions:
-                  pw: 0.30
-                  pl: 0.06
+                dimensions: *slot
                 layout: overlay
-                alignment:
-                  horizontal: center
-                  vertical: center
+                alignment: *center
                 children:
                   - instance: buttons
                     id: label
@@ -143,9 +140,7 @@ menus:
                     id: transparent
                     name: pause-quit-text
                     parameters:
-                      dimensions:
-                        pw: 0.30
-                        pl: 0.06
+                      dimensions: *slot
                     bind:
                       schema: text
                       target:
