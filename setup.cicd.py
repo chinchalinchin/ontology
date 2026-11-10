@@ -11,8 +11,8 @@ sdl_common = {
 
 ext_modules = [
     Extension(
-        "libs.core.audio.mixer",
-        sources=["src/libs/core/audio/mixer.pyx"],
+        "libs.audio.mixer",
+        sources=["src/libs/audio/mixer.pyx"],
         libraries=["SDL2", "SDL2_mixer"],
         **sdl_common,
     ),
