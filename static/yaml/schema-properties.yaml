@@ -34,8 +34,8 @@ $defs:
   Alignments:
     enum:
     - start
-    - end
     - center
+    - end
     title: Alignments
     type: string
   Blueprints:

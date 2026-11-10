@@ -49,8 +49,8 @@ $defs:
   Alignments:
     enum:
     - start
-    - end
     - center
+    - end
     title: Alignments
     type: string
   AnimationRecipe:
@@ -58,8 +58,6 @@ $defs:
     - none
     - state
     - sprite
-    - meter
-    - traversal
     - frequency
     title: AnimationRecipe
     type: string
@@ -90,6 +88,19 @@ $defs:
     - stump
     title: AnnualStages
     type: string
+  ApertureTarget:
+    properties:
+      selector:
+        title: Selector
+        type: string
+      index:
+        title: Index
+        type: integer
+    required:
+    - selector
+    - index
+    title: ApertureTarget
+    type: object
   AssetInstances:
     description: Enumeration of Asset Instances.
     enum:
@@ -115,7 +126,6 @@ $defs:
     - rafts
     - bridges
     - decor
-    - platforms
     - struts
     - stairs
     - forges
@@ -133,7 +143,6 @@ $defs:
     - buttons
     - icons
     - meters
-    - pages
     - panes
     title: AssetInstances
     type: string
@@ -190,6 +199,27 @@ $defs:
     - id
     title: AttachmentState
     type: object
+  AxisAlignment:
+    properties:
+      horizontal:
+        $ref: '#/$defs/Alignments'
+        default: center
+      vertical:
+        $ref: '#/$defs/Alignments'
+        default: center
+    title: AxisAlignment
+    type: object
+  Bindings:
+    enum:
+    - aperture
+    - collection
+    - icon
+    - library
+    - meter
+    - select
+    - text
+    title: Bindings
+    type: string
   BlueprintPartition:
     properties:
       delta:
@@ -385,6 +415,23 @@ $defs:
     - id
     title: CollectableState
     type: object
+  CollectionTarget:
+    properties:
+      source:
+        title: Source
+        type: string
+      capacity:
+        default: 8
+        title: Capacity
+        type: integer
+      columns:
+        default: 4
+        title: Columns
+        type: integer
+    required:
+    - source
+    title: CollectionTarget
+    type: object
   Columns:
     enum:
     - crowns
@@ -478,6 +525,17 @@ $defs:
     - id
     title: ContainerState
     type: object
+  Controllers:
+    enum:
+    - display
+    - inventory
+    - load
+    - main
+    - options
+    - pause
+    - scroll
+    title: Controllers
+    type: string
   Corridors:
     enum:
     - solids
@@ -1044,6 +1102,14 @@ $defs:
     - id
     title: FluidState
     type: object
+  Fonts:
+    description: Enumeration of Font Assets.
+    enum:
+    - dialogue
+    - menu
+    - title
+    title: Fonts
+    type: string
   FrameRecipe:
     enum:
     - binary
@@ -1057,6 +1123,7 @@ $defs:
     - none
     - object
     - oriented
+    - pane
     - single
     - seasonal
     - sprite
@@ -1095,6 +1162,8 @@ $defs:
       button:
         title: Button
         type: string
+      dimensions:
+        title: Dimensions
       gap:
         default: 5
         title: Gap
@@ -1197,6 +1266,15 @@ $defs:
     - switch
     title: HitboxRecipe
     type: string
+  IconTarget:
+    properties:
+      icon:
+        title: Icon
+        type: string
+    required:
+    - icon
+    title: IconTarget
+    type: object
   Inclines:
     enum:
     - up
@@ -1296,6 +1374,23 @@ $defs:
     - overlay
     title: Layouts
     type: string
+  LibraryTarget:
+    properties:
+      plot:
+        title: Plot
+        type: string
+      persona:
+        title: Persona
+        type: string
+      lexicon:
+        title: Lexicon
+        type: string
+    required:
+    - plot
+    - persona
+    - lexicon
+    title: LibraryTarget
+    type: object
   Lot:
     properties:
       inventory:
@@ -1466,20 +1561,20 @@ $defs:
     description: Associates UI controls or panes with runtime context paths or commands.
     properties:
       schema:
-        anyOf:
-        - type: string
-        - type: 'null'
-        default: null
-        title: Schema
+        $ref: '#/$defs/Bindings'
       target:
         anyOf:
-        - type: string
-        - additionalProperties:
-            type: string
-          type: object
-        - type: 'null'
-        default: null
+        - $ref: '#/$defs/LibraryTarget'
+        - $ref: '#/$defs/MeterTarget'
+        - $ref: '#/$defs/IconTarget'
+        - $ref: '#/$defs/TextTarget'
+        - $ref: '#/$defs/CollectionTarget'
+        - $ref: '#/$defs/SelectTarget'
+        - $ref: '#/$defs/ApertureTarget'
         title: Target
+    required:
+    - schema
+    - target
     title: MenuBinding
     type: object
   MenuConfiguration:
@@ -1487,8 +1582,7 @@ $defs:
       hierarchy.
     properties:
       controller:
-        title: Controller
-        type: string
+        $ref: '#/$defs/Controllers'
       roots:
         items:
           $ref: '#/$defs/MenuNode'
@@ -1527,8 +1621,7 @@ $defs:
         title: Name
         type: string
       instance:
-        title: Instance
-        type: string
+        $ref: '#/$defs/Widgets'
       bind:
         anyOf:
         - $ref: '#/$defs/MenuBinding'
@@ -1579,6 +1672,15 @@ $defs:
         title: Maximum
         type: integer
     title: Meter
+    type: object
+  MeterTarget:
+    properties:
+      meter:
+        title: Meter
+        type: string
+    required:
+    - meter
+    title: MeterTarget
     type: object
   Meters:
     properties:
@@ -1913,8 +2015,9 @@ $defs:
         $ref: '#/$defs/Layouts'
         default: stack
       alignment:
-        $ref: '#/$defs/Alignments'
-        default: start
+        $ref: '#/$defs/AxisAlignment'
+      justification:
+        $ref: '#/$defs/AxisAlignment'
       gap:
         default: 0
         title: Gap
@@ -1923,24 +2026,13 @@ $defs:
         default: 0
         title: Margins
         type: integer
-      position:
-        anyOf:
-        - {}
-        - type: 'null'
-        default: null
-        title: Position
       dimensions:
-        anyOf:
-        - {}
-        - type: 'null'
-        default: null
         title: Dimensions
       font:
         anyOf:
-        - type: string
+        - $ref: '#/$defs/Fonts'
         - type: 'null'
         default: null
-        title: Font
       children:
         items:
           $ref: '#/$defs/MenuNode'
@@ -2357,6 +2449,37 @@ $defs:
     - winter
     title: Seasons
     type: string
+  SelectTarget:
+    properties:
+      selection:
+        $ref: '#/$defs/Selections'
+        default: idle
+      selector:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Selector
+      index:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Index
+    title: SelectTarget
+    type: object
+  Selections:
+    enum:
+    - load
+    - menu
+    - new
+    - save
+    - scrollup
+    - scrolldown
+    - slot
+    - quit
+    title: Selections
+    type: string
   SheetRecipe:
     properties:
       pixies:
@@ -2743,6 +2866,15 @@ $defs:
     - id
     title: SwitchState
     type: object
+  TextTarget:
+    properties:
+      content:
+        title: Content
+        type: string
+    required:
+    - content
+    title: TextTarget
+    type: object
   TileRecipe:
     properties:
       canopy:
@@ -2816,14 +2948,21 @@ $defs:
       meters:
         $ref: '#/$defs/Recipe'
         default: null
-      pages:
-        $ref: '#/$defs/Recipe'
-        default: null
       panes:
         $ref: '#/$defs/Recipe'
         default: null
     title: WidgetRecipe
     type: object
+  Widgets:
+    description: Enumeration of Widgets, physical and virtualized.
+    enum:
+    - buttons
+    - icons
+    - gizmos
+    - meters
+    - panes
+    title: Widgets
+    type: string
   WorldMapping:
     properties:
       menus:
