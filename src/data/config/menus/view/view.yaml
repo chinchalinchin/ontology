@@ -3,7 +3,7 @@ menus:
     controller: display
     roots:
       - instance: panes
-        id: dark
+        id: dark-solid
         name: hud-menu
         parameters:
           dimensions:

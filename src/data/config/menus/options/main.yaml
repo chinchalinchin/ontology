@@ -21,7 +21,7 @@ menus:
           children:
             # --- Pane 1: Option Buttons Stack ---
             - instance: panes
-              id: dark
+              id: dark-solid
               name: options-button-pane
               parameters:
                 dimensions:
@@ -164,7 +164,7 @@ menus:
 
             # --- Pane 2: Placeholder Display ---
             - instance: panes
-              id: dark
+              id: dark-solid
               name: options-display-pane
               parameters:
                 dimensions:
@@ -177,7 +177,7 @@ menus:
                 font: menu
                 children:
                   - instance: panes
-                    id: light
+                    id: dark-texture
                     name: options-display
                     parameters:
                       dimensions:

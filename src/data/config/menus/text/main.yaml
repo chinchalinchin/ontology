@@ -3,7 +3,7 @@ menus:
     controller: scroll
     roots:
       - instance: panes
-        id: neutral
+        id: dark-solid
         name: text-menu
         parameters:
           dimensions:
@@ -21,7 +21,7 @@ menus:
           font: dialogue
           children:
             - instance: panes
-              id: dark
+              id: dark-solid
               name: text-display
               parameters:
                 dimensions:

@@ -3,7 +3,7 @@ menus:
     controller: load
     roots:
       - instance: panes
-        id: neutral
+        id: dark-solid
         name: main-menu
         parameters:
           dimensions:

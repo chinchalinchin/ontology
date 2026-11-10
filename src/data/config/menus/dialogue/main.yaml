@@ -3,7 +3,7 @@ menus:
     controller: scroll
     roots:
       - instance: panes
-        id: neutral
+        id: dark-solid
         name: dialogue-menu
         parameters:
           dimensions:
@@ -22,11 +22,11 @@ menus:
           children:
             # ------------------------------- PORTRAIT DISPLAY
             - instance: panes
-              id: dark
+              id: dark-texture
               name: character-portrait-container
               parameters:
                 dimensions:
-                  pw: 0.15
+                  pw: 0.10
                   pl: 0.20
                 layout: overlay
                 alignment:
@@ -43,7 +43,7 @@ menus:
                         icon: context.sprite.psyche.persona
             # ------------------------------- DIALOGUE DISPLAY
             - instance: panes
-              id: dark
+              id: dark-solid
               name: character-speech
               parameters:
                 dimensions:

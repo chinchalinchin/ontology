@@ -111,18 +111,34 @@ widgets:
   # ----------------------------------- PANES
   # -----------------------------------------
   panes:
-    dark:
+    brown-solid:
       dimensions:
         w: 318
-        l: 180
-    neutral:
+        l: 78
+    brown-texture:
       dimensions:
         w: 318
-        l: 180
-    light:
+        l: 78
+    dark-solid:
       dimensions:
-        w: 318 
-        l: 180
+        w: 318
+        l: 78
+    dark-texture:
+      dimensions:
+        w: 318
+        l: 78
+    green-solid:
+      dimensions:
+        w: 318
+        l: 78
+    green-texture:
+      dimensions:
+        w: 318
+        l: 78
+    transculent:
+      dimensions:
+        w: 318
+        l: 78
     transparent:
       dimensions:
         w: 40

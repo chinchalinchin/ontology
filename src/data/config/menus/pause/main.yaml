@@ -3,7 +3,7 @@ menus:
     controller: pause
     roots:
       - instance: panes
-        id: dark
+        id: dark-solid
         name: pause-menu
         parameters:
           font: menu

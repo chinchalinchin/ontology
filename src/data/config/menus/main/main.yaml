@@ -1,20 +1,30 @@
+# ---------------------------------------------------------------------
+themes:
+  colors:
+    pane: &pane transculent
+    pane-alt: &pane-alt dark-texture
+  alignments:
+    center: &center
+      horizontal: center
+      vertical: center
+  dimensions:
+    slot: &slot
+      pw: 0.30
+      pl: 0.06
+# ---------------------------------------------------------------------
 menus:
   main:
     controller: main
     roots:
-      - instance: panes
-        id: neutral
+      - id: *pane
+        instance: panes
         name: main-menu
         parameters:
           dimensions:
             pw: 0.65
             pl: 0.375
-          justification:
-            horizontal: center
-            vertical: center
-          alignment:
-            horizontal: center
-            vertical: center
+          justification: *center
+          alignment: *center
           layout: stack
           font: menu
           gap: 2
@@ -25,13 +35,9 @@ menus:
               id: transparent
               name: new-game-slot
               parameters:
-                dimensions:
-                  pw: 0.30
-                  pl: 0.06
+                dimensions: *slot
                 layout: overlay
-                alignment:
-                  horizontal: center
-                  vertical: center
+                alignment: *center
                 children:
                   - instance: buttons
                     id: label
@@ -45,9 +51,7 @@ menus:
                     id: transparent
                     name: new-game-text
                     parameters:
-                      dimensions:
-                        pw: 0.30
-                        pl: 0.06
+                      dimensions: *slot
                     bind:
                       schema: text
                       target:
@@ -58,13 +62,9 @@ menus:
               id: transparent
               name: load-game-slot
               parameters:
-                dimensions:
-                  pw: 0.30
-                  pl: 0.06
+                dimensions: *slot
                 layout: overlay
-                alignment:
-                  horizontal: center
-                  vertical: center
+                alignment: *center
                 children:
                   - instance: buttons
                     id: label
@@ -78,9 +78,7 @@ menus:
                     id: transparent
                     name: load-game-text
                     parameters:
-                      dimensions:
-                        pw: 0.30
-                        pl: 0.06
+                      dimensions: *slot
                     bind:
                       schema: text
                       target:
@@ -91,13 +89,9 @@ menus:
               id: transparent
               name: options-menu-slot
               parameters:
-                dimensions:
-                  pw: 0.30
-                  pl: 0.06
+                dimensions: *slot
                 layout: overlay
-                alignment:
-                  horizontal: center
-                  vertical: center
+                alignment: *center
                 children:
                   - instance: buttons
                     id: label
@@ -111,9 +105,7 @@ menus:
                     id: transparent
                     name: options-menu-text
                     parameters:
-                      dimensions:
-                        pw: 0.30
-                        pl: 0.06
+                      dimensions: *slot
                     bind:
                       schema: text
                       target:
@@ -124,13 +116,9 @@ menus:
               id: transparent
               name: editor-menu-slot
               parameters:
-                dimensions:
-                  pw: 0.30
-                  pl: 0.06
+                dimensions: *slot
                 layout: overlay
-                alignment:
-                  horizontal: center
-                  vertical: center
+                alignment: *center
                 children:
                   - instance: buttons
                     id: label
@@ -144,9 +132,7 @@ menus:
                     id: transparent
                     name: editor-menu-text
                     parameters:
-                      dimensions:
-                        pw: 0.30
-                        pl: 0.06
+                      dimensions: *slot
                     bind:
                       schema: text
                       target:
