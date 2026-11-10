@@ -794,7 +794,7 @@ def test_pane_frame_index_trisects_dimensions(mock_asset):
     pane = mock_asset(
         AssetCategories.WIDGETS.value,
         AssetInstances.PANES.value,
-        id="dark",
+        id="dark-solid",
     )
     assert isinstance(pane.frame, PaneFrame)
 
@@ -828,7 +828,7 @@ def test_pane_frame_keys_projects_9_slice_grid(mock_asset, nx: int, ny: int):
     pane = mock_asset(
         AssetCategories.WIDGETS.value,
         AssetInstances.PANES.value,
-        id="neutral",
+        id="dark-solid",
     )
     wc = pane.properties.dimensions.w // 3
     lc = pane.properties.dimensions.l // 3

@@ -55,7 +55,7 @@ def test_layout_quantize_9_slice_span(mock_asset):
     pane = mock_asset(
         AssetCategories.WIDGETS.value,
         AssetInstances.PANES.value,
-        id="neutral",
+        id="dark-solid",
     )
     pane.taxonomy.name = "root-pane"
 
@@ -64,7 +64,7 @@ def test_layout_quantize_9_slice_span(mock_asset):
 
     pw, pl = 0.65, 0.50
     root_cfg = MenuNode(
-        id="neutral",
+        id="dark-solid",
         name="root-pane",
         instance=AssetInstances.PANES.value,
         parameters=PaneParameters(
@@ -107,7 +107,7 @@ def test_layout_compute_root_justification(
     pane = mock_asset(
         AssetCategories.WIDGETS.value,
         AssetInstances.PANES.value,
-        id="dark",
+        id="dark-solid",
     )
     pane.taxonomy.name = "p1"
     pane.state.justification = AxisAlignment(horizontal=horiz, vertical=vert)
@@ -115,7 +115,7 @@ def test_layout_compute_root_justification(
 
     # Small scale clamps nx=0, ny=0 -> span = (2 * 106, 2 * 60) = (212, 120)
     root_cfg = MenuNode(
-        id="dark",
+        id="dark-solid",
         name="p1",
         instance=AssetInstances.PANES.value,
         parameters=PaneParameters(

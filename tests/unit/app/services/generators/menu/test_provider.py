@@ -100,7 +100,7 @@ def test_provider_unpack_and_bake_text_pane(
         controller=Controllers.SCROLL.value,
         roots=[
             MenuNode(
-                id="dark",
+                id="dark-solid",
                 name="page-pane",
                 instance=AssetInstances.PANES.value,
                 parameters=PaneParameters(
