@@ -48,9 +48,8 @@ def paginate(text: str, font: Any, w: int, l: int) -> List[str]:
     if not text or not font:
         return [str(text)] if text else [""]
 
-    # TODO: need to type `font` and get rid of duck-typing.
-    margin_w = int(w * font.margins) if hasattr(font, 'margins') else 0
-    margin_l = int(l * font.margins) if hasattr(font, 'margins') else 0
+    margin_w = int(w * font.margins)
+    margin_l = int(l * font.margins)
     
     wrap_width = w - (2 * margin_w)
     wrap_height = l - (2 * margin_l)
@@ -156,7 +155,7 @@ class TextBinding(Binding):
             if self._cached_pages is not None:
                 return self._cached_pages
                 
-            raw = self.target.content
+            raw = self._deref(self._content_ref, self.target.content)
             font = self.registry.font("dialogue") if self.registry else None
             
             self._cached_pages = paginate(str(raw), font, w, l)

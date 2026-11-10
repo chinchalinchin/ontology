@@ -1,11 +1,10 @@
 """
 @domain.model
-@app.config
-@category.widgets
+@app.core
 
-# Ontology: Source - app.models.config.menus
+# Ontology: Source - app.models.core
 
-Models for typing the configuration attributes of Menus.
+Models for typing the core Application Models.
 """
 from dataclasses import dataclass
 

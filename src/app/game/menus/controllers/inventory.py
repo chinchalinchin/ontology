@@ -25,6 +25,7 @@ from app.static.semantics import (
 from app.game.menus.controllers.base import MenuController
 from app.game.menus.core import Menu
 from app.models.menus import UpdateEvent
+from app.models.state import CollectionState
 
 if TYPE_CHECKING:
     from app.game.board import Board
@@ -51,7 +52,7 @@ class InventoryController(MenuController):
 
         if selection == Selections.SCROLLDOWN.value:
             target_widget = menu.widgets.get(target_key)
-            if target_widget and hasattr(target_widget.state, "scrolldown"):
+            if target_widget and isinstance(target_widget.state, CollectionState):
                 target_widget.state.scrolldown()
                 self._recover_focus(menu, target_widget)
                 bus.append(UpdateEvent(
@@ -62,7 +63,7 @@ class InventoryController(MenuController):
 
         if selection == Selections.SCROLLUP.value:
             target_widget = menu.widgets.get(target_key)
-            if target_widget and hasattr(target_widget.state, "scrollup"):
+            if target_widget and isinstance(target_widget.state, CollectionState):
                 target_widget.state.scrollup()
                 self._recover_focus(menu, target_widget)
                 bus.append(UpdateEvent(
@@ -73,7 +74,7 @@ class InventoryController(MenuController):
 
         if selection == Selections.SLOT.value:
             target_widget = menu.widgets.get(target_key)
-            if target_widget and hasattr(target_widget.state, "get_item"):
+            if target_widget and isinstance(target_widget.state, CollectionState):
                 slot_index = binding.target.index
                 item_key = target_widget.state.get_item(slot_index)
                 if item_key:

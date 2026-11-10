@@ -107,6 +107,8 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     * [x]: [Bug B014: Stair Railing Hitbox Traversal Block](./phases/patch/bug-b014.md)
     * [x]: [Bug B015: Decomposer Macro Scope](./phases/patch/bug-b015.md)
     * [x]: [Bug B016: Decomposer Elevation Inheritance](./phases/patch/bug-b016.md)
+    * [ ]: [Bug B017: Stair Omission When Elevation Weightless](./phases/patch/bug-b017.md)
+    * [ ]: [Bug B018: Library Binding Font Desynchronization](./phases/patch/bug-b018.md)
   * **Achieve:**
     * [x]: [Goal 01: Boundaries](./phases/achieve/goal-01.md)
     * [x]: [Goal 02: ScrollController, Library & Plots](./phases/achieve/goal-02)

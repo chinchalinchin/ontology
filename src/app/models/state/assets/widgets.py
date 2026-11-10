@@ -53,7 +53,7 @@ class WidgetState(AssetState):
 
 @dataclass(slots=True)
 class IconState(WidgetState):
-    icon_function: Callable[[], str] = field(default_factory=Callable)
+    icon_function: Callable[[], str] = field(default=lambda: "")
 
     @property
     def icon(self) -> str:
@@ -125,9 +125,9 @@ class PaneState(WidgetState):
 
 @dataclass(slots=True)
 class MeterState(WidgetState):
-    reading_function: Callable[[], Union[int, float]] = field(default_factory=Callable)
-    unit_function: Callable[[], Union[int, float]] = field(default_factory=Callable)
-
+    reading_function: Callable[[], Union[int, float]] = field(default=lambda: 0)
+    unit_function: Callable[[], Union[int, float]] = field(default=lambda: 0)
+    
     @property
     def reading(self) -> Union[int, float]:
         return self.reading_function()

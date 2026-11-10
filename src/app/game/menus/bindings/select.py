@@ -21,6 +21,7 @@ class SelectBinding(Binding):
 
     @property
     def selection(self) -> str:
+        # NOTE: need to account for Aperature Selection bindings.
         return getattr(self.target, "selection", Statuses.IDLE.value)
 
     @property
