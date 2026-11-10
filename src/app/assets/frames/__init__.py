@@ -32,6 +32,7 @@ from app.assets.frames.tiles import (
 from app.assets.frames.widgets import (
     TraversalFrame,
     MeterFrame,
+    PaneFrame,
 )
 __all__ = [
     'NoFrame',
@@ -44,6 +45,9 @@ __all__ = [
     'CardinalFrame',
     'MeterFrame',
     'IndexFrame',
+    'PaneFrame',
+    'ObjectFrame',
+    'BinaryFrame',
     'OrientedFrame',
     'DirectedFrame',
     'StageFrame',

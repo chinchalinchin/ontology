@@ -17,7 +17,8 @@ menus:
             vertical: center
           layout: stack
           font: menu
-          gap: 10
+          gap: 2
+          margins: 10
           children:
             # --- NEW GAME ---
             - instance: panes

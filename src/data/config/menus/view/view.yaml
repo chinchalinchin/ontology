@@ -7,8 +7,8 @@ menus:
         name: hud-menu
         parameters:
           dimensions:
-            pw: 0.40
-            pl: 0.20
+            pw: 0.30
+            pl: 0.25
           justification:
             horizontal: center
             vertical: end
@@ -17,7 +17,7 @@ menus:
             vertical: center
           layout: dock
           gap: 10
-          margins: 15
+          margins: 5
           children:
             - instance: panes
               id: transparent

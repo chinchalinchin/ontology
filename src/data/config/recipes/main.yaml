@@ -161,6 +161,6 @@ recipes:
       animation: none
       hitbox: none
     panes:
-      frame: single
+      frame: pane
       animation: none
       hitbox: none

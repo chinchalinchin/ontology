@@ -40,6 +40,7 @@ class FrameRecipe(str, Enum):
     NONE            = "none"
     OBJECT          = "object"
     ORIENTED        = "oriented"
+    PANE            = "pane"
     SINGLE          = "single"
     SEASONAL        = "seasonal"
     SPRITE          = "sprite"
