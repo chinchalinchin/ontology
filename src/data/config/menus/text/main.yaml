@@ -1,32 +1,47 @@
+# ---------------------------------------------------------------------
+themes:
+  colors:
+    pane: &pane dark-solid
+    pane-alt: &pane-alt dark-texture
+  alignments:
+    bottom: &bottom
+      horizontal: center
+      vertical: end
+    center: &center
+      horizontal: center
+      vertical: center
+  dimensions:
+    root: &root
+      pw: 0.65
+      pl: 0.25
+    child: &child
+      pw: 0.40
+      pl: 0.20
+    scroll: &scroll
+      pw: 0.08
+      pl: 0.15
+# ---------------------------------------------------------------------
 menus:
   text:
     controller: scroll
     roots:
       - instance: panes
-        id: dark-solid
+        id: *pane-alt
         name: text-menu
         parameters:
-          dimensions:
-            pw: 0.65
-            pl: 0.25
-          justification:
-            horizontal: center
-            vertical: end
-          alignment:
-            horizontal: center
-            vertical: center
+          dimensions: *root
+          justification: *bottom
+          alignment: *center
           layout: dock
           gap: 15
           margins: 10
           font: dialogue
           children:
-            - instance: panes
-              id: dark-solid
+            - id: *pane
+              instance: panes
               name: text-display
               parameters:
-                dimensions:
-                  pw: 0.45
-                  pl: 0.20
+                dimensions: *child
               bind:
                 schema: library
                 target:
@@ -37,13 +52,9 @@ menus:
               id: transparent
               name: text-scroll-buttons
               parameters:
-                dimensions:
-                  pw: 0.08
-                  pl: 0.15
+                dimensions: *scroll
                 layout: stack
-                alignment:
-                  horizontal: center
-                  vertical: center
+                alignment: *center
                 gap: 5
                 children:
                   - instance: buttons

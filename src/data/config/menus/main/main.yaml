@@ -8,6 +8,9 @@ themes:
       horizontal: center
       vertical: center
   dimensions:
+    root: &root
+      pw: 0.65
+      pl: 0.375
     slot: &slot
       pw: 0.30
       pl: 0.06
@@ -20,9 +23,7 @@ menus:
         instance: panes
         name: main-menu
         parameters:
-          dimensions:
-            pw: 0.65
-            pl: 0.375
+          dimensions: *root
           justification: *center
           alignment: *center
           layout: stack

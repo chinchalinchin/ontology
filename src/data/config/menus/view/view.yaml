@@ -1,35 +1,51 @@
+# ---------------------------------------------------------------------
+themes:
+  colors:
+    pane: &pane dark-solid
+    pane-alt: &pane-alt dark-texture
+  alignments:
+    bottom: &bottom
+      horizontal: center
+      vertical: end
+    center: &center
+      horizontal: center
+      vertical: center
+    start: &start
+      horizontal: start
+      vertical: center
+  dimensions:
+    root: &root
+      pw: 0.30
+      pl: 0.25
+    child: &child
+      pw: 0.10
+      pl: 0.10
+    slot: &slot
+      pw: 0.08
+      pl: 0.08
+# ---------------------------------------------------------------------
 menus:
   view:
     controller: display
     roots:
       - instance: panes
-        id: dark-solid
+        id: *pane
         name: hud-menu
         parameters:
-          dimensions:
-            pw: 0.30
-            pl: 0.25
-          justification:
-            horizontal: center
-            vertical: end
-          alignment:
-            horizontal: center
-            vertical: center
+          dimensions: *root
+          justification: *bottom
+          alignment: *start
           layout: dock
-          gap: 10
+          gap: 5
           margins: 5
           children:
             - instance: panes
               id: transparent
               name: hud-meters-pane
               parameters:
-                dimensions:
-                  pw: 0.16
-                  pl: 0.10
+                dimensions: *child
                 layout: stack
-                alignment:
-                  horizontal: center
-                  vertical: center
+                alignment: *center
                 gap: 5
                 children:
                   - instance: meters
@@ -50,13 +66,9 @@ menus:
               id: transparent
               name: hud-slots-pane
               parameters:
-                dimensions:
-                  pw: 0.18
-                  pl: 0.08
+                dimensions: *child
                 layout: dock
-                alignment:
-                  horizontal: start
-                  vertical: center
+                alignment: *start
                 gap: 5
                 children:
                   # --- bounding box for the slot ---
@@ -64,13 +76,9 @@ menus:
                     id: transparent
                     name: weapon-slot-container
                     parameters:
-                      dimensions:
-                        pw: 0.08
-                        pl: 0.08
+                      dimensions: *slot
                       layout: overlay
-                      alignment:
-                        horizontal: center
-                        vertical: center
+                      alignment: *center
                       gap: 0
                       children:
                         # 1. The Background
@@ -92,13 +100,9 @@ menus:
                     id: transparent
                     name: shield-slot-container
                     parameters:
-                      dimensions:
-                        pw: 0.08
-                        pl: 0.08
+                      dimensions: *slot
                       layout: overlay
-                      alignment:
-                        horizontal: center
-                        vertical: center
+                      alignment: *center
                       gap: 0
                       children:
                         - instance: buttons

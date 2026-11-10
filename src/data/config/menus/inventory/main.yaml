@@ -8,6 +8,9 @@ themes:
       horizontal: center
       vertical: center
   dimensions:
+    root: &root
+      pw: 0.67
+      pl: 0.80
     section: &section
       pw: 0.65
       pl: 0.20
@@ -16,6 +19,12 @@ themes:
       pl: 0.06
     row: &row
       pw: 0.50
+      pl: 0.08
+    slot: &slot
+      pw: 0.08
+      pl: 0.08
+    gizmo: &gizmo
+      pw: 0.32
       pl: 0.08
 # ---------------------------------------------------------------------
 menus:
@@ -26,9 +35,7 @@ menus:
         name: inventory-menu
         instance: panes
         parameters:
-          dimensions:
-            pw: 0.67
-            pl: 0.80
+          dimensions: *root
           justification: *center
           alignment: *center
           layout: stack
@@ -79,9 +86,7 @@ menus:
                           name: equipment-weapon-slot-pane
                           instance: panes
                           parameters:
-                            dimensions:
-                              pw: 0.08
-                              pl: 0.08
+                            dimensions: *slot
                             layout: overlay
                             alignment: *center
                             children:
@@ -101,9 +106,7 @@ menus:
                           name: equipment-shield-slot-pane
                           instance: panes
                           parameters:
-                            dimensions:
-                              pw: 0.08
-                              pl: 0.08
+                            dimensions: *slot
                             layout: overlay
                             alignment: *center
                             children:
@@ -123,9 +126,7 @@ menus:
                           name: equipment-armor-slot-pane
                           instance: panes
                           parameters:
-                            dimensions:
-                              pw: 0.08
-                              pl: 0.08
+                            dimensions: *slot
                             layout: overlay
                             alignment: *center
                             children:
@@ -145,9 +146,7 @@ menus:
                           name: equipment-tool-slot-pane
                           instance: panes
                           parameters:
-                            dimensions:
-                              pw: 0.08
-                              pl: 0.08
+                            dimensions: *slot
                             layout: overlay
                             alignment: *center
                             children:
@@ -167,9 +166,7 @@ menus:
                           name: equipment-utility-slot-pane
                           instance: panes
                           parameters:
-                            dimensions:
-                              pw: 0.08
-                              pl: 0.08
+                            dimensions: *slot
                             layout: overlay
                             alignment: *center
                             children:
@@ -246,9 +243,7 @@ menus:
                             gap: 5
                             pane: transparent
                             button: slot
-                            dimensions:
-                              pw: 0.32
-                              pl: 0.08
+                            dimensions: *gizmo
                         - id: arrow-right
                           name: inventory-pouch-scroll-down
                           instance: buttons
@@ -318,9 +313,7 @@ menus:
                             gap: 5
                             pane: transparent
                             button: slot
-                            dimensions:
-                              pw: 0.32
-                              pl: 0.08
+                            dimensions: *gizmo
                         - id: arrow-right
                           name: inventory-pack-scroll-down
                           instance: buttons

@@ -1,20 +1,31 @@
+# ---------------------------------------------------------------------
+themes:
+  colors:
+    pane: &pane dark-solid
+    pane-alt: &pane-alt dark-texture
+  alignments:
+    center: &center
+      horizontal: center
+      vertical: center
+  dimensions:
+    root: &root
+      pw: 0.65
+      pl: 0.25
+    slot: &slot
+      pw: 0.30
+      pl: 0.06
+# ---------------------------------------------------------------------
 menus:
   dialogue:
     controller: scroll
     roots:
-      - instance: panes
-        id: dark-solid
+      - id: *pane
+        instance: panes
         name: dialogue-menu
         parameters:
-          dimensions:
-            pw: 0.65
-            pl: 0.25
-          justification:
-            horizontal: center
-            vertical: end
-          alignment:
-            horizontal: center
-            vertical: center
+          dimensions: *root
+          justification: *center
+          alignment: *center
           layout: dock
           font: dialogue
           gap: 5
@@ -29,9 +40,7 @@ menus:
                   pw: 0.10
                   pl: 0.20
                 layout: overlay
-                alignment:
-                  horizontal: center
-                  vertical: center
+                alignment: *center
                 gap: 0
                 children:
                   - instance: icons
@@ -64,9 +73,7 @@ menus:
                   pw: 0.08
                   pl: 0.15
                 layout: stack
-                alignment:
-                  horizontal: center
-                  vertical: center
+                alignment: *center
                 gap: 5
                 children:
                   - instance: buttons
