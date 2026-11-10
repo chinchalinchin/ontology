@@ -15,11 +15,11 @@ themes:
       vertical: center
   dimensions:
     root: &root
-      pw: 0.30
+      pw: 0.35
       pl: 0.25
     child: &child
-      pw: 0.10
-      pl: 0.10
+      pw: 0.16
+      pl: 0.08
     slot: &slot
       pw: 0.08
       pl: 0.08
