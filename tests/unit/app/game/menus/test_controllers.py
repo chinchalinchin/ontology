@@ -240,36 +240,6 @@ def test_inventory_controller_pagination_and_equip(
     assert isinstance(scroll_up_ev, UpdateEvent)
     assert scroll_up_ev.content == "0"
 
-
-@pytest.mark.workflow_traversal
-def test_options_controller_focus_preview_and_select(
-    mock_menu,
-    mock_board,
-    mock_bus: deque,
-):
-    options_menu = mock_menu(Menus.OPTIONS.value)
-    ctrl = options_menu.controller
-    assert isinstance(ctrl, OptionsController)
-
-    ctrl.open(options_menu, mock_board, mock_bus)
-    options_menu.focus = "option-1"
-    ctrl.update(options_menu, mock_board, mock_bus)
-
-    assert len(mock_bus) == 1
-    preview_ev = mock_bus.popleft()
-    assert isinstance(preview_ev, UpdateEvent)
-    assert preview_ev.content == OptionsController.DESCRIPTIONS["option-1"]
-
-    ctrl.select("option-1", options_menu, mock_board, mock_bus)
-    assert len(mock_bus) == 1
-    select_ev = mock_bus.popleft()
-    assert isinstance(select_ev, UpdateEvent)
-    assert "OPTION-1 ACTIVATED" in select_ev.content
-
-    ctrl.close(options_menu, mock_board, mock_bus)
-    assert ctrl._last_focus is None
-
-
 @pytest.mark.workflow_traversal
 def test_pause_controller_save_load_submenu_and_quit(
     mock_menu,

@@ -12,7 +12,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/coverage.md.j2
+  template: iterate/merge.md.j2
 # ----------------------------------------------------
   parameters:
     description: *description
@@ -28,14 +28,14 @@ tools:
       templates: true
     # --------------------------------------------
     source:
-      data: true
+      data: false
       filter: true
     # --------------------------------------------
     shell:
       directory: true
     # --------------------------------------------
     tests:  
-      configuration: true
+      configuration: false
       pipeline: true
       session: false
 # -----------------------------------------------------
@@ -61,6 +61,7 @@ tools:
           - 11-emergence
           # - 12-architecture
       templates:
+        - template-merge
         - template-bug
     # --------------------------------------------
     source:
@@ -110,10 +111,10 @@ tools:
               app: [ menu ]
               menu: [ binding ]
           # -------------------------------------
-          # - title: Menu Modules
-          #   scan:
-          #     domain: [ logic ]
-          #     app: [ module, menu ]
+          - title: Menu Modules
+            scan:
+              domain: [ logic ]
+              app: [ module, menu ]
           # -------------------------------------
           # - title: Menu Mechanics
           #   scan:
@@ -137,20 +138,20 @@ tools:
               domain: [ system ]
               app: [ service, menu ]
           # -------------------------------------
-          - title: Test Fixtures
-            scan: 
-              domain: [ test ]
-              test: [ fixtures ]
+          # - title: Test Fixtures
+          #   scan: 
+          #     domain: [ test ]
+          #     test: [ fixtures ]
           # -------------------------------------
-          - title: Menu Unit Tests
-            scan:
-              domain: [ test ]
-              app: [ menu ]
+          # - title: Menu Unit Tests
+          #   scan:
+          #     domain: [ test ]
+          #     app: [ menu ]
           # -------------------------------------
       data:
         properties: [ widgets ]
         state: [ ]
-        configurations: [ menus]
+        configurations: [ menus ]
         templates: [ ]
     # --------------------------------------------
     shell:

@@ -1,7 +1,7 @@
 """
 @domain.model
 @app.config
-@category.widgets
+@app.menu
 
 # Ontology: Source - app.models.config.menus
 
