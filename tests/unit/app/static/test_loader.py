@@ -226,7 +226,7 @@ def test_cython_adapters_validation_and_serialization():
     hb = hb_adapter.validate_python(
         {"position": {"x": 8, "y": 12}, "dimensions": {"w": 16, "l": 20}}
     )
-    sc = sc_adapter.validate_python({"px": 0.25, "py": 0.75})
+    sc = sc_adapter.validate_python({"pw": 0.25, "pl": 0.75})
 
     assert isinstance(pos, Position) and (pos.x, pos.y) == (16, 32)
     assert isinstance(dim, Dimensions) and (dim.w, dim.l) == (64, 48)
@@ -235,7 +235,7 @@ def test_cython_adapters_validation_and_serialization():
     assert isinstance(hb, Hitbox)
     assert isinstance(hb.position, Position) and (hb.position.x, hb.position.y) == (8, 12)
     assert isinstance(hb.dimensions, Dimensions) and (hb.dimensions.w, hb.dimensions.l) == (16, 20)
-    assert isinstance(sc, Scale) and (sc.px, sc.py) == (0.25, 0.75)
+    assert isinstance(sc, Scale) and (sc.pw, sc.pl) == (0.25, 0.75)
 
     # 2. Passthrough validation when given existing Cython instances
     assert pos_adapter.validate_python(pos) is pos
@@ -254,7 +254,7 @@ def test_cython_adapters_validation_and_serialization():
         "position": {"x": 8, "y": 12},
         "dimensions": {"w": 16, "l": 20},
     }
-    assert sc_adapter.dump_python(sc, mode="json") == {"px": 0.25, "py": 0.75}
+    assert sc_adapter.dump_python(sc, mode="json") == {"pw": 0.25, "pl": 0.75}
 
 
 @pytest.mark.app_schema

@@ -172,7 +172,7 @@ class MeterFrame(Frame):
                 str(Gauges.EMPTY.value)
             ]): (0, 0, w, l)
         }
-        for res in range(1, Gauges.FULL.value):
+        for res in range(1, Gauges.FULL.value + 1):
             frame_index = settings.SEPARATOR.join([
                 id,
                 str(res)

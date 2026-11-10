@@ -75,7 +75,7 @@ class CollectionTarget:
 @dataclass(slots=True, frozen=True)
 class ApertureTarget:
     selector: str
-    index: int = 0
+    index: int
 
 
 @dataclass(slots=True, frozen=True)
@@ -83,6 +83,7 @@ class SelectTarget:
     selection: Enumerated[Selections] = Statuses.IDLE.value
     selector: Optional[str] = None
     index: Optional[int] = None
+
 
 # ---------------------------------------------------------
 
@@ -92,8 +93,11 @@ BindingTarget = Union[
     IconTarget,
     TextTarget,
     CollectionTarget,
-    ApertureTarget,
+    # NOTE: SelectTarget must come before ApertureTarget
+    #           or else Pydantic validators will enforce
+    #           wrong typing.
     SelectTarget,
+    ApertureTarget,
 ]
 
 # ---------------------------------------------------------

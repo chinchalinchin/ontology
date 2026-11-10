@@ -9,7 +9,7 @@
 
 # Ontology: Source - app.game.menus.controllers.inventory
 
-Package for managing the Player Inventory modal menu.
+Implementation for the Inventory Menu Controller
 """
 from __future__ import annotations
 
@@ -107,7 +107,7 @@ class InventoryController(MenuController):
         if focused_widget.binding.selection != Selections.SLOT.value:
             return
 
-        slot_index = focused_widget.binding.target.get.index
+        slot_index = int(focused_widget.binding.target.index)
         if gizmo_pane.state.is_occupied(slot_index):
             return
 
@@ -128,9 +128,7 @@ class InventoryController(MenuController):
 
         if new_focus and new_focus != menu.focus:
             focused_widget.state.status = Statuses.IDLE.value
-            focused_widget.state.animation.action = Statuses.IDLE.value
             menu.widgets[new_focus].state.status = Statuses.ACTIVE.value
-            menu.widgets[new_focus].state.animation.action = Statuses.ACTIVE.value
             menu.focus = new_focus
 
     def _equip_item(self, item: str, state: Any, board: Board) -> None:

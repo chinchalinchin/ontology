@@ -8,119 +8,170 @@
 
 Unit tests for Event Handler implementations.
 """
+# External Libraries
 import pytest
-import collections
-from unittest.mock import MagicMock
 
-from app.static.semantics import Menus
-from app.models.menus import (
-    MenuEvent,
-    StateEvent,
-    TerminalEvent,
-    UpdateEvent
-)
+# Application Libraries
 from app.game.menus.core import EventData
-from app.models.menus import (
-    MenuContext, 
-    LoadContext
-)
 from app.game.menus.handlers import (
     MenuEventHandler,
+    SeasonEventHandler,
     StateEventHandler,
     TerminalEventHandler,
-    UpdateEventHandler
+    UpdateEventHandler,
+)
+from app.models.menus import (
+    LoadContext,
+    MenuEvent,
+    SeasonEvent,
+    StateEvent,
+    TerminalEvent,
+    UpdateEvent,
+)
+from app.models.state import PaneState
+from app.static.semantics import (
+    Menus,
+    Seasons,
 )
 
 # ---------------------------------------------------------------------------
 
 pytestmark = [
     pytest.mark.app_menu,
-    pytest.mark.menu_handler
+    pytest.mark.menu_handler,
 ]
 
 # ---------------------------------------------------------------------------
 
 
-@pytest.fixture
-def mock_event_context():
-    context = EventData(
-        board=MagicMock(),
-        screens={'0': MagicMock()},
-        provider=MagicMock(),
-        bus=collections.deque()
-    )
-    # Default common attributes
-    context.board.configurations = MagicMock()
-    context.board.player.return_value = MagicMock(state=MagicMock(layer='0'))
-    context.board.loaded = True
-    context.board.menus = []
-    
-    return context
-
-def test_menu_event_handler(mock_event_context):
+@pytest.mark.workflow_rendering
+def test_menu_event_handler_pushes_menu_and_stamps_canvases(
+    mock_event_data: EventData,
+    mock_menu_context,
+    mock_render,
+):
     handler = MenuEventHandler()
-    event = MenuEvent(id="test_menu", context=MenuContext())
-    
-    mock_event_context.board.configurations.menus.get.return_value = {"config": "mocked"}
-    
-    mock_menu = MagicMock()
-    mock_menu.widgets = {
-        'test_widget': MagicMock(state=MagicMock(canvas=True, current=MagicMock(return_value="text")))
-    }
-    mock_event_context.provider.unpack.return_value = mock_menu
-    
-    handler.handle(event, mock_event_context)
-    
-    assert mock_event_context.board.paused is True
-    assert mock_menu in mock_event_context.board.menus
-    mock_event_context.screens['0'].stamp.assert_called_once()
+    event = MenuEvent(
+        id=Menus.MAIN.value,
+        context=mock_menu_context(Menus.MAIN.value),
+    )
 
-def test_state_event_handler(mock_event_context):
+    mock_event_data.board.paused = False
+    mock_event_data.board.menus.clear()
+
+    handler.handle(event, mock_event_data)
+
+    assert mock_event_data.board.paused is True
+    assert len(mock_event_data.board.menus) == 1
+    active_menu = mock_event_data.board.menus[-1]
+    assert active_menu.id == Menus.MAIN.value
+    assert any(
+        isinstance(w.state, PaneState) and w.state.canvas is not None
+        for w in active_menu.widgets.values()
+    )
+    mock_render.construct.assert_called()
+
+
+def test_menu_event_handler_ignores_unknown_menu(
+    mock_event_data: EventData,
+    mock_menu_context,
+):
+    handler = MenuEventHandler()
+    mock_event_data.board.paused = False
+    mock_event_data.board.menus.clear()
+
+    handler.handle(
+        MenuEvent(id="nonexistent-menu", context=mock_menu_context()),
+        mock_event_data,
+    )
+
+    assert mock_event_data.board.paused is False
+    assert len(mock_event_data.board.menus) == 0
+
+
+@pytest.mark.workflow_hydration
+def test_state_event_handler_queues_load_menu(mock_event_data: EventData):
     handler = StateEventHandler()
     event = StateEvent(id="world-02")
-    
-    handler.handle(event, mock_event_context)
-    
-    assert mock_event_context.board.migrator.target == "world-02"
-    assert len(mock_event_context.bus) == 1
-    
-    queued_event = mock_event_context.bus.popleft()
+
+    handler.handle(event, mock_event_data)
+
+    assert mock_event_data.board.migrator.target == "world-02"
+    assert len(mock_event_data.bus) == 1
+    queued_event = mock_event_data.bus.popleft()
     assert isinstance(queued_event, MenuEvent)
     assert queued_event.id == Menus.LOAD.value
     assert isinstance(queued_event.context, LoadContext)
 
-def test_terminal_event_handler_popping_standard_menu(mock_event_context):
-    handler = TerminalEventHandler()
-    mock_menu = MagicMock(id="standard_menu")
-    mock_event_context.board.menus = [mock_menu]
-    
-    handler.handle(TerminalEvent(), mock_event_context)
-    
-    # Assert menu was popped and board was unpaused
-    assert len(mock_event_context.board.menus) == 0
-    assert mock_event_context.board.paused is False
 
-def test_terminal_event_handler_popping_load_menu(mock_event_context):
+def test_terminal_event_handler_destroys_canvases_and_unpauses(
+    mock_event_data: EventData,
+    mock_menu,
+    mock_render,
+):
     handler = TerminalEventHandler()
-    mock_menu = MagicMock(id=Menus.LOAD.value)
-    mock_event_context.board.menus = [mock_menu]
-    
-    mock_hud = MagicMock()
-    mock_event_context.provider.unpack.return_value = mock_hud
-    
-    handler.handle(TerminalEvent(), mock_event_context)
-    
-    # Assert the HUD overlay was constructed and injected when Loading finishes
-    mock_event_context.provider.unpack.assert_called_once()
-    mock_event_context.board.set_overlays.assert_called_once_with([mock_hud])
+    menu = mock_menu(Menus.MAIN.value)
+    mock_event_data.board.menus = [menu]
+    mock_event_data.board.paused = True
+
+    handler.handle(TerminalEvent(), mock_event_data)
+
+    assert len(mock_event_data.board.menus) == 0
+    assert mock_event_data.board.paused is False
+    for widget in menu.widgets.values():
+        if isinstance(widget.state, PaneState):
+            assert widget.state.canvas is None
+    mock_render.destroy.assert_called()
+
+
+def test_terminal_event_handler_popping_load_menu_hydrates_hud_overlay(
+    mock_event_data: EventData,
+    mock_menu,
+):
+    handler = TerminalEventHandler()
+    load_menu = mock_menu(Menus.LOAD.value)
+    mock_event_data.board.menus = [load_menu]
+    mock_event_data.board.overlays.clear()
+
+    handler.handle(TerminalEvent(), mock_event_data)
+
+    assert len(mock_event_data.board.menus) == 0
+    assert len(mock_event_data.board.overlays) == 1
+    assert mock_event_data.board.overlays[0].id == Menus.VIEW.value
+
 
 @pytest.mark.workflow_rendering
-def test_update_event_handler(mock_event_context):
+def test_update_event_handler_restamps_pane_canvas(
+    mock_event_data: EventData,
+    mock_menu,
+    mock_render,
+):
     handler = UpdateEventHandler()
-    mock_widget = MagicMock()
-    event = UpdateEvent(widget=mock_widget, content="New Status!")
-    
-    handler.handle(event, mock_event_context)
-    
-    # Assert the VRAM stamp was directly executed against the correct screen
-    mock_event_context.screens['0'].stamp.assert_called_once_with(mock_widget, "New Status!")
+    dialogue_menu = mock_menu(Menus.DIALOGUE.value)
+    speech_pane = dialogue_menu.widgets["character-speech"]
+    mock_render.reset_mock()
+
+    handler.handle(
+        UpdateEvent(widget=speech_pane, content="Updated Dialogue Line"),
+        mock_event_data,
+    )
+
+    mock_render.construct.assert_called_once()
+    mock_render.write.assert_called_once()
+
+
+@pytest.mark.workflow_seasons
+def test_season_event_handler_reconstructs_screens_and_shorelines(
+    mock_event_data: EventData,
+    mock_render,
+):
+    handler = SeasonEventHandler()
+    mock_event_data.board.calendar.season = Seasons.AUTUMN.value
+    mock_render.reset_mock()
+
+    handler.handle(SeasonEvent(), mock_event_data)
+
+    mock_render.construct.assert_called()
+    for shore in mock_event_data.board.shorelines():
+        assert shore.state.season == Seasons.AUTUMN.value
+        assert shore.state._keys is None

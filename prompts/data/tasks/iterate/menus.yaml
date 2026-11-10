@@ -1,35 +1,40 @@
 # ----------------------------------------------------
 description: &description |
-  DESCRIPTION GOES HERE
+  Updates accepted.
+
+  **Priorities**
+      
+  * **DEBUGGING**: Debug the current run of the test pipeline located in the [Test Pipeline](#view-test-pipeline) section.
+  
 # ----------------------------------------------------
 context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/coverage.md.j2
+  template: index.md.j2
 # ----------------------------------------------------
   parameters:
     description: *description
-    title: Collection Refactor
+    title: Test Debugging
 # ----------------------------------------------------
 tools:
 # ----------------------------------------------------
   views:
     # --------------------------------------------
     manager:
-      board: true
-      docs: true
-      templates: true
+      board: false
+      docs: false
+      templates: false
     # --------------------------------------------
     source:
-      data: true
-      filter: true
+      data: false
+      filter: false
     # --------------------------------------------
     shell:
-      directory: true
+      directory: false
     # --------------------------------------------
     tests:  
-      configuration: true
+      configuration: false
       pipeline: true
       session: false
 # -----------------------------------------------------

@@ -147,6 +147,7 @@ class TextBinding(Binding):
         super().__init__(target, context, **kwargs)
         self.registry = registry
         self._cached_pages = None
+        self._content_ref = self._resolve_path(target.content, context)
 
     def bind(self, **kwargs) -> Tuple[Callable, ...]:
         w, l = kwargs.get('w', 0), kwargs.get('l', 0)

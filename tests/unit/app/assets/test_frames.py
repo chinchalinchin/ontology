@@ -318,86 +318,6 @@ def test_sprite_frame(mock_asset):
     expr_key = f"{ExpressionsPalette.BUBBLES.value}{SEPARATOR}loquacity"
     assert keys[6] == (expr_key, 10, -10)
 
-
-@pytest.mark.category_widgets
-def test_index_frame_indexing(mock_properties):
-    frame = IndexFrame()
-    props = mock_properties(
-        AssetCategories.CURSORS.value,
-        AssetInstances.EXPRESSIONS.value,
-        "bubbles",
-    )
-    w, l = props.dimensions.w, props.dimensions.l
-    crops = frame.index("bubbles", props)
-
-    for i, frame_name in enumerate(props.frames):
-        assert crops[f"bubbles{SEPARATOR}{frame_name}"] == (i * w, 0, w, l)
-
-
-@pytest.mark.category_widgets
-def test_index_frame_suppresses_vacant_slot():
-    frame = IndexFrame()
-
-    occupied_state = IconState(id="weapons", icon_function=lambda: "shortsword")
-    assert frame.keys("weapons", occupied_state) == [(f"weapons{SEPARATOR}shortsword", 0, 0)]
-
-    empty_state = IconState(id="weapons", icon_function=lambda: "")
-    assert frame.keys("weapons", empty_state) == []
-
-    none_state = IconState(id="weapons", icon_function=lambda: None)
-    assert frame.keys("weapons", none_state) == []
-
-
-@pytest.mark.category_widgets
-def test_traversal_frame_indexing_and_keys(mock_properties, mock_state):
-    frame = TraversalFrame()
-    props = mock_properties(
-        AssetCategories.WIDGETS.value,
-        "buttons",
-    )
-    w, l = props.dimensions.w, props.dimensions.l
-    crops = frame.index("ui_btn", props)
-
-    assert crops[f"ui_btn{SEPARATOR}{Statuses.IDLE.value}"] == (0, 0, w, l)
-    assert crops[f"ui_btn{SEPARATOR}{Statuses.ACTIVE.value}"] == (w, 0, w, l)
-    assert crops[f"ui_btn{SEPARATOR}{Statuses.SELECTED.value}"] == (2 * w, 0, w, l)
-    assert crops[f"ui_btn{SEPARATOR}{Statuses.DISABLED.value}"] == (3 * w, 0, w, l)
-
-    state = mock_state(
-        AssetCategories.EFFECTS.value,
-        AssetInstances.PASSIVE.value,
-    )
-    state.animation.action = Statuses.ACTIVE.value
-    assert frame.keys("ui_btn", state) == [
-        (f"ui_btn{SEPARATOR}{Statuses.ACTIVE.value}", 0, 0)
-    ]
-
-
-@pytest.mark.category_widgets
-def test_meter_frame_indexing_and_keys(mock_properties, mock_state):
-    frame = MeterFrame()
-    props = mock_properties(
-        AssetCategories.WIDGETS.value,
-        "meters",
-    )
-    w, l = props.dimensions.w, props.dimensions.l
-    crops = frame.index("health_bar", props)
-
-    assert crops[f"health_bar{SEPARATOR}{Gauges.EMPTY.value}"] == (0, 0, w, l)
-    assert crops[f"health_bar{SEPARATOR}50"] == (w, 0, int(w * 0.5), l)
-    assert crops[f"health_bar{SEPARATOR}100"] == (w, 0, w, l)
-
-    state = mock_state(
-        AssetCategories.EFFECTS.value,
-        AssetInstances.PASSIVE.value,
-    )
-    state.animation.frame = 50
-    assert frame.keys("health_bar", state) == [
-        (f"health_bar{SEPARATOR}{Gauges.EMPTY.value}", 0, 0),
-        (f"health_bar{SEPARATOR}50", 0, 0),
-    ]
-
-
 @pytest.mark.category_sheets
 @pytest.mark.modality_intention
 def test_sprite_frame_no_equipment(mock_asset):
@@ -867,3 +787,176 @@ def test_stage_frame_keys(mock_asset):
     keys = tree.frame.keys(tree.id, tree.state)
 
     assert keys == [(f"deciduous{SEPARATOR}{PerennialStages.ADULT.value}", 0, 0)]
+
+
+@pytest.mark.category_widgets
+def test_pane_frame_index_trisects_dimensions(mock_asset):
+    pane = mock_asset(
+        AssetCategories.WIDGETS.value,
+        AssetInstances.PANES.value,
+        id="dark",
+    )
+    assert isinstance(pane.frame, PaneFrame)
+
+    wc = pane.properties.dimensions.w // 3
+    lc = pane.properties.dimensions.l // 3
+    crops = pane.frame.index(pane.id, pane.properties)
+
+    assert len(crops) == 9
+    partitions = (
+        Alignments.START.value,
+        Alignments.CENTER.value,
+        Alignments.END.value,
+    )
+    for r, v in enumerate(partitions):
+        for c, h in enumerate(partitions):
+            key = settings.SEPARATOR.join([pane.id, v, h])
+            assert key in crops
+            assert crops[key] == (c * wc, r * lc, wc, lc)
+
+@pytest.mark.category_widgets
+@pytest.mark.parametrize(
+    "nx, ny",
+    [
+        (0, 0),
+        (1, 1),
+        (2, 2),
+        (3, 1),
+    ],
+)
+def test_pane_frame_keys_projects_9_slice_grid(mock_asset, nx: int, ny: int):
+    pane = mock_asset(
+        AssetCategories.WIDGETS.value,
+        AssetInstances.PANES.value,
+        id="neutral",
+    )
+    wc = pane.properties.dimensions.w // 3
+    lc = pane.properties.dimensions.l // 3
+
+    pane.state.multiple = Multiple(nx=nx, ny=ny)
+    pane.state.span = Dimensions(w=(nx + 2) * wc, l=(ny + 2) * lc)
+
+    primitives = pane.frame.keys(pane.id, pane.state)
+    assert len(primitives) == (nx + 2) * (ny + 2)
+
+    # Corners must map to start/end combinations
+    assert primitives[0] == (f"{pane.id}-start-start", 0, 0)
+    assert primitives[nx + 1] == (f"{pane.id}-start-end", (nx + 1) * wc, 0)
+    assert primitives[(ny + 1) * (nx + 2)] == (
+        f"{pane.id}-end-start",
+        0,
+        (ny + 1) * lc,
+    )
+    assert primitives[-1] == (
+        f"{pane.id}-end-end",
+        (nx + 1) * wc,
+        (ny + 1) * lc,
+    )
+
+    # Interior cells must map to center partitions with non-overlapping offsets
+    for iy in range(1, ny + 1):
+        for ix in range(1, nx + 1):
+            idx = iy * (nx + 2) + ix
+            assert primitives[idx] == (
+                f"{pane.id}-center-center",
+                ix * wc,
+                iy * lc,
+            )
+
+
+@pytest.mark.category_widgets
+def test_index_frame_indexing(mock_properties):
+    frame = IndexFrame()
+    props = mock_properties(
+        AssetCategories.CURSORS.value,
+        AssetInstances.EXPRESSIONS.value,
+        "bubbles",
+    )
+    w, l = props.dimensions.w, props.dimensions.l
+    crops = frame.index("bubbles", props)
+
+    for i, frame_name in enumerate(props.frames):
+        assert crops[f"bubbles{SEPARATOR}{frame_name}"] == (i * w, 0, w, l)
+
+
+@pytest.mark.category_widgets
+def test_index_frame_suppresses_vacant_slot():
+    frame = IndexFrame()
+
+    occupied_state = IconState(id="weapons", icon_function=lambda: "shortsword")
+    assert frame.keys("weapons", occupied_state) == [(f"weapons{SEPARATOR}shortsword", 0, 0)]
+
+    empty_state = IconState(id="weapons", icon_function=lambda: "")
+    assert frame.keys("weapons", empty_state) == []
+
+    none_state = IconState(id="weapons", icon_function=lambda: None)
+    assert frame.keys("weapons", none_state) == []
+
+
+@pytest.mark.category_widgets
+def test_traversal_frame_index_and_stateless_keys(mock_asset):
+    button = mock_asset(
+        AssetCategories.WIDGETS.value,
+        AssetInstances.BUTTONS.value,
+        id="label",
+    )
+    assert isinstance(button.frame, TraversalFrame)
+
+    w = button.properties.dimensions.w
+    l = button.properties.dimensions.l
+    crops = button.frame.index(button.id, button.properties)
+
+    assert crops[f"{button.id}-{Statuses.IDLE.value}"] == (0, 0, w, l)
+    assert crops[f"{button.id}-{Statuses.ACTIVE.value}"] == (w, 0, w, l)
+    assert crops[f"{button.id}-{Statuses.SELECTED.value}"] == (2 * w, 0, w, l)
+    assert crops[f"{button.id}-{Statuses.DISABLED.value}"] == (3 * w, 0, w, l)
+
+    for status in Statuses:
+        button.state.status = status.value
+        assert button.frame.keys(button.id, button.state) == [
+            (f"{button.id}-{status.value}", 0, 0)
+        ]
+
+
+@pytest.mark.category_widgets
+def test_meter_frame_index_and_stateless_ratio_keys(mock_asset):
+    meter = mock_asset(
+        AssetCategories.WIDGETS.value,
+        AssetInstances.METERS.value,
+        id="health",
+    )
+    assert isinstance(meter.frame, MeterFrame)
+
+    w = meter.properties.dimensions.w
+    l = meter.properties.dimensions.l
+    crops = meter.frame.index(meter.id, meter.properties)
+
+    empty_key = f"{meter.id}-{Gauges.EMPTY.value}"
+    assert crops[empty_key] == (0, 0, w, l)
+    assert crops[f"{meter.id}-50"] == (w, 0, int(w * (50 / Gauges.FULL.value)), l)
+
+    # Zero reading omits the second gauge tuple to avoid Registry MISS on '<id>-0'
+    meter.state.reading_function = lambda: 0
+    meter.state.unit_function = lambda: 100
+    assert meter.frame.keys(meter.id, meter.state) == [(empty_key, 0, 0)]
+
+    # Zero unit guards against ZeroDivisionError
+    meter.state.reading_function = lambda: 50
+    meter.state.unit_function = lambda: 0
+    assert meter.frame.keys(meter.id, meter.state) == [(empty_key, 0, 0)]
+
+    # Partial reading projects rounded integer percentage
+    meter.state.reading_function = lambda: 75
+    meter.state.unit_function = lambda: 100
+    assert meter.frame.keys(meter.id, meter.state) == [
+        (empty_key, 0, 0),
+        (f"{meter.id}-75", 0, 0),
+    ]
+
+    # Overflow reading clamps at 100
+    meter.state.reading_function = lambda: 150
+    meter.state.unit_function = lambda: 100
+    assert meter.frame.keys(meter.id, meter.state) == [
+        (empty_key, 0, 0),
+        (f"{meter.id}-100", 0, 0),
+    ]

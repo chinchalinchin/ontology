@@ -430,6 +430,8 @@ class Board:
                         render.destroy(widget.state.canvas)
                         widget.state.canvas = None
 
+        self.loaded = False
+        self.paused = False
         self._assets.clear()
         self._cache.clear()
         self.menus.clear()

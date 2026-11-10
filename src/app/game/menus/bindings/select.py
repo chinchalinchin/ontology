@@ -14,13 +14,14 @@ from typing import Optional
 # Application Libraries
 from app.models.config.menus import SelectTarget
 from app.game.menus.bindings.base import Binding
+from app.static.semantics import Statuses
 
 class SelectBinding(Binding):
     target: SelectTarget
 
     @property
     def selection(self) -> str:
-        return self.target.selection
+        return getattr(self.target, "selection", Statuses.IDLE.value)
 
     @property
     def selector(self) -> Optional[str]:
