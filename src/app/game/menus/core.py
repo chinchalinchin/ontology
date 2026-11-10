@@ -10,7 +10,7 @@ from __future__ import annotations
 
 # Standard Libraries
 from typing import (
-    Dict, 
+    Dict,
     Optional,
     TYPE_CHECKING
 )
@@ -21,6 +21,10 @@ import collections
 from app.assets.base import Asset
 from app.game.menus.bindings import Binding
 from app.models.menus import MenuContext
+from app.models.state import PaneState
+
+# Cython Libraries
+from libs.core.models import Dimensions
 
 if TYPE_CHECKING:
     from app.game.menus.controllers.base import MenuController
@@ -35,10 +39,16 @@ class Widget(Asset):
     Attach Binding to standard Asset base to allow state closure.
     """
     binding: Optional[Binding]
-    
+
     def __init__(self, taxonomy, properties, state, frame, animation, binding: Optional[Binding] = None):
         super().__init__(taxonomy, properties, state, frame, animation)
         self.binding = binding
+
+    @property
+    def dimensions(self) -> Dimensions:
+        if isinstance(self.state, PaneState):
+            return self.state.span
+        return self.properties.dimensions
 
 # ---------------------------------------------------------------------
 
@@ -51,7 +61,7 @@ class Menu:
     focus: str
     graph: Dict[str, Dict[str, str]]
     context: MenuContext
-    widgets: Dict[str, Widget]    
+    widgets: Dict[str, Widget]
     controller: MenuController
 
 # ---------------------------------------------------------------------

@@ -108,6 +108,10 @@ tools:
             scan:
               domain: [ system ]
               app: [ service, menu ]
+          - title: Menu Modules
+            scan:
+              domain: [ logic ]
+              app: [ module, menu ]
           # -------------------------------------
           - title: Menu Mechanics
             scan:

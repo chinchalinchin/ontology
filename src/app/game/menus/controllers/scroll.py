@@ -19,6 +19,10 @@ from app.static.semantics import Selections
 from app.game.menus.controllers.base import MenuController
 from app.game.menus.core import Menu
 from app.models.menus import UpdateEvent
+from app.models.state import (
+    PaneState,
+    TraversalState
+)
 
 if TYPE_CHECKING:
     from app.game.board import Board
@@ -29,32 +33,40 @@ class ScrollController(MenuController):
     """
 
     def open(self, menu: Menu, board: Board, bus: collections.deque) -> None:
-        pass
+        for widget in menu.widgets.values():
+            if isinstance(widget.state, PaneState) and widget.state.content_function is not None:
+                bus.append(UpdateEvent(widget=widget, content=widget.state.current()))
 
     def select(self, name: str, menu: Menu, board: Board, bus: collections.deque) -> None:
         """Fires when the user presses SELECT on a focused widget."""
         widget = menu.widgets[name]
+
+        if not widget or not widget.binding:
+            return
         
         selection = widget.binding.selection
-        target_key = widget.binding.selector 
+        selector = widget.binding.selector 
         
-        if not target_key or target_key not in menu.widgets:
+        if not selector or selector not in menu.widgets:
             return
             
-        page = menu.widgets[target_key]
+        pane = menu.widgets[selector]
+
+        if not isinstance(pane.state, PaneState):
+            return
         
         if selection == Selections.SCROLLDOWN.value:
-            page.state.scrolldown()
+            pane.state.scrolldown()
             bus.append(UpdateEvent(
-                widget=page, 
-                content=page.state.current()
+                widget=pane, 
+                content=pane.state.current()
             ))
 
         elif selection == Selections.SCROLLUP.value:
-            page.state.scrollup()
+            pane.state.scrollup()
             bus.append(UpdateEvent(
-                widget=page, 
-                content=page.state.current()
+                widget=pane, 
+                content=pane.state.current()
             ))
             
     def update(self, menu: Menu, board: Board, bus: collections.deque) -> None:

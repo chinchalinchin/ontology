@@ -7,7 +7,7 @@ Unify and simplify the `Widgets` branch of the Asset Hierarchy by:
 
 1. Deprecating `Pages` (`AssetInstances.PAGES` and `DisplayState`) and subsuming their typography, `canvas` allocation, and pagination capabilities directly into `Panes` (`AssetInstances.PANES` and `PaneState`).
 2. Eliminating `Widget` animations (`TraversalAnimation`, `MeterAnimation`) and `AnimationState` fields on `Widgets`, projecting instantaneous state changes directly inside `TraversalFrame.keys()` and `MeterFrame.keys()`.
-3. Decoupling `Panes` from fixed-dimension pixel configurations and `ScreenPosition` coordinates via implicit in-place $3 \times 3$ (9-slice) cell indexing (`PaneFrame`), screen-relative fractional `Scale` dimensions $(w_p, l_p) \in (0.0, 1.0]^2$, and 2-axis `AxisAlignment` (`horizontal: left | center | right`, `vertical: left | center | right`).
+3. Decoupling `Panes` from fixed-dimension pixel configurations and `ScreenPosition` coordinates via implicit in-place $3 \times 3$ (9-slice) cell indexing (`PaneFrame`), screen-relative fractional `Scale` dimensions $(w_p, l_p) \in (0.0, 1.0]^2$, and 2-axis `AxisAlignment` (`horizontal: start | center | end`, `vertical: start | center | end`).
 
 ##### Specification
 
@@ -504,6 +504,6 @@ class PaneState(WidgetState):
 
 *Objective*: Remove redundant fixed-size `pages` and `panes` definitions, unify menu YAML files onto fractional `dimensions` and 2-axis `alignment`/`justification`, and verify with unit tests.
 
-* [x] Subtask: Consolidate `src/assets/widgets/main.yaml` by removing the `pages:` section, moving `paper-*` assets under `panes:`, and replacing fixed-size variants (`dark-small`, `dark-thin`, `dark-dialogue`, `dark-notification`, `dark-portrait`, `neutral-small`, `light-small`, `transparent-slot`, `transparent-block`, `transparent-area`, `transparent-label`) with base pane entries (`dark`, `neutral`, `light`, `transparent`).
+* [x] Subtask: Consolidate `src/assets/widgets/**/*.yaml` by removing the `pages:` section, moving `paper-*` assets under `panes:`, and replacing fixed-size variants (`dark-small`, `dark-thin`, `dark-dialogue`, `dark-notification`, `dark-portrait`, `neutral-small`, `light-small`, `transparent-slot`, `transparent-block`, `transparent-area`, `transparent-label`) with base pane entries (`dark`, `neutral`, `light`, `transparent`).
 * [] Subtask: Update `main.yaml`, `load.yaml`, `pause.yaml`, `options.yaml`, `dialogue.yaml`, `text.yaml`, `inventory.yaml`, and `view.yaml` in `src/data/config/menus/` to replace `instance: pages` with `instance: panes`, remove `position: { px, py }`, and declare fractional `dimensions: { w, l }`, `justification: { horizontal, vertical }`, and `alignment: { horizontal, vertical }`.
 * [!: Dependent on User Acceptance Testing] Subtask: Add unit tests under `tests/unit/app/` verifying `PaneFrame.index()`, `PaneFrame.keys()`, stateless `TraversalFrame.keys()` and `MeterFrame.keys()`, fractional screen quantization, and 2-axis `Layout.compute()` positioning.

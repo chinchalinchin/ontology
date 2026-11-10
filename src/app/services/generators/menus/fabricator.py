@@ -25,6 +25,7 @@ from app.static.semantics import (
     Bindings
 )
 from app.models.config.menus import (
+    AxisAlignment,
     MenuNode,
     PaneParameters,
     GizmoParameters,
@@ -34,11 +35,10 @@ from app.models.config.menus import (
     SelectTarget,
     ApertureTarget
 )
-from app.models.properties import WidgetProperties
 from app.models.menus import MenuContext
 
 # Cython Libraries
-from libs.core.models import Dimensions
+from libs.core.models import Scale
 
 
 class Fabricator:
@@ -51,14 +51,13 @@ class Fabricator:
     def expand(
         cls,
         node: MenuNode,
-        context: MenuContext,
-        properties: WidgetProperties
+        context: MenuContext
     ) -> MenuNode:
         if not node.bind or not node.bind.schema:
             raise ValueError(f"Gizmo '{node.name}' declared without a binding schema.")
 
         handlers: Dict[str, Callable[
-            [MenuNode, MenuContext, WidgetProperties], MenuNode
+            [MenuNode, MenuContext], MenuNode
         ]] = {
             Bindings.COLLECTION.value: cls._collection,
         }
@@ -69,14 +68,13 @@ class Fabricator:
                 f"Unsupported gizmo schema '{node.bind.schema}' for node '{node.name}'."
             )
 
-        return handler(node, context, properties)
+        return handler(node, context)
 
     @classmethod
     def _collection(
         cls,
         node: MenuNode,
-        context: MenuContext,
-        properties: WidgetProperties
+        context: MenuContext
     ) -> MenuNode:
         params = node.parameters
         target = node.bind.target
@@ -95,16 +93,11 @@ class Fabricator:
         gap = params.gap
         pane_id = params.pane
         button_id = params.button
-
-        slot_props = properties.panes[pane_id]
-        slot_w = slot_props.dimensions.w
-        slot_l = slot_props.dimensions.l
+        grid_scale = params.dimensions
 
         total_rows = (capacity + columns - 1) // columns
-        row_w = columns * slot_w + (columns - 1) * gap
-        row_l = slot_l
-        grid_w = row_w
-        grid_l = total_rows * slot_l + (total_rows - 1) * gap
+        row_scale = Scale(w=grid_scale.w, l=grid_scale.l / total_rows)
+        slot_scale = Scale(w=grid_scale.w / columns, l=grid_scale.l / total_rows)
 
         row_panes: List[MenuNode] = []
 
@@ -148,10 +141,13 @@ class Fabricator:
                     instance=AssetInstances.PANES.value,
                     parameters=PaneParameters(
                         layout=Layouts.OVERLAY.value,
-                        alignment=Alignments.CENTER.value,
+                        alignment=AxisAlignment(
+                            horizontal=Alignments.CENTER.value,
+                            vertical=Alignments.CENTER.value
+                        ),
                         gap=0,
                         margins=0,
-                        dimensions=Dimensions(w=slot_w, l=slot_l),
+                        dimensions=slot_scale,
                         children=[button_node, icon_node]
                     )
                 )
@@ -163,10 +159,13 @@ class Fabricator:
                 instance=AssetInstances.PANES.value,
                 parameters=PaneParameters(
                     layout=Layouts.DOCK.value,
-                    alignment=Alignments.START.value,
+                    alignment=AxisAlignment(
+                        horizontal=Alignments.START.value,
+                        vertical=Alignments.CENTER.value
+                    ),
                     gap=gap,
                     margins=0,
-                    dimensions=Dimensions(w=row_w, l=row_l),
+                    dimensions=row_scale,
                     children=slot_panes
                 )
             )
@@ -188,10 +187,13 @@ class Fabricator:
             bind=root_binding,
             parameters=PaneParameters(
                 layout=Layouts.STACK.value,
-                alignment=Alignments.START.value,
+                alignment=AxisAlignment(
+                    horizontal=Alignments.START.value,
+                    vertical=Alignments.CENTER.value
+                ),
                 gap=gap,
                 margins=0,
-                dimensions=Dimensions(w=grid_w, l=grid_l),
+                dimensions=grid_scale,
                 children=row_panes
             )
         )

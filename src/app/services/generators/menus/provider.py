@@ -31,11 +31,9 @@ from app.static.semantics import (
 from app.services.factories.assets import AssetFactory
 from app.models.properties import WidgetProperties
 from app.models.state import (
-    DisplayState,
     PaneState,
     MeterState,
     TraversalState,
-    AnimationState,
     IconState,
     CollectionState
 )
@@ -92,49 +90,18 @@ class Provider:
     # ------------------------ ASSET HYDRATION UTILITIES
     # --------------------------------------------------
 
-    def _page(
-        self,
-        cfg: MenuNode,
-        binding: Optional[Binding],
-        font: Fonts
-    ) -> DisplayState:
-        props_dict = getattr(self.properties, cfg.instance, {})
-        props = props_dict.get(cfg.id)
-
-        w = props.dimensions.w
-        l = props.dimensions.l
-        canvas_ptr = render.canvas(w, l)
-
-        if binding:
-            content_function = binding.bind(w=w, l=l)
-        else:
-            content_function = lambda: []
-
-        return DisplayState(
-            id               = cfg.id,
-            position         = Position(x=0, y=0),
-            content_function = content_function,
-            font             = font,
-            pageindex        = 0,
-            pagesize         = 1,
-            canvas           = canvas_ptr
-        )
-
     def _meter(
         self,
         cfg: MenuNode,
         binding: Binding
     ) -> MeterState:
         reading_fn, unit_fn = binding.bind()
-        state = MeterState(
+        return MeterState(
             id               = cfg.id,
             position         = Position(x=0, y=0),
             reading_function = reading_fn,
             unit_function    = unit_fn
         )
-        if state.unit > 0:
-            state.animation.frame = max(0, min(100, int(round((state.reading / state.unit) * 100))))
-        return state
 
     def _icon(
         self,
@@ -157,17 +124,15 @@ class Provider:
         if isinstance(cfg.parameters, ButtonParameters):
             status_val = cfg.parameters.status
         return TraversalState(
-            id        = cfg.id,
-            position  = Position(x=0, y=0),
-            status    = status_val,
-            animation = AnimationState(action=status_val)
+            id       = cfg.id,
+            position = Position(x=0, y=0),
+            status   = status_val
         )
 
     def _widget(
         self,
         cfg: MenuNode,
         context: MenuContext,
-        font: Fonts,
         widgets: Dict[str, Widget]
     ) -> Widget:
         props_dict = getattr(self.properties, cfg.instance, {})
@@ -178,7 +143,6 @@ class Provider:
         binding = self.binder.binding(cfg.bind, context, widgets=widgets)
 
         delegator = {
-            AssetInstances.PAGES.value: lambda c, b: self._page(c, b, font),
             AssetInstances.METERS.value: self._meter,
             AssetInstances.BUTTONS.value: self._button,
             AssetInstances.ICONS.value: self._icon
@@ -187,6 +151,39 @@ class Provider:
         state = delegator[instance_key](cfg, binding)
 
         return AssetFactory.widget(cfg, properties, state, recipe, binding)
+
+    def _bake_pane(self, widget: Widget) -> None:
+        if not isinstance(widget.state, PaneState):
+            return
+
+        w = widget.dimensions.w
+        l = widget.dimensions.l
+
+        if widget.binding is not None and not isinstance(widget.binding, CollectionBinding):
+            widget.state.content_function = widget.binding.bind(w=w, l=l)
+
+        if w <= 0 or l <= 0:
+            return
+
+        canvas_ptr = render.canvas(w, l)
+        widget.state.canvas = canvas_ptr
+
+        primitives = []
+        for key, ox, oy in widget.frame.keys(widget.id, widget.state):
+            tex_data = self.binder.registry.image(key)
+            if not tex_data:
+                continue
+            tex_ptr, sx, sy, sw, sl = tex_data
+            primitives.append((tex_ptr, sx, sy, sw, sl, ox, oy, sw, sl, 1, 1))
+
+        if primitives:
+            render.construct(canvas_ptr, primitives)
+
+        content = widget.state.current()
+        if isinstance(content, str) and content:
+            font = self.binder.registry.font(widget.state.font)
+            if font:
+                render.write((canvas_ptr, 0, 0, w, l, 0, 0, w, l), content, font)
 
     # --------------------------------------------------
     # ------------------------------ RECURSION UTILITIES
@@ -202,7 +199,7 @@ class Provider:
         if cfg.instance == AssetInstances.PANES.value:
             self._unpack_pane(cfg, context, widgets, font)
         else:
-            widgets[cfg.name] = self._widget(cfg, context, font, widgets)
+            widgets[cfg.name] = self._widget(cfg, context, widgets)
 
     def _unpack_pane(
         self,
@@ -214,23 +211,12 @@ class Provider:
         """
         Hydrates a Pane node and recursively unpacks its children.
         """
-        params = pane.parameters
-
-        if not isinstance(params, PaneParameters):
-            logger.warning(f"Pane does not have PaneParameters: {pane.name}")
-            return
-
-        font = params.font or font
+        params = pane.parameters if isinstance(pane.parameters, PaneParameters) else PaneParameters()
+        active_font = params.font or font or Fonts.DIALOGUE.value
         props = self.properties.panes.get(pane.id)
         recipe = self.recipes.panes
 
-        if params.dimensions is not None:
-            props = WidgetProperties(
-                dimensions=params.dimensions,
-                frames=props.frames
-            )
-
-        binding = self.binder.binding(pane.bind, context, widgets=widgets)
+        binding = self.binder.binding(pane.bind, context, widgets=widgets, font=active_font)
 
         if isinstance(binding, CollectionBinding):
             state = CollectionState(
@@ -239,8 +225,10 @@ class Provider:
                 position            = Position(x=0, y=0),
                 layout              = params.layout,
                 alignment           = params.alignment,
+                justification       = params.justification,
                 gap                 = params.gap,
                 margins             = params.margins,
+                font                = active_font,
                 collection_function = binding.bind(),
                 capacity            = binding.target.capacity,
                 columns             = binding.target.columns,
@@ -248,13 +236,15 @@ class Provider:
             )
         else:
             state = PaneState(
-                id        = pane.id,
-                name      = pane.name,
-                position  = Position(x=0, y=0),
-                layout    = params.layout,
-                alignment = params.alignment,
-                gap       = params.gap,
-                margins   = params.margins
+                id            = pane.id,
+                name          = pane.name,
+                position      = Position(x=0, y=0),
+                layout        = params.layout,
+                alignment     = params.alignment,
+                justification = params.justification,
+                gap           = params.gap,
+                margins       = params.margins,
+                font          = active_font
             )
 
         pane_widget = AssetFactory.widget(
@@ -267,7 +257,7 @@ class Provider:
         widgets[pane.name] = pane_widget
 
         for child in params.children:
-            self._unpack_node(child, context, widgets, font)
+            self._unpack_node(child, context, widgets, active_font)
 
         # Synchronize initial slot button statuses for CollectionState gizmos
         if isinstance(state, CollectionState):
@@ -284,32 +274,27 @@ class Provider:
             if slot_widget and isinstance(slot_widget.state, TraversalState):
                 status = Statuses.IDLE.value if state.is_occupied(i) else Statuses.DISABLED.value
                 slot_widget.state.status = status
-                slot_widget.state.animation.action = status
 
     def _expand(self, node: MenuNode, context: MenuContext) -> MenuNode:
         """
         Recursively compiles virtual macro nodes (gizmos) into concrete pane subtrees.
         """
         if node.instance == Shortcuts.GIZMOS.value:
-            expanded = self.fabricator.expand(node, context, self.properties)
+            expanded = self.fabricator.expand(node, context)
             return self._expand(expanded, context)
 
         if node.instance == AssetInstances.PANES.value:
-            params = node.parameters
-            if not isinstance(params, PaneParameters):
-                logger.warning(f"Pane Node does not have PaneParameters: {node.name}")
-                return node
-
+            params = node.parameters if isinstance(node.parameters, PaneParameters) else PaneParameters()
             new_children = [self._expand(child, context) for child in params.children]
             new_params = PaneParameters(
-                layout     = params.layout,
-                alignment  = params.alignment,
-                gap        = params.gap,
-                margins    = params.margins,
-                position   = params.position,
-                dimensions = params.dimensions,
-                font       = params.font,
-                children   = new_children
+                layout        = params.layout,
+                alignment     = params.alignment,
+                justification = params.justification,
+                gap           = params.gap,
+                margins       = params.margins,
+                dimensions    = params.dimensions,
+                font          = params.font,
+                children      = new_children
             )
             return MenuNode(
                 id         = node.id,
@@ -337,7 +322,6 @@ class Provider:
         for focus in graph.keys():
             if widgets[focus].state.status != Statuses.DISABLED.value:
                 widgets[focus].state.status = Statuses.ACTIVE.value
-                widgets[focus].state.animation.action = Statuses.ACTIVE.value
                 return focus
 
         return None
@@ -365,6 +349,11 @@ class Provider:
         # Phase 3: Spatial Layout & Navigation Topology Graph
         layout = Layout(screensize)
         flattened_list, graph = layout.compute(expanded_roots, widgets)
+
+        # Phase 4: Deferred Text Binding & 9-Slice Canvas Baking
+        for widget in flattened_list:
+            if isinstance(widget.state, PaneState):
+                self._bake_pane(widget)
 
         ordered_widgets = {w.name: w for w in flattened_list}
         ctrl = AssetFactory.controller(config.controller)
