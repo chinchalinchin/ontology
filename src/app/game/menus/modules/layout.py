@@ -82,8 +82,8 @@ class Layout:
         wc = pane.properties.dimensions.w // 3
         lc = pane.properties.dimensions.l // 3
 
-        w_req = int(params.dimensions.w * self.screensize.w)
-        l_req = int(params.dimensions.l * self.screensize.l)
+        w_req = int(params.dimensions.pw * self.screensize.w)
+        l_req = int(params.dimensions.pl * self.screensize.l)
 
         nx = max(0, math.ceil((w_req - 2 * wc) / wc)) if wc > 0 else 0
         ny = max(0, math.ceil((l_req - 2 * lc) / lc)) if lc > 0 else 0

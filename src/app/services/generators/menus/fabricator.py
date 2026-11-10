@@ -24,8 +24,8 @@ from app.static.semantics import (
     Selections,
     Bindings
 )
+from app.models.core import AxisAlignment
 from app.models.config.menus import (
-    AxisAlignment,
     MenuNode,
     PaneParameters,
     GizmoParameters,
@@ -96,8 +96,8 @@ class Fabricator:
         grid_scale = params.dimensions
 
         total_rows = (capacity + columns - 1) // columns
-        row_scale = Scale(w=grid_scale.w, l=grid_scale.l / total_rows)
-        slot_scale = Scale(w=grid_scale.w / columns, l=grid_scale.l / total_rows)
+        row_scale = Scale(pw=grid_scale.pw, pl=grid_scale.pl / total_rows)
+        slot_scale = Scale(pw=grid_scale.pw / columns, pl=grid_scale.pl / total_rows)
 
         row_panes: List[MenuNode] = []
 

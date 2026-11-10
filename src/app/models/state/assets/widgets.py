@@ -33,7 +33,7 @@ from app.models.adapters import (
     PydanticMultiple as Multiple,
     Enumerated
 )
-from app.models.config.menus import AxisAlignment
+from app.models.core import AxisAlignment
 from app.models.state.core import AssetState
 
 # Cython Libraries

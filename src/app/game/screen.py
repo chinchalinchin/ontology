@@ -361,15 +361,13 @@ class Screen:
         for base_key, ox, oy in widget.frame.keys(widget.id, widget.state):
             tex_data = self.registry.image(base_key)
             if not tex_data:
-                logger.warning(f"Registry MISS: Frame key not found: '{base_key}'")
                 continue
 
             base_ptr, sx, sy, sw, sl = tex_data
             primitives.append((base_ptr, sx, sy, sw, sl, ox, oy, sw, sl, 1, 1))
 
-        # 1. Fetch and stamp clean 9-slice background
-        if primitives:
-            render.construct(tex, primitives)
+        # 1. Clear target canvas and stamp 9-slice background (if any)
+        render.construct(tex, primitives)
 
         # 2. Re-write the font over the cleared canvas
         if isinstance(content, str) and content:
@@ -381,7 +379,6 @@ class Screen:
                 )
                 return
             render.write((tex, 0, 0, tex.w, tex.l, 0, 0, tex.w, tex.l), content, font)
-
 
     def interface(self, menus: List[Menu], overlays: List[Menu]) -> None:
         """

@@ -24,7 +24,6 @@ from dataclasses import (
 from app.static.semantics import (
     Statuses,
     Layouts,
-    Alignments,
     Bindings,
     Controllers,
     Selections,
@@ -36,9 +35,12 @@ from app.models.adapters import (
     PydanticDimensions as Dimensions,
     Enumerated
 )
+from app.models.core import AxisAlignment
 from app.models.config import Configuration
 from app.models.adapters import Enumerated
 
+# Cython Libraries
+from libs.core.models import Scale as CoreScale
 # ---------------------------------------------------------
 
 @dataclass(slots=True, frozen=True)
@@ -97,11 +99,6 @@ BindingTarget = Union[
 # ---------------------------------------------------------
 
 @dataclass(slots=True, frozen=True)
-class AxisAlignment:
-    horizontal: Enumerated[Alignments] = Alignments.CENTER.value
-    vertical: Enumerated[Alignments] = Alignments.CENTER.value
-
-@dataclass(slots=True, frozen=True)
 class MenuBinding:
     """
     Associates UI controls or panes with runtime context paths or commands.
@@ -122,7 +119,7 @@ class PaneParameters:
     justification: AxisAlignment = field(default_factory=AxisAlignment)
     gap: int = 0
     margins: int = 0
-    dimensions: Scale = field(default_factory=lambda: Scale(1.0, 1.0)) # type: ignore
+    dimensions: Scale = field(default_factory=lambda: CoreScale(1.0, 1.0)) # type: ignore
     font: Optional[Enumerated[Fonts]] = None
     children: List[MenuNode] = field(default_factory=list)
 
@@ -136,7 +133,7 @@ class GizmoParameters:
     columns: int
     pane: str
     button: str
-    dimensions: Scale = field(default_factory=lambda: Scale(1.0, 1.0)) # type: ignore
+    dimensions: Scale = field(default_factory=lambda: CoreScale(1.0, 1.0)) # type: ignore
     gap: int = 5
 
     def __post_init__(self):

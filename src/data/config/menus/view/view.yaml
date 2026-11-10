@@ -1,60 +1,76 @@
 menus:
   view:
     controller: display
-    roots: 
+    roots:
       - instance: panes
-        id: dark-small
+        id: dark
         name: hud-menu
         parameters:
-          position:
-            # ---- 360 x 360
-            # px: 0.075
-            # py: 0.75
-            # ---- 480 x 480
-            px: 0.175
-            py: 0.80
+          dimensions:
+            pw: 0.40
+            pl: 0.20
+          justification:
+            horizontal: center
+            vertical: end
+          alignment:
+            horizontal: center
+            vertical: center
           layout: dock
-          alignment: start
           gap: 10
           margins: 15
-          children: 
+          children:
             - instance: panes
-              id: transparent-block
+              id: transparent
               name: hud-meters-pane
               parameters:
+                dimensions:
+                  pw: 0.16
+                  pl: 0.10
                 layout: stack
-                alignment: center
+                alignment:
+                  horizontal: center
+                  vertical: center
                 gap: 5
-                children: 
+                children:
                   - instance: meters
                     id: health
                     name: health-meter
-                    bind: 
+                    bind:
                       schema: meter
-                      target: 
+                      target:
                         meter: context.sprite.meters.health
                   - instance: meters
                     id: magic
                     name: magic-meter
-                    bind: 
+                    bind:
                       schema: meter
-                      target: 
+                      target:
                         meter: context.sprite.meters.magic
             - instance: panes
-              id: transparent-block
+              id: transparent
               name: hud-slots-pane
               parameters:
+                dimensions:
+                  pw: 0.18
+                  pl: 0.08
                 layout: dock
-                alignment: start
+                alignment:
+                  horizontal: start
+                  vertical: center
                 gap: 5
                 children:
                   # --- bounding box for the slot ---
                   - instance: panes
-                    id: transparent-slot 
+                    id: transparent
                     name: weapon-slot-container
                     parameters:
+                      dimensions:
+                        pw: 0.08
+                        pl: 0.08
                       layout: overlay
-                      alignment: center
+                      alignment:
+                        horizontal: center
+                        vertical: center
                       gap: 0
                       children:
                         # 1. The Background
@@ -69,26 +85,31 @@ menus:
                           name: weapon-icon
                           bind:
                             schema: icon
-                            target: 
+                            target:
                               icon: context.sprite.inventory.equipment.weapon
                   # --- bounding box for the slot ---
                   - instance: panes
-                    id: transparent-slot
+                    id: transparent
                     name: shield-slot-container
                     parameters:
+                      dimensions:
+                        pw: 0.08
+                        pl: 0.08
                       layout: overlay
-                      alignment: center
+                      alignment:
+                        horizontal: center
+                        vertical: center
                       gap: 0
                       children:
                         - instance: buttons
                           id: slot
                           name: shield-slot
-                          parameters: 
+                          parameters:
                             status: disabled
                         - instance: icons
                           id: shields
                           name: shield-icon
                           bind:
                             schema: icon
-                            target: 
+                            target:
                               icon: context.sprite.inventory.equipment.shield

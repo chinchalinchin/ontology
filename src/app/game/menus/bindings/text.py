@@ -98,9 +98,17 @@ class LibraryBinding(Binding):
     
     target: LibraryTarget
 
-    def __init__(self, target: LibraryTarget, context: MenuContext, library: Library = None, **kwargs):
+    def __init__(self, 
+        target: LibraryTarget, 
+        context: MenuContext, 
+        library: Library = None, 
+        registry: Registry = None, 
+        **kwargs
+    ):
         super().__init__(target, context, **kwargs)
         self.library = library
+        self.registry = registry
+        self._cached_pages = None
         self._plot_ref = self._resolve_path(target.plot, context)
         self._persona_ref = self._resolve_path(target.persona, context)
         self._lexicon_ref = self._resolve_path(target.lexicon, context)
@@ -114,9 +122,9 @@ class LibraryBinding(Binding):
             if self._cached_pages is not None:
                 return self._cached_pages
             
-            plot = self._get('plot', "")
-            persona = self._get('persona', "")
-            lexicon = self._get('lexicon', "")
+            plot = self._deref(self._plot_ref)
+            persona = self._deref(self._persona_ref)
+            lexicon = self._deref(self._lexicon_ref)
                 
             raw = self.library.fetch(plot, persona, lexicon) if self.library else ""
             font = self.registry.font("dialogue") if self.registry else None
@@ -124,13 +132,18 @@ class LibraryBinding(Binding):
             self._cached_pages = paginate(str(raw), font, w, l)
             return self._cached_pages
             
-        return (content_function,)
+        return content_function
 
 
 class TextBinding(Binding):
     target: TextTarget
 
-    def __init__(self, target: TextTarget, context: MenuContext, registry: Registry = None, **kwargs):
+    def __init__(self, 
+        target: TextTarget, 
+        context: MenuContext, 
+        registry: Registry = None, 
+        **kwargs
+    ):
         super().__init__(target, context, **kwargs)
         self.registry = registry
         self._cached_pages = None

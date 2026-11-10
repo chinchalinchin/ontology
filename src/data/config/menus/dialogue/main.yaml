@@ -1,44 +1,54 @@
 menus:
   dialogue:
     controller: scroll
-    roots: 
+    roots:
       - instance: panes
-        id: neutral-small
+        id: neutral
         name: dialogue-menu
         parameters:
-          position:
-            # 480 x 480
-            px: 0.175
-            py: 0.60
+          dimensions:
+            pw: 0.65
+            pl: 0.25
+          justification:
+            horizontal: center
+            vertical: end
+          alignment:
+            horizontal: center
+            vertical: center
           layout: dock
           font: dialogue
-          alignment: center
           gap: 5
           margins: 10
           children:
             # ------------------------------- PORTRAIT DISPLAY
             - instance: panes
-              id: transparent-block 
+              id: dark
               name: character-portrait-container
               parameters:
+                dimensions:
+                  pw: 0.15
+                  pl: 0.20
                 layout: overlay
-                alignment: start
+                alignment:
+                  horizontal: center
+                  vertical: center
                 gap: 0
                 children:
-                  - instance: pages
-                    id: dark-portrait
-                    name: character-portrait-bg
                   - instance: icons
                     id: portraits
                     name: character-portrait-icon
                     bind:
                       schema: icon
-                      target: 
+                      target:
                         icon: context.sprite.psyche.persona
             # ------------------------------- DIALOGUE DISPLAY
-            - instance: pages
-              id: dark-notification
+            - instance: panes
+              id: dark
               name: character-speech
+              parameters:
+                dimensions:
+                  pw: 0.40
+                  pl: 0.20
               bind:
                 schema: library
                 target:
@@ -46,18 +56,23 @@ menus:
                   persona: context.sprite.psyche.persona
                   lexicon: context.sprite.psyche.dialogue
             # ------------------------------- CONTROL DISPLAY
-            - id: transparent-slot
+            - id: transparent
               name: text-scroll-buttons
               instance: panes
               parameters:
+                dimensions:
+                  pw: 0.08
+                  pl: 0.15
                 layout: stack
-                alignment: center
+                alignment:
+                  horizontal: center
+                  vertical: center
                 gap: 5
                 children:
                   - instance: buttons
                     id: arrow-up
                     name: text-scroll-up
-                    bind: 
+                    bind:
                       schema: select
                       target:
                         selection: scrollup
@@ -65,7 +80,7 @@ menus:
                   - instance: buttons
                     id: arrow-down
                     name: text-scroll-down
-                    bind: 
+                    bind:
                       schema: select
                       target:
                         selection: scrolldown

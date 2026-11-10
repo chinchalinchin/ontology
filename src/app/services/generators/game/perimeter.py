@@ -69,13 +69,7 @@ class Perimeter:
             crafts = board.categories(AssetCategories.CRAFTS.value, layer)
             for craft in crafts:
                 base_e = craft.state.elevation if craft.state.elevation is not None else 0
-                if craft.taxonomy.instance == AssetInstances.PLATFORMS.value:
-                    if elevation > base_e and elevation in craft.hitbox.elevations(craft.properties, craft.state):
-                        x1 = int(craft.state.position.x)
-                        y1 = int(craft.state.position.y)
-                        rects.append((x1, y1, x1 + craft.dimensions.w, y1 + craft.dimensions.l))
-                        
-                elif craft.taxonomy.instance == AssetInstances.STAIRS.value:
+                if craft.taxonomy.instance == AssetInstances.STAIRS.value:
                     if base_e + craft.state.delta == elevation:
                         x1 = int(craft.state.position.x)
                         y1 = int(craft.state.position.y)
@@ -100,8 +94,7 @@ class Perimeter:
                 AssetInstances.CHESTS.value,
                 AssetInstances.RAFTS.value,
                 AssetInstances.STAIRS.value,
-                AssetInstances.BRIDGES.value,
-                AssetInstances.PLATFORMS.value
+                AssetInstances.BRIDGES.value
             ):
                 continue
 

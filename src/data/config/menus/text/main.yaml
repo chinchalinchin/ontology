@@ -1,42 +1,55 @@
 menus:
   text:
     controller: scroll
-    roots: 
+    roots:
       - instance: panes
         id: neutral
         name: text-menu
         parameters:
-          position:
-            # 480 x 480
-            px: 0.175
-            py: 0.60
+          dimensions:
+            pw: 0.65
+            pl: 0.25
+          justification:
+            horizontal: center
+            vertical: end
+          alignment:
+            horizontal: center
+            vertical: center
           layout: dock
-          alignment: center
           gap: 15
+          margins: 10
           font: dialogue
-          children: 
-            - instance: pages
-              id: dark-notification
+          children:
+            - instance: panes
+              id: dark
               name: text-display
+              parameters:
+                dimensions:
+                  pw: 0.45
+                  pl: 0.20
               bind:
                 schema: library
-                target: 
+                target:
                   plot: context.plot.current
                   persona: context.object.persona
                   lexicon: context.object.lexicon
-            # Use the 40x40 slot to constrain horizontal width
             - instance: panes
-              id: transparent-slot
+              id: transparent
               name: text-scroll-buttons
               parameters:
+                dimensions:
+                  pw: 0.08
+                  pl: 0.15
                 layout: stack
-                alignment: center
+                alignment:
+                  horizontal: center
+                  vertical: center
                 gap: 5
                 children:
                   - instance: buttons
                     id: arrow-up
                     name: text-scroll-up
-                    bind: 
+                    bind:
                       schema: select
                       target:
                         selection: scrollup
@@ -44,7 +57,7 @@ menus:
                   - instance: buttons
                     id: arrow-down
                     name: text-scroll-down
-                    bind: 
+                    bind:
                       schema: select
                       target:
                         selection: scrolldown

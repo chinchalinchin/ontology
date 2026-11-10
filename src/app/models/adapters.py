@@ -98,7 +98,7 @@ def serialize_hb(v: Any) -> Any:
 def serialize_scale(v: Any) -> Any:
     if v is None or isinstance(v, dict):
         return v
-    return {"pw": v.pw, "pl": v.l}
+    return {"pw": v.pw, "pl": v.pl}
 
 # ---------------------------------------------------------------------------
 # --------------------------------------------------------------------- TYPES

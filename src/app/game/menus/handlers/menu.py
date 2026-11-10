@@ -16,9 +16,14 @@ import logging
 # Application Libraries
 from app.game.menus.handlers.base import EventHandler
 from app.models.menus import MenuEvent
+from app.models.state import PaneState
 from app.game.menus.core import EventData
 
+# ----------------------------------------------------------------------
+
 logger = logging.getLogger(__name__)
+
+# ----------------------------------------------------------------------
 
 class MenuEventHandler(EventHandler):
     def handle(self, event: MenuEvent, data: EventData) -> None:
@@ -42,6 +47,5 @@ class MenuEventHandler(EventHandler):
 
         # Stamp any initial canvas content
         for widget in menu.widgets.values():
-            if hasattr(widget.state, 'canvas') and widget.state.canvas is not None:
-                if hasattr(widget.state, 'current'):
-                    screen.stamp(widget, widget.state.current())
+            if isinstance(widget.state, PaneState) and widget.state.canvas is not None:
+                screen.stamp(widget, widget.state.current())

@@ -37,7 +37,7 @@ from app.models.config.menus import (
     CollectionTarget,
     ApertureTarget,
     SelectTarget,
-    BindingTarget
+    BindingTarget,
 )
 from app.models.config.recipes import (
     Recipe,

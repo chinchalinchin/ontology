@@ -152,6 +152,7 @@ class Provider:
 
         return AssetFactory.widget(cfg, properties, state, recipe, binding)
 
+
     def _bake_pane(self, widget: Widget) -> None:
         if not isinstance(widget.state, PaneState):
             return
@@ -165,9 +166,6 @@ class Provider:
         if w <= 0 or l <= 0:
             return
 
-        canvas_ptr = render.canvas(w, l)
-        widget.state.canvas = canvas_ptr
-
         primitives = []
         for key, ox, oy in widget.frame.keys(widget.id, widget.state):
             tex_data = self.binder.registry.image(key)
@@ -176,8 +174,13 @@ class Provider:
             tex_ptr, sx, sy, sw, sl = tex_data
             primitives.append((tex_ptr, sx, sy, sw, sl, ox, oy, sw, sl, 1, 1))
 
-        if primitives:
-            render.construct(canvas_ptr, primitives)
+        if not primitives and widget.state.content_function is None:
+            return
+
+        canvas_ptr = render.canvas(w, l)
+        widget.state.canvas = canvas_ptr
+
+        render.construct(canvas_ptr, primitives)
 
         content = widget.state.current()
         if isinstance(content, str) and content:

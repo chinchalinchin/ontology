@@ -7,21 +7,30 @@ menus:
         name: pause-menu
         parameters:
           font: menu
-          position:
-            # Centered for 480 x 480 viewport: (480 - 318)/2 = 81px, (480 - 180)/2 = 150px
-            px: 0.16875
-            py: 0.3125
+          dimensions:
+            pw: 0.65
+            pl: 0.375
+          justification:
+            horizontal: center
+            vertical: center
+          alignment:
+            horizontal: center
+            vertical: center
           layout: stack
-          alignment: center
           gap: 10
           children:
             # --- SAVE GAME ---
             - instance: panes
-              id: transparent-label
+              id: transparent
               name: pause-save-slot
               parameters:
+                dimensions:
+                  pw: 0.30
+                  pl: 0.06
                 layout: overlay
-                alignment: center
+                alignment:
+                  horizontal: center
+                  vertical: center
                 children:
                   - instance: buttons
                     id: label
@@ -31,9 +40,13 @@ menus:
                       target:
                         selection: save
                         selector: save-01
-                  - instance: pages
-                    id: text-label
+                  - instance: panes
+                    id: transparent
                     name: pause-save-text
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
                     bind:
                       schema: text
                       target:
@@ -41,11 +54,16 @@ menus:
 
             # --- LOAD GAME ---
             - instance: panes
-              id: transparent-label
+              id: transparent
               name: pause-load-slot
               parameters:
+                dimensions:
+                  pw: 0.30
+                  pl: 0.06
                 layout: overlay
-                alignment: center
+                alignment:
+                  horizontal: center
+                  vertical: center
                 children:
                   - instance: buttons
                     id: label
@@ -55,9 +73,13 @@ menus:
                       target:
                         selection: load
                         selector: save-01
-                  - instance: pages
-                    id: text-label
+                  - instance: panes
+                    id: transparent
                     name: pause-load-text
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
                     bind:
                       schema: text
                       target:
@@ -65,11 +87,16 @@ menus:
 
             # --- OPTIONS ---
             - instance: panes
-              id: transparent-label
+              id: transparent
               name: pause-options-slot
               parameters:
+                dimensions:
+                  pw: 0.30
+                  pl: 0.06
                 layout: overlay
-                alignment: center
+                alignment:
+                  horizontal: center
+                  vertical: center
                 children:
                   - instance: buttons
                     id: label
@@ -79,9 +106,13 @@ menus:
                       target:
                         selection: menu
                         selector: options
-                  - instance: pages
-                    id: text-label
+                  - instance: panes
+                    id: transparent
                     name: pause-options-text
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
                     bind:
                       schema: text
                       target:
@@ -89,11 +120,16 @@ menus:
 
             # --- QUIT ---
             - instance: panes
-              id: transparent-label
+              id: transparent
               name: pause-quit-slot
               parameters:
+                dimensions:
+                  pw: 0.30
+                  pl: 0.06
                 layout: overlay
-                alignment: center
+                alignment:
+                  horizontal: center
+                  vertical: center
                 children:
                   - instance: buttons
                     id: label
@@ -103,9 +139,13 @@ menus:
                       target:
                         selection: quit
                         selector: main
-                  - instance: pages
-                    id: text-label
+                  - instance: panes
+                    id: transparent
                     name: pause-quit-text
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
                     bind:
                       schema: text
                       target:

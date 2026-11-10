@@ -1,42 +1,52 @@
 menus:
   main:
     controller: main
-    roots: 
+    roots:
       - instance: panes
         id: neutral
         name: main-menu
         parameters:
-          position:
-            # Centered for 480 x 480: (480 - 318)/2 -> 81px, (480 - 180)/2 -> 150px
-            px: 0.16875
-            py: 0.3125
-            # For 360 x 360:
-            # px: 0.0583
-            # py: 0.25
+          dimensions:
+            pw: 0.65
+            pl: 0.375
+          justification:
+            horizontal: center
+            vertical: center
+          alignment:
+            horizontal: center
+            vertical: center
           layout: stack
           font: menu
-          alignment: center
           gap: 10
-          children: 
+          children:
             # --- NEW GAME ---
             - instance: panes
-              id: transparent-label
+              id: transparent
               name: new-game-slot
               parameters:
+                dimensions:
+                  pw: 0.30
+                  pl: 0.06
                 layout: overlay
-                alignment: center
+                alignment:
+                  horizontal: center
+                  vertical: center
                 children:
                   - instance: buttons
                     id: label
                     name: new-game
-                    bind: 
+                    bind:
                       schema: select
                       target:
                         selection: new
                         selector: world-01
-                  - instance: pages
-                    id: text-label
+                  - instance: panes
+                    id: transparent
                     name: new-game-text
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
                     bind:
                       schema: text
                       target:
@@ -44,23 +54,32 @@ menus:
 
             # --- LOAD GAME ---
             - instance: panes
-              id: transparent-label
+              id: transparent
               name: load-game-slot
               parameters:
+                dimensions:
+                  pw: 0.30
+                  pl: 0.06
                 layout: overlay
-                alignment: center
+                alignment:
+                  horizontal: center
+                  vertical: center
                 children:
                   - instance: buttons
                     id: label
                     name: load-game
-                    bind: 
+                    bind:
                       schema: select
                       target:
                         selection: load
                         selector: world-01
-                  - instance: pages
-                    id: text-label
+                  - instance: panes
+                    id: transparent
                     name: load-game-text
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
                     bind:
                       schema: text
                       target:
@@ -68,11 +87,16 @@ menus:
 
             # --- OPTIONS ---
             - instance: panes
-              id: transparent-label
+              id: transparent
               name: options-menu-slot
               parameters:
+                dimensions:
+                  pw: 0.30
+                  pl: 0.06
                 layout: overlay
-                alignment: center
+                alignment:
+                  horizontal: center
+                  vertical: center
                 children:
                   - instance: buttons
                     id: label
@@ -82,9 +106,13 @@ menus:
                       target:
                         selector: options
                         selection: menu
-                  - instance: pages
-                    id: text-label
+                  - instance: panes
+                    id: transparent
                     name: options-menu-text
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
                     bind:
                       schema: text
                       target:
@@ -92,11 +120,16 @@ menus:
 
             # --- EDITOR ---
             - instance: panes
-              id: transparent-label
+              id: transparent
               name: editor-menu-slot
               parameters:
+                dimensions:
+                  pw: 0.30
+                  pl: 0.06
                 layout: overlay
-                alignment: center
+                alignment:
+                  horizontal: center
+                  vertical: center
                 children:
                   - instance: buttons
                     id: label
@@ -106,9 +139,13 @@ menus:
                       target:
                         selector: editor
                         selection: menu
-                  - instance: pages
-                    id: text-label
+                  - instance: panes
+                    id: transparent
                     name: editor-menu-text
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
                     bind:
                       schema: text
                       target:

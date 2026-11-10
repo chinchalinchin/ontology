@@ -149,7 +149,7 @@ class MeterFrame(Frame):
         frames = [
             (settings.SEPARATOR.join([
                 id,
-                Gauges.EMPTY.value
+                str(Gauges.EMPTY.value)
             ]), 0, 0)
         ]
         if res > 0:

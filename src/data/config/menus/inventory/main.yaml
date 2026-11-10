@@ -2,65 +2,88 @@ menus:
   inventory:
     controller: inventory
     roots:
-      - id: transparent-area
+      - id: transparent
         name: inventory-menu
         instance: panes
         parameters:
-          position:
-            px: 0.16875
-            py: 0.235
           dimensions:
-            w: 318
-            l: 254
+            pw: 0.67
+            pl: 0.80
+          justification:
+            horizontal: center
+            vertical: center
+          alignment:
+            horizontal: center
+            vertical: center
           layout: stack
-          alignment: center
           font: menu
           gap: 10
           margins: 0
           children:
             # ==========================================
-            # 1. EQUIPMENT SECTION (318 x 78)
+            # 1. EQUIPMENT SECTION
             # ==========================================
-            - id: neutral-small
+            - id: neutral
               name: inventory-equipment-section
               instance: panes
               parameters:
+                dimensions:
+                  pw: 0.65
+                  pl: 0.20
                 layout: stack
-                alignment: center
+                alignment:
+                  horizontal: center
+                  vertical: center
                 gap: 2
                 margins: 3
                 children:
-                  - id: transparent-label
+                  - id: transparent
                     name: inventory-equipment-label-slot
                     instance: panes
                     parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
                       layout: overlay
-                      alignment: center
+                      alignment:
+                        horizontal: center
+                        vertical: center
                       children:
-                        - id: text-label
+                        - id: transparent
                           name: inventory-equipment-label
-                          instance: pages
+                          instance: panes
+                          parameters:
+                            dimensions:
+                              pw: 0.30
+                              pl: 0.06
                           bind:
                             schema: text
                             target:
                               content: EQUIPMENT
-                  - id: transparent-block
+                  - id: transparent
                     name: inventory-equipment-row
                     instance: panes
                     parameters:
                       dimensions:
-                        w: 220
-                        l: 40
+                        pw: 0.50
+                        pl: 0.08
                       layout: dock
-                      alignment: center
+                      alignment:
+                        horizontal: center
+                        vertical: center
                       gap: 5
                       children:
-                        - id: transparent-slot
+                        - id: transparent
                           name: equipment-weapon-slot-pane
                           instance: panes
                           parameters:
+                            dimensions:
+                              pw: 0.08
+                              pl: 0.08
                             layout: overlay
-                            alignment: center
+                            alignment:
+                              horizontal: center
+                              vertical: center
                             children:
                               - id: slot
                                 name: equipment-weapon-slot
@@ -74,12 +97,17 @@ menus:
                                   schema: icon
                                   target:
                                     icon: context.inventory.equipment.weapon
-                        - id: transparent-slot
+                        - id: transparent
                           name: equipment-shield-slot-pane
                           instance: panes
                           parameters:
+                            dimensions:
+                              pw: 0.08
+                              pl: 0.08
                             layout: overlay
-                            alignment: center
+                            alignment:
+                              horizontal: center
+                              vertical: center
                             children:
                               - id: slot
                                 name: equipment-shield-slot
@@ -93,12 +121,17 @@ menus:
                                   schema: icon
                                   target:
                                     icon: context.inventory.equipment.shield
-                        - id: transparent-slot
+                        - id: transparent
                           name: equipment-armor-slot-pane
                           instance: panes
                           parameters:
+                            dimensions:
+                              pw: 0.08
+                              pl: 0.08
                             layout: overlay
-                            alignment: center
+                            alignment:
+                              horizontal: center
+                              vertical: center
                             children:
                               - id: slot
                                 name: equipment-armor-slot
@@ -112,12 +145,17 @@ menus:
                                   schema: icon
                                   target:
                                     icon: context.inventory.equipment.armor
-                        - id: transparent-slot
+                        - id: transparent
                           name: equipment-tool-slot-pane
                           instance: panes
                           parameters:
+                            dimensions:
+                              pw: 0.08
+                              pl: 0.08
                             layout: overlay
-                            alignment: center
+                            alignment:
+                              horizontal: center
+                              vertical: center
                             children:
                               - id: slot
                                 name: equipment-tool-slot
@@ -131,12 +169,17 @@ menus:
                                   schema: icon
                                   target:
                                     icon: context.inventory.equipment.tool
-                        - id: transparent-slot
+                        - id: transparent
                           name: equipment-utility-slot-pane
                           instance: panes
                           parameters:
+                            dimensions:
+                              pw: 0.08
+                              pl: 0.08
                             layout: overlay
-                            alignment: center
+                            alignment:
+                              horizontal: center
+                              vertical: center
                             children:
                               - id: slot
                                 name: equipment-utility-slot
@@ -152,41 +195,57 @@ menus:
                                     icon: context.inventory.equipment.utility
 
             # ==========================================
-            # 2. POUCH SECTION (318 x 78)
+            # 2. POUCH SECTION
             # ==========================================
-            - id: neutral-small
+            - id: neutral
               name: inventory-pouch-section
               instance: panes
               parameters:
+                dimensions:
+                  pw: 0.65
+                  pl: 0.20
                 layout: stack
-                alignment: center
+                alignment:
+                  horizontal: center
+                  vertical: center
                 gap: 2
                 margins: 3
                 children:
-                  - id: transparent-label
+                  - id: transparent
                     name: inventory-pouch-label-slot
                     instance: panes
                     parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
                       layout: overlay
-                      alignment: center
+                      alignment:
+                        horizontal: center
+                        vertical: center
                       children:
-                        - id: text-label
+                        - id: transparent
                           name: inventory-pouch-label
-                          instance: pages
+                          instance: panes
+                          parameters:
+                            dimensions:
+                              pw: 0.30
+                              pl: 0.06
                           bind:
                             schema: text
                             target:
                               content: POUCH
-                  - id: transparent-block
+                  - id: transparent
                     name: inventory-pouch-row
                     instance: panes
                     parameters:
                       dimensions:
-                        w: 233
-                        l: 40
+                        pw: 0.50
+                        pl: 0.08
                       layout: dock
-                      alignment: center
-                      gap: 10
+                      alignment:
+                        horizontal: center
+                        vertical: center
+                      gap: 20
                       children:
                         - id: weapons
                           name: inventory-pouch-grid
@@ -199,17 +258,22 @@ menus:
                             capacity: 4
                             columns: 4
                             gap: 5
-                            pane: transparent-slot
+                            pane: transparent
                             button: slot
-                        - id: transparent-slot
+                            dimensions:
+                              pw: 0.32
+                              pl: 0.08
+                        - id: transparent
                           name: inventory-pouch-scroll-controls
                           instance: panes
                           parameters:
                             dimensions:
-                              w: 48
-                              l: 40
+                              pw: 0.10
+                              pl: 0.08
                             layout: dock
-                            alignment: center
+                            alignment:
+                              horizontal: center
+                              vertical: center
                             gap: 0
                             children:
                               - id: arrow-up
@@ -230,41 +294,57 @@ menus:
                                     selector: inventory-pouch-grid
 
             # ==========================================
-            # 3. PACK SECTION (318 x 78)
+            # 3. PACK SECTION
             # ==========================================
-            - id: neutral-small
+            - id: neutral
               name: inventory-pack-section
               instance: panes
               parameters:
+                dimensions:
+                  pw: 0.65
+                  pl: 0.20
                 layout: stack
-                alignment: center
+                alignment:
+                  horizontal: center
+                  vertical: center
                 gap: 2
                 margins: 3
                 children:
-                  - id: transparent-label
+                  - id: transparent
                     name: inventory-pack-label-slot
                     instance: panes
                     parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
                       layout: overlay
-                      alignment: center
+                      alignment:
+                        horizontal: center
+                        vertical: center
                       children:
-                        - id: text-label
+                        - id: transparent
                           name: inventory-pack-label
-                          instance: pages
+                          instance: panes
+                          parameters:
+                            dimensions:
+                              pw: 0.30
+                              pl: 0.06
                           bind:
                             schema: text
                             target:
                               content: PACK
-                  - id: transparent-block
+                  - id: transparent
                     name: inventory-pack-row
                     instance: panes
                     parameters:
                       dimensions:
-                        w: 233
-                        l: 40
+                        pw: 0.50
+                        pl: 0.08
                       layout: dock
-                      alignment: center
-                      gap: 10
+                      alignment:
+                        horizontal: center
+                        vertical: center
+                      gap: 20
                       children:
                         - id: weapons
                           name: inventory-pack-grid
@@ -277,17 +357,22 @@ menus:
                             capacity: 4
                             columns: 4
                             gap: 5
-                            pane: transparent-slot
+                            pane: transparent
                             button: slot
-                        - id: transparent-slot
+                            dimensions:
+                              pw: 0.32
+                              pl: 0.08
+                        - id: transparent
                           name: inventory-pack-scroll-controls
                           instance: panes
                           parameters:
                             dimensions:
-                              w: 48
-                              l: 40
+                              pw: 0.10
+                              pl: 0.08
                             layout: dock
-                            alignment: center
+                            alignment:
+                              horizontal: center
+                              vertical: center
                             gap: 0
                             children:
                               - id: arrow-up
