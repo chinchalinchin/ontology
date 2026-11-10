@@ -1,0 +1,185 @@
+# ----------------------------------------------------
+context: true
+# ----------------------------------------------------
+# ----------------------------------------------------
+# ----------------------------------------------- TASK
+# ----------------------------------------------------
+# ----------------------------------------------------
+task:
+# ----------------------------------------------------
+  template: index.md.j2
+  # template: draft.md.j2
+  # --------------------------------------------
+  # --------------------- TEMPLATES: MAINTENANCE
+  # --------------------------------------------
+  # template: analyze/automaton.md.j2
+  # template: analyze/pstats.md.j2
+  # --------------------------------------------
+  # --------------------- TEMPLATES: MAINTENANCE
+  # --------------------------------------------
+  # template: maintain/codebase.md.j2
+  # template: maintain/patch.md.j2
+  # template: maintain/session.md.j2
+  # --------------------------------------------
+  # --------------------------- TEMPLATES: DUMPS 
+  # --------------------------------------------
+  # template: report/menus.md.j2
+  # template: report/state.md.j2
+  # --------------------------------------------
+  # ----------------------- TEMPLATES: ITERATION
+  # --------------------------------------------
+  # template: iterate/documentation.md.j2
+  # template: iterate/grooming.md.j2
+  # template: iterate/implementation.md.j2
+  # template: iterate/coverage.md.j2
+  # template: iterate/review.md.j2
+  # template: iterate/conclusion.md.j2
+  # --------------------------------------------
+  # -------------------------- TEMPLATES: DESIGN
+  # --------------------------------------------
+  # template: design/structure/menu.md.j2
+  # template: design/structure/composition.md.j2
+  # template: design/structure/score.md.j2
+  # template: design/diagram/hierarchy.md.j2
+  # template: design/diagram/automata.md.j2
+  # template: design/diagram/stages.md.j2
+  # template: design/style/mermaid.md.j2
+# ----------------------------------------------------
+  # PLACEHOLDER UNTIL STRUCTURE EMERGES FOR TOOL
+  parameters:
+    description: |
+      Alright, everything is working. Inventory menu looks good. We have touched upon one of the shortcomings of the current Menu and Widget model. Currently all Pane assets are fixed dimensions. 
+
+      As part of Phase 07.04, Compositions were given multiplication strategies to expand them according to schemas. Examine the multiplication strategies. Then examine the application dependency injection pipeline.
+
+      The Goal is the following: Panes should be able to expand to arbitrary sizes (constrained by whatever minimum dimensions the Asset actually supports). Panes are very similar to Strut Enclosures, insofar that they are defined as a perimeter around a geometric area, where the north-south edges are caps for vertical multiplcation and east-west edges are caps for horizontal multiplication.
+
+      Use the [Backlog Template](#template-backlog) to map out a new phase of development. Determine if the existing multiplication strategies can be utilized.
+    title: Menus 
+    # -------------- DESIGN PARAMETERS
+    diagram: executor-centennial-transitions.mmd
+    automata: stages 
+    table: executor-centennial-transitions.md
+    score: wagner-ride-of-the-valkyries.yaml
+# ----------------------------------------------------
+# ----------------------------------------------------
+# ---------------------------------------------- TOOLS
+# ----------------------------------------------------
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: MANAGER
+    # --------------------------------------------
+    manager:
+      board: false
+      docs: true
+      templates: true
+      specs: false
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: METRICS
+    # --------------------------------------------
+    metrics:
+      pstats: false
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: SOURCE
+    # --------------------------------------------
+    source:
+      data: false
+      filter: true
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: SHELL
+    # --------------------------------------------
+    shell:
+      directory: false
+      commands: false
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: TESTS
+    # --------------------------------------------
+    tests:  
+      configuration: false
+      pipeline: false
+      session: false
+# ----------------------------------------------------
+  parameters:
+    # --------------------------------------------
+    # ------------------------ PARAMETERS: MANAGER
+    # --------------------------------------------
+    manager:
+      board:
+        phase: 04-06
+        action: refactor
+      docs:
+        exclude:
+          - 00-overview
+          - 01-assets
+          - 02-sprites
+          # - 03-compositions
+          - 04-intentions
+          - 05-mechanics
+          - 06-widgets
+          - 07-sounds
+          - 08-plots
+          - 09-ecology
+          - 10-chemistry
+          - 11-emergence
+          - 12-architecture
+      templates: 
+        - template-backlog
+      specs:
+        - 00-dialogue
+        - 01-interaction
+        - 02-wander
+    metrics:
+      pstats: 
+        run: |
+          python -m cProfile -o $ROOT/engine-run.pstats src/main.py start world-01
+        dot: |
+          gprof2dot -f pstats --node-thres=1.0 --edge-thres=0.5 $ROOT/engine-run.pstats
+    # --------------------------------------------
+    # ------------------------ PARAMETERS: SOURCE
+    # --------------------------------------------
+    source:
+      filter:
+        default: AND
+        queries:
+          - title: Multiplier Abstract
+            scan:
+              domain: [ abstract ]
+              app: [ module ]
+              workflows: [ compositions ]
+          - title: Composition Logic
+            scan:
+              domain: [ logic ]
+              app: [ module ]
+              workflows: [ compositions ]
+          - title: Orchestration Services
+            scan:
+              domain: [ system ]
+              app: [ orchestration ]
+          - title: Hydration Services
+            scan:
+              domain: [ system ]
+              workflows: [ hydration ]
+      data:
+        properties: [ ]
+        state: [ ]
+        configurations: [ ]
+        templates: [ ]
+    # --------------------------------------------
+    # -------------------------- PARAMETERS: SHELL
+    # --------------------------------------------
+    shell:
+      directory: |
+        tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
+      commands: 
+        - python /Users/gmoore/Home/projects/ontology/src/main.py start
+    # --------------------------------------------
+    # -------------------------- PARAMETERS: TESTS
+    # --------------------------------------------
+    tests:
+      pipeline:
+        command: pytest -m
+        marker: workflow_navigation
+        # scope: '**/test_{actuator,cartographer}.py'

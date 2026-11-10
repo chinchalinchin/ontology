@@ -5,6 +5,7 @@ from app.static.semantics.assets import (
     # ------
     Spawnables,
     Equipment,
+    Widgets,
     Groups,
     # ------
     Frequencies,
@@ -41,7 +42,7 @@ from app.static.semantics.assets import (
     Columns,
     Decor,
     Enclosures,
-    Inclines
+    Inclines,
 )
 from app.static.semantics.config import (
     Configurations,
@@ -109,6 +110,7 @@ __all__ = [
     # ------
     'Spawnables',
     'Equipment',
+    'Widgets',
     'Groups',
     # ------
     'Frequencies',

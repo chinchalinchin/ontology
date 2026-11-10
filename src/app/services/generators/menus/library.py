@@ -1,9 +1,11 @@
 """
 @domain.system
 @app.service
+@app.menu
+@menu.binding
 @workflow.plot
 
-# Ontology: Source - app.services.generators.library
+# Ontology: Source - app.services.generators.menus.library
 
 Package for indexing and retrieving dialogue.
 """
@@ -12,6 +14,8 @@ import logging
 from typing import Dict
 
 logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------
 
 class Library:
     """

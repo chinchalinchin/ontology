@@ -1,0 +1,153 @@
+menus:
+  main:
+    controller: main
+    roots:
+      - instance: panes
+        id: neutral
+        name: main-menu
+        parameters:
+          dimensions:
+            pw: 0.65
+            pl: 0.375
+          justification:
+            horizontal: center
+            vertical: center
+          alignment:
+            horizontal: center
+            vertical: center
+          layout: stack
+          font: menu
+          gap: 2
+          margins: 10
+          children:
+            # --- NEW GAME ---
+            - instance: panes
+              id: transparent
+              name: new-game-slot
+              parameters:
+                dimensions:
+                  pw: 0.30
+                  pl: 0.06
+                layout: overlay
+                alignment:
+                  horizontal: center
+                  vertical: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: new-game
+                    bind:
+                      schema: select
+                      target:
+                        selection: new
+                        selector: world-01
+                  - instance: panes
+                    id: transparent
+                    name: new-game-text
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
+                    bind:
+                      schema: text
+                      target:
+                        content: NEW
+
+            # --- LOAD GAME ---
+            - instance: panes
+              id: transparent
+              name: load-game-slot
+              parameters:
+                dimensions:
+                  pw: 0.30
+                  pl: 0.06
+                layout: overlay
+                alignment:
+                  horizontal: center
+                  vertical: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: load-game
+                    bind:
+                      schema: select
+                      target:
+                        selection: load
+                        selector: world-01
+                  - instance: panes
+                    id: transparent
+                    name: load-game-text
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
+                    bind:
+                      schema: text
+                      target:
+                        content: LOAD
+
+            # --- OPTIONS ---
+            - instance: panes
+              id: transparent
+              name: options-menu-slot
+              parameters:
+                dimensions:
+                  pw: 0.30
+                  pl: 0.06
+                layout: overlay
+                alignment:
+                  horizontal: center
+                  vertical: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: options-menu
+                    bind:
+                      schema: select
+                      target:
+                        selector: options
+                        selection: menu
+                  - instance: panes
+                    id: transparent
+                    name: options-menu-text
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
+                    bind:
+                      schema: text
+                      target:
+                        content: OPTIONS
+
+            # --- EDITOR ---
+            - instance: panes
+              id: transparent
+              name: editor-menu-slot
+              parameters:
+                dimensions:
+                  pw: 0.30
+                  pl: 0.06
+                layout: overlay
+                alignment:
+                  horizontal: center
+                  vertical: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: editor-menu
+                    bind:
+                      schema: select
+                      target:
+                        selector: editor
+                        selection: menu
+                  - instance: panes
+                    id: transparent
+                    name: editor-menu-text
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
+                    bind:
+                      schema: text
+                      target:
+                        content: EDITOR

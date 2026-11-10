@@ -1,0 +1,152 @@
+menus:
+  pause:
+    controller: pause
+    roots:
+      - instance: panes
+        id: dark
+        name: pause-menu
+        parameters:
+          font: menu
+          dimensions:
+            pw: 0.65
+            pl: 0.375
+          justification:
+            horizontal: center
+            vertical: center
+          alignment:
+            horizontal: center
+            vertical: center
+          layout: stack
+          gap: 10
+          children:
+            # --- SAVE GAME ---
+            - instance: panes
+              id: transparent
+              name: pause-save-slot
+              parameters:
+                dimensions:
+                  pw: 0.30
+                  pl: 0.06
+                layout: overlay
+                alignment:
+                  horizontal: center
+                  vertical: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: pause-save
+                    bind:
+                      schema: select
+                      target:
+                        selection: save
+                        selector: save-01
+                  - instance: panes
+                    id: transparent
+                    name: pause-save-text
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
+                    bind:
+                      schema: text
+                      target:
+                        content: SAVE
+
+            # --- LOAD GAME ---
+            - instance: panes
+              id: transparent
+              name: pause-load-slot
+              parameters:
+                dimensions:
+                  pw: 0.30
+                  pl: 0.06
+                layout: overlay
+                alignment:
+                  horizontal: center
+                  vertical: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: pause-load
+                    bind:
+                      schema: select
+                      target:
+                        selection: load
+                        selector: save-01
+                  - instance: panes
+                    id: transparent
+                    name: pause-load-text
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
+                    bind:
+                      schema: text
+                      target:
+                        content: LOAD
+
+            # --- OPTIONS ---
+            - instance: panes
+              id: transparent
+              name: pause-options-slot
+              parameters:
+                dimensions:
+                  pw: 0.30
+                  pl: 0.06
+                layout: overlay
+                alignment:
+                  horizontal: center
+                  vertical: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: pause-options
+                    bind:
+                      schema: select
+                      target:
+                        selection: menu
+                        selector: options
+                  - instance: panes
+                    id: transparent
+                    name: pause-options-text
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
+                    bind:
+                      schema: text
+                      target:
+                        content: OPTIONS
+
+            # --- QUIT ---
+            - instance: panes
+              id: transparent
+              name: pause-quit-slot
+              parameters:
+                dimensions:
+                  pw: 0.30
+                  pl: 0.06
+                layout: overlay
+                alignment:
+                  horizontal: center
+                  vertical: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: pause-quit
+                    bind:
+                      schema: select
+                      target:
+                        selection: quit
+                        selector: main
+                  - instance: panes
+                    id: transparent
+                    name: pause-quit-text
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
+                    bind:
+                      schema: text
+                      target:
+                        content: QUIT

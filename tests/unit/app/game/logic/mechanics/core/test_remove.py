@@ -1,5 +1,10 @@
 """
-# Ontology: tests.unit.app.game.logic.mechanics.core.test_remove
+@domain.test
+@test.unit
+@app.mechanic
+@app.core
+
+# Ontology: Tests - tests.unit.app.game.logic.mechanics.core.test_remove
 
 Unit tests for Garbage Collection mechanics.
 """
@@ -7,8 +12,11 @@ Unit tests for Garbage Collection mechanics.
 from unittest.mock import Mock
 import collections
 
+# External Libraries
+import pytest
+
 # Application Libraries
-from app.game.logic.mechanics.core import  RemoveMechanics
+from app.game.logic.mechanics.core import RemoveMechanics
 from app.static.semantics import (
     AssetInstances, 
     AssetCategories, 
@@ -19,6 +27,18 @@ from app.models.state import (
     MenuPayload, 
     WorldPayload
 )
+
+# -----------------------------------------------------
+
+pytestmark = [
+    pytest.mark.app_core,
+    pytest.mark.app_mechanic,
+    pytest.mark.physics_motion
+]
+
+# -----------------------------------------------------
+
+# TODO: use fixtures
 
 def test_remove_mechanics_update():
     board = Mock()

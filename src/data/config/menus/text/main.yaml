@@ -1,0 +1,64 @@
+menus:
+  text:
+    controller: scroll
+    roots:
+      - instance: panes
+        id: neutral
+        name: text-menu
+        parameters:
+          dimensions:
+            pw: 0.65
+            pl: 0.25
+          justification:
+            horizontal: center
+            vertical: end
+          alignment:
+            horizontal: center
+            vertical: center
+          layout: dock
+          gap: 15
+          margins: 10
+          font: dialogue
+          children:
+            - instance: panes
+              id: dark
+              name: text-display
+              parameters:
+                dimensions:
+                  pw: 0.45
+                  pl: 0.20
+              bind:
+                schema: library
+                target:
+                  plot: context.plot.current
+                  persona: context.object.persona
+                  lexicon: context.object.lexicon
+            - instance: panes
+              id: transparent
+              name: text-scroll-buttons
+              parameters:
+                dimensions:
+                  pw: 0.08
+                  pl: 0.15
+                layout: stack
+                alignment:
+                  horizontal: center
+                  vertical: center
+                gap: 5
+                children:
+                  - instance: buttons
+                    id: arrow-up
+                    name: text-scroll-up
+                    bind:
+                      schema: select
+                      target:
+                        selection: scrollup
+                        selector: text-display
+                  - instance: buttons
+                    id: arrow-down
+                    name: text-scroll-down
+                    bind:
+                      schema: select
+                      target:
+                        selection: scrolldown
+                        selector: text-display

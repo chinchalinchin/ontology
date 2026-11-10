@@ -1,0 +1,189 @@
+menus:
+  options:
+    controller: options
+    roots:
+      - instance: panes
+        id: transparent
+        name: options-menu
+        parameters:
+          dimensions:
+            pw: 0.85
+            pl: 0.60
+          justification:
+            horizontal: center
+            vertical: center
+          alignment:
+            horizontal: center
+            vertical: center
+          layout: dock
+          font: menu
+          gap: 15
+          children:
+            # --- Pane 1: Option Buttons Stack ---
+            - instance: panes
+              id: dark
+              name: options-button-pane
+              parameters:
+                dimensions:
+                  pw: 0.40
+                  pl: 0.50
+                layout: stack
+                font: menu
+                alignment:
+                  horizontal: center
+                  vertical: center
+                gap: 8
+                children:
+                  - id: transparent
+                    name: option-1-slot
+                    instance: panes
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
+                      layout: overlay
+                      alignment:
+                        horizontal: center
+                        vertical: center
+                      children:
+                        - instance: buttons
+                          id: label
+                          name: option-1
+                          bind:
+                            schema: select
+                            target:
+                              selection: select
+                              selector: options-display
+                        - instance: panes
+                          id: transparent
+                          name: option-1-text
+                          parameters:
+                            dimensions:
+                              pw: 0.30
+                              pl: 0.06
+                          bind:
+                            schema: text
+                            target:
+                              content: OPTION 1
+
+                  - instance: panes
+                    id: transparent
+                    name: option-2-slot
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
+                      layout: overlay
+                      alignment:
+                        horizontal: center
+                        vertical: center
+                      children:
+                        - instance: buttons
+                          id: label
+                          name: option-2
+                          bind:
+                            schema: select
+                            target:
+                              selection: select
+                              selector: options-display
+                        - instance: panes
+                          id: transparent
+                          name: option-2-text
+                          parameters:
+                            dimensions:
+                              pw: 0.30
+                              pl: 0.06
+                          bind:
+                            schema: text
+                            target:
+                              content: OPTION 2
+
+                  - instance: panes
+                    id: transparent
+                    name: option-3-slot
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
+                      layout: overlay
+                      alignment:
+                        horizontal: center
+                        vertical: center
+                      children:
+                        - instance: buttons
+                          id: label
+                          name: option-3
+                          bind:
+                            schema: select
+                            target:
+                              selection: select
+                              selector: options-display
+                        - instance: panes
+                          id: transparent
+                          name: option-3-text
+                          parameters:
+                            dimensions:
+                              pw: 0.30
+                              pl: 0.06
+                          bind:
+                            schema: text
+                            target:
+                              content: OPTION 3
+
+                  - instance: panes
+                    id: transparent
+                    name: option-4-slot
+                    parameters:
+                      dimensions:
+                        pw: 0.30
+                        pl: 0.06
+                      layout: overlay
+                      alignment:
+                        horizontal: center
+                        vertical: center
+                      children:
+                        - instance: buttons
+                          id: label
+                          name: option-4
+                          bind:
+                            schema: select
+                            target:
+                              selection: select
+                              selector: options-display
+                        - instance: panes
+                          id: transparent
+                          name: option-4-text
+                          parameters:
+                            dimensions:
+                              pw: 0.30
+                              pl: 0.06
+                          bind:
+                            schema: text
+                            target:
+                              content: OPTION 4
+
+            # --- Pane 2: Placeholder Display ---
+            - instance: panes
+              id: dark
+              name: options-display-pane
+              parameters:
+                dimensions:
+                  pw: 0.40
+                  pl: 0.50
+                layout: overlay
+                alignment:
+                  horizontal: center
+                  vertical: center
+                font: menu
+                children:
+                  - instance: panes
+                    id: light
+                    name: options-display
+                    parameters:
+                      dimensions:
+                        pw: 0.35
+                        pl: 0.40
+                    bind:
+                      schema: text
+                      target:
+                        content: "SELECT AN OPTION"

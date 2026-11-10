@@ -1,4 +1,11 @@
 """
+@domain.user
+@domain.concrete
+@domain.system
+@app.menu
+@menu.handler
+@workflow.hydration
+
 # Ontology: Source - app.game.menus.handlers.state
 
 State event handling implementation.
@@ -8,29 +15,29 @@ import logging
 
 # Application Libraries
 from app.static.semantics import Menus
-from app.game.menus.events import (
-    MenuEvent, 
+from app.models.menus import (
+    MenuEvent,
     StateEvent,
-    EventContext
+    LoadContext
 )
-from app.game.menus.contexts import LoadContext
+from app.game.menus.core import EventData
 from app.game.menus.handlers.base import EventHandler
 
 logger = logging.getLogger(__name__)
 
 
 class StateEventHandler(EventHandler):
-    def handle(self, event: StateEvent, context: EventContext) -> None:
-        if not context.board.migrator:
+    def handle(self, event: StateEvent, data: EventData) -> None:
+        if not data.board.migrator:
             logger.warning("StateEvent received, but no Migrator defined on Board")
             return
         
-        context.board.migrator.target = event.id    
-        context.bus.append(MenuEvent(
+        data.board.migrator.target = event.id    
+        data.bus.append(MenuEvent(
             id=Menus.LOAD.value, 
             context=LoadContext(
-                registry=next(iter(context.screens.values())).registry,
-                screens=context.screens,
-                screensize=next(iter(context.screens.values())).screensize
+                registry=next(iter(data.screens.values())).registry,
+                screens=data.screens,
+                screensize=next(iter(data.screens.values())).screensize
             )
         ))

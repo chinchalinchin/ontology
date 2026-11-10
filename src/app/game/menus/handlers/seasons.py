@@ -1,5 +1,12 @@
 """
-# Ontology: Source - app.game.menus.handlers.update
+@domain.user
+@domain.concrete
+@domain.logic
+@app.menu
+@menu.handler
+@workflow.seasons
+
+# Ontology: Source - app.game.menus.handlers.seasons
 
 Season event handling implementation.
 """
@@ -11,10 +18,8 @@ from app.static.semantics import (
     AssetCategories,
     AssetInstances
 )
-from app.game.menus.events import (
-    SeasonEvent,
-    EventContext
-)
+from app.models.menus import SeasonEvent
+from app.game.menus.core import EventData
 from app.game.menus.handlers.base import EventHandler
 
 logger = logging.getLogger(__name__)
@@ -25,13 +30,13 @@ class SeasonEventHandler(EventHandler):
     invalidating frame key caches, and triggering static canvas reconstruction.
     """
 
-    def handle(self, event: SeasonEvent, context: EventContext) -> None:
-        if not context.board:
+    def handle(self, event: SeasonEvent, data: EventData) -> None:
+        if not data.board:
             return
 
-        active_season = context.board.calendar.season
-        cycle = context.board.calendar.cycle
-        period = context.board.calendar.period
+        active_season = data.board.calendar.season
+        cycle = data.board.calendar.cycle
+        period = data.board.calendar.period
 
         logger.info(
             f"SeasonEventHandler: Received SeasonEvent for season='{active_season}' "
@@ -39,19 +44,19 @@ class SeasonEventHandler(EventHandler):
         )
 
         # 1. Screen Reconstruction: Re-bake seasonal tile canvases
-        if context.screens:
-            for layer, screen in context.screens.items():
-                tiles = context.board.categories(AssetCategories.TILES.value, layer)
+        if data.screens:
+            for layer, screen in data.screens.items():
+                tiles = data.board.categories(AssetCategories.TILES.value, layer)
                 logger.info(
                     f"SeasonEventHandler: Triggering canvas reconstruction for layer='{layer}' "
                     f"({len(tiles)} tiles) to season='{active_season}'."
                 )
-                screen.reconstruct(tiles, context.board.calendar)
+                screen.reconstruct(tiles, data.board.calendar)
 
         # 2. Shoreline Frame Invalidation (Zero Geometry Regeneration)
-        shorelines = context.board.shorelines()
+        shorelines = data.board.shorelines()
         if not shorelines:
-            shorelines = context.board.instances(AssetInstances.SHORELINES.value)
+            shorelines = data.board.instances(AssetInstances.SHORELINES.value)
 
         updated_count = 0
         for shore in shorelines:

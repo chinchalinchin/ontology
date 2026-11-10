@@ -1,227 +1,280 @@
 """
-# Ontology: tests.unit.app.game.menus.layout
+@domain.test
+@test.unit
+@app.menu
+@app.module
+
+# Ontology: Tests - tests.unit.app.game.menus.test_layout
+
+Unit tests for the Layout Module.
 """
 # Standard Libraries
-from unittest.mock import MagicMock
+import math
 
 # External Libraries
 import pytest
 
 # Application Libraries
-from app.game.menus.layout import Layout
+from app.game.menus.modules import Layout
 from app.models.config.menus import (
-    MenuNode, 
+    MenuNode,
     PaneParameters,
-    ButtonParameters
 )
+from app.models.core import AxisAlignment
 from app.static.semantics import (
-    Layouts, 
-    Alignments, 
-    Traversal, 
-    Statuses, 
-    AssetInstances
+    Alignments,
+    AssetCategories,
+    AssetInstances,
+    Layouts,
+    Menus,
+    Statuses,
+    Traversal,
 )
-from app.models.state import (
-    PaneState, 
-    TraversalState
-)
-from app.assets.base import (
-    Asset, 
-    Taxonomy
-)
-from app.models.properties import WidgetProperties
 
 # Cython Libraries
 from libs.core.models import (
-    Dimensions, 
-    Position, 
-    ScreenPosition
+    Dimensions,
+    Position,
+    Scale,
 )
 
-# TODO: refactor to use fixtures
+# ---------------------------------------------------------------------------
 
-@pytest.mark.workflow_menus
-def test_layout_compute_anchor():
-    layout = Layout(Dimensions(w=1000, l=1000))
+pytestmark = [
+    pytest.mark.app_menu,
+    pytest.mark.app_module,
+]
+
+# ---------------------------------------------------------------------------
+
+
+def test_layout_quantize_9_slice_span(mock_asset):
+    screensize = Dimensions(w=640, l=480)
+    layout = Layout(screensize)
+
+    pane = mock_asset(
+        AssetCategories.WIDGETS.value,
+        AssetInstances.PANES.value,
+        id="neutral",
+    )
+    pane.taxonomy.name = "root-pane"
+
+    wc = pane.properties.dimensions.w // 3  # 318 // 3 = 106
+    lc = pane.properties.dimensions.l // 3  # 180 // 3 = 60
+
+    pw, pl = 0.65, 0.50
     root_cfg = MenuNode(
-        id="p1", 
+        id="neutral",
+        name="root-pane",
+        instance=AssetInstances.PANES.value,
+        parameters=PaneParameters(
+            dimensions=Scale(pw, pl),
+            children=[],
+        ),
+    )
+
+    layout._quantize(root_cfg, {"root-pane": pane})
+
+    w_req = int(pw * screensize.w)
+    l_req = int(pl * screensize.l)
+    expected_nx = max(0, math.ceil((w_req - 2 * wc) / wc))
+    expected_ny = max(0, math.ceil((l_req - 2 * lc) / lc))
+
+    assert pane.state.multiple.nx == expected_nx
+    assert pane.state.multiple.ny == expected_ny
+    assert pane.dimensions.w == (expected_nx + 2) * wc
+    assert pane.dimensions.l == (expected_ny + 2) * lc
+
+
+@pytest.mark.parametrize(
+    "horiz, vert, margin, expected_x, expected_y",
+    [
+        (Alignments.START.value, Alignments.START.value, 10, 10, 10),
+        (Alignments.CENTER.value, Alignments.CENTER.value, 10, (1000 - 212) // 2, (800 - 120) // 2),
+        (Alignments.END.value, Alignments.END.value, 15, 1000 - 212 - 15, 800 - 120 - 15),
+        (Alignments.CENTER.value, Alignments.END.value, 20, (1000 - 212) // 2, 800 - 120 - 20),
+    ],
+)
+def test_layout_compute_root_justification(
+    mock_asset,
+    horiz: str,
+    vert: str,
+    margin: int,
+    expected_x: int,
+    expected_y: int,
+):
+    layout = Layout(Dimensions(w=1000, l=800))
+    pane = mock_asset(
+        AssetCategories.WIDGETS.value,
+        AssetInstances.PANES.value,
+        id="dark",
+    )
+    pane.taxonomy.name = "p1"
+    pane.state.justification = AxisAlignment(horizontal=horiz, vertical=vert)
+    pane.state.margins = margin
+
+    # Small scale clamps nx=0, ny=0 -> span = (2 * 106, 2 * 60) = (212, 120)
+    root_cfg = MenuNode(
+        id="dark",
         name="p1",
         instance=AssetInstances.PANES.value,
         parameters=PaneParameters(
-            position=ScreenPosition(px=0.5, py=0.25), 
-            layout=Layouts.OVERLAY, 
-            alignment=Alignments.CENTER, 
-            gap=0, 
-            children=[]
-        )
+            dimensions=Scale(0.1, 0.1),
+            justification=AxisAlignment(horizontal=horiz, vertical=vert),
+            margins=margin,
+            children=[],
+        ),
     )
-    mock_pane = MagicMock()
-    mock_pane.state = PaneState(
-        id="test-pane",
-        position=Position(x=0, y=0), 
-        layout=Layouts.OVERLAY, 
-        alignment=Alignments.CENTER, gap=0
-    )
-    widgets = {"p1": mock_pane}
-    
-    layout.compute([root_cfg], widgets)
-    
-    assert mock_pane.state.position.x == 500
-    assert mock_pane.state.position.y == 250
+
+    flattened, _ = layout.compute([root_cfg], {"p1": pane})
+
+    assert flattened == [pane]
+    assert pane.state.position.x == expected_x
+    assert pane.state.position.y == expected_y
 
 
-@pytest.mark.workflow_menus
-def test_layout_overlay():
-    layout = Layout(Dimensions(w=1000, l=1000))
-    pane = MagicMock()
+def test_layout_overlay_2_axis_alignment(mock_layout, mock_asset):
+    pane = mock_asset(
+        AssetCategories.WIDGETS.value,
+        AssetInstances.PANES.value,
+        id="transparent",
+    )
     pane.state.margins = 10
     pane.state.position = Position(x=100, y=100)
-    pane.dimensions = Dimensions(w=200, l=200)
+    pane.state.span = Dimensions(w=200, l=200)
 
-    child = MagicMock()
-    child.dimensions = Dimensions(w=50, l=50)
+    child = mock_asset(
+        AssetCategories.WIDGETS.value,
+        AssetInstances.BUTTONS.value,
+        id="slot",
+    )  # 40x40
 
-    layout._layout_overlay(pane, [child])
+    mock_layout._layout_overlay(
+        pane,
+        [child],
+        AxisAlignment(horizontal=Alignments.CENTER.value, vertical=Alignments.CENTER.value),
+    )
+    assert child.state.position.x == 180
+    assert child.state.position.y == 180
 
-    assert child.state.position.x == 175
-    assert child.state.position.y == 175
+    mock_layout._layout_overlay(
+        pane,
+        [child],
+        AxisAlignment(horizontal=Alignments.START.value, vertical=Alignments.END.value),
+    )
+    assert child.state.position.x == 110
+    assert child.state.position.y == 250
 
 
-@pytest.mark.workflow_menus
-def test_layout_dock_center():
-    layout = Layout(Dimensions(w=1000, l=1000))
-    pane = MagicMock()
-    pane.state.margins = 0
+def test_layout_dock_2_axis_alignment(mock_layout, mock_asset):
+    pane = mock_asset(
+        AssetCategories.WIDGETS.value,
+        AssetInstances.PANES.value,
+        id="transparent",
+    )
+    pane.state.margins = 5
     pane.state.position = Position(x=0, y=0)
-    pane.dimensions = Dimensions(w=100, l=100)
+    pane.state.span = Dimensions(w=120, l=100)
 
-    c1 = MagicMock()
-    c1.dimensions = Dimensions(w=20, l=20)
-    c2 = MagicMock()
-    c2.dimensions = Dimensions(w=20, l=20)
+    c1 = mock_asset(
+        AssetCategories.WIDGETS.value,
+        AssetInstances.BUTTONS.value,
+        id="arrow-up",
+    )  # 24x24
+    c2 = mock_asset(
+        AssetCategories.WIDGETS.value,
+        AssetInstances.BUTTONS.value,
+        id="arrow-down",
+    )  # 24x24
 
-    layout._layout_dock(pane, [c1, c2], Alignments.CENTER, gap=10)
-    
-    assert c1.state.position.x == 25
-    assert c1.state.position.y == 40
-    assert c2.state.position.x == 55
-    assert c2.state.position.y == 40
+    # Total width = 24 + 24 + 12 = 60; centered X starts at (120 - 60) // 2 = 30
+    mock_layout._layout_dock(
+        pane,
+        [c1, c2],
+        AxisAlignment(horizontal=Alignments.CENTER.value, vertical=Alignments.CENTER.value),
+        gap=12,
+    )
+
+    assert c1.state.position.x == 30
+    assert c1.state.position.y == 38
+    assert c2.state.position.x == 66
+    assert c2.state.position.y == 38
 
 
-@pytest.mark.workflow_menus
-def test_layout_stack_center():
-    layout = Layout(Dimensions(w=1000, l=1000))
-    pane = MagicMock()
+def test_layout_stack_2_axis_alignment(mock_layout, mock_asset):
+    pane = mock_asset(
+        AssetCategories.WIDGETS.value,
+        AssetInstances.PANES.value,
+        id="transparent",
+    )
     pane.state.margins = 10
     pane.state.position = Position(x=10, y=10)
-    pane.dimensions = Dimensions(w=120, l=120)
+    pane.state.span = Dimensions(w=120, l=120)
 
-    c1 = MagicMock()
-    c1.dimensions = Dimensions(w=40, l=20)
-    c2 = MagicMock()
-    c2.dimensions = Dimensions(w=40, l=20)
+    c1 = mock_asset(
+        AssetCategories.WIDGETS.value,
+        AssetInstances.BUTTONS.value,
+        id="slot",
+    )  # 40x40
+    c2 = mock_asset(
+        AssetCategories.WIDGETS.value,
+        AssetInstances.BUTTONS.value,
+        id="slot",
+    )  # 40x40
 
-    layout._layout_stack(pane, [c1, c2], Alignments.CENTER, gap=10)
-    
+    # Total length = 40 + 40 + 10 = 90; centered Y starts at 10 + (120 - 90) // 2 = 25
+    mock_layout._layout_stack(
+        pane,
+        [c1, c2],
+        AxisAlignment(horizontal=Alignments.CENTER.value, vertical=Alignments.CENTER.value),
+        gap=10,
+    )
+
     assert c1.state.position.x == 50
-    assert c1.state.position.y == 45
+    assert c1.state.position.y == 25
     assert c2.state.position.x == 50
     assert c2.state.position.y == 75
 
 
-@pytest.mark.workflow_menus
-def test_layout_dock_with_explicit_dimensions():
-    """Validates that adjacent dock containers respect explicit geometry without overlapping."""
-    layout = Layout(Dimensions(w=640, l=480))
-    root_pane = Asset(
-        taxonomy=Taxonomy("neutral", "root", "widgets", AssetInstances.PANES.value),
-        properties=WidgetProperties(dimensions=Dimensions(w=318, l=180)),
-        state=PaneState(
-            id="test-pane-00",
-            position=Position(x=0, y=0), 
-            margins=10, 
-            gap=10
+@pytest.mark.workflow_traversal
+def test_layout_build_graph_cardinal_and_disabled_exclusion(mock_layout, mock_asset):
+    def place_button(name: str, x: int, y: int, status: str = Statuses.IDLE.value):
+        btn = mock_asset(
+            AssetCategories.WIDGETS.value,
+            AssetInstances.BUTTONS.value,
+            id="slot",
         )
+        btn.taxonomy.name = name
+        btn.state.position = Position(x=x, y=y)
+        btn.state.status = status
+        return btn
+
+    b_center = place_button("b_center", 100, 100)
+    b_south = place_button("b_south", 100, 160)
+    b_east = place_button("b_east", 160, 100)
+    b_west = place_button("b_west", 40, 100)
+    b_north = place_button("b_north", 100, 40)
+    b_disabled = place_button("b_disabled", 100, 130, status=Statuses.DISABLED.value)
+
+    graph = mock_layout._build_graph(
+        [b_center, b_south, b_east, b_west, b_north, b_disabled]
     )
 
-    grid_pane = Asset(
-        taxonomy=Taxonomy("transparent-slot", "grid", "widgets", AssetInstances.PANES.value),
-        properties=WidgetProperties(dimensions=Dimensions(w=175, l=85)),
-        state=PaneState(
-            id="test-pane-01",
-            margins=0
-        )
-    )
-    scroll_pane = Asset(
-        taxonomy=Taxonomy("transparent-slot", "controls", "widgets", AssetInstances.PANES.value),
-        properties=WidgetProperties(dimensions=Dimensions(w=24, l=85)),
-        state=PaneState(
-            id="test-pane-02",
-            margins=0
-        )
-    )
-
-    layout._layout_dock(root_pane, [grid_pane, scroll_pane], Alignments.CENTER, gap=10)
-
-    assert grid_pane.state.position.x + grid_pane.dimensions.w <= scroll_pane.state.position.x
-    assert scroll_pane.state.position.x - (grid_pane.state.position.x + grid_pane.dimensions.w) == 10
+    assert "b_disabled" not in graph
+    assert graph["b_center"][Traversal.SOUTH.value] == "b_south"
+    assert graph["b_center"][Traversal.NORTH.value] == "b_north"
+    assert graph["b_center"][Traversal.EAST.value] == "b_east"
+    assert graph["b_center"][Traversal.WEST.value] == "b_west"
+    assert graph["b_south"][Traversal.NORTH.value] == "b_center"
+    assert graph["b_east"][Traversal.WEST.value] == "b_center"
 
 
-@pytest.mark.workflow_menus
-def test_layout_build_graph():
-    layout = Layout(Dimensions(w=1000, l=1000))
-    
-    def mock_button(name, x, y, w, l):
-        b = MagicMock()
-        b.name = name
-        b.instance = AssetInstances.BUTTONS.value
-        b.state.position = Position(x=x, y=y)
-        b.state.status = Statuses.IDLE.value
-        b.dimensions = Dimensions(w=w, l=l)
-        return b
-        
-    b1 = mock_button("b1", 100, 100, 50, 50)
-    b2 = mock_button("b2", 100, 160, 50, 50)
-    b3 = mock_button("b3", 160, 100, 50, 50)
-    b4 = mock_button("b4", 40, 100, 50, 50)
-    b5 = mock_button("b5", 100, 40, 50, 50)
+@pytest.mark.workflow_traversal
+def test_layout_full_menu_unpack_and_graph(mock_menu):
+    main_menu = mock_menu(Menus.MAIN.value)
 
-    graph = layout._build_graph([b1, b2, b3, b4, b5])
-    
-    assert graph["b1"][Traversal.SOUTH] == "b2"
-    assert graph["b1"][Traversal.EAST] == "b3"
-    assert graph["b1"][Traversal.WEST] == "b4"
-    assert graph["b1"][Traversal.NORTH] == "b5"
-    assert graph["b2"][Traversal.NORTH] == "b1"
-    assert graph["b3"][Traversal.WEST] == "b1"
-
-
-@pytest.mark.workflow_menus
-def test_layout_build_graph_grid_to_controls():
-    """Validates that right-column buttons in a 2x2 grid link EAST to adjacent scroll controls."""
-    layout = Layout(Dimensions(w=640, l=480))
-
-    def make_btn(name, x, y, w=40, l=40):
-        b = MagicMock()
-        b.name = name
-        b.instance = AssetInstances.BUTTONS.value
-        b.state.position = Position(x=x, y=y)
-        b.state.status = Statuses.IDLE.value
-        b.dimensions = Dimensions(w=w, l=l)
-        return b
-
-    slot_0 = make_btn("slot-0", 100, 100)
-    slot_1 = make_btn("slot-1", 145, 100)
-    slot_2 = make_btn("slot-2", 100, 145)
-    slot_3 = make_btn("slot-3", 145, 145)
-
-    arrow_up = make_btn("arrow-up", 200, 100, w=24, l=24)
-    arrow_down = make_btn("arrow-down", 200, 145, w=24, l=24)
-
-    buttons = [slot_0, slot_1, slot_2, slot_3, arrow_up, arrow_down]
-    graph = layout._build_graph(buttons)
-
-    assert graph["slot-1"][Traversal.EAST] == "arrow-up"
-    assert graph["slot-3"][Traversal.EAST] == "arrow-down"
-    assert graph["arrow-up"][Traversal.WEST] == "slot-1"
-    assert graph["arrow-down"][Traversal.WEST] == "slot-3"
+    assert main_menu.focus == "new-game"
+    assert main_menu.graph["new-game"][Traversal.SOUTH.value] == "load-game"
+    assert main_menu.graph["load-game"][Traversal.NORTH.value] == "new-game"
+    assert main_menu.graph["load-game"][Traversal.SOUTH.value] == "options-menu"
+    assert main_menu.graph["options-menu"][Traversal.SOUTH.value] == "editor-menu"

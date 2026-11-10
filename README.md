@@ -28,9 +28,9 @@ pip install -r requirements.txt
 
 # 4. Install SDL libraries
 ## a. MacOS
-brew install sdl2 sdl2_image sdl2_ttf
+brew install sdl2 sdl2_image sdl2_ttf sdl2_mixer
 ### b. Debian
-sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
+sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
 ```
 
 ### Build

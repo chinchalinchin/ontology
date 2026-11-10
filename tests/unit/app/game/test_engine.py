@@ -16,11 +16,11 @@ import pytest
 from app.game.engine import Engine
 from app.game.logic.mechanics.core.animation import AnimationMechanics
 from app.game.logic.mechanics.intentional.player import PlayerMechanics
-from app.game.menus.contexts import PauseContext
-from app.game.menus.events import (
+from app.models.menus import (
     Event,
     MenuEvent,
     TerminalEvent,
+    PauseContext
 )
 from app.static.semantics import (
     Intentions,

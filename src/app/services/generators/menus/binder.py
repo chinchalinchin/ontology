@@ -1,19 +1,24 @@
 """
 @domain.system
 @app.service
-@workflow.menus
+@app.menu
+@menu.binding
 
-# Ontology: Source - app.services.generators.binder
+# Ontology: Source - app.services.generators.menus.binder
 
 Factory for generating and preparing Binding components.
 """
 # Standard Libraries
-from typing import Any, Optional, Dict
+from typing import (
+    Any,
+    Optional, 
+    Dict
+)
 
 # Application Libraries
 from app.static.semantics import Bindings
 from app.models.config.menus import MenuBinding
-from app.game.menus.contexts import MenuContext
+from app.models.menus import MenuContext
 from app.game.menus.bindings import (
     Binding, 
     CollectionBinding,

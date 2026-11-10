@@ -1,5 +1,13 @@
 """
-# Ontology: Source - app.gane.menus.controllers.display
+@draft
+@domain.user
+@domain.logic
+@domain.concrete
+@app.menu
+@menu.controller
+@workflow.traversal
+
+# Ontology: Source - app.game.menus.controllers.display
 """
 from __future__ import annotations
 

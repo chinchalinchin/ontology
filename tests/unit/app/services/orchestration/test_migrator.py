@@ -29,7 +29,7 @@ from libs.core.models import Position
 # ------------------------------------------------------------------
 
 pytestmark = [
-    pytest.mark.app_services,
+    pytest.mark.app_service,
     pytest.mark.workflow_hydration,
     pytest.mark.workflow_injection,
 ]

@@ -21,6 +21,6 @@ TODOS.md
 
 !**/.gitkeep
 !**/templates/*-dump.md
-!**/.prompts/blocks/**
-!**/.prompts/board/**
+!**/prompts/blocks/**
+!**/prompts/board/**
 !/**/.gitkeep

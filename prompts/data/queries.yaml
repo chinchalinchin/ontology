@@ -1,0 +1,180 @@
+queries:
+  # -------------------------------------------------------
+  # ------------------------ QUERY: COMPOSITION SOURCE CODE
+  # -------------------------------------------------------
+  compositions:
+    # ------------------------------------
+    - title: Asset Abstracts
+      strategy: AND
+      scan:
+        domain: [ abstract ]
+        app: [ asset ]
+    # ------------------------------------
+    - title: Material Modality
+      scan:
+        domain: [ model ]
+        modality: [ material ]
+    # ------------------------------------
+    - title: Material Implementations
+      scan:
+        app: [ asset ]
+        domain: [ concrete ]
+        modality: [ material ]
+    # ------------------------------------
+    - title: Composition Logic
+      scan:
+        domain: [ logic ]
+        workflows: [ compositions ]
+    # ------------------------------------
+    - title: Plot Services
+      scan:
+        app: [ services ]
+        workflows: [ plot ]
+  # -------------------------------------------------------
+  # ----------------------------- QUERY: SPRITE SOURCE CODE
+  # -------------------------------------------------------
+  sprites:
+    # ------------------------------------
+    - title: Asset Abstracts
+      scan:
+        domain: [ abstract ]
+        app: [ asset ]
+    # ------------------------------------
+    - title: Sheet Models
+      scan:
+        domain: [ model ]
+        category: [ sheets ]
+    # ------------------------------------
+    - title: Sheet Implementations
+      scan:
+        domain: [ concrete ]
+        app: [ asset ]
+        category: [ sheets ]
+    # ------------------------------------
+    - title: Action and Intention Modality
+      strategy: OR
+      scan:
+        modality: [ action, intention ]
+    # ------------------------------------
+    - title: Navigation Modules
+      scan:
+        app: [ module ]
+        domain: [ logic ]
+        workflows: [ navigation ]
+    # ------------------------------------
+    - title: Navigation Libraries
+      scan:
+        app: [ library ]
+        workflows: [ navigation ]
+  # -------------------------------------------------------
+  # ----------------------------- QUERY: DEVICE SOURCE CODE
+  # -------------------------------------------------------
+  devices:
+    # ------------------------------------
+    - title: Application Core Components
+      scan:
+        app: [ core, component ]
+    # ------------------------------------
+    - title: Application Devices
+      scan:
+        app: [ device ]
+    # ------------------------------------
+    - title: Player Mechanic Implementation
+      scan:
+        app: [ mechanic ]
+        workflows: [ player ]
+    # ------------------------------------
+  # -------------------------------------------------------
+  # ------------------------- QUERY: NAVIGATION SOURCE CODE
+  # -------------------------------------------------------
+  navigation:
+    # ------------------------------------
+    - title: Asset Abstract
+      scan: 
+        domain: [ abstract ]
+        app: [ asset ]
+    # ------------------------------------
+    - title: Mechanic Abstract
+      scan:
+        domain: [ abstract ]
+        app: [ mechanic ]
+    # ------------------------------------
+    - title: Sheet Implementations
+      scan:
+        domain: [ concrete ]
+        app: [ asset ]
+        category: [ sheets ]
+    # ------------------------------------
+    - title: Sheet Models
+      scan:
+        domain: [ model ]
+        category: [ sheets ]
+    # ------------------------------------
+    - title: Navigation Workflow
+      scan:
+        workflows: [ navigation ]
+    # ------------------------------------
+  # -------------------------------------------------------
+  # ------------------------------- QUERY: MENU SOURCE CODE
+  # -------------------------------------------------------
+  menus:
+    # -------------------------------------
+    - title: Asset Abstract
+      scan:
+        domain: [ abstract ]
+        app: [ asset ]
+    # -------------------------------------
+    - title: Widget Implementations
+      scan:
+        domain: [ concrete ]
+        app: [ asset ]
+        category: [ widgets ]
+    # -------------------------------------
+    - title: Widget Models
+      scan:
+        domain: [ model ]
+        category: [ widgets ]
+    # -------------------------------------
+    - title: Menu Abstracts
+      scan:
+        domain: [ abstract ]
+        app: [ menu ]
+    # -------------------------------------
+    - title: Menu Models
+      scan:
+        domain: [ model ]
+        app: [ menu ]
+    # -------------------------------------
+    - title: Menu Bindings
+      scan:
+        domain: [ concrete ]
+        app: [ menu ]
+        menu: [ binding ]
+    # -------------------------------------
+    # - title: Menu Modules
+    #   scan:
+    #     domain: [ logic ]
+    #     app: [ module, menu ]
+    # -------------------------------------
+    # - title: Menu Mechanics
+    #   scan:
+    #     domain: [ concrete ]
+    #     app: [ menu, mechanic ]
+    # -------------------------------------
+    - title: Menu Controllers
+      scan:
+        domain: [ concrete ]
+        app: [ menu ]
+        menu: [ controller ]
+    # -------------------------------------
+    # - title: Event Handlers
+    #   scan:
+    #     domain: [ concrete ]
+    #     app: [ menu ]
+    #     menu: [ handler ]
+    # -------------------------------------
+    - title: Menu Services
+      scan:
+        domain: [ system ]
+        app: [ service, menu ]
+    # -------------------------------------

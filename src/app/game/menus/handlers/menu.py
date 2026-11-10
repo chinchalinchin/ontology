@@ -1,4 +1,11 @@
 """
+@domain.user
+@domain.concrete
+@domain.system
+@app.menu
+@menu.handler
+@workflow.rendering
+
 # Ontology: Source - app.game.menus.handlers.menu
 
 Menu event handling implemention.
@@ -8,35 +15,42 @@ import logging
 
 # Application Libraries
 from app.game.menus.handlers.base import EventHandler
-from app.game.menus.events import (
-    MenuEvent, 
-    EventContext
-)
+from app.models.menus import MenuEvent
+from app.models.state import PaneState
+from app.game.menus.core import EventData
+
+# ----------------------------------------------------------------------
 
 logger = logging.getLogger(__name__)
 
+# ----------------------------------------------------------------------
+
 class MenuEventHandler(EventHandler):
-    def handle(self, event: MenuEvent, context: EventContext) -> None:
-        if not context.board.configurations.menus.get(event.id):
+    def handle(self, event: MenuEvent, data: EventData) -> None:
+        if not data.board.configurations.menus.get(event.id):
             logger.warning(f"MenuEvent Received, but no {event.id} Menu Defined")
             return
         
-        context.board.paused = True
-        player = context.board.player()
-        screen = context.screens[player.state.layer] \
-                    if player and context.board.loaded \
-                        else next(iter(context.screens.values()))
+        data.board.paused = True
+        player = data.board.player()
+        screen = data.screens[player.state.layer] \
+                    if player and data.board.loaded \
+                        else next(iter(data.screens.values()))
         
-        menu = context.provider.unpack(
+        menu = data.provider.unpack(
             event.id, 
-            context.board.configurations.menus.get(event.id), 
+            data.board.configurations.menus.get(event.id), 
             event.context, 
             screen.screensize
         )
-        context.board.menus.append(menu)
+        data.board.menus.append(menu)
 
+        if menu.controller:
+            menu.controller.open(menu, data.board, data.bus)
+            
         # Stamp any initial canvas content
         for widget in menu.widgets.values():
-            if hasattr(widget.state, 'canvas') and widget.state.canvas is not None:
-                if hasattr(widget.state, 'current'):
-                    screen.stamp(widget, widget.state.current())
+            if isinstance(widget.state, PaneState) and widget.state.canvas is not None:
+                screen.stamp(widget, widget.state.current())
+
+        

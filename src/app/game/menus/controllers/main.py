@@ -1,4 +1,13 @@
 """
+@draft
+@domain.user
+@domain.logic
+@domain.concrete
+@app.menu
+@menu.controller
+@workflow.traversal
+@workflow.hydration
+
 # Ontology: Source - app.game.menus.controllers.main
 """
 from __future__ import annotations
@@ -13,7 +22,7 @@ import app.static.settings as settings
 from app.static.semantics import Selections
 from app.game.menus.controllers.base import MenuController
 from app.game.menus.core import Menu
-from app.game.menus.events import (
+from app.models.menus import (
     StateEvent, 
     TerminalEvent,
     MenuEvent
@@ -54,4 +63,7 @@ class MainController(MenuController):
             bus.append(StateEvent(id=settings.NEW_BOARD))
 
         elif selection == Selections.MENU.value:
-            bus.append(MenuEvent(id=selector, context=menu.context))
+            bus.append(MenuEvent(
+                id=selector, 
+                context=menu.context
+            ))

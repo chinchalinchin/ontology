@@ -1,6 +1,5 @@
 """
 @domain.test
-@domain.graphics
 @test.unit
 @app.library
 @app.asset

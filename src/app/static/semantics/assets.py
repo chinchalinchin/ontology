@@ -57,7 +57,6 @@ class AssetInstances(str, Enum):
     # CRAFTS
     BRIDGES         = "bridges"
     DECOR           = "decor"
-    PLATFORMS       = "platforms"
     STRUTS          = "struts"
     STAIRS          = "stairs"
     FORGES          = "forges"
@@ -79,7 +78,6 @@ class AssetInstances(str, Enum):
     BUTTONS         = "buttons"
     ICONS           = "icons"
     METERS          = "meters"
-    PAGES           = "pages"
     PANES           = "panes"
 
 # -------------------------------------------------------
@@ -106,10 +104,19 @@ class Equipment(str, Enum):
     UTILITIES       = "utilities"
     WEAPONS         = "weapons"
 
+class Widgets(str, Enum):
+    """Enumeration of Widgets, physical and virtualized."""
+    BUTTONS         = "buttons"
+    ICONS           = "icons"
+    GIZMOS          = "gizmos"
+    METERS          = "meters"
+    PANES           = "panes"
+
 class Groups(str, Enum):
     """Enumeration of Asset Groups."""
     EQUIPMENT       = "equipment"
     SPAWNABLES      = "spawnables"
+    WIDGETS         = "widgets"
 
 # -------------------------------------------------------
 # -------------------------------- FRAME SPACE PARTITIONS
@@ -149,9 +156,10 @@ class Switches(int, Enum):
     ON              = 1
     OFF             = 0
 
-class Gauges(str, Enum):
-    EMPTY           = "0"
-
+class Gauges(int, Enum):
+    EMPTY           = 0
+    FULL            = 101
+    
 class Expressions(str, Enum):
     AGREEMENT       = "agreement"
     ANGER           = "anger"

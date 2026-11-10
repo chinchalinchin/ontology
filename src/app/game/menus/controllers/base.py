@@ -1,10 +1,19 @@
 """
+@domain.user
+@domain.abstract
+@app.menu
+@app.base
+@menu.controller
+
 # Ontology: Source - app.game.menus.controllers.base
 """
 from __future__ import annotations
 
 # Standard Libraries
-from abc import ABC, abstractmethod
+from abc import (
+    ABC, 
+    abstractmethod
+)
 import collections
 from typing import TYPE_CHECKING
 
