@@ -1,12 +1,30 @@
+# -------------------------------------------------------------
+themes:
+  dimensions:
+    icon: &icon
+      w: 32
+      l: 32
+    slot: &slot
+      w: 40
+      l: 40
+    pane: &pane
+      w: 36
+      l: 36
+    arrow: &arrow
+      w: 24
+      l: 24
+    meter: &meter
+      w: 72
+      l: 20
+# -------------------------------------------------------------
+
 widgets:
   # -----------------------------------------
   # --------------------------------- BUTTONS
   # -----------------------------------------
   buttons:
     slot: 
-      dimensions:
-        w: 40
-        l: 40
+      dimensions: *slot
     icon:
       dimensions:
         w: 71
@@ -17,25 +35,44 @@ widgets:
         l: 28
     # --------
     arrow-down:
-      dimensions:
-        w: 24
-        l: 24
+      dimensions: *arrow
     arrow-left:
-      dimensions:
-        w: 24
-        l: 24
+      dimensions: *arrow
     arrow-right:
-      dimensions:
-        w: 24
-        l: 24
+      dimensions: *arrow
     arrow-up:
-      dimensions:
-        w: 24
-        l: 24
+      dimensions: *arrow
   # -----------------------------------------
   # ----------------------------------- ICONS
   # -----------------------------------------
   icons:
+    # -------------------- STANDARDIZED ICONS
+    weapons:
+      dimensions: *icon
+      frames:
+        - sword
+        - dagger
+        - knife
+        - spear
+        - longbow
+        - crossbow
+        - cane
+    shields:
+      dimensions: *icon
+      frames:
+        - buckler
+        - kite
+        - emblem
+    tools:
+      dimensions: *icon
+      frames:
+        - shovel
+        - axe
+        - pickaxe
+        - hammer 
+        - hoe
+        - scythe
+    # -------------------- SPECIALIZED ICONS
     digits:
       dimensions:
         w: 12
@@ -51,35 +88,6 @@ widgets:
         - seven
         - eight
         - nine
-    weapons:
-      dimensions:
-        w: 32
-        l: 32
-      frames:
-        - sword
-        - dagger
-        - knife
-        - spear
-        - longbow
-        - crossbow
-        - cane
-    shields:
-      dimensions:
-        w: 32
-        l: 32
-      frames:
-        - buckler
-        - kite
-        - emblem
-    tools:
-      dimensions:
-        w: 32
-        l: 32
-      frames:
-        - shovel
-        - axe
-        - pickaxe
-        - hammer 
     portraits:
       dimensions: 
         w: 50
@@ -114,13 +122,9 @@ widgets:
   # -----------------------------------------
   meters:
     health:
-      dimensions:
-        w: 72
-        l: 20
+      dimensions: *meter
     magic:
-      dimensions:
-        w: 72
-        l: 20
+      dimensions: *meter
   # -----------------------------------------
   # ----------------------------------- PANES
   # -----------------------------------------

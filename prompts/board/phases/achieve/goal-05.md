@@ -10,12 +10,12 @@ TODO
 
 *Objective*: Ensure controller specific logic is migrated into the new Menu-Widget paradigm.
 
-* [ ] Remove the `equip()` method from `MenuMechanics`.
-* [ ] Verify `MenuMechanics.update()` acts strictly as a traversal router and event delegator.
+* [x] Remove the `equip()` method from `MenuMechanics`.
+* [x] Verify `MenuMechanics.update()` acts strictly as a traversal router and event delegator.
 
 **Task #2: Inventory Controller**
 
-* [!] Create `InventoryController(MenuController)`.
-* [!] Implement `select()` to intercept `EQUIP` selections, resolving the target equipment key and modifying the `SpriteState.inventory`.
-* [!] Implement `update()` to monitor Sprite inventory arrays and emit `UpdateEvents` to redraw capacity meters or dynamically rebuild the layout if items are dropped.
+* [x] Create `InventoryController(MenuController)`.
+* [x] Implement `select()` to intercept `EQUIP` selections, resolving the target equipment key and modifying the `SpriteState.inventory`.
+* [ ] Implement `update()` to monitor Sprite inventory arrays and emit `UpdateEvents` to redraw.
 
