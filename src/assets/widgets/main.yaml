@@ -17,7 +17,6 @@ themes:
       w: 72
       l: 20
 # -------------------------------------------------------------
-
 widgets:
   # -----------------------------------------
   # --------------------------------- BUTTONS
@@ -46,7 +45,85 @@ widgets:
   # ----------------------------------- ICONS
   # -----------------------------------------
   icons:
-    # -------------------- STANDARDIZED ICONS
+    # ------------------- ICONS: STANDARDIZED
+    armor:
+      dimensions: *icon
+      frames: 
+        - leather
+        - copper
+        - iron
+        - gold
+    # --------------------------------------
+    crops:
+      dimensions: *icon
+      frames:
+        - carrot
+        - lettuce
+        - maize
+        - radish
+        - watermelon
+        - tomato
+        - mushroom
+        - pepper
+        - pineapple
+        - berry
+        - chard
+        - gourd
+    # --------------------------------------
+    items:
+      dimensions: *icon
+      frames:
+        - bomb
+        - container
+        - key
+        - arrow
+        - bolt
+        - coin
+    # --------------------------------------
+    materials:
+      dimensions: *icon
+      frames:
+        - cotton
+        - thatches
+        - wood
+        - red-dye
+        - blue-dye
+        - yellow-dye
+        - green-dye
+        - clay
+        - marble
+        - granite
+        - feldspar
+        - iron
+        - copper
+        - gold
+    # --------------------------------------
+    shields:
+      dimensions: *icon
+      frames:
+        - buckler
+        - kite
+        - emblem
+    # --------------------------------------
+    utilities:
+      dimensions: *icon
+      frames:
+        - lantern
+        - stave
+        - sapphire
+        - emerald
+        - ruby
+    # --------------------------------------
+    tools:
+      dimensions: *icon
+      frames:
+        - shovel
+        - axe
+        - pickaxe
+        - hammer 
+        - hoe
+        - scythe
+    # --------------------------------------
     weapons:
       dimensions: *icon
       frames:
@@ -57,21 +134,6 @@ widgets:
         - longbow
         - crossbow
         - cane
-    shields:
-      dimensions: *icon
-      frames:
-        - buckler
-        - kite
-        - emblem
-    tools:
-      dimensions: *icon
-      frames:
-        - shovel
-        - axe
-        - pickaxe
-        - hammer 
-        - hoe
-        - scythe
     # -------------------- SPECIALIZED ICONS
     digits:
       dimensions:
@@ -88,6 +150,7 @@ widgets:
         - seven
         - eight
         - nine
+    # --------------------------------------
     portraits:
       dimensions: 
         w: 50
@@ -130,46 +193,24 @@ widgets:
   # -----------------------------------------
   panes:
     brown-solid:
-      dimensions:
-        w: 36
-        l: 36
+      dimensions: *pane
     brown-texture:
-      dimensions:
-        w: 36
-        l: 36
+      dimensions: *pane
     blue-solid:
-      dimensions:
-        w: 36
-        l: 36
+      dimensions: *pane
     blue-texture:
-      dimensions:
-        w: 36
-        l: 36
+      dimensions: *pane
     green-solid:
-      dimensions:
-        w: 36
-        l: 36
+      dimensions: *pane
     green-texture:
-      dimensions:
-        w: 36
-        l: 36
+      dimensions: *pane
     dark-solid:
-      dimensions:
-        w: 36
-        l: 36
+      dimensions: *pane
     dark-texture:
-      dimensions:
-        w: 36
-        l: 36
+      dimensions: *pane
     light-solid:
-      dimensions:
-        w: 36
-        l: 36
+      dimensions: *pane
     light-texture:
-      dimensions:
-        w: 36
-        l: 36
+      dimensions: *pane
     transparent:
-      dimensions:
-        w: 36
-        l: 36
+      dimensions: *pane
