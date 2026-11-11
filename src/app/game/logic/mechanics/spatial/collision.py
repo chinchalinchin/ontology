@@ -144,7 +144,7 @@ class CollisionMechanics(SpatialMechanic):
             return
 
         vel = getattr(asset.state, 'velocity', None)
-        hitboxes = asset.hitbox.get(asset.properties, asset.state, elevation, asset.frame)
+        hitboxes = asset.hitboxes
 
         intersection = geometry.bounded(
             int(asset.state.position.x), 
