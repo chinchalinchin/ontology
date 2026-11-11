@@ -88,7 +88,7 @@ class PlayerMechanics(Mechanic):
                 player.state.animation.tick = 0
         else:
             if not is_locked:
-                player.state.intention = Intentions.IDLE
+                player.state.intention = Intentions.IDLE.value
         
         # 3. Process Goals / Movement
         speed = player.state.character.speed

@@ -107,7 +107,7 @@ class SpriteFrame(StateFrame):
             ])
             frame_keys.append((expr_key, expr.offset.x, expr.offset.y))
             
-        if state.intention is not None and state.intention == Intentions.ATTACK:
+        if state.intention is not None and state.intention == Intentions.ATTACK.value:
             logger.info(f"SpriteFrame generated keys: {frame_keys}")
         
         return frame_keys

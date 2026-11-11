@@ -15,23 +15,24 @@
 
 **Menu: Equipment**
 
-* `Row(header)`: `pane(content="Equipment")`
-* `Row(gear)`: `button(slot[k]) for k, v in slots.equipment.items() if k in Gear` (`armor`, `shield`)
-* `Rows(equipment)`: `button(slot[k]) + gizmo(inventory[m(k)]) for k in slots.equipment.keys() if k not in Gear`
+* `dock(header)`: `pane(content="Equipment")`
+* `dock(gear)`: `button(slot[k]) for k, v in slots.equipment.items() if k in Gear` (`armor`, `shield`)
+* `dock(equipment)`: `button(slot[k]) + gizmo(inventory[m(k)]) for k in slots.equipment.keys() if k not in Gear`
     * `slots.equipment.weapon` $\to$ `inventory.sheathe`
     * `slots.equipment.tool` $\to$ `inventory.belt`
     * `slots.equipment.utility` $\to$ `inventory.bag`
 
 Each non-Gear row of `Equipment` is traversible. Selecting a slottable equipment piece from a row updates the corresponding slot at the beginning of the row, mutating `SheetState.slots.equipment` in place and updating the bound icon closure.
 
-**Menu: Pack**
+**Menu: Crafts**
 
-* `Row(header)`: `pane(content="Pack")`
-* `Column 1`:
-* `Row(subheader)`: `pane(content="Resources")`
-    * `Rows(items)`: `gizmo(inventory.pack)`
-* `Column 2`:
-    * `Row(subheader)`: `pane(content="Placeholder for Known Craft Formulae")`
+* `dock(header)`: `pane(content="Crafts")`
+* `stack`:
+    * `dock(subheader)`: `pane(content="Resources")`
+    * `dock(materials)`: `gizmo(inventory.pack)`
+    * `dock(crops)`: `gizmo(inventory.sack)`
+* `stack`:
+    * `docker(subheader)`: `pane(content="Placeholder for Known Craft Formulae")`
 
 **Menu: Pouch**
 
@@ -57,38 +58,12 @@ Each non-Gear row of `Equipment` is traversible. Selecting a slottable equipment
 * `inventory.bag`: `Dict[Enumerated[Utilities], int]`
 * `inventory.pouch`: `Dict[Enumerated[Items], int]`
 * `inventory.pack`: `Dict[Enumerated[Materials], int]`
+* `inventory.sack`: `Dict[Enumerated[Crops], int]`
 * `inventory.sheathe`: `Dict[Enumerated[Weapons], int]`
 
 ##### Architectural Analysis I
 
-###### 1. Spec Ambiguities & Corrections
-
-1. **Pack Menu Header and Gizmo Binding Typo**:
-In the draft specification for `Menu: Pack`, the header content is listed as `pane(content="Pouch")` and the resource rows are listed as `gizmo(inventory.pouch)`. Because `Menu: Pack` displays harvested raw materials alongside craft formulae, the header must be `"Pack"` and the collection gizmo must bind to `context.inventory.pack` (`id: materials`).
-2. **Singular vs. Plural Slot Attribute Naming (`tool`/`utility` vs. `tools`/`utilities`)**:
-The draft specification writes `slots.equipment.tools` and `slot.equipment.utilities` (with a singular `slot.` typo on the latter). In the existing codebase (`src/app/models/state/assets/sheets.py`, `src/app/assets/frames/sheets.py`, `src/app/game/logic/mechanics/intentional/player.py`, `src/app/game/menus/controllers/inventory.py`), slot attributes on `Equipment` are singular (`weapon`, `armor`, `shield`, `tool`, `utility`), whereas collection groups on `Board.equipment` (`EquipmentGroup`) and `widgets.icons` are plural (`weapons`, `armor`, `shields`, `tools`, `utilities`). Retaining singular field names on `Equipment` (`weapon`, `armor`, `shield`, `tool`, `utility`) preserves type semantics—each slot holds a single `Optional[str]` identifier—and minimizes churn across `SpriteFrame`, `AnimationMap`, and `CombatMechanics`.
-3. **Orphaned `crops` Icon Sheet vs. `Inventory` Partitions**:
-The Icon Enumeration specifies 8 icon sheets (`armor`, `crops`, `items`, `materials`, `shields`, `utilities`, `tools`, `weapons`), matching `src/assets/widgets/main.yaml`. However, `Model: Inventory` defines only 5 dictionaries (`belt`, `bag`, `pouch`, `pack`, `sheathe`). In `Fabricator._collection`, every aperture icon node inherits `id=node.id` from the parent Gizmo `MenuNode`, and `IconFrame.keys` prefixes the item key with `{id}-{state.icon}`. If `crops` (`carrot`, `lettuce`, `maize`, etc.) are placed inside `inventory.pack` (`id: materials`) or `inventory.pouch` (`id: items`), `Registry.image()` will look up `materials-carrot` or `items-carrot` and fail with a `Registry MISS` because those frames are indexed under `crops-carrot`.
-* **Resolution Options**:
-* **Option A (Dedicated `crops` Inventory Field)**: Add `inventory.sack: Dict[Enumerated[Crops], int]` (or `inventory.crops`) and place a second Collection Gizmo (`id: crops`, `source: context.inventory.sack`) under the `Resources` column in `Menu: Pack`.
-* **Option B (Unified Icon Indexing)**: Merge `crops` frames into `items` (if consumable in `pouch`) or `materials` (if crafting resources in `pack`) in `src/assets/widgets/main.yaml`.
-* *Recommendation*: **Option A** (or adding a `crops` Gizmo in `Pack`) preserves the existing `src/assets/widgets/main.yaml` atlas partitioning without re-atlasing PNG files.
-
-
-
-
-4. **Evaluation of the "Potential Abstraction" (`Inventory Gizmo`)**:
-The spec asks whether synthesizing a composite `Inventory Gizmo = Slot Button + Collection Gizmo` as a function of `(slot, inventory)` is "worth the squeeze".
-Evaluating the cardinality between `Slots` and `Inventory` across the three menus:
-* `Equipment (Gear)`: $2 \text{ Slots} \to 0 \text{ Inventories}$ (`armor`, `shield` have no backing inventory dict).
-* `Equipment (Slottable)`: $1 \text{ Slot} \to 1 \text{ Inventory}$ (`weapon` $\to$ `sheathe`, `tool` $\to$ `belt`, `utility` $\to$ `bag`).
-* `Pouch (Grip)`: $2 \text{ Slots} \to 1 \text{ Inventory}$ (`grip.left`, `grip.right` $\to$ `pouch`).
-* `Pack`: $0 \text{ Slots} \to 1 \text{ Inventory}$ (`None` $\to$ `pack`).
-
-
-Because the $1:1$ pairing only holds for 3 rows in a single menu, baking `(slot, inventory)` into `Fabricator` introduces an abstraction that fails for 3 of the 4 cases. Keeping `gizmos` strictly as `collection` grids and declaring `slot` buttons as standard `overlay` panes (using YAML anchors in `menus/inventory/main.yaml`) maintains orthogonality across `Fabricator`, `Binder`, and `Layout`.
-
-###### 2. Gizmo Traversal & Implicit Edge-Triggered Pagination
+###### 1. Gizmo Traversal & Implicit Edge-Triggered Pagination
 
 Eliminating explicit scroll arrow buttons (`arrow-left`, `arrow-right`) requires `CollectionState` Gizmos to be directly traversible and to paginate when `focus` crosses the boundary of the visible aperture window.
 
@@ -98,18 +73,20 @@ $$r(i) = \left\lfloor \frac{i}{K} \right\rfloor, \qquad c(i) = i \bmod K$$
 
 Two structural issues in the current codebase prevent button-less Gizmo pagination:
 
-1. **Static Exclusion of `DISABLED` Buttons in `Layout._build_graph**`:
+1. **Static Exclusion of `DISABLED` Buttons in `Layout._build_graph`**:
+
 Currently, `Provider._unpack_pane` calls `_sync_collection_slots` before `Layout.compute()`, setting unoccupied slots ($k \ge N$) to `Statuses.DISABLED`. `Layout._build_graph` then skips any button with `status == Statuses.DISABLED`. Consequently, if a Gizmo is initially empty or partially filled, or if a user scrolls to a partial final page where trailing slots become unoccupied, the static `menu.graph` either lacks edges for newly occupied slots or retains stale edges pointing to newly unoccupied slots.
-* **Architectural Fix**:
+
+**Architectural Fix**:
+
 * Separate **structural non-traversibility** (e.g., passive display slots like `Gear` in `Menu: Equipment`) from **dynamic slot vacancy**.
 * `Layout._build_graph` should include all Gizmo aperture slot buttons in the spatial adjacency graph regardless of whether they are currently occupied, while only excluding buttons explicitly configured as non-interactive display slots (or `MenuMechanics` should dynamically validate neighbor availability).
 * When traversing in `MenuMechanics` (or `InventoryController`), an edge to a target button is only followed if `target_button.state.status != Statuses.DISABLED`.
 
-
-
-
 2. **Boundary Traversal Interception (Window Scrolling without Arrow Buttons)**:
+
 When the focused widget is a Gizmo slot button (`SelectBinding` with `selection == Selections.SLOT`, `selector == gizmo_name`, `index == i`), directional input $\tau \in \{\text{NORTH}, \text{SOUTH}, \text{EAST}, \text{WEST}\}$ can be intercepted at the aperture boundary before falling back to `menu.graph`:
+
 * **1D Horizontal Strip Gizmos ($R = 1, C = K$, used in `Menu: Equipment` rows)**:
 * Each equipment row (`sheathe`, `belt`, `bag`) is a single horizontal row of $K$ slots stacked vertically beneath one another.
 * Vertical inputs (`NORTH`, `SOUTH`) must immediately traverse between equipment rows (`sheathe` $\leftrightarrow$ `belt` $\leftrightarrow$ `bag`) via `menu.graph`.
@@ -117,19 +94,11 @@ When the focused widget is a Gizmo slot button (`SelectBinding` with `selection 
 * If $\tau = \text{EAST}$ and $c(i) = K - 1$ and $\omega + C < N$: increment $\omega \leftarrow \omega + 1$ (or $\omega + K$), re-synchronize slot statuses, and retain/clamp focus inside the Gizmo.
 * If $\tau = \text{WEST}$ and $c(i) = 0$ and $\omega > 0$: decrement $\omega \leftarrow \max(0, \omega - 1)$, re-synchronize slot statuses, and retain focus on slot $0$. Only when $\omega = 0$ does $\tau = \text{WEST}$ consult `menu.graph`.
 
-
-
-
 * **2D Grid Gizmos ($R > 1, C = R \cdot K$, used in `Menu: Pouch` and `Menu: Pack`)**:
+
 * Vertical inputs (`NORTH`, `SOUTH`) scroll the window by one row ($K$ elements) at the top and bottom boundaries of the grid:
 * If $\tau = \text{SOUTH}$ and $r(i) = R - 1$ and $\omega + C < N$: advance $\omega \leftarrow \omega + K$, call `_sync_collection_slots`, and if $\omega + i \ge N$, clamp focus to the highest occupied slot index $i' < i$.
 * If $\tau = \text{NORTH}$ and $r(i) = 0$ and $\omega > 0$: decrement $\omega \leftarrow \max(0, \omega - K)$ and call `_sync_collection_slots`. Only when $r(i) = 0$ and $\omega = 0$ does $\tau = \text{NORTH}$ traverse out of the Gizmo into the `Row(grip)` buttons above.
-
-
-
-
-
-
 
 ```mermaid
 flowchart TD
@@ -144,10 +113,9 @@ flowchart TD
     G --> H{Neighbor Exists & Status != DISABLED?}
     H -- Yes --> I[Shift Focus to Neighbor]
     H -- No --> J[Retain Current Focus]
-
 ```
 
-###### 3. Pouch Dual-Grip Selection State Machine
+###### 2. Pouch Dual-Grip Selection State Machine
 
 In `Menu: Equipment`, each Collection Gizmo row corresponds uniquely to a single target slot (`sheathe` $\to$ `weapon`, `belt` $\to$ `tool`, `bag` $\to$ `utility`), so pressing `SELECT` on a Gizmo slot immediately equips the item into that row's slot.
 
@@ -155,12 +123,12 @@ In `Menu: Pouch`, both `slots.grip.right` and `slots.grip.left` draw from the si
 
 * The two Grip buttons (`pouch-grip-right-slot` and `pouch-grip-left-slot`) are interactive `buttons` bound to `SelectTarget(selection=Selections.GRIP, selector="right" | "left")`.
 * `InventoryContext` (or `InventoryController` / `PouchController`) tracks the target hand `grip_target: str` (defaulting to `"right"` on menu open, with `pouch-grip-right-slot` rendered in `Statuses.SELECTED` when idle, or toggled when the user selects either Grip button).
-* **Workflow**:
+
+**Workflow**
+
 1. When the user traverses to `pouch-grip-left-slot` or `pouch-grip-right-slot` and presses `SELECT`, `grip_target` switches to `"left"` or `"right"` respectively (updating the unselected grip button to `IDLE` and the active target grip button to `SELECTED`).
 2. When the user traverses to `inventory-pouch-grid` and presses `SELECT` on an occupied slot $i$, the controller resolves `item_key = gizmo.state.get_item(i)` and assigns `setattr(state.slots.grip, grip_target, item_key)`.
 3. Because `pouch-grip-right-icon` and `pouch-grip-left-icon` use `IconBinding` closures pointing to `context.slots.grip.right` and `context.slots.grip.left`, the newly equipped item icon renders immediately on the next frame.
-
-
 
 ###### 4. Parameterized `use` Intention & Device Mappings
 
@@ -171,12 +139,15 @@ The specification defines:
 
 In `src/app/models/config/mappings.py`, `WorldMapping.intentions` is currently `Dict[Enumerated[Intentions], int]`. Because YAML dictionary keys must be unique, `world.intentions` cannot contain two separate entries keyed by `use`.
 
-* **Architectural Resolution**:
+**Architectural Resolution**
+
 * Introduce `Hands` (`LEFT = "left"`, `RIGHT = "right"`) in `app.static.semantics`.
 * In `WorldMapping.intentions` (and `PlayerIntentions` / `Intentions` semantics), map distinct hardware input actions `use-left` and `use-right` (or add a ` grips: Dict[Enumerated[Hands], int]` mapping on `WorldMapping`), while keeping the canonical Sprite/Sheet `Intentions.USE = "use"` for the Intention Transition Matrix and `AnimationMap`.
 * When `PlayerMechanics` processes `payload.world`, a trigger on `use-left` (or `payload.world.grip == Hands.LEFT`) transitions `player.state.intention = Intentions.USE.value` and sets `player.state.mutators.parameters.hand = Hands.LEFT.value` (and analogously `Hands.RIGHT.value` for right grip).
 
+##### User Review I
 
+* `inventory.sack` added for `crops`. Specficiation updated.
 
 ##### Goals
 
@@ -314,9 +285,9 @@ Update `src/app/static/semantics.py`, `src/app/models/config/mappings.py`, `src/
 * [ ] Subtask: Update `PlayerMechanics.update` in `src/app/game/logic/mechanics/intentional/player.py` to dispatch `MenuEvent` with `InventoryContext(slots=player.state.slots, inventory=player.state.inventory)` for `Menus.EQUIPMENT`, `Menus.POUCH`, and `Menus.PACK`, and to populate `player.state.mutators.parameters.hand` when entering `Intentions.USE`.
 * [ ] Subtask: Add unit and integration tests covering `Slots` and `Inventory` hydration, `Equipment`/`Pouch`/`Pack` menu unpacking, edge-triggered Gizmo scrolling, and dual-grip item assignment.
 
----
+##### Bugs
 
-##### Bug B019: Gizmo Pagination Desynchronizes Slot Statuses and Rasterizes Offset Text Over Grid
+###### Bug B019: Gizmo Pagination Desynchronizes Slot Statuses and Rasterizes Offset Text Over Grid
 
 **STATUS**: OPEN
 **SEVERITY**: HIGH
@@ -339,7 +310,7 @@ In `src/app/game/menus/controllers/inventory.py`, when `InventoryController.sele
 1. Remove the `bus.append(UpdateEvent(widget=target_widget, content=str(target_widget.state.offset)))` calls from `InventoryController.select` (and remove `UpdateEvent(widget=widget, content=item_key)` on slot selection, as `IconBinding` closures and `ApertureBinding` closures evaluate dynamically every frame in `Screen._widgets`).
 2. Invoke `Provider._sync_collection_slots(target_widget.name, target_widget.state, menu.widgets)` whenever `CollectionState.offset` or the underlying collection mutates.
 
-##### Bug B020: Static Exclusion of Initially Disabled Gizmo Slots in `Layout._build_graph`
+###### Bug B020: Static Exclusion of Initially Disabled Gizmo Slots in `Layout._build_graph`
 
 **STATUS**: OPEN
 **SEVERITY**: MEDIUM
@@ -357,21 +328,3 @@ In `src/app/services/generators/menus/provider.py`, `_unpack_pane` executes `_sy
 **Proposed Remeditation**
 
 In `Layout._build_graph`, include Gizmo slot buttons (`widget.binding.selection == Selections.SLOT.value`) when computing geometric AABB adjacency edges regardless of their initial `IDLE`/`DISABLED` status, and enforce `menu.widgets[neighbor].state.status != Statuses.DISABLED.value` during runtime focus traversal in `MenuMechanics`.
-
-##### Bug B021: Enum Member Assigned to `player.state.intention` in `PlayerMechanics`
-
-**STATUS**: OPEN
-**SEVERITY**: LOW
-
-**Description**
-
-In `src/app/game/logic/mechanics/intentional/player.py` (line 85), when no intention input is active and the player is not locked in a blocking animation, `PlayerMechanics.update` assigns the raw enum member `player.state.intention = Intentions.IDLE` instead of `Intentions.IDLE.value` (`"idle"`). Similarly, `src/app/assets/frames/sheets.py` (line 111) compares `state.intention == Intentions.ATTACK` whereas `PlayerMechanics` (line 127) compares `player.state.intention == Intentions.ATTACK.value`. When `Intentions` is not a `str` subclass or when `Board.serialize` converts `asset.state` via `dataclasses.asdict`, assigning the `Enum` instance instead of `.value` creates type inconsistency between idle states (`Intentions.IDLE`) and polled states (`str` keys from `mapping.world.intentions`).
-
-**Steps to Replicate**
-
-1. Run `PlayerMechanics.update` for a single tick with an empty `WorldPayload(intention=None)`.
-2. Inspect `player.state.intention`; it is set to `Intentions.IDLE` rather than `Intentions.IDLE.value` (`"idle"`).
-
-**Proposed Remeditation**
-
-Assign `player.state.intention = Intentions.IDLE.value` in `src/app/game/logic/mechanics/intentional/player.py` (and `Goals.POSITION.value` on line 105), and standardize all comparisons in `src/app/assets/frames/sheets.py` and `src/app/game/logic/mechanics/intentional/player.py` on `.value` (or inherit `str, Enum` across all semantic enumerations in `src/app/static/semantics.py`).
