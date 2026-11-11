@@ -86,11 +86,7 @@ class LoadController(MenuController):
                     
             # Explicitly force Cython VRAM deletion on discarded Screens
             for j in range(len(board.layers()), len(old_screens)):
-                screen = old_screens[j]
-                if screen.bg_canvas:
-                    render.destroy(screen.bg_canvas)
-                if screen.fg_canvas:
-                    render.destroy(screen.fg_canvas)
+                old_screens[j].destroy()
             
             # Set the flag to trip the guard clause on the next tick
             board.loaded = True

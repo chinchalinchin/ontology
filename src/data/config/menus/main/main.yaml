@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 themes:
   colors:
-    pane: &pane transculent
+    pane: &pane blue-solid
     pane-alt: &pane-alt dark-texture
   alignments:
     center: &center

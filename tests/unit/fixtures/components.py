@@ -96,7 +96,6 @@ def mock_render(monkeypatch) -> MagicMock:
 
     monkeypatch.setattr("app.game.screen.render", mock)
     monkeypatch.setattr("libs.graphics.registry.render", mock)
-    monkeypatch.setattr("app.services.generators.menus.provider.render", mock)
     monkeypatch.setattr("app.services.orchestration.builder.render", mock)
     return mock
 

@@ -59,7 +59,6 @@ if TYPE_CHECKING:
     from app.services.generators.menus import Binder
 
 # Cython Libraries
-import libs.graphics.render as render
 from libs.core.models import (
     Dimensions,
     Position
@@ -152,41 +151,51 @@ class Provider:
 
         return AssetFactory.widget(cfg, properties, state, recipe, binding)
 
-
-    def _bake_pane(self, widget: Widget) -> None:
+    def _bind_pane(self, widget: Widget) -> None:
         if not isinstance(widget.state, PaneState):
             return
 
-        w = widget.dimensions.w
-        l = widget.dimensions.l
-
         if widget.binding is not None and not isinstance(widget.binding, CollectionBinding):
-            widget.state.content_function = widget.binding.bind(w=w, l=l)
+            widget.state.content_function = widget.binding.bind(
+                w=widget.dimensions.w,
+                l=widget.dimensions.l,
+                font=widget.state.font
+            )
 
-        if w <= 0 or l <= 0:
-            return
+    # def _bake_pane(self, widget: Widget) -> None:
+    #     if not isinstance(widget.state, PaneState):
+    #         return
 
-        primitives = []
-        for key, ox, oy in widget.frame.keys(widget.id, widget.state):
-            tex_data = self.binder.registry.image(key)
-            if not tex_data:
-                continue
-            tex_ptr, sx, sy, sw, sl = tex_data
-            primitives.append((tex_ptr, sx, sy, sw, sl, ox, oy, sw, sl, 1, 1))
+    #     w = widget.dimensions.w
+    #     l = widget.dimensions.l
 
-        if not primitives and widget.state.content_function is None:
-            return
+    #     if widget.binding is not None and not isinstance(widget.binding, CollectionBinding):
+    #         widget.state.content_function = widget.binding.bind(w=w, l=l)
 
-        canvas_ptr = render.canvas(w, l)
-        widget.state.canvas = canvas_ptr
+    #     if w <= 0 or l <= 0:
+    #         return
 
-        render.construct(canvas_ptr, primitives)
+    #     primitives = []
+    #     for key, ox, oy in widget.frame.keys(widget.id, widget.state):
+    #         tex_data = self.binder.registry.image(key)
+    #         if not tex_data:
+    #             continue
+    #         tex_ptr, sx, sy, sw, sl = tex_data
+    #         primitives.append((tex_ptr, sx, sy, sw, sl, ox, oy, sw, sl, 1, 1))
 
-        content = widget.state.current()
-        if isinstance(content, str) and content:
-            font = self.binder.registry.font(widget.state.font)
-            if font:
-                render.write((canvas_ptr, 0, 0, w, l, 0, 0, w, l), content, font)
+    #     if not primitives and widget.state.content_function is None:
+    #         return
+
+    #     canvas_ptr = render.canvas(w, l)
+    #     widget.state.canvas = canvas_ptr
+
+    #     render.construct(canvas_ptr, primitives)
+
+    #     content = widget.state.current()
+    #     if isinstance(content, str) and content:
+    #         font = self.binder.registry.font(widget.state.font)
+    #         if font:
+    #             render.write((canvas_ptr, 0, 0, w, l, 0, 0, w, l), content, font)
 
     # --------------------------------------------------
     # ------------------------------ RECURSION UTILITIES
@@ -353,10 +362,10 @@ class Provider:
         layout = Layout(screensize)
         flattened_list, graph = layout.compute(expanded_roots, widgets)
 
-        # Phase 4: Deferred Text Binding & 9-Slice Canvas Baking
+        # Phase 4: Deferred Text Closure Binding (Zero SDL / render calls)
         for widget in flattened_list:
             if isinstance(widget.state, PaneState):
-                self._bake_pane(widget)
+                self._bind_pane(widget)
 
         ordered_widgets = {w.name: w for w in flattened_list}
         ctrl = AssetFactory.controller(config.controller)

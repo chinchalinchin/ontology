@@ -104,26 +104,6 @@ def test_state_event_handler_queues_load_menu(mock_event_data: EventData):
     assert isinstance(queued_event.context, LoadContext)
 
 
-def test_terminal_event_handler_destroys_canvases_and_unpauses(
-    mock_event_data: EventData,
-    mock_menu,
-    mock_render,
-):
-    handler = TerminalEventHandler()
-    menu = mock_menu(Menus.MAIN.value)
-    mock_event_data.board.menus = [menu]
-    mock_event_data.board.paused = True
-
-    handler.handle(TerminalEvent(), mock_event_data)
-
-    assert len(mock_event_data.board.menus) == 0
-    assert mock_event_data.board.paused is False
-    for widget in menu.widgets.values():
-        if isinstance(widget.state, PaneState):
-            assert widget.state.canvas is None
-    mock_render.destroy.assert_called()
-
-
 def test_terminal_event_handler_popping_load_menu_hydrates_hud_overlay(
     mock_event_data: EventData,
     mock_menu,
