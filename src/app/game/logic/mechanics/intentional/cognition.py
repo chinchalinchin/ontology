@@ -101,7 +101,8 @@ class CognitionMechanics(Mechanic):
             return True
 
         if goal.category == Goals.TARGET.value:
-            return board.character(goal.name).mutators.triggers.dead
+            target_state = board.character(goal.name)
+            return target_state is None or target_state.mutators.triggers.dead
 
         if goal.category == Goals.SUBJECT.value:
             return sprite.state.psyche.dialogue is None

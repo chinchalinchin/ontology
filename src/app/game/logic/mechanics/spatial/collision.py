@@ -186,8 +186,8 @@ class CollisionMechanics(SpatialMechanic):
         vel1 = getattr(asset_a.state, 'velocity', None)
         vel2 = getattr(asset_b.state, 'velocity', None)
 
-        hitboxes_a = asset_a.hitbox.get(asset_a.properties, asset_a.state, elevation, asset_a.frame)
-        hitboxes_b = asset_b.hitbox.get(asset_b.properties, asset_b.state, elevation, asset_b.frame)
+        hitboxes_a = asset_a.hitboxes
+        hitboxes_b = asset_b.hitboxes
 
         intersection = geometry.intersects(
             asset_a.state.position, 

@@ -135,8 +135,7 @@ class HitboxSchema(Singleton):
         self,
         properties: AssetProperties,
         state: AssetState,
-        elevation: int,
-        frame: Optional[Frame] = None
+        elevation: int
     ) -> List[Hitbox]:
         """Resolves active physical hitboxes at the specified elevation plane."""
         pass
@@ -204,7 +203,7 @@ class Asset:
     @property
     def hitboxes(self) -> List[Hitbox]:
         """Default physical footprint resolved at the asset's deployed elevation."""
-        return self.hitbox.get(self.properties, self.state, self.elevation, self.frame)
+        return self.hitbox.get(self.properties, self.state, self.elevation)
 
     def primitive(self, index: int = 0, hitboxes: List[Hitbox] = None) -> Tuple:
         """

@@ -66,10 +66,9 @@ class SpatialMechanic(Mechanic):
             return []
         asset_map = dict(enumerate(assets))
         primitive_data = [
-            asset.primitive(
-                i, 
-                hitboxes=asset.hitbox.get(asset.properties, asset.state, elevation, asset.frame)
-            ) if elevation is not None else asset.primitive(i)
+            asset.primitive(i, asset.hitboxes) 
+            if elevation is not None else 
+            asset.primitive(i)
             for i, asset in enumerate(assets)
         ]
         colliding_indices = physics.collisions(primitive_data, self.grid)
@@ -164,10 +163,9 @@ class SpatialMechanic(Mechanic):
         asset_map = dict(enumerate(assets))
         bound_map = dict(enumerate(boundaries))
         primitive_assets = [
-            asset.primitive(
-                i, 
-                hitboxes=asset.hitbox.get(asset.properties, asset.state, elevation, asset.frame)
-            ) if elevation is not None else asset.primitive(i)
+            asset.primitive(i, asset.hitboxes) 
+            if elevation is not None else 
+            asset.primitive(i)
             for i, asset in enumerate(assets)
         ]
         primitive_bounds = [

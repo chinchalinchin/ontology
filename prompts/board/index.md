@@ -13,7 +13,6 @@ This is the Task Board for the project. Below is a backlog of completed and pend
   * **Implement**: Complex, multi-task development of new functionality.
   * **Refactor**: Complex, multi-task iteration of existing functionality.
   * **Patch**: Tasks for fixing logical bugs or errors in the codebase.
-  * **Achieve**: Short, encapsulated tasks for either new or existing functionality.
   * **Design**: Short, encapsulated tasks for creating data structures.
 
 **Table of Contents**
@@ -111,21 +110,8 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     * [x]: [Bug B016: Decomposer Elevation Inheritance](./phases/patch/bug-b016.md)
     * [ ]: [Bug B017: Stair Omission When Elevation Weightless](./phases/patch/bug-b017.md)
     * [ ]: [Bug B018: Library Binding Font Desynchronization](./phases/patch/bug-b018.md)
-  * **Achieve:**
-    * [x]: [Goal 01: Boundaries](./phases/achieve/goal-01.md)
-    * [x]: [Goal 02: ScrollController, Library & Plots](./phases/achieve/goal-02)
-    * [ ]: [Goal 03: ExchangeController & Loot](./phases/achieve/goal-03.md)
-    * [x]: [Goal 04: Main Menu & Saving](./phases/achieve/goal-04.md)
-    * [x]: [Goal 06: Speak Intentions](./phases/achieve/goal-06.md)
-    * [x]: [Goal 07: Interact Intentions](./phases/achieve/goal-07.md)
-    * [x]: [Goal 08: CLI Handling](./phases/achieve/goal-08.md)
-    * [x]: [Goal 09: Board Modularization](./phases/achieve/goal-09.md)
-    * [x]: [Goal 10: Dependency Injection](./phases/achieve/goal-11.md)
+    * [ ]: [Bug B019: Infinite Goal Cognition Loop](./phases/patch/bug-b019.md)
   * **Design:**
     * [x]: [Composition C000: Castle Dawn](./phases/design/composition-c000.md)
     * [ ]: [Composition C001: Temple of Trials](./phases/design/composition-c001.md)
     * [~]: [Composition C002: Regalia Galleria](./phases/design/composition-c002.md)
-* **Backlog:**
-  * [~]: [TODO T000: Telemetry Module](./backlog/todo-t000.md)
-  * [~]: [TODO T001: Telemetry Menu](./backlog/todo-t001.md)
-  * [ ]: [TODO T002: Bouyancy](./backlog/todo-t002.md)

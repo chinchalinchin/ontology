@@ -9,16 +9,10 @@
 Core HitboxSchema implementations.
 """
 # Standard Libraries
-from typing import (
-    List,
-    Optional
-)
+from typing import List
 
 # Application Libraries
-from app.assets.base import (
-    Frame,
-    HitboxSchema
-)
+from app.assets.base import HitboxSchema
 from app.models.properties import AssetProperties
 from app.models.state import AssetState
 
@@ -33,15 +27,17 @@ class StaticHitbox(HitboxSchema):
     Resolves static hitboxes declared on immutable AssetProperties.
     """
 
-    def elevations(self, properties: AssetProperties, state: AssetState) -> List[int]:
+    def elevations(self, 
+        properties: AssetProperties, 
+        state: AssetState
+    ) -> List[int]:
         return [max(0, state.elevation if state.elevation is not None else 0)]
     
     def get(
         self,
         properties: AssetProperties,
         state: AssetState,
-        elevation: int,
-        frame: Optional[Frame] = None
+        elevation: int
     ) -> List[Hitbox]:
         target_e = max(0, state.elevation if state.elevation is not None else 0)
         if max(0, elevation) != target_e:
@@ -58,15 +54,17 @@ class DynamicHitbox(HitboxSchema):
     Resolves mutable hitboxes declared on AssetState.
     """
 
-    def elevations(self, properties: AssetProperties, state: AssetState) -> List[int]:
+    def elevations(self, 
+        properties: AssetProperties, 
+        state: AssetState
+    ) -> List[int]:
         return [max(0, state.elevation if state.elevation is not None else 0)]
     
     def get(
         self,
         properties: AssetProperties,
         state: AssetState,
-        elevation: int,
-        frame: Optional[Frame] = None
+        elevation: int
     ) -> List[Hitbox]:
         target_e = max(0, state.elevation if state.elevation is not None else 0)
         if max(0, elevation) != target_e:
@@ -84,15 +82,17 @@ class OrientedHitbox(HitboxSchema):
     """
     """
 
-    def elevations(self, properties: AssetProperties, state: AssetState) -> List[int]:
+    def elevations(self, 
+        properties: AssetProperties, 
+        state: AssetState
+    ) -> List[int]:
         return [max(0, state.elevation if state.elevation is not None else 0)]
         
     def get(
         self,
         properties: AssetProperties,
         state: AssetState,
-        elevation: int,
-        frame: Optional[Frame] = None
+        elevation: int
     ) -> List[Hitbox]:
         target_e = max(0, state.elevation if state.elevation is not None else 0)
         if max(0, elevation) != target_e:
@@ -104,15 +104,17 @@ class DirectedHitbox(HitboxSchema):
     """
     """
 
-    def elevations(self, properties: AssetProperties, state: AssetState) -> List[int]:
+    def elevations(self, 
+        properties: AssetProperties, 
+        state: AssetState
+    ) -> List[int]:
         return [max(0, state.elevation if state.elevation is not None else 0)]
 
     def get(
         self,
         properties: AssetProperties,
         state: AssetState,
-        elevation: int,
-        frame: Optional[Frame] = None
+        elevation: int
     ) -> List[Hitbox]:
         target_e = max(0, state.elevation if state.elevation is not None else 0)
         if max(0, elevation) != target_e:
@@ -125,14 +127,16 @@ class NoHitbox(HitboxSchema):
     Null strategy for passable assets (tiles, passive effects, overlays).
     """
 
-    def elevations(self, properties: AssetProperties, state: AssetState) -> List[int]:
+    def elevations(self, 
+        properties: AssetProperties,
+        state: AssetState
+    ) -> List[int]:
         return []
 
     def get(
         self,
         properties: AssetProperties,
         state: AssetState,
-        elevation: int,
-        frame: Optional[Frame] = None
+        elevation: int
     ) -> List[Hitbox]:
         return []
