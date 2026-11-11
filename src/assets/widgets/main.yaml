@@ -56,16 +56,30 @@ widgets:
         w: 32
         l: 32
       frames:
-        - shortsword
+        - sword
         - dagger
         - knife
         - spear
+        - longbow
+        - crossbow
+        - cane
     shields:
       dimensions:
         w: 32
         l: 32
       frames:
         - buckler
+        - kite
+        - emblem
+    tools:
+      dimensions:
+        w: 32
+        l: 32
+      frames:
+        - shovel
+        - axe
+        - pickaxe
+        - hammer 
     portraits:
       dimensions: 
         w: 50

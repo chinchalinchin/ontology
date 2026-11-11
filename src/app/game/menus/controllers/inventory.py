@@ -6,6 +6,7 @@
 @app.menu
 @menu.controller
 @workflow.traversal
+@workflow.inventory
 
 # Ontology: Source - app.game.menus.controllers.inventory
 

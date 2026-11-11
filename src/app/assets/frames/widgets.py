@@ -26,7 +26,8 @@ from app.static.semantics import (
 from app.models.state import (
     PaneState,
     TraversalState,
-    MeterState
+    MeterState,
+    IconState
 )
 from app.models.properties import WidgetProperties
 
@@ -178,4 +179,40 @@ class MeterFrame(Frame):
                 str(res)
             ])
             crops[frame_index] = (w, 0, int(w * (res / Gauges.FULL.value)), l)
+        return crops
+
+# -------------------------------------------------------------
+
+class IconFrame(Frame):
+    """
+    ## IndexFrame
+
+    Parses horizontal sheets where each frame corresponds to a specific string key.
+    """
+    
+    def keys(self, id: str, state: IconState) -> List[Tuple[str, int, int]]:
+        if not state.icon:
+            return []
+        return [(settings.SEPARATOR.join([
+            id, 
+            state.icon
+        ]), 0, 0)]
+
+    def index(self, id: str, properties: WidgetProperties) -> Dict[str, Tuple[int, int, int, int]]:
+        w = properties.dimensions.w
+        l = properties.dimensions.l
+        frames = properties.frames
+        crops = {}
+        
+        # Failsafe: if no frames are defined, index the whole image
+        if not frames:
+            return {id: (0, 0, w, l)}
+            
+        for i, frame_name in enumerate(frames):
+            frame_index = settings.SEPARATOR.join([
+                id, 
+                frame_name
+            ])
+            crops[frame_index] = (i * w, 0, w, l)
+            
         return crops

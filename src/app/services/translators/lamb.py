@@ -2,6 +2,7 @@
 @domain.automata
 @domain.concrete
 @domain.logic
+@app.service
 @modality.intention
 @workflow.plot
 @workflow.seasons

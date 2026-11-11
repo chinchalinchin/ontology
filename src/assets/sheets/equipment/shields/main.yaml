@@ -1,0 +1,24 @@
+# -------------------------------------------------------------
+themes:
+  dimensions:
+    lpc: &lpc
+      w: 64
+      l: 64
+# -------------------------------------------------------------
+sheets:
+  shields:
+    buckler:
+      dimensions: *lpc
+      actions: lpc-full
+      hitboxes: null
+      stack: [ buckler ]
+    kite:
+      dimensions: *lpc
+      actions: lpc-full
+      hitboxes: null
+      stack: [ kite ]
+    emblem:
+      dimensions: *lpc
+      actions: lpc-full
+      hitboxes: null
+      stack: [ emblem ] 

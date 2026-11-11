@@ -33,7 +33,7 @@ class FrameRecipe(str, Enum):
     CARDINAL        = "cardinal"
     DIRECTED        = "directed"
     FLUID           = "fluid"
-    INDEX           = "index"
+    ICON            = "icon"
     ITERABLE        = "iterable"
     MATERIAL        = "material"
     METER           = "meter"

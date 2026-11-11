@@ -1,0 +1,120 @@
+# ----------------------------------------------------
+anchors:
+  description: &description TODO
+  title: &title TODO
+# ----------------------------------------------------
+context: true
+# ----------------------------------------------------
+task:
+# ----------------------------------------------------
+  template: iterate/grooming.md.j2
+# ----------------------------------------------------
+  parameters:
+    description: *description
+    title: *title
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    # --------------------------------------------
+    manager:
+      board: true
+      docs: true
+      templates: true
+    # --------------------------------------------
+    source:
+      data: true
+      filter: true
+    # --------------------------------------------
+    shell:
+      directory: true
+    # --------------------------------------------
+    tests:  
+      configuration: false
+      pipeline: false
+      session: false
+# -----------------------------------------------------
+  parameters:
+    # --------------------------------------------
+    manager:
+      board:
+        phase: '14'
+        action: implement
+      docs:
+        exclude:
+          # - 00-overview
+          # - 01-assets
+          # - 02-sprites
+          - 03-compositions
+          # - 04-intentions
+          # - 05-mechanics
+          - 06-widgets
+          - 07-sounds
+          # - 08-plots
+          - 09-ecology
+          - 10-chemistry
+          - 11-emergence
+          # - 12-architecture
+      templates:
+        - template-backlog
+        - template-bug
+    # --------------------------------------------
+    source:
+      filter:
+        default: AND
+        queries:
+          # -------------------------------------
+          - title: Application Core Components
+            scan:
+              domain: [ system ]
+              app: [ core, component ]
+          # ------------------------------------
+          - title: Asset Abstracts
+            scan:
+              domain: [ abstract ]
+              app: [ asset ]
+          # ------------------------------------
+          - title: Sheet Models
+            scan:
+              domain: [ model ]
+              category: [ sheets ]
+          # ------------------------------------
+          - title: Sheet Implementations
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              category: [ sheets ]
+          # ------------------------------------
+          - title: Intentional Mechanics
+            scan:
+              domain: [ concrete ]
+              app: [ mechanic ]
+              modality: [ intention ]
+          # ------------------------------------
+          - title: Plot Mechanics
+            scan:
+              domain: [ concrete ]
+              app: [ mechanic ]
+              workflows: [ plot ]
+          # ------------------------------------
+          - title: Automata Classes
+            scan:
+              domain: [ automata ]
+              app: [ service ]
+              modality: [ intention ]
+          # ------------------------------------
+      data:
+        properties: [ sheets ]
+        state: [ ]
+        configurations: [ intentions, plots ]
+        templates: [ ]
+    # --------------------------------------------
+    shell:
+      directory: |
+        tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
+    # --------------------------------------------
+    tests:
+      pipeline:
+        command: pytest -m
+        marker: app_menu
+        # scope: '**/test_{actuator,cartographer}.py'
