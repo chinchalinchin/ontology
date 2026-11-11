@@ -4,7 +4,6 @@
 themes:
   colors:
     pane: &pane dark-solid
-    pane-alt: &pane-alt dark-texture
   alignments:
     bottom: &bottom
       horizontal: center
@@ -15,10 +14,13 @@ themes:
     start: &start
       horizontal: start
       vertical: center
+    end: &end
+      horizontal: end
+      vertical: center
   dimensions:
     root: &root
-      pw: 0.40
-      pl: 0.25
+      pw: 0.50
+      pl: 0.175
     child: &child
       pw: 0.16
       pl: 0.10
@@ -34,7 +36,7 @@ menus:
     roots:
       - instance: panes
         id: *pane
-        name: hud-menu
+        name: view-menu
         parameters:
           dimensions: *root
           justification: *bottom
@@ -44,15 +46,18 @@ menus:
           margins: 5
           children:
             # ----------------------------------------------------------
+            # --------------------------------------------- VIEW: METERS
+            # ----------------------------------------------------------
             - instance: panes
               id: transparent
-              name: hud-meters-pane
+              name: view-pane-meters
               parameters:
                 dimensions: *child
                 layout: stack
-                alignment: *center
+                alignment: *start
                 gap: 5
                 children:
+                  # ------------------------------------- METER: HEALTH
                   - instance: meters
                     id: health
                     name: health-meter
@@ -60,6 +65,8 @@ menus:
                       schema: meter
                       target:
                         meter: context.sprite.meters.health
+                  # --------------------------------------------------
+                  # ------------------------------------- METER: MAGIC
                   - instance: meters
                     id: magic
                     name: magic-meter
@@ -67,19 +74,24 @@ menus:
                       schema: meter
                       target:
                         meter: context.sprite.meters.magic
+                  # --------------------------------------------------
+            # ----------------------------------------------------------
+            # ---------------------------------------------- VIEW: SLOTS
             # ----------------------------------------------------------
             - instance: panes
               id: transparent
-              name: slots-pane
+              name: view-pane-slots
               parameters:
                 dimensions: *child
                 layout: dock
                 alignment: *start
+                margins: 2
                 gap: 5
                 children:
+                  # -------------------------------------- SLOT: WEAPON
                   - instance: panes
                     id: transparent
-                    name: slot-weapon-pane
+                    name: pane-slot-weapon
                     parameters:
                       dimensions: *slot
                       layout: overlay
@@ -98,9 +110,11 @@ menus:
                             schema: icon
                             target:
                               icon: context.sprite.inventory.equipment.weapon
+                  # --------------------------------------------------
+                  # ------------------------------------- SLOT: SHIELD
                   - instance: panes
                     id: transparent
-                    name: slot-shield-pane
+                    name: pane-slot-shield
                     parameters:
                       dimensions: *slot
                       layout: overlay

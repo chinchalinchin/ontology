@@ -250,21 +250,6 @@ class Screen:
             render.superimpose(primitives)
 
 
-    def _flatten(
-        self,
-        menus: List[Menu],
-        overlays: List[Menu],
-    ) -> List[Asset]:
-        widgets = []
-        for menu in overlays:
-            if menu.widgets:
-                widgets.extend(menu.widgets.values())
-        for menu in menus:
-            if menu.widgets:
-                widgets.extend(menu.widgets.values())
-        return widgets
-
-
     def camera(
         self,
         focus: Position,

@@ -113,34 +113,45 @@ widgets:
   panes:
     brown-solid:
       dimensions:
-        w: 318
-        l: 78
+        w: 36
+        l: 36
     brown-texture:
       dimensions:
-        w: 318
-        l: 78
-    dark-solid:
+        w: 36
+        l: 36
+    blue-solid:
       dimensions:
-        w: 318
-        l: 78
-    dark-texture:
+        w: 36
+        l: 36
+    blue-texture:
       dimensions:
-        w: 318
-        l: 78
+        w: 36
+        l: 36
     green-solid:
       dimensions:
-        w: 318
-        l: 78
+        w: 36
+        l: 36
     green-texture:
       dimensions:
-        w: 318
-        l: 78
-    transculent:
+        w: 36
+        l: 36
+    dark-solid:
       dimensions:
-        w: 318
-        l: 78
+        w: 36
+        l: 36
+    dark-texture:
+      dimensions:
+        w: 36
+        l: 36
+    light-solid:
+      dimensions:
+        w: 36
+        l: 36
+    light-texture:
+      dimensions:
+        w: 36
+        l: 36
     transparent:
       dimensions:
-        w: 40
-        l: 40
-    
+        w: 36
+        l: 36
