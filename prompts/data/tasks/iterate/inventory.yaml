@@ -38,8 +38,8 @@ tools:
     # --------------------------------------------
     manager:
       board:
-        phase: '14'
-        action: implement
+        phase: '06-04'
+        action: refactor
       docs:
         exclude:
           # - 00-overview
@@ -106,16 +106,32 @@ tools:
               domain: [ model ]
               app: [ menu ]
           # -------------------------------------
+          - title: Menu Bindings
+            scan:
+              domain: [ concrete ]
+              app: [ menu ]
+              menu: [ binding ]
+          # -------------------------------------
+          - title: Menu Services
+            scan:
+              domain: [ system ]
+              app: [ menu, service ]
+          # -------------------------------------
           - title: Inventory Controller
             scan:
               domain: [ concrete ]
               app: [ menu ]
               menu: [ controller ]
               workflows: [ inventory ]
+          # -------------------------------------
+          - title: User Domain
+            scan:
+              domain: [ user ]
+          # -------------------------------------
       data:
         properties: [ sheets, widgets ]
         state: [ ]
-        configurations: [ menus/inventory ]
+        configurations: [ menus/inventory, mappings ]
         templates: [ ]
     # --------------------------------------------
     shell:

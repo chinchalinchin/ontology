@@ -38,7 +38,7 @@ In short, a Name identifies an Asset's deployment. A ID is what binds a deployed
 *State* is dynamic and can be changed by [Mechanics](./05-mechanics.md). State determines the mutable characteristics of an Asset, e.g. the current Position of an Asset, the current Animation, etc. All Assets have: *Position* State, given as a Cartesian coordinate (tuple); a Layer, given as a categorical variable'; an Elevation, representing their Z-axis, given as an integer; an Anchor, used to augment the perspective-based render sorting, given as an integer.
 
 !!! @TODO(08-04)
-    Mutators are polymorphic. Because of this, they have attributes that are not utilized by every Asset that is instantiated. They are one of the core ambiguities in the entire Asset model. They are mainly utilized by Sprites to signal their states have internally reached certain conditions, e.g. `vision` is triggered when the Sprite is in sight of its Goal. 
+    Mutators are polymorphic. Because of this, they have attributes that are not utilized by every Asset that is instantiated. They are one of the core ambiguities in the entire Asset model. They are mainly utilized by Sprites to signal their States have internally reached certain conditions, e.g. `vision` is triggered when the Sprite is in sight of its Goal. 
 
     They also contain general Asset fields, like `submerged`, that is triggered when an Asset is immersed in a Fluid stream. 
 
@@ -139,7 +139,7 @@ Certain Assets have a dedicated Substrate to preserve the fidelity of their rend
 
 --8<-- "static/md/asset-substrates.md"
 
-!!! @TODO(07-04)
+!!! @TODO(07-03)
     This entire procedure needs re-evaluation now that Substrates are not Elevations, i.e. prior to Phase 07.04 Substrates were used to lazily-load Elevations. Now they are a dedicated partition of the sort key `(elevation, substrate, ground, priority)`
 
 During [CollisionMechanics](./05-mechanics.md#spatial-mechanic-collisionmechanics) and Perimeter generation, all negative Substrates are collapsed into `elevation = 0`, i.e. $\text{elevation} \in [-\infty, 0] \to \text{elevation} = 0$, in order that all Assets on these Substrates may participate in collisions at `elevation = 0`.
@@ -941,7 +941,7 @@ Many Sheet Assets reuse the same Action specification. Common Action specificati
 
 **Hitbox: Attackboxes**
 
-!!! @TODO(10-01)
+!!! @TODO(06-03)
     The Hitbox interface has been formally codified into a component of an Asset. Attackboxes are the last remaining legacy hitbox implementation that needs migrated to the new paradigm. They are complicated by their relationship with Equipment and specific Frames in an Animation.
 
 An Attackbox is a special type of hitbox unique to Sheet Assets. It is mapped to a canonical `<action>-<direction>-<frame>` key (where `setting.SEPARATOR = "-"`) and applied during the animation state identified by this key. Attackboxes are used to augment the Sheet's basic hitbox collision detection during [CombatMechanics](./05-mechanics.md#mechanics-spatial). While any Sprite can alter its Attackbox properties, this property is utilized mainly by [Equipment](./02-sprites.md#equipment).

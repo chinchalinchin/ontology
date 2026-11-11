@@ -1,6 +1,5 @@
 """
 @domain.logic
-@domain.user
 @app.device
 @app.semantics
 

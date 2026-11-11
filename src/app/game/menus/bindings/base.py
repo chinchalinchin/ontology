@@ -1,6 +1,5 @@
 """
 @domain.abstract
-@domain.user
 @app.base
 @app.menu
 @menu.binding

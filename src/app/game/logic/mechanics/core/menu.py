@@ -1,5 +1,4 @@
 """
-@domain.user
 @domain.concrete
 @app.mechanic
 @app.menu

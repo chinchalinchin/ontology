@@ -1,7 +1,6 @@
 """
-@domain.user
-@domain.logic
-@app.module
+@domain.system
+@app.service
 @app.menu
 
 # Ontology: Source - app.game.menus.modules.layout

@@ -1,6 +1,5 @@
 """
 @draft
-@domain.user
 @domain.logic
 @domain.concrete
 @app.menu

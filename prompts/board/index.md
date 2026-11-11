@@ -64,6 +64,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       * [x]: [Phase 06.01: Expressions](./phases/refactor/refactor-06-01.md)
       * [ ]: [Phase 06.02: Goals](./phases/refactor/refactor-06-02.md)
       * [ ]: [Phase 06.03: Combat](./phases/refactor/refactor-06-03.md)
+      * [ ]: [Phase 06.04: Inventory]
     * *Phase 07:*
       * [x]: [Phase 07.01: Elevation Sorting](./phases/refactor/refactor-07-01.md)
       * [x]: [Phase 07.02: Platforms & Elevated Hitboxes](./phases/refactor/refactor-07-02.md)
@@ -115,7 +116,6 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     * [x]: [Goal 02: ScrollController, Library & Plots](./phases/achieve/goal-02)
     * [ ]: [Goal 03: ExchangeController & Loot](./phases/achieve/goal-03.md)
     * [x]: [Goal 04: Main Menu & Saving](./phases/achieve/goal-04.md)
-    * [~]: [Goal 05: InventoryController](./phases/achieve/goal-05.md)
     * [x]: [Goal 06: Speak Intentions](./phases/achieve/goal-06.md)
     * [x]: [Goal 07: Interact Intentions](./phases/achieve/goal-07.md)
     * [x]: [Goal 08: CLI Handling](./phases/achieve/goal-08.md)

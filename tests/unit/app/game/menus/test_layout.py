@@ -15,7 +15,7 @@ import math
 import pytest
 
 # Application Libraries
-from app.game.menus.modules import Layout
+from app.services.generators.menus.layout import Layout
 from app.models.config.menus import (
     MenuNode,
     PaneParameters,

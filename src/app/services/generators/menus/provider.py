@@ -52,7 +52,7 @@ from app.game.menus.bindings import (
     Binding,
     CollectionBinding
 )
-from app.game.menus.modules import Layout
+from app.services.generators.menus.layout import Layout
 from app.services.generators.menus.fabricator import Fabricator
 
 if TYPE_CHECKING:

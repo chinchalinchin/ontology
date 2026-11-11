@@ -19,7 +19,6 @@ from app.game.menus.core import (
     EventData,
     Menu,
 )
-from app.game.menus.modules import Layout
 from app.game.screen import Screen
 from app.models.config import ConfigurationSchema
 from app.models.config.menus import (
@@ -46,6 +45,7 @@ from app.models.menus import (
 )
 from app.models.state import CollectionState
 from app.services.generators.menus import Provider
+from app.services.generators.menus import Layout
 from app.services.orchestration import Migrator
 from app.static.semantics import (
     AssetInstances,
