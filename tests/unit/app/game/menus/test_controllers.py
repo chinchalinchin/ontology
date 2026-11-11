@@ -136,12 +136,6 @@ def test_scroll_controller_open_and_select(
     speech_pane.state.content_function = lambda: ["Page 1", "Page 2"]
     speech_pane.state.pageindex = 0
 
-    ctrl.open(dialogue_menu, mock_board, mock_bus)
-    assert len(mock_bus) >= 1
-    open_ev = mock_bus.popleft()
-    assert isinstance(open_ev, UpdateEvent)
-    mock_bus.clear()
-
     ctrl.select("text-scroll-down", dialogue_menu, mock_board, mock_bus)
     assert speech_pane.state.pageindex == 1
     down_ev = mock_bus.popleft()

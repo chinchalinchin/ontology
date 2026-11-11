@@ -45,23 +45,23 @@ class TerminalEventHandler(EventHandler):
                 player.state.layer, 
                 next(iter(data.screens.values()))
             )
-            
+
+            for old in data.board.overlays: 
+                screen.release(old)
+
             hud_menu = data.provider.unpack(
                 Menus.VIEW.value, 
                 data.board.configurations.menus.get(Menus.VIEW.value), 
                 ViewContext(sprite=player.state), 
                 screen.screensize
             )
+
             data.board.set_overlays([hud_menu])
+
+            screen.bake(hud_menu)
 
         if menu.controller:
             menu.controller.close(menu, data.board, data.bus)
-
-        if menu.widgets:
-            for widget in menu.widgets.values():
-                if isinstance(widget.state, PaneState) and widget.state.canvas is not None:
-                    render.destroy(widget.state.canvas)
-                    widget.state.canvas = None
 
         if not data.board.menus:
             data.board.paused = False

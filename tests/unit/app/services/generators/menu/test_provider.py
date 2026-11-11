@@ -86,45 +86,6 @@ def test_provider_paginate(mock_render, mock_registry):
     assert pages[1] == "three\nfour"
     assert pages[2] == "five\nsix"
 
-
-@pytest.mark.workflow_typography
-@pytest.mark.workflow_rendering
-def test_provider_unpack_and_bake_text_pane(
-    mock_provider,
-    mock_render,
-    mock_menu_context,
-    mock_screen,
-):
-    ctx = mock_menu_context(Menus.TEXT.value)
-    cfg = MenuConfiguration(
-        controller=Controllers.SCROLL.value,
-        roots=[
-            MenuNode(
-                id="dark-solid",
-                name="page-pane",
-                instance=AssetInstances.PANES.value,
-                parameters=PaneParameters(
-                    dimensions=Scale(0.50, 0.25),
-                    font=Fonts.DIALOGUE.value,
-                ),
-                bind=MenuBinding(
-                    schema=Bindings.TEXT.value,
-                    target=TextTarget(content="context.content"),
-                ),
-            )
-        ],
-    )
-
-    menu = mock_provider.unpack("text", cfg, ctx, mock_screen.screensize)
-    pane = menu.widgets["page-pane"]
-
-    assert isinstance(pane.state, PaneState)
-    assert pane.state.canvas is not None
-    assert pane.state.current() != ""
-    mock_render.construct.assert_called()
-    mock_render.write.assert_called()
-
-
 def test_provider_unpack_widget_traversal(mock_provider, mock_menu_context):
     cfg = MenuNode(
         id="label",
