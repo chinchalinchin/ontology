@@ -1,0 +1,37 @@
+# -------------------------------------------------------------
+themes:
+  dimensions:
+    lpc: &lpc
+      w: 64
+      l: 64
+# -------------------------------------------------------------
+sheets:
+  utilities:
+    # ------------------------------------- UTILITY: FUNCTIONS
+    lantern:
+      dimensions: *lpc
+      actions: lpc-full
+      hitboxes: null
+      stack: [ lantern ]
+    stave:
+      dimensions: *lpc
+      actions: lpc-full
+      hitboxes: null
+      stack: [ stave ]
+    # ------------------------------------ UTILITY: MAGIC GEMS
+    ruby:
+      dimensions: *lpc
+      actions: lpc-full
+      hitboxes: null
+      stack: [ ruby ]
+    emerald:
+      dimensions: *lpc
+      actions: lpc-full
+      hitboxes: null
+      stack: [ emerald ]
+    sapphire:
+      dimensions: *lpc
+      actions: lpc-full
+      hitboxes: null
+      stack: [ sapphire ]
+

@@ -2,7 +2,6 @@ from app.assets.frames.core import (
     NoFrame,
     SingleFrame,
     IterableFrame,
-    IndexFrame,
     OrientedFrame,
     DirectedFrame
 )
@@ -33,6 +32,7 @@ from app.assets.frames.widgets import (
     TraversalFrame,
     MeterFrame,
     PaneFrame,
+    IconFrame
 )
 __all__ = [
     'NoFrame',
@@ -44,7 +44,7 @@ __all__ = [
     'TraversalFrame',
     'CardinalFrame',
     'MeterFrame',
-    'IndexFrame',
+    'IconFrame',
     'PaneFrame',
     'ObjectFrame',
     'BinaryFrame',

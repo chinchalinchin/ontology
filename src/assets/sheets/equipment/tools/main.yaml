@@ -1,0 +1,29 @@
+# -------------------------------------------------------------
+themes:
+  dimensions:
+    lpc: &lpc
+      w: 64
+      l: 64
+# -------------------------------------------------------------
+sheets:
+  tools:
+    # --------------------------------------- ACTION: SLASH
+    axe:
+      dimensions: *lpc
+      actions: lpc-slash
+      hitboxes: null
+      attackboxes: null
+      stack: [ axe ]
+    # --------------------------------------- ACTION: THRUST
+    shovel:
+      dimensions: *lpc
+      actions: lpc-thrust
+      attackboxes: null
+      hitboxes: null
+      stack: [ shovel ] 
+    pickaxe:
+      dimensions: *lpc
+      actions: lpc-thrust
+      attackboxes: null
+      hitboxes: null
+      stack: [ pickaxe ] 

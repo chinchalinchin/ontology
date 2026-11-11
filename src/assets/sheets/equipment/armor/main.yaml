@@ -1,0 +1,30 @@
+# -------------------------------------------------------------
+themes:
+  dimensions:
+    lpc: &lpc
+      w: 64
+      l: 64
+# -------------------------------------------------------------
+sheets:
+  armor:
+    # ------------------------------------ ARMOR STACK: LEATHER
+    leather:
+      dimensions: *lpc
+      actions: lpc-full
+      hitboxes: null
+      stack:
+        - leather-gloves
+        - leather-kilt
+        - leather-sandals
+    # -------------------------------------- ARMOR STACK: IRON
+    iron:
+      dimensions: *lpc
+      actions: lpc-full
+      hitboxes: null
+      stack:
+        - plate-boots
+        - plate-chest
+        - plate-gloves
+        - plate-greaves
+        - plate-helmet
+        - plate-shoulders
