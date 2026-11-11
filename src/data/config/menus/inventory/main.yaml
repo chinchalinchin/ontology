@@ -308,9 +308,9 @@ menus:
                             target:
                               selection: scrollup
                               selector: inventory-pack-grid
-                        # ------------- SLOTS: RESOURCES
+                        # ------------- SLOTS: MATERIALS
                         - instance: gizmos
-                          id: resources
+                          id: materials
                           name: inventory-pack-grid
                           bind:
                             schema: collection

@@ -24,8 +24,10 @@ sheets:
           action:
             radius: 30
       inventory: 
-        pack: null
-        pouch: null
+        pack: 
+          wood: 10
+        pouch: 
+          bomb: 5
         equipment:
           armor: null
           tool: null
