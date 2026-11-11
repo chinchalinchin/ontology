@@ -31,6 +31,20 @@ themes:
     gizmo: &gizmo
       pw: 0.32
       pl: 0.08
+  parameters:
+    collection: &collection
+      capacity: 4
+      columns: 4
+      gap: 5
+      pane: transparent
+      button: slot
+      dimensions: *gizmo
+    disabled: &disabled
+      status: disabled
+    display: &display
+      dimensions: *label
+      layout: overlay
+      alignment: *center
 # ---------------------------------------------------------------------
 # ----------------------------------------------------- MENU: INVENTORY
 # ---------------------------------------------------------------------
@@ -38,9 +52,9 @@ menus:
   inventory:
     controller: inventory
     roots:
-      - id: transparent
+      - instance: panes
+        id: transparent
         name: inventory-menu
-        instance: panes
         parameters:
           dimensions: *root
           justification: *top
@@ -53,9 +67,9 @@ menus:
             # ------------------------------------------
             # --------------------- INVENTORY: EQUIPMENT
             # ------------------------------------------
-            - id: *pane-alt
+            - instance: panes
+              id: *pane-alt
               name: inventory-equipment-section
-              instance: panes
               parameters:
                 dimensions: *section
                 layout: stack
@@ -63,23 +77,18 @@ menus:
                 gap: 2
                 margins: 3
                 children:
-                  - id: transparent
+                  # -----------------------------------
+                  # ------------------ EQUIPMENT: LABEL
+                  - instance: panes
+                    id: transparent
                     name: inventory-equipment-label-slot
-                    instance: panes
-                    parameters:
-                      dimensions: *label
-                      layout: overlay
-                      alignment: *center
-                      children:
-                        - id: transparent
-                          name: inventory-equipment-label
-                          instance: panes
-                          parameters:
-                            dimensions: *label
-                          bind:
-                            schema: text
-                            target:
-                              content: EQUIPMENT
+                    parameters: *display
+                    bind:
+                      schema: text
+                      target:
+                        content: EQUIPMENT
+                  # -----------------------------------
+                  # ------------------ EQUIPMENT: SLOTS
                   - id: transparent
                     name: inventory-equipment-row
                     instance: panes
@@ -89,9 +98,10 @@ menus:
                       alignment: *center
                       gap: 5
                       children:
-                        - id: transparent
+                        # ----------------- SLOT: WEAPON
+                        - instance: panes
+                          id: transparent
                           name: equipment-weapon-slot-pane
-                          instance: panes
                           parameters:
                             dimensions: *slot
                             layout: overlay
@@ -100,8 +110,7 @@ menus:
                               - id: slot
                                 name: equipment-weapon-slot
                                 instance: buttons
-                                parameters:
-                                  status: disabled
+                                parameters: *disabled
                               - id: weapons
                                 name: equipment-weapon-icon
                                 instance: icons
@@ -109,9 +118,10 @@ menus:
                                   schema: icon
                                   target:
                                     icon: context.inventory.equipment.weapon
-                        - id: transparent
+                        # ----------------- SLOT: SHIELD
+                        - instance: panes
+                          id: transparent
                           name: equipment-shield-slot-pane
-                          instance: panes
                           parameters:
                             dimensions: *slot
                             layout: overlay
@@ -120,8 +130,7 @@ menus:
                               - id: slot
                                 name: equipment-shield-slot
                                 instance: buttons
-                                parameters:
-                                  status: disabled
+                                parameters: *disabled
                               - id: shields
                                 name: equipment-shield-icon
                                 instance: icons
@@ -129,9 +138,10 @@ menus:
                                   schema: icon
                                   target:
                                     icon: context.inventory.equipment.shield
-                        - id: transparent
+                        # ----------------- SLOT: ARMOR
+                        - instance: panes
+                          id: transparent
                           name: equipment-armor-slot-pane
-                          instance: panes
                           parameters:
                             dimensions: *slot
                             layout: overlay
@@ -140,18 +150,18 @@ menus:
                               - id: slot
                                 name: equipment-armor-slot
                                 instance: buttons
-                                parameters:
-                                  status: disabled
-                              - id: shields
+                                parameters: *disabled
+                              - id: armor
                                 name: equipment-armor-icon
                                 instance: icons
                                 bind:
                                   schema: icon
                                   target:
                                     icon: context.inventory.equipment.armor
-                        - id: transparent
+                        # ----------------- SLOT: TOOL
+                        - instance: panes
+                          id: transparent
                           name: equipment-tool-slot-pane
-                          instance: panes
                           parameters:
                             dimensions: *slot
                             layout: overlay
@@ -160,18 +170,18 @@ menus:
                               - id: slot
                                 name: equipment-tool-slot
                                 instance: buttons
-                                parameters:
-                                  status: disabled
-                              - id: weapons
+                                parameters: *disabled
+                              - id: tools
                                 name: equipment-tool-icon
                                 instance: icons
                                 bind:
                                   schema: icon
                                   target:
                                     icon: context.inventory.equipment.tool
-                        - id: transparent
+                        # ----------------- SLOT: UTILITY
+                        - instance: panes
+                          id: transparent
                           name: equipment-utility-slot-pane
-                          instance: panes
                           parameters:
                             dimensions: *slot
                             layout: overlay
@@ -180,21 +190,22 @@ menus:
                               - id: slot
                                 name: equipment-utility-slot
                                 instance: buttons
-                                parameters:
-                                  status: disabled
-                              - id: weapons
+                                parameters: *disabled
+                              - id: utilities
                                 name: equipment-utility-icon
                                 instance: icons
                                 bind:
                                   schema: icon
                                   target:
                                     icon: context.inventory.equipment.utility
+                        # -----------------------------
+                  # -----------------------------------
             # ------------------------------------------
             # ------------------------- INVENTORY: POUCH
             # ------------------------------------------
-            - id: *pane
+            - instance: panes
+              id: *pane
               name: inventory-pouch-section
-              instance: panes
               parameters:
                 dimensions: *section
                 layout: stack
@@ -202,62 +213,57 @@ menus:
                 gap: 2
                 margins: 3
                 children:
-                  - id: transparent
+                  # -----------------------------------
+                  # ----------------------- POUCH: LABEL
+                  - instance: panes
+                    id: transparent
                     name: inventory-pouch-label-slot
-                    instance: panes
-                    parameters:
-                      dimensions: *label
-                      layout: overlay
-                      alignment: *center
-                      children:
-                        - id: transparent
-                          name: inventory-pouch-label
-                          instance: panes
-                          parameters:
-                            dimensions: *label
-                          bind:
-                            schema: text
-                            target:
-                              content: POUCH
-                  - id: transparent
+                    parameters: *display
+                    bind:
+                      schema: text
+                      target:
+                        content: POUCH
+                  # -----------------------------------
+                  # ----------------------- POUCH: SLOTS
+                  - instance: panes
+                    id: transparent
                     name: inventory-pouch-row
-                    instance: panes
                     parameters:
                       dimensions: *row
                       layout: dock
                       alignment: *center
                       gap: 10
                       children:
-                        - id: arrow-left
+                        # ------------------------------
+                        # ---------------- CONTROL: LEFT
+                        - instance: buttons
+                          id: arrow-left
                           name: inventory-pouch-scroll-up
-                          instance: buttons
                           bind:
                             schema: select
                             target:
                               selection: scrollup
                               selector: inventory-pouch-grid
-                        - id: weapons
+                        # ----------------- SLOTS: ITEMS
+                        - instance: gizmos
+                          id: items
                           name: inventory-pouch-grid
-                          instance: gizmos
                           bind:
                             schema: collection
                             target:
                               source: context.inventory.pouch
-                          parameters:
-                            capacity: 4
-                            columns: 4
-                            gap: 5
-                            pane: transparent
-                            button: slot
-                            dimensions: *gizmo
-                        - id: arrow-right
+                          parameters: *collection
+                        # --------------- CONTROL: RIGHT
+                        - instance: buttons 
+                          id: arrow-right
                           name: inventory-pouch-scroll-down
-                          instance: buttons
                           bind:
                             schema: select
                             target:
                               selection: scrolldown
                               selector: inventory-pouch-grid
+                        # ------------------------------
+                  # -----------------------------------
             # ------------------------------------------
             # -------------------------- INVENTORY: PACK
             # ------------------------------------------
@@ -271,23 +277,18 @@ menus:
                 gap: 2
                 margins: 3
                 children:
+                  # -----------------------------------
+                  # ------------------------- PACK: LABEL
                   - id: transparent
                     name: inventory-pack-label-slot
                     instance: panes
-                    parameters:
-                      dimensions: *label
-                      layout: overlay
-                      alignment: *center
-                      children:
-                        - id: transparent
-                          name: inventory-pack-label
-                          instance: panes
-                          parameters:
-                            dimensions: *label
-                          bind:
-                            schema: text
-                            target:
-                              content: PACK
+                    parameters: *display
+                    bind:
+                      schema: text
+                      target:
+                        content: PACK
+                  # -----------------------------------
+                  # ----------------------- PACK: SLOTS
                   - id: transparent
                     name: inventory-pack-row
                     instance: panes
@@ -297,28 +298,26 @@ menus:
                       alignment: *center
                       gap: 20
                       children:
-                        - id: arrow-left
+                        # ------------------------------
+                        # ---------------- CONTROL: LEFT
+                        - instance: buttons
+                          id: arrow-left
                           name: inventory-pack-scroll-up
-                          instance: buttons
                           bind:
                             schema: select
                             target:
                               selection: scrollup
                               selector: inventory-pack-grid
-                        - id: weapons
+                        # ------------- SLOTS: RESOURCES
+                        - instance: gizmos
+                          id: resources
                           name: inventory-pack-grid
-                          instance: gizmos
                           bind:
                             schema: collection
                             target:
                               source: context.inventory.pack
-                          parameters:
-                            capacity: 4
-                            columns: 4
-                            gap: 5
-                            pane: transparent
-                            button: slot
-                            dimensions: *gizmo
+                          parameters: *collection
+                        # --------------- CONTROL: RIGHT
                         - id: arrow-right
                           name: inventory-pack-scroll-down
                           instance: buttons
@@ -327,3 +326,4 @@ menus:
                             target:
                               selection: scrolldown
                               selector: inventory-pack-grid
+                        # --------------- CONTROL: RIGHT
