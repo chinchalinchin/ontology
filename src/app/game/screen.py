@@ -333,29 +333,43 @@ class Screen:
             render.channel(active_channels, pov.x, pov.y)
 
 
-    def stamp(self, widget: Asset, content: Union[str, List[str]]) -> None:
+    def stamp(self, widget: Asset, content: Optional[Union[str, List[str]]] = None) -> None:
         """
-        Dynamically restamps 9-slice background and bakes updated text for O(N) runtime rendering.
+        Allocates PaneState.canvas on demand, constructs the 9-slice backdrop,
+        and rasterizes bound text onto the canvas.
         """
-        if not isinstance(widget.state, PaneState) or widget.state.canvas is None:
+        if not isinstance(widget.state, PaneState):
             return
 
-        tex = widget.state.canvas
+        w, l = widget.dimensions.w, widget.dimensions.l
+        if w <= 0 or l <= 0:
+            return
+
         primitives = []
+        if widget.id != "transparent":
+            for base_key, ox, oy in widget.frame.keys(widget.id, widget.state):
+                tex_data = self.registry.image(base_key)
+                if not tex_data:
+                    continue
+                base_ptr, sx, sy, sw, sl = tex_data
+                primitives.append((base_ptr, sx, sy, sw, sl, ox, oy, sw, sl, 1, 1))
 
-        for base_key, ox, oy in widget.frame.keys(widget.id, widget.state):
-            tex_data = self.registry.image(base_key)
-            if not tex_data:
-                continue
+        active_content = widget.state.current() if content is None else content
 
-            base_ptr, sx, sy, sw, sl = tex_data
-            primitives.append((base_ptr, sx, sy, sw, sl, ox, oy, sw, sl, 1, 1))
+        # Skip GPU texture allocation for transparent layout containers without text
+        if not primitives and not active_content and widget.state.content_function is None:
+            return
+
+        if widget.state.canvas is None:
+            widget.state.canvas = render.canvas(w, l)
+
+        tex = widget.state.canvas
 
         # 1. Clear target canvas and stamp 9-slice background (if any)
         render.construct(tex, primitives)
 
-        # 2. Re-write the font over the cleared canvas
-        if isinstance(content, str) and content:
+        # 2. Rasterize font over the cleared canvas
+        if isinstance(active_content, str) and active_content:
             font_key = widget.state.font
             font = self.registry.font(font_key)
             if not font:
@@ -363,7 +377,25 @@ class Screen:
                     f"Registry MISS: Font '{font_key}' not found for widget '{widget.name}'."
                 )
                 return
-            render.write((tex, 0, 0, tex.w, tex.l, 0, 0, tex.w, tex.l), content, font)
+            render.write((tex, 0, 0, tex.w, tex.l, 0, 0, tex.w, tex.l), active_content, font)
+
+    def bake(self, menu: Menu) -> None:
+        """Initializes and stamps all Pane canvases for a newly unpacked Menu."""
+        if not menu.widgets:
+            return
+        for widget in menu.widgets.values():
+            if isinstance(widget.state, PaneState):
+                self.stamp(widget)
+
+    @staticmethod
+    def release(menu: Menu) -> None:
+        """Explicitly destroys hardware canvas textures held by a Menu's panes."""
+        if not menu.widgets:
+            return
+        for widget in menu.widgets.values():
+            if isinstance(widget.state, PaneState) and widget.state.canvas is not None:
+                render.destroy(widget.state.canvas)
+                widget.state.canvas = None
 
     def interface(self, menus: List[Menu], overlays: List[Menu]) -> None:
         """

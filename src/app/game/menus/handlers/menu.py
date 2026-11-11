@@ -48,9 +48,6 @@ class MenuEventHandler(EventHandler):
         if menu.controller:
             menu.controller.open(menu, data.board, data.bus)
             
-        # Stamp any initial canvas content
-        for widget in menu.widgets.values():
-            if isinstance(widget.state, PaneState) and widget.state.canvas is not None:
-                screen.stamp(widget, widget.state.current())
+        screen.bake(menu)
 
         

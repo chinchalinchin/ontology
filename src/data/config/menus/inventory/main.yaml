@@ -6,6 +6,9 @@ themes:
     pane: &pane dark-solid
     pane-alt: &pane-alt dark-texture
   alignments:
+    top: &top
+      horizontal: center
+      vertical: start
     center: &center
       horizontal: center
       vertical: center
@@ -40,7 +43,7 @@ menus:
         instance: panes
         parameters:
           dimensions: *root
-          justification: *center
+          justification: *top
           alignment: *center
           layout: stack
           font: menu

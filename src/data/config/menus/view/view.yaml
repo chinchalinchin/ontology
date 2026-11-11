@@ -133,3 +133,4 @@ menus:
                             schema: icon
                             target:
                               icon: context.sprite.inventory.equipment.shield
+                  # --------------------------------------------------

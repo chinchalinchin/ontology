@@ -33,10 +33,8 @@ class ScrollController(MenuController):
     """
 
     def open(self, menu: Menu, board: Board, bus: collections.deque) -> None:
-        for widget in menu.widgets.values():
-            if isinstance(widget.state, PaneState) and widget.state.content_function is not None:
-                bus.append(UpdateEvent(widget=widget, content=widget.state.current()))
-
+        pass
+    
     def select(self, name: str, menu: Menu, board: Board, bus: collections.deque) -> None:
         """Fires when the user presses SELECT on a focused widget."""
         widget = menu.widgets[name]
