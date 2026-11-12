@@ -34,6 +34,30 @@ nav:
     - Dialogue Loop: specs/00-dialogue.md
     - Interaction Loop: specs/01-interaction.md
     - Wander Loop: specs/02-wander.md
+  - Roadmap:
+    - Index: board/index.md
+    - Phases: 
+      - Design:
+        - C000 - Castle Dawn: board/phases/design/design-comp-000.md
+        - C001 - Citadel of Trials: board/phases/design/design-comp-001.md
+        - C002 - Regalia Galleria: board/phases/design/design-comp-002.md
+      - Implement:
+        - Phase 01 - Renderer: board/phases/implement/implement-01.md
+        - Phase 02 - Game: board/phases/implement/implement-02.md
+        - Phase 03 - Physics: board/phases/implement/implement-03.md
+        - Phase 04 - Widgets: board/phases/implement/implement-04.md
+        - Phase 05 - Editor: board/phases/implement/implement-05.md
+        - Phase 06 - Intentions: board/phases/implement/implement-06.md
+        - Phase 07 - Compositions: board/phases/implement/implement-07.md
+        - Phase 08 - Pathfinding: board/phases/implement/implement-08.md
+        - Phase 09 - Hydrodynamics: board/phases/implement/implement-09.md
+        - Phase 10 - Seasons: board/phases/implement/implement-10.md
+        - Phase 11 - Geology: board/phases/implement/implement-11.md
+        - Phase 12 - Chemistry: board/phases/implement/implement-12.md
+        - Phase 13 - Acoustics: board/phases/implement/implement-13.md
+        - Phase 14 - Narratives: board/phases/implement/implement-14.md
+        - Phase n - Commerce: board/phases/implement/implement-n.md
+        - Phase n+1 - Towns: board/phases/implement/implement-n+1.md
   - Appendix: 
     - Index: appendices/index.md
     - References: appendices/00-references.md
@@ -62,12 +86,14 @@ markdown_extensions:
 
 exclude:
   - '**/.*.md'
+  - '**/.*/**'
   - '**/.drafts/**'
   - 'static/assets/**'
   - 'static/md/**'
 
 exclude_docs: |
   **/.*.md
+  **/.*/**
   **/.drafts/**
   static/assets/**
   static/md/**

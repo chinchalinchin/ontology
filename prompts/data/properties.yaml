@@ -11,7 +11,7 @@ properties:
     # ---------------------------------------
     actions: .githubs/workflows/
     # ---------------------------------------
-    blocks: prompts/tasks/.blocks/
+    blocks: prompts/tasks/blocks/
     board: prompts/board/
     config: src/data/config
     docs: docs/
