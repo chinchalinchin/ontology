@@ -130,7 +130,7 @@ In `Menu: Pouch`, both `slots.grip.right` and `slots.grip.left` draw from the si
 2. When the user traverses to `inventory-pouch-grid` and presses `SELECT` on an occupied slot $i$, the controller resolves `item_key = gizmo.state.get_item(i)` and assigns `setattr(state.slots.grip, grip_target, item_key)`.
 3. Because `pouch-grip-right-icon` and `pouch-grip-left-icon` use `IconBinding` closures pointing to `context.slots.grip.right` and `context.slots.grip.left`, the newly equipped item icon renders immediately on the next frame.
 
-###### 4. Parameterized `use` Intention & Device Mappings
+###### 3. Parameterized `use` Intention & Device Mappings
 
 The specification defines:
 
@@ -148,6 +148,7 @@ In `src/app/models/config/mappings.py`, `WorldMapping.intentions` is currently `
 ##### User Review I
 
 * `inventory.sack` added for `crops`. Specficiation updated.
+* need to differentiate between singular Inventory, things that only have a single instance (e.g. weapons, tools), and Inventory that accumulates (e.g. crops, material).
 
 ##### Goals
 
@@ -219,28 +220,21 @@ Remove scroll arrow buttons from `Inventory` menu configurations and enable `Col
 Replace the monolithic `menus.inventory` configuration in `src/data/config/menus/inventory/main.yaml` with three standalone menu definitions (`equipment`, `pouch`, `pack`):
 
 * **`equipment`**:
-* Header pane (`"EQUIPMENT"`).
-* Gear row (`dock` pane): two disabled/non-traversible display slots bound to `context.slots.equipment.armor` (`id: armor`) and `context.slots.equipment.shield` (`id: shields`).
-* Weapon row (`dock` pane): display slot bound to `context.slots.equipment.weapon` (`id: weapons`) + 1x4 Collection Gizmo (`id: weapons`, `source: context.inventory.sheathe`, `capacity: 4`, `columns: 4`).
-* Tool row (`dock` pane): display slot bound to `context.slots.equipment.tool` (`id: tools`) + 1x4 Collection Gizmo (`id: tools`, `source: context.inventory.belt`, `capacity: 4`, `columns: 4`).
-* Utility row (`dock` pane): display slot bound to `context.slots.equipment.utility` (`id: utilities`) + 1x4 Collection Gizmo (`id: utilities`, `source: context.inventory.bag`, `capacity: 4`, `columns: 4`).
-
+    * Header pane (`"EQUIPMENT"`).
+    * Gear row (`dock` pane): two disabled/non-traversible display slots bound to `context.slots.equipment.armor` (`id: armor`) and `context.slots.equipment.shield` (`id: shields`).
+    * Weapon row (`dock` pane): display slot bound to `context.slots.equipment.weapon` (`id: weapons`) + 1x4 Collection Gizmo (`id: weapons`, `source: context.inventory.sheathe`, `capacity: 4`, `columns: 4`).
+    * Tool row (`dock` pane): display slot bound to `context.slots.equipment.tool` (`id: tools`) + 1x4 Collection Gizmo (`id: tools`, `source: context.inventory.belt`, `capacity: 4`, `columns: 4`).
+    * Utility row (`dock` pane): display slot bound to `context.slots.equipment.utility` (`id: utilities`) + 1x4 Collection Gizmo (`id: utilities`, `source: context.inventory.bag`, `capacity: 4`, `columns: 4`).
 
 * **`pouch`**:
-* Header pane (`"POUCH"`).
-* Grip row (`dock` pane): two interactive slot buttons bound to `SelectTarget(selection=Selections.GRIP, selector="right")` (`context.slots.grip.right`, `id: items`) and `SelectTarget(selection=Selections.GRIP, selector="left")` (`context.slots.grip.left`, `id: items`).
-* Items grid: 2x4 Collection Gizmo (`id: items`, `source: context.inventory.pouch`, `capacity: 8`, `columns: 4`).
-
-
+    * Header pane (`"POUCH"`).
+    * Grip row (`dock` pane): two interactive slot buttons bound to `SelectTarget(selection=Selections.GRIP, selector="right")` (`context.slots.grip.right`, `id: items`) and `SelectTarget(selection=Selections.GRIP, selector="left")` (`context.slots.grip.left`, `id: items`).
+    * Items grid: 2x4 Collection Gizmo (`id: items`, `source: context.inventory.pouch`, `capacity: 8`, `columns: 4`).
 * **`pack`**:
-* Header pane (`"PACK"`).
-* Two-column `dock` body pane:
-* Left `stack` column: `"RESOURCES"` subheader pane + 2x4 Collection Gizmo (`id: materials`, `source: context.inventory.pack`, `capacity: 8`, `columns: 4`).
-* Right `stack` column: `"CRAFT FORMULAE"` placeholder subheader pane.
-
-
-
-
+    * Header pane (`"PACK"`).
+    * Two-column `dock` body pane:
+    * Left `stack` column: `"RESOURCES"` subheader pane + 2x4 Collection Gizmo (`id: materials`, `source: context.inventory.pack`, `capacity: 8`, `columns: 4`).
+    * Right `stack` column: `"CRAFT FORMULAE"` placeholder subheader pane.
 
 ###### Goal: Expand Device Mappings and Intention Routing
 
@@ -256,10 +250,10 @@ Update `src/app/static/semantics.py`, `src/app/models/config/mappings.py`, `src/
 *Objective*: Separate `Slots` and `Inventory` on `SheetState`, expand inventory dictionary partitions, add `hand` parameter support to `Mutators`, and migrate existing state and semantic definitions.
 
 * [x] Subtask: Update `src/app/static/semantics.py` to add `Menus` keys (`EQUIPMENT`, `POUCH`, `PACK`), `Intentions` keys (`BLOCK`, `USE`), `Hands` (`LEFT`, `RIGHT`), `Selections.GRIP`, and item/equipment enumeration classes (`ArmorPalette`, `CropPalette`, `ItemPalette`, `MaterialPalette`, `ShieldPalette`, `UtilityPalette`, `ToolPalette`, `WeaponPalette`) matching `src/assets/widgets/main.yaml#widgets.icons`.
-* [ ] Subtask: Refactor `src/app/models/state/assets/sheets.py` to define `Grip`, `Slots(equipment, grip)`, and updated `Inventory(belt, bag, pouch, pack, sheathe)`, removing `wallet` and attaching `slots: Optional[Slots]` to `SheetState`.
-* [ ] Subtask: Add `hand: Optional[Enumerated[Hands]] = None` to `Mutators.parameters` in `src/app/models/state/core.py`.
-* [ ] Subtask: Update `SpriteFrame.keys` in `src/app/assets/frames/sheets.py` and `AnimationMap.action` in `src/app/game/logic/modules/maps/animation.py` to read active equipment from `state.slots.equipment` instead of `state.inventory.equipment`.
-* [ ] Subtask: Migrate all board state YAML files in `src/data/state/**` and test fixtures in `tests/` from `inventory.equipment` / `inventory.wallet` to `slots.equipment`, `slots.grip`, and the 5 `inventory` dictionaries.
+* [x] Subtask: Refactor `src/app/models/state/assets/sheets.py` to define `Grip`, `Slots(equipment, grip)`, and updated `Inventory(belt, bag, pouch, pack, sheathe)`, removing `wallet` and attaching `slots: Optional[Slots]` to `SheetState`.
+* [x] Subtask: Add `hand: Optional[Enumerated[Hands]] = None` to `Mutators.parameters` in `src/app/models/state/core.py`.
+* [x] Subtask: Update `SpriteFrame.keys` in `src/app/assets/frames/sheets.py` and `AnimationMap.action` in `src/app/game/logic/modules/maps/animation.py` to read active equipment from `state.slots.equipment` instead of `state.inventory.equipment`.
+* [x: application]: [ : test fixtures] Subtask: Migrate all board state YAML files in `src/data/state/**` and test fixtures in `tests/` from `inventory.equipment` / `inventory.wallet` to `slots.equipment`, `slots.grip`, and the 5 `inventory` dictionaries.
 
 **2. Task: Upgrade `CollectionState`, `Layout`, and `MenuMechanics` for Button-less Gizmo Traversal**
 
@@ -273,7 +267,7 @@ Update `src/app/static/semantics.py`, `src/app/models/config/mappings.py`, `src/
 
 *Objective*: Split the monolithic Inventory Menu configuration into `equipment`, `pouch`, and `pack` Menus and update `InventoryController` to support row-scoped equipment slotting and dual-grip selection.
 
-* [ ] Subtask: Update `InventoryContext` in `src/app/models/menus/contexts.py` to accept both `slots: Slots` and `inventory: Inventory` (and `active_grip: str = "right"`).
+* [x] Subtask: Update `InventoryContext` in `src/app/models/menus/contexts.py` to accept both `slots: Slots` and `inventory: Inventory` (and `active_grip: str = "right"`).
 * [ ] Subtask: Refactor `src/data/config/menus/inventory/main.yaml` to define `menus.equipment`, `menus.pouch`, and `menus.pack` according to the Phase 06.04 specification without scroll arrow buttons.
 * [ ] Subtask: Refactor `InventoryController` in `src/app/game/menus/controllers/inventory.py` to handle `Selections.GRIP` (latching `active_grip` between `"left"` and `"right"` and toggling `Statuses.SELECTED` on the grip buttons) and `Selections.SLOT` (equipping weapons, tools, and utilities into `state.slots.equipment` in `Menu: Equipment`, or equipping usable items into ` getattr(state.slots.grip, active_grip)` in `Menu: Pouch`), removing the erroneous `UpdateEvent` text stamp on `CollectionState` panes.
 
@@ -283,7 +277,7 @@ Update `src/app/static/semantics.py`, `src/app/models/config/mappings.py`, `src/
 
 * [ ] Subtask: Update `WorldMapping` (`src/app/models/config/mappings.py`), `WorldPayload` (`src/app/models/state/devices.py`), `Keyboard.poll` (`src/app/game/devices.py`), and `src/data/config/mappings/main.yaml` to map distinct scancodes for `equipment`, `pouch`, and `pack` menus, as well as `block`, `mine`, and left/right hand `use` intentions.
 * [ ] Subtask: Update `PlayerMechanics.update` in `src/app/game/logic/mechanics/intentional/player.py` to dispatch `MenuEvent` with `InventoryContext(slots=player.state.slots, inventory=player.state.inventory)` for `Menus.EQUIPMENT`, `Menus.POUCH`, and `Menus.PACK`, and to populate `player.state.mutators.parameters.hand` when entering `Intentions.USE`.
-* [ ] Subtask: Add unit and integration tests covering `Slots` and `Inventory` hydration, `Equipment`/`Pouch`/`Pack` menu unpacking, edge-triggered Gizmo scrolling, and dual-grip item assignment.
+* [!: Dependent on User Acceptance Testing] Subtask: Add unit and integration tests covering `Slots` and `Inventory` hydration, `Equipment`/`Pouch`/`Pack` menu unpacking, edge-triggered Gizmo scrolling, and dual-grip item assignment.
 
 ##### Bugs
 

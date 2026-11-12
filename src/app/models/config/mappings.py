@@ -1,4 +1,3 @@
-
 """
 @domain.model
 @domain.user
@@ -18,6 +17,7 @@ from dataclasses import (
 
 # Application Libraries
 from app.static.semantics import (
+    Hands,
     Intentions,
     PlayerGoals,
     Menus,
@@ -33,6 +33,7 @@ from app.models.config.core import Configuration
 class WorldMapping:
     menus: Dict[Enumerated[Menus], int] = field(default_factory=dict)
     intentions: Dict[Enumerated[Intentions], int] = field(default_factory=dict)
+    grips: Dict[Enumerated[Hands], int] = field(default_factory=dict)
     goals: Dict[Enumerated[PlayerGoals], int] = field(default_factory=dict)
 
 @dataclass(slots=True, frozen=True)

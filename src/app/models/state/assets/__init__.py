@@ -44,7 +44,9 @@ from app.models.state.assets.sheets import (
     Goal,
     Inventory,
     Memory,
-    Trajectory
+    Trajectory,
+    Slots,
+    Grip
 )
 from app.models.state.assets.tiles import (
     MultiplierState
@@ -103,6 +105,8 @@ __all__ = [
     'Inventory',
     'Memory',
     'Trajectory',
+    'Slots',
+    'Grip',
     # WIDGET STATES
     'IconState',
     'TraversalState',

@@ -10,6 +10,7 @@ Widget State Models.
 """
 # Standard Libraries
 from typing import (
+    Dict,
     List,
     Optional,
     Union,
@@ -22,10 +23,13 @@ from dataclasses import (
 )
 
 # Application Libraries
+import app.static.settings as settings
 from app.static.semantics import (
     Statuses,
     Layouts,
-    Fonts
+    Fonts,
+    Selections,
+    Traversal
 )
 from app.models.adapters import (
     PydanticPosition as Position,
@@ -157,6 +161,16 @@ class CollectionState(PaneState):
         """Evaluates the live collection closure."""
         return self.collection_function()
 
+    @property
+    def rows(self) -> int:
+        """Total row count across the aperture grid."""
+        return (self.capacity + self.columns - 1) // self.columns
+
+    @property
+    def is_strip(self) -> bool:
+        """True when the aperture is configured as a 1D horizontal row."""
+        return self.capacity <= self.columns
+
     def get_item(self, slot_index: int) -> str:
         """
         Retrieves the item string identifier at the windowed collection index.
@@ -171,6 +185,82 @@ class CollectionState(PaneState):
     def is_occupied(self, slot_index: int) -> bool:
         """Determines whether a physical aperture index holds an active entity."""
         return 0 <= (self.offset + slot_index) < len(self.collection)
+
+    def sync(self, pane_name: str, widgets: Dict[str, Any]) -> None:
+        """
+        Synchronizes child aperture slot button statuses with current window occupancy.
+        """
+        for i in range(self.capacity):
+            slot_name = settings.SEPARATOR.join([pane_name, Selections.SLOT.value, str(i)])
+            slot_widget = widgets.get(slot_name)
+            if slot_widget and isinstance(slot_widget.state, TraversalState):
+                status = Statuses.IDLE.value if self.is_occupied(i) else Statuses.DISABLED.value
+                slot_widget.state.status = status
+
+    def can_scroll_west(self, slot_index: int) -> bool:
+        """1D strip boundary predicate for westward window scrolling."""
+        if not self.is_strip:
+            return False
+        col = slot_index % self.columns
+        return col == 0 and self.offset > 0
+
+    def can_scroll_east(self, slot_index: int) -> bool:
+        """1D strip boundary predicate for eastward window scrolling."""
+        if not self.is_strip:
+            return False
+        col = slot_index % self.columns
+        return col == (self.columns - 1) and (self.offset + self.capacity) < len(self.collection)
+
+    def can_scroll_north(self, slot_index: int) -> bool:
+        """2D grid boundary predicate for northward row scrolling."""
+        if self.is_strip:
+            return False
+        row = slot_index // self.columns
+        return row == 0 and self.offset > 0
+
+    def can_scroll_south(self, slot_index: int) -> bool:
+        """2D grid boundary predicate for southward row scrolling."""
+        if self.is_strip:
+            return False
+        row = slot_index // self.columns
+        return row == (self.rows - 1) and (self.offset + self.capacity) < len(self.collection)
+
+    def scroll(self, direction: str, slot_index: int) -> bool:
+        """
+        Executes edge-triggered window pagination along the Gizmo's active scroll axis.
+        Returns True if the aperture offset mutated.
+        """
+        if direction == Traversal.WEST.value and self.can_scroll_west(slot_index):
+            self.offset = max(0, self.offset - 1)
+            return True
+
+        if direction == Traversal.EAST.value and self.can_scroll_east(slot_index):
+            self.offset += 1
+            return True
+
+        if direction == Traversal.NORTH.value and self.can_scroll_north(slot_index):
+            self.scrollup()
+            return True
+
+        if direction == Traversal.SOUTH.value and self.can_scroll_south(slot_index):
+            self.scrolldown()
+            return True
+
+        return False
+
+    def clamp_slot(self, slot_index: int) -> Optional[int]:
+        """
+        Returns slot_index if occupied, or clamps to the highest occupied slot
+        index in the current aperture window. Returns None if the window is empty.
+        """
+        if self.is_occupied(slot_index):
+            return slot_index
+
+        visible_count = len(self.collection) - self.offset
+        if visible_count <= 0:
+            return None
+
+        return min(slot_index, self.capacity - 1, visible_count - 1)
 
     def scrollup(self) -> None:
         """Decrements offset by column count, clamped to the lower bound (0)."""

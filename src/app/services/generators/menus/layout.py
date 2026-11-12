@@ -3,13 +3,10 @@
 @app.service
 @app.menu
 
-# Ontology: Source - app.game.menus.modules.layout
+# Ontology: Source - app.services.generators.menu.layout
 
 Menu spatial layouts and traversal graph generation.
 
-## TODOs
-
-1. This seems like a service, not a game module.
 """
 # Standard Libraries
 import math
@@ -22,12 +19,15 @@ import logging
 
 # Application Libraries
 from app.assets.base import Asset
+from app.game.menus.core import Widget
+from app.game.menus.bindings import SelectBinding
 from app.static.semantics import (
     AssetInstances,
     Layouts,
     Alignments,
     Traversal,
-    Statuses
+    Statuses,
+    Selections
 )
 from app.models.config.menus import (
     AxisAlignment,
@@ -67,6 +67,16 @@ class Layout:
         if mode == Alignments.END.value:
             return origin + span - content - margin
         return origin + (span - content) // 2
+
+    @staticmethod
+    def _is_graph_node(button: Widget) -> bool:
+        """
+        Includes all Gizmo aperture slot buttons in the spatial adjacency graph
+        regardless of initial vacancy, while excluding passive display slots.
+        """
+        if isinstance(button.binding, SelectBinding) and button.binding.selection == Selections.SLOT.value:
+            return True
+        return button.state.status != Statuses.DISABLED.value
 
     def _quantize(self, cfg: MenuNode, widgets: Dict[str, Asset]) -> None:
         if cfg.instance != AssetInstances.PANES.value:
@@ -228,12 +238,11 @@ class Layout:
 
             child.state.position = Position(x=child_x, y=child_y)
 
-    def _build_graph(self, buttons: List[Asset]) -> Dict[str, Dict[str, str]]:
+    def _build_graph(self, buttons: List[Widget]) -> Dict[str, Dict[str, str]]:
         graph = {}
-        for b1 in buttons:
-            if b1.state.status == Statuses.DISABLED.value:
-                continue
+        traversable = [b for b in buttons if self._is_graph_node(b)]
 
+        for b1 in traversable:
             b1_name = b1.name
             graph[b1_name] = {}
             b1_pos = b1.state.position
@@ -245,8 +254,8 @@ class Layout:
             south_candidates, north_candidates = [], []
             east_candidates, west_candidates = [], []
 
-            for b2 in buttons:
-                if b1 == b2 or b2.state.status == Statuses.DISABLED.value:
+            for b2 in traversable:
+                if b1 == b2:
                     continue
 
                 b2_pos = b2.state.position

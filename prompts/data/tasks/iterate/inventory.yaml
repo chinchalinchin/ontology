@@ -7,7 +7,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/grooming.md.j2
+  template: iterate/implementation.md.j2
 # ----------------------------------------------------
   parameters:
     description: *description
@@ -20,7 +20,7 @@ tools:
     manager:
       board: true
       docs: true
-      templates: true
+      templates: false
     # --------------------------------------------
     source:
       data: true
@@ -129,8 +129,8 @@ tools:
               domain: [ user ]
           # -------------------------------------
       data:
-        properties: [ sheets, widgets ]
-        state: [ ]
+        properties: [ sheets/sprites, widgets ]
+        state: [ world-01/sheets ]
         configurations: [ menus/inventory, mappings ]
         templates: [ ]
     # --------------------------------------------

@@ -6,7 +6,7 @@
 
 # Ontology: Source - app.services.factories.assets
 
-Factory for instantiating Assets, flyweight Asset components, and Menu Controllers.
+Factory for instantiating Assets and flyweight Asset components.
 """
 # Standard Libraries
 from typing import Optional
@@ -56,15 +56,6 @@ from app.assets.hitboxes import (
 )
 from app.game.menus.bindings import Binding
 from app.game.menus.core import Widget
-from app.game.menus.controllers import (
-    DisplayController,
-    InventoryController,
-    LoadController,
-    MainController,
-    OptionsController,
-    PauseController,
-    ScrollController
-)
 from app.models.config import (
     Recipe,
     MenuNode
@@ -80,7 +71,6 @@ from app.models.state import (
 from app.static.semantics import (
     AssetCategories,
     AnimationRecipe,
-    Controllers,
     FrameRecipe,
     HitboxRecipe,
     Substrates
@@ -89,8 +79,7 @@ from app.static.semantics import (
 
 class AssetFactory:
     """
-    Central factory for Asset assembly, flyweight component resolution,
-    and temporary Menu Controller instantiation.
+    Central factory for Asset assembly and flyweight component resolution.
     """
     # ----------- FLYWEIGHT COMPONENTS
     _FRAMES = {
@@ -129,17 +118,6 @@ class AssetFactory:
         HitboxRecipe.STAGE.value: StageHitbox(),
         HitboxRecipe.STATIC.value: StaticHitbox(),
         HitboxRecipe.SWITCH.value: SwitchHitbox(),
-    }
-
-    # ------------ MENU CONTROLLERS (Pending app.services.factories.menus)
-    CONTROLLER_MAP = {
-        Controllers.DISPLAY.value: DisplayController,
-        Controllers.INVENTORY.value: InventoryController,
-        Controllers.LOAD.value: LoadController,
-        Controllers.MAIN.value: MainController,
-        Controllers.OPTIONS.value: OptionsController,
-        Controllers.PAUSE.value: PauseController,
-        Controllers.SCROLL.value: ScrollController,
     }
 
     @classmethod
@@ -181,18 +159,13 @@ class AssetFactory:
         )
 
     @classmethod
-    def controller(cls, kind: str):
-        target_cls = cls.CONTROLLER_MAP.get(kind, ScrollController)
-        return target_cls()
-
-    @classmethod
     def widget(cls,
         node: MenuNode,
         properties: WidgetProperties,
         state: WidgetState,
         recipe: Recipe,
         binding: Optional[Binding] = None           
-    ):
+    ) -> Widget:
         animation = cls.animation(recipe.animation)
         frame = cls.frame(recipe.frame)
         taxonomy = Taxonomy(

@@ -17,6 +17,7 @@ from dataclasses import dataclass, field
 @dataclass(slots=True)
 class WorldPayload:
     intention: Optional[str] = None
+    grip: Optional[str] = None
     menu: Optional[str] = None
     goals: List[str] = field(default_factory=list)
 

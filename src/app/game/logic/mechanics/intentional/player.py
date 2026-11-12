@@ -8,7 +8,7 @@
 
 # Ontology: Source - app.game.logic.mechanics.intentional.player
 
-Unit Tests for PlayerMechanics
+Player Mechanics for resolving DevicePayload into Player Intention, Goal, and MenuEvent state.
 """
 # Standard Libraries
 from __future__ import annotations
@@ -36,9 +36,9 @@ from app.models.state import (
 )
 from app.models.menus import (
     InventoryContext,
-    PauseContext
+    PauseContext,
+    MenuEvent
 )
-from app.models.menus import MenuEvent
 
 # Cython Libraries
 from libs.core.models import Position
@@ -46,6 +46,12 @@ from libs.core.models import Position
 # --------------------------------------------------------------
 
 logger = logging.getLogger(__name__)
+
+_INVENTORY_MENUS = frozenset((
+    Menus.EQUIPMENT.value,
+    Menus.POUCH.value,
+    Menus.PACK.value,
+))
 
 # --------------------------------------------------------------
 
@@ -63,29 +69,39 @@ class PlayerMechanics(Mechanic):
 
         # 1. Intercept Menu Triggers
         if payload.world.menu:
-            if payload.world.menu == Menus.INVENTORY.value:
+            if payload.world.menu in _INVENTORY_MENUS:
                 bus.append(MenuEvent(
-                    id=Menus.INVENTORY.value,
-                    context=InventoryContext(inventory=player.state.inventory)
+                    id=payload.world.menu,
+                    context=InventoryContext(
+                        inventory=player.state.inventory,
+                        slots=player.state.slots
+                    )
                 ))
                 return
-            elif payload.world.menu == Menus.PAUSE.value:
+            if payload.world.menu == Menus.PAUSE.value:
                 bus.append(MenuEvent(
                     id=Menus.PAUSE.value,
                     context=PauseContext(board=board)
                 ))
                 return
 
-        # 2. Process Intentions
+        # 2. Process Intentions & Grip Parameters
         is_blocking = player.state.intention in BlockingIntentions
         is_animating = player.state.animation.frame > 0 or player.state.animation.tick > 0
         is_locked = is_blocking and is_animating
 
-        if payload.world.intention:
-            if not is_locked and player.state.intention != payload.world.intention:
-                player.state.intention = payload.world.intention
-                player.state.animation.frame = 0
-                player.state.animation.tick = 0
+        intention = payload.world.intention
+        if payload.world.grip and not intention:
+            intention = Intentions.USE.value
+
+        if intention:
+            if not is_locked:
+                if payload.world.grip:
+                    player.state.mutators.parameters.hand = payload.world.grip
+                if player.state.intention != intention:
+                    player.state.intention = intention
+                    player.state.animation.frame = 0
+                    player.state.animation.tick = 0
         else:
             if not is_locked:
                 player.state.intention = Intentions.IDLE.value
@@ -136,7 +152,7 @@ class PlayerMechanics(Mechanic):
             )
 
         if player.state.intention == Intentions.ATTACK.value:
-            eq = player.state.inventory.equipment
+            eq = player.state.slots.equipment
             logger.info(
                 f"SheetState("
                 f"id={player.id}"

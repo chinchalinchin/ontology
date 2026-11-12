@@ -35,9 +35,9 @@ class AnimationMap:
         - state: sprite state
         - equipment: equipment properties
         """
-        weapon = state.inventory.equipment.weapon
-        tool = state.inventory.equipment.tool
-        utility = state.inventory.equipment.utility
+        weapon = state.slots.equipment.weapon
+        tool = state.slots.equipment.tool
+        utility = state.slots.equipment.utility
         intention = state.intention
 
         if intention in StaticIntentions:

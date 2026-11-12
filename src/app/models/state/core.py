@@ -26,7 +26,8 @@ from app.static.semantics import (
     Actions, 
     Directions,
     Cycles,
-    Seasons
+    Seasons,
+    Hands
 )
 
 # ---------------------------------------------------------------------------------------
@@ -56,7 +57,8 @@ class MutatorParameters:
     action: Optional[RadialParameters] = field(default_factory=RadialParameters)
     squeeze: Optional[RadialParameters] = field(default_factory=RadialParameters)
     descension: Optional[float] = 0.0
-    
+    hand: Optional[Enumerated[Hands]] = None
+
 @dataclass(slots=True)
 class Mutators:
     triggers: MutatorTriggers = field(default_factory=MutatorTriggers)

@@ -19,10 +19,13 @@ from typing import (
 )
 
 # Application Classes
+from app.static.semantics import Hands
 from app.models.state.core import PlotState
 from app.models.state.assets import (
     SpriteState,
-    DialogueState
+    DialogueState,
+    Slots,
+    Inventory
 )
 
 # Cython Libraries
@@ -68,7 +71,9 @@ class DialogueContext(MenuContext):
 
 @dataclass(slots=True)
 class InventoryContext(MenuContext):
-    inventory: Any
+    inventory: Inventory
+    slots: Slots
+    active_grip: str = Hands.RIGHT.value
 
 
 @dataclass(slots=True)
