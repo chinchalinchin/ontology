@@ -141,8 +141,10 @@ class CognitionMechanics(Mechanic):
         if not target_door:
 
             target_door = next((
-                d for d in board.instances(AssetInstances.DOORS.value, sprite.state.layer) 
-                if d.name not in sprite.state.memory.doors 
+                d for d in board.instances(
+                    AssetInstances.DOORS.value, 
+                    sprite.state.layer
+                ) if d.name not in sprite.state.memory.doors 
                 and CognitionMechanics.nearby(
                     d.state.position, 
                     sprite.state.position,
@@ -579,7 +581,7 @@ class CognitionMechanics(Mechanic):
             sprite.state.mutators.triggers.vision = False
 
 
-    def _project(self, sprite, board: Board) -> None:
+    def _project(self, sprite: Asset, board: Board) -> None:
         """
         ### _project(sprite: Asset, board: Board)
 

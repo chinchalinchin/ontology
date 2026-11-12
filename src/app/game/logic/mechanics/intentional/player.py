@@ -112,7 +112,7 @@ class PlayerMechanics(Mechanic):
         if has_movement and not player.state.goal:
             player.state.goal = Goal(
                 name=player.name, 
-                category=Goals.POSITION, 
+                category=Goals.POSITION.value, 
                 position=Position(goal_x, goal_y)
             )
         elif player.state.goal:

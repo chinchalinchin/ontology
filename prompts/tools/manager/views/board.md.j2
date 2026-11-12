@@ -1,13 +1,7 @@
-{% set prefixes = {
-    "patch": "bug",
-    "implement": "phase",
-    "refactor": "refactor",
-    "design": "composition"
-} %}
+
 {% set action = tools.parameters.manager.board.action %}
 {% set phase = tools.parameters.manager.board.phase %}
-{% set prefix = prefixes[action] %}
-{% set path = properties.paths.root + properties.paths.phases + action + "/" + prefix + "-" + phase + ".md" %}
+{% set path = properties.paths.root + properties.paths.phases + action + "/" + action + "-" + phase + ".md" %}
 {# -------------------------------------------------  #}
 ### View: Task Board
 
