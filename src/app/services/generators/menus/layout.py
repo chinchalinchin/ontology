@@ -88,20 +88,40 @@ class Layout:
 
         params = cfg.parameters if isinstance(cfg.parameters, PaneParameters) else PaneParameters()
 
+        # Post-order traversal: resolve child spans before computing parent span
+        for child_cfg in params.children:
+            self._quantize(child_cfg, widgets)
+
         wc = pane.properties.dimensions.w // 3
         lc = pane.properties.dimensions.l // 3
 
         w_req = int(params.dimensions.pw * self.screensize.w)
         l_req = int(params.dimensions.pl * self.screensize.l)
 
+        children = [widgets[c.name] for c in params.children if c.name in widgets]
+        if children:
+            gap = pane.state.gap
+            margin = pane.state.margins
+            layout = pane.state.layout
+
+            if layout == Layouts.DOCK.value:
+                content_w = sum(c.dimensions.w for c in children) + gap * (len(children) - 1) + 2 * margin
+                content_l = max(c.dimensions.l for c in children) + 2 * margin
+            elif layout == Layouts.STACK.value:
+                content_w = max(c.dimensions.w for c in children) + 2 * margin
+                content_l = sum(c.dimensions.l for c in children) + gap * (len(children) - 1) + 2 * margin
+            else:
+                content_w = max(c.dimensions.w for c in children) + 2 * margin
+                content_l = max(c.dimensions.l for c in children) + 2 * margin
+
+            w_req = max(w_req, content_w)
+            l_req = max(l_req, content_l)
+
         nx = max(0, math.ceil((w_req - 2 * wc) / wc)) if wc > 0 else 0
         ny = max(0, math.ceil((l_req - 2 * lc) / lc)) if lc > 0 else 0
 
         pane.state.multiple = Multiple(nx=nx, ny=ny)
         pane.state.span = Dimensions(w=(nx + 2) * wc, l=(ny + 2) * lc)
-
-        for child_cfg in params.children:
-            self._quantize(child_cfg, widgets)
 
     def compute(self, root_cfgs: List[MenuNode], widgets: Dict[str, Asset]) -> Tuple[List[Asset], Dict]:
         flattened: List[Asset] = []

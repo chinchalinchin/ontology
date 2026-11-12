@@ -101,7 +101,7 @@ class Fabricator:
 
         row_panes: List[MenuNode] = []
 
-        for row_idx in range(total_rows):
+        for row_idx in(range(total_rows)):
             start_slot = row_idx * columns
             end_slot = min(start_slot + columns, capacity)
             slot_panes: List[MenuNode] = []
@@ -160,7 +160,7 @@ class Fabricator:
                 parameters=PaneParameters(
                     layout=Layouts.DOCK.value,
                     alignment=AxisAlignment(
-                        horizontal=Alignments.START.value,
+                        horizontal=Alignments.CENTER.value,
                         vertical=Alignments.CENTER.value
                     ),
                     gap=gap,
@@ -188,7 +188,7 @@ class Fabricator:
             parameters=PaneParameters(
                 layout=Layouts.STACK.value,
                 alignment=AxisAlignment(
-                    horizontal=Alignments.START.value,
+                    horizontal=Alignments.CENTER.value,
                     vertical=Alignments.CENTER.value
                 ),
                 gap=gap,

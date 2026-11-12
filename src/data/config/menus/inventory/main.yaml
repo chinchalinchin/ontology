@@ -12,6 +12,9 @@ themes:
     center: &center
       horizontal: center
       vertical: center
+    start: &start
+      horizontal: start
+      vertical: center
   dimensions:
     root: &root
       pw: 0.67

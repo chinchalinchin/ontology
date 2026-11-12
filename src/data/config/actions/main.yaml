@@ -96,6 +96,7 @@ actions:
     data:
       cast:
         count: 7
+        delay: 5
         directions:
           up:
             row: 0
@@ -107,6 +108,7 @@ actions:
             row: 3
       thrust:
         count: 8
+        delay: 5
         directions:
           up:
             row: 4
@@ -142,6 +144,7 @@ actions:
             row: 15
       shoot:
         count: 13
+        delay: 5
         directions:
           up:
             row: 16
@@ -153,6 +156,7 @@ actions:
             row: 19
       die:
         count: 6
+        delay: 3
         directions:
           up:
             row: 20
