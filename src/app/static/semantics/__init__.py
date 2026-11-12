@@ -22,6 +22,14 @@ from app.static.semantics.assets import (
     RequiredAssets,
     EffectsPalette,
     ExpressionsPalette,
+    ArmorPalette,
+    CropPalette,
+    ItemPalette,
+    MaterialPalette,
+    ShieldPalette,
+    UtilityPalette,
+    ToolPalette,
+    WeaponPalette,
     # ------
     Seasons,
     Lifespans,
@@ -97,7 +105,8 @@ from app.static.semantics.intentions import (
     Motivations,
     Inventories,
     Goals,
-    PlayerGoals
+    PlayerGoals,
+    Hands
 )
 
 __all__ = [
@@ -149,6 +158,14 @@ __all__ = [
     'RequiredAssets',
     'EffectsPalette',
     'ExpressionsPalette',
+    'ArmorPalette',
+    'CropPalette',
+    'ItemPalette',
+    'MaterialPalette',
+    'ShieldPalette',
+    'UtilityPalette',
+    'ToolPalette',
+    'WeaponPalette',
     # ------
     'Devices',
     'DeviceContexts',
@@ -164,6 +181,7 @@ __all__ = [
     'Inventories',
     'Goals',
     'PlayerGoals',
+    'Hands',
     # ------
     'Mechanics',
     'Configurations',

@@ -97,6 +97,11 @@ nav:
         - Phase 09.06 - Cythonization: board/phases/refactor/refactor-09-06.md
         - Phase 09.07 - Frame Caching: board/phases/refactor/refactor-09-07.md
         - Phase 09.08 - Transverse Fluid Submersion: board/phases/refactor/refactor-09-08.md
+        - Phase 10.01 - Stage Hitboxes: board/phases/refactor/refactor-10-01.md
+        - Phase 10.02 - Shoreline Seasonal Indexing: board/phases/refactor/refactor-10-02.md
+        - Phase 10.03 - Flowers, Pixies & Reproduction: board/phases/refactor/refactor-10-03.md
+        - Phase 10.04 - Cythonization: board/phases/refactor/refactor-10-04.md
+        - Phase 10.05 - Seasonality: board/phases/refactor/refactor-10-05.md
   - Appendix: 
     - Index: appendices/index.md
     - References: appendices/00-references.md

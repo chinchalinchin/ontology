@@ -255,7 +255,7 @@ Update `src/app/static/semantics.py`, `src/app/models/config/mappings.py`, `src/
 
 *Objective*: Separate `Slots` and `Inventory` on `SheetState`, expand inventory dictionary partitions, add `hand` parameter support to `Mutators`, and migrate existing state and semantic definitions.
 
-* [ ] Subtask: Update `src/app/static/semantics.py` to add `Menus` keys (`EQUIPMENT`, `POUCH`, `PACK`), `Intentions` keys (`BLOCK`, `USE`), `Hands` (`LEFT`, `RIGHT`), `Selections.GRIP`, and item/equipment enumeration classes (`Armor`, `Crops`, `Items`, `Materials`, `Shields`, `Utilities`, `Tools`, `Weapons`) matching `src/assets/widgets/main.yaml`.
+* [x] Subtask: Update `src/app/static/semantics.py` to add `Menus` keys (`EQUIPMENT`, `POUCH`, `PACK`), `Intentions` keys (`BLOCK`, `USE`), `Hands` (`LEFT`, `RIGHT`), `Selections.GRIP`, and item/equipment enumeration classes (`ArmorPalette`, `CropPalette`, `ItemPalette`, `MaterialPalette`, `ShieldPalette`, `UtilityPalette`, `ToolPalette`, `WeaponPalette`) matching `src/assets/widgets/main.yaml#widgets.icons`.
 * [ ] Subtask: Refactor `src/app/models/state/assets/sheets.py` to define `Grip`, `Slots(equipment, grip)`, and updated `Inventory(belt, bag, pouch, pack, sheathe)`, removing `wallet` and attaching `slots: Optional[Slots]` to `SheetState`.
 * [ ] Subtask: Add `hand: Optional[Enumerated[Hands]] = None` to `Mutators.parameters` in `src/app/models/state/core.py`.
 * [ ] Subtask: Update `SpriteFrame.keys` in `src/app/assets/frames/sheets.py` and `AnimationMap.action` in `src/app/game/logic/modules/maps/animation.py` to read active equipment from `state.slots.equipment` instead of `state.inventory.equipment`.

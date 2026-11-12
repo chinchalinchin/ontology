@@ -17,6 +17,7 @@ class Intentions(str, Enum):
     ATTACK          = "attack"
     ATTRACT         = "attract"
     BARTER          = "barter"
+    BLOCK           = "block"
     BUILD           = "build"
     ESCAPE          = "escape"
     FIND            = "find"
@@ -31,6 +32,7 @@ class Intentions(str, Enum):
     SPEAK           = "speak"
     SPRINT          = "sprint"
     THREATEN        = "threaten"
+    USE             = "use"
     WANDER          = "wander"
 
 class BlockingIntentions(str, Enum):
@@ -104,4 +106,10 @@ class PlayerGoals(str, Enum):
     UP              = "up"
     LEFT            = "left"
     DOWN            = "down"
+    RIGHT           = "right"
+
+# ---------------------------------
+
+class Hands(str, Enum):
+    LEFT            = "left"
     RIGHT           = "right"
