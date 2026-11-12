@@ -2,7 +2,6 @@ site_name: Ontology
 site_url: https://chinchalinchin.github.io/ontology/
 repo_url: https://github.com/chinchalinchin/ontology
 repo_name: chinchalinchin/ontology
-
 theme:
   name: material
   palette: 
@@ -13,7 +12,6 @@ theme:
     - content.code.copy
     - navigation.expand
     - navigation.indexes
-
 nav:
   - Index: index.md
   - Overview: 00-overview.md
@@ -58,6 +56,47 @@ nav:
         - Phase 14 - Narratives: board/phases/implement/implement-14.md
         - Phase n - Commerce: board/phases/implement/implement-n.md
         - Phase n+1 - Towns: board/phases/implement/implement-n+1.md
+      - Refactor:
+        - Phase 01.01 - Orchestration: board/phases/refactor/refactor-01-01.md
+        - Phase 02.01 - Frames: board/phases/refactor/refactor-02-01.md
+        - Phase 02.02 - Registry: board/phases/refactor/refactor-02-02.md
+        - Phase 02.03 - Equipment: board/phases/refactor/refactor-02-03.md
+        - Phase 02.04 - Engine: board/phases/refactor/refactor-02-04.md
+        - Phase 02.05 - Finetuning: board/phases/refactor/refactor-02-05.md
+        - Phase 02.06 - Effects: board/phases/refactor/refactor-02-06.md
+        - Phase 02.07 - Registry Data Structures: board/phases/refactor/refactor-02-07.md
+        - Phase 02.08 - World Chunks: board/phases/refactor/refactor-02-08.md
+        - Phase 03.01 - Mechanics: board/phases/refactor/refactor-03-01.md
+        - Phase 03.02 - Consolidation: board/phases/refactor/refactor-03-02.md
+        - Phase 03.03 - Motion: board/phases/refactor/refactor-03-03.md
+        - Phase 03.04 - Projectiles: board/phases/refactor/refactor-03-04.md
+        - Phase 04.01 - Typography: board/phases/refactor/refactor-04-01.md
+        - Phase 04.02 - Simplification: board/phases/refactor/refactor-04-02.md
+        - Phase 04.03 - Event Handlers: board/phases/refactor/refactor-04-03.md
+        - Phase 04.04 - Menu Context: board/phases/refactor/refactor-04-04.md
+        - Phase 04.05 - Gizmos: board/phases/refactor/refactor-04-05.md
+        - Phase 04.06 - Pane Generation: board/phases/refactor/refactor-04-06.md
+        - Phase 06.01 - Expressions: board/phases/refactor/refactor-06-01.md
+        - Phase 06.02 - Goals: board/phases/refactor/refactor-06-02.md
+        - Phase 06.03 - Combat: board/phases/refactor/refactor-06-03.md
+        - Phase 06.04 - Inventory: board/phases/refactor/refactor-06-04.md
+        - Phase 07.01 - Elevation Sorting: board/phases/refactor/refactor-07-01.md
+        - Phase 07.02 - Platforms & Elevated Hitboxes: board/phases/refactor/refactor-07-02.md
+        - Phase 07.03 - Gravity: board/phases/refactor/refactor-07-03.md
+        - Phase 07.04 - Materialization: board/phases/refactor/refactor-07-04.md
+        - Phase 07.05 - Composite Compositions: board/phases/refactor/refactor-07-05.md
+        - Phase 08.01 - Obstacle Geometry: board/phases/refactor/refactor-08-01.md
+        - Phase 08.02 - Navigation Mechanics: board/phases/refactor/refactor-08-02.md
+        - Phase 08.03 - Trajectory Optimization: board/phases/refactor/refactor-08-03.md
+        - Phase 08.04 - Mutators: board/phases/refactor/refactor-08-04.md
+        - Phase 09.01 - Fluid Flows: board/phases/refactor/refactor-09-01.md
+        - Phase 09.02 - Shorelines & Geography: board/phases/refactor/refactor-09-02.md
+        - Phase 09.03 - Consolidation: board/phases/refactor/refactor-09-03.md
+        - Phase 09.04 - Optimization: board/phases/refactor/refactor-09-04.md
+        - Phase 09.05 - Bridges & Bifurcation: board/phases/refactor/refactor-09-05.md
+        - Phase 09.06 - Cythonization: board/phases/refactor/refactor-09-06.md
+        - Phase 09.07 - Frame Caching: board/phases/refactor/refactor-09-07.md
+        - Phase 09.08 - Transverse Fluid Submersion: board/phases/refactor/refactor-09-08.md
   - Appendix: 
     - Index: appendices/index.md
     - References: appendices/00-references.md
@@ -65,7 +104,6 @@ nav:
     - Diagrams: appendices/02-diagrams.md
   - Reports:
     - Unit Test Coverage: coverage/index
-
 markdown_extensions:  
   - attr_list
   - md_in_html
@@ -83,25 +121,21 @@ markdown_extensions:
       generic: true
   - pymdownx.snippets:
       base_path: docs
-
 exclude:
   - '**/.*.md'
   - '**/.*/**'
   - '**/.drafts/**'
   - 'static/assets/**'
   - 'static/md/**'
-
 exclude_docs: |
   **/.*.md
   **/.*/**
   **/.drafts/**
   static/assets/**
   static/md/**
-  
 extra_javascript:
   - static/js/mathjax.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
-
 plugins:
   - mkdocstrings:
       handlers:
