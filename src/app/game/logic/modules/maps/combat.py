@@ -30,8 +30,8 @@ class CombatMap:
             sprite.animation.action,
             sprite.animation.direction,
             str(sprite.animation.frame)
-        ])
-        weapon_key = sprite.inventory.equipment.weapon
+        ]) 
+        weapon_key = sprite.slots.equipment.weapon
         weapon_props = equipment.weapons.get(weapon_key) if weapon_key else None
         if not weapon_props or not weapon_props.attackboxes:
             return []

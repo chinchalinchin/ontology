@@ -129,7 +129,12 @@ class MenuMechanics(Mechanic):
         bus: collections.deque,
         payload: DevicePayload
     ) -> None:
+        for overlay in board.overlays:
+            if overlay.controller:
+                overlay.controller.update(overlay, board, bus)
+
         if not board.menus:
+            board.device.context(DeviceContexts.WORLD.value)
             return
 
         board.device.context(DeviceContexts.MENU.value)

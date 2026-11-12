@@ -109,7 +109,7 @@ menus:
                           bind:
                             schema: icon
                             target:
-                              icon: context.sprite.inventory.equipment.weapon
+                              icon: context.sprite.slots.equipment.weapon
                   # --------------------------------------------------
                   # ------------------------------------- SLOT: SHIELD
                   - instance: panes
@@ -132,5 +132,5 @@ menus:
                           bind:
                             schema: icon
                             target:
-                              icon: context.sprite.inventory.equipment.shield
+                              icon: context.sprite.slots.equipment.shield
                   # --------------------------------------------------
