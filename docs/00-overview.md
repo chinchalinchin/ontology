@@ -15,6 +15,9 @@
 !!! note "Logical Quantification
     `|` is used as a logical quantifier, e.g. `y | y + x = 3` would mean the set of `y` that lie along the line `3 - x`.
 
+!!! note "Model vs Fields"
+    In all following pages, *Model* generally means a nested data structure, whereas *Field* refers to a primitive quantity. 
+
 ## Cores
 
 ### Core: Assets

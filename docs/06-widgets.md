@@ -52,11 +52,14 @@ Menus (and their component Widgets) communicate state shifts through the Engine'
 
 #### Concept: Contextuality
 
-When the Board is paused by a MenuEvent, a dedicated [Mechanic](./05-mechanics.md) takes over. During this phase, [MenuMechanic](./05-mechanics.md) switches [Device Context](./02-sprites.md#device-contexts) contexts and translates the [Device mappings](./02-sprites.md#device) to Widget State changes. 
+When the Board is paused by a MenuEvent, [MenuMechanics](./05-mechanics.md#core-mechanic-menumechanics) switches the [Device Context](./02-sprites.md#device-contexts) to `menu` and translates hardware inputs into traversal and selection actions.
 
-These State changes then map back onto Asset State changes through Event notifications sent to the Engine Bus. For example, a Player may traverse the Button Widgets in an Inventory Menu and select a new piece of Equipment (see [Inventory Menu](#menus) below for more detail); This generates an StateEvent from the Inventory Menu. This Event is processed by the Bus and the Player state is in turn updated.  
 
-When the Menu enters certain end states, such as the user selecting an Exit Button, the corresponding Widget will emit a TerminalEvent that bubbles up through the Menu and generates a notification to the Bus the MenuEvent has ended. The Board is unpaused, and the game resumes.
+[Controllers](#menus-controllers) mutate bound Asset State directly through the Menu's [Context](#menus-context) or emit asynchronous Events onto the [Engine Bus](./00-overview.md#component-engine). 
+
+For example, selecting an item inside the [Equipment or Pouch Menu](#menu-data) mutates the Context, which is immediately reflected on the next Frame via [Binding closures](#menus-bindings). Conversely, selecting a [Board transition](./12-architecture.md#phase-2-hydration) in the [Main or Pause Menu](#menu-data) emits a StateEvent onto the [Engine Bus](./00-overview.md#component-engine).
+
+When the Menu enters certain end states, such as the user selecting an Exit Button, the corresponding Widget will emit a TerminalEvent that bubbles up through the Menu and generates a notification to the Bus the MenuEvent has ended. The [Board](./00-overview.md#component-board) is then unpaused, and the [World Loop](./05-mechanics.md#mechanics-world) resumes.
 
 ## Category: Widgets
 
@@ -246,9 +249,9 @@ Due to the nature of Icons as representations of other Assets, Icons have unique
 
 * `icon: str`: Key determining which frame from the Icon sheet is displayed. 
 
-**Frame: IndexFrame**
+**Frame: IconFrame**
 
-* `keys(id, state): return [("id-{state.icon}", 0, 0)]`
+* `keys(id, state): return [("{id}-{state.icon}", 0, 0)]`
 * `index(id, properties): return [{ "{id}-{frame}": (i*w, 0, w, l) for i, frame in enumerate(properties.frames)} ]`
 
 ## Configuration: Menus

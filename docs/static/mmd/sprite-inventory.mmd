@@ -1,13 +1,45 @@
-flowchart TD
-    InventoryState["InventoryState"]
-    
-    Equipment["Equipment"]
-    Pouch["Pouch"]
-    Pack["Pack"]
-    Wallet["Wallet"]
+flowchart LR
+    subgraph Inventory ["Inventory"]
+        Sheathe["Sheathe"]
+        Belt["Belt"]
+        Bag["Bag"]
+        Pouch["Pouch"]
+        Pack["Pack"]
+        Sack["Sack"]
+    end
 
+    subgraph Slots ["Slots"]
+        subgraph Equipment ["Equipment"]
+            Armor["Armor"]
+            Shield["Shield"]
+            Weapon["Weapon"]
+            Tool["Tool"]
+            Utility["Utility"]
+        end
+        subgraph Grip ["Grip"]
+            Left["Left"]
+            Right["Right"]
+        end
+    end
 
-    InventoryState --> Equipment
-    InventoryState --> Pouch
-    InventoryState --> Pack
-    InventoryState --> Wallet
+    Sheathe -- slottable --> Weapon
+    Belt -- slottable --> Tool
+    Bag -- slottable --> Utility
+    Pouch -- slottable --> Left
+    Pouch -- slottable --> Right
+
+    Sheathe ~~~ Armor
+    Sheathe ~~~ Shield
+    Pack ~~~ Right
+    Sack ~~~ Right
+
+    classDef default fill:#2d223c,stroke:#7e57c2,stroke-width:1.5px,color:#ede7f6;
+    classDef edgeLabel fill:#1e2129,color:#82b1ff;
+
+    style Inventory fill:#1e2129,stroke:#7e57c2,stroke-width:1.5px,color:#ede7f6
+    style Slots fill:#1e2129,stroke:#7e57c2,stroke-width:1.5px,color:#ede7f6
+    style Equipment fill:#251d33,stroke:#5e35b1,stroke-width:1px,color:#ede7f6
+    style Grip fill:#251d33,stroke:#5e35b1,stroke-width:1px,color:#ede7f6
+
+    linkStyle 0,1,2,3,4 stroke:#448aff,stroke-width:1.5px;
+    linkStyle 5,6,7,8 stroke:none,stroke-width:0px;
