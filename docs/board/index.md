@@ -63,7 +63,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       * [x]: [Phase 06.01: Expressions](./phases/refactor/refactor-06-01.md)
       * [ ]: [Phase 06.02: Goals](./phases/refactor/refactor-06-02.md)
       * [ ]: [Phase 06.03: Combat](./phases/refactor/refactor-06-03.md)
-      * [ ]: [Phase 06.04: Inventory](./phases/refactor/refactor-06-04.md)
+      * [x]: [Phase 06.04: Inventory](./phases/refactor/refactor-06-04.md)
     * *Phase 07:*
       * [x]: [Phase 07.01: Elevation Sorting](./phases/refactor/refactor-07-01.md)
       * [x]: [Phase 07.02: Platforms & Elevated Hitboxes](./phases/refactor/refactor-07-02.md)
@@ -112,6 +112,9 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     * [ ]: [Bug B018: Library Binding Font Desynchronization](./phases/patch/patch-b018.md)
     * [ ]: [Bug B019: Infinite Goal Cognition Loop](./phases/patch/patch-b019.md)
   * **Design:**
-    * [x]: [Composition 000: Castle Dawn](./phases/design/design-comp-000.md)
-    * [ ]: [Composition 001: Temple of Trials](./phases/design/design-comp-001.md)
-    * [~]: [Composition 002: Regalia Galleria](./phases/design/design-composition-002.md)
+    * *Compositions:*
+      * [x]: [Composition 000: Castle Dawn](./phases/design/design-comp-000.md)
+      * [ ]: [Composition 001: Temple of Trials](./phases/design/design-comp-001.md)
+      * [~]: [Composition 002: Regalia Galleria](./phases/design/design-composition-002.md)
+    * *Menus*
+      * [~]: [Menu 000: View](./phases/design/design-menu-000.md)

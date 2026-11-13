@@ -10,60 +10,69 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
 
 See [Sheets](./01-assets.md#category-sheets) for a complete description of the Asset Category.
 
-#### Instance: Sprite
+#### Sheet: Sprite
 
 **State: SpriteState**
 
 * `position: Position`
 * `velocity: Velocity`
 * `layer: str`
-* `intention: str` 
+* `intention: str`
 * `character: Character`
     * `strength: int`
     * `defense: int`
     * `speed: int` (Maximum magnitude of Velocity vector)
-    * `impulse: int`: (Amount of acceleration applied to Velocity per game-tick)
+    * `impulse: int` (Amount of acceleration applied to Velocity per game-tick)
 * `animation: AnimationState`
     * `action: str`
     * `direction: str`
     * `frame: int`
+* `slots: Slots`
+    * `equipment: Equipment`
+        * `armor: Optional[ArmorPalette]`
+        * `weapon: Optional[WeaponPalette]`
+        * `tool: Optional[ToolPalette]`
+        * `utility: Optional[UtilityPalette]`
+        * `shield: Optional[ShieldPalette]`
+    * `grip: Grip`
+        * `left: Optional[ItemPalette]`
+        * `right: Optional[ItemPalette]`
 * `inventory: Inventory`
-    * `equipment:`
-        * `armor: str`
-        * `weapon: str`
-        * `tool: str`
-        * `utility: str`
-        * `shield: str`
-    * `pouch: Dict[str, int]`
-    * `pack: Dict[str, int]`
+    * `bag: List[UtilityPalette]`
+    * `belt: List[ToolPalette]`
+    * `sheathe: List[WeaponPalette]`
+    * `pouch: Dict[ItemPalette, int]`
+    * `pack: Dict[MaterialPalette, int]`
+    * `sack: Dict[CropPalette, int]`
 * `meters: Meters`
-    * `health: Meter` 
+    * `health: Meter`
         * `current: int`
         * `maximum: int`
     * `magic: Meter`
         * `current: int`
         * `maximum: int`
 * `mutators: Mutators`
-    * `triggers: Dict[str, bool]`
-    * `parameters: Dict[str, Dict[str, Union[int, double]]]`
-* `memory: Memory` 
+    * `triggers: MutatorTriggers`
+    * `parameters: MutatorParameters`
+* `memory: Memory`
     * `doors: Dict[str, str]`
     * `goals: Dict[str, Goal]`
     * `relationships: Dict[str, str]`
-    * `prices: Dict[str, double]`
-    * `property: List[str]`
+    * `prices: Dict[str, float]`
+    * `property: Dict[str, Position]`
+    * `sprites: Dict[str, Position]`
     * `rumors: List[str]`
-* `psyche: Psyche`:
+* `psyche: Psyche`
     * `dialogue: str`
-    * `expression: Expressions`
+    * `expression: AttachmentState`
     * `motivation: Motivations`
     * `persona: str` (*Key for [Library](./08-narratives.md#service-library) dialogue retrieval*)
-* `goal:`
+* `goal: Goal`
     * `name: str`
     * `layer: str`
     * `category: Goals`
     * `position: Position`
-* `trajectory`:
+* `trajectory: Trajectory`
     * `target: Position`
     * `vertices: List[Position]`
     * `stalled: bool`
@@ -84,19 +93,19 @@ See [Sheets](./01-assets.md#category-sheets) for a complete description of the A
 
 * `get(properties, state, frame): returns properties.hitboxes`
 
-#### Field: Intention
+##### Field: Intention
 
 Intentions are an internal State data structure that governs a Sprite's core logic. 
 
 See [Intentions documentation](./04-intentions.md) for more information.
 
-#### Field: Goal
+##### Field: Goal
 
 Goals are the current focus of the Sprite's path-finding and Direction resolution.
 
 See [Goals documentation](./04-intentions.md) for more information.
 
-#### Field: Trajectory
+##### Field: Trajectory
 
 Sprite Pathfinding is managed via its Trajectory. When a direct line of sight to a  Goal is blocked, [NavigationMechanics](./05-mechanics.md#mechanics-intentional) executes an [Rapidly-exploring Random Tree pathfinding routine](./12-architecture.md#math) and populates the trajectory buffer:
 
@@ -107,7 +116,7 @@ Sprite Pathfinding is managed via its Trajectory. When a direct line of sight to
 
 Sprite Trajectories are managed by the [NavigationMechanics](./05-mechanics.md#intentional-mechanic-navigationmechanics).
 
-#### Field: Meters
+##### Field: Meters
 
 A Meter has a `current` value and a `maximum` value.
 
@@ -119,14 +128,14 @@ TODO
 
 TODO
 
-#### Field: Character
+##### Field: Character
 
 * **Strength**: TODO
 * **Defense**: TODO
 * **Speed**: Speed determines the maximum magnitude of a Sprite's Velocity vector.
 * **Impulse**: Impulse determines the rate of change of a Sprite's Velocity vector.
 
-#### Field: Mutators
+##### Field: Mutators
 
 Mutators are attributes that alter Sprite behavior. They are functions of the Sprite's state, i.e. they are calculated from state attributes, not *primitive* state attributes themselves.
 
@@ -160,11 +169,11 @@ Mutators are *condition-driven*. They may also be *parameterized*; In other word
 * `parameters.community`: 
     * `radius`: Radius used for [Town Formation Mechanics](./11-emergence.md#towns).
 
-#### Field: Animation
+##### Field: Animation
 
 Animations are tuples of (Action, Direction, Frame). Action and Direction were previously defined in the [Assets documentation](./01-assets.md#category-sheets).
 
-#### Field: Psyche
+##### Field: Psyche
 
 The *Psyche* is an internal State data structure that governs a Sprite's ancillary Animation and Intention logic. All Sprite Assets besides the Player are given a Psyche state when deployed onto the Board. Psyche coordinates encode alterations and modulations of the Sprite state. The complete Psyche state for a Sprite is given by the tuple,
 
@@ -202,7 +211,7 @@ Motivations are long-term state variables that are used to modulate the [Intenti
 
 * `conquest`, `profit`, `survival`, `love`, `revenge`, `rebellion`, `safety`
 
-#### Field: Memory
+##### Field: Memory
 
 *Memory* stores episodic and relational data while the Sprite's active Goal focuses elsewhere:
 
@@ -237,7 +246,7 @@ A Sprite can acquire property through the `build` [Intention](./04-intentions.md
 
 TODO
 
-#### Field: Inventory
+##### Field: Inventory
 
 A Sprite Inventory represents different slots where a Sprite can store Items.
 
@@ -268,7 +277,7 @@ The Pack contains [Resources](./01-assets.md#category-resources) obtained throug
 
 The keys in the Inventory Pack are Material keys defined by the [MaterialIndex](./appendices/01-schemas.md#configuration-materials). 
 
-#### Instance: Equipment
+#### Sheet: Equipment
 
 Equipment is a grouping of several [Sheet Instances](./01-assets.md#category-sheets) that share the common feature of having no [State](./00-overview.md#core-state). Instead, their rendering is dependent on a Sprite State. Equipment is not an Asset Category in and of itself, but a label applied to particular Instances of Sheets in the Hierarchy. 
 
@@ -317,7 +326,7 @@ sprite.state.animation.action = AnimationMap.action(
 !!! note "Equipment"
     Equipment Properties are stored in the [Board](./00-overview.md#component-board) database, *not* the Sprite Asset.
 
-#### Instance: Player
+#### Sheet: Player
 
 A Player is a special type of Sprite Sheet. It may be thought of as a "*pseudo*"-Asset. It has no Properties that differentiate it in the Hierarchy; Instead, it utilizes Sprite Sheet properties. However, it is differentiated by having a unique [State](./00-overview.md#core-state) and isolated [Intention](./04-intentions.md) management Mechanics. 
 

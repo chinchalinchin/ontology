@@ -1,0 +1,101 @@
+# ----------------------------------------------------
+# TASK: PARAMETERS
+# ----------------------------------------------------
+parameters:
+  board: &board
+    phase: menu-000
+    action: design
+# ----------------------------------------------------
+context: true
+# ----------------------------------------------------
+task:
+# ----------------------------------------------------
+  template: design/structure/menu.md.j2
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    # --------------------------------------------
+    manager:
+      board: true
+      docs: true
+    # --------------------------------------------
+    source:
+      data: true
+      filter: true
+    # --------------------------------------------
+    shell:
+      directory: true
+# -----------------------------------------------------
+  parameters:
+    # --------------------------------------------
+    manager:
+      board: *board
+      docs:
+        exclude:
+          - 03-compositions
+          - 04-intentions
+          - 05-mechanics
+          - 07-acoustics
+          - 08-narratives
+          - 09-ecology
+          - 10-chemistry
+          - 11-emergence
+    # --------------------------------------------
+    source:
+      filter:
+        default: AND
+        queries:
+          # -------------------------------------
+          - title: Asset Abstract
+            scan:
+              domain: [ abstract ]
+              app: [ asset ]
+          # -------------------------------------
+          - title: Widget Implementations
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              category: [ widgets ]
+          # -------------------------------------
+          - title: Widget Models
+            scan:
+              domain: [ model ]
+              category: [ widgets ]
+          # -------------------------------------
+          - title: Menu Abstracts
+            scan:
+              domain: [ abstract ]
+              app: [ menu ]
+          # -------------------------------------
+          - title: Menu Models
+            scan:
+              domain: [ model ]
+              app: [ menu ]
+          # -------------------------------------
+          - title: Menu Bindings
+            scan:
+              domain: [ concrete ]
+              app: [ menu ]
+              menu: [ binding ]
+          # -------------------------------------
+          - title: Menu Services
+            scan:
+              domain: [ system ]
+              app: [ service, menu ]
+          # -------------------------------------
+      data:
+        properties: [ widgets ]
+        state: [ ]
+        configurations: [ menus/dialogue, menus/inventory ]
+        templates: [ ]
+    # --------------------------------------------
+    shell:
+      directory: |
+        tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
+    # --------------------------------------------
+    tests:
+      pipeline:
+        command: pytest -m
+        marker: "'app_menu or app_device'"
+        # scope: '**/test_{actuator,cartographer}.py'

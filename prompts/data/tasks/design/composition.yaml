@@ -1,9 +1,10 @@
 # ----------------------------------------------------
 # TASK: PARAMETERS
 # ----------------------------------------------------
-board: &parameters-board
-  phase: c002
-  action: design
+parameters:
+  board: &board
+    phase: comp-002
+    action: design
 # ----------------------------------------------------
 context: true
 # ----------------------------------------------------
@@ -28,7 +29,7 @@ tools:
   parameters:
     # --------------------------------------------
     manager:
-      board: *parameters-board
+      board: *board
       docs:
         exclude:
           - index
