@@ -1,0 +1,215 @@
+{% set ec2_module = [
+    'data.tf',
+    'outputs.tf',
+    'locals.tf',
+    'modules.tf',
+    'resources.tf',
+    'variables.tf',
+    'terraform.tf',
+    'user-data/user-data.sh'
+]%}
+{% set plat_module = [
+    'data.tf',
+    'outputs.tf',
+    'locals.tf',
+    'variables.tf',
+    'terraform.tf',
+    'metadata/clients.json',
+    'metadata/environments.json',
+    'metadata/regions.json',
+    'metadata/subnets.json'
+]%}
+{% set kms_module = [
+    'data.tf',
+    'outputs.tf',
+    'locals.tf',
+    'modules.tf',
+    'resources.tf',
+    'variables.tf',
+    'terraform.tf'
+]%}
+{% set sg_module = [
+    'outputs.tf',
+    'locals.tf',
+    'modules.tf',
+    'resources.tf',
+    'variables.tf',
+    'terraform.tf'
+]%}
+{% set sm_module = [
+    'data.tf',
+    'outputs.tf',
+    'locals.tf',
+    'modules.tf',
+    'resources.tf',
+    'variables.tf',
+    'terraform.tf'
+]%}
+# Tool: Cloud
+
+The **Cloud Tool** provides **Views** into Cloud deployments of Application Resources.
+
+## Views
+
+### Views: Deployment
+
+The **Deployment View** displays the currently deployed Cloud resources.
+
+#### Deployment: State
+
+**ontology/cloud/main.tf**
+
+```terraform
+{{ file('/Users/gmoore/Home/projects/ontology/cloud/main.tf')}}
+```
+
+#### Deployment: Modules
+
+##### Module: platform
+
+{% for plat in plat_module %}
+
+**terraform/platform/{{ plat }}**
+
+```{{ typehint(plat)}}
+{{ file('/Users/gmoore/Home/projects/terraform/platform/' + plat) }}
+```
+
+{% endfor %}
+
+## Module: compute/ec2
+
+{% for ec2 in ec2_module %}
+
+**terraform/compute-ec2/{{ ec2 }}**
+
+```{{ typehint(ec2) }}
+{{ file('/Users/gmoore/Home/projects/terraform/compute-ec2/' + ec2) }}
+```
+
+{% endfor %}
+
+
+## Module: security/kms
+
+{% for kms in kms_module %}
+
+**terraform/security-kms/{{ kms }}**
+
+```{{ typehint(kms) }}
+{{ file('/Users/gmoore/Home/projects/terraform/security-kms/' + kms) }}
+```
+
+{% endfor %}
+
+## Module: security/sg
+
+{% for sg in sg_module %}
+
+**terraform/security-sg/{{ kms }}**
+
+```{{ typehint(sg) }}
+{{ file('/Users/gmoore/Home/projects/terraform/security-sg/' + sg) }}
+```
+
+{% endfor %}
+
+## Module: security/sm
+
+{% for sm in sm_module %}
+
+**terraform/security-sm/{{ sm }}**
+
+```{{ typehint(sm) }}
+{{ file('/Users/gmoore/Home/projects/terraform/security-sm/' + sm) }}
+```
+
+{% endfor %}
+
+# Task: Ontology - MCP Server
+
+Set up the Terraform and user-data script for an MCP server.
+
+## Additional Context
+
+This is the pyproject.toml for the project that will be exposing an MCP interface,
+
+```toml
+[project]
+name = "ontology"
+version = "0.0.0"
+requires-python = ">=3.14"
+dependencies = [
+    "Cython==3.2.8",
+    "pydantic==2.13.4",
+    "pydantic-settings[yaml]==2.14.2",
+    "PyYAML==6.0.3",
+    "Jinja2==3.1.6",
+]
+
+[dependency-groups]
+build = [
+    "setuptools==83.0.0",
+]
+test = [
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
+    "pytest-xdist==3.8.0"
+]
+scripts = [
+    "pillow==12.3.0",
+    "music21==10.5.0",
+    "numpy==2.5.4",
+    "matplotlib==3.11.2"
+]
+docs = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+]
+analysis = [
+    "gprof2dot",
+    "pydeps",
+    "vulture"
+]
+prompts = [
+    "panflute"
+]
+
+[tool.uv]
+package = false
+```
+
+This is the Dockerfile for running unit tests and other continuous integration workflows,
+
+```dockerfile
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
+ENV PATH="/root/.local/bin:$PATH"
+
+# Install system build dependencies, SDL2 headers, graphviz, and git
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    git \
+    gcc \
+    build-essential \
+    libsdl2-dev \
+    libsdl2-image-dev \
+    libsdl2-ttf-dev \
+    libsdl2-mixer-dev \
+    graphviz \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install uv package manager
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Pre-install Python 3.14
+RUN uv python install 3.14
+
+COPY src /workspace
+
+WORKDIR /workspace
+```

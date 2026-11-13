@@ -56,8 +56,6 @@ class Interactions(str, Enum):
 class Menus(str, Enum):
     DIALOGUE        = "dialogue"
     EQUIPMENT       = "equipment"
-    # TODO: depreate
-    INVENTORY       = "inventory"
     LOAD            = "load"
     MAIN            = "main"
     OPTIONS         = "options"

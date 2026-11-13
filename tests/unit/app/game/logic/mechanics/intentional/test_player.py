@@ -208,9 +208,9 @@ def test_player_menu_triggers_emit_events(
 ):
     mechanic = mock_mechanic(Mechanics.PLAYER.value)
 
-    mechanic.update(mock_board, 0.016, mock_bus, mock_payload(menu=Menus.INVENTORY.value))
+    mechanic.update(mock_board, 0.016, mock_bus, mock_payload(menu=Menus.EQUIPMENT.value))
     assert len(mock_bus) == 1
-    assert mock_bus[-1].id == Menus.INVENTORY.value
+    assert mock_bus[-1].id == Menus.EQUIPMENT.value
 
     mechanic.update(mock_board, 0.016, mock_bus, mock_payload(menu=Menus.PAUSE.value))
     assert len(mock_bus) == 2
