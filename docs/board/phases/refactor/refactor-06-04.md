@@ -259,29 +259,29 @@ Update `src/app/static/semantics.py`, `src/app/models/config/mappings.py`, `src/
 
 *Objective*: Enable direct cardinal traversal across Gizmo slots with automatic window scrolling when the binding count exceeds Gizmo capacity.
 
-* [ ] Subtask: Update `Layout._build_graph` in `src/app/services/generators/menus/layout.py` so Gizmo aperture buttons (`Selections.SLOT`) are always indexed into `menu.graph` regardless of initial vacancy, while `MenuMechanics` filters out transitions to neighbors currently in `Statuses.DISABLED`.
-* [ ] Subtask: Add boundary scroll resolution methods to `CollectionState` in `src/app/models/state/assets/widgets.py` supporting 1D horizontal strip scrolling (`capacity == columns`, scrolling by 1 or `columns` on `WEST`/`EAST`) and 2D grid scrolling (`capacity > columns`, scrolling by `columns` on `NORTH`/`SOUTH`).
-* [ ] Subtask: Update `MenuMechanics` and `InventoryController` so edge traversal on a focused Gizmo slot triggers `CollectionState` scrolling, calls `Provider._sync_collection_slots` to refresh button `IDLE`/`DISABLED` statuses, and clamps focus to the nearest occupied slot.
+* [x] Subtask: Update `Layout._build_graph` in `src/app/services/generators/menus/layout.py` so Gizmo aperture buttons (`Selections.SLOT`) are always indexed into `menu.graph` regardless of initial vacancy, while `MenuMechanics` filters out transitions to neighbors currently in `Statuses.DISABLED`.
+* [x] Subtask: Add boundary scroll resolution methods to `CollectionState` in `src/app/models/state/assets/widgets.py` supporting 1D horizontal strip scrolling (`capacity == columns`, scrolling by 1 or `columns` on `WEST`/`EAST`) and 2D grid scrolling (`capacity > columns`, scrolling by `columns` on `NORTH`/`SOUTH`).
+* [x] Subtask: Update `MenuMechanics` and `InventoryController` so edge traversal on a focused Gizmo slot triggers `CollectionState` scrolling, calls `Provider._sync_collection_slots` to refresh button `IDLE`/`DISABLED` statuses, and clamps focus to the nearest occupied slot.
 
 **3. Task: Implement `Equipment`, `Pouch`, and `Pack` Menus and Controller Logic**
 
 *Objective*: Split the monolithic Inventory Menu configuration into `equipment`, `pouch`, and `pack` Menus and update `InventoryController` to support row-scoped equipment slotting and dual-grip selection.
 
 * [x] Subtask: Update `InventoryContext` in `src/app/models/menus/contexts.py` to accept both `slots: Slots` and `inventory: Inventory` (and `active_grip: str = "right"`).
-* [ ] Subtask: Refactor `src/data/config/menus/inventory/main.yaml` to define `menus.equipment`, `menus.pouch`, and `menus.pack` according to the Phase 06.04 specification without scroll arrow buttons.
-* [ ] Subtask: Refactor `InventoryController` in `src/app/game/menus/controllers/inventory.py` to handle `Selections.GRIP` (latching `active_grip` between `"left"` and `"right"` and toggling `Statuses.SELECTED` on the grip buttons) and `Selections.SLOT` (equipping weapons, tools, and utilities into `state.slots.equipment` in `Menu: Equipment`, or equipping usable items into ` getattr(state.slots.grip, active_grip)` in `Menu: Pouch`), removing the erroneous `UpdateEvent` text stamp on `CollectionState` panes.
+* [x] Subtask: Refactor `src/data/config/menus/inventory/main.yaml` to define `menus.equipment`, `menus.pouch`, and `menus.pack` according to the Phase 06.04 specification without scroll arrow buttons.
+* [x] Subtask: Refactor `InventoryController` in `src/app/game/menus/controllers/inventory.py` to handle `Selections.GRIP` (latching `active_grip` between `"left"` and `"right"` and toggling `Statuses.SELECTED` on the grip buttons) and `Selections.SLOT` (equipping weapons, tools, and utilities into `state.slots.equipment` in `Menu: Equipment`, or equipping usable items into ` getattr(state.slots.grip, active_grip)` in `Menu: Pouch`), removing the erroneous `UpdateEvent` text stamp on `CollectionState` panes.
 
 **4. Task: Wire Device Mappings and `PlayerMechanics` for New Menus and Intentions**
 
 *Objective*: Connect hardware inputs for `equipment`, `pouch`, `pack`, `block`, `mine`, and parameterized `use` (`left`/`right` hand) to `Device` polling and `PlayerMechanics`.
 
-* [ ] Subtask: Update `WorldMapping` (`src/app/models/config/mappings.py`), `WorldPayload` (`src/app/models/state/devices.py`), `Keyboard.poll` (`src/app/game/devices.py`), and `src/data/config/mappings/main.yaml` to map distinct scancodes for `equipment`, `pouch`, and `pack` menus, as well as `block`, `mine`, and left/right hand `use` intentions.
-* [ ] Subtask: Update `PlayerMechanics.update` in `src/app/game/logic/mechanics/intentional/player.py` to dispatch `MenuEvent` with `InventoryContext(slots=player.state.slots, inventory=player.state.inventory)` for `Menus.EQUIPMENT`, `Menus.POUCH`, and `Menus.PACK`, and to populate `player.state.mutators.parameters.hand` when entering `Intentions.USE`.
+* [x] Subtask: Update `WorldMapping` (`src/app/models/config/mappings.py`), `WorldPayload` (`src/app/models/state/devices.py`), `Keyboard.poll` (`src/app/game/devices.py`), and `src/data/config/mappings/main.yaml` to map distinct scancodes for `equipment`, `pouch`, and `pack` menus, as well as `block`, `mine`, and left/right hand `use` intentions.
+* [x] Subtask: Update `PlayerMechanics.update` in `src/app/game/logic/mechanics/intentional/player.py` to dispatch `MenuEvent` with `InventoryContext(slots=player.state.slots, inventory=player.state.inventory)` for `Menus.EQUIPMENT`, `Menus.POUCH`, and `Menus.PACK`, and to populate `player.state.mutators.parameters.hand` when entering `Intentions.USE`.
 * [!: Dependent on User Acceptance Testing] Subtask: Add unit and integration tests covering `Slots` and `Inventory` hydration, `Equipment`/`Pouch`/`Pack` menu unpacking, edge-triggered Gizmo scrolling, and dual-grip item assignment.
 
 ##### Bugs
 
-###### Bug B019: Gizmo Pagination Desynchronizes Slot Statuses and Rasterizes Offset Text Over Grid
+###### Bug: Gizmo Pagination Desynchronizes Slot Statuses and Rasterizes Offset Text Over Grid
 
 **STATUS**: OPEN
 **SEVERITY**: HIGH
@@ -304,7 +304,7 @@ In `src/app/game/menus/controllers/inventory.py`, when `InventoryController.sele
 1. Remove the `bus.append(UpdateEvent(widget=target_widget, content=str(target_widget.state.offset)))` calls from `InventoryController.select` (and remove `UpdateEvent(widget=widget, content=item_key)` on slot selection, as `IconBinding` closures and `ApertureBinding` closures evaluate dynamically every frame in `Screen._widgets`).
 2. Invoke `Provider._sync_collection_slots(target_widget.name, target_widget.state, menu.widgets)` whenever `CollectionState.offset` or the underlying collection mutates.
 
-###### Bug B020: Static Exclusion of Initially Disabled Gizmo Slots in `Layout._build_graph`
+###### Bug: Static Exclusion of Initially Disabled Gizmo Slots in `Layout._build_graph`
 
 **STATUS**: OPEN
 **SEVERITY**: MEDIUM

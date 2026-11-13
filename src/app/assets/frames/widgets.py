@@ -185,7 +185,7 @@ class MeterFrame(Frame):
 
 class IconFrame(Frame):
     """
-    ## IndexFrame
+    ## IconFrame
 
     Parses horizontal sheets where each frame corresponds to a specific string key.
     """

@@ -15,7 +15,7 @@ import pytest
 # Application Libraries
 from app.assets.frames import (
     CardinalFrame,
-    IndexFrame,
+    IconFrame,
     NoFrame,
     DirectedFrame,
     OrientedFrame,
@@ -866,7 +866,7 @@ def test_pane_frame_keys_projects_9_slice_grid(mock_asset, nx: int, ny: int):
 
 @pytest.mark.category_widgets
 def test_index_frame_indexing(mock_properties):
-    frame = IndexFrame()
+    frame = IconFrame()
     props = mock_properties(
         AssetCategories.CURSORS.value,
         AssetInstances.EXPRESSIONS.value,
@@ -881,7 +881,7 @@ def test_index_frame_indexing(mock_properties):
 
 @pytest.mark.category_widgets
 def test_index_frame_suppresses_vacant_slot():
-    frame = IndexFrame()
+    frame = IconFrame()
 
     occupied_state = IconState(id="weapons", icon_function=lambda: "shortsword")
     assert frame.keys("weapons", occupied_state) == [(f"weapons{SEPARATOR}shortsword", 0, 0)]
