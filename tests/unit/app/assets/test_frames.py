@@ -291,7 +291,7 @@ def test_sprite_frame(mock_asset):
     sprite.state.animation.action = Actions.SLASH.value
     sprite.state.animation.direction = Directions.LEFT.value
     sprite.state.animation.frame = 3
-    sprite.state.inventory.equipment = Equipment(
+    sprite.state.slots.equipment = Equipment(
         armor="leather_armor",
         utility="lantern",
         tool="pickaxe",
@@ -331,7 +331,7 @@ def test_sprite_frame_no_equipment(mock_asset):
     sprite.state.animation.action = Actions.WALK.value
     sprite.state.animation.direction = Directions.DOWN.value
     sprite.state.animation.frame = 0
-    sprite.state.inventory.equipment = None
+    sprite.state.slots.equipment = None
     sprite.state.psyche.expression = None
 
     keys = sprite.frame.keys(sprite.id, sprite.state)

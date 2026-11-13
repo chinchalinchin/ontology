@@ -72,7 +72,7 @@ def test_binding_icon(mock_binder, mock_icon_bind, mock_menu_context):
 
     assert isinstance(binding, IconBinding)
     icon_fn = binding.bind()
-    assert icon_fn() == ctx.sprite.inventory.equipment.weapon
+    assert icon_fn() == ctx.sprite.slots.equipment.weapon
 
 
 def test_binding_select(mock_binder, mock_select_bind, mock_menu_context):

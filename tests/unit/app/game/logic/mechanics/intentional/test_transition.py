@@ -50,7 +50,7 @@ def test_transition_update_evaluates_executor(
     sprite.state.layer = "0"
     sprite.state.position = Position(x=10, y=10)
     sprite.state.mutators.parameters.action.radius = 25
-    sprite.state.inventory.equipment.weapon = None
+    sprite.state.slots.equipment.weapon = None
     sprite.state.goal = Goal(
         name=player.name,
         category=Goals.TARGET.value,

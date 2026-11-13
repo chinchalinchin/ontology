@@ -88,6 +88,7 @@ from app.models.state import (
     Goal,
     HazardState,
     Inventory,
+    Slots,
     Memory,
     Meters,
     MotiveState,
@@ -421,9 +422,9 @@ def test_load_properties_hydrates_entire_schema(
     # 8. Sheets & Equipment
     player = mock_properties_schema.sheets.sprites["player"]
     rat = mock_properties_schema.sheets.pixies["giant-rat"]
-    shortsword = mock_properties_schema.sheets.weapons["shortsword"]
+    sword = mock_properties_schema.sheets.weapons["sword"]
     buckler = mock_properties_schema.sheets.shields["buckler"]
-    for sheet_prop in (player, rat, shortsword, buckler):
+    for sheet_prop in (player, rat, sword, buckler):
         assert isinstance(sheet_prop, SheetProperties)
         assert isinstance(sheet_prop.dimensions, Dimensions)
 
@@ -649,7 +650,7 @@ def test_load_state_hydrates_models_and_referential_integrity(
     assert isinstance(sprite.character, Character)
     assert isinstance(sprite.meters, Meters)
     assert isinstance(sprite.inventory, Inventory)
-    assert isinstance(sprite.inventory.equipment, Equipment)
+    assert isinstance(sprite.slots, Slots)
     assert isinstance(sprite.psyche, Psyche)
     assert isinstance(sprite.goal, Goal)
     assert isinstance(sprite.memory, Memory)
@@ -715,7 +716,7 @@ def test_save_and_reload_state_roundtrip(
     assert slot_file.is_file()
 
     raw_saved = yaml.safe_load(slot_file.read_text(encoding="utf-8"))
-    assert raw_saved["sheets"]["players"][0]["inventory"]["equipment"].get("armor") is None
+    assert raw_saved["sheets"]["players"][0]["slots"]["equipment"].get("armor") is None
 
     reloaded = Loader.load_save("world-testbed", "0")
 

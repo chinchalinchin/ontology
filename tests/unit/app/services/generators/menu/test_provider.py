@@ -122,12 +122,12 @@ def test_provider_unpack_widget_icon(mock_provider, mock_menu_context):
         instance=AssetInstances.ICONS.value,
         bind=MenuBinding(
             schema=Bindings.ICON.value,
-            target=IconTarget(icon="context.sprite.inventory.equipment.weapon"),
+            target=IconTarget(icon="context.sprite.slots.equipment.weapon"),
         ),
     )
 
     widget = mock_provider._widget(cfg, ctx, {})
-    assert widget.state.icon == ctx.sprite.inventory.equipment.weapon
+    assert widget.state.icon == ctx.sprite.slots.equipment.weapon
     assert widget.state.position.x == 0
     assert widget.state.position.y == 0
 
@@ -201,3 +201,33 @@ def test_provider_unpack_view_overlay_has_no_focus(mock_menu):
     assert hud.focus is None
     assert "health-meter" in hud.widgets
     assert "magic-meter" in hud.widgets
+
+@pytest.mark.menu_gizmo
+@pytest.mark.workflow_inventory
+@pytest.mark.parametrize(
+    "menu_id, expected_gizmos",
+    [
+        (
+            Menus.EQUIPMENT.value,
+            ("equipment-weapons-grid", "equipment-tools-grid", "equipment-utilities-grid"),
+        ),
+        (
+            Menus.POUCH.value,
+            ("inventory-pouch-grid",),
+        ),
+        (
+            Menus.PACK.value,
+            ("inventory-pack-grid", "inventory-sack-grid"),
+        ),
+    ],
+)
+def test_provider_unpack_equipment_pouch_and_pack_menus(
+    mock_menu,
+    menu_id: str,
+    expected_gizmos: tuple[str, ...],
+):
+    menu = mock_menu(menu_id)
+    assert menu.id == menu_id
+    for gizmo_name in expected_gizmos:
+        assert gizmo_name in menu.widgets
+        assert isinstance(menu.widgets[gizmo_name].state, CollectionState)

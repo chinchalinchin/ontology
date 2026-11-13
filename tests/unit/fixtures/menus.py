@@ -99,7 +99,7 @@ def mock_meter_bind() -> MenuBinding:
 def mock_icon_bind() -> MenuBinding:
     return MenuBinding(
         schema=Bindings.ICON.value,
-        target=IconTarget(icon="context.sprite.inventory.equipment.weapon"),
+        target=IconTarget(icon="context.sprite.slots.equipment.weapon"),
     )
 
 
@@ -230,8 +230,16 @@ def mock_menu_context(
                 sprite=speaker,
                 object=sign,
             )
-        if menu_id == Menus.INVENTORY.value:
-            return InventoryContext(inventory=player.state.inventory)
+        if menu_id in (
+            Menus.EQUIPMENT.value,
+            Menus.POUCH.value,
+            Menus.PACK.value,
+            Menus.INVENTORY.value,
+        ):
+            return InventoryContext(
+                inventory=player.state.inventory,
+                slots=player.state.slots,
+            )
         if menu_id == Menus.PAUSE.value:
             return PauseContext(board=mock_board)
         if menu_id == Menus.TEXT.value:

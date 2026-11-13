@@ -58,16 +58,16 @@ def test_animation_map_attack_weapons(mock_state, mock_equipment):
     )
     state.intention = Intentions.ATTACK.value
 
-    state.inventory.equipment.weapon = None
+    state.slots.equipment.weapon = None
     assert AnimationMap.action(state, mock_equipment) == Actions.CAST.value
 
-    state.inventory.equipment.weapon = "shortsword"
+    state.slots.equipment.weapon = "shortsword"
     assert AnimationMap.action(state, mock_equipment) == Actions.SLASH.value
 
-    state.inventory.equipment.weapon = "spear"
+    state.slots.equipment.weapon = "spear"
     assert AnimationMap.action(state, mock_equipment) == Actions.THRUST.value
 
-    state.inventory.equipment.weapon = "longbow"
+    state.slots.equipment.weapon = "longbow"
     assert AnimationMap.action(state, mock_equipment) == Actions.SHOOT.value
 
 
@@ -78,20 +78,20 @@ def test_animation_map_mine_and_build(mock_state, mock_equipment):
     )
 
     state.intention = Intentions.MINE.value
-    state.inventory.equipment.tool = None
+    state.slots.equipment.tool = None
     assert AnimationMap.action(state, mock_equipment) == Actions.THRUST.value
 
-    state.inventory.equipment.tool = "axe"
+    state.slots.equipment.tool = "axe"
     assert AnimationMap.action(state, mock_equipment) == Actions.SLASH.value
 
-    state.inventory.equipment.tool = "pickaxe"
+    state.slots.equipment.tool = "pickaxe"
     assert AnimationMap.action(state, mock_equipment) == Actions.THRUST.value
 
     state.intention = Intentions.BUILD.value
-    state.inventory.equipment.utility = None
+    state.slots.equipment.utility = None
     assert AnimationMap.action(state, mock_equipment) == Actions.CAST.value
 
-    state.inventory.equipment.utility = "lantern"
+    state.slots.equipment.utility = "lantern"
     assert AnimationMap.action(state, mock_equipment) == Actions.CAST.value
 
 

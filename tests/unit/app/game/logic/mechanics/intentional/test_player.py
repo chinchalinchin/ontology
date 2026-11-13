@@ -69,7 +69,7 @@ def test_player_attack_intention_maps_weapon_action(
     mechanic = mock_mechanic(Mechanics.PLAYER.value)
     player = mock_board.player()
     player.state.intention = Intentions.IDLE.value
-    player.state.inventory.equipment.weapon = "shortsword"
+    player.state.slots.equipment.weapon = "shortsword"
 
     payload = mock_payload(intention=Intentions.ATTACK.value)
     mechanic.update(mock_board, 0.016, mock_bus, payload)

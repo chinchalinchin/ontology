@@ -1,10 +1,10 @@
 """
 @domain.test
 @test.unit
-@app.menu
+@app.service
 @app.module
 
-# Ontology: Tests - tests.unit.app.game.menus.test_layout
+# Ontology: Tests - tests.unit.app.services.generators.menus.test_layout
 
 Unit tests for the Layout Module.
 """
@@ -15,10 +15,12 @@ import math
 import pytest
 
 # Application Libraries
+from app.game.menus.bindings import SelectBinding
 from app.services.generators.menus.layout import Layout
 from app.models.config.menus import (
     MenuNode,
     PaneParameters,
+    SelectTarget,
 )
 from app.models.core import AxisAlignment
 from app.static.semantics import (
@@ -27,6 +29,7 @@ from app.static.semantics import (
     AssetInstances,
     Layouts,
     Menus,
+    Selections,
     Statuses,
     Traversal,
 )
@@ -42,7 +45,7 @@ from libs.core.models import (
 
 pytestmark = [
     pytest.mark.app_menu,
-    pytest.mark.app_module,
+    pytest.mark.app_service,
 ]
 
 # ---------------------------------------------------------------------------
@@ -59,8 +62,8 @@ def test_layout_quantize_9_slice_span(mock_asset):
     )
     pane.taxonomy.name = "root-pane"
 
-    wc = pane.properties.dimensions.w // 3  # 318 // 3 = 106
-    lc = pane.properties.dimensions.l // 3  # 180 // 3 = 60
+    wc = pane.properties.dimensions.w // 3  # 36 // 3 = 12
+    lc = pane.properties.dimensions.l // 3  # 36 // 3 = 12
 
     pw, pl = 0.65, 0.50
     root_cfg = MenuNode(
@@ -86,13 +89,69 @@ def test_layout_quantize_9_slice_span(mock_asset):
     assert pane.dimensions.l == (expected_ny + 2) * lc
 
 
+def test_layout_quantize_post_order_expands_parent_to_fit_children(mock_asset):
+    """
+    Verifies post-order quantization expands a parent dock pane's 9-slice span
+    when the sum of its children's quantized spans and gaps exceeds its initial scale.
+    """
+    layout = Layout(Dimensions(w=480, l=480))
+
+    parent = mock_asset(
+        AssetCategories.WIDGETS.value,
+        AssetInstances.PANES.value,
+        id="transparent",
+    )
+    parent.taxonomy.name = "parent-dock"
+    parent.state.layout = Layouts.DOCK.value
+    parent.state.gap = 5
+
+    children_nodes = []
+    widgets = {"parent-dock": parent}
+    for i in range(4):
+        slot_pane = mock_asset(
+            AssetCategories.WIDGETS.value,
+            AssetInstances.PANES.value,
+            id="transparent",
+        )
+        slot_name = f"slot-{i}-pane"
+        slot_pane.taxonomy.name = slot_name
+        widgets[slot_name] = slot_pane
+        children_nodes.append(
+            MenuNode(
+                id="transparent",
+                name=slot_name,
+                instance=AssetInstances.PANES.value,
+                parameters=PaneParameters(dimensions=Scale(0.08, 0.08)),
+            )
+        )
+
+    parent_cfg = MenuNode(
+        id="transparent",
+        name="parent-dock",
+        instance=AssetInstances.PANES.value,
+        parameters=PaneParameters(
+            layout=Layouts.DOCK.value,
+            gap=5,
+            dimensions=Scale(0.32, 0.08),
+            children=children_nodes,
+        ),
+    )
+
+    layout._quantize(parent_cfg, widgets)
+
+    # Each child quantizes to 48px; 4 * 48 + 3 * 5 = 207px -> next multiple of 12 is 216px
+    assert all(widgets[f"slot-{i}-pane"].dimensions.w == 48 for i in range(4))
+    assert parent.dimensions.w == 216
+    assert parent.dimensions.l == 48
+
+
 @pytest.mark.parametrize(
     "horiz, vert, margin, expected_x, expected_y",
     [
         (Alignments.START.value, Alignments.START.value, 10, 10, 10),
-        (Alignments.CENTER.value, Alignments.CENTER.value, 10, (1000 - 212) // 2, (800 - 120) // 2),
-        (Alignments.END.value, Alignments.END.value, 15, 1000 - 212 - 15, 800 - 120 - 15),
-        (Alignments.CENTER.value, Alignments.END.value, 20, (1000 - 212) // 2, 800 - 120 - 20),
+        (Alignments.CENTER.value, Alignments.CENTER.value, 10, (1000 - 108) // 2, (800 - 84) // 2),
+        (Alignments.END.value, Alignments.END.value, 15, 1000 - 108 - 15, 800 - 84 - 15),
+        (Alignments.CENTER.value, Alignments.END.value, 20, (1000 - 108) // 2, 800 - 84 - 20),
     ],
 )
 def test_layout_compute_root_justification(
@@ -113,7 +172,7 @@ def test_layout_compute_root_justification(
     pane.state.justification = AxisAlignment(horizontal=horiz, vertical=vert)
     pane.state.margins = margin
 
-    # Small scale clamps nx=0, ny=0 -> span = (2 * 106, 2 * 60) = (212, 120)
+    # Scale(0.1, 0.1) on 1000x800 with 36x36 pane (wc=12, lc=12) -> nx=7, ny=5 -> span=(108, 84)
     root_cfg = MenuNode(
         id="dark-solid",
         name="p1",
@@ -267,6 +326,49 @@ def test_layout_build_graph_cardinal_and_disabled_exclusion(mock_layout, mock_as
     assert graph["b_center"][Traversal.WEST.value] == "b_west"
     assert graph["b_south"][Traversal.NORTH.value] == "b_center"
     assert graph["b_east"][Traversal.WEST.value] == "b_center"
+
+
+@pytest.mark.menu_gizmo
+@pytest.mark.workflow_traversal
+def test_layout_build_graph_includes_disabled_gizmo_aperture_slots(
+    mock_layout,
+    mock_asset,
+    mock_menu_context,
+):
+    """
+    Verifies Bug B020 fix: Gizmo slot buttons (Selections.SLOT) are indexed into
+    menu.graph even when initially DISABLED due to vacancy.
+    """
+    ctx = mock_menu_context()
+
+    def place_gizmo_slot(index: int, x: int, status: str):
+        btn = mock_asset(
+            AssetCategories.WIDGETS.value,
+            AssetInstances.BUTTONS.value,
+            id="slot",
+        )
+        btn.taxonomy.name = f"weapons-grid-slot-{index}"
+        btn.state.position = Position(x=x, y=100)
+        btn.state.status = status
+        btn.binding = SelectBinding(
+            target=SelectTarget(
+                selection=Selections.SLOT.value,
+                selector="weapons-grid",
+                index=index,
+            ),
+            context=ctx,
+        )
+        return btn
+
+    s0 = place_gizmo_slot(0, 100, Statuses.IDLE.value)
+    s1 = place_gizmo_slot(1, 150, Statuses.DISABLED.value)
+
+    graph = mock_layout._build_graph([s0, s1])
+
+    assert "weapons-grid-slot-0" in graph
+    assert "weapons-grid-slot-1" in graph
+    assert graph["weapons-grid-slot-0"][Traversal.EAST.value] == "weapons-grid-slot-1"
+    assert graph["weapons-grid-slot-1"][Traversal.WEST.value] == "weapons-grid-slot-0"
 
 
 @pytest.mark.workflow_traversal

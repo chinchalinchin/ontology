@@ -172,6 +172,7 @@ def mock_payload():
     def _payload(
         goals: Optional[List[str]] = None,
         intention: Optional[str] = None,
+        grip: Optional[str] = None,
         menu: Optional[str] = None,
         traversal: Optional[str] = None,
         interaction: Optional[str] = None,
@@ -180,6 +181,7 @@ def mock_payload():
             world=WorldPayload(
                 goals=list(goals) if goals else [],
                 intention=intention,
+                grip=grip,
                 menu=menu,
             ),
             menu=MenuPayload(

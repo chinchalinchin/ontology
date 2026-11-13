@@ -93,7 +93,7 @@ def _create_player_attacker(x=10, y=10, action="slash", direction="right", frame
         animation=AnimationState(action=action, direction=direction, frame=frame),
         intention=Intentions.ATTACK
     )
-    state.inventory.equipment.weapon = "shortsword"
+    state.slots.equipment.weapon = "shortsword"
     return Asset(tax, props, state, SpriteFrame(), SpriteAnimation(), StaticHitbox())
 
 
@@ -228,7 +228,7 @@ def test_combat_mechanics_inactive_attackbox_filtered(mock_board):
 def test_combat_mechanics_unarmed_bypasses_melee(mock_board):
     mechanic = CombatMechanics()
     attacker = _create_player_attacker(x=10, y=10)
-    attacker.state.inventory.equipment.weapon = None
+    attacker.state.slots.equipment.weapon = None
     target = _create_sprite_target(x=50, y=20, health=50)
 
     mock_board.equipment = _create_equipment()

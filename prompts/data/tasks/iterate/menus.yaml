@@ -7,7 +7,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/review.md.j2
+  template: iterate/coverage.md.j2
 # ----------------------------------------------------
   parameters:
     description: *description
@@ -18,20 +18,21 @@ tools:
   views:
     # --------------------------------------------
     manager:
-      board: true
-      docs: true
-      templates: true
+      board: false
+      docs: false
+      templates: false
     # --------------------------------------------
     source:
-      data: true
-      filter: true
+      data: false
+      filter: false
     # --------------------------------------------
     shell:
-      directory: true
+      directory: false
+      commands: false
     # --------------------------------------------
     tests:  
       configuration: false
-      pipeline: false
+      pipeline: true
       session: false
 # -----------------------------------------------------
   parameters:
@@ -69,79 +70,84 @@ tools:
           #     domain: [ system ]
           #     app: [ orchestration ]
           # -------------------------------------
-          - title: Application Core Components
-            scan:
-              domain: [ system ]
-              app: [ core, component ]
-          # -------------------------------------
-          - title: Asset Abstract
-            scan:
-              domain: [ abstract ]
-              app: [ asset ]
-          # -------------------------------------
-          - title: Widget Implementations
-            scan:
-              domain: [ concrete ]
-              app: [ asset ]
-              category: [ widgets ]
-          # -------------------------------------
-          - title: Widget Models
-            scan:
-              domain: [ model ]
-              category: [ widgets ]
-          # -------------------------------------
-          - title: Menu Abstracts
-            scan:
-              domain: [ abstract ]
-              app: [ menu ]
-          # -------------------------------------
-          - title: Menu Models
-            scan:
-              domain: [ model ]
-              app: [ menu ]
-          # -------------------------------------
-          - title: Menu Bindings
-            scan:
-              domain: [ concrete ]
-              app: [ menu ]
-              menu: [ binding ]
-          # -------------------------------------
-          - title: Menu Modules
-            scan:
-              domain: [ logic ]
-              app: [ module, menu ]
-          # -------------------------------------
-          - title: Menu Mechanics
-            scan:
-              domain: [ concrete ]
-              app: [ menu, mechanic ]
-          # -------------------------------------
-          - title: Menu Controllers
-            scan:
-              domain: [ concrete ]
-              app: [ menu ]
-              menu: [ controller ]
-          # -------------------------------------
-          - title: Event Handlers
-            scan:
-              domain: [ concrete ]
-              app: [ menu ]
-              menu: [ handler ]
-          # -------------------------------------
-          - title: Menu Services
-            scan:
-              domain: [ system ]
-              app: [ service, menu ]
-          # -------------------------------------
-          # - title: Test Fixtures
-          #   scan: 
-          #     domain: [ test ]
-          #     test: [ fixtures ]
-          # -------------------------------------
-          # - title: Menu Unit Tests
+          # - title: Application Core Components
           #   scan:
-          #     domain: [ test ]
+          #     domain: [ system ]
+          #     app: [ core, component ]
+          # -------------------------------------
+          # - title: Asset Abstract
+          #   scan:
+          #     domain: [ abstract ]
+          #     app: [ asset ]
+          # -------------------------------------
+          # - title: Widget Implementations
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ asset ]
+          #     category: [ widgets ]
+          # -------------------------------------
+          # - title: Widget Models
+          #   scan:
+          #     domain: [ model ]
+          #     category: [ widgets ]
+          # -------------------------------------
+          # - title: Menu Abstracts
+          #   scan:
+          #     domain: [ abstract ]
           #     app: [ menu ]
+          # -------------------------------------
+          # - title: Menu Models
+          #   scan:
+          #     domain: [ model ]
+          #     app: [ menu ]
+          # -------------------------------------
+          # - title: Menu Bindings
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ menu ]
+          #     menu: [ binding ]
+          # -------------------------------------
+          # - title: Menu Modules
+          #   scan:
+          #     domain: [ logic ]
+          #     app: [ module, menu ]
+          # -------------------------------------
+          # - title: Menu Mechanics
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ menu, mechanic ]
+          # -------------------------------------
+          # - title: Menu Controllers
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ menu ]
+          #     menu: [ controller ]
+          # -------------------------------------
+          # - title: Event Handlers
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ menu ]
+          #     menu: [ handler ]
+          # -------------------------------------
+          # - title: Menu Services
+          #   scan:
+          #     domain: [ system ]
+          #     app: [ service, menu ]
+          # -------------------------------------
+          - title: Test Fixtures
+            scan: 
+              domain: [ test ]
+              test: [ fixtures ]
+          # -------------------------------------
+          - title: Menu Unit Tests
+            scan:
+              domain: [ test ]
+              app: [ menu ]
+          # -------------------------------------
+          - title: Device Unit Tests
+            scan:
+              domain: [ test ]
+              app: [ device ]
           # -------------------------------------
       data:
         properties: [ widgets ]
@@ -156,5 +162,5 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: app_menu
+        marker: "'app_menu or app_device'"
         # scope: '**/test_{actuator,cartographer}.py'

@@ -21,6 +21,7 @@ from app.static.semantics import (
     DeviceContexts,
     Devices,
     Directions,
+    Hands,
     Intentions,
     Interactions,
     Menus,
@@ -36,7 +37,9 @@ pytestmark = [
 
 # -----------------------------------------------------
 
-EXPECTED_WORLD_SCANCODES = {4, 7, 8, 22, 26, 30, 31, 32, 33, 44, 224, 225, 226}
+EXPECTED_WORLD_SCANCODES = {
+    4, 5, 6, 7, 8, 9, 20, 22, 26, 30, 31, 32, 33, 34, 44, 224, 225, 226
+}
 EXPECTED_MENU_SCANCODES = {4, 7, 22, 26, 43, 44}
 
 
@@ -68,7 +71,7 @@ def test_keyboard_handles_none_scancodes(mock_keyboard: Keyboard, mock_sdl):
     mock_keyboard.context(DeviceContexts.WORLD.value)
 
     assert 224 not in mock_keyboard._scancodes
-    assert 33 not in mock_keyboard._scancodes
+    assert 34 not in mock_keyboard._scancodes
     assert None not in mock_keyboard._scancodes
 
     mock_sdl({44})
@@ -118,6 +121,56 @@ def test_keyboard_edge_triggered_intentions(
     mock_sdl({44})
     result_frame_4 = mock_keyboard.poll()
     assert result_frame_4.world.intention == Intentions.ATTACK.value
+
+
+@pytest.mark.modality_intention
+def test_keyboard_edge_triggered_grips_resolve_use_intention(
+    mock_keyboard: Keyboard,
+    mock_sdl,
+):
+    """
+    Ensure left (20) and right (9) grip keys resolve world.grip and default world.intention to USE.
+    """
+    # Frame 1: Press 'left' grip (20)
+    mock_sdl({20})
+    p1 = mock_keyboard.poll()
+    assert p1.world.grip == Hands.LEFT.value
+    assert p1.world.intention == Intentions.USE.value
+
+    # Frame 2: Hold 'left' grip (20) -> edge-triggered, does not re-fire
+    mock_sdl({20})
+    p2 = mock_keyboard.poll()
+    assert p2.world.grip is None
+    assert p2.world.intention is None
+
+    # Frame 3: Press 'right' grip (9)
+    mock_sdl({9})
+    p3 = mock_keyboard.poll()
+    assert p3.world.grip == Hands.RIGHT.value
+    assert p3.world.intention == Intentions.USE.value
+
+
+@pytest.mark.workflow_inventory
+@pytest.mark.parametrize(
+    "scancode, expected_menu",
+    [
+        (31, Menus.EQUIPMENT.value),
+        (32, Menus.POUCH.value),
+        (33, Menus.PACK.value),
+    ],
+)
+def test_keyboard_inventory_menu_triggers(
+    mock_keyboard: Keyboard,
+    mock_sdl,
+    scancode: int,
+    expected_menu: str,
+):
+    """
+    Ensure dedicated scancodes trigger Equipment, Pouch, and Pack menus in WORLD context.
+    """
+    mock_sdl({scancode})
+    payload = mock_keyboard.poll()
+    assert payload.world.menu == expected_menu
 
 
 def test_keyboard_level_triggered_goals(
@@ -238,7 +291,7 @@ def test_keyboard_singular_resolution_priority(
     """
     Ensure overlapping edge-triggered inputs collapse to the first configured key.
     """
-    # Simultaneously press 'interact' (8) and 'attack' (44), plus 'pause' (30) and 'inventory' (31)
+    # Simultaneously press 'interact' (8) and 'attack' (44), plus 'pause' (30) and 'equipment' (31)
     mock_sdl({8, 44, 30, 31})
     world_payload = mock_keyboard.poll()
     assert world_payload.world.intention == Intentions.INTERACT.value

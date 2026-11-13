@@ -30,7 +30,7 @@ pytestmark = [
 
 def test_combat_map_attackboxes_unarmed(mock_board):
     player = mock_board.player()
-    player.state.inventory.equipment.weapon = None
+    player.state.slots.equipment.weapon = None
 
     assert CombatMap.attackboxes(
         player.state, 
@@ -40,7 +40,7 @@ def test_combat_map_attackboxes_unarmed(mock_board):
 
 def test_combat_map_attackboxes_missing_weapon_properties(mock_board):
     player = mock_board.player()
-    player.state.inventory.equipment.weapon = "non-existent-weapon"
+    player.state.slots.equipment.weapon = "non-existent-weapon"
 
     assert CombatMap.attackboxes(
         player.state, 
@@ -54,7 +54,7 @@ def test_combat_map_attackboxes_matching_frame(
     player = mock_board.player()
     equipment = mock_board.equipment
 
-    player.state.inventory.equipment.weapon = "shortsword"
+    player.state.slots.equipment.weapon = "shortsword"
     player.state.animation.action = Actions.SLASH.value
     player.state.animation.direction = Directions.RIGHT.value
     player.state.animation.frame = 3
@@ -67,7 +67,7 @@ def test_combat_map_attackboxes_matching_frame(
 
 def test_combat_map_attackboxes_unmatched_frame(mock_board):
     player = mock_board.player()
-    player.state.inventory.equipment.weapon = "shortsword"
+    player.state.slots.equipment.weapon = "shortsword"
     player.state.animation.action = Actions.SLASH.value
     player.state.animation.direction = Directions.RIGHT.value
     player.state.animation.frame = 0
