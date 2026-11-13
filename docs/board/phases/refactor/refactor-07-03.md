@@ -86,6 +86,7 @@ def _extract_tier_support_aabbs(
         inst = craft.taxonomy.instance
         base_e = craft.elevation
 
+        # TODO: remove: platforms are deprecated.
         if inst == AssetInstances.PLATFORMS.value:
             if elevation > base_e and elevation in craft.hitbox.elevations(craft.properties, craft.state):
                 aabbs.append((

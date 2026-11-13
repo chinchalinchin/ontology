@@ -82,3 +82,7 @@ class StairState(CraftState):
     @property
     def direction(self) -> Optional[str]:
         return self.blueprint
+
+    @direction.setter
+    def direction(self, value: Optional[str]) -> None:
+        self.blueprint = value

@@ -234,7 +234,6 @@ def mock_menu_context(
             Menus.EQUIPMENT.value,
             Menus.POUCH.value,
             Menus.PACK.value,
-            Menus.INVENTORY.value,
         ):
             return InventoryContext(
                 inventory=player.state.inventory,

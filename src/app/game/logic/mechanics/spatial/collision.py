@@ -91,12 +91,11 @@ class CollisionMechanics(SpatialMechanic):
 
             tread_progress = (foot_y - stairs.state.position.y) / stair_l
 
-            if direction_val == Directions.UP.value:
-                # Ascent moves North (vy < 0); Descent moves South (vy > 0)
-                if tread_progress <= 0.85 and vy < 0:
-                    sprite.elevation = e_top
-                elif tread_progress >= 0.85 and vy > 0:
-                    sprite.elevation = e_base
+            # Ascent moves North (vy < 0); Descent moves South (vy > 0)
+            if tread_progress <= 0.85 and vy < 0:
+                sprite.elevation = e_top
+            elif tread_progress >= 0.85 and vy > 0:
+                sprite.elevation = e_base
 
         # -----------------------------------------------------------------
         # HORIZONTAL STAIRS (LEFT / RIGHT)
@@ -144,7 +143,11 @@ class CollisionMechanics(SpatialMechanic):
             return
 
         vel = getattr(asset.state, 'velocity', None)
-        hitboxes = asset.hitboxes
+        hitboxes = (
+            asset.hitbox.get(asset.properties, asset.state, elevation)
+            if elevation is not None
+            else asset.hitboxes
+        )
 
         intersection = geometry.bounded(
             int(asset.state.position.x), 
@@ -176,18 +179,29 @@ class CollisionMechanics(SpatialMechanic):
         Extract variables logically and defer matrix shifts to Cython,
         resolving hitboxes matching the active collision elevation tier.
         """
-        # TODO: mass and velocity should probably be core Asset properties.
+        # TODO: mass should probably be a core Asset Property field
+        #       but what about Widgets?
         m1 = getattr(asset_a.properties, 'mass', 0)
         m2 = getattr(asset_b.properties, 'mass', 0)
 
         is_kinematic1 = asset_a.taxonomy.instance == AssetInstances.PLAYERS.value
         is_kinematic2 = asset_b.taxonomy.instance == AssetInstances.PLAYERS.value
 
+        # TODO: velocity should probably be a core Asset State field...
+        #       but what about Widgets?
         vel1 = getattr(asset_a.state, 'velocity', None)
         vel2 = getattr(asset_b.state, 'velocity', None)
 
-        hitboxes_a = asset_a.hitboxes
-        hitboxes_b = asset_b.hitboxes
+        hitboxes_a = (
+            asset_a.hitbox.get(asset_a.properties, asset_a.state, elevation)
+            if elevation is not None
+            else asset_a.hitboxes
+        )
+        hitboxes_b = (
+            asset_b.hitbox.get(asset_b.properties, asset_b.state, elevation)
+            if elevation is not None
+            else asset_b.hitboxes
+        )
 
         intersection = geometry.intersects(
             asset_a.state.position, 

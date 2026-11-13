@@ -13,7 +13,6 @@ site/**
 **/.vscode/**
 **/logs/**
 **/new.py
-TODOS.md
 **/*.pstats
 !**/latest.pstats
 **/*.o

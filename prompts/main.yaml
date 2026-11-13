@@ -12,7 +12,7 @@ context: false
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: cloud.md.j2
+  # template: index.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
@@ -35,7 +35,7 @@ task:
   # template: iterate/documentation.md.j2
   # template: iterate/grooming.md.j2
   # template: iterate/implementation.md.j2
-  # template: iterate/coverage.md.j2
+  template: iterate/coverage.md.j2
   # template: iterate/review.md.j2
   # template: iterate/conclusion.md.j2
   # --------------------------------------------
@@ -71,8 +71,8 @@ tools:
     # --------------------------------------------
     manager:
       board: false
-      docs: false
-      templates: false
+      docs: true
+      templates: true
       specs: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
@@ -83,20 +83,20 @@ tools:
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: false
-      filter: false
+      data: true
+      filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: false
+      directory: true
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
       configuration: false
-      pipeline: false
+      pipeline: true
       session: false
 # ----------------------------------------------------
   parameters:
@@ -109,21 +109,22 @@ tools:
         action: refactor
       docs:
         exclude:
-          - 00-overview
-          - 01-assets
-          - 02-sprites
-          # - 03-compositions
+          # - 00-overview
+          # - 01-assets
+          # - 02-sprites
+          - 03-compositions
           - 04-intentions
-          - 05-mechanics
+          # - 05-mechanics
           - 06-widgets
           - 07-acoustics
           - 08-narratives
           - 09-ecology
           - 10-chemistry
           - 11-emergence
-          - 12-architecture
+          # - 12-architecture
       templates: 
-        - template-backlog
+        - template-review
+        - template-bug
       specs:
         - 00-dialogue
         - 01-interaction
@@ -141,27 +142,38 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Multiplier Abstract
+          - title: Asset Abstract
+            scan: 
+              domain: [ abstract ]
+              app: [ asset ]
+          - title: Mechanic Abstract
             scan:
               domain: [ abstract ]
-              app: [ module ]
-              workflows: [ compositions ]
-          - title: Composition Logic
+              app: [ mechanic ]
+          - title: Asset Hitboxes
             scan:
-              domain: [ logic ]
-              app: [ module ]
-              workflows: [ compositions ]
-          - title: Orchestration Services
-            scan:
-              domain: [ system ]
-              app: [ orchestration ]
-          - title: Hydration Services
+              domain: [ concrete ]
+              app: [ asset ]
+              asset: [ hitbox ]
+          - title: Application Core Components
             scan:
               domain: [ system ]
-              workflows: [ hydration ]
+              app: [ core, component ]
+          - title: Workflow - Collisions
+            scan:
+              app: [ mechanic ]
+              workflows: [ collisions ]
+          - title: Libraries - Collisions
+            scan: 
+              app: [ library ]
+              workflows: [ collisions ]
+          - title: Test Fixtures
+            scan:
+              domain: [ test ]
+              test: [ fixtures ]
       data:
-        properties: [ ]
-        state: [ ]
+        properties: [ objects ]
+        state: [ world-testbed ]
         configurations: [ ]
         templates: [ ]
     # --------------------------------------------
@@ -178,5 +190,5 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: workflow_navigation
+        marker: workflow_collisions
         # scope: '**/test_{actuator,cartographer}.py'
