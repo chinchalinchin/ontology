@@ -13,6 +13,22 @@
 
 * The [Data View](#view-data) provides a view into Widget properties and example Menus that have been successfully implemented in the Ontology framework.
 
+## Menu: Diagrams
+
+Mermaid Diagrams from the [Documentation](#view-documentation) that are relevant to the Design Task.
+
+**sprite-inventory.mmd**
+
+```mmd
+{{ file(properties.paths.root + properties.paths.diagrams + 'sprite-inventory.mmd')}}
+```
+
+**menu-flow.mmd**
+
+```mmd
+{{ file(properties.paths.root + properties.paths.diagrams + 'menu-flow.mmd')}}
+```
+
 ## Menu: Themes
 
 YAML anchors are processed by `pyyaml` prior to being loaded in the [Application](#application). They should be used like a theme or stylesheet. Declare theme variables (anchors) at the top of each [Menu Model](#menu-model) and reference them to consistently "style" the Menu.

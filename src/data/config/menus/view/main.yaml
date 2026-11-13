@@ -3,10 +3,16 @@
 # ---------------------------------------------------------------------
 themes:
   colors:
-    pane: &pane dark-solid
+    pane: &pane transparent
   alignments:
-    bottom: &bottom
-      horizontal: center
+    top-left: &top-left
+      horizontal: start
+      vertical: start
+    bottom-left: &bottom-left
+      horizontal: start
+      vertical: end
+    bottom-right: &bottom-right
+      horizontal: end
       vertical: end
     center: &center
       horizontal: center
@@ -18,15 +24,32 @@ themes:
       horizontal: end
       vertical: center
   dimensions:
-    root: &root
-      pw: 0.50
-      pl: 0.175
-    child: &child
+    meters: &meters
       pw: 0.16
       pl: 0.10
+    grip: &grip
+      pw: 0.16
+      pl: 0.08
+    equipment: &equipment
+      pw: 0.24
+      pl: 0.18
+    gear: &gear
+      pw: 0.16
+      pl: 0.08
+    slottables: &slottables
+      pw: 0.24
+      pl: 0.08
     slot: &slot
       pw: 0.08
       pl: 0.08
+  parameters:
+    disabled: &disabled
+      status: disabled
+    slot-pane: &slot-pane
+      dimensions: *slot
+      layout: overlay
+      alignment: *center
+      gap: 0
 # ---------------------------------------------------------------------
 # ---------------------------------------------------------- MENU: VIEW
 # ---------------------------------------------------------------------
@@ -34,98 +57,140 @@ menus:
   view:
     controller: display
     roots:
+      # ---------------------------------------------------------------
+      # ---------------------------------------- TOP LEFT: METERS STACK
+      # ---------------------------------------------------------------
       - instance: panes
         id: *pane
-        name: view-menu
+        name: view-pane-meters
         parameters:
-          dimensions: *root
-          justification: *bottom
-          alignment: *center
+          dimensions: *meters
+          justification: *top-left
+          alignment: *start
+          layout: stack
+          gap: 5
+          margins: 5
+          children:
+            # ------------------------------------------- METER: HEALTH
+            - instance: meters
+              id: health
+              name: health-meter
+              bind:
+                schema: meter
+                target:
+                  meter: context.sprite.meters.health
+            # -------------------------------------------- METER: MAGIC
+            - instance: meters
+              id: magic
+              name: magic-meter
+              bind:
+                schema: meter
+                target:
+                  meter: context.sprite.meters.magic
+      # ---------------------------------------------------------------
+      # --------------------------------------- BOTTOM RIGHT: GRIP DOCK
+      # ---------------------------------------------------------------
+      - instance: panes
+        id: *pane
+        name: view-pane-grip
+        parameters:
+          dimensions: *grip
+          justification: *bottom-right
+          alignment: *end
           layout: dock
           gap: 5
           margins: 5
           children:
-            # ----------------------------------------------------------
-            # --------------------------------------------- VIEW: METERS
-            # ----------------------------------------------------------
+            # ----------------------------------------- SLOT: GRIP LEFT
             - instance: panes
-              id: transparent
-              name: view-pane-meters
+              id: *pane
+              name: pane-slot-grip-left
               parameters:
-                dimensions: *child
-                layout: stack
-                alignment: *start
-                gap: 5
+                <<: *slot-pane
                 children:
-                  # ------------------------------------- METER: HEALTH
-                  - instance: meters
-                    id: health
-                    name: health-meter
+                  - instance: buttons
+                    id: slot
+                    name: grip-left-slot
+                    parameters: *disabled
+                  - instance: icons
+                    id: items
+                    name: grip-left-icon
                     bind:
-                      schema: meter
+                      schema: icon
                       target:
-                        meter: context.sprite.meters.health
-                  # --------------------------------------------------
-                  # ------------------------------------- METER: MAGIC
-                  - instance: meters
-                    id: magic
-                    name: magic-meter
-                    bind:
-                      schema: meter
-                      target:
-                        meter: context.sprite.meters.magic
-                  # --------------------------------------------------
-            # ----------------------------------------------------------
-            # ---------------------------------------------- VIEW: SLOTS
-            # ----------------------------------------------------------
+                        icon: context.sprite.slots.grip.left
+            # ---------------------------------------- SLOT: GRIP RIGHT
             - instance: panes
-              id: transparent
-              name: view-pane-slots
+              id: *pane
+              name: pane-slot-grip-right
               parameters:
-                dimensions: *child
+                <<: *slot-pane
+                children:
+                  - instance: buttons
+                    id: slot
+                    name: grip-right-slot
+                    parameters: *disabled
+                  - instance: icons
+                    id: items
+                    name: grip-right-icon
+                    bind:
+                      schema: icon
+                      target:
+                        icon: context.sprite.slots.grip.right
+      # ---------------------------------------------------------------
+      # ---------------------------------- BOTTOM LEFT: EQUIPMENT STACK
+      # ---------------------------------------------------------------
+      - instance: panes
+        id: *pane
+        name: view-pane-equipment
+        parameters:
+          dimensions: *equipment
+          justification: *bottom-left
+          alignment: *start
+          layout: stack
+          gap: 5
+          margins: 5
+          children:
+            # ---------------------------------------------- DOCK: GEAR
+            - instance: panes
+              id: *pane
+              name: view-pane-gear
+              parameters:
+                dimensions: *gear
                 layout: dock
                 alignment: *start
-                margins: 2
                 gap: 5
+                margins: 2
                 children:
-                  # -------------------------------------- SLOT: WEAPON
+                  # --------------------------------------- SLOT: ARMOR
                   - instance: panes
-                    id: transparent
-                    name: pane-slot-weapon
+                    id: *pane
+                    name: pane-slot-armor
                     parameters:
-                      dimensions: *slot
-                      layout: overlay
-                      alignment: *center
-                      gap: 0
+                      <<: *slot-pane
                       children:
                         - instance: buttons
                           id: slot
-                          name: weapon-slot
-                          parameters:
-                            status: disabled
+                          name: armor-slot
+                          parameters: *disabled
                         - instance: icons
-                          id: weapons
-                          name: weapon-icon
+                          id: armor
+                          name: armor-icon
                           bind:
                             schema: icon
                             target:
-                              icon: context.sprite.slots.equipment.weapon
-                  # --------------------------------------------------
-                  # ------------------------------------- SLOT: SHIELD
+                              icon: context.sprite.slots.equipment.armor
+                  # -------------------------------------- SLOT: SHIELD
                   - instance: panes
-                    id: transparent
+                    id: *pane
                     name: pane-slot-shield
                     parameters:
-                      dimensions: *slot
-                      layout: overlay
-                      alignment: *center
-                      gap: 0
+                      <<: *slot-pane
                       children:
                         - instance: buttons
                           id: slot
                           name: shield-slot
-                          parameters:
-                            status: disabled
+                          parameters: *disabled
                         - instance: icons
                           id: shields
                           name: shield-icon
@@ -133,4 +198,68 @@ menus:
                             schema: icon
                             target:
                               icon: context.sprite.slots.equipment.shield
-                  # --------------------------------------------------
+            # ---------------------------------------- DOCK: SLOTTABLES
+            - instance: panes
+              id: *pane
+              name: view-pane-slottables
+              parameters:
+                dimensions: *slottables
+                layout: dock
+                alignment: *start
+                gap: 5
+                margins: 2
+                children:
+                  # ------------------------------------- SLOT: UTILITY
+                  - instance: panes
+                    id: *pane
+                    name: pane-slot-utility
+                    parameters:
+                      <<: *slot-pane
+                      children:
+                        - instance: buttons
+                          id: slot
+                          name: utility-slot
+                          parameters: *disabled
+                        - instance: icons
+                          id: utilities
+                          name: utility-icon
+                          bind:
+                            schema: icon
+                            target:
+                              icon: context.sprite.slots.equipment.utility
+                  # ---------------------------------------- SLOT: TOOL
+                  - instance: panes
+                    id: *pane
+                    name: pane-slot-tool
+                    parameters:
+                      <<: *slot-pane
+                      children:
+                        - instance: buttons
+                          id: slot
+                          name: tool-slot
+                          parameters: *disabled
+                        - instance: icons
+                          id: tools
+                          name: tool-icon
+                          bind:
+                            schema: icon
+                            target:
+                              icon: context.sprite.slots.equipment.tool
+                  # -------------------------------------- SLOT: WEAPON
+                  - instance: panes
+                    id: *pane
+                    name: pane-slot-weapon
+                    parameters:
+                      <<: *slot-pane
+                      children:
+                        - instance: buttons
+                          id: slot
+                          name: weapon-slot
+                          parameters: *disabled
+                        - instance: icons
+                          id: weapons
+                          name: weapon-icon
+                          bind:
+                            schema: icon
+                            target:
+                              icon: context.sprite.slots.equipment.weapon

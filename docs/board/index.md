@@ -117,4 +117,5 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       * [ ]: [Composition 001: Temple of Trials](./phases/design/design-comp-001.md)
       * [~]: [Composition 002: Regalia Galleria](./phases/design/design-composition-002.md)
     * *Menus*
-      * [~]: [Menu 000: View](./phases/design/design-menu-000.md)
+      * [x]: [Menu 000: View](./phases/design/design-menu-000.md)
+      * [ ]: [Menu 001: Dialogue](./phases//design-menu-001.md)
