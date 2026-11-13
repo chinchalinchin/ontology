@@ -3,11 +3,11 @@ anchors:
   description: &description TODO
   title: &title TODO
 # ----------------------------------------------------
-context: true
+context: false
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/coverage.md.j2
+  template: iterate/merge.md.j2
 # ----------------------------------------------------
   parameters:
     description: *description

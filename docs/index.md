@@ -14,7 +14,7 @@
 * [Intentions](./04-intentions.md)
 * [Mechanics](./05-mechanics.md)
 * [Widgets](./06-widgets.md)
-* [Sounds](./07-sounds.md)
+* [Acoustics](./07-acoustics.md)
 * [Narratives](./08-narratives.md)
 * [Ecology](./09-ecology.md)
 * [Chemistry](./10-chemistry.md)
