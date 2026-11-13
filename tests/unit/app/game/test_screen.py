@@ -108,7 +108,7 @@ def test_frame_keys_generation(mock_board):
         frame=4,
     )
     player.state.slots.equipment.armor = "leather"
-    player.state.slots.equipment.weapon = "shortsword"
+    player.state.slots.equipment.weapon = "sword"
     player.state.slots.equipment.shield = "buckler"
 
     # 1. NoFrame
@@ -127,7 +127,7 @@ def test_frame_keys_generation(mock_board):
     expected_keys = [
         ("player-thrust-up-4", 0, 0),
         ("leather-thrust-up-4", 0, 0),
-        ("shortsword-thrust-up-4", 0, 0),
+        ("sword-thrust-up-4", 0, 0),
         ("buckler-thrust-up-4", 0, 0),
     ]
     assert player.frame.keys(player.id, player.state) == expected_keys

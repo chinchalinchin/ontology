@@ -1,8 +1,12 @@
-# Ontology Docs: Plots
+# Ontology Docs: Narratives
+
+## Narratives: Overview 
+
+**Plots**
 
 Due to the nature of the [Engine](./00-overview.md#component-engine), a Plot is not scripted, in the sense that Sprite Actions are hardcoded and pre-determined down to the pixel. Conditions are reached to change the World state, which causes the [Board's](./00-overview.md#component-board) `plot` attribute to update. This in turn affects what dialogue keys are available for a [Sprite](./02-sprites.md). 
 
-## Plots: Overview
+## Narratives: Plots
 
 [Sprites](./02-sprites.md) retain a Expression in their [Psyche](./02-sprites.md#psyche). This Expression is a Lexicon key to access content in the [Library](#library). It is used in conjunction with the Sprite's `persona` and the [Board's](./00-overview.md#component-board) `plot` key to unlock the appropriate content.
 
@@ -10,7 +14,7 @@ As a simple example, a Plot state might be defined to change conditional on the 
 
 A Sprite, whose `psyche.persona = <persona>` is defined through [State files](./00-overview.md#core-state), when entering into a `speak` Intention with `psyche.dialogue = <lexicon>` (arrived at through [Intention transitions](./04-intentions.md) and [World Mechanics](./05-mechanics.md)), would then retrieve the `<plot>.<persona>.<lexicon>` dialogue from the Library. 
 
-## Service: Library
+### Service: Library
 
 * Address: `src/data/config/library/main.yaml`
 
@@ -29,15 +33,15 @@ library:
 * `persona-key`: Persona binding for Sprite or Signs. Determined by the Asset.
 * `lexicon-key`: Dynamic key for ingame modulation. 
 
-## State: Plot
+### State: Plot
 
 The Plot is an Asset-less State. It is instantiated during [initialization](./12-architecture.md#specification-initialization) and injected into the Board. 
 
-## Mechanics: Plot
+### Mechanics: Plot
 
 PlotMechanics are a [World Mechanic](./05-mechanics.md#mechanics-world) that manages the Plot State. It does so through the medium of the *Plot Transition Matrix*.
 
-### Plot: Transition Matrix
+#### Plot: Transition Matrix
 
 Similar to [Intentions](./04-intentions.md), the Plot utilizes a Transition Matrix to determine where the current node of the Plot State resides, and whether or not conditions have been met to transition to the next node.
 

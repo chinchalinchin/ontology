@@ -883,8 +883,8 @@ def test_index_frame_indexing(mock_properties):
 def test_index_frame_suppresses_vacant_slot():
     frame = IconFrame()
 
-    occupied_state = IconState(id="weapons", icon_function=lambda: "shortsword")
-    assert frame.keys("weapons", occupied_state) == [(f"weapons{SEPARATOR}shortsword", 0, 0)]
+    occupied_state = IconState(id="weapons", icon_function=lambda: "sword")
+    assert frame.keys("weapons", occupied_state) == [(f"weapons{SEPARATOR}sword", 0, 0)]
 
     empty_state = IconState(id="weapons", icon_function=lambda: "")
     assert frame.keys("weapons", empty_state) == []

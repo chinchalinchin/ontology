@@ -154,7 +154,7 @@ These Mechanics handle spatial interactions and collisions between Assets.
 * `collision: CollisioMechanics`: Resolves collisions.
 * `combat: CombatMechanics`: Resolves attack hitbox overlaps, decrements health, etc.
 * `interaction: InteractionMechanics`:Resolves Asset interactions.
-* `social: SocialMechanics`: Handle Social Intentions and [Plot calculations](./08-plots.md).
+* `social: SocialMechanics`: Handle Social Intentions and [Plot calculations](./08-narratives.md).
 
 **Base: SpatialMechanics**
 
@@ -307,7 +307,7 @@ TODO
 
 The World is a collection of correlated fields stored on the [Board](./00-overview.md#component-board). World Mechanics handle and mutate this macro State, performing high-level calculations and other abstract accounting.
 
-* `plot: PlotMechanics`: Evaluates the [Plot Transition matrix](./08-plots.md#transition-matrix) to transition the [Board](./00-overview.md#component-board) [plot State](./08-plots.md#plot-states).
+* `plot: PlotMechanics`: Evaluates the [Plot Transition matrix](./08-narratives.md#transition-matrix) to transition the [Board](./00-overview.md#component-board) [plot State](./08-narratives.md#plot-states).
 * `fluid: FluidMechanics`: Resolves [Fluid](./01-assets.md#effect-fluids) propagation, stream obstructions, and radial pool perimeter calculation.
 * `season: SeasonMechanics`: Handles the accumulation of time, manages the lifespan of [Resources](./01-assets.md#category-resources) and the transition of Seasons on the [Board](./00-overview.md#component-board)
 
@@ -376,7 +376,7 @@ Systems requiring external services (such as the Actuator for [FluidMechanics](.
 
 Executors are Services made available to Mechanics that register to receive them in the [Configuration](#configuration-mechanics). Available Executors are enumerated below,
 
-* `plot`: Executor for evaluating the conditions for [Plot Transitions](./08-plots.md).
+* `plot`: Executor for evaluating the conditions for [Plot Transitions](./08-narratives.md).
 * `intention`: Executor for evaluating the conditions for [Intention Transitions](./04-intentions.md)
 * `actuator`: Executor for generating [Fluid](./01-assets.md#effect-fluids) and [Shoreline](./01-assets.md#shorelines) Assets.
 * `annual`: Executor evaluating [Resource Stage](./01-assets.md#resources) transitions for annual lifespans.

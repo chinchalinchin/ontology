@@ -93,7 +93,7 @@ def _create_player_attacker(x=10, y=10, action="slash", direction="right", frame
         animation=AnimationState(action=action, direction=direction, frame=frame),
         intention=Intentions.ATTACK
     )
-    state.slots.equipment.weapon = "shortsword"
+    state.slots.equipment.weapon = "sword"
     return Asset(tax, props, state, SpriteFrame(), SpriteAnimation(), StaticHitbox())
 
 
@@ -138,7 +138,7 @@ def _create_reactable_target(x=50, y=20):
 
 
 def _create_equipment():
-    shortsword_props = SheetProperties(
+    sword_props = SheetProperties(
         dimensions=Dimensions(w=64, l=64),
         attackboxes={
             "slash-right-3": [Hitbox(Position(40, 16), Dimensions(24, 32))]
@@ -148,7 +148,7 @@ def _create_equipment():
         armor={},
         tools={},
         utilities={},
-        weapons={"shortsword": shortsword_props}
+        weapons={"sword": sword_props}
     )
 
 # --------------------------------------------------------------------------------------

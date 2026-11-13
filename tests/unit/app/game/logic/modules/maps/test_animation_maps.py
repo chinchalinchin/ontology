@@ -61,7 +61,7 @@ def test_animation_map_attack_weapons(mock_state, mock_equipment):
     state.slots.equipment.weapon = None
     assert AnimationMap.action(state, mock_equipment) == Actions.CAST.value
 
-    state.slots.equipment.weapon = "shortsword"
+    state.slots.equipment.weapon = "sword"
     assert AnimationMap.action(state, mock_equipment) == Actions.SLASH.value
 
     state.slots.equipment.weapon = "spear"

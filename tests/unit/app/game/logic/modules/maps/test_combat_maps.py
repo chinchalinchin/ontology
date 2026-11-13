@@ -54,7 +54,7 @@ def test_combat_map_attackboxes_matching_frame(
     player = mock_board.player()
     equipment = mock_board.equipment
 
-    player.state.slots.equipment.weapon = "shortsword"
+    player.state.slots.equipment.weapon = "sword"
     player.state.animation.action = Actions.SLASH.value
     player.state.animation.direction = Directions.RIGHT.value
     player.state.animation.frame = 3
@@ -62,12 +62,12 @@ def test_combat_map_attackboxes_matching_frame(
     boxes = CombatMap.attackboxes(player.state, equipment)
     print(boxes)
     assert len(boxes) == 1
-    assert boxes[0] == equipment.weapons['shortsword'].attackboxes['slash-right-3'][0]
+    assert boxes[0] == equipment.weapons['sword'].attackboxes['slash-right-3'][0]
 
 
 def test_combat_map_attackboxes_unmatched_frame(mock_board):
     player = mock_board.player()
-    player.state.slots.equipment.weapon = "shortsword"
+    player.state.slots.equipment.weapon = "sword"
     player.state.animation.action = Actions.SLASH.value
     player.state.animation.direction = Directions.RIGHT.value
     player.state.animation.frame = 0

@@ -181,7 +181,7 @@ def mock_collection_state() -> CollectionState:
     return CollectionState(
         id="transparent",
         name="inventory-pack-grid",
-        collection_function=lambda: ["shortsword", "dagger", "buckler"],
+        collection_function=lambda: ["sword", "dagger", "buckler"],
         capacity=8,
         columns=4,
         offset=0,

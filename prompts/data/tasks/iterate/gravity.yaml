@@ -55,8 +55,8 @@ tools:
           - 04-intentions
           # - 05-mechanics
           - 06-widgets
-          - 07-sounds
-          - 08-plots
+          - 07-acoustics
+          - 08-narratives
           - 09-ecology
           - 10-chemistry
           - 11-emergence

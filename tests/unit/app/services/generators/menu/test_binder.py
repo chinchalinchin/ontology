@@ -95,7 +95,7 @@ def test_binding_collection_list_and_dict(
     assert isinstance(binding, CollectionBinding)
     assert isinstance(binding.bind()(), list)
 
-    dict_ctx = {"inventory": {"pack": {"shortsword": 1, "dagger": 0, "buckler": 2}}}
+    dict_ctx = {"inventory": {"pack": {"sword": 1, "dagger": 0, "buckler": 2}}}
     dict_binding = mock_binder.binding(
         MenuBinding(
             schema=Bindings.COLLECTION.value,
@@ -103,7 +103,7 @@ def test_binding_collection_list_and_dict(
         ),
         dict_ctx,
     )
-    assert dict_binding.get_collection() == ["shortsword", "buckler"]
+    assert dict_binding.get_collection() == ["sword", "buckler"]
 
 
 @pytest.mark.menu_gizmo
@@ -126,7 +126,7 @@ def test_binding_aperture_occupied_and_vacant(
 
     occupied_binding = mock_binder.binding(mock_aperture_bind, ctx, widgets=widgets)
     assert isinstance(occupied_binding, ApertureBinding)
-    assert occupied_binding.get_item() == "shortsword"
+    assert occupied_binding.get_item() == "sword"
 
     vacant_binding = mock_binder.binding(mock_aperture_bind_alt, ctx, widgets=widgets)
     assert vacant_binding.get_item() == ""

@@ -137,7 +137,7 @@ def test_provider_expand_and_unpack_gizmo_collection_state(
     mock_provider,
     mock_gizmo_node,
 ):
-    context = {"inventory": {"pack": ["shortsword", "dagger"]}}
+    context = {"inventory": {"pack": ["sword", "dagger"]}}
     expanded = mock_provider._expand(mock_gizmo_node, context)
 
     assert expanded.instance == AssetInstances.PANES.value
@@ -152,7 +152,7 @@ def test_provider_expand_and_unpack_gizmo_collection_state(
     assert isinstance(grid_asset.state, CollectionState)
     assert grid_asset.state.capacity == 8
     assert grid_asset.state.columns == 4
-    assert grid_asset.state.get_item(0) == "shortsword"
+    assert grid_asset.state.get_item(0) == "sword"
     assert grid_asset.state.get_item(1) == "dagger"
     assert grid_asset.state.get_item(2) == ""
 

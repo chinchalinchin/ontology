@@ -504,7 +504,7 @@ Rafts are kinematics Objects that allow other Assets to traverse [Fluid](#effect
 
 Signs are linguistic Objects whose `content` is transmitted into a [Text Menu](./06-widgets.md#menus) when a Player enters into the `interact` [Intention](./04-intentions.md) with them.
 
-Signs utilize `persona` and `lexicon` keys to grab the appropriate content from the [Library](./08-plots.md#library)
+Signs utilize `persona` and `lexicon` keys to grab the appropriate content from the [Library](./08-narratives.md#library)
 
 **State: DialogueState**
 

@@ -98,6 +98,7 @@ from app.services.translators import (
 )
 from app.services.factories import (
     AssetFactory,
+    ControllerFactory,
     MechanicFactory,
 )
 
@@ -248,10 +249,10 @@ def test_factory_controller():
         Controllers.INVENTORY.value: InventoryController,
     }
     for enum_key, cls in mapping.items():
-        assert isinstance(AssetFactory.controller(enum_key), cls)
+        assert isinstance(ControllerFactory.controller(enum_key), cls)
 
     assert isinstance(
-        AssetFactory.controller("unmapped_controller"),
+        ControllerFactory.controller("unmapped_controller"),
         ScrollController,
     )
 

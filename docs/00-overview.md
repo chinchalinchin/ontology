@@ -31,7 +31,7 @@ Assets are divided into non-overlapping (Category, Instance) nodes, known as the
 * [Geography](./01-assets.md#category-geography)
 * [Objects](./01-assets.md#category-objects)
 * [Sheets](./01-assets.md#category-sheets)
-* [Sounds](./07-sounds.md)
+* [Acoustics](./07-acoustics.md)
 * [Resources](./01-assets.md#category-resources)
 * [Tiles](./01-assets.md#category-tiles)
 * [Widgets](./06-widgets.md)
@@ -59,12 +59,12 @@ Mechanics, Relations and other components of the [Engine](#component-engine) uti
 * [Actions](./01-assets.md#category-sheets)
 * [Compositions](./03-compositions.md)
 * [Intentions](./04-intentions.md)
-* [Library](./08-plots.md)
+* [Library](./08-narratives.md)
 * [Mappings](./02-sprites.md#devices)
 * [Materials](./01-assets.md#concept-materiality)
 * [Mechanics](./05-mechanics.md)
 * [Menus](./06-widgets.md#menus)
-* [Plots](./08-plots.md)
+* [Plots](./08-narratives.md)
 * [Recipes](./01-assets.md#asset-concepts)
 
 ## Application 

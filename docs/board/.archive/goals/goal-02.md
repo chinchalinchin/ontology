@@ -8,7 +8,7 @@ The core functionality of Widgets and Menus has been implemented and tested. The
 
 The eventual goal (in the next [phase](../refactor/phase-05-04.md)) is to layout and implement the Inventory controller, but the larger Menu framework needs to be put to the test first. Before the complexity of the Inventory is tackled, a simpler case of the ScrollController will be undertaken. This will involve implementing the [Sign Object](../../../01-assets.md#signs) to trigger an ingame Text Menu.
 
-This, in turn, will require implementation of the [Library](../../../08-plots.md#library), to parse and hold the dialogue to be rendered. As yet another consequence, this will require further elaboration of the plotting mechanism used bythe game.
+This, in turn, will require implementation of the [Library](../../../08-narratives.md#library), to parse and hold the dialogue to be rendered. As yet another consequence, this will require further elaboration of the plotting mechanism used bythe game.
 
 The font and text rendering is, as of yet, purely theoretical and untested. Many things could go wrong along the way. The current goal is to determine what must be done in order to get Signs up and running, alongside the Library and MenuEvent('text').
 

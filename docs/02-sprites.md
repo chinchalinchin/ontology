@@ -57,7 +57,7 @@ See [Sheets](./01-assets.md#category-sheets) for a complete description of the A
     * `dialogue: str`
     * `expression: Expressions`
     * `motivation: Motivations`
-    * `persona: str` (*Key for [Library](./08-plots.md#service-library) dialogue retrieval*)
+    * `persona: str` (*Key for [Library](./08-narratives.md#service-library) dialogue retrieval*)
 * `goal:`
     * `name: str`
     * `layer: str`
@@ -174,11 +174,11 @@ $$
 
 **Dimension: Dialogue**
 
-The Dialogue dimension of a Sprite's Psyche can be thought of as the short-term memory or a buffer for dialogue the Sprite is about to transmit. This field holds the lexicon key that will be exchanged at the [Library](./08-plots.md#library) for content and rendered in a [Dialogue Menu](./06-widgets.md#menus) if the Player enters into the `speak` Intention. In addition, Sprites may enter into `speak` Intentions with other Sprites, but these events are not routed to [Menus](./06-widgets.md#menus). Instead, Sprite-to-Sprite Dialogue is used by the [RumorMechanics](./05-mechanics.md).
+The Dialogue dimension of a Sprite's Psyche can be thought of as the short-term memory or a buffer for dialogue the Sprite is about to transmit. This field holds the lexicon key that will be exchanged at the [Library](./08-narratives.md#library) for content and rendered in a [Dialogue Menu](./06-widgets.md#menus) if the Player enters into the `speak` Intention. In addition, Sprites may enter into `speak` Intentions with other Sprites, but these events are not routed to [Menus](./06-widgets.md#menus). Instead, Sprite-to-Sprite Dialogue is used by the [RumorMechanics](./05-mechanics.md).
 
 **Dimension: Persona**
 
-A Sprite persona is a data structure used to index Dialogue to a Sprite through the [Library](./08-plots.md#library). It can be thought of as the "personality" of the Sprite.
+A Sprite persona is a data structure used to index Dialogue to a Sprite through the [Library](./08-narratives.md#library). It can be thought of as the "personality" of the Sprite.
 
 **Dimension: Expression**
 
