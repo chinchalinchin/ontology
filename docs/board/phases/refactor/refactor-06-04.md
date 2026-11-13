@@ -277,13 +277,13 @@ Update `src/app/static/semantics.py`, `src/app/models/config/mappings.py`, `src/
 
 * [x] Subtask: Update `WorldMapping` (`src/app/models/config/mappings.py`), `WorldPayload` (`src/app/models/state/devices.py`), `Keyboard.poll` (`src/app/game/devices.py`), and `src/data/config/mappings/main.yaml` to map distinct scancodes for `equipment`, `pouch`, and `pack` menus, as well as `block`, `mine`, and left/right hand `use` intentions.
 * [x] Subtask: Update `PlayerMechanics.update` in `src/app/game/logic/mechanics/intentional/player.py` to dispatch `MenuEvent` with `InventoryContext(slots=player.state.slots, inventory=player.state.inventory)` for `Menus.EQUIPMENT`, `Menus.POUCH`, and `Menus.PACK`, and to populate `player.state.mutators.parameters.hand` when entering `Intentions.USE`.
-* [!: Dependent on User Acceptance Testing] Subtask: Add unit and integration tests covering `Slots` and `Inventory` hydration, `Equipment`/`Pouch`/`Pack` menu unpacking, edge-triggered Gizmo scrolling, and dual-grip item assignment.
+* [x] Subtask: Add unit and integration tests covering `Slots` and `Inventory` hydration, `Equipment`/`Pouch`/`Pack` menu unpacking, edge-triggered Gizmo scrolling, and dual-grip item assignment.
 
 ##### Bugs
 
 ###### Bug: Gizmo Pagination Desynchronizes Slot Statuses and Rasterizes Offset Text Over Grid
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: HIGH
 
 **Description**
@@ -306,7 +306,7 @@ In `src/app/game/menus/controllers/inventory.py`, when `InventoryController.sele
 
 ###### Bug: Static Exclusion of Initially Disabled Gizmo Slots in `Layout._build_graph`
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: MEDIUM
 
 **Description**

@@ -3,7 +3,7 @@
 # ----------------------------------------------------
 parameters:
   board: &board
-    phase: menu-000
+    phase: view
     action: design
 # ----------------------------------------------------
 context: true
