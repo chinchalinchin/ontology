@@ -251,14 +251,15 @@ class CollisionMechanics(SpatialMechanic):
                 ]
                 for stair in stairs:
                     for mover in movers:
-                        if geometry.intersects(
-                            mover.state.position,
-                            mover.dimensions,
+                        if geometry.bounded(
+                            int(mover.state.position.x),
+                            int(mover.state.position.y),
                             mover.hitboxes,
-                            stair.state.position,
-                            stair.dimensions,
-                            stair.hitboxes
-                        ): 
+                            stair.state.position.x,
+                            stair.state.position.y,
+                            stair.dimensions.w,
+                            stair.dimensions.l,
+                        ):
                             self._traverse_stairs(mover, stair)
 
             # -------------------------------------------------------------

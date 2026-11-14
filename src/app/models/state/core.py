@@ -62,7 +62,7 @@ class MutatorParameters:
 @dataclass(slots=True)
 class Mutators:
     triggers: MutatorTriggers = field(default_factory=MutatorTriggers)
-    parameters: Optional[MutatorParameters] = None
+    parameters: Optional[MutatorParameters] = field(default_factory=MutatorParameters)
 
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------- CORE ASSET STATES
