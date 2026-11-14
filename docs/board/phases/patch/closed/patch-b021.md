@@ -1,6 +1,6 @@
 ##### Bug 021: Sub-Pixel Integer Truncation in `physics.collide` Fails to Separate 1px Dynamic Overlaps
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: MEDIUM
 
 **Description**

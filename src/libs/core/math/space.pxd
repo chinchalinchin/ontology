@@ -8,6 +8,6 @@ cdef class Space:
     cdef int* bucket_data
 
     cpdef void clear(self)
-    cdef inline int _hash(self, int cx, int cy)
+    cdef inline int _hash(self, int cx, int cy) noexcept nogil
     cpdef void insert(self, int entity_id, int x, int y, int w, int l)
     cpdef list query(self)

@@ -345,3 +345,31 @@ def test_physics_avoid_clear_and_obstructed(mock_asset):
     kinematic_tuple = (80.0, 0.0, 0.0, 0.0, 32.0, True)
     v_tuple = physics.avoid((0, 0, 0, 64, 64), Velocity(50.0, 0.0), [kinematic_tuple], 0.016)
     assert v_tuple.vy != 0.0
+
+def test_physics_collide_single_pixel_and_unequal_mass_separation():
+    hb = Hitbox(Position(0, 0), Dimensions(32, 32))
+
+    # 1px overlap between equal-mass dynamic bodies separates completely by 1px
+    pos1 = Position(0, 0)
+    pos2 = Position(31, 0)
+    vel1 = Velocity(10.0, 0.0)
+    vel2 = Velocity(-10.0, 0.0)
+
+    physics.collide(pos1, hb, vel1, 1.0, False, pos2, hb, vel2, 1.0, False)
+
+    assert pos2.x - pos1.x == 32
+    assert vel1.vx == -10.0
+    assert vel2.vx == 10.0
+
+    # 2px overlap between unequal-mass dynamic bodies (m1=10, m2=5) separates by 2px
+    pos_heavy = Position(0, 0)
+    pos_light = Position(30, 0)
+    vel_heavy = Velocity(0.0, 0.0)
+    vel_light = Velocity(-15.0, 0.0)
+
+    physics.collide(
+        pos_heavy, hb, vel_heavy, 10.0, False,
+        pos_light, hb, vel_light, 5.0, False,
+    )
+
+    assert pos_light.x - pos_heavy.x == 32

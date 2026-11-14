@@ -1,6 +1,6 @@
 ##### Bug 020: Broad-Phase `Space` Grid Inserts Unpadded Asset Dimensions Instead of Active Hitbox Bounds
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: HIGH
 
 **Description**
