@@ -7,7 +7,8 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  # template: index.md.j2
+  template: index.md.j2
+  # template: draft.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
@@ -31,7 +32,7 @@ task:
   # template: iterate/groom.md.j2
   # template: iterate/implement.md.j2
   # template: iterate/cover.md.j2
-  template: iterate/merge.md.j2
+  # template: iterate/merge.md.j2
   # template: iterate/review.md.j2
   # --------------------------------------------
   # -------------------------- TEMPLATES: DESIGN
@@ -46,9 +47,13 @@ task:
 # ----------------------------------------------------
   parameters:
     description: |
-      TODO
+      Changes for current bugs accepted. Cython libraries recompiled.
+
+      New bugs logged, but no changes implemented.
+
+      * Debug the latest run of the [Test Pipeline](#view-test-pipeline)
     title: |
-      TODO
+      Ontology - Patch
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ---------------------------------------------- TOOLS
@@ -63,7 +68,7 @@ tools:
     manager:
       board: false
       docs: false
-      templates: true
+      templates: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
     # --------------------------------------------
@@ -92,7 +97,7 @@ tools:
     # --------------------------------------------
     tests:  
       configuration: false
-      pipeline: false
+      pipeline: true
       session: false
 # ----------------------------------------------------
   parameters:
@@ -120,9 +125,9 @@ tools:
           # - 12-architecture
       templates: 
         # - template-backlog
-        # - template-bug
+        - template-bug
         # - template-design
-        - template-merge
+        # - template-merge
         # - template-review
         # - template-spec
     metrics:
@@ -163,14 +168,18 @@ tools:
             scan: 
               app: [ library ]
               workflows: [ collisions ]
+          - title: Services - Collisions
+            scan:
+              app: [ service ]
+              workflows: [ collisions ]
           - title: Test Fixtures
             scan:
               domain: [ test ]
               test: [ fixtures ]
       data:
-        properties: [ objects ]
+        properties: [ objects, crafts, sheets/sprites ]
         state: [ world-testbed ]
-        configurations: [ ]
+        configurations: [ materials ]
         templates: [ ]
     # --------------------------------------------
     # -------------------------- PARAMETERS: SHELL

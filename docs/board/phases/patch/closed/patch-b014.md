@@ -1,6 +1,6 @@
 ##### Bug B014: Stair Railing Hitbox Traversal Block
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: HIGH
 
 **Description**

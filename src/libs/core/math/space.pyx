@@ -9,7 +9,6 @@
 
 # Ontology: Libraries - libs.core.math.space
 """
-# cython: language_level=3
 from libc.stdlib cimport malloc, free
 from libc.string cimport memset
 
@@ -33,8 +32,9 @@ cdef class Space:
         if self.bucket_counts is not NULL:
             memset(self.bucket_counts, 0, self.num_buckets * sizeof(int))
 
-    cdef inline int _hash(self, int cx, int cy):
-        return (abs(cx * 73856093 ^ cy * 19349663)) % self.num_buckets
+    cdef inline int _hash(self, int cx, int cy) noexcept nogil:
+        cdef unsigned int h = (<unsigned int>cx * 73856093u) ^ (<unsigned int>cy * 19349663u)
+        return <int>(h % <unsigned int>self.num_buckets)
 
     # Promoted to cpdef for Python test accessibility
     cpdef void insert(self, int entity_id, int x, int y, int w, int l):
@@ -42,15 +42,18 @@ cdef class Space:
         cdef int min_y = y // self.cell_size
         cdef int max_x = (x + w) // self.cell_size
         cdef int max_y = (y + l) // self.cell_size
-        cdef int cx, cy, h, idx
+        cdef int cx, cy, h, count, idx
 
         for cx in range(min_x, max_x + 1):
             for cy in range(min_y, max_y + 1):
                 h = self._hash(cx, cy)
-                if self.bucket_counts[h] < self.max_per_bucket:
-                    idx = h * self.max_per_bucket + self.bucket_counts[h]
+                count = self.bucket_counts[h]
+                if count > 0 and self.bucket_data[h * self.max_per_bucket + count - 1] == entity_id:
+                    continue
+                if count < self.max_per_bucket:
+                    idx = h * self.max_per_bucket + count
                     self.bucket_data[idx] = entity_id
-                    self.bucket_counts[h] += 1
+                    self.bucket_counts[h] = count + 1
 
     # Promoted to cpdef for Python test accessibility
     cpdef list query(self):
@@ -66,6 +69,8 @@ cdef class Space:
                     for j in range(i + 1, count):
                         id1 = self.bucket_data[b * self.max_per_bucket + i]
                         id2 = self.bucket_data[b * self.max_per_bucket + j]
+                        if id1 == id2:
+                            continue
                         if id1 > id2:
                             id1, id2 = id2, id1
                         pair = (id1, id2)

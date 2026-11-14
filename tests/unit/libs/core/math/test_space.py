@@ -61,3 +61,17 @@ def test_space_bucket_capacity_guard(mock_space_grid):
     pairs = grid.query()
     # Capped at 50 entities: C(50, 2) = 1225 unique pairs
     assert len(pairs) == 1225
+
+def test_space_negative_coordinates_no_self_pairing(mock_space_grid):
+    """
+    Verifies entities spanning negative and positive cell coordinates do not
+    hash-collide into self-pairs (id, id) during Space.query().
+    """
+    grid = mock_space_grid
+    grid.clear()
+
+    grid.insert(0, -15, -15, 114, 114)
+    grid.insert(1, 55, -15, 114, 114)
+
+    pairs = grid.query()
+    assert pairs == [(0, 1)]

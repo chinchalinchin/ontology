@@ -220,3 +220,18 @@ def test_perimeter_generator_composition_layer(mock_perimeter, mock_board):
     assert (10, 202, 96, 1) in hull_segments
     assert (10, 10, 1, 192) in hull_segments
     assert (106, 10, 1, 192) in hull_segments
+
+@pytest.mark.category_crafts
+@pytest.mark.workflow_generation
+def test_perimeter_generator_generate_unoccupied_stair_elevation(mock_perimeter, mock_board):
+    """
+    Verifies Perimeter.generate populates upper-tier perimeters for stair target
+    elevations (base_e + delta) even when no mass >= 0 weight occupies that tier.
+    """
+    for weight in mock_board.weights("0"):
+        weight.elevation = 0
+
+    perimeters = mock_perimeter.generate(mock_board, "0")
+
+    assert 1 in perimeters
+    assert len(perimeters[1]) == 4

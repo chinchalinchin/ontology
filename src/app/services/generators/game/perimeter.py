@@ -106,9 +106,6 @@ class Perimeter:
                 if obj.elevation != elevation:
                     continue
 
-            if not hasattr(obj, 'dimensions'):
-                raise ValueError(f"{obj.id} - {obj.name}")
-            
             x1 = int(obj.state.position.x)
             y1 = int(obj.state.position.y)
             rects.append((x1, y1, x1 + obj.dimensions.w, y1 + obj.dimensions.l))
@@ -118,12 +115,20 @@ class Perimeter:
     @classmethod
     def generate(cls, board: Board, layer: str) -> Dict[int, List[Boundary]]:
         weights = board.weights(layer)
+        stairs = board.instances(AssetInstances.STAIRS.value, layer)
         # Collapse all non-positive elevations to Tier 0
-        elevations = {
-            max(0, e)
-            for w in weights
-            for e in w.hitbox.elevations(w.properties, w.state)
-        } | {0}
+        elevations = (
+            {
+                max(0, e)
+                for w in weights
+                for e in w.hitbox.elevations(w.properties, w.state)
+            }
+            | {
+                max(0, s.elevation + s.state.delta)
+                for s in stairs
+            }
+            | {0}
+        )
         perimeters_by_tier: Dict[int, List[Boundary]] = {}
 
         for elevation in elevations:

@@ -9,7 +9,6 @@
 # Ontology: Libraries - libs.core.math.physics
 
 """
-# cython: language_level=3
 from libc.math cimport sqrt, cos, sin, atan2
 
 from libs.core.models cimport Position, Dimensions, Hitbox, Velocity
@@ -20,17 +19,56 @@ from libs.core.math.geometry cimport intersects, bounded
 # COLLISION & MOTION INTEGRATION
 # -----------------------------------------------------------------------------
 
+cdef inline void _insert_hitboxes(
+    Space grid,
+    int entity_id,
+    int ax,
+    int ay,
+    list hitboxes
+):
+    """
+    Computes the world-space bounding box of active hitboxes and inserts the
+    resulting span into the broad-phase Space grid.
+    """
+    cdef Hitbox hb
+    cdef int hx1, hy1, hx2, hy2
+    cdef int min_x = 0, min_y = 0, max_x = 0, max_y = 0
+    cdef bint first = True
+
+    if not hitboxes:
+        return
+
+    for item in hitboxes:
+        hb = item
+        hx1 = ax + hb.position.x
+        hy1 = ay + hb.position.y
+        hx2 = hx1 + hb.dimensions.w
+        hy2 = hy1 + hb.dimensions.l
+
+        if first:
+            min_x = hx1
+            min_y = hy1
+            max_x = hx2
+            max_y = hy2
+            first = False
+        else:
+            if hx1 < min_x:
+                min_x = hx1
+            if hy1 < min_y:
+                min_y = hy1
+            if hx2 > max_x:
+                max_x = hx2
+            if hy2 > max_y:
+                max_y = hy2
+
+    grid.insert(entity_id, min_x, min_y, max_x - min_x, max_y - min_y)
+
+
 cpdef list collisions(list primitive_data, Space grid):
-    cdef int i, x, y, w, l
     cdef tuple data
     
     for data in primitive_data:
-        i = data[0]
-        x = data[1]
-        y = data[2]
-        w = data[3]
-        l = data[4]
-        grid.insert(i, x, y, w, l)
+        _insert_hitboxes(grid, data[0], data[1], data[2], data[5])
         
     cdef list candidate_pairs = grid.query()
     cdef list colliding_pairs = []
@@ -84,7 +122,7 @@ cpdef void collide(
     cdef float overlap_y = (hb1.dimensions.l / 2.0 + hb2.dimensions.l / 2.0) - abs(dy)
 
     cdef float inv_m1, inv_m2, inv_total, p1, p2
-    cdef float shift_x1, shift_x2, shift_y1, shift_y2
+    cdef int total_shift, ishift_1, ishift_2
     cdef float v1x, v1y, v2x, v2y, v1f_x, v1f_y, v2f_x, v2f_y
 
     if overlap_x > 0 and overlap_y > 0:
@@ -97,15 +135,20 @@ cpdef void collide(
             p2 = inv_m2 / inv_total
 
             if overlap_x < overlap_y:
-                shift_x1 = overlap_x * p1
-                shift_x2 = overlap_x * p2
+                total_shift = max(1, <int>overlap_x)
+                if p1 <= p2:
+                    ishift_1 = <int>(total_shift * p1)
+                    ishift_2 = total_shift - ishift_1
+                else:
+                    ishift_2 = <int>(total_shift * p2)
+                    ishift_1 = total_shift - ishift_2
 
                 if dx > 0:
-                    pos1.x -= int(shift_x1)
-                    pos2.x += int(shift_x2)
+                    pos1.x -= ishift_1
+                    pos2.x += ishift_2
                 else:
-                    pos1.x += int(shift_x1)
-                    pos2.x -= int(shift_x2)
+                    pos1.x += ishift_1
+                    pos2.x -= ishift_2
 
                 if m1 == 0 and m2 == 0:
                     pass
@@ -127,14 +170,20 @@ cpdef void collide(
                         vel2.vx = v2f_x
 
             else:
-                shift_y1 = overlap_y * p1
-                shift_y2 = overlap_y * p2
-                if dy > 0:
-                    pos1.y -= int(shift_y1)
-                    pos2.y += int(shift_y2)
+                total_shift = max(1, <int>overlap_y)
+                if p1 <= p2:
+                    ishift_1 = <int>(total_shift * p1)
+                    ishift_2 = total_shift - ishift_1
                 else:
-                    pos1.y += int(shift_y1)
-                    pos2.y -= int(shift_y2)
+                    ishift_2 = <int>(total_shift * p2)
+                    ishift_1 = total_shift - ishift_2
+
+                if dy > 0:
+                    pos1.y -= ishift_1
+                    pos2.y += ishift_2
+                else:
+                    pos1.y += ishift_1
+                    pos2.y -= ishift_2
 
                 if m1 == 0 and m2 == 0:
                     pass
@@ -268,7 +317,7 @@ cpdef list boundaries(list asset_data, list boundary_data, Space grid):
         grid.insert(-i - 1, b_data[1], b_data[2], b_data[3], b_data[4])
         
     for a_data in asset_data:
-        grid.insert(a_data[0], a_data[1], a_data[2], a_data[3], a_data[4])
+        _insert_hitboxes(grid, a_data[0], a_data[1], a_data[2], a_data[5])
         
     cdef list candidate_pairs = grid.query()
     cdef list colliding = []
@@ -351,7 +400,7 @@ cpdef list environment(list assets, list fields, Space grid):
 
     for i in range(len(assets)):
         a_data = assets[i]
-        grid.insert(i, a_data[1], a_data[2], a_data[3], a_data[4])
+        _insert_hitboxes(grid, i, a_data[1], a_data[2], a_data[5])
 
     cdef list candidate_pairs = grid.query()
     for pair in candidate_pairs:
@@ -511,8 +560,8 @@ cpdef Velocity avoid(
                     else:
                         nx = float(n.state.position.x + n.dimensions.w / 2.0)
                         ny = float(n.state.position.y + n.dimensions.l / 2.0)
-                        nvx = float(n.state.velocity.vx)
-                        nvy = float(n.state.velocity.vy)
+                        nvx = float(n.state.velocity.vx if n.state.velocity else 0.0)
+                        nvy = float(n.state.velocity.vy if n.state.velocity else 0.0)
                         nr = float(n.dimensions.w if n.dimensions.w > n.dimensions.l else n.dimensions.l) / 2.0
                         is_kinematic = False
 

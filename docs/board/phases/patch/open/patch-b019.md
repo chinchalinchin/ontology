@@ -1,4 +1,4 @@
-##### Bug B019: Infinite Goal Ping-Pong Loop on Abandoned `TARGET` and `SUBJECT` Goals in `CognitionMechanics`
+##### Bug B019: Infinite Cognition Goal Loop
 
 **STATUS**: OPEN
 **SEVERITY**: HIGH

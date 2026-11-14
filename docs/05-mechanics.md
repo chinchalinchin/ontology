@@ -9,7 +9,7 @@ A Mechanic is an implementation of an abstract interface the [Engine](./00-overv
 * `bus`: A Bus for storing [Events](./06-widgets.md#events)
 * `payload`: The current [Device](./02-sprites.md#devices) Payload. 
 
-Once a Mechanic registered in the [Mechanics Configuration](./appendices/01-schemas.md#configuration-mechanics) and implements this signature, the arguments will be injected from above by the [Engine](./00-overview.md#componentengine) each tick of its loop.
+Once a Mechanic is registered in the [Mechanics Configuration](./appendices/01-schemas.md#configuration-mechanics) and implements this signature, the arguments will be injected from above by the [Engine](./00-overview.md#componentengine) each tick of its loop.
 
 !!! note "Mechanic Keys"
     Mechanics are listed below using `key: class`, where `key` is the unique string identifier for the associated Mechanic implementation. This `key` is used in the [Mechanics Configuration](#configuration) to specify the order of execution.
@@ -18,13 +18,13 @@ Once a Mechanic registered in the [Mechanics Configuration](./appendices/01-sche
 
 * Address: `app.game.logic.mechanics.core`
 
-These Mechanics handle the core engine logic.
+These Mechanics handle the core [Engine](./00-overview.md#component-engine) logic.
 
 * `animation AnimationMechanics`: Translates current states into FrameKeys for the renderer.
 * `remove: RemoveMechanics`: General garbage collection for Assets whose lifespan has expired.
 * `motion: MotionMechanics`: Applies acceleration and velocity integrations to Assets to arrive at their next position.
 * `menu: MenuMechanics`: Handles Menu and Widget interactions.
-* `telemetry: TelemetryMechanics`: Manages TCP socket queries for game state requests.
+* `telemetry: TelemetryMechanics`: Manages TCP socket queries for Telemetry requests.
 
 #### Core Mechanic: AnimationMechanics
 
@@ -58,11 +58,11 @@ Guided by NavigationMechanics. Evaluates avoidance and Trajectory vectors. In [F
 
 **Frictive Assets: Crates**
 
-Passively receive momentum from physical collisions, decaying via tile friction. Floating dynamic bodies in fluids drift along the stream vector.
+Passively receive momentum from physical collisions, decaying via [Environ Tile](./01-assets.md#tile-environ) friction. Assets suspended in [Fluid](./01-assets.md#effect-fluids) drift along at the Fluid's stream vector.
 
 The mathematical bounds for Friction are $[0, \infty)$.
 
-* *Lower Bound* ($0$): A value of exactly $0$ yields $\Delta v = 0$, meaning the asset will glide indefinitely without losing momentum until it strikes a static body. 
+* *Lower Bound* ($0$): A value of exactly $0$ yields $\Delta v = 0$, meaning the Asset will glide indefinitely without losing momentum until it strikes a static Asset or enters a region with friction. 
 * *Upper Bound* ($\infty$): Any value satisfying the condition $\text{friction} \cdot \Delta t \ge \vert v \vert$ will eventually halt the Asset.
 
 !!! note "Units"
@@ -72,7 +72,7 @@ The mathematical bounds for Friction are $[0, \infty)$.
 
 Specialized Assets that do not obstruct Fluid propagation. Rafts passively drift at the Fluid current velocity $\vec{v}_{\text{current}}$. Passengers aboard a Raft adopt the Raft's velocity as their baseline reference frame, suppressing the `submerged` Mutator.
 
-**Inert Assets: Projectiles**: 
+**Inert Assets: Projectiles**
 
 Translates along linear trajectories until lifetime expiration or boundary collision triggers garbage collection.
 

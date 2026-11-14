@@ -231,3 +231,31 @@ def test_spatial_mechanic_empty_and_parameterless_guards(mock_mechanic, mock_ass
     assert mechanics.proximities([crate]) == []
     assert mechanics.constrain([], [mock_boundary]) == []
     assert mechanics.constrain([crate], []) == []
+
+@pytest.mark.app_asset
+@pytest.mark.workflow_collisions
+@pytest.mark.workflow_interactions
+def test_spatial_mechanic_proximities_cross_cell_boundary(mock_mechanic, mock_asset):
+    """
+    Verifies SpatialMechanic.proximities hashes the action-radius padded hitbox bounds
+    into Space so entities in non-overlapping base cells still pair across cell boundaries.
+    """
+    mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    sprite_a = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value,
+    )
+    sprite_b = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value,
+    )
+
+    # Base 64x64 footprints occupy cx in {0, 1} ([50, 114]) and cx in {2, 3} ([130, 194]),
+    # while 25px action-padded hitboxes span [25, 139] and [105, 219] (overlapping in cx=2).
+    sprite_a.state.position = Position(50, 10)
+    sprite_b.state.position = Position(130, 10)
+
+    pairs = mechanics.proximities([sprite_a, sprite_b])
+
+    assert len(pairs) == 1
+    assert (sprite_a, sprite_b) in pairs or (sprite_b, sprite_a) in pairs
