@@ -121,7 +121,7 @@ $$
 \Delta y_{\text{elevation}} = \lfloor L_{\text{LOS}} \cdot \sin(60^\circ) \rfloor = \left\lfloor 64 \cdot \frac{\sqrt{3}}{2} \right\rfloor = 55\text{ px}
 $$
 
-Under this formulation, Gravity is purely a property of the topological elevation planes $E \in \mathbb{Z}_{\ge 0}$: every $\Delta y_{\text{elevation}} = \text{TIER\_DROP\_DISTANCE} = 55\text{ px}$ of vertical freefall transitions an unsupported entity down one discrete elevation plane ($E \to E - 1$), where substrate support is re-evaluated immediately.
+Under this formulation, Gravity is purely a property of the topological elevation planes $E \in \mathbb{Z}_{\ge 0}$: every $\Delta y_{\text{elevation}} = \text{TIER_DROP_DISTANCE} = 55\text{ px}$ of vertical freefall transitions an unsupported entity down one discrete elevation plane ($E \to E - 1$), where substrate support is re-evaluated immediately.
 
 **Behavior: Substrate Support**
 
@@ -129,7 +129,7 @@ At Step 0 of `fields.update()`, entities at $E > 0$ are evaluated against walkab
 
 * **Bridges**: Deployed at $e_{\text{base}} = E$.
 * **Stairs**: Spanning $e_{\text{base}} < E \le e_{\text{base}} + \Delta e$, evaluated across the full stair tread bounding box $(x, y, w, l)$.
-* **Struts**: Deployed at $e_{\text{base}} = E$ with a non-obstacle surface blueprint ($\neg\text{MaterialIndex.is\_obstacle}(\text{blueprint})$, e.g., `floors`, `flats`, `paths`, `corridors`) or sensor mass ($m < 0$).
+* **Struts**: Deployed at $e_{\text{base}} = E$ with a non-obstacle surface blueprint ($\neg\text{MaterialIndex.is_obstacle}(\text{blueprint})$, e.g., `floors`, `flats`, `paths`, `corridors`) or sensor mass ($m < 0$).
 
 Base terrain ($E = 0$) is unconditionally supported.
 
@@ -146,9 +146,9 @@ $$
 
 Preserving $v_{x,0}$ produces a natural screen-space parabolic trajectory $y(x) = y_0 + \frac{g}{2v_{x,0}^2}(x - x_0)^2$ until landing.
 
-3. **Tier Stepping & Remainder Clamping**: Each tick, integer vertical displacement $\Delta y_{\text{step}} = \lfloor r_y + v_y \Delta t \rfloor$ is compared against the remaining distance to the next elevation plane, $\Delta y_{\text{rem}} = \text{TIER\_DROP\_DISTANCE} - \text{descension}$:
+3. **Tier Stepping & Remainder Clamping**: Each tick, integer vertical displacement $\Delta y_{\text{step}} = \lfloor r_y + v_y \Delta t \rfloor$ is compared against the remaining distance to the next elevation plane, $\Delta y_{\text{rem}} = \text{TIER_DROP_DISTANCE} - \text{descension}$:
    * If $\Delta y_{\text{step}} \ge \Delta y_{\text{rem}}$, the entity's Y-coordinate advances to the exact plane intercept ($y + \Delta y_{\text{rem}}$), its elevation decrements ($E \to E - 1$), and support is re-evaluated at the new tier.
-   * **Supported Landing ($E \ge 0$)**: If supported at $E - 1$, `falling` is cleared to `False`, `descension`, `position.ry`, and `velocity.vy` are zeroed, clamping the landing coordinate to an exact multiple of $\text{TIER\_DROP\_DISTANCE}$. On the subsequent frame, normal locomotion (`kinematic`, `motive`, or `frictive`) resumes and resolves any residual horizontal velocity $v_x$.
+   * **Supported Landing ($E \ge 0$)**: If supported at $E - 1$, `falling` is cleared to `False`, `descension`, `position.ry`, and `velocity.vy` are zeroed, clamping the landing coordinate to an exact multiple of $\text{TIER_DROP_DISTANCE}$. On the subsequent frame, normal locomotion (`kinematic`, `motive`, or `frictive`) resumes and resolves any residual horizontal velocity $v_x$.
    * **Continuous Multi-Tier Fall**: If unsupported at $E - 1$, the entity retains $v_y$, updates `descension` with the overshoot remainder, and continues falling through intermediate planes until reaching a supported tier or $E = 0$.
 
 **Behavior: System Suppression**
@@ -363,7 +363,7 @@ FluidMechanics governs [Fluid](./01-assets.md#effect-fluids) emission and recurs
 
 1. **Temporal Integration**: Accumulates frame $\Delta t$ into `board.calendar.elapsed`. When elapsed time reaches `settings.PERIOD_DURATION_SECONDS`, the mechanic advances `period` (0..2), `cycle` (`onset`, `peak`, `decline`), `season` (`spring`, `summer`, `autumn`, `winter`), and `year`, appending a `SeasonEvent` to the engine bus.
 2. **Environmental Hydrology (Potential Field Integration)**: Soil moisture diffusion operates via a continuous scalar potential field calculated during `FluidMechanics` propagation and cached on `Board`. Dynamic 60 Hz updates avoid spatial lookups by reading `resource.state.moisture_flux`:
-   * **Positive Flux**: Accumulates moisture via $\text{retention} \mathrel{+}= \kappa_{\text{diffusion}} \cdot \text{moisture\_flux} \cdot \Delta t$.
+   * **Positive Flux**: Accumulates moisture via $\text{retention} \mathrel{+}= \kappa_{\text{diffusion}} \cdot \text{moisture_flux} \cdot \Delta t$.
    * **Zero Flux**: Evaporates moisture via $\text{retention} \mathrel{-}= \kappa_{\text{evap}} \cdot \mu_{\text{season}} \cdot \Delta t$.
 3. **Throttled Stage Transitions**: Biological and geological progression checks (`executor.evaluate(stage, locals)`) are decoupled from the 60 Hz physics loop, evaluating at a 1.0-second throttled frequency or upon calendar period transitions (`period_changed == True`).
 
@@ -402,7 +402,7 @@ The order in which Mechanics are specified in the schema becomes the order of ex
 Systems requiring external services (such as the Actuator for [FluidMechanics](./05-mechanics.md#world-mechanic-fluidmechanics), or compiled Transition Executors for [TransitionMechanics](./05-mechanics.md#intentional-mechanic-transitionmechanics) and [PlotMechanics](./05-mechanics.md#world-mechanic-plotmechanics)) receive them through their constructor via Factory.
 
 ```mermaid
---*<-- "static/mmd/mechanics.bootstrap.mmd
+--*<-- "static/mmd/mechanics-bootstrap.mmd
 ```
 
 ### Dependency: Executors
