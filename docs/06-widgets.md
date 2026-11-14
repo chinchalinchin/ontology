@@ -2,7 +2,7 @@
 
 Widgets are a type of specialized [Asset](./01-assets.md) leveraged for user interfaces. Similar to the core [Asset Categories](./01-assets.md#asset-hierarchy), they possess Properties, State and have extensible components injected into their Frame and Animation interfaces. However, they play a unique role in the [Engine Loop](./00-overview.md#component-engine) and have dedicated systems for their processing and deployment.
 
-Widgets are not declared in a [State file](./00-overview.md#core-state) and are thus not migrated onto the [Board](./00-overview.md#component-board) during [hydration](./12-architecture.md#phase-2-hydration). Widgets have their [Bindings](#bindings) and [Layout](#layouts) configured into [Menus](#menus), that are subsequently injected into the [Application](./00-overview.md#application) when [Events](#events) are thrown.
+Widgets are not declared in a [State file](./00-overview.md#core-state) and are thus not migrated onto the [Board](./00-overview.md#component-board) during [hydration](./12-architecture.md#phase-2-hydration). Widgets have their [Bindings](#bindings) and [Layout](#layouts) configured into [Menus](#configuration-menus), that are subsequently injected into the [Application](./00-overview.md#application) when [Events](#events) are thrown.
 
 ## Widgets: Overview
 
@@ -38,7 +38,7 @@ For example, suppose a Menu Pane has two traversible Widgets. In this example, W
 
 Menus (and their component Widgets) are driven through asychronous *Events*.
 
-As an illustration, the [Engine Loop](./00-overview.md#component-engine) may emit an Event containing a [Menu](#menus) key along with Event Data, e.g. Asset State. When an Event is detected by the [Engine](./00-overview.md#component-engine), it causes the [Application](./00-overview.md#application) to pause the [World Loop](./05-mechanics.md#mechanics-world) and switch contexts into the [Menu Loop](./05-mechanics.md#core-mechanic-menumechanics). 
+As an illustration, the [Engine Loop](./00-overview.md#component-engine) may emit an Event containing a [Menu](#configuration-menus) key along with Event Data, e.g. Asset State. When an Event is detected by the [Engine](./00-overview.md#component-engine), it causes the [Application](./00-overview.md#application) to pause the [World Loop](./05-mechanics.md#mechanics-world) and switch contexts into the [Menu Loop](./05-mechanics.md#core-mechanic-menumechanics). 
 
 Menus (and their component Widgets) communicate state shifts through the Engine's event bus:
 
@@ -113,7 +113,7 @@ Panes are scaled to a percentage of the underlying [Screen's](./00-overview.md#c
 * `pw`: Percentage of the [Screen](./00-overview.md#component-screen) width.
 * `pl`: Percentage of the [Screen](./00-overview.md#component-screen) length.
 
-Only Panes have a Scale explicitly set in the [Menu Configuration](#menus). All other Widgets have their [Screen](./00-overview.md#component-screen) Positions calculated relative to the Pane in which they are embedded. These Positions are calculated and injected into the Widget during instantation in the [Provider service](#provider).
+Only Panes have a Scale explicitly set in the [Menu Configuration](#configuration-menus). All other Widgets have their [Screen](./00-overview.md#component-screen) Positions calculated relative to the Pane in which they are embedded. These Positions are calculated and injected into the Widget during instantation in the [Provider service](#provider).
 
 **Model: AxisAlignment**
 

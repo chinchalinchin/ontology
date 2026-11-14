@@ -43,7 +43,7 @@ Assets are placed in the `/src/assets/<category>/` directory and then registered
 
 The `/src/assets` directory is known as the *asset directory*.
 
-See [Asset Schema](./appendices/01-schemas.md#model-properties) for more information on the Asset Property index.
+See [Asset Schema](./appendices/01-schemas.md#schema-properties) for more information on the Asset Property index.
 
 ### Core: State
 
@@ -66,9 +66,9 @@ Mechanics, Relations and other components of the [Engine](#component-engine) uti
 * [Mappings](./02-sprites.md#devices)
 * [Materials](./01-assets.md#concept-materiality)
 * [Mechanics](./05-mechanics.md)
-* [Menus](./06-widgets.md#menus)
+* [Menus](./06-widgets.md#configuration-menus)
 * [Plots](./08-narratives.md)
-* [Recipes](./01-assets.md#asset-concepts)
+* [Recipes](./01-assets.md#overview-concepts)
 
 ## Application 
 
@@ -165,7 +165,7 @@ The Bus processes asynchronous [Events](./06-widgets.md#events).
 
 **Service: Provider**
 
-The Provider instantiates [Menus](./06-widgets.md#menus).
+The Provider instantiates [Menus](./06-widgets.md#configuration-menus).
 
 **Service: Binder**
 

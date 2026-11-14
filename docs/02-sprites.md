@@ -198,9 +198,9 @@ $$
 
 **Field: Dialogue**
 
-The Dialogue dimension of a Sprite's Psyche can be thought of as the short-term memory or a buffer for dialogue the Sprite is about to transmit. This field holds the lexicon key that will be exchanged at the [Library](./08-narratives.md#library) for content and rendered in a [Dialogue Menu](./06-widgets.md#menus) if the Player enters into the `speak` Intention with the Sprite. 
+The Dialogue dimension of a Sprite's Psyche can be thought of as the short-term memory or a buffer for dialogue the Sprite is about to transmit. This field holds the lexicon key that will be exchanged at the [Library](./08-narratives.md#library) for content and rendered in a [Dialogue Menu](./06-widgets.md#menu-data) if the Player enters into the `speak` Intention with the Sprite. 
 
-In addition, Sprites may enter into `speak` Intentions with other Sprites, but these events are not routed to [Menus](./06-widgets.md#menus). Instead, Sprite-to-Sprite Dialogue is used by the [RumorMechanics](./05-mechanics.md).
+In addition, Sprites may enter into `speak` Intentions with other Sprites, but these events are not routed to [Menus](./06-widgets.md#configuration-menus). Instead, Sprite-to-Sprite Dialogue is used by the [RumorMechanics](./05-mechanics.md).
 
 **Field: Persona**
 
@@ -257,7 +257,7 @@ When two Sprites enter the `speak` Intention within a certain radius of each oth
 
 **Field: Property**
 
-A Sprite can acquire property through the `build` [Intention](./04-intentions.md). When a Sprite creates a [Strut](./01-assets.md#struts), the location of that Strut is stored in `memory.property`, keyed to the name of the Strut Asset.
+A Sprite can acquire property through the `build` [Intention](./04-intentions.md). When a Sprite creates a [Strut](./03-compositions.md#craft-struts), the location of that Strut is stored in `memory.property`, keyed to the name of the Strut Asset.
 
 **Field: Rumors**
 

@@ -683,9 +683,9 @@ Mechanics, Relations, Synthesizers, and other components of the [Engine](#compon
 - [Mappings](./02-sprites.md#devices)
 - [Materials](./01-assets.md#concept-materiality)
 - [Mechanics](./05-mechanics.md)
-- [Menus](./06-widgets.md#menus)
+- [Menus](./06-widgets.md#configurations-menu)
 - [Plots](./08-narratives.md)
-- [Recipes](./01-assets.md#asset-concepts)
+- [Recipes](./01-assets.md)
 - [Scores](./07-sounds.md#configuration-scores)
 - [Sounds](./07-sounds.md#configuration-sounds)
 

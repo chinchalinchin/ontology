@@ -311,7 +311,7 @@ Canopy Tiles are hardcoded to always render on on top of all of other Assets, re
 
 #### Tile: Grid
 
-A Grid is a special Tile reserved for use in the [Editor Menu](./06-widgets.md#menus). It is used as an overlay in the Editor, to create a spatial grid that can be traversed through focus. 
+A Grid is a special Tile reserved for use in the [Editor Menu](./06-widgets.md#menu-data). It is used as an overlay in the Editor, to create a spatial grid that can be traversed through focus. 
 
 !!! @TODO(05)
     Reatlasing of Grid Tiles needs to occur.
@@ -373,7 +373,7 @@ N/A
 
 A Chest is *reusable* through the `interact` [Intention](./04-intentions.md), meaning [Inventory Loot](./02-sprites.md#inventory) can be taken out of and also placed into a Chest. The `content` state field manages the current contents of the Chest through a list of Inventory Loot keys.
 
-When interacting with a Chest, the [Player](./02-sprites.md#player) is shown the [Chest Menu](./06-widgets.md#menus), allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an `interact` Intention with a Chest through its [Intention Transition Matrix](./04-intentions.md#transition-matrix). This interaction is managed through a dedicated Sprite [Mechanic](05-mechanics.md)
+When interacting with a Chest, the [Player](./02-sprites.md#player) is shown the [Chest Menu](./06-widgets.md#menu-data), allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an `interact` Intention with a Chest through its [Intention Transition Matrix](./04-intentions.md#transition-matrix). This interaction is managed through a dedicated Sprite [Mechanic](05-mechanics.md)
 
 **State: ContainerState**
 
@@ -502,7 +502,7 @@ Rafts are kinematics Objects that allow other Assets to traverse [Fluid](#effect
 
 #### Object: Signs
 
-Signs are linguistic Objects whose `content` is transmitted into a [Text Menu](./06-widgets.md#menus) when a Player enters into the `interact` [Intention](./04-intentions.md) with them.
+Signs are linguistic Objects whose `content` is transmitted into a [Text Menu](./06-widgets.md#menu-data) when a Player enters into the `interact` [Intention](./04-intentions.md) with them.
 
 Signs utilize `persona` and `lexicon` keys to grab the appropriate content from the [Library](./08-narratives.md#library)
 

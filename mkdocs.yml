@@ -36,9 +36,12 @@ nav:
     - Index: board/index.md
     - Phases: 
       - Design:
-        - C000 - Castle Dawn: board/phases/design/design-comp-000.md
-        - C001 - Citadel of Trials: board/phases/design/design-comp-001.md
-        - C002 - Regalia Galleria: board/phases/design/design-comp-002.md
+        - Composition - Castle Dawn: board/phases/design/design-comp-castle-dawn.md
+        - Composition - Regalia Galleria: board/phases/design/design-comp-regalia-galleria.md
+        - Composition - Trials of Trials: board/phases/design/design-comp-temple-of-trials.md
+        - Menu - Dialogue: board/phases/design/design-menu-dialogue.md
+        - Menu - Inventory: board/phases/design/design-menu-inventory.md
+        - Menu - View: board/phases/design/design-menu-view.md
       - Implement:
         - Phase 01 - Renderer: board/phases/implement/implement-01.md
         - Phase 02 - Game: board/phases/implement/implement-02.md
@@ -101,7 +104,6 @@ nav:
         - Phase 10.02 - Shoreline Seasonal Indexing: board/phases/refactor/refactor-10-02.md
         - Phase 10.03 - Flowers, Pixies & Reproduction: board/phases/refactor/refactor-10-03.md
         - Phase 10.04 - Cythonization: board/phases/refactor/refactor-10-04.md
-        - Phase 10.05 - Seasonality: board/phases/refactor/refactor-10-05.md
   - Appendix: 
     - Index: appendices/index.md
     - References: appendices/00-references.md
@@ -129,12 +131,14 @@ markdown_extensions:
 exclude:
   - '**/.*.md'
   - '**/.*/**'
+  - '**/patch/**'
   - '**/.drafts/**'
   - 'static/assets/**'
   - 'static/md/**'
 exclude_docs: |
   **/.*.md
   **/.*/**
+  **/patch/**
   **/.drafts/**
   static/assets/**
   static/md/**
