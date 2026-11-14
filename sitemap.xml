@@ -77,6 +77,18 @@
          <lastmod>2026-11-14</lastmod>
     </url>
     <url>
+         <loc>https://chinchalinchin.github.io/ontology/board/phases/design/design-automata-dialogue/</loc>
+         <lastmod>2026-11-14</lastmod>
+    </url>
+    <url>
+         <loc>https://chinchalinchin.github.io/ontology/board/phases/design/design-automata-interaction/</loc>
+         <lastmod>2026-11-14</lastmod>
+    </url>
+    <url>
+         <loc>https://chinchalinchin.github.io/ontology/board/phases/design/design-automata-wander/</loc>
+         <lastmod>2026-11-14</lastmod>
+    </url>
+    <url>
          <loc>https://chinchalinchin.github.io/ontology/board/phases/design/design-comp-castle-dawn/</loc>
          <lastmod>2026-11-14</lastmod>
     </url>
@@ -338,22 +350,6 @@
     </url>
     <url>
          <loc>https://chinchalinchin.github.io/ontology/board/phases/refactor/refactor-10-04/</loc>
-         <lastmod>2026-11-14</lastmod>
-    </url>
-    <url>
-         <loc>https://chinchalinchin.github.io/ontology/specs/</loc>
-         <lastmod>2026-11-14</lastmod>
-    </url>
-    <url>
-         <loc>https://chinchalinchin.github.io/ontology/specs/00-dialogue/</loc>
-         <lastmod>2026-11-14</lastmod>
-    </url>
-    <url>
-         <loc>https://chinchalinchin.github.io/ontology/specs/01-interaction/</loc>
-         <lastmod>2026-11-14</lastmod>
-    </url>
-    <url>
-         <loc>https://chinchalinchin.github.io/ontology/specs/02-wander/</loc>
          <lastmod>2026-11-14</lastmod>
     </url>
 </urlset>
