@@ -1,6 +1,6 @@
 ##### Bug B017: Stair Target Elevations Omitted by `Perimeter.generate` When Unoccupied by Weights
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: MEDIUM
 
 **Description**

@@ -32,8 +32,7 @@ from libs.core.models import (
 pytestmark = [
     pytest.mark.app_mechanic,
     pytest.mark.physics_motion,
-    pytest.mark.workflow_gravity,
-    pytest.mark.workflow_collisions,
+    pytest.mark.workflow_gravity
 ]
 
 # ---------------------------------------------------------------------------
