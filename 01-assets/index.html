@@ -4686,14 +4686,14 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <p>Asset <em>Categories</em> form the top layer of the hierarchy. Each Asset Category is defined by its static Properties; an Asset's Category determines what type of Properties it will parse from the Property files and inject into its deployment. </p>
 <p>Each Category is differentiated by its purpose and place in the semantics of the Engine.</p>
 <ul>
-<li>Tiles: Environmental. These Assets determine the background and macro-level processes that underlie the Engine.</li>
-<li>Object: Functional. These Assets perform functions and alter their states. </li>
-<li>Effects: Periodic. These Assets undergo changes in their state according to fundamental frequencies.</li>
-<li>Geography: Procedural. These Assets are generated via physical principles embodied by the Engine.</li>
-<li>Resources: Biological. These Assets undergo lifecycles and have reactive states that change as the result of the environment.</li>
-<li>Crafts: Structural. These Assets provide the foundation and topology of the Board.</li>
-<li>Sheets: Intentional. These Assets perform Actions and engage Intentionally with the Board.</li>
-<li>Widgets: Metalogical. These Assets display metadata about the world to the User.</li>
+<li>Tiles: Environmental. These Assets form the background of the <a href="../00-overview/#component-board">Board</a>. Their collective State is used to manage the background processes that occur each <a href="../00-overview/#component-engine">Engine Loop</a>.</li>
+<li>Object: Functional. These Assets perform functions and alter their States when acted upon by an outside force. In other words, Objects receive <em>input</em> and produce <em>output</em>.</li>
+<li>Effects: Periodic. These Assets undergo continuous changes in their State according to fundamental Frequencies.</li>
+<li>Geography: Procedural. These Assets are generated via physical principles embodied by the <a href="../05-mechanics/#mechanics-world">World Mechanics</a>.</li>
+<li>Resources: Biological. These Assets undergo Lifecycles and have reactive States that change as the result of the environment.</li>
+<li>Crafts: Structural. These Assets provide the foundation and topology of the <a href="../00-overview/#component-board">Board</a>.</li>
+<li>Sheets: Intentional. These Assets perform Actions and engage Intentionally with the <a href="../00-overview/#component-board">Board</a>.</li>
+<li>Widgets: Logical. These Assets display metadata about the world to the User.</li>
 </ul>
 <table>
 <thead>
@@ -4939,27 +4939,27 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <li><code>instance: str</code>: Determines what State model is employed by the Asset. An Asset's state is hydrated from the <code>data/state/&lt;board&gt;/**/*.yaml</code> directory.</li>
 </ul>
 <p><code>(category, instance)</code> collectively map to the components <code>(frame, animation, hitbox, properties, state)</code> injected into an Asset class during the <a href="../12-architecture/#specification-initialization">application initialization</a>. More specifically, Category maps to properties (<span class="arithmatex">\(\text{category} \to \text{properties}\)</span>), and Instance maps the remaining components (<span class="arithmatex">\(\text{instance} \to (\text{frame}, \text{animation}, text{hitbox}, \text{state})\)</span>).</p>
-<p>The State and Property model of an Asset can be calculated (and is, during <a href="../12-architecture/#specification-initialization">application bootstrapping</a> via Pydantic) from its (Category, Instance)-node, but (Animation, Frame, Hitbox) are independent of the node in the Asset Hierarchy. These components must be specified through a <a href="../appendices/01-schemas/#configuration-recipes">Recipe</a>.</p>
+<p>The State and Property model of an Asset can be calculated (and <em>is</em> calculated in this way, during <a href="../12-architecture/#specification-initialization">Application Initialization</a> via Pydantic) from its (Category, Instance)-node, but (Animation, Frame, Hitbox) are independent of the node in the Asset Hierarchy. These components must be specified through a <a href="../appendices/01-schemas/#configuration-recipes">Recipe</a>.</p>
 <h3 id="overview-architecture">Overview: Architecture</h3>
-<p>Every rendered entity in the <a href="../00-overview/#application">Application</a> is an instance of the unified Asset class. The distinction between a <a href="#category-tiles">Tile</a>, an <a href="#category-objects">Object</a>, or a <a href="#category-sheets">Sheet</a> is determined entirely by the data models and components injected into them. Behaviors are decoupled from Assets and managed entirely by <em>Mechanic</em> classes that iterate over the <a href="../00-overview/#component-board">Board</a> Assets. See <a href="../05-mechanics/">Mechanics documentation</a> for more information.</p>
-<p>The formula for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in its <a href="../appendices/01-schemas/#configuration-recipes">Recipe</a> configuration file. The components of each Assets are enumerated below,</p>
+<p>Every rendered entity in the <a href="../00-overview/#application">Application</a> is an instance of the unified Asset class. The distinction between a <a href="#category-tiles">Tile</a>, an <a href="#category-objects">Object</a>, or a <a href="#category-sheets">Sheet</a> is determined entirely by the data models and components injected into them. Behaviors are decoupled from Assets and managed entirely by <em>Mechanic</em> classes that iterate over the <a href="../00-overview/#component-board">Board's</a> Assets. See <a href="../05-mechanics/">Mechanics documentation</a> for more information.</p>
+<p>The formula for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in its <a href="../appendices/01-schemas/#configuration-recipes">Recipe Configuration File</a>. The components of each Assets are enumerated below,</p>
 <ol>
 <li><strong>Model: Properties</strong> A model defining immutable data.</li>
 <li><strong>Model: State</strong> A model defining mutable data.</li>
-<li><strong>Behavior: Animation</strong> Stateless strategies injected into the Asset. These contain the specific logic for updating Animation frames.<ul>
-<li><code>animate(state, properties)</code>: Interface for applying animation logic to Asset state.</li>
+<li><strong>Behavior: Animation</strong> Stateless strategy injected into the Asset.<ul>
+<li><code>animate(state, properties)</code>: Interface for applying Animation logic to the Asset State.</li>
 </ul>
 </li>
-<li><strong>Behavior: Frame:</strong> A static schema calculation used by the renderer to determine the correct texture string keys. <ul>
-<li><code>index(id: str, properties: AssetProperties) -&gt; Dict[str, Tuple[int, int, int, int]]</code>: Interface for indexing Asset frames in Registry.</li>
-<li><code>keys(id: str, state: AssetState) -&gt; List[Tuple[str, int, int]]</code>: Reflexive intrinsic state projection for dynamic 60 Hz draw passes.</li>
-<li><code>eras(id: str, calendar: CalendarState) -&gt; List[Tuple[str, int, int]]</code>: Macro-temporal epochal projection for static pre-rendered canvas baking.</li>
-<li><code>channels(id: str, state: AssetState, properties: AssetProperties) -&gt; List[Tuple]</code>: Emits auxiliary shader and texture modulation directives.</li>
+<li><strong>Behavior: Frame:</strong> A static schema calculation used by the Registry to determine the correct Asset Frame keys. <ul>
+<li><code>index(id: str, properties: AssetProperties) -&gt; Dict[str, Tuple[int, int, int, int]]</code>: Interface for indexing Asset Frames in Registry.</li>
+<li><code>keys(id: str, state: AssetState) -&gt; List[Tuple[str, int, int]]</code>: Interface for retrieving Asset Frame keys from the Registry.</li>
+<li><code>eras(id: str, calendar: CalendarState) -&gt; List[Tuple[str, int, int]]</code>: Interface for Assets whose Frame key depends on an external State, i.e. an <a href="#tile-environ">Environ Tile</a> depending on the <a href="../09-ecology/#principle-seasonality">Board Season</a>.</li>
+<li><code>channels(id: str, state: AssetState, properties: AssetProperties) -&gt; List[Tuple]</code>: Interface for rendering Frame channels.</li>
 </ul>
 </li>
-<li><strong>Behavior: Hitbox:</strong> Stateless collision boundary resolution strategies injected via Recipes. Resolves active physical obstacles dynamically without mutating cached properties:<ul>
-<li><code>elevations(properties: AssetProperties, state: AssetState) -&gt; List[int]</code>: Emits the discrete elevation tiers the entity participates in.</li>
-<li><code>get(properties: AssetProperties, state: AssetState, elevation: int, frame: Optional[Frame] = None) -&gt; List[Hitbox]</code>: Emits active physical collision footprints at the requested elevation, accounting for animation frame states (e.g., Attackboxes).</li>
+<li><strong>Behavior: Hitbox:</strong> Stateless strategy for resolving Asset Hitboxes from the Asset's internal data structure.<ul>
+<li><code>elevations(properties: AssetProperties, state: AssetState) -&gt; List[int]</code>: Interface for the elevation in which the Asset Hitboxes participate.</li>
+<li><code>get(properties: AssetProperties, state: AssetState, elevation: int) -&gt; List[Hitbox]</code>: Interface for active Hitboxes at the requested elevation.</li>
 </ul>
 </li>
 </ol>
@@ -4998,24 +4998,21 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <p>Moreover, they are not included in the core rendering loop; Instead, they are prerendered once and drawn from cache. See <a href="../12-architecture/#specification-graphics">Rendering documentation</a> for more information.</p>
 <p><strong>Behavior: Seasonality</strong></p>
 <p>Environ Tiles undergo Frame changes based on the accumulation of time on the <a href="../00-overview/#component-board">Board</a>. In other words, Environ Tiles have the unique property of having their Frame depend on an external State, rather than internal State. All rendering of Environ Tiles occurs through the <code>Frame.eras()</code> interface to account for this external dependency.</p>
-<p>For this reason, Environ Tiles leverage a SeasonalFrame and event-driven reconstruction triggered as the Board undergoes Seasons. See <a href="../09-ecology/">Ecology documentation</a> for more information.</p>
+<p>For this reason, Environ Tiles leverage a SeasonalFrame and event-driven reconstruction triggered as the <a href="../00-overview/#component-board">Board</a> undergoes Seasons. See <a href="../09-ecology/">Ecology documentation</a> for more information.</p>
 <p><strong>Semantics: Seasons</strong></p>
 <ul>
-<li><code>spring</code></li>
-<li><code>summer</code></li>
-<li><code>autumn</code></li>
-<li><code>winter</code></li>
+<li><code>spring</code>, <code>summer</code>, <code>autumn</code>, <code>winter</code></li>
 </ul>
 <p><strong>Atlas: (Row: Season, Column: Period)</strong></p>
 <ul>
-<li>columns: <code>^(?:onset|peak|decline)-[0-9]$</code></li>
+<li>columns: <code>^(?:onset|peak|decline)-[0-3]$</code></li>
 <li>rows: <code>^(?:spring|summer|autumn|winter)</code></li>
 </ul>
 <h4 id="tile-canopy">Tile: Canopy</h4>
 <p>Canopy Tiles are hardcoded to always render on on top of all of other Assets, regardless of their <code>elevation</code> or <code>priority</code>. </p>
 <div class="admonition important">
 <p class="admonition-title">Widget Exception</p>
-<p>The <em>single</em> exception to this rule is Widgets. Canopy Tiles are an "in-world" Asset, and thus their render ordering is superseded by Widgets.</p>
+<p>The <em>single</em> exception to this rule is Widgets. Canopy Tiles are an <a href="../05-mechanics/#mechanics-world">World</a> Asset, and thus their render order is superseded by Widgets.</p>
 </div>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
@@ -5047,7 +5044,7 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <li><em>Unary Objects (<code>count = 1</code>)</em>: Crates, Doors, Signs </li>
 <li><em>Binary Objects (<code>count = 2</code>)</em>: Chests, Gates, Plates</li>
 </ul>
-<p><strong>Atlas: (row: Count, column: Material)</strong></p>
+<p><strong>Atlas: (row: Count, column: Materials)</strong></p>
 <ul>
 <li>columns: <code>^(?:ceramics|chromatics|geologics|metallics|organics)</code></li>
 <li>row: <code>^[0-9]</code></li>
@@ -5057,7 +5054,7 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <li><code>hitboxes: List[Hitbox]</code> </li>
 <li><code>count: int = 1</code></li>
 <li><code>mass: int</code></li>
-<li><code>materials: Material</code></li>
+<li><code>materials: Materials</code></li>
 </ul>
 <p><strong>State: ObjectState(AssetState)</strong></p>
 <ul>
@@ -5067,7 +5064,7 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 <p>All Objects extend this base Model..</p>
 <p><strong>Frame: ObjectFrame</strong></p>
 <ul>
-<li><code>index(id, properties): returns { "{id}-{i}": (j * properties.dimension.w, 0, properties.dimensions.w, properties.dimension.l )} for i in partition(properties.material)</code></li>
+<li><code>index(id, properties): returns { "{id}-{i}": (i * properties.dimension.w, 0, properties.dimensions.w, properties.dimension.l )} for i in enumerate(properties.materials)</code></li>
 <li><code>keys(id, state): returns "{id}-{state.material}"</code></li>
 </ul>
 <p><strong>Animation: None</strong></p>

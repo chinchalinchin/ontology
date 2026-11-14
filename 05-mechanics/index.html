@@ -3967,7 +3967,7 @@
 <li><code>bus</code>: A Bus for storing <a href="../06-widgets/#events">Events</a></li>
 <li><code>payload</code>: The current <a href="../02-sprites/#devices">Device</a> Payload. </li>
 </ul>
-<p>Once a Mechanic registered in the <a href="../appendices/01-schemas/#configuration-mechanics">Mechanics Configuration</a> and implements this signature, the arguments will be injected from above by the <a href="../00-overview/#componentengine">Engine</a> each tick of its loop.</p>
+<p>Once a Mechanic is registered in the <a href="../appendices/01-schemas/#configuration-mechanics">Mechanics Configuration</a> and implements this signature, the arguments will be injected from above by the <a href="../00-overview/#componentengine">Engine</a> each tick of its loop.</p>
 <div class="admonition note">
 <p class="admonition-title">Mechanic Keys</p>
 <p>Mechanics are listed below using <code>key: class</code>, where <code>key</code> is the unique string identifier for the associated Mechanic implementation. This <code>key</code> is used in the <a href="#configuration">Mechanics Configuration</a> to specify the order of execution.</p>
@@ -3976,13 +3976,13 @@
 <ul>
 <li>Address: <code>app.game.logic.mechanics.core</code></li>
 </ul>
-<p>These Mechanics handle the core engine logic.</p>
+<p>These Mechanics handle the core <a href="../00-overview/#component-engine">Engine</a> logic.</p>
 <ul>
 <li><code>animation AnimationMechanics</code>: Translates current states into FrameKeys for the renderer.</li>
 <li><code>remove: RemoveMechanics</code>: General garbage collection for Assets whose lifespan has expired.</li>
 <li><code>motion: MotionMechanics</code>: Applies acceleration and velocity integrations to Assets to arrive at their next position.</li>
 <li><code>menu: MenuMechanics</code>: Handles Menu and Widget interactions.</li>
-<li><code>telemetry: TelemetryMechanics</code>: Manages TCP socket queries for game state requests.</li>
+<li><code>telemetry: TelemetryMechanics</code>: Manages TCP socket queries for Telemetry requests.</li>
 </ul>
 <h4 id="core-mechanic-animationmechanics">Core Mechanic: AnimationMechanics</h4>
 <p>TODO</p>
@@ -4002,10 +4002,10 @@ v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)
 <p><strong>Motive Assets: Sprites</strong></p>
 <p>Guided by NavigationMechanics. Evaluates avoidance and Trajectory vectors. In <a href="#motion-fields">Field</a> streams, the Field vector is added to the Trajectory vector.</p>
 <p><strong>Frictive Assets: Crates</strong></p>
-<p>Passively receive momentum from physical collisions, decaying via tile friction. Floating dynamic bodies in fluids drift along the stream vector.</p>
+<p>Passively receive momentum from physical collisions, decaying via <a href="../01-assets/#tile-environ">Environ Tile</a> friction. Assets suspended in <a href="../01-assets/#effect-fluids">Fluid</a> drift along at the Fluid's stream vector.</p>
 <p>The mathematical bounds for Friction are <span class="arithmatex">\([0, \infty)\)</span>.</p>
 <ul>
-<li><em>Lower Bound</em> (<span class="arithmatex">\(0\)</span>): A value of exactly <span class="arithmatex">\(0\)</span> yields <span class="arithmatex">\(\Delta v = 0\)</span>, meaning the asset will glide indefinitely without losing momentum until it strikes a static body. </li>
+<li><em>Lower Bound</em> (<span class="arithmatex">\(0\)</span>): A value of exactly <span class="arithmatex">\(0\)</span> yields <span class="arithmatex">\(\Delta v = 0\)</span>, meaning the Asset will glide indefinitely without losing momentum until it strikes a static Asset or enters a region with friction. </li>
 <li><em>Upper Bound</em> (<span class="arithmatex">\(\infty\)</span>): Any value satisfying the condition <span class="arithmatex">\(\text{friction} \cdot \Delta t \ge \vert v \vert\)</span> will eventually halt the Asset.</li>
 </ul>
 <div class="admonition note">
@@ -4014,7 +4014,7 @@ v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)
 </div>
 <p><strong>Galilean Assets: Rafts</strong></p>
 <p>Specialized Assets that do not obstruct Fluid propagation. Rafts passively drift at the Fluid current velocity <span class="arithmatex">\(\vec{v}_{\text{current}}\)</span>. Passengers aboard a Raft adopt the Raft's velocity as their baseline reference frame, suppressing the <code>submerged</code> Mutator.</p>
-<p><strong>Inert Assets: Projectiles</strong>: </p>
+<p><strong>Inert Assets: Projectiles</strong></p>
 <p>Translates along linear trajectories until lifetime expiration or boundary collision triggers garbage collection.</p>
 <h5 id="motion-fields">Motion: Fields</h5>
 <h6 id="field-fluids">Field: Fluids</h6>
