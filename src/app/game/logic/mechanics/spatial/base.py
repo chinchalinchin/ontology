@@ -49,6 +49,7 @@ class SpatialMechanic(Mechanic):
 
     def __init__(self, cell_size: int = 64, max_entities: int = 2000):
         # Allocated exactly once in memory during orchestration
+        super().__init__()
         self.grid = Space(cell_size=cell_size, max_entities=max_entities)
 
 
@@ -67,9 +68,11 @@ class SpatialMechanic(Mechanic):
         asset_map = dict(enumerate(assets))
         primitive_data = [
             asset.primitive(
-                i, 
-                hitboxes=asset.hitbox.get(asset.properties, asset.state, elevation, asset.frame)
-            ) if elevation is not None else asset.primitive(i)
+                i,
+                asset.hitbox.get(asset.properties, asset.state, elevation)
+            )
+            if elevation is not None else 
+            asset.primitive(i)
             for i, asset in enumerate(assets)
         ]
         colliding_indices = physics.collisions(primitive_data, self.grid)
@@ -128,7 +131,7 @@ class SpatialMechanic(Mechanic):
         for i, asset in enumerate(assets):
             # Extract action radius safely, defaulting to 15 (1/2 grid cell)
             
-            if not getattr(asset.state, 'mutators', None) or \
+            if not asset.state.mutators or \
                 not asset.state.mutators.parameters:
                 continue
 
@@ -165,9 +168,11 @@ class SpatialMechanic(Mechanic):
         bound_map = dict(enumerate(boundaries))
         primitive_assets = [
             asset.primitive(
-                i, 
-                hitboxes=asset.hitbox.get(asset.properties, asset.state, elevation, asset.frame)
-            ) if elevation is not None else asset.primitive(i)
+                i,
+                asset.hitbox.get(asset.properties, asset.state, elevation)
+            )
+            if elevation is not None else 
+            asset.primitive(i)
             for i, asset in enumerate(assets)
         ]
         primitive_bounds = [

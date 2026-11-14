@@ -194,6 +194,9 @@ class NavigationMechanics(Mechanic):
         """
         Tactical trajectory update frequency for an individual sprite.
         """
+        if sprite.state.mutators.triggers.falling:
+            return
+        
         # 1. Goal Verification
         if not self.navigating(sprite):
             self._clear(sprite)

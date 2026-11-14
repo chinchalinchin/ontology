@@ -107,9 +107,9 @@ def test_frame_keys_generation(mock_board):
         direction=Directions.UP.value,
         frame=4,
     )
-    player.state.inventory.equipment.armor = "leather"
-    player.state.inventory.equipment.weapon = "shortsword"
-    player.state.inventory.equipment.shield = "buckler"
+    player.state.slots.equipment.armor = "leather"
+    player.state.slots.equipment.weapon = "sword"
+    player.state.slots.equipment.shield = "buckler"
 
     # 1. NoFrame
     assert NoFrame().keys(obstacle.id, obstacle.state) == [(obstacle.id, 0, 0)]
@@ -127,7 +127,7 @@ def test_frame_keys_generation(mock_board):
     expected_keys = [
         ("player-thrust-up-4", 0, 0),
         ("leather-thrust-up-4", 0, 0),
-        ("shortsword-thrust-up-4", 0, 0),
+        ("sword-thrust-up-4", 0, 0),
         ("buckler-thrust-up-4", 0, 0),
     ]
     assert player.frame.keys(player.id, player.state) == expected_keys
@@ -224,11 +224,11 @@ def test_screen_draw_submerge_channel_splitting(mock_screen, mock_board, mock_re
 
     player = mock_board.player()
     player.state.position = Position(x=100, y=100)
-    player.state.inventory.equipment.armor = None
-    player.state.inventory.equipment.weapon = None
-    player.state.inventory.equipment.shield = None
-    player.state.inventory.equipment.tool = None
-    player.state.inventory.equipment.utility = None
+    player.state.slots.equipment.armor = None
+    player.state.slots.equipment.weapon = None
+    player.state.slots.equipment.shield = None
+    player.state.slots.equipment.tool = None
+    player.state.slots.equipment.utility = None
     player.state.mutators.triggers.submerged = True
 
     channels = player.frame.channels(player.id, player.state, player.properties)
@@ -553,11 +553,11 @@ def test_screen_export_map_submerge_channel_splitting(
     """
     player = mock_board.player()
     player.state.position = Position(x=100, y=100)
-    player.state.inventory.equipment.armor = None
-    player.state.inventory.equipment.weapon = None
-    player.state.inventory.equipment.shield = None
-    player.state.inventory.equipment.tool = None
-    player.state.inventory.equipment.utility = None
+    player.state.slots.equipment.armor = None
+    player.state.slots.equipment.weapon = None
+    player.state.slots.equipment.shield = None
+    player.state.slots.equipment.tool = None
+    player.state.slots.equipment.utility = None
     player.state.mutators.triggers.submerged = True
 
     channels = player.frame.channels(player.id, player.state, player.properties)

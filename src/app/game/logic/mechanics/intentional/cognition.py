@@ -101,7 +101,8 @@ class CognitionMechanics(Mechanic):
             return True
 
         if goal.category == Goals.TARGET.value:
-            return board.character(goal.name).mutators.triggers.dead
+            target_state = board.character(goal.name)
+            return target_state is None or target_state.mutators.triggers.dead
 
         if goal.category == Goals.SUBJECT.value:
             return sprite.state.psyche.dialogue is None
@@ -140,8 +141,10 @@ class CognitionMechanics(Mechanic):
         if not target_door:
 
             target_door = next((
-                d for d in board.instances(AssetInstances.DOORS.value, sprite.state.layer) 
-                if d.name not in sprite.state.memory.doors 
+                d for d in board.instances(
+                    AssetInstances.DOORS.value, 
+                    sprite.state.layer
+                ) if d.name not in sprite.state.memory.doors 
                 and CognitionMechanics.nearby(
                     d.state.position, 
                     sprite.state.position,
@@ -578,7 +581,7 @@ class CognitionMechanics(Mechanic):
             sprite.state.mutators.triggers.vision = False
 
 
-    def _project(self, sprite, board: Board) -> None:
+    def _project(self, sprite: Asset, board: Board) -> None:
         """
         ### _project(sprite: Asset, board: Board)
 

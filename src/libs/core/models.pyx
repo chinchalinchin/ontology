@@ -1,5 +1,5 @@
 """
-@domain.systems
+@domain.system
 @domain.model
 @app.library
 @workflow.collisions

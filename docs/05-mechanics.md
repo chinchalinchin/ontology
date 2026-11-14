@@ -98,14 +98,10 @@ Dynamic Assets ($m > 0$) interacting with active Fluid streams and pools evaluat
 
 ###### Field: Gravity
 
-!!! @TODO(07-03)
-    Needs elaboration.
-
 Let world space be parameterized by $(X, Y, Z)$, where $(X, Y)$ spans the horizontal ground plane ($E = 0$) and $Z \ge 0$ is the vertical elevation axis perpendicular to the ground plane:
 
-1. **Assumption**: Camera rays are parallel and intersect the horizontal ground plane $(X, Y)$ at a constant inclination angle $\theta = 60^\circ$.
-
-2. **Assumption**: For a point at discrete elevation $E$ dropping by $\Delta E = 1$ to $E - 1$, the vertical elevation change ($\Delta z$), the horizontal ground change ($\Delta y$), and the camera line-of-sight ray ($L_{\text{LOS}}$) form a right triangle $\triangle$ with right angle at the base of the vertical leg and acute angle $\theta = 60^\circ$ at the ground intercept.
+1. **Assumption (Orthographic Parallelism)**: Camera rays are parallel and intersect the horizontal ground plane $(X, Y)$ at a constant inclination angle $\theta = 60^\circ$.
+2. **Assumption (Right Triangle Formation)**: For a point at discrete elevation $E$ dropping by $\Delta E = 1$ to $E - 1$, the vertical elevation change ($\Delta z$), the horizontal ground change ($\Delta y$), and the camera line-of-sight ray ($L_{\text{LOS}}$) form a right triangle $\triangle$ with right angle at the base of the vertical leg and acute angle $\theta = 60^\circ$ at the ground intercept:
 
 $$
 \tan(\theta) = \frac{\Delta z}{\Delta y}, \qquad \sin(\theta) = \frac{\Delta z}{L_{\text{LOS}}}, \qquad \cos(\theta) = \frac{\Delta y}{L_{\text{LOS}}}
@@ -113,18 +109,55 @@ $$
 
 **Unit Elevation Drop ($\Delta y_{\text{elevation}}$):**
 
-Taking the horizontal ground run of one unit Tile as the adjacent leg ($\Delta y = U = 32\text{ px}$), the vertical leg opposite $\theta = 60^\circ$ (the Screen-space $+y$ of one unit elevation) is:
+Taking the horizontal ground run of one unit Tile as the adjacent leg ($\Delta y = U = 32\text{ px}$), the vertical leg opposite $\theta = 60^\circ$ (the Screen-space $+y$ displacement of one unit elevation) is:
 
 $$
-\Delta y_{\text{elevation}} = U \cdot \tan(60^\circ) = 32\sqrt{3} \approx 55.43\text{ px}
+\Delta y_{\text{elevation}} = \lfloor U \cdot \tan(60^\circ) \rfloor = \lfloor 32\sqrt{3} \rfloor = 55\text{ px}
 $$
 
 Equivalently, taking the line-of-sight hypotenuse across a two-tile Sprite frame ($L_{\text{LOS}} = 2U = 64\text{ px}$) yields the same opposite vertical leg:
 
 $$
-\Delta y_{\text{elevation}} = L_{\text{LOS}} \cdot \sin(60^\circ) = 64 \cdot \frac{\sqrt{3}}{2} = 32\sqrt{3} \approx 55.43\text{ px}$$
+\Delta y_{\text{elevation}} = \lfloor L_{\text{LOS}} \cdot \sin(60^\circ) \rfloor = \left\lfloor 64 \cdot \frac{\sqrt{3}}{2} \right\rfloor = 55\text{ px}
+$$
 
-Under this formulation, Gravity is purely a property of the topological elevation planes $E \in \mathbb{Z}$: every $\Delta y_{\text{elevation}} = U \tan(\theta)$ pixels of vertical freefall transitions the entity down one discrete elevation plane ($E \to E - 1$), where support is re-evaluated immediately.
+Under this formulation, Gravity is purely a property of the topological elevation planes $E \in \mathbb{Z}_{\ge 0}$: every $\Delta y_{\text{elevation}} = \text{TIER\_DROP\_DISTANCE} = 55\text{ px}$ of vertical freefall transitions an unsupported entity down one discrete elevation plane ($E \to E - 1$), where substrate support is re-evaluated immediately.
+
+**Behavior: Substrate Support**
+
+At Step 0 of `fields.update()`, entities at $E > 0$ are evaluated against walkable substrates occupying tier $E$ on the active layer via Cython's zero-allocation `geometry.occluded`. An entity is supported at tier $E > 0$ if its active hitboxes (or bounding dimensions) intersect any of the following Craft footprints:
+
+* **Bridges**: Deployed at $e_{\text{base}} = E$.
+* **Stairs**: Spanning $e_{\text{base}} < E \le e_{\text{base}} + \Delta e$, evaluated across the full stair tread bounding box $(x, y, w, l)$.
+* **Struts**: Deployed at $e_{\text{base}} = E$ with a non-obstacle surface blueprint ($\neg\text{MaterialIndex.is\_obstacle}(\text{blueprint})$, e.g., `floors`, `flats`, `paths`, `corridors`) or sensor mass ($m < 0$).
+
+Base terrain ($E = 0$) is unconditionally supported.
+
+**Behavior: Freefall & Parabolic Momentum**
+
+When an entity at $E > 0$ steps off its supporting substrate:
+
+1. **Freefall Onset**: `state.mutators.triggers.falling` is set to `True`, `state.mutators.parameters.descension` and `state.position.ry` are reset to `0.0`, and upward vertical velocity is clamped via $v_y = \max(0.0, v_y)$.
+2. **Orthogonal Momentum Preservation**: Because the $60^\circ$ orthographic pitch occurs strictly in the $(Y, Z)$ plane, horizontal velocity $v_x$ is orthogonally decoupled from vertical drop:
+
+$$
+\begin{pmatrix} \dot{x}(t) \\ \dot{y}(t) \end{pmatrix} = \begin{pmatrix} v_{x,0} \\ v_{y,0} + g t \end{pmatrix}, \qquad v_y(t + \Delta t) = \min\Big(v_{\text{terminal}},\; v_y(t) + g \cdot \Delta t\Big)
+$$
+
+Preserving $v_{x,0}$ produces a natural screen-space parabolic trajectory $y(x) = y_0 + \frac{g}{2v_{x,0}^2}(x - x_0)^2$ until landing.
+
+3. **Tier Stepping & Remainder Clamping**: Each tick, integer vertical displacement $\Delta y_{\text{step}} = \lfloor r_y + v_y \Delta t \rfloor$ is compared against the remaining distance to the next elevation plane, $\Delta y_{\text{rem}} = \text{TIER\_DROP\_DISTANCE} - \text{descension}$:
+   * If $\Delta y_{\text{step}} \ge \Delta y_{\text{rem}}$, the entity's Y-coordinate advances to the exact plane intercept ($y + \Delta y_{\text{rem}}$), its elevation decrements ($E \to E - 1$), and support is re-evaluated at the new tier.
+   * **Supported Landing ($E \ge 0$)**: If supported at $E - 1$, `falling` is cleared to `False`, `descension`, `position.ry`, and `velocity.vy` are zeroed, clamping the landing coordinate to an exact multiple of $\text{TIER\_DROP\_DISTANCE}$. On the subsequent frame, normal locomotion (`kinematic`, `motive`, or `frictive`) resumes and resolves any residual horizontal velocity $v_x$.
+   * **Continuous Multi-Tier Fall**: If unsupported at $E - 1$, the entity retains $v_y$, updates `descension` with the overshoot remainder, and continues falling through intermediate planes until reaching a supported tier or $E = 0$.
+
+**Behavior: System Suppression**
+
+While `state.mutators.triggers.falling == True`, the entity is between discrete topological planes:
+
+* **Locomotion & Navigation**: `kinematic.update()`, `motive.update()`, `frictive.update()`, and `NavigationMechanics` bypass the entity, preventing mid-air directional input, RVO steering, idle velocity zeroing, or tile friction from overriding freefall kinematics.
+* **Environmental Fields**: Airborne entities are excluded from Bridge/Raft surface interception, Shoreline step-down nudges, and Fluid immersion in `fields.update()`.
+* **Collisions & Ledges**: `CollisionMechanics` excludes airborne entities from Phase 0 stair traversal and Phase 2 solid collisions, and restricts Phase 1 environmental perimeter constraints to `elevation == 0` so dynamic entities can walk off un-walled ledges at $E > 0$.
 
 #### Core Mechanic: MenuMechanics
 
@@ -154,7 +187,7 @@ These Mechanics handle spatial interactions and collisions between Assets.
 * `collision: CollisioMechanics`: Resolves collisions.
 * `combat: CombatMechanics`: Resolves attack hitbox overlaps, decrements health, etc.
 * `interaction: InteractionMechanics`:Resolves Asset interactions.
-* `social: SocialMechanics`: Handle Social Intentions and [Plot calculations](./08-plots.md).
+* `social: SocialMechanics`: Handle Social Intentions and [Plot calculations](./08-narratives.md).
 
 **Base: SpatialMechanics**
 
@@ -307,7 +340,7 @@ TODO
 
 The World is a collection of correlated fields stored on the [Board](./00-overview.md#component-board). World Mechanics handle and mutate this macro State, performing high-level calculations and other abstract accounting.
 
-* `plot: PlotMechanics`: Evaluates the [Plot Transition matrix](./08-plots.md#transition-matrix) to transition the [Board](./00-overview.md#component-board) [plot State](./08-plots.md#plot-states).
+* `plot: PlotMechanics`: Evaluates the [Plot Transition matrix](./08-narratives.md#transition-matrix) to transition the [Board](./00-overview.md#component-board) [plot State](./08-narratives.md#plot-states).
 * `fluid: FluidMechanics`: Resolves [Fluid](./01-assets.md#effect-fluids) propagation, stream obstructions, and radial pool perimeter calculation.
 * `season: SeasonMechanics`: Handles the accumulation of time, manages the lifespan of [Resources](./01-assets.md#category-resources) and the transition of Seasons on the [Board](./00-overview.md#component-board)
 
@@ -376,7 +409,7 @@ Systems requiring external services (such as the Actuator for [FluidMechanics](.
 
 Executors are Services made available to Mechanics that register to receive them in the [Configuration](#configuration-mechanics). Available Executors are enumerated below,
 
-* `plot`: Executor for evaluating the conditions for [Plot Transitions](./08-plots.md).
+* `plot`: Executor for evaluating the conditions for [Plot Transitions](./08-narratives.md).
 * `intention`: Executor for evaluating the conditions for [Intention Transitions](./04-intentions.md)
 * `actuator`: Executor for generating [Fluid](./01-assets.md#effect-fluids) and [Shoreline](./01-assets.md#shorelines) Assets.
 * `annual`: Executor evaluating [Resource Stage](./01-assets.md#resources) transitions for annual lifespans.

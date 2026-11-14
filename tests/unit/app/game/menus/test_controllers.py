@@ -16,7 +16,6 @@ import pytest
 
 # Application Libraries
 import app.static.settings as settings
-from app.game.menus.bindings import SelectBinding
 from app.game.menus.controllers import (
     DisplayController,
     InventoryController,
@@ -26,7 +25,6 @@ from app.game.menus.controllers import (
     PauseController,
     ScrollController,
 )
-from app.models.config.menus import SelectTarget
 from app.models.menus import (
     MenuEvent,
     StateEvent,
@@ -35,11 +33,13 @@ from app.models.menus import (
 )
 from app.models.state import PaneState
 from app.static.semantics import (
-    AssetCategories,
-    AssetInstances,
+    Hands,
+    ItemPalette,
     Menus,
-    Selections,
     Statuses,
+    ToolPalette,
+    UtilityPalette,
+    WeaponPalette,
 )
 
 # ---------------------------------------------------------------------------
@@ -151,88 +151,85 @@ def test_scroll_controller_open_and_select(
 
 @pytest.mark.workflow_traversal
 @pytest.mark.workflow_inventory
-def test_inventory_controller_pagination_and_equip(
+def test_inventory_controller_equipment_slotting(
     mock_menu,
-    mock_asset,
     mock_board,
     mock_bus: deque,
 ):
-    inv_menu = mock_menu(Menus.INVENTORY.value)
-    ctrl = inv_menu.controller
+    """
+    Verifies selecting occupied weapon, tool, and utility Gizmo slots in Menu: Equipment
+    mutates player.state.slots.equipment in-place without emitting UpdateEvents (Bug B019).
+    """
+    player = mock_board.player()
+    player.state.inventory.sheathe = [WeaponPalette.SPEAR.value]
+    player.state.inventory.belt = [ToolPalette.PICKAXE.value]
+    player.state.inventory.bag = [UtilityPalette.LANTERN.value]
+    player.state.slots.equipment.weapon = None
+    player.state.slots.equipment.tool = None
+    player.state.slots.equipment.utility = None
+
+    eq_menu = mock_menu(Menus.EQUIPMENT.value)
+    ctrl = eq_menu.controller
     assert isinstance(ctrl, InventoryController)
 
-    grid_pane = inv_menu.widgets["inventory-pack-grid"]
-    capacity = grid_pane.state.capacity
-    columns = grid_pane.state.columns
+    ctrl.select("equipment-weapons-grid-slot-0", eq_menu, mock_board, mock_bus)
+    assert player.state.slots.equipment.weapon == WeaponPalette.SPEAR.value
+    assert eq_menu.widgets["equipment-weapon-icon"].state.icon == WeaponPalette.SPEAR.value
 
-    # Configure collection with (capacity + 1) items so the last slot is occupied at offset=0
-    # and vacant after scrolling down by `columns`
-    items = ["shortsword", "buckler", *[f"item-{i}" for i in range(capacity - 1)]]
-    grid_pane.state.collection_function = lambda: items
-    grid_pane.state.offset = 0
+    ctrl.select("equipment-tools-grid-slot-0", eq_menu, mock_board, mock_bus)
+    assert player.state.slots.equipment.tool == ToolPalette.PICKAXE.value
+    assert eq_menu.widgets["equipment-tool-icon"].state.icon == ToolPalette.PICKAXE.value
 
-    # Ensure scroll-down and scroll-up control buttons targeting `inventory-pack-grid` exist
-    if "inventory-scroll-down" not in inv_menu.widgets:
-        btn_down = mock_asset(
-            AssetCategories.WIDGETS.value,
-            AssetInstances.BUTTONS.value,
-            id="arrow-down",
-        )
-        btn_down.taxonomy.name = "inventory-scroll-down"
-        inv_menu.widgets["inventory-scroll-down"] = btn_down
-    inv_menu.widgets["inventory-scroll-down"].binding = SelectBinding(
-        target=SelectTarget(
-            selection=Selections.SCROLLDOWN.value,
-            selector="inventory-pack-grid",
-        ),
-        context=inv_menu.context,
-    )
+    ctrl.select("equipment-utilities-grid-slot-0", eq_menu, mock_board, mock_bus)
+    assert player.state.slots.equipment.utility == UtilityPalette.LANTERN.value
+    assert eq_menu.widgets["equipment-utility-icon"].state.icon == UtilityPalette.LANTERN.value
 
-    if "inventory-scroll-up" not in inv_menu.widgets:
-        btn_up = mock_asset(
-            AssetCategories.WIDGETS.value,
-            AssetInstances.BUTTONS.value,
-            id="arrow-up",
-        )
-        btn_up.taxonomy.name = "inventory-scroll-up"
-        inv_menu.widgets["inventory-scroll-up"] = btn_up
-    inv_menu.widgets["inventory-scroll-up"].binding = SelectBinding(
-        target=SelectTarget(
-            selection=Selections.SCROLLUP.value,
-            selector="inventory-pack-grid",
-        ),
-        context=inv_menu.context,
-    )
+    assert len(mock_bus) == 0
 
-    # 1. Slot selection equips matching weapon onto player state
+
+@pytest.mark.workflow_traversal
+@pytest.mark.workflow_inventory
+def test_inventory_controller_pouch_dual_grip_selection(
+    mock_menu,
+    mock_board,
+    mock_bus: deque,
+):
+    """
+    Verifies dual-grip target latching and item assignment in Menu: Pouch.
+    """
     player = mock_board.player()
-    ctrl.select("inventory-pack-grid-slot-0", inv_menu, mock_board, mock_bus)
-    assert player.state.inventory.equipment.weapon == "shortsword"
-    equip_ev = mock_bus.popleft()
-    assert isinstance(equip_ev, UpdateEvent)
-    assert equip_ev.content == "shortsword"
+    player.state.inventory.pouch = {
+        ItemPalette.BOMB.value: 5,
+        ItemPalette.ARROW.value: 20,
+    }
+    player.state.slots.grip.right = None
+    player.state.slots.grip.left = None
 
-    # 2. Focus on last slot, then scroll down: offset advances by `columns` and focus recovers to slot 0
-    last_slot_name = f"inventory-pack-grid-slot-{capacity - 1}"
-    inv_menu.focus = last_slot_name
-    inv_menu.widgets[last_slot_name].state.status = Statuses.ACTIVE.value
-    inv_menu.widgets["inventory-pack-grid-slot-0"].state.status = Statuses.IDLE.value
+    pouch_menu = mock_menu(Menus.POUCH.value)
+    ctrl = pouch_menu.controller
+    assert isinstance(ctrl, InventoryController)
 
-    ctrl.select("inventory-scroll-down", inv_menu, mock_board, mock_bus)
-    assert grid_pane.state.offset == columns
-    assert inv_menu.focus == "inventory-pack-grid-slot-0"
-    assert inv_menu.widgets[last_slot_name].state.status == Statuses.IDLE.value
-    assert inv_menu.widgets["inventory-pack-grid-slot-0"].state.status == Statuses.ACTIVE.value
-    scroll_down_ev = mock_bus.popleft()
-    assert isinstance(scroll_down_ev, UpdateEvent)
-    assert scroll_down_ev.content == str(columns)
+    # 1. Default active_grip is 'right'; selecting slot 0 equips to right grip
+    assert pouch_menu.context.active_grip == Hands.RIGHT.value
+    ctrl.select("inventory-pouch-grid-slot-0", pouch_menu, mock_board, mock_bus)
+    assert player.state.slots.grip.right == ItemPalette.BOMB.value
+    assert pouch_menu.widgets["pouch-grip-right-icon"].state.icon == ItemPalette.BOMB.value
 
-    # 3. Scroll up restores collection window offset back to 0
-    ctrl.select("inventory-scroll-up", inv_menu, mock_board, mock_bus)
-    assert grid_pane.state.offset == 0
-    scroll_up_ev = mock_bus.popleft()
-    assert isinstance(scroll_up_ev, UpdateEvent)
-    assert scroll_up_ev.content == "0"
+    # 2. Selecting left grip button switches active_grip to 'left' and updates button statuses
+    pouch_menu.focus = "pouch-grip-left-slot"
+    ctrl.select("pouch-grip-left-slot", pouch_menu, mock_board, mock_bus)
+    assert pouch_menu.context.active_grip == Hands.LEFT.value
+    assert pouch_menu.widgets["pouch-grip-left-slot"].state.status == Statuses.SELECTED.value
+    assert pouch_menu.widgets["pouch-grip-right-slot"].state.status == Statuses.IDLE.value
+
+    # 3. Selecting slot 1 equips to left grip while preserving right grip
+    pouch_menu.focus = "inventory-pouch-grid-slot-1"
+    ctrl.select("inventory-pouch-grid-slot-1", pouch_menu, mock_board, mock_bus)
+    assert player.state.slots.grip.left == ItemPalette.ARROW.value
+    assert player.state.slots.grip.right == ItemPalette.BOMB.value
+    assert pouch_menu.widgets["pouch-grip-left-icon"].state.icon == ItemPalette.ARROW.value
+    assert len(mock_bus) == 0
+
 
 @pytest.mark.workflow_traversal
 def test_pause_controller_save_load_submenu_and_quit(

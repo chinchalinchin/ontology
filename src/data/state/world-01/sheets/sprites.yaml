@@ -3,7 +3,6 @@ sheets:
     - id: jasilynn
       name: evil-empress-jasilynn
       layer: throne-layer-3
-      depth: 0
       position:
         x: 15
         y: 15
@@ -31,6 +30,7 @@ sheets:
             radius: 25
           squeeze: 
             radius: 10
+          hand: right
       psyche:
         dialogue: greeting
         expression: null
@@ -62,13 +62,21 @@ sheets:
           player:
             x: 100
             y: 200
-      inventory: 
-        pouch: null
-        pack: null
+      slots:
         equipment:
           armor: null
           tool: null
           utility: null
           weapon: sword
           shield: null
-        wallet: 0
+        grip:
+          left: null
+          right: null
+      inventory:
+        bag: []
+        belt: []
+        sheathe:
+          - sword 
+        pouch: {}
+        pack: {}
+        sack: {}

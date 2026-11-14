@@ -378,22 +378,22 @@
       - `{{ item_id }}`: {{ qty }}
 {% endfor -%}
 {% endif -%}
-{% if asset.state.inventory.equipment is defined and asset.state.inventory.equipment is not none -%}
+{% if asset.state.slots.equipment is defined and asset.state.slots.equipment is not none -%}
     - Equipment:
-{% if asset.state.inventory.equipment.armor is not none -%}
-      - Armor: `{{ asset.state.inventory.equipment.armor }}`
+{% if asset.state.slots.equipment.armor is not none -%}
+      - Armor: `{{ asset.state.slots.equipment.armor }}`
 {% endif -%}
-{% if asset.state.inventory.equipment.weapon is not none -%}
-      - Weapon: `{{ asset.state.inventory.equipment.weapon }}`
+{% if asset.state.slots.equipment.weapon is not none -%}
+      - Weapon: `{{ asset.state.slots.equipment.weapon }}`
 {% endif -%}
-{% if asset.state.inventory.equipment.tool is not none -%}
-      - Tool: `{{ asset.state.inventory.equipment.tool }}`
+{% if asset.state.slots.equipment.tool is not none -%}
+      - Tool: `{{ asset.state.slots.equipment.tool }}`
 {% endif -%}
-{% if asset.state.inventory.equipment.utility is not none -%}
-      - Utility: `{{ asset.state.inventory.equipment.utility }}`
+{% if asset.state.slots.equipment.utility is not none -%}
+      - Utility: `{{ asset.state.slots.equipment.utility }}`
 {% endif -%}
-{% if asset.state.inventory.equipment.shield is not none -%}
-      - Shield: `{{ asset.state.inventory.equipment.shield }}`
+{% if asset.state.slots.equipment.shield is not none -%}
+      - Shield: `{{ asset.state.slots.equipment.shield }}`
 {% endif -%}
 {% endif -%}
 {% endif -%}

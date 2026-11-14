@@ -38,7 +38,7 @@ In short, a Name identifies an Asset's deployment. A ID is what binds a deployed
 *State* is dynamic and can be changed by [Mechanics](./05-mechanics.md). State determines the mutable characteristics of an Asset, e.g. the current Position of an Asset, the current Animation, etc. All Assets have: *Position* State, given as a Cartesian coordinate (tuple); a Layer, given as a categorical variable'; an Elevation, representing their Z-axis, given as an integer; an Anchor, used to augment the perspective-based render sorting, given as an integer.
 
 !!! @TODO(08-04)
-    Mutators are polymorphic. Because of this, they have attributes that are not utilized by every Asset that is instantiated. They are one of the core ambiguities in the entire Asset model. They are mainly utilized by Sprites to signal their states have internally reached certain conditions, e.g. `vision` is triggered when the Sprite is in sight of its Goal. 
+    Mutators are polymorphic. Because of this, they have attributes that are not utilized by every Asset that is instantiated. They are one of the core ambiguities in the entire Asset model. They are mainly utilized by Sprites to signal their States have internally reached certain conditions, e.g. `vision` is triggered when the Sprite is in sight of its Goal. 
 
     They also contain general Asset fields, like `submerged`, that is triggered when an Asset is immersed in a Fluid stream. 
 
@@ -139,7 +139,7 @@ Certain Assets have a dedicated Substrate to preserve the fidelity of their rend
 
 --8<-- "static/md/asset-substrates.md"
 
-!!! @TODO(07-04)
+!!! @TODO(07-03)
     This entire procedure needs re-evaluation now that Substrates are not Elevations, i.e. prior to Phase 07.04 Substrates were used to lazily-load Elevations. Now they are a dedicated partition of the sort key `(elevation, substrate, ground, priority)`
 
 During [CollisionMechanics](./05-mechanics.md#spatial-mechanic-collisionmechanics) and Perimeter generation, all negative Substrates are collapsed into `elevation = 0`, i.e. $\text{elevation} \in [-\infty, 0] \to \text{elevation} = 0$, in order that all Assets on these Substrates may participate in collisions at `elevation = 0`.
@@ -311,7 +311,7 @@ Canopy Tiles are hardcoded to always render on on top of all of other Assets, re
 
 #### Tile: Grid
 
-A Grid is a special Tile reserved for use in the [Editor Menu](./06-widgets.md#menus). It is used as an overlay in the Editor, to create a spatial grid that can be traversed through focus. 
+A Grid is a special Tile reserved for use in the [Editor Menu](./06-widgets.md#menu-data). It is used as an overlay in the Editor, to create a spatial grid that can be traversed through focus. 
 
 !!! @TODO(05)
     Reatlasing of Grid Tiles needs to occur.
@@ -373,7 +373,7 @@ N/A
 
 A Chest is *reusable* through the `interact` [Intention](./04-intentions.md), meaning [Inventory Loot](./02-sprites.md#inventory) can be taken out of and also placed into a Chest. The `content` state field manages the current contents of the Chest through a list of Inventory Loot keys.
 
-When interacting with a Chest, the [Player](./02-sprites.md#player) is shown the [Chest Menu](./06-widgets.md#menus), allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an `interact` Intention with a Chest through its [Intention Transition Matrix](./04-intentions.md#transition-matrix). This interaction is managed through a dedicated Sprite [Mechanic](05-mechanics.md)
+When interacting with a Chest, the [Player](./02-sprites.md#player) is shown the [Chest Menu](./06-widgets.md#menu-data), allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an `interact` Intention with a Chest through its [Intention Transition Matrix](./04-intentions.md#transition-matrix). This interaction is managed through a dedicated Sprite [Mechanic](05-mechanics.md)
 
 **State: ContainerState**
 
@@ -502,9 +502,9 @@ Rafts are kinematics Objects that allow other Assets to traverse [Fluid](#effect
 
 #### Object: Signs
 
-Signs are linguistic Objects whose `content` is transmitted into a [Text Menu](./06-widgets.md#menus) when a Player enters into the `interact` [Intention](./04-intentions.md) with them.
+Signs are linguistic Objects whose `content` is transmitted into a [Text Menu](./06-widgets.md#menu-data) when a Player enters into the `interact` [Intention](./04-intentions.md) with them.
 
-Signs utilize `persona` and `lexicon` keys to grab the appropriate content from the [Library](./08-plots.md#library)
+Signs utilize `persona` and `lexicon` keys to grab the appropriate content from the [Library](./08-narratives.md#library)
 
 **State: DialogueState**
 
@@ -941,7 +941,7 @@ Many Sheet Assets reuse the same Action specification. Common Action specificati
 
 **Hitbox: Attackboxes**
 
-!!! @TODO(10-01)
+!!! @TODO(06-03)
     The Hitbox interface has been formally codified into a component of an Asset. Attackboxes are the last remaining legacy hitbox implementation that needs migrated to the new paradigm. They are complicated by their relationship with Equipment and specific Frames in an Animation.
 
 An Attackbox is a special type of hitbox unique to Sheet Assets. It is mapped to a canonical `<action>-<direction>-<frame>` key (where `setting.SEPARATOR = "-"`) and applied during the animation state identified by this key. Attackboxes are used to augment the Sheet's basic hitbox collision detection during [CombatMechanics](./05-mechanics.md#mechanics-spatial). While any Sprite can alter its Attackbox properties, this property is utilized mainly by [Equipment](./02-sprites.md#equipment).

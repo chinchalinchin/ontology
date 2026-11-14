@@ -64,12 +64,12 @@ def test_player_attack_intention_maps_weapon_action(
     mock_payload,
 ):
     """
-    Ensure triggering ATTACK with an equipped shortsword maps to SLASH and enables animation.
+    Ensure triggering ATTACK with an equipped sword maps to SLASH and enables animation.
     """
     mechanic = mock_mechanic(Mechanics.PLAYER.value)
     player = mock_board.player()
     player.state.intention = Intentions.IDLE.value
-    player.state.inventory.equipment.weapon = "shortsword"
+    player.state.slots.equipment.weapon = "sword"
 
     payload = mock_payload(intention=Intentions.ATTACK.value)
     mechanic.update(mock_board, 0.016, mock_bus, payload)
@@ -208,9 +208,9 @@ def test_player_menu_triggers_emit_events(
 ):
     mechanic = mock_mechanic(Mechanics.PLAYER.value)
 
-    mechanic.update(mock_board, 0.016, mock_bus, mock_payload(menu=Menus.INVENTORY.value))
+    mechanic.update(mock_board, 0.016, mock_bus, mock_payload(menu=Menus.EQUIPMENT.value))
     assert len(mock_bus) == 1
-    assert mock_bus[-1].id == Menus.INVENTORY.value
+    assert mock_bus[-1].id == Menus.EQUIPMENT.value
 
     mechanic.update(mock_board, 0.016, mock_bus, mock_payload(menu=Menus.PAUSE.value))
     assert len(mock_bus) == 2

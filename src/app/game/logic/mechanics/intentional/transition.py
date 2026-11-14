@@ -75,12 +75,12 @@ class TransitionMechanics(Mechanic):
                 current_intent = sprite.state.intention
 
                 if next_intent_str:
-                    next_intent = Intentions(next_intent_str)
+                    next_intent = Intentions(next_intent_str).value
                     if next_intent != current_intent:
                         logger.info(
                             f"Transition({sprite.name}): "
                             f"{sprite.state.intention} -> "
-                            f"{next_intent.value}"
+                            f"{next_intent}"
                         )
                         
                         sprite.state.intention = next_intent

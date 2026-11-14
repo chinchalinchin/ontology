@@ -72,7 +72,7 @@ def test_binding_icon(mock_binder, mock_icon_bind, mock_menu_context):
 
     assert isinstance(binding, IconBinding)
     icon_fn = binding.bind()
-    assert icon_fn() == ctx.sprite.inventory.equipment.weapon
+    assert icon_fn() == ctx.sprite.slots.equipment.weapon
 
 
 def test_binding_select(mock_binder, mock_select_bind, mock_menu_context):
@@ -90,12 +90,12 @@ def test_binding_collection_list_and_dict(
     mock_collection_bind,
     mock_menu_context,
 ):
-    ctx = mock_menu_context(Menus.INVENTORY.value)
+    ctx = mock_menu_context(Menus.PACK.value)
     binding = mock_binder.binding(mock_collection_bind, ctx)
     assert isinstance(binding, CollectionBinding)
     assert isinstance(binding.bind()(), list)
 
-    dict_ctx = {"inventory": {"pack": {"shortsword": 1, "dagger": 0, "buckler": 2}}}
+    dict_ctx = {"inventory": {"pack": {"wood": 1, "gold": 0, "copper": 2}}}
     dict_binding = mock_binder.binding(
         MenuBinding(
             schema=Bindings.COLLECTION.value,
@@ -103,7 +103,7 @@ def test_binding_collection_list_and_dict(
         ),
         dict_ctx,
     )
-    assert dict_binding.get_collection() == ["shortsword", "buckler"]
+    assert dict_binding.get_collection() == ["wood", "copper"]
 
 
 @pytest.mark.menu_gizmo
@@ -122,11 +122,11 @@ def test_binding_aperture_occupied_and_vacant(
         asset_state=mock_collection_state,
     )
     widgets = {"inventory-pack-grid": pane}
-    ctx = mock_menu_context(Menus.INVENTORY.value)
+    ctx = mock_menu_context(Menus.PACK.value)
 
     occupied_binding = mock_binder.binding(mock_aperture_bind, ctx, widgets=widgets)
     assert isinstance(occupied_binding, ApertureBinding)
-    assert occupied_binding.get_item() == "shortsword"
+    assert occupied_binding.get_item() == "sword"
 
     vacant_binding = mock_binder.binding(mock_aperture_bind_alt, ctx, widgets=widgets)
     assert vacant_binding.get_item() == ""

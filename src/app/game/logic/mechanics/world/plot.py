@@ -62,6 +62,5 @@ class PlotMechanics(Mechanic):
         
         if next_plot_str and next_plot_str != current_plot:
             logger.info(f"Transition(plot): {current_plot} -> {next_plot_str}")
-            if board.plot.previous:
-                board.plot.previous.append(current_plot)
+            board.plot.previous.append(current_plot)
             board.plot.current = next_plot_str

@@ -1,0 +1,91 @@
+# Ontology Docs: Narratives
+
+## Narratives: Overview 
+
+**Plots**
+
+Due to the nature of the [Engine](./00-overview.md#component-engine), a Plot is not scripted, in the sense that Sprite Actions are hardcoded and pre-determined down to the pixel. Conditions are reached to change the World state, which causes the [Board's](./00-overview.md#component-board) `plot` attribute to update. This in turn affects what dialogue keys are available for a [Sprite](./02-sprites.md). 
+
+## Narratives: Plots
+
+[Sprites](./02-sprites.md) retain a Expression in their [Psyche](./02-sprites.md#psyche). This Expression is a Lexicon key to access content in the [Library](#library). It is used in conjunction with the Sprite's `persona` and the [Board's](./00-overview.md#component-board) `plot` key to unlock the appropriate content.
+
+As a simple example, a Plot state might be defined to change conditional on the existence of Sprite (perhaps whether a character is alive or dead), call it `<plot>`.
+
+A Sprite, whose `psyche.persona = <persona>` is defined through [State files](./00-overview.md#core-state), when entering into a `speak` Intention with `psyche.dialogue = <lexicon>` (arrived at through [Intention transitions](./04-intentions.md) and [World Mechanics](./05-mechanics.md)), would then retrieve the `<plot>.<persona>.<lexicon>` dialogue from the Library. 
+
+### Service: Library
+
+* Address: `src/data/config/library/main.yaml`
+
+The Library reads in the dialogue scripts stored in `src/data/config/library/main.yaml`, otherwise known as the *Library directory*.
+
+TODO
+
+```yaml
+library:
+    <plot-key>:
+        <persona-key>:
+            <lexicon-key>: <content>
+```
+
+* `plot-key`: Current state of the Plot. Determined by the Board.
+* `persona-key`: Persona binding for Sprite or Signs. Determined by the Asset.
+* `lexicon-key`: Dynamic key for ingame modulation. 
+
+### State: Plot
+
+The Plot is an Asset-less State. It is instantiated during [initialization](./12-architecture.md#specification-initialization) and injected into the Board. 
+
+### Mechanics: Plot
+
+PlotMechanics are a [World Mechanic](./05-mechanics.md#mechanics-world) that manages the Plot State. It does so through the medium of the *Plot Transition Matrix*.
+
+#### Plot: Transition Matrix
+
+Similar to [Intentions](./04-intentions.md), the Plot utilizes a Transition Matrix to determine where the current node of the Plot State resides, and whether or not conditions have been met to transition to the next node.
+
+The general schema for a row of Plot Transitions is given directly below,
+
+```yaml
+plots:
+    <plot-state>:
+        - next: <plot-state>
+          conditions:
+            - <condition>
+```
+
+For example, the following Plot Transition Matrix demonstrates how a Plot tree can be embedded into the [Application](./00-overview.md#application) by specifying nodes and the conditions that must be met to transition out of a given node, 
+
+!!! important "Plot Transitions"
+  Plot Transitions use the same scripting syntax and constants as [Intention Transitions](./04-intentions.md#transition-matrix).
+
+```yaml
+plots:
+  castle-dawn-locked:
+    - next: castle-dawn-unlocked
+      conditions:
+        - sprites.get(constants.RequiredAssets.PLAYER.value)
+        - sprites.get(constants.RequiredAssets.PLAYER.value).inventory.pouch.get('writ-of-dawn') >= 1
+    - next: town-unlocked
+      conditions:
+        - sprites.get('castle-dawn-guard')
+        - sprites.get('castle-dawn-guard').mutators.triggers.dead
+    - next: castle-dawn-unlocked
+      conditions:
+        - sprites.get('evil-empress-jasilynn')
+        - sprites.get('evil-empress-jasiylnn').memory.relationships.get(constants.RequiredAssets.PLAYER.value)
+        - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER.value) == constants.Relationships.FRIEND.value
+  castle-dawn-unlocked:
+    - next: castle-dawn-hostile
+      conditions:
+        - sprites.get('evil-empress-jasilynn')
+        - sprites.get('evil-empress-jasiylnn').memory.relationships.get(constants.RequiredAssets.PLAYER.value)
+        - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER.value) == constants.Relationships.FOE.value
+  castle-dawn-hostile:
+    - next: castle-dawn-unlocked
+      conditions:
+        - sprites.get('evil-empress-jasilynn')
+        - sprites.get('evil-empress-jasiylnn').memory.relationships.get(constants.RequiredAssets.PLAYER.value)
+        - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER.value) != constants.Relationships.FOE.value
+```

@@ -303,3 +303,75 @@ class ExpressionsPalette(str, Enum):
 
 class EffectsPalette(str, Enum):
     SPLASH          = "splash"
+
+class ArmorPalette(str, Enum):
+    LEATHER         = "leather"
+    COPPER          = "copper"
+    IRON            = "iron"
+    GOLD            = "gold"
+
+class CropPalette(str, Enum):
+    CARROT          = "carrot"
+    LETTUCE         = "lettuce"
+    MAIZE           = "maize"
+    RADISH          = "radish"
+    WATERMELON      = "watermelon"
+    TOMATO          = "tomato"
+    MUSHROOM        = "mushroom"
+    PEPPER          = "pepper"
+    PINEAPPLE       = "pineapple"
+    BERRY           = "berry"
+    CHARD           = "chard"
+
+class ItemPalette(str, Enum):
+    BOMB            = "bomb"
+    CONTAINER       = "container"
+    KEY             = "key"
+    ARROW           = "arrow"
+    BOLT            = "bolt"
+    COIN            = "coin"
+
+class MaterialPalette(str, Enum):
+    COTTON          = "cotton"
+    THATCHES        = "thatches"
+    WOOD            = "wood"
+    RED             = "red-dye"
+    BLUE            = "blue-dye"
+    YELLOW          = "yellow-dye"
+    GREEN           = "green-dye"
+    CLAY            = "clay"
+    MARBLE          = "marble"
+    GRANITE         = "granite"
+    FELDSPAR        = "feldspar"
+    IRON            = "iron"
+    COPPER          = "copper"
+    GOLD            = "gold"
+
+class ShieldPalette(str, Enum):
+    BUCKLER         = "buckler"
+    KITE            = "kite"
+    EMBLEM          = "emblem"
+
+class UtilityPalette(str, Enum):
+    LANTERN         = "lantern"
+    STAVE           = "stave"
+    SAPPHIRE        = "sapphire"
+    EMERALD         = "emerald"
+    RUBY            = "ruby"
+
+class ToolPalette(str, Enum):
+    SHOVEL          = "shovel"
+    AXE             = "axe"
+    PICKAXE         = "pickaxe"
+    HAMMER          = "hammer"
+    HOE             = "hoe"
+    SCYTHE          = "scythe"
+
+class WeaponPalette(str, Enum):
+    SWORD           = "sword"
+    DAGGER          = "dagger"
+    KNIFE           = "knife"
+    SPEAR           = "spear"
+    LONGBOW         = "longbow"
+    CROSSBOW        = "crossbow"
+    CANE            = "cane"

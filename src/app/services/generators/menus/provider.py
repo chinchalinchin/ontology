@@ -28,7 +28,10 @@ from app.static.semantics import (
     Fonts,
     Shortcuts
 )
-from app.services.factories.assets import AssetFactory
+from app.services.factories import (
+    AssetFactory,
+    ControllerFactory
+)
 from app.models.properties import WidgetProperties
 from app.models.state import (
     PaneState,
@@ -52,7 +55,7 @@ from app.game.menus.bindings import (
     Binding,
     CollectionBinding
 )
-from app.game.menus.modules import Layout
+from app.services.generators.menus.layout import Layout
 from app.services.generators.menus.fabricator import Fabricator
 
 if TYPE_CHECKING:
@@ -162,41 +165,6 @@ class Provider:
                 font=widget.state.font
             )
 
-    # def _bake_pane(self, widget: Widget) -> None:
-    #     if not isinstance(widget.state, PaneState):
-    #         return
-
-    #     w = widget.dimensions.w
-    #     l = widget.dimensions.l
-
-    #     if widget.binding is not None and not isinstance(widget.binding, CollectionBinding):
-    #         widget.state.content_function = widget.binding.bind(w=w, l=l)
-
-    #     if w <= 0 or l <= 0:
-    #         return
-
-    #     primitives = []
-    #     for key, ox, oy in widget.frame.keys(widget.id, widget.state):
-    #         tex_data = self.binder.registry.image(key)
-    #         if not tex_data:
-    #             continue
-    #         tex_ptr, sx, sy, sw, sl = tex_data
-    #         primitives.append((tex_ptr, sx, sy, sw, sl, ox, oy, sw, sl, 1, 1))
-
-    #     if not primitives and widget.state.content_function is None:
-    #         return
-
-    #     canvas_ptr = render.canvas(w, l)
-    #     widget.state.canvas = canvas_ptr
-
-    #     render.construct(canvas_ptr, primitives)
-
-    #     content = widget.state.current()
-    #     if isinstance(content, str) and content:
-    #         font = self.binder.registry.font(widget.state.font)
-    #         if font:
-    #             render.write((canvas_ptr, 0, 0, w, l, 0, 0, w, l), content, font)
-
     # --------------------------------------------------
     # ------------------------------ RECURSION UTILITIES
     # --------------------------------------------------
@@ -273,19 +241,7 @@ class Provider:
 
         # Synchronize initial slot button statuses for CollectionState gizmos
         if isinstance(state, CollectionState):
-            self._sync_collection_slots(pane.name, state, widgets)
-
-    @staticmethod
-    def _sync_collection_slots(
-        pane_name: str,
-        state: CollectionState,
-        widgets: Dict[str, Widget]
-    ) -> None:
-        for i in range(state.capacity):
-            slot_widget = widgets.get(f"{pane_name}-slot-{i}")
-            if slot_widget and isinstance(slot_widget.state, TraversalState):
-                status = Statuses.IDLE.value if state.is_occupied(i) else Statuses.DISABLED.value
-                slot_widget.state.status = status
+            state.sync(pane.name, widgets)
 
     def _expand(self, node: MenuNode, context: MenuContext) -> MenuNode:
         """
@@ -368,7 +324,7 @@ class Provider:
                 self._bind_pane(widget)
 
         ordered_widgets = {w.name: w for w in flattened_list}
-        ctrl = AssetFactory.controller(config.controller)
+        ctrl = ControllerFactory.controller(config.controller)
         focus = self._focus(id, ordered_widgets, graph)
 
         return Menu(

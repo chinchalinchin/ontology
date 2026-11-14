@@ -2,7 +2,7 @@
 
 Widgets are a type of specialized [Asset](./01-assets.md) leveraged for user interfaces. Similar to the core [Asset Categories](./01-assets.md#asset-hierarchy), they possess Properties, State and have extensible components injected into their Frame and Animation interfaces. However, they play a unique role in the [Engine Loop](./00-overview.md#component-engine) and have dedicated systems for their processing and deployment.
 
-Widgets are not declared in a [State file](./00-overview.md#core-state) and are thus not migrated onto the [Board](./00-overview.md#component-board) during [hydration](./12-architecture.md#phase-2-hydration). Widgets have their [Bindings](#bindings) and [Layout](#layouts) configured into [Menus](#menus), that are subsequently injected into the [Application](./00-overview.md#application) when [Events](#events) are thrown.
+Widgets are not declared in a [State file](./00-overview.md#core-state) and are thus not migrated onto the [Board](./00-overview.md#component-board) during [hydration](./12-architecture.md#phase-2-hydration). Widgets have their [Bindings](#bindings) and [Layout](#layouts) configured into [Menus](#configuration-menus), that are subsequently injected into the [Application](./00-overview.md#application) when [Events](#events) are thrown.
 
 ## Widgets: Overview
 
@@ -38,7 +38,7 @@ For example, suppose a Menu Pane has two traversible Widgets. In this example, W
 
 Menus (and their component Widgets) are driven through asychronous *Events*.
 
-As an illustration, the [Engine Loop](./00-overview.md#component-engine) may emit an Event containing a [Menu](#menus) key along with Event Data, e.g. Asset State. When an Event is detected by the [Engine](./00-overview.md#component-engine), it causes the [Application](./00-overview.md#application) to pause the [World Loop](./05-mechanics.md#mechanics-world) and switch contexts into the [Menu Loop](./05-mechanics.md#core-mechanic-menumechanics). 
+As an illustration, the [Engine Loop](./00-overview.md#component-engine) may emit an Event containing a [Menu](#configuration-menus) key along with Event Data, e.g. Asset State. When an Event is detected by the [Engine](./00-overview.md#component-engine), it causes the [Application](./00-overview.md#application) to pause the [World Loop](./05-mechanics.md#mechanics-world) and switch contexts into the [Menu Loop](./05-mechanics.md#core-mechanic-menumechanics). 
 
 Menus (and their component Widgets) communicate state shifts through the Engine's event bus:
 
@@ -52,11 +52,14 @@ Menus (and their component Widgets) communicate state shifts through the Engine'
 
 #### Concept: Contextuality
 
-When the Board is paused by a MenuEvent, a dedicated [Mechanic](./05-mechanics.md) takes over. During this phase, [MenuMechanic](./05-mechanics.md) switches [Device Context](./02-sprites.md#device-contexts) contexts and translates the [Device mappings](./02-sprites.md#device) to Widget State changes. 
+When the Board is paused by a MenuEvent, [MenuMechanics](./05-mechanics.md#core-mechanic-menumechanics) switches the [Device Context](./02-sprites.md#device-contexts) to `menu` and translates hardware inputs into traversal and selection actions.
 
-These State changes then map back onto Asset State changes through Event notifications sent to the Engine Bus. For example, a Player may traverse the Button Widgets in an Inventory Menu and select a new piece of Equipment (see [Inventory Menu](#menus) below for more detail); This generates an StateEvent from the Inventory Menu. This Event is processed by the Bus and the Player state is in turn updated.  
 
-When the Menu enters certain end states, such as the user selecting an Exit Button, the corresponding Widget will emit a TerminalEvent that bubbles up through the Menu and generates a notification to the Bus the MenuEvent has ended. The Board is unpaused, and the game resumes.
+[Controllers](#menus-controllers) mutate bound Asset State directly through the Menu's [Context](#menus-context) or emit asynchronous Events onto the [Engine Bus](./00-overview.md#component-engine). 
+
+For example, selecting an item inside the [Equipment or Pouch Menu](#menu-data) mutates the Context, which is immediately reflected on the next Frame via [Binding closures](#menus-bindings). Conversely, selecting a [Board transition](./12-architecture.md#phase-2-hydration) in the [Main or Pause Menu](#menu-data) emits a StateEvent onto the [Engine Bus](./00-overview.md#component-engine).
+
+When the Menu enters certain end states, such as the user selecting an Exit Button, the corresponding Widget will emit a TerminalEvent that bubbles up through the Menu and generates a notification to the Bus the MenuEvent has ended. The [Board](./00-overview.md#component-board) is then unpaused, and the [World Loop](./05-mechanics.md#mechanics-world) resumes.
 
 ## Category: Widgets
 
@@ -110,7 +113,7 @@ Panes are scaled to a percentage of the underlying [Screen's](./00-overview.md#c
 * `pw`: Percentage of the [Screen](./00-overview.md#component-screen) width.
 * `pl`: Percentage of the [Screen](./00-overview.md#component-screen) length.
 
-Only Panes have a Scale explicitly set in the [Menu Configuration](#menus). All other Widgets have their [Screen](./00-overview.md#component-screen) Positions calculated relative to the Pane in which they are embedded. These Positions are calculated and injected into the Widget during instantation in the [Provider service](#provider).
+Only Panes have a Scale explicitly set in the [Menu Configuration](#configuration-menus). All other Widgets have their [Screen](./00-overview.md#component-screen) Positions calculated relative to the Pane in which they are embedded. These Positions are calculated and injected into the Widget during instantation in the [Provider service](#provider).
 
 **Model: AxisAlignment**
 
@@ -173,6 +176,25 @@ Panes contain a `canvas` to hold a reference to an [Texture](./12-architecture.m
 * `scrolldown(): pageindex++`
 * `scrollup(): pageindex--`
 
+#### Pane: Collections
+
+**State: CollectionState(PaneState)**
+
+Synthesized root Panes of Collection [Gizmos](#menus-gizmos) use CollectionState to window over a live Collection closure:
+
+* `collection_function: Callable[[], List[str]]`: Live closure returning active item keys.
+* `capacity: int`: Total aperture slots in the visible window ($C$).
+* `columns: int`: Number of columns per row ($K$).
+* `offset: int`: Current window offset ($\omega \ge 0$).
+
+**CollectionState: Methods**
+
+* `get_item(slot_index: int) -> str`: Resolves the item key at $\omega + \text{slot\_index}$, or `""` if vacant.
+* `is_occupied(slot_index: int) -> bool`: Asserts $0 \le \omega + \text{slot\_index} < |\text{collection}|$.
+* `sync(pane_name: str, widgets: Dict[str, Widget]) -> None`: Sets occupied aperture slot buttons to `Statuses.IDLE` and vacant slots to `Statuses.DISABLED`.
+* `scroll(direction: str, slot_index: int) -> bool`: Advances or decrements $\omega$ when traversal crosses the active scroll boundary ($\pm 1$ on `WEST`/`EAST` for 1D strips where $C \le K$; $\pm K$ on `NORTH`/`SOUTH` for 2D grids where $C > K$).
+& `clamp_slot(slot_index: int) -> Optional[int]`: Clamps focus to the highest occupied slot index in the aperture window after pagination.
+
 ### Widget: Buttons
 
 Buttons are *traversible* Widgets. They have a *Status* that changes as they are traversed. 
@@ -233,22 +255,23 @@ Each Icon Asset is a horizontal row of Frames, indexed sequentially by the order
 Due to the nature of Icons as representations of other Assets, Icons have unique constraints. The following Icon sheets *must* exist for the game to function properly,
 
 * `digits`: A sheet of numeric digits 0 - 9, keyed as `zero` - `nine`.
-* `weapons`: A sheet of Weapon icons. Keys *must* match Weapon keys specified in the property index `src/assets/sheets/**/*.yaml#sheet.weapons`.
-* `armor`: A sheet of Armor icons. Keys *must* match Armor keys specified in the property index `src/assets/sheets/**/*.yaml#sheets.armor`.
-* `shields`: A sheet of Shield icons. Keys *must* match Shield keys specified in the property index `src/assets/sheets/**/*.yaml#sheets.shields`
-* `utilities`: A sheet of Utility icons. Keys *must*  match Utility keys specified in the property index `/src/assets/sheets/**/*.yaml#sheets.utilities`
-* `tools`: A sheet of Tool icons. Keys *must* match Tool keys specified in the property index `src/assets/sheets/**/*.yaml#sheets.tools`
-* `portraits`: TODO
-* `resources`: TODO
-* `items`: TODO
+* `weapons`: A sheet of Weapon icons Keys *must* match `src/assets/sheets/**/*.yaml#sheets.weapons`.
+* `armor`: A sheet of Armor icons. Keys *must* match `src/assets/sheets/**/*.yaml#sheets.armor`.
+* `shields`: A sheet of Shield icons. Keys *must* match `src/assets/sheets/**/*.yaml#sheets.shields`.
+* `utilities`: A sheet of Utility icons. Keys *must* match `src/assets/sheets/**/*.yaml#sheets.utilities`.
+* `tools`: A sheet of Tool icons. Keys *must* match `src/assets/sheets/**/*.yaml#sheets.tools`.
+* `items`: A sheet of usable Item icons. Keys *must* match `src/assets/sheets/**/*.yaml#sheets.sprites.*.inventory.pouch`. More generally, Keys *must* match the Item partitions (TODO).
+* `materials`: A sheet of raw Material icons. Key *must* match the [MaterialIndex partitions](./01-assets.md#concept-materiality).
+* `crops`: A sheet of harvested Crop icons. Keys *must* match `src/assets/resources/**/*.yaml#resources.crops`.
+* `portraits`: A sheet of character Portrait icons keyed by persona identifier. `src/assets/sheets/**/*.yaml#sheets.sprites.*.psyche.persona`.
  
 **State: IconState**
 
 * `icon: str`: Key determining which frame from the Icon sheet is displayed. 
 
-**Frame: IndexFrame**
+**Frame: IconFrame**
 
-* `keys(id, state): return [("id-{state.icon}", 0, 0)]`
+* `keys(id, state): return [("{id}-{state.icon}", 0, 0)]`
 * `index(id, properties): return [{ "{id}-{frame}": (i*w, 0, w, l) for i, frame in enumerate(properties.frames)} ]`
 
 ## Configuration: Menus
@@ -400,8 +423,24 @@ bind:
 bind:
     schema: select
     target:
-        selection: scrolldown | scrollup | new | load | menu
-        selector: <widget-name> | <board-id> | <menu-id>
+        selection: scrolldown | scrollup | slot | grip | new | load | save | menu | quit
+        selector: <widget-name> | <hand-key> | <board-id> | <menu-id>
+        index: <optional-slot-index>
+
+# 6. CollectionBinding
+bind:
+    schema: collection
+    target:
+        source: context.<path>.<to>.<collection>
+        capacity: <int>
+        columns: <int>
+
+# 7. ApertureBinding
+bind:
+    schema: aperture
+    target:
+        selector: <gizmo-pane-name>
+        index: <slot-index>
 
 ```
 
@@ -453,12 +492,14 @@ class ScrollController(Controller):
 Bindings are enumerated and summarized below:
 
 * `selection`: Menu Action commands.
-    * `SCROLLUP`: Call `scrollup()` on a Page DisplayState
-    * `SCROLLDOWN`: Call `scrolldown()` on a Page DisplayState
-    * `SELECT`: Select the focused Widget.
-    * `NEW`: 
-    * `LOAD`:
-    * `MENU`: 
+    * `SCROLLUP`: Call `scrollup()` on a PaneState.
+    * `SCROLLDOWN`: Call `scrolldown()` on a PaneState.
+    * `SLOT`: Equip or interact with the item at aperture `index` on the CollectionState Gizmo `selector`.
+    * `GRIP`: Latch Grip to `selector` in [Pouch Menu](#menu-data) and toggle Status to `selected`.
+    * `NEW` / `LOAD`: Emit a TerminalEvent and StateEvent.
+    * `SAVE`: Serialize current [Board](./00-overview.md#component-board) state.
+    * `MENU`: Emit a MenuEvent.
+    * `QUIT`: Reset the [Board](./00-overview.md#component-board) and return to the [Main Menu](#menu-data).
 * `selector`: The name of a target to be used in the SelectionEvent.
     * `selections in [SCROLLUP, SCROLLDOWN, SELECT]`: Selector is the target Widget name.
     * `selections == MENU`: Selector is the target Menu.
@@ -491,6 +532,13 @@ The Binding of a Gizmo's synthesized root Pane is determined by the Binding's `s
 
 * `collections`: A Collection Gizmo is a synthetic grid of Buttons that enumerates and displays a list of Icon strings bound to its `target.source`.
 
+**Behavior: Edge-Triggered Pagination**
+
+Collection Gizmos do not use explicit scroll arrow buttons. Instead, aperture slot buttons are directly traversable and paginate automatically when directional input crosses the aperture boundary:
+
+* **1D Strip Gizmos ($C \le K$, used in `Menu: Equipment`)**: (Used in the [Equipment Menu](#menu-data)) `west` and `east` traverse horizontally within the strip and shift `offset` by $\pm 1$ at the left ($c = 0$) and right ($c = K - 1$) boundaries when $|\text{collection}| > C$. `north` and `south` immediately traverse between adjacent equipment rows via [Traversal Graph](#concept-traversibility).
+* **2D Grid Gizmos ($C > K$)**: (Used in the [Pouch and Pack Menus](#menu-data)) `north` and `south` shift `offset` by $\pm K$ (one row) at the top ($r = 0$) and bottom ($r = R - 1$) boundaries.
+
 ## Menu: Services
 
 ### Service: Provider
@@ -507,12 +555,7 @@ The Binder Service instantiates Bindings and generates the callable functions le
 
 The Fabricator Service synthesizes Gizmo Widgets and their Pane Bindings.
 
-## Menu: Modules
-
-### Module: Layouts
-
-!!! @TODO(04-06)
-    This seems like it should be a Service.
+### Service: Layout
 
 Consider a `stack` Pane with two children `dock` Panes, each with three Buttons, represented by the matrix, `[[a,b,c], [d, e, f]]`. Consider the problem of the Menu `focus` residing on the `b` Button element when the user presses `south`. In this case, the Menu must shift focus to the `e` element. The `graph` attribute of the Menu holds this relational struture. 
 
@@ -525,34 +568,18 @@ As this example illustrates, a Menu must have access to the Traversal graph. Thi
 
 To generate the Render List, when a Menu is triggered, the Layout Module executes the following sequence:
 
-1. **Resolve Pane Anchors**: Convert its root Pane's Scale and Justification to absolute coordinates. This becomes the Pane's anchor `(x, y)`.
-2. **Align Children**: Use the Pane's anchor to align its children.
-3. **Apply Algorithm**:
-    * If `pane.layout == dock`
-        * If `alignment == start`: TODO
-        * If `alignment == end`: TODO
-        * If `alignment == center`: Calculate the maximum width of all children. Offset each child's X coordinate by (Max Width - Child Width) // 2.
-    * If `pane.layout == stack`:
-        * If `alignment == start`: TODO
-        * If `alignment == end`: TODO
-        * If `alignment == center`: Calculate the maximum height of all children. Offset each child's Y coordinate by (Max Height - Child Height) // 2.
-    * If `pane.layout == tab`: Alignments do not apply. Pane children are Panes. Each receives the same ScreenPosition. Algorithm recurses to find the coordinates of the grandchildren.    
-4. **Flatten**: Return a list of standard Asset objects. The engine now treats them exactly like Game Board assets, completely ignoring the Menu hierarchy.
+1. **Quantize 9-Slice Spans (Post-Order)**: Recursively walk the Menu Tree bottom-up (`Layout._quantize`). Leaf and child Pane dimensions are resolved first; each parent Pane bounds its requested `(w_req, l_req)` below by the aggregate footprint of its children (`DOCK`, `STACK`, or `OVERLAY` plus `gap` and `margins`) before quantizing `multiple` (`nx`, `ny`) and `span` to 9-slice tile multiples.
+2. **Resolve Root Pane Anchors**: Convert each root Pane's `span` and `justification` to absolute screen coordinates `(x, y)`.
+3. **Align Children (Pre-Order)**: Recursively position child Widgets relative to their parent Pane's anchor along the Pane's `layout` axis (`dock`, `stack`, or `overlay`) using `Layout._resolve_axis`.
+4. **Flatten**: Return the flattened list of instantiated `Widget` objects.
 
 **Interface: Traversal Graph**
 
-The prior example oversimplifies considerations; Irregular shaped grids, e.g. `[[a,b,c], [d, e]]`, need to be treated with special care.
+To construct the Traversal Graph, the Layout Service evaluates Axis-Aligned Bounding Box (AABB) overlaps across traversable Buttons:
 
-To construct the TraversalGraph, the Layout must use an Axis-Aligned Bounding Box (AABB) ray-casting approach after all absolute coordinates are calculated. The algorithm for the Layout to link `south` from Button A:
-
-* Filter all other Buttons whose absolute `y`-coordinate is strictly greater than Button A's `y`-coordinate.
-* Filter this subset to only include Buttons whose `x`-coordinate domain ($state.position.x$ to $state.position.x + dimensions.w$) overlaps with Button A's `x`-coordinate domain.
-* Find the Button with the minimum `y`-coordinate from this overlapping subset. 
-* This is the `south` neighbor. Repeat for all cardinal directions.
-
-The resultant graph is saved and returned.
-
-When the [MenuMechanics](./05-mechanics.md#core)fires, it does not care about spatial layout. It simply looks at `focus` (e.g., `'a'`), checks the Device poll for a `east` command, looks up `graph['a']['east']`, and updates the focus to `'b'`, decoupleing Menu Layouts from Menu logical relationships.
+* **Graph Inclusion**: Passive display slots (`status == Statuses.DISABLED`) are excluded from `menu.graph`. All Gizmo aperture slot buttons (`SelectBinding` with `selection == Selections.SLOT`) are always indexed into Traversal Graph regardless of initial vacancy so dynamic collection changes and pagination never leave stale or missing graph edges.
+* **Cardinal Raycast**: For each Button, the Layout Service links the nearest overlapping Button along each cardinal axis (`north`, `south`, `east`, `west`).
+* **Runtime Traversal**: When directional input is polled, [MenuMechanics](./05-mechanics.md#core-mechanic-menumechanics) first checks whether focus resides on a Gizmo aperture boundary that can scroll. Otherwise, it looks up the neighbor in `menu.graph` and shifts focus only if `neighbor.state.status != Statuses.DISABLED`.
 
 ## Board: Overlays
 
@@ -571,9 +598,12 @@ The HUD is always painted on top of all dynamic Assets; as such, it is stored in
 2. Editor: TODO
     * **Payload**: `EditorContext` (TBD)
     * **Events**: TODO
-3. Inventory: Instantiated from the world loop via `MenuEvent('inventory')` in `PlayerMechanics`.
-    * **Payload**: `InventoryContext(inventory: Inventory)`
-    * **Events**: `UpdateEvent` (slot scrolling and selection previews), `TerminalEvent` (closing menu and unpausing world)
+3. **Equipment, Pouch & Pack (Inventory Menus)**: Instantiated from the world loop via `MenuEvent('equipment')`, `MenuEvent('pouch')`, and `MenuEvent('pack')` in `PlayerMechanics`:
+    * **Payload**: `InventoryContext(inventory: Inventory, slots: Slots, active_grip: str = "right")`
+    * **`equipment`**: Displays passive `Gear` slots (`armor`, `shield`) and three 1x4 strip Gizmos mapping `inventory.sheathe` $\to$ `slots.equipment.weapon`, `inventory.belt` $\to$ `slots.equipment.tool`, and `inventory.bag` $\to$ `slots.equipment.utility`.
+    * **`pouch`**: Displays interactive `right` and `left` Grip buttons (`Selections.GRIP`) and a 2x4 grid Gizmo mapping `inventory.pouch` $\to$ `slots.grip.<active_grip>`.
+    * **`pack`**: Displays two 2x4 grid Gizmos for `inventory.pack` (`materials`) and `inventory.sack` (`crops`) alongside the Craft Formulae pane.
+    * **Events**: `TerminalEvent` (closing menu and unpausing world). Slot icon updates and Gizmo pagination evaluate reactively through `IconBinding` and `ApertureBinding` closures without emitting `UpdateEvent`.
 4. Market: TODO
     * **Payload**: `MarketContext(buyer: Inventory, seller: Inventory)` (TBD)
     * **Events**: TODO

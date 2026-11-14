@@ -1,4 +1,4 @@
-# Task: Design
+# Task: Design - Composition
 
 **Priorities**
 
@@ -15,7 +15,7 @@
 * **Signs** If adding Signs, ensure the text is stored in the [Library](#library) and accounts for all current [Plot](#ontology-plot) states. Sign Personas may be added freely, but all Sign Personas must have the following Lexicon keys: `spring`, `summer`, `autumn`, `winter`.
 * **Property Indexing** Many Assets may need their properties adjusted to render or behave properly (This does not include `dimensions`; all `dimensions` are accurate.). If using an Asset that is missing properties or has misconfigured properties, set or adjust them accordingly.
 
-## Design: Themes
+## Composition: Themes
 
 YAML anchors are processed by `pyyaml` prior to being loaded in the [Application](#application). They should be used like a theme or stylesheet. Declare theme variables (anchors) at the top of each [Composition Model](#composition-model) and reference them to consistently "style" the Composition.
 
@@ -32,7 +32,7 @@ layers:
 # --------------------------------------------------
 ```
 
-## Design: (Blueprint, Material) Space
+## Composition: (Blueprint, Material) Space
 
 **Material Genera**
 
@@ -42,6 +42,6 @@ layers:
 
 {{ file(properties.paths.root + 'docs/static/md/blueprint-schema.md') }}
 
-## Design: Material Pallete
+## Composition: Material Pallete
 
 {{ file(properties.paths.root + 'docs/static/md/material-palette.md') }}

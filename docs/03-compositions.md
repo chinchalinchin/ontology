@@ -111,7 +111,7 @@ Compositions are organized around [Struts](#craft-struts). They serve as abstrac
 
 ### Defintion: Roots & Branches
 
-Every Composition has atleast one [Strut](./01-assets.md#struts), known as the Root Strut. If it has more than one Strut, the other Struts are known as Branch Struts. 
+Every Composition has atleast one [Strut](#craft-struts), known as the Root Strut. If it has more than one Strut, the other Struts are known as Branch Struts. 
 
 A Composition contains other Assets in predefined configurations, known as the Composition Components. Each Strut in a Composition has its own Components.
 

@@ -21,7 +21,8 @@ from app.game.logic.mechanics import CombatMechanics
 from app.static.semantics import (
     Intentions, 
     AssetInstances, 
-    AssetCategories
+    AssetCategories,
+    Mechanics
 )
 from app.models.state import (
     SpriteState, 
@@ -40,7 +41,8 @@ from app.models.groups import EquipmentGroup
 from libs.core.models import (
     Position, 
     Dimensions, 
-    Hitbox
+    Hitbox,
+    Velocity
 )
 
 # -----------------------------------------------------
@@ -93,7 +95,7 @@ def _create_player_attacker(x=10, y=10, action="slash", direction="right", frame
         animation=AnimationState(action=action, direction=direction, frame=frame),
         intention=Intentions.ATTACK
     )
-    state.inventory.equipment.weapon = "shortsword"
+    state.slots.equipment.weapon = "sword"
     return Asset(tax, props, state, SpriteFrame(), SpriteAnimation(), StaticHitbox())
 
 
@@ -138,7 +140,7 @@ def _create_reactable_target(x=50, y=20):
 
 
 def _create_equipment():
-    shortsword_props = SheetProperties(
+    sword_props = SheetProperties(
         dimensions=Dimensions(w=64, l=64),
         attackboxes={
             "slash-right-3": [Hitbox(Position(40, 16), Dimensions(24, 32))]
@@ -148,7 +150,7 @@ def _create_equipment():
         armor={},
         tools={},
         utilities={},
-        weapons={"shortsword": shortsword_props}
+        weapons={"sword": sword_props}
     )
 
 # --------------------------------------------------------------------------------------
@@ -228,7 +230,7 @@ def test_combat_mechanics_inactive_attackbox_filtered(mock_board):
 def test_combat_mechanics_unarmed_bypasses_melee(mock_board):
     mechanic = CombatMechanics()
     attacker = _create_player_attacker(x=10, y=10)
-    attacker.state.inventory.equipment.weapon = None
+    attacker.state.slots.equipment.weapon = None
     target = _create_sprite_target(x=50, y=20, health=50)
 
     mock_board.equipment = _create_equipment()
@@ -237,3 +239,101 @@ def test_combat_mechanics_unarmed_bypasses_melee(mock_board):
 
     mechanic.update(mock_board, 0.016, MagicMock(), MagicMock())
     assert target.state.meters.health.current == 50
+
+def test_collision_mechanics_traverse_stairs_up_ascent_and_descent(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    """
+    Verifies Phase 0 vertical stair (UP) elevation ascent (vy < 0) and descent (vy > 0).
+    """
+    payload = mock_payload()
+    mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    player = mock_board.player()
+    stairs = mock_board.instances(AssetInstances.STAIRS.value)[0]
+
+    stairs.elevation = 0
+    stairs.state.delta = 1
+    stairs.state.direction = "up"
+    stairs.state.position = Position(500, 500)
+
+    # Ascent: place foot inside upper 85% of stair tread with northward velocity (vy < 0)
+    player.elevation = 0
+    player.state.position = Position(
+        stairs.state.position.x,
+        stairs.state.position.y - player.dimensions.l + int(stairs.dimensions.l * 0.5),
+    )
+    player.state.velocity = Velocity(0.0, -20.0)
+
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert player.elevation == 1
+
+    # Descent: place foot in lower 15% (>= 0.85) of stair tread with southward velocity (vy > 0)
+    player.state.position = Position(
+        stairs.state.position.x,
+        stairs.state.position.y - player.dimensions.l + int(stairs.dimensions.l * 0.9),
+    )
+    player.state.velocity = Velocity(0.0, 20.0)
+
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert player.elevation == 0
+
+
+def test_collision_mechanics_traverse_stairs_horizontal_left_and_right(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    """
+    Verifies Phase 0 horizontal stair (RIGHT and LEFT) elevation transitions.
+    """
+    payload = mock_payload()
+    mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    player = mock_board.player()
+    stairs = mock_board.instances(AssetInstances.STAIRS.value)[0]
+
+    stairs.elevation = 0
+    stairs.state.delta = 1
+    stairs.state.direction = "right"
+    stairs.state.position = Position(500, 500)
+
+    # RIGHT Ascent (vx > 0, tread_progress >= 0.15)
+    player.elevation = 0
+    player.state.position = Position(
+        stairs.state.position.x - (player.dimensions.w // 2) + int(stairs.dimensions.w * 0.5),
+        stairs.state.position.y,
+    )
+    player.state.velocity = Velocity(20.0, 0.0)
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert player.elevation == 1
+
+    # RIGHT Descent (vx < 0, tread_progress <= 0.15)
+    player.state.position = Position(
+        stairs.state.position.x - (player.dimensions.w // 2) + int(stairs.dimensions.w * 0.1),
+        stairs.state.position.y,
+    )
+    player.state.velocity = Velocity(-20.0, 0.0)
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert player.elevation == 0
+
+    # LEFT Ascent (vx < 0, tread_progress <= 0.85)
+    stairs.state.direction = "left"
+    player.state.position = Position(
+        stairs.state.position.x - (player.dimensions.w // 2) + int(stairs.dimensions.w * 0.5),
+        stairs.state.position.y,
+    )
+    player.state.velocity = Velocity(-20.0, 0.0)
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert player.elevation == 1
+
+    # LEFT Descent (vx > 0, tread_progress >= 0.85)
+    player.state.position = Position(
+        stairs.state.position.x - (player.dimensions.w // 2) + int(stairs.dimensions.w * 0.9),
+        stairs.state.position.y,
+    )
+    player.state.velocity = Velocity(20.0, 0.0)
+    mechanics.update(mock_board, 0.016, mock_bus, payload)
+    assert player.elevation == 0

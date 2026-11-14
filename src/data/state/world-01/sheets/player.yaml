@@ -3,7 +3,6 @@ sheets:
     - id: player
       name: player
       layer: '0'
-      depth: 0
       position:
         x: 05
         y: 60
@@ -23,13 +22,32 @@ sheets:
         parameters:
           action:
             radius: 30
+          hand: right
       inventory: 
-        pack: null
-        pouch: null
+        belt:
+          - shovel
+          - pickaxe
+        bag: 
+          - lantern
+          - sapphire
+        sheathe: 
+          - sword
+          - spear
+          - crossbow
+        pack: 
+          wood: 10
+        pouch: 
+          bomb: 5
+          bolt: 20
+          arrow: 20
+        sack: {}
+      slots:
         equipment:
           armor: null
           tool: null
           utility: null
           weapon: sword
           shield: buckler
-        wallet: 0
+        grip:
+          left: null
+          right: null

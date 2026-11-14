@@ -57,6 +57,8 @@ from app.models.state.assets import (
     Inventory,
     Memory,
     Trajectory,
+    Slots,
+    Grip,
     # ---- WIDGET STATES
     IconState,
     TraversalState,
@@ -133,6 +135,8 @@ __all__ = [
     'Inventory',
     'Memory',
     'Trajectory',
+    'Slots',
+    'Grip',
     'MutatorTriggers',
     'MutatorParameters',
     'Mutators',

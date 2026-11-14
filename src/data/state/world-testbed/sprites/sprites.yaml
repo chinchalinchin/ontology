@@ -3,7 +3,6 @@ sheets:
     - id: jasilynn
       name: test-sprite-0
       layer: '0'
-      depth: 0
       position:
         x: 215
         y: 15
@@ -62,16 +61,24 @@ sheets:
           player:
             x: 100
             y: 200
-      inventory: 
-        pouch: null
-        pack: null
+      slots:
         equipment:
           armor: null
           tool: null
           utility: null
-          weapon: shortsword
+          weapon: sword
           shield: null
-        wallet: 0
+        grip:
+          left: null
+          right: null
+      inventory:
+        bag: []
+        belt: []
+        sheathe:
+          - sword 
+        pouch: {}
+        pack: {}
+        sack: {}
     - id: archaxes
       name: test-sprite-1
       layer: '0'
@@ -134,13 +141,21 @@ sheets:
           player:
             x: 100
             y: 200
-      inventory: 
-        pouch: null
-        pack: null
+      slots:
         equipment:
           armor: null
           tool: null
           utility: null
           weapon: sword
           shield: null
-        wallet: 0
+        grip:
+          left: null
+          right: null
+      inventory:
+        bag: []
+        belt: []
+        sheathe:
+          - sword 
+        pouch: {}
+        pack: {}
+        sack: {}

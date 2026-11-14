@@ -10,17 +10,11 @@
 Craft HitboxSchema implementations.
 """
 # Standard Libraries
-from typing import (
-    Optional,
-    List
-)
+from typing import List
 import logging
 
 # Application Libraries
-from app.assets.base import (
-    Frame,
-    HitboxSchema
-)
+from app.assets.base import HitboxSchema
 from app.game.logic.relations import MaterialIndex
 from app.models.properties import CraftProperties
 from app.models.state import (
@@ -53,8 +47,7 @@ class ElevatedHitbox(HitboxSchema):
         self,
         properties: CraftProperties,
         state: CraftState,
-        elevation: int,
-        frame: Optional[Frame] = None
+        elevation: int
     ) -> List[Hitbox]:
         if not properties.hitboxes:
             return []
@@ -82,7 +75,6 @@ class MaterialHitbox(HitboxSchema):
         properties: CraftProperties,
         state: CraftState,
         elevation: int,
-        frame: Optional[Frame] = None
     ) -> List[Hitbox]:
         if not MaterialIndex().is_obstacle(state.blueprint):
             return []

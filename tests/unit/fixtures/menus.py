@@ -19,7 +19,6 @@ from app.game.menus.core import (
     EventData,
     Menu,
 )
-from app.game.menus.modules import Layout
 from app.game.screen import Screen
 from app.models.config import ConfigurationSchema
 from app.models.config.menus import (
@@ -46,6 +45,7 @@ from app.models.menus import (
 )
 from app.models.state import CollectionState
 from app.services.generators.menus import Provider
+from app.services.generators.menus import Layout
 from app.services.orchestration import Migrator
 from app.static.semantics import (
     AssetInstances,
@@ -99,7 +99,7 @@ def mock_meter_bind() -> MenuBinding:
 def mock_icon_bind() -> MenuBinding:
     return MenuBinding(
         schema=Bindings.ICON.value,
-        target=IconTarget(icon="context.sprite.inventory.equipment.weapon"),
+        target=IconTarget(icon="context.sprite.slots.equipment.weapon"),
     )
 
 
@@ -181,7 +181,7 @@ def mock_collection_state() -> CollectionState:
     return CollectionState(
         id="transparent",
         name="inventory-pack-grid",
-        collection_function=lambda: ["shortsword", "dagger", "buckler"],
+        collection_function=lambda: ["sword", "dagger", "buckler"],
         capacity=8,
         columns=4,
         offset=0,
@@ -230,8 +230,15 @@ def mock_menu_context(
                 sprite=speaker,
                 object=sign,
             )
-        if menu_id == Menus.INVENTORY.value:
-            return InventoryContext(inventory=player.state.inventory)
+        if menu_id in (
+            Menus.EQUIPMENT.value,
+            Menus.POUCH.value,
+            Menus.PACK.value,
+        ):
+            return InventoryContext(
+                inventory=player.state.inventory,
+                slots=player.state.slots,
+            )
         if menu_id == Menus.PAUSE.value:
             return PauseContext(board=mock_board)
         if menu_id == Menus.TEXT.value:

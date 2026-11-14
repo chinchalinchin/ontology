@@ -87,8 +87,8 @@ class SpriteFrame(StateFrame):
         frame_keys = super().keys(id, state)
         
         # Iterate over active equipment in strict Z-index order: Base -> Armor -> Utility -> Tool -> Weapon
-        if state.inventory.equipment:
-            eq = state.inventory.equipment
+        if state.slots.equipment:
+            eq = state.slots.equipment
             for eq_key in (eq.armor, eq.utility, eq.tool, eq.weapon, eq.shield):
                 if eq_key:
                     key_str = settings.SEPARATOR.join([
@@ -107,7 +107,7 @@ class SpriteFrame(StateFrame):
             ])
             frame_keys.append((expr_key, expr.offset.x, expr.offset.y))
             
-        if state.intention is not None and state.intention == Intentions.ATTACK:
+        if state.intention is not None and state.intention == Intentions.ATTACK.value:
             logger.info(f"SpriteFrame generated keys: {frame_keys}")
         
         return frame_keys

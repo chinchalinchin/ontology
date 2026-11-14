@@ -12,15 +12,21 @@ mappings:
     world:
       menus:
         pause: 30         # SDL_SCANCODE_1
-        inventory: 31     # SDL_SCANCODE_2
-        trade: 33         # SDL_SCANCODE_4
+        equipment: 31     # SDL_SCANCODE_2
+        pouch: 32         # SDL_SCANCODE_3
+        pack: 33          # SDL_SCANCODE_4
+        trade: 34         # SDL_SCANCODE_5
       intentions:
         interact: 8       # SDL_SCANCODE_E
         sprint: 224       # SDL_SCANCODE_LCTRL
         speak: 226        # SDL_SCANCODE_LALT
         mine: 225         # SDL_SCANCODE_LSHIFT
         attack: 44        # SDL_SCANCODE_SPACE
-        build: 32         # SDL_SCANCODE_3
+        block: 6          # SDL_SCANCODE_C
+        build: 5          # SDL_SCANCODE_B
+      grips:
+        left: 20          # SDL_SCANCODE_Q
+        right: 9          # SDL_SCANCODE_F
       goals:
         up: 26            # SDL_SCANCODE_W
         down: 22          # SDL_SCANCODE_S

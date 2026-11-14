@@ -1,5 +1,68 @@
-# Task: Design Menu
+# Task: Design - Menu
 
-TODO: explain task
+**Priorities**
 
-TODO: parameterize menu specs
+* Implement the current [Menu Specification](#menu-specification) by creating/editing the [Menu](#menu-model) `.yaml` file.
+
+**Constraint: Menus**
+
+* Your primary objective is not to analyze code. Any code present in the context is meant to inform Menu design decisions.
+* Do not add details to the [Menu Specification](#menu-specification). Implement the Menu exactly as described. 
+
+**Guideline: Menus**
+
+* The [Data View](#view-data) provides a view into Widget properties and example Menus that have been successfully implemented in the Ontology framework.
+
+## Menu: Model
+
+The current implementation of the [Menu Specification](#menu-specification) is given below,
+
+```yaml
+{{ file(properties.paths.root + 'src/data/config/menus/' + tools.parameters.manager.board.phase + '/main.yaml')}}
+```
+
+## Menu: Diagrams
+
+Mermaid Diagrams from the [Documentation](#view-documentation) that are relevant to the Design Task.
+
+**sprite-inventory.mmd**
+
+```mmd
+{{ file(properties.paths.root + properties.paths.diagrams + 'sprite-inventory.mmd')}}
+```
+
+**menu-flow.mmd**
+
+```mmd
+{{ file(properties.paths.root + properties.paths.diagrams + 'menu-flow.mmd')}}
+```
+
+## Menu: Themes
+
+YAML anchors are processed by `pyyaml` prior to being loaded in the [Application](#application). They should be used like a theme or stylesheet. Declare theme variables (anchors) at the top of each [Menu Model](#menu-model) and reference them to consistently "style" the Menu.
+
+```yaml
+# ------------------------------------ THEME: MENU - <menu>
+themes:
+  colors:
+    pane: &pane dark-solid
+    pane-alt: &pane-alt dark-texture
+  alignments:
+    top: &top
+      horizontal: center
+      vertical: start
+    center: &center
+      horizontal: center
+      vertical: center
+    start: &start
+      horizontal: start
+      vertical: center
+  dimensions:
+    root: &root
+      pw: 0.67
+      pl: 0.80
+    column: &column
+      pw: 0.32
+      pl: 0.60
+# --------------------------------------------------------------
+```

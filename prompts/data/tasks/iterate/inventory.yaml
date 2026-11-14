@@ -1,0 +1,145 @@
+# ----------------------------------------------------
+anchors:
+  description: &description TODO
+  title: &title TODO
+# ----------------------------------------------------
+context: true
+# ----------------------------------------------------
+task:
+# ----------------------------------------------------
+  template: iterate/implementation.md.j2
+# ----------------------------------------------------
+  parameters:
+    description: *description
+    title: *title
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    # --------------------------------------------
+    manager:
+      board: true
+      docs: true
+      templates: false
+    # --------------------------------------------
+    source:
+      data: true
+      filter: true
+    # --------------------------------------------
+    shell:
+      directory: true
+    # --------------------------------------------
+    tests:  
+      configuration: false
+      pipeline: false
+      session: false
+# -----------------------------------------------------
+  parameters:
+    # --------------------------------------------
+    manager:
+      board:
+        phase: '06-04'
+        action: refactor
+      docs:
+        exclude:
+          # - 00-overview
+          # - 01-assets
+          # - 02-sprites
+          - 03-compositions
+          - 04-intentions
+          # - 05-mechanics
+          # - 06-widgets
+          - 07-acoustics
+          - 08-narratives
+          - 09-ecology
+          - 10-chemistry
+          - 11-emergence
+          # - 12-architecture
+      templates:
+        - template-backlog
+        - template-bug
+    # --------------------------------------------
+    source:
+      filter:
+        default: AND
+        queries:
+          # -------------------------------------
+          - title: Application Core Components
+            scan:
+              domain: [ system ]
+              app: [ core, component ]
+          # ------------------------------------
+          - title: Asset Abstracts
+            scan:
+              domain: [ abstract ]
+              app: [ asset ]
+          # ------------------------------------
+          - title: Sheet Models
+            scan:
+              domain: [ model ]
+              category: [ sheets ]
+          # ------------------------------------
+          - title: Sheet Implementations
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              category: [ sheets ]
+          # -------------------------------------
+          - title: Widget Models
+            scan:
+              domain: [ model ]
+              category: [ widgets ]
+          # ------------------------------------
+          - title: Widget Implementations
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              category: [ widgets ]
+          # -------------------------------------
+          - title: Menu Abstracts
+            scan:
+              domain: [ abstract ]
+              app: [ menu ]
+          # -------------------------------------
+          - title: Menu Models
+            scan:
+              domain: [ model ]
+              app: [ menu ]
+          # -------------------------------------
+          - title: Menu Bindings
+            scan:
+              domain: [ concrete ]
+              app: [ menu ]
+              menu: [ binding ]
+          # -------------------------------------
+          - title: Menu Services
+            scan:
+              domain: [ system ]
+              app: [ menu, service ]
+          # -------------------------------------
+          - title: Inventory Controller
+            scan:
+              domain: [ concrete ]
+              app: [ menu ]
+              menu: [ controller ]
+              workflows: [ inventory ]
+          # -------------------------------------
+          - title: User Domain
+            scan:
+              domain: [ user ]
+          # -------------------------------------
+      data:
+        properties: [ sheets/sprites, widgets ]
+        state: [ world-01/sheets ]
+        configurations: [ menus/inventory, mappings ]
+        templates: [ ]
+    # --------------------------------------------
+    shell:
+      directory: |
+        tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
+    # --------------------------------------------
+    tests:
+      pipeline:
+        command: pytest -m
+        marker: app_menu
+        # scope: '**/test_{actuator,cartographer}.py'

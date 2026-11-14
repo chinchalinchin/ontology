@@ -20,6 +20,14 @@ from dataclasses import dataclass, field
 from app.static.semantics import (
     Intentions, 
     Relationships,
+    ItemPalette,
+    ArmorPalette,
+    ShieldPalette,
+    ToolPalette,
+    UtilityPalette,
+    WeaponPalette,
+    MaterialPalette,
+    CropPalette
 )
 from app.models.adapters import (
     PydanticPosition as Position, 
@@ -64,18 +72,41 @@ class Meters:
 
 @dataclass(slots=True)
 class Equipment:
-    armor: Optional[str] = None
-    weapon: Optional[str] = None
-    tool: Optional[str] = None
-    utility: Optional[str] = None
-    shield: Optional[str] = None
+    armor: Optional[Enumerated[ArmorPalette]] = None
+    weapon: Optional[Enumerated[WeaponPalette]] = None
+    tool: Optional[Enumerated[ToolPalette]] = None
+    utility: Optional[Enumerated[UtilityPalette]] = None
+    shield: Optional[Enumerated[ShieldPalette]] = None
+
+@dataclass(slots=True)
+class Grip:
+    left: Optional[Enumerated[ItemPalette]] = None
+    right: Optional[Enumerated[ItemPalette]] = None
+
+@dataclass(slots=True)
+class Slots:
+    equipment: Equipment = field(default_factory=Equipment)
+    grip: Grip = field(default_factory=Grip)
 
 @dataclass(slots=True)
 class Inventory:
-    pack: Optional[Dict[str, int]] = field(default_factory=dict)
-    pouch: Optional[Dict[str, int]] = field(default_factory=dict)
-    equipment: Optional[Equipment] = field(default_factory=Equipment)
-    wallet: int = 0
+    # List Fields (i.e. inventory with only one instance)
+    bag: List[Enumerated[UtilityPalette]] = field(default_factory=list)
+    belt: List[Enumerated[ToolPalette]] = field(default_factory=list)
+    sheathe: List[Enumerated[WeaponPalette]] = field(default_factory=list)
+    # Dict Fields (i.e. inventory that can be accumulated)
+    pouch: Dict[
+        Enumerated[ItemPalette], 
+        int
+    ] = field(default_factory=dict)
+    pack: Dict[
+        Enumerated[MaterialPalette], 
+        int
+    ] = field(default_factory=dict)
+    sack: Dict[
+        Enumerated[CropPalette],
+        int
+    ] = field(default_factory=dict)
 
 # ---------------------------------------------------------------------------------------
 
@@ -136,7 +167,8 @@ class SheetState(AssetState):
     animation: AnimationState = field(default_factory=AnimationState)
     intention: Optional[Enumerated[Intentions]] = Intentions.IDLE.value
     character: Optional[Character] = field(default_factory=Character)
-    inventory: Optional[Inventory] = field(default_factory=Inventory)
+    slots: Optional[Slots] = field(default_factory=Slots)
+    inventory: Optional[Inventory] = field(default_factory=Inventory)    
     meters: Optional[Meters] = field(default_factory=Meters)
     goal: Optional[Goal] = field(default_factory=Goal)
 

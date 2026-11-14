@@ -35,7 +35,7 @@ recipes:
       hitbox: material
   cursors:
     expressions:
-      frame: index
+      frame: icon
       animation: none
       hitbox: none
     projectiles:

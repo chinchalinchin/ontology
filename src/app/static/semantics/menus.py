@@ -55,11 +55,13 @@ class Interactions(str, Enum):
 
 class Menus(str, Enum):
     DIALOGUE        = "dialogue"
-    INVENTORY       = "inventory"
+    EQUIPMENT       = "equipment"
     LOAD            = "load"
     MAIN            = "main"
     OPTIONS         = "options"
+    PACK            = "pack"
     PAUSE           = "pause"
+    POUCH           = "pouch"
     TEXT            = "text"
     TRADE           = "trade"
     VIEW            = "view"
@@ -67,6 +69,7 @@ class Menus(str, Enum):
 class Selections(str, Enum):
     LOAD            = "load"
     MENU            = "menu"
+    GRIP            = "grip"
     NEW             = "new"
     SAVE            = "save"
     SCROLLUP        = "scrollup"

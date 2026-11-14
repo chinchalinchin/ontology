@@ -32,7 +32,6 @@
 | Sheet | Pixie | Base, Animation |
 | Sheet | Sprite | Base, Animation, Velocity, Intention, Inventory, Meters, Memory, Mutators, Goal, Trajectory |
 | Widget | Icon | Base, Icon |
-| Widget | Pane | Base, Layout, Alignment, Gap, Margins |
+| Widget | Pane | Base, Layout, Alignment, Gap, Margins, Content, Page Index, Page Size, Canvas |
 | Widget | Button  | Base, Status, Animation |
 | Widget | Meter | Base, Animation, Reading, Unit |
-| Widget | Page | Base, Animation, Content, Page Index, Page Size, Canvas |

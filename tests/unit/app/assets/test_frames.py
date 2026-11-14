@@ -15,7 +15,7 @@ import pytest
 # Application Libraries
 from app.assets.frames import (
     CardinalFrame,
-    IndexFrame,
+    IconFrame,
     NoFrame,
     DirectedFrame,
     OrientedFrame,
@@ -291,7 +291,7 @@ def test_sprite_frame(mock_asset):
     sprite.state.animation.action = Actions.SLASH.value
     sprite.state.animation.direction = Directions.LEFT.value
     sprite.state.animation.frame = 3
-    sprite.state.inventory.equipment = Equipment(
+    sprite.state.slots.equipment = Equipment(
         armor="leather_armor",
         utility="lantern",
         tool="pickaxe",
@@ -331,7 +331,7 @@ def test_sprite_frame_no_equipment(mock_asset):
     sprite.state.animation.action = Actions.WALK.value
     sprite.state.animation.direction = Directions.DOWN.value
     sprite.state.animation.frame = 0
-    sprite.state.inventory.equipment = None
+    sprite.state.slots.equipment = None
     sprite.state.psyche.expression = None
 
     keys = sprite.frame.keys(sprite.id, sprite.state)
@@ -866,7 +866,7 @@ def test_pane_frame_keys_projects_9_slice_grid(mock_asset, nx: int, ny: int):
 
 @pytest.mark.category_widgets
 def test_index_frame_indexing(mock_properties):
-    frame = IndexFrame()
+    frame = IconFrame()
     props = mock_properties(
         AssetCategories.CURSORS.value,
         AssetInstances.EXPRESSIONS.value,
@@ -881,10 +881,10 @@ def test_index_frame_indexing(mock_properties):
 
 @pytest.mark.category_widgets
 def test_index_frame_suppresses_vacant_slot():
-    frame = IndexFrame()
+    frame = IconFrame()
 
-    occupied_state = IconState(id="weapons", icon_function=lambda: "shortsword")
-    assert frame.keys("weapons", occupied_state) == [(f"weapons{SEPARATOR}shortsword", 0, 0)]
+    occupied_state = IconState(id="weapons", icon_function=lambda: "sword")
+    assert frame.keys("weapons", occupied_state) == [(f"weapons{SEPARATOR}sword", 0, 0)]
 
     empty_state = IconState(id="weapons", icon_function=lambda: "")
     assert frame.keys("weapons", empty_state) == []

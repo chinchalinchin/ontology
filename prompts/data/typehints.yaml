@@ -30,6 +30,7 @@ sh: bash
 sql: sql
 svg: xml
 swift: swift
+tf: terraform
 toml: toml
 ts: typescript
 tsx: tsx

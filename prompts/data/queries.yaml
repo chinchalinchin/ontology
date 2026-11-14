@@ -1,5 +1,36 @@
 queries:
   # -------------------------------------------------------
+  # ------------------------- QUERY: COLLISIONS SOURCE CODE
+  # -------------------------------------------------------
+  collisions:
+    - title: Asset Abstract
+      scan: 
+        domain: [ abstract ]
+        app: [ asset ]
+    - title: Mechanic Abstract
+      scan:
+        domain: [ abstract ]
+        app: [ mechanic ]
+    - title: Asset Hitboxes
+      scan:
+        domain: [ concrete ]
+        app: [ asset ]
+        asset: [ hitbox ]
+    - title: Application Core Components
+      scan:
+        domain: [ system ]
+        app: [ core, component ]
+    - title: Workflow - Collisions
+      scan:
+        domain: [ logic ]
+        app: [ mechanic ]
+        workflows: [ collisions ]
+    - title: Libraries - Collisions
+      scan: 
+        domain: [ system ]
+        app: [ library ]
+        workflows: [ collisions ]
+  # -------------------------------------------------------
   # ------------------------ QUERY: COMPOSITION SOURCE CODE
   # -------------------------------------------------------
   compositions:

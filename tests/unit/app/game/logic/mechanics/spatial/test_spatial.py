@@ -180,3 +180,54 @@ def test_spatial_mechanic_constrain_elevation_filtering(mock_mechanic, mock_boar
 
     assert pairs_e0 == [(crate, boundary)]
     assert pairs_e1 == []
+
+@pytest.mark.app_asset
+@pytest.mark.workflow_interactions
+def test_spatial_mechanic_intersections_motive_padding(mock_mechanic, mock_asset):
+    """
+    Verifies SpatialMechanic.intersections applies a 2px contact margin to Sprites/Players
+    so flush post-collision separation still registers an intersection.
+    """
+    mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    sprite = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value,
+    )
+    chest = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CHESTS.value,
+    )
+
+    hb_s = sprite.hitboxes[0]
+    hb_c = chest.hitboxes[0]
+
+    # Position chest 1px flush outside the right edge of the sprite's physical hitbox
+    sprite.state.position = Position(10, 10)
+    chest.state.position = Position(
+        10 + hb_s.position.x + hb_s.dimensions.w + 1 - hb_c.position.x,
+        10 + hb_s.position.y - hb_c.position.y,
+    )
+
+    assert mechanics.collisions([sprite, chest]) == []
+    assert len(mechanics.intersections([sprite, chest])) == 1
+
+
+@pytest.mark.app_asset
+@pytest.mark.workflow_collisions
+@pytest.mark.workflow_interactions
+def test_spatial_mechanic_empty_and_parameterless_guards(mock_mechanic, mock_asset, mock_boundary):
+    """
+    Verifies empty collection guards and safe skipping of parameterless assets in proximities.
+    """
+    mechanics = mock_mechanic(Mechanics.COLLISION.value)
+    crate = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+
+    assert mechanics.collisions([]) == []
+    assert mechanics.intersections([]) == []
+    assert mechanics.proximities([]) == []
+    assert mechanics.proximities([crate]) == []
+    assert mechanics.constrain([], [mock_boundary]) == []
+    assert mechanics.constrain([crate], []) == []

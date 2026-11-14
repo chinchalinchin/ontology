@@ -126,7 +126,7 @@ Recipe Configuration files determine the specific (Animation, Frame, Hitbox) com
 
 ### Schema: Properties
 
-* [Spec: Property Schema](../static/yaml/schema-property.yaml)
+* [Spec: Property Schema](../static/yaml/schema-properties.yaml)
 
 ### Schema: State
 

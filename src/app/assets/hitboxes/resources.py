@@ -9,17 +9,11 @@
 Resource HitboxSchema implementations.
 """
 # Standard Libraries
-from typing import (
-    Optional,
-    List
-)
+from typing import List
 import logging
 
 # Application Libraries
-from app.assets.base import (
-    Frame,
-    HitboxSchema
-)
+from app.assets.base import HitboxSchema
 from app.models.properties import ResourceProperties
 from app.models.state import ResourceState
 
@@ -43,8 +37,7 @@ class StageHitbox(HitboxSchema):
         self,
         properties: ResourceProperties,
         state: ResourceState,
-        elevation: int,
-        frame: Optional[Frame] = None
+        elevation: int
     ) -> List[Hitbox]:
         target_e = max(0, state.elevation if state.elevation is not None else 0)
         if max(0, elevation) != target_e:

@@ -10,16 +10,10 @@
 Object HitboxSchema implementations.
 """
 # Standard Libraries
-from typing import (
-    List,
-    Optional
-)
+from typing import List
 
 # Application Libraries
-from app.assets.base import (
-    Frame,
-    HitboxSchema
-)
+from app.assets.base import HitboxSchema
 from app.assets.hitboxes.core import StaticHitbox
 from app.static.semantics import LayerProjections
 from app.models.properties import ObjectProperties
@@ -62,12 +56,11 @@ class SwitchHitbox(StaticHitbox):
         self,
         properties: ObjectProperties,
         state: SwitchState,
-        elevation: int,
-        frame: Optional[Frame] = None
+        elevation: int
     ) -> List[Hitbox]:
         if state.switch:
             return []
-        return super().get(properties, state, elevation, frame)
+        return super().get(properties, state, elevation)
 
 
 class LayeredHitbox(HitboxSchema):
@@ -89,8 +82,7 @@ class LayeredHitbox(HitboxSchema):
         self,
         properties: ObjectProperties,
         state: DoorState,
-        elevation: int,
-        frame: Optional[Frame] = None
+        elevation: int
     ) -> List[Hitbox]:
         target_e = max(0, state.elevation if state.elevation is not None else 0)
         if max(0, elevation) != target_e:

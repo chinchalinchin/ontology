@@ -15,6 +15,9 @@
 !!! note "Logical Quantification
     `|` is used as a logical quantifier, e.g. `y | y + x = 3` would mean the set of `y` that lie along the line `3 - x`.
 
+!!! note "Model vs Fields"
+    In all following pages, *Model* generally means a nested data structure, whereas *Field* refers to a primitive quantity. 
+
 ## Cores
 
 ### Core: Assets
@@ -31,7 +34,7 @@ Assets are divided into non-overlapping (Category, Instance) nodes, known as the
 * [Geography](./01-assets.md#category-geography)
 * [Objects](./01-assets.md#category-objects)
 * [Sheets](./01-assets.md#category-sheets)
-* [Sounds](./07-sounds.md)
+* [Acoustics](./07-acoustics.md)
 * [Resources](./01-assets.md#category-resources)
 * [Tiles](./01-assets.md#category-tiles)
 * [Widgets](./06-widgets.md)
@@ -40,7 +43,7 @@ Assets are placed in the `/src/assets/<category>/` directory and then registered
 
 The `/src/assets` directory is known as the *asset directory*.
 
-See [Asset Schema](./appendices/01-schemas.md#model-properties) for more information on the Asset Property index.
+See [Asset Schema](./appendices/01-schemas.md#schema-properties) for more information on the Asset Property index.
 
 ### Core: State
 
@@ -59,13 +62,13 @@ Mechanics, Relations and other components of the [Engine](#component-engine) uti
 * [Actions](./01-assets.md#category-sheets)
 * [Compositions](./03-compositions.md)
 * [Intentions](./04-intentions.md)
-* [Library](./08-plots.md)
+* [Library](./08-narratives.md)
 * [Mappings](./02-sprites.md#devices)
 * [Materials](./01-assets.md#concept-materiality)
 * [Mechanics](./05-mechanics.md)
-* [Menus](./06-widgets.md#menus)
-* [Plots](./08-plots.md)
-* [Recipes](./01-assets.md#asset-concepts)
+* [Menus](./06-widgets.md#configuration-menus)
+* [Plots](./08-narratives.md)
+* [Recipes](./01-assets.md#overview-concepts)
 
 ## Application 
 
@@ -162,7 +165,7 @@ The Bus processes asynchronous [Events](./06-widgets.md#events).
 
 **Service: Provider**
 
-The Provider instantiates [Menus](./06-widgets.md#menus).
+The Provider instantiates [Menus](./06-widgets.md#configuration-menus).
 
 **Service: Binder**
 

@@ -8,7 +8,10 @@
 import logging 
 
 # Application Libraries
-from app.static.semantics import DeviceContexts
+from app.static.semantics import (
+    DeviceContexts,
+    Intentions
+)
 from app.models.config import DeviceMapping
 from app.models.state import (
     DevicePayload,
@@ -50,9 +53,10 @@ class Keyboard(Device):
         self._context = map 
         if map == DeviceContexts.WORLD.value:
             i_codes = [v for v in self.mapping.world.intentions.values() if v is not None]
+            r_codes = [v for v in self.mapping.world.grips.values() if v is not None]
             g_codes = [v for v in self.mapping.world.goals.values() if v is not None]
             m_codes = [v for v in self.mapping.world.menus.values() if v is not None]
-            self._scancodes = tuple(set(i_codes + g_codes + m_codes))
+            self._scancodes = tuple(set(i_codes + r_codes + g_codes + m_codes))
 
         elif map == DeviceContexts.MENU.value:
             t_codes = [v for v in self.mapping.menu.traversal.values() if v is not None]
@@ -76,6 +80,14 @@ class Keyboard(Device):
             for k, v in self.mapping.world.intentions.items():
                 if v is not None and current_dict.get(v) and not self._last_state.get(v):
                     world_payload.intention = k
+                    break
+
+            # Edge-triggered, singular grip resolution (parameterizes Intentions.USE)
+            for k, v in self.mapping.world.grips.items():
+                if v is not None and current_dict.get(v) and not self._last_state.get(v):
+                    world_payload.grip = k
+                    if not world_payload.intention:
+                        world_payload.intention = Intentions.USE.value
                     break
             
             # Edge-triggered, singular resolution

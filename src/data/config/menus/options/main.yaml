@@ -50,6 +50,7 @@ menus:
                 alignment: *center
                 gap: 8
                 children:
+                  # ---------------------------------------------------
                   - instance: panes 
                     id: transparent
                     name: option-1-slot
@@ -58,6 +59,7 @@ menus:
                       layout: overlay
                       alignment: *center
                       children:
+                        # ---------------------------------------------
                         - instance: buttons
                           id: label
                           name: option-1
@@ -66,6 +68,7 @@ menus:
                             target:
                               selection: select
                               selector: options-display
+                        # ---------------------------------------------
                         - instance: panes
                           id: transparent
                           name: option-1-text
@@ -75,7 +78,7 @@ menus:
                             schema: text
                             target:
                               content: OPTION 1
-
+                  # ---------------------------------------------------
                   - instance: panes
                     id: transparent
                     name: option-2-slot
@@ -84,6 +87,7 @@ menus:
                       layout: overlay
                       alignment: *center
                       children:
+                        # ---------------------------------------------
                         - instance: buttons
                           id: label
                           name: option-2
@@ -92,6 +96,7 @@ menus:
                             target:
                               selection: select
                               selector: options-display
+                        # ---------------------------------------------
                         - instance: panes
                           id: transparent
                           name: option-2-text
@@ -101,7 +106,7 @@ menus:
                             schema: text
                             target:
                               content: OPTION 2
-
+                  # ---------------------------------------------------
                   - instance: panes
                     id: transparent
                     name: option-3-slot
@@ -110,6 +115,7 @@ menus:
                       layout: overlay
                       alignment: *center
                       children:
+                        # ---------------------------------------------
                         - instance: buttons
                           id: label
                           name: option-3
@@ -118,6 +124,7 @@ menus:
                             target:
                               selection: select
                               selector: options-display
+                        # ---------------------------------------------
                         - instance: panes
                           id: transparent
                           name: option-3-text
@@ -127,7 +134,7 @@ menus:
                             schema: text
                             target:
                               content: OPTION 3
-
+                  # ---------------------------------------------------
                   - instance: panes
                     id: transparent
                     name: option-4-slot
@@ -136,6 +143,7 @@ menus:
                       layout: overlay
                       alignment: *center
                       children:
+                        # ---------------------------------------------
                         - instance: buttons
                           id: label
                           name: option-4
@@ -144,6 +152,7 @@ menus:
                             target:
                               selection: select
                               selector: options-display
+                        # ---------------------------------------------
                         - instance: panes
                           id: transparent
                           name: option-4-text
@@ -165,6 +174,7 @@ menus:
                 alignment: *center
                 font: menu
                 children:
+                  # ---------------------------------------------------
                   - instance: panes
                     id: *pane-alt
                     name: options-display

@@ -114,6 +114,7 @@ Tags are meant to capture logically related slices of the Application.
                 * `workflow.hydration` (*Initialization*)
                 * `workflow.interactions`
                 * `workflow.injection` (*Dependency Injection Pipeline*)
+                * `workflow.inventory`
                 * `workflow.navigation` (*RRT Algorithms*)
                 * `workflow.player`
                 * `workflow.plots`
