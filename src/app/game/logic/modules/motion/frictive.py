@@ -29,6 +29,9 @@ def update(assets: List[Asset], board: Board, delta: float) -> None:
     Suspends friction calculations while assets are floating in environmental water bodies.
     """
     for asset in assets:
+        if asset.state.mutators.triggers.falling:
+            continue
+        
         if asset.state.velocity is None:
             continue
 

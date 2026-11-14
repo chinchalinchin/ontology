@@ -30,6 +30,9 @@ def update(sprites: List[Asset], board: Board, delta: float) -> None:
     player_name = board.player().name
 
     for sprite in sprites:
+        if sprite.state.mutators.triggers.falling:
+            continue
+        
         if not sprite.state.goal or sprite.state.intention not in NavigationIntentions:
             sprite.state.velocity.vx = 0.0
             sprite.state.velocity.vy = 0.0

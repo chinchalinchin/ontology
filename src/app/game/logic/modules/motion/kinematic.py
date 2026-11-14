@@ -21,6 +21,9 @@ def update(players: List[Asset], payload: DevicePayload, delta: float):
     Snaps axis and applies velocity to kinematic player entities without generating impulses.
     """
     for player in players:
+        if player.state.mutators.triggers.falling:
+            continue
+        
         ix, iy = 0.0, 0.0
         if PlayerGoals.UP in payload.world.goals: iy -= 1.0
         if PlayerGoals.DOWN in payload.world.goals: iy += 1.0

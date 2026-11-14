@@ -129,7 +129,6 @@ class CollisionMechanics(SpatialMechanic):
                 f"elevation: {prev_e} -> {sprite.elevation}"
             )
 
-
     def _boundary(self, asset: Asset, boundary: Boundary, elevation: int) -> None:
         """
         Delegates Asset vs Boundary interaction to the specialized Cython constraint solver,
@@ -179,16 +178,12 @@ class CollisionMechanics(SpatialMechanic):
         Extract variables logically and defer matrix shifts to Cython,
         resolving hitboxes matching the active collision elevation tier.
         """
-        # TODO: mass should probably be a core Asset Property field
-        #       but what about Widgets?
         m1 = getattr(asset_a.properties, 'mass', 0)
         m2 = getattr(asset_b.properties, 'mass', 0)
 
         is_kinematic1 = asset_a.taxonomy.instance == AssetInstances.PLAYERS.value
         is_kinematic2 = asset_b.taxonomy.instance == AssetInstances.PLAYERS.value
 
-        # TODO: velocity should probably be a core Asset State field...
-        #       but what about Widgets?
         vel1 = getattr(asset_a.state, 'velocity', None)
         vel2 = getattr(asset_b.state, 'velocity', None)
 
@@ -248,6 +243,7 @@ class CollisionMechanics(SpatialMechanic):
                 movers = [
                     w for w in board.weights(layer)
                     if getattr(w.properties, 'mass', 0) > 0
+                    and not w.state.mutators.triggers.falling
                 ]
                 for stair in stairs:
                     for mover in movers:
@@ -259,13 +255,16 @@ class CollisionMechanics(SpatialMechanic):
                             stair.state.position.y,
                             stair.dimensions.w,
                             stair.dimensions.l,
-                        ):
+                        ): 
                             self._traverse_stairs(mover, stair)
 
             # -------------------------------------------------------------
             # TIER PARTITIONING
             # -------------------------------------------------------------
-            weights = board.weights(layer)
+            weights = [
+                w for w in board.weights(layer)
+                if not w.state.mutators.triggers.falling
+            ]
             weights_by_elevation = collections.defaultdict(list)
             for w in weights:
                 # Deduplicate tiers that collapse to <= 0
@@ -273,15 +272,16 @@ class CollisionMechanics(SpatialMechanic):
                     weights_by_elevation[tier].append(w)
 
             for elevation, tier_weights in weights_by_elevation.items():
-                # Phase 1: Boundary Constraints
-                perimeters = board.perimeters.get(layer, {}).get(elevation, [])
-                if perimeters:
-                    dynamics = [
-                        w for w in tier_weights
-                        if getattr(w.properties, 'mass', 0) > 0
-                    ]
-                    for asset, boundary in self.constrain(dynamics, perimeters, elevation=elevation):
-                        self._boundary(asset, boundary, elevation=elevation)
+                # Phase 1: Boundary Constraints (restricted to base terrain elevation == 0)
+                if elevation == 0:
+                    perimeters = board.perimeters.get(layer, {}).get(elevation, [])
+                    if perimeters:
+                        dynamics = [
+                            w for w in tier_weights
+                            if getattr(w.properties, 'mass', 0) > 0
+                        ]
+                        for asset, boundary in self.constrain(dynamics, perimeters, elevation=elevation):
+                            self._boundary(asset, boundary, elevation=elevation)
 
                 # Phase 2: Dynamic Collisions
                 for asset_a, asset_b in self.collisions(tier_weights, elevation=elevation):
