@@ -8,6 +8,7 @@ context: true
 task:
 # ----------------------------------------------------
   # template: index.md.j2
+  template: draft.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
@@ -31,7 +32,7 @@ task:
   # template: iterate/groom.md.j2
   # template: iterate/implement.md.j2
   # template: iterate/cover.md.j2
-  template: iterate/merge.md.j2
+  # template: iterate/merge.md.j2
   # template: iterate/review.md.j2
   # --------------------------------------------
   # -------------------------- TEMPLATES: DESIGN
@@ -62,7 +63,7 @@ tools:
     # --------------------------------------------
     manager:
       board: false
-      docs: false
+      docs: true
       templates: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
@@ -79,20 +80,20 @@ tools:
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: false
-      filter: false
+      data: true
+      filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: false
+      directory: true
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
-      configuration: false
-      pipeline: false
+      configuration: true
+      pipeline: true
       session: false
 # ----------------------------------------------------
   parameters:
@@ -120,9 +121,9 @@ tools:
           # - 12-architecture
       templates: 
         # - template-backlog
-        # - template-bug
+        - template-bug
         # - template-design
-        - template-merge
+        # - template-merge
         # - template-review
         # - template-spec
     metrics:
@@ -163,14 +164,18 @@ tools:
             scan: 
               app: [ library ]
               workflows: [ collisions ]
+          - title: Services - Collisions
+            scan:
+              app: [ service ]
+              workflows: [ collisions ]
           - title: Test Fixtures
             scan:
               domain: [ test ]
               test: [ fixtures ]
       data:
-        properties: [ objects ]
+        properties: [ objects, crafts, sheets/sprites ]
         state: [ world-testbed ]
-        configurations: [ ]
+        configurations: [ materials ]
         templates: [ ]
     # --------------------------------------------
     # -------------------------- PARAMETERS: SHELL

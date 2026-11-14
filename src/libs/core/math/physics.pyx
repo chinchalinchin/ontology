@@ -510,8 +510,8 @@ cpdef Velocity avoid(
                     else:
                         nx = float(n.state.position.x + n.dimensions.w / 2.0)
                         ny = float(n.state.position.y + n.dimensions.l / 2.0)
-                        nvx = float(n.state.velocity.vx)
-                        nvy = float(n.state.velocity.vy)
+                        nvx = float(n.state.velocity.vx if n.state.velocity else 0.0)
+                        nvy = float(n.state.velocity.vy if n.state.velocity else 0.0)
                         nr = float(n.dimensions.w if n.dimensions.w > n.dimensions.l else n.dimensions.l) / 2.0
                         is_kinematic = False
 

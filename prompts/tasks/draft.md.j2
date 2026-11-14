@@ -1,0 +1,85 @@
+{% set bugs = [ 
+    'patch-b017',
+    'patch-b020',
+    'patch-b021'
+] %}
+{% set path = properties.paths.root + properties.paths.phases + 'patch/open/'%}
+# Task: Ontology - Patch
+
+**Priorities**
+
+* **PATCHING** Implement fixes for the [Bugs](#bugs) described below.
+    * If fixes requires additional code, ensure that code is covered.
+* **DEBUGGING**: If applicable, debug the current run of the test pipeline located in the [Test Pipeline](#view-test-pipeline) section.
+* **BUGHUNTING** If new bugs are detected, **do not implement the solution**. Instead, open a new [Bug Report](#template-bug) for **User Review**.
+
+## Patching Guidelines
+
+{% include 'blocks/controls/constraint-quality.md' %}
+
+{% include 'blocks/controls/constraint-changes.md' %}
+
+{% include 'blocks/controls/guideline-models.md' %}
+
+{% include 'blocks/controls/guideline-docstrings.md' %}
+
+{% include 'blocks/controls/warning-code.md' %}
+
+## Coverage Guidelines
+
+{% include 'blocks/controls/guideline-fixtures.md' %}
+
+{% include 'blocks/controls/guideline-coverage.md' %}
+
+{% include 'blocks/controls/guideline-testbed.md' %}
+
+{% include 'blocks/controls/constraint-coverage.md' %}
+
+## Bugs
+
+### Reports
+
+{% for bug in bugs %}
+
+{{ file(path + bug + '.md') }}
+
+{% endfor %}
+
+### Issues
+
+* **Camera Culling Divergence (`geometry.onscreen` vs. `Screen.camera`)**: `geometry.onscreen()` computes `cam_x` and `cam_y` without clamping to `[0, boardsize - screensize]` or centering layers smaller than `screensize`, diverging from `Screen.camera()` and `Screen._assemble()`.
+* **Inconsistent `max_entities` Allocation**: `SpatialMechanic.__init__` defaults to `max_entities: int = 2000`, but `CollisionMechanics.__init__` overrides the default to `max_entities: int = 200` (`num_buckets = 400`), increasing hash collisions in the primary physics mechanic.
+* **Redundant Narrow-Phase Evaluations**: In `CollisionMechanics.update()`, `self.collisions(tier_weights, elevation=elevation)` already executes `geometry.intersects()` inside `physics.collisions()` to filter candidate pairs. `CollisionMechanics._resolve()` then immediately invokes `geometry.intersects()` a second time on the exact same pair to retrieve `(hb_a, hb_b)`. Similarly, `physics.boundaries()` runs `geometry.bounded()`, and `CollisionMechanics._boundary()` runs `geometry.bounded()` a second time. Returning `(id_a, id_b, hb_a, hb_b)` from `physics.collisions()` and `(asset_id, bound_id, hb)` from `physics.boundaries()` eliminates all duplicate narrow-phase passes.
+* **Static-vs-Static Filtering in Phase 2 Collisions**: `board.weights(layer)` returns all assets with $m \ge 0$, including static structural Crafts (`struts`), `obstacles`, `chests`, `gates`, and `resources` ($m = 0$). In Phase 2 of `CollisionMechanics.update()`, all $m = 0$ entities are inserted into `Space`, generating candidate pairs and running `geometry.intersects()` twice for every pair of touching or overlapping static walls/struts on the board, only for `physics.collide()` to exit when `inv_total == 0`. Ignoring candidate pairs in `physics.collisions()` (or filtering before `_resolve()`) where both assets have `mass == 0` eliminates $O(N_{\text{static}}^2)$ narrow-phase overhead every frame.
+* **Per-Frame Set/Tuple Allocations in `Space.query()`**: `Space.query()` allocates a Python `set()` (`seen`) and 2-tuples on the heap every call (`3x` per layer per frame across `constrain`, `collisions`, etc.). Maintaining a C-level generation counter array or sorting per-bucket pairs avoids Python set hashing in the inner loop.
+
+### Skeptical Reports
+
+This has been reported. However, I am skeptical of the analysis, as the default hash size in `app.static.settings` is `32`
+
+```python
+TILE_HASH_SIZE: Final[int] = int(os.getenv("ONTOLOGY_TILE_HASH_SIZE", "32"))
+"""Size of spatial cache hash on Board."""
+```
+
+Never once has the application thrown any sort of out-of-bounds exception.
+
+#### Bug ??: Signed 32-Bit Integer Overflow and Negative Modulo in `Space._hash`
+
+**STATUS**: OPEN
+**SEVERITY**: MEDIUM
+
+**Description**
+
+In `src/libs/core/math/space.pyx`, `_hash(self, int cx, int cy)` computes `(abs(cx * 73856093 ^ cy * 19349663)) % self.num_buckets` using signed 32-bit C `int` arithmetic. `cx * 73856093` overflows 32-bit signed `int` for `cx >= 30` ($30 \times 73856093 > 2^{31} - 1$). Furthermore, in C two's complement, `abs(INT_MIN)` evaluates to `INT_MIN` (negative), and C's `%` operator preserves the negative sign, yielding a negative bucket index `h < 0` that reads and writes before the start of `self.bucket_counts` and `self.bucket_data`.
+
+**Proposed Remeditation**
+
+Perform the hash multiplication and bitwise mask using `unsigned int`:
+
+```cython
+cdef inline int _hash(self, int cx, int cy) noexcept nogil:
+    cdef unsigned int h = (<unsigned int>cx * 73856093u) ^ (<unsigned int>cy * 19349663u)
+    return <int>(h % <unsigned int>self.num_buckets)
+```
+

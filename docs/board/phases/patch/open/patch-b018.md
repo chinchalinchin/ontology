@@ -1,7 +1,6 @@
 ##### Bug B018: Library Binding Font Desynchronization
 
 **STATUS**: OPEN
-
 **SEVERITY**: MEDIUM
 
 **Description**

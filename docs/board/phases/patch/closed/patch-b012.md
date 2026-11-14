@@ -1,4 +1,3 @@
-
 ##### Bug B012: Composition Duplication
 
 **STATUS**: CLOSED

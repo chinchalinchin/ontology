@@ -1,6 +1,6 @@
 ##### Bug B003: Painter's Algorithm String Exception
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: HIGH
 
 **Description**

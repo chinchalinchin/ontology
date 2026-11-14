@@ -183,14 +183,14 @@ Asset *Categories* form the top layer of the hierarchy. Each Asset Category is d
 
 Each Category is differentiated by its purpose and place in the semantics of the Engine.
 
-* Tiles: Environmental. These Assets determine the background and macro-level processes that underlie the Engine.
-* Object: Functional. These Assets perform functions and alter their states. 
-* Effects: Periodic. These Assets undergo changes in their state according to fundamental frequencies.
-* Geography: Procedural. These Assets are generated via physical principles embodied by the Engine.
-* Resources: Biological. These Assets undergo lifecycles and have reactive states that change as the result of the environment.
-* Crafts: Structural. These Assets provide the foundation and topology of the Board.
-* Sheets: Intentional. These Assets perform Actions and engage Intentionally with the Board.
-* Widgets: Metalogical. These Assets display metadata about the world to the User.
+* Tiles: Environmental. These Assets form the background of the [Board](./00-overview.md#component-board). Their collective State is used to manage the background processes that occur each [Engine Loop](./00-overview.md#component-engine).
+* Object: Functional. These Assets perform functions and alter their States when acted upon by an outside force. In other words, Objects receive *input* and produce *output*.
+* Effects: Periodic. These Assets undergo continuous changes in their State according to fundamental Frequencies.
+* Geography: Procedural. These Assets are generated via physical principles embodied by the [World Mechanics](./05-mechanics.md#mechanics-world).
+* Resources: Biological. These Assets undergo Lifecycles and have reactive States that change as the result of the environment.
+* Crafts: Structural. These Assets provide the foundation and topology of the [Board](./00-overview.md#component-board).
+* Sheets: Intentional. These Assets perform Actions and engage Intentionally with the [Board](./00-overview.md#component-board).
+* Widgets: Logical. These Assets display metadata about the world to the User.
 
 --8<-- "static/md/asset-categories.md"
 
@@ -213,13 +213,13 @@ An Asset's order in the Asset Hierarchy is encoded into its Taxonomy. These attr
 
 `(category, instance)` collectively map to the components `(frame, animation, hitbox, properties, state)` injected into an Asset class during the [application initialization](./12-architecture.md#specification-initialization). More specifically, Category maps to properties ($\text{category} \to \text{properties}$), and Instance maps the remaining components ($\text{instance} \to (\text{frame}, \text{animation}, text{hitbox}, \text{state})$).
 
-The State and Property model of an Asset can be calculated (and is, during [application bootstrapping](./12-architecture.md#specification-initialization) via Pydantic) from its (Category, Instance)-node, but (Animation, Frame, Hitbox) are independent of the node in the Asset Hierarchy. These components must be specified through a [Recipe](./appendices/01-schemas.md#configuration-recipes).
+The State and Property model of an Asset can be calculated (and *is* calculated in this way, during [Application Initialization](./12-architecture.md#specification-initialization) via Pydantic) from its (Category, Instance)-node, but (Animation, Frame, Hitbox) are independent of the node in the Asset Hierarchy. These components must be specified through a [Recipe](./appendices/01-schemas.md#configuration-recipes).
 
 ### Overview: Architecture
 
-Every rendered entity in the [Application](./00-overview.md#application) is an instance of the unified Asset class. The distinction between a [Tile](#category-tiles), an [Object](#category-objects), or a [Sheet](#category-sheets) is determined entirely by the data models and components injected into them. Behaviors are decoupled from Assets and managed entirely by *Mechanic* classes that iterate over the [Board](./00-overview.md#component-board) Assets. See [Mechanics documentation](./05-mechanics.md) for more information.
+Every rendered entity in the [Application](./00-overview.md#application) is an instance of the unified Asset class. The distinction between a [Tile](#category-tiles), an [Object](#category-objects), or a [Sheet](#category-sheets) is determined entirely by the data models and components injected into them. Behaviors are decoupled from Assets and managed entirely by *Mechanic* classes that iterate over the [Board's](./00-overview.md#component-board) Assets. See [Mechanics documentation](./05-mechanics.md) for more information.
 
-The formula for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in its [Recipe](./appendices/01-schemas.md#configuration-recipes) configuration file. The components of each Assets are enumerated below,
+The formula for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in its [Recipe Configuration File](./appendices/01-schemas.md#configuration-recipes). The components of each Assets are enumerated below,
 
 1. **Model: Properties** A model defining immutable data.
 2. **Model: State** A model defining mutable data.
@@ -283,18 +283,15 @@ Moreover, they are not included in the core rendering loop; Instead, they are pr
 
 Environ Tiles undergo Frame changes based on the accumulation of time on the [Board](./00-overview.md#component-board). In other words, Environ Tiles have the unique property of having their Frame depend on an external State, rather than internal State. All rendering of Environ Tiles occurs through the `Frame.eras()` interface to account for this external dependency.
 
-For this reason, Environ Tiles leverage a SeasonalFrame and event-driven reconstruction triggered as the Board undergoes Seasons. See [Ecology documentation](./09-ecology.md) for more information.
+For this reason, Environ Tiles leverage a SeasonalFrame and event-driven reconstruction triggered as the [Board](./00-overview.md#component-board) undergoes Seasons. See [Ecology documentation](./09-ecology.md) for more information.
 
 **Semantics: Seasons**
 
-* `spring`
-* `summer`
-* `autumn`
-* `winter`
+* `spring`, `summer`, `autumn`, `winter`
 
 **Atlas: (Row: Season, Column: Period)**
 
-* columns: `^(?:onset|peak|decline)-[0-9]$`
+* columns: `^(?:onset|peak|decline)-[0-3]$`
 * rows: `^(?:spring|summer|autumn|winter)`
 
 #### Tile: Canopy
@@ -302,7 +299,7 @@ For this reason, Environ Tiles leverage a SeasonalFrame and event-driven reconst
 Canopy Tiles are hardcoded to always render on on top of all of other Assets, regardless of their `elevation` or `priority`. 
 
 !!! important "Widget Exception"
-    The *single* exception to this rule is Widgets. Canopy Tiles are an "in-world" Asset, and thus their render ordering is superseded by Widgets.
+    The *single* exception to this rule is Widgets. Canopy Tiles are an [World](./05-mechanics.md#mechanics-world) Asset, and thus their render order is superseded by Widgets.
 
 **Frame: SingleFrame**
 
@@ -318,8 +315,8 @@ A Grid is a special Tile reserved for use in the [Editor Menu](./06-widgets.md#m
 
 There must be precisely *two* Grid tiles:
 
-- `focus`: A Grid Tile to represent active selections.
-- `cell`: A Grid Tile to represent idle selections.
+* `focus`: A Grid Tile to represent active selections.
+* `cell`: A Grid Tile to represent idle selections.
 
 **Frame: SingleFrame**
 
@@ -339,7 +336,7 @@ Objects have different States. `count` enumerates the number of possible States 
 * *Unary Objects (`count = 1`)*: Crates, Doors, Signs 
 * *Binary Objects (`count = 2`)*: Chests, Gates, Plates
 
-**Atlas: (row: Count, column: Material)**
+**Atlas: (row: Count, column: Materials)**
 
 * columns: `^(?:ceramics|chromatics|geologics|metallics|organics)`
 * row: `^[0-9]`
@@ -349,7 +346,7 @@ Objects have different States. `count` enumerates the number of possible States 
 * `hitboxes: List[Hitbox]` 
 * `count: int = 1`
 * `mass: int`
-* `materials: Material`
+* `materials: Materials`
 
 **State: ObjectState(AssetState)**
 
@@ -360,7 +357,7 @@ All Objects extend this base Model..
 
 **Frame: ObjectFrame**
 
-* `index(id, properties): returns { "{id}-{i}": (j * properties.dimension.w, 0, properties.dimensions.w, properties.dimension.l )} for i in partition(properties.material)`
+* `index(id, properties): returns { "{id}-{i}": (i * properties.dimension.w, 0, properties.dimensions.w, properties.dimension.l )} for i in enumerate(properties.materials)`
 * `keys(id, state): returns "{id}-{state.material}"`
 
 **Animation: None**

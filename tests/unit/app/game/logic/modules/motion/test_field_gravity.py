@@ -5,7 +5,6 @@
 @physics.motion
 @physics.fields
 @workflow.gravity
-@workflow.collisions
 
 # Ontology: Tests - tests.unit.app.game.logic.test_gravity
 
