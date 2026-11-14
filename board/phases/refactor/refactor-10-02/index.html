@@ -1,0 +1,4775 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/board/phases/refactor/refactor-10-02/">
+      
+      
+        <link rel="prev" href="../refactor-10-01/">
+      
+      
+        <link rel="next" href="../refactor-10-03/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Phase 10.02 - Shoreline Seasonal Indexing - Ontology</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#refactor-phase-1002-shoreline-seasonal-indexing" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="Ontology" class="md-header__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ontology
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Phase 10.02 - Shoreline Seasonal Indexing
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="Ontology" class="md-nav__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Ontology
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../00-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../01-assets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../02-sprites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../03-compositions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../04-intentions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../05-mechanics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../06-widgets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../07-acoustics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../08-narratives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../09-ecology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ecology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../10-chemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../11-emergence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../12-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../specs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Specifications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_15" id="__nav_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Specifications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/00-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dialogue Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/01-interaction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/02-wander/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wander Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_16" id="__nav_16_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Roadmap
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2" id="__nav_16_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_16_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_1" id="__nav_16_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-castle-dawn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Castle Dawn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-regalia-galleria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Regalia Galleria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-temple-of-trials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Trials of Trials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Dialogue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-view/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_2" id="__nav_16_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implement
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implement
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01 - Renderer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02 - Game
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03 - Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04 - Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 05 - Editor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06 - Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07 - Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08 - Pathfinding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09 - Hydrodynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10 - Seasons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 11 - Geology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 12 - Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-13/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 13 - Acoustics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 14 - Narratives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-n/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n - Commerce
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-n%2B1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n+1 - Towns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_3" id="__nav_16_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refactor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Refactor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-01-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01.01 - Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.01 - Frames
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.02 - Registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.03 - Equipment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.04 - Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.05 - Finetuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.06 - Effects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.07 - Registry Data Structures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.08 - World Chunks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.01 - Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.02 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.03 - Motion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.04 - Projectiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.01 - Typography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.02 - Simplification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.03 - Event Handlers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.04 - Menu Context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.05 - Gizmos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.06 - Pane Generation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.01 - Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.02 - Goals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.03 - Combat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.04 - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.01 - Elevation Sorting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.02 - Platforms & Elevated Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.03 - Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.04 - Materialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.05 - Composite Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.01 - Obstacle Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.02 - Navigation Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.03 - Trajectory Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.04 - Mutators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.01 - Fluid Flows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.02 - Shorelines & Geography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.03 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.04 - Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.05 - Bridges & Bifurcation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.06 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.07 - Frame Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.08 - Transverse Fluid Submersion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.01 - Stage Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.02 - Shoreline Seasonal Indexing
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.02 - Shoreline Seasonal Indexing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-1002-shoreline-seasonal-indexing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 10.02 - Shoreline Seasonal Indexing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 10.02 - Shoreline Seasonal Indexing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis I
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis I">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimizations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review I
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Review I">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rendering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rendering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cythonization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cythonization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis II
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis II">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-rendering-lifecycle-eras-vs-keys-for-shorelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Rendering Lifecycle: eras() vs. keys() for Shorelines
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-shoreline-atlas-geometry-shorelineindex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Shoreline Atlas Geometry &amp; ShorelineIndex
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-inner-loop-optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Inner-Loop Optimizations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis III
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis III">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-hidden-bottleneck-in-predicatespy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Hidden Bottleneck in predicates.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pragmatic-remediation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pragmatic Remediation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-backlog-adjustment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task Backlog Adjustment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review II
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-iii_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis III
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis III">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-mathematical-formulation-superposition-of-linear-and-disk-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Mathematical Formulation: Superposition of Linear and Disk Sources
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-architectural-division-of-labor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Architectural Division of Labor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-comparison-of-alternatives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Comparison of Alternatives
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review III
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-iv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis IV
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis IV">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#big-picture-architecture-logical-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Big-Picture Architecture &amp; Logical Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shoreline-lifecycle-during-seasonevents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shoreline Lifecycle During SeasonEvents
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-soil-hydrology-superposition-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Soil Hydrology Superposition Field
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Reports
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bug Reports">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-b013-canvas-bleed-on-fore-tiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B013: Canvas Bleed on Fore Tiles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b014-transient-heap-allocation-in-seasonmechanics_probes-inner-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B014: Transient Heap Allocation in SeasonMechanics._probes() Inner Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-multi-season-shoreline-atlas-keying-event-synchronization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Multi-Season Shoreline Atlas Keying &amp; Event Synchronization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-continuous-hydrological-potential-field-static-flux-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Continuous Hydrological Potential Field &amp; Static Flux Caching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-isl-throttling-fore-canvas-bleed-elimination" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: ISL Throttling &amp; Fore Canvas Bleed Elimination
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.03 - Flowers, Pixies & Reproduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.04 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../appendices/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_17" id="__nav_17_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/00-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/01-schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/02-diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagrams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reports
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../coverage/index" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unit Test Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-1002-shoreline-seasonal-indexing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 10.02 - Shoreline Seasonal Indexing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 10.02 - Shoreline Seasonal Indexing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis I
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis I">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimizations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review I
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Review I">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rendering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rendering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cythonization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cythonization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis II
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis II">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-rendering-lifecycle-eras-vs-keys-for-shorelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Rendering Lifecycle: eras() vs. keys() for Shorelines
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-shoreline-atlas-geometry-shorelineindex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Shoreline Atlas Geometry &amp; ShorelineIndex
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-inner-loop-optimizations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Inner-Loop Optimizations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis III
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis III">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-hidden-bottleneck-in-predicatespy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Hidden Bottleneck in predicates.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pragmatic-remediation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pragmatic Remediation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-backlog-adjustment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task Backlog Adjustment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review II
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-iii_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis III
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis III">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-mathematical-formulation-superposition-of-linear-and-disk-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Mathematical Formulation: Superposition of Linear and Disk Sources
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-architectural-division-of-labor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Architectural Division of Labor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-comparison-of-alternatives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Comparison of Alternatives
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review III
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-iv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis IV
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis IV">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#big-picture-architecture-logical-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Big-Picture Architecture &amp; Logical Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shoreline-lifecycle-during-seasonevents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shoreline Lifecycle During SeasonEvents
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-soil-hydrology-superposition-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Soil Hydrology Superposition Field
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Reports
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bug Reports">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-b013-canvas-bleed-on-fore-tiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B013: Canvas Bleed on Fore Tiles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b014-transient-heap-allocation-in-seasonmechanics_probes-inner-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B014: Transient Heap Allocation in SeasonMechanics._probes() Inner Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-multi-season-shoreline-atlas-keying-event-synchronization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Multi-Season Shoreline Atlas Keying &amp; Event Synchronization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-continuous-hydrological-potential-field-static-flux-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Continuous Hydrological Potential Field &amp; Static Flux Caching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-isl-throttling-fore-canvas-bleed-elimination" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: ISL Throttling &amp; Fore Canvas Bleed Elimination
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Phase 10.02 - Shoreline Seasonal Indexing</h1>
+
+<h4 id="refactor-phase-1002-shoreline-seasonal-indexing">Refactor: Phase 10.02 - Shoreline Seasonal Indexing</h4>
+<p><strong>Overview</strong></p>
+<p>Integrate environmental Shorelines with temporal seasonality by extending atlas indexing across cardinal directions and calendar seasons. Decouple high-frequency ISL stage transition checks from the 60 Hz loop, eliminate inner-loop heap allocations by introducing an event-driven hydrological potential field, and ensure static screen reconstruction clears transparent fore canvases between season transitions.</p>
+<h5 id="architectural-analysis-i">Architectural Analysis I</h5>
+<h6 id="optimizations">Optimizations</h6>
+<ol>
+<li>Inner-Loop Heap Allocation in <code>SeasonMechanics._probes</code></li>
+</ol>
+<p>In <code>src/app/game/logic/mechanics/world/seasons.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_probes</span><span class="p">(</span><span class="n">resource</span><span class="p">:</span> <span class="n">Asset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Position</span><span class="p">]:</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">Position</span><span class="p">(</span><span class="n">mid_x</span><span class="p">,</span> <span class="n">mid_y</span><span class="p">),</span>
+        <span class="n">Position</span><span class="p">(</span><span class="n">mid_x</span><span class="p">,</span> <span class="n">pos</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">Position</span><span class="p">(</span><span class="n">mid_x</span><span class="p">,</span> <span class="n">pos</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">l</span><span class="p">),</span>
+        <span class="n">Position</span><span class="p">(</span><span class="n">pos</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mid_y</span><span class="p">),</span>
+        <span class="n">Position</span><span class="p">(</span><span class="n">pos</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">w</span><span class="p">,</span> <span class="n">mid_y</span><span class="p">)</span>
+    <span class="p">]</span>
+</code></pre></div>
+<p><code>SeasonMechanics.update()</code> executes at <span class="arithmatex">\(60\text{ Hz}\)</span>. For every active <code>Resource</code> on the board, <code>_probes()</code> instantiates five heap-allocated Python <code>Position</code> objects each tick to query <code>board.fluid()</code>. For dense environments (such as an orchard or forest with 100+ trees), this generates <span class="arithmatex">\(\sim 30{,}000\)</span> transient Python allocations per second, violating the engine's driving principle of zero heap allocation in inner loops.</p>
+<ol>
+<li>High-Frequency Evaluation of Declarative ISL Stage Transitions</li>
+</ol>
+<p>In <code>SeasonMechanics.update()</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">lifespan</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="n">next_stage</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">stage</span><span class="p">,</span> <span class="nb">locals</span><span class="p">)</span>
+</code></pre></div>
+<p>Biological stage transitions are evaluated every frame (<span class="arithmatex">\(16.6\text{ ms}\)</span>) across all resources. While moisture diffusion must integrate continuously with frame delta time (<span class="arithmatex">\(\Delta t\)</span>), biological growth checks (which depend on macro seasons and discrete moisture thresholds) do not require <span class="arithmatex">\(60\text{ Hz}\)</span> AST/lambda evaluation. Throttling stage evaluation to period boundaries or a dedicated low-frequency accumulator (e.g., <span class="arithmatex">\(1\text{ Hz}\)</span>) would eliminate unnecessary CPU overhead.</p>
+<ol>
+<li>Texture Overdraw in <code>Screen.reconstruct()</code></li>
+</ol>
+<p>In <code>Screen.reconstruct()</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">reconstruct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tiles</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">],</span> <span class="n">calendar</span><span class="p">:</span> <span class="n">CalendarState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">back_tiles</span><span class="p">,</span> <span class="n">fore_tiles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prerender</span><span class="p">(</span><span class="n">tiles</span><span class="p">,</span> <span class="n">calendar</span><span class="p">)</span>
+    <span class="n">render</span><span class="o">.</span><span class="n">construct</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bg_canvas</span><span class="p">,</span> <span class="n">back_tiles</span><span class="p">)</span>
+    <span class="n">render</span><span class="o">.</span><span class="n">construct</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fg_canvas</span><span class="p">,</span> <span class="n">fore_tiles</span><span class="p">)</span>
+</code></pre></div>
+<p><code>render.construct()</code> executes <code>SDL_RenderCopy</code> calls directly onto the existing target texture. While opaque <code>back_tiles</code> overwrite underlying pixels cleanly, transparent foreground canopy tiles (<code>fg_canvas</code>) will overdraw new seasonal pixels directly on top of previous season textures without an intermediate clear pass.</p>
+<h5 id="user-review-i">User Review I</h5>
+<h6 id="rendering">Rendering</h6>
+<p>I do not believe <code>eras()</code> can support Shoreline Frame rendering. <code>eras()</code> is the projection of an external state onto the animation space of an Asset, i.e. SeasonalFrame accepts the Calendar state to retrieve from the frame key from Tile animation space; in this way the rendered Tile Frame is dependent on the Board state. </p>
+<p>However, the Shoreline Frame is dependent on its own state, with caveat that it caches its frame keys once computed and its state is procedurally generated in the Cartographer. </p>
+<p>Moreover, utilizing <code>eras()</code> would change the rendering process, as Shorelines are currently rendered through <code>keys()</code>. But, thinking upon that, this is incorrect, as Shorelines do not need to retrieve new keys every single frame. They are only recomputed when Fluid flow is altered. So, perhaps it does make sense to have Shorelines rendered through <code>eras()</code>. This will entail an analysis of what needs to change in the rendering workflow.</p>
+<p>Also, tangentially related, the indexing for Shoreline frames will need to range over an enumeration of <code>app.config.enums.Seasons</code>.</p>
+<h6 id="cythonization">Cythonization</h6>
+<p>The probing math in SeasonMechanics seems ripe for Cythonization, considering Bug B018.</p>
+<h5 id="architectural-analysis-ii">Architectural Analysis II</h5>
+<h6 id="1-rendering-lifecycle-eras-vs-keys-for-shorelines">1. Rendering Lifecycle: <code>eras()</code> vs. <code>keys()</code> for Shorelines</h6>
+<p>In User Review I, the question arose whether <code>Shoreline</code> rendering should transition from <code>keys()</code> to <code>eras()</code>. A deeper inspection of the rendering pipeline reveals why <strong><code>eras()</code> cannot support Shorelines without breaking the engine's visual hierarchy</strong>:</p>
+<ol>
+<li><strong>Painter's Algorithm &amp; Z-Ordering Invariant</strong>:<ul>
+<li><code>Screen._prerender()</code> bakes <code>eras()</code> outputs strictly onto static textures: <code>bg_canvas</code> (Back Tiles) and <code>fg_canvas</code> (Fore Tiles).</li>
+<li>In the active draw loop (<code>Screen.draw()</code>), dynamic world entities sort by <code>(height, depth)</code>: <span class="arithmatex">\(\text{Fluids} \, (\text{depth}: -1) &lt; \text{Shorelines} \, (\text{depth}: 0) &lt; \text{Bridges} \, (\text{depth}: 1)\)</span></li>
+</ul>
+</li>
+<li>Fluids are dynamic animated effects (<code>FluidState</code> cycles micro-frames and expands/contracts corridors). If Shorelines were baked into <code>bg_canvas</code>, they would be stamped <strong>beneath</strong> fluid streams. The opaque water bodies would overdraw and completely occlude the outer land fringe. Shoreline fringes must render on top of water (<code>depth: 0</code> over <code>depth: -1</code>).</li>
+<li>**Interface Contract of <code>eras()**</code>:<ul>
+<li><code>Frame.eras(id: str, calendar: CalendarState)</code> operates without entity <code>state</code>. Static tiles rely purely on their grid multiplier (<code>multiple.nx</code>, <code>multiple.ny</code>).</li>
+<li>Procedural shorelines require <code>state.orientation</code> (to select cardinal rows) and <code>state.length</code> (to calculate full-tile intervals and fractional remainder slices). Stripping <code>state</code> from <code>eras()</code> makes computing slices impossible.</li>
+</ul>
+</li>
+<li><strong>Execution Cost</strong>:<ul>
+<li><code>CardinalFrame.keys()</code> already memoizes slice sequences onto <code>state._keys</code>. During standard 60 Hz execution, it performs an <span class="arithmatex">\(O(1)\)</span> reference check.</li>
+<li>Shoreline keys only require invalidation when either:</li>
+<li>Fluid geometry shifts (already handled via <code>Cartographer.purge()</code> and <code>generate()</code>).</li>
+<li>A macro-temporal season advances (<code>SeasonEvent</code>).</li>
+</ul>
+</li>
+</ol>
+<p><strong>Conclusion</strong>: Shorelines must remain dynamic renderables evaluated through <code>keys()</code>, with temporal invalidation driven by <code>SeasonEvent</code>.</p>
+<h6 id="2-shoreline-atlas-geometry-shorelineindex">2. Shoreline Atlas Geometry &amp; <code>ShorelineIndex</code></h6>
+<p>Currently, <code>GeographyProperties</code> and <code>CardinalFrame</code> define a 1-column, 4-row atlas (<span class="arithmatex">\(w \times 4l\)</span>, <span class="arithmatex">\(32 \times 128\)</span>). To integrate seasonality:</p>
+<ol>
+<li><strong>Atlas Grid</strong>: Expand the atlas horizontally into 4 season columns: <span class="arithmatex">\(\text{Columns} \in \{\text{spring}, \text{summer}, \text{autumn}, \text{winter}\}, \quad \text{Rows} \in \{\text{up}, \text{left}, \text{down}, \text{right}\}\)</span>, yielding a <span class="arithmatex">\(4w \times 4l\)</span> (<span class="arithmatex">\(128 \times 128\)</span>) texture sheet.</li>
+<li><strong>Keying Convention</strong>:<ul>
+<li>Full tile: <code>{id}-{season}-{direction}</code> at <span class="arithmatex">\((col \cdot w, row \cdot l, w, l)\)</span>.</li>
+<li>Fractional remainder (<span class="arithmatex">\(s\)</span>): <code>{id}-{season}-{direction}-{s}</code> at <span class="arithmatex">\((col \cdot w, row \cdot l, s, l)\)</span> (horizontal) or <span class="arithmatex">\((col \cdot w, row \cdot l, w, s)\)</span> (vertical).</li>
+</ul>
+</li>
+<li><strong>Secondary Relation Resolution</strong>:<ul>
+<li>If a multi-season shoreline atlas embeds all four seasons, <code>ShorelineIndex</code> only needs <code>(tile_id, fluid_id) \to shoreline_id</code>.</li>
+<li>To support biomes where distinct seasons bind to entirely different asset atlases (e.g., standard fringe vs. standalone pack-ice shelf), <code>ShorelineIndex.resolve()</code> should accept an optional <code>season: Optional[str] = None</code>, querying <code>(tile, fluid, season)</code> with fallback to <code>(tile, fluid)</code>.</li>
+</ul>
+</li>
+</ol>
+<h6 id="3-inner-loop-optimizations">3. Inner-Loop Optimizations</h6>
+<ol>
+<li><strong>Heap Allocation in <code>SeasonMechanics._probes</code> (Bug B018)</strong>:<ul>
+<li>Generating 5 transient <code>Position</code> dataclass instances at 60 Hz per resource creates tens of thousands of heap objects per second.</li>
+<li>Because <code>Resource</code> entities are static physical bodies (<span class="arithmatex">\(m = 0\)</span>) whose positions and dimensions are invariant after hydration, their probe coordinates <span class="arithmatex">\((x + \Delta x, y + \Delta y)\)</span> can be pre-calculated and cached on <code>ResourceState</code> during hydration, or evaluated via integer primitives using a new <code>board.fluid_at(layer, x, y)</code> lookup.</li>
+</ul>
+</li>
+<li><strong>ISL Stage Transition Throttling</strong>:<ul>
+<li>Moisture diffusion requires continuous integration with frame <span class="arithmatex">\(\Delta t\)</span>.</li>
+<li>Declarative stage checks via <code>executor.evaluate(stage, locals)</code> do not need 60 Hz evaluation. Throttling execution to period changes (<code>period_changed == True</code>) or a 1.0-second accumulator removes ISL AST overhead from the hot loop.</li>
+</ul>
+</li>
+<li><strong>Canvas Bleed on Fore Tiles (Bug B013)</strong>:<ul>
+<li><code>Screen.reconstruct()</code> executes <code>render.construct()</code> directly on <code>fg_canvas</code> without clearing previous pixels. Because tree canopies contain alpha channels, new seasonal foliage draws on top of old textures. <code>fg_canvas</code> requires a clear pass prior to baking.</li>
+</ul>
+</li>
+</ol>
+<h5 id="architectural-analysis-iii">Architectural Analysis III</h5>
+<h6 id="the-hidden-bottleneck-in-predicatespy">The Hidden Bottleneck in <code>predicates.py</code></h6>
+<p>Even if <code>_probes()</code> were rewritten to pass raw integer primitives <code>(x, y)</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">in_stream</span><span class="p">(</span><span class="n">position</span><span class="p">:</span> <span class="n">Position</span><span class="p">,</span> <span class="n">fluid</span><span class="p">:</span> <span class="n">Asset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="n">aabbs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">slen</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="o">...</span>
+        <span class="n">aabbs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="o">...</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">fluid</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">branches</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">fluid</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">branches</span><span class="p">:</span>
+            <span class="o">...</span>
+            <span class="n">aabbs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="o">...</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">geometry</span><span class="o">.</span><span class="n">inside</span><span class="p">(</span><span class="n">px</span><span class="p">,</span> <span class="n">py</span><span class="p">,</span> <span class="n">aabbs</span><span class="p">)</span>
+</code></pre></div>
+<p><code>in_stream()</code> dynamically allocates a new <code>list</code> and multiple <code>tuple</code> objects <strong>on every single call</strong>.</p>
+<p>For 100 resources probed 5 times per frame at 60 Hz, passing integer coordinates to <code>board.fluid()</code> would save 30,000 <code>Position</code> allocations per second while <code>predicates.in_stream()</code> continues generating <strong>30,000+ lists and 60,000+ tuples per second</strong> on the heap.</p>
+<p>Ripping up the <code>Position</code> interface across the stack solves only a fraction of the allocations while breaking existing call sites like <code>Cartographer.is_step_fluid()</code>.</p>
+<h6 id="pragmatic-remediation">Pragmatic Remediation</h6>
+<ol>
+<li>Cache Probe Instances on <code>ResourceState</code> (Zero API Changes)</li>
+</ol>
+<p>Resources (trees, crops, ore) are static bodies (<span class="arithmatex">\(m = 0\)</span>). Their coordinates and dimensions never change after world hydration.</p>
+<p>Pre-calculate the five <code>Position</code> objects <strong>once</strong> during entity hydration or spawning and store them on <code>ResourceState</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># During hydration in Migrator / Cradle:</span>
+<span class="n">resource</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">probes</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Position</span><span class="p">(</span><span class="n">mid_x</span><span class="p">,</span> <span class="n">mid_y</span><span class="p">),</span>
+    <span class="n">Position</span><span class="p">(</span><span class="n">mid_x</span><span class="p">,</span> <span class="n">pos</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">Position</span><span class="p">(</span><span class="n">mid_x</span><span class="p">,</span> <span class="n">pos</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">l</span><span class="p">),</span>
+    <span class="n">Position</span><span class="p">(</span><span class="n">pos</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mid_y</span><span class="p">),</span>
+    <span class="n">Position</span><span class="p">(</span><span class="n">pos</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">w</span><span class="p">,</span> <span class="n">mid_y</span><span class="p">),</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>In <code>SeasonMechanics.update()</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">is_near_water</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+    <span class="n">board</span><span class="o">.</span><span class="n">fluid</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">layer</span><span class="p">,</span> <span class="n">probe_pos</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">probe_pos</span> <span class="ow">in</span> <span class="n">resource</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">probes</span>
+<span class="p">)</span>
+</code></pre></div>
+<ul>
+<li><strong>Inner loop heap allocations</strong>: 0.</li>
+<li>**Changes to <code>Board.fluid()**</code>: 0.</li>
+<li>**Changes to <code>predicates.py**</code>: 0.</li>
+<li>
+<p><strong>Changes to Cython</strong>: 0.</p>
+</li>
+<li>
+<p>Cache Water AABBs on <code>FluidState</code></p>
+</li>
+</ul>
+<p>To eliminate the real heap pressure inside <code>predicates.in_stream()</code>, compile the AABBs once when the fluid propagates rather than recomputing them per query.</p>
+<p><code>Actuator.propagate()</code> already calculates stream lengths, pools, and branches when fluid geometry changes. Store the pre-compiled AABB bounding boxes on <code>FluidState</code> (e.g., <code>fluid.state._aabbs: List[Tuple[int, int, int, int]]</code>).</p>
+<p><code>predicates.in_stream()</code> then simplifies to:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">in_stream</span><span class="p">(</span><span class="n">position</span><span class="p">:</span> <span class="n">Position</span><span class="p">,</span> <span class="n">fluid</span><span class="p">:</span> <span class="n">Asset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">fluid</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">_aabbs</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">geometry</span><span class="o">.</span><span class="n">inside</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">position</span><span class="o">.</span><span class="n">x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">position</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="n">fluid</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">_aabbs</span><span class="p">)</span>
+</code></pre></div>
+<p>This reduces <code>in_stream()</code> from an allocation-heavy layout routine to a direct pass-through into Cython's <code>geometry.inside()</code>.</p>
+<ol>
+<li>Throttle Probing Frequency</li>
+</ol>
+<p>Because resources are stationary and water geometry only shifts when gates open/close or during initial load, running 5 spatial queries per resource at 60 Hz is wasted work.</p>
+<p>Evaluate <code>is_near_water</code> inside the throttled stage accumulator (e.g., at 1 Hz or on <code>period_changed</code>), caching a boolean <code>resource.state.irrigated</code> flag for the per-frame moisture diffusion formula.</p>
+<h6 id="task-backlog-adjustment">Task Backlog Adjustment</h6>
+<p>Replace the proposed <code>Board.fluid_at</code> refactor in Phase 10.02 with targeted caching:</p>
+<ul>
+<li><strong>Subtask</strong>: Add pre-calculated <code>probes: List[Position]</code> field to <code>ResourceState</code>, populated during hydration.</li>
+<li><strong>Subtask</strong>: Pre-compile stream and branch AABBs onto <code>FluidState._aabbs</code> in <code>Actuator.propagate()</code>.</li>
+<li><strong>Subtask</strong>: Update <code>predicates.in_stream()</code> to pass <code>fluid.state._aabbs</code> directly to <code>geometry.inside()</code>.</li>
+</ul>
+<h5 id="user-review-ii">User Review II</h5>
+<p>Okay, here is a wild idea. The process bottlenecks because it is trying to determine its moisture level by examining its surrounding terrain. the engine then hardcodes a diffusion rate and applies it if the probes are successful. However, this isn't really how the whole process occurs in reality. In actuality, it's more like bodies of waters are sources in a field that obeys superposition. So, what if after the Actuator pumps fluid, a field is calculated across the entire Board layer perimeter according to the following rules:</p>
+<ul>
+<li>every source fluid asset contributes to a moisture field</li>
+<li>field is calculated by summing individual contributions and then cached on Board. An approximation can be generated to turn it into a closed form function, if necessary. Fluid in the game is essentially equivalent to the classical mechanical problem of a bar of infinite length and the fields it creates. it has a nice closed form, as I recall.</li>
+<li>SeasonMechanics doesn't care about Fluids. it queries a Resource's location in the moisture field.</li>
+</ul>
+<h5 id="architectural-analysis-iii_1">Architectural Analysis III</h5>
+<p>Treating fluid networks as potential field sources obeying linear superposition transforms soil hydrology from an ad-hoc geometric collision query into a continuous, physical state space.</p>
+<p>This architecture cleanly decouples <code>SeasonMechanics</code> from fluid geometries and reduces per-frame environmental queries to zero.</p>
+<h6 id="1-mathematical-formulation-superposition-of-linear-and-disk-sources">1. Mathematical Formulation: Superposition of Linear and Disk Sources</h6>
+<p>In continuous 2D soil hydrology with uniform transmissivity <span class="arithmatex">\(D\)</span> and surface evaporation/sink rate <span class="arithmatex">\(\gamma\)</span>, the steady-state moisture concentration <span class="arithmatex">\(\Phi(\mathbf{x})\)</span> outside active bodies satisfies the screened Poisson equation:</p>
+<div class="arithmatex">\[\nabla^2 \Phi(\mathbf{x}) - \kappa^2 \Phi(\mathbf{x}) = -S(\mathbf{x})\]</div>
+<p>where <span class="arithmatex">\(\kappa = \sqrt{\gamma / D}\)</span> is the inverse diffusion length and <span class="arithmatex">\(S(\mathbf{x})\)</span> represents fluid injection sources.</p>
+<div class="highlight"><pre><span></span><code>       Linear Stream Source (S_i)           Annular Pool Source (P_j)
+      [============================]                 /-----\
+                     \                             |   Q_j   |
+                      \ d(x, segment)               \-----/
+                       \                               /
+                        \                             / d(x, pool)
+                         v                           v
+                     Resource Coordinate x: Phi(x) = Sum Phi_i(x)
+</code></pre></div>
+<ol>
+<li>Linear Stream Corridors (Finite Line Segments)</li>
+</ol>
+<p>A fluid stream or branch corridor with source direction <span class="arithmatex">\(\hat{u}\)</span>, width <span class="arithmatex">\(w\)</span>, flow intensity <span class="arithmatex">\(f\)</span>, and length <span class="arithmatex">\(L\)</span> acts as a uniform line source segment between endpoints <span class="arithmatex">\(\mathbf{a}\)</span> and <span class="arithmatex">\(\mathbf{b} = \mathbf{a} + L\hat{u}\)</span> with linear flux density <span class="arithmatex">\(\lambda = \lambda_0 \cdot f\)</span>.</p>
+<p>In classical potential theory, the field generated by a finite uniform line segment at target point <span class="arithmatex">\(\mathbf{x} = (x, y)\)</span> can be evaluated either via exact line integration or via orthogonal distance to the segment:</p>
+<p><strong>Exact 3D Potential Projection (Finite Bar)</strong>:</p>
+<p>Mapping the corridor to a bar spanning <span class="arithmatex">\(z \in [0, L]\)</span> with transverse offset <span class="arithmatex">\(r = d_{\perp}(\mathbf{x}, \text{axis})\)</span>:</p>
+<div class="arithmatex">\[
+\Phi_{\text{bar}}(\mathbf{x}) = \lambda \int_0^L \frac{dz'}{\sqrt{r^2 + (z - z')^2}} = \lambda \ln \left( \frac{(L - z) + \sqrt{r^2 + (L - z)^2}}{-z + \sqrt{r^2 + z^2}} \right)
+\]</div>
+<p><strong>Screened Euclidean Distance Approximation (Piecewise or Exponential Decay)</strong>:</p>
+<p>For 2D terrain diffusion with a maximum hydrological cutoff radius <span class="arithmatex">\(R_{\max} = \sigma \cdot f\)</span>, the field contribution simplifies to a function of the minimum Euclidean distance <span class="arithmatex">\(d_i(\mathbf{x})\)</span> from <span class="arithmatex">\(\mathbf{x}\)</span> to segment <span class="arithmatex">\([\mathbf{a}_i, \mathbf{b}_i]\)</span>:</p>
+<div class="arithmatex">\[
+\Phi_i(\mathbf{x}) = \Phi_0 \cdot f_i \cdot \exp\left( -\frac{d_i(\mathbf{x})}{\sigma} \right) \quad \text{for } d_i(\mathbf{x}) \le R_{\max}
+\]</div>
+<p>where the distance <span class="arithmatex">\(d_i(\mathbf{x})\)</span> to the segment is computed without square roots outside the radius:</p>
+<div class="arithmatex">\[
+t = \text{clamp}\left( \frac{(\mathbf{x} - \mathbf{a}_i) \cdot (\mathbf{b}_i - \mathbf{a}_i)}{\Vert{}\mathbf{b}_i - \mathbf{a}_i\Vert{}^2}, 0, 1 \right), \quad d_i(\mathbf{x}) = \Vert{}\mathbf{x} - (\mathbf{a}_i + t(\mathbf{b}_i - \mathbf{a}_i))\Vert{}
+\]</div>
+<ol>
+<li>Annular Pools (Disk Sources)</li>
+</ol>
+<p>A pool centered at <span class="arithmatex">\(\mathbf{c}_j\)</span> with effective radius <span class="arithmatex">\(R_j = \frac{1}{2}\sqrt{w_{\text{pool}}^2 + l_{\text{pool}}^2}\)</span> acts as an isotropic source of intensity <span class="arithmatex">\(Q_j \propto f\)</span>:</p>
+<div class="arithmatex">\[
+\Phi_j(\mathbf{x}) = Q_j \cdot \exp\left( -\frac{\max(0, \Vert{}\mathbf{x} - \mathbf{c}_j\Vert{} - R_j)}{\sigma} \right)
+\]</div>
+<ol>
+<li>Superposition Field</li>
+</ol>
+<p>By the principle of superposition, the total soil moisture potential at any point <span class="arithmatex">\(\mathbf{x}\)</span> on layer <span class="arithmatex">\(L\)</span> is:</p>
+<div class="arithmatex">\[
+\Phi(\mathbf{x}) = \sum_{i \in \text{Streams}} \Phi_i(\mathbf{x}) + \sum_{j \in \text{Pools}} \Phi_j(\mathbf{x})
+\]</div>
+<h6 id="2-architectural-division-of-labor">2. Architectural Division of Labor</h6>
+<div class="highlight"><pre><span></span><code>+-------------------------------------------------------------------------+
+| FluidMechanics / Actuator (Event-Driven: Runs only when water shifts)   |
+|                                                                         |
+|  1. Truncate streams, expand pools, trace branches                     |
+|  2. If geometry shifted: Compute MoistureField for layer                |
+|  3. Assign Field to Board: board.set_moisture_field(layer, field)       |
++-------------------------------------------------------------------------+
+                                    |
+                                    v
++-------------------------------------------------------------------------+
+| Board (Data Store)                                                      |
+|                                                                         |
+|  Exposes: board.moisture(layer, x, y) -&gt; float                          |
++-------------------------------------------------------------------------+
+                                    |
+                                    v
++-------------------------------------------------------------------------+
+| SeasonMechanics (60 Hz Engine Loop)                                     |
+|                                                                         |
+|  Iterates Resources:                                                    |
+|    flux = board.moisture(resource.layer, resource.pos.x, resource.pos.y) |
+|    if flux &gt; 0:                                                         |
+|        resource.state.retention += flux * delta                         |
+|    else:                                                                |
+|        resource.state.retention -= evap * delta                         |
++-------------------------------------------------------------------------+
+</code></pre></div>
+<ol>
+<li>**<code>Actuator.propagate()</code> / <code>FluidMechanics**</code>:<ul>
+<li>Maintains exclusive ownership of source generation.</li>
+<li>When fluid invalidation flags a layer as dirty, it updates stream lengths and pools.</li>
+<li>Once propagation concludes, it constructs a <code>MoistureField</code> instance from the active stream segments and pools.</li>
+<li>Pushes the compiled <code>MoistureField</code> to <code>Board</code>.</li>
+</ul>
+</li>
+<li><strong><code>Board</code> Representation</strong>: Two valid concrete implementations exist for caching:<ul>
+<li><strong>Analytic Evaluator (<code>AnalyticMoistureField</code>)</strong>: Stores the list of segment tuples <code>(x1, y1, x2, y2, flow)</code> and pool circles <code>(cx, cy, radius, flow)</code>. Evaluates closed-form distance attenuation on demand.</li>
+<li><strong>Discrete Raster Grid (<code>RasterMoistureGrid</code>)</strong>: A flat 2D scalar array matching the board size divided into coarse spatial buckets (e.g., <span class="arithmatex">\(16 \times 16\)</span> or <span class="arithmatex">\(32 \times 32\)</span> grid cells). During <code>FluidMechanics</code> pass 2, it rasterizes the sources into the grid. Sampling is an <span class="arithmatex">\(O(1)\)</span> array index lookup: <span class="arithmatex">\(\text{cell\_x} = x \gg 5, \quad \text{cell\_y} = y \gg 5, \quad \Phi = \text{grid}[\text{cell\_y} \cdot W_{\text{cells}} + \text{cell\_x}]\)</span></li>
+</ul>
+</li>
+<li><strong><code>SeasonMechanics</code></strong>:<ul>
+<li>Completely decoupled from <code>predicates.in_fluid</code>, hitboxes, branch arrays, and <code>Position</code> allocations.</li>
+<li>Queries a single coordinate scalar: <code>flux = board.moisture(layer, pos.x, pos.y)</code>.</li>
+<li>Modulates absorption continuously: <span class="arithmatex">\(\text{retention} \mathrel{+}= \kappa_{\text{diffusion}} \cdot \text{flux} \cdot \Delta t\)</span>.</li>
+</ul>
+</li>
+<li><strong>Zero-Work Optimization for Static Resources</strong>:<ul>
+<li>Because resources are static (<span class="arithmatex">\(m = 0\)</span>), their positions are constant.</li>
+<li>When <code>board.set_moisture_field(layer, field)</code> is invoked, the board can update a scalar <code>resource.state.moisture_flux: float</code> directly on each resource on that layer.</li>
+<li>Under this pattern, <code>SeasonMechanics</code> executes <strong>zero spatial lookups</strong> per tick. It integrates <code>resource.state.retention += resource.state.moisture_flux * delta</code> directly in a flat scalar loop.</li>
+</ul>
+</li>
+</ol>
+<h6 id="3-comparison-of-alternatives">3. Comparison of Alternatives</h6>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Point Probing (<code>_probes()</code>)</th>
+<th>Raster Moisture Grid (<span class="arithmatex">\(32 \times 32\)</span>)</th>
+<th>Analytic Continuous Field</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Complexity per Resource</strong></td>
+<td><span class="arithmatex">\(O(K \cdot N_{\text{fluids}})\)</span> per frame</td>
+<td><span class="arithmatex">\(O(1)\)</span> scalar array lookup</td>
+<td><span class="arithmatex">\(O(N_{\text{segments}} + N_{\text{pools}})\)</span></td>
+</tr>
+<tr>
+<td><strong>Inner Loop Allocations</strong></td>
+<td>High (5 <code>Position</code> + lists)</td>
+<td><strong>Zero</strong></td>
+<td><strong>Zero</strong></td>
+</tr>
+<tr>
+<td><strong>Hydrological Fidelity</strong></td>
+<td>Binary step function (in/out)</td>
+<td>Smooth gradient</td>
+<td>Infinite continuous gradient</td>
+</tr>
+<tr>
+<td><strong>Sensitivity to Board Scale</strong></td>
+<td>Degrades with resource density</td>
+<td>Fixed rasterization on shift</td>
+<td>Independent of board size</td>
+</tr>
+<tr>
+<td><strong>Cache Invalidation</strong></td>
+<td>Every tick</td>
+<td>Event-driven (only when gates mutate)</td>
+<td>Event-driven (only when gates mutate)</td>
+</tr>
+</tbody>
+</table>
+<h5 id="user-review-iii">User Review III</h5>
+<p>The only thing that remains unclear to me is how Shorelines get updated during SeasonEvents, and how the Cartographer will pass in the Calendar State to the ShorelineIndex to resolve the Shoreline Asset ID.</p>
+<h5 id="architectural-analysis-iv">Architectural Analysis IV</h5>
+<h6 id="big-picture-architecture-logical-flow">Big-Picture Architecture &amp; Logical Flow</h6>
+<p>The objective of Phase 10.02 is to resolve a critical convergence point in the engine: where <strong>spatial geometry</strong> (fluid channels, shorelines, terrain) intersects with <strong>macro-temporal mechanics</strong> (calendar periods, seasonal cycles, ecological lifecycles).</p>
+<p>At present, this convergence suffers from three fundamental architectural friction points:</p>
+<ol>
+<li><strong>Coupling Temporal Invalidation to Geometric Regeneration</strong>: Shorelines are procedural assets generated by <code>Cartographer</code>. The engine lacked a defined pattern for shifting shorelines across seasons without re-running expensive contour sweeps.</li>
+<li><strong>Inner-Loop Spatial Collision as a Proxy for Hydrology</strong>: <code>SeasonMechanics</code> was treating soil moisture diffusion as an ad-hoc 60 Hz geometric collision problem via <code>_probes()</code>, causing tens of thousands of transient heap allocations and redundant bounding-box traversals per second.</li>
+<li><strong>Canvas Overdraw on Reconstructed Foliage</strong>: The static pre-rendering pipeline in <code>Screen.reconstruct()</code> failed to clear transparent target surfaces before re-baking fore tiles.</li>
+</ol>
+<div class="highlight"><pre><span></span><code>+-------------------------------------------------------------------------------------------------+
+|                                        TEMPORAL PIPELINE                                        |
+|                                                                                                 |
+|   SeasonMechanics.update() (60 Hz)                                                              |
+|     ├── 1. Accumulates dt into board.calendar.elapsed                                           |
+|     └── 2. When elapsed &gt;= period_duration:                                                    |
+|              Advances calendar (period -&gt; cycle -&gt; season -&gt; year)                              |
+|              Appends SeasonEvent(season=...) to Engine Bus                                      |
++-------------------------------------------------------------------------------------------------+
+                                                 │
+                                                 │ (Dispatched via Engine Bus)
+                                                 ▼
++-------------------------------------------------------------------------------------------------+
+|                                     EVENT HANDLING &amp; SYNC                                       |
+|                                                                                                 |
+|   SeasonEventHandler.handle(event, context)                                                     |
+|     ├── 1. Screen Reconstruction:                                                               |
+|     │        Screen.reconstruct() clears fg_canvas (Fix B013) &amp; re-bakes Fore/Back tiles.       |
+|     └── 2. Shoreline Frame Invalidation (Zero Geometry Regeneration):                           |
+|              Iterates board.shorelines():                                                       |
+|                state.season = event.season                                                      |
+|                state._keys = None  (Lazy evaluation in next draw pass)                          |
++-------------------------------------------------------------------------------------------------+
+                                                 ▲
+                                                 │ (Event-Driven: Gate/Switch Shift Only)
++-------------------------------------------------------------------------------------------------+
+|                                     HYDROLOGICAL PIPELINE                                       |
+|                                                                                                 |
+|   FluidMechanics / Actuator.propagate()                                                         |
+|     ├── 1. Raycasts streams, annular pools, and downstream branches                             |
+|     ├── 2. Compiles layer MoistureField (Superposition of line segments + pool disks)           |
+|     ├── 3. board.set_moisture_field(layer, field)                                               |
+|     │        └── Precomputes resource.state.moisture_flux on static entities (m = 0)            |
+|     └── 4. If fluid geometry shifted:                                                           |
+|              Cartographer.generate(layer, board, shoreline_index)                               |
++-------------------------------------------------------------------------------------------------+
+                                                 │
+                                                 │ (Zero Spatial Lookups in 60 Hz Loop)
+                                                 ▼
++-------------------------------------------------------------------------------------------------+
+|                                  RESOURCE DIFFUSION &amp; GROWTH                                    |
+|                                                                                                 |
+|   SeasonMechanics.update() (Hot Loop)                                                           |
+|     ├── 1. Continuous Flux Integration (60 Hz):                                                 |
+|     │        if resource.state.moisture_flux &gt; 0:                                               |
+|     │            retention += moisture_flux * DIFFUSION_RATE * dt                               |
+|     │        else:                                                                              |
+|     │            retention -= EVAPORATION_RATE * evap_modifier * dt                             |
+|     └── 2. Throttled Biological Transitions (1 Hz or on period_changed):                        |
+|              executor.evaluate(resource.state.stage, locals)                                    |
++-------------------------------------------------------------------------------------------------+
+</code></pre></div>
+<h6 id="shoreline-lifecycle-during-seasonevents">Shoreline Lifecycle During SeasonEvents</h6>
+<p>User Review III asked:</p>
+<blockquote>
+<p><em>"The only thing that remains unclear to me is how Shorelines get updated during SeasonEvents, and how the Cartographer will pass in the Calendar State to the ShorelineIndex to resolve the Shoreline Asset ID."</em></p>
+</blockquote>
+<p>The resolution to this question rests on separating <strong>geometric boundary derivation</strong> from <strong>frame key resolution</strong>:</p>
+<ol>
+<li><strong>Geometry is Invariant Across Seasons</strong>: A riverbank or pond margin does not shift its spatial coordinates when autumn turns to winter. The contour boundaries <span class="arithmatex">\((x, y, w, l, \text{orientation})\)</span> generated by <code>geometry.contours()</code> remain identical. Therefore, <strong>re-running <code>Cartographer.generate()</code> during a <code>SeasonEvent</code> is an anti-pattern</strong>.</li>
+<li><strong>Atlas-Level vs. Asset-Level Seasonality</strong>:<ul>
+<li><strong>Atlas-Level (Standard Case)</strong>: A multi-season shoreline asset (e.g., <code>grassy-shore</code>) embeds all four seasons in a <span class="arithmatex">\(4w \times 4l\)</span> (<span class="arithmatex">\(128 \times 128\)</span>) texture sheet. The Asset ID itself does not change across seasons; only the active column in the texture atlas shifts.</li>
+<li><strong>Asset-Level (Biome Replacement Case)</strong>: In specialized environments, a season might require substituting an entirely different asset sheet (e.g., swapping standard shoreline fringe for a jagged pack-ice shelf).</li>
+</ul>
+</li>
+<li><strong>Division of Responsibility</strong>:<ul>
+<li><strong>During <code>Cartographer.generate()</code> (Initial Hydration or Gate Oscillation)</strong>: The Cartographer receives <code>board: Board</code>. In <code>_coalesce_segments()</code>, it queries the relation via: <code>shoreline_id = index.resolve(tile.id, fluid_id, season=board.calendar.season)</code> This binds the appropriate initial Asset ID for the prevailing season.</li>
+<li><strong>During <code>SeasonEvent</code> (Macro-Temporal Advance)</strong>:
+<code>SeasonEventHandler</code> iterates over <code>board.shorelines()</code>:</li>
+</ul>
+</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">shore</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">shorelines</span><span class="p">():</span>
+    <span class="n">target_id</span> <span class="o">=</span> <span class="n">shoreline_index</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">shore</span><span class="o">.</span><span class="n">tile_id</span><span class="p">,</span> <span class="n">shore</span><span class="o">.</span><span class="n">fluid_id</span><span class="p">,</span> <span class="n">season</span><span class="o">=</span><span class="n">event</span><span class="o">.</span><span class="n">season</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">target_id</span> <span class="o">==</span> <span class="n">shore</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+        <span class="c1"># Standard Case: Invalidate frame key cache only (Zero GC / Zero allocations)</span>
+        <span class="n">shore</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">season</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">season</span>
+        <span class="n">shore</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">_keys</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Biome Replacement: Asset ID substitution requires Cartographer regeneration</span>
+        <span class="n">needs_regeneration</span> <span class="o">=</span> <span class="kc">True</span>
+</code></pre></div>
+<p>For standard 4-season atlases, key invalidation is <span class="arithmatex">\(O(N)\)</span> with zero heap allocations, zero geometry recomputation, and zero texture re-allocation.</p>
+<h6 id="the-soil-hydrology-superposition-field">The Soil Hydrology Superposition Field</h6>
+<p>User Review II proposed replacing point-based probing with an environmental moisture field obeying linear superposition.</p>
+<p><strong>Physical Justification</strong></p>
+<p>Treating fluid channels as continuous line and disk sources models groundwater diffusion far more accurately than collision checking. In real soil physics, water potential attenuates continuously with distance from open water according to transmissivity and evaporation.</p>
+<p><strong>Elimination of the Inner-Loop Bottleneck</strong></p>
+<p>In the current implementation, 100 resources generate:</p>
+<ul>
+<li><span class="arithmatex">\(500\)</span> <code>Position</code> instances instantiated every tick at 60 Hz (<span class="arithmatex">\(\sim 30{,}000\text{ objects/s}\)</span>).</li>
+<li><span class="arithmatex">\(500\)</span> calls to <code>board.fluid()</code>, each triggering broad-phase grid indexing and list/tuple allocations inside <code>predicates.in_stream()</code>.</li>
+</ul>
+<p>By moving to a superposition field:</p>
+<ol>
+<li>When <code>FluidMechanics</code> runs pass 1 (<code>Actuator.propagate()</code>), it registers active stream segments <span class="arithmatex">\([\mathbf{a}_i, \mathbf{b}_i]\)</span> and annular pool disks <span class="arithmatex">\((\mathbf{c}_j, R_j)\)</span> into a <code>MoistureField</code>.</li>
+<li>When <code>board.set_moisture_field(layer, field)</code> is invoked, <code>Board</code> evaluates the field once for each static resource (<span class="arithmatex">\(m = 0\)</span>) and caches the scalar result onto <code>resource.state.moisture_flux: float</code>.</li>
+<li>Inside <code>SeasonMechanics.update()</code>, the 60 Hz loop executes <strong>zero spatial queries, zero broad-phase lookups, and zero allocations</strong>:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="n">resource</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">moisture_flux</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+    <span class="n">resource</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">retention</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">MAX_RETENTION</span><span class="p">,</span>
+        <span class="n">resource</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">retention</span> <span class="o">+</span> <span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">moisture_flux</span> <span class="o">*</span> <span class="n">settings</span><span class="o">.</span><span class="n">DIFFUSION_RATE</span> <span class="o">*</span> <span class="n">delta</span><span class="p">)</span>
+    <span class="p">)</span>
+</code></pre></div>
+<h5 id="bug-reports">Bug Reports</h5>
+<h6 id="bug-b013-canvas-bleed-on-fore-tiles">Bug B013: Canvas Bleed on Fore Tiles</h6>
+<p><strong>STATUS</strong>: OPEN
+<strong>SEVERITY</strong>: Medium</p>
+<p><strong>Description</strong></p>
+<p>When <code>Screen.reconstruct()</code> updates seasonal tile frames, it invokes <code>render.construct(self.fg_canvas, fore_tiles)</code> directly on the existing <code>TexturePtr</code>. Unlike <code>bg_canvas</code> which is fully opaque and overwrites previous pixel values, <code>fg_canvas</code> contains transparent alpha channels (e.g., foliage overhangs and tree canopies). Successive season transitions will render new seasonal foliage textures over the existing pixels without clearing the target, causing ghosting and visual artifacts.</p>
+<p><strong>Steps to Replicate</strong></p>
+<ol>
+<li>Initialize a layer containing <code>fore</code> tiles with transparent backgrounds.</li>
+<li>Advance <code>board.calendar</code> past a period boundary to fire <code>SeasonEvent</code>.</li>
+<li>Inspect <code>screen.fg_canvas</code>; preceding seasonal canopy pixels remain visible beneath new seasonal pixels.</li>
+</ol>
+<p><strong>Proposed Remediation</strong></p>
+<p>Expose a clear-target routine in <code>libs.graphics.render</code> (or call <code>SDL_SetRenderTarget</code> followed by <code>SDL_RenderClear</code> on <code>fg_canvas</code>) within <code>Screen.reconstruct()</code> immediately before invoking <code>render.construct()</code>.</p>
+<h6 id="bug-b014-transient-heap-allocation-in-seasonmechanics_probes-inner-loop">Bug B014: Transient Heap Allocation in SeasonMechanics._probes() Inner Loop</h6>
+<p><strong>STATUS</strong>: OPEN
+<strong>SEVERITY</strong>: Low</p>
+<p><strong>Description</strong></p>
+<p>In <code>SeasonMechanics._probes(resource)</code>, five discrete <code>Position</code> dataclass instances are constructed every frame for every active resource on the board. In dense maps, this creates tens of thousands of short-lived Python objects per second, contributing to garbage collection latency and violating the engine's zero-heap inner loop philosophy.</p>
+<p><strong>Proposed Remediation</strong></p>
+<ul>
+<li>[!] Add <code>Board.fluid_at(layer: str, x: int, y: int) -&gt; bool</code> accepting raw integer coordinates, and cache local probe offsets <span class="arithmatex">\((dx, dy)\)</span> on <code>ResourceState</code> during hydration.</li>
+<li>[ ] Introduce Moisture Field potential calculations.</li>
+</ul>
+<h5 id="goals">Goals</h5>
+<h6 id="goal-multi-season-shoreline-atlas-keying-event-synchronization">Goal: Multi-Season Shoreline Atlas Keying &amp; Event Synchronization</h6>
+<p>Expand <code>CardinalFrame</code> to map 2D atlas grids partitioned by Cardinal directions (rows) and Calendar seasons (columns). Update <code>ShorelineState</code> to track active seasons, enabling lazy cache invalidation via <code>SeasonEvent</code> without rebuilding underlying geometric boundaries.</p>
+<div class="highlight"><pre><span></span><code><span class="err">```</span><span class="n">python</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">properties</span><span class="p">:</span> <span class="n">GeographyProperties</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">w</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">l</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tile_w</span> <span class="o">=</span> <span class="n">w</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tile_l</span> <span class="o">=</span> <span class="n">l</span>
+    <span class="n">crops</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">season</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Seasons</span><span class="p">):</span>
+        <span class="n">base_x</span> <span class="o">=</span> <span class="n">col</span> <span class="o">*</span> <span class="n">w</span>
+        <span class="k">for</span> <span class="n">direction</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">CARDINAL_ROWS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">base_y</span> <span class="o">=</span> <span class="n">row</span> <span class="o">*</span> <span class="n">l</span>
+
+            <span class="c1"># 1. Base full tile key: {id}-{season}-{direction}</span>
+            <span class="n">full_key</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">id</span><span class="p">,</span> <span class="n">season</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">direction</span><span class="p">])</span>
+            <span class="n">crops</span><span class="p">[</span><span class="n">full_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">base_x</span><span class="p">,</span> <span class="n">base_y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span>
+
+            <span class="c1"># 2. Fractional slices</span>
+            <span class="k">if</span> <span class="n">direction</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Directions</span><span class="o">.</span><span class="n">UP</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">Directions</span><span class="o">.</span><span class="n">DOWN</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+                <span class="c1"># Horizontal bank: sliced along width W</span>
+                <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
+                    <span class="n">slice_key</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">id</span><span class="p">,</span> <span class="n">season</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)])</span>
+                    <span class="n">crops</span><span class="p">[</span><span class="n">slice_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">base_x</span><span class="p">,</span> <span class="n">base_y</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Vertical bank: sliced along length L</span>
+                <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
+                    <span class="n">slice_key</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">id</span><span class="p">,</span> <span class="n">season</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)])</span>
+                    <span class="n">crops</span><span class="p">[</span><span class="n">slice_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">base_x</span><span class="p">,</span> <span class="n">base_y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">crops</span>
+</code></pre></div>
+<h6 id="goal-continuous-hydrological-potential-field-static-flux-caching">Goal: Continuous Hydrological Potential Field &amp; Static Flux Caching</h6>
+<p>Replace iterative point-probing with an event-driven scalar potential field. Model fluid corridors and annular pools as physical emission sources obeying superposition. Precompute and cache <code>moisture_flux</code> directly on static <code>ResourceState</code> instances during field invalidation, reducing 60 Hz soil diffusion math to scalar multiplication.</p>
+<h6 id="goal-isl-throttling-fore-canvas-bleed-elimination">Goal: ISL Throttling &amp; Fore Canvas Bleed Elimination</h6>
+<p>Throttle expensive declarative stage evaluations in <code>SeasonMechanics</code> to 1.0-second intervals or calendar boundary changes. Resolve Bug B013 by clearing <code>Screen.fg_canvas</code> prior to re-rendering seasonal foreground tiles. Resolve Bug B015 by correcting the enum attribute access in <code>predicates.is_obstacle()</code>.</p>
+<h5 id="tasks">Tasks</h5>
+<p><strong>1. Task: Multi-Season Shoreline Atlas Keying</strong></p>
+<p><em>Objective</em>: Map shoreline atlas textures across cardinal rows and seasonal columns in <code>CardinalFrame</code>.</p>
+<ul>
+<li>[x] Subtask: Extend <code>CardinalFrame.index()</code> in <code>app.assets.frames.geography</code> to iterate over <code>Seasons</code> columns (<span class="arithmatex">\(col \cdot w\)</span>) and <code>Directions</code> rows (<span class="arithmatex">\(row \cdot l\)</span>), generating crop entries for <code>{id}-{season}-{direction}</code> and fractional slices <code>{id}-{season}-{direction}-{rem}</code>.</li>
+<li>[x] Subtask: Add <code>season: str = Seasons.SPRING.value</code> to <code>ShorelineState</code> in <code>app.models.state.assets.geography</code>.</li>
+<li>[x] Subtask: Update <code>CardinalFrame.keys()</code> to emit <code>{id}-{state.season}-{direction}</code> and memoize on <code>state._keys</code>.</li>
+</ul>
+<p><strong>2. Task: Shoreline Seasonal Event Handling &amp; Relational Fallback</strong></p>
+<p><em>Objective</em>: Synchronize shoreline state with calendar transitions and support compound relational fallbacks.</p>
+<ul>
+<li>[x] Subtask: Update <code>ShorelineIndex.resolve(tile_id, fluid_id, season=None)</code> in <code>app.game.logic.relations.shorelines</code> to query <code>(tile_id, fluid_id, season)</code> before falling back to <code>(tile_id, fluid_id)</code>.</li>
+<li>[x] Subtask: Update <code>Cartographer._coalesce_segments()</code> in <code>app.services.generators.game.cartographer</code> to pass <code>board.calendar.season</code> into <code>index.resolve()</code>.</li>
+<li>[x] Subtask: Implement <code>SeasonEventHandler.handle()</code> in <code>app.game.menus.handlers</code> to iterate over <code>board.shorelines()</code>, updating <code>state.season = context.board.calendar.season</code> and invalidating <code>state._keys = None</code>.</li>
+</ul>
+<p><strong>3. Task: Hydrological Superposition Field Model</strong></p>
+<p><em>Objective</em>: Implement continuous soil moisture potential modeling based on fluid geometry.</p>
+<ul>
+<li>[x] Subtask: Define <code>MoistureField</code> in <code>app.game.board.fields</code> supporting registered stream corridors (line segments) and annular pools (disks) with exponential distance attenuation.</li>
+<li>[x] Subtask: Update <code>Actuator.propagate()</code> in <code>app.services.generators.game.actuator</code> to compile active streams, pools, and branches into a <code>MoistureField</code> upon completing fluid propagation.</li>
+<li>[x] Subtask: Add <code>_moisture_fields: Dict[str, MoistureField]</code> and <code>board.set_moisture_field(layer, field)</code> to <code>Board</code> in <code>app.game.board.core</code>.</li>
+<li>[x] Subtask: Add <code>moisture_flux: float = 0.0</code> field to <code>ResourceState</code> in <code>app.models.state.assets.resources</code>.</li>
+<li>[x] Subtask: In <code>board.set_moisture_field()</code>, iterate over static resources on the layer and precompute <code>resource.state.moisture_flux = field.evaluate(pos.x, pos.y)</code>.</li>
+</ul>
+<p><strong>4. Task: SeasonMechanics Refactoring &amp; Throttling</strong></p>
+<p><em>Objective</em>: Eliminate inner-loop heap allocations and throttle declarative AST evaluations.</p>
+<ul>
+<li>[x] Subtask: Remove <code>SeasonMechanics._probes()</code> in <code>app.game.logic.mechanics.world.seasons</code>.</li>
+<li>[x] Subtask: Refactor <code>SeasonMechanics.update()</code> to integrate moisture directly from <code>resource.state.moisture_flux</code> at 60 Hz.</li>
+<li>[x] Subtask: Add <code>_transition_accumulator: float = 0.0</code> to <code>SeasonMechanics</code> and throttle <code>executor.evaluate()</code> to execute once per second or when <code>period_changed == True</code>.</li>
+</ul>
+<p><strong>5. Task: Canvas Clear Pass in Screen.reconstruct() (Bug B013)</strong></p>
+<p><em>Objective</em>: Eliminate texture bleed and ghosting on transparent foreground canopy tiles during season transitions.</p>
+<ul>
+<li>[!: Will be addressed in separate Patch] Subtask: Expose <code>render.clear_target(target)</code> in <code>libs.graphics.render</code> to clear texture pointers via <code>SDL_SetRenderTarget</code> and <code>SDL_RenderClear</code>.</li>
+<li>[!: Will be addressed in separate Patch] Subtask: Invoke target clearing on <code>self.fg_canvas</code> in <code>Screen.reconstruct()</code> before executing <code>render.construct(self.fg_canvas, fore_tiles)</code>.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="../../../../static/js/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,4591 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/board/phases/refactor/refactor-10-03/">
+      
+      
+        <link rel="prev" href="../refactor-10-02/">
+      
+      
+        <link rel="next" href="../refactor-10-04/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Phase 10.03 - Flowers, Pixies & Reproduction - Ontology</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#refactor-phase-1003-flowers-pixies-reproduction" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="Ontology" class="md-header__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ontology
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Phase 10.03 - Flowers, Pixies & Reproduction
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="Ontology" class="md-nav__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Ontology
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../00-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../01-assets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../02-sprites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../03-compositions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../04-intentions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../05-mechanics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../06-widgets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../07-acoustics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../08-narratives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../09-ecology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ecology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../10-chemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../11-emergence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../12-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../specs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Specifications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_15" id="__nav_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Specifications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/00-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dialogue Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/01-interaction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/02-wander/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wander Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_16" id="__nav_16_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Roadmap
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2" id="__nav_16_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_16_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_1" id="__nav_16_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-castle-dawn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Castle Dawn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-regalia-galleria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Regalia Galleria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-temple-of-trials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Trials of Trials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Dialogue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-view/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_2" id="__nav_16_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implement
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implement
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01 - Renderer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02 - Game
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03 - Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04 - Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 05 - Editor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06 - Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07 - Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08 - Pathfinding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09 - Hydrodynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10 - Seasons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 11 - Geology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 12 - Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-13/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 13 - Acoustics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 14 - Narratives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-n/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n - Commerce
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-n%2B1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n+1 - Towns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_3" id="__nav_16_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refactor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Refactor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-01-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01.01 - Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.01 - Frames
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.02 - Registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.03 - Equipment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.04 - Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.05 - Finetuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.06 - Effects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.07 - Registry Data Structures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.08 - World Chunks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.01 - Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.02 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.03 - Motion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.04 - Projectiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.01 - Typography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.02 - Simplification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.03 - Event Handlers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.04 - Menu Context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.05 - Gizmos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.06 - Pane Generation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.01 - Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.02 - Goals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.03 - Combat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.04 - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.01 - Elevation Sorting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.02 - Platforms & Elevated Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.03 - Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.04 - Materialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.05 - Composite Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.01 - Obstacle Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.02 - Navigation Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.03 - Trajectory Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.04 - Mutators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.01 - Fluid Flows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.02 - Shorelines & Geography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.03 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.04 - Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.05 - Bridges & Bifurcation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.06 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.07 - Frame Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.08 - Transverse Fluid Submersion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.01 - Stage Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.02 - Shoreline Seasonal Indexing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.03 - Flowers, Pixies & Reproduction
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.03 - Flowers, Pixies & Reproduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-1003-flowers-pixies-reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 10.03 - Flowers, Pixies &amp; Reproduction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 10.03 - Flowers, Pixies &amp; Reproduction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-mathematical-formulation-moisture-gradient-reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Mathematical Formulation: Moisture Gradient Reproduction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-pixie-architecture-variable-row-sheet-indexing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Pixie Architecture &amp; Variable-Row Sheet Indexing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-pipeline-integration-faunamechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Pipeline Integration: FaunaMechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-pixie-asset-architecture-variable-row-keying" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Pixie Asset Architecture &amp; Variable-Row Keying
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-flower-resource-lifecycle-pollination-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Flower Resource Lifecycle &amp; Pollination State
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-faunamechanics-gradient-ascent-child-dispersion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: FaunaMechanics &amp; Gradient Ascent Child Dispersion
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architectural-synthesis-the-emergent-ecology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Synthesis: The Emergent Ecology
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Synthesis: The Emergent Ecology">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#review-phase-1001-stage-hitboxes-ecs-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review: Phase 10.01 - Stage Hitboxes &amp; ECS Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Review: Phase 10.01 - Stage Hitboxes &amp; ECS Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Control
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quality-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality Control
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimization-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimization Control
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b016-stagehitbox-attributeerror-on-unconfigured-resource-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B016: StageHitbox AttributeError on Unconfigured Resource Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b017-asset-instantiation-defaults-hitbox-to-unbound-nonetype" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B017: Asset Instantiation Defaults Hitbox to Unbound NoneType
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#draft-interface-alignment-for-hitboxschema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Draft: Interface Alignment for HitboxSchema
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Draft: Interface Alignment for HitboxSchema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Drift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#draft-hitbox-concept-modernization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Draft: Hitbox Concept Modernization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Draft: Hitbox Concept Modernization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#drift_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Drift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refactor-phase-1003-flowers-pixies-reproduction_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 10.03 - Flowers, Pixies &amp; Reproduction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 10.03 - Flowers, Pixies &amp; Reproduction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis 1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-floral-resource-lifecycle-pollination-schemas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Floral Resource Lifecycle &amp; Pollination Schemas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-pixie-foraging-emergent-seed-dispersal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Pixie Foraging &amp; Emergent Seed Dispersal
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.04 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../appendices/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_17" id="__nav_17_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/00-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/01-schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/02-diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagrams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reports
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../coverage/index" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unit Test Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-1003-flowers-pixies-reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 10.03 - Flowers, Pixies &amp; Reproduction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 10.03 - Flowers, Pixies &amp; Reproduction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-mathematical-formulation-moisture-gradient-reproduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Mathematical Formulation: Moisture Gradient Reproduction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-pixie-architecture-variable-row-sheet-indexing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Pixie Architecture &amp; Variable-Row Sheet Indexing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-pipeline-integration-faunamechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Pipeline Integration: FaunaMechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-pixie-asset-architecture-variable-row-keying" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Pixie Asset Architecture &amp; Variable-Row Keying
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-flower-resource-lifecycle-pollination-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Flower Resource Lifecycle &amp; Pollination State
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-faunamechanics-gradient-ascent-child-dispersion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: FaunaMechanics &amp; Gradient Ascent Child Dispersion
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architectural-synthesis-the-emergent-ecology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Synthesis: The Emergent Ecology
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Synthesis: The Emergent Ecology">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#review-phase-1001-stage-hitboxes-ecs-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review: Phase 10.01 - Stage Hitboxes &amp; ECS Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Review: Phase 10.01 - Stage Hitboxes &amp; ECS Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Control
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quality-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality Control
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimization-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimization Control
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b016-stagehitbox-attributeerror-on-unconfigured-resource-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B016: StageHitbox AttributeError on Unconfigured Resource Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b017-asset-instantiation-defaults-hitbox-to-unbound-nonetype" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B017: Asset Instantiation Defaults Hitbox to Unbound NoneType
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#draft-interface-alignment-for-hitboxschema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Draft: Interface Alignment for HitboxSchema
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Draft: Interface Alignment for HitboxSchema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#drift" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Drift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#draft-hitbox-concept-modernization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Draft: Hitbox Concept Modernization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Draft: Hitbox Concept Modernization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#drift_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Drift
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refactor-phase-1003-flowers-pixies-reproduction_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 10.03 - Flowers, Pixies &amp; Reproduction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 10.03 - Flowers, Pixies &amp; Reproduction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis 1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-floral-resource-lifecycle-pollination-schemas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Floral Resource Lifecycle &amp; Pollination Schemas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-pixie-foraging-emergent-seed-dispersal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Pixie Foraging &amp; Emergent Seed Dispersal
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Phase 10.03 - Flowers, Pixies & Reproduction</h1>
+
+<h4 id="refactor-phase-1003-flowers-pixies-reproduction">Refactor: Phase 10.03 - Flowers, Pixies &amp; Reproduction</h4>
+<p><strong>Overview</strong></p>
+<p>Implements the <code>Flower</code> resource type, codifies the <code>Pixie</code> asset category for lightweight 4-row directional fauna, and introduces <code>FaunaMechanics</code> to govern insect instincts, pollination, and gradient-driven seed dispersion..</p>
+<h5 id="architectural-analysis">Architectural Analysis</h5>
+<p>Integrating floral reproduction and entomological fauna connects three decoupled engine subsystems:</p>
+<ol>
+<li><strong>Hydrological Potential Fields</strong> (<code>MoistureField</code>): Providing environmental gradients for directional propagation.</li>
+<li><strong>Resource Lifecycle Automata</strong> (<code>SeasonMechanics</code> &amp; ISL <code>Executor</code>): Regulating vegetative, bloom, and seed phases.</li>
+<li><strong>Kinematic Airborne Entities</strong> (<code>Pixies</code> &amp; <code>FaunaMechanics</code>): Lightweight agents bypassing terrain-bound RRT pathfinding.</li>
+</ol>
+<div class="highlight"><pre><span></span><code>       [ SeasonMechanics (1 Hz) ]
+                   │
+                   ▼ (Transitions to 'bloom')
+           Flower (Resource) ───────────┐
+                   │                     │ Attracts (Sensory Radius)
+                   │                     ▼
+                   │             Bee (Pixie / Sheet)
+                   │                     │
+                   │ Pollinated by       │ Intersects Hitbox
+                   │ (FaunaMechanics)    │
+                   ▼                     ▼
+          Evaluate Gradient:      Transition Instinct:
+          ∇Φ(x, y) on Field      POLLINATE ──&gt; ROAM
+                   │
+                   ▼
+          Cradle.spawn_child(
+              x + h·u_grad, 
+              stage='sprout'
+          )
+</code></pre></div>
+<h6 id="1-mathematical-formulation-moisture-gradient-reproduction">1. Mathematical Formulation: Moisture Gradient Reproduction</h6>
+<p>Let <span class="arithmatex">\(\Phi(\mathbf{x})\)</span> denote the soil moisture potential field at coordinates <span class="arithmatex">\(\mathbf{x} = (x, y)\)</span> on layer <span class="arithmatex">\(L\)</span>, evaluated as the linear superposition of active stream segments and annular pools:</p>
+<div class="arithmatex">\[
+\Phi(\mathbf{x}) = \sum_{i \in \text{Streams}} \Phi_i(\mathbf{x}) + \sum_{j \in \text{Pools}} \Phi_j(\mathbf{x})
+\]</div>
+<p>The directional propagation of a pollinated flower follows the local gradient <span class="arithmatex">\(\nabla \Phi(\mathbf{x})\)</span>. To maintain grid alignment and prevent continuous sub-pixel drift into static obstacles, the child spawn location <span class="arithmatex">\(\mathbf{x}_{\text{child}}\)</span> is selected by evaluating the discrete gradient over cardinal neighbors at dispersion distance <span class="arithmatex">\(h\)</span> (where <span class="arithmatex">\(h = \text{tile\_w} = 32\text{ px}\)</span>):</p>
+<div class="arithmatex">\[
+\mathbf{x}_{\text{child}} = \mathbf{x} + \Delta \mathbf{x}^*, \quad \text{where } \Delta \mathbf{x}^* = \underset{\Delta \mathbf{x} \in \mathcal{N}_h}{\operatorname{argmax}} \, \Phi(\mathbf{x} + \Delta \mathbf{x})
+\]</div>
+<div class="arithmatex">\[
+\mathcal{N}_h = \{ (0, -h), (-h, 0), (0, h), (h, 0) \} \quad (\text{North, West, South, East})
+\]</div>
+<p><strong>Constraints on Child Allocation:</strong></p>
+<ol>
+<li><strong>Obstacle Occlusion</strong>: <span class="arithmatex">\(\mathbf{x}_{\text{child}}\)</span> must not intersect static obstacles (<span class="arithmatex">\(\text{is\_obstacle}(\mathbf{x}_{\text{child}}) = \text{False}\)</span>).</li>
+<li><strong>Substrate Validity</strong>: Must reside on a valid background tile (<code>board.tile(layer, pos) is not None</code>).</li>
+<li><strong>Fluid Submersion</strong>: <span class="arithmatex">\(\mathbf{x}_{\text{child}}\)</span> cannot fall directly into open fluid corridors (<span class="arithmatex">\(\text{board.fluid}(layer, \mathbf{x}_{\text{child}}) = \text{False}\)</span>).</li>
+<li><strong>Saturation Guard</strong>: If <span class="arithmatex">\(\Phi(\mathbf{x} + \Delta \mathbf{x})\)</span> is uniform across all valid neighbors, select a uniform random direction <span class="arithmatex">\(\Delta \mathbf{x} \in \mathcal{N}_h\)</span>.</li>
+</ol>
+<h6 id="2-pixie-architecture-variable-row-sheet-indexing">2. Pixie Architecture &amp; Variable-Row Sheet Indexing</h6>
+<p><code>Pixie</code> entities encapsulate lightweight dynamic fauna. Unlike <code>Sprites</code>, Pixies:</p>
+<ul>
+<li>Do not utilize combat attackboxes, equipment stacks, inventory bags, or dialogue lexicons.</li>
+<li>Ignore ground friction and obstacle RRT pathfinding (aerial locomotion).</li>
+<li>Partition sheets into strictly 4 directional rows (<code>up: 0</code>, <code>left: 1</code>, <code>down: 2</code>, <code>right: 3</code>), where each row may have an independent frame count <span class="arithmatex">\(N_d\)</span>.</li>
+</ul>
+<p><strong>Frame &amp; Indexing Specification (<code>DirectionFrame</code>)</strong></p>
+<div class="highlight"><pre><span></span><code>Row 0: UP    [ 0 ][ 1 ][ 2 ][ 3 ] ... [ N_up - 1 ]
+Row 1: LEFT  [ 0 ][ 1 ][ 2 ] ...       [ N_left - 1 ]
+Row 2: DOWN  [ 0 ][ 1 ][ 2 ][ 3 ] ... [ N_down - 1 ]
+Row 3: RIGHT [ 0 ][ 1 ][ 2 ] ...       [ N_right - 1 ]
+</code></pre></div>
+<ul>
+<li><strong>Index</strong>: <code>{id}-{direction}-{frame}</code> mapped to <code>(frame * w, row_index * l, w, l)</code>.</li>
+<li><strong>Keys</strong>: Evaluated via <code>(state.direction, state.animation.frame)</code>.</li>
+</ul>
+<p><strong>Instinctual Automata (<code>PixieInstinct</code>)</strong></p>
+<p>To avoid running ISL AST evaluations at 60 Hz for large swarms, Pixies evaluate a hardcoded, zero-allocation state machine within <code>FaunaMechanics</code>:</p>
+<div class="highlight"><pre><span></span><code>   ┌────────────────────────────────────────────────────────┐
+   │                                                        │
+   ▼                                                        │
+[ ROAM ] ──( Blooming Flower within R_sense )──&gt; [ FORAGE ] │ Cooldown Expired
+   ▲                                                 │      │
+   │                                                 ▼      │
+   └────────( Intersects Flower Hitbox )───── [ POLLINATE ] ┘
+</code></pre></div>
+<ol>
+<li><strong><code>ROAM</code></strong>: Pseudo-random kinematic drift. Velocity vector steers towards an oscillating target offset within a bounding territory.</li>
+<li><strong><code>FORAGE</code></strong>: Vector steering directly toward the flower's coordinate: <span class="arithmatex">\(\vec{v} = \text{normalize}(\mathbf{x}_{\text{flower}} - \mathbf{x}_{\text{bee}}) \cdot \text{speed}\)</span></li>
+<li><strong><code>POLLINATE</code></strong>: Hover over flower center for duration <span class="arithmatex">\(T_{\text{linger}}\)</span>. Sets <code>flower.state.pollinated = True</code>. Transitions to <code>ROAM</code> with foraging cooldown <span class="arithmatex">\(T_{\text{cooldown}}\)</span>.</li>
+</ol>
+<h6 id="3-pipeline-integration-faunamechanics">3. Pipeline Integration: <code>FaunaMechanics</code></h6>
+<p><code>FaunaMechanics</code> executes within the <code>world</code> pipeline of <code>Engine._play()</code>, sequenced immediately following <code>MotionMechanics</code> and prior to <code>SeasonMechanics</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># src/data/config/mechanics/main.yaml</span>
+<span class="nt">mechanics</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">world</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">motion</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">collision</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fauna</span><span class="w">        </span><span class="c1"># Evaluates Pixie locomotion, pollination, and reproduction</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fluid</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">seasons</span><span class="w">      </span><span class="c1"># Evaluates continuous moisture integration &amp; stage progression</span>
+</code></pre></div>
+<h5 id="goals">Goals</h5>
+<h6 id="goal-pixie-asset-architecture-variable-row-keying">Goal: Pixie Asset Architecture &amp; Variable-Row Keying</h6>
+<p>Establish <code>PixieProperties</code>, <code>PixieState</code>, and <code>PixieFrame</code> supporting 4-directional sprite sheets with asymmetric frame counts per row.</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PixieRow</span><span class="p">:</span>
+    <span class="n">row</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">count</span><span class="p">:</span> <span class="nb">int</span>
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PixieProperties</span><span class="p">(</span><span class="n">AssetProperties</span><span class="p">):</span>
+    <span class="n">dimensions</span><span class="p">:</span> <span class="n">Dimensions</span>
+    <span class="n">rows</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PixieRow</span><span class="p">]</span>
+    <span class="n">delay</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">speed</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.0</span>
+    <span class="n">mass</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PixieState</span><span class="p">(</span><span class="n">AssetState</span><span class="p">):</span>
+    <span class="n">position</span><span class="p">:</span> <span class="n">Position</span>
+    <span class="n">velocity</span><span class="p">:</span> <span class="n">Velocity</span>
+    <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Directions</span><span class="o">.</span><span class="n">DOWN</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">instinct</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"roam"</span>
+    <span class="n">target_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">linger_timer</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">cooldown_timer</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">animation</span><span class="p">:</span> <span class="n">AnimationState</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">AnimationState</span><span class="p">)</span>
+</code></pre></div>
+<h6 id="goal-flower-resource-lifecycle-pollination-state">Goal: Flower Resource Lifecycle &amp; Pollination State</h6>
+<p>Extend resource definitions with <code>FlowerState</code>, tracking pollination and child dispersion states. Define stages (<code>sprout</code> <span class="arithmatex">\(\to\)</span> <code>growth</code> <span class="arithmatex">\(\to\)</span> <code>bloom</code> <span class="arithmatex">\(\to\)</span> <code>seed</code> <span class="arithmatex">\(\to\)</span> <code>stump</code>).</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlowerState</span><span class="p">(</span><span class="n">ResourceState</span><span class="p">):</span>
+    <span class="n">pollinated</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">reproduced</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+</code></pre></div>
+<h6 id="goal-faunamechanics-gradient-ascent-child-dispersion">Goal: FaunaMechanics &amp; Gradient Ascent Child Dispersion</h6>
+<p>Implement <code>FaunaMechanics</code> to update Pixie steering, evaluate pollination intersections, and execute gradient-driven child spawning via <code>MoistureField</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FaunaMechanics</span><span class="p">(</span><span class="n">Mechanic</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">Board</span><span class="p">,</span> <span class="n">delta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">bus</span><span class="p">:</span> <span class="n">deque</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">DevicePayload</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># 1. Update Pixies: ROAM, FORAGE, POLLINATE</span>
+        <span class="c1"># 2. On pollination: evaluate moisture gradient around flower and spawn child</span>
+</code></pre></div>
+<h5 id="tasks">Tasks</h5>
+<p><strong>1. Task: Pixie Data Models &amp; Schema Support</strong></p>
+<p><em>Objective</em>: Codify <code>PixieProperties</code> and <code>PixieState</code> in models and property schemas.</p>
+<ul>
+<li>[ ] Subtask: Define <code>PixieProperties</code> and <code>PixieRow</code> in <code>app.models.properties</code> supporting asymmetric directional row counts.</li>
+<li>[ ] Subtask: Define <code>PixieState</code> in <code>app.models.state.assets.sheets</code> with tracking fields for instinct, target reference, and timers.</li>
+<li>[ ] Subtask: Add <code>pixies: Dict[str, PixieProperties]</code> to <code>SheetPropertyInstances</code> in <code>app.models.properties</code>.</li>
+<li>[ ] Subtask: Register <code>PixieProperties</code> validation in Pydantic schema adapters.</li>
+</ul>
+<p><strong>2. Task: Variable-Row Directional PixieFrame</strong></p>
+<p><em>Objective</em>: Implement <code>PixieFrame</code> and <code>PixieAnimation</code> for 4-directional sheets.</p>
+<ul>
+<li>[ ] Subtask: Implement <code>PixieFrame.index()</code> in <code>app.assets.frames.sheets</code> mapping rows (<code>UP=0</code>, <code>LEFT=1</code>, <code>DOWN=2</code>, <code>RIGHT=3</code>) to <code>{id}-{direction}-{frame}</code> using individual row counts.</li>
+<li>[ ] Subtask: Implement <code>PixieFrame.keys()</code> in <code>app.assets.frames.sheets</code> emitting current frame tuple from <code>state.direction</code> and <code>state.animation.frame</code>.</li>
+<li>[ ] Subtask: Implement <code>PixieAnimation.animate()</code> cycling frames within the active direction row limit based on <code>properties.delay</code>.</li>
+</ul>
+<p><strong>3. Task: Flower Lifecycle Configuration &amp; State Models</strong></p>
+<p><em>Objective</em>: Configure the Flower resource stage graph and extend resource state representation.</p>
+<ul>
+<li>[ ] Subtask: Define <code>FlowerState</code> in <code>app.models.state.assets.resources</code> inheriting <code>ResourceState</code> with <code>pollinated</code> and <code>reproduced</code> flags.</li>
+<li>[ ] Subtask: Add <code>flowers: Dict[str, ResourceProperties]</code> to <code>ResourcePropertyInstances</code> in <code>app.models.properties</code>.</li>
+<li>[ ] Subtask: Add stage transitions for <code>floral</code> lifespan in <code>src/data/config/stages/main.yaml</code> mapping <code>sprout</code> <span class="arithmatex">\(\to\)</span> <code>growth</code> <span class="arithmatex">\(\to\)</span> <code>bloom</code> <span class="arithmatex">\(\to\)</span> <code>seed</code> <span class="arithmatex">\(\to\)</span> <code>stump</code>.</li>
+<li>[ ] Subtask: Add <code>Lifespans.FLORAL</code> enum member to <code>app.config.enums.assets</code>.</li>
+</ul>
+<p><strong>4. Task: FaunaMechanics Implementation</strong></p>
+<p><em>Objective</em>: Implement the world mechanic governing Pixie instinct loops and pollination logic.</p>
+<ul>
+<li>[ ] Subtask: Create <code>FaunaMechanics</code> in <code>app.game.logic.mechanics.world.fauna</code>.</li>
+<li>[ ] Subtask: Implement Pixie steering towards blooming flowers within perception radius (<span class="arithmatex">\(R_{\text{sense}} = 128\text{ px}\)</span>).</li>
+<li>[ ] Subtask: Detect intersection between Bee hitboxes and blooming Flower hitboxes using <code>geometry.intersects</code>.</li>
+<li>[ ] Subtask: Linger over flower during <code>POLLINATE</code> instinct and set <code>flower.state.pollinated = True</code>.</li>
+</ul>
+<p><strong>5. Task: Moisture Gradient Reproduction Engine</strong></p>
+<p><em>Objective</em>: Sample <code>MoistureField</code> and spawn child flowers along the gradient vector.</p>
+<ul>
+<li>[ ] Subtask: Implement <code>_find_highest_moisture_neighbor(flower_pos, layer, board)</code> in <code>FaunaMechanics</code> evaluating cardinal displacements <span class="arithmatex">\(h=32\)</span>.</li>
+<li>[ ] Subtask: Validate candidate child coordinate against boundaries, static obstacles, and active fluid corridors.</li>
+<li>[ ] Subtask: Invoke <code>board.cradle.spawn_resource()</code> to instantiate child flower at candidate position with <code>stage="sprout"</code>.</li>
+<li>[ ] Subtask: Register <code>fauna</code> mechanic in <code>src/data/config/mechanics/main.yaml</code> within the <code>world</code> execution list.</li>
+</ul>
+<h3 id="architectural-synthesis-the-emergent-ecology">Architectural Synthesis: The Emergent Ecology</h3>
+<p>With the completion of <strong>Phase 10.01 (Stage Hitboxes &amp; Optimizations)</strong>, the engine bridges a longstanding architectural gap between macro-environmental mechanics and physical spatial simulation.</p>
+<p>The core thesis of <em>Ontology</em> is <strong>simulation and emergence at all costs</strong>—the elimination of procedural scripting in favor of deterministic initial conditions evolving under invariant systemic laws. Previously, physical collision bounds remained statically bound to asset recipes. While <code>SeasonMechanics</code> transitioned biological entities across complex life cycles (Genesis, Homeostasis, and Apoptosis) and updated visual sprite atlas projections via <code>StageFrame</code>, physical bodies remained frozen in their initial footprints. Mature deciduous canopies obstructed open air, saplings blocked adult creatures, and harvested stumps behaved like ancient oaks.</p>
+<p>Elevating physical hitboxes into a first-class, stateless ECS behavior strategy (<code>HitboxSchema</code>) alongside <code>Frame</code> and <code>Animation</code> resolves this tension:</p>
+<ol>
+<li><strong>Decoupled Physical Representation</strong>: The physical collision hull is now an emergent projection of state and properties rather than a static asset property.</li>
+<li><strong>Contract Invariance</strong>: <code>Asset.hitboxes</code> preserves its external contract (<code>List[Hitbox]</code>), allowing downstream spatial pipelines (<code>CollisionMechanics</code>, <code>NavigationMechanics</code>, and Cython broad/narrow-phase spatial hashing) to consume dynamic bounds without inner-loop branching.</li>
+<li><strong>Foundation for Ecology &amp; Fauna</strong>: By resolving juvenile passability and dynamic footprint expansion in <span class="arithmatex">\(O(1)\)</span> time, the stage is set for <strong>Phase 10.03 (Flowers, Pixies &amp; Reproduction)</strong> and <strong>Phase 10.04 (Cythonization)</strong>. Flora can now propagate seeds into traversable juvenile patches, and simple fauna (Pixies) can navigate dense foliage without snagging on phantom canopy boundaries.</li>
+</ol>
+<hr />
+<h4 id="review-phase-1001-stage-hitboxes-ecs-architecture">Review: Phase 10.01 - Stage Hitboxes &amp; ECS Architecture</h4>
+<h5 id="context">Context</h5>
+<ul>
+<li><strong>Affected Systems</strong>: <code>app.assets.base</code> (<code>Asset</code>, <code>HitboxSchema</code>), <code>app.assets.hitboxes</code> (<code>StaticHitbox</code>, <code>DynamicHitbox</code>, <code>StageHitbox</code>, <code>NoHitbox</code>), <code>app.models.properties</code> (<code>ResourceProperties</code>), <code>app.services.generators.game.factory</code> (<code>Factory.hitbox</code>), and asset hydration pipelines (<code>Migrator</code>, <code>Decomposer</code>, <code>Cradle</code>).</li>
+<li><strong>Initial Conditions</strong>: Resources maintained static <code>hitboxes</code> declared on immutable properties. A falsy check (<code>if not hbs and self.dimensions</code>) converted passable entities (<code>hitboxes: []</code>) into full-dimension obstacles.</li>
+<li><strong>Prior Assumptions</strong>: Biological stage transitions mutate <code>resource.state.stage</code> deterministically via <code>SeasonMechanics</code>. Hitbox resolution must execute in <span class="arithmatex">\(O(1)\)</span> time during the 60 Hz physics update without heap allocation.</li>
+</ul>
+<h5 id="implementation-control">Implementation Control</h5>
+<ul>
+<li><strong>Specification Met</strong>: <code>HitboxSchema</code> strategy hierarchy implemented and integrated into the <code>Recipe</code> configuration schema. Stage-indexed dictionaries on <code>ResourceProperties</code> resolve dynamic collision hulls in <span class="arithmatex">\(O(1)\)</span> time. Trunk and stump hitboxes configured for deciduous trees; passable juvenile stages verified.</li>
+<li><strong>Edge Cases</strong>:</li>
+<li>Explicit passable declarations (<code>hitboxes: []</code>) correctly bypass fallback bounding box generation via <code>if properties.hitboxes is None</code>.</li>
+<li>
+<p>Non-stage entities defaulting to <code>StaticHitbox</code> maintain exact legacy behavior with zero configuration changes.</p>
+</li>
+<li>
+<p><strong>Errors Handling</strong>: <code>StageHitbox.get</code> gracefully returns an empty list if a stage is absent from the property dictionary, though it lacks a safeguard if <code>properties.hitboxes</code> is configured as <code>None</code> (see Bug B016).</p>
+</li>
+</ul>
+<h5 id="quality-control">Quality Control</h5>
+<ul>
+<li><strong>Comments &amp; Docstrings</strong>: Module-level docstrings and interface contracts across <code>app.assets.hitboxes</code> conform to project guidelines.</li>
+<li><strong>Code Smells</strong>:</li>
+<li><code>Factory.hitbox()</code> instantiates a new strategy object on every invocation (<code>return target_cls()</code>) instead of returning pre-instantiated stateless singletons.</li>
+<li>
+<p><code>Asset.__init__</code> accepts <code>hitbox: HitboxSchema = None</code> and assigns <code>self.hitbox = hitbox</code> directly without a fallback default, creating a potential <code>NoneType</code> attribute error if instantiated outside <code>Factory</code>.</p>
+</li>
+<li>
+<p><strong>Application Constraint Violations</strong>: The naming convention in <code>HitboxSchema</code> deviates from the documentation draft: implemented as <code>get(properties, state, frame)</code> rather than <code>resolve(properties, state, frame)</code>.</p>
+</li>
+<li><strong>Readability</strong>: Strategy dispatch cleanly isolates biological stage logic from generic static objects, eliminating the sprawling procedural conditionals previously accumulating on <code>Asset.hitboxes</code>.</li>
+</ul>
+<h5 id="optimization-control">Optimization Control</h5>
+<ul>
+<li><strong>Cython Candidates</strong>: <code>StageHitbox.get()</code> dictionary lookups currently occur within the Python runtime. When <code>Asset.primitive()</code> is called during broad-phase collision sweeps, packing hitboxes into Cython integer tuples incurs Python dictionary overhead. In Phase 10.04, stage hitbox arrays should be indexed via integer stage enums in C-contiguous memory.</li>
+<li><strong>Allocation Bottlenecks</strong>: Hydrating large boards with thousands of constituent assets currently allocates individual <code>HitboxSchema</code> instances due to <code>Factory.hitbox()</code> returning new instances rather than singletons.</li>
+</ul>
+<hr />
+<h5 id="bug-b016-stagehitbox-attributeerror-on-unconfigured-resource-properties">Bug B016: StageHitbox AttributeError on Unconfigured Resource Properties</h5>
+<p><strong>STATUS</strong>: OPEN</p>
+<p><strong>SEVERITY</strong>: Medium</p>
+<p><strong>Description</strong></p>
+<p>In <code>app.models.properties.ResourceProperties</code>, the <code>hitboxes</code> field defaults to <code>None</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">hitboxes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Hitbox</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+<p>In <code>app.assets.hitboxes.resources.StageHitbox</code>, stage resolution queries the dictionary directly without verifying non-null property initialization:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">properties</span><span class="p">:</span> <span class="n">ResourceProperties</span><span class="p">,</span>
+    <span class="n">state</span><span class="p">:</span> <span class="n">ResourceState</span><span class="p">,</span>
+    <span class="n">frame</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Frame</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Hitbox</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="n">properties</span><span class="o">.</span><span class="n">hitboxes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">stage</span><span class="p">,</span> <span class="p">[])</span> <span class="ow">or</span> <span class="p">[]</span>
+</code></pre></div>
+<p>If a resource recipe or test fixture instantiates <code>ResourceProperties</code> with <code>hitboxes=None</code> (or omits the field entirely in YAML), invoking <code>asset.hitboxes</code> raises:</p>
+<div class="highlight"><pre><span></span><code>AttributeError: 'NoneType' object has no attribute 'get'
+</code></pre></div>
+<p><strong>Steps to Replicate</strong></p>
+<ol>
+<li>Instantiate a <code>ResourceProperties</code> model without explicitly supplying <code>hitboxes</code>: <code>props = ResourceProperties(dimensions=Dimensions(32, 32), loot="wood", lifespan=Lifespans.PERENNIAL)</code>.</li>
+<li>Instantiate an <code>Asset</code> using <code>props</code>, a valid <code>ResourceState(stage="sapling")</code>, and <code>hitbox=StageHitbox()</code>.</li>
+<li>Query <code>asset.hitboxes</code>.</li>
+<li>Observe <code>AttributeError</code>.</li>
+</ol>
+<p><strong>Proposed Remediation</strong></p>
+<p>Evaluate non-null state before dictionary lookup in <code>StageHitbox.get</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">properties</span><span class="p">:</span> <span class="n">ResourceProperties</span><span class="p">,</span>
+    <span class="n">state</span><span class="p">:</span> <span class="n">ResourceState</span><span class="p">,</span>
+    <span class="n">frame</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Frame</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Hitbox</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">properties</span><span class="o">.</span><span class="n">hitboxes</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="n">properties</span><span class="o">.</span><span class="n">hitboxes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">stage</span><span class="p">,</span> <span class="p">[])</span> <span class="ow">or</span> <span class="p">[]</span>
+</code></pre></div>
+<hr />
+<h5 id="bug-b017-asset-instantiation-defaults-hitbox-to-unbound-nonetype">Bug B017: Asset Instantiation Defaults Hitbox to Unbound NoneType</h5>
+<p><strong>STATUS</strong>: OPEN</p>
+<p><strong>SEVERITY</strong>: Low</p>
+<p><strong>Description</strong></p>
+<p>In <code>src/app/assets/base.py</code>, <code>Asset.__init__</code> accepts <code>hitbox: HitboxSchema = None</code> and binds it directly:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">taxonomy</span><span class="p">:</span> <span class="n">Taxonomy</span><span class="p">,</span>
+    <span class="n">properties</span><span class="p">:</span> <span class="n">AssetProperties</span><span class="p">,</span> 
+    <span class="n">state</span><span class="p">:</span> <span class="n">AssetState</span><span class="p">,</span> 
+    <span class="n">frame</span><span class="p">:</span> <span class="n">Frame</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+    <span class="n">animation</span><span class="p">:</span> <span class="n">Animation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">hitbox</span><span class="p">:</span> <span class="n">HitboxSchema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="o">...</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">hitbox</span> <span class="o">=</span> <span class="n">hitbox</span>
+</code></pre></div>
+<p>If an asset is instantiated directly (such as in lightweight unit test mocks or fixture loaders) without passing an explicit <code>hitbox</code>, <code>self.hitbox</code> remains <code>None</code>. Subsequent calls to <code>asset.hitboxes</code> or <code>asset.primitive()</code> trigger <code>AttributeError: 'NoneType' object has no attribute 'get'</code>.</p>
+<p><strong>Steps to Replicate</strong></p>
+<ol>
+<li>Instantiate an <code>Asset</code> directly with <code>hitbox=None</code>.</li>
+<li>Access <code>asset.hitboxes</code>.</li>
+<li>Observe <code>AttributeError: 'NoneType' object has no attribute 'get'</code>.</li>
+</ol>
+<p><strong>Proposed Remediation</strong></p>
+<p>Provide a safe default strategy fallback during initialization:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">app.assets.hitboxes.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">StaticHitbox</span>
+
+<span class="bp">self</span><span class="o">.</span><span class="n">hitbox</span> <span class="o">=</span> <span class="n">hitbox</span> <span class="k">if</span> <span class="n">hitbox</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">StaticHitbox</span><span class="p">()</span>
+</code></pre></div>
+<hr />
+<h4 id="draft-interface-alignment-for-hitboxschema">Draft: Interface Alignment for HitboxSchema</h4>
+<ul>
+<li><strong>Page</strong>: <code>docs/01-assets.md</code></li>
+<li><strong>Heading</strong>: <code>Asset Architecture</code></li>
+</ul>
+<h5 id="drift">Drift</h5>
+<p>The architectural documentation in <code>01-assets.md</code> records the strategy interface method as <code>resolve(properties, state, frame)</code>. However, the implementation in <code>app.assets.base.HitboxSchema</code> and all downstream strategy classes (<code>StaticHitbox</code>, <code>DynamicHitbox</code>, <code>StageHitbox</code>, <code>NoHitbox</code>) defines the method as <code>get(properties, state, frame)</code>.</p>
+<h5 id="update">Update</h5>
+<div class="highlight"><pre><span></span><code><span class="k">5.</span> <span class="gs">**Behavior: Hitbox:**</span> Stateless collision boundary resolution strategies injected via Recipes. Resolves active physical obstacles dynamically without mutating cached properties:
+<span class="w">    </span><span class="k">-</span><span class="w"> </span><span class="sb">`get(properties: AssetProperties, state: AssetState, frame: Optional[Frame]) -&gt; List[Hitbox]`</span>: Emits the active physical collision footprint for spatial broad-phase and narrow-phase physics.
+</code></pre></div>
+<hr />
+<h4 id="draft-hitbox-concept-modernization">Draft: Hitbox Concept Modernization</h4>
+<ul>
+<li><strong>Page</strong>: <code>docs/00-overview.md</code></li>
+<li><strong>Heading</strong>: <code>Hitboxes</code></li>
+</ul>
+<h5 id="drift_1">Drift</h5>
+<p>The concept section in <code>00-overview.md</code> documents hitboxes as strictly static properties residing exclusively on <code>properties.hitboxes</code>. This does not reflect the ECS strategy component architecture introduced in Phase 10.01, which accommodates dynamic stage-based hitboxes (<code>StageHitbox</code>) and state-driven boundary hulls (<code>DynamicHitbox</code>).</p>
+<h5 id="update_1">Update</h5>
+<div class="highlight"><pre><span></span><code><span class="gu">### Hitboxes</span>
+
+Many Assets have Hitboxes. Hitboxes define the physical collision and interaction boundaries of an entity. To ensure coordinate consistency, Hitbox positions are normalized relative to the Asset's top-left origin <span class="sb">`(0, 0)`</span>, while dimensions are absolute.
+
+Physical boundaries are resolved through decoupled, stateless <span class="sb">`HitboxSchema`</span> behavior components:
+<span class="k">-</span><span class="w"> </span><span class="gs">**Static**</span>: Uniform entities (crates, obstacles) query immutable <span class="sb">`properties.hitboxes`</span>.
+<span class="k">-</span><span class="w"> </span><span class="gs">**Stage**</span>: Biological and geological resources (trees, crops, ore) query stage-indexed dictionaries (<span class="sb">`properties.hitboxes[state.stage]`</span>), dynamically adjusting collision hulls across growth and harvesting lifecycles.
+<span class="k">-</span><span class="w"> </span><span class="gs">**Dynamic**</span>: Procedural landforms (shorelines, fluid boundaries) evaluate active spatial contours on <span class="sb">`state.hitboxes`</span>.
+<span class="k">-</span><span class="w"> </span><span class="gs">**None**</span>: Passable background substrate tiles, passive particle effects, and screen overlays emit empty collision lists.
+</code></pre></div>
+<hr />
+<h4 id="refactor-phase-1003-flowers-pixies-reproduction_1">Refactor: Phase 10.03 - Flowers, Pixies &amp; Reproduction</h4>
+<p><strong>Overview</strong></p>
+<p>With stage hitboxes established for perennial trees and annual crops, the ecological loop requires autonomous reproductive and entomological agents. Currently, vegetation stages advance strictly along a deterministic single-track progression; they do not reproduce, cross-pollinate, or spawn progeny. Furthermore, the <code>pixies</code> sheet instance remains an inert, uncoordinated sprite variant.</p>
+<p>Phase 10.03 introduces the <code>flowers</code> resource instance (annual/perennial nectar producers) and activates <code>pixies</code> as dynamic ecological agents. Pixies traverse between flowering flora, accumulating pollen potential and triggering seed dispersal into neighboring fertile soil tiles based on moisture potential fields (<span class="arithmatex">\(\Phi(\mathbf{x})\)</span>).</p>
+<h5 id="specification">Specification</h5>
+<ol>
+<li><strong>Flower Resource Definition (<code>src/assets/resources/main.yaml</code>)</strong>:</li>
+<li>Model <code>flowers</code> under <code>resources</code> with lifespans (<code>annual</code>, <code>perennial</code>), nectar loot tables, and stage progression: <code>sprout</code> <span class="arithmatex">\(\to\)</span> <code>growth</code> <span class="arithmatex">\(\to\)</span> <code>bloom</code> <span class="arithmatex">\(\to\)</span> <code>pollinated</code> <span class="arithmatex">\(\to\)</span> <code>seed</code> <span class="arithmatex">\(\to\)</span> <code>stump</code>.</li>
+<li>
+<p>Configure stage hitboxes: passable (<code>[]</code>) during <code>sprout</code> and <code>growth</code>; localized stem footprint during <code>bloom</code> and <code>pollinated</code>.</p>
+</li>
+<li>
+<p><strong>Pixie Ecological Behavior</strong>:</p>
+</li>
+<li>Register <code>pixie</code> navigation routines in <code>CognitionMechanics</code> targeting active <code>bloom</code> stages on the layer.</li>
+<li>
+<p>Pixies intersecting a <code>bloom</code> flower increment <code>pixie.state.pollen</code> and transition the flower to <code>pollinated</code>.</p>
+</li>
+<li>
+<p><strong>Seed Dispersal &amp; Propagation (<code>ReproductionMechanics</code>)</strong>:</p>
+</li>
+<li>When a pollinated flower reaches the <code>seed</code> stage, calculate dispersal trajectories along active wind/fluid vectors.</li>
+<li>If candidate coordinates satisfy moisture thresholds (<span class="arithmatex">\(\Phi(\mathbf{x}) \ge \theta_{\text{germination}}\)</span>) and are unoccupied by static obstacles, instantiate new juvenile <code>sprout</code> assets via <code>board.cradle</code>.</li>
+</ol>
+<h5 id="architectural-analysis-1">Architectural Analysis 1</h5>
+<p>The reproduction loop must operate entirely within existing architectural boundaries:</p>
+<ul>
+<li><strong>Decoupled Spawning</strong>: Entity instantiation must route strictly through <code>Board.cradle</code> to preserve ID registration, spatial bucket insertion, and cache indexing.</li>
+<li><strong>Moisture Coupling</strong>: Seed viability queries the compiled <code>MoistureField</code> directly (<code>board.moisture(layer, x, y)</code>), reinforcing the dependency between hydrology (<code>FluidMechanics</code>) and vegetation density.</li>
+<li><strong>Zero Scripting</strong>: No scripted quests or manual trigger zones. Forest and flower meadow proliferation emerges entirely from fluid flow, moisture diffusion, and pixie pollination paths.</li>
+</ul>
+<h5 id="goals_1">Goals</h5>
+<h6 id="goal-floral-resource-lifecycle-pollination-schemas">Goal: Floral Resource Lifecycle &amp; Pollination Schemas</h6>
+<p>Author declarative stage transitions for <code>flowers</code> in <code>src/data/config/stages/main.yaml</code>. Bind nectar loot and biological lifespans to enable pollination transitions without modifying core simulation loops.</p>
+<h6 id="goal-pixie-foraging-emergent-seed-dispersal">Goal: Pixie Foraging &amp; Emergent Seed Dispersal</h6>
+<p>Implement <code>ReproductionMechanics</code> within the <code>world</code> mechanics pipeline to evaluate germination potentials and spawn juvenile flora via <code>Cradle</code>.</p>
+<h5 id="tasks_1">Tasks</h5>
+<p><strong>1. Task: Flower Resource Schema &amp; Atlas Indexing</strong></p>
+<p><em>Objective</em>: Author asset property declarations and biological stage configs for flowers.</p>
+<ul>
+<li>[ ] Subtask: Define <code>flowers</code> under <code>resources</code> in <code>src/assets/resources/main.yaml</code> with dimensions, loot, and stage-indexed hitboxes.</li>
+<li>[ ] Subtask: Configure <code>annual</code> and <code>perennial</code> stage transition graphs for flowers in <code>src/data/config/stages/main.yaml</code>.</li>
+<li>[ ] Subtask: Register <code>flowers</code> recipe in <code>src/data/config/recipes/main.yaml</code> with <code>frame: stage</code>, <code>animation: none</code>, and <code>hitbox: stage</code>.</li>
+</ul>
+<p><strong>2. Task: Pixie Foraging Cognition &amp; Pollination Logic</strong></p>
+<p><em>Objective</em>: Direct Pixie sheet entities toward flowering resources and manage pollination states.</p>
+<ul>
+<li>[ ] Subtask: Extend <code>CognitionMechanics</code> to evaluate <code>FORAGE</code> goals targeting flora in the <code>bloom</code> stage.</li>
+<li>[ ] Subtask: Add <code>pollen: int</code> to <code>PixieState</code> in <code>app.models.state.assets.sheets</code>.</li>
+<li>[ ] Subtask: Transition flowers from <code>bloom</code> to <code>pollinated</code> upon pixie contact.</li>
+</ul>
+<p><strong>3. Task: ReproductionMechanics &amp; Seed Dispersal Pipeline</strong></p>
+<p><em>Objective</em>: Introduce world pipeline mechanic for seed drop evaluation and hydration.</p>
+<ul>
+<li>[ ] Subtask: Create <code>app.game.logic.mechanics.world.reproduction.ReproductionMechanics</code>.</li>
+<li>[ ] Subtask: Implement germination spatial checks evaluating tile clearance and <code>board.moisture(layer, x, y) &gt;= threshold</code>.</li>
+<li>[ ] Subtask: Inject newborn <code>sprout</code> assets into the board via <code>board.cradle.spawn()</code>.</li>
+<li>[ ] Subtask: Register <code>reproduction</code> in <code>src/data/config/mechanics/main.yaml</code> within the <code>world</code> pipeline.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="../../../../static/js/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

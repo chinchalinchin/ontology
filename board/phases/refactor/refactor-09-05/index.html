@@ -1,0 +1,4828 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/board/phases/refactor/refactor-09-05/">
+      
+      
+        <link rel="prev" href="../refactor-09-04/">
+      
+      
+        <link rel="next" href="../refactor-09-06/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Phase 09.05 - Bridges & Bifurcation - Ontology</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#refactor-phase-0905-bridges-bifurication" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="Ontology" class="md-header__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ontology
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Phase 09.05 - Bridges & Bifurcation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="Ontology" class="md-nav__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Ontology
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../00-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../01-assets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../02-sprites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../03-compositions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../04-intentions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../05-mechanics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../06-widgets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../07-acoustics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../08-narratives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../09-ecology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ecology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../10-chemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../11-emergence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../12-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../specs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Specifications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_15" id="__nav_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Specifications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/00-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dialogue Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/01-interaction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/02-wander/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wander Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_16" id="__nav_16_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Roadmap
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2" id="__nav_16_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_16_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_1" id="__nav_16_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-castle-dawn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Castle Dawn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-regalia-galleria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Regalia Galleria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-temple-of-trials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Trials of Trials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Dialogue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-view/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_2" id="__nav_16_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implement
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implement
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01 - Renderer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02 - Game
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03 - Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04 - Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 05 - Editor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06 - Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07 - Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08 - Pathfinding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09 - Hydrodynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10 - Seasons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 11 - Geology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 12 - Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-13/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 13 - Acoustics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 14 - Narratives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-n/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n - Commerce
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-n%2B1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n+1 - Towns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_3" id="__nav_16_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refactor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Refactor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-01-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01.01 - Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.01 - Frames
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.02 - Registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.03 - Equipment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.04 - Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.05 - Finetuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.06 - Effects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.07 - Registry Data Structures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.08 - World Chunks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.01 - Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.02 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.03 - Motion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.04 - Projectiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.01 - Typography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.02 - Simplification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.03 - Event Handlers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.04 - Menu Context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.05 - Gizmos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.06 - Pane Generation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.01 - Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.02 - Goals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.03 - Combat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.04 - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.01 - Elevation Sorting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.02 - Platforms & Elevated Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.03 - Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.04 - Materialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.05 - Composite Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.01 - Obstacle Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.02 - Navigation Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.03 - Trajectory Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.04 - Mutators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.01 - Fluid Flows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.02 - Shorelines & Geography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.03 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.04 - Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.05 - Bridges & Bifurcation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.05 - Bridges & Bifurcation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-0905-bridges-bifurication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 09.05 - Bridges &amp; Bifurication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 09.05 - Bridges &amp; Bifurication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis I
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis I">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recursive-stream-bifurcation-downstream-continuation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recursive Stream Bifurcation &amp; Downstream Continuation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#static-architectural-bridges-surface-interception" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static Architectural Bridges &amp; Surface Interception
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#surface-interception-hierarchy-in-fieldspy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Surface Interception Hierarchy in fields.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Reports
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bug Reports">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-b012-inconsistent-physical-weight-caching-across-board-mutations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B012: Inconsistent Physical Weight Caching Across Board Mutations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b013-flank-discharge-coordinate-gap-and-texture-overdraw-in-proposed-bifurcation-raycasting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B013: Flank Discharge Coordinate Gap and Texture Overdraw in Proposed Bifurcation Raycasting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis II
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis II">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#subsystem-1-stream-bifurcation-geometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subsystem 1: Stream Bifurcation Geometry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subsystem-2-static-architectural-bridges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subsystem 2: Static Architectural Bridges
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subsystem-3-buoyancy-mechanics-velocity-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subsystem 3: Buoyancy Mechanics &amp; Velocity Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-hydrological-network-bifurcation-downstream-raycasting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Hydrological Network Bifurcation &amp; Downstream Raycasting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-architectural-bridges-surface-interception" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Architectural Bridges &amp; Surface Interception
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review I
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Review I">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scoping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scoping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-hydrological-network-bifurcation-downstream-raycasting_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Hydrological Network Bifurcation &amp; Downstream Raycasting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-architectural-bridge-crafts-decomposition-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Architectural Bridge Crafts &amp; Decomposition Engine
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review II
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Review II">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bridge-frame-ambiguities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bridge Frame Ambiguities
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis III
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis III">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#path-a-first-class-spatial-strategy-orientedframe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path A: First-Class Spatial Strategy (OrientedFrame)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#path-b-canonical-categorical-slot-indexframe-via-statevariant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path B: Canonical Categorical Slot (IndexFrame via state.variant)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decomposition-logic-srcappservicesgeneratorsgamedecomposerpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decomposition Logic (src/app/services/generators/game/decomposer.py)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-hydrological-network-bifurcation-downstream-raycasting_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Hydrological Network Bifurcation &amp; Downstream Raycasting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-architectural-bridge-crafts-oriented-frame-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Architectural Bridge Crafts &amp; Oriented Frame Decomposition
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#latent-technical-debt-architectural-tensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Latent Technical Debt &amp; Architectural Tensions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Latent Technical Debt &amp; Architectural Tensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-the-bridge-underpass-dilemma-25d-elevation-collapse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The Bridge Underpass Dilemma (2.5D Elevation Collapse)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.06 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.07 - Frame Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.08 - Transverse Fluid Submersion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.01 - Stage Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.02 - Shoreline Seasonal Indexing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.03 - Flowers, Pixies & Reproduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.04 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../appendices/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_17" id="__nav_17_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/00-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/01-schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/02-diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagrams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reports
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../coverage/index" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unit Test Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-0905-bridges-bifurication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 09.05 - Bridges &amp; Bifurication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 09.05 - Bridges &amp; Bifurication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis I
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis I">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recursive-stream-bifurcation-downstream-continuation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recursive Stream Bifurcation &amp; Downstream Continuation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#static-architectural-bridges-surface-interception" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static Architectural Bridges &amp; Surface Interception
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#surface-interception-hierarchy-in-fieldspy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Surface Interception Hierarchy in fields.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Reports
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bug Reports">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-b012-inconsistent-physical-weight-caching-across-board-mutations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B012: Inconsistent Physical Weight Caching Across Board Mutations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b013-flank-discharge-coordinate-gap-and-texture-overdraw-in-proposed-bifurcation-raycasting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B013: Flank Discharge Coordinate Gap and Texture Overdraw in Proposed Bifurcation Raycasting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis II
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis II">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#subsystem-1-stream-bifurcation-geometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subsystem 1: Stream Bifurcation Geometry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subsystem-2-static-architectural-bridges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subsystem 2: Static Architectural Bridges
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subsystem-3-buoyancy-mechanics-velocity-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subsystem 3: Buoyancy Mechanics &amp; Velocity Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-hydrological-network-bifurcation-downstream-raycasting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Hydrological Network Bifurcation &amp; Downstream Raycasting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-architectural-bridges-surface-interception" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Architectural Bridges &amp; Surface Interception
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review I
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Review I">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scoping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scoping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-hydrological-network-bifurcation-downstream-raycasting_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Hydrological Network Bifurcation &amp; Downstream Raycasting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-architectural-bridge-crafts-decomposition-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Architectural Bridge Crafts &amp; Decomposition Engine
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review II
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Review II">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bridge-frame-ambiguities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bridge Frame Ambiguities
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis III
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis III">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#path-a-first-class-spatial-strategy-orientedframe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path A: First-Class Spatial Strategy (OrientedFrame)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#path-b-canonical-categorical-slot-indexframe-via-statevariant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path B: Canonical Categorical Slot (IndexFrame via state.variant)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decision
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decomposition-logic-srcappservicesgeneratorsgamedecomposerpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decomposition Logic (src/app/services/generators/game/decomposer.py)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-hydrological-network-bifurcation-downstream-raycasting_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Hydrological Network Bifurcation &amp; Downstream Raycasting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-architectural-bridge-crafts-oriented-frame-decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Architectural Bridge Crafts &amp; Oriented Frame Decomposition
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#latent-technical-debt-architectural-tensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Latent Technical Debt &amp; Architectural Tensions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Latent Technical Debt &amp; Architectural Tensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-the-bridge-underpass-dilemma-25d-elevation-collapse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The Bridge Underpass Dilemma (2.5D Elevation Collapse)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Phase 09.05 - Bridges & Bifurcation</h1>
+
+<h4 id="refactor-phase-0905-bridges-bifurication">Refactor: Phase 09.05 - Bridges &amp; Bifurication</h4>
+<p><strong>Overview</strong></p>
+<p>Transition the fluid and geography mechanics from single-corridor raycasts to branched hydrological networks with downstream flank continuation, and implement procedural architectural bridge crafts that decompose into discrete static sensors, elevating entities over water corridors and shoreline thresholds without obstructing navigation or fluid flow.</p>
+<h5 id="architectural-analysis-i">Architectural Analysis I</h5>
+<h6 id="recursive-stream-bifurcation-downstream-continuation">Recursive Stream Bifurcation &amp; Downstream Continuation</h6>
+<p>In Phase 09.01–09.04, when an active fluid stream strikes an immovable static obstacle (<span class="arithmatex">\(m = 0\)</span>), <code>Actuator.propagate()</code> halts the stream corridor at the annular pool margin. Under the principles of fluid mechanics:</p>
+<ul>
+<li>An obstructed fluid bifurcates across its orthogonal axes and discharges secondary streams continuing in the original <code>source</code> vector past the obstacle flanks.</li>
+<li>The maximum bifurcation depth is governed by <code>flow</code> (where branching occurs when <span class="arithmatex">\(\text{flow} &gt; 1\)</span>, propagating child streams with <span class="arithmatex">\(\text{flow} - 1\)</span>).</li>
+</ul>
+<p><strong>Impact on Phase 09.04 Subsystems</strong>:</p>
+<ul>
+<li><strong><code>FluidState</code></strong>: Augmented with <code>branches: List[BranchCorridor]</code> defining offset origins, lengths, flow intensities, and hitboxes for secondary streams.</li>
+<li><strong><code>Actuator.propagate()</code></strong>: Following <code>_partition_pool()</code>, discharges lateral flank streams if <span class="arithmatex">\(\text{flow} &gt; 1\)</span> by raycasting in the <code>source</code> direction from <span class="arithmatex">\((pool.x - fw, pool.y)\)</span> and <span class="arithmatex">\((pool.x + pool.w, pool.y)\)</span> (for vertical flows) or orthogonal Y-flanks (for horizontal flows).</li>
+<li><strong><code>Cartographer._collect_water_rectangles()</code></strong>: Ingests bounding boxes for both the parent stream, the annular pool, and all active branch corridors into the contour sweep pass (<code>geometry.contours()</code>).</li>
+<li>**<code>Board._cached_watermap</code> &amp; <code>Board._in_stream()**</code>: Extends broad-phase spatial hash population and point-in-stream narrow-phase checks across all child branch corridors.</li>
+<li><strong><code>FluidFrame.keys()</code></strong>: Emits tiled texture coordinates and distal remainder slices for each active branch corridor.</li>
+</ul>
+<h6 id="static-architectural-bridges-surface-interception">Static Architectural Bridges &amp; Surface Interception</h6>
+<p>Currently, <code>app.game.logic.modules.motion.fields.py</code> implements a 3-tier environmental resolution pass:</p>
+<ol>
+<li><strong>Surface Hierarchy Interception (Rafts)</strong>: Disables submersion, suppresses shoreline drop nudges, and transfers current velocity.</li>
+<li><strong>Virtual Edge Crossing (Shorelines)</strong>: Applies orthogonal step-down nudges, sets <code>submerged = True</code>, and spawns splash particles.</li>
+<li><strong>Direct Environmental Fluid Immersion</strong>: Imparts fluid current velocity and sets <code>submerged = True</code>.</li>
+</ol>
+<p><strong>Proposal</strong>:</p>
+<ul>
+<li>Register <code>AssetInstances.BRIDGES = "bridges"</code> under <code>AssetCategories.OBJECTS</code> with static sensor mass (<span class="arithmatex">\(m = -1\)</span>) and an explicit <code>elevation: int = 1</code> or passable deck hitbox.</li>
+<li>In <code>fields.update()</code>, evaluate bridge surface interception at the top of the hierarchy (alongside Rafts):</li>
+<li>When an asset's bounding box intersects a <code>bridge</code>, mark <code>on_surface = True</code>, clear <code>submerged = False</code>, and bypass downstream shoreline edge crossing and fluid immersion checks.</li>
+<li>Unlike dynamic Rafts (<span class="arithmatex">\(m &gt; 0\)</span>), bridges are static (<span class="arithmatex">\(m = -1\)</span>), imparting zero drift velocity (<span class="arithmatex">\(\vec{v}_{\text{drift}} = \vec{0}\)</span>).</li>
+</ul>
+<h6 id="surface-interception-hierarchy-in-fieldspy">Surface Interception Hierarchy in <code>fields.py</code></h6>
+<div class="highlight"><pre><span></span><code><span class="c1"># src/app/game/logic/modules/motion/fields.py</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="n">assets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">],</span> <span class="n">board</span><span class="p">:</span> <span class="n">Board</span><span class="p">,</span> <span class="n">delta</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">rafts</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">assets</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">instance</span> <span class="o">==</span> <span class="n">AssetInstances</span><span class="o">.</span><span class="n">RAFTS</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+    <span class="n">_update_rafts</span><span class="p">(</span><span class="n">rafts</span><span class="p">,</span> <span class="n">board</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">asset</span> <span class="ow">in</span> <span class="n">assets</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">asset</span><span class="o">.</span><span class="n">instance</span> <span class="ow">in</span> <span class="p">(</span><span class="n">AssetInstances</span><span class="o">.</span><span class="n">RAFTS</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">AssetInstances</span><span class="o">.</span><span class="n">PROJECTILES</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="n">layer</span> <span class="o">=</span> <span class="n">asset</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">layer</span>
+
+        <span class="c1"># -------------------------------------------------------------</span>
+        <span class="c1"># 1. SURFACE HIERARCHY INTERCEPTION (BRIDGES &amp; RAFTS)</span>
+        <span class="c1"># -------------------------------------------------------------</span>
+        <span class="n">on_surface</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">surface_vx</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">surface_vy</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># Evaluate Static Bridges</span>
+        <span class="n">bridges</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">instances</span><span class="p">(</span><span class="n">AssetInstances</span><span class="o">.</span><span class="n">BRIDGES</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">bridge</span> <span class="ow">in</span> <span class="n">bridges</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">_intersects</span><span class="p">(</span><span class="n">asset</span><span class="p">,</span> <span class="n">bridge</span><span class="p">):</span>
+                <span class="n">on_surface</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+
+        <span class="c1"># Evaluate Dynamic Rafts</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">on_surface</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">raft</span> <span class="ow">in</span> <span class="n">board</span><span class="o">.</span><span class="n">instances</span><span class="p">(</span><span class="n">AssetInstances</span><span class="o">.</span><span class="n">RAFTS</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">_intersects</span><span class="p">(</span><span class="n">asset</span><span class="p">,</span> <span class="n">raft</span><span class="p">):</span>
+                    <span class="n">on_surface</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">surface_vx</span> <span class="o">=</span> <span class="n">raft</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">velocity</span><span class="o">.</span><span class="n">vx</span>
+                    <span class="n">surface_vy</span> <span class="o">=</span> <span class="n">raft</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">velocity</span><span class="o">.</span><span class="n">vy</span>
+                    <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">on_surface</span><span class="p">:</span>
+            <span class="n">asset</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">velocity</span><span class="o">.</span><span class="n">vx</span> <span class="o">+=</span> <span class="n">surface_vx</span>
+            <span class="n">asset</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">velocity</span><span class="o">.</span><span class="n">vy</span> <span class="o">+=</span> <span class="n">surface_vy</span>
+            <span class="n">asset</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">mutators</span><span class="o">.</span><span class="n">triggers</span><span class="o">.</span><span class="n">submerged</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># -------------------------------------------------------------</span>
+        <span class="c1"># 2. VIRTUAL EDGE CROSSING (SHORELINES)</span>
+        <span class="c1"># -------------------------------------------------------------</span>
+        <span class="c1"># ...</span>
+</code></pre></div>
+<hr />
+<h5 id="bug-reports">Bug Reports</h5>
+<h6 id="bug-b012-inconsistent-physical-weight-caching-across-board-mutations">Bug B012: Inconsistent Physical Weight Caching Across Board Mutations</h6>
+<p><strong>STATUS</strong>: OPEN
+<strong>SEVERITY</strong>: HIGH</p>
+<p><strong>Description</strong></p>
+<p>The physical weight cache <code>Board._cached_weights</code> exhibits divergent asset filtering across its lifecycle methods (<code>_cache</code>, <code>add</code>, and <code>relayer</code>). In <code>_cache()</code>, assets in <code>EFFECTS</code> and <code>GEOGRAPHY</code> are explicitly excluded from weights even if their mass is non-negative (<span class="arithmatex">\(m \ge 0\)</span>). However, <code>add()</code> only filters <code>CURSORS</code>, allowing <code>EFFECTS</code> and <code>GEOGRAPHY</code> assets with mass to pollute <code>_cached_weights</code>. Furthermore, <code>relayer()</code> only checks <code>asset.properties.mass &gt;= 0</code>, completely omitting category validation. This causes spatial collision routines and <code>Actuator._collect_obstacles</code> to evaluate invalid candidate assets after dynamic state additions or layer transitions.</p>
+<p><strong>Proposed Remediation</strong></p>
+<p>Standardize weight predicate filtering into a shared internal method <code>Board._is_weight(asset: Asset) -&gt; bool</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_is_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">Asset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="nb">hasattr</span><span class="p">(</span><span class="n">asset</span><span class="o">.</span><span class="n">properties</span><span class="p">,</span> <span class="s2">"mass"</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">asset</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">mass</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+        <span class="ow">and</span> <span class="n">asset</span><span class="o">.</span><span class="n">category</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="n">AssetCategories</span><span class="o">.</span><span class="n">CURSORS</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">AssetCategories</span><span class="o">.</span><span class="n">EFFECTS</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">AssetCategories</span><span class="o">.</span><span class="n">GEOGRAPHY</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">AssetCategories</span><span class="o">.</span><span class="n">TILES</span><span class="o">.</span><span class="n">value</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+</code></pre></div>
+<p>Apply this predicate uniformly across <code>_cache()</code>, <code>add()</code>, <code>relayer()</code>, and <code>weights()</code>.</p>
+<h6 id="bug-b013-flank-discharge-coordinate-gap-and-texture-overdraw-in-proposed-bifurcation-raycasting">Bug B013: Flank Discharge Coordinate Gap and Texture Overdraw in Proposed Bifurcation Raycasting</h6>
+<p><strong>STATUS</strong>: OPEN
+<strong>SEVERITY</strong>: MEDIUM</p>
+<p><strong>Description</strong></p>
+<p>The task board's proposed discharge raycast coordinates for bifurcated fluid streams:</p>
+<div class="arithmatex">\[
+(pool.x - fw, pool.y) \quad \text{and} \quad (pool.x + pool.w, pool.y)
+\]</div>
+<p>place secondary stream origins 1 tile (<span class="arithmatex">\(fw\)</span>) outside the annular pool margin along the X-axis while starting at the upstream face of the pool (<span class="arithmatex">\(pool.y\)</span>). For a stream flowing <code>DOWN</code>, this produces an unmeshed 1-tile gap at the pool flank and causes the secondary stream to travel parallel to the annular pool for length <span class="arithmatex">\(pool.l\)</span>, creating severe texture overdraw and duplicate hitbox registrations.</p>
+<p><strong>Proposed Remediation</strong></p>
+<p>Update the bifurcation geometry calculation in <code>Actuator</code> so that discharge origins emanate from the downstream edge of the pool boundary (<span class="arithmatex">\(pool.y + pool.l\)</span> for <code>DOWN</code>, <span class="arithmatex">\(pool.x + pool.w\)</span> for <code>RIGHT</code>, <span class="arithmatex">\(pool.y\)</span> for <code>UP</code>, and <span class="arithmatex">\(pool.x\)</span> for <code>LEFT</code>), positioned flush at the lateral flanks (<span class="arithmatex">\(pool.x\)</span> and <span class="arithmatex">\(pool.x + pool.w - fw\)</span> for vertical streams).</p>
+<h5 id="architectural-analysis-ii">Architectural Analysis II</h5>
+<p><strong>Invariants to Maintain</strong></p>
+<ol>
+<li><strong>Decoupled Generator Services</strong>:<ul>
+<li><code>Actuator</code> and <code>Cartographer</code> must remain stateless geometric and spatial generators.</li>
+<li><code>Actuator.propagate()</code> currently executes <code>board.cache_fluid(fluid)</code> directly on the database. This violates the principle of separation of concerns; cache mutation belongs to the orchestrating mechanic (<code>FluidMechanics</code>) or database mutation hooks.</li>
+</ul>
+</li>
+<li><strong>Strict Spatial Coordinate Contracts</strong>:<ul>
+<li><code>Asset.hitboxes</code> must always be relative to <code>asset.state.position</code>.</li>
+<li><code>Cartographer</code> expects absolute bounding boxes <code>(min_x, min_y, max_x, max_y)</code>.</li>
+<li>Frame keys emitted by <code>Frame.keys()</code> must output coordinate offsets relative to <code>asset.state.position</code>.</li>
+</ul>
+</li>
+<li><strong>Physical Classification Integrity</strong>:<ul>
+<li>Bridges are static sensors (<span class="arithmatex">\(m = -1\)</span>). They must <strong>never</strong> be registered under <code>Board.obstacles()</code>, as <code>NavigationMechanics</code> queries <code>board.obstacles()</code> to populate RRT spatial barriers. Marking bridges as obstacles would cause NPC pathfinding to navigate around bridges rather than across them.</li>
+</ul>
+</li>
+<li><strong>Physical Buoyancy vs. Locomotion</strong>:<ul>
+<li>Dynamic non-buoyant objects (<span class="arithmatex">\(m &gt; 0\)</span>, <code>buoyant = False</code>, such as iron crates or stone blocks) sink in fluid, maintain tile friction, and resist drift.</li>
+<li>Dynamic buoyant objects (<span class="arithmatex">\(m &gt; 0\)</span>, <code>buoyant = True</code>, such as wood crates) float, drift with current velocity (<span class="arithmatex">\(\vec{v} = \vec{v}_{\text{flow}}\)</span>), and suppress ground friction.</li>
+<li>Characters (Sprites, Players) swim/wade voluntarily: fluid velocity is added vectorally (<span class="arithmatex">\(\vec{v} = \vec{v}_{\text{input}} + \vec{v}_{\text{flow}}\)</span>).</li>
+</ul>
+</li>
+</ol>
+<h6 id="subsystem-1-stream-bifurcation-geometry">Subsystem 1: Stream Bifurcation Geometry</h6>
+<p>The task board's proposed discharge coordinates for bifurcated streams contain a geometric misalignment:</p>
+<div class="arithmatex">\[
+\text{Proposed Left Flank}: (pool.x - fw, pool.y)
+\]</div>
+<div class="arithmatex">\[
+\text{Proposed Right Flank}: (pool.x + pool.w, pool.y)
+\]</div>
+<p>This formulation produces two defects:</p>
+<ol>
+<li><strong>Spatial Disconnect (1-Tile Outward Gap)</strong>: In <code>_partition_pool()</code>, the annular pool already spans horizontally from <code>pool.x</code> to <code>pool.x + pool.w</code>. Raycasting from <code>pool.x - fw</code> leaves an unmeshed 1-tile vacuum between the pool's outer margin and the secondary stream.</li>
+<li><strong>Texture and Hitbox Overdraw</strong>: Starting at <code>pool.y</code> for a <code>DOWN</code>-flowing stream causes the secondary stream to travel downstream alongside the pool from <code>pool.y</code> down to <code>pool.y + pool.l</code>. This reintroduces overlapping hitboxes and shoreline artifacts previously resolved in Bug B010 and Bug B011.</li>
+</ol>
+<p><strong>Downstream Flank Continuation Formulation</strong></p>
+<p>For a fluid flowing in direction <span class="arithmatex">\(\vec{d}\)</span>, the secondary streams must discharge from the <strong>downstream face</strong> of the annular pool, aligned flush with the pool's lateral flanks:</p>
+<table>
+<thead>
+<tr>
+<th>Stream Direction</th>
+<th>Primary Axis Origin</th>
+<th>Left/Top Flank Coordinate</th>
+<th>Right/Bottom Flank Coordinate</th>
+<th>Secondary Stream Raycast Direction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DOWN</code></td>
+<td><span class="arithmatex">\(y_{\text{origin}} = pool.y + pool.l\)</span></td>
+<td><span class="arithmatex">\(x_1 = pool.x\)</span></td>
+<td><span class="arithmatex">\(x_2 = pool.x + pool.w - fw\)</span></td>
+<td><code>DOWN</code></td>
+</tr>
+<tr>
+<td><code>UP</code></td>
+<td><span class="arithmatex">\(y_{\text{origin}} = pool.y\)</span></td>
+<td><span class="arithmatex">\(x_1 = pool.x\)</span></td>
+<td><span class="arithmatex">\(x_2 = pool.x + pool.w - fw\)</span></td>
+<td><code>UP</code></td>
+</tr>
+<tr>
+<td><code>RIGHT</code></td>
+<td><span class="arithmatex">\(x_{\text{origin}} = pool.x + pool.w\)</span></td>
+<td><span class="arithmatex">\(y_1 = pool.y\)</span></td>
+<td><span class="arithmatex">\(y_2 = pool.y + pool.l - fl\)</span></td>
+<td><code>RIGHT</code></td>
+</tr>
+<tr>
+<td><code>LEFT</code></td>
+<td><span class="arithmatex">\(x_{\text{origin}} = pool.x\)</span></td>
+<td><span class="arithmatex">\(y_1 = pool.y\)</span></td>
+<td><span class="arithmatex">\(y_2 = pool.y + pool.l - fl\)</span></td>
+<td><code>LEFT</code></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code>                       DOWN FLOW SCHEMATIC
+
+                            | Stream | (fx, fy)
+                            |        |
+                            v        v
+         pool.x -------------------------------- pool.x + pool.w
+                |          Annular Pool         |
+                |         [Obstacle: m=0]       |
+     pool.y+pool.l ------------------------------
+                   |                          |
+                   | Flank 1                  | Flank 2
+                   v (DOWN)                   v (DOWN)
+</code></pre></div>
+<p>Each branch corridor must be validated with <code>geometry.raycast()</code> against the layer's static obstacles. If an immediate barrier exists at a flank, its length is zero and no corridor is emitted.</p>
+<h6 id="subsystem-2-static-architectural-bridges">Subsystem 2: Static Architectural Bridges</h6>
+<p><strong>Surface Hierarchy Resolution Order</strong></p>
+<p>In <code>fields.py</code>, surface interception must resolve bridges and rafts prior to evaluating virtual edge crossing (shorelines) or direct fluid immersion. When an entity intersects a bridge:</p>
+<ul>
+<li><code>on_surface = True</code></li>
+<li><code>asset.state.mutators.triggers.submerged = False</code></li>
+<li><code>surface_vx = 0.0, surface_vy = 0.0</code></li>
+<li>Section 2 (Shorelines) and Section 3 (Fluids) are bypassed via <code>continue</code>.</li>
+</ul>
+<div class="highlight"><pre><span></span><code>Entity Update in fields.py:
+ 1. Surface Interception (Bridges &amp; Rafts)
+    ├── Intersects Bridge? -&gt; on_surface = True, v_surface = 0, submerged = False -&gt; CONTINUE
+    └── Intersects Raft?   -&gt; on_surface = True, v_surface = v_raft, submerged = False -&gt; CONTINUE
+ 2. Virtual Edge Crossing (Shorelines)
+    └── Entry/Exit ledge traversal, splash particles, step-down nudge
+ 3. Direct Fluid Immersion
+    └── Buoyancy velocity assignment, submerged = True
+</code></pre></div>
+<p><strong>Z-Ordering Model</strong></p>
+<p>To ensure entities crossing a bridge render on top of the bridge deck, while the bridge deck renders on top of the fluid and shorelines:</p>
+<ul>
+<li><code>Fluids</code>: <code>height = 0, depth = -1</code></li>
+<li><code>Shorelines</code>: <code>height = 0, depth = 0</code></li>
+<li><code>Bridges</code>: <code>height = 0, depth = 1</code></li>
+<li><code>Entities</code> (Sprites, Crates): Geometric height (<span class="arithmatex">\(y + l &gt; 0\)</span>)</li>
+</ul>
+<h6 id="subsystem-3-buoyancy-mechanics-velocity-integration">Subsystem 3: Buoyancy Mechanics &amp; Velocity Integration</h6>
+<p>The Task Board proposed replacing instance checks with <code>getattr(asset.properties, "buoyant", False)</code>, but routed non-buoyant entities into an <code>else</code> block that applied <code>+= flow_vx</code>. This caused non-buoyant objects (e.g., heavy iron crates) to accelerate downstream faster than buoyant ones.</p>
+<p>The physical behavior must be partitioned by asset classification:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># -------------------------------------------------------------</span>
+<span class="c1"># 3. DIRECT ENVIRONMENTAL FLUID IMMERSION (BUOYANCY)</span>
+<span class="c1"># -------------------------------------------------------------</span>
+<span class="k">if</span> <span class="n">in_fluid</span><span class="p">:</span>
+    <span class="c1"># Character Locomotion: voluntary movement + environmental drift</span>
+    <span class="k">if</span> <span class="n">asset</span><span class="o">.</span><span class="n">category</span> <span class="o">==</span> <span class="n">AssetCategories</span><span class="o">.</span><span class="n">SHEETS</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+        <span class="n">asset</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">velocity</span><span class="o">.</span><span class="n">vx</span> <span class="o">+=</span> <span class="n">flow_vx</span>
+        <span class="n">asset</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">velocity</span><span class="o">.</span><span class="n">vy</span> <span class="o">+=</span> <span class="n">flow_vy</span>
+        <span class="n">asset</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">mutators</span><span class="o">.</span><span class="n">triggers</span><span class="o">.</span><span class="n">submerged</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># Dynamic Objects (Crates, Barrels, Blocks)</span>
+    <span class="k">elif</span> <span class="n">asset</span><span class="o">.</span><span class="n">category</span> <span class="o">==</span> <span class="n">AssetCategories</span><span class="o">.</span><span class="n">OBJECTS</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">asset</span><span class="o">.</span><span class="n">properties</span><span class="p">,</span> <span class="s2">"buoyant"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="c1"># Buoyant objects float and match fluid current velocity directly</span>
+            <span class="n">asset</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">velocity</span><span class="o">.</span><span class="n">vx</span> <span class="o">=</span> <span class="n">flow_vx</span>
+            <span class="n">asset</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">velocity</span><span class="o">.</span><span class="n">vy</span> <span class="o">=</span> <span class="n">flow_vy</span>
+            <span class="n">asset</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">mutators</span><span class="o">.</span><span class="n">triggers</span><span class="o">.</span><span class="n">submerged</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Non-buoyant objects sink: maintain friction and resist stream velocity</span>
+            <span class="n">asset</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">mutators</span><span class="o">.</span><span class="n">triggers</span><span class="o">.</span><span class="n">submerged</span> <span class="o">=</span> <span class="kc">True</span>
+</code></pre></div>
+<p>In <code>frictive.py</code>, standard tile friction must only be suppressed if an asset is actively submerged <strong>and</strong> buoyant:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># src/app/game/logic/modules/motion/frictive.py</span>
+<span class="n">is_submerged</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">asset</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">mutators</span><span class="o">.</span><span class="n">triggers</span><span class="p">,</span> <span class="s2">"submerged"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="n">is_buoyant</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">asset</span><span class="o">.</span><span class="n">properties</span><span class="p">,</span> <span class="s2">"buoyant"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">is_submerged</span> <span class="ow">and</span> <span class="n">is_buoyant</span><span class="p">:</span>
+    <span class="k">continue</span>
+</code></pre></div>
+<h5 id="goals">Goals</h5>
+<h6 id="goal-hydrological-network-bifurcation-downstream-raycasting">Goal: Hydrological Network Bifurcation &amp; Downstream Raycasting</h6>
+<p>Implement recursive stream branching in <code>Actuator</code> when an immovable obstacle (<span class="arithmatex">\(m = 0\)</span>) is struck and <span class="arithmatex">\(\text{flow} &gt; 1\)</span>. Ensure child streams discharge strictly from the downstream face of the annular pool along its lateral flanks, eliminating spatial gaps and texture overdraw. Update <code>FluidState</code>, <code>FluidFrame</code>, <code>Board</code>, and <code>Cartographer</code> to index and render branched networks.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Conceptual discharge derivation in Actuator._propagate_branches()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_calculate_branch_discharges</span><span class="p">(</span>
+    <span class="n">pool</span><span class="p">:</span> <span class="n">Pool</span><span class="p">,</span> 
+    <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+    <span class="n">flow</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
+    <span class="n">fw</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
+    <span class="n">fl</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Position</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+    <span class="n">child_flow</span> <span class="o">=</span> <span class="n">flow</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">child_flow</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="n">Directions</span><span class="o">.</span><span class="n">DOWN</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">pool</span><span class="o">.</span><span class="n">l</span>
+        <span class="n">left_pos</span> <span class="o">=</span> <span class="n">Position</span><span class="p">(</span><span class="n">pool</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">right_pos</span> <span class="o">=</span> <span class="n">Position</span><span class="p">(</span><span class="n">pool</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">pool</span><span class="o">.</span><span class="n">w</span> <span class="o">-</span> <span class="n">fw</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">left_pos</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">child_flow</span><span class="p">),</span> <span class="p">(</span><span class="n">right_pos</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">child_flow</span><span class="p">)]</span>
+    <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="n">Directions</span><span class="o">.</span><span class="n">UP</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">y</span>
+        <span class="n">left_pos</span> <span class="o">=</span> <span class="n">Position</span><span class="p">(</span><span class="n">pool</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">right_pos</span> <span class="o">=</span> <span class="n">Position</span><span class="p">(</span><span class="n">pool</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">pool</span><span class="o">.</span><span class="n">w</span> <span class="o">-</span> <span class="n">fw</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">left_pos</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">child_flow</span><span class="p">),</span> <span class="p">(</span><span class="n">right_pos</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">child_flow</span><span class="p">)]</span>
+    <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="n">Directions</span><span class="o">.</span><span class="n">RIGHT</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">pool</span><span class="o">.</span><span class="n">w</span>
+        <span class="n">top_pos</span> <span class="o">=</span> <span class="n">Position</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pool</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">bottom_pos</span> <span class="o">=</span> <span class="n">Position</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pool</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">pool</span><span class="o">.</span><span class="n">l</span> <span class="o">-</span> <span class="n">fl</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">top_pos</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">child_flow</span><span class="p">),</span> <span class="p">(</span><span class="n">bottom_pos</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">child_flow</span><span class="p">)]</span>
+    <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="n">Directions</span><span class="o">.</span><span class="n">LEFT</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">top_pos</span> <span class="o">=</span> <span class="n">Position</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pool</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">bottom_pos</span> <span class="o">=</span> <span class="n">Position</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pool</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">pool</span><span class="o">.</span><span class="n">l</span> <span class="o">-</span> <span class="n">fl</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">top_pos</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">child_flow</span><span class="p">),</span> <span class="p">(</span><span class="n">bottom_pos</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">child_flow</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="p">[]</span>
+</code></pre></div>
+<h6 id="goal-architectural-bridges-surface-interception">Goal: Architectural Bridges &amp; Surface Interception</h6>
+<p>Introduce <code>BRIDGES</code> under <code>AssetCategories.OBJECTS</code> with sensor mass (<span class="arithmatex">\(m = -1\)</span>) and explicit Z-ordering parameters (<code>height = 0, depth = 1</code>). Implement surface hierarchy evaluation in <code>fields.py</code> to intercept entities traversing bridges, suppressing submersion, splash particles, shoreline nudges, and current drift. Ensure bridges remain accessible to NPC pathfinding by keeping them out of <code>Board.obstacles()</code>.</p>
+<h5 id="user-review-i">User Review I</h5>
+<h6 id="scoping">Scoping</h6>
+<ul>
+<li>Executive Decision: Bouyancy has been moved to the backlog.</li>
+</ul>
+<h6 id="specification">Specification</h6>
+<p><strong>Bridges</strong></p>
+<p>To avoid the proliferation of bespoke Bridge Assets and the manual construction of Bridges to be deployed through editing software, the Bridge Asset needs a procedure for generating its deployment from simple Assets that meet a precise specification. Bridges Assets will have a vertical and horizontal oriented frame arranged in a physically horizontal row in the image file. </p>
+<p>A Bridge Asset will be built through the <code>build</code> intention (i.e. a <code>build</code> Menu or a <code>build</code> Intention Transition), and the size of a Bridge will be dependent on the Player (or Sprite) specified dimensions and the prerequisite Resource cost being met. Bridges will be extended along vertical or horizontal axes (but not both simultaneously).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>build</code> workflow is not important right now. During testing Bridges will be placed manually into the state file.</p>
+</div>
+<p>In other words, Bridges need to be Crafts. Furthermore, they need a state analogous to a Tile MultiplierState. A Bridge Asset needs to be deployed as a directed multiple (e.g. horizontal or vertical multiple) of its base Asset file so it can extend over a Fluid stream. Infact, the MultiplerState may be able to be leveraged directly or as a Base class for Bridge states.</p>
+<p>However, whereas Tiles do not participate in collisions and do not have hitboxes, Bridges need hitboxes stretched over the area defined by their multiples. This means Bridges have "stateful" hitboxes. </p>
+<p>However, hitboxes need to remain properties to prevent the overcomplication of logic. So, the solution should be to treat Bridges as a "virtual asset" whose state decomposes into its constituent assets, i.e. if the property index reads,</p>
+<div class="highlight"><pre><span></span><code><span class="nt">crafts</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">bridges</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">wood-bridge-horizontal</span><span class="p">:</span><span class="w">    </span>
+<span class="w">            </span><span class="nt">dimensions</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">                </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
+<span class="w">            </span><span class="nt">hitboxes</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">                    </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">                  </span><span class="nt">dimensions</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">                    </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">22</span>
+<span class="w">            </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
+</code></pre></div>
+<p>And if the state file reads,</p>
+<div class="highlight"><pre><span></span><code><span class="nt">crafts</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">bridges</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wood-bridge-horizontal</span>
+<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">the-bridge-to-terrabithia</span>
+<span class="w">          </span><span class="nt">layer</span><span class="p">:</span><span class="w"> </span><span class="s">'0'</span>
+<span class="w">          </span><span class="nt">position</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">            </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">          </span><span class="nt">multiple</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">nx</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+</code></pre></div>
+<p>This produces a "decomposition" of <code>multiple.nx</code> Bridge Assets at <code>(x, y)=(100, 100)</code>, <code>(x + w,y) = (200, 100)</code> and <code>(x + 2w, y) = (300, 100)</code> with hitboxes <code>[(100, 110, 22, 100)], [(200, 110, 22, 100)], [(300, 110, 22, 100)]</code></p>
+<p>This is similar to how Struts and Compositions function. A BridgeState is really a "schema" for instantiation. In fact, the "decomposition" of Bridges should probably slot into the existing Decomposer class.</p>
+<h5 id="goals_1">Goals</h5>
+<h6 id="goal-hydrological-network-bifurcation-downstream-raycasting_1">Goal: Hydrological Network Bifurcation &amp; Downstream Raycasting</h6>
+<p>Implement recursive stream branching in <code>Actuator</code> when an immovable obstacle (<span class="arithmatex">\(m = 0\)</span>) is struck and <span class="arithmatex">\(\text{flow} &gt; 1\)</span>. Ensure child streams discharge strictly from the downstream face of the annular pool along its lateral flanks, eliminating spatial gaps and texture overdraw. Update <code>FluidState</code>, <code>FluidFrame</code>, <code>Board</code>, and <code>Cartographer</code> to index and render branched networks. Decouple <code>Actuator</code> from direct <code>Board</code> cache mutation.</p>
+<h6 id="goal-architectural-bridge-crafts-decomposition-engine">Goal: Architectural Bridge Crafts &amp; Decomposition Engine</h6>
+<p>Introduce <code>BRIDGES</code> under <code>AssetCategories.CRAFTS</code>. Define <code>BridgeState</code> utilizing a directional multiplier schema. Extend <code>Decomposer</code> to unpack bridge schemas into constituent unit <code>Asset</code> instances with sensor mass (<span class="arithmatex">\(m = -1\)</span>) and explicit Z-ordering parameters (<code>height = 0, depth = 1</code>). Expose <code>Board.bridges(layer)</code> while strictly excluding bridges from <code>Board.obstacles()</code> and <code>Board.weights()</code>. Implement surface hierarchy evaluation in <code>fields.py</code> to intercept entities traversing bridges, suppressing submersion, splash particles, shoreline nudges, and current drift.</p>
+<h5 id="user-review-ii">User Review II</h5>
+<p>Closer to finalization, but not ready for implementation. Ambiguities remain.</p>
+<h6 id="bridge-frame-ambiguities">Bridge Frame Ambiguities</h6>
+<p>There is a disconnect in the current tasking between the Bridge orientation and Bridge state. The vertical and horizontal frames of the Bridge are embedded in an Asset image file (<code>.png</code>) in a physical horizontal frame. In other words, Bridge State needs an <code>orientation</code> field, I think. And more clarification is needed on what is meant by properties and state with respect to frames.</p>
+<p>The properties of assets are meant to "span" the space of image file, i.e. properties define how to arrange the frames of an asset to achieve an animation or generation. The state of Assets are meant to access the partitions created by the property indexing in such a way that the state of the Asset "traverses" an "animation trajectory" in "frame space" as the state evolves as part of the game loop.</p>
+<p>Currently this is done in a couple of ways:</p>
+<ul>
+<li>(action, direction) mappings for sheets</li>
+<li>numerical indices for effects</li>
+<li>categorical indices of widgets</li>
+<li>etc.</li>
+</ul>
+<p>As the game has developed, certain abstractions are becoming clearer. A discussion is to be had regarding the Frame implementation to use for Bridges, as a segway into a greater discussion about the Frame interface. There are two existing Frame implementation that seem like they can be used:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">IndexFrame</span><span class="p">(</span><span class="n">Frame</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    ## IndexFrame</span>
+
+<span class="sd">    Parses horizontal sheets where each frame corresponds to a specific string key.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">AssetState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+        <span class="n">icon_key</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">"icon"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">icon_key</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">settings</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">id</span><span class="p">,</span> <span class="n">icon_key</span><span class="p">]),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">properties</span><span class="p">:</span> <span class="n">WidgetProperties</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">w</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">l</span>
+        <span class="n">frames</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">frames</span>
+        <span class="n">crops</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Failsafe: if no frames are defined, index the whole image</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">frames</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="nb">id</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">l</span><span class="p">)}</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">frame_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">frames</span><span class="p">):</span>
+            <span class="n">frame_index</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">id</span><span class="p">,</span> <span class="n">frame_name</span><span class="p">])</span>
+            <span class="n">crops</span><span class="p">[</span><span class="n">frame_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">w</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">crops</span>
+</code></pre></div>
+<p>or </p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">IterableFrame</span><span class="p">(</span><span class="n">Frame</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    ## IterableFrame</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">AssetState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="p">[(</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+                <span class="nb">id</span><span class="p">,</span> 
+                <span class="nb">str</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">animation</span><span class="o">.</span><span class="n">frame</span><span class="p">)</span>
+            <span class="p">]),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="p">)]</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">properties</span><span class="p">:</span> <span class="n">AssetProperties</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        """</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">w</span> 
+        <span class="n">l</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">l</span>
+
+        <span class="k">return</span> <span class="p">{</span> 
+            <span class="n">settings</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+                <span class="nb">id</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="p">]):</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">w</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">properties</span><span class="o">.</span><span class="n">count</span><span class="p">)</span> 
+        <span class="p">}</span>
+</code></pre></div>
+<p>Most Frame classes have been created in an adhoc manner as the engine developed, though reuse and recycling has always been kept in mind.</p>
+<p>The indexing methods for both of these implementations are very similar; one simply use a sequence of numbers (IterableFrame with <code>0, 1, ..., properites.count</code>) versus a sequence of string categories (Index Frame with <code>properties.frames</code>). It is how they access the index via the state formulas that are materially different, e.g. IndexFrame uses a bespoke state field for icons versus IterableFrame's usage of an animation state field.</p>
+<p>While BridgeFrames may ultimately require a specific Frame implementation for their orientation of <code>horizontal</code> and <code>vertical</code>, there are other solutions that involve reusing these implemenations; I am always loathe to introduce polymorphisms and duck-typing, as it significantly decreases the readability of the code, but there does seem to be an asbtraction lurking there that may require neither.</p>
+<p>Analyze the problem of Bridge Frames and Frame interfaces in general. </p>
+<h5 id="architectural-analysis-iii">Architectural Analysis III</h5>
+<h6 id="path-a-first-class-spatial-strategy-orientedframe">Path A: First-Class Spatial Strategy (<code>OrientedFrame</code>)</h6>
+<p>Directionality is already a first-class concept in Ontology (<code>Directions</code>: <code>UP</code>, <code>DOWN</code>, <code>LEFT</code>, <code>RIGHT</code>). Linear structures (bridges, fences, barricades, aqueducts) introduce the 2-way orthogonal axis (<code>Orientations</code>: <code>HORIZONTAL</code>, <code>VERTICAL</code>).</p>
+<p>Just as <code>ShorelineFrame</code> maps cardinal <code>state.orientation</code> across rows, <code>OrientedFrame</code> maps axial <code>state.orientation</code> across a horizontal row:</p>
+<ul>
+<li><strong><code>OrientedFrame.index()</code></strong>:</li>
+<li><code>f"{id}-{Orientations.HORIZONTAL.value}": (0, 0, w, l)</code></li>
+<li>
+<p><code>f"{id}-{Orientations.VERTICAL.value}": (w, 0, w, l)</code></p>
+</li>
+<li>
+<p><strong><code>OrientedFrame.keys()</code></strong>:</p>
+</li>
+<li>Reads typed <code>state.orientation: str</code>.</li>
+<li>
+<p>Returns <code>[(f"{id}-{state.orientation}", 0, 0)]</code>.</p>
+</li>
+<li>
+<p><strong>Pros</strong>: Perfectly mirrors <code>ShorelineFrame</code>. Zero duck-typing. High domain readability.</p>
+</li>
+<li><strong>Cons</strong>: Adds a small, focused Frame class to <code>app.assets.frames.crafts</code>.</li>
+</ul>
+<h6 id="path-b-canonical-categorical-slot-indexframe-via-statevariant">Path B: Canonical Categorical Slot (<code>IndexFrame</code> via <code>state.variant</code>)</h6>
+<p>Standardize all nominal 1D states onto a single protocol. Replace <code>state.icon</code> on <code>AttachmentState</code> and <code>state.orientation</code> on <code>BridgeState</code> with a shared field: <code>state.variant: str</code>:</p>
+<ul>
+<li><strong><code>IndexFrame.keys()</code></strong>: Strictly reads <code>state.variant</code>.</li>
+<li><strong>Pros</strong>: Unifies expressions, icons, and bridges under a single frame component.</li>
+<li><strong>Cons</strong>: Forces domain concepts (<code>icon</code>, <code>orientation</code>) into a generic name (<code>variant</code>), reducing semantic precision in gameplay logic (e.g., <code>fields.py</code> inspecting <code>bridge.state.variant</code> instead of <code>orientation</code>).</li>
+</ul>
+<h6 id="decision">Decision</h6>
+<p>Adopt <strong>Path A (<code>OrientedFrame</code>)</strong>.</p>
+<ol>
+<li><code>Orientations</code> (<code>horizontal</code>, <code>vertical</code>) represents a fundamental spatial property of world entities, matching the engine's existing treatment of <code>Directions</code>.</li>
+<li>It keeps <code>BridgeState</code> semantically clean (<code>bridge.state.orientation = Orientations.HORIZONTAL.value</code>).</li>
+<li>It keeps <code>IndexFrame</code> isolated to UI/expressions without polluting it with duck-typing or forcing unrelated states to adopt an abstract <code>variant</code> field.</li>
+</ol>
+<h6 id="decomposition-logic-srcappservicesgeneratorsgamedecomposerpy">Decomposition Logic (<code>src/app/services/generators/game/decomposer.py</code>)</h6>
+<p>When <code>Decomposer.unpack_bridge()</code> processes a deployed <code>BridgeState</code>:</p>
+<ul>
+<li>If <code>orientation == HORIZONTAL</code>: steps <span class="arithmatex">\(N = \text{multiple.nx}\)</span> times along <span class="arithmatex">\(+X\)</span>, offsetting <code>Position(pos.x + i * w, pos.y)</code>.</li>
+<li>If <code>orientation == VERTICAL</code>: steps <span class="arithmatex">\(N = \text{multiple.ny}\)</span> times along <span class="arithmatex">\(+Y\)</span>, offsetting <code>Position(pos.x, pos.y + i * l)</code>.</li>
+<li>Each constituent unit segment receives:</li>
+<li>An independent <code>BridgeState</code> with <code>multiple = Multiple(nx=1, ny=1)</code>.</li>
+<li>A sequential name: <code>settings.SEPARATOR.join([state.name, str(i)])</code>.</li>
+<li>The static <code>CraftProperties</code> of the unit asset, preserving hitboxes and dimensions.</li>
+</ul>
+<h5 id="goals_2">Goals</h5>
+<h6 id="goal-hydrological-network-bifurcation-downstream-raycasting_2">Goal: Hydrological Network Bifurcation &amp; Downstream Raycasting</h6>
+<p>Implement recursive stream branching in <code>Actuator</code> when an immovable obstacle (<span class="arithmatex">\(m = 0\)</span>) is struck and <span class="arithmatex">\(\text{flow} &gt; 1\)</span>. Ensure child streams discharge strictly from the downstream face of the annular pool along its lateral flanks, eliminating spatial gaps and texture overdraw. Update <code>FluidState</code>, <code>FluidFrame</code>, <code>Board</code>, and <code>Cartographer</code> to index and render branched networks. Decouple <code>Actuator</code> from direct <code>Board</code> cache mutation.</p>
+<h6 id="goal-architectural-bridge-crafts-oriented-frame-decomposition">Goal: Architectural Bridge Crafts &amp; Oriented Frame Decomposition</h6>
+<p>Introduce <code>Orientations</code> enum and register <code>BRIDGES</code> under <code>AssetCategories.CRAFTS</code>. Implement <code>OrientedFrame</code> to index horizontal and vertical deck tiles from a single asset image. Define <code>BridgeState</code> with structural multipliers and explicit Z-ordering parameters (<code>height = 0, depth = 1</code>). Extend <code>Decomposer</code> to unpack bridge schemas into constituent unit <code>Asset</code> instances with sensor mass (<span class="arithmatex">\(m = -1\)</span>). Expose <code>Board.bridges(layer)</code> while strictly excluding bridges from <code>Board.obstacles()</code> and <code>Board.weights()</code>. Implement surface hierarchy evaluation in <code>fields.py</code> to intercept entities traversing bridges, suppressing submersion, splash particles, shoreline nudges, and current drift.</p>
+<h5 id="tasks">Tasks</h5>
+<p><strong>1. Task: Recursive Stream Bifurcation &amp; Hydrodynamic Network Modeling</strong></p>
+<p><em>Objective</em>: Implement lateral flank discharge raycasting in <code>Actuator</code> and extend broad-phase spatial caching, shoreline synthesis, and frame key emission across all active branches.</p>
+<ul>
+<li>[x] Subtask: Define <code>BranchCorridor</code> dataclass in <code>src/app/models/state/effects.py</code> and register <code>branches: List[BranchCorridor]</code> on <code>FluidState</code>.</li>
+<li>[x] Subtask: Refactor <code>Actuator.propagate()</code> to compute downstream flank origins from the pool boundary (<span class="arithmatex">\(pool.y + pool.l\)</span> for <code>DOWN</code>, <span class="arithmatex">\(pool.x + pool.w\)</span> for <code>RIGHT</code>, <span class="arithmatex">\(pool.y\)</span> for <code>UP</code>, <span class="arithmatex">\(pool.x\)</span> for <code>LEFT</code>) and raycast secondary child streams with <code>flow - 1</code>.</li>
+<li>[x] Subtask: Decouple <code>Actuator</code> from <code>Board</code> cache mutation by removing <code>board.cache_fluid()</code> calls from <code>Actuator.propagate()</code>, delegating cache invalidation to <code>FluidMechanics</code>.</li>
+<li>[x] Subtask: Update <code>Board._add_fluid_to_watermap()</code> to index parent corridors, annular pools, and all child branch corridors into <code>_cached_watermap</code>.</li>
+<li>[x] Subtask: Update <code>Board._in_stream()</code> to evaluate candidate coordinates against active child branch corridor bounding boxes.</li>
+<li>[x] Subtask: Update <code>Cartographer._collect_water_rectangles()</code> to compile primitive AABB tuples across all active branch corridors for contour analysis.</li>
+<li>[x] Subtask: Update <code>FluidFrame.keys()</code> to emit full-tile keys and distal remainder slices for each active branch corridor relative to <code>state.position</code>.</li>
+</ul>
+<p><strong>2. Task: Architectural Bridge Crafts &amp; Oriented Frame Strategy</strong></p>
+<p><em>Objective</em>: Implement static bridge assets as Crafts using <code>OrientedFrame</code> and decompose multiplier configurations via <code>Decomposer</code>.</p>
+<ul>
+<li>[x] Subtask: Add <code>Orientations</code> (<code>HORIZONTAL = "horizontal"</code>, <code>VERTICAL = "vertical"</code>) and <code>AssetInstances.BRIDGES = "bridges"</code> to <code>src/app/config/enums.py</code>.</li>
+<li>[x] Subtask: Add <code>bridges: Dict[str, CraftProperties]</code> to <code>CraftPropertyInstances</code> in <code>src/app/models/properties.py</code>.</li>
+<li>[x] Subtask: Create <code>BridgeState</code> in <code>src/app/models/state/crafts.py</code> with <code>orientation: str</code>, <code>multiple: Multiple</code>, <code>depth: int = 1</code>, and <code>height: int = 0</code>.</li>
+<li>[x] Subtask: Implement <code>OrientedFrame</code> in <code>src/app/assets/frames/crafts.py</code> mapping horizontal and vertical frame tiles. Register in the Factory.</li>
+<li>[x] Subtask: Register <code>bridges</code> in <code>RecipeConfiguration.crafts</code> (<code>frame: oriented</code>, <code>animation: none</code>, <code>state: BridgeState</code>).</li>
+<li>[x] Subtask: Implement <code>Decomposer.bridge(deployed_state: BridgeState) -&gt; List[Asset]</code> to expand directed multipliers into constituent unit assets with sequential names, offset positions, and static hitboxes.</li>
+<li>[x] Subtask: Implement <code>Decomposer.bridge_cost(id: str, multiple: Multiple) -&gt; List[Cost]</code> to calculate linear resource requirements (<span class="arithmatex">\(N \times \text{cost}\)</span>).</li>
+<li>[x] Subtask: Update hydration loaders and <code>Board</code> instantiation to unpack <code>crafts.bridges</code> via <code>Decomposer</code>.<ul>
+<li>[x]: Add <code>spawn_bridge()</code> to <code>Cradle</code>.</li>
+<li>[x]: Add Bridge tasks to <code>Migrator</code> to called new <code>Decomposer</code> method.</li>
+</ul>
+</li>
+<li>[x] Subtask: Expose <code>Board.bridges(layer)</code> query method on <code>Board</code>, ensuring bridges are strictly excluded from <code>Board.obstacles()</code> and <code>Board.weights()</code>.</li>
+</ul>
+<p><strong>3. Task: Surface Interception Hierarchy in Motion Fields</strong></p>
+<p><em>Objective</em>: Intercept entities traversing bridges in <code>fields.py</code> to suppress fluid immersion, current drift, and shoreline step-down nudges.</p>
+<ul>
+<li>[x] Subtask: Update <code>fields.update()</code> to evaluate bridge surface interception at the top of the hierarchy prior to dynamic Rafts.</li>
+<li>[x] Subtask: When intersecting a bridge, mark <code>on_surface = True</code>, set zero surface drift velocity (<span class="arithmatex">\(\vec{v}_{\text{drift}} = \vec{0}\)</span>), clear <code>asset.state.mutators.triggers.submerged = False</code>, and bypass downstream shoreline edge crossing and fluid immersion passes.</li>
+</ul>
+<hr />
+<p>Bug For Later: When a submerged Asset (i.e. an Asset moving under the influence of a Fluid field) intersects a bridge, it should render underneath of the Bridge and continue moving through the field, i.e. it should "pass underneath" the Bridge when its velocity is transverse to the orientation of the Bridge.</p>
+<h3 id="latent-technical-debt-architectural-tensions">Latent Technical Debt &amp; Architectural Tensions</h3>
+<h4 id="1-the-bridge-underpass-dilemma-25d-elevation-collapse">1. The Bridge Underpass Dilemma (2.5D Elevation Collapse)</h4>
+<p>Currently, <code>fields.py</code> checks AABB intersection with bridges unconditionally:</p>
+<div class="highlight"><pre><span></span><code><span class="n">layer_bridges</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">instances</span><span class="p">(</span><span class="n">AssetInstances</span><span class="o">.</span><span class="n">BRIDGES</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">bridge</span> <span class="ow">in</span> <span class="n">layer_bridges</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">_intersects</span><span class="p">(</span><span class="n">asset</span><span class="p">,</span> <span class="n">bridge</span><span class="p">):</span>
+        <span class="n">on_surface</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># ...</span>
+</code></pre></div>
+<p>If an entity is already floating in a fluid stream and drifts beneath a bridge deck whose span is perpendicular to the flow, <code>fields.py</code> intercepts the entity, clears <code>submerged = False</code>, and halts its drift. Because the engine models 2D planar space with pseudo-depth (<code>height</code>, <code>depth</code>), an asset cannot distinguish between being <em>on top of</em> the bridge deck versus <em>underneath</em> it. Resolving this requires formalizing an <code>elevation</code> or entry-trajectory state attribute.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="../../../../static/js/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

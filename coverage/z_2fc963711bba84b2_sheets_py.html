@@ -64,8 +64,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="z_2fc963711bba84b2_tiles_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.17.2">coverage.py v7.17.2</a>,
-            created at 2026-11-10 16:04 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.17.3">coverage.py v7.17.3</a>,
+            created at 2026-11-14 02:23 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -169,8 +169,8 @@
     <p class="run"><span class="n"><a id="t87" href="#t87">87</a></span><span class="t">        <span class="nam">frame_keys</span> <span class="op">=</span> <span class="nam">super</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">keys</span><span class="op">(</span><span class="nam">id</span><span class="op">,</span> <span class="nam">state</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t88" href="#t88">88</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t89" href="#t89">89</a></span><span class="t">        <span class="com"># Iterate over active equipment in strict Z-index order: Base -&gt; Armor -&gt; Utility -&gt; Tool -&gt; Weapon</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t90" href="#t90">90</a></span><span class="t">        <span class="key">if</span> <span class="nam">state</span><span class="op">.</span><span class="nam">inventory</span><span class="op">.</span><span class="nam">equipment</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t91" href="#t91">91</a></span><span class="t">            <span class="nam">eq</span> <span class="op">=</span> <span class="nam">state</span><span class="op">.</span><span class="nam">inventory</span><span class="op">.</span><span class="nam">equipment</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t90" href="#t90">90</a></span><span class="t">        <span class="key">if</span> <span class="nam">state</span><span class="op">.</span><span class="nam">slots</span><span class="op">.</span><span class="nam">equipment</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t91" href="#t91">91</a></span><span class="t">            <span class="nam">eq</span> <span class="op">=</span> <span class="nam">state</span><span class="op">.</span><span class="nam">slots</span><span class="op">.</span><span class="nam">equipment</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t92" href="#t92">92</a></span><span class="t">            <span class="key">for</span> <span class="nam">eq_key</span> <span class="key">in</span> <span class="op">(</span><span class="nam">eq</span><span class="op">.</span><span class="nam">armor</span><span class="op">,</span> <span class="nam">eq</span><span class="op">.</span><span class="nam">utility</span><span class="op">,</span> <span class="nam">eq</span><span class="op">.</span><span class="nam">tool</span><span class="op">,</span> <span class="nam">eq</span><span class="op">.</span><span class="nam">weapon</span><span class="op">,</span> <span class="nam">eq</span><span class="op">.</span><span class="nam">shield</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t93" href="#t93">93</a></span><span class="t">                <span class="key">if</span> <span class="nam">eq_key</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t94" href="#t94">94</a></span><span class="t">                    <span class="nam">key_str</span> <span class="op">=</span> <span class="nam">settings</span><span class="op">.</span><span class="nam">SEPARATOR</span><span class="op">.</span><span class="nam">join</span><span class="op">(</span><span class="op">[</span>&nbsp;</span><span class="r"></span></p>
@@ -189,7 +189,7 @@
     <p class="run run2"><span class="n"><a id="t107" href="#t107">107</a></span><span class="t">            <span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t108" href="#t108">108</a></span><span class="t">            <span class="nam">frame_keys</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="op">(</span><span class="nam">expr_key</span><span class="op">,</span> <span class="nam">expr</span><span class="op">.</span><span class="nam">offset</span><span class="op">.</span><span class="nam">x</span><span class="op">,</span> <span class="nam">expr</span><span class="op">.</span><span class="nam">offset</span><span class="op">.</span><span class="nam">y</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t109" href="#t109">109</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t110" href="#t110">110</a></span><span class="t">        <span class="key">if</span> <span class="nam">state</span><span class="op">.</span><span class="nam">intention</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span> <span class="key">and</span> <span class="nam">state</span><span class="op">.</span><span class="nam">intention</span> <span class="op">==</span> <span class="nam">Intentions</span><span class="op">.</span><span class="nam">ATTACK</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t110" href="#t110">110</a></span><span class="t">        <span class="key">if</span> <span class="nam">state</span><span class="op">.</span><span class="nam">intention</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span> <span class="key">and</span> <span class="nam">state</span><span class="op">.</span><span class="nam">intention</span> <span class="op">==</span> <span class="nam">Intentions</span><span class="op">.</span><span class="nam">ATTACK</span><span class="op">.</span><span class="nam">value</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t111" href="#t111">111</a></span><span class="t">            <span class="nam">logger</span><span class="op">.</span><span class="nam">info</span><span class="op">(</span><span class="fst">f&quot;</span><span class="fst">SpriteFrame generated keys: </span><span class="op">{</span><span class="nam">frame_keys</span><span class="op">}</span><span class="fst">&quot;</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t112" href="#t112">112</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t113" href="#t113">113</a></span><span class="t">        <span class="key">return</span> <span class="nam">frame_keys</span>&nbsp;</span><span class="r"></span></p>
@@ -201,8 +201,8 @@
             <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a class="nav" href="z_2fc963711bba84b2_tiles_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.17.2">coverage.py v7.17.2</a>,
-            created at 2026-11-10 16:04 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.17.3">coverage.py v7.17.3</a>,
+            created at 2026-11-14 02:23 +0000
         </p>
     </div>
 </footer>

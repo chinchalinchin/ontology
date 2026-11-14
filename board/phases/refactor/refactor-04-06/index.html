@@ -1,0 +1,4550 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/board/phases/refactor/refactor-04-06/">
+      
+      
+        <link rel="prev" href="../refactor-04-05/">
+      
+      
+        <link rel="next" href="../refactor-06-01/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Phase 04.06 - Pane Generation - Ontology</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#refactor-phase-0406-pane-generation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="Ontology" class="md-header__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ontology
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Phase 04.06 - Pane Generation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="Ontology" class="md-nav__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Ontology
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../00-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../01-assets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../02-sprites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../03-compositions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../04-intentions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../05-mechanics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../06-widgets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../07-acoustics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../08-narratives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../09-ecology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ecology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../10-chemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../11-emergence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../12-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../specs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Specifications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_15" id="__nav_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Specifications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/00-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dialogue Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/01-interaction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/02-wander/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wander Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_16" id="__nav_16_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Roadmap
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2" id="__nav_16_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_16_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_1" id="__nav_16_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-castle-dawn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Castle Dawn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-regalia-galleria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Regalia Galleria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-temple-of-trials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Trials of Trials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Dialogue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-view/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_2" id="__nav_16_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implement
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implement
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01 - Renderer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02 - Game
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03 - Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04 - Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 05 - Editor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06 - Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07 - Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08 - Pathfinding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09 - Hydrodynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10 - Seasons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 11 - Geology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 12 - Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-13/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 13 - Acoustics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 14 - Narratives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-n/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n - Commerce
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-n%2B1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n+1 - Towns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_3" id="__nav_16_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refactor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Refactor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-01-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01.01 - Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.01 - Frames
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.02 - Registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.03 - Equipment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.04 - Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.05 - Finetuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.06 - Effects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.07 - Registry Data Structures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.08 - World Chunks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.01 - Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.02 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.03 - Motion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.04 - Projectiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.01 - Typography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.02 - Simplification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.03 - Event Handlers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.04 - Menu Context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.05 - Gizmos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.06 - Pane Generation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.06 - Pane Generation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-0406-pane-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 04.06 - Pane Generation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 04.06 - Pane Generation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis I
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis I">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-can-the-existing-multiplication-strategies-be-utilized" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Can the Existing Multiplication Strategies Be Utilized?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-dependency-injection-hydration-pipeline-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Dependency Injection &amp; Hydration Pipeline Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis II
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis II">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-decoupling-provider-and-multiplier-from-materialindex-addressing-user-review-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Decoupling Provider and Multiplier from MaterialIndex (Addressing User Review I)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-corner-superposition-geometry-full-footprint-center-fill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Corner Superposition Geometry &amp; Full-Footprint center Fill
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-layoutsoverlay-and-transparent-container-auto-sizing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Layouts.OVERLAY and Transparent Container Auto-Sizing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review II
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis III
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis III">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-subsuming-pages-displaystate-into-panes-panestate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Subsuming Pages (DisplayState) into Panes (PaneState)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-iv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review IV
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-iv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis IV
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis IV">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-eliminating-multipliers-coupling-and-widgetpropertiesstrategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Eliminating Multipliers Coupling and WidgetProperties.strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-eliminating-screenposition-and-paneparameters-fallbacks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Eliminating ScreenPosition and PaneParameters Fallbacks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-v" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review V
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-v" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis V
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis V">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-formalizing-the-animation-vs-frame-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Formalizing the Animation vs. Frame Boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-remove-extraneous-widget-animations-project-state-directly-in-widget-frames" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Remove Extraneous Widget Animations &amp; Project State Directly in Widget Frames
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-implicit-9-slice-paneframe-indexing-projection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Implicit 9-Slice PaneFrame Indexing &amp; Projection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-replace-screenposition-with-fractional-scale-2-axis-axisalignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Replace ScreenPosition with Fractional Scale &amp; 2-Axis AxisAlignment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-consolidate-displaystate-pages-into-panestate-panes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Consolidate DisplayState (Pages) into PaneState (Panes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.01 - Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.02 - Goals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.03 - Combat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.04 - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.01 - Elevation Sorting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.02 - Platforms & Elevated Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.03 - Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.04 - Materialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.05 - Composite Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.01 - Obstacle Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.02 - Navigation Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.03 - Trajectory Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.04 - Mutators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.01 - Fluid Flows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.02 - Shorelines & Geography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.03 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.04 - Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.05 - Bridges & Bifurcation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.06 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.07 - Frame Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.08 - Transverse Fluid Submersion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.01 - Stage Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.02 - Shoreline Seasonal Indexing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.03 - Flowers, Pixies & Reproduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.04 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../appendices/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_17" id="__nav_17_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/00-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/01-schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/02-diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagrams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reports
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../coverage/index" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unit Test Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-0406-pane-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 04.06 - Pane Generation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 04.06 - Pane Generation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis I
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis I">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-can-the-existing-multiplication-strategies-be-utilized" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Can the Existing Multiplication Strategies Be Utilized?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-dependency-injection-hydration-pipeline-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Dependency Injection &amp; Hydration Pipeline Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis II
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis II">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-decoupling-provider-and-multiplier-from-materialindex-addressing-user-review-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Decoupling Provider and Multiplier from MaterialIndex (Addressing User Review I)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-corner-superposition-geometry-full-footprint-center-fill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Corner Superposition Geometry &amp; Full-Footprint center Fill
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-layoutsoverlay-and-transparent-container-auto-sizing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Layouts.OVERLAY and Transparent Container Auto-Sizing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review II
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis III
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis III">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-subsuming-pages-displaystate-into-panes-panestate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Subsuming Pages (DisplayState) into Panes (PaneState)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-iv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review IV
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-iv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis IV
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis IV">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-eliminating-multipliers-coupling-and-widgetpropertiesstrategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Eliminating Multipliers Coupling and WidgetProperties.strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-eliminating-screenposition-and-paneparameters-fallbacks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Eliminating ScreenPosition and PaneParameters Fallbacks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-v" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review V
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-v" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis V
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis V">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-formalizing-the-animation-vs-frame-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Formalizing the Animation vs. Frame Boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-remove-extraneous-widget-animations-project-state-directly-in-widget-frames" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Remove Extraneous Widget Animations &amp; Project State Directly in Widget Frames
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-implicit-9-slice-paneframe-indexing-projection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Implicit 9-Slice PaneFrame Indexing &amp; Projection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-replace-screenposition-with-fractional-scale-2-axis-axisalignment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Replace ScreenPosition with Fractional Scale &amp; 2-Axis AxisAlignment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-consolidate-displaystate-pages-into-panestate-panes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Consolidate DisplayState (Pages) into PaneState (Panes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Phase 04.06 - Pane Generation</h1>
+
+<h4 id="refactor-phase-0406-pane-generation">Refactor: Phase 04.06 - Pane Generation</h4>
+<p><strong>Overview</strong></p>
+<p>Unify and simplify the <code>Widgets</code> branch of the Asset Hierarchy by:</p>
+<ol>
+<li>Deprecating <code>Pages</code> (<code>AssetInstances.PAGES</code> and <code>DisplayState</code>) and subsuming their typography, <code>canvas</code> allocation, and pagination capabilities directly into <code>Panes</code> (<code>AssetInstances.PANES</code> and <code>PaneState</code>).</li>
+<li>Eliminating <code>Widget</code> animations (<code>TraversalAnimation</code>, <code>MeterAnimation</code>) and <code>AnimationState</code> fields on <code>Widgets</code>, projecting instantaneous state changes directly inside <code>TraversalFrame.keys()</code> and <code>MeterFrame.keys()</code>.</li>
+<li>Decoupling <code>Panes</code> from fixed-dimension pixel configurations and <code>ScreenPosition</code> coordinates via implicit in-place <span class="arithmatex">\(3 \times 3\)</span> (9-slice) cell indexing (<code>PaneFrame</code>), screen-relative fractional <code>Scale</code> dimensions <span class="arithmatex">\((w_p, l_p) \in (0.0, 1.0]^2\)</span>, and 2-axis <code>AxisAlignment</code> (<code>horizontal: start | center | end</code>, <code>vertical: start | center | end</code>).</li>
+</ol>
+<h5 id="specification">Specification</h5>
+<ol>
+<li><strong>Implicit <span class="arithmatex">\(3 \times 3\)</span> Cell Partitioning (<code>PaneFrame.index</code>)</strong>:</li>
+</ol>
+<p>Given a <code>Pane</code> asset with total pixel dimensions <span class="arithmatex">\((W, L) = (\text{properties.dimensions.w}, \text{properties.dimensions.l})\)</span>, the unit cell dimensions <span class="arithmatex">\((w_c, l_c)\)</span> are obtained by trisecting each axis:</p>
+<div class="arithmatex">\[w_c = \left\lfloor \frac{W}{3} \right\rfloor, \quad l_c = \left\lfloor \frac{L}{3} \right\rfloor\]</div>
+<p>Let <span class="arithmatex">\(V = (\text{start}, \text{center}, \text{end})\)</span>. <code>PaneFrame.index(id, properties)</code> partitions the source texture in-place into nine cells:</p>
+<div class="arithmatex">\[\text{index}(id, \text{properties}) = \Big\{\; \text{{id}-{V[r]}-{V[c]}}: (c \cdot w_c,\; r \cdot l_c,\; w_c,\; l_c) \;\Big\vert{}\; r \in \{0, 1, 2\},\; c \in \{0, 1, 2\} \;\Big\}\]</div>
+<ol>
+<li><strong>Screen-Relative Quantization</strong>:</li>
+</ol>
+<p>Given fractional <code>PaneParameters.dimensions</code> <span class="arithmatex">\((w_p, l_p) \in (0.0, 1.0]^2\)</span> and viewport <code>screensize</code> <span class="arithmatex">\((W_s, L_s)\)</span>, the target pixel footprint is:</p>
+<div class="arithmatex">\[W_{\text{req}} = \text{int}(w_p \cdot W_s), \quad L_{\text{req}} = \text{int}(l_p \cdot L_s)\]</div>
+<p>The interior multiplicity <span class="arithmatex">\((n_x, n_y) \in \mathbb{Z}_{\ge 0}^2\)</span> and quantized pixel span <span class="arithmatex">\((W_{\text{span}}, L_{\text{span}})\)</span> are resolved deterministically for every <code>Pane</code>:</p>
+<div class="arithmatex">\[n_x = \max\!\left(0,\; \left\lceil \frac{W_{\text{req}} - 2w_c}{w_c} \right\rceil\right), \quad n_y = \max\!\left(0,\; \left\lceil \frac{L_{\text{req}} - 2l_c}{l_c} \right\rceil\right)\]</div>
+<div class="arithmatex">\[W_{\text{span}}(n_x) = (n_x + 2) \cdot w_c, \quad L_{\text{span}}(n_y) = (n_y + 2) \cdot l_c\]</div>
+<ol>
+<li><strong>9-Slice Topological Projection (<code>PaneFrame.keys</code>)</strong>:</li>
+</ol>
+<p>For a <code>Pane</code> with <code>state.multiple = Multiple(nx, ny)</code>, <code>PaneFrame.keys(id, state)</code> iterates over row index <span class="arithmatex">\(i_y \in [0, n_y + 1]\)</span> and column index <span class="arithmatex">\(i_x \in [0, n_x + 1]\)</span>, selecting:</p>
+<div class="arithmatex">\[v(i) = \begin{cases} \text{start} &amp; i = 0 \\ \text{end} &amp; i = n + 1 \\ \text{center} &amp; 1 \le i \le n \end{cases}\]</div>
+<p>and emitting <span class="arithmatex">\((n_x + 2)(n_y + 2)\)</span> non-overlapping tile primitives:</p>
+<div class="arithmatex">\[\Big(\text{id-}v[i_y]\text{-}v[i_x],\; i_x \cdot w_c,\; i_y \cdot l_c\Big)\]</div>
+<ol>
+<li><strong>Two-Axis Alignment, Justification, and Margins</strong>:</li>
+</ol>
+<p>Both horizontal (<span class="arithmatex">\(X\)</span>) and vertical (<span class="arithmatex">\(Y\)</span>, downward positive) axes are parameterized over <code>Alignments</code> <span class="arithmatex">\(\in \{\text{start}, \text{center}, \text{end}\}\)</span>. For a parent bounding box <span class="arithmatex">\((p_0, P)\)</span>, an inner content span <span class="arithmatex">\(C\)</span>, and margin <span class="arithmatex">\(m \in \mathbb{Z}_{\ge 0}\)</span>, the 1D axis resolver <span class="arithmatex">\(\alpha(p_0, P, C, m, \text{mode})\)</span> is:</p>
+<div class="arithmatex">\[\alpha(p_0, P, C, m, \text{mode}) = \begin{cases} p_0 + m &amp; \text{if mode} = \text{start} \\ p_0 + \lfloor (P - C) / 2 \rfloor &amp; \text{if mode} = \text{center} \\ p_0 + P - C - m &amp; \text{if mode} = \text{end} \end{cases}\]</div>
+<ul>
+<li><strong>Root Pane Placement (<code>justification</code>)</strong>: Placed within the viewport <span class="arithmatex">\((0, 0, W_s, L_s)\)</span> at:</li>
+</ul>
+<div class="arithmatex">\[x_{\text{root}} = \alpha(0, W_s, W_{\text{span}}, m, \text{justification.horizontal}), \quad y_{\text{root}} = \alpha(0, L_s, L_{\text{span}}, m, \text{justification.vertical})\]</div>
+<ul>
+<li>
+<p><strong>Child Placement (<code>alignment</code>)</strong>: Inside a <code>Pane</code> at <span class="arithmatex">\((x_0, y_0)\)</span> with quantized span <span class="arithmatex">\((W_{\text{span}}, L_{\text{span}})\)</span>, children <span class="arithmatex">\(C = \{c_1, \dots, c_k\}\)</span> with inter-child gap <span class="arithmatex">\(g\)</span> are positioned along their layout axis (<code>STACK</code>, <code>DOCK</code>, or <code>OVERLAY</code>) using <span class="arithmatex">\(\alpha\)</span> along both horizontal and vertical axes.</p>
+</li>
+<li>
+<p><strong>Direct Stateless Frame Projection for <code>Widgets</code> (No <code>Animation</code> Mediation)</strong>:</p>
+</li>
+</ul>
+<p>In accordance with the <code>Frame</code> vs. <code>Animation</code> separation of concerns:</p>
+<div class="arithmatex">\[\text{Frame.index}: \text{Properties} \to \text{Atlas}, \qquad \text{Frame.keys}: \text{State} \to \text{Keys}, \qquad \text{Animation.animate}: \text{State} \times \text{Properties} \to \text{State}\]</div>
+<p>An <code>Animation</code> component is valid if and only if a non-instantaneous temporal transition (accumulating <code>tick</code> over time) must be mediated by <code>Properties</code> (such as <code>EffectProperties.frequency</code> or <code>SheetProperties.actions</code>). Because all <code>Widget</code> state transitions (<code>TraversalState.status</code>, <code>MeterState.reading / unit</code>, <code>IconState.icon</code>, <code>PaneState.pageindex</code>) are instantaneous and unmediated by <code>WidgetProperties</code>, <code>Widgets</code> have no <code>Animation</code> component:</p>
+<ul>
+<li><strong><code>TraversalFrame.keys(id, state)</code></strong>: Projects <code>state.status</code> directly to <code>[(f"{id}-{state.status}", 0, 0)]</code>.</li>
+<li><strong><code>MeterFrame.keys(id, state)</code></strong>: Evaluates <span class="arithmatex">\(r = \text{clamp}(\text{round}(100 \cdot \text{state.reading} / \text{state.unit}), 0, 100)\)</span> directly in <code>keys()</code>, returning <code>[(f"{id}-empty", 0, 0), (f"{id}-{r}", 0, 0)]</code> when <span class="arithmatex">\(r &gt; 0\)</span> and <code>[(f"{id}-empty", 0, 0)]</code> when <span class="arithmatex">\(r = 0\)</span>.</li>
+</ul>
+<h5 id="architectural-analysis-i">Architectural Analysis I</h5>
+<h6 id="1-can-the-existing-multiplication-strategies-be-utilized">1. Can the Existing Multiplication Strategies Be Utilized?</h6>
+<p>The existing <code>Multipliers</code> (<code>SimpleMultiplier</code>, <code>OrientedMultiplier</code>, <code>ExpansionMultiplier</code>, <code>PerimeterMultiplier</code> in <code>app.game.logic.modules.multipliers</code>) implement the exact coordinate stepping required for <code>Panes</code>, but <strong>cannot be invoked directly as-is</strong> due to three architectural divergences between world <code>Crafts</code> and UI <code>Panes</code>:</p>
+<ol>
+<li><strong>Multi-Entity Instantiation vs. Single-Widget Identity</strong>:<ul>
+<li><code>PerimeterMultiplier.multiply()</code> calls <code>self._unit(...)</code> to instantiate <span class="arithmatex">\(2(n_x + n_y + 4)\)</span> separate <code>Asset</code> instances on the <code>Board</code>. <code>Struts</code> require separate <code>Asset</code> instances because each world segment has an independent <code>Hitbox</code> for <code>CollisionMechanics</code> and an independent <code>ground_y</code> (<code>anchor</code>) for 2.5D Painter's Algorithm sorting (<code>Screen._sort</code>) against dynamic <code>Sprites</code>.</li>
+<li>Conversely, a <code>Pane</code> in <code>Menu.widgets</code> <strong>must remain a single <code>Widget</code> instance</strong> keyed by <code>pane.name</code>:</li>
+<li><code>Layout.compute()</code> queries <code>widgets[pane.name]</code> to resolve child alignments and mutates <code>pane.state.position</code> <em>after</em> <code>Provider._unpack_pane()</code> completes.</li>
+<li><code>CollectionState</code> Gizmos store state on the root <code>Pane</code> (<code>menu.widgets[selector]</code>), which <code>ApertureBinding</code> and <code>InventoryController</code> query in <span class="arithmatex">\(O(1)\)</span> by <code>pane.name</code>.</li>
+<li><code>Panes</code> do not participate in world collisions or <code>Screen._sort</code>; they render flat on a single plane behind their children via <code>Screen.interface()</code>.</li>
+</ul>
+</li>
+<li><strong>Hollow Enclosure vs. Filled Backdrop</strong>:<ul>
+<li><code>PerimeterMultiplier</code> generates a <strong>hollow</strong> boundary: for <span class="arithmatex">\(n_x \ge 1, n_y \ge 1\)</span>, no segments are placed in the interior domain <span class="arithmatex">\([1, n_x] \times [1, n_y]\)</span>. While a fence or wall enclosure on the <code>Board</code> encloses open terrain, a <code>Pane</code> is an opaque backdrop. Using <code>PerimeterMultiplier</code> alone leaves a rectangular hole in the center of every menu whenever <span class="arithmatex">\(n_x \ge 1\)</span> and <span class="arithmatex">\(n_y \ge 1\)</span>.</li>
+<li>A <code>Pane</code> therefore requires a <strong>composite (<code>simple</code> + <code>perimeter</code>)</strong> or <strong>filled-perimeter (<code>surface</code>)</strong> strategy: a base fill across the interior <span class="arithmatex">\([1, n_x] \times [1, n_y]\)</span> (or full <span class="arithmatex">\([0, n_x + 1] \times [0, n_y + 1]\)</span> footprint) combined with the <code>PerimeterMultiplier</code> border pass.</li>
+</ul>
+</li>
+<li><strong>Coupling to <code>CraftState</code> and <code>MaterialIndex</code> Substrates</strong>:<ul>
+<li><code>Multiplier._unit</code> assumes <code>state</code> is a <code>CraftState</code> with <code>material</code>, <code>blueprint</code>, <code>layer</code>, <code>elevation</code>, and queries <code>self.materials.substrate(instance, blueprint)</code>.<ul>
+<li><strong>Resolution</strong>: Refactor <code>Multiplier</code> subclasses to separate <strong>pure topological coordinate generation</strong> (<code>project(w, l, nx, ny, ...) -&gt; List[Tuple[str, int, int, int]]</code> yielding <code>(partition_key, ox, oy, anchor_delta)</code> and <code>span(w, l, nx, ny) -&gt; Dimensions</code>) from <strong>world <code>Asset</code> instantiation</strong> (<code>multiply(...) 
+-&gt; List[Asset]</code>).</li>
+</ul>
+</li>
+<li><code>Decomposer.multiply()</code> calls <code>multiply()</code> to emit world <code>Asset</code> lists for <code>Crafts</code>.</li>
+<li><code>CompositionCompiler._compute_span()</code> calls <code>Multiplier.span()</code> instead of duplicating strategy span formulas.</li>
+<li><code>Provider</code> / <code>PaneFrame</code> calls <code>project()</code> to obtain relative tile offsets <code>(part_key, ox, oy)</code> for a single <code>Pane</code> <code>Widget</code>.</li>
+</ul>
+</li>
+</ol>
+<h6 id="2-dependency-injection-hydration-pipeline-analysis">2. Dependency Injection &amp; Hydration Pipeline Analysis</h6>
+<p>Tracing the DI pipeline (<code>Builder</code> <span class="arithmatex">\(\to\)</span> <code>Orchestrator</code> <span class="arithmatex">\(\to\)</span> <code>Provider</code> <span class="arithmatex">\(\to\)</span> <code>Layout</code> <span class="arithmatex">\(\to\)</span> <code>Screen</code>) reveals three pipeline bottlenecks that must be resolved:</p>
+<ol>
+<li>**Missing <code>MaterialIndex</code> / Strategy Injection in <code>Provider**</code>:<ul>
+<li>In <code>app.services.orchestration.builder</code>, <code>Decomposer</code> is injected with <code>MaterialIndex</code>, whereas <code>Provider</code> only receives <code>(recipes.widgets, properties.widgets, binder, fabricator)</code>. If <code>Panes</code> declare blueprint schemas (or multiplication strategies) and optional <code>Material</code> palettes (e.g., unifying <code>dark</code>, <code>neutral</code>, <code>light</code> into a single <code>pane</code> atlas indexed over <code>Chromatics</code>), <code>Provider</code> must receive <code>MaterialIndex</code> (or the compiled strategy index).</li>
+</ul>
+</li>
+<li>**Phase Ordering Inversion Between <code>Provider._unpack_pane</code> and <code>Layout.compute**</code>:<ul>
+<li>Currently in <code>Provider.unpack()</code>:</li>
+<li><strong>Phase 1</strong>: <code>_expand()</code> expands <code>Gizmos</code> into <code>MenuNode</code> trees, computing static pixel <code>Dimensions</code> on <code>PaneParameters</code>.</li>
+<li><strong>Phase 2</strong>: <code>_unpack_pane()</code> instantiates <code>Widget</code> objects and overrides <code>props.dimensions</code> if <code>params.dimensions</code> was explicitly set.</li>
+<li><strong>Phase 3</strong>: <code>Layout.compute()</code> walks the tree, reads <code>widget.dimensions</code>, and assigns <code>widget.state.position</code>.</li>
+<li>Under this ordering, if a <code>Pane</code> in YAML omits explicit <code>dimensions</code> / <code>multiple</code>, Phase 2 instantiates it with its raw unit tile size <span class="arithmatex">\((w, l)\)</span> before <code>Layout</code> has measured its children!</li>
+<li><strong>Pipeline Fix</strong>: Split <code>Layout.compute()</code> into a <strong>Bottom-Up Measurement &amp; Quantization Pass</strong> (computing required <code>(nx, ny)</code> and quantized <code>span</code> <code>Dimensions((nx + 2) * w, (ny + 2) * l)</code> for every <code>Pane</code> based on its children's sizes, <code>gap</code>, and <code>margins</code>) followed by the <strong>Top-Down Positioning Pass</strong>.</li>
+</ul>
+</li>
+<li><strong>60 Hz Rendering Overhead (<code>Frame.keys</code> vs. <code>render.construct</code> Canvas Baking)</strong>:<ul>
+<li>A <span class="arithmatex">\(320 \times 256\text{ px}\)</span> menu built from <span class="arithmatex">\(16 \times 16\text{ px}\)</span> unit tiles (<span class="arithmatex">\(n_x = 18, n_y = 14\)</span>) comprises <span class="arithmatex">\((20 \times 16) + 2(18 + 14 + 4) = 392\)</span> tile primitives.</li>
+<li>Pushing 392 tuples per pane across the Python-to-Cython boundary in <code>Screen._widgets()</code> on every frame at 60 Hz creates avoidable inner-loop overhead.</li>
+<li>Instead, just as <code>Screen._prerender()</code> bakes multiplied <code>Tiles</code> onto <code>bg_canvas</code> via <code>render.construct()</code> and <code>Provider._page()</code> allocates a <code>TexturePtr</code> <code>canvas</code> for <code>DisplayState</code>, <code>Provider</code> (or <code>Layout</code>) can bake a multiplied <code>Pane</code>'s tiles once onto a <code>PaneState.canvas: TexturePtr</code> via <code>render.construct()</code> at menu instantiation time. At runtime, <code>Screen._widgets()</code> draws the entire multiplied <code>Pane</code> in a <strong>single</strong> <code>SDL_RenderCopy</code> call.</li>
+</ul>
+</li>
+</ol>
+<h5 id="user-review-i">User Review I</h5>
+<p>Let's lose anything that requires injecting the Provider with the MaterialIndex, as it seems hacky making a Menu Factory depend on the relationships between the material aspect of Assets. Menus have no "materiality" modality, so let's not give Menus a dependency it does not requires. The Provider can instantiate whatever multiplication strategy handlers it requires within its own methods.</p>
+<h5 id="architectural-analysis-ii">Architectural Analysis II</h5>
+<h6 id="1-decoupling-provider-and-multiplier-from-materialindex-addressing-user-review-i">1. Decoupling <code>Provider</code> and <code>Multiplier</code> from <code>MaterialIndex</code> (Addressing User Review I)</h6>
+<p>Per <strong>User Review I</strong>, <code>Provider</code> must not receive <code>MaterialIndex</code>, as UI <code>Menus</code> have no <code>Material</code> modality. Inspecting <code>src/app/game/logic/modules/multipliers/</code> reveals two subtle coupling hazards that must be addressed when <code>Provider</code> instantiates or invokes multiplication strategies directly:</p>
+<ol>
+<li>**<code>Singleton</code> Lifecycle Hazard on <code>Multiplier**</code>:<ul>
+<li><code>Multiplier</code> (<code>src/app/game/logic/modules/multipliers/base.py</code>) inherits from <code>Singleton</code> and currently requires <code>materials: MaterialIndex</code> in <code>__init__(self, materials: MaterialIndex)</code>.</li>
+<li>In Python, when a <code>Singleton</code> subclass is called a second time (e.g., <code>Decomposer</code> instantiates <code>PerimeterMultiplier(materials)</code> during <code>Builder</code> bootstrap, and <code>Provider</code> later calls <code>PerimeterMultiplier()</code> without arguments), Python still invokes <code>__init__</code> on the cached singleton instance. If <code>__init__</code> blindly assigns <code>self.materials = materials</code>, calling <code>PerimeterMultiplier()</code> with <code>materials=None</code> inside <code>Provider</code> will overwrite <code>self.materials = None</code> on the singleton shared with <code>Decomposer</code>!</li>
+<li><strong>Resolution</strong>:<ul>
+<li>Make <code>span()</code> and <code>project()</code> pure <code>@classmethod</code> methods on <code>Multiplier</code> subclasses, AND guard <code>Multiplier.__init__(self, materials: Optional[MaterialIndex] = None)</code> with <code>if materials is not None: self.materials = materials</code>.</li>
+<li>Neither <code>span()</code> nor <code>project()</code> accesses <code>self.materials</code>. <code>Provider</code>, <code>Layout</code>, and <code>CompositionCompiler</code> can therefore invoke <code>strategy.span(...)</code> and <code>strategy.project(...)</code> directly on the strategy class (or via a class-level <code>_STRATEGIES</code> mapping) with zero dependency on <code>MaterialIndex</code>.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>**Preserving <code>Enclosures</code> Cardinality for <code>Crafts**</code>:<ul>
+<li>In <code>src/app/models/properties/assets.py</code> and <code>MaterialFrame</code>, <code>Blueprints.ENCLOSURES</code> maps to the 4-element <code>Enclosures</code> enum (<code>north</code>, <code>south</code>, <code>east</code>, <code>west</code>). <code>MaterialFrame.index()</code> iterates over <code>partition(properties.blueprints)</code> to index rows of Craft sprite sheets.</li>
+<li>Adding <code>CENTER = "center"</code> directly to <code>Enclosures</code> would change the partition cardinality of <code>Enclosures</code> from 4 to 5, corrupting row indexing for all <code>Crafts</code> declaring <code>blueprints: enclosures</code>.</li>
+<li><strong>Resolution</strong>: Define a dedicated <code>Surfaces</code> enum in <code>src/app/static/semantics.py</code> with the 5 partitions <code>(NORTH, SOUTH, EAST, WEST, CENTER)</code> (or keep <code>Enclosures</code> strictly 4-part and reference <code>Surfaces.CENTER</code> in <code>SurfaceMultiplier</code> and <code>PaneFrame</code>).</li>
+</ul>
+</li>
+</ol>
+<h6 id="2-corner-superposition-geometry-full-footprint-center-fill">2. Corner Superposition Geometry &amp; Full-Footprint <code>center</code> Fill</h6>
+<p>In <code>PerimeterMultiplier.project()</code>, <code>north</code> and <code>south</code> are emitted first across <span class="arithmatex">\(i_x \in [0, n_x + 1]\)</span>, followed by <code>west</code> and <code>east</code> across <span class="arithmatex">\(i_y \in [0, n_y + 1]\)</span>. At the four corners <span class="arithmatex">\((0, 0)\)</span>, <span class="arithmatex">\(((n_x + 1)w, 0)\)</span>, <span class="arithmatex">\((0, (n_y + 1)l)\)</span>, and <span class="arithmatex">\(((n_x + 1)w, (n_y + 1)l)\)</span>, <code>west</code> and <code>east</code> are drawn <em>on top of</em> <code>north</code> and <code>south</code>:</p>
+<ul>
+<li>If the <code>west</code> and <code>east</code> unit tiles in the <code>.png</code> atlas contained opaque interior background fill across their full <span class="arithmatex">\(w \times l\)</span> cell, stamping <code>west</code> at <span class="arithmatex">\((0, 0)\)</span> over <code>north</code> would overwrite <code>north</code>'s horizontal top border across columns <span class="arithmatex">\([b, w)\)</span> (where <span class="arithmatex">\(b\)</span> is the border thickness in pixels).</li>
+<li>
+<p>Conversely, if <code>north</code>, <code>south</code>, <code>east</code>, and <code>west</code> contain only their respective border bevels with transparent interiors, and <code>center</code> were only tiled across the strict interior <span class="arithmatex">\([1, n_x] \times [1, n_y]\)</span>, then:</p>
+</li>
+<li>
+<p>The inner <span class="arithmatex">\((w - b)\)</span> margin of the border ring would be transparent.</p>
+</li>
+<li>
+<p>Any pane with <span class="arithmatex">\(n_x = 0\)</span> or <span class="arithmatex">\(n_y = 0\)</span> would have an empty <span class="arithmatex">\([1, 0]\)</span> interior range and thus zero <code>center</code> tiles.</p>
+</li>
+<li>
+<p><strong>Resolution</strong>: <code>SurfaceMultiplier.project()</code> must first emit <code>Surfaces.CENTER.value</code> across the <strong>entire</strong> <span class="arithmatex">\([0, n_x + 1] \times [0, n_y + 1]\)</span> footprint via <code>SimpleMultiplier.project(w, l, nx + 2, ny + 2, blueprint=Surfaces.CENTER.value)</code>, and then append <code>PerimeterMultiplier.project(w, l, nx, ny, ...)</code>. In the re-atlased pane <code>.png</code> strips, <code>center</code> provides the solid <span class="arithmatex">\(w \times l\)</span> backdrop, while <code>north</code>, <code>south</code>, <code>east</code>, and <code>west</code> contain only their directional border bevels over a transparent background so they superimpose cleanly at all four corners.</p>
+</li>
+</ul>
+<h6 id="3-layoutsoverlay-and-transparent-container-auto-sizing">3. <code>Layouts.OVERLAY</code> and Transparent Container Auto-Sizing</h6>
+<p>Inspecting <code>src/app/services/generators/menus/fabricator.py</code> and <code>src/data/config/menus/dialogue/main.yaml</code> exposes two layout edge cases:</p>
+<ol>
+<li><strong><code>Layouts.OVERLAY</code> Measurement</strong>: <code>new-game-slot</code>, <code>character-portrait-container</code>, and <code>Fabricator</code> slot containers use <code>layout: overlay</code> to superimpose a foreground <code>Icon</code> or <code>Page</code> over a <code>Button</code> or background <code>Page</code>. <code>Layout</code>Pass 1 must evaluate <code>Layouts.OVERLAY</code> via <span class="arithmatex">\(W_{\text{req}} = \max_c(c.w) + 2m\)</span> and <span class="arithmatex">\(L_{\text{req}} = \max_c(c.l) + 2m\)</span> rather than summing along an axis.</li>
+<li><strong>Unmultiplied Container Span Resolution</strong>: When <code>Fabricator._collection()</code> removes hardcoded <code>dimensions</code> on synthesized <code>row_pane</code> and root gizmo panes (which use <code>id: transparent-slot</code>, whose static property size is <span class="arithmatex">\(40 \times 40\)</span>), <code>Layout</code> Pass 1 must assign <code>pane.state.span = Dimensions(W_req, L_req)</code> to unmultiplied container panes so parent panes measure the full synthesized grid (<span class="arithmatex">\(175 \times 85\)</span>) rather than a single <span class="arithmatex">\(40 \times 40\)</span> slot.</li>
+<li><strong>Skipping Canvas Allocation for Transparent Panes</strong>: In <code>Provider._bake_pane(widget)</code>, if <code>widget.properties.strategy is None</code> or <code>self.binder.registry.image(...)</code> returns <code>None</code>, <code>pane.state.canvas</code> must remain <code>None</code> so transparent layout containers do not allocate blank SDL target textures or issue redundant <code>SDL_RenderCopy</code> calls in <code>Screen._widgets()</code>.</li>
+</ol>
+<pre class="mermaid"><code>flowchart TD
+    A[Provider.unpack] --&gt; B[Phase 1:Provider._expand via Fabricator]
+    B --&gt; C[Phase 2: Provider._unpack_pane Hydrates Widgets]
+    C --&gt; D[Phase 3a: Layout Pass 1 - Post-Order Child Measurement]
+    D --&gt; E{props.strategy?}
+    E -- surface / perimeter --&gt; F[Quantize nx, ny viaMultiplier.span &amp; Set pane.state.span]
+    E -- None --&gt; G[Set pane.state.span = Dimensions W_req, L_req]
+    F --&gt; H[Phase 3b: Layout Pass 2 - Pre-Order Coordinate Assignment &amp; AABB Graph]
+    G --&gt; H
+    H --&gt; I[Phase 4: Provider._bake_pane via Multiplier.project &amp; render.construct]
+</code></pre>
+<h5 id="user-review-ii">User Review II</h5>
+<p>Thinking about the Widget branch of the Asset Hierachy in general, there appears to be an opportunity for reducing some complexity and verbosity: Pages serve the same purpose as Panes, e.g. providing a background, differing insofar they possess a <code>canvas</code> to render text. You are now proposing adding a <code>canvas</code> to PaneState to accomodate prerendering the pane multiplication. I am now wondering if Pages are completely extraneous and should be culled from the Asset Hierarchy altogether and have their functionality subsumed by Panes. I see no reason Panes couldn't receive a TextBinding or LibraryBinding.</p>
+<p>Analyze what would be necessary to accomplish the deprecation of Pages.</p>
+<h5 id="architectural-analysis-iii">Architectural Analysis III</h5>
+<h6 id="1-subsuming-pages-displaystate-into-panes-panestate">1. Subsuming <code>Pages</code> (<code>DisplayState</code>) into <code>Panes</code> (<code>PaneState</code>)</h6>
+<p>Inspecting <code>src/app/models/state/assets/widgets.py</code>, <code>src/app/game/screen.py</code>, and <code>src/app/services/generators/menus/provider.py</code> confirms that <code>Pages</code> and <code>Panes</code> are structurally isomorphic: both represent static rectangular regions that optionally back foreground content. Deprecating <code>Pages</code> requires resolving six architectural touchpoints:</p>
+<ol>
+<li>
+<p><strong>State Model Consolidation (<code>DisplayState</code> <span class="arithmatex">\(\to\)</span> <code>PaneState</code>)</strong>:</p>
+</li>
+<li>
+<p><code>DisplayState</code> holds <code>content_function: Callable[[], Union[str, List[str]]]</code>, <code>pageindex: int = 0</code>, <code>pagesize: int = 1</code>, <code>font: Enumerated[Fonts] = Fonts.DIALOGUE.value</code>, <code>canvas: Any = None</code>, and the pagination interface (<code>content</code>, <code>_pagecount</code>, <code>current()</code>, <code>more()</code>, <code>less()</code>, <code>scrollup()</code>, <code>scrolldown()</code>).</p>
+</li>
+<li>
+<p>Merging these fields and methods directly into <code>PaneState</code> eliminates <code>DisplayState</code> without conflicting with <code>CollectionState(PaneState)</code>: <code>CollectionState</code> already subclasses <code>PaneState</code> and overrides <code>scrollup()</code> and <code>scrolldown()</code> for collection aperture windowing. Consequently, <code>ScrollController</code> can invoke <code>target_widget.state.scrollup()</code> / <code>scrolldown()</code> polymorphically on any <code>PaneState</code>.</p>
+</li>
+<li>
+<p><strong>Deferred Text-Binding Hydration After Quantization (<code>Layout</code> Pass 1 <span class="arithmatex">\(\to\)</span> <code>Binding.bind</code>)</strong>:</p>
+</li>
+<li>
+<p>Previously, <code>Provider._page()</code> called <code>binding.bind(w=w, l=l)</code> during Phase 2 widget instantiation using raw <code>properties.dimensions</code>.</p>
+</li>
+<li>When a <code>Pane</code> with a <code>LibraryBinding</code> or <code>TextBinding</code> uses <code>strategy: surface</code> (for example, <code>character-speech</code> in <code>dialogue.yaml</code> using <code>id: dark</code> instead of fixed <code>dark-notification</code>), its raw <code>properties.dimensions</code> is the unit tile size <span class="arithmatex">\((w, l)\)</span> (e.g., <span class="arithmatex">\(16 \times 16\)</span>), whereas its actual text-wrapping bounding box is the quantized <code>pane.state.span</code> <span class="arithmatex">\((W, L)\)</span> computed in <code>Layout.compute()</code> Pass 1.</li>
+<li>
+<p><strong>Resolution</strong>: During <code>Provider._unpack_pane()</code>, attach the <code>Binding</code> instance (<code>LibraryBinding</code> or <code>TextBinding</code>) to <code>pane_widget.binding</code> and store the lexically scoped <code>font</code> on <code>pane.state.font</code>, but defer invoking <code>pane.state.content_function = pane_widget.binding.bind(w=pane.dimensions.w, l=pane.dimensions.l, font=pane.state.font)</code> until <strong>after</strong> <code>Layout.compute()</code> Pass 1 has resolved <code>pane.state.span</code>.</p>
+</li>
+<li>
+<p><strong>Unifying <code>PaneFrame.keys()</code> for <code>Provider._bake_pane()</code> and <code>Screen.stamp()</code></strong>:</p>
+</li>
+<li>
+<p>When <code>ScrollController</code> advances <code>pageindex</code> on a dialogue <code>Pane</code> and emits <code>UpdateEvent(widget, content)</code>, <code>UpdateEventHandler</code> invokes <code>Screen.stamp(widget, content)</code>.</p>
+</li>
+<li>In <code>src/app/game/screen.py</code>, <code>Screen.stamp()</code> previously assumed the background was a single unmultiplied texture (<code>base_key, ox, oy = widget.frame.keys(widget.id, widget.state)[0]</code>). If the dialogue box is now a multiplied <code>Pane</code>, <code>Screen.stamp()</code> must reconstruct the <em>multiplied</em> backdrop before calling <code>render.write()</code> so the previous page's glyphs are wiped cleanly.</li>
+<li><strong>Resolution</strong>: Have <code>PaneFrame.keys(id, state)</code> inspect <code>state.multiple</code>:<ul>
+<li>If <code>state.multiple is not None</code>, <code>PaneFrame.keys()</code> delegates to <code>SurfaceMultiplier.project(w, l, state.multiple.nx, state.multiple.ny)</code> and returns <code>[(f"{id}-{part}", ox, oy) for part, ox, oy, _ in projected]</code>.</li>
+<li>If <code>state.multiple is None</code>, <code>PaneFrame.keys()</code> returns <code>[(id, 0, 0)]</code>.</li>
+</ul>
+</li>
+<li>
+<p>With this <code>PaneFrame.keys()</code> contract, <code>Screen.stamp()</code> and <code>Provider._bake_pane()</code> share the exact same backdrop construction loop: iterate over <code>widget.frame.keys(widget.id, widget.state)</code>, collect <code>(tex_ptr, sx, sy, sw, sl, ox, oy, sw, sl, 1, 1)</code> for all keys present in <code>Registry</code>, call <code>render.construct(canvas, primitives)</code>, and—if <code>content</code> is non-empty—call <code>render.write((canvas, 0, 0, canvas.w, canvas.l, 0, 0, canvas.w, canvas.l), content, font)</code>.</p>
+</li>
+<li>
+<p><strong>Optional <code>PaneParameters</code> on Leaf Panes in <code>menus/*.yaml</code></strong>:</p>
+</li>
+<li>
+<p>Leaf <code>Pages</code> in <code>menus/*.yaml</code> (such as <code>new-game-text</code> or <code>character-speech</code>) did not require a <code>parameters:</code> block unless overriding layout or dimensions.</p>
+</li>
+<li>In <code>Provider._expand()</code> and <code>Provider._unpack_pane()</code>, <code>pane.parameters</code> was strictly checked with <code>if not isinstance(params, PaneParameters): return</code>.</li>
+<li>
+<p><strong>Resolution</strong>: Default <code>params = pane.parameters or PaneParameters()</code> when <code>node.instance == AssetInstances.PANES.value</code> so leaf text-display <code>Panes</code> do not require boilerplate <code>parameters:</code> blocks in YAML.</p>
+</li>
+<li>
+<p><strong>Fixing Lexical Font Shadowing on <code>PaneParameters</code></strong>:</p>
+</li>
+<li>
+<p>In <code>src/app/models/config/menus.py</code>, <code>PaneParameters.font</code> defaulted to <code>Fonts.DIALOGUE.value</code> instead of <code>None</code>. When a root pane declared <code>font: menu</code> (e.g. <code>main.yaml</code>) and a child container pane (<code>new-game-slot</code>) omitted <code>font:</code>, <code>params.font or font</code> evaluated to <code>"dialogue"</code>, shadowing the parent's <code>"menu"</code> font on all nested text widgets.</p>
+</li>
+<li>
+<p><strong>Resolution</strong>: Set <code>PaneParameters.font: Optional[Enumerated[Fonts]] = None</code>, and resolve <code>active_font = params.font or font or Fonts.DIALOGUE.value</code> during tree traversal in <code>Provider._unpack_pane()</code>.</p>
+</li>
+<li>
+<p><strong>Asset &amp; Configuration Cleanup (<code>src/assets/widgets/main.yaml</code> &amp; <code>menus/*.yaml</code>)</strong>:</p>
+</li>
+<li>
+<p><strong>Eliminated Fixed-Size Dark/Neutral/Light Assets</strong>: <code>dark-dialogue</code>, <code>dark-notification</code>, <code>dark-portrait</code> (formerly under <code>pages:</code>), and <code>dark-small</code>, <code>dark-thin</code>, <code>neutral-small</code>, <code>light-small</code> (under <code>panes:</code>) are all replaced by the 3 multiplied base panes: <code>dark</code>, <code>neutral</code>, and <code>light</code>.</p>
+</li>
+<li><strong>Eliminated Duplicate Transparent Label</strong>: <code>pages.text-label</code> (<span class="arithmatex">\(142 \times 28\)</span>) is redundant with <code>panes.transparent-label</code> (<span class="arithmatex">\(142 \times 28\)</span>) and is removed.</li>
+<li><strong>Collapsed Portrait Container in <code>dialogue.yaml</code></strong>: <code>character-portrait-container</code> (<code>transparent-block</code> wrapping <code>pages.dark-portrait</code> + <code>icons.portraits</code>) simplifies to a single <code>instance: panes, id: dark</code> with <code>layout: overlay</code> wrapping <code>icons.portraits</code> directly.</li>
+<li><strong>Migrated Faux-Paper Assets</strong>: <code>paper-scroll</code>, <code>paper-header-torn</code>, <code>paper-header</code>, <code>paper-area</code>, and <code>paper-weathered</code> move from <code>widgets.pages</code> to <code>widgets.panes</code> as static single-frame panes (<code>strategy: None</code>).</li>
+</ol>
+<pre class="mermaid"><code>flowchart TD
+    subgraph Unified_Widgets_Hierarchy ["Widgets Category (Post-04.06)"]
+        P[Panes: Container + Backdrop + Typography]
+        B[Buttons: Traversable Controls]
+        M[Meters: Continuous Gauges]
+        I[Icons: Indexed Decals]
+    end
+
+    P --&gt; P1["Multiplied Backdrop (dark, neutral, light)"]
+    P --&gt; P2["Multiplied + Text/Library Binding (dialogue, text)"]
+    P --&gt; P3["Static Single-Frame + Text (paper-*, transparent-label)"]
+    P --&gt; P4["Transparent Layout Container (transparent-slot, canvas=None)"]</code></pre>
+<h5 id="user-review-iv">User Review IV</h5>
+<p>Several poor design choices stick out.</p>
+<p><strong>Incorrect Multiplication Strategy</strong></p>
+<p>Multiplication strategy for Panes seems incorrect. Most likely an artifact of trying to jam Pane expansion in the Composition multiplcation framework. Seems like the base Pane Frame should be broken into nine cells:</p>
+<ul>
+<li>(start, start), (start, center), (top, end)</li>
+<li>(center, start), (center, center), (center, end)</li>
+<li>(end, start), (end, center), (end, end)</li>
+</ul>
+<p>So when it is multipled by (nx, ny) = (2, 2), say,</p>
+<ul>
+<li>(start, start), (start, center), (start, center), (start, end)</li>
+<li>(center, start), (center, center), (center, center), (center, end)</li>
+<li>(center, start), (center, center), (center, center), (center, end)</li>
+<li>(end, start), (end, center), (end, center), (end, end)</li>
+</ul>
+<p>Atlas is implicit in the Pane Asset. Asset does not need to be edited into a special atlas; No special atlas is required at all. To avoid verbose configuration, Pane dimensions should be declared to encompass the entire Asset. Indexing strategy can account for the corner margins by just dividing the image in three along each dimension; except in extreme cases where the Asset wouldn't even be usable in the engine, there is no way for this solution not to work.</p>
+<p><strong>Pointless Property</strong></p>
+<p><code>strategy</code> is pointless, as the only widget that gets multiplied are Panes. Remove it. It is a duck-typing placeholder to circumvent the actual issue, which is touched on next.</p>
+<p><strong>Specification Drift</strong></p>
+<p>The various fallbacks and duck-typing of PaneParameters is undesirable. Eliminate it. The underlying problem is having the width and length of the Pane specified as pixels, while position is percentage of screen width.</p>
+<p>Instead of hacking the dimensions to make them work, system needs rethought. Simplest way to make would seem to be: remove screen position altogether, introduce axis alignments/justifications and margins to Panes (e.g. vertical: left | center | right, horizontal: left | center | right), and then specify dimension as percentages of screen width,</p>
+<ul>
+<li><em>Note</em>: Do not worry about Screen resizing events.</li>
+</ul>
+<h5 id="architectural-analysis-iv">Architectural Analysis IV</h5>
+<h6 id="1-eliminating-multipliers-coupling-and-widgetpropertiesstrategy">1. Eliminating <code>Multipliers</code> Coupling and <code>WidgetProperties.strategy</code></h6>
+<p>By trisecting any <code>Pane</code> texture in-place within <code>PaneFrame.index()</code> into the 9 cells <code>{top, center, bottom} x {left, center, right}</code>:</p>
+<ul>
+<li><strong>Zero <code>Multipliers</code> Touchpoints</strong>: <code>src/app/game/logic/modules/multipliers/</code> remains strictly dedicated to world <code>Crafts</code> and <code>Compositions</code>. <code>Panes</code> do not share or subclass <code>PerimeterMultiplier</code> or <code>SimpleMultiplier</code>.</li>
+<li><strong>Zero Special Atlases</strong>: Existing rectangular <code>Pane</code> <code>.png</code> assets do not need to be sliced into horizontal strips; <code>WidgetProperties.dimensions</code> simply declares the full pixel width and length of the <code>.png</code> file.</li>
+<li><strong>Zero Property Duck-Typing</strong>: <code>WidgetProperties</code> does not need a <code>strategy</code> field because <em>every</em> <code>Pane</code> is indexed and projected via <code>PaneFrame</code>'s 9-slice grid. Even transparent layout containers (<code>transparent</code>) use the exact same 9-slice math.</li>
+</ul>
+<h6 id="2-eliminating-screenposition-and-paneparameters-fallbacks">2. Eliminating <code>ScreenPosition</code> and <code>PaneParameters</code> Fallbacks</h6>
+<p>Previously, <code>PaneParameters</code> mixed fractional screen coordinates (<code>ScreenPosition(px, py)</code>) with pixel <code>Dimensions(w, l)</code>, forcing authors to manually pre-calculate <code>px = (screensize.w - w) / (2 * screensize.w)</code> in YAML and requiring fallback chains when <code>dimensions</code> or <code>position</code> were omitted.</p>
+<p>Under the revised architecture:</p>
+<ol>
+<li><strong><code>ScreenPosition</code> Removal</strong>: <code>ScreenPosition</code> and <code>PydanticScreenPosition</code> are removed from <code>PaneParameters</code>, <code>src/app/models/adapters.py</code>, and <code>src/libs/core/models.pyx</code>.</li>
+<li>**Fractional <code>Scale</code> (<code>pw: float, pl: float</code>) for <code>PaneParameters.dimensions**</code>: <code>PaneParameters.dimensions</code> is always a fractional pair <span class="arithmatex">\((w_p, l_p) \in (0.0, 1.0]^2\)</span> (defaulting to <code>Scale(pw=1.0, pl=1.0)</code>). <code>Layout.compute()</code> converts <span class="arithmatex">\((w_p, l_p)\)</span> into target pixels <span class="arithmatex">\((W_{\text{req}}, L_{\text{req}}) = (\text{int}(w_p \cdot W_s), \text{int}(l_p \cdot L_s))\)</span> and immediately quantizes <code>pane.state.multiple = Multiple(nx, ny)</code> and <code>pane.state.span = Dimensions((nx + 2) * wc, (ny + 2) * lc)</code> in a single top-down pass.</li>
+<li><strong>Orthogonal <code>justification</code> and <code>alignment</code> via <code>AxisAlignment</code></strong>:<ul>
+<li>Why separate <code>justification</code> (self-placement of a root <code>Pane</code> within <code>Screen</code>) from <code>alignment</code> (placement of <code>children</code> within the <code>Pane</code>)? Because leaf controls (<code>Buttons</code>, <code>Meters</code>, <code>Icons</code>) do not carry <code>PaneParameters</code>—their placement is governed by their parent <code>Pane</code>'s <code>alignment</code>. Meanwhile, a root <code>Pane</code> (such as <code>dialogue-menu</code>) must be justified at the bottom-center of the <code>Screen</code> (<code>justification: { horizontal: center, vertical: right }</code>) while centering its own children vertically (<code>alignment: { horizontal: center, vertical: center }</code>).</li>
+<li>Both fields use the identical <code>AxisAlignment(horizontal: Alignments, vertical: Alignments)</code> schema with default <code>AxisAlignment(horizontal="center", vertical="center")</code>.</li>
+</ul>
+</li>
+<li><strong>Pure Percentage Subdivision in <code>Fabricator._collection()</code></strong>:</li>
+<li>Because <code>PaneParameters.dimensions</code> is a screen percentage <code>Scale(pw, pl)</code>, <code>Fabricator._collection()</code> no longer needs <code>WidgetProperties</code> to look up pixel sizes. Given a gizmo's <code>dimensions: Scale(pw, pl)</code>, <code>columns</code>, and <code>total_rows = ceil(capacity / columns)</code>, <code>Fabricator</code> assigns <code>Scale(pw=w, pl=pl / total_rows)</code> to each row <code>Pane</code> and <code>Scale(pw=pw / columns, pl=pl / total_rows)</code> to each slot <code>Pane</code>.</li>
+</ol>
+<pre class="mermaid"><code>flowchart LR
+    A["PaneParameters\ndimensions: Scale(pw, pl)\njustification: AxisAlignment\nalignment: AxisAlignment\nmargins: int"] --&gt; B["Layout.compute\nW_req = int(pw * W_s)\nL_req = int(pl * L_s)"]
+    B --&gt; C["9-Slice Quantization\nwc = W // 3, lc = L // 3\nnx, ny -&gt; Span((nx+2)wc, (ny+2)lc)"]
+    C --&gt; D["Coordinate Resolution\nRoot via justification\nChildren via alignment"]
+    D --&gt; E["Provider._bake_pane\nPaneFrame.keys (9-slice grid)\nrender.construct + render.write"]</code></pre>
+<h5 id="user-review-v">User Review V</h5>
+<p>Everything looks good for implementation, except one last point that I noticed on my last review of the codebase. I am looking over Widget Frames, Animations and MenuMechanics:</p>
+<p>I wonder if Widget Animations are extraneous. Widget animations really only serve to intercede the Frame logic which already instantaneously alters the Frame based on the Widget state. Atleast for TraversalAnimation. It also seems like MeterFrame could directly calculate the ratio of its reading and unit field.</p>
+<p>During a recent refactor, it was established that instantaneous state changes do not require an animation. For example, Objects previously had an animation implementation for Plates and Gates that transformed their <code>state.switch</code> into <code>state.animation</code>, but this was deemed redundant because all that served to accomplish was adding an extra step to the process.</p>
+<p>It seems like an additional tenet for Animation Should be:</p>
+<p>Animations only exist if the non-instantaneous change of state must be meditated by properties. in the case of effects, this is the frequency and periodicity that controls the flow of the animation over time. in the case of sheets, this is the action and its frame delay. </p>
+<p>In fact, examining the Frame interface, <code>keys(state)</code>, <code>index(properties)</code> and the Animation interface, <code>animation(state, properties)</code>, this is already manifest. Going further, the separation of Animation and Frame into distinct interfaces seems slightly arbitrary.</p>
+<p>I suppose the idea is separate all of the distinct Asset behaviors into interfaces. <code>keys()</code> and <code>index()</code> are implicitly related (almost inverses of one another, in a certain sense), so they logically get grouped into the Frame interface. While it is tempting to collapse Animation interface into the Frame interface (i.e. add <code>animate()</code> to Frame), most Assets would have to pass on its implementation. Which I suppose they do now by specifying <code>none</code> in the Recipes. So, really, either approach is valid, it's a matter of what the abstraction is grouping together.</p>
+<p>Anyway, whether or not animations get collapsed into the Frame interface for other Assets is irrelevant to the question at hand: I believe Widget Animations are completely extraneous, as Widgets alter their state instantaneously.</p>
+<h5 id="architectural-analysis-v">Architectural Analysis V</h5>
+<h6 id="1-formalizing-the-animation-vs-frame-boundary">1. Formalizing the <code>Animation</code> vs. <code>Frame</code> Boundary</h6>
+<p>The signatures of <code>Frame</code> and <code>Animation</code> in <code>src/app/assets/base.py</code> encode their mathematical roles:</p>
+<ul>
+<li><code>Frame.index(id, properties)</code> depends purely on <code>AssetProperties</code> (partitioning the static image file into named crop regions).</li>
+<li><code>Frame.keys(id, state)</code> depends purely on <code>AssetState</code> (projecting the entity's current state into a list of crop keys).</li>
+<li><code>Animation.animate(state, properties)</code> is the <em>only</em> interface that takes the product <span class="arithmatex">\((\text{AssetState}, \text{AssetProperties})\)</span>, because advancing a frame index over discrete engine ticks requires comparing a mutable temporal accumulator (<code>state.animation.tick</code>, <code>state.animation.frame</code>) against immutable timing and topology constraints (<code>properties.frequency.delay</code>, <code>properties.actions[action].count</code>).</li>
+</ul>
+<p>When an asset's visual representation is a pure function of its domain state (<code>ObjectState.material</code>, <code>SwitchState.switch</code>, <code>ResourceState.stage</code>, <code>TraversalState.status</code>, <code>MeterState.reading / unit</code>), introducing an <code>Animation</code> class merely copies data from one field of <code>state</code> to <code>state.animation</code> so <code>Frame.keys()</code> can read <code>state.animation</code>. Removing <code>TraversalAnimation</code> and <code>MeterAnimation</code> yields four immediate architectural improvements:</p>
+<ol>
+<li>**Eliminates <code>src/app/assets/animations/widgets.py**</code>: Both <code>TraversalAnimation</code> and <code>MeterAnimation</code> are deleted, leaving <code>Animation</code> implementations strictly to time-stepped world entities (<code>FrequencyAnimation</code> for <code>Effects</code>, <code>StateAnimation</code> for <code>Sheets</code>).</li>
+<li>**Simplifies <code>TraversalState</code> and <code>MeterState**</code>: Neither state model carries an extraneous <code>animation: AnimationState</code> dataclass instance. <code>Provider._button()</code>, <code>Provider._meter()</code>, <code>Provider._focus()</code>, and <code>Provider._sync_collection_slots()</code> no longer have to synchronize <code>state.status</code> with <code>state.animation.action</code>.</li>
+<li><strong>Eliminates <code>MenuMechanics</code> Per-Tick Widget Loops &amp; Fixes Bug B017</strong>: <code>MenuMechanics.update()</code> (<code>src/app/game/logic/mechanics/core/menu.py</code>) no longer iterates over <code>overlay.widgets.values()</code> or <code>active_menu.widgets.values()</code> to call <code>widget.animation.animate()</code>. Focus shifts (<code>active_menu.widgets[new_focus].state.status = Statuses.ACTIVE.value</code>) are reflected on the very same tick by <code>TraversalFrame.keys()</code> without a 1-frame animation lag.</li>
+<li>**Fixes Zero-Reading Registry Miss in <code>MeterFrame.keys()**</code>: In <code>src/app/assets/frames/widgets.py</code>, <code>MeterFrame.index()</code> only indexes <code>res in range(1, 101)</code>. Previously, when <code>reading == 0</code>, <code>state.animation.frame</code> was <code>0</code> and <code>MeterFrame.keys()</code> emitted <code>f"{id}-0"</code>, triggering a <code>Registry MISS</code> warning in <code>Screen._widgets()</code>. Computing <code>res</code> directly inside <code>MeterFrame.keys()</code> and omitting the second tuple when <code>res == 0</code> resolves this cleanly.</li>
+</ol>
+<h5 id="goals">Goals</h5>
+<h6 id="goal-remove-extraneous-widget-animations-project-state-directly-in-widget-frames">Goal: Remove Extraneous <code>Widget</code> Animations &amp; Project State Directly in <code>Widget</code> Frames</h6>
+<p>Delete <code>src/app/assets/animations/widgets.py</code> (<code>TraversalAnimation</code>, <code>MeterAnimation</code>), remove <code>animation: AnimationState</code> from <code>TraversalState</code> and <code>MeterState</code>, remove widget animation loops from <code>MenuMechanics.update()</code>, and evaluate state directly inside <code>TraversalFrame.keys()</code> and <code>MeterFrame.keys()</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TraversalFrame</span><span class="p">(</span><span class="n">Frame</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TraversalState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">id</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">status</span><span class="p">]),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="p">]</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MeterFrame</span><span class="p">(</span><span class="n">Frame</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">MeterState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">unit</span>
+        <span class="n">pct</span> <span class="o">=</span> <span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">reading</span> <span class="o">/</span> <span class="n">unit</span><span class="p">)</span> <span class="k">if</span> <span class="n">unit</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">pct</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))))</span>
+
+        <span class="n">frames</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">id</span><span class="p">,</span> <span class="n">Gauges</span><span class="o">.</span><span class="n">EMPTY</span><span class="o">.</span><span class="n">value</span><span class="p">]),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">res</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">id</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">res</span><span class="p">)]),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">frames</span>
+</code></pre></div>
+<h6 id="goal-implicit-9-slice-paneframe-indexing-projection">Goal: Implicit 9-Slice <code>PaneFrame</code> Indexing &amp; Projection</h6>
+<p>Implement <code>PaneFrame(Frame)</code> in <code>src/app/assets/frames/widgets.py</code> to trisect any <code>Pane</code> asset of dimensions <span class="arithmatex">\((W, L)\)</span> into 9 cells of size <span class="arithmatex">\((w_c, l_c) = (W // 3, L // 3)\)</span> and project <span class="arithmatex">\((n_x + 2) \times (n_y + 2)\)</span> tile offsets from <code>PaneState.multiple</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PaneFrame</span><span class="p">(</span><span class="n">Frame</span><span class="p">):</span>
+    <span class="n">_VERTICAL</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">PanePartitions</span><span class="o">.</span><span class="n">TOP</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">PanePartitions</span><span class="o">.</span><span class="n">CENTER</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">PanePartitions</span><span class="o">.</span><span class="n">BOTTOM</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_HORIZONTAL</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">Alignments</span><span class="o">.</span><span class="n">LEFT</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">Alignments</span><span class="o">.</span><span class="n">CENTER</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">Alignments</span><span class="o">.</span><span class="n">RIGHT</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">properties</span><span class="p">:</span> <span class="n">WidgetProperties</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+        <span class="n">wc</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">w</span> <span class="o">//</span> <span class="mi">3</span>
+        <span class="n">lc</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">l</span> <span class="o">//</span> <span class="mi">3</span>
+        <span class="n">crops</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_VERTICAL</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_HORIZONTAL</span><span class="p">):</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">id</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">h</span><span class="p">])</span>
+                <span class="n">crops</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span> <span class="n">wc</span><span class="p">,</span> <span class="n">r</span> <span class="o">*</span> <span class="n">lc</span><span class="p">,</span> <span class="n">wc</span><span class="p">,</span> <span class="n">lc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">crops</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">keys</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">state</span><span class="p">:</span> <span class="n">PaneState</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+        <span class="n">nx</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">multiple</span><span class="o">.</span><span class="n">nx</span>
+        <span class="n">ny</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">multiple</span><span class="o">.</span><span class="n">ny</span>
+        <span class="n">wc</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">span</span><span class="o">.</span><span class="n">w</span> <span class="o">//</span> <span class="p">(</span><span class="n">nx</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">lc</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">span</span><span class="o">.</span><span class="n">l</span> <span class="o">//</span> <span class="p">(</span><span class="n">ny</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">primitives</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">iy</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ny</span> <span class="o">+</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">PanePartitions</span><span class="o">.</span><span class="n">TOP</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="n">iy</span> <span class="o">==</span> <span class="mi">0</span>
+                <span class="k">else</span> <span class="n">PanePartitions</span><span class="o">.</span><span class="n">BOTTOM</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="n">iy</span> <span class="o">==</span> <span class="n">ny</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="k">else</span> <span class="n">PanePartitions</span><span class="o">.</span><span class="n">CENTER</span><span class="o">.</span><span class="n">value</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nx</span> <span class="o">+</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="n">h</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">Alignments</span><span class="o">.</span><span class="n">LEFT</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="n">ix</span> <span class="o">==</span> <span class="mi">0</span>
+                    <span class="k">else</span> <span class="n">Alignments</span><span class="o">.</span><span class="n">RIGHT</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="n">ix</span> <span class="o">==</span> <span class="n">nx</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="k">else</span> <span class="n">Alignments</span><span class="o">.</span><span class="n">CENTER</span><span class="o">.</span><span class="n">value</span>
+                <span class="p">)</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">id</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">h</span><span class="p">])</span>
+                <span class="n">primitives</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">ix</span> <span class="o">*</span> <span class="n">wc</span><span class="p">,</span> <span class="n">iy</span> <span class="o">*</span> <span class="n">lc</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">primitives</span>
+</code></pre></div>
+<h6 id="goal-replace-screenposition-with-fractional-scale-2-axis-axisalignment">Goal: Replace <code>ScreenPosition</code> with Fractional <code>Scale</code> &amp; 2-Axis <code>AxisAlignment</code></h6>
+<p>Remove <code>ScreenPosition</code> from <code>libs.core.models</code> and <code>app.models.adapters</code>, replacing it with <code>Scale(w: double, l: double)</code> (<code>PydanticScale</code>), and standardize <code>Alignments</code> to <code>LEFT = "left"</code>, <code>CENTER = "center"</code>, <code>RIGHT = "right"</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AxisAlignment</span><span class="p">:</span>
+    <span class="n">horizontal</span><span class="p">:</span> <span class="n">Enumerated</span><span class="p">[</span><span class="n">Alignments</span><span class="p">]</span> <span class="o">=</span> <span class="n">Alignments</span><span class="o">.</span><span class="n">CENTER</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">vertical</span><span class="p">:</span> <span class="n">Enumerated</span><span class="p">[</span><span class="n">Alignments</span><span class="p">]</span> <span class="o">=</span> <span class="n">Alignments</span><span class="o">.</span><span class="n">CENTER</span><span class="o">.</span><span class="n">value</span>
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PaneParameters</span><span class="p">:</span>
+    <span class="n">layout</span><span class="p">:</span> <span class="n">Enumerated</span><span class="p">[</span><span class="n">Layouts</span><span class="p">]</span> <span class="o">=</span> <span class="n">Layouts</span><span class="o">.</span><span class="n">STACK</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">alignment</span><span class="p">:</span> <span class="n">AxisAlignment</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">AxisAlignment</span><span class="p">)</span>
+    <span class="n">justification</span><span class="p">:</span> <span class="n">AxisAlignment</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">AxisAlignment</span><span class="p">)</span>
+    <span class="n">gap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">margins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">dimensions</span><span class="p">:</span> <span class="n">Scale</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Scale</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+    <span class="n">font</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Enumerated</span><span class="p">[</span><span class="n">Fonts</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">children</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">MenuNode</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+</code></pre></div>
+<h6 id="goal-consolidate-displaystate-pages-into-panestate-panes">Goal: Consolidate <code>DisplayState</code> (<code>Pages</code>) into <code>PaneState</code> (<code>Panes</code>)</h6>
+<p>Deprecate <code>Pages</code> (<code>AssetInstances.PAGES</code>, <code>Widgets.PAGES</code>, <code>DisplayState</code>) and merge all text-binding, pagination, multiplication, and canvas attributes onto <code>PaneState</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PaneState</span><span class="p">(</span><span class="n">WidgetState</span><span class="p">):</span>
+    <span class="n">layout</span><span class="p">:</span> <span class="n">Enumerated</span><span class="p">[</span><span class="n">Layouts</span><span class="p">]</span> <span class="o">=</span> <span class="n">Layouts</span><span class="o">.</span><span class="n">STACK</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">alignment</span><span class="p">:</span> <span class="n">AxisAlignment</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">AxisAlignment</span><span class="p">)</span>
+    <span class="n">justification</span><span class="p">:</span> <span class="n">AxisAlignment</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">AxisAlignment</span><span class="p">)</span>
+    <span class="n">gap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">margins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">multiple</span><span class="p">:</span> <span class="n">Multiple</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Multiple</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">span</span><span class="p">:</span> <span class="n">Dimensions</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Dimensions</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">content_function</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[],</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">pageindex</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">pagesize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">font</span><span class="p">:</span> <span class="n">Enumerated</span><span class="p">[</span><span class="n">Fonts</span><span class="p">]</span> <span class="o">=</span> <span class="n">Fonts</span><span class="o">.</span><span class="n">DIALOGUE</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">canvas</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+<h5 id="tasks">Tasks</h5>
+<p><strong>1. Task: Replace <code>ScreenPosition</code> with Fractional <code>Scale</code> and Introduce 2-Axis <code>AxisAlignment</code></strong></p>
+<p><em>Objective</em>: Remove <code>ScreenPosition</code> across Cython and Pydantic models, update <code>Alignments</code> to <code>left | center | right</code>, and define <code>Scale</code> and <code>AxisAlignment</code> on <code>PaneParameters</code>.</p>
+<ul>
+<li>[x] Subtask: Replace <code>ScreenPosition(px, py)</code> with <code>Scale(w: double, l: double)</code> in <code>src/libs/core/models.pxd</code>, <code>src/libs/core/models.pyx</code>, and <code>src/app/models/adapters.py</code> (<code>PydanticScale</code>).</li>
+<li>[x] Subtask: Update <code>Alignments</code> in <code>src/app/static/semantics.py</code> to <code>LEFT = "START"</code>, <code>CENTER = "center"</code>, <code>RIGHT = "END"</code>.</li>
+<li>[x] Subtask: Define <code>AxisAlignment(horizontal, vertical)</code> in <code>src/app/models/config/menus.py</code> and update <code>PaneParameters</code> to remove <code>position: Optional[ScreenPosition]</code>, replace pixel <code>dimensions</code> with fractional <code>dimensions: Scale</code>, and use <code>alignment: AxisAlignment</code> and <code>justification: AxisAlignment</code>.</li>
+<li>[x] Subtask: Add <code>dimensions: Scale</code> to <code>GizmoParameters</code> (<code>src/app/models/config/menus.py</code>) and update <code>Fabricator._collection()</code> (<code>src/app/services/generators/menus/fabricator.py</code>) to subdivide fractional <code>Scale</code> across generated row and slot panes without querying <code>WidgetProperties</code>.</li>
+</ul>
+<p><strong>2. Task: Deprecate <code>Pages</code>, Remove <code>Widget</code> Animations, and Implement 9-Slice <code>PaneFrame</code></strong></p>
+<p><em>Objective</em>: Remove <code>Pages</code> (<code>DisplayState</code>) and <code>Widget</code> animations (<code>TraversalAnimation</code>, <code>MeterAnimation</code>) from the Asset Hierarchy, merge pagination and canvas fields into <code>PaneState</code>, and implement direct state projection across <code>PaneFrame</code>, <code>TraversalFrame</code>, and <code>MeterFrame</code>.</p>
+<ul>
+<li>[x] Subtask: Delete <code>src/app/assets/animations/widgets.py</code>, remove <code>TraversalAnimation</code> and <code>MeterAnimation</code> from <code>src/app/assets/animations/__init__.py</code> and <code>AssetFactory</code>, and set all <code>widgets</code> recipes in <code>src/data/config/recipes/main.yaml</code> to <code>animation: none</code>.</li>
+<li>[x] Subtask: Remove <code>animation: AnimationState</code> from <code>TraversalState</code> and <code>MeterState</code> in <code>src/app/models/state/assets/widgets.py</code>, update <code>TraversalFrame.keys()</code> and <code>MeterFrame.keys()</code> in <code>src/app/assets/frames/widgets.py</code> to read <code>state.status</code> and <code>state.reading / state.unit</code> directly, and remove the widget <code>animate()</code> loops from <code>MenuMechanics.update()</code> (<code>src/app/game/logic/mechanics/core/menu.py</code>).</li>
+<li>[x] Subtask: Remove <code>PAGES = "pages"</code> from <code>AssetInstances</code> and <code>Widgets</code> in <code>src/app/static/semantics.py</code>, remove <code>pages</code> from <code>WidgetGroup</code> / <code>RecipeGroup</code> in <code>src/app/models/groups.py</code> and <code>src/data/config/recipes/main.yaml</code>, and merge <code>DisplayState</code> fields and pagination methods into <code>PaneState</code> alongside <code>multiple: Multiple</code>, <code>span: Dimensions</code>, <code>alignment: AxisAlignment</code>, and <code>justification: AxisAlignment</code>.</li>
+<li>[x] Subtask: Implement <code>PaneFrame(Frame)</code> in <code>src/app/assets/frames/widgets.py</code> (and register <code>PaneFrame</code> on <code>widgets.panes</code> in <code>src/data/config/recipes/main.yaml</code>) to index 9 cells <code>(c * wc, r * lc, wc, lc)</code> where <code>wc = w // 3, lc = l // 3</code> and emit <span class="arithmatex">\((n_x + 2)(n_y + 2)\)</span> 9-slice tile tuples in <code>keys(id, state)</code>.</li>
+<li>[x] Subtask: Override <code>dimensions</code> on <code>Widget</code> (<code>src/app/game/menus/core.py</code>) to return <code>self.state.span</code> when <code>isinstance(self.state, PaneState)</code>, falling back to <code>self.properties.dimensions</code>.</li>
+</ul>
+<p><strong>3. Task: Upgrade <code>Layout</code>, <code>Provider</code>, and <code>Screen</code> for 9-Slice Quantization, 2-Axis Alignment, and Canvas Baking</strong></p>
+<p><em>Objective</em>: Quantize <code>Panes</code> directly from fractional screen dimensions, resolve coordinates via 2-axis <code>justification</code> and <code>alignment</code>, and unify 9-slice backdrop + text rendering on <code>PaneState.canvas</code>.</p>
+<ul>
+<li>[x] Subtask: Refactor <code>Layout.compute()</code> (<code>src/app/game/menus/modules/layout.py</code>) to compute <span class="arithmatex">\(W_{\text{req}} = \text{int}(w_p \cdot W_s)\)</span> and <span class="arithmatex">\(L_{\text{req}} = \text{int}(l_p \cdot L_s)\)</span>, quantize <code>state.multiple</code> and <code>state.span</code> via <span class="arithmatex">\((w_c, l_c) = (W // 3, L // 3)\)</span>, position root panes on <code>Screen</code> using <code>state.justification</code> and <code>state.margins</code>, and position children inside panes across <code>STACK</code>, <code>DOCK</code>, and <code>OVERLAY</code> using <code>state.alignment</code>, <code>state.gap</code>, and <code>state.margins</code>.</li>
+<li>[x] Subtask: Remove <code>Provider._page()</code> and <code>AnimationState</code> references from <code>Provider</code> (<code>src/app/services/generators/menus/provider.py</code>), and update <code>Provider._unpack_pane()</code> to hydrate <code>PaneState</code>, bind <code>LibraryBinding</code> / <code>TextBinding</code> against quantized <code>state.span</code>, and bake <code>PaneState.canvas</code> via <code>render.construct()</code> and <code>render.write()</code>.</li>
+<li>[x] Subtask: Update <code>Screen._widgets()</code> and <code>Screen.stamp()</code> (<code>src/app/game/screen.py</code>), <code>ScrollController</code>, <code>MenuEventHandler</code>, and <code>UpdateEventHandler</code> to operate on <code>PaneState</code> (re-stamping all 9-slice tuples from <code>widget.frame.keys()</code> onto <code>PaneState.canvas</code> before calling <code>render.write()</code>).</li>
+<li>[x] Subtask: Add explicit <code>render.destroy()</code> cleanup for <code>PaneState.canvas</code> in <code>TerminalEventHandler.handle</code> (<code>src/app/game/menus/handlers/terminal.py</code>) and <code>Board.clear()</code> (<code>src/app/game/board/core.py</code>).</li>
+</ul>
+<p><strong>4. Task: Consolidate <code>widgets/main.yaml</code> and Migrate <code>menus/*.yaml</code> to Fractional Dimensions and 2-Axis Alignments</strong></p>
+<p><em>Objective</em>: Remove redundant fixed-size <code>pages</code> and <code>panes</code> definitions, unify menu YAML files onto fractional <code>dimensions</code> and 2-axis <code>alignment</code>/<code>justification</code>, and verify with unit tests.</p>
+<ul>
+<li>[x] Subtask: Consolidate <code>src/assets/widgets/**/*.yaml</code> by removing the <code>pages:</code> section, moving <code>paper-*</code> assets under <code>panes:</code>, and replacing fixed-size variants (<code>dark-small</code>, <code>dark-thin</code>, <code>dark-dialogue</code>, <code>dark-notification</code>, <code>dark-portrait</code>, <code>neutral-small</code>, <code>light-small</code>, <code>transparent-slot</code>, <code>transparent-block</code>, <code>transparent-area</code>, <code>transparent-label</code>) with base pane entries (<code>dark</code>, <code>neutral</code>, <code>light</code>, <code>transparent</code>).</li>
+<li>[x] Subtask: Update <code>main.yaml</code>, <code>load.yaml</code>, <code>pause.yaml</code>, <code>options.yaml</code>, <code>dialogue.yaml</code>, <code>text.yaml</code>, <code>inventory.yaml</code>, and <code>view.yaml</code> in <code>src/data/config/menus/</code> to replace <code>instance: pages</code> with <code>instance: panes</code>, remove <code>position: { px, py }</code>, and declare fractional <code>dimensions: { w, l }</code>, <code>justification: { horizontal, vertical }</code>, and <code>alignment: { horizontal, vertical }</code>.</li>
+<li>[X] Subtask: Add unit tests under <code>tests/unit/app/</code> verifying <code>PaneFrame.index()</code>, <code>PaneFrame.keys()</code>, stateless <code>TraversalFrame.keys()</code> and <code>MeterFrame.keys()</code>, fractional screen quantization, and 2-axis <code>Layout.compute()</code> positioning.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="../../../../static/js/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

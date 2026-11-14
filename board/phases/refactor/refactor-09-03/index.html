@@ -1,0 +1,5212 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/board/phases/refactor/refactor-09-03/">
+      
+      
+        <link rel="prev" href="../refactor-09-02/">
+      
+      
+        <link rel="next" href="../refactor-09-04/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Phase 09.03 - Consolidation - Ontology</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#refactor-phase-0903-fluid-consolidation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="Ontology" class="md-header__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ontology
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Phase 09.03 - Consolidation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="Ontology" class="md-nav__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Ontology
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../00-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../01-assets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../02-sprites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../03-compositions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../04-intentions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../05-mechanics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../06-widgets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../07-acoustics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../08-narratives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../09-ecology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ecology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../10-chemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../11-emergence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../12-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../specs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Specifications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_15" id="__nav_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Specifications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/00-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dialogue Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/01-interaction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/02-wander/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wander Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_16" id="__nav_16_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Roadmap
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2" id="__nav_16_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_16_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_1" id="__nav_16_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-castle-dawn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Castle Dawn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-regalia-galleria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Regalia Galleria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-temple-of-trials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Trials of Trials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Dialogue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-view/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_2" id="__nav_16_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implement
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implement
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01 - Renderer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02 - Game
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03 - Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04 - Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 05 - Editor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06 - Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07 - Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08 - Pathfinding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09 - Hydrodynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10 - Seasons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 11 - Geology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 12 - Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-13/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 13 - Acoustics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 14 - Narratives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-n/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n - Commerce
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-n%2B1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n+1 - Towns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_3" id="__nav_16_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refactor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Refactor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-01-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01.01 - Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.01 - Frames
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.02 - Registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.03 - Equipment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.04 - Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.05 - Finetuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.06 - Effects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.07 - Registry Data Structures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.08 - World Chunks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.01 - Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.02 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.03 - Motion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.04 - Projectiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.01 - Typography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.02 - Simplification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.03 - Event Handlers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.04 - Menu Context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.05 - Gizmos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.06 - Pane Generation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.01 - Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.02 - Goals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.03 - Combat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.04 - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.01 - Elevation Sorting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.02 - Platforms & Elevated Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.03 - Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.04 - Materialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.05 - Composite Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.01 - Obstacle Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.02 - Navigation Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.03 - Trajectory Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.04 - Mutators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.01 - Fluid Flows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.02 - Shorelines & Geography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.03 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.03 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-0903-fluid-consolidation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 09.03 - Fluid Consolidation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 09.03 - Fluid Consolidation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Reports
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bug Reports">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-b011-crate-fluid-interaction-crash-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B011: Crate-Fluid Interaction Crash Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b012-shorelines-not-rendering-at-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B012: Shorelines Not Rendering at Endpoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b013-shoreline-cross-fluid-interactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B013: Shoreline Cross Fluid Interactions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b014-single-point-shoreline-submersion-culling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B014: Single-Point Shoreline Submersion Culling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#latest-state-dump" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Latest State Dump
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Latest State Dump">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initial-conditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Initial Conditions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dependency-decomposition-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency &amp; Decomposition Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-board-environmental-water-query-unification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Board Environmental Water Query Unification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-decoupled-stateless-cartographer-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Decoupled Stateless Cartographer Service
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-actuator-refactoring-multi-pass-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Actuator Refactoring &amp; Multi-Pass Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-two-pass-fluid-execution-dynamic-obstacle-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Two-Pass Fluid Execution &amp; Dynamic Obstacle Resolution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Review">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-erratic-crate-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug: Erratic Crate Behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-erratic-shoreline-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug: Erratic Shoreline Behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root-cause-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Root Cause Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Root Cause Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-erratic-crate-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Erratic Crate Behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-erratic-shoreline-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Erratic Shoreline Behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Review">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crate-submersion-arbitrary-asset-submersion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Crate Submersion (-&gt; Arbitrary Asset Submersion)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-090301-unified-asset-mutators-submersion-channel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 09.03.01 - Unified Asset Mutators &amp; Submersion Channel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 09.03.01 - Unified Asset Mutators &amp; Submersion Channel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-universal-mutator-state-promotion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Universal Mutator State Promotion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-base-frame-submersion-channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Base Frame Submersion Channels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-uniform-environmental-immersion-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Uniform Environmental Immersion Resolution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-coincident-pool-mutual-exclusion-deadlock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Coincident Pool Mutual Exclusion Deadlock
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-startup-hydration-vs-gate-invalidation-desynchronization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Startup Hydration vs. Gate Invalidation Desynchronization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remediation-layer-wide-geography-synthesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remediation: Layer-Wide Geography Synthesis
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clarification-where-shoreline-state-lives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clarification: Where Shoreline State Lives
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-reports_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Reports
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bug Reports">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-b015-coincident-pool-mutual-exclusion-flank-desynchronization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B015: Coincident Pool Mutual Exclusion &amp; Flank Desynchronization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-090303-layer-wide-fluid-geography-contour-shorelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 09.03.03 - Layer-Wide Fluid Geography &amp; Contour Shorelines
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 09.03.03 - Layer-Wide Fluid Geography &amp; Contour Shorelines">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-de-parenting-shoreline-fluid-state-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: De-parenting Shoreline &amp; Fluid State Models
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-board-layer-shoreline-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Board Layer Shoreline Tracking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-layer-wide-geometric-water-contour-synthesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Layer-Wide Geometric Water Contour Synthesis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-coordinated-two-pass-layer-updates-in-fluidmechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Coordinated Two-Pass Layer Updates in FluidMechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.04 - Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.05 - Bridges & Bifurcation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.06 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.07 - Frame Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.08 - Transverse Fluid Submersion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.01 - Stage Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.02 - Shoreline Seasonal Indexing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.03 - Flowers, Pixies & Reproduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.04 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../appendices/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_17" id="__nav_17_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/00-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/01-schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/02-diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagrams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reports
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../coverage/index" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unit Test Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-0903-fluid-consolidation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 09.03 - Fluid Consolidation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 09.03 - Fluid Consolidation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Reports
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bug Reports">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-b011-crate-fluid-interaction-crash-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B011: Crate-Fluid Interaction Crash Loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b012-shorelines-not-rendering-at-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B012: Shorelines Not Rendering at Endpoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b013-shoreline-cross-fluid-interactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B013: Shoreline Cross Fluid Interactions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b014-single-point-shoreline-submersion-culling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B014: Single-Point Shoreline Submersion Culling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#latest-state-dump" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Latest State Dump
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Latest State Dump">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initial-conditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Initial Conditions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dependency-decomposition-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency &amp; Decomposition Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-board-environmental-water-query-unification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Board Environmental Water Query Unification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-decoupled-stateless-cartographer-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Decoupled Stateless Cartographer Service
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-actuator-refactoring-multi-pass-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Actuator Refactoring &amp; Multi-Pass Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-two-pass-fluid-execution-dynamic-obstacle-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Two-Pass Fluid Execution &amp; Dynamic Obstacle Resolution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Review">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-erratic-crate-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug: Erratic Crate Behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-erratic-shoreline-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug: Erratic Shoreline Behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root-cause-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Root Cause Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Root Cause Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-erratic-crate-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Erratic Crate Behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-erratic-shoreline-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Erratic Shoreline Behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Review">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crate-submersion-arbitrary-asset-submersion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Crate Submersion (-&gt; Arbitrary Asset Submersion)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-090301-unified-asset-mutators-submersion-channel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 09.03.01 - Unified Asset Mutators &amp; Submersion Channel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 09.03.01 - Unified Asset Mutators &amp; Submersion Channel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-universal-mutator-state-promotion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Universal Mutator State Promotion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-base-frame-submersion-channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Base Frame Submersion Channels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-uniform-environmental-immersion-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Uniform Environmental Immersion Resolution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-coincident-pool-mutual-exclusion-deadlock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Coincident Pool Mutual Exclusion Deadlock
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-startup-hydration-vs-gate-invalidation-desynchronization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Startup Hydration vs. Gate Invalidation Desynchronization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remediation-layer-wide-geography-synthesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remediation: Layer-Wide Geography Synthesis
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clarification-where-shoreline-state-lives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clarification: Where Shoreline State Lives
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-reports_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Reports
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bug Reports">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-b015-coincident-pool-mutual-exclusion-flank-desynchronization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B015: Coincident Pool Mutual Exclusion &amp; Flank Desynchronization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-090303-layer-wide-fluid-geography-contour-shorelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 09.03.03 - Layer-Wide Fluid Geography &amp; Contour Shorelines
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 09.03.03 - Layer-Wide Fluid Geography &amp; Contour Shorelines">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-de-parenting-shoreline-fluid-state-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: De-parenting Shoreline &amp; Fluid State Models
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-board-layer-shoreline-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Board Layer Shoreline Tracking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-layer-wide-geometric-water-contour-synthesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Layer-Wide Geometric Water Contour Synthesis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-coordinated-two-pass-layer-updates-in-fluidmechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Coordinated Two-Pass Layer Updates in FluidMechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Phase 09.03 - Consolidation</h1>
+
+<h4 id="refactor-phase-0903-fluid-consolidation">Refactor: Phase 09.03 - Fluid Consolidation</h4>
+<p><strong>Overview</strong></p>
+<p>Refactor the fluid generation pipeline by decoupling shoreline synthesis from <code>Actuator</code> into a standalone, stateless <code>Cartographer</code> service. Unify environmental water checks on <code>Board</code>, eliminate the crate-fluid infinite invalidation loop by restricting fluid obstacles strictly to immovable static bodies (<span class="arithmatex">\(m = 0\)</span>), and resolve endpoint and cross-fluid shoreline rendering regressions via a coordinated two-pass propagation lifecycle.</p>
+<hr />
+<h5 id="bug-reports">Bug Reports</h5>
+<h6 id="bug-b011-crate-fluid-interaction-crash-loop">Bug B011: Crate-Fluid Interaction Crash Loop</h6>
+<p><strong>STATUS</strong>: OPEN
+<strong>SEVERITY</strong>: CRITICAL</p>
+<p><strong>Description</strong></p>
+<p>The introduction of Fluid fields has caused the Crate obstruction to fail. When a Crate enters a Fluid field, the fluid pooling and velocity addition interact and cause the game to enter into an unsustainable crash loop where the fluid pushes the Crate and then redraws the pool around the Crate.</p>
+<p><strong>Steps to Replicate</strong> </p>
+<p>Place Crate into the path of a Fluid stream.</p>
+<p><strong>Root Cause</strong></p>
+<p><code>Actuator._collect_obstacles</code> ingests <code>board.weights(layer)</code> (all assets with <span class="arithmatex">\(m \ge 0\)</span>) and <code>board.obstacles(layer)</code> (which includes <code>Crates</code>). Because a Crate has dynamic mass (<span class="arithmatex">\(m = 5\)</span> or <span class="arithmatex">\(100\)</span>), it halts the raycast. The Actuator places a pool around the Crate. On the next tick, <code>MotionMechanics</code> (<code>fields.py</code>) applies fluid velocity to the Crate. In <code>FluidMechanics</code>, any velocity change on a crate (<code>|vx| &gt; 0</code> or <code>|vy| &gt; 0</code>) marks the fluid as <code>dirty</code>, causing per-frame raycasting and pool recalculations.</p>
+<p><strong>Proposed Remeditation</strong></p>
+<p>In accordance with the physics specification, <strong>only static, immovable bodies (<span class="arithmatex">\(m = 0\)</span>) block fluid flow.</strong> Dynamic bodies (<span class="arithmatex">\(m &gt; 0\)</span>) must be excluded from fluid raycast obstacles. Furthermore, <code>FluidMechanics.update()</code> must cease monitoring crate velocities for fluid dirtying; only switchable static barriers (e.g., <code>Gates</code>) invalidate fluid propagation.</p>
+<h6 id="bug-b012-shorelines-not-rendering-at-endpoints">Bug B012: Shorelines Not Rendering at Endpoints</h6>
+<p><strong>STATUS</strong>: OPEN
+<strong>SEVERITY</strong>: MEDIUM</p>
+<p><strong>Description</strong></p>
+<p>The source Asset dimensions of a Fluid are not receiving Shorelines, i.e. the very first frame in a stream of Fluid has no Shorelines.</p>
+<p><strong>Steps To Repicate</strong></p>
+<p>See <a href="#latest-state-dump">Latest State Dump</a> for reproduction.</p>
+<p><strong>Root Cause</strong></p>
+<p>Two distinct issues cause missing endpoint shorelines:</p>
+<ol>
+<li><code>Actuator._extract_flank_descriptors</code> only generates side flanks (West/East for vertical streams, North/South for horizontal streams). It completely omits the distal or source cap (e.g., North margin at <code>fy</code> for a <code>DOWN</code> stream), leaving emitter origins bare.</li>
+<li>In <code>_detect_flank_occlusions</code>, the boundary sweep algorithm evaluates the probe area (<code>probe_x, probe_y, probe_w, probe_l</code>) against outer perimeter hulls. At map bounds (<code>fy = 0</code>), the 32px probe box intersects the 1px boundary line, causing the entire first tile (<code>y = 0..32</code>) to be falsely discarded as "occluded."</li>
+</ol>
+<p><strong>Proposed Remediation</strong></p>
+<p>Add source cap descriptors in the flank extraction routine when bounded by land. Refine flank occlusion validation so that orthogonal perimeter hulls do not disqualify valid parallel shoreline margins.</p>
+<h6 id="bug-b013-shoreline-cross-fluid-interactions">Bug B013: Shoreline Cross Fluid Interactions</h6>
+<p><strong>STATUS</strong>: OPEN
+<strong>SEVERITY</strong>: HIGH</p>
+<p><strong>Description</strong></p>
+<p>When Fluid streams cross into the pool of another Fluid, they are generating Shoreline assets within the Pool, creating a disjointed look. For example, a <code>source = left</code> Fluid when crossing into a <code>source = down</code> Pool leaves a trail of Shorelines within the area of the Pool.</p>
+<p><strong>Steps To Replicate</strong></p>
+<p>See <a href="#latest-state-dump">Latest State Dump</a> for reproduction.</p>
+<p><strong>Root Cause</strong></p>
+<ol>
+<li><code>pump()</code> is executed per-fluid. When Fluid A flows into Fluid B's pool, Fluid A's shorelines are placed before Fluid B's pool is computed, or Fluid B's shorelines run across Fluid A's stream entrance.</li>
+<li>The cleanup routine checks submersion by probing a single point <code>(pos.x + 16, pos.y + 16)</code>. For a coalesced shoreline of length 480px, checking only the origin tile fails to detect that intermediate tiles are submerged under an overlapping pool.</li>
+</ol>
+<p><strong>Proposed Remediation</strong></p>
+<ol>
+<li>Move <code>water</code> onto <code>Board</code> with an optional <code>exclude</code> argument.</li>
+<li>In <code>FluidMechanics</code>, adopt a <strong>two-pass execution pattern</strong> across dirty layers:<ul>
+<li><strong>Pass 1 (Propagation)</strong>: Update all dirty fluids' lengths, pools, and hitboxes via <code>Actuator.propagate()</code>.</li>
+<li><strong>Pass 2 (Shorelines)</strong>: Generate shorelines across the updated fluids using <code>Cartographer.generate()</code>. Because all fluid pools and streams are already registered on the board, <code>board.water()</code> accurately suppresses shorelines at every water-to-water junction.</li>
+</ul>
+</li>
+</ol>
+<h6 id="bug-b014-single-point-shoreline-submersion-culling">Bug B014: Single-Point Shoreline Submersion Culling</h6>
+<p><strong>STATUS</strong>: OPEN
+<strong>SEVERITY</strong>: HIGH</p>
+<p><strong>Description</strong></p>
+<p><code>Actuator.pump()</code> attempts to clean up existing shorelines submerged by expanding pools using <code>scx = s.state.position.x + 16</code> and <code>scy = s.state.position.y + 16</code>. Because procedural shorelines are coalesced into continuous strips up to several hundred pixels in length, evaluating only the origin tile causes long shorelines to bypass submersion checks when overlapping pools cover downstream sections. Conversely, if the origin tile is submerged, the entire multi-tile shoreline is purged even if the remainder borders dry land.</p>
+<p><strong>Steps to Replicate</strong></p>
+<ol>
+<li>Spawn a fluid with a continuous horizontal or vertical stream length <span class="arithmatex">\(\ge 192\text{px}\)</span>.</li>
+<li>Introduce an intersecting fluid or pool overlapping the midpoint of the stream.</li>
+<li>Observe that the original shoreline is either entirely removed or completely preserved across the water intersection.</li>
+</ol>
+<p><strong>Proposed Remediation</strong></p>
+<p>Deprecate the single-point <code>cull_submerged</code> routine. Defer shoreline synthesis until all layer fluid propagation has completed (Two-Pass update). During shoreline generation, <code>Cartographer</code> samples <code>board.water()</code> at each discrete tile step, preventing submerged segments from ever being generated or coalesced.</p>
+<hr />
+<h5 id="latest-state-dump">Latest State Dump</h5>
+<h6 id="initial-conditions">Initial Conditions</h6>
+<p><strong>Properties</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">effects</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">fluids</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># -------------------------------------------------------</span>
+<span class="w">    </span><span class="nt">waterflow-00</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
+<span class="w">        </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
+<span class="w">      </span><span class="nt">lifecycle</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">continuous</span>
+<span class="w">        </span><span class="nt">delay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
+<span class="w">      </span><span class="nt">count</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">      </span><span class="nt">hitboxes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">    </span><span class="c1"># -------------------------------------------------------</span>
+<span class="w">    </span><span class="nt">waterflow-01</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
+<span class="w">        </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">96</span>
+<span class="w">      </span><span class="nt">lifecycle</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">continuous</span>
+<span class="w">        </span><span class="nt">delay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">      </span><span class="nt">count</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">      </span><span class="nt">hitboxes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="nt">geography</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">shorelines</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">grassy-shore</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">tile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grass</span>
+<span class="w">      </span><span class="nt">fluid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">waterflow-00</span>
+<span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
+<span class="w">        </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
+<span class="w">      </span><span class="nt">thickness</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
+<span class="w">      </span><span class="nt">hitboxes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+</code></pre></div>
+<p><strong>State</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">effects</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">fluids</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">waterflow-00</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jasilynns-tears-00</span>
+<span class="w">      </span><span class="nt">layer</span><span class="p">:</span><span class="w"> </span><span class="s">'0'</span>
+<span class="w">      </span><span class="nt">position</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">70</span>
+<span class="w">        </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">      </span><span class="nt">flow</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">      </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">down</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">waterflow-00</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jasilynns-tears-01</span>
+<span class="w">      </span><span class="nt">layer</span><span class="p">:</span><span class="w"> </span><span class="s">'0'</span>
+<span class="w">      </span><span class="nt">position</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">600</span>
+<span class="w">        </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">600</span>
+<span class="w">      </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">left</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">waterflow-00</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jasilynns-tears-02</span>
+<span class="w">      </span><span class="nt">layer</span><span class="p">:</span><span class="w"> </span><span class="s">'0'</span>
+<span class="w">      </span><span class="nt">flow</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="w">      </span><span class="nt">position</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">632</span>
+<span class="w">        </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">      </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">down</span>
+</code></pre></div>
+<h6 id="results">Results</h6>
+<p><strong>Application Logs</strong></p>
+<p><em>Omitted after bug identified for brevity.</em></p>
+<p><strong>State Dump</strong></p>
+<p><em>Omitted after bug identified for brevity.</em></p>
+<h5 id="architectural-analysis">Architectural Analysis</h5>
+<p>Currently, <code>Actuator.pump()</code> attempts to:</p>
+<ol>
+<li>Collect spatial obstacles and boundaries along the stream propagation vector.</li>
+<li>Truncate the stream path via 2D raycasting.</li>
+<li>Compute dynamic pooling geometry and partition hitboxes around impacted bodies.</li>
+<li>Trace stream and pool perimeters to derive directional flank descriptors.</li>
+<li>Sample bordering substrate terrain tiles from <code>Board</code>.</li>
+<li>Query secondary relational indices (<code>ShorelineIndex</code>) to resolve asset bindings.</li>
+<li>Coalesce contiguous cell segments and spawn <code>Shoreline</code> entities via <code>Cradle</code>.</li>
+<li>Enforce shoreline cleanup and submerged margin culling.</li>
+</ol>
+<p>This tight coupling creates severe architectural friction:</p>
+<ul>
+<li><strong>Embedded Terrain Queries</strong>: Spatial queries like <code>_water()</code> and <code>_water_excluding()</code> query <code>board.instances(AssetInstances.FLUIDS.value, layer)</code> directly inside the actuator. The <code>Board</code> is the game's centralized database; environmental queries belong on <code>Board</code>, accessible to any mechanic or service without duplicating lookup algorithms.</li>
+<li><strong>Stateful Leakage in a Generator</strong>: The <code>Actuator</code> retains a reference to <code>ShorelineIndex</code> and mutates <code>Board</code> entities directly (<code>board.add()</code>, <code>board.remove()</code>), while also altering <code>FluidState</code>. Generator services in Ontology should remain stateless calculators that return pure geometric or entity specifications rather than orchestrating multi-entity world mutations.</li>
+<li><strong>Inter-Fluid Order Dependencies (Bug B013)</strong>: Because shoreline generation is coupled directly inside single-fluid <code>pump()</code> execution, each fluid emitter generates and cleans up shorelines in isolation. When multiple fluids cross or meet (e.g., a lateral stream entering a vertical pool), neither fluid has complete visibility over the resolved water boundaries of the other, resulting in disjointed shorelines inside pooled areas.</li>
+<li><strong>Coupling Dynamic Masses to Fluid Raycasts (Bug B011)</strong>: Treating dynamic objects (<span class="arithmatex">\(m &gt; 0\)</span>, such as <code>Crates</code>) as stream-blocking obstacles triggers an infinite feedback loop: fluid hits crate <span class="arithmatex">\(\to\)</span> creates pool <span class="arithmatex">\(\to\)</span> imparts velocity <span class="arithmatex">\(\to\)</span> crate moves <span class="arithmatex">\(\to\)</span> fluid marks dirty <span class="arithmatex">\(\to\)</span> stream recalculates <span class="arithmatex">\(\to\)</span> loop repeats.</li>
+</ul>
+<h6 id="dependency-decomposition-analysis">Dependency &amp; Decomposition Analysis</h6>
+<pre class="mermaid"><code>flowchart TD
+    FM[FluidMechanics] --&gt;|1. propagate| ACT[Actuator]
+    FM --&gt;|2. generate| SG[Cartographer]
+    ACT --&gt;|Raycast &amp; Hitboxes| CY[libs.core.math.geometry]
+    ACT --&gt;|Update State| FS[FluidState]
+    SG --&gt;|Resolve Shoreline ID| SI[ShorelineIndex]
+    SG --&gt;|Query Substrate &amp; Water| BD[Board]
+    SG --&gt;|Spawn Assets| CR[Cradle]</code></pre>
+<ol>
+<li><strong>Fluid Generation is a Prerequisite for Shoreline Generation</strong>:
+A shoreline is an environmental boundary asset. It has no physical or visual identity without an established, stationary water margin. Therefore, <strong>fluid propagation must be fully resolved before shorelines can be computed.</strong></li>
+<li><strong>The Actuator Interface Must Be Segregated</strong>:<ul>
+<li><code>Actuator.propagate(fluid: Asset, board: Board)</code>: Evaluates raycast truncation against immovable environmental occluders (<span class="arithmatex">\(m = 0\)</span>), derives annular pooling bounds, and constructs stream/pool hitboxes.</li>
+<li><code>Cartographer.generate(fluid: Asset, board: Board, index: ShorelineIndex)</code>: A static, stateless service that reads resolved fluid bounds and generates the corresponding <code>Shoreline</code> entities.</li>
+<li><code>Actuator.pump(fluid: Asset, board: Board)</code>: Maintained as a convenience interface that chains propagation and shoreline generation for isolated updates and test harnesses.</li>
+</ul>
+</li>
+</ol>
+<h5 id="goal-board-environmental-water-query-unification">Goal: Board Environmental Water Query Unification</h5>
+<p>Migrate <code>water()</code> from <code>Actuator</code> to <code>Board</code> and eliminate <code>water_excluding()</code>. Provide an <span class="arithmatex">\(O(N)\)</span> spatial query on <code>Board</code> that evaluates whether a given Cartesian coordinate falls within any active fluid corridor or pool on a layer, with an optional fluid entity exclusion parameter.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># app/game/board.py</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">water</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">layer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">position</span><span class="p">:</span> <span class="n">Position</span><span class="p">,</span>
+    <span class="n">exclude</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Evaluates whether world coordinate (pos.x, pos.y) intersects any active</span>
+<span class="sd">    fluid stream corridor or annular pool on the given layer.</span>
+<span class="sd">    """</span>
+    <span class="n">fluids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instances</span><span class="p">(</span><span class="n">AssetInstances</span><span class="o">.</span><span class="n">FLUIDS</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">fluid</span> <span class="ow">in</span> <span class="n">fluids</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">exclude</span> <span class="ow">and</span> <span class="n">fluid</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">exclude</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="c1"># Evaluate pool bounds</span>
+        <span class="n">pool</span> <span class="o">=</span> <span class="n">fluid</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">pool</span>
+        <span class="k">if</span> <span class="n">pool</span> <span class="ow">and</span> <span class="n">pool</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">pool</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">pool</span><span class="o">.</span><span class="n">w</span> <span class="ow">and</span> <span class="n">pool</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;=</span> <span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;</span> <span class="n">pool</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">pool</span><span class="o">.</span><span class="n">l</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="c1"># Evaluate directional stream corridor bounds</span>
+        <span class="k">if</span> <span class="n">fluid</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_stream</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">fluid</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span>
+</code></pre></div>
+<h5 id="goal-decoupled-stateless-cartographer-service">Goal: Decoupled Stateless Cartographer Service</h5>
+<p>Extract all shoreline extraction, flank descriptor generation, substrate sampling, contiguous coalescing, and sensor hitbox calculation out of <code>Actuator</code> into <code>Cartographer</code>. The service remains purely stateless and accepts explicit <code>Board</code>, <code>Fluid</code>, and <code>ShorelineIndex</code> dependencies on execution.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># app/services/generators/game/shoreline.py</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Cartographer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Stateless geometric generator for environmental shoreline margins.</span>
+<span class="sd">    """</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">fluid</span><span class="p">:</span> <span class="n">Asset</span><span class="p">,</span>
+        <span class="n">board</span><span class="p">:</span> <span class="n">Board</span><span class="p">,</span>
+        <span class="n">index</span><span class="p">:</span> <span class="n">ShorelineIndex</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]:</span>
+        <span class="n">descriptors</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_extract_descriptors</span><span class="p">(</span><span class="n">fluid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_coalesce_segments</span><span class="p">(</span><span class="n">descriptors</span><span class="p">,</span> <span class="n">fluid</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">purge</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fluid</span><span class="p">:</span> <span class="n">Asset</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">Board</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fluid</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">shorelines</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">removals</span> <span class="o">=</span> <span class="p">[</span><span class="n">board</span><span class="o">.</span><span class="n">asset</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">fluid</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">layer</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">fluid</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">shorelines</span><span class="p">]</span>
+        <span class="n">board</span><span class="o">.</span><span class="n">remove</span><span class="p">([</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">removals</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
+        <span class="n">fluid</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">shorelines</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</code></pre></div>
+<h5 id="goal-actuator-refactoring-multi-pass-interface">Goal: Actuator Refactoring &amp; Multi-Pass Interface</h5>
+<p>Refactor <code>Actuator</code> to focus strictly on fluid dynamics (stream raycasting, pool expansion, and compound hitbox construction). Expose <code>propagate()</code> for pure fluid calculations, <code>generate_shorelines()</code> for shoreline delegation, and maintain <code>pump()</code> as a unified wrapper.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># app/services/generators/game/actuator.py</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Actuator</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">propagate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fluid</span><span class="p">:</span> <span class="n">Asset</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">Board</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Pool</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Hitbox</span><span class="p">]]:</span>
+        <span class="c1"># Raycast against m == 0 obstacles and map boundaries</span>
+        <span class="c1"># Calculate annular pool if obstacle struck</span>
+        <span class="c1"># Update FluidState length, pool, hitboxes, dirty</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_shorelines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fluid</span><span class="p">:</span> <span class="n">Asset</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">Board</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]:</span>
+        <span class="n">Cartographer</span><span class="o">.</span><span class="n">purge</span><span class="p">(</span><span class="n">fluid</span><span class="p">,</span> <span class="n">board</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">shorelines</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">shores</span> <span class="o">=</span> <span class="n">Cartographer</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">fluid</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shorelines</span><span class="p">)</span>
+        <span class="n">board</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">shores</span><span class="p">)</span>
+        <span class="n">fluid</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">shorelines</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">shores</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">shores</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">pump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fluid</span><span class="p">:</span> <span class="n">Asset</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">Board</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Pool</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Hitbox</span><span class="p">]]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">propagate</span><span class="p">(</span><span class="n">fluid</span><span class="p">,</span> <span class="n">board</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generate_shorelines</span><span class="p">(</span><span class="n">fluid</span><span class="p">,</span> <span class="n">board</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fluid</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">length</span><span class="p">,</span> <span class="n">fluid</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">pool</span><span class="p">,</span> <span class="n">fluid</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">hitboxes</span>
+</code></pre></div>
+<h5 id="goal-two-pass-fluid-execution-dynamic-obstacle-resolution">Goal: Two-Pass Fluid Execution &amp; Dynamic Obstacle Resolution</h5>
+<p>Update <code>FluidMechanics</code> to enforce the physics rule that dynamic bodies (<span class="arithmatex">\(m &gt; 0\)</span>) do not obstruct fluids, resolving Bug B011. Structure layer updates into a two-pass pipeline (Pass 1: Propagate all dirty fluids; Pass 2: Generate shorelines for all dirty fluids), ensuring cross-fluid interactions (Bug B013) evaluate against settled water bodies.</p>
+<h5 id="tasks">Tasks</h5>
+<p><strong>1. Task: Unify Water Query Interface on Board</strong></p>
+<p><em>Objective</em>: Implement <code>Board.water()</code> with optional fluid entity exclusion and remove <code>_water</code> / <code>_water_excluding</code> from <code>Actuator</code>.</p>
+<ul>
+<li>[x] Subtask: Add <code>water(layer, position, exclude=None)</code> method to <code>Board</code> in <code>src/app/game/board.py</code>.</li>
+<li>[x] Subtask: Implement stream bounding box intersection helper <code>_in_stream(position, fluid)</code> in <code>Board</code>.</li>
+<li>[x] Subtask: Update unit tests for <code>Board</code> to verify coordinate intersection across pools and streams with exclusion filtering.</li>
+</ul>
+<p><strong>2. Task: Restrict Fluid Occlusion to Immovable Assets (Fix B011)</strong></p>
+<p><em>Objective</em>: Prevent dynamic bodies from blocking fluid streams and remove crate-based invalidation loops.</p>
+<ul>
+<li>[x] Subtask: Modify <code>Actuator._collect_obstacles</code> to filter candidates strictly by <code>asset.properties.mass == 0</code>.</li>
+<li>[x] Subtask: Remove <code>crates</code> traversal and <code>_crate_positions</code> invalidation logic from <code>FluidMechanics.update()</code>.</li>
+<li>[x] Subtask: Verify gate state transitions remain the sole dynamic trigger for layer fluid invalidation.</li>
+</ul>
+<p><strong>3. Task: Extract Stateless Cartographer Service</strong></p>
+<p><em>Objective</em>: Decouple all shoreline derivation and instantiation logic out of <code>Actuator</code> into a standalone service.</p>
+<ul>
+<li>[~] Subtask: Create <code>src/app/services/generators/game/cartographer.py</code> with class <code>Cartographer</code>.</li>
+<li>[x] Subtask: Move flank descriptor extraction, hitbox synthesis, substrate validation, and segment coalescing from <code>Actuator</code> to <code>Cartographer</code>.</li>
+<li>[x] Subtask: Implement <code>Cartographer.purge(fluid, board)</code> to centralize previous child shoreline disposal.</li>
+<li>[x] Subtask: Implement <code>Cartographer.generate(fluid, board, index)</code> returning spawned <code>Asset</code> lists without directly mutating <code>board</code>.</li>
+</ul>
+<p><strong>4. Task: Fix Endpoint and Flank Boundary Occlusions (Fix B012)</strong></p>
+<p><em>Objective</em>: Ensure source asset dimensions and boundary-adjacent corridors generate complete shorelines.</p>
+<ul>
+<li>[x] Subtask: Add source cap descriptors in <code>Cartographer._extract_descriptors</code> for emitter origin margins bordered by land.</li>
+<li>[x] Subtask: Adjust <code>_detect_flank_occlusions</code> to prevent perpendicular 1px map perimeters from disqualifying parallel shoreline margins.</li>
+<li>[!: Conditional on User Acceptance] Subtask: Add regression unit tests verifying shorelines generate at <code>c = 0</code> for border emitters.</li>
+</ul>
+<p><strong>5. Task: Implement Two-Pass Layer Updates in FluidMechanics (Fix B013)</strong></p>
+<p><em>Objective</em>: Resolve cross-fluid shoreline overlapping by decoupling fluid propagation from shoreline generation.</p>
+<ul>
+<li>[x] Subtask: Refactor <code>Actuator</code> to expose <code>propagate()</code> and <code>generate_shorelines()</code>.</li>
+<li>[x] Subtask: Update <code>FluidMechanics.update()</code> to execute Pass 1 (<code>propagate</code>) across all dirty layer fluids before executing Pass 2 (<code>generate_shorelines</code>).</li>
+<li>[x] Subtask: Eliminate single-point <code>cull_submerged</code> checks in favor of Pass 2 evaluation against <code>board.water()</code>.</li>
+</ul>
+<h5 id="user-review">User Review</h5>
+<h6 id="bug-erratic-crate-behavior">Bug: Erratic Crate Behavior</h6>
+<p>Crates now behave better, but still have a few bugs. When pushing a crate into a fluid stream, it goes haywire and flies across screen. I suspect what is going on is: Crate still has velocity orthogonal to the stream flow so the addition of field velocity causes Crate to go off course. </p>
+<p>It seems as though what should occur is: when Crates (or other frictive Assets) enter into a stream field, their velocity is immediately snapped to the direction of the stream flow. All friction calculations should be suspended while the Crate is "floating".</p>
+<h5 id="bug-erratic-shoreline-behavior">Bug: Erratic Shoreline Behavior</h5>
+<p>Shorelines where Fluid streams meet separate Fluid streams are still being generated inside of the annular pool where the impinging stream intersects the pool. However, curiously, when the Player intersects a Switch to open a Gate, the shorelines along the intersection disappear. </p>
+<h5 id="root-cause-analysis">Root Cause Analysis</h5>
+<h6 id="1-erratic-crate-behavior">1. Erratic Crate Behavior</h6>
+<ul>
+<li><strong>Friction Calculation</strong>: In <code>frictive.py</code>, the engine was calculating ground tile friction decay on floating crates. When floating in fluid, friction should be suspended entirely so the body drifts with the current rather than decelerating against the underlying terrain.</li>
+<li><strong>Per-Frame Velocity Accumulation</strong>: In <code>fields.py</code>, direct immersion added fluid velocity vectorally via accumulation (<code>asset.state.velocity.vx += flow_vx</code>). Unlike kinematic assets (which clamp or overwrite velocity from user input every frame), frictive bodies persist velocity frame-to-frame. Accumulating <code>flow_vx</code> and <code>flow_vy</code> on every tick caused crate velocity to accelerate exponentially to thousands of pixels per second while retaining previous orthogonal momentum.</li>
+<li><strong>Remediation</strong>:</li>
+<li>In <code>frictive.py</code>, check <code>board.water(asset.state.layer, center_pos)</code> and bypass friction decay while floating.</li>
+<li>In <code>fields.py</code>, directly snap frictive assets (<code>AssetInstances.CRATES.value</code>) to the stream velocity vector (<code>vx = flow_vx</code>, <code>vy = flow_vy</code>) instead of accumulating.</li>
+</ul>
+<h6 id="2-erratic-shoreline-behavior">2. Erratic Shoreline Behavior</h6>
+<ul>
+<li><strong>Sequential Startup Hydration</strong>: During bootstrapping and state hydration, <code>Actuator.pump()</code> was called iteratively on each fluid emitter in isolation. When Fluid 0 (<code>jasilynns-tears-00</code>) was pumped, Fluid 1 (<code>jasilynns-tears-01</code>) had not yet propagated, so Fluid 0 generated shorelines across the perimeter of its pool where Fluid 1 enters. When Fluid 1 subsequently propagated into Fluid 0's pool, Fluid 0's existing shorelines were not purged or re-evaluated.</li>
+<li>**Delayed Two-Pass Trigger in <code>FluidMechanics**</code>: <code>FluidMechanics.update()</code> previously only flagged fluids as dirty when a gate switch changed (<code>prev_switch is not None and prev_switch != curr_switch</code>). Because hydration marked fluids clean (<code>dirty = False</code>), the coordinated Two-Pass layer update never executed on frame 1. When the player stepped on a plate to open a gate, <code>FluidMechanics</code> invalidated the layer and ran the Two-Pass update for all layer fluids, which correctly purged and suppressed the intersecting shorelines.</li>
+<li><strong>Single-Corner Probe Sampling</strong>: In <code>Cartographer._coalesce_segments</code>, the boundary check sampled only the top-left index point <code>Position(c, probe_coord)</code>. Because fluid emitters can reside at fractional offsets (e.g., <span class="arithmatex">\(x = 70\)</span>), testing <span class="arithmatex">\(c = 64\)</span> checked a point just outside the stream corridor, failing to detect water-to-water junctions.</li>
+<li><strong>Remediation</strong>:</li>
+<li>Refactor <code>Actuator.pump(fluid, board)</code> to execute Pass 1 (<code>propagate</code>) followed by Pass 2 (<code>generate_shorelines</code>) across all fluids on that layer.</li>
+<li>In <code>FluidMechanics.update()</code>, ensure that on the initial tick (<code>not self._initialized</code>), all layer fluids are marked dirty and run through the Two-Pass update.</li>
+<li>In <code>Cartographer</code>, implement <code>_is_step_water</code> to sample the active step interval across its midpoint and boundaries, preventing coordinate misalignment from bypassing water-to-water margin suppression.</li>
+</ul>
+<h5 id="user-review_1">User Review</h5>
+<p>All changes accepted and passing. Last remaining point before moving onto unit tests. </p>
+<h6 id="crate-submersion-arbitrary-asset-submersion">Crate Submersion (-&gt; Arbitrary Asset Submersion)</h6>
+<p>Currently, only Sprites have the submersion Channel directive applied to them. To achieve the effect of submersion in Fluid, SpriteFrame uses a Channel directive conditional on its <code>mutator</code> state field,</p>
+<p>The Screen then uses the Channel to call the Cython SDL interface.</p>
+<p><strong>NOTE</strong>: The Screen is unaware the Channel came from a Sprite Asset.</p>
+<p>Mutators are currently specific to Sprites,</p>
+<p>Objects do not have Mutators.</p>
+<p>I believe the most architecturally sound course of action is make Mutators are core Asset state attribute available on all instances of Assets and shift the logic for submersion that currently resides SpriteFrame to the base Frame class.</p>
+<p>Analyze this proposal. Propose a sequence of tasks to achieve this functionality. Use the <a href="#template-backlog">Template: Backlog</a>.</p>
+<h5 id="analysis">Analysis</h5>
+<p>Promoting <code>mutators</code> to <code>AssetState</code> and shifting <code>ChannelTypes.SUBMERGE</code> derivation to <code>Frame.channels()</code> is architecturally sound:</p>
+<ol>
+<li><strong>ECS Consistency</strong>: In Ontology, behavioral distinction is driven by injected components, while common physical/environmental states reside on the base model. Submersion is an environmental condition governed by spatial mechanics (<code>fields.py</code>), not a Sprite-exclusive cognitive state.</li>
+<li><strong>Elimination of Instance-Gated Logic</strong>: Currently, <code>fields.py</code> explicitly gates submersion assignment behind <code>if asset.instance in (PLAYERS, SPRITES)</code>. Moving <code>mutators</code> to <code>AssetState</code> allows <code>fields.py</code> to toggle <code>asset.state.mutators.triggers.submerged</code> across all active entities (Crates, Sprites, Players) without duck typing or instance whitelisting.</li>
+<li><strong>DRY Rendering Directives</strong>: <code>SpriteFrame</code> is currently the only frame calculating submerge channel offsets. Because submersion splits an asset's height at <span class="arithmatex">\(l/2\)</span> using <code>properties.dimensions.l</code>, placing this logic directly in <code>Frame.channels()</code> provides universal submersion rendering across all frame types (<code>SingleFrame</code>, <code>IterableFrame</code>, <code>SpriteFrame</code>) without code duplication.</li>
+<li><strong>Structural Segregation</strong>: While <code>MutatorTriggers</code> (e.g., <code>submerged</code>, <code>animated</code>, <code>dead</code>) applies universally to all assets, <code>MutatorParameters</code> (e.g., <code>fear</code>, <code>vision</code>, <code>squeeze</code>) contains AI-specific sensory radiuses. Retaining <code>parameters: Optional[MutatorParameters] = None</code> on <code>Mutators</code> ensures the base footprint remains minimal for non-cognitive entities like Crates.</li>
+</ol>
+<hr />
+<h4 id="refactor-phase-090301-unified-asset-mutators-submersion-channel">Refactor: Phase 09.03.01 - Unified Asset Mutators &amp; Submersion Channel</h4>
+<p><strong>Overview</strong></p>
+<p>Elevate <code>mutators</code> from <code>SpriteState</code> to the foundational <code>AssetState</code> model, providing universal environmental status tracking across all physical entities. Migrate procedural submersion channel generation from <code>SpriteFrame</code> to the base <code>Frame</code> class, and update <code>fields.py</code> to evaluate submersion triggers and splash particle emissions uniformly across all dynamic and frictive bodies.</p>
+<h5 id="goal-universal-mutator-state-promotion">Goal: Universal Mutator State Promotion</h5>
+<p>Relocate <code>MutatorTriggers</code> and <code>Mutators</code> to the core state definitions. Add <code>mutators: Mutators = field(default_factory=Mutators)</code> to <code>AssetState</code> so that every deployed entity inherits state-level trigger flags with <code>submerged = False</code> by default.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># app/models/state/core.py</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MutatorTriggers</span><span class="p">:</span>
+    <span class="n">animated</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">frightened</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">dead</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">vision</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">submerged</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Mutators</span><span class="p">:</span>
+    <span class="n">triggers</span><span class="p">:</span> <span class="n">MutatorTriggers</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">MutatorTriggers</span><span class="p">)</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AssetState</span><span class="p">:</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">height</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">mutators</span><span class="p">:</span> <span class="n">Mutators</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Mutators</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="goal-base-frame-submersion-channels">Goal: Base Frame Submersion Channels</h5>
+<p>Implement default channel emission in <code>Frame.channels()</code>. If <code>state.mutators.triggers.submerged</code> is active, calculate the horizontal half-length split (<span class="arithmatex">\(l / 2\)</span>) from <code>properties.dimensions.l</code> and emit <code>(ChannelTypes.SUBMERGE.value, (half_l, 40, 110, 180, 170))</code>. Derived frames (such as <code>SpriteFrame</code>) call <code>super().channels()</code> and append their own specialized channel directives.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># app/assets/base.py</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Frame</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+        <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="n">state</span><span class="p">:</span> <span class="n">AssetState</span><span class="p">,</span> 
+        <span class="n">properties</span><span class="p">:</span> <span class="n">AssetProperties</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">]:</span>
+        <span class="n">directives</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">"mutators"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="n">state</span><span class="o">.</span><span class="n">mutators</span><span class="o">.</span><span class="n">triggers</span><span class="o">.</span><span class="n">submerged</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">properties</span><span class="p">,</span> <span class="s2">"dimensions"</span><span class="p">)</span> <span class="ow">and</span> <span class="n">properties</span><span class="o">.</span><span class="n">dimensions</span><span class="p">:</span>
+                <span class="n">half_l</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">l</span> <span class="o">//</span> <span class="mi">2</span>
+                <span class="n">directives</span><span class="o">.</span><span class="n">append</span><span class="p">((</span>
+                    <span class="n">ChannelTypes</span><span class="o">.</span><span class="n">SUBMERGE</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="p">(</span><span class="n">half_l</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">110</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">170</span><span class="p">)</span>
+                <span class="p">))</span>
+        <span class="k">return</span> <span class="n">directives</span>
+</code></pre></div>
+<h5 id="goal-uniform-environmental-immersion-resolution">Goal: Uniform Environmental Immersion Resolution</h5>
+<p>Refactor <code>app.game.logic.modules.motion.fields</code> to remove entity instance whitelisting on shoreline crossings and direct fluid immersion. All non-raft mutable assets (Crates, Sprites, Players) entering or exiting water toggle <code>asset.state.mutators.triggers.submerged</code> and spawn splash particles via <code>Cradle</code>.</p>
+<h5 id="tasks_1">Tasks</h5>
+<p><strong>1. Task: Promote Mutator Models to Core State</strong></p>
+<p><em>Objective</em>: Make <code>mutators</code> a standard field on <code>AssetState</code> and remove the redundant declaration from <code>SpriteState</code>.</p>
+<ul>
+<li>[x] Subtask: Move <code>MutatorTriggers</code> and <code>Mutators</code> definitions into <code>src/app/models/state/core.py</code>.</li>
+<li>[x] Subtask: Add <code>mutators: Mutators = field(default_factory=Mutators)</code> to <code>AssetState</code>.</li>
+<li>[x] Subtask: Remove overridden <code>mutators</code> field from <code>SpriteState</code> in <code>src/app/models/state/sprites.py</code>.</li>
+</ul>
+<p><strong>2. Task: Implement Default Submersion in Base Frame</strong></p>
+<p><em>Objective</em>: Provide universal <code>SUBMERGE</code> channel emission on <code>Frame</code> for all inheriting frame strategies.</p>
+<ul>
+<li>[x] Subtask: Implement <code>channels()</code> on <code>Frame</code> in <code>src/app/assets/base.py</code> checking <code>state.mutators.triggers.submerged</code>.</li>
+<li>[x] Subtask: Refactor <code>SingleFrame</code>, <code>IterableFrame</code>, and <code>StateFrame</code> to inherit or delegate to <code>Frame.channels()</code>.</li>
+<li>[x] Subtask: Refactor <code>SpriteFrame.channels()</code> in <code>src/app/assets/frames/sprites.py</code> to call <code>super().channels()</code> and remove duplicated submersion slice logic.</li>
+</ul>
+<p><strong>3. Task: Generalize Field Immersion and Splash Handling</strong></p>
+<p><em>Objective</em>: Apply shoreline ledge transitions, direct fluid immersion, and splash particle spawning across all mutable assets.</p>
+<ul>
+<li>[x] Subtask: Remove <code>AssetInstances.PLAYERS.value</code> and <code>AssetInstances.SPRITES.value</code> instance filters for <code>submerged</code> state updates in <code>src/app/game/logic/modules/motion/fields.py</code>.</li>
+<li>[x] Subtask: Ensure dynamic Crates crossing shorelines or entering fluids update <code>submerged = True</code> and emit splash particles via <code>board.cradle.spawn_passive</code>.</li>
+<li>[x] Subtask: Ensure exiting water clears <code>submerged = False</code> across all mutable assets.</li>
+</ul>
+<h5 id="user-review_2">User Review</h5>
+<p>Everything is mostly working to spec. However, a subtler bug was discovered during this round of User Acceptance testing. When there are two adjacent Fluid streams, the Shoreline around the overlapping Pools from the adjacent streams is not being rendered at all.</p>
+<p>In addition, when the Player passes over an unrelated Gate, Shorelines are generated where the adjacent streams touch.</p>
+<p><strong>Initial Conditions</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>This was tried with <code>name = jasilynns-tears-01</code> such that <code>position.x = 101</code> with the same results.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">effects</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">fluids</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">waterflow-00</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jasilynns-tears-00</span>
+<span class="w">      </span><span class="nt">layer</span><span class="p">:</span><span class="w"> </span><span class="s">'0'</span>
+<span class="w">      </span><span class="nt">position</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">70</span>
+<span class="w">        </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">      </span><span class="nt">flow</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">      </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">down</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">waterflow-00</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jasilynns-tears-01</span>
+<span class="w">      </span><span class="nt">layer</span><span class="p">:</span><span class="w"> </span><span class="s">'0'</span>
+<span class="w">      </span><span class="nt">position</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">102</span>
+<span class="w">        </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">      </span><span class="nt">flow</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">      </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">down</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">waterflow-00</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jasilynns-tears-02</span>
+<span class="w">      </span><span class="nt">layer</span><span class="p">:</span><span class="w"> </span><span class="s">'0'</span>
+<span class="w">      </span><span class="nt">position</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">600</span>
+<span class="w">        </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">600</span>
+<span class="w">      </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">left</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">waterflow-00</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jasilynns-tears-03</span>
+<span class="w">      </span><span class="nt">layer</span><span class="p">:</span><span class="w"> </span><span class="s">'0'</span>
+<span class="w">      </span><span class="nt">flow</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="w">      </span><span class="nt">position</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">632</span>
+<span class="w">        </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">      </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">down</span>
+</code></pre></div>
+<p><strong>Application Logs</strong></p>
+<p><em>Omitted after bug identified for brevity</em></p>
+<p><strong>State Dump</strong></p>
+<p><em>Omitted after bug identified for brevity</em></p>
+<p><strong>Hypotheses</strong></p>
+<ul>
+<li>the <code>_is_step_water</code> function, due to its <code>exclude=fluid.name</code> parameter, suppresses shoreline generation for overlapping pools.  Both fluid streams, with identical pool dimensions, end up mutually excluding each other, resulting in no shoreline generation around either pool, mathematically explaining Bug 1.</li>
+</ul>
+<p><strong>Notes</strong></p>
+<ul>
+<li>a core flaw: the shoreline logic is overly coupled to the individual Fluid instances. This leads to the mutual exclusion of shorelines at identical pool boundaries. Refactoring to decouple shoreline generation from individual fluids will resolve the core issue.</li>
+<li>This will entail an analysis of where to place the Shoreline State, as this state is currently a "Virtual State" on the Fluid asset. <strong>Thought</strong>: It could reside on the Board, similarly to the plot state, except keyed by layer.</li>
+<li>shorelines represent where water on a layer meets land. They don't belong to individual fluids but arise from the overall water geography of the layer. This unified perspective simplifies the logic.</li>
+<li>The shoreline should be linked to a layer as a whole, no longer belonging to a single fluid. This architectural shift simplifies the logic and provides a clean separation.</li>
+<li>Possible Shoreline invariant formula: A shoreline exists at (x, y) with orientation O if and only if: the tile is water, the adjacent cell (in direction O) is not water, and this adjacent cell is valid land. This removes the mutual exclusion deadlock and ensures correct shoreline generation regardless of the water's origin. This is a core shift in design and will require careful planning.</li>
+</ul>
+<p><strong>Task</strong>: Put together Phase 09.03.03 to refactor the Fluid workflow around these bugs.</p>
+<h5 id="architectural-analysis_1">Architectural Analysis</h5>
+<p>The erratic shoreline behavior discovered during User Acceptance Testing stems from a foundational category error: <strong>treating Shorelines as dependent child entities of individual <code>Fluid</code> emitters rather than as emergent, layer-scoped environmental geography.</strong></p>
+<h6 id="1-coincident-pool-mutual-exclusion-deadlock">1. Coincident Pool Mutual Exclusion Deadlock</h6>
+<p>When two adjacent streams (<code>jasilynns-tears-00</code> and <code>jasilynns-tears-01</code>) strike the same immovable obstacle (<code>jasilynns-rock</code> at <code>x=68, y=600</code>), both calculate an identical annular pool bounding box:</p>
+<div class="arithmatex">\[\text{Pool}_0 = \text{Pool}_1 = (x: 0, y: 512, w: 192, l: 224)\]</div>
+<p>During shoreline generation in <code>Cartographer._coalesce_segments</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 2. Skip if shoreline tile is submerged under an overlapping fluid (Fix B013)</span>
+<span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_step_water</span><span class="p">(</span><span class="n">board</span><span class="p">,</span> <span class="n">layer</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">step_len</span><span class="p">,</span> <span class="n">center_fixed</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="n">fluid</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+    <span class="n">commit_segment</span><span class="p">()</span>
+    <span class="n">c</span> <span class="o">+=</span> <span class="n">step_len</span>
+    <span class="k">continue</span>
+</code></pre></div>
+<ol>
+<li><code>Cartographer.generate(tears-00)</code> evaluates its pool perimeter at <code>center_fixed = 528</code>. It queries <code>board.water(layer, pos, exclude="jasilynns-tears-00")</code>. Because <code>tears-01</code> occupies the identical pool bounds, <code>board.water</code> evaluates to <code>True</code>. <code>Cartographer</code> classifies every single perimeter cell of <code>tears-00</code> as submerged under <code>tears-01</code> and discards them.</li>
+<li><code>Cartographer.generate(tears-01)</code> evaluates its pool perimeter with <code>exclude="jasilynns-tears-01"</code>. Because <code>tears-00</code> occupies the identical pool bounds, <code>board.water</code> evaluates to <code>True</code>. <code>Cartographer</code> classifies every single perimeter cell of <code>tears-01</code> as submerged under <code>tears-00</code> and discards them.</li>
+<li><strong>Result</strong>: Both fluids mutually suppress each other's shorelines, resulting in zero shorelines around the entire pool.</li>
+</ol>
+<h6 id="2-startup-hydration-vs-gate-invalidation-desynchronization">2. Startup Hydration vs. Gate Invalidation Desynchronization</h6>
+<p>The appearance of shorelines when a player steps on an unrelated gate plate occurs due to order-dependent state hydration:</p>
+<ol>
+<li><strong>Hydration Phase</strong>: The <code>Migrator</code> hydrates entities sequentially. When <code>tears-00</code> is hydrated and pumped, <code>tears-01</code> does not yet exist on the board. <code>tears-00</code> generates shorelines without seeing <code>tears-01</code>. When <code>tears-01</code> is later pumped, it sees <code>tears-00</code>'s established water corridor.</li>
+<li><strong>Runtime Invalidation</strong>: When the player steps on a switch, <code>FluidMechanics.update()</code> flags all fluids on layer <code>0</code> as <code>dirty</code>. It executes Pass 1 (<code>propagate</code>) followed by Pass 2 (<code>generate_shorelines</code>) for each fluid iteratively:
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">layer_fluids</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">actuator</span><span class="o">.</span><span class="n">generate_shorelines</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">board</span><span class="p">)</span>
+</code></pre></div></li>
+</ol>
+<p><code>Cartographer.purge(fluid, board)</code> only removes the shorelines associated with the active fluid instance (<code>fluid.state.shorelines</code>). Because shoreline synthesis is executed per-fluid rather than per-layer, cross-fluid boundary queries evaluate against partially updated intermediate states on <code>Board</code>.</p>
+<h6 id="remediation-layer-wide-geography-synthesis">Remediation: Layer-Wide Geography Synthesis</h6>
+<p>Shorelines represent the topological boundary where water meets dry substrate on a given layer. They have no physical or behavioral connection to individual fluid emitters.</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph Pass 1: Fluid Physics
+        FM[FluidMechanics] --&gt;|propagate all| ACT[Actuator]
+        ACT --&gt;|Raycast &amp; Annular Pools| FS[FluidStates]
+    end
+
+    subgraph Pass 2: Layer Geography
+        FM --&gt;|purge layer shorelines| CR[Cartographer]
+        FM --&gt;|generate layer shorelines| CR
+        CR --&gt;|Extract Water Rectangles| FS
+        CR --&gt;|contours sweep| CY[libs.core.math.geometry]
+        CR --&gt;|Substrate Sampling| BD[Board]
+        CR --&gt;|Spawn Shorelines| CD[Cradle]
+    end</code></pre>
+<ol>
+<li><strong>Decouple Shorelines from FluidState</strong>:</li>
+<li>Remove <code>shorelines: List[str]</code> from <code>FluidState</code>.</li>
+<li>Remove <code>parent_fluid: str</code> from <code>ShorelineState</code>.</li>
+<li>Shorelines become first-class geography entities indexed on <code>Board</code> solely by <code>layer</code>.</li>
+<li><strong>Layer-Scoped Contour Sweep</strong>:</li>
+<li>Instead of running 150 lines of directional flank descriptor extraction per fluid, <code>Cartographer</code> collects all active stream corridors and pool bounds on the layer into a single collection of primitive AABB tuples: <span class="arithmatex">\(\text{Rects}_{\text{water}} = \{ (x_1, y_1, x_2, y_2)_{\text{stream}}, (x_1, y_1, x_2, y_2)_{\text{pool}} \}\)</span></li>
+<li>Pass <span class="arithmatex">\(\text{Rects}_{\text{water}}\)</span> directly to <code>libs.core.math.geometry.contours()</code>.</li>
+<li>The existing Cython Sweep-Line XOR algorithm dissolves all shared interior edges, merges coincident pools, eliminates stream-to-pool seams, and returns the exact outer mathematical perimeter of the layer's aggregate water mask.</li>
+<li><strong>Stateless Substrate &amp; Occlusion Evaluation</strong>:</li>
+<li><code>Cartographer</code> samples the exterior normal of each exposed contour boundary against <code>board.tile(layer, coord)</code>.</li>
+<li><code>ShorelineIndex</code> resolves the matching <code>shoreline_id</code>.</li>
+<li>Contiguous segments are coalesced and spawned into <code>board</code> in a single pass. Mutual exclusion deadlocks and order dependencies are eliminated.</li>
+</ol>
+<h5 id="clarification-where-shoreline-state-lives">Clarification: Where Shoreline State Lives</h5>
+<pre class="mermaid"><code>flowchart TD
+    subgraph Board Database
+        BD[Board]
+        BD --&gt;|Layer Metadata| PERIM[board.perimeters: Dict[str, List[Boundary]]]
+        BD --&gt;|Layer Metadata| SHORES[board.shorelines: Dict[str, List[Asset]]]
+        BD --&gt;|Global Assets| ASSETS[board._assets: List[Asset]]
+    end
+
+    subgraph Geography Assets
+        ASSETS --&gt; SHORE1[Asset: spawn-01]
+        ASSETS --&gt; SHORE2[Asset: spawn-02]
+        SHORE1 --&gt; SS1[state: ShorelineState]
+        SHORE2 --&gt; SS2[state: ShorelineState]
+    end
+
+    subgraph Mechanics &amp; Generators
+        FM[FluidMechanics] --&gt;|Pass 2: purge &amp; generate| CART[Cartographer]
+        CART --&gt;|Update| SHORES
+        CART --&gt;|board.add / board.remove| ASSETS
+    end
+</code></pre>
+<p><strong>Layer-Level State: <code>board.shorelines</code> on <code>Board</code></strong></p>
+<p>The "virtual state" that previously lived on <code>fluid.state.shorelines</code> is migrated directly to <code>Board</code>, structured identically to <code>board.perimeters</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># app/game/board.py</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Board</span><span class="p">:</span>
+    <span class="c1"># Public Layer Metadata</span>
+    <span class="n">perimeters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Boundary</span><span class="p">]]</span>
+    <span class="n">shorelines</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]]</span>
+</code></pre></div>
+<ul>
+<li><strong>Storage</strong>: A layer-keyed collection on <code>Board</code> holding references to all active procedural shoreline <code>Asset</code> instances on that layer (<code>board.shorelines[layer] = [...]</code>).</li>
+<li><strong>Initialization</strong>: <code>board._init_cache(layer)</code> initializes <code>self.shorelines[layer] = []</code>.</li>
+<li><strong>Database Synchronization</strong>:</li>
+<li><code>board.add(assets)</code>: Whenever an added asset has <code>instance == AssetInstances.SHORELINES.value</code>, it is registered into <code>self.shorelines[layer]</code> (in addition to <code>_assets</code> and <code>_cached_renderables</code>).</li>
+<li><code>board.remove(assets)</code>: Automatically removes matching assets from <code>self.shorelines[layer]</code>.</li>
+</ul>
+<hr />
+<h5 id="bug-reports_1">Bug Reports</h5>
+<h6 id="bug-b015-coincident-pool-mutual-exclusion-flank-desynchronization">Bug B015: Coincident Pool Mutual Exclusion &amp; Flank Desynchronization</h6>
+<p><strong>STATUS</strong>: OPEN
+<strong>SEVERITY</strong>: HIGH</p>
+<p><strong>Description</strong></p>
+<p>When two fluid streams form identical or overlapping annular pools against the same obstacle, <code>Cartographer._coalesce_segments</code> evaluates each fluid's pool margin against <code>board.water(exclude=fluid.name)</code>. Because each pool's margin falls within the other fluid's pool bounds, both fluids mutually exclude each other, suppressing shoreline generation entirely. Furthermore, because <code>Cartographer.purge</code> and <code>Cartographer.generate</code> operate per-fluid, sequential startup hydration leaves stale shoreline artifacts that mutate whenever a dynamic gate switch invalidates the layer.</p>
+<p><strong>Steps to Replicate</strong></p>
+<ol>
+<li>Define two fluid emitters (<code>jasilynns-tears-00</code> and <code>jasilynns-tears-01</code>) flowing in parallel along the same axis into a shared static obstacle (<span class="arithmatex">\(m = 0\)</span>).</li>
+<li>Boot the engine and inspect the pool boundaries. Observe that zero shorelines are generated along the shared pool perimeter.</li>
+<li>Trigger a switch on an unrelated gate to invalidate the layer. Observe that shorelines appear and disappear along inter-stream boundaries.</li>
+</ol>
+<p><strong>Proposed Remediation</strong></p>
+<p>Deprecate per-fluid shoreline generation. Remove <code>shorelines</code> from <code>FluidState</code> and <code>parent_fluid</code> from <code>ShorelineState</code>. Implement layer-wide shoreline synthesis in <code>Cartographer.generate(layer, board, index)</code> using <code>libs.core.math.geometry.contours</code> to derive the outer boundary of the layer's aggregate water mask.</p>
+<hr />
+<h4 id="refactor-phase-090303-layer-wide-fluid-geography-contour-shorelines">Refactor: Phase 09.03.03 - Layer-Wide Fluid Geography &amp; Contour Shorelines</h4>
+<p><strong>Overview</strong></p>
+<p>Decouple shoreline geography from individual fluid emitters by removing relational parent-child tracking from <code>FluidState</code> and <code>ShorelineState</code>. Promote layer shoreline tracking to a first-class metadata collection on <code>Board</code> (<code>board.shorelines</code>), and migrate <code>Cartographer</code> to layer-wide geometric contour sweeps using <code>libs.core.math.geometry.contours()</code>.</p>
+<h5 id="goal-de-parenting-shoreline-fluid-state-models">Goal: De-parenting Shoreline &amp; Fluid State Models</h5>
+<p>Remove <code>shorelines: List[str]</code> from <code>FluidState</code> and <code>parent_fluid: Optional[str]</code> from <code>ShorelineState</code>. Individual shoreline segments retain <code>ShorelineState</code> as their concrete ECS state model, while parent-child tracking is eliminated.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># app/models/state/effects.py</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FluidState</span><span class="p">(</span><span class="n">EffectState</span><span class="p">):</span>
+    <span class="n">height</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">pool</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Pool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">hitboxes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Hitbox</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">dirty</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">flow</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">source</span><span class="p">:</span> <span class="n">Directions</span> <span class="o">=</span> <span class="n">Directions</span><span class="o">.</span><span class="n">DOWN</span><span class="o">.</span><span class="n">value</span>
+
+<span class="c1"># app/models/state/geography.py</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ShorelineState</span><span class="p">(</span><span class="n">AssetState</span><span class="p">):</span>
+    <span class="n">height</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">position</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Position</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">orientation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Directions</span><span class="o">.</span><span class="n">DOWN</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">thickness</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">bidirectional</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">hitboxes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Hitbox</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="goal-board-layer-shoreline-tracking">Goal: Board Layer Shoreline Tracking</h5>
+<p>Add <code>board.shorelines: Dict[str, List[Asset]]</code> to <code>Board</code> to track active procedural shoreline geography by layer, analogous to <code>board.perimeters</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># app/game/board.py</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Board</span><span class="p">:</span>
+    <span class="n">perimeters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Boundary</span><span class="p">]]</span>
+    <span class="n">shorelines</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="o">...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeters</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shorelines</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">shorelines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">layer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shorelines</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">all_shores</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">l_shores</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shorelines</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">all_shores</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">l_shores</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">all_shores</span>
+</code></pre></div>
+<h5 id="goal-layer-wide-geometric-water-contour-synthesis">Goal: Layer-Wide Geometric Water Contour Synthesis</h5>
+<p>Refactor <code>Cartographer</code> to extract all layer water AABBs into <code>(min_x, min_y, max_x, max_y)</code> primitives, compute the outer boundary hull via <code>geometry.contours()</code>, evaluate bordering substrate tiles from <code>board.tile()</code>, and spawn coalesced <code>Shoreline</code> entities.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># app/services/generators/game/cartographer.py</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Cartographer</span><span class="p">:</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">purge</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">Board</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">shores</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">shorelines</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">shores</span><span class="p">:</span>
+            <span class="n">board</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">shores</span><span class="p">))</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">layer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">board</span><span class="p">:</span> <span class="n">Board</span><span class="p">,</span>
+        <span class="n">index</span><span class="p">:</span> <span class="n">ShorelineIndex</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]:</span>
+        <span class="n">water_rects</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_collect_water_rectangles</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">board</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">water_rects</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">boundaries</span> <span class="o">=</span> <span class="n">geometry</span><span class="o">.</span><span class="n">contours</span><span class="p">(</span><span class="n">water_rects</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_synthesize_margins</span><span class="p">(</span><span class="n">boundaries</span><span class="p">,</span> <span class="n">layer</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="goal-coordinated-two-pass-layer-updates-in-fluidmechanics">Goal: Coordinated Two-Pass Layer Updates in FluidMechanics</h5>
+<p>Update <code>FluidMechanics.update()</code> to execute Pass 1 (<code>Actuator.propagate</code>) across all dirty layer fluids, followed by a single layer-level Pass 2 (<code>Cartographer.purge</code> and <code>Cartographer.generate</code>).</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># app/game/logic/mechanics/world/fluid.py</span>
+<span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">dirty_layers</span><span class="p">:</span>
+    <span class="n">layer_fluids</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">instances</span><span class="p">(</span><span class="n">AssetInstances</span><span class="o">.</span><span class="n">FLUIDS</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
+    <span class="c1"># Pass 1: Propagate fluid dynamics</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">layer_fluids</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actuator</span><span class="o">.</span><span class="n">propagate</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">board</span><span class="p">)</span>
+    <span class="c1"># Pass 2: Synthesize layer geography</span>
+    <span class="n">Cartographer</span><span class="o">.</span><span class="n">purge</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">board</span><span class="p">)</span>
+    <span class="n">new_shores</span> <span class="o">=</span> <span class="n">Cartographer</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shorelines</span><span class="p">)</span>
+    <span class="n">board</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_shores</span><span class="p">)</span>
+</code></pre></div>
+<h5 id="tasks_2">Tasks</h5>
+<p><strong>1. Task: Establish Layer Shoreline State on Board</strong></p>
+<p><em>Objective</em>: Add layer-scoped shoreline tracking to <code>Board</code> and update caching and mutation lifecycles.</p>
+<ul>
+<li>[x] Subtask: Add <code>shorelines: Dict[str, List[Asset]]</code> field to <code>Board</code> in <code>src/app/game/board.py</code>.</li>
+<li>[x] Subtask: Initialize <code>self.shorelines[layer] = []</code> in <code>Board._init_cache()</code>.</li>
+<li>[x] Subtask: Update <code>Board.add()</code> and <code>Board.remove()</code> to maintain <code>self.shorelines[layer]</code> alongside <code>_cached_instances</code>.</li>
+<li>[x] Subtask: Add <code>Board.shorelines(layer=None)</code> query interface.</li>
+</ul>
+<p><strong>2. Task: De-parent Shoreline and Fluid State Models</strong></p>
+<p><em>Objective</em>: Remove <code>shorelines</code> from <code>FluidState</code> and <code>parent_fluid</code> from <code>ShorelineState</code> and <code>Cradle</code>.</p>
+<ul>
+<li>[x] Subtask: Remove <code>shorelines: List[str]</code> field from <code>FluidState</code> in <code>src/app/models/state/effects.py</code>.</li>
+<li>[x] Subtask: Remove <code>parent_fluid: Optional[str]</code> field from <code>ShorelineState</code> in <code>src/app/models/state/geography.py</code>.</li>
+<li>[x] Subtask: Remove <code>parent_fluid</code> parameter from <code>Cradle.spawn_shoreline</code> in <code>src/app/services/generators/game/cradle.py</code>.</li>
+</ul>
+<p><strong>3. Task: Implement Layer-Wide Geometric Contour Generation in Cartographer</strong></p>
+<p><em>Objective</em>: Refactor <code>Cartographer</code> to extract layer water AABBs and derive unified shoreline boundaries using <code>geometry.contours()</code>.</p>
+<ul>
+<li>[x] Subtask: Implement <code>Cartographer._collect_water_rectangles(layer, board)</code> converting active streams and pools into <code>(min_x, min_y, max_x, max_y)</code> primitives.</li>
+<li>[x] Subtask: Implement <code>Cartographer.purge(layer, board)</code> using <code>board.shorelines(layer)</code>.</li>
+<li>[x] Subtask: Implement boundary orientation detection by probing outward normal coordinates against <code>board.water(layer, pos)</code>.</li>
+<li>[x] Subtask: Port 32px step sampling, substrate lookup (<code>board.tile</code>), occlusion checks (<code>_detect_flank_occlusions</code>), and contiguous segment coalescing to evaluate contour boundaries.</li>
+<li>[x] Subtask: Refactor <code>Cartographer.generate(layer, board, index)</code> to return all synthesized <code>Shoreline</code> entities for the layer.</li>
+</ul>
+<p><strong>4. Task: Refactor FluidMechanics Pipeline and Segregate Actuator</strong></p>
+<p><em>Objective</em>: Remove shoreline delegation from <code>Actuator</code> and coordinate layer-wide two-pass updates in <code>FluidMechanics</code>.</p>
+<ul>
+<li>[x] Subtask: Remove <code>generate_shorelines()</code> and <code>self.shorelines</code> dependency from <code>Actuator</code> in <code>src/app/services/generators/game/actuator.py</code>.</li>
+<li>[x] Subtask: Update <code>Actuator.pump(fluid, board)</code> to strictly propagate fluid dynamics.</li>
+<li>[x] Subtask: Inject <code>ShorelineIndex</code> directly into <code>FluidMechanics</code>.</li>
+<li>[x] Subtask: Update <code>FluidMechanics.update()</code> to execute Pass 1 per-fluid and Pass 2 per-layer across all invalidated layers.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="../../../../static/js/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

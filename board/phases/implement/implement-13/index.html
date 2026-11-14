@@ -1,0 +1,5082 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/board/phases/implement/implement-13/">
+      
+      
+        <link rel="prev" href="../implement-12/">
+      
+      
+        <link rel="next" href="../implement-14/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Phase 13 - Acoustics - Ontology</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#big-picture-architectural-review-phase-13-sound" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="Ontology" class="md-header__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ontology
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Phase 13 - Acoustics
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="Ontology" class="md-nav__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Ontology
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../00-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../01-assets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../02-sprites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../03-compositions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../04-intentions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../05-mechanics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../06-widgets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../07-acoustics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../08-narratives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../09-ecology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ecology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../10-chemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../11-emergence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../12-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../specs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Specifications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_15" id="__nav_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Specifications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/00-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dialogue Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/01-interaction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/02-wander/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wander Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_16" id="__nav_16_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Roadmap
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2" id="__nav_16_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_16_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_1" id="__nav_16_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-castle-dawn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Castle Dawn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-regalia-galleria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Regalia Galleria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-temple-of-trials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Trials of Trials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Dialogue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-view/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_2" id="__nav_16_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implement
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implement
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01 - Renderer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02 - Game
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03 - Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04 - Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 05 - Editor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06 - Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07 - Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08 - Pathfinding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09 - Hydrodynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10 - Seasons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 11 - Geology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 12 - Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 13 - Acoustics
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 13 - Acoustics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#big-picture-architectural-review-phase-13-sound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Big-Picture Architectural Review: Phase 13 (Sound)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Big-Picture Architectural Review: Phase 13 (Sound)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-disambiguating-configuration-sounds-scores-vs-assets-music-noises-vocals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Disambiguating Configuration (sounds, scores) vs. Assets (music, noises, vocals)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Disambiguating Configuration (sounds, scores) vs. Assets (music, noises, vocals)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-sound-score-configuration-pipeline-srcdataconfigsounds-srcdataconfigscores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. Sound &amp; Score Configuration Pipeline (/src/data/config/sounds/, /src/data/config/scores/)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-indexing-and-triggering-stateful-sound-assets-vocals-noises-music" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. Indexing and Triggering Stateful Sound Assets (vocals, noises, music)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-critical-architectural-improvements-for-libsaudiomixerpyx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Critical Architectural Improvements for libs/audio/mixer.pyx
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implement-phase-13-sound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implement: Phase 13: Sound
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implement: Phase 13: Sound">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis II
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis II">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-porting-scriptssynthesize-models-into-appmodelsproperties-and-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Porting scripts/synthesize Models into app.models.properties and Registry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-lpc-instrument-taxonomy-timbre-specialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. LPC Instrument Taxonomy &amp; Timbre Specialization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-solving-the-88-key-problem-the-13-key-chromatic-octave-keyboardgizmo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Solving the 88-Key Problem: The 13-Key Chromatic Octave &amp; KeyboardGizmo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review II
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis III
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis III">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-disambiguating-configurations-sounds-scores-from-assets-music-noises-vocals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Disambiguating Configurations (sounds, scores) from Assets (music, noises, vocals)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-indexing-interfaces-for-vocals-noises-and-music" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Indexing Interfaces for vocals, noises, and music
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-dual-path-lock-free-synthesizer-ring-buffer-score-sequencer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Dual-Path Lock-Free Synthesizer (Ring Buffer + Score Sequencer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review III
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-zero-allocation-cython-audio-mixer-libsaudiomixerpyx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Zero-Allocation Cython Audio Mixer (libs/audio/mixer.pyx)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-sound-score-configuration-compilation-into-board_cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Sound &amp; Score Configuration Compilation into Board._cache
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-vocal-component-noiseindex-musicindex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Vocal Component, NoiseIndex, &amp; MusicIndex
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-instrumentevent-instrumentmenu-13-key-instrumentcontroller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: InstrumentEvent, InstrumentMenu, &amp; 13-Key InstrumentController
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bug-reports-template-bug-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Reports (Template: Bug Report)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bug Reports (Template: Bug Report)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-b019-spsc-ring-buffer-overflow-head-of-line-blocking-on-multi-measure-score-playback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B019: SPSC Ring Buffer Overflow &amp; Head-of-Line Blocking on Multi-Measure Score Playback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b020-screenexport_map-renders-channel-modulations-to-default-backbuffer-instead-of-full_target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B020: Screen.export_map() Renders Channel Modulations to Default Backbuffer Instead of full_target
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 14 - Narratives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-n/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n - Commerce
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-n%2B1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n+1 - Towns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_3" id="__nav_16_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refactor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Refactor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-01-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01.01 - Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.01 - Frames
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.02 - Registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.03 - Equipment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.04 - Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.05 - Finetuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.06 - Effects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.07 - Registry Data Structures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.08 - World Chunks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-03-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.01 - Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-03-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.02 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-03-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.03 - Motion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-03-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.04 - Projectiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-04-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.01 - Typography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-04-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.02 - Simplification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-04-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.03 - Event Handlers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-04-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.04 - Menu Context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-04-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.05 - Gizmos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-04-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.06 - Pane Generation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-06-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.01 - Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-06-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.02 - Goals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-06-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.03 - Combat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-06-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.04 - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-07-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.01 - Elevation Sorting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-07-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.02 - Platforms & Elevated Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-07-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.03 - Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-07-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.04 - Materialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-07-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.05 - Composite Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-08-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.01 - Obstacle Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-08-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.02 - Navigation Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-08-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.03 - Trajectory Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-08-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.04 - Mutators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.01 - Fluid Flows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.02 - Shorelines & Geography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.03 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.04 - Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.05 - Bridges & Bifurcation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.06 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.07 - Frame Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.08 - Transverse Fluid Submersion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-10-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.01 - Stage Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-10-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.02 - Shoreline Seasonal Indexing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-10-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.03 - Flowers, Pixies & Reproduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-10-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.04 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../appendices/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_17" id="__nav_17_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/00-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/01-schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/02-diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagrams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reports
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../coverage/index" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unit Test Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#big-picture-architectural-review-phase-13-sound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Big-Picture Architectural Review: Phase 13 (Sound)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Big-Picture Architectural Review: Phase 13 (Sound)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-disambiguating-configuration-sounds-scores-vs-assets-music-noises-vocals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Disambiguating Configuration (sounds, scores) vs. Assets (music, noises, vocals)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Disambiguating Configuration (sounds, scores) vs. Assets (music, noises, vocals)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-sound-score-configuration-pipeline-srcdataconfigsounds-srcdataconfigscores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. Sound &amp; Score Configuration Pipeline (/src/data/config/sounds/, /src/data/config/scores/)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-indexing-and-triggering-stateful-sound-assets-vocals-noises-music" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. Indexing and Triggering Stateful Sound Assets (vocals, noises, music)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-critical-architectural-improvements-for-libsaudiomixerpyx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Critical Architectural Improvements for libs/audio/mixer.pyx
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implement-phase-13-sound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implement: Phase 13: Sound
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implement: Phase 13: Sound">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis II
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis II">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-porting-scriptssynthesize-models-into-appmodelsproperties-and-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Porting scripts/synthesize Models into app.models.properties and Registry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-lpc-instrument-taxonomy-timbre-specialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. LPC Instrument Taxonomy &amp; Timbre Specialization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-solving-the-88-key-problem-the-13-key-chromatic-octave-keyboardgizmo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Solving the 88-Key Problem: The 13-Key Chromatic Octave &amp; KeyboardGizmo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review II
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis III
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis III">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-disambiguating-configurations-sounds-scores-from-assets-music-noises-vocals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Disambiguating Configurations (sounds, scores) from Assets (music, noises, vocals)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-indexing-interfaces-for-vocals-noises-and-music" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Indexing Interfaces for vocals, noises, and music
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-dual-path-lock-free-synthesizer-ring-buffer-score-sequencer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Dual-Path Lock-Free Synthesizer (Ring Buffer + Score Sequencer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review III
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-zero-allocation-cython-audio-mixer-libsaudiomixerpyx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Zero-Allocation Cython Audio Mixer (libs/audio/mixer.pyx)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-sound-score-configuration-compilation-into-board_cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Sound &amp; Score Configuration Compilation into Board._cache
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-vocal-component-noiseindex-musicindex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Vocal Component, NoiseIndex, &amp; MusicIndex
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-instrumentevent-instrumentmenu-13-key-instrumentcontroller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: InstrumentEvent, InstrumentMenu, &amp; 13-Key InstrumentController
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bug-reports-template-bug-report" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Reports (Template: Bug Report)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bug Reports (Template: Bug Report)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-b019-spsc-ring-buffer-overflow-head-of-line-blocking-on-multi-measure-score-playback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B019: SPSC Ring Buffer Overflow &amp; Head-of-Line Blocking on Multi-Measure Score Playback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b020-screenexport_map-renders-channel-modulations-to-default-backbuffer-instead-of-full_target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B020: Screen.export_map() Renders Channel Modulations to Default Backbuffer Instead of full_target
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Phase 13 - Acoustics</h1>
+
+<h3 id="big-picture-architectural-review-phase-13-sound">Big-Picture Architectural Review: Phase 13 (Sound)</h3>
+<p><strong>User Review II</strong> identifies a fundamental category error in the previous Phase 13 specification: conflating <strong>Sound Assets</strong> (physical <code>.mp3</code> and <code>.wav</code> media files on disk that require hardware/RAM lifecycle management in the <code>Registry</code>) with <strong>Sound &amp; Score Configurations</strong> (declarative mathematical tables and symbolic timelines in <code>/src/data/config/</code> that are compiled into Cython primitives).</p>
+<p>Stepping back to examine the logical flow of <em>Ontology</em>, the engine is built around three strict pillars:</p>
+<ol>
+<li><strong>Assets (<code>/src/assets/&lt;category&gt;/**</code> <span class="arithmatex">\(\to\)</span> <code>PropertiesSchema</code> <span class="arithmatex">\(\to\)</span> <code>Registry</code>)</strong>: Physical files on the filesystem bound to runtime pointers (<code>TexturePtr</code>, <code>TTFFont</code>, and now <code>MixMusicPtr</code> and <code>MixChunkPtr</code>).</li>
+<li><strong>Configurations (<code>/src/data/config/&lt;domain&gt;/**</code> <span class="arithmatex">\(\to\)</span> <code>ConfigurationSchema</code> <span class="arithmatex">\(\to\)</span> <code>Builder</code> <span class="arithmatex">\(\to\)</span> <code>Board</code>)</strong>: Declarative rules, topologies, and schemas (<code>actions</code>, <code>compositions</code>, <code>intentions</code>, <code>materials</code>, <code>menus</code>, <code>plots</code>, <code>recipes</code>, and now <code>sounds</code> and <code>scores</code>) that are compiled during bootstrap into <span class="arithmatex">\(O(1)\)</span> execution structures (<code>Executors</code>, <code>Relations</code>, and <code>Board._cache</code>).</li>
+<li><strong>State (<code>/src/data/state/&lt;board&gt;/**</code> <span class="arithmatex">\(\to\)</span> <code>StateSchema</code> <span class="arithmatex">\(\to\)</span> <code>Migrator</code> <span class="arithmatex">\(\to\)</span> <code>Board</code>)</strong>: Dynamic entity deployments and macro-world variables (<code>calendar</code>, <code>plots</code>) mutated by <code>Mechanics</code> and rendered/synthesized across the Cython boundary using zero-heap <code>.primitive()</code> tuples.</li>
+</ol>
+<pre class="mermaid"><code>flowchart TD
+    subgraph Disk ["Filesystem"]
+        A1["/src/assets/sounds/{music,noises,vocals}/*.mp3, *.wav, main.yaml"]
+        C1["/src/data/config/sounds/main.yaml"]
+        C2["/src/data/config/scores/**/*.yaml"]
+    end
+
+    subgraph Boot ["Phase 1: Boot (Orchestrator &amp; Builder)"]
+        L1["Loader.load_properties()"]
+        L2["Loader.load_configurations()"]
+        R1["Registry._cache() &amp; _index()"]
+        B1["Builder.build_relations()"]
+        B2["Builder.build_sounds()"]
+    end
+
+    subgraph Runtime ["Phase 2 &amp; Loop: Runtime Memory"]
+        REG["Registry (_music: MixMusicPtr, _chunks: MixChunkPtr)"]
+        REL["Relations (MusicIndex, NoiseIndex)"]
+        BC["Board._cache (CompiledNote &amp; CompiledScore .primitive() tuples)"]
+        MIX["libs.audio.mixer (SDL_mixer + 32-Voice PostMix Synth)"]
+    end
+
+    A1 --&gt; L1 --&gt; R1 --&gt; REG
+    A1 --&gt; L1 --&gt; B1 --&gt; REL
+    C1 &amp; C2 --&gt; L2 --&gt; B2 --&gt; BC
+    REG --&gt; MIX
+    REL --&gt; MIX
+    BC --&gt; MIX
+</code></pre>
+<hr />
+<h4 id="1-disambiguating-configuration-sounds-scores-vs-assets-music-noises-vocals">1. Disambiguating Configuration (<code>sounds</code>, <code>scores</code>) vs. Assets (<code>music</code>, <code>noises</code>, <code>vocals</code>)</h4>
+<h5 id="a-sound-score-configuration-pipeline-srcdataconfigsounds-srcdataconfigscores">A. Sound &amp; Score Configuration Pipeline (<code>/src/data/config/sounds/</code>, <code>/src/data/config/scores/</code>)</h5>
+<p>As seen in the current Data View, <code>/src/data/config/sounds/main.yaml</code> (<code>signatures</code>, <code>beats</code>, <code>dynamics</code>, <code>timbres</code>, <code>notes</code>) and <code>/src/data/config/scores/chopin/nocturne-op-9-no-2.yaml</code> (<code>score</code>) already reside in <code>/src/data/config/</code>. They have no physical media files associated with them and must never enter <code>PropertiesSchema</code> or <code>Registry</code>.</p>
+<ul>
+<li><strong>Ingestion (<code>Loader</code> &amp; <code>ConfigurationSchema</code>)</strong>:</li>
+<li>
+<p><code>Loader.load_configurations()</code> validates <code>/src/data/config/sounds/**/*.yaml</code> into <code>ConfigurationSchema.sounds: SoundConfiguration</code> and <code>/src/data/config/scores/**/*.yaml</code> into <code>ConfigurationSchema.scores: Dict[str, ScoreConfiguration]</code>.</p>
+</li>
+<li>
+<p><strong>Compilation (<code>Builder.build_sounds()</code> <span class="arithmatex">\(\to\)</span> <code>Board._cache</code>)</strong>:</p>
+</li>
+<li>Mirroring how <code>Asset.primitive()</code> flattens spatial attributes into a C-ready tuple <code>(index, x, y, w, l, hitboxes)</code>, the compiled synthesis models—<code>CompiledNote</code> and <code>CompiledScore</code>—act as thin immutable containers around pre-packed primitive tuples:</li>
+</ul>
+<div class="arithmatex">\[\text{CompiledNote.primitive}() \mapsto \big(t_{\text{delay}},\; f_0,\; \Delta t,\; v,\; t_{\text{attack}},\; k_{\text{decay}},\; n_h,\; (w_0, w_1, \dots, w_7)\big)\]</div>
+<ul>
+<li>During <code>Builder.build_board()</code> (or a dedicated <code>Builder.build_sounds()</code> pipeline stage), a <code>SynthesizerCompiler</code> service pre-compiles:</li>
+<li>Every declarative <code>ScoreConfiguration</code> entry into a <code>CompiledScore</code> object holding its sorted tuple sequence <code>events: Tuple[Tuple[...], ...]</code> and motif pitch sequence <code>pitches: Tuple[str, ...]</code>.</li>
+<li>
+<p>A flat lookup table of <code>CompiledNote</code> primitives indexed by <code>(pitch_name, beat_name, dynamic_name, timbre_name)</code> (or pre-indexed frequency/duration/velocity/timbre structs) and stores both directly inside <code>Board._cache</code> (<code>cache.cached_scores</code>, <code>cache.cached_notes</code>).</p>
+</li>
+<li>
+<p>At runtime, when <code>InstrumentController.select()</code> handles a key press or a <code>player-piano</code> score trigger, it queries <code>board.note(...)</code> or <code>board.score(...)</code> from <code>Board._cache</code> in <span class="arithmatex">\(O(1)\)</span> time and passes <code>.primitive()</code> directly across the Cython boundary to <code>mixer.push_note()</code> or <code>mixer.push_score()</code> with **zero heap allocation and zero dictionary parsing in <code>Registry**</code>.</p>
+</li>
+</ul>
+<hr />
+<h5 id="b-indexing-and-triggering-stateful-sound-assets-vocals-noises-music">B. Indexing and Triggering Stateful Sound Assets (<code>vocals</code>, <code>noises</code>, <code>music</code>)</h5>
+<p>In <code>/src/assets/sounds/main.yaml</code>, <code>PropertiesSchema.sounds</code> indexes physical <code>.wav</code> and <code>.mp3</code> files across three instances: <code>vocals</code>, <code>noises</code>, and <code>music</code>. Why was <code>Frame</code> inappropriate for indexing them, and what interfaces replace it?</p>
+<ol>
+<li><strong>Why <code>Frame</code> is Inappropriate</strong>:</li>
+<li><code>Frame</code> is a 2D spatial texture crop calculator (<code>(sx, sy, sw, sl)</code>) bound to an entity's visual <code>.png</code> atlas. An <code>Asset</code> deployed on the Board already occupies its <code>asset.frame</code> slot with its visual <code>Frame</code> strategy (e.g., <code>SpriteFrame</code>, <code>BinaryFrame</code>, <code>SeasonalFrame</code>).</li>
+<li>
+<p>Audio assets are 1D temporal streams (<code>.mp3</code>) or PCM sample buffers (<code>.wav</code>) stored in <code>/src/assets/sounds/</code>, independent of the visual <code>.png</code> file identified by <code>asset.id</code>.</p>
+</li>
+<li>
+<p><strong><code>vocals</code> — First-Class ECS Component on <code>Asset</code> (<code>Vocal</code>)</strong>:</p>
+</li>
+<li><code>vocals</code> are emitted by animate, intentional <code>Asset</code> instances (<code>sheets.sprites</code>, <code>sheets.players</code>, <code>sheets.pixies</code>) as a direct function of their internal state (<code>state.intention</code>, <code>state.animation.action</code>, <code>state.expression</code>, <code>state.mutators.triggers</code>).</li>
+<li>Therefore, <code>Vocal</code> belongs on <code>Asset</code> at the exact same architectural level as <code>Frame</code>, <code>Animation</code>, and <code>HitboxSchema</code>:</li>
+<li><strong><code>Asset.vocal: Vocal</code></strong>: Injected via <code>/src/data/config/recipes/main.yaml</code> (<code>recipe.vocal</code>).</li>
+<li><strong><code>Vocal.index(id: str, properties: VocalProperties) -&gt; Dict[str, Tuple[int, int]]</code></strong>: Used by <code>Registry._index()</code> to map compound vocal keys (e.g., <code>f"{id}-{action}"</code> or <code>f"{id}-{expression}"</code>) to sample slice offsets <code>(start_sample, num_samples)</code> within a <code>.wav</code> file (or <code>(0, -1)</code> for whole-file <code>.wav</code> samples).</li>
+<li>
+<p><strong><code>Vocal.keys(id: str, state: AssetState, properties: AssetProperties) -&gt; List[str]</code></strong>: Queried at runtime by <code>SoundMechanics</code> to project a Sprite's active state transitions (e.g., entering <code>slash</code>, <code>die</code>, <code>speak</code>, or spawning an <code>anger</code> expression) into <code>Registry</code> chunk keys.</p>
+</li>
+<li>
+<p><strong><code>noises</code> — Dual Indexing via <code>Noise</code> ECS Component &amp; <code>NoiseIndex</code> Relation</strong>:</p>
+</li>
+<li>Why is <code>noises</code> less obvious than <code>vocals</code>? Because in a simulation engine, physical noises arise from <strong>two distinct mechanisms</strong>:</li>
+<li><strong>Intrinsic Asset State Mutations (Entity-Bound)</strong>: A <code>Chest</code> or <code>Gate</code> flipping <code>state.switch</code> (<code>open</code>/<code>close</code>), a <code>Plate</code> depressing, a <code>Door</code> traversing, an <code>Effect</code> pulsing on a specific <code>animation.frame</code>, or an <code>Equipment</code> item executing <code>slash</code>/<code>shoot</code>.</li>
+<li>
+<p><strong>Relational / Material Interactions (Environment-Bound)</strong>: A <code>Sprite</code> or <code>Crate</code> moving across an <code>Environ Tile</code> (footsteps/scraping modulated by the Tile's terrain or <code>friction</code>), or two <code>Weight</code> bodies colliding in <code>CollisionMechanics</code> (impact sound determined by <code>(asset.state.material, other.state.material)</code>).</p>
+</li>
+<li>
+<p>To handle both cleanly without polluting <code>Frame</code>:</p>
+</li>
+<li>**In <code>Registry**</code>: Physical <code>.wav</code> files under <code>/src/assets/sounds/noises/</code> are indexed into <code>Registry._chunks</code> as <code>MixChunkPtr</code> extension objects (supporting optional <code>(start_sample, num_samples)</code> slicing via <code>Noise.index(id, properties)</code>).</li>
+<li><strong>In <code>Relations</code> (<code>NoiseIndex</code>)</strong>: Compiled during <code>Builder.build_relations()</code> from <code>PropertiesSchema.sounds.noises</code>. Each <code>NoiseProperties</code> entry declares its trigger domain (<code>category</code>, <code>instance</code>, optional <code>material</code>, <code>state_key</code> / <code>action</code>). <code>NoiseIndex</code> exposes <span class="arithmatex">\(O(1)\)</span> relational lookup <code>noise_index.resolve(category, instance, material=..., trigger=...) -&gt; Optional[str]</code>.</li>
+<li>
+<p>When <code>InteractionMechanics</code> toggles a <code>Chest</code>/<code>Gate</code>/<code>Plate</code>, <code>MotionMechanics</code> steps across a <code>Tile</code>, or <code>CollisionMechanics</code> resolves an elastic impulse exceeding a velocity threshold, <code>SoundMechanics</code> resolves the <code>noise_key</code> through <code>NoiseIndex</code> and dispatches a <code>NoiseEvent(noise_key, layer, position, gain)</code> to the bus.</p>
+</li>
+<li>
+<p><strong><code>music</code> — Macro-Environmental Indexing via <code>MusicIndex</code> Relation</strong>:</p>
+</li>
+<li>Unlike <code>vocals</code> (bound to a Sprite) or <code>noises</code> (bound to an Object/Interaction), <code>music</code> (<code>.mp3</code> streams) is a macro-state property of the <strong>Board Layer, Season, and Plot</strong>—architecturally parallel to how <code>Environ Tiles</code> respond to <code>CalendarState</code> and <code>Library</code> responds to <code>PlotState</code>.</li>
+<li>**In <code>Registry**</code>: Physical <code>.mp3</code> files under <code>/src/assets/sounds/music/</code> are indexed into <code>Registry._music</code> as <code>MixMusicPtr</code> Cython extension types wrapping <code>Mix_Music*</code>, alongside loop points (<code>loop_start</code>, <code>loop_end</code>) and <code>gain</code> from <code>MusicProperties</code>.</li>
+<li><strong>In <code>Relations</code> (<code>MusicIndex</code>)</strong>: Compiled in <code>Builder.build_relations()</code> from <code>PropertiesSchema.sounds.music</code>, mapping <code>(layer, season, plot) -&gt; (music_id, loop_start, loop_end, gain)</code> with wildcard fallback <code>(layer, None, None)</code>.</li>
+<li>When <code>StateEventHandler</code> finishes board hydration, <code>SeasonEventHandler</code> advances the calendar, or <code>InteractionMechanics</code> transitions the Player through a <code>Door</code> to a new <code>layer</code>, the handler queries <code>MusicIndex</code> and instructs <code>mixer.play_music(music_ptr, loop_start, loop_end, gain, fade_ms)</code> to crossfade the background stream.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Audio Domain</th>
+<th>Disk Location</th>
+<th>Schema Owner</th>
+<th>Runtime Storage</th>
+<th>Indexing / Resolution Strategy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>sounds</code> (Synth Config)</strong></td>
+<td><code>/src/data/config/sounds/</code></td>
+<td><code>ConfigurationSchema.sounds</code></td>
+<td><code>Board._cache</code> (<code>cached_notes</code>)</td>
+<td>Compiled by <code>Builder.build_sounds()</code> into <code>CompiledNote.primitive()</code> tuples</td>
+</tr>
+<tr>
+<td><strong><code>scores</code> (Score Config)</strong></td>
+<td><code>/src/data/config/scores/</code></td>
+<td><code>ConfigurationSchema.scores</code></td>
+<td><code>Board._cache</code> (<code>cached_scores</code>)</td>
+<td>Compiled by <code>Builder.build_sounds()</code> into <code>CompiledScore.primitive()</code> tuple arrays &amp; Motif Trie</td>
+</tr>
+<tr>
+<td><strong><code>vocals</code> (Sound Asset)</strong></td>
+<td><code>/src/assets/sounds/vocals/</code></td>
+<td><code>PropertiesSchema.sounds.vocals</code></td>
+<td><code>Registry._chunks</code> (<code>MixChunkPtr</code>)</td>
+<td><code>Asset.vocal</code> ECS component (<code>Vocal.index()</code> &amp; <code>Vocal.keys()</code>)</td>
+</tr>
+<tr>
+<td><strong><code>noises</code> (Sound Asset)</strong></td>
+<td><code>/src/assets/sounds/noises/</code></td>
+<td><code>PropertiesSchema.sounds.noises</code></td>
+<td><code>Registry._chunks</code> (<code>MixChunkPtr</code>)</td>
+<td><code>NoiseIndex</code> relation <code>(category, instance, material, trigger) -&gt; chunk_key</code></td>
+</tr>
+<tr>
+<td><strong><code>music</code> (Sound Asset)</strong></td>
+<td><code>/src/assets/sounds/music/</code></td>
+<td><code>PropertiesSchema.sounds.music</code></td>
+<td><code>Registry._music</code> (<code>MixMusicPtr</code>)</td>
+<td><code>MusicIndex</code> relation <code>(layer, season, plot) -&gt; music_key</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="2-critical-architectural-improvements-for-libsaudiomixerpyx">2. Critical Architectural Improvements for <code>libs/audio/mixer.pyx</code></h4>
+<p>Inspecting <code>scripts/synthesize/sound.pyx</code> alongside <code>src/data/config/scores/chopin/nocturne-op-9-no-2.yaml</code> reveals an important architectural bottleneck in the original specification:</p>
+<ol>
+<li><strong>Separating the Interactive SPSC Ring Buffer from the Score Sequencer Cursor</strong>:</li>
+<li>The 22-measure <code>chopin_nocturne_op9_no2</code> score compiles into <strong>~950 individual <code>NoteEvent</code> structs</strong>.</li>
+<li>If <code>push_score()</code> dumps all 950 events into a 256-slot SPSC ring buffer (<code>RING_BUFFER_SIZE = 256</code>), the ring buffer immediately saturates and drops nearly 700 notes on the first tick. Furthermore, if the audio callback drains the ring buffer sequentially by waiting for <code>ring[read_idx].start_sample &lt;= current_sample</code>, any scheduled future score note at the head of the ring buffer will <strong>head-of-line block</strong> immediate interactive notes (<code>start_sample == 0</code>) pushed by the player!</li>
+<li><strong>Solution</strong>: Split synthesis dispatch in <code>SynthState</code> into two lock-free paths:</li>
+<li><strong>Immediate Interactive Ring Buffer (<code>NoteEvent ring[256]</code>)</strong>: Exclusively handles real-time single-note triggers (<code>mixer.push_note(note_primitive)</code>). Every entry in <code>ring</code> has zero start delay and is allocated to a free <code>Voice</code> immediately on the next audio callback frame.</li>
+<li>
+<p><strong>Score Sequencer Buffer (<code>NoteEvent score_buf[MAX_SCORE_EVENTS]</code>, <code>int score_len</code>, <code>int score_idx</code>, <code>int score_sample_pos</code>, <code>int score_active</code>)</strong>: Handles compiled multi-note timelines (<code>mixer.push_score(score_primitives)</code>). The audio callback advances <code>score_sample_pos</code> independently on each sample and spawns voices as <code>score_buf[score_idx].start_sample &lt;= score_sample_pos</code>. This allows a 1,000+ note <code>player-piano</code> score to play autonomously while the player simultaneously plays live notes on top without buffer overflow or head-of-line blocking.</p>
+</li>
+<li>
+<p><strong>Zero-Heap Tuple Unpacking Across the Cython Boundary</strong>:</p>
+</li>
+<li>In <code>scripts/synthesize/models.py</code>, <code>harmonics</code> was a Python <code>List[float]</code>, forcing Cython's <code>play()</code> to iterate over a heap-allocated Python list inside every tuple.</li>
+<li>By pre-padding harmonics to a fixed 8-element float tuple <code>(w0, w1, w2, w3, w4, w5, w6, w7)</code> accompanied by <code>num_harmonics: int</code> inside <code>CompiledNote.primitive()</code>, <code>mixer.push_note()</code> unpacks a flat 15-element C-compatible tuple <code>(start_delay, freq, duration, velocity, attack, decay, num_harmonics, w0, w1, w2, w3, w4, w5, w6, w7)</code> directly onto stack primitives without touching a single nested Python list.</li>
+</ol>
+<h4 id="implement-phase-13-sound">Implement: Phase 13: Sound</h4>
+<p><strong>Overview</strong> </p>
+<p>Implement the foundational audio and procedural synthesis architecture for the engine, cleanly separating physical <strong>Sound Assets</strong> (<code>/src/assets/sounds/</code>: <code>music</code>, <code>noises</code>, <code>vocals</code>) indexed in the <code>Registry</code> from declarative <strong>Sound &amp; Score Configurations</strong> (<code>/src/data/config/sounds/</code>, <code>/src/data/config/scores/</code>) compiled into the <code>Board</code> cache. This phase integrates a lock-free Cython audio mixer (<code>libs/audio/mixer.pyx</code>), inducts LPC <code>instruments</code> (<code>pipe-organ</code>, <code>grand-piano</code>, <code>player-piano</code>, <code>lute</code>, <code>bongos</code>) into the <code>objects</code> Asset Category, introduces the <code>Vocal</code> ECS component and <code>MusicIndex</code>/<code>NoiseIndex</code> relational indices, and implements the <code>InstrumentEvent</code> <span class="arithmatex">\(\to\)</span> <code>InstrumentMenu</code> <span class="arithmatex">\(\to\)</span> <code>MelodyEvent</code> <span class="arithmatex">\(\to\)</span> <code>SoundMechanics</code> pipeline driving Sprite psychological resonance.</p>
+<p><strong>Diagrams</strong></p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph Disk ["Filesystem"]
+        A1["/src/assets/sounds/{music,noises,vocals}/*.mp3, *.wav, main.yaml"]
+        C1["/src/data/config/sounds/main.yaml"]
+        C2["/src/data/config/scores/**/*.yaml"]
+    end
+
+    subgraph Boot ["Phase 1: Boot (Orchestrator &amp; Builder)"]
+        L1["Loader.load_properties()"]
+        L2["Loader.load_configurations()"]
+        R1["Registry._cache() &amp; _index()"]
+        B1["Builder.build_relations()"]
+        B2["Builder.build_sounds()"]
+    end
+
+    subgraph Runtime ["Phase 2 &amp; Loop: Runtime Memory"]
+        REG["Registry (_music: MixMusicPtr, _chunks: MixChunkPtr)"]
+        REL["Relations (MusicIndex, NoiseIndex)"]
+        BC["Board._cache (CompiledNote &amp; CompiledScore .primitive() tuples)"]
+        MIX["libs.audio.mixer (SDL_mixer + 32-Voice PostMix Synth)"]
+    end
+
+    A1 --&gt; L1 --&gt; R1 --&gt; REG
+    A1 --&gt; L1 --&gt; B1 --&gt; REL
+    C1 &amp; C2 --&gt; L2 --&gt; B2 --&gt; BC
+    REG --&gt; MIX
+    REL --&gt; MIX
+    BC --&gt; MIX</code></pre>
+<h5 id="specification">Specification</h5>
+<ol>
+<li><strong>Disambiguated Audio Data Architecture</strong>:</li>
+<li><strong>Sound Configurations (<code>/src/data/config/sounds/main.yaml</code> <span class="arithmatex">\(\to\)</span> <code>ConfigurationSchema.sounds</code>)</strong>:<ul>
+<li><code>signatures</code>: Time signature definitions (<code>beats_per_measure</code>, <code>beat_unit</code>).</li>
+<li><code>beats</code>: Whole-note normalized duration scalars (<code>double_whole: 2.0</code> down to <code>thirty_second: 0.03125</code> and triplets).</li>
+<li><code>dynamics</code>: Symbolic dynamic markings (<code>ppp: 0.15</code> through <code>fff: 1.00</code>) mapped to normalized velocity scalars.</li>
+<li><code>timbres</code>: Additive synthesis harmonic profiles (<code>harmonics: List[float]</code>, <code>attack: float</code>, <code>decay: float</code>, <code>beat: str</code>) for <code>piano</code>, <code>soft_piano</code>, <code>grand_piano</code>, <code>pipe_organ</code>, <code>lute</code>, <code>bongos</code>, <code>reed</code>, and <code>bell</code>.</li>
+<li><code>notes</code>: Equal-temperament pitch lookup table (<code>REST</code>, <code>A0</code>–<code>C8</code>) in Hz.</li>
+</ul>
+</li>
+<li><strong>Score Configurations (<code>/src/data/config/scores/**/*.yaml</code> <span class="arithmatex">\(\to\)</span> <code>ConfigurationSchema.scores</code>)</strong>:<ul>
+<li>Declarative multi-track and single-track musical compositions (<code>signature</code>, <code>bpm</code>, <code>tracks</code>, <code>notes</code>), including <code>chopin_nocturne_op9_no2</code> and short recognizable gameplay motifs.</li>
+</ul>
+</li>
+<li><strong>Sound Assets (<code>/src/assets/sounds/main.yaml</code> <span class="arithmatex">\(\to\)</span> <code>PropertiesSchema.sounds</code>)</strong>:<ul>
+<li><code>music</code>: Streaming <code>.mp3</code> background tracks configured with <code>loop: Tuple[float, float]</code>, <code>gain: float</code>, and relational selectors (<code>layers</code>, <code>seasons</code>, <code>plots</code>).</li>
+<li><code>noises</code>: Physical and environmental <code>.wav</code> SFX samples configured with <code>gain: float</code>, optional sample slice bounds, and relational triggers (<code>category</code>, <code>instance</code>, <code>material</code>, <code>trigger</code>).</li>
+<li><code>vocals</code>: Character and creature <code>.wav</code> verbalization samples configured with <code>gain: float</code> and state-to-slice mappings (<code>actions</code>, <code>intentions</code>, <code>expressions</code>).</li>
+</ul>
+</li>
+<li><strong>Compilation &amp; Zero-Heap <code>primitive()</code> Models (<code>Builder</code> &amp; <code>Board._cache</code>)</strong>:</li>
+<li><code>Builder.build_sounds()</code> compiles <code>ConfigurationSchema.sounds</code> and <code>ConfigurationSchema.scores</code> during Phase 1 Boot into immutable <code>CompiledNote</code> and <code>CompiledScore</code> models stored in <code>Board._cache</code> (<code>cached_notes</code>, <code>cached_scores</code>, and <code>motif_trie</code>).</li>
+<li><code>CompiledNote.primitive()</code> returns a flat 15-element tuple <code>(start_delay, freq, duration, velocity, attack, decay, num_harmonics, w0, w1, w2, w3, w4, w5, w6, w7)</code> for zero-heap unpacking in Cython.</li>
+<li><code>CompiledScore.primitive()</code> returns a tuple of pre-sorted <code>CompiledNote.primitive()</code> tuples ready for direct ingestion by <code>mixer.push_score()</code>.</li>
+<li><strong>Sound Asset Indexing (<code>Registry</code>, <code>Vocal</code> ECS Component, <code>MusicIndex</code>, <code>NoiseIndex</code>)</strong>:</li>
+<li><strong>Registry Audio Wrappers (<code>libs/graphics/registry.pyx</code> &amp; <code>libs/audio/mixer.pyx</code>)</strong>:<ul>
+<li>Discovers <code>.mp3</code> and <code>.wav</code> files in <code>/src/assets/sounds/</code> during <code>Registry._cache()</code>.</li>
+<li>Wraps <code>.mp3</code> streams in <code>MixMusicPtr</code> (<code>Mix_FreeMusic</code> in <code>__dealloc__</code>) and <code>.wav</code> chunks in <code>MixChunkPtr</code> (<code>Mix_FreeChunk</code> in <code>__dealloc__</code>), prewarmed within the <code>Registry.prewarm()</code> frame budget.</li>
+</ul>
+</li>
+<li><strong><code>Vocal</code> Component (<code>app.assets.base.Vocal</code>)</strong>:<ul>
+<li>First-class ECS behavioral interface injected into <code>Asset</code> (<code>asset.vocal</code>) via <code>Recipe</code>.</li>
+<li><code>Vocal.index(id, properties)</code> maps state-qualified vocal keys to sample slices; <code>Vocal.keys(id, state, properties)</code> emits active vocal keys when a Sheet's <code>intention</code>, <code>action</code>, or <code>expression</code> mutates.</li>
+</ul>
+</li>
+<li><strong><code>NoiseIndex</code> &amp; <code>MusicIndex</code> (<code>app.game.logic.relations</code>)</strong>:<ul>
+<li><code>NoiseIndex</code>: Compiled in <code>Builder.build_relations()</code>, mapping <code>(category, instance, material, trigger) -&gt; noise_key</code> for <span class="arithmatex">\(O(1)\)</span> SFX lookup on Object switches, footsteps, and collisions.</li>
+<li><code>MusicIndex</code>: Compiled in <code>Builder.build_relations()</code>, mapping <code>(layer, season, plot) -&gt; music_key</code> for automatic layer/season/plot background music transitions.</li>
+</ul>
+</li>
+<li><strong>Instrument Object Taxonomy (<code>objects.instruments</code>)</strong>:</li>
+<li>Register <code>instruments</code> under <code>AssetCategories.OBJECTS</code> (<code>ObjectPropertyInstances.instruments</code>, <code>ObjectStateInstances.instruments</code>, and <code>Cache.get_obstacles()</code>):</li>
+<li><strong>Supported LPC Assets</strong>: <code>pipe-organ</code>, <code>grand-piano</code>, <code>player-piano</code>, <code>lute</code>, <code>bongos</code>.</li>
+<li><strong><code>InstrumentProperties(ObjectProperties)</code></strong>: Extends <code>ObjectProperties</code> with <code>timbre: str</code>, <code>layout: Enumerated[InstrumentLayouts]</code> (<code>chromatic</code>, <code>percussion</code>, <code>player</code>), <code>octaves: Tuple[int, int] = (2, 6)</code>, and <code>default_beat: str = "quarter"</code>.</li>
+<li><strong><code>InstrumentState(ObjectState)</code></strong>: Extends <code>ObjectState</code> with <code>octave: int = 4</code>, <code>dynamic: Enumerated[Dynamics] = "mf"</code>, <code>score: Optional[str] = None</code>, and <code>switch: bool = False</code>.</li>
+<li><strong>Audio Architecture (<code>libs/audio/mixer.pyx</code>)</strong>:</li>
+<li>Unified SDL2 / <code>SDL_mixer</code> backend at 48,000 Hz, <code>AUDIO_F32SYS</code>, with headless fallback (<code>SDL_AUDIODRIVER=dummy</code>).</li>
+<li>Dual-path <code>Mix_SetPostMix</code> <code>nogil</code> additive synthesizer (32 polyphonic voices, 8 harmonics, Stevens' power law <span class="arithmatex">\(A = v^{1.8}\)</span>, dynamic brightness <span class="arithmatex">\(w'_h = w_h \cdot v^{0.5h}\)</span>):<ul>
+<li><strong>Interactive SPSC Ring Buffer (<code>NoteEvent[256]</code>)</strong>: Lock-free immediate single-note dispatch via <code>push_note()</code>.</li>
+<li><strong>Score Sequencer Cursor (<code>NoteEvent[MAX_SCORE_EVENTS]</code>)</strong>: Lock-free timeline playback via <code>push_score()</code> preventing ring-buffer saturation on multi-hundred-note scores (<code>chopin_nocturne_op9_no2</code>) and avoiding head-of-line blocking.</li>
+</ul>
+</li>
+<li><strong>Interactive Instrument Event &amp; Menu Pipeline</strong>:</li>
+<li><code>PlayerMechanics</code> / <code>InteractionMechanics</code> emits <code>InstrumentEvent(sprite, instrument, properties)</code> onto <code>Engine.bus</code> when interacting with an <code>objects.instruments</code> hitbox.</li>
+<li><code>InstrumentEventHandler</code> pauses world simulation (<code>board.paused = True</code>), constructs <code>InstrumentContext(sprite, instrument, properties)</code>, and pushes <code>InstrumentMenu</code> via <code>Provider.menu("instrument", context)</code>.</li>
+<li><code>Fabricator.expand()</code> expands the <code>keyboard</code> Gizmo schema into a 13-key chromatic octave (5 upper <code>key-black</code> buttons + 8 lower <code>key-white</code> buttons) or 4 <code>drum-pad</code> buttons for <code>bongos</code>.</li>
+<li><code>InstrumentController.select()</code> resolves <code>board.note(pitch, beat, dynamic, timbre)</code> from <code>Board._cache</code> and pushes <code>MelodyEvent</code> onto <code>Engine.bus</code>.</li>
+<li><code>MelodyEventHandler</code> executes during <code>Engine._drain()</code> (active even while <code>board.paused == True</code>), passing <code>note.primitive()</code> to <code>mixer.push_note()</code> (or <code>score.primitive()</code> to <code>mixer.push_score()</code>) and appending the acoustic onset to <code>board.acoustics</code>.</li>
+<li><strong>Psychological &amp; Ecological Mechanics (<code>SoundMechanics</code>)</strong>:</li>
+<li>Drains <code>board.acoustics</code>, computes distance attenuation <span class="arithmatex">\(I(r) = I_0 / (1 + \alpha r^2)\)</span> and obstacle occlusion across <code>board.obstacles(layer)</code> using <code>geometry.c_punctures</code>.</li>
+<li>Evaluates played note sequences against the compiled Melodic Trie in <code>Board._cache</code> to trigger Sprite <code>MutatorTriggers</code> (<code>frightened</code>, <code>calmed</code>, <code>attentive</code>) and <code>Expressions</code>.</li>
+</ol>
+<h5 id="architectural-analysis-i">Architectural Analysis I</h5>
+<p>The audio subsystem must decouple runtime synthesis from the fixed 60 Hz physics loop while maintaining strict synchronization with Sprite cognition. Calling transcendental functions per sample inside Python would drop frame rates below acceptable thresholds; thus, audio synthesis must remain in C memory via Cython, completely releasing the GIL.</p>
+<p>Pre-recorded assets (<code>.wav</code>, <code>.mp3</code>) and synthesized timbres require distinct memory management:</p>
+<ul>
+<li><code>.mp3</code> files stream directly from disk via <code>Mix_Music</code> to prevent loading multi-megabyte uncompressed PCM buffers into RAM.</li>
+<li><code>.wav</code> files are pre-loaded into system RAM during <code>Registry.prewarm</code> as <code>Mix_Chunk*</code> pointers, indexed by asset key for instantaneous <span class="arithmatex">\(O(1)\)</span> playback.</li>
+<li>Procedural scores defined in YAML must be compiled during initialization into flat C structs (<code>NoteEvent</code>), guaranteeing that runtime score playback incurs zero parsing overhead.</li>
+</ul>
+<p>To prevent audio stutter and race conditions, the engine will not use mutex locks across the Python/audio boundary. Instead, the main thread pushes note triggers into an atomic 256-slot ring buffer. The audio callback drains this buffer at sample accuracy without locking.</p>
+<h5 id="user-review-i">User Review I</h5>
+<p>Drill down on implementing the <code>Instrument</code> Object within the application using the Sound models from <code>scripts/synthesize</code>:</p>
+<ol>
+<li>Player interacts with <code>Instrument</code>.</li>
+<li><code>InstrumentEvent</code> is thrown.</li>
+<li><code>InstrumentMenu</code> is instantiated.</li>
+<li>Player traverses Menu and selects Key Widgets (special Button IDs) to play.</li>
+<li>Sound is generated each time <code>Engine</code> handles a select event on one of the Key Widgets.</li>
+<li>All 88 keys is overkill—scope the keyboard representation appropriately.</li>
+<li>Account for the LPC Instrument assets: <code>pipe organ</code>, <code>grand piano</code>, <code>player piano</code>, <code>lute</code>, <code>bongos</code>.</li>
+</ol>
+<h5 id="architectural-analysis-ii">Architectural Analysis II</h5>
+<h6 id="1-porting-scriptssynthesize-models-into-appmodelsproperties-and-registry">1. Porting <code>scripts/synthesize</code> Models into <code>app.models.properties</code> and <code>Registry</code></h6>
+<p>In <code>scripts/synthesize</code>, audio synthesis is driven by two declarative schemas (<code>SoundsRoot</code> and <code>ScoreRoot</code>) and a time-domain compiler (<code>compile.score()</code>) that flattens hierarchical tracks and beats into chronological <code>NoteEventDTO</code> tuples:</p>
+<div class="arithmatex">\[e_i = \big(t_{\text{start}},\; f_0,\; \Delta t,\; v,\; t_{\text{attack}},\; k_{\text{decay}},\; [w_0, w_1, \dots, w_{n-1}]\big)\]</div>
+<h6 id="2-lpc-instrument-taxonomy-timbre-specialization">2. LPC Instrument Taxonomy &amp; Timbre Specialization</h6>
+<table>
+<thead>
+<tr>
+<th>LPC Asset ID</th>
+<th>Layout Type</th>
+<th>Default Timbre</th>
+<th>Harmonic Profile <span class="arithmatex">\([w_0, \dots, w_k]\)</span></th>
+<th>Attack (<span class="arithmatex">\(s\)</span>)</th>
+<th>Decay (<span class="arithmatex">\(k\)</span>)</th>
+<th>Default Beat</th>
+<th>Behavioral Mode</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>grand-piano</code></td>
+<td><code>chromatic</code> (13 keys)</td>
+<td><code>grand_piano</code></td>
+<td><code>[1.0, 0.35, 0.10, 0.02]</code></td>
+<td><code>0.005</code></td>
+<td><code>2.2</code></td>
+<td><code>quarter</code></td>
+<td>Manual polyphonic keyboard</td>
+</tr>
+<tr>
+<td><code>pipe-organ</code></td>
+<td><code>chromatic</code> (13 keys)</td>
+<td><code>pipe_organ</code></td>
+<td><code>[1.0, 0.85, 0.60, 0.45, 0.30, 0.20, 0.10, 0.05]</code></td>
+<td><code>0.030</code></td>
+<td><code>0.35</code></td>
+<td><code>half</code></td>
+<td>Sustained cathedral pipes</td>
+</tr>
+<tr>
+<td><code>player-piano</code></td>
+<td><code>player</code> (13 keys + score)</td>
+<td><code>grand_piano</code></td>
+<td><code>[1.0, 0.35, 0.10, 0.02]</code></td>
+<td><code>0.005</code></td>
+<td><code>2.2</code></td>
+<td><code>quarter</code></td>
+<td>Manual play + compiled <code>score</code> playback</td>
+</tr>
+<tr>
+<td><code>lute</code></td>
+<td><code>chromatic</code> (13 keys)</td>
+<td><code>lute</code></td>
+<td><code>[1.0, 0.50, 0.25, 0.08, 0.02]</code></td>
+<td><code>0.003</code></td>
+<td><code>3.8</code></td>
+<td><code>quarter</code></td>
+<td>Plucked acoustic string decay</td>
+</tr>
+<tr>
+<td><code>bongos</code></td>
+<td><code>percussion</code> (4 pads)</td>
+<td><code>bongos</code></td>
+<td><code>[1.0, 0.45, 0.75, 0.25, 0.15]</code></td>
+<td><code>0.001</code></td>
+<td><code>7.5</code></td>
+<td><code>sixteenth</code></td>
+<td>4 tuned drum pads (<code>C3</code>, <code>G3</code>, <code>C4</code>, <code>E4</code>)</td>
+</tr>
+</tbody>
+</table>
+<h6 id="3-solving-the-88-key-problem-the-13-key-chromatic-octave-keyboardgizmo">3. Solving the 88-Key Problem: The 13-Key Chromatic Octave &amp; <code>KeyboardGizmo</code></h6>
+<p>Rendering 88 individual <code>Button</code> widgets would saturate screen real estate and require up to 87 sequential <code>EAST</code>/<code>WEST</code> traversal inputs to cross the keyboard. Instead, <code>InstrumentMenu</code> models a <strong>single 13-key chromatic octave (<code>C</code> through <code>C'</code>)</strong> paired with stateful octave transposition (<code>InstrumentState.octave</code> within <code>properties.octaves = (2, 6)</code>), expanded declaratively via <code>Fabricator</code> using <code>schema: keyboard</code>.</p>
+<h5 id="user-review-ii">User Review II</h5>
+<p>There are several things going on here that need further clarification and disambiguation, as multiple distinct things are being labeled "Assets" in the current specification. </p>
+<ul>
+<li>Sound Assets: <code>music</code>, <code>noises</code>, <code>vocals</code></li>
+<li>Configuration: <code>sound</code>, <code>scores</code></li>
+</ul>
+<p>In the current spec, the synthesize Sound models are being jammed into the Asset Hierarchy for some reason. There is no physical Asset associated with <code>sound</code> or <code>scores</code> until the engine compiles the configuration during runtime, so Sound clearly belongs to a different kind of application system.</p>
+<p><code>sound</code> should be loaded through Configuration. There can be a dedicated step in the dependency pipeline for compiling the sound models and storing them somewhere (not the Registry; logically, the Board Cache would be a prime candidate), as these models should be wrappers around Cython primitive() calls that simply flatten their data struture into tuples for Cython (zero heap). </p>
+<p><code>music</code>, <code>noises</code>, <code>vocals</code> should be indexed by the Registry, as they will be "stateful" Assets, triggered by Board events and Asset state conditions. However, this raises the question of what interface is doing the indexing, as Frame is not appropriate. It is clear at least:</p>
+<ul>
+<li><code>vocals</code>: This will need to be an interface on the Asset itself, on the level of Hitbox, Frame and Animation.</li>
+</ul>
+<p>How and where <code>music</code> and <code>noises</code> get index is less obvious.</p>
+<h5 id="architectural-analysis-iii">Architectural Analysis III</h5>
+<h6 id="1-disambiguating-configurations-sounds-scores-from-assets-music-noises-vocals">1. Disambiguating Configurations (<code>sounds</code>, <code>scores</code>) from Assets (<code>music</code>, <code>noises</code>, <code>vocals</code>)</h6>
+<p>Following Ontology's core axiom—<em>an Asset is a physical media file on disk, whereas Configuration is a declarative rule system</em>—the audio architecture splits cleanly along the <code>Loader</code> boundary:</p>
+<ol>
+<li><strong>Configuration Pipeline (<code>/src/data/config/sounds/</code>, <code>/src/data/config/scores/</code>)</strong>:</li>
+<li><code>Loader.load_configurations()</code> parses <code>/src/data/config/sounds/main.yaml</code> into <code>ConfigurationSchema.sounds</code> (<code>SoundConfiguration</code>) and <code>/src/data/config/scores/**/*.yaml</code> into <code>ConfigurationSchema.scores</code> (<code>Dict[str, ScoreConfiguration]</code>).</li>
+<li><code>Builder.build_sounds()</code> compiles these models during bootstrap via <code>SynthesizerCompiler</code> and injects them into <code>Board._cache</code> (<code>cache.cached_notes</code>, <code>cache.cached_scores</code>, <code>cache.motif_trie</code>).</li>
+<li>Both <code>CompiledNote</code> and <code>CompiledScore</code> expose <code>.primitive()</code> methods returning flat, pre-padded C-compatible tuples:</li>
+</ol>
+<div class="arithmatex">\[\text{CompiledNote.primitive}() = \big(\text{delay},\; f_0,\; \Delta t,\; v,\; t_{\text{attack}},\; k_{\text{decay}},\; n_h,\; w_0, w_1, w_2, w_3, w_4, w_5, w_6, w_7\big)\]</div>
+<ol>
+<li><strong>Sound Asset Pipeline (<code>/src/assets/sounds/{music,noises,vocals}/</code>)</strong>:</li>
+<li><code>Loader.load_properties()</code> parses <code>/src/assets/sounds/main.yaml</code> into <code>PropertiesSchema.sounds</code> (<code>SoundPropertyInstances</code>: <code>music</code>, <code>noises</code>, <code>vocals</code>).</li>
+<li><code>Registry._cache()</code> indexes <code>.mp3</code> and <code>.wav</code> filepaths; <code>Registry.prewarm()</code> loads them into <code>MixMusicPtr</code> and <code>MixChunkPtr</code> Cython extension classes.</li>
+</ol>
+<h6 id="2-indexing-interfaces-for-vocals-noises-and-music">2. Indexing Interfaces for <code>vocals</code>, <code>noises</code>, and <code>music</code></h6>
+<p>Because <code>Frame</code> is a 2D spatial crop-map strategy (<code>(sx, sy, sw, sl)</code>) already occupied by an entity's visual <code>.png</code> representation, the three Sound Asset instances are indexed and triggered according to the scope of the state that drives them:</p>
+<ul>
+<li><strong>Entity-Scope (<code>vocals</code> <span class="arithmatex">\(\to\)</span> <code>Asset.vocal: Vocal</code> ECS Component)</strong>:</li>
+<li><code>Vocal</code> is injected into <code>Asset</code> via <code>Recipe</code> (<code>recipe.vocal</code>) alongside <code>frame</code>, <code>animation</code>, and <code>hitbox</code>.</li>
+<li><code>Vocal.index(id, properties)</code> maps state keys (e.g., <code>f"{id}-{action}"</code>, <code>f"{id}-{intention}"</code>, <code>f"{id}-{expression}"</code>) to sample offsets <code>(start_sample, num_samples)</code> in <code>Registry._vocals</code>.</li>
+<li><code>Vocal.keys(id, state, properties)</code> inspects a Sprite/Pixie's current state transitions and returns active vocal keys to <code>SoundMechanics</code>.</li>
+<li><strong>Interaction &amp; Material Scope (<code>noises</code> <span class="arithmatex">\(\to\)</span> <code>NoiseIndex</code> in <code>Relations</code>)</strong>:</li>
+<li>Physical noises are triggered either by intrinsic Object state flips (<code>Chest</code>, <code>Gate</code>, <code>Plate</code> <code>switch</code> mutations) or relational multi-body interactions (footsteps on <code>Tile</code> terrain, elastic <code>Weight</code> collisions in <code>CollisionMechanics</code>).</li>
+<li><code>Builder.build_relations()</code> compiles <code>PropertiesSchema.sounds.noises</code> into <code>NoiseIndex</code> (<code>Relations.NOISES</code>), mapping <code>(category, instance, material, trigger) -&gt; noise_key</code> in <span class="arithmatex">\(O(1)\)</span>.</li>
+<li><strong>Macro-Board Scope (<code>music</code> <span class="arithmatex">\(\to\)</span> <code>MusicIndex</code> in <code>Relations</code>)</strong>:</li>
+<li>Background <code>.mp3</code> streams depend on macro-world coordinates <code>(layer, calendar.season, plot.current)</code> rather than individual entities.</li>
+<li><code>Builder.build_relations()</code> compiles <code>PropertiesSchema.sounds.music</code> into <code>MusicIndex</code> (<code>Relations.MUSIC</code>), mapping <code>(layer, season, plot) -&gt; (music_key, loop_start, loop_end, gain)</code>.</li>
+</ul>
+<h6 id="3-dual-path-lock-free-synthesizer-ring-buffer-score-sequencer">3. Dual-Path Lock-Free Synthesizer (<code>Ring Buffer</code> + <code>Score Sequencer</code>)</h6>
+<p>Because full scores such as <code>chopin_nocturne_op9_no2</code> compile into ~950 chronological <code>NoteEvent</code> structs, pushing an entire score into a 256-slot interactive ring buffer would drop over 70% of the score and cause head-of-line blocking for live notes (<code>start_sample == 0</code>). <code>libs/audio/mixer.pyx</code> therefore separates real-time synthesis into two lock-free channels inside <code>SynthState</code>:</p>
+<ul>
+<li><strong><code>NoteEvent ring[256]</code> (SPSC Ring Buffer)</strong>: Exclusively services immediate <code>push_note(note.primitive())</code> calls from live <code>InstrumentMenu</code> key presses.</li>
+<li><strong><code>NoteEvent score_buf[2048]</code> (Score Sequencer Cursor)</strong>: Exclusively services <code>push_score(score.primitive())</code> calls (e.g., from <code>player-piano</code>), advancing its own sample counter <code>score_sample_pos</code> inside <code>Mix_SetPostMix</code> so live notes and autonomous scores mix seamlessly without overflow or blocking.</li>
+</ul>
+<h5 id="user-review-iii">User Review III</h5>
+<p><strong>Notes</strong></p>
+<p>Asset Category: Tracks
+Asset Instances: Music, Noises
+Asset Component: Vocals</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># example recipe</span>
+<span class="nt">sheets</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">sprite</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite</span>
+<span class="w">        </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite</span>
+<span class="w">        </span><span class="nt">hitbox</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">static</span>
+<span class="w">        </span><span class="nt">vocal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;vocal-recipe&gt;</span>
+</code></pre></div>
+<p><strong>Analysis of Available Assets &amp; Possible Mappings</strong></p>
+<h5 id="goals">Goals</h5>
+<h6 id="goal-zero-allocation-cython-audio-mixer-libsaudiomixerpyx">Goal: Zero-Allocation Cython Audio Mixer (<code>libs/audio/mixer.pyx</code>)</h6>
+<p>Unify <code>SDL_mixer</code> channel management (<code>MixMusicPtr</code>, <code>MixChunkPtr</code>) with a dual-path 32-voice additive synthesizer executing inside a <code>Mix_SetPostMix</code> <code>nogil</code> callback:</p>
+<div class="highlight"><pre><span></span><code><span class="c"># src/libs/audio/mixer.pyx</span>
+<span class="cp">DEF</span> <span class="n">MAX_VOICES</span> <span class="o">=</span> <span class="mf">32</span>
+<span class="cp">DEF</span> <span class="n">MAX_HARMONICS</span> <span class="o">=</span> <span class="mf">8</span>
+<span class="cp">DEF</span> <span class="n">RING_BUFFER_SIZE</span> <span class="o">=</span> <span class="mf">256</span>
+<span class="cp">DEF</span> <span class="n">MAX_SCORE_EVENTS</span> <span class="o">=</span> <span class="mf">2048</span>
+
+<span class="k">cdef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">NoteEvent</span><span class="p">:</span>
+    <span class="nb">int</span> <span class="n">start_sample</span>
+    <span class="nb">int</span> <span class="n">total_samples</span>
+    <span class="nb">float</span> <span class="n">freq</span>
+    <span class="nb">float</span> <span class="n">velocity</span>
+    <span class="nb">float</span> <span class="n">attack</span>
+    <span class="nb">float</span> <span class="n">decay</span>
+    <span class="nb">int</span> <span class="n">num_harmonics</span>
+    <span class="nb">float</span> <span class="n">harmonics</span><span class="p">[</span><span class="n">MAX_HARMONICS</span><span class="p">]</span>
+
+<span class="k">cdef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">SynthState</span><span class="p">:</span>
+    <span class="nb">int</span> <span class="n">sample_rate</span>
+    <span class="nb">int</span> <span class="n">write_idx</span>
+    <span class="nb">int</span> <span class="n">read_idx</span>
+    <span class="n">NoteEvent</span> <span class="n">ring</span><span class="p">[</span><span class="n">RING_BUFFER_SIZE</span><span class="p">]</span>
+    <span class="nb">int</span> <span class="n">score_active</span>
+    <span class="nb">int</span> <span class="n">score_len</span>
+    <span class="nb">int</span> <span class="n">score_idx</span>
+    <span class="nb">int</span> <span class="n">score_sample_pos</span>
+    <span class="n">NoteEvent</span> <span class="n">score_buf</span><span class="p">[</span><span class="n">MAX_SCORE_EVENTS</span><span class="p">]</span>
+    <span class="n">Voice</span> <span class="n">voices</span><span class="p">[</span><span class="n">MAX_VOICES</span><span class="p">]</span>
+
+<span class="k">cpdef</span><span class="w"> </span><span class="kt">void</span> <span class="nf">push_note</span><span class="p">(</span><span class="nb">tuple</span> <span class="n">primitive</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Unpacks a 15-element CompiledNote.primitive() tuple into the lock-free SPSC ring buffer."""</span>
+    <span class="k">cdef</span><span class="w"> </span><span class="kt">int</span> <span class="nv">next_w</span><span class="w"> </span><span class="o">=</span> <span class="p">(</span><span class="n">_synth</span><span class="o">.</span><span class="n">write_idx</span> <span class="o">+</span> <span class="mf">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">RING_BUFFER_SIZE</span> <span class="o">-</span> <span class="mf">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">next_w</span> <span class="o">==</span> <span class="n">_synth</span><span class="o">.</span><span class="n">read_idx</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">cdef</span><span class="w"> </span><span class="kt">NoteEvent</span> *<span class="nv">ev</span><span class="w"> </span><span class="o">=</span> <span class="o">&amp;</span><span class="n">_synth</span><span class="o">.</span><span class="n">ring</span><span class="p">[</span><span class="n">_synth</span><span class="o">.</span><span class="n">write_idx</span><span class="p">]</span>
+    <span class="n">ev</span><span class="o">.</span><span class="n">start_sample</span> <span class="o">=</span> <span class="mf">0</span>
+    <span class="n">ev</span><span class="o">.</span><span class="n">freq</span> <span class="o">=</span> <span class="p">&lt;</span><span class="kt">float</span><span class="p">&gt;</span><span class="n">primitive</span><span class="p">[</span><span class="mf">1</span><span class="p">]</span>
+    <span class="n">ev</span><span class="o">.</span><span class="n">total_samples</span> <span class="o">=</span> <span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(&lt;</span><span class="kt">float</span><span class="p">&gt;</span><span class="n">primitive</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">_synth</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">ev</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="p">&lt;</span><span class="kt">float</span><span class="p">&gt;</span><span class="n">primitive</span><span class="p">[</span><span class="mf">3</span><span class="p">]</span>
+    <span class="n">ev</span><span class="o">.</span><span class="n">attack</span> <span class="o">=</span> <span class="p">&lt;</span><span class="kt">float</span><span class="p">&gt;</span><span class="n">primitive</span><span class="p">[</span><span class="mf">4</span><span class="p">]</span>
+    <span class="n">ev</span><span class="o">.</span><span class="n">decay</span> <span class="o">=</span> <span class="p">&lt;</span><span class="kt">float</span><span class="p">&gt;</span><span class="n">primitive</span><span class="p">[</span><span class="mf">5</span><span class="p">]</span>
+    <span class="n">ev</span><span class="o">.</span><span class="n">num_harmonics</span> <span class="o">=</span> <span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span><span class="n">primitive</span><span class="p">[</span><span class="mf">6</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MAX_HARMONICS</span><span class="p">):</span>
+        <span class="n">ev</span><span class="o">.</span><span class="n">harmonics</span><span class="p">[</span><span class="n">h</span><span class="p">]</span> <span class="o">=</span> <span class="p">&lt;</span><span class="kt">float</span><span class="p">&gt;</span><span class="n">primitive</span><span class="p">[</span><span class="mf">7</span> <span class="o">+</span> <span class="n">h</span><span class="p">]</span>
+    <span class="n">_synth</span><span class="o">.</span><span class="n">write_idx</span> <span class="o">=</span> <span class="n">next_w</span>
+
+<span class="k">cpdef</span><span class="w"> </span><span class="kt">void</span> <span class="nf">push_score</span><span class="p">(</span><span class="nb">tuple</span> <span class="n">score_primitives</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Loads a pre-compiled score tuple sequence into the lock-free score sequencer cursor."""</span>
+    <span class="k">cdef</span><span class="w"> </span><span class="kt">int</span> <span class="nv">n</span><span class="w"> </span><span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">score_primitives</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="n">MAX_SCORE_EVENTS</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">MAX_SCORE_EVENTS</span>
+    <span class="n">_synth</span><span class="o">.</span><span class="n">score_active</span> <span class="o">=</span> <span class="mf">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="c"># Unpack each 15-element note tuple into _synth.score_buf[i]</span>
+        <span class="o">...</span>
+    <span class="n">_synth</span><span class="o">.</span><span class="n">score_len</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="n">_synth</span><span class="o">.</span><span class="n">score_idx</span> <span class="o">=</span> <span class="mf">0</span>
+    <span class="n">_synth</span><span class="o">.</span><span class="n">score_sample_pos</span> <span class="o">=</span> <span class="mf">0</span>
+    <span class="n">_synth</span><span class="o">.</span><span class="n">score_active</span> <span class="o">=</span> <span class="mf">1</span>
+</code></pre></div>
+<h6 id="goal-sound-score-configuration-compilation-into-board_cache">Goal: Sound &amp; Score Configuration Compilation into <code>Board._cache</code></h6>
+<p>Define <code>SoundConfiguration</code> and <code>ScoreConfiguration</code> under <code>app/models/config/sounds.py</code>, compile them in <code>Builder.build_sounds()</code>, and store <code>CompiledNote</code> and <code>CompiledScore</code> wrappers in <code>Board._cache</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># src/app/models/config/sounds.py</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CompiledNote</span><span class="p">:</span>
+    <span class="n">pitch_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">velocity</span><span class="p">:</span> <span class="nb">float</span>
+     <span class="n">_primitive</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span>
+        <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">primitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Returns the zero-heap 15-element tuple for libs.audio.mixer.push_note()."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_primitive</span>
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CompiledScore</span><span class="p">:</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">bpm</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">signature</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">pitches</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">_primitives</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">primitive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Returns the zero-heap tuple sequence for libs.audio.mixer.push_score()."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_primitives</span>
+</code></pre></div>
+<h6 id="goal-vocal-component-noiseindex-musicindex">Goal: <code>Vocal</code> Component, <code>NoiseIndex</code>, &amp; <code>MusicIndex</code></h6>
+<p>Extend <code>Asset</code> and <code>Recipe</code> with <code>vocal: Vocal</code>, and compile <code>NoiseIndex</code> and <code>MusicIndex</code> in <code>Builder.build_relations()</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># src/app/assets/base.py</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Vocal</span><span class="p">(</span><span class="n">Singleton</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Foundational interface for Assets that emit stateful vocalizations."""</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">properties</span><span class="p">:</span> <span class="n">AssetProperties</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">keys</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">state</span><span class="p">:</span> <span class="n">AssetState</span><span class="p">,</span>
+        <span class="n">properties</span><span class="p">:</span> <span class="n">AssetProperties</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">pass</span>
+</code></pre></div>
+<h6 id="goal-instrumentevent-instrumentmenu-13-key-instrumentcontroller">Goal: <code>InstrumentEvent</code>, <code>InstrumentMenu</code>, &amp; 13-Key <code>InstrumentController</code></h6>
+<p>Route interactive key selections through <code>Board._cache</code> (<code>board.note()</code> and <code>board.score()</code>) without runtime allocations:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># src/app/game/menus/controllers/instrument.py</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">InstrumentController</span><span class="p">(</span><span class="n">MenuController</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">menu</span><span class="p">:</span> <span class="n">Menu</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">Board</span><span class="p">,</span> <span class="n">bus</span><span class="p">:</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">widget</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">widget</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">widget</span><span class="o">.</span><span class="n">binding</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">ctx</span><span class="p">:</span> <span class="n">InstrumentContext</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">context</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">binding</span><span class="o">.</span><span class="n">selection</span>
+        <span class="n">selector</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">binding</span><span class="o">.</span><span class="n">selector</span>
+
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="n">Selections</span><span class="o">.</span><span class="n">PLAY_NOTE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">pitch_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_pitch</span><span class="p">(</span><span class="n">selector</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">octave</span><span class="p">)</span>
+            <span class="n">compiled_note</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">note</span><span class="p">(</span>
+                <span class="n">pitch_name</span><span class="o">=</span><span class="n">pitch_name</span><span class="p">,</span>
+                <span class="n">beat_name</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">default_beat</span><span class="p">,</span>
+                <span class="n">dynamic_name</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">dynamic</span><span class="p">,</span>
+                <span class="n">timbre_name</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">timbre</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">bus</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MelodyEvent</span><span class="p">(</span>
+                <span class="n">source</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">sprite</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">layer</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">layer</span><span class="p">,</span>
+                <span class="n">position</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">position</span><span class="p">,</span>
+                <span class="n">note</span><span class="o">=</span><span class="n">compiled_note</span><span class="p">,</span>
+            <span class="p">))</span>
+        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="n">Selections</span><span class="o">.</span><span class="n">PLAY_SCORE</span><span class="o">.</span><span class="n">value</span> <span class="ow">and</span> <span class="n">ctx</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">score</span><span class="p">:</span>
+            <span class="n">compiled_score</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">score</span><span class="p">)</span>
+            <span class="n">bus</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MelodyEvent</span><span class="p">(</span>
+                <span class="n">source</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">layer</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">layer</span><span class="p">,</span>
+                <span class="n">position</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">position</span><span class="p">,</span>
+                <span class="n">score</span><span class="o">=</span><span class="n">compiled_score</span><span class="p">,</span>
+            <span class="p">))</span>
+        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="n">Selections</span><span class="o">.</span><span class="n">OCTAVE_UP</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">octave</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">octaves</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ctx</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">octave</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">bus</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">UpdateEvent</span><span class="p">(</span><span class="n">menu</span><span class="o">=</span><span class="n">menu</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s2">"octave-display"</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="n">Selections</span><span class="o">.</span><span class="n">OCTAVE_DOWN</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">octave</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">octaves</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ctx</span><span class="o">.</span><span class="n">instrument</span><span class="o">.</span><span class="n">octave</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">bus</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">UpdateEvent</span><span class="p">(</span><span class="n">menu</span><span class="o">=</span><span class="n">menu</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s2">"octave-display"</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="n">Selections</span><span class="o">.</span><span class="n">EXIT</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">bus</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TerminalEvent</span><span class="p">())</span>
+</code></pre></div>
+<h5 id="tasks">Tasks</h5>
+<p><strong>1. Task: Cython Audio Subsystem, <code>SDL_mixer</code> Wrappers &amp; Dual-Path Synthesizer</strong></p>
+<p><em>Objective</em>: Build <code>libs/audio/mixer.pyx</code> and extend <code>libs/graphics/registry.pyx</code> to manage <code>Mix_Music</code> / <code>Mix_Chunk</code> pointers alongside a non-blocking 32-voice additive synthesizer with separate live ring-buffer and score-sequencer channels.</p>
+<ul>
+<li>[x] Subtask: Configure build pipeline in <code>setup.py</code>, <code>setup.cicd.py</code>, and <code>Dockerfile</code> to link against <code>SDL2</code> and <code>SDL2_mixer</code>.</li>
+<li>[ ] Subtask: Define <code>MixMusicPtr</code> and <code>MixChunkPtr</code> Cython extension classes with deterministic <code>__dealloc__</code> teardown (<code>Mix_FreeMusic</code>, <code>Mix_FreeChunk</code>) and register <code>.mp3</code> and <code>.wav</code> ingestion in <code>Registry._cache()</code>, <code>Registry.prewarm()</code>, and <code>Registry.clear()</code>.</li>
+<li>[ ] Subtask: Implement <code>libs/audio/mixer.pyx</code> managing <code>Mix_OpenAudio</code> (48,000 Hz, <code>AUDIO_F32SYS</code>), streaming <code>play_music()</code> with crossfade/loop bounds, and positional <code>play_chunk()</code> SFX channels.</li>
+<li>[ ] Subtask: Implement the lock-free 256-slot SPSC ring buffer (<code>push_note(tuple primitive)</code>) for immediate interactive notes and the 2,048-slot Score Sequencer cursor (<code>push_score(tuple score_primitives)</code>) for autonomous multi-measure scores.</li>
+<li>[ ] Subtask: Port <code>sound.pyx</code> voice allocation (<code>MAX_VOICES = 32</code>, <code>MAX_HARMONICS = 8</code>), Stevens' power law scaling (<span class="arithmatex">\(v^{1.8}\)</span>), dynamic brightness (<span class="arithmatex">\(v^{0.5h}\)</span>), and linear-attack/exponential-decay envelopes into a <code>Mix_SetPostMix</code> <code>nogil</code> callback.</li>
+<li>[ ] Subtask: Add headless/CI audio driver fallback (<code>SDL_AUDIODRIVER=dummy</code>) so unit and integration tests execute without physical audio hardware.</li>
+</ul>
+<p><strong>2. Task: Sound &amp; Score Configuration Models, Compiler &amp; <code>Board._cache</code> Integration</strong></p>
+<p><em>Objective</em>: Load <code>/src/data/config/sounds/main.yaml</code> and <code>/src/data/config/scores/**/*.yaml</code> through <code>ConfigurationSchema</code>, compile them into zero-heap <code>CompiledNote</code> and <code>CompiledScore</code> wrappers in <code>Builder.build_sounds()</code>, and store them in <code>Board._cache</code>.</p>
+<ul>
+<li>[ ] Subtask: Define <code>SignatureConfiguration</code>, <code>BeatConfiguration</code>, <code>NoteFrequencyConfiguration</code>, <code>TimbreConfiguration</code>, <code>SoundConfiguration</code>, <code>ScoreNoteConfiguration</code> (with <code>__post_init__</code> normalizing <code>note</code> into <code>notes</code>), <code>TrackConfiguration</code>, <code>ScoreConfiguration</code>, <code>CompiledNote</code>, and <code>CompiledScore</code> in <code>app/models/config/sounds.py</code>.</li>
+<li>[ ] Subtask: Attach <code>sounds: SoundConfiguration</code> and <code>scores: Dict[str, ScoreConfiguration]</code> to <code>ConfigurationSchema</code> and update <code>Loader.load_configurations()</code> to ingest <code>/src/data/config/sounds/</code> and <code>/src/data/config/scores/</code>.</li>
+<li>[ ] Subtask: Populate <code>/src/data/config/sounds/main.yaml</code> with the LPC instrument timbres (<code>grand_piano</code>, <code>pipe_organ</code>, <code>lute</code>, <code>bongos</code>) alongside <code>piano</code>, <code>soft_piano</code>, <code>reed</code>, and <code>bell</code>, and add gameplay motif scores to <code>/src/data/config/scores/motifs/main.yaml</code>.</li>
+<li>[ ] Subtask: Implement <code>SynthesizerCompiler</code> in <code>app/services/generators/game/synthesizer.py</code> to pre-compile <code>SoundConfiguration</code> and <code>ScoreConfiguration</code> into <code>CompiledNote</code> (15-element <code>.primitive()</code> tuples), <code>CompiledScore</code> (<code>.primitive()</code> tuple sequences), and a Melodic Trie.</li>
+<li>[ ] Subtask: Add <code>Builder.build_sounds()</code> to <code>Orchestrator.orchestrate()</code> and extend <code>Cache</code> (<code>app/game/board/modules/cache.py</code>) and <code>Board</code> (<code>app/game/board/core.py</code>) with <code>board.note()</code>, <code>board.score()</code>, <code>board.motifs()</code>, and <code>board.acoustics</code>.</li>
+</ul>
+<p><strong>3. Task: Sound Assets (<code>music</code>, <code>noises</code>, <code>vocals</code>), <code>Vocal</code> Component &amp; Relational Indices</strong></p>
+<p><em>Objective</em>: Induct physical audio assets (<code>/src/assets/sounds/main.yaml</code>) into <code>PropertiesSchema.sounds</code>, add the <code>Vocal</code> ECS interface to <code>Asset</code>, and compile <code>MusicIndex</code> and <code>NoiseIndex</code> in <code>Builder.build_relations()</code>.</p>
+<ul>
+<li>[ ] Subtask: Add <code>SOUNDS = "sounds"</code> to <code>AssetCategories</code>, <code>MUSIC = "music"</code>, <code>NOISES = "noises"</code>, <code>VOCALS = "vocals"</code>, <code>INSTRUMENTS = "instruments"</code> to <code>AssetInstances</code>, and <code>MUSIC = "music"</code>, <code>NOISES = "noises"</code> to <code>Relations</code> in <code>app/static/semantics.py</code>.</li>
+<li>[ ] Subtask: Define <code>MusicProperties</code>, <code>NoiseProperties</code>, <code>VocalProperties</code>, and <code>SoundPropertyInstances</code> in <code>app/models/properties/sounds.py</code> and attach <code>sounds: SoundPropertyInstances</code> to <code>PropertiesSchema</code>.</li>
+<li>[ ] Subtask: Define the abstract <code>Vocal</code> class in <code>app/assets/base.py</code>, add <code>vocal: Vocal = None</code> to <code>Asset.__init__()</code>, and register <code>Vocal</code> implementations (<code>SpriteVocal</code>, <code>NoVocal</code>) in <code>AssetFactory</code> and <code>/src/data/config/recipes/main.yaml</code>.</li>
+<li>[ ] Subtask: Implement <code>MusicIndex</code> and <code>NoiseIndex</code> in <code>app/game/logic/relations/sounds.py</code> and register them inside <code>Builder.build_relations()</code>.</li>
+<li>[ ] Subtask: Define <code>InstrumentProperties(ObjectProperties)</code> and <code>InstrumentState(ObjectState)</code>, register <code>instruments</code> in <code>ObjectPropertyInstances</code>, <code>ObjectStateInstances</code>, <code>Cache.get_obstacles()</code>, and configure <code>pipe-organ</code>, <code>grand-piano</code>, <code>player-piano</code>, <code>lute</code>, and <code>bongos</code> in <code>/src/assets/objects/main.yaml</code>.</li>
+</ul>
+<p>**4. Task: <code>InstrumentEvent</code>, <code>InstrumentMenu</code>, <code>KeyboardGizmo</code> &amp; <code>InstrumentController**</code></p>
+<p><em>Objective</em>: Implement the interactive instrument lifecycle from Player <code>interact</code> intention to <code>InstrumentMenu</code> traversal and <code>MelodyEvent</code> synthesis.</p>
+<ul>
+<li>[ ] Subtask: Define <code>InstrumentEvent</code>, <code>MelodyEvent</code>, and <code>NoiseEvent</code> in <code>app/game/menus/events.py</code> and <code>InstrumentContext(sprite, instrument, properties)</code> in <code>app/game/menus/contexts.py</code>.</li>
+<li>[ ] Subtask: Implement <code>InstrumentEventHandler</code>, <code>MelodyEventHandler</code>, and <code>NoiseEventHandler</code> in <code>app/game/menus/handlers.py</code> and register them in <code>Engine.handlers</code>.</li>
+<li>[ ] Subtask: Update <code>InteractionMechanics</code> / <code>PlayerMechanics</code> to emit <code>InstrumentEvent</code> onto <code>Engine.bus</code> when the Player triggers <code>interact</code> while intersecting an <code>objects.instruments</code> hitbox.</li>
+<li>[ ] Subtask: Configure <code>key-white</code>, <code>key-black</code>, and <code>drum-pad</code> button assets in <code>/src/assets/widgets/main.yaml</code> and extend <code>Fabricator.expand()</code> (<code>app/services/generators/menus/fabricator.py</code>) with the <code>keyboard</code> Gizmo schema (<code>chromatic</code>, <code>percussion</code>, <code>player</code>).</li>
+<li>[ ] Subtask: Define the <code>instrument</code> menu in <code>/src/data/config/menus/main.yaml</code> and implement <code>InstrumentController.select()</code> in <code>app/game/menus/controllers/instrument.py</code> querying <code>board.note()</code> and <code>board.score()</code>.</li>
+</ul>
+<p><strong>5. Task: <code>SoundMechanics</code>, Spatial Attenuation &amp; Sprite Psyche Resonance</strong></p>
+<p><em>Objective</em>: Simulate physical sound propagation, trigger <code>Vocal</code> and <code>NoiseIndex</code> emissions from world state changes, manage layer/season <code>MusicIndex</code> streams, and evaluate Sprite behavioral responses to melodies.</p>
+<ul>
+<li>[ ] Subtask: Implement <code>SoundMechanics</code> in <code>app/game/logic/mechanics/world/sound.py</code> consuming <code>board.acoustics</code> and polling <code>asset.vocal.keys()</code> and <code>NoiseIndex</code> triggers across active layer entities.</li>
+<li>[ ] Subtask: Implement distance attenuation (<span class="arithmatex">\(I(r) = I_0 / (1 + \alpha r^2)\)</span>) and obstacle transmission muffling across <code>board.obstacles(layer)</code> using <code>geometry.c_punctures</code>.</li>
+<li>[ ] Subtask: Evaluate played note sequences against <code>board.motifs()</code> (sliding-window Melodic Trie) and modulate Sprite <code>MutatorTriggers</code> (<code>frightened</code>, <code>calmed</code>, <code>attentive</code>) and <code>Expressions</code> for <code>TransitionMechanics</code>.</li>
+<li>[ ] Subtask: Connect <code>MusicIndex</code> resolution to <code>StateEventHandler</code>, <code>SeasonEventHandler</code>, and Door layer transitions to stream and crossfade background <code>.mp3</code> tracks automatically.</li>
+</ul>
+<div class="highlight"><pre><span></span><code>---
+
+### Backlog Additions from `@TODO` Markup Review (`Template: Backlog`)
+
+Reviewing the `@TODO(phase)` annotations in the documentation where `phase` has already been closed on the Task Board (`Phase 07.04: Materialization [x]` and `Phase 10.01: Stage Hitboxes [x]`):
+
+1. **`@TODO(07-04)`**: In `01-assets.md`, `Substrates` notes that prior to Phase 07.04, negative substrates were stored in `elevation` and collapsed via $\text{elevation} \in [-\infty, 0] \to 0$ during `CollisionMechanics` and Perimeter generation. Because `substrate` is now a dedicated attribute on `Asset` (`asset.substrate`) distinct from `asset.elevation`, legacy `max(0, elevation)` guards in `Board.weights()`, `Board.obstacles()`, and `LayeredHitbox.elevations()` should be audited and simplified.
+2. **`@TODO(10-01)`**: In `01-assets.md`, `Attackboxes` notes that `HitboxSchema` has been codified as an ECS component on `Asset`, leaving `SheetProperties.attackboxes` and Equipment attackboxes as the last legacy hitbox path outside `HitboxSchema.get()`.
+
+```markdown
+#### Refactor: Phase 10.06: Attackbox HitboxSchema Unification
+
+**Overview** 
+
+Migrate legacy `SheetProperties.attackboxes` and slotted `Equipment` attackboxes into a dedicated `SheetHitbox(HitboxSchema)` component implementation, completing the `HitboxSchema` ECS unification noted in `@TODO(10-01)`.
+
+##### Goals
+
+###### Goal: `SheetHitbox` Component &amp; Frame-Keyed Attackbox Resolution
+
+Unify base body hitboxes and frame-specific `&lt;action&gt;-&lt;direction&gt;-&lt;frame&gt;` attackboxes behind `HitboxSchema` so `CombatMechanics` and `CollisionMechanics` query `asset.hitbox` uniformly without manual dictionary inspection on `SheetProperties`:
+
+```python
+# src/app/assets/hitboxes.py
+class SheetHitbox(HitboxSchema):
+    def elevations(self, properties: SheetProperties, state: SheetState) -&gt; List[int]:
+        return [state.elevation or 0]
+
+    def get(
+        self,
+        properties: SheetProperties,
+        state: SheetState,
+        elevation: int,
+        frame: Optional[Frame] = None
+    ) -&gt; List[Hitbox]:
+        if (state.elevation or 0) != elevation:
+            return []
+        return properties.hitboxes
+
+    def attack(
+        self,
+        properties: SheetProperties,
+        state: SheetState,
+        equipment: Optional[AssetProperties] = None
+    ) -&gt; List[Hitbox]:
+        key = f"{state.animation.action}-{state.animation.direction}-{state.animation.frame}"
+        source = equipment.attackboxes if (equipment and equipment.attackboxes) else properties.attackboxes
+        return source.get(key, []) if source else []
+</code></pre></div>
+<h5 id="tasks_1">Tasks</h5>
+<p><strong>1. Task: <code>SheetHitbox</code> Implementation &amp; <code>CombatMechanics</code> Migration</strong></p>
+<p><em>Objective</em>: Encapsulate <code>&lt;action&gt;-&lt;direction&gt;-&lt;frame&gt;</code> attackbox resolution inside <code>SheetHitbox</code> and remove raw <code>properties.attackboxes</code> lookups from <code>CombatMechanics</code>.</p>
+<ul>
+<li>[ ] Subtask: Implement <code>SheetHitbox(HitboxSchema)</code> in <code>app/assets/hitboxes.py</code> supporting both base <code>get()</code> collision footprints and <code>attack()</code> frame-indexed weapon/sheet hitboxes.</li>
+<li>[ ] Subtask: Register <code>SheetHitbox</code> in <code>AssetFactory.hitbox</code> and bind <code>sheets.sprites</code>, <code>sheets.players</code>, and <code>sheets.pixies</code> to <code>SheetHitbox</code> in <code>/src/data/config/recipes/main.yaml</code>.</li>
+<li>[ ] Subtask: Refactor <code>CombatMechanics</code> to resolve active attack footprints exclusively through <code>sprite.hitbox.attack(sprite.properties, sprite.state, active_weapon_props)</code>.</li>
+</ul>
+<div class="highlight"><pre><span></span><code>---
+
+### Documentation Updates (`Template: Documentation`)
+
+Per the Documentation Guidelines, the following updates resolve architectural drift across `00-overview.md`, `01-assets.md` (`@TODO(07-04)` and `@TODO(10-01)`), `06-widgets.md` (`@TODO` out-of-date notice), and `07-sounds.md` (`TODO` placeholder).
+
+```markdown
+##### Draft: Disambiguating Sound Assets vs. Sound &amp; Score Configurations in Overview
+
+- **Page**: `00-overview.md`
+- **Heading**: `##### Cores` / `###### Core: Configuration` &amp; `###### Component: Board`
+
+###### Drift
+
+`00-overview.md` lists `Sounds` exclusively under `Core: Assets` and omits `Sounds` and `Scores` from `Core: Configuration`. Additionally, `Component: Board` does not document the compiled synthesis queries (`board.note()`, `board.score()`, `board.motifs()`) hosted in `Board._cache`.
+
+###### Update
+
+###### Core: Configuration
+
+- Location: `/src/data/config`
+
+Mechanics, Relations, Synthesizers, and other components of the [Engine](#component-engine) utilize Configuration stored in the Configuration directory:
+
+- [Actions](./01-assets.md#category-sheets)
+- [Compositions](./03-compositions.md)
+- [Intentions](./04-intentions.md)
+- [Library](./08-narratives.md)
+- [Mappings](./02-sprites.md#devices)
+- [Materials](./01-assets.md#concept-materiality)
+- [Mechanics](./05-mechanics.md)
+- [Menus](./06-widgets.md#configurations-menu)
+- [Plots](./08-narratives.md)
+- [Recipes](./01-assets.md)
+- [Scores](./07-sounds.md#configuration-scores)
+- [Sounds](./07-sounds.md#configuration-sounds)
+
+**Interface: Queries (Acoustic &amp; Synthesis)**
+
+- Acoustic Queries
+    1. `board.note(pitch_name, beat_name, dynamic_name, timbre_name)`: Retrieves a pre-compiled `CompiledNote` wrapper from `Board._cache` in $O(1)$ time for zero-heap Cython synthesis.
+    2. `board.score(score_key)`: Retrieves a pre-compiled `CompiledScore` wrapper from `Board._cache` containing chronological `NoteEvent` primitives.
+    3. `board.motifs()`: Retrieves the compiled Melodic Trie mapping note pitch sequences to psychological motif keys.
+
+##### Draft: Inducting the `Vocal` ECS Component, `objects.instruments`, and Resolving `@TODO(07-04)` in Assets
+
+- **Page**: `01-assets.md`
+- **Heading**: `###### Concept: Appearance`, `###### Asset: Architecture`, and `##### Category: Objects`
+
+###### Drift
+
+1. `@TODO(07-04)` notes that `Substrates` still describes collapsing negative `elevation` values ($\text{elevation} \in [-\infty, 0] \to 0$) during `CollisionMechanics`, which is obsolete now that `substrate` is a dedicated integer field on `Asset` (`asset.substrate`) separate from `asset.elevation`.
+2. `Asset: Architecture` lists 5 components (`Properties`, `State`, `Animation`, `Frame`, `Hitbox`), omitting the 6th component (`Vocal`) required to index and project stateful `.wav` vocalizations on `Asset`.
+3. `Category: Objects` omits the `Object: Instruments` instance specification (`pipe-organ`, `grand-piano`, `player-piano`, `lute`, `bongos`).
+
+###### Update
+
+**Substrates**
+
+Certain Assets have a dedicated Substrate (`asset.substrate` $\in \mathbb{Z}_{\le 0}$) to preserve the fidelity of their intra-elevation rendering order within a macro-elevation $E$ (`asset.elevation` $\in \mathbb{Z}_{\ge 0}$). These values are hydrated onto the Asset directly via [MaterialIndex](./appendices/01-schemas.md#configuration-materials) during [hydration](./12-architecture.md#phase-2-hydration). Because `substrate` is orthogonal to `elevation`, Assets on negative substrates (`ENVIRON = -4`, `FLUIDS = -3`, `SURFACES = -2`, `OVERLAYS = -1`) naturally reside at macro-elevation `elevation = 0` and participate in coplanar spatial evaluations without requiring elevation clamping.
+
+###### Asset: Architecture
+
+The formula for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in its [Recipe](./appendices/01-schemas.md#configuration-recipes) configuration file:
+
+1. **Model: Properties**: A model defining immutable data.
+2. **Model: State**: A model defining mutable data.
+3. **Behavior: Animation**: Stateless strategies for updating Animation frames (`animate(state, properties)`).
+4. **Behavior: Frame**: Stateless texture crop-map and render-key calculators (`index()`, `keys()`, `eras()`, `channels()`).
+5. **Behavior: Hitbox**: Stateless collision boundary resolution strategies (`elevations()`, `get()`).
+6. **Behavior: Vocal**: Stateless acoustic emission strategies projecting intrinsic state transitions into `Registry` audio chunk keys:
+   * `index(id: str, properties: AssetProperties) -&gt; Dict[str, Tuple[int, int]]`: Maps compound vocal keys to PCM sample slice bounds `(start_sample, num_samples)`.
+   * `keys(id: str, state: AssetState, properties: AssetProperties) -&gt; List[str]`: Emits active vocal chunk keys based on current `intention`, `action`, or `expression` state.
+
+###### Object: Instruments
+
+*Instruments* (`pipe-organ`, `grand-piano`, `player-piano`, `lute`, `bongos`) are interactive acoustic Objects that bridge world interaction with procedural synthesis in `libs.audio.mixer`. When a Player enters the `interact` [Intention](./04-intentions.md) while intersecting an Instrument's hitbox, an `InstrumentEvent` pauses world simulation and opens the modal [Instrument Menu](./06-widgets.md#menus).
+
+**Properties: InstrumentProperties(ObjectProperties)**
+
+- `timbre: str`: Default synthesis timbre key from `/src/data/config/sounds/main.yaml`.
+- `layout: InstrumentLayouts`: Keybed topology (`chromatic`, `percussion`, `player`).
+- `octaves: Tuple[int, int]`: Transposition octave bounds (defaults to `(2, 6)`).
+- `default_beat: str`: Default note duration key (defaults to `"quarter"`).
+
+**State: InstrumentState(ObjectState)**
+
+- `octave: int = 4`: Currently focused octave window.
+- `dynamic: Dynamics = "mf"`: Active velocity scalar key.
+- `score: Optional[str] = None`: Compiled score key for autonomous or triggered `player-piano` performance.
+- `switch: bool = False`: Autonomous playback toggle.
+
+**Hitbox: StaticHitbox**
+
+- `get(properties, state, elevation, frame): returns properties.hitboxes`
+
+**Frame: ObjectFrame / BinaryFrame**
+
+- `keys(id, state): returns "{id}-{state.material}"`
+
+##### Draft: Modernizing Widgets Documentation (`@TODO` Resolution)
+
+- **Page**: `06-widgets.md`
+- **Heading**: `###### Panes`, `###### Gizmos`, and `###### Bindings`
+
+###### Drift
+
+`06-widgets.md` carries a top-level `!!! @TODO Documentation out of date` banner:
+1. Under `Panes -&gt; Layout`, the documentation lists `Overlay`, `Column`, `Row`, whereas the codebase (`menus/main.yaml` and `Layouts` section) uses `dock`, `stack`, `overlay`, and `tab`.
+2. Under `Gizmos`, only `collection` is documented; the `keyboard` Gizmo schema for `InstrumentMenu` is missing.
+3. Under `Bindings -&gt; Selection Bindings`, the `PLAY_NOTE`, `OCTAVE_UP`, `OCTAVE_DOWN`, `PLAY_SCORE`, and `EXIT` selections are omitted.
+
+###### Update
+
+**Layout**
+
+Pane layouts are enumerated below:
+
+- `overlay`: A sagittal axis (out-of-the-screen) stacking child Widgets over the same origin.
+- `stack`: A vertical column arrangement of child Widgets along the Y-axis.
+- `dock`: A horizontal row arrangement of child Widgets along the X-axis.
+- `tab`: Multi-pane container where each child Pane shares the parent `ScreenPosition`.
+
+###### Gizmos
+
+The type of state and topology a Gizmo expands into via `Fabricator.expand()` is determined by `bind.schema`:
+
+- `collection`: A synthetic grid of Buttons and overlaid Icons enumerating a list bound to `target.source`.
+- `keyboard`: An interactive musical keybed generated from `context.properties.layout`:
+  * `chromatic` / `player`: Expands into an upper `dock` Pane of 5 staggered accidental Buttons (`key-black`: `C#`, `D#`, `F#`, `G#`, `A#`) and a lower `dock` Pane of 8 natural Buttons (`key-white`: `C` through `C+1`), bound to `SelectBinding(selection="play_note", selector="&lt;semitone_offset&gt;")`.
+  * `percussion`: Expands into a single `dock` Pane of 4 tuned `drum-pad` Buttons (`C3`, `G3`, `C4`, `E4`).
+
+##### Draft: Complete Specification for `07-sounds.md`
+
+- **Page**: `07-sounds.md`
+- **Heading**: `#### Ontology Docs: Sounds`
+
+###### Drift
+
+`07-sounds.md` is currently an empty `TODO` stub.
+
+###### Update
+
+#### Ontology Docs: Sounds
+
+Audio in *Ontology* is divided into two distinct architectural systems: **Sound Assets** (physical `.mp3` and `.wav` media files in `/src/assets/sounds/` managed by the [Registry](./00-overview.md#library-registry)) and **Sound &amp; Score Configurations** (declarative mathematical tables and symbolic scores in `/src/data/config/sounds/` and `/src/data/config/scores/` compiled into [Board Caches](./12-architecture.md#specification-board-caches)).
+
+##### Sound Assets (`/src/assets/sounds/`)
+
+Sound Assets bind physical audio files on disk to stateful in-world triggers. During bootstrap, the `Registry` indexes `.mp3` streams as `MixMusicPtr` objects and `.wav` samples as `MixChunkPtr` objects.
+
+###### Instance: Vocals
+
+- Location: `/src/assets/sounds/vocals/**/*.wav`
+- Interface: `Asset.vocal` (`Vocal` ECS Component)
+
+Vocals encapsulate character and creature verbalizations. Unlike `Frame` (which slices 2D `.png` atlases), `Vocal` maps an intentional Sheet's `intention`, `action`, and `expression` transitions to `.wav` sample slices in `Registry`.
+
+###### Instance: Noises
+
+- Location: `/src/assets/sounds/noises/**/*.wav`
+- Interface: `NoiseIndex` (`Relations.NOISES`)
+
+Noises encapsulate physical, environmental, and mechanical sound effects (e.g., Chest/Gate switches, footsteps across Tile materials, weapon impacts, and Fluid splashes). During `Builder.build_relations()`, `NoiseProperties` declarations are compiled into `NoiseIndex`, resolving `(category, instance, material, trigger) -&gt; noise_id` in $O(1)$ time.
+
+###### Instance: Music
+
+- Location: `/src/assets/sounds/music/**/*.mp3`
+- Interface: `MusicIndex` (`Relations.MUSIC`)
+
+Music Assets are streaming background tracks tied to macro-Board state rather than individual entities. `MusicIndex` maps `(layer, calendar.season, plot.current)` to a target `MixMusicPtr` and loop boundary `(loop_start, loop_end, gain)`.
+
+##### Sound &amp; Score Configurations (`/src/data/config/`)
+
+###### Configuration: Sounds
+
+- Location: `/src/data/config/sounds/main.yaml`
+
+Defines the mathematical foundation for the 32-voice Cython additive synthesizer (`libs.audio.mixer`):
+
+- `signatures`: Time signatures (`beats_per_measure`, `beat_unit`).
+- `beats`: Whole-note normalized duration scalars (`double_whole` through `thirty_second` and triplets).
+- `dynamics`: Normalized velocity scalars (`ppp: 0.15` to `fff: 1.00`).
+- `timbres`: Harmonic partial weights $[w_0, \dots, w_7]$, linear `attack` ($s$), and exponential `decay` ($k$).
+- `notes`: Equal-temperament pitch frequencies (`REST`, `A0`–`C8`).
+
+###### Configuration: Scores
+
+- Location: `/src/data/config/scores/**/*.yaml`
+
+Defines multi-track and single-track compositions and short gameplay motifs. During `Builder.build_sounds()`, `SynthesizerCompiler` flattens all scores and note combinations into `CompiledScore` and `CompiledNote` objects stored in `Board._cache`. Each model exposes a `.primitive()` method returning a flat, zero-heap tuple consumed directly by `libs.audio.mixer.push_note()` and `libs.audio.mixer.push_score()`.
+</code></pre></div>
+<hr />
+<h3 id="bug-reports-template-bug-report">Bug Reports (<code>Template: Bug Report</code>)</h3>
+<div class="highlight"><pre><span></span><code><span class="gu">##### Bug B018: Cache.get_obstacles() Omits `obstacles` and `instruments` Asset Instances</span>
+
+<span class="gs">**STATUS**</span>: OPEN
+<span class="gs">**SEVERITY**</span>: HIGH
+
+<span class="gs">**Description**</span>
+
+In <span class="sb">`src/app/game/board/modules/cache.py`</span>, <span class="sb">`Cache.get_obstacles(self, layer: str)`</span> hardcodes a tuple of 5 <span class="sb">`AssetInstances`</span> keys:
+
+```python
+for inst_key in (
+    AssetInstances.CRATES.value,
+    AssetInstances.GATES.value,
+    AssetInstances.STRUTS.value,
+    AssetInstances.SIGNS.value,
+    AssetInstances.CHESTS.value
+):
+    obstacles.extend(layer_inst.get(inst_key, []))
+</code></pre></div>
+<p>It omits <code>AssetInstances.OBSTACLES.value</code> (<code>objects.obstacles</code>), <code>AssetInstances.TREES.value</code> / <code>AssetInstances.ORE.value</code> (<code>resources</code>), and the incoming <code>AssetInstances.INSTRUMENTS.value</code> (<code>objects.instruments</code>). Consequently, <code>board.obstacles(layer)</code> fails to return rock outcroppings, trees, ore nodes, or large instruments (<code>pipe-organ</code>, <code>grand-piano</code>), causing RRT pathfinding (<code>paths.pyx</code>), line-of-sight checks (<code>geometry.los</code>), and Phase 13 acoustic occlusion (<code>SoundMechanics</code> via <code>geometry.c_punctures</code>) to route and raycast straight through solid obstacles.</p>
+<p><strong>Steps to Replicate</strong></p>
+<ol>
+<li>Instantiate a Board containing an <code>objects.obstacles</code> asset (or an <code>objects.instruments</code> asset) on layer <code>"0"</code>.</li>
+<li>Call <code>board.obstacles("0")</code>.</li>
+<li>Observe that the returned list excludes all <code>objects.obstacles</code> and <code>objects.instruments</code> instances despite their non-negative mass and active <code>StaticHitbox</code> footprints.</li>
+</ol>
+<p><strong>Proposed Remeditation</strong></p>
+<p>Update <code>Cache.get_obstacles()</code> in <code>src/app/game/board/modules/cache.py</code> to include <code>AssetInstances.OBSTACLES.value</code>, <code>AssetInstances.INSTRUMENTS.value</code>, <code>AssetInstances.TREES.value</code>, and <code>AssetInstances.ORE.value</code> (or filter <code>self.cached_weights.get(layer, [])</code> for non-kinematic/blocking entities with active hitboxes).</p>
+<h5 id="bug-b019-spsc-ring-buffer-overflow-head-of-line-blocking-on-multi-measure-score-playback">Bug B019: SPSC Ring Buffer Overflow &amp; Head-of-Line Blocking on Multi-Measure Score Playback</h5>
+<p><strong>STATUS</strong>: OPEN
+<strong>SEVERITY</strong>: HIGH</p>
+<p><strong>Description</strong></p>
+<p>In the Phase 13 <code>libs/audio/mixer.pyx</code> specification, a single 256-slot SPSC ring buffer (<code>RING_BUFFER_SIZE = 256</code>) is used for both immediate interactive key presses (<code>push_note</code>) and compiled score sequences (<code>push_score</code>). However, <code>src/data/config/scores/chopin/nocturne-op-9-no-2.yaml</code> compiles into ~950 chronological <code>NoteEvent</code> structs across its 22 measures. Pushing a compiled score into the 256-slot ring buffer immediately overflows <code>RING_BUFFER_SIZE</code>, silently dropping ~700 notes. Furthermore, because the audio callback drains the ring buffer sequentially while <code>ring[read_idx].start_sample &lt;= current_sample</code>, any future-scheduled score event at <code>ring[read_idx]</code> blocks all subsequent immediate interactive <code>push_note</code> events (<code>start_sample = 0</code>) until the score note's timestamp is reached.</p>
+<p><strong>Steps to Replicate</strong></p>
+<ol>
+<li>Compile <code>chopin_nocturne_op9_no2</code> (~950 <code>NoteEvent</code> tuples) and pass it to a 256-slot ring buffer via <code>push_score()</code>.</li>
+<li>Observe that events <code>255..950</code> are dropped by the <code>if next_w == _synth.read_idx: return</code> guard.</li>
+<li>Push an immediate live note (<code>start_delay = 0.0</code>) while a future score note (<code>start_sample &gt; current_sample</code>) sits at <code>read_idx</code>; observe that the live note is blocked behind the scheduled score event.</li>
+</ol>
+<p><strong>Proposed Remeditation</strong></p>
+<p>Separate <code>SynthState</code> in <code>libs/audio/mixer.pyx</code> into two lock-free dispatch structures:</p>
+<ol>
+<li><code>NoteEvent ring[256]</code>: Exclusively for immediate <code>push_note()</code> events (<code>start_sample = 0</code>).</li>
+<li><code>NoteEvent score_buf[2048]</code> with independent <code>score_sample_pos</code> and <code>score_idx</code> cursors: Exclusively for <code>push_score()</code> timeline playback.</li>
+</ol>
+<h5 id="bug-b020-screenexport_map-renders-channel-modulations-to-default-backbuffer-instead-of-full_target">Bug B020: Screen.export_map() Renders Channel Modulations to Default Backbuffer Instead of <code>full_target</code></h5>
+<p><strong>STATUS</strong>: OPEN
+<strong>SEVERITY</strong>: MEDIUM</p>
+<p><strong>Description</strong></p>
+<p>In <code>src/app/game/screen.py</code>, <code>Screen.export_map()</code> allocates a transient <code>full_target</code> canvas and calls <code>render.render(..., target=full_target)</code>. Inside Cython, <code>render.render()</code> resets the SDL render target back to <code>NULL</code> (the default window backbuffer) upon completion. Immediately afterward, <code>Screen.export_map()</code> executes:</p>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="n">active_channels</span><span class="p">:</span>
+    <span class="n">render</span><span class="o">.</span><span class="n">channel</span><span class="p">(</span><span class="n">active_channels</span><span class="p">,</span> <span class="n">pov</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">pov</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+</code></pre></div>
+<p>without passing <code>target=full_target</code>. Any <code>ChannelTypes.TINT</code> operations are therefore drawn onto the window backbuffer rather than <code>full_target</code> before <code>render.save(..., target=full_target)</code> dumps the texture to disk.</p>
+<p><strong>Steps to Replicate</strong></p>
+<ol>
+<li>Deploy an Asset with an active <code>ChannelTypes.TINT</code> directive onto a Board layer.</li>
+<li>Invoke <code>screen.export_map("out.png", board.renderables(layer))</code>.</li>
+<li>Inspect <code>out.png</code> and observe that the channel tint is missing from the exported map image.</li>
+</ol>
+<p><strong>Proposed Remeditation</strong></p>
+<p>Extend <code>render.channel()</code> in <code>libs/graphics/render.pyx</code> to accept an optional <code>TexturePtr target = None</code> parameter (binding <code>SDL_SetRenderTarget(_renderer, target.ptr)</code> when provided) and pass <code>target=full_target</code> from <code>Screen.export_map()</code>.</p>
+<div class="highlight"><pre><span></span><code>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="../../../../static/js/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

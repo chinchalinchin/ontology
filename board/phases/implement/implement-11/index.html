@@ -1,0 +1,4131 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/board/phases/implement/implement-11/">
+      
+      
+        <link rel="prev" href="../implement-10/">
+      
+      
+        <link rel="next" href="../implement-12/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Phase 11 - Geology - Ontology</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#implement-phase-11-geology" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="Ontology" class="md-header__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ontology
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Phase 11 - Geology
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="Ontology" class="md-nav__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Ontology
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../00-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../01-assets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../02-sprites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../03-compositions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../04-intentions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../05-mechanics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../06-widgets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../07-acoustics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../08-narratives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../09-ecology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ecology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../10-chemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../11-emergence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../12-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../specs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Specifications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_15" id="__nav_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Specifications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/00-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dialogue Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/01-interaction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/02-wander/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wander Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_16" id="__nav_16_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Roadmap
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2" id="__nav_16_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_16_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_1" id="__nav_16_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-castle-dawn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Castle Dawn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-regalia-galleria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Regalia Galleria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-temple-of-trials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Trials of Trials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Dialogue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-view/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_2" id="__nav_16_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implement
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implement
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01 - Renderer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02 - Game
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03 - Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04 - Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 05 - Editor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06 - Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07 - Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08 - Pathfinding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09 - Hydrodynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10 - Seasons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 11 - Geology
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 11 - Geology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#implement-phase-11-geology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implement: Phase 11 - Geology
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implement: Phase 11 - Geology">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis I
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis I">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-state-property-generalization-shorelines-vs-strata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. State &amp; Property Generalization (Shorelines vs. Strata)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-out-of-context-systems-affected" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Out-of-Context Systems Affected
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-hydration-execution-order-invariant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Hydration Execution Order Invariant
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-semantic-property-and-state-schema-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Semantic, Property, and State Schema Expansion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-relational-indexing-probability-weights-strataindex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Relational Indexing &amp; Probability Weights (StrataIndex)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-ecs-frame-multi-tier-hitbox-components-formationframe-formationhitbox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: ECS Frame &amp; Multi-Tier Hitbox Components (FormationFrame &amp; FormationHitbox)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-faultline-extraction-probabilistic-generation-in-cartographer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Faultline Extraction &amp; Probabilistic Generation in Cartographer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-perimeter-elevation-physics-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Perimeter &amp; Elevation Physics Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 12 - Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-13/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 13 - Acoustics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 14 - Narratives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-n/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n - Commerce
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-n%2B1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n+1 - Towns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_3" id="__nav_16_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refactor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Refactor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-01-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01.01 - Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.01 - Frames
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.02 - Registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.03 - Equipment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.04 - Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.05 - Finetuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.06 - Effects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.07 - Registry Data Structures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.08 - World Chunks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-03-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.01 - Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-03-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.02 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-03-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.03 - Motion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-03-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.04 - Projectiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-04-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.01 - Typography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-04-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.02 - Simplification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-04-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.03 - Event Handlers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-04-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.04 - Menu Context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-04-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.05 - Gizmos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-04-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.06 - Pane Generation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-06-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.01 - Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-06-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.02 - Goals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-06-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.03 - Combat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-06-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.04 - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-07-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.01 - Elevation Sorting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-07-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.02 - Platforms & Elevated Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-07-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.03 - Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-07-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.04 - Materialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-07-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.05 - Composite Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-08-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.01 - Obstacle Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-08-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.02 - Navigation Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-08-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.03 - Trajectory Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-08-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.04 - Mutators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.01 - Fluid Flows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.02 - Shorelines & Geography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.03 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.04 - Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.05 - Bridges & Bifurcation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.06 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.07 - Frame Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.08 - Transverse Fluid Submersion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-10-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.01 - Stage Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-10-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.02 - Shoreline Seasonal Indexing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-10-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.03 - Flowers, Pixies & Reproduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-10-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.04 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../appendices/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_17" id="__nav_17_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/00-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/01-schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/02-diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagrams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reports
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../coverage/index" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unit Test Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#implement-phase-11-geology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implement: Phase 11 - Geology
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implement: Phase 11 - Geology">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis I
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis I">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-state-property-generalization-shorelines-vs-strata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. State &amp; Property Generalization (Shorelines vs. Strata)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-out-of-context-systems-affected" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Out-of-Context Systems Affected
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-hydration-execution-order-invariant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Hydration Execution Order Invariant
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-semantic-property-and-state-schema-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Semantic, Property, and State Schema Expansion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-relational-indexing-probability-weights-strataindex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Relational Indexing &amp; Probability Weights (StrataIndex)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-ecs-frame-multi-tier-hitbox-components-formationframe-formationhitbox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: ECS Frame &amp; Multi-Tier Hitbox Components (FormationFrame &amp; FormationHitbox)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-faultline-extraction-probabilistic-generation-in-cartographer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Faultline Extraction &amp; Probabilistic Generation in Cartographer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-perimeter-elevation-physics-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Perimeter &amp; Elevation Physics Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Phase 11 - Geology</h1>
+
+<h4 id="implement-phase-11-geology">Implement: Phase 11 - Geology</h4>
+<p><strong>Overview</strong></p>
+<p>This proposal introduces <code>Strata</code> as a new procedural <code>AssetInstance</code> under the <code>Geography</code> category (<code>geography.strata</code>). While <code>Shorelines</code> represent 1D directional margins synthesized deterministically at the interface of <code>Environ</code> Tiles and <code>Fluid</code> Effects, <code>Strata</code> represent unidirectional, multi-elevation 2.5D geological formations (<code>mesas</code>, <code>spires</code>, <code>buttes</code>) bound strictly to <code>Environ</code> Tiles. During Board hydration, <code>Cartographer</code> identifies interior "faultlines" where adjacent <code>Environ</code> Tile deployments meet, constructs a spatial probability field localized along those faultlines, and probabilistically samples and spawns <code>Strata</code> formations via <code>StrataIndex</code> and <code>Cradle</code>.</p>
+<h5 id="specification">Specification</h5>
+<ul>
+<li>
+<p><strong>Taxonomy</strong>:</p>
+</li>
+<li>
+<p><code>category</code>: <code>AssetCategories.GEOGRAPHY</code> (<code>"geography"</code>)</p>
+</li>
+<li><code>instance</code>: <code>AssetInstances.STRATA</code> (<code>"strata"</code>)</li>
+<li>
+<p><code>substrate</code>: <code>Substrates.STANDARD</code> (<code>0</code>) — unlike <code>Shorelines</code> (<code>Substrates.SURFACES = -2</code>), <code>Strata</code> are upright volumetric formations that must Y-sort (<code>ground_y</code>) coplanarly with <code>Sprites</code>, <code>Objects</code>, and <code>Crafts</code>.</p>
+</li>
+<li>
+<p><strong>Relational Binding (<code>StrataIndex</code>)</strong>:</p>
+</li>
+<li>
+<p>Binds <code>tile_id: str</code> (<span class="arithmatex">\(\text{Tile}_{\text{Environ}} \to \text{Strata}\)</span>) without a <code>fluid</code> key.</p>
+</li>
+<li>
+<p>Encodes relative formation weights <span class="arithmatex">\(W = (w_{\text{spires}}, w_{\text{mesas}}, w_{\text{buttes}})\)</span> satisfying <span class="arithmatex">\(P(\text{spires}) &gt; P(\text{mesas}) &gt; P(\text{buttes})\)</span>.</p>
+</li>
+<li>
+<p><strong>Atlas Partitioning <code>(Row: Formation, Column: Season)</code></strong>:</p>
+</li>
+<li>
+<p><strong>Columns (<code>Seasons</code>)</strong>: <code>spring</code> (<span class="arithmatex">\(0\)</span>), <code>summer</code> (<span class="arithmatex">\(1\)</span>), <code>autumn</code> (<span class="arithmatex">\(2\)</span>), <code>winter</code> (<span class="arithmatex">\(3\)</span>).</p>
+</li>
+<li>
+<p><strong>Rows (<code>Formations</code>)</strong>:</p>
+<ol>
+<li><code>mesas</code> (Row <span class="arithmatex">\(0\)</span>): Elevated plateau. Obstructs dynamic entities at its deployed elevation <span class="arithmatex">\(E\)</span> (<span class="arithmatex">\(m = 0\)</span>) and projects a walkable support surface at elevation <span class="arithmatex">\(E + 1\)</span> for entities descending from <span class="arithmatex">\(\ge E + 1\)</span> or traversing horizontally at <span class="arithmatex">\(E + 1\)</span>.</li>
+<li><code>spires</code> (Row <span class="arithmatex">\(1\)</span>): Vertical monolith. Obstructs dynamic entities at its deployed elevation <span class="arithmatex">\(E\)</span> (<span class="arithmatex">\(m = 0\)</span>) with no walkable upper surface at <span class="arithmatex">\(E + 1\)</span>.</li>
+<li><code>buttes</code> (Row <span class="arithmatex">\(2\)</span>): Inclined plateau. Obstructs dynamic entities along its <code>UP</code>, <code>LEFT</code>, and <code>RIGHT</code> flanks at deployed elevation <span class="arithmatex">\(E\)</span>, exposes a walkable incline outlet on its <code>DOWN</code> (southern) edge that transitions dynamic entities between <span class="arithmatex">\(E\)</span> and <span class="arithmatex">\(E + 1\)</span> (<span class="arithmatex">\(\Delta E = \pm 1\)</span>), and provides a walkable surface at <span class="arithmatex">\(E + 1\)</span>.</li>
+</ol>
+</li>
+<li>
+<p><strong>Procedural Faultline Synthesis (<code>Cartographer</code>)</strong>:</p>
+</li>
+<li>
+<p><strong>Faultline Extraction</strong>: Where two <code>Environ</code> Tile regions <span class="arithmatex">\(T_i, T_j\)</span> share an interior border segment <span class="arithmatex">\(\mathcal{F}_{ij}\)</span>, a faultline segment <span class="arithmatex">\(\mathbf{s}_k = (\mathbf{a}_k, \mathbf{b}_k)\)</span> is established.</p>
+</li>
+<li><strong>Spatial Probability Field</strong>: Faultline segments act as line sources generating an exponentially screened spatial probability density <span class="arithmatex">\(\mathcal{P}(\mathbf{x}) \in [0, 1]\)</span> across the layer:</li>
+</ul>
+<div class="arithmatex">\[\mathcal{P}(\mathbf{x}) = 1 - \prod_{k \in \text{Faultlines}} \left(1 - p_0 \exp\left(-\frac{d_k(\mathbf{x})}{\sigma_{\text{strata}}}\right)\right)\]</div>
+<p>where <span class="arithmatex">\(d_k(\mathbf{x})\)</span> is the minimum Euclidean distance from candidate coordinate <span class="arithmatex">\(\mathbf{x}\)</span> to faultline segment <span class="arithmatex">\(\mathbf{s}_k\)</span>, <span class="arithmatex">\(p_0 \in (0, 1]\)</span> is the peak faultline nucleation probability, and <span class="arithmatex">\(\sigma_{\text{strata}}\)</span> is the transverse decay length.
+* <strong>Formation Sampling</strong>: At each accepted non-occluded candidate coordinate <span class="arithmatex">\(\mathbf{x}\)</span>, the underlying <code>Environ</code> tile <span class="arithmatex">\(T(\mathbf{x})\)</span> is queried via <code>board.tile(layer, x)</code>, resolved through <code>StrataIndex</code> to a <code>strata_id</code> and categorical distribution <span class="arithmatex">\(P(\text{Formation} \mid \text{strata\_id})\)</span>, and instantiated via <code>board.cradle.spawn_strata(...)</code>.</p>
+<h5 id="architectural-analysis-i">Architectural Analysis I</h5>
+<h6 id="1-state-property-generalization-shorelines-vs-strata">1. State &amp; Property Generalization (<code>Shorelines</code> vs. <code>Strata</code>)</h6>
+<p>In <code>Crafts</code>, <code>CraftProperties</code> and <code>CraftState</code> unified disparate structural atlases through <code>Blueprints</code> (rows) and <code>Material</code> (columns). <code>Geography</code> exhibits an isomorphic structure:</p>
+<ul>
+<li><strong>Columns</strong>: Both <code>Shorelines</code> and <code>Strata</code> index their horizontal atlas axis by <code>Seasons</code> (<code>spring</code>, <code>summer</code>, <code>autumn</code>, <code>winter</code>).</li>
+<li><strong>Rows</strong>: <code>Shorelines</code> index their vertical atlas axis by <code>Directions</code> (<code>up</code>, <code>left</code>, <code>down</code>, <code>right</code>), whereas <code>Strata</code> index their vertical axis by <code>Formations</code> (<code>mesas</code>, <code>spires</code>, <code>buttes</code>).</li>
+</ul>
+<p>To avoid ad-hoc proliferation of unrelated state fields while honoring semantic distinction:</p>
+<ul>
+<li>Define a shared base <code>GeographyState(AssetState)</code> in <code>src/app/models/state/assets/geography.py</code> containing <code>position: Optional[Position]</code>, <code>season: Seasons</code>, <code>hitboxes: List[Hitbox]</code>, and <code>_keys: Optional[List[Tuple[str, int, int]]]</code>.</li>
+<li><code>ShorelineState(GeographyState)</code> declares <code>orientation: Directions</code> and <code>length: int</code>.</li>
+<li><code>StrataState(GeographyState)</code> declares <code>formation: Formations</code> and <code>delta: int = 1</code> (used by <code>buttes</code> and <code>mesas</code> for elevation offset resolution).</li>
+<li>In <code>GeographyProperties</code> (<code>src/app/models/properties/assets.py</code>), widen <code>hitboxes</code> from <code>Optional[List[Hitbox]]</code> to mirrored polymorphic formation mappings:
+<div class="highlight"><pre><span></span><code><span class="n">hitboxes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Hitbox</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="n">Hitbox</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+<span class="n">probabilities</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div></li>
+</ul>
+<p>This allows <code>Shorelines</code> to retain <code>hitboxes: null</code> (synthesized dynamically via <code>thickness</code>) while <code>Strata</code> YAML property files can declare explicit per-formation relative hitboxes (<code>mesas</code>, <code>spires</code>, <code>buttes</code>) and optional per-asset formation probability overrides.</p>
+<h6 id="2-out-of-context-systems-affected">2. Out-of-Context Systems Affected</h6>
+<p>Because <code>Strata</code> introduce static <span class="arithmatex">\(m = 0\)</span> obstructions, multi-elevation surfaces (<span class="arithmatex">\(E + 1\)</span>), and incline transitions (<span class="arithmatex">\(\Delta E = \pm 1\)</span>) into <code>Geography</code>, the following systems <strong>not</strong> present in the current context window will be impacted:</p>
+<table>
+<thead>
+<tr>
+<th>System / Module</th>
+<th>Address</th>
+<th>Impact &amp; Required Modification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Semantics</strong></td>
+<td><code>src/app/static/semantics.py</code></td>
+<td>Add <code>STRATA = "strata"</code> to <code>AssetInstances</code> and <code>Relations</code>; add <code>Formations(Enum)</code> (<code>MESAS</code>, <code>SPIRES</code>, <code>BUTTES</code>); add <code>FORMATION = "formation"</code> to <code>FrameTypes</code> and <code>HitboxTypes</code>.</td>
+</tr>
+<tr>
+<td><strong>Property &amp; State Schemas</strong></td>
+<td><code>src/app/models/properties/__init__.py</code><br></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><br><code>src/app/models/state/__init__.py</code> | Register <code>strata: Dict[str, GeographyProperties]</code> on <code>GeographyPropertiesSchema</code> and <code>strata: List[StrataState]</code> on <code>GeographyStateSchema</code> so <code>Loader</code> and <code>AssetFactory</code> ingest <code>/src/assets/geography/strata/**/*.yaml</code>. |
+| <strong>Material Index (Substrates)</strong> | <code>src/data/config/materials/main.yaml</code><br></p>
+<p><br><code>src/app/game/logic/relations/materials.py</code> | Register <code>strata</code> under <code>Substrates.STANDARD (0)</code>. If defaulted to <code>Substrates.SURFACES (-2)</code> like <code>shorelines</code>, Sprites at elevation <span class="arithmatex">\(E\)</span> would render <em>on top of</em> <code>spires</code> and <code>mesas</code> regardless of <code>ground_y</code>. |
+| <strong>Spawnable Group &amp; Cradle</strong> | <code>src/app/models/groups.py</code><br></p>
+<p><br><code>src/app/services/generators/game/cradle.py</code> | Add <code>strata: Dict[str, GeographyProperties]</code> to <code>SpawnableGroup</code>. Add <code>Cradle.spawn_strata(...)</code> to instantiate <code>Strata</code> assets using <code>recipes.geography.strata</code> and <code>Substrates.STANDARD</code>. |
+| <strong>Hitbox ECS Component</strong> | <code>src/app/assets/hitboxes/geography.py</code> <em>(or <code>hitboxes.py</code>)</em> | Implement <code>FormationHitbox(HitboxSchema)</code>. Must emit <code>[E]</code> for <code>spires</code> and <code>[E, E + 1]</code> for <code>mesas</code> and <code>buttes</code> in <code>elevations()</code>, and return tier-appropriate footprints in <code>get(properties, state, elevation)</code>. |
+| <strong>Board Queries &amp; Caches</strong> | <code>src/app/game/board/core.py</code><br></p>
+<p><br><code>src/app/game/board/caches.py</code> | Expose <code>board.strata(layer=None)</code>. Ensure <code>board.weights(layer, elevation)</code> and <code>board.obstacles(layer, elevation)</code> include <code>geography.strata</code> (<span class="arithmatex">\(m = 0\)</span>) so <code>CollisionMechanics</code>, <code>NavigationMechanics</code> (RRT), and <code>Actuator</code> (fluid raycasting) recognize <code>Strata</code> as static obstacles. |
+| <strong>Collision &amp; Incline Physics</strong> | <code>src/app/game/logic/mechanics/spatial/collision.py</code><br></p>
+<p><br><code>src/app/game/logic/mechanics/core/motion.py</code> | Update Phase 0 incline traversal (<code>_traverse_stairs</code>) in <code>CollisionMechanics</code> to also evaluate <code>strata</code> with <code>state.formation == Formations.BUTTES.value</code> along the <code>DOWN</code> approach vector (<span class="arithmatex">\(v_y &lt; 0 \implies E + 1\)</span>, <span class="arithmatex">\(v_y &gt; 0 \implies E - 1\)</span>). Ensure gravity/support checks in <code>MotionMechanics</code> recognize <code>mesas</code> and <code>buttes</code> at <span class="arithmatex">\(E + 1\)</span> as valid supporting surfaces. |
+| <strong>Season Mechanics</strong> | <code>src/app/game/logic/mechanics/world/season.py</code> | When <code>SeasonEvent</code> triggers, iterate <code>board.strata()</code> alongside <code>board.shorelines()</code> to update <code>state.season = board.calendar.season</code> and invalidate <code>state._keys = None</code>. |
+| <strong>Hydration Pipeline (<code>Migrator</code> &amp; <code>Builder</code>)</strong> | <code>src/app/services/orchestration/migrator.py</code><br></p>
+<p><br><code>src/app/services/orchestration/builder.py</code> | Compile <code>StrataIndex</code> in <code>Builder</code>. In <code>Migrator</code>, invoke <code>Cartographer.generate_strata(layer, board, strata_index)</code> during Phase 2 hydration. |</p>
+<h6 id="3-hydration-execution-order-invariant">3. Hydration Execution Order Invariant</h6>
+<p>In <code>Migrator</code>, procedural generation ordering across <code>Tiles</code>, <code>Strata</code>, <code>Perimeter</code>, and <code>Fluids</code> is strictly constrained by causal dependencies:</p>
+<ol>
+<li><strong><code>Tiles</code> Hydration</strong>: Populates <code>board.caches.tilemap[layer][ENVIRON]</code>.</li>
+<li><strong><code>Cartographer.generate_strata</code></strong>: Extracts faultlines from <code>Environ</code> tiles, checks initial static <code>Objects</code>/<code>Crafts</code> occlusions, and adds <code>Strata</code> (<span class="arithmatex">\(m = 0\)</span>) to the <code>Board</code>.</li>
+<li><strong><code>Perimeter.generate</code></strong>: Extracts <code>Tiles</code>, <code>Objects</code>, <code>Crafts</code>, and newly spawned <code>Strata</code> (<code>mesas</code> and <code>buttes</code> at <span class="arithmatex">\(E + 1\)</span>, static obstructions at <span class="arithmatex">\(E\)</span>) to build tier boundary hulls.</li>
+<li><strong><code>Actuator.propagate</code> &amp; <code>Cartographer.generate</code> (Shorelines)</strong>: Raycasts <code>Fluids</code> against <code>board.obstacles</code> and <code>board.weights</code>. Because <code>Strata</code> are already on the <code>Board</code> with <span class="arithmatex">\(m = 0\)</span>, fluid streams striking a <code>spire</code>, <code>mesa</code>, or <code>butte</code> will automatically truncate, form annular pools around the geological formation, bifurcate, and synthesize <code>Shorelines</code> along the resulting water contour.</li>
+</ol>
+<h5 id="user-review-i">User Review I</h5>
+<p><em>(Reserved for User Review — alignment, constraints, and notes on faultline sampling density, <code>buttes</code> outlet hitbox geometry, and hydration seeding.)</em></p>
+<h5 id="goals">Goals</h5>
+<h6 id="goal-semantic-property-and-state-schema-expansion">Goal: Semantic, Property, and State Schema Expansion</h6>
+<p>Define <code>Formations</code> in <code>app.static.semantics</code>, generalize <code>GeographyProperties</code> to support per-formation hitboxes and probability weights, and establish <code>GeographyState</code> and <code>StrataState</code> in <code>app.models.state.assets.geography</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># src/app/static/semantics.py</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Formations</span><span class="p">(</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span> <span class="p">):</span>
+    <span class="n">MESAS</span>  <span class="o">=</span> <span class="s2">"mesas"</span>
+    <span class="n">SPIRES</span> <span class="o">=</span> <span class="s2">"spires"</span>
+    <span class="n">BUTTES</span> <span class="o">=</span> <span class="s2">"buttes"</span>
+
+<span class="c1"># src/app/models/state/assets/geography.py</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GeographyState</span><span class="p">(</span><span class="n">AssetState</span><span class="p">):</span>
+    <span class="n">position</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Position</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore</span>
+    <span class="n">season</span><span class="p">:</span> <span class="n">Seasons</span> <span class="o">=</span> <span class="n">Seasons</span><span class="o">.</span><span class="n">SPRING</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">hitboxes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Hitbox</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="n">_keys</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ShorelineState</span><span class="p">(</span><span class="n">GeographyState</span><span class="p">):</span>
+    <span class="n">orientation</span><span class="p">:</span> <span class="n">Directions</span> <span class="o">=</span> <span class="n">Directions</span><span class="o">.</span><span class="n">DOWN</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StrataState</span><span class="p">(</span><span class="n">GeographyState</span><span class="p">):</span>
+    <span class="n">formation</span><span class="p">:</span> <span class="n">Formations</span> <span class="o">=</span> <span class="n">Formations</span><span class="o">.</span><span class="n">SPIRES</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">delta</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+</code></pre></div>
+<h6 id="goal-relational-indexing-probability-weights-strataindex">Goal: Relational Indexing &amp; Probability Weights (<code>StrataIndex</code>)</h6>
+<p>Implement <code>StrataIndex</code> in <code>src/app/game/logic/relations/strata.py</code> to compile <code>tile -&gt; strata_id</code> associations and normalize relative formation probabilities (defaulting to <code>spires: 0.60</code>, <code>mesas: 0.30</code>, <code>buttes: 0.10</code> if not overridden on <code>GeographyProperties</code>).</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># src/app/game/logic/relations/strata.py</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StrataIndex</span><span class="p">(</span><span class="n">Singleton</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Relational index mapping Environ Tile IDs to Strata Asset IDs and</span>
+<span class="sd">    normalized categorical probability distributions over Formations.</span>
+<span class="sd">    """</span>
+    <span class="n">DEFAULT_WEIGHTS</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">Formations</span><span class="o">.</span><span class="n">SPIRES</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="mf">0.60</span><span class="p">,</span>
+        <span class="n">Formations</span><span class="o">.</span><span class="n">MESAS</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="mf">0.30</span><span class="p">,</span>
+        <span class="n">Formations</span><span class="o">.</span><span class="n">BUTTES</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="mf">0.10</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">_tile_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]</span>
+    <span class="n">_fallback_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+    <span class="n">_weights</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_properties</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">strata</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">GeographyProperties</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">StrataIndex</span><span class="p">:</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">strata_id</span><span class="p">,</span> <span class="n">props</span> <span class="ow">in</span> <span class="n">strata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">season</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">props</span><span class="p">,</span> <span class="s2">"season"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">season</span><span class="p">:</span>
+                <span class="n">index</span><span class="o">.</span><span class="n">register</span><span class="p">((</span><span class="n">props</span><span class="o">.</span><span class="n">tile</span><span class="p">,</span> <span class="n">season</span><span class="p">),</span> <span class="n">strata_id</span><span class="p">)</span>
+            <span class="n">index</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">props</span><span class="o">.</span><span class="n">tile</span><span class="p">,</span> <span class="n">strata_id</span><span class="p">)</span>
+
+            <span class="n">raw_weights</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">props</span><span class="p">,</span> <span class="s2">"probabilities"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">DEFAULT_WEIGHTS</span>
+            <span class="n">total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">raw_weights</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="ow">or</span> <span class="mf">1.0</span>
+            <span class="n">index</span><span class="o">.</span><span class="n">_weights</span><span class="p">[</span><span class="n">strata_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="o">/</span> <span class="n">total</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">raw_weights</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">}</span>
+        <span class="k">return</span> <span class="n">index</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tile_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">season</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">season</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">tile_id</span><span class="p">,</span> <span class="n">season</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tile_map</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tile_map</span><span class="p">[(</span><span class="n">tile_id</span><span class="p">,</span> <span class="n">season</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fallback_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tile_id</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_formation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strata_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">u</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Inverse-transform sampling over (spires, mesas, buttes) given uniform u in [0, 1).</span>
+<span class="sd">        """</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weights</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">strata_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_WEIGHTS</span><span class="p">)</span>
+        <span class="n">cumulative</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">formation</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">dist</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">cumulative</span> <span class="o">+=</span> <span class="n">prob</span>
+            <span class="k">if</span> <span class="n">u</span> <span class="o">&lt;</span> <span class="n">cumulative</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">formation</span>
+        <span class="k">return</span> <span class="n">Formations</span><span class="o">.</span><span class="n">SPIRES</span><span class="o">.</span><span class="n">value</span>
+</code></pre></div>
+<h6 id="goal-ecs-frame-multi-tier-hitbox-components-formationframe-formationhitbox">Goal: ECS Frame &amp; Multi-Tier Hitbox Components (<code>FormationFrame</code> &amp; <code>FormationHitbox</code>)</h6>
+<p>Implement <code>FormationFrame</code> in <code>src/app/assets/frames/geography.py</code> to index the <span class="arithmatex">\(3 \times 4\)</span> <code>(Formation, Season)</code> atlas, and <code>FormationHitbox</code> in <code>src/app/assets/hitboxes/geography.py</code> to project multi-tier collision and surface geometry across elevations <span class="arithmatex">\(E\)</span> and <span class="arithmatex">\(E + 1\)</span>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># src/app/assets/frames/geography.py</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FormationFrame</span><span class="p">(</span><span class="n">Frame</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Indexes 3 geological formation rows (mesas, spires, buttes) across 4 calendar</span>
+<span class="sd">    season columns.</span>
+<span class="sd">    """</span>
+    <span class="n">FORMATION_ROWS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">Formations</span><span class="o">.</span><span class="n">MESAS</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">Formations</span><span class="o">.</span><span class="n">SPIRES</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">Formations</span><span class="o">.</span><span class="n">BUTTES</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">properties</span><span class="p">:</span> <span class="n">GeographyProperties</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">w</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">l</span>
+        <span class="n">crops</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">season</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Seasons</span><span class="p">):</span>
+            <span class="n">base_x</span> <span class="o">=</span> <span class="n">col</span> <span class="o">*</span> <span class="n">w</span>
+            <span class="k">for</span> <span class="n">formation</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">FORMATION_ROWS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">base_y</span> <span class="o">=</span> <span class="n">row</span> <span class="o">*</span> <span class="n">l</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">id</span><span class="p">,</span> <span class="n">season</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">formation</span><span class="p">])</span>
+                <span class="n">crops</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">base_x</span><span class="p">,</span> <span class="n">base_y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">crops</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">StrataState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+        <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">_keys</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">_keys</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">id</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">season</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">formation</span><span class="p">])</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">_keys</span> <span class="o">=</span> <span class="p">[(</span><span class="n">key</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">_keys</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># src/app/assets/hitboxes/geography.py</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FormationHitbox</span><span class="p">(</span><span class="n">HitboxSchema</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Resolves elevation participation and tier-specific collision footprints</span>
+<span class="sd">    for mesas, spires, and buttes.</span>
+<span class="sd">    """</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">elevations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">properties</span><span class="p">:</span> <span class="n">GeographyProperties</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">StrataState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="n">base_e</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">elevation</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">formation</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Formations</span><span class="o">.</span><span class="n">MESAS</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">Formations</span><span class="o">.</span><span class="n">BUTTES</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">base_e</span><span class="p">,</span> <span class="n">base_e</span> <span class="o">+</span> <span class="n">state</span><span class="o">.</span><span class="n">delta</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">base_e</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">properties</span><span class="p">:</span> <span class="n">GeographyProperties</span><span class="p">,</span>
+        <span class="n">state</span><span class="p">:</span> <span class="n">StrataState</span><span class="p">,</span>
+        <span class="n">elevation</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">frame</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Frame</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Hitbox</span><span class="p">]:</span>
+        <span class="n">base_e</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">elevation</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">w</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">l</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">properties</span><span class="o">.</span><span class="n">thickness</span>
+
+        <span class="c1"># Tier E + 1: Walkable surface footprint for mesas and buttes</span>
+        <span class="k">if</span> <span class="n">elevation</span> <span class="o">==</span> <span class="n">base_e</span> <span class="o">+</span> <span class="n">state</span><span class="o">.</span><span class="n">delta</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">formation</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Formations</span><span class="o">.</span><span class="n">MESAS</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">Formations</span><span class="o">.</span><span class="n">BUTTES</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">Hitbox</span><span class="p">(</span><span class="n">Position</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">Dimensions</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">l</span><span class="p">))]</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">elevation</span> <span class="o">!=</span> <span class="n">base_e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="c1"># Tier E: Base collision footprints</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">properties</span><span class="o">.</span><span class="n">hitboxes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">state</span><span class="o">.</span><span class="n">formation</span> <span class="ow">in</span> <span class="n">properties</span><span class="o">.</span><span class="n">hitboxes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">properties</span><span class="o">.</span><span class="n">hitboxes</span><span class="p">[</span><span class="n">state</span><span class="o">.</span><span class="n">formation</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">formation</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Formations</span><span class="o">.</span><span class="n">SPIRES</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">Formations</span><span class="o">.</span><span class="n">MESAS</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">hitboxes</span> <span class="ow">or</span> <span class="p">[</span><span class="n">Hitbox</span><span class="p">(</span><span class="n">Position</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">Dimensions</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">l</span><span class="p">))]</span>
+
+        <span class="c1"># Buttes at Tier E: 3-sided obstruction (UP, LEFT, RIGHT), open on DOWN for incline entry</span>
+        <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">formation</span> <span class="o">==</span> <span class="n">Formations</span><span class="o">.</span><span class="n">BUTTES</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">hitboxes</span> <span class="ow">or</span> <span class="p">[</span>
+                <span class="n">Hitbox</span><span class="p">(</span><span class="n">Position</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">Dimensions</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">t</span><span class="p">)),</span>          <span class="c1"># North wall</span>
+                <span class="n">Hitbox</span><span class="p">(</span><span class="n">Position</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">Dimensions</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">l</span><span class="p">)),</span>          <span class="c1"># West wall</span>
+                <span class="n">Hitbox</span><span class="p">(</span><span class="n">Position</span><span class="p">(</span><span class="n">w</span> <span class="o">-</span> <span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">Dimensions</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">l</span><span class="p">)),</span>      <span class="c1"># East wall</span>
+            <span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">[]</span>
+</code></pre></div>
+<h6 id="goal-faultline-extraction-probabilistic-generation-in-cartographer">Goal: Faultline Extraction &amp; Probabilistic Generation in <code>Cartographer</code></h6>
+<p>Extend <code>Cartographer</code> to extract interior faultlines between <code>Environ</code> tiles, evaluate the spatial probability distribution localized around faultline segments, and synthesize non-overlapping <code>Strata</code> instances.</p>
+<ol>
+<li><strong>Faultline Detection (<code>_collect_faultlines</code>)</strong>:</li>
+<li>Query all <code>AssetInstances.ENVIRON</code> tiles on <code>layer</code>.</li>
+<li>Convert each tile deployment into its world AABB <span class="arithmatex">\((x_1, y_1, x_2, y_2, \text{id})\)</span>.</li>
+<li>
+<p>Extract shared interior edges where an edge of tile <span class="arithmatex">\(A\)</span> overlaps or abuts an edge of tile <span class="arithmatex">\(B\)</span> within the layer bounds (excluding the outer map perimeter).</p>
+</li>
+<li>
+<p><strong>Spatial Probability Evaluation &amp; Sampling (<code>generate_strata</code>)</strong>:</p>
+</li>
+<li>Partition the layer into candidate cells of size <code>(w, l)</code> matching the target <code>Strata</code> dimensions (or step grid <code>STEP_SIZE</code>).</li>
+<li>For each candidate coordinate <span class="arithmatex">\(\mathbf{x} = (x, y)\)</span>, compute minimum squared distance <span class="arithmatex">\(d_k^2(\mathbf{x})\)</span> to all faultline segments <span class="arithmatex">\(\mathbf{s}_k\)</span>.</li>
+<li>Evaluate faultline probability <span class="arithmatex">\(\mathcal{P}(\mathbf{x}) = 1 - \prod_k \left(1 - p_0 \exp(-d_k(\mathbf{x}) / \sigma_{\text{strata}})\right)\)</span>.</li>
+<li>If uniform sample <span class="arithmatex">\(u_1 &lt; \mathcal{P}(\mathbf{x})\)</span> and <code>_detect_flank_occlusions(x, y, w, l, layer, board)</code> is <code>False</code> (and coordinate does not overlap existing <code>Strata</code> or <code>Fluid</code> emitters):</li>
+<li>Resolve <code>tile = board.tile(layer, Position(x + w // 2, y + l // 2))</code> and <code>strata_id = strata_index.resolve(tile.id, season)</code>.</li>
+<li>Sample <code>formation = strata_index.sample_formation(strata_id, u_2)</code>.</li>
+<li>Spawn via <code>board.cradle.spawn_strata(...)</code>.</li>
+</ol>
+<h6 id="goal-perimeter-elevation-physics-integration">Goal: Perimeter &amp; Elevation Physics Integration</h6>
+<p>Update <code>Perimeter.extract</code> (<code>src/app/services/generators/game/perimeter.py</code>) so <code>Strata</code> participate in both Tier <span class="arithmatex">\(0\)</span> static architecture hulls and Tier <span class="arithmatex">\(E + 1\)</span> elevated platform contours:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># src/app/services/generators/game/perimeter.py</span>
+<span class="c1"># Inside Perimeter.extract:</span>
+<span class="c1"># 2. Map Elevated Substrates (Platform decks, Stair inclines, and Strata mesas/buttes at E &gt; base_e)</span>
+<span class="k">if</span> <span class="n">elevation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">elevation</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">strata_list</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">instances</span><span class="p">(</span><span class="n">AssetInstances</span><span class="o">.</span><span class="n">STRATA</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">strata</span> <span class="ow">in</span> <span class="n">strata_list</span><span class="p">:</span>
+        <span class="n">base_e</span> <span class="o">=</span> <span class="n">strata</span><span class="o">.</span><span class="n">elevation</span>
+        <span class="k">if</span> <span class="n">elevation</span> <span class="o">&gt;</span> <span class="n">base_e</span> <span class="ow">and</span> <span class="n">elevation</span> <span class="ow">in</span> <span class="n">strata</span><span class="o">.</span><span class="n">hitbox</span><span class="o">.</span><span class="n">elevations</span><span class="p">(</span><span class="n">strata</span><span class="o">.</span><span class="n">properties</span><span class="p">,</span> <span class="n">strata</span><span class="o">.</span><span class="n">state</span><span class="p">):</span>
+            <span class="n">x1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">strata</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">y1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">strata</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+            <span class="n">rects</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x1</span> <span class="o">+</span> <span class="n">strata</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="n">y1</span> <span class="o">+</span> <span class="n">strata</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">l</span><span class="p">))</span>
+</code></pre></div>
+<p>In <code>CollisionMechanics._traverse_stairs</code>, include <code>strata</code> where <code>state.formation == Formations.BUTTES.value</code>:</p>
+<ul>
+<li>Entering through the open <code>DOWN</code> face with upward velocity (<span class="arithmatex">\(v_y &lt; 0\)</span>) transitions <code>asset.state.elevation += strata.state.delta</code>.</li>
+<li>Exiting through the <code>DOWN</code> face from <span class="arithmatex">\(E + 1\)</span> with downward velocity (<span class="arithmatex">\(v_y &gt; 0\)</span>) transitions <code>asset.state.elevation -= strata.state.delta</code>.</li>
+</ul>
+<h5 id="tasks">Tasks</h5>
+<p><strong>1. Task: Semantics, Models, and Schema Registration</strong></p>
+<p><em>Objective</em>: Induct <code>Strata</code> and <code>Formations</code> into the application's semantic enumerations, Pydantic validation schemas, and property/state dataclasses.</p>
+<ul>
+<li>[] Subtask: Add <code>STRATA = "strata"</code> to <code>AssetInstances</code> and <code>Relations</code> in <code>src/app/static/semantics.py</code>.</li>
+<li>[] Subtask: Add <code>Formations(Enum)</code> (<code>MESAS = "mesas"</code>, <code>SPIRES = "spires"</code>, <code>BUTTES = "buttes"</code>) and <code>FORMATION = "formation"</code> to <code>FrameTypes</code> and <code>HitboxTypes</code> in <code>src/app/static/semantics.py</code>.</li>
+<li>[] Subtask: Refactor <code>src/app/models/state/assets/geography.py</code> to define base <code>GeographyState(AssetState)</code>, <code>ShorelineState(GeographyState)</code>, and <code>StrataState(GeographyState)</code> with <code>formation: Formations</code> and <code>delta: int = 1</code>.</li>
+<li>[] Subtask: Update <code>GeographyProperties</code> in <code>src/app/models/properties/assets.py</code> to default <code>mass: int = 0</code> for <code>Strata</code> (or configure <code>mass: 0</code> in YAML), support <code>hitboxes: Optional[Union[Dict[str, List[Hitbox]], List[Hitbox]]]</code>, and add <code>probabilities: Optional[Dict[str, float]] = None</code>.</li>
+<li>[] Subtask: Register <code>strata</code> on <code>GeographyPropertiesSchema</code> and <code>GeographyStateSchema</code> in <code>src/app/models/properties/__init__.py</code> and <code>src/app/models/state/__init__.py</code>.</li>
+</ul>
+<p><strong>2. Task: Relational Index, Recipes, and Asset Configuration</strong></p>
+<p><em>Objective</em>: Implement <code>StrataIndex</code> for tile-to-strata resolution and relative formation probability sampling, and configure <code>Strata</code> recipes and property files.</p>
+<ul>
+<li>[] Subtask: Create <code>src/app/game/logic/relations/strata.py</code> implementing <code>StrataIndex</code> (<code>from_properties</code>, <code>resolve</code>, <code>sample_formation</code>) and export it in <code>src/app/game/logic/relations/__init__.py</code>.</li>
+<li>[] Subtask: Add <code>geography.strata</code> recipe (<code>frame: formation</code>, <code>animation: none</code>, <code>hitbox: formation</code>) to <code>src/data/config/recipes/main.yaml</code>.</li>
+<li>[] Subtask: Map <code>strata</code> to <code>Substrates.STANDARD (0)</code> in <code>src/data/config/materials/main.yaml</code> and <code>MaterialIndex</code>.</li>
+<li>[] Subtask: Configure baseline <code>Strata</code> asset properties (<code>mass: 0</code>, <code>tile</code>, <code>dimensions</code>, <code>thickness</code>, <code>probabilities</code>) in <code>src/assets/geography/main.yaml</code>.</li>
+</ul>
+<p><strong>3. Task: ECS Frame, Hitbox, and Cradle Instantiation</strong></p>
+<p><em>Objective</em>: Implement the <code>FormationFrame</code> and <code>FormationHitbox</code> strategies and wire <code>Cradle</code> to spawn <code>Strata</code> instances.</p>
+<ul>
+<li>[] Subtask: Implement <code>FormationFrame</code> in <code>src/app/assets/frames/geography.py</code> to index <code>(Formation, Season)</code> crops and cache frame keys on <code>state._keys</code>.</li>
+<li>[] Subtask: Implement <code>FormationHitbox</code> in <code>src/app/assets/hitboxes/geography.py</code> to emit <code>[E, E + 1]</code> elevations for <code>mesas</code>/<code>buttes</code>, <code>[E]</code> for <code>spires</code>, and formation-specific collision hitboxes per tier.</li>
+<li>[] Subtask: Register <code>FormationFrame</code> and <code>FormationHitbox</code> in <code>AssetFactory</code> component lookup tables.</li>
+<li>[] Subtask: Add <code>strata</code> to <code>SpawnableGroup</code> (<code>src/app/models/groups.py</code>) and implement <code>Cradle.spawn_strata</code> in <code>src/app/services/generators/game/cradle.py</code>.</li>
+</ul>
+<p>**4. Task: Faultline Extraction and Probabilistic Synthesis in <code>Cartographer**</code></p>
+<p><em>Objective</em>: Expand <code>Cartographer</code> (and <code>libs.core.math.geometry</code> if needed) to detect <code>Environ</code> tile faultlines, compute localized faultline probability fields, and synthesize <code>Strata</code> formations.</p>
+<ul>
+<li>[] Subtask: Implement <code>Cartographer._collect_faultlines(layer, board)</code> to extract shared interior boundary segments between adjacent <code>Environ</code> tiles.</li>
+<li>[] Subtask: Implement faultline distance and screened probability evaluation <span class="arithmatex">\(\mathcal{P}(\mathbf{x})\)</span> in <code>Cartographer</code> (using segment distance math).</li>
+<li>[] Subtask: Implement <code>Cartographer.generate_strata(layer, board, strata_index, seed=None)</code> to sample non-occluded coordinates, resolve <code>StrataIndex</code> formations (<code>P(spires) &gt; P(mesas) &gt; P(buttes)</code>), and spawn <code>Strata</code> via <code>Cradle</code>.</li>
+<li>[] Subtask: Implement <code>Cartographer.purge_strata(layer, board)</code> for clean layer disposal.</li>
+</ul>
+<p><strong>5. Task: Board, Perimeter, Physics, and Hydration Integration</strong></p>
+<p><em>Objective</em>: Connect spawned <code>Strata</code> to <code>Board</code> spatial queries, <code>Perimeter</code> contour generation, <code>CollisionMechanics</code> incline transitions, <code>SeasonMechanics</code>, and <code>Migrator</code> hydration.</p>
+<ul>
+<li>[] Subtask: Add <code>board.strata(layer=None)</code> and include <code>geography.strata</code> (<span class="arithmatex">\(m = 0\)</span>) in <code>board.weights(layer, elevation)</code> and <code>board.obstacles(layer, elevation)</code>.</li>
+<li>[] Subtask: Update <code>Perimeter.extract</code> in <code>src/app/services/generators/game/perimeter.py</code> to include <code>mesas</code> and <code>buttes</code> at <span class="arithmatex">\(E + 1\)</span> in elevated deck contours and <code>Strata</code> at <span class="arithmatex">\(E\)</span> in static obstacle hulls.</li>
+<li>[] Subtask: Update <code>CollisionMechanics._traverse_stairs</code> and <code>MotionMechanics</code> surface support checks to handle <code>buttes</code> southern incline transitions (<span class="arithmatex">\(\Delta E = \pm 1\)</span>) and <code>mesas</code>/<code>buttes</code> <span class="arithmatex">\(E + 1\)</span> surface walking.</li>
+<li>[] Subtask: Update <code>SeasonMechanics</code> to synchronize <code>state.season</code> and clear <code>state._keys</code> on active <code>Strata</code> upon <code>SeasonEvent</code>.</li>
+<li>[] Subtask: Wire <code>Cartographer.generate_strata</code> into <code>Migrator</code> Phase 2 hydration strictly after <code>Tiles</code> ingestion and prior to <code>Perimeter.generate</code> and <code>FluidMechanics</code>.</li>
+</ul>
+<p><strong>6. Task: Test Fixture &amp; Unit Test Suite Induction</strong></p>
+<p><em>Objective</em>: Induct <code>StrataIndex</code> and procedural <code>Strata</code> generation into <code>tests/unit/fixtures</code> and verify faultline synthesis, formation probabilities, and multi-tier hitboxes.</p>
+<ul>
+<li>[] Subtask: Add <code>mock_strata_index</code> and update <code>mock_relations</code>, <code>mock_spawnables</code>, and <code>mock_board</code> in <code>tests/unit/fixtures/structures.py</code> and <code>tests/unit/fixtures/components.py</code>.</li>
+<li>[] Subtask: Add a secondary <code>Environ</code> tile region (<code>highland</code>) to <code>src/data/state/world-testbed/tiles/tiles.yaml</code> so <code>world-testbed</code> naturally forms an interior faultline with <code>temperate</code>.</li>
+<li>[] Subtask: Add unit tests in <code>tests/unit/app/services/generators/game/test_cartographer.py</code> verifying faultline extraction, probability localization around faultlines, empirical formation ordering (<code>spires &gt; mesas &gt; buttes</code>), and <code>FormationHitbox</code> elevation resolution.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="../../../../static/js/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -101,6 +101,14 @@ $defs:
     - index
     title: ApertureTarget
     type: object
+  ArmorPalette:
+    enum:
+    - leather
+    - copper
+    - iron
+    - gold
+    title: ArmorPalette
+    type: string
   AssetInstances:
     description: Enumeration of Asset Instances.
     enum:
@@ -648,6 +656,21 @@ $defs:
         type: array
     title: CraftStateInstances
     type: object
+  CropPalette:
+    enum:
+    - carrot
+    - lettuce
+    - maize
+    - radish
+    - watermelon
+    - tomato
+    - mushroom
+    - pepper
+    - pineapple
+    - berry
+    - chard
+    title: CropPalette
+    type: string
   CursorRecipe:
     properties:
       expressions:
@@ -956,34 +979,29 @@ $defs:
     properties:
       armor:
         anyOf:
-        - type: string
+        - $ref: '#/$defs/ArmorPalette'
         - type: 'null'
         default: null
-        title: Armor
       weapon:
         anyOf:
-        - type: string
+        - $ref: '#/$defs/WeaponPalette'
         - type: 'null'
         default: null
-        title: Weapon
       tool:
         anyOf:
-        - type: string
+        - $ref: '#/$defs/ToolPalette'
         - type: 'null'
         default: null
-        title: Tool
       utility:
         anyOf:
-        - type: string
+        - $ref: '#/$defs/UtilityPalette'
         - type: 'null'
         default: null
-        title: Utility
       shield:
         anyOf:
-        - type: string
+        - $ref: '#/$defs/ShieldPalette'
         - type: 'null'
         default: null
-        title: Shield
     title: Equipment
     type: object
   Executors:
@@ -1116,7 +1134,7 @@ $defs:
     - cardinal
     - directed
     - fluid
-    - index
+    - icon
     - iterable
     - material
     - meter
@@ -1202,6 +1220,26 @@ $defs:
         title: Position
     title: Goal
     type: object
+  Grip:
+    properties:
+      left:
+        anyOf:
+        - $ref: '#/$defs/ItemPalette'
+        - type: 'null'
+        default: null
+      right:
+        anyOf:
+        - $ref: '#/$defs/ItemPalette'
+        - type: 'null'
+        default: null
+    title: Grip
+    type: object
+  Hands:
+    enum:
+    - left
+    - right
+    title: Hands
+    type: string
   HazardState:
     properties:
       id:
@@ -1302,6 +1340,7 @@ $defs:
     - attack
     - attract
     - barter
+    - block
     - build
     - escape
     - find
@@ -1316,6 +1355,7 @@ $defs:
     - speak
     - sprint
     - threaten
+    - use
     - wander
     title: Intentions
     type: string
@@ -1336,30 +1376,54 @@ $defs:
     type: string
   Inventory:
     properties:
-      pack:
-        anyOf:
-        - additionalProperties:
-            type: integer
-          type: object
-        - type: 'null'
-        title: Pack
+      bag:
+        items:
+          $ref: '#/$defs/UtilityPalette'
+        title: Bag
+        type: array
+      belt:
+        items:
+          $ref: '#/$defs/ToolPalette'
+        title: Belt
+        type: array
+      sheathe:
+        items:
+          $ref: '#/$defs/WeaponPalette'
+        title: Sheathe
+        type: array
       pouch:
-        anyOf:
-        - additionalProperties:
-            type: integer
-          type: object
-        - type: 'null'
+        additionalProperties:
+          type: integer
+        propertyNames:
+          $ref: '#/$defs/ItemPalette'
         title: Pouch
-      equipment:
-        anyOf:
-        - $ref: '#/$defs/Equipment'
-        - type: 'null'
-      wallet:
-        default: 0
-        title: Wallet
-        type: integer
+        type: object
+      pack:
+        additionalProperties:
+          type: integer
+        propertyNames:
+          $ref: '#/$defs/MaterialPalette'
+        title: Pack
+        type: object
+      sack:
+        additionalProperties:
+          type: integer
+        propertyNames:
+          $ref: '#/$defs/CropPalette'
+        title: Sack
+        type: object
     title: Inventory
     type: object
+  ItemPalette:
+    enum:
+    - bomb
+    - container
+    - key
+    - arrow
+    - bolt
+    - coin
+    title: ItemPalette
+    type: string
   LayerProjections:
     description: Enumeration of Door Projections
     enum:
@@ -1419,6 +1483,24 @@ $defs:
     - keyboard
     title: MappingConfiguration
     type: object
+  MaterialPalette:
+    enum:
+    - cotton
+    - thatches
+    - wood
+    - red-dye
+    - blue-dye
+    - yellow-dye
+    - green-dye
+    - clay
+    - marble
+    - granite
+    - feldspar
+    - iron
+    - copper
+    - gold
+    title: MaterialPalette
+    type: string
   MaterialSpace:
     properties:
       host:
@@ -1644,11 +1726,13 @@ $defs:
   Menus:
     enum:
     - dialogue
-    - inventory
+    - equipment
     - load
     - main
     - options
+    - pack
     - pause
+    - pouch
     - text
     - trade
     - view
@@ -1881,6 +1965,11 @@ $defs:
         - type: 'null'
         default: 0.0
         title: Descension
+      hand:
+        anyOf:
+        - $ref: '#/$defs/Hands'
+        - type: 'null'
+        default: null
     title: MutatorParameters
     type: object
   MutatorTriggers:
@@ -1919,7 +2008,6 @@ $defs:
         anyOf:
         - $ref: '#/$defs/MutatorParameters'
         - type: 'null'
-        default: null
     title: Mutators
     type: object
   ObjectRecipe:
@@ -2472,6 +2560,7 @@ $defs:
     enum:
     - load
     - menu
+    - grip
     - new
     - save
     - scrollup
@@ -2560,6 +2649,10 @@ $defs:
         anyOf:
         - $ref: '#/$defs/Character'
         - type: 'null'
+      slots:
+        anyOf:
+        - $ref: '#/$defs/Slots'
+        - type: 'null'
       inventory:
         anyOf:
         - $ref: '#/$defs/Inventory'
@@ -2594,6 +2687,21 @@ $defs:
         title: Pixies
         type: array
     title: SheetStateInstances
+    type: object
+  ShieldPalette:
+    enum:
+    - buckler
+    - kite
+    - emblem
+    title: ShieldPalette
+    type: string
+  Slots:
+    properties:
+      equipment:
+        $ref: '#/$defs/Equipment'
+      grip:
+        $ref: '#/$defs/Grip'
+    title: Slots
     type: object
   SpriteState:
     properties:
@@ -2646,6 +2754,10 @@ $defs:
       character:
         anyOf:
         - $ref: '#/$defs/Character'
+        - type: 'null'
+      slots:
+        anyOf:
+        - $ref: '#/$defs/Slots'
         - type: 'null'
       inventory:
         anyOf:
@@ -2907,6 +3019,16 @@ $defs:
         type: array
     title: TileStateInstances
     type: object
+  ToolPalette:
+    enum:
+    - shovel
+    - axe
+    - pickaxe
+    - hammer
+    - hoe
+    - scythe
+    title: ToolPalette
+    type: string
   Trajectory:
     properties:
       target:
@@ -2936,6 +3058,26 @@ $defs:
     - east
     - west
     title: Traversal
+    type: string
+  UtilityPalette:
+    enum:
+    - lantern
+    - stave
+    - sapphire
+    - emerald
+    - ruby
+    title: UtilityPalette
+    type: string
+  WeaponPalette:
+    enum:
+    - sword
+    - dagger
+    - knife
+    - spear
+    - longbow
+    - crossbow
+    - cane
+    title: WeaponPalette
     type: string
   WidgetRecipe:
     properties:
@@ -2978,6 +3120,13 @@ $defs:
         propertyNames:
           $ref: '#/$defs/Intentions'
         title: Intentions
+        type: object
+      grips:
+        additionalProperties:
+          type: integer
+        propertyNames:
+          $ref: '#/$defs/Hands'
+        title: Grips
         type: object
       goals:
         additionalProperties:

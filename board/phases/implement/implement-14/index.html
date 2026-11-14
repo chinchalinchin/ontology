@@ -1,0 +1,3957 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/board/phases/implement/implement-14/">
+      
+      
+        <link rel="prev" href="../implement-13/">
+      
+      
+        <link rel="next" href="../implement-n/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Phase 14 - Narratives - Ontology</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#implement-phase-14-narratives" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="Ontology" class="md-header__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ontology
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Phase 14 - Narratives
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="Ontology" class="md-nav__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Ontology
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../00-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../01-assets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../02-sprites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../03-compositions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../04-intentions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../05-mechanics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../06-widgets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../07-acoustics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../08-narratives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../09-ecology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ecology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../10-chemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../11-emergence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../12-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../specs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Specifications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_15" id="__nav_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Specifications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/00-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dialogue Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/01-interaction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/02-wander/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wander Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_16" id="__nav_16_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Roadmap
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2" id="__nav_16_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_16_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_1" id="__nav_16_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-castle-dawn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Castle Dawn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-regalia-galleria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Regalia Galleria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-temple-of-trials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Trials of Trials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Dialogue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-view/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_2" id="__nav_16_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implement
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implement
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01 - Renderer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02 - Game
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03 - Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04 - Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 05 - Editor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06 - Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07 - Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08 - Pathfinding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09 - Hydrodynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10 - Seasons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 11 - Geology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 12 - Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-13/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 13 - Acoustics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 14 - Narratives
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 14 - Narratives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#implement-phase-14-narratives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implement: Phase 14 - Narratives
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implement: Phase 14 - Narratives">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Specification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-formal-synthesis-of-narrative-models-in-ontology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Formal Synthesis of Narrative Models in Ontology
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-architectural-approaches-to-introducing-narratives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Architectural Approaches to Introducing "Narratives"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis I
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis I">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisite-architectural-alterations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisite Architectural Alterations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-structured-semantic-propositions-proposition-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Structured Semantic Propositions (Proposition Model)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-greimasian-motivation-bremondian-subsumption-in-cognitionmechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Greimasian Motivation &amp; Bremondian Subsumption in CognitionMechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-contextual-library-service-actantial-plotstate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Contextual Library Service &amp; Actantial PlotState
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-n/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n - Commerce
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implement-n%2B1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n+1 - Towns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_3" id="__nav_16_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refactor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Refactor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-01-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01.01 - Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.01 - Frames
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.02 - Registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.03 - Equipment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.04 - Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.05 - Finetuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.06 - Effects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.07 - Registry Data Structures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-02-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.08 - World Chunks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-03-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.01 - Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-03-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.02 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-03-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.03 - Motion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-03-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.04 - Projectiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-04-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.01 - Typography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-04-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.02 - Simplification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-04-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.03 - Event Handlers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-04-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.04 - Menu Context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-04-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.05 - Gizmos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-04-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.06 - Pane Generation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-06-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.01 - Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-06-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.02 - Goals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-06-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.03 - Combat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-06-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.04 - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-07-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.01 - Elevation Sorting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-07-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.02 - Platforms & Elevated Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-07-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.03 - Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-07-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.04 - Materialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-07-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.05 - Composite Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-08-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.01 - Obstacle Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-08-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.02 - Navigation Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-08-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.03 - Trajectory Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-08-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.04 - Mutators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.01 - Fluid Flows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.02 - Shorelines & Geography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.03 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.04 - Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.05 - Bridges & Bifurcation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.06 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.07 - Frame Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-09-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.08 - Transverse Fluid Submersion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-10-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.01 - Stage Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-10-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.02 - Shoreline Seasonal Indexing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-10-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.03 - Flowers, Pixies & Reproduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor/refactor-10-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.04 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../appendices/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_17" id="__nav_17_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/00-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/01-schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/02-diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagrams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reports
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../coverage/index" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unit Test Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#implement-phase-14-narratives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implement: Phase 14 - Narratives
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implement: Phase 14 - Narratives">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Specification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-formal-synthesis-of-narrative-models-in-ontology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Formal Synthesis of Narrative Models in Ontology
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-architectural-approaches-to-introducing-narratives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Architectural Approaches to Introducing "Narratives"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis I
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis I">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisite-architectural-alterations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisite Architectural Alterations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-structured-semantic-propositions-proposition-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Structured Semantic Propositions (Proposition Model)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-greimasian-motivation-bremondian-subsumption-in-cognitionmechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Greimasian Motivation &amp; Bremondian Subsumption in CognitionMechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-contextual-library-service-actantial-plotstate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Contextual Library Service &amp; Actantial PlotState
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Phase 14 - Narratives</h1>
+
+<h4 id="implement-phase-14-narratives">Implement: Phase 14 - Narratives</h4>
+<p><strong>Overview</strong></p>
+<p>Ontology's foundational design constraint is <em>simulation and emergence, at all costs</em>: the engine ingests an initial world state configuration and evolves strictly via internal mechanics without hardcoded conversational trees or scripted cutscenes. Currently, narrative progression is split across two disconnected strata:</p>
+<ol>
+<li><strong>Macro-Plot State (<code>PlotMechanics</code> &amp; <code>Library</code>)</strong>: <code>board.plot</code> tracks a global state string (<code>current</code>, <code>previous</code>) mutated via the Plot Transition Matrix (<code>src/data/config/plots/main.yaml</code>), which serves as the outer key in the static 3-tier <code>Library</code> lookup <span class="arithmatex">\(\text{Library}(\text{plot}, \text{persona}, \text{lexicon}) \to \text{content}\)</span>.</li>
+<li><strong>Micro-Intentional State (<code>CognitionMechanics</code>, <code>TransitionMechanics</code>, &amp; <code>SocialMechanics</code>)</strong>: Individual <code>Sprites</code> possess a <code>Psyche</code> <span class="arithmatex">\((\text{dialogue}, \text{persona}, \text{expression}, \text{motivation})\)</span> and <code>Memory</code> <span class="arithmatex">\((\text{goals}, \text{rumors}, \text{prices}, \text{relationships}, \text{property}, \text{sprites}, \text{doors})\)</span>, executing autonomous loops through the Intention Transition Matrix (<code>src/data/config/intentions/main.yaml</code>).</li>
+</ol>
+<p>However, the bridge between micro-level Sprite agency and macro-level Narrative structure is currently incomplete: <code>CognitionMechanics._motivate</code> is unimplemented (<code>pass</code> across all seven <code>Motivations</code>), <code>memory.rumors</code> stores opaque strings that cannot alter recipient cognition, <code>Library</code> lookups lack fallback or template interpolation, and <code>PlotMechanics</code> relies on brittle, hardcoded entity names rather than reusable structural roles.</p>
+<p>Phase 14 formalizes and implements <strong>Emergent Narratives</strong> by synthesizing structuralist narratology (Propp, Bremond, Greimas), stratified linguistic transduction (Meaning-Text Theory / HPSG feature signs), and contextual blackboard response rules into Ontology's Entity-Component-System (ECS) and Intentional Automata.</p>
+<h5 id="specification">Specification</h5>
+<p>To introduce the concept of a <strong>Narrative</strong> without violating Ontology's anti-scripting philosophy, narrative must not be modeled as a pre-authored directed graph of lines, but as a <strong>coupled cybernetic loop</strong> between bottom-up agent teleology (Bremond/Greimas) and top-down structural recognition and contextual expression (Propp/MTT/Response Rules).</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph Macro ["Macro-Stratum: World &amp; Plot (Propp / Greimas Deep Level)"]
+        PS[PlotState &amp; Actantial Bindings]
+        PM[PlotMechanics: Structural Recognizer]
+        LIB[Library Service: Contextual Rule &amp; Jinja2 Transducer]
+    end
+
+    subgraph Meso ["Meso-Stratum: Semiotic Signs (MTT / HPSG SemR)"]
+        PROP["Proposition / Rumor Sign\n(subject, predicate, object, locus, polarity)"]
+    end
+
+    subgraph Micro ["Micro-Stratum: Intentional Agent (Bremond / Greimas Surface Level)"]
+        MOT[Psyche: Motivation &amp; Persona]
+        MEM[Memory Blackboard &amp; Goal Subsumption Stack]
+        COG[CognitionMechanics: Modal Competence &amp; Triads]
+        TRN[TransitionMechanics: ISL Automaton]
+        SOC[SocialMechanics: Utterance &amp; Coupling]
+    end
+
+    MOT --&gt;|Vouloir-Faire| COG
+    MEM --&gt;|Savoir/Pouvoir-Faire| COG
+    COG --&gt;|Virtualize Goal| TRN
+    TRN --&gt;|Actualize Intention| SOC
+    SOC --&gt;|Emit Sign| PROP
+    PROP --&gt;|Update Epistemic Memory / Devoir-Faire| MEM
+    PROP --&gt;|Render Surface Text| LIB
+    MEM --&gt;|World State Mutation| PM
+    PM --&gt;|Transition Plot Epoch| PS
+    PS --&gt;|Modulate Lexicon Space| LIB
+</code></pre>
+<h6 id="1-formal-synthesis-of-narrative-models-in-ontology">1. Formal Synthesis of Narrative Models in Ontology</h6>
+<table>
+<thead>
+<tr>
+<th>Theoretical Framework</th>
+<th>Formal Mechanism</th>
+<th>Ontology Engine Realization</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Vladimir Propp</strong> (<em>Morphology</em>)</td>
+<td>31 Invariant Functions (<span class="arithmatex">\(\phi\)</span>) &amp; 7 Spheres of Action</td>
+<td><strong>Macro-Level Recognizer (<code>PlotMechanics</code>)</strong>: Instead of scripting actions, Proppian functions act as <em>posterior state predicates</em> (e.g., <span class="arithmatex">\(\text{Villainy/Lack } A\)</span>, <span class="arithmatex">\(\text{Struggle/Victory } H/I\)</span>, <span class="arithmatex">\(\text{Liquidation } K\)</span>) evaluated by the Plot <code>Executor</code> over bound Actantial Roles to advance <code>board.plot</code>.</td>
+</tr>
+<tr>
+<td><strong>Claude Bremond</strong> (<em>Logique du récit</em>)</td>
+<td>Elementary Triads (<span class="arithmatex">\(\text{Virtualize} \to \text{Actualize} \to \text{Achieve/Fail}\)</span>) &amp; 3 Operations (<em>Chaining</em>, <em>Embedding</em>, <em>Coupling</em>)</td>
+<td><strong>Micro-Level Deliberative Loop (<code>CognitionMechanics</code>)</strong>:<br></td>
+</tr>
+</tbody>
+</table>
+<p><br>1. <em>Virtualization</em>: <code>_motivate</code> &amp; <code>_ideate</code> instantiate a <code>Goal</code>.<br></p>
+<p><br>2. <em>Actualization</em>: <code>TransitionMechanics</code> &amp; <code>NavigationMechanics</code> execute the Intention.<br></p>
+<p><br>3. <em>Achievement/Failure</em>: <code>_resolve</code> evaluates completion or stall.<br></p>
+<p><br>4. <em>Embedding (Enchâssement)</em>: Generalizes Cross-Layer Door Subsumption into a recursive prerequisite stack in <code>memory.goals</code>.<br></p>
+<p><br>5. <em>Coupling (Entrecroisement)</em>: <code>CombatMechanics</code> and <code>SocialMechanics</code> apply inverse state/relationship mutations to interacting pairs. |
+| <strong>A. J. Greimas</strong> (<em>Sémantique structurale</em>) | Actantial Model (6 Actants on 3 Axes) &amp; 4 Modalities of Competence (<em>Vouloir</em>, <em>Devoir</em>, <em>Savoir</em>, <em>Pouvoir</em>) | <strong>Modal Competence Evaluation</strong>:<br></p>
+<p><br>• <em>Vouloir-faire</em> (Desire): <code>psyche.motivation</code> (<span class="arithmatex">\(\text{Subject} \to \text{Object}\)</span>).<br></p>
+<p><br>• <em>Devoir-faire</em> (Contract): Social/Plot obligations received via <code>speak</code> (<code>Sender</code> <span class="arithmatex">\(\to\)</span> <code>Receiver</code>).<br></p>
+<p><br>• <em>Savoir-faire</em> (Knowledge): Epistemic queries against <code>memory.sprites</code>, <code>memory.doors</code>, <code>memory.prices</code>.<br></p>
+<p><br>• <em>Pouvoir-faire</em> (Capacity): Material queries against <code>inventory.equipment</code>, <code>inventory.wallet</code>, <code>inventory.pack</code>. |
+| <strong>Mel'čuk (MTT) &amp; HPSG</strong> | Stratified <span class="arithmatex">\(\text{SemR} \to \text{Surface}\)</span> Transduction &amp; Typed Feature Signs | <strong>Structured Propositions (<code>Proposition</code> Model)</strong>: Replaces raw <code>str</code> keys in <code>psyche.dialogue</code> / <code>memory.rumors</code> with a dual-aspect Sign containing a machine-readable semantic payload (<span class="arithmatex">\(\text{SemR}\)</span>: mutating recipient <code>Memory</code> on transmission) and a <code>lexicon</code> key rendered via <code>Library</code> Jinja2 templates. |
+| <strong>Valve Response System</strong> | Contextual Blackboard Queries &amp; Specificity Scoring | <strong>Dynamic <code>Library</code> Resolution</strong>: Evaluates <code>(plot, persona, lexicon)</code> with wildcard/default fallbacks and contextual predicates so dialogue adapts to emergent world state without combinatorial YAML explosion. |</p>
+<h6 id="2-architectural-approaches-to-introducing-narratives">2. Architectural Approaches to Introducing "Narratives"</h6>
+<p>There are three distinct ways to architecturally introduce Narratives into Ontology, which can be implemented either independently or as a unified stratified architecture:</p>
+<ol>
+<li><strong>Approach I: Bottom-Up Teleological Emergence (Bremondian Subsumption &amp; Greimasian Competence)</strong></li>
+<li><strong>Mechanism</strong>: Narrative exists purely as the trace of autonomous agents resolving multi-step motivational chains. <code>CognitionMechanics._motivate</code> translates each of the 7 <code>Motivations</code> (<code>conquest</code>, <code>profit</code>, <code>survival</code>, <code>love</code>, <code>revenge</code>, <code>rebellion</code>, <code>safety</code>) into concrete target states (Conjunction <span class="arithmatex">\(S \land O\)</span>). Before transitioning into an execution Intention, <code>CognitionMechanics</code> checks <strong>Modal Competence</strong>:</li>
+</ol>
+<div class="arithmatex">\[\text{Competent}(S, G) \iff \text{Savoir}(S, G) \land \text{Pouvoir}(S, G)\]</div>
+<p>If <span class="arithmatex">\(\neg \text{Pouvoir}(S, G)\)</span> (e.g., <code>Motivation == CONQUEST</code> requires <code>attack</code>, which requires <code>inventory.equipment.weapon != None</code> per <code>AnimationMap</code>), <code>CognitionMechanics</code> <em>embeds</em> (Bremond's <em>Enchâssement</em>) a prerequisite <code>Goal</code> (e.g., <code>scavenge</code> a weapon or <code>interact</code> with a known <code>Chest</code>, or <code>barter</code> with a merchant) onto <code>memory.goals</code>, exactly as <code>_track</code> currently subsumes cross-layer goals with a <code>Door</code> goal.
+* <strong>Pros</strong>: 100% faithful to Ontology's zero-scripting axiom; produces complex, multi-step emergent quests spontaneously.
+* <strong>Cons</strong>: Without a communicative or macro-recognition layer, emergent actions remain silent behavioral loops; the Player sees Sprites moving and fighting, but cannot read or participate in the underlying causal history.</p>
+<ol>
+<li><strong>Approach II: Meso-Level Epistemic &amp; Semiotic Propagation (<code>Proposition</code> Signs &amp; <code>RumorMechanics</code>)</strong></li>
+<li><strong>Mechanism</strong>: Upgrades <code>psyche.dialogue</code> and <code>memory.rumors</code> from static lexicon strings to structured <strong>Semantic Propositions</strong> (<span class="arithmatex">\(\text{SemR}\)</span>). When an event occurs within a Sprite's <code>vision.radius</code> during <code>CognitionMechanics._scan</code> or <code>SpatialMechanics</code> (e.g., Sprite <span class="arithmatex">\(A\)</span> kills Sprite <span class="arithmatex">\(B\)</span>, or Sprite <span class="arithmatex">\(A\)</span> spots a <code>Chest</code> or <code>Resource</code>, or a <code>Plot</code> epoch shifts), the witnessing Sprite synthesizes a <code>Proposition</code>:</li>
+</ol>
+<div class="arithmatex">\[\pi = \langle \text{topic}, \text{subject}, \text{predicate}, \text{object}, \text{layer}, \text{position} \rangle\]</div>
+<p>When the witness enters <code>speak</code> with another Sprite (<code>SocialMechanics</code>), <span class="arithmatex">\(\pi\)</span> is transmitted into the listener's <code>memory.rumors</code> <strong>and</strong> unpacked into the listener's epistemic <code>Memory</code> (updating <code>memory.sprites[subject]</code>, <code>memory.relationships</code>, or virtualizing a new <code>Goal</code>). When transmitted to the <code>Player</code>, the <code>Library</code> interpolates the fields of <span class="arithmatex">\(\pi\)</span> into a Jinja2 template indexed by <code>(plot, persona, topic)</code>.
+* <strong>Pros</strong>: Unifies <code>RumorMechanics</code>, <code>SocialMechanics</code>, and <code>Library</code> dialogue; Sprites gossip about actual events that occurred in the simulation rather than reciting canned lines.
+* <strong>Cons</strong>: Requires refactoring <code>Psyche.dialogue</code> and <code>Memory.rumors</code> schemas and updating <code>Library</code> to support template rendering.</p>
+<ol>
+<li><strong>Approach III: Top-Down Structural Recognition (<code>PlotMechanics</code> Actantial Frames)</strong></li>
+<li><strong>Mechanism</strong>: Generalizes <code>PlotState</code> from a flat state string into an <strong>Actantial Frame</strong> where roles (<code>cast: Dict[str, str]</code>, e.g., <code>sovereign: evil-empress-jasilynn</code>, <code>champion: castle-dawn-champion</code>, <code>relic: writ-of-dawn</code>) are bound in configuration or dynamically assigned. <code>PlotMechanics</code> evaluates Proppian structural transitions over these role bindings, and upon plot state transitions, can optionally broadcast macro-level <code>PlotEvent</code> updates or mutate world relationships/motivations.</li>
+<li><strong>Pros</strong>: Decouples Plot Transition Matrices from hardcoded entity names, allowing reusable narrative archetypes (e.g., <em>Siege</em>, <em>Usurpation</em>, <em>Vendetta</em>, <em>Blight</em>) across different Boards.</li>
+<li><strong>Cons</strong>: If over-used to force state changes, risks encroaching on bottom-up simulation; therefore, <code>PlotMechanics</code> must remain strictly a <em>recognizer</em> of world state rather than a <em>puppeteer</em> of Sprite Intentions.</li>
+</ol>
+<p><strong>Recommended Synthesis</strong>: Implement a <strong>Stratified Hybrid of Approaches I, II, and III</strong>, keeping <code>TransitionMechanics</code> strictly responsible for <code>Intentions</code>, <code>CognitionMechanics</code> strictly responsible for <code>Goals</code> and Bremondian/Greimasian competence subsumption, <code>SocialMechanics</code> responsible for <code>Proposition</code> transmission and coupling, and <code>PlotMechanics</code> + <code>Library</code> responsible for macro-state recognition and Jinja2 surface realization.</p>
+<hr />
+<h5 id="architectural-analysis-i">Architectural Analysis I</h5>
+<h6 id="prerequisite-architectural-alterations">Prerequisite Architectural Alterations</h6>
+<p>Before Phase 14 can be fully realized, several foundational gaps and inconsistencies in Phases 04, 06, and 08 must be addressed:</p>
+<ol>
+<li><strong>Goal Taxonomy &amp; Resolution Completeness (<code>Phase 06.02: Goals</code>)</strong>:</li>
+<li><strong>Ambiguity in <code>Goals</code> Enumeration</strong>: <code>src/data/config/intentions/main.yaml</code> references <code>constants.Goals.LOOT.value</code> (in <code>barter</code> and <code>mine</code>), whereas <code>docs/04-intentions.md</code> lists <code>position</code>, <code>object</code>, <code>property</code>, <code>target</code>, <code>subject</code>, and <code>@TODO(06-03) resource</code>. Meanwhile, <code>CognitionMechanics._resolve</code> assumes <code>Goals.OBJECT.value</code> is exclusively a cross-layer <code>Door</code> transition (<code>if sprite.state.layer != goal.layer</code>), leaving <code>Chest</code>, <code>Sign</code>, and <code>Plate</code> interactions unresolved!</li>
+<li><strong>Alteration</strong>: Partition <code>Goals.OBJECT</code> or augment <code>Goal</code> with a <code>modality</code> / target <code>instance</code> check so <code>CognitionMechanics._resolve</code> and <code>complete</code> accurately resolve:</li>
+<li><code>DOORS</code>: <code>sprite.state.layer != goal.layer</code></li>
+<li><code>CHESTS</code>: Chest <code>state.switch == True</code> or target item transferred to <code>sprite.state.inventory</code></li>
+<li><code>RESOURCES</code> / <code>LOOT</code>: Resource harvested or item quantity in <code>inventory.pack</code> / <code>inventory.pouch</code> incremented</li>
+<li>
+<p><code>PROPERTY</code>: <code>goal.name in sprite.state.memory.property</code></p>
+</li>
+<li>
+<p><strong>Generalizing <code>memory.goals</code> into a LIFO Subsumption Stack</strong>:</p>
+</li>
+<li>Currently, <code>memory.goals: Dict[str, Goal]</code> is an unordered dictionary iterated via <code>for key, candidate in sprite.state.memory.goals.items(): break</code> in <code>CognitionMechanics._remember</code>.</li>
+<li>Furthermore, when <code>_resolve</code> abandons a <code>TARGET</code> or <code>SUBJECT</code> goal because the target was not at its last-known <code>position</code>, it pushes the stale goal back into <code>memory.goals[goal.name] = goal</code>. As soon as the Sprite takes one <code>wander</code> step away from <code>candidate.position</code>, <code>_remember</code> sees <code>not self.nearby(candidate.position, sprite.state.position, action_radius)</code> and immediately pops the stale goal back out, causing an infinite oscillation loop (see <strong>Bug B020</strong>).</li>
+<li>
+<p><strong>Alteration</strong>: Add a <code>dormant: bool = False</code> flag to <code>Goal</code> (set to <code>True</code> when abandoned at an empty last-known coordinate, and cleared to <code>False</code> in <code>_scan</code> when the entity is re-sighted within <code>vision.radius</code>), and treat <code>memory.goals</code> as an ordered prerequisite stack (using Python 3.7+ <code>dict</code> insertion order with <code>.popitem()</code> for LIFO prerequisite resolution).</p>
+</li>
+<li>
+<p><strong>Modal Competence Check in <code>CognitionMechanics</code> (<code>Pouvoir-Faire</code> &amp; <code>Savoir-Faire</code>)</strong>:</p>
+</li>
+<li>In <code>TransitionMechanics</code>, <code>AnimationMap.action(sprite.state, board.equipment)</code> maps <code>attack</code> <span class="arithmatex">\(\to\)</span> <code>equipment.weapon</code> action and <code>mine</code> <span class="arithmatex">\(\to\)</span> <code>equipment.tool</code> action. If a Sprite transitions into <code>attack</code> or <code>mine</code> without the required equipment slotted, it cannot resolve a valid animation action or attackbox.</li>
+<li>
+<p><strong>Alteration</strong>: <code>CognitionMechanics</code> must verify competence before committing to an terminal goal. If a Sprite's goal requires a <code>weapon</code> (<code>TARGET</code>), <code>tool</code> (<code>RESOURCE</code>), or <code>materials</code> (<code>PROPERTY</code>), and the Sprite lacks the item in <code>inventory</code>, <code>CognitionMechanics</code> subsumes the primary goal into <code>memory.goals</code> and pushes a prerequisite acquisition goal (<code>OBJECT</code> for a known <code>Chest</code>, <code>SUBJECT</code> for <code>barter</code>, or <code>LOOT</code> / <code>RESOURCE</code>).</p>
+</li>
+<li>
+<p><strong>Upgrading <code>Library</code> with Fallback Resolution and Jinja2 Interpolation</strong>:</p>
+</li>
+<li>Ontology already uses <code>Jinja2</code> for dynamic template rendering in its toolchain. By allowing <code>Library</code> entries (<code>src/data/config/library/main.yaml</code>) to contain optional Jinja2 expressions (e.g., <code>"Have you heard? {{ rumor.subject }} was seen near {{ rumor.layer }}!"</code>) and implementing a fallback cascade:</li>
+</ol>
+<div class="arithmatex">\[\text{Library.resolve}(\text{plot}, \text{persona}, \text{lexicon}, \text{context}) \to \text{plot}.\text{persona}.\text{lexicon} \;\lor\; \text{default}.\text{persona}.\text{lexicon} \;\lor\; \text{default}.\text{default}.\text{lexicon}\]</div>
+<p>dialogue will never crash or return empty on Plot transitions where a minor NPC's dialogue did not change.</p>
+<hr />
+<h5 id="goals">Goals</h5>
+<h6 id="goal-structured-semantic-propositions-proposition-model">Goal: Structured Semantic Propositions (<code>Proposition</code> Model)</h6>
+<p>To bridge <code>CognitionMechanics</code>, <code>SocialMechanics</code>, and <code>Library</code>, introduce a <code>Proposition</code> dataclass in <code>src/app/models/state/assets/sheets.py</code> (or <code>src/app/models/state/core.py</code>) representing a unit of narrative information (<span class="arithmatex">\(\text{SemR}\)</span>):</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Proposition</span><span class="p">:</span>
+    <span class="n">lexicon</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">subject</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">predicate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">position</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Position</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">valuation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+<ul>
+<li>When a Sprite's <code>psyche.dialogue</code> is populated (either statically from YAML hydration or dynamically via <code>_ideate</code> / <code>_scan</code>), it holds a <code>lexicon</code> key or <code>Proposition</code>.</li>
+<li>When <code>SocialMechanics</code> executes a <code>speak</code> interaction between <code>source</code> and <code>target</code>:</li>
+<li><strong>Player Target</strong>: Dispatches <code>MenuEvent(id=Menus.DIALOGUE.value, context=DialogueContext(source=source, proposition=prop))</code> which resolves the surface string through <code>Library.render(board.plot.current, source.state.psyche.persona, prop)</code> and stamps the <code>dialogue</code> MenuPane.</li>
+<li><strong>Sprite Target (Rumor &amp; Epistemic Propagation)</strong>: Appends <code>prop</code> to <code>target.state.memory.rumors</code> and integrates its semantic payload into <code>target.state.memory</code>:</li>
+<li>If <code>prop.subject</code> and <code>prop.position</code> and <code>prop.layer == target.state.layer</code>: updates <code>target.state.memory.sprites[prop.subject] = prop.position</code> and refreshes any matching dormant <code>Goal</code> in <code>target.state.memory.goals</code> (clearing <code>dormant = False</code>).</li>
+<li>If <code>prop.predicate == Relationships.FOE.value</code> and <code>target.state.memory.relationships.get(source.name) in (Relationships.FRIEND.value, Relationships.FAMILY.value)</code>: propagates relational alignment (Bremondian coupling).</li>
+</ul>
+<h6 id="goal-greimasian-motivation-bremondian-subsumption-in-cognitionmechanics">Goal: Greimasian Motivation &amp; Bremondian Subsumption in <code>CognitionMechanics</code></h6>
+<p>Complete <code>CognitionMechanics._motivate</code> so that each of the seven <code>Motivations</code> virtualizes strategic <code>Goals</code> based on the Sprite's internal state and <code>Memory</code> blackboard:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_motivate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sprite</span><span class="p">:</span> <span class="n">Asset</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">Board</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">intention</span> <span class="o">!=</span> <span class="n">Intentions</span><span class="o">.</span><span class="n">IDLE</span><span class="o">.</span><span class="n">value</span> <span class="ow">or</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">goal</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">motivation</span> <span class="o">=</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">psyche</span><span class="o">.</span><span class="n">motivation</span>
+    <span class="n">mem</span> <span class="o">=</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">memory</span>
+
+    <span class="k">if</span> <span class="n">motivation</span> <span class="o">==</span> <span class="n">Motivations</span><span class="o">.</span><span class="n">REVENGE</span><span class="o">.</span><span class="n">value</span> <span class="ow">or</span> <span class="n">motivation</span> <span class="o">==</span> <span class="n">Motivations</span><span class="o">.</span><span class="n">CONQUEST</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+        <span class="c1"># Seek known foes in memory</span>
+        <span class="n">foes</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">mem</span><span class="o">.</span><span class="n">relationships</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">rel</span> <span class="o">==</span> <span class="n">Relationships</span><span class="o">.</span><span class="n">FOE</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">foe_name</span> <span class="ow">in</span> <span class="n">foes</span><span class="p">:</span>
+            <span class="n">foe_state</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">character</span><span class="p">(</span><span class="n">foe_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">foe_state</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">foe_state</span><span class="o">.</span><span class="n">mutators</span><span class="o">.</span><span class="n">triggers</span><span class="o">.</span><span class="n">dead</span><span class="p">:</span>
+                <span class="n">pos</span> <span class="o">=</span> <span class="n">mem</span><span class="o">.</span><span class="n">sprites</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">foe_name</span><span class="p">,</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+                <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">goal</span> <span class="o">=</span> <span class="n">Goal</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">foe_name</span><span class="p">,</span>
+                    <span class="n">category</span><span class="o">=</span><span class="n">Goals</span><span class="o">.</span><span class="n">TARGET</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="n">layer</span><span class="o">=</span><span class="n">foe_state</span><span class="o">.</span><span class="n">layer</span><span class="p">,</span>
+                    <span class="n">position</span><span class="o">=</span><span class="n">Position</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">pos</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">pos</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">return</span>
+
+    <span class="k">elif</span> <span class="n">motivation</span> <span class="o">==</span> <span class="n">Motivations</span><span class="o">.</span><span class="n">SURVIVAL</span><span class="o">.</span><span class="n">value</span> <span class="ow">or</span> <span class="n">motivation</span> <span class="o">==</span> <span class="n">Motivations</span><span class="o">.</span><span class="n">SAFETY</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+        <span class="c1"># If fear trigger is active or health is low, seek safety / escape</span>
+        <span class="k">if</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">mutators</span><span class="o">.</span><span class="n">triggers</span><span class="o">.</span><span class="n">fear</span> <span class="ow">and</span> <span class="n">mem</span><span class="o">.</span><span class="n">property</span><span class="p">:</span>
+            <span class="n">prop_name</span><span class="p">,</span> <span class="n">prop_pos</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">mem</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+            <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">goal</span> <span class="o">=</span> <span class="n">Goal</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">prop_name</span><span class="p">,</span>
+                <span class="n">category</span><span class="o">=</span><span class="n">Goals</span><span class="o">.</span><span class="n">POSITION</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">layer</span><span class="o">=</span><span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">layer</span><span class="p">,</span>
+                <span class="n">position</span><span class="o">=</span><span class="n">Position</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">prop_pos</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">prop_pos</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+    <span class="k">elif</span> <span class="n">motivation</span> <span class="o">==</span> <span class="n">Motivations</span><span class="o">.</span><span class="n">LOVE</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+        <span class="c1"># Seek friends or family to converse with</span>
+        <span class="n">loved</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">mem</span><span class="o">.</span><span class="n">relationships</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">rel</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Relationships</span><span class="o">.</span><span class="n">FRIEND</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">Relationships</span><span class="o">.</span><span class="n">FAMILY</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">target_name</span> <span class="ow">in</span> <span class="n">loved</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">target_name</span> <span class="ow">in</span> <span class="n">mem</span><span class="o">.</span><span class="n">sprites</span> <span class="ow">and</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">psyche</span><span class="o">.</span><span class="n">dialogue</span><span class="p">:</span>
+                <span class="n">pos</span> <span class="o">=</span> <span class="n">mem</span><span class="o">.</span><span class="n">sprites</span><span class="p">[</span><span class="n">target_name</span><span class="p">]</span>
+                <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">goal</span> <span class="o">=</span> <span class="n">Goal</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">target_name</span><span class="p">,</span>
+                    <span class="n">category</span><span class="o">=</span><span class="n">Goals</span><span class="o">.</span><span class="n">SUBJECT</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="n">layer</span><span class="o">=</span><span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">layer</span><span class="p">,</span>
+                    <span class="n">position</span><span class="o">=</span><span class="n">Position</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">pos</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">pos</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">return</span>
+</code></pre></div>
+<h6 id="goal-contextual-library-service-actantial-plotstate">Goal: Contextual <code>Library</code> Service &amp; Actantial <code>PlotState</code></h6>
+<p>Enhance <code>PlotState</code> and <code>Library</code> to support role bindings, fallback resolution, and template interpolation:</p>
+<div class="arithmatex">\[\text{Library.get}(\text{plot}, \text{persona}, \text{lexicon}, \text{ctx}) = \text{Render}_{\text{Jinja2}}\Big(\mathcal{L}[\text{plot}][\text{persona}][\text{lexicon}] \;\lor\; \mathcal{L}[\text{&quot;default&quot;}][\text{persona}][\text{lexicon}],\; \text{ctx}\Big)\]</div>
+<hr />
+<h5 id="tasks">Tasks</h5>
+<p><strong>1. Task: Prerequisite Goal Lifecycle &amp; Subsumption Refactor (Phase 06.02 Alignment)</strong></p>
+<p><em>Objective</em>: Complete goal resolution semantics in <code>CognitionMechanics</code> and fix dormant goal memory oscillation so multi-step narrative goals can execute reliably.</p>
+<ul>
+<li>[] Subtask: Add a <code>dormant: bool = False</code> attribute to <code>Goal</code> in <code>src/app/models/state/assets/sheets.py</code> to distinguish un-sighted last-known positions from active prerequisite goals in <code>memory.goals</code>.</li>
+<li>[] Subtask: Update <code>CognitionMechanics._resolve</code> and <code>CognitionMechanics.complete</code> to safely handle <code>None</code> returns from <code>board.character(goal.name)</code> and implement completion predicates for <code>Goals.OBJECT</code> (distinguishing <code>Doors</code> from <code>Chests</code>), <code>Goals.PROPERTY</code> (<code>goal.name in sprite.state.memory.property</code>), and <code>Goals.RESOURCE</code> / <code>Goals.LOOT</code>.</li>
+<li>[] Subtask: Update <code>CognitionMechanics._remember</code> to skip <code>memory.goals</code> entries where <code>candidate.dormant == True</code>, and update <code>CognitionMechanics._scan</code> to set <code>mem_goal.dormant = False</code> when <code>other_name</code> is sighted within <code>vision_radius</code>.</li>
+<li>[] Subtask: Implement LIFO prerequisite subsumption in <code>CognitionMechanics._track</code> and <code>_motivate</code> so missing modal competencies (<code>Pouvoir-faire</code>: missing <code>weapon</code>/<code>tool</code> in <code>inventory.equipment</code>; <code>Savoir-faire</code>: unknown target coordinates) push the primary <code>Goal</code> to <code>memory.goals</code> and instantiate a prerequisite acquisition/exploration <code>Goal</code>.</li>
+</ul>
+<p><strong>2. Task: Implement Motivational Goal Generation &amp; Coupling</strong></p>
+<p><em>Objective</em>: Implement <code>CognitionMechanics._motivate</code> across all seven <code>Motivations</code> and add Bremondian event coupling in <code>CombatMechanics</code> and <code>SocialMechanics</code>.</p>
+<ul>
+<li>[] Subtask: Implement <code>CONQUEST</code>, <code>REVENGE</code>, <code>SURVIVAL</code>, <code>SAFETY</code>, <code>PROFIT</code>, <code>LOVE</code>, and <code>REBELLION</code> goal ideation in <code>CognitionMechanics._motivate</code> (<code>src/app/game/logic/mechanics/intentional/cognition.py</code>).</li>
+<li>[] Subtask: Implement Bremondian coupling (<em>Entrecroisement</em>) in <code>CombatMechanics</code>: when <code>source</code> damages <code>target</code>, automatically update <code>target.state.memory.relationships[source.name] = Relationships.FOE.value</code>, record <code>source.state.position</code> in <code>target.state.memory.sprites[source.name]</code>, and spawn an <code>ANGER</code> or <code>SURPRISE</code> expression bubble via <code>board.cradle.spawn_expression</code>.</li>
+<li>[] Subtask: Add unit tests in <code>tests/unit/app/game/logic/mechanics/intentional/test_cognition.py</code> verifying each <code>Motivation</code> generates the expected <code>Goal</code> category and respects prerequisite subsumption.</li>
+</ul>
+<p><strong>3. Task: Implement Semantic Propositions &amp; <code>SocialMechanics</code> Rumor Propagation</strong></p>
+<p><em>Objective</em>: Replace inert string rumors with structured <code>Proposition</code> signs that mutate recipient <code>Memory</code> blackboards during <code>speak</code> intentions.</p>
+<ul>
+<li>[] Subtask: Define the <code>Proposition</code> model in <code>src/app/models/state/assets/sheets.py</code> and update <code>Memory.rumors</code> and <code>Psyche.dialogue</code> type annotations and Pydantic adapters to support structured propositions alongside legacy lexicon strings.</li>
+<li>[] Subtask: Update <code>CognitionMechanics._scan</code> to synthesize a <code>Proposition</code> when a Sprite observes salient world transitions (e.g., a dead character, a hostile combatant, or a newly discovered <code>Chest</code>/<code>Resource</code>).</li>
+<li>[] Subtask: Implement <code>SocialMechanics</code> (<code>src/app/game/logic/mechanics/spatial/social.py</code>) to handle <code>Intentions.SPEAK</code>: when two Sprites intersect within <code>action.radius</code>, exchange <code>Proposition</code> rumors, update recipient <code>memory.sprites</code> and <code>memory.relationships</code>, perform price discovery on <code>memory.prices</code>, and spawn <code>LOQUACITY</code> / <code>AGREEMENT</code> / <code>DISAGREEMENT</code> expressions.</li>
+<li>[] Subtask: When <code>Player</code> is the target or initiator of <code>Intentions.SPEAK</code>, push a <code>MenuEvent(id=Menus.DIALOGUE.value)</code> to the <code>Engine.bus</code> and clear or advance the speaker's <code>psyche.dialogue</code> buffer.</li>
+</ul>
+<p><strong>4. Task: Upgrade <code>Library</code> Service &amp; <code>PlotMechanics</code> Actantial Recognition</strong></p>
+<p><em>Objective</em>: Enable dynamic template interpolation and fallback cascades in <code>Library</code>, and fix <code>PlotMechanics</code> history tracking and ISL helper functions.</p>
+<ul>
+<li>[] Subtask: Fix <code>PlotMechanics.update</code> (<code>src/app/game/logic/mechanics/world/plot.py</code>) so <code>board.plot.previous.append(current_plot)</code> executes when <code>board.plot.previous is not None</code> rather than <code>if board.plot.previous:</code>.</li>
+<li>[] Subtask: Extend <code>PlotState</code> (<code>src/app/models/state/core.py</code>) with an optional <code>roles: Dict[str, str]</code> mapping to bind abstract Actantial roles (e.g., <code>sovereign</code>, <code>champion</code>, <code>villain</code>) to concrete entity names for reusable Plot Transition rules.</li>
+<li>[] Subtask: Implement <code>default</code> plot and persona fallback resolution and Jinja2 string interpolation in the <code>Library</code> service so <code>Proposition</code> attributes (<code>subject</code>, <code>target</code>, <code>layer</code>, <code>valuation</code>) can be injected directly into dialogue strings.</li>
+<li>[] Subtask: Add narrative integration tests verifying a complete emergent loop: World Event <span class="arithmatex">\(\to\)</span> Witness <code>Proposition</code> <span class="arithmatex">\(\to\)</span> Sprite-to-Sprite Rumor Transmission <span class="arithmatex">\(\to\)</span> Motivational <code>Goal</code> Virtualization <span class="arithmatex">\(\to\)</span> <code>PlotMechanics</code> Transition <span class="arithmatex">\(\to\)</span> <code>Library</code> Surface Realization.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="../../../../static/js/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

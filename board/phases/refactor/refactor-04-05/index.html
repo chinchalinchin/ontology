@@ -1,0 +1,5008 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/board/phases/refactor/refactor-04-05/">
+      
+      
+        <link rel="prev" href="../refactor-04-04/">
+      
+      
+        <link rel="next" href="../refactor-04-06/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Phase 04.05 - Gizmos - Ontology</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#refactor-phase-0405-gizmos" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="Ontology" class="md-header__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ontology
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Phase 04.05 - Gizmos
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="Ontology" class="md-nav__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Ontology
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../00-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../01-assets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../02-sprites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../03-compositions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../04-intentions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../05-mechanics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../06-widgets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../07-acoustics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../08-narratives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../09-ecology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ecology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../10-chemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../11-emergence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../12-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../specs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Specifications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_15" id="__nav_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Specifications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/00-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dialogue Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/01-interaction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/02-wander/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wander Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_16" id="__nav_16_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Roadmap
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2" id="__nav_16_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_16_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_1" id="__nav_16_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-castle-dawn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Castle Dawn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-regalia-galleria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Regalia Galleria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-temple-of-trials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Trials of Trials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Dialogue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-view/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_2" id="__nav_16_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implement
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implement
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01 - Renderer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02 - Game
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03 - Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04 - Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 05 - Editor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06 - Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07 - Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08 - Pathfinding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09 - Hydrodynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10 - Seasons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 11 - Geology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 12 - Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-13/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 13 - Acoustics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 14 - Narratives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-n/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n - Commerce
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-n%2B1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n+1 - Towns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_3" id="__nav_16_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refactor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Refactor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-01-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01.01 - Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.01 - Frames
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.02 - Registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.03 - Equipment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.04 - Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.05 - Finetuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.06 - Effects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.07 - Registry Data Structures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.08 - World Chunks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.01 - Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.02 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.03 - Motion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.04 - Projectiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.01 - Typography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.02 - Simplification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.03 - Event Handlers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.04 - Menu Context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.05 - Gizmos
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.05 - Gizmos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-0405-gizmos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 04.05 - Gizmos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 04.05 - Gizmos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#working-updates-06-widgetsgizmos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Working Updates: 06-widgets#gizmos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-assessment-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Assessment I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-gizmo-configuration-models-macro-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Gizmo Configuration Models &amp; Macro Expansion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-windowed-collection-bindings-pseudo-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Windowed Collection Bindings &amp; Pseudo-State
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-inventorycontroller-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: InventoryController Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-assessment-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Assessment II
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bug-reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Reports
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bug Reports">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-b008-pane-asset-discards-ast-dimensions-in-provider-unpack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B008: Pane Asset Discards AST Dimensions in Provider Unpack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b009-registry-miss-storm-on-vacant-icon-frame-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B009: Registry Miss Storm on Vacant Icon Frame Keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b010-static-menu-ast-mutation-in-provider-unpack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B010: Static Menu AST Mutation in Provider Unpack
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-040502-gizmos-dynamic-ui-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor Phase 04.05.02 - Gizmos &amp; Dynamic UI Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor Phase 04.05.02 - Gizmos &amp; Dynamic UI Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-dynamic-layout-sizing-overlap-remediation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Dynamic Layout Sizing &amp; Overlap Remediation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-unified-slot-bindings-traversal-integrity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Unified Slot Bindings &amp; Traversal Integrity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-generalized-strategy-based-fabricator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Generalized Strategy-Based Fabricator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-windowed-collection-pagination-focus-clamping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Windowed Collection Pagination &amp; Focus Clamping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review II
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-assessment-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Assessment III
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review III
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-assessment-iv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Assessment IV
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-040503-gizmos-composite-apertures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 04.05.03 - Gizmos &amp; Composite Apertures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 04.05.03 - Gizmos &amp; Composite Apertures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-composite-pane-dimensional-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Composite Pane Dimensional Propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-centralized-collectionstate-paging-apertures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Centralized CollectionState &amp; Paging Apertures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-aperture-delegation-traversal-stability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Aperture Delegation &amp; Traversal Stability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-centralized-pagination-commands-in-inventorycontroller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Centralized Pagination Commands in InventoryController
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#user-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-040504-unified-menu-ast-virtual-gizmo-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 04.05.04 - Unified Menu AST &amp; Virtual Gizmo Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 04.05.04 - Unified Menu AST &amp; Virtual Gizmo Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-root-cause-remediation-ast-tree-substitution-traversal-recursion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Root Cause Remediation - AST Tree Substitution &amp; Traversal Recursion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-unified-menu-ast-data-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Unified Menu AST Data Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-aperturebinding-binder-funneling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: ApertureBinding &amp; Binder Funneling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-virtual-gizmo-lifecycle-strategy-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Virtual Gizmo Lifecycle &amp; Strategy Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.06 - Pane Generation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.01 - Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.02 - Goals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.03 - Combat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.04 - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.01 - Elevation Sorting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.02 - Platforms & Elevated Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.03 - Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.04 - Materialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.05 - Composite Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.01 - Obstacle Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.02 - Navigation Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.03 - Trajectory Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.04 - Mutators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.01 - Fluid Flows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.02 - Shorelines & Geography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.03 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.04 - Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.05 - Bridges & Bifurcation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.06 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.07 - Frame Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.08 - Transverse Fluid Submersion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.01 - Stage Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.02 - Shoreline Seasonal Indexing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.03 - Flowers, Pixies & Reproduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.04 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../appendices/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_17" id="__nav_17_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/00-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/01-schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/02-diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagrams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reports
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../coverage/index" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unit Test Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-0405-gizmos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 04.05 - Gizmos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 04.05 - Gizmos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#working-updates-06-widgetsgizmos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Working Updates: 06-widgets#gizmos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-assessment-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Assessment I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-gizmo-configuration-models-macro-expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Gizmo Configuration Models &amp; Macro Expansion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-windowed-collection-bindings-pseudo-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Windowed Collection Bindings &amp; Pseudo-State
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-inventorycontroller-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: InventoryController Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-assessment-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Assessment II
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bug-reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Reports
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bug Reports">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-b008-pane-asset-discards-ast-dimensions-in-provider-unpack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B008: Pane Asset Discards AST Dimensions in Provider Unpack
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b009-registry-miss-storm-on-vacant-icon-frame-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B009: Registry Miss Storm on Vacant Icon Frame Keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b010-static-menu-ast-mutation-in-provider-unpack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B010: Static Menu AST Mutation in Provider Unpack
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-040502-gizmos-dynamic-ui-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor Phase 04.05.02 - Gizmos &amp; Dynamic UI Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor Phase 04.05.02 - Gizmos &amp; Dynamic UI Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-dynamic-layout-sizing-overlap-remediation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Dynamic Layout Sizing &amp; Overlap Remediation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-unified-slot-bindings-traversal-integrity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Unified Slot Bindings &amp; Traversal Integrity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-generalized-strategy-based-fabricator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Generalized Strategy-Based Fabricator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-windowed-collection-pagination-focus-clamping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Windowed Collection Pagination &amp; Focus Clamping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review II
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-assessment-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Assessment III
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review III
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-assessment-iv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Assessment IV
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-040503-gizmos-composite-apertures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 04.05.03 - Gizmos &amp; Composite Apertures
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 04.05.03 - Gizmos &amp; Composite Apertures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-composite-pane-dimensional-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Composite Pane Dimensional Propagation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-centralized-collectionstate-paging-apertures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Centralized CollectionState &amp; Paging Apertures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-aperture-delegation-traversal-stability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Aperture Delegation &amp; Traversal Stability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-centralized-pagination-commands-in-inventorycontroller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Centralized Pagination Commands in InventoryController
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#user-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-040504-unified-menu-ast-virtual-gizmo-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 04.05.04 - Unified Menu AST &amp; Virtual Gizmo Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 04.05.04 - Unified Menu AST &amp; Virtual Gizmo Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-root-cause-remediation-ast-tree-substitution-traversal-recursion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Root Cause Remediation - AST Tree Substitution &amp; Traversal Recursion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-unified-menu-ast-data-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Unified Menu AST Data Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-aperturebinding-binder-funneling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: ApertureBinding &amp; Binder Funneling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-virtual-gizmo-lifecycle-strategy-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Virtual Gizmo Lifecycle &amp; Strategy Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Phase 04.05 - Gizmos</h1>
+
+<h4 id="refactor-phase-0405-gizmos">Refactor: Phase 04.05 - Gizmos</h4>
+<p><strong>Goal</strong>: Similar (but distinct) to Compositions, there needs to be a way of unpacking reusable menu components into flat lists of Widgets for rendering. A pre-defined configuration of Widgets will be called a <em>Gizmo</em>.</p>
+<p><strong>Use Case</strong>: The InventoryController will require a configuration of Widgets (a Gizmo) for listing an arbitrary number of items from different fields of the Inventory (<code>pouch</code>, <code>pack</code>). </p>
+<p><strong>Overview</strong></p>
+<p>Implement the Gizmo configuration macro system within <code>app.services.generators.menus.fabricator</code> to support dynamic, multi-widget UI components (such as item grids and equipment slots) for <code>InventoryController</code> and <code>ExchangeController</code>. Gizmos dynamically generate declarative <code>MenuPane</code> and <code>MenuWidget</code> subtrees from runtime collection data, preserving the zero-allocation rendering pipeline and offloading positioning and traversal graph generation entirely to <code>Layout</code>.</p>
+<h5 id="working-updates-06-widgetsgizmos">Working Updates: 06-widgets#gizmos</h5>
+<p>A Gizmo is a declarative macro node within a Menu configuration tree. Gizmos bridge static UI layout structures with variable runtime collection data (e.g., inventory slots, trade grids, crafting lists).</p>
+<div class="highlight"><pre><span></span><code><span class="nt">gizmos</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">&lt;gizmo-name&gt;</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;gizmo-template-id&gt;</span>
+<span class="w">    </span><span class="nt">bind</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">collection</span>
+<span class="w">      </span><span class="nt">target</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context.&lt;path&gt;.&lt;collection&gt;</span>
+<span class="w">    </span><span class="nt">capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;int&gt;</span>
+<span class="w">    </span><span class="nt">columns</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;int&gt;</span>
+<span class="w">    </span><span class="nt">gap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;int&gt;</span>
+<span class="w">    </span><span class="nt">pane</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;pane-asset-id&gt;</span>
+<span class="w">    </span><span class="nt">button</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;button-asset-id&gt;</span>
+</code></pre></div>
+<p><strong>Gizmo Compositions</strong></p>
+<p>Widgets adhere strictly to single-texture rendering. Composite controls (e.g., an equipment slot consisting of a button frame and an item graphic) are composed using <code>Layout.OVERLAY</code> within a parent <code>Pane</code>:</p>
+<ol>
+<li>The parent <code>Pane</code> allocates the layout cell dimensions (e.g., <span class="arithmatex">\(40 \times 40\)</span>).</li>
+<li>Child 1 (<code>Button</code>) renders the interactive background and captures traversal focus.</li>
+<li>Child 2 (<code>Icon</code>) centers natively on top of the button, binding to the item texture key.</li>
+</ol>
+<p><strong>Pane Dimensional Hierarchy</strong></p>
+<p>When a <code>MenuPane</code> declares explicit <code>dimensions</code>, the <code>Provider</code> overrides the prototype dimensions declared in <code>properties.panes[id]</code>. This is mandatory for macro nodes (such as Gizmos) whose dimensions are derived dynamically from child counts:</p>
+<div class="arithmatex">\[\text{Width} = C \cdot w_{\text{slot}} + (C - 1) \cdot \text{gap}\]</div>
+<div class="arithmatex">\[\text{Length} = R \cdot l_{\text{slot}} + (R - 1) \cdot \text{gap}\]</div>
+<h5 id="architectural-assessment-i">Architectural Assessment I</h5>
+<p>In the world simulation, <code>Decomposer</code> does not invent ad-hoc asset classes; it reads a blueprint from <code>/src/data/config/compositions/</code> and expands deployed pseudo-state into standard <code>Asset</code> instances that the <code>Board</code> consumes uniformly.</p>
+<p>For menus, a Gizmo represents a dynamic UI pattern—such as an inventory grid, equipment rack, or shop listing—where the number of rendered controls depends on dynamic collection lengths in <code>MenuContext</code>.</p>
+<pre class="mermaid"><code>flowchart TD
+    A["MenuConfiguration (YAML)"]
+    B["MenuPane (Root)"]
+    C["MenuGizmo (Macro Node: e.g. item-grid)"]
+    D["MenuPane (Synthesized Subtree: Dock/Stack/Overlay)"]
+    E["Dict[str, Widget] (Instantiated Assets with Bindings)"]
+    F["Flat Render List + Traversal Graph (AABB Raycasting)"]
+
+    A --&gt; B
+    B --&gt; C
+    C --&gt;|"Fabricator.expand(node, context)"| D
+    D --&gt;|"Provider._unpack_pane"| E
+    E --&gt;|"Layout.compute"| F</code></pre>
+<p>Synthesizing a <code>MenuPane</code> subtree prior to layout resolution provides distinct architectural advantages:</p>
+<ul>
+<li><strong>Zero Duplication of Spatial Geometry</strong>: <code>Layout._layout_dock</code>, <code>_layout_stack</code>, and <code>_layout_overlay</code> handle child positioning identically for static and dynamic menus.</li>
+<li><strong>Unified Traversal Topology</strong>: <code>Layout._build_graph</code> evaluates all active button hitboxes uniformly via AABB ray-casting, eliminating manual adjacency-graph wiring.</li>
+<li><strong>Decal Composition via Overlays</strong>: An inventory slot consists of an outer <code>transparent-slot</code> pane with <code>Layout.OVERLAY</code>, holding a <code>slot</code> button background and an inner centered <code>icon</code> widget. Expanding to <code>MenuPane</code> trees preserves this rendering hierarchy naturally.</li>
+</ul>
+<p><strong>1. Pseudo-State &amp; Windowed Bindings</strong></p>
+<p>In Compositions, pseudo-state resolves spatial translations and binds relative references (<code>bind(root.layer)</code>). In Gizmos, "pseudo-state" resolves <strong>collection slicing and slot index mapping</strong>.</p>
+<p>When an inventory holds 24 items but the Gizmo pane only has 8 physical slots:</p>
+<ul>
+<li><strong>The Windowed State</strong>: The Menu Context or Controller maintains a paging offset (<span class="arithmatex">\(O \in [0, N]\)</span>).</li>
+<li><strong>Slot Mapping</strong>: Slot <span class="arithmatex">\(i \in [0, 7]\)</span> maps to index <span class="arithmatex">\(k = O + i\)</span> in <code>context.inventory.&lt;field&gt;</code>.</li>
+<li><strong>State Superposition</strong>:</li>
+<li>If <span class="arithmatex">\(k &lt; \text{len}(\text{collection})\)</span>: The slot button status is set to <code>IDLE</code>, its select binding is wired to item <span class="arithmatex">\(k\)</span>, and the child icon binds to <code>collection[k]</code>.</li>
+<li>If <span class="arithmatex">\(k \ge \text{len}(\text{collection})\)</span>: The slot is empty. The button status is set to <code>DISABLED</code> (intraversable), and the icon displays a blank/empty frame.</li>
+</ul>
+<p><strong>2. Traversal &amp; Edge Scrolling Mechanics</strong></p>
+<p>Implicit edge-scrolling during traversal risks fighting with <code>Layout._build_graph</code> because off-screen items have no spatial bounding boxes.</p>
+<p>The engine architecture already implements a clean, tested pattern in <code>ScrollController</code> via explicit selection commands (<code>SCROLLUP</code>, <code>SCROLLDOWN</code>). For Gizmos:</p>
+<ol>
+<li><strong>Explicit Navigation Buttons</strong>: The Gizmo macro optionally appends pagination controls (<code>arrow-up</code> / <code>arrow-down</code> buttons) alongside the grid. Selecting an arrow fires <code>scrolldown</code>/<code>scrollup</code> on the controller, incrementing the window offset and emitting an <code>UpdateEvent</code>.</li>
+<li><strong>Deterministic Focus Recovery</strong>: When an update event re-slices the collection, the active focus defaults safely to the first available active slot in the new page.</li>
+</ol>
+<h5 id="goal-gizmo-configuration-models-macro-expansion">Goal: Gizmo Configuration Models &amp; Macro Expansion</h5>
+<p>Extend <code>app.models.config.menus</code> with a <code>MenuGizmo</code> configuration node. Implement <code>Fabricator</code> to expand <code>MenuGizmo</code> specifications into concrete <code>MenuPane</code> hierarchies before <code>Provider</code> performs ECS widget instantiation.</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MenuGizmo</span><span class="p">:</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">bind</span><span class="p">:</span> <span class="n">MenuBinding</span>
+    <span class="n">capacity</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">columns</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">gap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">pane</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"transparent-slot"</span>
+    <span class="n">button</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"slot"</span>
+</code></pre></div>
+<h5 id="goal-windowed-collection-bindings-pseudo-state">Goal: Windowed Collection Bindings &amp; Pseudo-State</h5>
+<p>Implement <code>CollectionBinding</code> in <code>app.game.menus.bindings</code> to manage dynamic index resolution, pagination offsets, and empty-slot suppression, allowing slots to evaluate <code>context.&lt;path&gt;.&lt;collection&gt;[offset + i]</code> dynamically.</p>
+<h5 id="goal-inventorycontroller-integration">Goal: InventoryController Integration</h5>
+<p>Implement <code>InventoryController</code> to manage Gizmo pagination offsets, item equipping/inspecting commands, and dispatching <code>UpdateEvent</code> payloads to refresh slot textures when the inventory state mutates.</p>
+<h5 id="tasks">Tasks</h5>
+<p><strong>1. Task: Schematize MenuGizmo &amp; Extend Menu AST</strong></p>
+<p><em>Objective</em>: Allow Menu configurations to declare dynamic Gizmo macros alongside standard Panes and Widgets.</p>
+<ul>
+<li>[x] Subtask: Add <code>MenuGizmo</code> dataclass to <code>app.models.config.menus</code>.</li>
+<li>[x] Subtask: Update <code>MenuPane.children</code> type signature to <code>List[Union[MenuPane, MenuWidget, MenuGizmo]]</code>.</li>
+<li>[x] Subtask: Add Pydantic schema validation for Gizmo properties (<code>capacity</code>, <code>columns</code>, <code>pane_id</code>, <code>button_id</code>).</li>
+</ul>
+<p><strong>2. Task: Implement GizmoGenerator Service</strong></p>
+<p><em>Objective</em>: Build the expansion generator that transforms <code>MenuGizmo</code> nodes into standard <code>MenuPane</code> subtrees.</p>
+<ul>
+<li>[x] Subtask: Implement <code>app.services.generators.menus.Fabricator</code>.</li>
+<li>[x] Subtask: Build grid subdivision logic to partition <code>capacity</code> across <code>columns</code> using nested <code>dock</code> and <code>stack</code> panes.</li>
+<li>[x] Subtask: Generate <code>transparent-slot</code> overlay panes with child <code>buttons</code> and <code>icons</code> with deterministic IDs (<code>&lt;name&gt;-slot-&lt;i&gt;</code>, <code>&lt;name&gt;-icon-&lt;i&gt;</code>).</li>
+<li>[x] Subtask: Integrate <code>Fabricator</code> into <code>Provider._unpack_node</code> so expansion occurs seamlessly during Menu hydration.</li>
+</ul>
+<p><strong>3. Task: Implement CollectionBinding &amp; Slot Paging</strong></p>
+<p><em>Objective</em>: Connect individual slot buttons and icons to underlying collection elements.</p>
+<ul>
+<li>[x] Subtask: Create <code>CollectionBinding</code> subclass in <code>app.game.menus.bindings.collection</code>.</li>
+<li>[x] Subtask: Implement index-slice bounds checks returning empty strings and <code>DISABLED</code> statuses for vacant slots.</li>
+<li>[x] Subtask: Register <code>collection</code> schema in <code>app.services.generators.binder.Binder</code>.</li>
+</ul>
+<p><strong>4. Task: Implement InventoryController</strong></p>
+<p><em>Objective</em>: Manage selection events, pagination shifts, and item mutations for the player inventory.</p>
+<ul>
+<li>[x] Subtask: Implement <code>app.game.menus.controllers.inventory.InventoryController</code>.</li>
+<li>[x] Subtask: Implement <code>select()</code> to process slot clicks and emit <code>UpdateEvent</code> on scroll actions.</li>
+<li>[!: Dependent on Phase Completion] Subtask: Write unit tests covering Gizmo AST expansion, grid layout computation, and slot traversal graph generation.</li>
+</ul>
+<h5 id="user-review-i">User Review I</h5>
+<p>Gizmos are rendering! However, the layout is messed up. The arrows are rendering on top of the grid. See state dump below.</p>
+<p><strong>Inventory Menu State Dump</strong></p>
+<div class="highlight"><pre><span></span><code>Omitted after bug identified for brevity.
+</code></pre></div>
+<p><strong>[x] Task: Architectural Assessment</strong></p>
+<p>With the initial implementation of Gizmos in place, it needs refactored and reanalyzed to streamline the datastructures that support it and the logic that is used to construct it.</p>
+<ul>
+<li>Diagnose the problem with the Gizmo layout.</li>
+<li>Analyze the codebase for errors and bugs as they pertain to this phase.</li>
+</ul>
+<p><strong>Scrolling</strong></p>
+<p>The Inventory menu currently has arrow Buttons for scrolling, but they do not hook into anything. </p>
+<p>Scrolling is currently a "text" only feature. Determine the level of effort and how ugly the code has to be made in order to support scrolling through a collection of slots (gizmo).</p>
+<p><strong>Generalization</strong></p>
+<p>A Gizmo is currently specific to a "Collection". However, there are other configurations of Gizmos that may be useful in the future. The Fabricator should be more like a Factory class, that generates the Gizmo layout from its binded schema.</p>
+<p><strong>Various Notes</strong></p>
+<ul>
+<li>The Fabricator doesn't use the MenuContext, despite it being passed into <code>expand()</code>.</li>
+</ul>
+<h5 id="architectural-assessment-ii">Architectural Assessment II</h5>
+<p>The arrows render on top of the inventory grid because <code>Provider._unpack_pane</code> silently discards the synthetic dimensions calculated by <code>Fabricator</code>, forcing <code>Layout._layout_dock</code> to treat the entire <span class="arithmatex">\(175 \times 85\text{ px}\)</span> grid as a single <span class="arithmatex">\(40 \times 40\text{ px}\)</span> cell.</p>
+<p><strong>Layout Problem Diagnosis</strong></p>
+<p>In <code>Fabricator.expand()</code>, the grid dimensions are calculated correctly based on capacity, column count, slot size (<span class="arithmatex">\(40 \times 40\)</span>), and gap (<span class="arithmatex">\(5\text{ px}\)</span>):</p>
+<div class="arithmatex">\[\text{grid\_w} = 4 \times 40 + (4 - 1) \times 5 = 175\text{ px}\]</div>
+<div class="arithmatex">\[\text{grid\_l} = 2 \times 40 + (2 - 1) \times 5 = 85\text{ px}\]</div>
+<p>These values are attached to the synthesized <code>MenuPane(dimensions=Dimensions(w=175, l=85))</code>. However, inside <code>Provider._unpack_pane()</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">props</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">panes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pane</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<span class="c1"># ...</span>
+<span class="n">pane_asset</span> <span class="o">=</span> <span class="n">Asset</span><span class="p">(</span>
+    <span class="n">taxonomy</span><span class="o">=</span><span class="n">Factory</span><span class="o">.</span><span class="n">taxonomy</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="n">pane</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">pane</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="n">AssetCategories</span><span class="o">.</span><span class="n">WIDGETS</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">instance</span><span class="o">=</span><span class="n">AssetInstances</span><span class="o">.</span><span class="n">PANES</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">properties</span><span class="o">=</span><span class="n">props</span><span class="p">,</span>  <span class="c1"># Static 40x40 from transparent-slot in main.yaml</span>
+    <span class="n">state</span><span class="o">=</span><span class="n">PaneState</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
+<span class="p">)</span>
+</code></pre></div>
+<p><code>pane.dimensions</code> on the AST node is ignored. <code>props</code> is retrieved directly from <code>self.properties.panes["transparent-slot"]</code>, which defines static dimensions of <span class="arithmatex">\(40 \times 40\)</span>.</p>
+<p>When <code>Layout._layout_dock</code> executes on the parent <code>inventory-menu</code> (<span class="arithmatex">\(W=318, L=180, \text{margin}=10, \text{gap}=10\)</span>):</p>
+<ol>
+<li><strong>Child Measurement</strong>: <code>c.dimensions</code> accesses <code>Asset.dimensions</code>, resolving to <code>Asset.properties.dimensions</code>.</li>
+<li><code>inventory-pack-grid</code>: Measured as <strong><span class="arithmatex">\(40\text{ px}\)</span></strong> instead of <strong><span class="arithmatex">\(175\text{ px}\)</span></strong>.</li>
+<li>
+<p><code>inventory-scroll-controls</code>: Measured as <strong><span class="arithmatex">\(40\text{ px}\)</span></strong> (also using <code>transparent-slot</code>).</p>
+</li>
+<li>
+<p><strong>Total Width</strong>:</p>
+</li>
+</ol>
+<div class="arithmatex">\[
+\text{total\_w} = 40 + 40 + 10 = 90\text{ px} \quad (\text{expected } 175 + 40 + 10 = 225\text{ px})
+\]</div>
+<ol>
+<li><strong>Anchor Positioning</strong>: With <code>alignment: center</code> and usable width <span class="arithmatex">\(318 - 20 = 298\text{ px}\)</span>:</li>
+</ol>
+<div class="arithmatex">\[
+\text{offset\_x} = \frac{298 - 90}{2} = 104\text{px}
+\]</div>
+<div class="arithmatex">\[
+\text{current\_x} = 81 + 10 + 104 = 195\text{px}
+\]</div>
+<ol>
+<li><strong>Placement Collision</strong>:</li>
+<li><code>inventory-pack-grid</code> is placed at <span class="arithmatex">\(X = 195\)</span>. Its internal slots expand across <span class="arithmatex">\(X \in [195, 370]\)</span> (Slot 0 at 195, Slot 1 at 240, Slot 2 at 285, Slot 3 at 330).</li>
+<li><code>inventory-scroll-controls</code> is placed at <span class="arithmatex">\(X = 195 + 40 + 10 = \mathbf{245}\)</span>.</li>
+<li>The arrows (<span class="arithmatex">\(W=24\)</span>) center inside the controls at <span class="arithmatex">\(X = 245 + \frac{40 - 24}{2} = \mathbf{253}\)</span>.</li>
+</ol>
+<p>The scroll controls are stamped directly between Slot 1 (<span class="arithmatex">\(X=240\)</span>) and Slot 2 (<span class="arithmatex">\(X=285\)</span>).</p>
+<p><strong>Codebase Analysis: Critical Phase Bugs</strong></p>
+<p>Beyond the dimensional collapse, four architectural bugs break Gizmo functionality:</p>
+<ol>
+<li><strong>Button Status Decoupled from CollectionBinding</strong>: <code>Fabricator.expand()</code> assigns <code>CollectionBinding</code> to the <code>icon</code> widget, but assigns <code>SelectBinding</code> to the <code>button</code> widget. <code>InventoryController._sync_slots()</code> queries <code>hasattr(widget.binding, "offset")</code> and attempts to set <code>widget.state.status = binding.get_status()</code>. This operation targets the <code>IconState</code> (which has no <code>status</code> field), while the slot button retains <code>SelectBinding</code> and stays permanently <code>IDLE</code>. As seen in the state dump, all 8 buttons remain traversable in <code>menu.graph</code> even when <code>context.inventory.pack</code> is <code>None</code>.</li>
+<li><strong>Static Traversal Graph Invalidation</strong>: <code>Layout._build_graph</code> runs once during <code>Provider.unpack()</code>. When collection pagination or inventory mutation changes a slot from active to empty, <code>menu.graph</code> is never updated. Traversing into a newly disabled slot causes focus to land on an intraversable widget.</li>
+<li><strong>Registry Miss Logging Storm</strong>: When a slot is vacant, <code>CollectionBinding.get_item()</code> returns <code>""</code>. <code>IndexFrame.keys()</code> evaluates this to <code>[("weapons-", 0, 0)]</code>. Because <code>IconState</code> is not excluded from missing frame checks in <code>Screen._widgets</code>, the engine logs <code>Registry MISS: Frame key not found: 'weapons-'</code> for every empty slot on every frame, generating hundreds of I/O log writes per second.</li>
+<li><strong>AST Mutation of Frozen Configurations</strong>: In <code>Provider._unpack_pane()</code>, the loop executes <code>pane.children[i] = node</code>. Mutating <code>pane.children</code> in-place mutates the long-lived <code>MenuConfiguration</code> loaded during boot. Once expanded, the <code>MenuGizmo</code> macro node is permanently replaced by a concrete <code>MenuPane</code>, preventing subsequent re-expansions or dynamic re-bindings.</li>
+</ol>
+<p><strong>Gizmo Scrolling Architecture</strong></p>
+<p>Supporting collection scrolling requires minimal effort and zero ugly code because <strong>texture rebaking is not involved</strong>.</p>
+<p>Unlike text scrolling—which requires rasterizing glyphs onto an SDL surface canvas via <code>Screen.stamp()</code>—Gizmo slot textures are static sprites already cached in the <code>Registry</code>. An icon's displayed texture is resolved on the fly each frame through its frame key:</p>
+<div class="highlight"><pre><span></span><code><span class="n">keys</span> <span class="o">=</span> <span class="p">[(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">widget</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">icon</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+</code></pre></div>
+<p>Where <code>state.icon</code> evaluates <code>CollectionBinding.get_item()</code> dynamically:</p>
+<div class="arithmatex">\[k = \text{offset} + \text{index}\]</div>
+<p><strong>Clean Implementation Strategy</strong></p>
+<ol>
+<li><strong>Store Offset on Context</strong>: Move pagination tracking into the context (e.g., <code>context.offset</code> or a controller-backed property).</li>
+<li><strong>Targeted Paging Bounds</strong>: In <code>InventoryController.select()</code>:</li>
+<li>When <code>selection == SCROLLDOWN</code>: Advance offset by <code>columns</code> (e.g., <span class="arithmatex">\(+4\)</span>), clamped to: <span class="arithmatex">\(\text{max\_offset} = \max\left(0, \left\lceil \frac{N - \text{capacity}}{\text{columns}} \right\rceil \times \text{columns}\right)\)</span></li>
+<li>When <code>selection == SCROLLUP</code>: Decrement offset by <code>columns</code>, clamped to <span class="arithmatex">\(\ge 0\)</span>.</li>
+<li><strong>Direct Context Resolution</strong>: Configure <code>CollectionBinding</code> to resolve <code>offset</code> dynamically via path (<code>target: {"offset": "context.offset", ...}</code>), eliminating the manual <code>_sync_slots()</code> iteration loop entirely.</li>
+<li><strong>Focus Recovery</strong>: If <code>menu.focus</code> belongs to a slot whose effective index <span class="arithmatex">\(k \ge N\)</span> after a scroll event, clamp focus to the nearest valid slot or default to <code>inventory-scroll-up</code>.</li>
+</ol>
+<p><strong>Gizmo Generalization &amp; Fabricator Architecture</strong></p>
+<p><code>Fabricator</code> should not be hardcoded to grid collections. Refactor it into an extensible generator factory that selects an expansion strategy based on <code>gizmo.bind.schema</code>:</p>
+<div class="highlight"><pre><span></span><code>Fabricator.expand(gizmo, context, properties)
+ ├── schema == "collection" / "grid"   ──&gt; GridFabricator
+ ├── schema == "equipment" / "record" ──&gt; EquipmentFabricator
+ └── schema == "pagination"           ──&gt; PaginationFabricator
+</code></pre></div>
+<p><strong>Utilizing MenuContext in Expansion</strong></p>
+<p><code>context</code> is currently passed to <code>expand()</code> and unused. Integrating <code>context</code> unlocks three capabilities:</p>
+<ul>
+<li><strong>Dynamic Capacity Sizing</strong>: If <code>gizmo.capacity</code> is set to <code>0</code> or omitted in YAML, the Fabricator queries <code>len(context.resolve(source_path))</code> to generate exactly the required slot count, eliminating empty placeholder slots for fixed lists.</li>
+<li><strong>Direct Path Binding</strong>: Generates declarative select targets that bind buttons directly to underlying domain entities (e.g., <code>target: {"entity": f"{source_path}[{k}]"}</code>).</li>
+<li><strong>Pre-computed Traversal States</strong>: Evaluates collection bounds during expansion so empty slots are initialized directly as <code>DISABLED</code> before <code>Layout._build_graph()</code> executes, preventing phantom nodes in the initial navigation graph.</li>
+</ul>
+<h4 id="bug-reports">Bug Reports</h4>
+<h5 id="bug-b008-pane-asset-discards-ast-dimensions-in-provider-unpack">Bug B008: Pane Asset Discards AST Dimensions in Provider Unpack</h5>
+<p><strong>STATUS</strong>: OPEN
+<strong>SEVERITY</strong>: HIGH</p>
+<p><strong>Description</strong></p>
+<p>When <code>Provider._unpack_pane()</code> instantiates a <code>MenuPane</code> Asset, it assigns properties solely via <code>self.properties.panes.get(pane.id)</code>. Any synthetic or explicit dimensions defined on the configuration AST node (<code>pane.dimensions</code>, such as those calculated by <code>Fabricator</code>) are ignored. Consequently, <code>Layout._layout_dock</code> and <code>_layout_stack</code> read the fallback asset dimensions (e.g., <span class="arithmatex">\(40 \times 40\)</span> for <code>transparent-slot</code>), causing subsequent siblings in dock/stack layouts to compute overlapping coordinates.</p>
+<p><strong>Steps to Replicate</strong></p>
+<ol>
+<li>Launch <code>inventory</code> menu with an expanded Gizmo grid (<span class="arithmatex">\(175\text{ px}\)</span> wide) and pagination controls in a horizontal <code>dock</code> pane.</li>
+<li>Inspect the resulting <code>PaneState.position</code> and button coordinates via state dump.</li>
+<li>Observe <code>inventory-scroll-controls</code> placed at <span class="arithmatex">\(X=245\)</span>, overlapping the grid which extends to <span class="arithmatex">\(X=370\)</span>.</li>
+</ol>
+<p><strong>Proposed Remediation</strong></p>
+<p>In <code>Provider._unpack_pane()</code>, check if <code>pane.dimensions</code> is set. If present, instantiate an overridden <code>WidgetProperties</code> container with <code>dimensions=pane.dimensions</code> instead of directly sharing the static prototype from <code>self.properties.panes</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="n">pane</span><span class="o">.</span><span class="n">dimensions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+  <span class="n">props</span> <span class="o">=</span> <span class="n">WidgetProperties</span><span class="p">(</span>
+      <span class="n">dimensions</span><span class="o">=</span><span class="n">pane</span><span class="o">.</span><span class="n">dimensions</span><span class="p">,</span>
+      <span class="n">frames</span><span class="o">=</span><span class="n">props</span><span class="o">.</span><span class="n">frames</span> <span class="k">if</span> <span class="n">props</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+  <span class="p">)</span>
+</code></pre></div>
+<h5 id="bug-b009-registry-miss-storm-on-vacant-icon-frame-keys">Bug B009: Registry Miss Storm on Vacant Icon Frame Keys</h5>
+<p><strong>STATUS</strong>: OPEN
+<strong>SEVERITY</strong>: MEDIUM</p>
+<p><strong>Description</strong></p>
+<p>When an inventory slot is vacant, <code>CollectionBinding.get_item()</code> returns an empty string. <code>IndexFrame.keys()</code> joins this with the asset identifier, producing <code>weapons-</code>. <code>Screen._widgets()</code> queries <code>self.registry.image("weapons-")</code>, fails, and logs a warning on every frame because <code>IconState</code> is not excluded from missing texture checks.</p>
+<p><strong>Steps to Replicate</strong></p>
+<ol>
+<li>Open the inventory menu with empty slots.</li>
+<li>Monitor application logs.</li>
+<li>Observe <code>Registry MISS: Frame key not found: 'weapons-'</code> logged 60 times per second per empty slot.</li>
+</ol>
+<p><strong>Proposed Remediation</strong></p>
+<p>Update <code>IndexFrame.keys()</code> to return an empty list <code>[]</code> when <code>state.icon</code> is empty or <code>None</code>, preventing texture lookup entirely:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">AssetState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+  <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">"icon"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[]</span>
+  <span class="k">return</span> <span class="p">[(</span><span class="n">settings</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">id</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">icon</span><span class="p">]),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+</code></pre></div>
+<h5 id="bug-b010-static-menu-ast-mutation-in-provider-unpack">Bug B010: Static Menu AST Mutation in Provider Unpack</h5>
+<p><strong>STATUS</strong>: OPEN
+<strong>SEVERITY</strong>: MEDIUM</p>
+<p><strong>Description</strong></p>
+<p>In <code>Provider._unpack_pane()</code>, the loop performs <code>pane.children[i] = node</code>. This mutates the child list of the master <code>MenuConfiguration</code> in place. Once a <code>MenuGizmo</code> macro is expanded into a <code>MenuPane</code>, the configuration tree permanently loses the macro definition, preventing re-expansion or dynamic reconstruction on future menu invocations.</p>
+<p><strong>Steps to Replicate</strong></p>
+<ol>
+<li>Open <code>inventory</code> menu (triggering Gizmo expansion).</li>
+<li>Close <code>inventory</code> menu.</li>
+<li>Modify player inventory.</li>
+<li>Re-open <code>inventory</code> menu.</li>
+<li>Observe that <code>Provider._unpack_node</code> receives the stale <code>MenuPane</code> rather than the <code>MenuGizmo</code> macro node.</li>
+</ol>
+<p><strong>Proposed Remediation</strong></p>
+<p>Treat incoming configuration trees as read-only templates. In <code>Provider.unpack()</code>, clone or copy the root panes prior to traversal, or maintain a distinct runtime AST separate from the configuration specification.</p>
+<hr />
+<h4 id="refactor-phase-040502-gizmos-dynamic-ui-architecture">Refactor Phase 04.05.02 - Gizmos &amp; Dynamic UI Architecture</h4>
+<p><strong>Overview</strong></p>
+<p>Refactor the Gizmo subsystem to address dimensional layout bugs, eliminate traversal over vacant slots, generalize macro expansion across collection and equipment schemas, and implement pagination controls.</p>
+<h5 id="goal-dynamic-layout-sizing-overlap-remediation">Goal: Dynamic Layout Sizing &amp; Overlap Remediation</h5>
+<p>Ensure synthesized and container panes propagate explicit dimensional geometry to <code>Asset.properties</code> during hydration, allowing <code>Layout._layout_dock</code> and <code>_layout_stack</code> to calculate spacing using actual subtree bounds.</p>
+<h5 id="goal-unified-slot-bindings-traversal-integrity">Goal: Unified Slot Bindings &amp; Traversal Integrity</h5>
+<p>Unify button traversal state with collection item occupancy. When a slot is vacant, its button must automatically assume <code>DISABLED</code> status prior to <code>Layout._build_graph()</code>, preventing intraversable elements from populating the navigation topology.</p>
+<h5 id="goal-generalized-strategy-based-fabricator">Goal: Generalized Strategy-Based Fabricator</h5>
+<p>Refactor <code>Fabricator</code> from a concrete grid generator into a factory service delegating macro expansion to dedicated schema generators (<code>collection</code>, <code>equipment</code>, <code>pagination</code>).</p>
+<h5 id="goal-windowed-collection-pagination-focus-clamping">Goal: Windowed Collection Pagination &amp; Focus Clamping</h5>
+<p>Connect pagination buttons to controller offset states, implement row-based pagination stepping, and add deterministic focus recovery when the active slot leaves the visible window.</p>
+<h5 id="tasks_1">Tasks</h5>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+</div>
+<p>Many tasks have been cancelled following a subsequent user review and architectural assessment.</p>
+<p><strong>1. Task: Fix Pane Geometry Propagation in Provider</strong></p>
+<p><em>Objective</em>: Allow synthesized <code>MenuPane.dimensions</code> to override prototype asset properties during unpacking.</p>
+<ul>
+<li>[ ] Subtask: Update <code>Provider._unpack_pane</code> to construct custom <code>WidgetProperties</code> when <code>pane.dimensions</code> is defined.</li>
+<li>[ ] Subtask: Define explicit dimensions for <code>inventory-scroll-controls</code> in <code>data/config/menus/main.yaml</code> (<span class="arithmatex">\(W=24, L=53\)</span>).</li>
+<li>[ ] Subtask: Verify <code>inventory-pack-grid</code> (<span class="arithmatex">\(W=175\)</span>) and scroll controls (<span class="arithmatex">\(W=24\)</span>) dock horizontally without spatial overlap.</li>
+</ul>
+<p><strong>2. Task: Implement SlotBinding &amp; Vacancy Handling</strong></p>
+<p><em>Objective</em>: Synchronize button traversal status and icon frame generation with collection item bounds.</p>
+<ul>
+<li>[!: Cancelled] Subtask: Implement <code>SlotBinding</code> in <code>app.game.menus.bindings.slot</code> combining select commands with collection bounds checking.</li>
+<li>[ ] Subtask: Update <code>IndexFrame.keys()</code> to return an empty list when <code>state.icon</code> is empty, eliminating missing texture log warnings.</li>
+<li>[!: Cancelled] Subtask: Ensure <code>Provider._focus()</code> selects the first valid, non-disabled button upon initial menu hydration.</li>
+</ul>
+<p><strong>3. Task: Refactor Fabricator to Strategy Factory</strong></p>
+<p><em>Objective</em>: Abstract macro expansion to support arbitrary dynamic UI patterns.</p>
+<ul>
+<li>[!: Cancelled] Subtask: Define <code>GizmoStrategy</code> abstract base class with <code>expand(gizmo, context, properties) -&gt; MenuPane</code>.</li>
+<li>[!: Cancelled] Subtask: Extract grid generation logic into <code>CollectionGridStrategy</code>.</li>
+<li>[!: Cancelled] Subtask: Implement <code>EquipmentSlotStrategy</code> for binding discrete equipment fields (<code>weapon</code>, <code>shield</code>, <code>armor</code>).</li>
+<li>[!: Cancelled] Subtask: Register strategies within <code>Fabricator</code> keyed by <code>bind.schema</code>.</li>
+</ul>
+<p><strong>4. Task: Integrate Collection Pagination in InventoryController</strong></p>
+<p><em>Objective</em>: Implement row-based collection scrolling and focus recovery.</p>
+<ul>
+<li>[!: Cancelled] Subtask: Update <code>InventoryController.select()</code> to advance/decrement <code>offset</code> by <code>columns</code>.</li>
+<li>[!: Cancelled] Subtask: Add upper and lower offset clamping based on collection length and grid capacity.</li>
+<li>[!: Cancelled] Subtask: Implement focus recovery logic shifting traversal focus to <code>inventory-scroll-up</code> when the selected slot scrolls out of view.</li>
+<li>[!: Cancelled] Subtask: Write unit tests covering AST expansion, dock spacing with dynamic pane dimensions, and empty slot traversal exclusion.</li>
+</ul>
+<h5 id="user-review-ii">User Review II</h5>
+<p>The current plan fails to consider how slot pagination breaks the traversal graph generation.</p>
+<ul>
+<li>Slots need to stay traversible in the collection. User has to be able to navigate and select them.</li>
+<li>Arrows page through the slots.</li>
+</ul>
+<h5 id="architectural-assessment-iii">Architectural Assessment III</h5>
+<p>Treating empty slots as <code>DISABLED</code> was an error: disabling vacant slots punches physical holes into the Axis-Aligned Bounding Box (AABB) projection, destroying the spatial bridges needed to reach neighboring slots and pagination controls.</p>
+<p>The core conflict lies in an architectural impedance mismatch: <strong><code>Layout._build_graph</code> is a purely spatial raycaster operating on physical screen geometry, whereas a paginated collection is a windowed data stream.</strong></p>
+<p><strong>The Breakdown: Spatial Raycasting vs. Paginated Collections</strong></p>
+<p><code>Layout._build_graph</code> operates under three strict invariants:</p>
+<ol>
+<li>Every traversable node must exist as an instantiated <code>Asset</code> with an absolute <code>Position</code> and physical <code>Dimensions</code>.</li>
+<li>Edges are established strictly by 1D interval overlap (<span class="arithmatex">\(X\)</span> overlap for vertical rays, <span class="arithmatex">\(Y\)</span> overlap for horizontal rays) and Euclidean distance minimization.</li>
+<li>Any node omitted or marked <code>DISABLED</code> is discarded from candidate evaluation.</li>
+</ol>
+<div class="highlight"><pre><span></span><code>[Slot 0] &lt;---&gt; [Slot 1] &lt;---&gt; [Slot 2] &lt;---&gt; [Slot 3] &lt;---&gt; [Arrow Up]
+   ^              ^              ^              ^
+   |              |              |              |
+   v              v              v              v
+[Slot 4] &lt;---&gt; [Slot 5] &lt;---&gt; [Slot 6] &lt;---&gt; [Slot 7] &lt;---&gt; [Arrow Down]
+   |              |              |              |
+   x              x              x              x   &lt;-- Offscreen slots 8-11 do not exist!
+</code></pre></div>
+<p>When paginating a collection of 24 items across an 8-slot Gizmo (<span class="arithmatex">\(4 \times 2\)</span> grid), two distinct failures emerge:</p>
+<p><strong>1. The Empty Slot Collapse</strong></p>
+<p>If an inventory only contains 2 items and slots 2 through 7 are marked <code>DISABLED</code>:</p>
+<ul>
+<li><code>b1.state.status == Statuses.DISABLED.value</code> strips slots 2–7 from graph construction.</li>
+<li>Slot 0 and Slot 1 can raycast to each other, but the ray from Slot 1 looking <code>EAST</code> finds nothing within its <span class="arithmatex">\(Y\)</span>-interval until the right screen margin. If the pagination arrows sit at a different <span class="arithmatex">\(Y\)</span>-offset, the ray misses entirely.</li>
+<li>The player is physically trapped in the first two slots and cannot navigate to the scroll arrows or inspect empty spaces.</li>
+<li><strong>Rule</strong>: All physical aperture slots in a Gizmo must remain <code>IDLE</code> and traversable at all times, regardless of whether their backing collection index holds data.</li>
+</ul>
+<p><strong>2. The Offscreen Horizon</strong></p>
+<p>Items 8 through 23 cannot participate in <code>Layout._build_graph</code>:</p>
+<ul>
+<li>If they are not instantiated as widgets, they have no spatial coordinates; a ray cast <code>SOUTH</code> from Slot 4 finds no candidate bounding boxes and terminates with no edge.</li>
+<li>If they <em>were</em> instantiated and positioned offscreen below the pane, raycasting would successfully link Slot 4 to Slot 8. However, traversing <code>SOUTH</code> would shift <code>menu.focus</code> to a coordinate outside the window bounds. Because the engine lacks automatic viewport camera tracking for Menu panes, the focus indicator would vanish off the screen into void space.</li>
+</ul>
+<h5 id="user-review-iii">User Review III</h5>
+<p>Why are we paging through slots? The physical slots don't have been to rerendered. That's actually absurdly inefficient, if you think about it. It's just their icons that are changing. Okay, so the solution is this, I think: A collection renders a determinate grid of slot and contains data struture of paginated icon strs, e.g. <code>[ [icon_1, icon_2, ... ], [icon_n, icon_n+1, ...] , ... ]</code>. Then when user scrolls, it's just rerendering the icons on top of the same slots. It's the "illusion" of slot scrolling. </p>
+<p>However, that requires a Gizmo "state", where the paginated structure can live and be accessed. Which I suppose is what the binding is. However, the Gizmo binding needs to return more than just get_item(). It needs interfaces for scrollup() and scrolldown().</p>
+<p>That is the ambiguity in the current setup: Gizmos don't have bindings, their components do. So the collection binding is being made to the icons. That's not correct, I don't think, or atleast it's incomplete, and the source of the woes. </p>
+<p>The question that needs answered is: What <em>is</em> a Collection? Is it a binding? What Widget state is it binding to?</p>
+<ul>
+<li>Thought: a Collection binding is actually the ENTIRE schema of bindings for all widgets in the Gizmo. What is lacking a Widget with a scrollup and scrolldown interface for rendering non-text. But that's exactly what a Collection is. Except it's not a concrete Widget, it's an abstract schema.</li>
+</ul>
+<p>Right now the whole setup works by utilizing the existing binding flow on Widgets. But it seems like the current Widgets are insufficient to complete what the binding requires.</p>
+<h5 id="architectural-assessment-iv">Architectural Assessment IV</h5>
+<p>Paging the physical slots is an anti-pattern: <strong>slots are static spatial apertures (viewports), while the items sliding underneath them are a windowed data stream.</strong></p>
+<p>The physical buttons must never move, resize, or be rebuilt. They exist solely to provide fixed <span class="arithmatex">\((X, Y)\)</span> hitboxes so <code>Layout._build_graph</code> can compute an immutable AABB traversal mesh. Only the icon texture keys bound to those apertures change when scrolling.</p>
+<p>The reason the current implementation feels broken is an architectural identity crisis: <strong><code>Fabricator</code> decomposes the Gizmo into leaf widgets, but fractures the collection's state across <span class="arithmatex">\(N\)</span> disconnected child bindings.</strong></p>
+<p><strong>The Root Cause: Orphaned Window State</strong></p>
+<p>Currently:</p>
+<ol>
+<li><code>Fabricator</code> stamps out 8 independent <code>CollectionBinding</code> instances (one per icon) and 8 independent <code>SelectBinding</code> instances (one per button).</li>
+<li>Each <code>CollectionBinding</code> maintains its own <code>offset</code> attribute.</li>
+<li>Because there is no central "collection" entity at runtime, <code>InventoryController</code> is forced to iterate over every widget in <code>menu.widgets</code>, search for <code>binding.offset</code>, and manually mutate it.</li>
+<li>The slot buttons don't know what their sibling icons are displaying, and the pagination controls have no concrete target to send <code>scrollup</code> or <code>scrolldown</code> commands to.</li>
+</ol>
+<p>In the existing engine design, <code>ScrollController</code> works cleanly with <code>Page</code> widgets because <code>Page</code> has a <strong>single state</strong> (<code>DisplayState</code>) with concrete methods: <code>scrollup()</code>, <code>scrolldown()</code>, <code>more()</code>, and <code>less()</code>.</p>
+<p>A Gizmo cannot be a single leaf widget like <code>Page</code> because the engine's traversal system requires discrete <code>Button</code> entities with individual bounding boxes. However, <strong>the Gizmo's root <code>Pane</code> can own the composite Collection State.</strong></p>
+<p><strong>The Solution: The Composite Aperture Pattern</strong></p>
+<p>Rather than scattering bindings across individual slots, treat the <strong>Gizmo Pane</strong> as the stateful collection manager, and treat the child slots as <strong>aperture delegates</strong>.</p>
+<pre class="mermaid"><code>flowchart TD
+    A["Gizmo Root Pane (inventory-pack-grid)&lt;br/&gt;State: CollectionState (offset, capacity, collection)&lt;br/&gt;Methods: scrollup(), scrolldown(), get_item(i)"]
+
+    A --- B["Slot 0 (Aperture)&lt;br/&gt;Button: delegate(parent, 0)&lt;br/&gt;Icon: delegate(parent, 0)"]
+    A --- C["Slot 1 (Aperture)&lt;br/&gt;Button: delegate(parent, 1)&lt;br/&gt;Icon: delegate(parent, 1)"]
+    A --- D["... Slots 2-7 ..."]
+
+    E["Scroll Up Button&lt;br/&gt;Target: inventory-pack-grid&lt;br/&gt;Action: scrollup"] -.-&gt;|"invokes"| A
+    F["Scroll Down Button&lt;br/&gt;Target: inventory-pack-grid&lt;br/&gt;Action: scrolldown"] -.-&gt;|"invokes"| A
+</code></pre>
+<p><strong>1. The Gizmo Root Pane Holds <code>CollectionState</code></strong></p>
+<p>Instead of a generic <code>PaneState</code>, the root container of the Gizmo (<code>inventory-pack-grid</code>) receives a specialized <code>CollectionState</code> (or a composite <code>CollectionBinding</code>):</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CollectionState</span><span class="p">(</span><span class="n">PaneState</span><span class="p">):</span>
+    <span class="n">collection_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span>
+    <span class="n">capacity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">columns</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">collection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection_function</span><span class="p">()</span> <span class="ow">or</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">+</span> <span class="n">slot_index</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">):</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">item</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">"id"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_occupied</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">+</span> <span class="n">slot_index</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">scrollup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">scrolldown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span>
+</code></pre></div>
+<p><strong>2. Child Slots Use Aperture Delegates</strong></p>
+<p>When <code>Fabricator</code> expands the slots, it doesn't give them independent collection paths. It binds them directly to the <strong>parent Gizmo pane</strong>:</p>
+<ul>
+<li><strong>Child Icon <span class="arithmatex">\(i\)</span></strong>: <code>icon_function = lambda: parent_pane.state.get_item(i)</code></li>
+<li><strong>Child Button <span class="arithmatex">\(i\)</span></strong>: When selected, emits the item at <code>parent_pane.state.offset + i</code>.</li>
+<li><strong>Empty Slots</strong>: If <code>not parent_pane.state.is_occupied(i)</code>, the icon returns <code>""</code> (rendering nothing), but the button remains <code>IDLE</code> so the spatial graph stays intact.</li>
+</ul>
+<p><strong>3. Seamless Integration with <code>ScrollController</code></strong></p>
+<p>This mirrors the existing <code>Page</code> architecture. In <code>main.yaml</code>, the scroll buttons target <code>inventory-pack-grid</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arrow-down</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inventory-scroll-down</span>
+<span class="w">  </span><span class="nt">bind</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">select</span>
+<span class="w">    </span><span class="nt">target</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">selection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scrolldown</span>
+<span class="w">      </span><span class="nt">selector</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inventory-pack-grid</span>
+</code></pre></div>
+<p>When <code>InventoryController.select()</code> receives <code>scrolldown</code> on selector <code>inventory-pack-grid</code>:</p>
+<ol>
+<li>It looks up <code>target = menu.widgets["inventory-pack-grid"]</code>.</li>
+<li>It calls <code>target.state.scrolldown()</code>.</li>
+<li>It emits <code>UpdateEvent(widget=target)</code>.</li>
+<li>The next frame, every child slot icon automatically pulls the newly shifted item key during standard render passes—<strong>zero allocations, zero widget tree rebuilding, and zero manual loop updates.</strong></li>
+</ol>
+<p><strong>Architectural Verdict</strong></p>
+<p>We don't need new primitive rendering widgets. The primitive widgets (<code>Pane</code>, <code>Button</code>, <code>Icon</code>) are doing their jobs.</p>
+<p>What was missing is the <strong>Composite Container</strong>:</p>
+<ol>
+<li><strong>Physical Viewport (Layout)</strong>: Handled by <code>MenuPane</code> + child <code>Button</code>/<code>Icon</code> pairs.</li>
+<li><strong>Collection Slicing &amp; Scrolling</strong>: Owned centrally by the parent Gizmo node's state/binding.</li>
+<li><strong>Traversal Graph</strong>: Built once over the static apertures and never invalidated by scrolling.</li>
+</ol>
+<hr />
+<h4 id="refactor-phase-040503-gizmos-composite-apertures">Refactor: Phase 04.05.03 - Gizmos &amp; Composite Apertures</h4>
+<p><strong>Overview</strong></p>
+<p>Refactor the Gizmo UI macro system from fragmented, leaf-level slot bindings to the <strong>Composite Aperture Pattern</strong>. Instead of distributing pagination offsets and collection queries across <span class="arithmatex">\(N\)</span> isolated child widgets, the root Gizmo <code>MenuPane</code> assumes central ownership of a <code>CollectionState</code> with windowing and paging mechanics (<code>scrollup()</code>, <code>scrolldown()</code>, <code>get_item(i)</code>).</p>
+<p>Child slots are instantiated as fixed spatial apertures (permanent <code>IDLE</code> buttons with delegated child icons) that pull their display keys dynamically from the parent Gizmo state. This preserves immutable AABB raycast topology in <code>Layout._build_graph</code>, eliminates redundant widget tree rebuilding, and fixes the dock measurement collapse where the pagination controls overlap the grid.</p>
+<h5 id="goal-composite-pane-dimensional-propagation">Goal: Composite Pane Dimensional Propagation</h5>
+<p>Ensure synthesized and container panes propagate explicit dimensional geometry to <code>Asset.properties</code> during hydration, allowing <code>Layout._layout_dock</code> and <code>_layout_stack</code> to calculate sibling spacing using actual subtree bounds rather than prototype asset dimensions.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Provider._unpack_pane dimensional override</span>
+<span class="k">if</span> <span class="n">pane</span><span class="o">.</span><span class="n">dimensions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+  <span class="n">props</span> <span class="o">=</span> <span class="n">WidgetProperties</span><span class="p">(</span>
+      <span class="n">dimensions</span><span class="o">=</span><span class="n">pane</span><span class="o">.</span><span class="n">dimensions</span><span class="p">,</span>
+      <span class="n">frames</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">props</span><span class="p">,</span> <span class="s2">"frames"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+  <span class="p">)</span>
+</code></pre></div>
+<h5 id="goal-centralized-collectionstate-paging-apertures">Goal: Centralized CollectionState &amp; Paging Apertures</h5>
+<p>Model the collection window as a unified state on the Gizmo root pane rather than scattering state across individual slots. The parent <code>CollectionState</code> manages the active slice <span class="arithmatex">\([O, O + C)\)</span> and handles pagination shifts, while child slots pull data through deterministic slot indices.</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CollectionState</span><span class="p">(</span><span class="n">PaneState</span><span class="p">):</span>
+  <span class="n">collection_function</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Callable</span><span class="p">)</span>
+  <span class="n">capacity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span>
+  <span class="n">columns</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
+  <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+  <span class="nd">@property</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">collection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection_function</span><span class="p">()</span> <span class="ow">or</span> <span class="p">[]</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="nf">get_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">+</span> <span class="n">slot_index</span>
+    <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">):</span>
+      <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+      <span class="k">return</span> <span class="n">item</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">"id"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+    <span class="k">return</span> <span class="s2">""</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="nf">is_occupied</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">+</span> <span class="n">slot_index</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">)</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="nf">scrollup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+  <span class="k">def</span><span class="w"> </span><span class="nf">scrolldown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">):</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span>
+</code></pre></div>
+<h5 id="goal-aperture-delegation-traversal-stability">Goal: Aperture Delegation &amp; Traversal Stability</h5>
+<p>Maintain a permanently stable traversal graph across collection mutations. Slot buttons remain continuously <code>IDLE</code> to serve as fixed raycasting anchors. Child icons pull dynamically from <code>parent.get_item(slot_index)</code>. When a slot is vacant, the icon returns an empty key which <code>IndexFrame</code> converts to an empty list <code>[]</code>, suppressing texture rendering and eliminating <code>Registry MISS</code> warnings without altering button status.</p>
+<h5 id="goal-centralized-pagination-commands-in-inventorycontroller">Goal: Centralized Pagination Commands in InventoryController</h5>
+<p>Align Gizmo pagination with the established <code>ScrollController</code> pattern. Pagination buttons target the root Gizmo pane identifier via <code>SelectBinding(selection="scrolldown", selector="inventory-pack-grid")</code>. The controller invokes <code>scrollup()</code> or <code>scrolldown()</code> directly on the target pane's <code>CollectionState</code> and emits a single <code>UpdateEvent</code>, avoiding manual iteration over individual slot widgets.</p>
+<hr />
+<h5 id="tasks_2">Tasks</h5>
+<p><strong>1. Task: Fix Pane Geometry Propagation in Provider</strong></p>
+<p><em>Objective</em>: Ensure <code>Provider._unpack_pane</code> respects explicit <code>dimensions</code> declared on synthesized AST nodes.</p>
+<ul>
+<li>[x] Subtask: Update <code>Provider._unpack_pane</code> to instantiate a custom <code>WidgetProperties</code> instance with <code>pane.dimensions</code> whenever <code>pane.dimensions</code> is defined.</li>
+<li>[x] Subtask: Configure explicit dimensions for <code>inventory-scroll-controls</code> in <code>data/config/menus/main.yaml</code> (<span class="arithmatex">\(W=24, L=85\)</span>) to match the height of the <span class="arithmatex">\(4 \times 2\)</span> grid.</li>
+<li>[x] Subtask: Verify that <code>Layout._layout_dock</code> spaces <code>inventory-pack-grid</code> (<span class="arithmatex">\(W=175\)</span>) and <code>inventory-scroll-controls</code> (<span class="arithmatex">\(W=24\)</span>) with the configured <span class="arithmatex">\(10\text{ px}\)</span> gap, eliminating overlapping screen positions.</li>
+</ul>
+<p><strong>2. Task: Implement CollectionState &amp; Aperture Delegation Models</strong></p>
+<p><em>Objective</em>: Create the centralized collection state and aperture delegation hooks.</p>
+<ul>
+<li>[x] Subtask: Implement <code>CollectionState</code> in <code>app.models.state.widgets</code> inheriting from <code>PaneState</code>, complete with <code>offset</code>, <code>capacity</code>, <code>columns</code>, <code>get_item()</code>, <code>is_occupied()</code>, <code>scrollup()</code>, and <code>scrolldown()</code>.</li>
+<li>[x] Subtask: Update <code>IndexFrame.keys()</code> in <code>app.assets.frames.widgets</code> to return an empty list <code>[]</code> when <code>state.icon</code> is empty or <code>None</code>, preventing missing texture logs for unoccupied apertures.</li>
+<li>[x] Subtask: Register <code>CollectionState</code> unpacking within <code>Provider._unpack_pane</code> for panes generated with collection schemas.</li>
+</ul>
+<p><strong>3. Task: Refactor Fabricator to the Composite Aperture Pattern</strong></p>
+<p><em>Objective</em>: Structure Gizmo expansion so the root pane manages collection state and child widgets act as fixed apertures.</p>
+<ul>
+<li>[x] Subtask: Update <code>Fabricator.expand()</code> to configure the root Gizmo <code>MenuPane</code> with <code>dimensions=Dimensions(w=grid_w, l=grid_l)</code> and a root-level <code>CollectionBinding</code>.</li>
+<li>[x] Subtask: Generate child slot buttons with permanent <code>status: Statuses.IDLE</code> and <code>SelectBinding(selection="slot", selector=f"{gizmo.name}", index=slot_idx)</code>.</li>
+<li>[x] Subtask: Wire child icon widgets to evaluate the parent Gizmo pane's <code>get_item(slot_idx)</code> closure via <code>IconState.icon_function</code>.</li>
+<li>[x] Subtask: Ensure <code>Fabricator.expand()</code> treats the AST as a template and returns a detached copy of the pane tree to prevent in-place mutation of boot configurations.</li>
+</ul>
+<p><strong>4. Task: Integrate Collection Pagination in InventoryController</strong></p>
+<p><em>Objective</em>: Connect pagination controls and slot selections to centralized Gizmo state.</p>
+<ul>
+<li>[x] Subtask: Implement <code>scrolldown</code> and <code>scrollup</code> handling in <code>InventoryController.select()</code> to call <code>target_widget.state.scrolldown()</code> / <code>scrollup()</code> on the Gizmo pane and emit <code>UpdateEvent(widget=target_widget)</code>.</li>
+<li>[x] Subtask: Update <code>slot</code> handling in <code>InventoryController.select()</code> to query the item from the Gizmo pane state using the button's slot index, equipping the item if occupied or handling empty slot clicks gracefully.</li>
+<li>[x] Subtask: Remove the manual <code>_sync_slots()</code> loop from <code>InventoryController</code>, relying on dynamic state evaluation during render passes.</li>
+<li>[x] Subtask: Implement focus recovery in <code>InventoryController</code> to ensure that if focus is on a slot that becomes vacant after paging, focus safely resets to the first occupied slot or falls back to <code>inventory-scroll-up</code>.</li>
+</ul>
+<p><strong>5. Task: Verification &amp; Unit Testing</strong></p>
+<p><em>Objective</em>: Validate spatial layout calculation, traversal graph stability, and pagination logic.</p>
+<ul>
+<li>[x] Subtask: Write unit tests in <code>tests/unit/test_app_services_generators_fabricator.py</code> verifying AST expansion, root <code>CollectionState</code> attributes, and child aperture closures.</li>
+<li>[x] Subtask: Write unit tests in <code>tests/unit/test_app_game_menus_layout.py</code> confirming <code>Layout.compute()</code> generates an unbroken traversal graph where all 8 slots and both arrows connect bidirectionally.</li>
+<li>[x] Subtask: Write unit tests in <code>tests/unit/test_app_game_menus_controllers.py</code> validating that sending <code>scrolldown</code> to <code>inventory-pack-grid</code> increments offset by <code>columns</code>, slides item keys across apertures, and preserves active button traversal states.</li>
+</ul>
+<h4 id="user-review">User Review</h4>
+<p>Dumped inventory menu state after changes,</p>
+<div class="highlight"><pre><span></span><code>Removed after bug identified for brevity.
+</code></pre></div>
+<ul>
+<li>No slots are being rendered. Probably because the Player inventory is empty. However, the slots should always be rendered up to the capacity of the Gizmo.</li>
+<li>The code assumes slots are permanently disabled and non-traversible, but can't test until first point is addressed.</li>
+<li>Let's alter the Gizmo schema to align with the existing menu config schema and ensure the data shapes of elements are consistent.</li>
+<li>Ensure the Fabricator binding instantiations are funneled through the Binder service. This will require Fabricator and Binder updates. Goal is to treat a Gizmo like a "virtual asset" in the Menu schema.</li>
+</ul>
+<p>Here is the goal menu schema:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">menus</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">inventory</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">controller</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inventory</span>
+<span class="w">    </span><span class="nt">roots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neutral</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inventory-menu</span>
+<span class="w">        </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">panes</span>
+<span class="w">        </span><span class="nt">parameters</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">position</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">px</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.16875</span>
+<span class="w">            </span><span class="nt">py</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.25</span>
+<span class="w">          </span><span class="nt">layout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dock</span>
+<span class="w">          </span><span class="nt">alignment</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">center</span>
+<span class="w">          </span><span class="nt">gap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">          </span><span class="nt">margins</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">          </span><span class="nt">children</span><span class="p">:</span>
+<span class="w">            </span><span class="c1"># --- INVENTORY GRID GIZMO ---</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">weapons</span>
+<span class="w">              </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inventory-pack-grid</span>
+<span class="w">              </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gizmos</span>
+<span class="w">              </span><span class="nt">bind</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">collection</span>
+<span class="w">                </span><span class="nt">target</span><span class="p">:</span>
+<span class="w">                  </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context.inventory.pack</span>
+<span class="w">              </span><span class="nt">parameters</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span>
+<span class="w">                </span><span class="nt">columns</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="w">                </span><span class="nt">gap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">                </span><span class="nt">pane</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">transparent-slot</span>
+<span class="w">                </span><span class="nt">button</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">slot</span>
+
+<span class="w">            </span><span class="c1"># --- PAGINATION CONTROLS ---</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">transparent-slot</span>
+<span class="w">              </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inventory-scroll-controls</span>
+<span class="w">              </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">panes</span>
+<span class="w">              </span><span class="nt">parameters</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">dimensions</span><span class="p">:</span>
+<span class="w">                  </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">24</span>
+<span class="w">                  </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">85</span>
+<span class="w">                </span><span class="nt">layout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stack</span>
+<span class="w">                </span><span class="nt">alignment</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">center</span>
+<span class="w">                </span><span class="nt">gap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">                </span><span class="nt">children</span><span class="p">:</span>
+<span class="w">                  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">buttons</span>
+<span class="w">                    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arrow-up</span>
+<span class="w">                    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inventory-scroll-up</span>
+<span class="w">                    </span><span class="nt">bind</span><span class="p">:</span>
+<span class="w">                      </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">select</span>
+<span class="w">                      </span><span class="nt">target</span><span class="p">:</span>
+<span class="w">                        </span><span class="nt">selection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scrollup</span>
+<span class="w">                        </span><span class="nt">selector</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inventory-pack-grid</span>
+<span class="w">                  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">buttons</span>
+<span class="w">                    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arrow-down</span>
+<span class="w">                    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inventory-scroll-down</span>
+<span class="w">                    </span><span class="nt">bind</span><span class="p">:</span>
+<span class="w">                      </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">select</span>
+<span class="w">                      </span><span class="nt">target</span><span class="p">:</span>
+<span class="w">                        </span><span class="nt">selection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scrolldown</span>
+<span class="w">                        </span><span class="nt">selector</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inventory-pack-grid</span>
+</code></pre></div>
+<h4 id="refactor-phase-040504-unified-menu-ast-virtual-gizmo-architecture">Refactor: Phase 04.05.04 - Unified Menu AST &amp; Virtual Gizmo Architecture</h4>
+<p><strong>Overview</strong></p>
+<p>Refactor the Menu configuration AST, <code>Fabricator</code>, <code>Binder</code>, and <code>Provider</code> to adopt a unified node structure where every element in the menu tree shares a consistent data shape (<code>id</code>, <code>name</code>, <code>instance</code>, <code>bind</code>, <code>parameters</code>). Under this model, a Gizmo is treated as a "virtual asset" (<code>instance: gizmos</code>) within the configuration AST, directly mirroring how Compositions act as virtual assets for the world simulation.</p>
+<p>This phase also remedies the missing slot rendering in the recent dump. The slots were missing because <code>Provider.unpack()</code> did not splice the expanded subtree into the AST tree before invoking <code>Layout.compute()</code>. <code>Layout._compute_recursive()</code> encountered the unexpanded <code>MenuGizmo</code> node, failed the <code>isinstance(cfg, MenuPane)</code> check, and aborted recursion before slot positions and traversal edges could be generated. Additionally, this phase introduces <code>ApertureBinding</code> into <code>Binder</code> so all widget binding generation routes through a single service rather than relying on ad-hoc closures created in <code>Provider</code>.</p>
+<h5 id="goal-root-cause-remediation-ast-tree-substitution-traversal-recursion">Goal: Root Cause Remediation - AST Tree Substitution &amp; Traversal Recursion</h5>
+<p>In the previous implementation, <code>Provider._unpack_pane()</code> called <code>Fabricator.expand()</code> and unpacked the resulting widgets into the flat <code>widgets</code> dictionary, but it avoided mutating <code>pane.children</code> in-place. Consequently, the AST tree passed to <code>Layout.compute(runtime_roots, widgets)</code> still held the unexpanded <code>MenuGizmo</code> macro node.</p>
+<p>When <code>Layout._compute_recursive</code> encountered <code>MenuGizmo</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">MenuPane</span><span class="p">):</span>
+    <span class="k">return</span>
+</code></pre></div>
+<p>The recursion halted immediately. The child row panes, slot overlay panes, buttons, and icons were never visited by <code>Layout</code>. They received no absolute positions, were omitted from the <code>flattened</code> render list, and were excluded from <code>Layout._build_graph()</code>.</p>
+<p>To resolve this, <code>Provider.unpack()</code> must perform a pure tree transformation pass that clones the configuration tree and replaces <code>instance: gizmos</code> nodes with their expanded <code>instance: panes</code> subtrees before layout resolution begins.</p>
+<h5 id="goal-unified-menu-ast-data-model">Goal: Unified Menu AST Data Model</h5>
+<p>Replace divergent configuration classes (<code>MenuPane</code>, <code>MenuWidget</code>, <code>MenuGizmo</code>) with a unified node structure where every element declares <code>id</code>, <code>name</code>, <code>instance</code>, an optional <code>bind</code>, and a polymorphic <code>parameters</code> payload.</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MenuBinding</span><span class="p">:</span>
+    <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">target</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span>
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PaneParameters</span><span class="p">:</span>
+    <span class="n">layout</span><span class="p">:</span> <span class="n">Layouts</span> <span class="o">=</span> <span class="n">Layouts</span><span class="o">.</span><span class="n">STACK</span>
+    <span class="n">alignment</span><span class="p">:</span> <span class="n">Alignments</span> <span class="o">=</span> <span class="n">Alignments</span><span class="o">.</span><span class="n">START</span>
+    <span class="n">gap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">margins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">position</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ScreenPosition</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">dimensions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dimensions</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">font</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">children</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">'MenuNode'</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GizmoParameters</span><span class="p">:</span>
+    <span class="n">capacity</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">columns</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">gap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">pane</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"transparent-slot"</span>
+    <span class="n">button</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"slot"</span>
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ButtonParameters</span><span class="p">:</span>
+    <span class="n">status</span><span class="p">:</span> <span class="n">Statuses</span> <span class="o">=</span> <span class="n">Statuses</span><span class="o">.</span><span class="n">IDLE</span>
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MenuNode</span><span class="p">:</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">bind</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MenuBinding</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">PaneParameters</span><span class="p">,</span> <span class="n">GizmoParameters</span><span class="p">,</span> <span class="n">ButtonParameters</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+<h5 id="goal-aperturebinding-binder-funneling">Goal: ApertureBinding &amp; Binder Funneling</h5>
+<p>Formalize aperture delegation by implementing <code>ApertureBinding</code> in <code>app.game.menus.bindings.aperture</code> and registering it in <code>Binder</code>. Instead of <code>Provider</code> manually assembling closures against <code>widgets</code>, <code>Fabricator</code> declares standard bindings:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">bind</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aperture</span>
+<span class="w">  </span><span class="nt">target</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">selector</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">inventory-pack-grid</span>
+<span class="w">    </span><span class="nt">index</span><span class="p">:</span><span class="w"> </span><span class="s">"0"</span>
+</code></pre></div>
+<p>When evaluated, <code>ApertureBinding</code> resolves the target Gizmo pane via context/widget registry and returns the item string via <code>target_pane.state.get_item(index)</code>. If vacant, it returns <code>""</code>, which <code>IndexFrame.keys()</code> converts to <code>[]</code> to suppress texture rendering while keeping the slot button <code>IDLE</code> and traversable.</p>
+<h5 id="goal-virtual-gizmo-lifecycle-strategy-pipeline">Goal: Virtual Gizmo Lifecycle &amp; Strategy Pipeline</h5>
+<p>Structure <code>Fabricator</code> as an AST-to-AST compiler:</p>
+<div class="highlight"><pre><span></span><code>MenuNode(instance="gizmos") 
+       │
+       ▼  Fabricator.expand(node, properties)
+MenuNode(instance="panes", parameters=PaneParameters(children=[row_panes...]))
+</code></pre></div>
+<p>The <code>Provider</code> operates in two explicit phases:</p>
+<ol>
+<li><strong>Macro Expansion (AST Pass)</strong>: Recursively walk <code>config.roots</code>, delegating any node with <code>instance == "gizmos"</code> to <code>Fabricator.expand()</code>. Return a fresh, detached AST where all macro nodes are replaced with standard <code>panes</code> and <code>widgets</code>.</li>
+<li><strong>ECS Hydration (Asset Pass)</strong>: Hydrate the resulting tree into <code>Asset</code> and <code>Widget</code> instances using <code>Binder</code> for all bindings. Pass the hydrated tree to <code>Layout.compute()</code> to compute spatial coordinates and build the complete traversal graph across all physical slots.</li>
+</ol>
+<h5 id="tasks_3">Tasks</h5>
+<p><strong>1. Task: Schematize Unified Menu AST Models</strong></p>
+<p><em>Objective</em>: Unify all menu configuration nodes into a standardized schema matching the <code>(id, name, instance, bind, parameters)</code> specification.</p>
+<ul>
+<li>[x] Subtask: Define <code>PaneParameters</code>, <code>GizmoParameters</code>, and <code>ButtonParameters</code> dataclasses in <code>app.models.config.menus</code>.</li>
+<li>[x] Subtask: Implement the unified <code>MenuNode</code> configuration model in <code>app.models.config.menus</code> replacing separate <code>MenuPane</code>, <code>MenuWidget</code>, and <code>MenuGizmo</code> classes.</li>
+<li>[x] Subtask: Update <code>MenuConfiguration</code> to hold <code>roots: List[MenuNode]</code>.</li>
+<li>[x] Subtask: Update Pydantic adapter schemas in <code>app.models.adapters</code> to validate the nested <code>parameters</code> dictionary into the correct parameter dataclass based on <code>instance</code>.</li>
+</ul>
+<p><strong>2. Task: Implement ApertureBinding &amp; Extend Binder</strong></p>
+<p><em>Objective</em>: Funnel aperture delegation through the <code>Binder</code> service to eliminate inline closure wiring in <code>Provider</code>.</p>
+<ul>
+<li>[x] Subtask: Implement <code>ApertureBinding</code> in <code>app.game.menus.bindings.aperture</code> inheriting from <code>Binding</code>, managing <code>selector</code> and <code>index</code> resolution.</li>
+<li>[x] Subtask: Register <code>Bindings.APERTURE</code> in <code>app.config.enums</code> and add schema resolution in <code>app.services.generators.menus.binder.Binder</code>.</li>
+<li>[x] Subtask: Update <code>Binder.binding()</code> to accept an optional widget dictionary or registry reference so <code>ApertureBinding</code> can resolve target pane states cleanly.</li>
+</ul>
+<p><strong>3. Task: Refactor Fabricator to the Unified Virtual Asset Schema</strong></p>
+<p><em>Objective</em>: Update <code>Fabricator</code> to consume <code>MenuNode(instance="gizmos")</code> and synthesize a detached <code>MenuNode(instance="panes")</code> subtree.</p>
+<ul>
+<li>[x] Subtask: Refactor <code>Fabricator.expand()</code> to ingest a unified <code>MenuNode</code> with <code>GizmoParameters</code>.</li>
+<li>[x] Subtask: Generate row and slot containers as <code>MenuNode(instance="panes", parameters=PaneParameters(...))</code> with explicit grid dimensions.</li>
+<li>[x] Subtask: Generate child slot buttons as <code>MenuNode(instance="buttons", bind=MenuBinding(schema="select", ...))</code> with default <code>status: Statuses.IDLE</code>.</li>
+<li>[x] Subtask: Generate child slot icons as <code>MenuNode(instance="icons", bind=MenuBinding(schema="aperture", ...))</code>.</li>
+<li>[x] Subtask: Attach <code>MenuBinding(schema="collection", ...)</code> to the synthesized root pane node.</li>
+</ul>
+<p><strong>4. Task: Refactor Provider Hydration &amp; Runtime AST Tree Substitution</strong></p>
+<p><em>Objective</em>: Ensure macro expansion fully replaces Gizmo nodes in the runtime AST before <code>Layout</code> calculates screen coordinates and traversal graphs.</p>
+<ul>
+<li>[x] Subtask: Implement <code>Provider._expand_tree(node: MenuNode) -&gt; MenuNode</code> to recursively clone and substitute <code>instance: "gizmos"</code> nodes prior to ECS hydration.</li>
+<li>[x] Subtask: Update <code>Provider._unpack_node()</code> to unpack elements polymorphically based on <code>node.instance</code>.</li>
+<li>[x] Subtask: Ensure <code>Provider._unpack_pane()</code> reads <code>parameters.dimensions</code> to instantiate <code>WidgetProperties</code> overrides, preserving dock spacing.</li>
+<li>[x] Subtask: Pass the expanded AST tree directly into <code>Layout.compute()</code>, verifying all 8 slot buttons and pagination arrows are processed into <code>flattened</code> and <code>menu.graph</code>.</li>
+</ul>
+<p><strong>5. Task: Update Menu Configuration Files</strong></p>
+<p><em>Objective</em>: Migrate existing YAML configurations to the unified node schema.</p>
+<ul>
+<li>[x] Subtask: Update <code>src/data/config/menus/main.yaml</code> to conform to the new <code>instance</code> and <code>parameters</code> schema for <code>inventory</code>, <code>text</code>, <code>main</code>, and <code>pause</code> menus.</li>
+<li>[x] Subtask: Set explicit dimensions on <code>inventory-scroll-controls</code> (<span class="arithmatex">\(W=24, L=85\)</span>) inside its <code>parameters</code> block.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="../../../../static/js/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

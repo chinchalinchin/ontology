@@ -1,0 +1,4172 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/board/phases/refactor/refactor-08-02/">
+      
+      
+        <link rel="prev" href="../refactor-08-01/">
+      
+      
+        <link rel="next" href="../refactor-08-03/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Phase 08.02 - Navigation Mechanics - Ontology</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bug-reports" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="Ontology" class="md-header__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ontology
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Phase 08.02 - Navigation Mechanics
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="Ontology" class="md-nav__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Ontology
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../00-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../01-assets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../02-sprites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../03-compositions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../04-intentions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../05-mechanics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../06-widgets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../07-acoustics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../08-narratives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../09-ecology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ecology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../10-chemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../11-emergence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../12-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../specs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Specifications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_15" id="__nav_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Specifications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/00-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dialogue Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/01-interaction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/02-wander/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wander Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_16" id="__nav_16_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Roadmap
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2" id="__nav_16_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_16_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_1" id="__nav_16_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-castle-dawn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Castle Dawn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-regalia-galleria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Regalia Galleria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-temple-of-trials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Trials of Trials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Dialogue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-view/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_2" id="__nav_16_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implement
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implement
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01 - Renderer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02 - Game
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03 - Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04 - Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 05 - Editor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06 - Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07 - Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08 - Pathfinding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09 - Hydrodynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10 - Seasons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 11 - Geology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 12 - Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-13/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 13 - Acoustics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 14 - Narratives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-n/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n - Commerce
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-n%2B1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n+1 - Towns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_3" id="__nav_16_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refactor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Refactor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-01-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01.01 - Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.01 - Frames
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.02 - Registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.03 - Equipment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.04 - Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.05 - Finetuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.06 - Effects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.07 - Registry Data Structures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.08 - World Chunks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.01 - Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.02 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.03 - Motion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.04 - Projectiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.01 - Typography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.02 - Simplification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.03 - Event Handlers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.04 - Menu Context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.05 - Gizmos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.06 - Pane Generation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.01 - Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.02 - Goals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.03 - Combat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.04 - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.01 - Elevation Sorting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.02 - Platforms & Elevated Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.03 - Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.04 - Materialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.05 - Composite Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.01 - Obstacle Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.02 - Navigation Mechanics
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.02 - Navigation Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bug-reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Reports
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bug Reports">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-b010-fifo-queue-inversion-on-subsumed-path-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B010: FIFO Queue Inversion on Subsumed Path Goals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b011-spurious-waypoint-re-planning-via-fallthrough-in-_track" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B011: Spurious Waypoint Re-Planning via Fallthrough in _track
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b012-hitbox-drift-from-missing-anchor-offset-in-cognitionmechanicspath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B012: Hitbox Drift from Missing Anchor Offset in CognitionMechanics.path
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-0802-path-execution-recovery-finalization-cancelled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 08.02: Path Execution &amp; Recovery Finalization (CANCELLED)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 08.02: Path Execution &amp; Recovery Finalization (CANCELLED)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-fifo-memory-reordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: FIFO Memory Reordering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-pathfinding-failure-backoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Pathfinding Failure Backoff
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-0802-navigationmechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 08.02 - NavigationMechanics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 08.02 - NavigationMechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-data-structure-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Data Structure Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-mechanical-responsibilities-logic-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Mechanical Responsibilities &amp; Logic Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-cython-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Cython Migration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-5-algorithmic-verification-regression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 5: Algorithmic Verification &amp; Regression
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.03 - Trajectory Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.04 - Mutators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.01 - Fluid Flows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.02 - Shorelines & Geography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.03 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.04 - Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.05 - Bridges & Bifurcation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.06 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.07 - Frame Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.08 - Transverse Fluid Submersion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.01 - Stage Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.02 - Shoreline Seasonal Indexing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.03 - Flowers, Pixies & Reproduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.04 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../appendices/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_17" id="__nav_17_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/00-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/01-schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/02-diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagrams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reports
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../coverage/index" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unit Test Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bug-reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug Reports
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bug Reports">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-b010-fifo-queue-inversion-on-subsumed-path-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B010: FIFO Queue Inversion on Subsumed Path Goals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b011-spurious-waypoint-re-planning-via-fallthrough-in-_track" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B011: Spurious Waypoint Re-Planning via Fallthrough in _track
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-b012-hitbox-drift-from-missing-anchor-offset-in-cognitionmechanicspath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug B012: Hitbox Drift from Missing Anchor Offset in CognitionMechanics.path
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-0802-path-execution-recovery-finalization-cancelled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 08.02: Path Execution &amp; Recovery Finalization (CANCELLED)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 08.02: Path Execution &amp; Recovery Finalization (CANCELLED)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-fifo-memory-reordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: FIFO Memory Reordering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-pathfinding-failure-backoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Pathfinding Failure Backoff
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-0802-navigationmechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 08.02 - NavigationMechanics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 08.02 - NavigationMechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-data-structure-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Data Structure Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-mechanical-responsibilities-logic-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Mechanical Responsibilities &amp; Logic Changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-cython-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Cython Migration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-5-algorithmic-verification-regression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 5: Algorithmic Verification &amp; Regression
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Phase 08.02 - Navigation Mechanics</h1>
+
+<h4 id="bug-reports">Bug Reports</h4>
+<h5 id="bug-b010-fifo-queue-inversion-on-subsumed-path-goals">Bug B010: FIFO Queue Inversion on Subsumed Path Goals</h5>
+<p><strong>STATUS</strong>: OPEN</p>
+<p><strong>SEVERITY</strong>: CRITICAL</p>
+<p><strong>Description</strong></p>
+<p>When a Sprite initiates cross-layer pursuit, <code>CognitionMechanics._track()</code> subsumes the original overarching goal (e.g., <code>player</code>) into <code>sprite.state.memory.goals</code> and sets a prerequisite <code>OBJECT</code> goal (the transition door). When <code>_plan()</code> subsequent generates an RRT path to the door, <code>CognitionMechanics.path()</code> appends the new <code>path-*</code> waypoints to the existing <code>memory.goals</code> dictionary and re-appends the door goal.</p>
+<p>Because Python dictionaries preserve insertion order, the previously subsumed parent goal (<code>player</code>) remains at index 0. On the subsequent engine tick in <code>idle</code>, <code>CognitionMechanics._remember()</code> inspects <code>memory.goals</code> and pops the entry at index 0. It pops <code>player</code> instead of <code>path-0</code>, completely bypassing the RRT waypoint sequence. The waypoints and door remain stranded in memory, and the engine resets into an infinite cycle of door re-acquisition and path regeneration.</p>
+<p><strong>Steps to Replicate</strong></p>
+<ol>
+<li>Place a Sprite on layer <code>brick-house-compose-layer</code> with an initial <code>SUBJECT</code> goal targeting <code>player</code> on layer <code>0</code>.</li>
+<li>Allow <code>_track()</code> to detect layer mismatch, subsume <code>player</code> into <code>memory.goals</code>, and assign <code>door-strut-house-interior-1-1</code> as the active <code>OBJECT</code> goal.</li>
+<li>Obstruct direct line-of-sight to the door to trigger <code>Planner.plan()</code>.</li>
+<li>Observe the memory stack when transitioning to <code>idle</code>: <code>_remember()</code> pops <code>player</code> rather than <code>path-0</code>.</li>
+</ol>
+<p><strong>Proposed Remediation</strong></p>
+<p>In <code>CognitionMechanics.path()</code>, reconstruct <code>memory.goals</code> so the generated <code>path-*</code> waypoints and the active sub-goal precede existing background goals:</p>
+<div class="highlight"><pre><span></span><code><span class="n">new_goals</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">wp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">segments</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">settings</span><span class="o">.</span><span class="n">RRT_PATH_PREFIX</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)])</span>
+    <span class="n">new_goals</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">Goal</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="n">Goals</span><span class="o">.</span><span class="n">POSITION</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">layer</span><span class="o">=</span><span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">layer</span><span class="p">,</span>
+        <span class="n">position</span><span class="o">=</span><span class="n">Position</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">offset_x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">wp</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">offset_y</span><span class="p">)</span>
+    <span class="p">)</span>
+<span class="n">new_goals</span><span class="p">[</span><span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">goal</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">goal</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">goals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">RRT_PATH_PREFIX</span><span class="p">)</span> <span class="ow">and</span> <span class="n">k</span> <span class="o">!=</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">goal</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+        <span class="n">new_goals</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+<span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">goals</span> <span class="o">=</span> <span class="n">new_goals</span>
+<span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">goal</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Superseded by Phase Realignment.</p>
+</div>
+<h5 id="bug-b011-spurious-waypoint-re-planning-via-fallthrough-in-_track">Bug B011: Spurious Waypoint Re-Planning via Fallthrough in <code>_track</code></h5>
+<p><strong>STATUS</strong>: OPEN</p>
+<p><strong>SEVERITY</strong>: HIGH</p>
+<p><strong>Description</strong></p>
+<p>In <code>CognitionMechanics._track()</code>, active RRT waypoints (<code>name.startswith(settings.RRT_PATH_PREFIX)</code>) execute an invalidation check: <code>if is_path and self._scrap(sprite, board): return</code>. When the path remains unobstructed, <code>_scrap()</code> returns <code>False</code>. Because there is no unconditional exit branch for active waypoints, execution falls through to the subsequent positional block:</p>
+<div class="highlight"><pre><span></span><code><span class="k">elif</span> <span class="n">goal</span><span class="o">.</span><span class="n">category</span> <span class="ow">in</span> <span class="p">[</span>
+    <span class="n">Goals</span><span class="o">.</span><span class="n">POSITION</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">Goals</span><span class="o">.</span><span class="n">OBJECT</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> 
+    <span class="n">Goals</span><span class="o">.</span><span class="n">PROPERTY</span><span class="o">.</span><span class="n">value</span>
+<span class="p">]:</span>
+    <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">mutators</span><span class="o">.</span><span class="n">triggers</span><span class="o">.</span><span class="n">vision</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_plan</span><span class="p">(</span><span class="n">sprite</span><span class="p">,</span> <span class="n">board</span><span class="p">)</span>
+</code></pre></div>
+<p>Because waypoints are typed with <code>category=Goals.POSITION.value</code>, <code>self._plan()</code> executes every single frame on every waypoint during active navigation. This causes massive redundant spatial checks and risks premature path trashing.</p>
+<p><strong>Steps to Replicate</strong></p>
+<ol>
+<li>Allow an entity to begin traversing an RRT waypoint (<code>path-0</code>).</li>
+<li>Retain a clear line-of-sight to <code>path-0</code>.</li>
+<li>Observe engine execution in <code>_track()</code>: <code>_plan()</code> runs on every frame rather than yielding to motion integration.</li>
+</ol>
+<p><strong>Proposed Remediation</strong></p>
+<p>Enforce immediate return after invalidation processing when tracking an active path:</p>
+<div class="highlight"><pre><span></span><code><span class="n">prefix</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">RRT_PATH_PREFIX</span>
+<span class="n">is_path</span> <span class="o">=</span> <span class="n">goal</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span> <span class="n">goal</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">is_path</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_scrap</span><span class="p">(</span><span class="n">sprite</span><span class="p">,</span> <span class="n">board</span><span class="p">)</span>
+    <span class="k">return</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Superseded by Phase Realignment.</p>
+</div>
+<h5 id="bug-b012-hitbox-drift-from-missing-anchor-offset-in-cognitionmechanicspath">Bug B012: Hitbox Drift from Missing Anchor Offset in <code>CognitionMechanics.path</code></h5>
+<p><strong>STATUS</strong>: OPEN</p>
+<p><strong>SEVERITY</strong>: HIGH</p>
+<p><strong>Description</strong></p>
+<p><code>Planner</code> generates waypoints in sensory anchor space (footprint center). In <code>CognitionMechanics.path()</code>, waypoints are committed to goals directly as <code>Goal(position=Position(x=wp.x, y=wp.y))</code>. When <code>motive.update()</code> and <code>physics.dynamics()</code> compute acceleration vectors, they evaluate distance against <code>sprite.state.position</code> (the top-left canvas origin). This steers the sprite's canvas origin to the anchor coordinate, shifting the physical collision hitbox by <span class="arithmatex">\(+(\text{anchor}_x - \text{origin}_x, \text{anchor}_y - \text{origin}_y)\)</span> away from the calculated collision-free trajectory. The entity drifts into adjacent obstacles while traversing waypoints.</p>
+<p><strong>Steps to Replicate</strong></p>
+<ol>
+<li>Execute an RRT route passing flush along a wall.</li>
+<li>Inspect the sprite's hitbox coordinates in <code>physics.collisions</code> during motion.</li>
+<li>Observe collision overlaps caused by the origin-anchor displacement.</li>
+</ol>
+<p><strong>Proposed Remediation</strong></p>
+<p>Subtract the entity's anchor displacement vector when constructing waypoint <code>Position</code> models in <code>CognitionMechanics.path()</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">anchor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">anchor</span><span class="p">(</span><span class="n">sprite</span><span class="p">)</span>
+<span class="n">offset_x</span> <span class="o">=</span> <span class="n">anchor</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span>
+<span class="n">offset_y</span> <span class="o">=</span> <span class="n">anchor</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">wp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">segments</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SEPARATOR</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">settings</span><span class="o">.</span><span class="n">RRT_PATH_PREFIX</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)])</span>
+    <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">goals</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">Goal</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">category</span><span class="o">=</span><span class="n">Goals</span><span class="o">.</span><span class="n">POSITION</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">layer</span><span class="o">=</span><span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">layer</span><span class="p">,</span>
+        <span class="n">position</span><span class="o">=</span><span class="n">Position</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">wp</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">offset_x</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">wp</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">offset_y</span><span class="p">))</span>
+    <span class="p">)</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Superseded by Phase Realignment.</p>
+</div>
+<h4 id="refactor-phase-0802-path-execution-recovery-finalization-cancelled">Refactor: Phase 08.02: Path Execution &amp; Recovery Finalization (CANCELLED)</h4>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>After an architectural review of the preceding bugs, this phase has been cancelled and superseded by what follows in the next section. It has been retained purely for record-keeping, to detail the thought process which led to the architectural shift discussed in the next section.</p>
+</div>
+<p><strong>Overview</strong></p>
+<p>Finalize RRT integration by resolving FIFO memory queue ordering, eliminating redundant per-tick planning on active paths, offsetting waypoints by sensory anchors, and implementing unreachable target backoff to prevent automaton thrashing.</p>
+<h5 id="goal-fifo-memory-reordering">Goal: FIFO Memory Reordering</h5>
+<p>Ensure RRT waypoints and active sub-goals take immediate precedence over suspended background goals in <code>CognitionMechanics.path()</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">new_goals</span> <span class="o">=</span> <span class="p">{</span><span class="n">wp_name</span><span class="p">:</span> <span class="n">wp_goal</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">sub_goal_name</span><span class="p">:</span> <span class="n">sub_goal</span><span class="p">}</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">goals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">RRT_PATH_PREFIX</span><span class="p">)</span> <span class="ow">and</span> <span class="n">k</span> <span class="o">!=</span> <span class="n">sub_goal_name</span><span class="p">:</span>
+        <span class="n">new_goals</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+<span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">goals</span> <span class="o">=</span> <span class="n">new_goals</span>
+</code></pre></div>
+<h5 id="goal-pathfinding-failure-backoff">Goal: Pathfinding Failure Backoff</h5>
+<p>Prevent two-tick oscillation between <code>find</code> and <code>idle</code> when a path cannot be found by shelving unreachable goals with a cooldown interval.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># In CognitionMechanics._plan():</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+    <span class="n">CognitionMechanics</span><span class="o">.</span><span class="n">log_goal</span><span class="p">(</span><span class="n">sprite</span><span class="p">,</span> <span class="n">verb</span><span class="o">=</span><span class="s2">"unreachable"</span><span class="p">)</span>
+    <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">unreachable</span><span class="p">[</span><span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">goal</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">current_tick</span> <span class="o">+</span> <span class="n">settings</span><span class="o">.</span><span class="n">PATH_RETRY_INTERVAL</span>
+    <span class="p">)</span>
+    <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">goal</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+<h5 id="tasks">Tasks</h5>
+<p><strong>1. Task: Waypoint FIFO Queue Rectification</strong></p>
+<p><em>Objective</em>: Prepend waypoints ahead of background goals during path injection.</p>
+<ul>
+<li>[!] Subtask: Refactor <code>CognitionMechanics.path()</code> to build a reconstructed dictionary where <code>path-*</code> waypoints and the current goal precede any existing entries in <code>memory.goals</code>.</li>
+<li>[!] Subtask: In <code>CognitionMechanics.path()</code>, compute anchor displacement <code>(anchor.x - sprite.state.position.x, anchor.y - sprite.state.position.y)</code> and subtract it from each waypoint coordinate.</li>
+</ul>
+<p><strong>2. Task: Active Waypoint Dispatch Isolation</strong></p>
+<p><em>Objective</em>: Prevent per-tick re-planning on existing paths.</p>
+<ul>
+<li>[!] Subtask: Update <code>CognitionMechanics._track()</code> to return immediately after running <code>self._scrap()</code> when <code>is_path</code> evaluates to <code>True</code>.</li>
+</ul>
+<p><strong>3. Task: Unreachable Target Backoff Mechanism</strong></p>
+<p><em>Objective</em>: Stabilize the automaton when targets or transition doors are unreachable.</p>
+<ul>
+<li>[!] Subtask: Add <code>unreachable: Optional[Dict[str, int]] = field(default_factory=dict)</code> to <code>Memory</code> in <code>src/app/models/state/sprites.py</code>.</li>
+<li>[!] Subtask: In <code>CognitionMechanics._remember()</code>, bypass candidate goals whose key exists in <code>sprite.state.memory.unreachable</code> if <code>current_tick &lt; retry_tick</code>.</li>
+<li>[!] Subtask: In <code>CognitionMechanics._plan()</code>, when <code>planner.plan()</code> returns <code>[]</code>, record <code>current_tick + settings.PATH_RETRY_INTERVAL</code> into <code>memory.unreachable</code> before setting <code>sprite.state.goal = None</code>.</li>
+</ul>
+<hr />
+<p><strong>User Note</strong>: Stepping back, reviewing the complexity of CognitionMechanics and analyzing the underlying root cause of the bugs and woes...</p>
+<hr />
+<h4 id="refactor-phase-0802-navigationmechanics">Refactor: Phase 08.02 - NavigationMechanics</h4>
+<p><strong>Overview</strong></p>
+<p>The architectural friction in <code>CognitionMechanics</code> stems from a category error: conflating <strong>Strategic Intent</strong> (what entity or location a Sprite desires to reach) with <strong>Tactical Kinematics</strong> (the intermediate coordinates traversed to steer around an obstacle).</p>
+<p>Treating RRT waypoints as <code>POSITION</code> goals forces the engine to abuse <code>sprite.state.memory.goals</code> as a path queue, resulting in dictionary FIFO inversion during door subsumptions (Bug B010), spurious per-tick re-planning (Bug B011), and anchor-offset spatial drift (Bug B012). Worse, it forces <code>TransitionMechanics</code> into an artificial ping-pong loop (<code>hunt -&gt; idle -&gt; wander -&gt; idle -&gt; wander -&gt; hunt</code>), repeatedly throwing the automaton into <code>wander</code> simply to step past a wall.</p>
+<p>This phase extracts tactical steering into a dedicated <code>NavigationMechanics</code> and introduces <code>TrajectoryState</code>. <code>CognitionMechanics</code> retains sole authority over high-level <code>Goal</code> selection, while <code>NavigationMechanics</code> manages the spatial trajectory required to reach that goal. Sprites pursuing an entity remain continuously in their primary intention (<code>hunt</code>, <code>find</code>) while navigating around physical barriers.</p>
+<pre class="mermaid"><code>flowchart TD
+    %% Mechanics Nodes
+    CM["CognitionMechanics"]
+    TM["TransitionMechanics"]
+    NM["NavigationMechanics"]
+    MM["MotionMechanics"]
+
+    %% Pipeline Flow
+    CM --&gt;|"(sprite.state.goal)"| TM
+    TM --&gt;|"(sprite.state.intention)"| NM
+    NM --&gt;|"(sprite.state.trajectory.target)"| MM
+
+    %% Action / Output Annotations
+    CM --&gt; A1["Sets Strategic Goal (TARGET, SUBJECT, OBJECT, POSITION)"]
+    TM --&gt; A2["Evaluates ISL Intention (hunt, find, wander, idle)"]
+    NM --&gt; A3["Manages Obstacles, LOS &amp; RRT Queue (populates Trajectory)"]
+    MM --&gt; A4["Steers Velocity Vector toward Trajectory Target"]</code></pre>
+<h5 id="goal-data-structure-changes">Goal: Data Structure Changes</h5>
+<p><strong>1. Trajectory State Model (<code>src/app/models/state/sprites.py</code>)</strong></p>
+<p>Introduce <code>TrajectoryState</code> to encapsulate active steering waypoints, isolating continuous geometric points from cognitive memories:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TrajectoryState</span><span class="p">:</span>
+    <span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Position</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">vertices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Position</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">stalled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">cooldown</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+</code></pre></div>
+<ul>
+<li><code>target</code>: The immediate physical coordinate <code>(x, y)</code> the kinematic/motive engine must steer toward on the current tick. If LOS to the strategic goal is clear, <code>target == sprite.state.goal.position</code>. If occluded, <code>target == vertices[0]</code>.</li>
+<li><code>vertices</code>: The FIFO queue of intermediate RRT avoidance coordinates.</li>
+<li><code>stalled</code>: Boolean flag set when RRT fails to resolve a valid route, notifying deliberative systems of an impassable obstruction.</li>
+<li><code>cooldown</code>: Engine tick accumulator preventing thrashing re-evaluations against impassable geometries.</li>
+</ul>
+<p><strong>2. SpriteState Integration (<code>src/app/models/state/sprites.py</code>)</strong></p>
+<p>Inject <code>Trajectory</code> into <code>SpriteState</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SpriteState</span><span class="p">(</span><span class="n">AssetState</span><span class="p">):</span>
+    <span class="c1"># ... existing fields ...</span>
+    <span class="n">trajectory</span><span class="p">:</span> <span class="n">Trajectory</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Trajectory</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>3. Strategic Memory Sanitation (<code>src/app/models/state/sprites.py</code>)</strong></p>
+<p><code>sprite.state.memory.goals</code> reverts to its intended role: an episodic store of true strategic entities (<code>Dict[str, Goal]</code>). All string-prefix conventions (<code>path-*</code>, <code>RRT_PATH_PREFIX</code>) are eliminated from memory storage.</p>
+<h5 id="goal-mechanical-responsibilities-logic-changes">Goal: Mechanical Responsibilities &amp; Logic Changes</h5>
+<p><strong>1. <code>CognitionMechanics</code> (Strategic Deliberation)</strong></p>
+<ul>
+<li><strong>Retains</strong>: <code>_resolve()</code>, <code>_scan()</code>, <code>_remember()</code>, <code>_ideate()</code>, <code>_motivate()</code>, <code>_track()</code>, and <code>_project()</code>.</li>
+<li><strong>Purges</strong>: <code>_plan()</code>, <code>_scrap()</code>, <code>path()</code>, <code>anchor()</code>, and <code>obstacles()</code>.</li>
+<li><strong>Logic Changes</strong>:</li>
+<li>In <code>_track()</code>: When tracking a same-layer entity (<code>TARGET</code>, <code>SUBJECT</code>), it simply writes <code>goal.position = target_state.position</code>. It performs no LOS checks and triggers no RRT routines.</li>
+<li>Cross-layer door subsumption remains in <code>_track()</code>: if <code>goal.layer != sprite.layer</code>, it pushes the parent goal to <code>memory.goals</code> and sets a prerequisite <code>OBJECT</code> goal for the door.</li>
+<li>In <code>_project()</code>: Evaluates only autonomous wander randomization (<code>name = "wander"</code>) when <code>not sprite.state.goal</code> and the Sprite is already in the <code>wander</code> Intention.</li>
+<li>In <code>_resolve()</code>: Evaluates only strategic completion (target dead, dialogue finished, door crossed). It is completely unaware of intermediate waypoint progress.</li>
+</ul>
+<p>Strip tactical obstacle processing, geometric path generation, and waypoint tracking out of <code>CognitionMechanics</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># In CognitionMechanics._track():</span>
+<span class="c1"># Simply maintain the coordinates of high-level goals.</span>
+<span class="k">if</span> <span class="n">target_state</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">nearby</span><span class="p">(</span><span class="n">target_state</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="n">vision_radius</span><span class="p">):</span>
+    <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">mutators</span><span class="o">.</span><span class="n">triggers</span><span class="o">.</span><span class="n">vision</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">goal</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">target_state</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">goal</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">target_state</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span>
+</code></pre></div>
+<p><strong>2. <code>NavigationMechanics</code> (Tactical Trajectory Planning)</strong></p>
+<p>A new Mechanic executing in the <code>world</code> pipeline after <code>TransitionMechanics</code> and before <code>MotionMechanics</code>:</p>
+<ul>
+<li><strong>Execution Lifecycle</strong>:<ol>
+<li><strong>Goal Verification</strong>: If <code>not sprite.state.goal</code> or <code>sprite.state.intention not in NavigationIntentions</code>, clear <code>sprite.state.trajectory</code> and return.</li>
+<li><strong>Anchor Computation</strong>: Calculate physical sensory origins using <code>anchor(sprite)</code> and target footprint offsets.</li>
+<li><strong>Direct Line-of-Sight Check</strong>: Raycast via Cython <code>geometry.los()</code> against <code>board.weights(layer)</code> and <code>board.perimeters</code>.</li>
+<li><strong>Path Maintenance</strong>:<ul>
+<li>If LOS is <strong>clear</strong>: Clear <code>trajectory.waypoints</code>. Set <code>trajectory.target = sprite.state.goal.position</code>.</li>
+<li>If LOS is <strong>blocked</strong>:</li>
+<li>If <code>trajectory.waypoints</code> is empty: Extract hitboxes via <code>obstacles()</code>, execute <code>Planner.plan()</code>, and populate <code>trajectory.waypoints</code> with anchor-adjusted coordinates. Set <code>trajectory.target = trajectory.waypoints[0]</code>.</li>
+<li>If <code>trajectory.waypoints</code> exists: Validate LOS to <code>trajectory.target</code>. If blocked by a dynamic asset (e.g., pushed crate), invalidate waypoints and replan.</li>
+</ul>
+</li>
+<li><strong>Waypoint Arrival</strong>: If <code>geometry.nearby(anchor, trajectory.target, arrival_radius)</code>:<ul>
+<li>Pop <code>trajectory.waypoints[0]</code>.</li>
+<li>If waypoints remain, set <code>trajectory.target = trajectory.waypoints[0]</code>.</li>
+<li>If waypoints are exhausted, set <code>trajectory.target = sprite.state.goal.position</code>.</li>
+</ul>
+</li>
+<li><strong>Stall Handling</strong>: If RRT fails to find a path, set <code>trajectory.stalled = True</code> and write an unreachable cooldown for the goal.</li>
+</ol>
+</li>
+</ul>
+<p>Construct the tactical navigation mechanic responsible for obstacle querying, line-of-sight validation, RRT dispatch, and trajectory target updating.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># app/game/logic/mechanics/intentional/navigation.py</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NavigationMechanics</span><span class="p">(</span><span class="n">Mechanic</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">Board</span><span class="p">,</span> <span class="n">delta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">bus</span><span class="p">:</span> <span class="n">deque</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">DevicePayload</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">sprite</span> <span class="ow">in</span> <span class="n">board</span><span class="o">.</span><span class="n">instances</span><span class="p">(</span><span class="n">AssetInstances</span><span class="o">.</span><span class="n">SPRITES</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_navigate</span><span class="p">(</span><span class="n">sprite</span><span class="p">,</span> <span class="n">board</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>3. <code>MotionMechanics</code> &amp; <code>AnimationMap</code> (Actuation Alignment)</strong></p>
+<ul>
+<li>In <code>motive.update()</code>: Steer velocity vectors toward <code>sprite.state.trajectory.target</code> instead of <code>sprite.state.goal.position</code>.</li>
+<li>In <code>AnimationMap.direction()</code>: Compute facing direction using the vector from <code>sprite.state.position</code> to <code>sprite.state.trajectory.target</code>.</li>
+</ul>
+<p>Rebind motive acceleration and directional orientation to track <code>sprite.state.trajectory.target</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># In motive.update():</span>
+<span class="n">target_pos</span> <span class="o">=</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">target</span> <span class="ow">or</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">goal</span><span class="o">.</span><span class="n">position</span>
+<span class="n">physics</span><span class="o">.</span><span class="n">dynamics</span><span class="p">(</span>
+    <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">velocity</span><span class="p">,</span>
+    <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+    <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+    <span class="n">target_pos</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+    <span class="n">target_pos</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+    <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">speed</span><span class="p">,</span>
+    <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">character</span><span class="o">.</span><span class="n">impulse</span><span class="p">,</span>
+    <span class="n">delta</span>
+<span class="p">)</span>
+</code></pre></div>
+<h5 id="tasks_1">Tasks</h5>
+<p><strong>1. Task: Trajectory State Definitions</strong></p>
+<p><em>Objective</em>: Implement models for intermediate steering and navigation buffers.</p>
+<ul>
+<li>[x] Subtask: Define <code>Trajectory</code> in <code>src/app/models/state/sprites.py</code> with <code>target</code>, <code>vertices</code>, <code>stalled</code>, and <code>cooldown</code> fields.</li>
+<li>[x] Subtask: Add <code>trajectory: Trajectory</code> to <code>SpriteState</code> and register the default factory.</li>
+<li>[ ] Subtask: Purge <code>RRT_PATH_PREFIX</code> references from <code>src/app/config/settings.py</code> and <code>src/app/models/state/sprites.py</code>.</li>
+</ul>
+<p><strong>2. Task: NavigationMechanics Construction</strong></p>
+<p><em>Objective</em>: Build the tactical navigation subsystem.</p>
+<ul>
+<li>[x] Subtask: Create <code>src/app/game/logic/mechanics/intentional/navigation.py</code> implementing <code>NavigationMechanics</code>.</li>
+<li>[x] Subtask: Migrate <code>anchor()</code> and <code>obstacles()</code> from <code>CognitionMechanics</code> into <code>NavigationMechanics</code> (or <code>libs.core.math</code>).</li>
+<li>[x] Subtask: Implement waypoint progress resolution: when a sprite's footprint arrives within <code>action_radius</code> of <code>trajectory.target</code>, advance to the next waypoint or return to direct tracking.</li>
+<li>[x] Subtask: Implement dynamic path invalidation: if line-of-sight to the active intermediate waypoint becomes obstructed, clear waypoints and recalculate via <code>Planner</code>.</li>
+<li>[x] Subtask: Register <code>NavigationMechanics</code> in <code>src/data/config/mechanics/main.yaml</code> directly following <code>TransitionMechanics</code> and preceding <code>MotionMechanics</code>.</li>
+</ul>
+<p><strong>3. Task: CognitionMechanics Purge &amp; Realignment</strong></p>
+<p><em>Objective</em>: Restrict <code>CognitionMechanics</code> purely to high-level strategic reasoning.</p>
+<ul>
+<li>[x] Subtask: Delete <code>_plan()</code>, <code>_scrap()</code>, <code>path()</code>, <code>obstacles()</code>, and <code>anchor()</code> from <code>src/app/game/logic/mechanics/intentional/cognition.py</code>.</li>
+<li>[x] Subtask: Remove waypoint bypass logic and <code>name.startswith(settings.RRT_PATH_PREFIX)</code> filtering from <code>_track()</code>, <code>_ideate()</code>, <code>_project()</code>, and <code>_remember()</code>.</li>
+<li>[x] Subtask: Revert <code>_resolve()</code> to evaluate exclusively strategic completion (<code>dead</code>, <code>not dialogue</code>, <code>layer != goal.layer</code>).</li>
+<li>[x] Subtask: In <code>_track()</code>, update same-layer entity goals directly without checking line of sight.</li>
+</ul>
+<p><strong>4. Task: Motive and Animation Redirection</strong></p>
+<p><em>Objective</em>: Ensure movement vectors and facing directions track tactical waypoints.</p>
+<ul>
+<li>[x] Subtask: Update <code>src/app/game/logic/mechanics/modules/motion/motive.py</code> to accelerate towards <code>sprite.state.trajectory.target</code> when present, falling back to <code>sprite.state.goal.position</code>.</li>
+<li>[x] Subtask: Update <code>TransitionMechanics</code> / <code>AnimationMap.direction()</code> in <code>src/app/game/logic/maps.py</code> to resolve facing angles from <code>sprite.state.trajectory.target</code>.</li>
+</ul>
+<p><strong>5. Task: Cythonization</strong></p>
+<p><em>Objective</em>: Move intensive calculations across the Cython boundary.</p>
+<ul>
+<li>[!] Once the implementation is complete and passes user acceptence, migrate the RRT math in <code>app.game.logic.modules.paths.plan</code> to Cython. Devise the interfaces and leave the <code>app.game.logic.modules.path.plan</code> as a light wrapper around the interfaces that unpacks the game data for Cython.</li>
+</ul>
+<p><strong>6. Task: Verification and Behavioral Regression Suite</strong></p>
+<p><em>Objective</em>: Verify pathfinding and intention stability across obstacles.</p>
+<ul>
+<li>[!: User Task] Subtask: Add unit tests in <code>tests/unit/test_app_game_logic_mechanics_intentional_navigation.py</code> validating trajectory generation, waypoint advancement, and dynamic replanning.</li>
+<li>[!: User Task] Subtask: Verify an NPC navigating around a wall to reach an enemy remains continuously in the <code>hunt</code> Intention without dropping into <code>idle</code> or <code>wander</code>.</li>
+<li>[!: User Task] Subtask: Verify cross-layer door subsumption operates without memory queue corruption when the door itself requires pathfinding avoidance.</li>
+</ul>
+<h5 id="goal-cython-migration">Goal: Cython Migration</h5>
+<p><strong>1. Architectural Scope &amp; Boundary Layout</strong></p>
+<p>The current Python implementation (<code>app.game.logic.modules.paths.plan</code>) incurs heavy overhead in its inner loop due to:</p>
+<ul>
+<li>Per-iteration Python heap allocations (<code>Node</code> instances, <code>Position</code> models).</li>
+<li>Repeated dynamic dispatch and attribute lookups (<code>node.x</code>, <code>node.parent</code>).</li>
+<li>Unpacking Python tuples and calling Python functions during obstacle collision checks (<code>geometry.los</code> iterating over Python <code>tuple</code> obstacles).</li>
+<li>Python-level trigonometric and distance math (<code>math.atan2</code>, <code>math.cos</code>, <code>math.sin</code>, <code>math.hypot</code>).</li>
+</ul>
+<p>The core algorithm will move to <code>src/libs/core/math/paths.pyx</code>, exposing a fast C-level procedure, while <code>app.game.logic.modules.paths.plan</code> remains a lightweight Python wrapper that unpacks engine objects and delegates to the Cython binary.</p>
+<div class="highlight"><pre><span></span><code>src/
+├── libs/
+│   └── core/
+│       └── math/
+│           ├── geometry.pxd        # Expose C-level bisects to avoid Python tuple unpacking
+│           ├── paths.pxd           # C-declarations for RRT structs and routines
+│           └── paths.pyx           # Cython RRT implementation (contiguous C memory)
+└── app/
+    └── game/
+        └── logic/
+            └── modules/
+                └── paths/
+                    └── plan.py     # Thin Python wrapper retaining existing Planner interface
+</code></pre></div>
+<p><strong>2. C Data Structures &amp; Memory Strategy</strong></p>
+<p>To satisfy the <strong>"Zero Heap Allocation in the Inner Loop"</strong> constraint:</p>
+<div class="highlight"><pre><span></span><code><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">parent_idx</span><span class="p">;</span><span class="w"> </span><span class="c1">// Array index of parent node; eliminates object pointer overhead</span>
+<span class="p">}</span><span class="w"> </span><span class="n">RRTNode</span><span class="p">;</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">w</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">l</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">RRTObstacle</span><span class="p">;</span>
+</code></pre></div>
+<ul>
+<li><strong>Node Buffer</strong>: Pre-allocated contiguous block via <code>malloc(sizeof(RRTNode) * (max_iter + 2))</code>. Released via <code>free()</code> in a <code>try...finally</code> block.</li>
+<li><strong>Obstacle Buffer</strong>: Ingest incoming obstacle list once at entry into a stack-allocated or <code>malloc</code>'d contiguous <code>RRTObstacle*</code> array. Obstacle queries in the inner loop then iterate over raw C-memory with zero Python object lookups.</li>
+<li><strong>Collision Checking</strong>: Call a C-level inline <code>c_bisects</code> function directly (sharing logic with <code>libs.core.math.geometry</code>), bypassing Python tuple unpacking during ray-box evaluations.</li>
+<li><strong>Math &amp; Sampling</strong>: Use <code>libc.math</code> (<code>atan2f</code>, <code>cosf</code>, <code>sinf</code>, <code>hypotf</code>) and <code>libc.stdlib.rand</code> for 2D sampling within pre-calculated bounding limits.</li>
+<li><strong>Backtracing</strong>: Traverse <code>parent_idx</code> backwards from target to start, instantiating Python <code>Position</code> models only once when building the final path list.</li>
+</ul>
+<h5 id="tasks_2">Tasks</h5>
+<p><strong>1: Expose C-Level Segment Intersection in <code>geometry</code></strong></p>
+<p><em>Objective</em>: Allow <code>paths.pyx</code> to call line-of-sight collision checks directly without Python wrapper overhead.</p>
+<ul>
+<li>[x] Subtask 1.1: Create <code>src/libs/core/math/geometry.pxd</code> exposing <code>cdef bint c_bisects(float x1, float y1, float x2, float y2, float rx, float ry, float rw, float rl) nogil</code>.</li>
+<li>[x] Subtask 1.2: Refactor <code>bisects</code> in <code>src/libs/core/math/geometry.pyx</code> to delegate to <code>c_bisects</code>.</li>
+</ul>
+<p><strong>Task 2: Implement Cython RRT Engine (<code>libs.core.math.paths</code>)</strong></p>
+<p><em>Objective</em>: Build the standalone, zero-allocation C-level RRT solver.</p>
+<ul>
+<li>[x] Subtask 2.1: Define <code>RRTNode</code> and <code>RRTObstacle</code> structs in <code>src/libs/core/math/paths.pxd</code>.</li>
+<li>[x] Subtask 2.2: Implement <code>cpdef list rrt(float sx, float sy, float tx, float ty, list obstacles, float step_size, int max_iter)</code> in <code>src/libs/core/math/paths.pyx</code>.</li>
+<li>[x] Subtask 2.3: Ingest <code>obstacles</code> into a flat <code>RRTObstacle*</code> buffer at entry and free on exit.</li>
+<li>[x] Subtask 2.4: Implement C-level nearest-neighbor search, 5% goal-biased sampling, and trigonometric node steering using <code>libc.math</code> and <code>libc.stdlib.rand</code>.</li>
+<li>[x] Subtask 2.5: Implement parent index backtracing to return <code>List[Position]</code>.</li>
+</ul>
+<p><strong>Task 3: Build &amp; Extension Registration</strong></p>
+<p><em>Objective</em>: Integrate the new Cython extension into the build pipeline.</p>
+<ul>
+<li>[x] Subtask 3.1: Register <code>libs.core.math.paths</code> in <code>setup.py</code> and <code>setup.cicd.py</code>.</li>
+<li>[x] Subtask 3.2: Verify clean compilation via <code>python setup.py build_ext --inplace</code>.</li>
+</ul>
+<p><strong>Task 4: Rebind <code>Planner</code> Interface in Python</strong></p>
+<p><em>Objective</em>: Retain API compatibility while delegating all work to Cython.</p>
+<ul>
+<li>[x] Subtask 4.1: Refactor <code>app/game/logic/modules/paths/plan.py</code> to import <code>libs.core.math.paths.rrt</code>.</li>
+<li>[x] Subtask 4.2: Preserve <code>Planner(start, target, obstacles, step_size, max_iter).plan()</code> as a thin wrapper unpacking <code>Position</code> coordinates and delegating to <code>rrt()</code>.</li>
+<li>[x] Subtask 4.3: Deprecate Python <code>Node</code> class in <code>plan.py</code>.</li>
+</ul>
+<h5 id="task-5-algorithmic-verification-regression">Task 5: Algorithmic Verification &amp; Regression</h5>
+<p><em>Objective</em>: Verify path generation correctness and performance.</p>
+<ul>
+<li>[x] Subtask 5.1: Execute <code>tests/algorithms/rrt.py</code> to ensure convergence, collision clearance, and return formats remain identical.</li>
+<li>[x] Subtask 5.2: Verify integration through <code>tests/unit/test_app_game_logic_modules_paths.py</code> (or existing path test suite).</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="../../../../static/js/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

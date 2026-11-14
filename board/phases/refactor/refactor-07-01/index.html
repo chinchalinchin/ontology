@@ -1,0 +1,4428 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/board/phases/refactor/refactor-07-01/">
+      
+      
+        <link rel="prev" href="../refactor-06-04/">
+      
+      
+        <link rel="next" href="../refactor-07-02/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Phase 07.01 - Elevation Sorting - Ontology</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#refactor-phase-0701-elevation-sorting" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="Ontology" class="md-header__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ontology
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Phase 07.01 - Elevation Sorting
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="Ontology" class="md-nav__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Ontology
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../00-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../01-assets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../02-sprites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../03-compositions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../04-intentions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../05-mechanics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../06-widgets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../07-acoustics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../08-narratives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../09-ecology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ecology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../10-chemistry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../11-emergence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../12-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../specs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Specifications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_15" id="__nav_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Specifications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/00-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dialogue Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/01-interaction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../specs/02-wander/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wander Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_16" id="__nav_16_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Roadmap
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2" id="__nav_16_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phases
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_16_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phases
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_1" id="__nav_16_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-castle-dawn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Castle Dawn
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-regalia-galleria/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Regalia Galleria
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-comp-temple-of-trials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Composition - Trials of Trials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Dialogue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../design/design-menu-view/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menu - View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_16_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_2" id="__nav_16_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implement
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Implement
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01 - Renderer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02 - Game
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03 - Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04 - Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 05 - Editor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06 - Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07 - Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08 - Pathfinding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09 - Hydrodynamics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10 - Seasons
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 11 - Geology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 12 - Chemistry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-13/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 13 - Acoustics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 14 - Narratives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-n/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n - Commerce
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implement/implement-n%2B1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase n+1 - Towns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16_2_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_16_2_3" id="__nav_16_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Refactor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_16_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_16_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Refactor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-01-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01.01 - Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.01 - Frames
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.02 - Registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.03 - Equipment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.04 - Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.05 - Finetuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.06 - Effects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.07 - Registry Data Structures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-02-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 02.08 - World Chunks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.01 - Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.02 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.03 - Motion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.04 - Projectiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.01 - Typography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.02 - Simplification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.03 - Event Handlers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.04 - Menu Context
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.05 - Gizmos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-04-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 04.06 - Pane Generation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.01 - Expressions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.02 - Goals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.03 - Combat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-06-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 06.04 - Inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.01 - Elevation Sorting
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.01 - Elevation Sorting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-0701-elevation-sorting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 07.01: Elevation Sorting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 07.01: Elevation Sorting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-core-data-model-cython-primitives-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Core Data Model &amp; Cython Primitives Migration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-dual-key-screen-sorting-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Dual-Key Screen Sorting Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-stairs-property-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Stairs Property Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-elevation-aware-spatial-mechanics-collision-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Elevation-Aware Spatial Mechanics &amp; Collision Filtering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-dynamic-elevation-transitioning-on-inclines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Dynamic Elevation Transitioning on Inclines
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#session-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session II
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#review-phase-0701-elevation-sorting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review: Phase 07.01 - Elevation Sorting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Review: Phase 07.01 - Elevation Sorting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#review-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review: Implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#review-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review: Quality
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Review: Quality">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#review-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review: Logic
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#review-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review: Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Review: Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#review-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review: Optimization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.02 - Platforms & Elevated Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.03 - Gravity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.04 - Materialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-07-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.05 - Composite Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.01 - Obstacle Geometry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.02 - Navigation Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.03 - Trajectory Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-08-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 08.04 - Mutators
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.01 - Fluid Flows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.02 - Shorelines & Geography
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.03 - Consolidation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.04 - Optimization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.05 - Bridges & Bifurcation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.06 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.07 - Frame Caching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-09-08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 09.08 - Transverse Fluid Submersion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.01 - Stage Hitboxes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.02 - Shoreline Seasonal Indexing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.03 - Flowers, Pixies & Reproduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-10-04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 10.04 - Cythonization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_17" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../appendices/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_17" id="__nav_17_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/00-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/01-schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appendices/02-diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagrams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reports
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../coverage/index" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unit Test Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#refactor-phase-0701-elevation-sorting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactor: Phase 07.01: Elevation Sorting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Refactor: Phase 07.01: Elevation Sorting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-core-data-model-cython-primitives-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Core Data Model &amp; Cython Primitives Migration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-dual-key-screen-sorting-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Dual-Key Screen Sorting Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-stairs-property-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Stairs Property Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-elevation-aware-spatial-mechanics-collision-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Elevation-Aware Spatial Mechanics &amp; Collision Filtering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-dynamic-elevation-transitioning-on-inclines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Dynamic Elevation Transitioning on Inclines
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#session-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session II
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#review-phase-0701-elevation-sorting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review: Phase 07.01 - Elevation Sorting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Review: Phase 07.01 - Elevation Sorting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#review-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review: Implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#review-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review: Quality
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Review: Quality">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#review-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review: Logic
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#review-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review: Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Review: Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#review-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review: Optimization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Phase 07.01 - Elevation Sorting</h1>
+
+<h4 id="refactor-phase-0701-elevation-sorting">Refactor: Phase 07.01: Elevation Sorting</h4>
+<p><strong>Overview</strong></p>
+<p>This phase deprecates the legacy <code>height</code> coordinate hack, renames the categorical <code>depth</code> attribute to <code>elevation</code> across all data models and configuration schemas, and establishes a discrete multi-tier 2.5D spatial architecture. The rendering engine is updated to enforce strict lexicographical sorting: primary sorting evaluates discrete integer <span class="arithmatex">\(Z\)</span>-plane elevation tiers (<span class="arithmatex">\(\text{elevation} \in \mathbb{Z}\)</span>), and secondary sorting evaluates continuous in-tier geometric ground perspective (<span class="arithmatex">\(y + l\)</span>). In addition, <code>stairs</code> is promoted to a dedicated <code>Crafts</code> asset instance, complete with interaction-driven elevation transitions and elevation-filtered physical boundary collision checks.</p>
+<h5 id="specification">Specification</h5>
+<ol>
+<li>
+<p><strong>State &amp; Property Nomenclature</strong>:</p>
+</li>
+<li>
+<p>Deprecate <code>height</code> on <code>AssetState</code> and all derived models.</p>
+</li>
+<li>Rename <code>depth</code> to <code>elevation</code> across all state models, schemas, Cython primitives, and YAML configs (defaulting to <code>elevation: 0</code>).</li>
+<li>
+<p>Add optional <code>elevation_span: Optional[Tuple[int, int]]</code> (defaulting to <code>(elevation, elevation)</code>) to physical <code>Hitbox</code> representations to support vertical structures that obstruct multiple tiers (e.g., cliff facades spanning elevation <span class="arithmatex">\(0 \to 1\)</span>).</p>
+</li>
+<li>
+<p><strong>Rendering Pipeline Invariant</strong>:</p>
+</li>
+<li>
+<p>The Painter's Algorithm in <code>Screen._sort()</code> evaluates:</p>
+</li>
+</ol>
+<div class="arithmatex">\[\text{sort\_key}(A) = \Big(A.\text{state.elevation},\; \text{int}(A.\text{state.position.y} + A.\text{dimensions.l})\Big)\]</div>
+<ul>
+<li>
+<p>Rendering iterates monotonically from lowest elevation to highest elevation, sorting dynamic perspective strictly within each discrete tier.</p>
+</li>
+<li>
+<p><strong>Taxonomy &amp; Crafts Expansion (<code>crafts.stairs</code>)</strong>:</p>
+</li>
+<li>
+<p>Register <code>stairs</code> as a first-class instance under <code>AssetCategories.CRAFTS.value</code>.</p>
+</li>
+<li>Provide <code>StairProperties</code> (<span class="arithmatex">\(w, l, \text{mass} = -1, \text{hitboxes}, \text{cost}\)</span>) and <code>StairState</code> (<span class="arithmatex">\(\text{orientation}, \text{elevation}, \text{delta} = 1\)</span>).</li>
+<li>
+<p>Register flyweight recipe components: <code>OrientedFrame</code>, <code>NoAnimation</code>, and <code>DynamicHitbox</code>.</p>
+</li>
+<li>
+<p><strong>Elevation Transition Mechanics (<code>InteractionMechanics</code>)</strong>:</p>
+</li>
+<li>
+<p>Stairs act as spatial sensors (<span class="arithmatex">\(m = -1\)</span>) that bridge tier <span class="arithmatex">\(E\)</span> and tier <span class="arithmatex">\(E + 1\)</span>.</p>
+</li>
+<li>
+<p>Directional threshold detection: Entering along the ascent vector increments character elevation (<span class="arithmatex">\(E_{\text{sprite}} \leftarrow E_{\text{stairs}} + 1\)</span>); exiting along the descent vector decrements character elevation (<span class="arithmatex">\(E_{\text{sprite}} \leftarrow E_{\text{stairs}}\)</span>).</p>
+</li>
+<li>
+<p><strong>Collision &amp; Constraint Filtering (<code>CollisionMechanics</code>)</strong>:</p>
+</li>
+<li>
+<p>Broad-phase and narrow-phase collision resolution is partitioned by elevation tier:</p>
+</li>
+</ul>
+<div class="arithmatex">\[\text{CanCollide}(A, B) \iff \big[\min(E_A), \max(E_A)\big] \cap \big[\min(E_B), \max(E_B)\big] \neq \emptyset\]</div>
+<ul>
+<li>Environmental perimeters generated by <code>Perimeter</code> partition per layer and elevation tier (<code>board.perimeters[layer][elevation]</code>).</li>
+</ul>
+<h5 id="architectural-analysis-i">Architectural Analysis I</h5>
+<p>The prior reliance on <code>height</code> was a compensatory mechanism for a flat 2D coordinate system attempting to fake 3D occlusions. Binding <code>height: bind(root.height)</code> or forcing <code>height: -100</code> flattened multi-planar geometry into a single dimension, resulting in Z-fighting, jittering along seams, and failure on inclined planes (stairs).</p>
+<p>Promoting <code>elevation</code> to an integer spatial coordinate (<span class="arithmatex">\(Z\)</span>) eliminates sorting ambiguity:</p>
+<ul>
+<li><strong>Substrate Floors</strong>: <code>elevation: -1</code> or <code>elevation: 0</code> with <span class="arithmatex">\(y+l=0\)</span>.</li>
+<li><strong>Ground Facades &amp; Entities</strong>: <code>elevation: 0</code>, sorting dynamically via <span class="arithmatex">\(y + l\)</span>.</li>
+<li><strong>Terraces &amp; Balconies</strong>: <code>elevation: 1</code>, sorting dynamically via <span class="arithmatex">\(y + l\)</span>.</li>
+<li><strong>Canopies &amp; Overhangs</strong>: <code>elevation: 2</code>, guaranteed to paint over all characters at elevation <span class="arithmatex">\(0\)</span> and <span class="arithmatex">\(1\)</span>.</li>
+</ul>
+<p>Regarding physical collisions: If collision resolution only evaluates entities where <span class="arithmatex">\(E_A == E_B\)</span>, an entity on elevation <span class="arithmatex">\(0\)</span> can never hit a platform deck on elevation <span class="arithmatex">\(1\)</span>. However, the front-facing vertical wall of the platform must still block entities walking on elevation <span class="arithmatex">\(0\)</span>. Decoupling the platform asset into a vertical facade wall at elevation <span class="arithmatex">\(0\)</span> (<span class="arithmatex">\(m = 0\)</span>) and a floor deck at elevation <span class="arithmatex">\(1\)</span> (<span class="arithmatex">\(m = -1\)</span>, walkable substrate) solves this natively without complex 3D swept-volume math.</p>
+<h5 id="user-review-i">User Review I</h5>
+<p>While I would like to reuse OrientedFrame if possible, I believe that also requires adjusting the hitbox implementation to a new class, say, OrientedHitbox, i.e. hitbox has to change based on state.orientation. Also, there needs to be a StairState that has orientation in it. Similar to how StageHitbox uses the stage to determine hitboxes:</p>
+<div class="highlight"><pre><span></span><code><span class="sd">"""</span>
+<span class="sd"># Ontology: app.assets.hitboxes.resources</span>
+
+<span class="sd">"""</span>
+<span class="c1"># Standard Libraries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">List</span>
+<span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="c1"># Application Libraries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.assets.base</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Frame</span><span class="p">,</span>
+    <span class="n">HitboxSchema</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.models.properties</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResourceProperties</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.models.state</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResourceState</span>
+
+<span class="c1"># Cython Libraries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">libs.core.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Hitbox</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">StageHitbox</span><span class="p">(</span><span class="n">HitboxSchema</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Resolves biological/geological stage-indexed hitboxes from ResourceProperties.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">properties</span><span class="p">:</span> <span class="n">ResourceProperties</span><span class="p">,</span>
+        <span class="n">state</span><span class="p">:</span> <span class="n">ResourceState</span><span class="p">,</span>
+        <span class="n">frame</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Frame</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Hitbox</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">properties</span><span class="o">.</span><span class="n">hitboxes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">stage</span><span class="p">,</span> <span class="p">[])</span> <span class="ow">or</span> <span class="p">[]</span>
+</code></pre></div>
+<h5 id="goals">Goals</h5>
+<h6 id="goal-core-data-model-cython-primitives-migration">Goal: Core Data Model &amp; Cython Primitives Migration</h6>
+<p>Replace <code>depth</code> and <code>height</code> across Python data structures and Cython spatial models with <code>elevation</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># libs/core/models.pyx</span>
+<span class="n">cdef</span> <span class="k">class</span><span class="w"> </span><span class="nc">Position</span><span class="p">:</span>
+    <span class="n">cdef</span> <span class="n">public</span> <span class="nb">int</span> <span class="n">x</span>
+    <span class="n">cdef</span> <span class="n">public</span> <span class="nb">int</span> <span class="n">y</span>
+
+<span class="c1"># app/models/state/core.py</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AssetState</span><span class="p">:</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">elevation</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">mutators</span><span class="p">:</span> <span class="n">Mutators</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Mutators</span><span class="p">)</span>
+</code></pre></div>
+<h6 id="goal-dual-key-screen-sorting-pipeline">Goal: Dual-Key Screen Sorting Pipeline</h6>
+<p>Update <code>Screen._sort</code> to eliminate manual height overrides and execute primary integer elevation grouping with secondary geometric ground sorting.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># app/game/screen.py</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_sort</span><span class="p">(</span><span class="n">asset</span><span class="p">:</span> <span class="n">Asset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="n">ground_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">asset</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">asset</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">l</span><span class="p">)</span> <span class="k">if</span> <span class="n">asset</span><span class="o">.</span><span class="n">dimensions</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">asset</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">asset</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">elevation</span><span class="p">,</span> <span class="n">ground_y</span><span class="p">)</span>
+</code></pre></div>
+<h6 id="goal-stairs-property-specification">Goal: Stairs Property Specification</h6>
+<div class="highlight"><pre><span></span><code><span class="c1"># src/assets/crafts/struts/stairs.yaml</span>
+<span class="nt">crafts</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">stairs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">stairs-stone</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
+<span class="w">        </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">96</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">      </span><span class="nt">cost</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">item</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stone</span>
+<span class="w">          </span><span class="nt">quantity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12</span>
+<span class="w">      </span><span class="nt">hitboxes</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">up</span><span class="p">:</span>
+<span class="w">          </span><span class="c1"># Left boundary railing</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> x</span><span class="p">:</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="nt"> y</span><span class="p">:</span><span class="w"> </span><span class="nv">27</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">            </span><span class="nt">dimensions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> w</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nt"> l</span><span class="p">:</span><span class="w"> </span><span class="nv">53</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">          </span><span class="c1"># Right boundary railing</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> x</span><span class="p">:</span><span class="w"> </span><span class="nv">31</span><span class="p p-Indicator">,</span><span class="nt"> y</span><span class="p">:</span><span class="w"> </span><span class="nv">27</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">            </span><span class="nt">dimensions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> w</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nt"> l</span><span class="p">:</span><span class="w"> </span><span class="nv">53</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">down</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> x</span><span class="p">:</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="nt"> y</span><span class="p">:</span><span class="w"> </span><span class="nv">16</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">            </span><span class="nt">dimensions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> w</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nt"> l</span><span class="p">:</span><span class="w"> </span><span class="nv">53</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> x</span><span class="p">:</span><span class="w"> </span><span class="nv">31</span><span class="p p-Indicator">,</span><span class="nt"> y</span><span class="p">:</span><span class="w"> </span><span class="nv">16</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">            </span><span class="nt">dimensions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> w</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nt"> l</span><span class="p">:</span><span class="w"> </span><span class="nv">53</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">left</span><span class="p">:</span>
+<span class="w">          </span><span class="c1"># Top boundary railing</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> x</span><span class="p">:</span><span class="w"> </span><span class="nv">16</span><span class="p p-Indicator">,</span><span class="nt"> y</span><span class="p">:</span><span class="w"> </span><span class="nv">0</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">            </span><span class="nt">dimensions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> w</span><span class="p">:</span><span class="w"> </span><span class="nv">53</span><span class="p p-Indicator">,</span><span class="nt"> l</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">          </span><span class="c1"># Bottom boundary railing</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> x</span><span class="p">:</span><span class="w"> </span><span class="nv">16</span><span class="p p-Indicator">,</span><span class="nt"> y</span><span class="p">:</span><span class="w"> </span><span class="nv">31</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">            </span><span class="nt">dimensions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> w</span><span class="p">:</span><span class="w"> </span><span class="nv">53</span><span class="p p-Indicator">,</span><span class="nt"> l</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">right</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> x</span><span class="p">:</span><span class="w"> </span><span class="nv">27</span><span class="p p-Indicator">,</span><span class="nt"> y</span><span class="p">:</span><span class="w"> </span><span class="nv">0</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">            </span><span class="nt">dimensions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> w</span><span class="p">:</span><span class="w"> </span><span class="nv">53</span><span class="p p-Indicator">,</span><span class="nt"> l</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> x</span><span class="p">:</span><span class="w"> </span><span class="nv">27</span><span class="p p-Indicator">,</span><span class="nt"> y</span><span class="p">:</span><span class="w"> </span><span class="nv">31</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">            </span><span class="nt">dimensions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> w</span><span class="p">:</span><span class="w"> </span><span class="nv">53</span><span class="p p-Indicator">,</span><span class="nt"> l</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<h6 id="goal-elevation-aware-spatial-mechanics-collision-filtering">Goal: Elevation-Aware Spatial Mechanics &amp; Collision Filtering</h6>
+<p>Filter broad-phase candidate pairs in <code>CollisionMechanics</code> by matching elevation tiers before narrow-phase AABB calculations.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># app/game/logic/mechanics/spatial/collision.py</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">Board</span><span class="p">,</span> <span class="n">delta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">bus</span><span class="p">:</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="n">DevicePayload</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">board</span><span class="o">.</span><span class="n">layers</span><span class="p">():</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">weights</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+        <span class="n">weights_by_elevation</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">weights</span><span class="p">:</span>
+            <span class="n">weights_by_elevation</span><span class="p">[</span><span class="n">w</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">elevation</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">elevation</span><span class="p">,</span> <span class="n">tier_weights</span> <span class="ow">in</span> <span class="n">weights_by_elevation</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">perimeters</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">perimeters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">elevation</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="k">if</span> <span class="n">perimeters</span><span class="p">:</span>
+                <span class="n">dynamics</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">tier_weights</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">properties</span><span class="p">,</span> <span class="s1">'mass'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">w</span><span class="o">.</span><span class="n">taxonomy</span><span class="o">.</span><span class="n">instance</span> <span class="o">==</span> <span class="n">AssetInstances</span><span class="o">.</span><span class="n">PLAYERS</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">asset</span><span class="p">,</span> <span class="n">boundary</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constrain</span><span class="p">(</span><span class="n">dynamics</span><span class="p">,</span> <span class="n">perimeters</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_boundary</span><span class="p">(</span><span class="n">asset</span><span class="p">,</span> <span class="n">boundary</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">collisions</span><span class="p">(</span><span class="n">tier_weights</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_resolve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+</code></pre></div>
+<h6 id="goal-dynamic-elevation-transitioning-on-inclines">Goal: Dynamic Elevation Transitioning on Inclines</h6>
+<p>Implement threshold tracking in <code>InteractionMechanics</code> to shift a sprite's elevation tier upon traversing stairs.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># app/game/logic/mechanics/world/interaction.py</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_traverse_stairs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sprite</span><span class="p">:</span> <span class="n">Asset</span><span class="p">,</span> <span class="n">stairs</span><span class="p">:</span> <span class="n">Asset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1"># Check vertical progression across tread bounds</span>
+    <span class="n">tread_progress</span> <span class="o">=</span> <span class="p">(</span><span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">sprite</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">l</span> <span class="o">-</span> <span class="n">stairs</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="n">stairs</span><span class="o">.</span><span class="n">dimensions</span><span class="o">.</span><span class="n">l</span>
+    <span class="k">if</span> <span class="n">tread_progress</span> <span class="o">&lt;=</span> <span class="mf">0.2</span><span class="p">:</span>  <span class="c1"># Reached top landing</span>
+        <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">elevation</span> <span class="o">=</span> <span class="n">stairs</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">elevation</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="n">tread_progress</span> <span class="o">&gt;=</span> <span class="mf">0.8</span><span class="p">:</span>  <span class="c1"># Reached bottom landing</span>
+        <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">elevation</span> <span class="o">=</span> <span class="n">stairs</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">elevation</span>
+</code></pre></div>
+<h5 id="tasks">Tasks</h5>
+<p><strong>1. Task: Models &amp; Schema Refactoring</strong></p>
+<p><em>Objective</em>: Deprecate <code>height</code>, rename <code>depth</code> to <code>elevation</code>, and update data structures.</p>
+<ul>
+<li>[x] Subtask: Remove <code>height</code> and rename <code>depth</code> to <code>elevation</code> in <code>AssetState</code>, <code>BridgeState</code>, and related state dataclasses in <code>app.models.state</code>.</li>
+<li>[x] Subtask: Update Cython extension types in <code>libs/core/models.pyx</code> and pxd declarations to reflect <code>elevation</code>.</li>
+<li>[x] Subtask: Refactor <code>PropertiesSchema</code> and state loader definitions to migrate existing YAML property files from <code>depth</code> to <code>elevation</code>.</li>
+<li>[x] Subtask: Remove <code>node_height</code> tracking and <code>bind(root.height)</code> / <code>bind(parent.height)</code> parsing routines from <code>Decomposer</code>.</li>
+</ul>
+<p><strong>2. Task: Screen Painter's Algorithm Sorting</strong></p>
+<p><em>Objective</em>: Refactor screen draw sorting to use primary elevation tiers and secondary <span class="arithmatex">\(y + l\)</span> perspective.</p>
+<ul>
+<li>[x] Subtask: Refactor <code>Screen._sort()</code> in <code>src/app/game/screen.py</code> to evaluate <code>(asset.state.elevation, asset.state.position.y + asset.dimensions.l)</code>.</li>
+<li>[x] Subtask: Remove string-to-integer height coercion and fallback branches in <code>Screen.draw()</code>.</li>
+<li>[x] Subtask: Audit <code>Screen.draw()</code> AABB culling to ensure high-elevation overlays are not prematurely culled.</li>
+</ul>
+<p><strong>3. Task: Crafts Stairs Instance Registration</strong></p>
+<p><em>Objective</em>: Integrate <code>stairs</code> into the Asset Hierarchy and configuration pipelines.</p>
+<ul>
+<li>[x] Subtask: Add <code>AssetInstances.STAIRS</code> to <code>app.config.enums.AssetInstances</code>.</li>
+<li>[x] Subtask: Create <code>src/assets/crafts/struts/stairs.yaml</code> with schema definitions and calibrated costs.</li>
+<li>[x] Subtask: Configure recipe mapping in <code>recipes.yaml</code> binding <code>stairs</code> to <code>DirectedFrame</code>, <code>NoAnimation</code>, and `DirectedHitboxed.</li>
+<li>[x] Subtack: Implement StairState.</li>
+<li>[x] Subtack: Implement DirectedFrame and DirectedHitbox.</li>
+<li>[x] Subtask: Register <code>crafts.stairs</code> in <code>PropertiesSchema</code>, <code>StateSchema</code>, and <code>Decomposer._accumulate_cost</code>.</li>
+</ul>
+<p><em>Notes</em></p>
+<ul>
+<li>CraftProperty hitboxes: <code>hitboxes: Union[Dict[str, Optional[List[Hitbox]]], Optional[List[Hitbox]] = None # type: ignore</code></li>
+</ul>
+<p><strong>4. Task: Elevation Partitioning in Collision &amp; Physics Mechanics</strong></p>
+<p><em>Objective</em>: Enforce elevation-isolated collision detection and perimeter constraints.</p>
+<ul>
+<li>[x] Subtask: Update <code>Board.weights(layer, elevation=None)</code> and <code>Board.obstacles(layer, elevation=None)</code> to support elevation filtering.</li>
+<li>[x] Subtask: Refactor <code>Perimeter.generate()</code> to bucket boundary hulls by <code>(layer, elevation)</code>.</li>
+<li>[x] Subtask: Update <code>CollisionMechanics.update()</code> to group active physical bodies by elevation before delegating to <code>self.collisions()</code> and <code>self.constrain()</code>.</li>
+<li>[x] Subtask: Ensure sensor collisions (plates, doors, stairs) conditionally match trigger elevation.</li>
+</ul>
+<p><strong>5. Task: Stairway Traversal &amp; State Mutation</strong></p>
+<p><em>Objective</em>: Enable smooth elevation transitions when crossing stair entities.</p>
+<ul>
+<li>[x] Subtask: Implement <code>InteractionMechanics._stairs()</code> to evaluate character spatial progress across stair incline footprints.</li>
+<li>[x] Subtask: Mutate character <code>state.elevation</code> dynamically upon crossing the upper/lower boundary thresholds.</li>
+<li>[x] Subtask: Add directional alignment validation to prevent side-entry elevation exploits.</li>
+</ul>
+<p><strong>6. Task: Test Bed Migration &amp; Regression Suite</strong></p>
+<p><em>Objective</em>: Update existing test fixtures and verify multi-tier rendering and collisions.</p>
+<ul>
+<li>[x] Subtask: Migrate all mock fixtures in <code>tests/unit/fixtures/</code> from <code>depth</code> to <code>elevation</code>.</li>
+<li>[x] Subtask: Add unit tests in <code>test_collision.py</code> asserting bodies at different elevations bypass Phase 1 constraints and Phase 2 overlap resolution.</li>
+<li>[x] Subtask: Add unit tests in <code>test_screen.py</code> asserting assets with higher elevation render on top of lower elevation assets regardless of lower <span class="arithmatex">\(y + l\)</span> values.</li>
+<li>[x] Subtask: Add integration tests verifying stair traversal correctly increments and decrements player elevation.</li>
+</ul>
+<h5 id="debugging">Debugging</h5>
+<p>Original sessions omitted for brevity. Below is the comprehensive audit of architectural and implementation changes introduced during this session.</p>
+<h6 id="session-i">Session I</h6>
+<p><strong>1. The Substrate Hierarchy Registry &amp; Dynamic Elevation Fallback</strong></p>
+<ul>
+<li>
+<p><strong>Original Spec</strong>: <code>elevation</code> was conceived as a static integer field (<code>elevation: int = 0</code>) on <code>AssetState</code> replacing <code>depth</code> and <code>height</code>. All substrates and ground entities defaulted to <code>0</code>.</p>
+</li>
+<li>
+<p><strong>Added / Changed</strong>:</p>
+</li>
+<li>Created <code>settings.SUBSTRATES</code> as a canonical instance-keyed mapping assigning negative integer tiers to terrain substrates (<code>back: -4</code>, <code>fluids: -3</code>, <code>shorelines: -2</code>, <code>bridges: -1</code>).</li>
+<li>Updated <code>AssetState.elevation</code> to <code>Optional[int] = None</code>.</li>
+<li>Added dynamic <code>@property</code> and <code>@elevation.setter</code> on <code>Asset</code> to lazily resolve substrate defaults when unset, while preserving explicit state overrides for upper-tier bridges or custom elevations.</li>
+</ul>
+<p><strong>2. Three-Key Lexicographical Painter's Algorithm (<code>elevation</code>, <code>ground_y</code>, <code>priority</code>)</strong></p>
+<ul>
+<li><strong>Original Spec</strong>: <code>Screen._sort</code> evaluated a 2-tuple:</li>
+</ul>
+<div class="arithmatex">\[
+\text{sort\_key}(A) = (A.\text{state.elevation},\; \text{int}(A.\text{state.position.y} + A.\text{dimensions.l}))
+\]</div>
+<ul>
+<li><strong>Added / Changed</strong>:</li>
+<li>Proved that a 2-tuple cannot distinguish inset wall fixtures from objects standing behind buildings.</li>
+<li>Added <code>priority: int = 0</code> to <code>AssetProperties</code> as an archetype-level surface tie-breaker.</li>
+<li>Added <code>anchor: int = 0</code> to <code>AssetState</code> to allow wall fixtures to align with their host facade's ground contact line.</li>
+<li>Expanded <code>Screen._sort</code> to evaluate <code>(asset.elevation, ground_y, asset.properties.priority)</code> with <span class="arithmatex">\(\text{ground\_y} = \text{int}(\text{pos.y} + l + \text{anchor})\)</span>.</li>
+</ul>
+<p><strong>3. Sanitation of <code>Perimeter</code> Boundary Extraction &amp; Dynamic Body Exclusion</strong></p>
+<ul>
+<li>
+<p><strong>Original Spec</strong>: <code>Perimeter.extract()</code> partitioned hulls by <code>(layer, elevation)</code> matching static architecture to <code>elevation</code>.</p>
+</li>
+<li>
+<p><strong>Added / Changed</strong>:</p>
+</li>
+<li>Identified that <code>Perimeter.extract()</code> was naively pulling dynamic bodies (<code>mass &gt; 0</code>, <code>crates</code>, <code>chests</code>) into the mathematical obstacle hull, baking initial coordinates of movable furniture (like <code>wood-bookshelf</code>) into boundary perimeters and triggering recursive collision jitter loops in <code>physics.constrain</code>.</li>
+<li>Added an explicit static filter in <code>Perimeter.extract()</code> excluding all movable bodies and dynamic containers.</li>
+<li>Added substrate floor inclusion for Tier 0: ensured room floorboards (<code>elevation &lt;= 0</code> with <span class="arithmatex">\(m = -1\)</span>) are included in boundary synthesis so interior spaces do not generate inverted perimeter edges around furniture footprints.</li>
+</ul>
+<p><strong>4. Non-Positive Elevation Clamping for Physics &amp; Hydrology</strong></p>
+<ul>
+<li>
+<p><strong>Original Spec</strong>: Broad-phase and narrow-phase collision mechanics partitioned purely by matching discrete elevation integers (<span class="arithmatex">\(E_A == E_B\)</span>).</p>
+</li>
+<li>
+<p><strong>Added / Changed</strong>:</p>
+</li>
+<li>With substrates assigned negative elevations (<code>-4</code> to <code>-1</code>), physical partitioning risked fragmenting ground-level interactions.</li>
+<li>Updated <code>CollisionMechanics.update()</code> to map non-positive elevations to Tier 0 (<code>max(0, w.elevation)</code>), unifying ground entities while preserving isolation for upper tiers (<span class="arithmatex">\(E \ge 1\)</span>).</li>
+<li>Updated <code>Actuator._collect_obstacles()</code> to clamp non-positive fluid elevations to 0 (<code>fluid.elevation if fluid.elevation &gt; 0 else 0</code>), ensuring fluid stream raycasts interact with ground-level obstacle hulls correctly.</li>
+<li>Updated <code>Board.weights()</code> and <code>Board.obstacles()</code> queries to treat <code>elevation == 0</code> as matching all entities where <code>elevation &lt;= 0</code>.</li>
+</ul>
+<p><strong>5. Decomposer Unique Nomenclature Generation (Preexisting Defect Resolution)</strong></p>
+<ul>
+<li>
+<p><strong>Original Spec</strong>: Only called for removing <code>node_height</code> tracking and <code>bind(root.height)</code> parsing from <code>Decomposer</code>.</p>
+</li>
+<li>
+<p><strong>Added / Changed</strong>:</p>
+</li>
+<li>Discovered that <code>Decomposer._hydrate_state()</code> discarded <code>kwargs.get('name')</code> for non-strut child components, assigning identical generated names to sibling entities under the same parent strut (e.g., 3 doors named <code>door-strut-castle-dawn-exterior-3-3</code>, 4 interior doors named <code>door-strut-castle-atrium-floor-3-3</code>).</li>
+<li>Fixed nomenclature generation to preserve the component's unique configuration name: <code>&lt;instance&gt;-&lt;parent_name&gt;-&lt;comp_name&gt;-&lt;increment&gt;</code>.</li>
+</ul>
+<h6 id="session-ii">Session II</h6>
+<p><strong>1. Entity Physics &amp; Mass Normalization</strong></p>
+<ul>
+<li><strong>Model Default Update (<code>app.models.properties.SheetProperties</code>)</strong>:</li>
+<li>Set <code>mass: int = 1</code> by default (previously <code>0</code>) across all sheet entities.</li>
+<li><strong>ECS Decoupling</strong>:</li>
+<li>Eliminated categorical taxonomy checks (<code>taxonomy.instance == AssetInstances.PLAYERS.value</code>) in favor of physics-driven predicates (<code>getattr(properties, 'mass', 0) &gt; 0</code>).</li>
+<li>NPC <code>sprites</code> are now dynamically recognized as movable bodies, enabling them to naturally collide, be pushed by kinematic players, obey perimeter boundaries, and traverse stairs without taxonomy branch exceptions.</li>
+</ul>
+<p><strong>2. Incline Traversal &amp; Kinematic Foot-Anchor Gating</strong></p>
+<ul>
+<li>
+<p><strong>Sensory Foot-Anchor Projection (<code>CollisionMechanics._traverse_stairs</code>)</strong>:</p>
+</li>
+<li>
+<p>Replaced bounding box leading edge evaluations (<code>pos.x + w</code>, <code>pos.y + l</code>) with centered ground contact coordinates:</p>
+</li>
+</ul>
+<div class="arithmatex">\[
+f_x = \text{pos.x} + \left\lfloor\frac{w}{2}\right\rfloor, \quad f_y = \text{pos.y} + l
+\]</div>
+<ul>
+<li>Normalized spatial progress across stair dimensions:</li>
+</ul>
+<div class="arithmatex">\[
+\text{tread\_progress}_y = \frac{f_y - \text{stair.y}}{\text{stair.l}}, \quad \text{tread\_progress}_x = \frac{f_x - \text{stair.x}}{\text{stair.w}}
+\]</div>
+<ul>
+<li>
+<p>Resolved bounding-box saturation where sprites with <span class="arithmatex">\(w \ge 0.2 \cdot \text{stair.w}\)</span> prematurely clamped to <span class="arithmatex">\(1.0\)</span> upon first contact.</p>
+</li>
+<li>
+<p><strong>Velocity Hysteresis &amp; Inversion Fixes</strong>:</p>
+</li>
+<li>
+<p>Tied tier switching to directional velocity gating (<span class="arithmatex">\(v_y &lt; 0\)</span> / <span class="arithmatex">\(v_y &gt; 0\)</span>, <span class="arithmatex">\(v_x &lt; 0\)</span> / <span class="arithmatex">\(v_x &gt; 0\)</span>), preventing premature snapping when grazing stair edges.</p>
+</li>
+<li>Corrected threshold target inversion on south-facing stairs (<code>Directions.DOWN.value</code>), mapping summit landings (<span class="arithmatex">\(u \le 0.2, v_y &lt; 0\)</span>) to <span class="arithmatex">\(E_{\text{base}}\)</span> and base landings (<span class="arithmatex">\(u \ge 0.8, v_y &gt; 0\)</span>) to <span class="arithmatex">\(E_{\text{top}}\)</span>.</li>
+</ul>
+<p><strong>3. Stair Sensor Classification</strong></p>
+<ul>
+<li><strong>Asset Configuration (<code>src/assets/crafts/struts/stairs.yaml</code>)</strong>:</li>
+<li>Reclassified <code>stairs-stone</code> mass to <code>mass: -1</code> (sensor body).</li>
+<li><strong>Physics Collision Bypass</strong>:</li>
+<li>Excluded stair entities from <code>Board.weights()</code> and <code>Board.obstacles()</code>, eliminating infinite-mass static body collision blocks and physics jitter during incline climbs while preserving spatial trigger detection.</li>
+</ul>
+<p><strong>4. Declarative Anchor Macro Compilation (<code>anchor(target)</code>)</strong></p>
+<ul>
+<li>
+<p><strong>State Model Schema Typing (<code>app.models.state.core.AssetState</code>)</strong>:</p>
+</li>
+<li>
+<p>Updated attribute typing to <code>anchor: Union[int, str] = 0</code>.</p>
+</li>
+<li>
+<p>Allows Pydantic's <code>TypeAdapter(ConfigurationSchema).validate_python()</code> to parse declarative macro strings in YAML without <code>int_parsing</code> validation errors.</p>
+</li>
+<li>
+<p><strong>Two-Pass Macro Resolution Compiler (<code>app.services.generators.game.decomposer.Decomposer</code>)</strong>:</p>
+</li>
+<li>
+<p><strong>Pass 1 (Scope Indexing)</strong>: Scans node/branch components into <code>scope_lookup: Dict[str, Tuple[AssetState, str, str]]</code>, recording local sibling names alongside their Category, Instance, and Asset ID.</p>
+</li>
+<li>
+<p><strong>Pass 2 (Evaluation &amp; Downcasting)</strong>: Compiles <code>anchor(...)</code> directives into concrete ground-alignment offsets before ECS asset instantiation:</p>
+</li>
+</ul>
+<div class="arithmatex">\[
+\text{anchor} = (y_{\text{target}} + l_{\text{target}}) - (y_{\text{self}} + l_{\text{self}})
+\]</div>
+<ul>
+<li>Supported targets:</li>
+<li><code>anchor(parent)</code>: Anchors to the immediate parent strut's baseline.</li>
+<li><code>anchor(root)</code>: Anchors to the root strut's baseline.</li>
+<li>
+<p><code>anchor(&lt;sibling_name&gt;)</code>: Anchors to a named sibling defined within the same branch.</p>
+</li>
+<li>
+<p><strong>Runtime Invariant</strong>: Enforces <code>kwargs['anchor'] = int(...)</code>, ensuring <code>Screen._sort</code> receives a strictly typed <code>int</code> for Painter's Algorithm ground-depth calculations (<code>ground_y = int(pos.y + dim_l + anchor)</code>).</p>
+</li>
+</ul>
+<p><strong>5. Architectural Backlog Status</strong></p>
+<ul>
+<li><strong>Bug B014 (Pinned)</strong>: Evaluating zero-allocation broad-phase sensor queries in Cython (<code>libs.core.math.geometry</code>) or pre-cached static sensor hitboxes on <code>StairProperties</code> to prevent per-frame <code>Hitbox</code> heap allocations during stair detection.</li>
+</ul>
+<h5 id="review-phase-0701-elevation-sorting">Review: Phase 07.01 - Elevation Sorting</h5>
+<h6 id="overview">Overview</h6>
+<p>Phase 07.01 deprecated the legacy <code>height</code> attribute, renamed <code>depth</code> to <code>elevation</code>, established discrete negative integer tiers for terrain substrates, expanded the Painter's Algorithm to a 3-key lexicographical sort <span class="arithmatex">\((E, \text{ground\_y}, \text{priority})\)</span>, registered <code>crafts.stairs</code> as an inclined sensor entity, and partitioned broad/narrow-phase physical collisions by discrete elevation tiers.</p>
+<h6 id="review-implementation">Review: Implementation</h6>
+<ul>
+<li>
+<p><strong>Topological Incline Traversal</strong>: <code>CollisionMechanics._traverse_stairs</code> successfully replaces naive bounding-box leading edges with centered foot-anchor projection (<span class="arithmatex">\(f_x = x + \lfloor w/2 \rfloor, f_y = y + l\)</span>). Normalizing tread progress and gating elevation mutation on directional velocity vectors (<span class="arithmatex">\(v_y &lt; 0 / v_y &gt; 0, v_x &lt; 0 / v_x &gt; 0\)</span>) prevents premature tier switching when an entity grazes stair edges.</p>
+</li>
+<li>
+<p><strong>Lexicographical Screen Sorting</strong>: <code>Screen._sort</code> evaluates <code>(asset.elevation, ground_y, asset.properties.priority)</code>. Upright entities, substrate layers, and surface apertures sort deterministically without runtime string coercion or fallback branches.</p>
+</li>
+<li>
+<p><strong>Two-Pass Macro Resolution</strong>: <code>Decomposer</code> introduces scope indexing to resolve <code>anchor(target)</code> directives down to concrete integer offsets before ECS instantiation, allowing wall fixtures to align with host facade baselines without manual asset offset tuning.</p>
+</li>
+</ul>
+<h5 id="review-quality">Review: Quality</h5>
+<ul>
+<li>
+<p><strong>Docstring Drift in Hitbox Schemas</strong>: <code>app.assets.hitboxes.crafts.ElevatedHitbox</code> contains a copy-paste docstring from <code>StageHitbox</code> referencing <em>"biological/geological stage-indexed hitboxes from ResourceProperties"</em>. Furthermore, <code>OrientedHitbox</code> and <code>DirectedHitbox</code> in <code>app.assets.hitboxes.core</code> possess empty docstrings.</p>
+</li>
+<li>
+<p><strong>Redundant Taxonomy Predicates</strong>: In <code>CollisionMechanics.update</code>, dynamic body filtering retains redundant checks:</p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">properties</span><span class="p">,</span> <span class="s1">'mass'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">w</span><span class="o">.</span><span class="n">taxonomy</span><span class="o">.</span><span class="n">instance</span> <span class="o">==</span> <span class="n">AssetInstances</span><span class="o">.</span><span class="n">PLAYERS</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+</code></pre></div>
+<p>Since <code>SheetProperties</code> defaults to <code>mass: int = 1</code> and the player is configured as a dynamic body (<span class="arithmatex">\(m &gt; 0\)</span>), checking <code>taxonomy.instance == AssetInstances.PLAYERS.value</code> violates the ECS principle of decoupling behavior from categorical taxonomy.</p>
+<ul>
+<li><strong>Enum Equality Style Discrepancy</strong>: In <code>CollisionMechanics._resolve</code>, lines 144–145 compare <code>asset_a.taxonomy.instance == AssetInstances.PLAYERS</code> directly against the enum rather than using <code>.value</code>, whereas line 118 in <code>_boundary</code> uses <code>AssetInstances.PLAYERS.value</code>.</li>
+</ul>
+<h6 id="review-logic">Review: Logic</h6>
+<ul>
+<li><strong>Sensor Body Boundary Ingestion Defect</strong>: In <code>Perimeter.extract</code>, static architecture is filtered using:
+<div class="highlight"><pre><span></span><code><span class="n">mass</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">properties</span><span class="p">,</span> <span class="s1">'mass'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">mass</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">obj</span><span class="o">.</span><span class="n">taxonomy</span><span class="o">.</span><span class="n">instance</span> <span class="ow">in</span> <span class="p">(</span>
+    <span class="n">AssetInstances</span><span class="o">.</span><span class="n">CRATES</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">AssetInstances</span><span class="o">.</span><span class="n">CHESTS</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">AssetInstances</span><span class="o">.</span><span class="n">RAFTS</span><span class="o">.</span><span class="n">value</span>
+<span class="p">):</span>
+    <span class="k">continue</span>
+</code></pre></div></li>
+</ul>
+<p>Sensor entities (such as stairs, pressure plates, and bridges) define <code>mass: int = -1</code>. The condition <code>mass &gt; 0</code> evaluates to <code>False</code>, causing <code>Perimeter.extract</code> to treat sensor bodies as static architecture (<span class="arithmatex">\(m = 0\)</span>) and appending their outer dimensions to <code>rects</code>. Consequently, <code>geometry.contours</code> bakes the entire bounding box of stair treads and floor switches into the impassable perimeter hull, physically locking characters out of incline traversal (the underlying cause of Bug B014).</p>
+<ul>
+<li>
+<p><strong>Zero-Velocity Incline Stalling</strong>: In <code>_traverse_stairs</code>, elevation mutation requires non-zero directional velocity (<code>vy &lt; 0</code>, <code>vy &gt; 0</code>, etc.). If an entity is pushed onto a stair sensor or comes to a complete rest (<span class="arithmatex">\(v = 0\)</span>) within the transition threshold before switching tiers, their elevation remains unchanged. While this prevents edge grazing jitter, voluntary locomotion must be resumed in the original direction to trigger the shift.</p>
+</li>
+<li>
+<p><strong>Substrate Elevation Query Parity</strong>: <code>Board.weights</code> and <code>Board.obstacles</code> map negative substrate elevations (<span class="arithmatex">\(\le 0\)</span>) to Tier 0. However, <code>Board.categories</code> and <code>Board.instances</code> evaluate strict equality (<code>a.elevation == elevation</code>). Querying <code>board.categories('crafts', layer, elevation=0)</code> excludes default bridges because their substrate elevation is <code>-1</code>.</p>
+</li>
+</ul>
+<h5 id="review-architecture">Review: Architecture</h5>
+<ul>
+<li>
+<p><strong>Pathfinding Disconnect on Multi-Tier Networks</strong>: <code>CollisionMechanics</code> partitions physical collisions by elevation, but <code>NavigationMechanics</code> (RRT pathfinding) still extracts obstacle hitboxes in 2D space without elevation filtering. An NPC pathfinding on elevation 1 currently treats ground-level obstacles at elevation 0 as obstructions if they share screen coordinates <span class="arithmatex">\((x, y)\)</span>. Path planning must become elevation-aware.</p>
+</li>
+<li>
+<p><strong>Two-Pass Macro Scope Limits</strong>: <code>Decomposer._resolve_anchor</code> indexes sibling components within the same strut branch. However, forward references across separate branches of the same composition macro cannot be resolved if the target branch is traversed later in the tree.</p>
+</li>
+</ul>
+<h6 id="review-optimization">Review: Optimization</h6>
+<ul>
+<li><strong>Unindexed Stair Sensor Checks</strong>: In <code>CollisionMechanics.update</code>, stair detection executes an unindexed nested loop across all stairs and dynamic movers:
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">stair</span> <span class="ow">in</span> <span class="n">stairs</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">mover</span> <span class="ow">in</span> <span class="n">movers</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">geometry</span><span class="o">.</span><span class="n">intersects</span><span class="p">(</span><span class="o">...</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traverse_stairs</span><span class="p">(</span><span class="n">mover</span><span class="p">,</span> <span class="n">stair</span><span class="p">)</span>
+</code></pre></div></li>
+</ul>
+<p>This incurs an <span class="arithmatex">\(O(S \times M)\)</span> overhead in Python and invokes the <code>stair.hitboxes</code> property repeatedly every frame. Sensor candidate evaluation should be offloaded to <code>SpatialMechanic.grid</code> (<code>Space.query</code>) or Cython <code>physics.environment</code>.</p>
+<ul>
+<li><strong>Per-Frame Sorting Allocations</strong>: In <code>Screen.draw()</code>, <code>assets.sort(key=self._sort)</code> creates a 3-tuple <code>(elevation, ground_y, priority)</code> for every rendered asset on every frame at 60 Hz. Moving the sorting comparator into a Cython sort key or maintaining an insertion-sorted linked list in <code>BoardCache</code> will reduce inner-loop garbage collection pressure.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="../../../../static/js/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
