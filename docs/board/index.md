@@ -17,7 +17,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
 
 **Table of Contents**
 
--**Actions:**
+* **Actions:**
   * **Implement:**
     * [x]: [Phase 01: Renderer](./phases/implement/implement-01.md)
     * [x]: [Phase 02: Game](./phases/implement/implement-02.md)
@@ -90,6 +90,10 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       * [ ]: [Phase 10.03: Flowers, Pixies & Reproduction](./phases/refactor/refactor-10-03.md)
       * [ ]: [Phase 10.04: Cythonization](./phases/refactor/refactor-10-04.md)
   * **Design:**
+    * *Automata*
+      * [x]: [Intention Loop 000: Dialogue](./phases/design/design-automata-dialogue.md)
+      * [x]: [Intention Loop 001: Interaction](./phases/design/design-automata-interaction.md)
+      * [x]: [Intention Loop 002: Wander](./phases/design/design-automata-wander.md)
     * *Compositions:*
       * [x]: [Composition 000: Castle Dawn](./phases/design/design-comp-castle-dawn.md)
       * [ ]: [Composition 001: Temple of Trials](./phases/design/design-comp-temple-of-trials.md)

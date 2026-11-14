@@ -106,6 +106,13 @@
 #               state-dump
 #     ]
 # ----------------------------------------------------
+# ------------------ TOOL.PARAMETERS.MANAGER.TEMPLATES
+# ----------------------------------------------------
+#   templates: [ 
+#                 template-backlog, template-bug, template-design
+#                 template-merge, template-review, template-spec
+#   ]
+# ----------------------------------------------------
 # ----------------------------------------------- TASK
 # ----------------------------------------------------
 task:
@@ -113,11 +120,7 @@ task:
   template: <path>
 # ----------------------------------------------------
   parameters:
-    automata: <automata>
-    composition: <composition>
     description: <description>
-    diagram: <diagram>
-    table: <table>
     title: <title>
 # ----------------------------------------------------
 # ---------------------------------------------- TOOLS
@@ -128,7 +131,6 @@ tools:
     # ------------------------------------------------
     manager:
       board: false
-      specs: false
       docs: false
     # ------------------------------------------------
     metrics:
@@ -163,8 +165,6 @@ tools:
           - <doc-page>
       template: 
         - <template>
-      specs:
-        - <spec-page>
     # ------------------------------------------------
     metrics:
       pstats:

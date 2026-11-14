@@ -295,7 +295,9 @@ The Inventory is partitioned into containers for Inventory that only has a singl
 
 The diagram below shows the mapping between Slots and Inventory fields.
 
+```mermaid
 --8<-- "static/mmd/sprite-inventory.mmd"
+```
 
 $$
 \Big((\text{Bag}, \text{Belt}, \text{Sheathe}, \text{Pouch}, \text{Pack}, \text{Sack}\Big))

@@ -1,10 +1,5 @@
 # ----------------------------------------------------
-anchors:
-  description: &description |
-    * **DEBUGGING**: Debug the current run of the test pipeline located in the [Test Pipeline](#view-test-pipeline) section.
-  title: &title Unit Test Debugging
-# ----------------------------------------------------
-context: false
+context: true
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ----------------------------------------------- TASK
@@ -49,15 +44,11 @@ task:
   # template: design/diagram/stages.md.j2
   # template: design/style/mermaid.md.j2
 # ----------------------------------------------------
-  # PLACEHOLDER UNTIL STRUCTURE EMERGES FOR TOOL
   parameters:
-    description: *description
-    title: *title
-    # -------------- DESIGN PARAMETERS
-    diagram: executor-centennial-transitions.mmd
-    automata: stages 
-    table: executor-centennial-transitions.md
-    score: wagner-ride-of-the-valkyries.yaml
+    description: |
+      TODO
+    title: |
+      TODO
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ---------------------------------------------- TOOLS
@@ -73,7 +64,6 @@ tools:
       board: false
       docs: false
       templates: true
-      specs: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
     # --------------------------------------------
@@ -129,11 +119,12 @@ tools:
           - 11-emergence
           # - 12-architecture
       templates: 
+        # - template-backlog
+        # - template-bug
+        # - template-design
         - template-merge
-      specs:
-        - 00-dialogue
-        - 01-interaction
-        - 02-wander
+        # - template-review
+        # - template-spec
     metrics:
       pstats: 
         run: |

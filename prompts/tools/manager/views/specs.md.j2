@@ -1,7 +1,0 @@
-### View: {{ properties.project.title | capitalize }} Specs
-
-{% for spec in tools.parameters.manager.specs %}
-{% set spec_path = properties.paths.root + properties.paths.docs + 'specs/' + spec + '.md' %}
-{{ md(spec_path) }}
-
-{% endfor %}
