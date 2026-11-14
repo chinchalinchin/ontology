@@ -2,7 +2,7 @@
 @domain.test
 @domain.logic
 @test.unit
-@app.asset
+@app.module
 @app.semantics
 
 # Ontology: Tests - tests.unit.app.game.logic.test_predicates

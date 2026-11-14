@@ -47,13 +47,9 @@ task:
 # ----------------------------------------------------
   parameters:
     description: |
-      Changes for current bugs accepted. Cython libraries recompiled.
-
-      New bugs logged, but no changes implemented.
-
-      * Debug the latest run of the [Test Pipeline](#view-test-pipeline)
+      Having seen the collision pipeline, perform a [Code Review](#template-review) of the closely related navigation workflow and logical predicates.
     title: |
-      Ontology - Patch
+      Review
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ---------------------------------------------- TOOLS
@@ -68,7 +64,7 @@ tools:
     manager:
       board: false
       docs: false
-      templates: false
+      templates: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
     # --------------------------------------------
@@ -85,7 +81,7 @@ tools:
     # --------------------------------------------
     source:
       data: false
-      filter: false
+      filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
@@ -125,10 +121,10 @@ tools:
           # - 12-architecture
       templates: 
         # - template-backlog
-        - template-bug
+        # - template-bug
         # - template-design
         # - template-merge
-        # - template-review
+        - template-review
         # - template-spec
     metrics:
       pstats: 
@@ -143,39 +139,25 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Asset Abstract
+          # ------------------------------------
+          - title: Mechanic - Navigation
             scan: 
-              domain: [ abstract ]
-              app: [ asset ]
-          - title: Mechanic Abstract
-            scan:
-              domain: [ abstract ]
               app: [ mechanic ]
-          - title: Asset Hitboxes
+              workflows: [ navigation ]
+          # ------------------------------------
+          - title: Modules - Navigation Workflow
             scan:
-              domain: [ concrete ]
-              app: [ asset ]
-              asset: [ hitbox ]
-          - title: Application Core Components
+              app: [ module ]
+              workflows: [ navigation ]
+          # ------------------------------------
+          - title: Libraries - Navigation Workflow
             scan:
-              domain: [ system ]
-              app: [ core, component ]
-          - title: Workflow - Collisions
-            scan:
-              app: [ mechanic ]
-              workflows: [ collisions ]
-          - title: Libraries - Collisions
-            scan: 
               app: [ library ]
-              workflows: [ collisions ]
-          - title: Services - Collisions
+              workflows: [ navigation ]
+          # ------------------------------------
+          - title: Logical Predicates
             scan:
-              app: [ service ]
-              workflows: [ collisions ]
-          - title: Test Fixtures
-            scan:
-              domain: [ test ]
-              test: [ fixtures ]
+              app: [ module, semantics ]
       data:
         properties: [ objects, crafts, sheets/sprites ]
         state: [ world-testbed ]
@@ -195,5 +177,5 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: workflow_collisions
+        marker: workflow_navigation
         # scope: '**/test_{actuator,cartographer}.py'
