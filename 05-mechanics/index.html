@@ -1361,7 +1361,7 @@
   <span class="md-ellipsis">
     
   
-    Composition - Trials of Trials
+    Composition - Temple of Trials
   
 
     
@@ -4125,13 +4125,13 @@ v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)
 <div class="arithmatex">\[
 \Delta y_{\text{elevation}} = \lfloor L_{\text{LOS}} \cdot \sin(60^\circ) \rfloor = \left\lfloor 64 \cdot \frac{\sqrt{3}}{2} \right\rfloor = 55\text{ px}
 \]</div>
-<p>Under this formulation, Gravity is purely a property of the topological elevation planes <span class="arithmatex">\(E \in \mathbb{Z}_{\ge 0}\)</span>: every <span class="arithmatex">\(\Delta y_{\text{elevation}} = \text{TIER\_DROP\_DISTANCE} = 55\text{ px}\)</span> of vertical freefall transitions an unsupported entity down one discrete elevation plane (<span class="arithmatex">\(E \to E - 1\)</span>), where substrate support is re-evaluated immediately.</p>
+<p>Under this formulation, Gravity is purely a property of the topological elevation planes <span class="arithmatex">\(E \in \mathbb{Z}_{\ge 0}\)</span>: every <span class="arithmatex">\(\Delta y_{\text{elevation}} = \text{TIER_DROP_DISTANCE} = 55\text{ px}\)</span> of vertical freefall transitions an unsupported entity down one discrete elevation plane (<span class="arithmatex">\(E \to E - 1\)</span>), where substrate support is re-evaluated immediately.</p>
 <p><strong>Behavior: Substrate Support</strong></p>
 <p>At Step 0 of <code>fields.update()</code>, entities at <span class="arithmatex">\(E &gt; 0\)</span> are evaluated against walkable substrates occupying tier <span class="arithmatex">\(E\)</span> on the active layer via Cython's zero-allocation <code>geometry.occluded</code>. An entity is supported at tier <span class="arithmatex">\(E &gt; 0\)</span> if its active hitboxes (or bounding dimensions) intersect any of the following Craft footprints:</p>
 <ul>
 <li><strong>Bridges</strong>: Deployed at <span class="arithmatex">\(e_{\text{base}} = E\)</span>.</li>
 <li><strong>Stairs</strong>: Spanning <span class="arithmatex">\(e_{\text{base}} &lt; E \le e_{\text{base}} + \Delta e\)</span>, evaluated across the full stair tread bounding box <span class="arithmatex">\((x, y, w, l)\)</span>.</li>
-<li><strong>Struts</strong>: Deployed at <span class="arithmatex">\(e_{\text{base}} = E\)</span> with a non-obstacle surface blueprint (<span class="arithmatex">\(\neg\text{MaterialIndex.is\_obstacle}(\text{blueprint})\)</span>, e.g., <code>floors</code>, <code>flats</code>, <code>paths</code>, <code>corridors</code>) or sensor mass (<span class="arithmatex">\(m &lt; 0\)</span>).</li>
+<li><strong>Struts</strong>: Deployed at <span class="arithmatex">\(e_{\text{base}} = E\)</span> with a non-obstacle surface blueprint (<span class="arithmatex">\(\neg\text{MaterialIndex.is_obstacle}(\text{blueprint})\)</span>, e.g., <code>floors</code>, <code>flats</code>, <code>paths</code>, <code>corridors</code>) or sensor mass (<span class="arithmatex">\(m &lt; 0\)</span>).</li>
 </ul>
 <p>Base terrain (<span class="arithmatex">\(E = 0\)</span>) is unconditionally supported.</p>
 <p><strong>Behavior: Freefall &amp; Parabolic Momentum</strong></p>
@@ -4145,9 +4145,9 @@ v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)
 \]</div>
 <p>Preserving <span class="arithmatex">\(v_{x,0}\)</span> produces a natural screen-space parabolic trajectory <span class="arithmatex">\(y(x) = y_0 + \frac{g}{2v_{x,0}^2}(x - x_0)^2\)</span> until landing.</p>
 <ol>
-<li><strong>Tier Stepping &amp; Remainder Clamping</strong>: Each tick, integer vertical displacement <span class="arithmatex">\(\Delta y_{\text{step}} = \lfloor r_y + v_y \Delta t \rfloor\)</span> is compared against the remaining distance to the next elevation plane, <span class="arithmatex">\(\Delta y_{\text{rem}} = \text{TIER\_DROP\_DISTANCE} - \text{descension}\)</span>:</li>
+<li><strong>Tier Stepping &amp; Remainder Clamping</strong>: Each tick, integer vertical displacement <span class="arithmatex">\(\Delta y_{\text{step}} = \lfloor r_y + v_y \Delta t \rfloor\)</span> is compared against the remaining distance to the next elevation plane, <span class="arithmatex">\(\Delta y_{\text{rem}} = \text{TIER_DROP_DISTANCE} - \text{descension}\)</span>:</li>
 <li>If <span class="arithmatex">\(\Delta y_{\text{step}} \ge \Delta y_{\text{rem}}\)</span>, the entity's Y-coordinate advances to the exact plane intercept (<span class="arithmatex">\(y + \Delta y_{\text{rem}}\)</span>), its elevation decrements (<span class="arithmatex">\(E \to E - 1\)</span>), and support is re-evaluated at the new tier.</li>
-<li><strong>Supported Landing (<span class="arithmatex">\(E \ge 0\)</span>)</strong>: If supported at <span class="arithmatex">\(E - 1\)</span>, <code>falling</code> is cleared to <code>False</code>, <code>descension</code>, <code>position.ry</code>, and <code>velocity.vy</code> are zeroed, clamping the landing coordinate to an exact multiple of <span class="arithmatex">\(\text{TIER\_DROP\_DISTANCE}\)</span>. On the subsequent frame, normal locomotion (<code>kinematic</code>, <code>motive</code>, or <code>frictive</code>) resumes and resolves any residual horizontal velocity <span class="arithmatex">\(v_x\)</span>.</li>
+<li><strong>Supported Landing (<span class="arithmatex">\(E \ge 0\)</span>)</strong>: If supported at <span class="arithmatex">\(E - 1\)</span>, <code>falling</code> is cleared to <code>False</code>, <code>descension</code>, <code>position.ry</code>, and <code>velocity.vy</code> are zeroed, clamping the landing coordinate to an exact multiple of <span class="arithmatex">\(\text{TIER_DROP_DISTANCE}\)</span>. On the subsequent frame, normal locomotion (<code>kinematic</code>, <code>motive</code>, or <code>frictive</code>) resumes and resolves any residual horizontal velocity <span class="arithmatex">\(v_x\)</span>.</li>
 <li><strong>Continuous Multi-Tier Fall</strong>: If unsupported at <span class="arithmatex">\(E - 1\)</span>, the entity retains <span class="arithmatex">\(v_y\)</span>, updates <code>descension</code> with the overshoot remainder, and continues falling through intermediate planes until reaching a supported tier or <span class="arithmatex">\(E = 0\)</span>.</li>
 </ol>
 <p><strong>Behavior: System Suppression</strong></p>
@@ -4443,7 +4443,7 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <ol>
 <li><strong>Temporal Integration</strong>: Accumulates frame <span class="arithmatex">\(\Delta t\)</span> into <code>board.calendar.elapsed</code>. When elapsed time reaches <code>settings.PERIOD_DURATION_SECONDS</code>, the mechanic advances <code>period</code> (0..2), <code>cycle</code> (<code>onset</code>, <code>peak</code>, <code>decline</code>), <code>season</code> (<code>spring</code>, <code>summer</code>, <code>autumn</code>, <code>winter</code>), and <code>year</code>, appending a <code>SeasonEvent</code> to the engine bus.</li>
 <li><strong>Environmental Hydrology (Potential Field Integration)</strong>: Soil moisture diffusion operates via a continuous scalar potential field calculated during <code>FluidMechanics</code> propagation and cached on <code>Board</code>. Dynamic 60 Hz updates avoid spatial lookups by reading <code>resource.state.moisture_flux</code>:</li>
-<li><strong>Positive Flux</strong>: Accumulates moisture via <span class="arithmatex">\(\text{retention} \mathrel{+}= \kappa_{\text{diffusion}} \cdot \text{moisture\_flux} \cdot \Delta t\)</span>.</li>
+<li><strong>Positive Flux</strong>: Accumulates moisture via <span class="arithmatex">\(\text{retention} \mathrel{+}= \kappa_{\text{diffusion}} \cdot \text{moisture_flux} \cdot \Delta t\)</span>.</li>
 <li><strong>Zero Flux</strong>: Evaporates moisture via <span class="arithmatex">\(\text{retention} \mathrel{-}= \kappa_{\text{evap}} \cdot \mu_{\text{season}} \cdot \Delta t\)</span>.</li>
 <li><strong>Throttled Stage Transitions</strong>: Biological and geological progression checks (<code>executor.evaluate(stage, locals)</code>) are decoupled from the 60 Hz physics loop, evaluating at a 1.0-second throttled frequency or upon calendar period transitions (<code>period_changed == True</code>).</li>
 </ol>
@@ -4472,7 +4472,24 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <p>The order in which Mechanics are specified in the schema becomes the order of execution in the <a href="../00-overview/#component-engine">Engine loop</a>.</p>
 <h2 id="dependencies">Dependencies</h2>
 <p>Systems requiring external services (such as the Actuator for <a href="./#world-mechanic-fluidmechanics">FluidMechanics</a>, or compiled Transition Executors for <a href="./#intentional-mechanic-transitionmechanics">TransitionMechanics</a> and <a href="./#world-mechanic-plotmechanics">PlotMechanics</a>) receive them through their constructor via Factory.</p>
-<pre class="mermaid"><code>--*&lt;-- "static/mmd/mechanics.bootstrap.mmd</code></pre>
+<pre class="mermaid"><code>flowchart TD
+    subgraph Orchestrator_Bootstrapping["Orchestrator Bootstrapping"]
+        PS["PropertiesSchema"]
+        CFG["Configuration (YAML)"]
+        SI["ShorelineIndex"]
+        ACT["Actuator"]
+        MF["MechanicsFactory"]
+        FM["FluidMechanics(actuator)"]
+        TM["TransitionMechanics(executor)"]
+
+        PS --&gt; SI
+        SI --&gt; ACT
+        PS --&gt; CFG
+        CFG --&gt; MF
+        ACT --&gt; MF
+        MF --&gt; FM
+        MF --&gt; TM
+    end</code></pre>
 <h3 id="dependency-executors">Dependency: Executors</h3>
 <p>Executors are Services made available to Mechanics that register to receive them in the <a href="#configuration-mechanics">Configuration</a>. Available Executors are enumerated below,</p>
 <ul>
