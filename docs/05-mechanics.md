@@ -402,7 +402,7 @@ The order in which Mechanics are specified in the schema becomes the order of ex
 Systems requiring external services (such as the Actuator for [FluidMechanics](./05-mechanics.md#world-mechanic-fluidmechanics), or compiled Transition Executors for [TransitionMechanics](./05-mechanics.md#intentional-mechanic-transitionmechanics) and [PlotMechanics](./05-mechanics.md#world-mechanic-plotmechanics)) receive them through their constructor via Factory.
 
 ```mermaid
---*<-- "static/mmd/mechanics-bootstrap.mmd
+--8<-- "static/mmd/mechanics-bootstrap.mmd"
 ```
 
 ### Dependency: Executors
