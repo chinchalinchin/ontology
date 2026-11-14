@@ -223,16 +223,16 @@ The formula for an Asset, i.e. the list of components which go into a particular
 
 1. **Model: Properties** A model defining immutable data.
 2. **Model: State** A model defining mutable data.
-3. **Behavior: Animation** Stateless strategies injected into the Asset. These contain the specific logic for updating Animation frames.
-    * `animate(state, properties)`: Interface for applying animation logic to Asset state.
-4. **Behavior: Frame:** A static schema calculation used by the renderer to determine the correct texture string keys. 
-    * `index(id: str, properties: AssetProperties) -> Dict[str, Tuple[int, int, int, int]]`: Interface for indexing Asset frames in Registry.
-    * `keys(id: str, state: AssetState) -> List[Tuple[str, int, int]]`: Reflexive intrinsic state projection for dynamic 60 Hz draw passes.
-    * `eras(id: str, calendar: CalendarState) -> List[Tuple[str, int, int]]`: Macro-temporal epochal projection for static pre-rendered canvas baking.
-    * `channels(id: str, state: AssetState, properties: AssetProperties) -> List[Tuple]`: Emits auxiliary shader and texture modulation directives.
-5. **Behavior: Hitbox:** Stateless collision boundary resolution strategies injected via Recipes. Resolves active physical obstacles dynamically without mutating cached properties:
-    * `elevations(properties: AssetProperties, state: AssetState) -> List[int]`: Emits the discrete elevation tiers the entity participates in.
-    * `get(properties: AssetProperties, state: AssetState, elevation: int, frame: Optional[Frame] = None) -> List[Hitbox]`: Emits active physical collision footprints at the requested elevation, accounting for animation frame states (e.g., Attackboxes).
+3. **Behavior: Animation** Stateless strategy injected into the Asset.
+    * `animate(state, properties)`: Interface for applying Animation logic to the Asset State.
+4. **Behavior: Frame:** A static schema calculation used by the Registry to determine the correct Asset Frame keys. 
+    * `index(id: str, properties: AssetProperties) -> Dict[str, Tuple[int, int, int, int]]`: Interface for indexing Asset Frames in Registry.
+    * `keys(id: str, state: AssetState) -> List[Tuple[str, int, int]]`: Interface for retrieving Asset Frame keys from the Registry.
+    * `eras(id: str, calendar: CalendarState) -> List[Tuple[str, int, int]]`: Interface for Assets whose Frame key depends on an external State, i.e. an [Environ Tile](#tile-environ) depending on the [Board Season](./09-ecology.md#principle-seasonality).
+    * `channels(id: str, state: AssetState, properties: AssetProperties) -> List[Tuple]`: Interface for rendering Frame channels.
+5. **Behavior: Hitbox:** Stateless strategy for resolving Asset Hitboxes from the Asset's internal data structure.
+    * `elevations(properties: AssetProperties, state: AssetState) -> List[int]`: Interface for the elevation in which the Asset Hitboxes participate.
+    * `get(properties: AssetProperties, state: AssetState, elevation: int) -> List[Hitbox]`: Interface for active Hitboxes at the requested elevation.
 
 !!! note "Stacks and Offsets"
     An Asset can be a single logical entity composed of multiple superimposed rendered textures, i.e. [Sheets](#category-sheets), therefore a Frame component returns a `List[(str, int, int)]` rather than a single `str`. The tuple `(int, int)` controls how much the frame is offset from its origin (mainly used in [Expressions](#expressions) to pin a [Cursor Expressions](#cursors) to the relative Position of a Sprite).

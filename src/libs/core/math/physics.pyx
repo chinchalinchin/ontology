@@ -9,7 +9,6 @@
 # Ontology: Libraries - libs.core.math.physics
 
 """
-# cython: language_level=3
 from libc.math cimport sqrt, cos, sin, atan2
 
 from libs.core.models cimport Position, Dimensions, Hitbox, Velocity

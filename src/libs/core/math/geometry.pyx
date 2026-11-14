@@ -10,7 +10,6 @@
 
 Cython Library for geometrical calculations and algorithms.
 """
-# cython: language_level=3
 # C Libraries
 from libc.math cimport sqrt
 
