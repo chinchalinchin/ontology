@@ -27,15 +27,13 @@ nav:
   - Chemistry: 10-chemistry.md
   - Emergence: 11-emergence.md
   - Architecture: 12-architecture.md
-  - Specifications:
-    - Index: specs/index.md
-    - Dialogue Loop: specs/00-dialogue.md
-    - Interaction Loop: specs/01-interaction.md
-    - Wander Loop: specs/02-wander.md
   - Roadmap:
     - Index: board/index.md
     - Phases: 
       - Design:
+        - Automata - Dialogue Loop: board/phases/design/design-dialogue.md
+        - Automata - Interaction Loop: board/phases/design/design-interaction.md
+        - Automata - Wander Loop: board/phases/design/design-wander.md
         - Composition - Castle Dawn: board/phases/design/design-comp-castle-dawn.md
         - Composition - Regalia Galleria: board/phases/design/design-comp-regalia-galleria.md
         - Composition - Temple of Trials: board/phases/design/design-comp-temple-of-trials.md
