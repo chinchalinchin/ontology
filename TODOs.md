@@ -159,3 +159,49 @@ cdef inline int _hash(self, int cx, int cy) noexcept nogil:
     return <int>(h % <unsigned int>self.num_buckets)
 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Merge: Phase 07.03 - Gravity, Stair Traversal, and Elevation Collisions
+
+## Merge: Overview
+
+Implements geometric gravity and multi-tier freefall in `MotionMechanics` (`fields.py`) derived from the LPC $60^\circ$ orthographic camera projection ($\Delta y_{\text{tier}} = \lfloor 32 \tan 60^\circ \rfloor = 55\text{ px}$), resolves elevation-filtered hitbox queries across `SpatialMechanic` and `CollisionMechanics`, fixes Phase 0 stair incline detection to evaluate full stair tread bounds, and expands unit test coverage across the Cython physics, spatial hashing, collision, and gravity pipelines.
+
+## Merge: Changes
+
+### Change: Models
+
+* `src/app/models/state/core.py`: Added `falling: bool = False` to `MutatorTriggers` to flag airborne entities and `descension: Optional[float] = 0.0` to `MutatorParameters` to accumulate vertical $+Y$ pixel displacement across discrete elevation drops.
+* `src/app/static/settings.py`: Added orthographic projection and gravitational constants `PERSPECTIVE_ANGLE_DEG = 60.0`, `TIER_DROP_DISTANCE = int(TILE_HASH_SIZE * math.tan(math.radians(60.0)))` ($55\text{ px}$), `GRAVITY_ACCELERATION = 400.0`, and `TERMINAL_VELOCITY = 350.0`.
+
+### Change: Logic
+
+* `src/app/game/logic/modules/motion/fields.py`: Implemented `_extract_tier_support_aabbs()`, `_is_supported_at_tier()`, and `_update_gravity()` at Step 0 of `fields.update()`. Evaluates substrate support at $E > 0$ via Cython's zero-allocation `geometry.occluded` across `Platforms`, full-tread `Stairs`, `Bridges`, and passable surface `Struts` (`not MaterialIndex().is_obstacle(blueprint)`). Preserves orthogonal horizontal velocity ($v_x$) during freefall for parabolic trajectories while integrating downward acceleration ($v_y \mathrel{+}= g \cdot \Delta t$) up to `TERMINAL_VELOCITY`. Steps $E \to E - 1$ per `TIER_DROP_DISTANCE` with exact landing remainder clamping, and filters airborne entities (`falling_indices`) out of subsequent surface, shoreline, and fluid passes.
+* `src/app/game/logic/modules/motion/kinematic.py`: Gated `kinematic.update()` to bypass input velocity clamping while `player.state.mutators.triggers.falling` is `True`.
+* `src/app/game/logic/modules/motion/motive.py`: Gated `motive.update()` prior to goal verification so airborne Sprites retain freefall velocity without RVO steering or idle velocity zeroing.
+* `src/app/game/logic/modules/motion/frictive.py`: Gated `frictive.update()` to suspend tile friction decay while `asset.state.mutators.triggers.falling` is `True`.
+* `src/app/game/logic/mechanics/intentional/navigation.py`: Gated `NavigationMechanics._navigate()` to suspend LOS checks and RRT path planning while airborne.
+* `src/app/game/logic/mechanics/spatial/base.py`: Fixed `SpatialMechanic.collisions()` and `SpatialMechanic.constrain()` to resolve hitboxes at the target `elevation` parameter via `asset.hitbox.get(asset.properties, asset.state, elevation)` instead of `asset.hitboxes`.
+* `src/app/game/logic/mechanics/spatial/collision.py`: Updated Phase 0 stair traversal to check full stair tread bounds via `geometry.bounded`, excluded airborne (`falling == True`) entities from Phase 0 stair traversal and Phase 2 dynamic collision resolution, restricted Phase 1 perimeter constraints to `elevation == 0` so dynamic bodies can step across un-walled elevated ledges, and resolved tier-specific hitboxes in `_boundary()` and `_resolve()`.
+
+### Change: Tests
+
+* `tests/unit/app/game/logic/modules/motion/test_field_gravity.py`: Added unit tests verifying single-tier drop distance (`TIER_DROP_DISTANCE = 55`), multi-tier intermediate platform landing ($E: 2 \to 1$), continuous multi-tier freefall to ground ($E: 2 \to 0$), stair ascent tread support, and horizontal momentum preservation (`vx`) with mid-air input and collision suppression.
+* `tests/unit/app/game/logic/mechanics/spatial/test_collision.py` & `test_spatial.py`: Added unit tests covering vertical (`UP`) and horizontal (`LEFT`, `RIGHT`) stair ascent/descent transitions, 2px motive contact margin intersections, and empty/parameterless guard clauses.
+* `tests/unit/libs/core/math/test_physics.py` & `test_space.py`: Added unit tests for `collide`, `integrate` sub-pixel accumulation, `friction`, `kinematics`, `dynamics`, `boundaries`, `constrain`, `environment`, `aim`, `avoid`, multi-cell pair deduplication, and bucket capacity bounds.

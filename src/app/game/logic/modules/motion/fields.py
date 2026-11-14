@@ -29,6 +29,7 @@ from app.static.semantics import (
     Directions,
     EffectsPalette
 )
+from app.game.logic.relations import MaterialIndex
 
 if TYPE_CHECKING:
     from app.game.board import Board
@@ -109,24 +110,12 @@ def _extract_tier_support_aabbs(
     at discrete elevation tier E > 0.
     """
     aabbs: List[Tuple[int, int, int, int]] = []
-    platforms_inst = getattr(AssetInstances, "PLATFORMS", None)
-    platforms_val = platforms_inst.value if platforms_inst is not None else "platforms"
 
     for craft in board.categories(AssetCategories.CRAFTS.value, layer):
         inst = craft.taxonomy.instance
         base_e = craft.elevation
 
-        # TODO: remove: platforms are deprecated.
-        if inst == platforms_val:
-            if elevation > base_e and elevation in craft.hitbox.elevations(craft.properties, craft.state):
-                aabbs.append((
-                    int(craft.state.position.x),
-                    int(craft.state.position.y),
-                    int(craft.dimensions.w),
-                    int(craft.dimensions.l)
-                ))
-
-        elif inst == AssetInstances.STAIRS.value:
+        if inst == AssetInstances.STAIRS.value:
             # Use full stair tread bounds so ascending/descending entities remain supported
             if base_e < elevation <= base_e + craft.state.delta:
                 aabbs.append((
@@ -146,9 +135,10 @@ def _extract_tier_support_aabbs(
                 ))
 
         elif inst == AssetInstances.STRUTS.value:
-            # Support both sensor struts (mass < 0) and passable surface blueprints at tier E
+            # Support sensor struts (mass < 0) and passable surface blueprints at tier E
             if base_e == elevation and (
-                getattr(craft.properties, "mass", 0) < 0
+                craft.properties.mass < 0
+                or not MaterialIndex().is_obstacle(craft.state.blueprint)
                 or not craft.hitbox.elevations(craft.properties, craft.state)
             ):
                 aabbs.append((
@@ -236,15 +226,13 @@ def _update_gravity(
                 asset.state.mutators.triggers.falling = True
                 asset.state.mutators.parameters.descension = 0.0
                 asset.state.position.ry = 0.0
-                asset.state.velocity.vx = 0.0
                 asset.state.velocity.vy = max(0.0, asset.state.velocity.vy)
                 is_falling = True
 
         if not is_falling:
             continue
 
-        # 2. Integrate constant gravitational acceleration (+Y)
-        asset.state.velocity.vx = 0.0
+        # 2. Integrate constant gravitational acceleration (+Y) while preserving vx
         asset.state.velocity.vy = min(
             settings.TERMINAL_VELOCITY,
             asset.state.velocity.vy + (settings.GRAVITY_ACCELERATION * delta)

@@ -67,7 +67,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     * *Phase 07:*
       * [x]: [Phase 07.01: Elevation Sorting](./phases/refactor/refactor-07-01.md)
       * [x]: [Phase 07.02: Platforms & Elevated Hitboxes](./phases/refactor/refactor-07-02.md)
-      * [ ]: [Phase 07.03: Gravity](./phases/refactor/refactor-07-03.md)
+      * [x]: [Phase 07.03: Gravity](./phases/refactor/refactor-07-03.md)
       * [x]: [Phase 07.04: Materialization](./phases/refactor/refactor-07-04.md)
       * [ ]: [Phase 07.05: Composite Compositions](./phases/refactor/refactor-07-05.md)
     * *Phase 08:*

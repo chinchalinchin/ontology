@@ -2,24 +2,34 @@
 # -------------------------------------- TASK.TEMPLATE
 # ----------------------------------------------------
 # template: index.md.j2
-# --------------------- TEMPLATES: ANALYZE
+# --------------------------------------------
+# --------------------- TEMPLATES: MAINTENANCE
+# --------------------------------------------
 # template: analyze/automaton.md.j2
-# template: analye/engine.md.j2
-# --------------------- TEMPLATES: CONSOLE
+# template: analyze/pstats.md.j2
+# --------------------------------------------
+# --------------------- TEMPLATES: MAINTENANCE
+# --------------------------------------------
 # template: maintain/codebase.md.j2
 # template: maintain/patch.md.j2
 # template: maintain/session.md.j2
+# --------------------------------------------
 # --------------------------- TEMPLATES: DUMPS 
+# --------------------------------------------
 # template: report/menus.md.j2
 # template: report/state.md.j2
+# --------------------------------------------
 # ----------------------- TEMPLATES: ITERATION
-# template: iterate/documentation.md.j2
-# template: iterate/grooming.md.j2
-# template: iterate/implementation.md.j2
-# template: iterate/coverage.md.j2
+# --------------------------------------------
+# template: iterate/document.md.j2
+# template: iterate/groom.md.j2
+# template: iterate/implement.md.j2
+# template: iterate/cover.md.j2
+# template: iterate/merge.md.j2
 # template: iterate/review.md.j2
-# template: iterate/conclusion.md.j2
+# --------------------------------------------
 # -------------------------- TEMPLATES: DESIGN
+# --------------------------------------------
 # template: design/structure/menu.md.j2
 # template: design/structure/composition.md.j2
 # template: design/structure/score.md.j2

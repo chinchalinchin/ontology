@@ -260,31 +260,31 @@ def _update_gravity(
 
 *Objective*: Prevent voluntary input polling, NPC steering, idle velocity zeroing, tile friction decay, and RRT pathfinding from overriding gravitational velocity or thrashing while an entity is airborne.
 
-* [ ] Subtask: Gate `kinematic.update()` in `src/app/game/logic/modules/motion/kinematic.py` at the top of the loop to skip entities with `player.state.mutators.triggers.falling == True`.
-* [ ] Subtask: Gate `motive.update()` in `src/app/game/logic/modules/motion/motive.py` at the very top of the loop (strictly before the `if not sprite.state.goal` velocity reset) to skip entities with `sprite.state.mutators.triggers.falling == True`.
-* [ ] Subtask: Gate `frictive.update()` in `src/app/game/logic/modules/motion/frictive.py` at the top of the loop to skip entities with `asset.state.mutators.triggers.falling == True`.
-* [ ] Subtask: Gate `NavigationMechanics._navigate()` in `src/app/game/logic/mechanics/intentional/navigation.py` to skip path maintenance when `sprite.state.mutators.triggers.falling == True`.
+* [x] Subtask: Gate `kinematic.update()` in `src/app/game/logic/modules/motion/kinematic.py` at the top of the loop to skip entities with `player.state.mutators.triggers.falling == True`.
+* [x] Subtask: Gate `motive.update()` in `src/app/game/logic/modules/motion/motive.py` at the very top of the loop (strictly before the `if not sprite.state.goal` velocity reset) to skip entities with `sprite.state.mutators.triggers.falling == True`.
+* [x] Subtask: Gate `frictive.update()` in `src/app/game/logic/modules/motion/frictive.py` at the top of the loop to skip entities with `asset.state.mutators.triggers.falling == True`.
+* [x] Subtask: Gate `NavigationMechanics._navigate()` in `src/app/game/logic/mechanics/intentional/navigation.py` to skip path maintenance when `sprite.state.mutators.triggers.falling == True`.
 
 **3. Task: Geometric Gravity Field & Multi-Tier Landing Resolution**
 
 *Objective*: Implement zero-allocation elevated substrate support detection and trigonometric tier-stepped freefall in `fields.py`.
 
-* [ ] Subtask: Implement `_extract_tier_support_aabbs()` and `_is_supported_at_tier()` using `geometry.occluded` in `src/app/game/logic/modules/motion/fields.py`, covering `Platforms`, full-tread `Stairs`, `Bridges`, and passable surface `Struts`.
-* [ ] Subtask: Implement `_update_gravity()` at Step 0 of the per-layer loop in `src/app/game/logic/modules/motion/fields.py` to trigger freefall when unsupported at $E > 0$, accumulate integer drop displacement synchronized with `position.ry`, clamp landing steps to exact `TIER_DROP_DISTANCE` multiples, and halt freefall when `_is_supported_at_tier()` succeeds at $E \ge 0$.
-* [ ] Subtask: Filter `falling_indices` out of subsequent bridge/raft, shoreline, and fluid passes in `fields.update()`, while allowing entities that landed at $E = 0$ on the current tick (`falling == False`) to proceed immediately into surface and fluid evaluation.
+* [x] Subtask: Implement `_extract_tier_support_aabbs()` and `_is_supported_at_tier()` using `geometry.occluded` in `src/app/game/logic/modules/motion/fields.py`, covering `Platforms`, full-tread `Stairs`, `Bridges`, and passable surface `Struts`.
+* [x] Subtask: Implement `_update_gravity()` at Step 0 of the per-layer loop in `src/app/game/logic/modules/motion/fields.py` to trigger freefall when unsupported at $E > 0$, accumulate integer drop displacement synchronized with `position.ry`, clamp landing steps to exact `TIER_DROP_DISTANCE` multiples, and halt freefall when `_is_supported_at_tier()` succeeds at $E \ge 0$.
+* [x] Subtask: Filter `falling_indices` out of subsequent bridge/raft, shoreline, and fluid passes in `fields.update()`, while allowing entities that landed at $E = 0$ on the current tick (`falling == False`) to proceed immediately into surface and fluid evaluation.
 
 **4. Task: CollisionMechanics Ledge & Airborne Integration**
 
 *Objective*: Allow dynamic entities to cross un-walled elevated ledges and bypass solid collisions while airborne.
 
-* [ ] Subtask: Restrict Phase 1 `CollisionMechanics._boundary` enforcement in `src/app/game/logic/mechanics/spatial/collision.py` to `elevation == 0` so `board.perimeters` at $E > 0$ remain available to `NavigationMechanics` without trapping dynamic bodies on open ledges.
-* [ ] Subtask: Filter entities with `w.state.mutators.triggers.falling == True` out of Phase 0 stair traversal (`movers`) and Phase 2 solid collision resolution (`tier_weights`) in `CollisionMechanics.update()`.
+* [x] Subtask: Restrict Phase 1 `CollisionMechanics._boundary` enforcement in `src/app/game/logic/mechanics/spatial/collision.py` to `elevation == 0` so `board.perimeters` at $E > 0$ remain available to `NavigationMechanics` without trapping dynamic bodies on open ledges.
+* [x] Subtask: Filter entities with `w.state.mutators.triggers.falling == True` out of Phase 0 stair traversal (`movers`) and Phase 2 solid collision resolution (`tier_weights`) in `CollisionMechanics.update()`.
 
 **5. Task: Multi-Tier Gravity Regression Suite**
 
 *Objective*: Verify trigonometric drop distance, stair ascent support, intermediate elevation landing ($E = 2 \to 1$), and ground landing ($E = 1 \to 0$).
 
-* [!: Dependent on User Acceptance Testing] Subtask: Add unit test in `tests/unit/app/game/logic/test_gravity.py` verifying an unsupported entity at $E = 1$ falls exactly `TIER_DROP_DISTANCE` ($\lfloor 32 \tan 60^\circ \rfloor = 55\text{ px}$) before transitioning to $E = 0$ and clearing `falling`.
-* [!: Dependent on User Acceptance Testing] Subtask: Add unit test verifying an entity stepping off an $E = 2$ platform onto an underlying $E = 1$ platform transitions $E: 2 \to 1$ after `TIER_DROP_DISTANCE` pixels and lands at $E = 1$ without dropping to $E = 0$.
-* [!: Dependent on User Acceptance Testing] Subtask: Add unit test verifying an entity stepping off an $E = 2$ platform with no $E = 1$ support underneath falls continuously through $E = 1$ and lands at $E = 0$ after $2 \times \text{TIER\_DROP\_DISTANCE}$ (`110 px`).
-* [!: Dependent on User Acceptance Testing] Subtask: Add unit test verifying an entity ascending `Stairs` from $E = 0 \to 1$ remains supported by the stair tread bounding box after `_traverse_stairs` transitions its elevation to $E = 1$.
+* [x] Subtask: Add unit test in `tests/unit/app/game/logic/test_gravity.py` verifying an unsupported entity at $E = 1$ falls exactly `TIER_DROP_DISTANCE` ($\lfloor 32 \tan 60^\circ \rfloor = 55\text{ px}$) before transitioning to $E = 0$ and clearing `falling`.
+* [x] Subtask: Add unit test verifying an entity stepping off an $E = 2$ platform onto an underlying $E = 1$ platform transitions $E: 2 \to 1$ after `TIER_DROP_DISTANCE` pixels and lands at $E = 1$ without dropping to $E = 0$.
+* [x] Subtask: Add unit test verifying an entity stepping off an $E = 2$ platform with no $E = 1$ support underneath falls continuously through $E = 1$ and lands at $E = 0$ after $2 \times \text{TIER\_DROP\_DISTANCE}$ (`110 px`).
+* [x] Subtask: Add unit test verifying an entity ascending `Stairs` from $E = 0 \to 1$ remains supported by the stair tread bounding box after `_traverse_stairs` transitions its elevation to $E = 1$.
