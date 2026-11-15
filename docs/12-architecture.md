@@ -20,9 +20,7 @@ flowchart LR
 ```
 
 !!! important "Hardware Rendering Context Pre-requisites"
-    When running in live (non-headless) mode, the hardware window context (`render.show()`) **must** be instantiated strictly *after* `render.init()` but *before* Registry initialization. 
-    
-    The Registry caches textures directly into GPU memory via Cython (`TexturePtr`). If the window context does not exist when the Registry attempts to index and load `.png` files, the textures will silently resolve as empty `0x0` null pointers. This results in a "ghost state" where the entire game board is invisible, but the Board database and Mechanic systems continue to operate normally.
+    When running in live (non-headless) mode, the hardware window context **must** be instantiated strictly *after* the rendering subsystem is intialized but *before* Registry initialization. The Registry caches textures directly into GPU memory via Cython. If the window context does not exist when the Registry attempts to index and load `.png` files, the textures will silently resolve as empty `0x0` null pointers. This results in a "ghost game" where the entire Screen is invisible, but the Board database and Mechanic systems continue to operate normally.
 
 #### Phase 1: Boot
 
@@ -59,7 +57,6 @@ def _play(self, delta) -> None:
     if not self.board.paused:
         for mechanic in self.world:
             mechanic.update(self.board, delta, self.bus)
-
 ```
 
 * **Core Mechanics:** Systems that must execute every frame regardless of game state. This includes [MenuMechanics](./05-mechanics.md#core) (to process input and layout traversals), [AnimationMechanics](./05-mechanics.md#core) (to keep Assets animating), and RemoveMechanics (garbage collection).
@@ -71,25 +68,19 @@ When a [MenuEvent](./06-widgets.md#events) fires and a modal Menu is pushed to t
 
 #### Cache: Spatial Grid
 
-To optimize environmental lookups without traversing linear asset arrays, the Board utilizes two discrete ($O(1)$) spatial hash grids managed by `BoardCaches`:
+The Board utilizes two discrete ($O(1)$) spatial hash grids $(c_x, c_y)$:
 
-1. **Tile Spatial Grid (`tilemap`)**:
-
-Partitions Tiles into spatial buckets. To prevent [Canopy Tiles](./01-assets.md#tile-canopy) from overwriting [Environ Tiles](./01-assets.md#tile-environ), buckets nest by layer and instance:
+1. **Tile Grid**: Partitions Tiles into buckets nested by Layer and Instance
 
 $$
 \text{tilemap}[\text{layer}][\text{instance}][(c_x, c_y)] \to \text{Asset}
 $$
 
-2. **Hydrological Broad-Phase Grid**:
-
-Indexes active Fluid streams, annular pools, and branching corridors into spatial buckets. Each bucket stores references to overlapping Fluids:
+2. **Fluid Grid**: Paritions Fluid streams and their Pools into buckets. Each bucket stores references to overlapping Fluids:
 
 $$
 \text{fluidmap}[\text{layer}][(c_x, c_y)] \to \text{List}[\text{Asset}]
 $$
-
-When asserting Fluid immersion, the Engine queries the bucket corresponding to the coordinate, then delegates to narrow-phase AABB segment validation.
 
 ### Specification: Graphics
 
@@ -98,24 +89,24 @@ When asserting Fluid immersion, the Engine queries the bucket corresponding to t
 World rendering evaluates spatial geometry using discrete elevations, intra-elevation substrate planes, ground perspective, and coplanar priority:
 
 $$
-\text{sort_key}(A) = \Big(A.\text{elevation}, A.\text{substrate}, \text{ground_y}(A), A.\text{properties.priority}\Big)
+\text{sortkey}(A) = \Big(A.\text{elevation}, A.\text{substrate}, \text{ground}(A), A.\text{properties.priority}\Big)
 $$
 
 1. **Primary Key (`A.elevation` $\in \mathbb{Z}_{\ge 0}$)**: Discrete elevation (`0`, `1`, `2`, ...).
 2. **Secondary Key (`A.substrate` $\in \mathbb{Z}_{\le 0}$)**: Intra-elevation rendering plane within $E$:
-   * `Substrates.ENVIRON (-4)`: `tiles.environ`
-   * `Substrates.FLUIDS (-3)`: `effects.fluids`
-   * `Substrates.SURFACES (-2)`: `geography.shorelines`, `crafts.struts.floors`, `crafts.struts.paths`, `crafts.strtuts.flats`
-   * `Substrates.OVERLAYS (-1)`: `crafts.bridges`, `crafts.stairs`, `objects.doors`, `crafts.struts.solids`, `crafts.struts.stripes`, `crafts.struts.designs`
-   * `Substrates.STANDARD (0)`: All upright entities, walls, columns, enclosures, objects, and sheets.
-3. **Tertiary Key (`ground_y` $\in \mathbb{Z}$)**: Geometric perspective offset by Anchor: $\text{ground_y} = \text{int}(A.\text{state.position.y} + A.\text{dimensions.l} + A.\text{state.anchor})$.
-4. **Quaternary Key (`priority` $\in \mathbb{Z}$)**: Coplanar tie-breaker for Assets sharing an identical `(elevation, substrate, ground_y)` baseline.
+    * `-4`: [Environ Tiles](./01-assets.md#tile-environ)
+    * `-3`: [Fluids](./01-assets.md#effect-fluids)
+    * `-2`: [Struts](./03-compositions.md#craft-struts), [Geography](./09-ecology.md#category-geography).
+    * `-1`: [Bridges](./01-assets.md#craft-bridges), [Stairs](01-assets.md#craft-stairs).
+    * `0`: Standard Substrate.
+3. **Tertiary Key ($\text{ground} \in \mathbb{Z}$)**: Geometric perspective offset by Anchor: $\text{ground} = \text{int}(A.\text{state.position.y} + A.\text{dimensions.l} + A.\text{state.anchor})$.
+4. **Quaternary Key ($\text{priority} \in \mathbb{Z}$)**: Coplanar tie-breaker for Assets sharing an identical `(elevation, substrate, ground)` baseline.
 
 #### Rendering: Typography
 
-A Font configuration pairs a `.ttf` file with styling rules. During bootstrap, the Registry ingests each Font declared in `/src/assets/fonts/**/*.yaml`, storing them as styled Cython `TTFFont` wrappers. When `outline` is specified, the Registry instantiates a secondary internal outline pointer configured via `TTF_SetFontOutline`, enabling `render.write()` to execute two-pass blended rendering (outline pass followed by foreground fill) without runtime glyph cache invalidation.
+A Font configuration pairs a `.ttf` file with styling rules. During bootstrap, the Registry ingests each Font declared in `/src/assets/fonts/**/*.yaml`, storing them as styled Cython wrappers. 
 
-In Menu hierarchies, Font are scoped lexically at the MenuPane level: any `font` declared on a parent pane cascades down to all child Widgets unless explicitly shadowed by a nested pane.
+In [Menu Configurations](./06-widgets.md#configuration-menus), Font are scoped at the [Pane](./06-widgets.md#widget-panes) level: any Fany declared on a parent Pane cascades down to all child Widgets unless explicitly overridden by a nested pane.
 
 See [Library: Graphics](#library-graphics) for more implementation details.
 
@@ -143,9 +134,9 @@ See [Library: Graphics](#library-graphics) for more implementation details.
 
 **Required: Fonts**
 
-* `dialogue`: Standard proportional font used to render NPC conversations and narrative logs.
-* `menu`: High-contrast, styled font used for interactive UI controls and button labels.
-* `title`: Large-format font used for menu headers and screen titles.
+* `dialogue`: Font used to render text.
+* `menu`: Font used for Buttons.
+* `title`: Font used for headings.
 
 ### Specification: Cython Libraries
 
@@ -192,37 +183,197 @@ While Python objects are fast enough for general logic, calculating collisions a
 
 * Address: `libs.core.math`
 
-The engine leverages Cython for high-frequency mathematical, geometric, and physical calculations. To achieve maximum throughput, stateless operations are implemented as module-level `cpdef` and `cdef` functions within the `libs.core.math` package, avoiding the Virtual Method Table (vtable) overhead of class wrappers.
+The mathematical foundation of the Engine operates over the two-dimensional Euclidean plane $\mathbb{R}^2$ and its discrete integer lattice $\mathbb{Z}^2$:
 
-Spatial data (such as `Position`, `Velocity`, `Dimensions`, and `Hitbox`) are modeled as Cython Extension Types (`cdef class` in `libs.core.models`). This structure allows the engine to pass objects across the Python/C boundary while allowing C-level functions to access spatial properties (e.g., `pos.x`, `hb.dimensions.l`) natively without dictionary lookups.
+1. **Coordinate Space**: Each Layer defines an independent Cartesian plane with origin $(0, 0)$ at the upper-left corner, $+x$ directed right, and $+y$ directed down.
+2. **Bounding Primitives**: A rectangular region (Axis-Aligned Bounding Box, or AABB) is parameterized by its upper-left origin $(x, y)$ and non-negative dimensions $(w, l)$, spanning the half-open interval:
 
-The engine selectively manages the Global Interpreter Lock (GIL). Standard spatial routines retain the GIL to preserve reference counting and clean iteration syntax over Python collections. Performance-critical, loop-intensive mathematical routines—specifically RRT tree generation in `paths.pyx`—release the GIL (`nogil`) and execute entirely against contiguous C-allocated buffers.
+$$
+R(x, y, w, l) = [x, x + w) \times [y, y + l)
+$$
+
+3. **Composite Footprints**: An entity at world position $(x_a, y_a)$ with relative hitboxes $\{(x_i, y_i, w_i, l_i)\}$ occupies the union of translated bounding boxes:
+
+$$
+\mathcal{H}(A) = \bigcup_{i} \big[x_a + x_i,\; x_a + x_i + w_i\big) \times \big[y_a + y_i,\; y_a + y_i + l_i\big)
+$$
 
 ##### Math: Geometry
 
 * Address: `libs.core.math.geometry`
 
-This module houses pure geometric evaluations, translating expensive Python float and distance calculations into C-level primitives.
+1. **intersects** Calculates Axis-Aligned Bounding Box intersections.
 
-* **`intersects`**: Calculates Axis-Aligned Bounding Box (AABB) intersections. Iterates through entity hitboxes, returning the overlapping tuple pair or `None`.
-* **`onscreen`**: AABB camera culling check used by the renderer. Evaluates if an asset's absolute position intersects with the camera viewport.
-* **`cone`**: A zero-allocation field-of-view check validating whether a target coordinate falls within a parameterized directional vision cone.
-* **`nearby`**: Pure integer squared-distance check ($dx^2 + dy^2 < r^2$).
-* **`punctures` / `c_punctures**`: A `noexcept nogil` implementation of the Liang-Barsky line clipping algorithm. Evaluates whether a line segment $(x_1, y_1) \to (x_2, y_2)$ penetrates the interior of an AABB obstacle with non-degenerate penetration depth ($u_1 < u_2 - \epsilon$).
-* **`los`**: Raycasts a line-of-sight segment across a collection of primitive AABB tuples using `c_punctures`, returning `True` if clear and `False` if occluded.
-* **`contours`**: Executes a two-pass Sweep-Line algorithm over primitive AABBs to dynamically generate map boundaries. Uses C-level interval merging and XOR symmetric differences to isolate exposed contour edges, returning boundary segments.
-* **`bounded`**: Narrow-phase validation checking whether an asset's offset hitboxes intersect a raw mathematical boundary constraint.
+Two axis-aligned bounding boxes $R_1 = (x_1, y_1, w_1, l_1)$ and $R_2 = (x_2, y_2, w_2, l_2)$ intersect if and only if their projections overlap on both principal axes:
+
+$$
+(x_1 < x_2 + w_2)
+$$
+$$
+(x_1 + w_1 > x_2)
+$$
+$$
+(y_1 < y_2 + l_2)
+$$
+$$
+(y_1 + l_1 > y_2)
+$$
+
+A point $(p_x, p_y)$ lies inside $R(x, y, w, l)$ when $x \le p_x < x + w$ and $y \le p_y < y + l$.
+
+2. **onscreen** Evaluates if an Asset intersects with the Screen Camera.
+
+For a Camera of dimensions $(w_s, l_s)$ centered on a focus at $(x_f, y_f)$ with dimensions $(w_f, l_f)$, the camera origin is:
+
+$$
+x_c = x_f + \left\lfloor \frac{w_f}{2} \right\rfloor - \left\lfloor \frac{w_s}{2} \right\rfloor
+$$
+$$y_c = y_f + \left\lfloor \frac{l_f}{2} \right\rfloor - \left\lfloor \frac{l_s}{2} \right\rfloor
+$$
+
+An Asset is visible on screen if its bounding box intersects $R(x_c, y_c, w_s, l_s)$.
+
+3. **cone** Field-of-view check validating whether a target coordinate falls within a parameterized directional vision cone.
+
+Given a source point $\mathbf{s} = (s_x, s_y)$ and a target point $\mathbf{t} = (t_x, t_y)$ with displacement $\mathbf{d} = \mathbf{t} - \mathbf{s} = (\Delta x, \Delta y)$:
+
+Given a cardinal unit heading vector $\hat{\mathbf{u}} \in \{(0, -1), (0, 1), (-1, 0), (1, 0)\}$ and angular cosine threshold $\cos\alpha$, $\mathbf{t}$ lies within the field of view of radius $r$ when $\|\mathbf{d}\|^2 \le r^2$ and:
+
+$$
+(\mathbf{d} = \mathbf{0})
+\lor
+(\frac{\mathbf{d} \cdot \hat{\mathbf{u}}}{\|\mathbf{d}\|} \ge \cos\alpha)
+$$
+
+4. **nearby**: Euclidean distance check.
+
+$\mathbf{t}$ lies within radius $r$ of $\mathbf{s}$ if and only if:
+
+$$
+\|\mathbf{d}\|^2 = \Delta x^2 + \Delta y^2 < r^2
+$$
+
+5. **punctures** Implementation of the Liang-Barsky line clipping algorithm. Evaluates whether a line segment $(x_1, y_1) \to (x_2, y_2)$ penetrates the interior of an AABB obstacle with non-degenerate penetration depth ($u_1 < u_2 - \epsilon$).
+
+A directed line segment from $\mathbf{p}_1 = (x_1, y_1)$ to $\mathbf{p}_2 = (x_2, y_2)$ is parameterized over $u \in [0, 1]$ by:
+
+$$
+\mathbf{p}(u) = \mathbf{p}_1 + u(\mathbf{p}_2 - \mathbf{p}_1) = (x_1 + u\Delta x,\; y_1 + u\Delta y)
+$$
+
+Intersection with an obstacle rectangle $R = [r_x, r_x + r_w] \times [r_y, r_y + r_l]$ satisfies the system of four linear inequalities $ p_k \le q_k$ for $k \in \{0, 1, 2, 3\}$:
+
+$$
+p_0 = -\Delta x, \quad q_0 = x_1 - r_x
+$$
+$$
+p_1 = +\Delta x, \quad q_1 = (r_x + r_w) - x_1
+$$
+$$
+p_2 = -\Delta y,  \quad q_2 = y_1 - r_y
+$$
+$$
+p_3 = +\Delta y, \quad q_3 = (r_y + r_l) - y_1
+$$
+
+Let $u_1$ and $u_2$ denote the clipped entry and exit parameters:
+
+$$
+u_1 = \max\Big(\{0\} \cup \{\frac{q_k}{p_k} \mid p_k < 0 \}\Big)
+$$
+$$
+u_2 = \min\Big(\{1\} \cup \{\frac{q_k}{p_k} \mid p_k > 0 \}\Big)
+$$
+
+The segment punctures the interior of $R$ if no parallel boundary is violated ($p_k = 0 \implies q_k > \epsilon$) and $u_1 < u_2 - \epsilon$ for tolerance $\epsilon > 0$. Line of sight holds between $\mathbf{p}_1$ and $\mathbf{p}_2$ over an obstacle set $\mathcal{O}$ if the segment punctures no rectangle in $\mathcal{O}$.
+
+6. **los** Raycasts a line-of-sight segment across a collection of primitive AABB tuples.
+
+For a corridor of cross-section $(s_w, s_l)$ originating at $(s_x, s_y)$ and propagating along a cardinal direction up to distance $D_{\max}$, the distance to the nearest obstructing rectangle $(o_x, o_y, o_w, o_l) \in \mathcal{O}$ is evaluated over obstacles whose transverse projection overlaps the corridor:
+
+* *Vertical Propagation* ($o_x < s_x + s_w$ and $o_x + o_w > s_x$):
+
+$$
+d_{\text{down}} = \min\Big(\{D_{\max}\} \cup \{ o_y - s_y \mid o_y > s_y \}\Big)
+$$
+$$
+d_{\text{up}} = \min\Big(\{D_{\max}\} \cup \{s_y - (o_y + o_l) \mid o_y + o_l < s_y\}\Big)
+$$
+
+* *Horizontal Propagation* ($o_y < s_y + s_l \land o_y + o_l > s_y$):
+
+$$
+d_{\text{right}} = \min\Big(\{D_{\max}\} \cup \{o_x - s_x \mid o_x > s_x\}\Big)
+$$
+$$
+d_{\text{left}} = \min\Big(\{D_{\max}\} \cup \{s_x - (o_x + o_w) \mid o_x + o_w < s_x\}\Big)
+$$
+
+7. **contours**
+
+Executes a two-pass Sweep-Line algorithm over primitive AABBs to generate map boundaries. Uses interval merging and XOR symmetric differences to isolate exposed contour edges, returning boundary segments.
+
+Given a family of axis-aligned rectangles $\{R_i = [x_{i,\min}, x_{i,\max}] \times [y_{i,\min}, y_{i,\max}]\}$, the exposed boundary contours of their union $\mathcal{U} = \bigcup_i R_i$ are derived via a two-pass orthogonal sweep:
+
+* *Vertical Sweep*: Sort all vertical edges by $x$-coordinate, pairing $x_{i,\min}$ with event $+1$ and $x_{i,\max}$ with event $-1$. At each event coordinate $x$, let $I_{\text{prev}}$ and $I_{\text{curr}}$ denote the merged 1D $y$-intervals of active rectangles before and after $x$. The asymmetric set differences isolate the exposed vertical contour segments at $x$:
+
+$$
+E_{\text{left}}(x) = I_{\text{curr}} \setminus I_{\text{prev}}
+$$
+$$
+E_{\text{right}}(x) = I_{\text{prev}} \setminus I_{\text{curr}}
+$$
+
+* *Horizontal Sweep*: Sort all horizontal edges by $y$-coordinate, pairing $y_{i,\min}$ with $+1$ and $y_{i,\max}$ with $-1$. Comparing the merged 1D $x$-intervals $J_{\text{prev}}$ and $J_{\text{curr}}$ isolates the exposed horizontal contour segments at $y$:
+
+8. **bounded**
+
+Narrow-phase validation checking whether an Asset's offset hitboxes intersect a raw mathematical boundary constraint.
 
 ##### Math: Paths
 
 * Address: `libs.core.math.paths`
 
-This module implements the Rapidly-exploring Random Tree (RRT) pathfinding algorithm in C memory.
 
-* **Memory Management**: Ingests obstacle lists at function entry into a flat `RRTObstacle*` contiguous buffer and allocates an `RRTNode*` tree buffer sized to `max_iter + 2` via `malloc()`. Both buffers are freed synchronously via a `try...finally` block.
-* **Tree Representation**: Nodes are represented as flat `RRTNode` structs containing coordinate values and an integer `parent_idx`, eliminating object pointer chasing and heap fragmentation.
-* **Inner Loop (`nogil`)**: Releases the Python GIL during the exploratory phase. Executes 5% goal-biased continuous coordinate sampling, $O(N)$ nearest-neighbor distance minimization via `hypotf()`, fixed-distance trigonometric node steering via `atan2f()`, `cosf()`, and `sinf()`, and line-of-sight segment verification via `c_punctures`.
-* **Path Reconstruction**: Re-acquires the GIL upon reaching the goal, traverses the `parent_idx` chain in reverse into an integer path buffer, and instantiates the final list of Python `Position` models. Returns an empty list if iterations expire without resolving a route.
+Given a start coordinate $\mathbf{s} = (s_x, s_y)$, a target coordinate $\mathbf{t} = (t_x, t_y)$, a step size $\delta > 0$, an iteration limit $N_{\max}$, and a set of obstacle rectangles $\mathcal{O}$ (inflated in configuration space by the navigating Sprite's Hitbox half-dimensions and clearance radius), pathfinding constructs a collision-free trajectory from $\mathbf{s}$ to $\mathbf{t}$ via a Rapidly-exploring Random Tree (RRT):
+
+1. **Search Window Partitioning**: Define a padded search domain enclosing $\mathbf{s}$ and $\mathbf{t}$ with margin $\mathbf{m} = (0.2|t_x - s_x| + 2\delta, 0.2|t_y - s_y| + 2\delta)$:
+
+$$
+[x_{\min}, x_{\max}] = [\min(s_x, t_x) - m_x, \max(s_x, t_x) + m_x]
+$$
+$$
+[y_{\min}, y_{\max}] = [\min(s_y, t_y) - m_y,\; \max(s_y, t_y) + m_y]
+$$
+
+If $x_{\min} < 0$ or $y_{\min} < 0$, the negative offset is added to the corresponding upper bound and the lower bound is clamped to $0$. The active obstacle set is restricted to $\mathcal{O}_{\text{local}} = \{R \in \mathcal{O} \mid R \cap ([x_{\min}, x_{\max}] \times [y_{\min}, y_{\max}]) \neq \emptyset\}$.
+
+2. **Goal-Biased Tree Expansion**: Initialize a tree $\mathcal{T} = (V, E)$ rooted at $\mathbf{v}_0 = \mathbf{s}$. For up to $N_{\max}$ iterations:
+
+* **Sampling**: Draw $u, u_x, u_y \sim \mathcal{U}(0, 1)$ with goal bias $p_{\text{goal}} = 0.05$:
+
+$$
+\mathbf{q} = \begin{cases} \mathbf{t} & \text{if } u \le p_{\text{goal}} \\ \big(x_{\min} + u_x(x_{\max} - x_{\min}),\; y_{\min} + u_y(y_{\max} - y_{\min})\big) & \text{otherwise} \end{cases}
+$$
+
+* **Nearest Neighbor**: Select the tree vertex $\mathbf{v}_{\text{near}} \in V$ minimizing Euclidean distance to $\mathbf{q}$:
+
+$$
+\mathbf{v}_{\text{near}} = \arg\min_{\mathbf{v} \in V} \|\mathbf{v} - \mathbf{q}\|_2
+$$
+
+* **Clamped Steering**: Step from $\mathbf{v}_{\text{near}}$ toward $\mathbf{q}$ by distance $d = \min(\delta, \|\mathbf{q} - \mathbf{v}_{\text{near}}\|_2)$ along angle $\theta = \operatorname{atan2}(q_y - v_{\text{near},y},\; q_x - v_{\text{near},x})$:
+
+$$
+\mathbf{v}_{\text{new}} = \mathbf{v}_{\text{near}} + d\begin{pmatrix} \cos\theta \\ \sin\theta \end{pmatrix}
+$$
+
+* **Edge Validation & Termination**: If the segment $\overline{\mathbf{v}_{\text{near}}\mathbf{v}_{\text{new}}}$ is unobstructed across $\mathcal{O}_{\text{local}}$, add $\mathbf{v}_{\text{new}}$ to $V$ with parent $\mathbf{v}_{\text{near}}$. If $\mathbf{v}_{\text{new}} = \mathbf{t}$, or if $\|\mathbf{t} - \mathbf{v}_{\text{new}}\|_2 \le \delta$ and $\overline{\mathbf{v}_{\text{new}}\mathbf{t}}$ is unobstructed, append $\mathbf{t}$ to $\mathcal{T}$ and terminate exploration.
+
+3. **Backtracing & String-Pulling Pruning**: Traverse parent links from $\mathbf{t}$ to $\mathbf{v}_0$ and reverse the sequence to form the unpruned chain $\mathbf{p}_0, \mathbf{p}_1, \dots, \mathbf{p}_k$ ($\mathbf{p}_0 = \mathbf{s}$, $\mathbf{p}_k = \mathbf{t}$). Redundant intermediate vertices are collapsed via greedy line-of-sight string-pulling:
+
+* From current anchor index $i$ (initialized to $0$), select the largest index $j \in (i, k]$ for which $\overline{\mathbf{p}_i\mathbf{p}_j}$ is unobstructed across $\mathcal{O}_{\text{local}}$ (defaulting to $j = i + 1$ if no further vertex has line of sight).
+* Emit $\mathbf{p}_j$, advance $i \leftarrow j$, and repeat until $i = k$.
 
 ##### Math: Space
 

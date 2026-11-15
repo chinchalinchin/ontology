@@ -904,3 +904,155 @@ $$
      * **Player Kinematic Exemption**: The Player retains positive dynamic mass ($m > 0$) during spatial separation—halting against static walls ($m = 0$) and pushing movable Crates ($m > 0$)—but passes `is_kinematic = True` to `physics.collide` to bypass elastic velocity bounce.
 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##### Math: Paths
+
+- Address: `libs.core.math.paths`
+
+Given a start coordinate $\mathbf{s} = (s_x, s_y)$, a target coordinate $\mathbf{t} = (t_x, t_y)$, a step size $\delta > 0$, an iteration limit $N_{\max}$, and a set of obstacle rectangles $\mathcal{O}$ (inflated in configuration space by the navigating entity's hitbox half-dimensions and clearance radius), pathfinding constructs a collision-free trajectory from $\mathbf{s}$ to $\mathbf{t}$ via a Rapidly-exploring Random Tree (RRT):
+
+1. **Search Window Partitioning**:
+   Define a padded search domain enclosing $\mathbf{s}$ and $\mathbf{t}$ with margin $\mathbf{m} = (0.2|t_x - s_x| + 2\delta,\; 0.2|t_y - s_y| + 2\delta)$:
+
+$$
+[x_{\min}, x_{\max}] = [\min(s_x, t_x) - m_x,\; \max(s_x, t_x) + m_x], \qquad [y_{\min}, y_{\max}] = [\min(s_y, t_y) - m_y,\; \max(s_y, t_y) + m_y]
+$$
+
+   If $x_{\min} < 0$ or $y_{\min} < 0$, the negative offset is added to the corresponding upper bound and the lower bound is clamped to $0$. The active obstacle set is restricted to $\mathcal{O}_{\text{local}} = \{R \in \mathcal{O} \mid R \cap ([x_{\min}, x_{\max}] \times [y_{\min}, y_{\max}]) \neq \emptyset\}$.
+
+2. **Goal-Biased Tree Expansion**:
+   Initialize a tree $\mathcal{T} = (V, E)$ rooted at $\mathbf{v}_0 = \mathbf{s}$. For up to $N_{\max}$ iterations:
+   - **Sampling**: Draw $u, u_x, u_y \sim \mathcal{U}(0, 1)$ with goal bias $p_{\text{goal}} = 0.05$:
+
+$$
+\mathbf{q} = \begin{cases} \mathbf{t} & \text{if } u \le p_{\text{goal}} \\ \big(x_{\min} + u_x(x_{\max} - x_{\min}),\; y_{\min} + u_y(y_{\max} - y_{\min})\big) & \text{otherwise} \end{cases}
+$$
+
+   - **Nearest Neighbor**: Select the tree vertex $\mathbf{v}_{\text{near}} \in V$ minimizing Euclidean distance to $\mathbf{q}$:
+
+$$
+\mathbf{v}_{\text{near}} = \arg\min_{\mathbf{v} \in V} \|\mathbf{v} - \mathbf{q}\|_2
+$$
+
+   - **Clamped Steering**: Step from $\mathbf{v}_{\text{near}}$ toward $\mathbf{q}$ by distance $d = \min(\delta, \|\mathbf{q} - \mathbf{v}_{\text{near}}\|_2)$ along angle $\theta = \operatorname{atan2}(q_y - v_{\text{near},y},\; q_x - v_{\text{near},x})$:
+
+$$
+\mathbf{v}_{\text{new}} = \mathbf{v}_{\text{near}} + d\begin{pmatrix} \cos\theta \\ \sin\theta \end{pmatrix}
+$$
+
+   - **Edge Validation & Termination**: If the segment $\overline{\mathbf{v}_{\text{near}}\mathbf{v}_{\text{new}}}$ is unobstructed across $\mathcal{O}_{\text{local}}$, add $\mathbf{v}_{\text{new}}$ to $V$ with parent $\mathbf{v}_{\text{near}}$. If $\mathbf{v}_{\text{new}} = \mathbf{t}$, or if $\|\mathbf{t} - \mathbf{v}_{\text{new}}\|_2 \le \delta$ and $\overline{\mathbf{v}_{\text{new}}\mathbf{t}}$ is unobstructed, append $\mathbf{t}$ to $\mathcal{T}$ and terminate exploration.
+
+3. **Backtracing & String-Pulling Pruning**:
+   Traverse parent links from $\mathbf{t}$ to $\mathbf{v}_0$ and reverse the sequence to form the unpruned chain $\mathbf{p}_0, \mathbf{p}_1, \dots, \mathbf{p}_k$ ($\mathbf{p}_0 = \mathbf{s}$, $\mathbf{p}_k = \mathbf{t}$). Redundant intermediate vertices are collapsed via greedy line-of-sight string-pulling:
+   - From current anchor index $i$ (initialized to $0$), select the largest index $j \in (i, k]$ for which $\overline{\mathbf{p}_i\mathbf{p}_j}$ is unobstructed across $\mathcal{O}_{\text{local}}$ (defaulting to $j = i + 1$ if no further vertex has line of sight).
+   - Emit $\mathbf{p}_j$, advance $i \leftarrow j$, and repeat until $i = k$.
+
+##### Math: Space
+
+- Address: `libs.core.math.space`
+
+To avoid $O(N^2)$ pairwise comparisons over $N$ entities, the plane is partitioned into a uniform grid of cell size $C > 0$ mapped across $M$ hash buckets:
+
+1. **Grid Discretization**:
+   An entity with bounding box $[x, x + w] \times [y, y + l]$ covers the integer cell coordinates:
+
+$$
+c_x \in \left[\left\lfloor \frac{x}{C} \right\rfloor,\; \left\lfloor \frac{x + w}{C} \right\rfloor\right], \qquad c_y \in \left[\left\lfloor \frac{y}{C} \right\rfloor,\; \left\lfloor \frac{y + l}{C} \right\rfloor\right]
+$$
+
+2. **Spatial Hashing**:
+   Each covered cell $(c_x, c_y)$ maps to a 1D bucket index $h(c_x, c_y) \in \{0, \dots, M - 1\}$ via multiplicative prime hashing:
+
+$$
+h(c_x, c_y) = (c_x \cdot p_1 \oplus c_y \cdot p_2) \bmod M
+$$
+
+   where $p_1, p_2$ are large coprime integers. The entity identifier is inserted into each bucket its bounding box intersects.
+
+3. **Candidate Pair Generation**:
+   Iterating through populated buckets yields unique unordered pairs $(i, j)$ with $i < j$ that share at least one spatial bucket, forming the broad-phase candidate set for narrow-phase evaluation.
+
+##### Math: Physics
+
+- Address: `libs.core.math.physics`
+
+This module governs collision detection, minimum-translation separation, elastic momentum transfer, boundary constraints, locomotion steering, friction decay, and numerical integration:
+
+1. **Two-Phase Collision Pipeline**:
+   - **Broad Phase**: Entities are hashed into the uniform spatial grid by their bounding footprints to produce candidate pairs $(A_1, A_2)$.
+   - **Narrow Phase**: Candidate pairs are evaluated for intersection across their offset hitboxes $\mathcal{H}(A_1) \cap \mathcal{H}(A_2) \neq \emptyset$.
+
+2. **Minimum Translation Vector & Inverse-Mass Separation**:
+   For two intersecting hitboxes $H_1 = [x_1, x_1 + w_1] \times [y_1, y_1 + l_1]$ and $H_2 = [x_2, x_2 + w_2] \times [y_2, y_2 + l_2]$ with centers $\mathbf{c}_1, \mathbf{c}_2$, the axial overlap depths are:
+
+$$
+\delta_x = \frac{w_1 + w_2}{2} - |c_{1,x} - c_{2,x}|, \qquad \delta_y = \frac{l_1 + l_2}{2} - |c_{1,y} - c_{2,y}|
+$$
+
+   Separation occurs along the axis of minimum penetration $\delta = \min(\delta_x, \delta_y)$ with unit normal $\hat{\mathbf{n}}$. Define each body's inverse mass $\mu_i$ such that static obstacles ($m_i = 0$) have $\mu_i = 0$ ($m_i \to \infty$) and dynamic bodies ($m_i > 0$) have $\mu_i = 1 / m_i$. For $\mu_{\text{total}} = \mu_1 + \mu_2 > 0$, each body is displaced in proportion to its inverse mass share:
+
+$$
+\Delta \mathbf{r}_1 = -\delta \left(\frac{\mu_1}{\mu_{\text{total}}}\right) \hat{\mathbf{n}}, \qquad \Delta \mathbf{r}_2 = +\delta \left(\frac{\mu_2}{\mu_{\text{total}}}\right) \hat{\mathbf{n}}
+$$
+
+3. **One-Dimensional Elastic Momentum Transfer**:
+   Along the collision normal, post-separation velocities $(v_{1f}, v_{2f})$ follow conservation of momentum and kinetic energy:
+
+$$
+v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2 v_2}{m_1 + m_2}, \qquad v_{2f} = \frac{v_2(m_2 - m_1) + 2m_1 v_1}{m_1 + m_2}
+$$
+
+   Against a static body ($m_2 = 0 \implies m_2 \to \infty$), the dynamic body's normal velocity inverts ($v_{1f} = -v_1$). Kinematic entities participate in inverse-mass spatial separation using their nominal mass $m_1 > 0$, but bypass velocity reassignment.
+
+4. **Boundary Hull Constraints**:
+   Environmental perimeters act as directed barriers with $\mu_{\text{bound}} = 0$. When an entity's hitbox penetrates a boundary segment, the entity is displaced out of the overlap along the boundary normal by penetration depth $\delta$ and its normal velocity component is inverted.
+
+5. **Locomotion Kinematics & Steering Dynamics**:
+   - **Direct Kinematics**: Given directional input vector $\mathbf{d}_{\text{input}}$ and speed $s$, non-active axes snap to $0$ and the velocity vector is normalized to magnitude $s$:
+
+$$
+\mathbf{v} = \begin{cases} s \dfrac{\mathbf{d}_{\text{input}}}{\|\mathbf{d}_{\text{input}}\|_2} & \text{if } \|\mathbf{d}_{\text{input}}\|_2 > 0 \\ \mathbf{0} & \text{otherwise} \end{cases}
+$$
+
+   - **Autonomous Steering Dynamics**: Given position $\mathbf{r} = (x, y)$, target $\mathbf{t} = (t_x, t_y)$, impulse $a$, and maximum speed $s$, let $\mathbf{d} = \mathbf{t} - \mathbf{r}$ and $\hat{\mathbf{d}} = \mathbf{d} / \|\mathbf{d}\|_2$. Velocity accelerates along $\hat{\mathbf{d}}$ and is clamped to $s$:
+
+$$
+\mathbf{v}' = \mathbf{v} + a \hat{\mathbf{d}}, \qquad \mathbf{v}_{n+1} = \min\left(1,\; \frac{s}{\|\mathbf{v}'\|_2}\right)\mathbf{v}'
+$$
+
+     If $\|\mathbf{d}\|_2$ lies within the single-tick arrival threshold, velocity snaps to the remaining displacement to prevent oscillation.
+
+6. **Linear Friction Decay**:
+   For an entity with velocity $\mathbf{v}_n$ traversing a surface with friction coefficient $\mu_f \ge 0$ over timestep $\Delta t$, speed decays linearly to a lower bound of $0$:
+
+$$
+s_{n+1} = \max\big(0,\; \|\mathbf{v}_n\|_2 - \mu_f \Delta t\big), \qquad \mathbf{v}_{n+1} = \begin{cases} \dfrac{s_{n+1}}{\|\mathbf{v}_n\|_2}\mathbf{v}_n & \text{if } \|\mathbf{v}_n\|_2 > 0 \\ \mathbf{0} & \text{otherwise} \end{cases}
+$$
+
+7. **Symplectic Euler Integration with Sub-Pixel Accumulation**:
+   Because positions $(x_n, y_n) \in \mathbb{Z}^2$ are discrete integers while velocities $(v_x, v_y) \in \mathbb{R}^2$ and timesteps $\Delta t \in \mathbb{R}_{>0}$ are continuous, fractional sub-pixel remainders $(r_x, r_y) \in (-1, 1)$ are accumulated across frames:
+
+$$
+\begin{aligned}
+\tilde{r}_x &= r_{x,n} + v_x \Delta t, & \Delta x &= \operatorname{trunc}(\tilde{r}_x), & x_{n+1} &= x_n + \Delta x, & r_{x,n+1} &= \tilde{r}_x - \Delta x \\
+\tilde{r}_y &= r_{y,n} + v_y \Delta t, & \Delta y &= \operatorname{trunc}(\tilde{r}_y), & y_{n+1} &= y_n + \Delta y, & r_{y,n+1} &= \tilde{r}_y - \Delta y
+\end{aligned}
+$$
