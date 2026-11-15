@@ -413,14 +413,14 @@ This module orchestrates the physical simulation, bridging the broad-phase grid 
 This Library is a Cythonized interface for SDL2 bindings. 
 
 * **Context Initialization (`init`):** Sets up the SDL environment, including video, images, and typography.
-* **Asset & Font Allocation (`_load_image`, `_load_font`):** Loads physical image (`.png`) and font (`.ttf`) Assets from the file system into Application memory, returning Cython wrappers. Fonts are pre-styled during ingestion using Configurations.
+* **Asset & Font Allocation (`_load_image`, `_load_font`):** Loads physical image (`.png`) and font (`.ttf`) Assets from the file system into Application memory, returning Cython wrappers. 
 * **Typography (`measure`, `write`):** `measure` queries the pixel dimensions of a string without allocating a rendering surface. `write` calculates wrapping bounds and alignment, rendering characters as a blended surface that is stamped onto a target texture.
 * **Background Compilation (`canvas` & `construct`):** A blank texture is created in memory to match the full size of the Board. 
 * **Buffer Management (`clear` & `present`):** `clear` wipes the current buffer while `present` finalizes and displays the current buffer.
 * **World Rendering (`render`):** Copies the cropped background texture and then maps world-coordinates to camera-relative coordinates, stamping the active primitives onto the back buffer.
 * **Overlays (`superimpose`):** Bypasses the camera offset logic, rendering textures via absolute screen coordinates directly on top of the Screen.
 
-**Memory Management**
+**Models: Rendering**
 
 * **`TexturePtr`**: Wraps a raw `SDL_Texture*` pointer alongside its integer dimensions (`w`, `l`).
 * **`TTFFont`**: Wraps a raw `TTF_Font*` pointer alongside its pre-configured styling metadata.
