@@ -14,9 +14,10 @@ from __future__ import annotations
 
 # Standard Libraries
 from typing import (
-    TYPE_CHECKING, 
-    List, 
-    Tuple
+    TYPE_CHECKING,
+    List,
+    Optional,
+    Tuple,
 )
 import collections
 import logging
@@ -73,35 +74,62 @@ class NavigationMechanics(Mechanic):
 
 
     @staticmethod
+    def padding(asset: Asset) -> Tuple[float, float]:
+        """
+        Calculates the Minkowski inflation half-extents (hitbox half-dimensions + squeeze radius)
+        for a navigating asset.
+        """
+        hbs = asset.hitboxes
+        if hbs:
+            half_w = hbs[0].dimensions.w / 2.0
+            half_l = hbs[0].dimensions.l / 2.0
+        else:
+            half_w = asset.dimensions.w / 2.0
+            half_l = asset.dimensions.l / 2.0
+
+        squeeze = 0.0
+        if (
+            asset.state.mutators
+            and asset.state.mutators.parameters
+            and asset.state.mutators.parameters.squeeze
+        ):
+            squeeze = float(asset.state.mutators.parameters.squeeze.radius)
+
+        return (half_w + squeeze, half_l + squeeze)
+
+
+    @staticmethod
     def obstacles(
-        layer: str, 
-        board: Board, 
-        exclude: list, 
-        elevation: int = 0
+        layer: str,
+        board: Board,
+        exclude: list,
+        elevation: int = 0,
+        pad_x: float = 0.0,
+        pad_y: float = 0.0,
     ) -> list:
         """
         Transforms board weights and perimeters for the specified elevation tier
-        into flat C-primitive tuples.
+        into flat C-primitive tuples, optionally inflated by Minkowski padding.
         """
         obstacles = []
 
         for asset in board.weights(layer, elevation=elevation):
             if asset.name in exclude:
                 continue
-            for hb in asset.hitboxes:
+            for hb in asset.hitbox.get(asset.properties, asset.state, elevation):
                 obstacles.append((
-                    float(asset.state.position.x + hb.position.x),
-                    float(asset.state.position.y + hb.position.y),
-                    float(hb.dimensions.w),
-                    float(hb.dimensions.l),
+                    float(asset.state.position.x + hb.position.x) - pad_x,
+                    float(asset.state.position.y + hb.position.y) - pad_y,
+                    float(hb.dimensions.w) + 2.0 * pad_x,
+                    float(hb.dimensions.l) + 2.0 * pad_y,
                 ))
 
         for bound in board.perimeters.get(layer, {}).get(elevation, []):
             obstacles.append((
-                float(bound.position.x),
-                float(bound.position.y),
-                float(bound.dimensions.w),
-                float(bound.dimensions.l),
+                float(bound.position.x) - pad_x,
+                float(bound.position.y) - pad_y,
+                float(bound.dimensions.w) + 2.0 * pad_x,
+                float(bound.dimensions.l) + 2.0 * pad_y,
             ))
 
         return obstacles
@@ -127,7 +155,7 @@ class NavigationMechanics(Mechanic):
         sprite.state.trajectory.stalled = False
 
 
-    def _target(self, sprite: Asset, board: Board) -> Position:
+    def _target(self, sprite: Asset, board: Board) -> Optional[Position]:
         """
         Resolves the physical anchor coordinate of the sprite's goal.
         """
@@ -138,9 +166,12 @@ class NavigationMechanics(Mechanic):
         # Same-layer deployed asset: track physical footprint center
         if goal.name:
             target_asset = board.asset(goal.name, sprite.state.layer) or \
-                            board.asset(goal.name)
+                           board.asset(goal.name)
             if target_asset and target_asset.state.layer == sprite.state.layer:
                 return self.anchor(target_asset)
+
+        if goal.position is None:
+            return None
 
         # Coordinate destination: apply sprite footprint displacement
         anchor = self.anchor(sprite)
@@ -158,7 +189,7 @@ class NavigationMechanics(Mechanic):
         target: Position,
         obstacles: List[Tuple[int, int, int, int]],
         offset: Tuple[int, int]
-    ) -> None:
+    ) -> bool:
         """
         """
         planner = Planner(
@@ -214,16 +245,33 @@ class NavigationMechanics(Mechanic):
         offset_x = anchor.x - sprite.state.position.x
         offset_y = anchor.y - sprite.state.position.y
         target = self._target(sprite, board)
+        if target is None:
+            self._clear(sprite)
+            return
+
+        goal_x = int(target.x - offset_x)
+        goal_y = int(target.y - offset_y)
+        if (
+            sprite.state.goal.position is not None
+            and sprite.state.goal.position.x == goal_x
+            and sprite.state.goal.position.y == goal_y
+        ):
+            goal_target = sprite.state.goal.position
+        else:
+            goal_target = Position(x=goal_x, y=goal_y)
 
         exclude = [ sprite.name ]
         if sprite.state.goal.name:
             exclude.append(sprite.state.goal.name)
 
+        pad_x, pad_y = self.padding(sprite)
         obstacles = self.obstacles(
-            sprite.state.layer, 
-            board, 
-            exclude=exclude, 
-            elevation=sprite.elevation
+            sprite.state.layer,
+            board,
+            exclude=exclude,
+            elevation=sprite.elevation,
+            pad_x=pad_x,
+            pad_y=pad_y,
         )
 
         planned = False
@@ -238,7 +286,7 @@ class NavigationMechanics(Mechanic):
         ):
             # Line of sight is clear: direct tracking to strategic goal
             self._clear(sprite)
-            sprite.state.trajectory.target = sprite.state.goal.position
+            sprite.state.trajectory.target = goal_target
             sprite.state.trajectory.cooldown = 0
 
         else:
@@ -283,7 +331,7 @@ class NavigationMechanics(Mechanic):
                         target,
                         obstacles,
                         offset = (offset_x, offset_y)
-                    ): return False
+                    ): return 
 
                     planned = True
 
@@ -300,6 +348,18 @@ class NavigationMechanics(Mechanic):
                 int(sprite.state.trajectory.target.y),
                 arrival_radius,
             ):
+                # Require clear LOS to the subsequent corner vertex before popping early
+                if len(sprite.state.trajectory.vertices) > 1:
+                    next_wp = sprite.state.trajectory.vertices[1]
+                    if not geometry.los(
+                        float(anchor.x),
+                        float(anchor.y),
+                        float(next_wp.x + offset_x),
+                        float(next_wp.y + offset_y),
+                        obstacles,
+                    ):
+                        return
+
                 if sprite.state.trajectory.vertices and (
                     sprite.state.trajectory.target == sprite.state.trajectory.vertices[0]
                 ):
@@ -309,7 +369,7 @@ class NavigationMechanics(Mechanic):
                     sprite.state.trajectory.target = sprite.state.trajectory.vertices[0]
                     return
                 
-                sprite.state.trajectory.target = sprite.state.goal.position
+                sprite.state.trajectory.target = goal_target
                 return
 
 

@@ -4,12 +4,16 @@ Use the following template to create docstrings for Python modules,
 
 ```jinja2
 {% raw %}
+{% set titles = {
+    'src': 'Source',
+    'tests': 'Tests',
+    'libs': 'Libraries
+} % }
 {% for t in module.tags % }
 @{{ t.tag }}.{{ t.name }}
 {% endfor %}
 
-{% set title = 'Source' if module.src else 'Tests' %}
-# Ontology: {{ title }} -  {{ module.path }}
+# Ontology: {{ titles[module.type] }} -  {{ module.path }}
 
 {{ module.description }}
 {% endraw %}

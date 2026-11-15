@@ -2,7 +2,7 @@
 @domain.test
 @domain.logic
 @test.unit
-@app.asset
+@app.module
 @app.semantics
 
 # Ontology: Tests - tests.unit.app.game.logic.test_predicates
@@ -229,3 +229,27 @@ def test_in_fluid_composite_containment(mock_asset):
     assert predicates.in_fluid(Position(185, 210), fluid) is True
     # Outside all fluid geometry
     assert predicates.in_fluid(Position(10, 10), fluid) is False
+
+
+@pytest.mark.workflow_fluids
+@pytest.mark.workflow_ecology
+def test_in_fluid_zero_parent_length_with_active_branch(mock_asset):
+    """
+    Verifies Bug B033: predicates.in_fluid() evaluates child branches via
+    in_stream() even when parent fluid.state.length == 0.
+    """
+    fluid = mock_asset(AssetCategories.EFFECTS.value, AssetInstances.FLUIDS.value)
+    fluid.state.position = Position(64, 64)
+    fluid.state.source = Directions.DOWN.value
+    fluid.state.length = 0
+    fluid.state.pool = None
+    fluid.state.branches = [
+        Branch(
+            position=Position(96, 64),
+            source=Directions.DOWN.value,
+            flow=1,
+            length=64,
+        )
+    ]
+
+    assert predicates.in_fluid(Position(100, 96), fluid) is True

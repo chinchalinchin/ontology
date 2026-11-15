@@ -1,5 +1,4 @@
-
-##### Bug B026: `Screen.export_map` Renders Auxiliary Channels to the Default Viewport Instead of `full_target`
+### Bug B026: `Screen.export_map` Renders Auxiliary Channels to the Default Viewport Instead of `full_target`
 
 **STATUS**: OPEN
 **SEVERITY**: LOW

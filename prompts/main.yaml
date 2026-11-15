@@ -7,8 +7,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: index.md.j2
-  # template: draft.md.j2
+  # template: index.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
@@ -18,7 +17,7 @@ task:
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
   # template: maintain/codebase.md.j2
-  # template: maintain/patch.md.j2
+  template: maintain/patch.md.j2
   # template: maintain/session.md.j2
   # --------------------------------------------
   # --------------------------- TEMPLATES: DUMPS 
@@ -46,14 +45,8 @@ task:
   # template: design/style/mermaid.md.j2
 # ----------------------------------------------------
   parameters:
-    description: |
-      Changes for current bugs accepted. Cython libraries recompiled.
-
-      New bugs logged, but no changes implemented.
-
-      * Debug the latest run of the [Test Pipeline](#view-test-pipeline)
-    title: |
-      Ontology - Patch
+    description: TODO
+    title: TODO
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ---------------------------------------------- TOOLS
@@ -114,7 +107,7 @@ tools:
           # - 01-assets
           # - 02-sprites
           - 03-compositions
-          - 04-intentions
+          # - 04-intentions
           # - 05-mechanics
           - 06-widgets
           - 07-acoustics
@@ -123,7 +116,7 @@ tools:
           - 10-chemistry
           - 11-emergence
           # - 12-architecture
-      templates: 
+      templates:
         # - template-backlog
         - template-bug
         # - template-design
@@ -143,39 +136,56 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Asset Abstract
-            scan: 
-              domain: [ abstract ]
-              app: [ asset ]
-          - title: Mechanic Abstract
-            scan:
-              domain: [ abstract ]
-              app: [ mechanic ]
-          - title: Asset Hitboxes
-            scan:
-              domain: [ concrete ]
-              app: [ asset ]
-              asset: [ hitbox ]
-          - title: Application Core Components
-            scan:
-              domain: [ system ]
-              app: [ core, component ]
-          - title: Workflow - Collisions
-            scan:
-              app: [ mechanic ]
-              workflows: [ collisions ]
-          - title: Libraries - Collisions
-            scan: 
-              app: [ library ]
-              workflows: [ collisions ]
-          - title: Services - Collisions
-            scan:
-              app: [ service ]
-              workflows: [ collisions ]
           - title: Test Fixtures
             scan:
               domain: [ test ]
               test: [ fixtures ]
+          # # ------------------------------------
+          # - title: Application Core Components
+          #   scan:
+          #     domain: [ system ]
+          #     app: [ core, component ]
+          # # ------------------------------------
+          # - title: Asset Abstracts
+          #   scan:
+          #     domain: [ abstract ]
+          #     app: [ asset ]
+          # # ------------------------------------
+          # - title: Core Asset Models
+          #   scan:
+          #     domain: [ model ]
+          #     app: [ core, asset ]
+          # # ------------------------------------
+          # - title: Sheet Models
+          #   scan:
+          #     domain: [ model ]
+          #     category: [ sheets ]
+          # # ------------------------------------
+          # - title: Sheet Hitboxes
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ asset ]
+          #     asset: [ hitbox ]
+          #     category: [ sheets ]
+          # # ------------------------------------
+          # - title: Mechanic - Navigation
+          #   scan: 
+          #     app: [ mechanic ]
+          #     workflows: [ navigation ]
+          # # ------------------------------------
+          # - title: Modules - Navigation Workflow
+          #   scan:
+          #     app: [ module ]
+          #     workflows: [ navigation ]
+          # # ------------------------------------
+          # - title: Libraries - Navigation Workflow
+          #   scan:
+          #     app: [ library ]
+          #     workflows: [ navigation ]
+          # # ------------------------------------
+          # - title: Logical Predicates
+          #   scan:
+          #     app: [ module, semantics ]
       data:
         properties: [ objects, crafts, sheets/sprites ]
         state: [ world-testbed ]
@@ -195,5 +205,5 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: workflow_collisions
+        marker: workflow_navigation
         # scope: '**/test_{actuator,cartographer}.py'

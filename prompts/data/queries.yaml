@@ -30,6 +30,10 @@ queries:
         domain: [ system ]
         app: [ library ]
         workflows: [ collisions ]
+    - title: Services - Collisions
+      scan:
+        app: [ service ]
+        workflows: [ collisions ]
   # -------------------------------------------------------
   # ------------------------ QUERY: COMPOSITION SOURCE CODE
   # -------------------------------------------------------

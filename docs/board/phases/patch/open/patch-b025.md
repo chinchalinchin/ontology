@@ -1,5 +1,4 @@
-
-##### Bug B025: `LayeredHitbox.elevations` Returns `[]` for `'out'`-Projected Doors, Omitting Them From Elevation-Filtered Queries
+### Bug B025: `LayeredHitbox.elevations` Returns `[]` for `'out'`-Projected Doors, Omitting Them From Elevation-Filtered Queries
 
 **STATUS**: OPEN
 **SEVERITY**: MEDIUM

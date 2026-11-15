@@ -92,18 +92,17 @@ def in_stream(position: Position, fluid: Asset) -> bool:
     slen = fluid.state.length
 
     direction = fluid.state.source
-    direction_val = direction.value if hasattr(direction, "value") else str(direction)
 
     aabbs: List[Tuple[int, int, int, int]] = []
 
     if slen > 0:
-        if direction_val == Directions.DOWN.value:
+        if direction == Directions.DOWN.value:
             aabbs.append((fx, fy, fx + fw, fy + slen))
-        elif direction_val == Directions.UP.value:
+        elif direction == Directions.UP.value:
             aabbs.append((fx, fy - slen, fx + fw, fy))
-        elif direction_val == Directions.RIGHT.value:
+        elif direction == Directions.RIGHT.value:
             aabbs.append((fx, fy, fx + slen, fy + fl))
-        elif direction_val == Directions.LEFT.value:
+        elif direction == Directions.LEFT.value:
             aabbs.append((fx - slen, fy, fx, fy + fl))
 
     if fluid.state.branches:
@@ -114,15 +113,13 @@ def in_stream(position: Position, fluid: Asset) -> bool:
             by = int(branch.position.y)
             b_dir = branch.source
             
-            b_dir_val = b_dir.value if hasattr(b_dir, "value") else str(b_dir)
-
-            if b_dir_val == Directions.DOWN.value:
+            if b_dir == Directions.DOWN.value:
                 aabbs.append((bx, by, bx + fw, by + branch.length))
-            elif b_dir_val == Directions.UP.value:
+            elif b_dir == Directions.UP.value:
                 aabbs.append((bx, by - branch.length, bx + fw, by))
-            elif b_dir_val == Directions.RIGHT.value:
+            elif b_dir == Directions.RIGHT.value:
                 aabbs.append((bx, by, bx + branch.length, by + fl))
-            elif b_dir_val == Directions.LEFT.value:
+            elif b_dir == Directions.LEFT.value:
                 aabbs.append((bx - branch.length, by, bx, by + fl))
 
     if not aabbs:
@@ -138,6 +135,6 @@ def in_fluid(position: Position, fluid: Asset) -> bool:
     """
     if in_pool(position, fluid):
         return True
-    if fluid.state.length > 0 and in_stream(position, fluid):
+    if in_stream(position, fluid):
         return True
     return False

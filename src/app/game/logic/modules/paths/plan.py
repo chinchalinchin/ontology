@@ -20,19 +20,6 @@ from libs.core.models import Position
 from libs.core.math.paths import rrt
 
 
-class Node:
-    """
-    Deprecated: Retained for backward compatibility.
-    Inner node allocations have moved to contiguous C structures in libs.core.math.paths.
-    """
-    __slots__ = ['x', 'y', 'parent']
-
-    def __init__(self, x: float, y: float):
-        self.x = x
-        self.y = y
-        self.parent = None
-
-
 class Planner:
     """
     ## Planner (RRT)

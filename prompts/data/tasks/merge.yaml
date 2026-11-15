@@ -1,0 +1,22 @@
+# ----------------------------------------------------
+task:
+# ----------------------------------------------------
+  template: iterate/merge.md.j2
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    manager:
+      templates: true
+    tests:
+      pipeline: true
+# ----------------------------------------------------
+  parameters:
+    manager:
+      templates:
+        - template-merge
+        - template-docs
+    tests:
+      pipeline:
+        command: pytest -m
+        marker: workflow_navigation

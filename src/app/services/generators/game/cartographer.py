@@ -83,17 +83,16 @@ class Cartographer:
             fl = fluid.properties.dimensions.l
             length = fluid.state.length
             direction = fluid.state.source
-            direction_str = direction.value if hasattr(direction, "value") else str(direction)
 
             # 1. Directional stream corridor bounding box
             if length > 0:
-                if direction_str == Directions.DOWN.value:
+                if direction == Directions.DOWN.value:
                     rects.append((fx, fy, fx + fw, fy + length))
-                elif direction_str == Directions.UP.value:
+                elif direction == Directions.UP.value:
                     rects.append((fx, fy - length, fx + fw, fy))
-                elif direction_str == Directions.RIGHT.value:
+                elif direction == Directions.RIGHT.value:
                     rects.append((fx, fy, fx + length, fy + fl))
-                elif direction_str == Directions.LEFT.value:
+                elif direction == Directions.LEFT.value:
                     rects.append((fx - length, fy, fx, fy + fl))
 
             # 2. Annular pool bounding box
@@ -102,25 +101,24 @@ class Cartographer:
                 rects.append((pool.x, pool.y, pool.x + pool.w, pool.y + pool.l))
 
             # 3. Child branch corridors
-            for branch in getattr(fluid.state, "branches", None) or []:
+            for branch in fluid.state.branches:
                 if branch.length <= 0:
                     continue
                 bx = branch.position.x
                 by = branch.position.y
                 b_dir = branch.source
-                b_dir_str = b_dir.value if hasattr(b_dir, "value") else str(b_dir)
 
-                if b_dir_str == Directions.DOWN.value:
+                if b_dir == Directions.DOWN.value:
                     rects.append((bx, by, bx + fw, by + branch.length))
-                elif b_dir_str == Directions.UP.value:
+                elif b_dir == Directions.UP.value:
                     rects.append((bx, by - branch.length, bx + fw, by))
-                elif b_dir_str == Directions.RIGHT.value:
+                elif b_dir == Directions.RIGHT.value:
                     rects.append((bx, by, bx + branch.length, by + fl))
-                elif b_dir_str == Directions.LEFT.value:
+                elif b_dir == Directions.LEFT.value:
                     rects.append((bx - branch.length, by, bx, by + fl))
 
             # 4. Compound hitboxes (captures secondary pools from recursive bifurcations)
-            for hb in getattr(fluid.state, "hitboxes", None) or []:
+            for hb in fluid.state.hitboxes:
                 if hb.dimensions.w > 0 and hb.dimensions.l > 0:
                     rect = (
                         fx + hb.position.x,
@@ -252,13 +250,16 @@ class Cartographer:
         candidate_obstacles: List[Tuple[int, int, int, int]] = []
 
         for asset in candidates:
-            if asset.category in (AssetCategories.SHEETS.value, AssetCategories.EFFECTS.value):
+            if asset.category in (
+                AssetCategories.SHEETS.value, 
+                AssetCategories.EFFECTS.value
+            ):
                 continue
             if asset.instance == AssetInstances.RAFTS.value:
                 continue
             if asset.instance == AssetInstances.GATES.value and asset.state.switch:
                 continue
-            if hasattr(asset.properties, "mass") and asset.properties.mass != 0:
+            if asset.properties.mass != 0:
                 continue
 
             for hb in asset.hitboxes:
@@ -269,7 +270,10 @@ class Cartographer:
                     hb.dimensions.l,
                 ))
 
-        return bool(candidate_obstacles and geometry.occluded(x, y, w, l, candidate_obstacles))
+        return bool(
+            candidate_obstacles and 
+            geometry.occluded(x, y, w, l, candidate_obstacles)
+        )
 
     @classmethod
     def _resolve_step(
