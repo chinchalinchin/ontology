@@ -1,8 +1,8 @@
 **Guideline: Documentation**
 
-* **Flexibility** Treat code as ground truth, but recognize the application is in development and this ground truth will evolve over time. Documentation is an ideal that may not yet be implemented in the code (or it may have been modified to accomodate the realities of code execution); it serves as a design document. It should be respected and consulted for the general direction of the project, but not always enforced. Because the application is currently in development, the documentation may touch on areas that have not yet been implemented or it may assert things of the code that are no longer true. Documentation is in flux while design occurs, so it is open for debate if something is inconsistent or contradictory. Assist in elaborating the nebulous or vague concepts in the documentation.
+* **Flexibility** Treat the Codebase as ground truth, but recognize the Application is in development and this ground truth will evolve over time. Documentation is an ideal that may not yet be implemented in the Codebase (or it may have been modified to accomodate the realities of execution); it serves as a design document. It should be respected and consulted for the general direction of the project, but not always enforced. Because the Application is currently in development, the Documentation may touch on areas that have not yet been implemented or it may assert things of the Codebase that are no longer true. Documentation is in flux while design occurs, so it is open for debate if something is inconsistent or contradictory. Assist in elaborating the nebulous or vague concepts in the Documentation.
 * **Generality** Documentation should **not** be *hyper-specific*. Do **not** document each and every function call, or `dict` lookup. Do **not** litter the Documentation with string literals, i.e. `tickmarks`. The point of Documentation is to create a metalogical framework for understanding the Application, not for replicating the codebase into pseudocode. Do **not** reference specific function calls like `malloc()` or `cosf()`. The Documentation should **not** contain any reference to implementation-specific libraries beyond the Application libraries themselves. 
-* **Concisness** Do **not** change documentation to insert pointless filler words like "*precisely*", "*exactly*", "*pure*", etc. 
+* **Conciseness** Do **not** employ pointless filler words like "*precisely*", "*exactly*", "*pure*", etc. All unnecessary adjectives and abverbs should be culled from the Documentation.
 
 **Example: Poor Documentation**
 
@@ -17,8 +17,8 @@ Example of **Extremely Poor** Documentation:
 
 Why this **Extremely Poor** Documentation:
 
-* It *inverts* the order of understanding. Since it does not actually reflect the underlying logic of the Rapidly-exploring Random Tree in anyway, and is more aptly described as a "taxonomy of jargon", a reader cannot understand this block without first reading the Codebase, defeating the entire purpose of Documentation. It actively obscures the algorithm through meaningless jargon. 
-* It is littered with specific references to lines in the Codebase. This is a *Dependency* between the Documentation and the Codebase. Anytime the Codebase changes, this section of the Documentation has to be updated to reflect the underlying change. This is not how Documentation should work; Documentation specifies, the Codebase implements. If Documentation needs updated to accomodate the specifics of an implementation, then something is wrong. The Documentation should be *completely* decoupled from the Codebase; all such *Dependencies* should be eliminated when they are detected.
+* It *inverts* the order of understanding. Since it does not actually reflect the underlying logic of the Rapidly-exploring Random Tree in any way, and is more aptly described as a "taxonomy of jargon", a reader cannot understand this block without first knowing what it is referring to in the Codebase, thus defeating the entire purpose of Documentation. It actively obscures the algorithm through meaningless jargon and forces the reader to consult the Codebase. 
+* It is littered with specific references to lines in the Codebase. This is a *Dependency* between the Documentation and the Codebase. Anytime the Codebase changes, this section of the Documentation has to be updated to reflect the underlying change. This is not how Documentation should work; Documentation specifies, the Codebase implements. If Documentation needs updated to accomodate the particulars of an implementation, then something is wrong. The Documentation should be *completely* decoupled from the Codebase; all such *Dependencies* should be eliminated when they are detected.
 * It references a static idea from a snapshot of the project, e.g. "*eliminating object pointer chasing and heap fragmentation*". If the code actually eliminates this, then it is pointless and counter-productive reintroducing this clause as an idea into future **Contexts**. This is a *Vestige* of the current **Context**, and all such *Vestiges* should be removed from the Documentation.
 
 **Example: Good Documentation**
@@ -52,11 +52,7 @@ Example of **Extremely Good** Documentation:
 
 Why this **Extremely Good** Documentation:
 
-* The reader requires no knowledge of the Codebase to understand what is going. The Documentation is no less specific or exact for the lack of highly specific and bespoke jargon.
-* The Documentation has *no Dependencies* on the Codebase whatsoever. No classes names are referenced, no functions names are enumerated, no specific lines from the Codebase are referenced at all; It is a pure deduction from explicit and well-defined premises.
-
-**Markup: Documentation**
-
-* `@TODO(phase: Optional[str])`: Markup by the **User** to denote key areas that need re-evaluated. If present, review the note and consider using a [Backlog Template `with(not grooming)`](#template-backlog) to open an item in the Backlog, or a [Bug Report](#template-bug-report) to isolate a logical error.
-    * `phase`: If `phase` has not been started on the [Task Board](#ontology-task-board), ignore this markup. If `phase = None`, review the note unconditionally.
-
+* The reader requires no knowledge of the Codebase to understand what is going on.
+* The Documentation is no less specific or exact for the lack of highly obstuse and bespoke jargon.
+* The Documentation has *no Dependencies* on the Codebase whatsoever. No classes names are referenced, no functions names are enumerated, no specific lines from the Codebase are referenced at all; It is a pure deduction from explicit and well-defined premises contained within the Documentation itself.
+* The specification given in the Documentation is decoupled from the Codebase, but the Codebase nevertheless depends on the specifics of the Documentation. The algorithm that needs to be implemented is clear and precise, but the Codebase is free to adapt the implementation to the realities of the Application, without invalidating the Documentation.
