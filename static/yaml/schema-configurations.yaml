@@ -1597,7 +1597,6 @@ $defs:
             type: string
           type: array
         - type: 'null'
-        default: null
         title: Rumors
       prices:
         anyOf:
@@ -1605,7 +1604,6 @@ $defs:
             type: number
           type: object
         - type: 'null'
-        default: null
         title: Prices
       relationships:
         anyOf:
