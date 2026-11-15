@@ -249,10 +249,16 @@ class NavigationMechanics(Mechanic):
             self._clear(sprite)
             return
 
-        goal_target = Position(
-            x=int(target.x - offset_x),
-            y=int(target.y - offset_y),
-        )
+        goal_x = int(target.x - offset_x)
+        goal_y = int(target.y - offset_y)
+        if (
+            sprite.state.goal.position is not None
+            and sprite.state.goal.position.x == goal_x
+            and sprite.state.goal.position.y == goal_y
+        ):
+            goal_target = sprite.state.goal.position
+        else:
+            goal_target = Position(x=goal_x, y=goal_y)
 
         exclude = [ sprite.name ]
         if sprite.state.goal.name:

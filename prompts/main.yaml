@@ -60,8 +60,8 @@ tools:
     # --------------------------------------------
     manager:
       board: false
-      docs: true
-      templates: true
+      docs: false
+      templates: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
     # --------------------------------------------
@@ -77,19 +77,19 @@ tools:
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: true
-      filter: true
+      data: false
+      filter: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: true
+      directory: false
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
-      configuration: true
+      configuration: false
       pipeline: true
       session: false
 # ----------------------------------------------------
@@ -136,52 +136,56 @@ tools:
       filter:
         default: AND
         queries:
-          # ------------------------------------
-          - title: Application Core Components
+          - title: Test Fixtures
             scan:
-              domain: [ system ]
-              app: [ core, component ]
-          # ------------------------------------
-          - title: Asset Abstracts
-            scan:
-              domain: [ abstract ]
-              app: [ asset ]
-          # ------------------------------------
-          - title: Core Asset Models
-            scan:
-              domain: [ model ]
-              app: [ core, asset ]
-          # ------------------------------------
-          - title: Sheet Models
-            scan:
-              domain: [ model ]
-              category: [ sheets ]
-          # ------------------------------------
-          - title: Sheet Hitboxes
-            scan:
-              domain: [ concrete ]
-              app: [ asset ]
-              asset: [ hitbox ]
-              category: [ sheets ]
-          # ------------------------------------
-          - title: Mechanic - Navigation
-            scan: 
-              app: [ mechanic ]
-              workflows: [ navigation ]
-          # ------------------------------------
-          - title: Modules - Navigation Workflow
-            scan:
-              app: [ module ]
-              workflows: [ navigation ]
-          # ------------------------------------
-          - title: Libraries - Navigation Workflow
-            scan:
-              app: [ library ]
-              workflows: [ navigation ]
-          # ------------------------------------
-          - title: Logical Predicates
-            scan:
-              app: [ module, semantics ]
+              domain: [ test ]
+              test: [ fixtures ]
+          # # ------------------------------------
+          # - title: Application Core Components
+          #   scan:
+          #     domain: [ system ]
+          #     app: [ core, component ]
+          # # ------------------------------------
+          # - title: Asset Abstracts
+          #   scan:
+          #     domain: [ abstract ]
+          #     app: [ asset ]
+          # # ------------------------------------
+          # - title: Core Asset Models
+          #   scan:
+          #     domain: [ model ]
+          #     app: [ core, asset ]
+          # # ------------------------------------
+          # - title: Sheet Models
+          #   scan:
+          #     domain: [ model ]
+          #     category: [ sheets ]
+          # # ------------------------------------
+          # - title: Sheet Hitboxes
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ asset ]
+          #     asset: [ hitbox ]
+          #     category: [ sheets ]
+          # # ------------------------------------
+          # - title: Mechanic - Navigation
+          #   scan: 
+          #     app: [ mechanic ]
+          #     workflows: [ navigation ]
+          # # ------------------------------------
+          # - title: Modules - Navigation Workflow
+          #   scan:
+          #     app: [ module ]
+          #     workflows: [ navigation ]
+          # # ------------------------------------
+          # - title: Libraries - Navigation Workflow
+          #   scan:
+          #     app: [ library ]
+          #     workflows: [ navigation ]
+          # # ------------------------------------
+          # - title: Logical Predicates
+          #   scan:
+          #     app: [ module, semantics ]
       data:
         properties: [ objects, crafts, sheets/sprites ]
         state: [ world-testbed ]

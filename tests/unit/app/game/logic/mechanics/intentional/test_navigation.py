@@ -207,7 +207,7 @@ def test_navigation_obstacles_elevation_partitioning(mock_board):
     assert (50.0, 50.0, 30.0, 40.0) in obs_tier1
 
 
-def test_navigation_obstacles_queries_requested_elevation_tier(mock_board):
+def test_navigation_obstacles_queries_requested_elevation_tier(mock_board, monkeypatch):
     """
     Verifies Bug B030: obstacles() resolves hitboxes at the target elevation
     argument rather than the asset's base elevation.
@@ -217,8 +217,23 @@ def test_navigation_obstacles_queries_requested_elevation_tier(mock_board):
     hb_tier1 = Hitbox(Position(20, 20), Dimensions(30, 30))
 
     strut.elevation = 0
-    strut.hitbox.elevations = lambda props, state: [0, 1]
-    strut.hitbox.get = lambda props, state, elev: [hb_tier0] if elev == 0 else [hb_tier1]
+    orig_elevations = strut.hitbox.elevations
+    orig_get = strut.hitbox.get
+
+    monkeypatch.setattr(
+        strut.hitbox,
+        "elevations",
+        lambda props, state: [0, 1] if state is strut.state else orig_elevations(props, state),
+    )
+    monkeypatch.setattr(
+        strut.hitbox,
+        "get",
+        lambda props, state, elev: (
+            ([hb_tier0] if elev == 0 else [hb_tier1])
+            if state is strut.state
+            else orig_get(props, state, elev)
+        ),
+    )
 
     sx, sy = strut.state.position.x, strut.state.position.y
     obs_tier1 = NavigationMechanics.obstacles(
@@ -466,7 +481,9 @@ def test_navigation_clear_los_tracks_moving_same_layer_asset_when_goal_position_
 
     mechanic._navigate(sprite, mock_board)
 
-    assert sprite.state.trajectory.target == Position(200, 800)
+    assert sprite.state.trajectory.target is not None
+    assert sprite.state.trajectory.target.x == 200
+    assert sprite.state.trajectory.target.y == 800
 
 
 def test_navigation_occluded_los_generates_waypoints(mock_mechanic, mock_board):

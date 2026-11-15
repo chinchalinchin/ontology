@@ -15,6 +15,7 @@ tools:
     manager:
       templates:
         - template-merge
+        - template-docs
     tests:
       pipeline:
         command: pytest -m
