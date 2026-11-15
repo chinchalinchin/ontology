@@ -70,6 +70,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       * [x]: [Phase 07.03: Gravity](./phases/refactor/refactor-07-03.md)
       * [x]: [Phase 07.04: Materialization](./phases/refactor/refactor-07-04.md)
       * [ ]: [Phase 07.05: Composite Compositions](./phases/refactor/refactor-07-05.md)
+      * [ ]: [Phase 07.06: Primitive Crafting](./phases/refactor/refactor-07-06.md)
     * *Phase 08:*
       * [x]: [Phase 08.01: Obstable Geometry](./phases/refactor/refactor-08-01.md)
       * [x]: [Phase 08.02: NavigationMechanics](./phases/refactor/refactor-08-02.md)
@@ -90,9 +91,9 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       * [ ]: [Phase 10.03: Flowers, Pixies & Reproduction](./phases/refactor/refactor-10-03.md)
       * [ ]: [Phase 10.04: Cythonization](./phases/refactor/refactor-10-04.md)
   * **Design:**
-    * *Automata*
+    * *Automaton*
       * [x]: [Intention Automata 000: Dialogue](./phases/design/design-automata-dialogue.md)
-      * [x]: [Intention Automat 001: Interaction](./phases/design/design-automata-interaction.md)
+      * [x]: [Intention Automata 001: Interaction](./phases/design/design-automata-interaction.md)
       * [x]: [Intention Automata 002: Wander](./phases/design/design-automata-wander.md)
     * *Compositions:*
       * [x]: [Composition 000: Castle Dawn](./phases/design/design-comp-castle-dawn.md)
