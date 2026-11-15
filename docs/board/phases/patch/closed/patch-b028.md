@@ -1,6 +1,6 @@
 ### Bug B028: `NavigationMechanics` Performs 1D Point-Ray LOS and RRT Planning Without Inflating Obstacles by Sprite Hitbox Half-Extents or `squeeze.radius`
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: HIGH
 
 **Description**

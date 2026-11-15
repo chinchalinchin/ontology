@@ -1,6 +1,6 @@
 ### Bug B031: `NavigationMechanics._navigate` Assigns Raw `goal.position` Instead of Offset-Adjusted `_target` Coordinate on Clear LOS and Final Waypoint Arrival
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: MEDIUM
 
 **Description**

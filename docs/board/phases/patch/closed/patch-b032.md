@@ -2,7 +2,7 @@
 
 ### Bug B032: `_steer` in `libs.core.math.paths.pyx` Steps a Fixed `step_size` Without Clamping to Sample Distance, Overshooting Near Targets Into Obstacles
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: MEDIUM
 
 **Description**

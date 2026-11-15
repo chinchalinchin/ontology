@@ -1,7 +1,7 @@
 
 ### Bug B029: Early Waypoint Popping at `action.radius` (`25px`) Before Corner Clearance Triggers Next-Frame LOS Occlusion and Replan Thrashing
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: HIGH
 
 **Description**

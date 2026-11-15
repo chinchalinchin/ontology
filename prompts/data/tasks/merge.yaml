@@ -6,16 +6,16 @@ task:
 tools:
 # ----------------------------------------------------
   views:
-    # --------------------------------------------
-    # ------------------------ TOOL VIEWS: MANAGER
-    # --------------------------------------------
     manager:
       templates: true
+    tests:
+      pipeline: true
 # ----------------------------------------------------
   parameters:
-    # --------------------------------------------
-    # ------------------------ PARAMETERS: MANAGER
-    # --------------------------------------------
     manager:
       templates:
         - template-merge
+    tests:
+      pipeline:
+        command: pytest -m
+        marker: workflow_navigation

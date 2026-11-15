@@ -1,7 +1,7 @@
 
 ### Bug B030: `NavigationMechanics.obstacles` Queries `asset.hitboxes` at Base `asset.elevation` Instead of the Target `elevation` Tier
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: MEDIUM
 
 **Description**
