@@ -1,6 +1,6 @@
 ### Bug B027: `Engine._drain` Returns Early on Unregistered Event Types, Stranding Remaining Events in `self.bus`
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: LOW
 
 **Description**

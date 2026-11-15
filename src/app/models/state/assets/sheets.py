@@ -127,8 +127,8 @@ class Goal:
 @dataclass(slots=True)
 class Memory:
     goals: Optional[Dict[str, Goal]] = field(default_factory=dict)
-    rumors: Optional[List[str]] = None
-    prices: Optional[Dict[str, float]] = None
+    rumors: Optional[List[str]] = field(default_factory=list)
+    prices: Optional[Dict[str, float]] = field(default_factory=dict)    
     relationships: Optional[Dict[str, Enumerated[Relationships]]] = None
     property: Optional[Dict[str, Position]] = None # type: ignore
     sprites: Optional[Dict[str, Position]] = None # type: ignore
@@ -147,6 +147,8 @@ class Memory:
             self.rumors = []
         if self.doors is None:
             self.doors = {} 
+        if self.prices is None: 
+            self.prices = {}
 
 @dataclass(slots=True)
 class Trajectory:

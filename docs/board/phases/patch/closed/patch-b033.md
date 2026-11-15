@@ -1,7 +1,7 @@
 
 ### Bug B033: `predicates.in_fluid` Short-Circuits Active Child Branches When Parent `fluid.state.length == 0`
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: LOW
 
 **Description**

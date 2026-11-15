@@ -112,7 +112,7 @@ class Engine:
             
             if not handler:
                 logger.warning(f"No Event Handler registered for type: {type(event)}")
-                return 
+                continue
             
             handler.handle(event, self.data)
 
