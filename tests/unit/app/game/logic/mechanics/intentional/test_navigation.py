@@ -41,7 +41,7 @@ pytestmark = [
 ]
 
 # ---------------------------------------------------------------------------
-# ANCHOR & OBSTACLE TESTS
+# ANCHOR, PADDING & OBSTACLE TESTS
 # ---------------------------------------------------------------------------
 
 
@@ -74,6 +74,30 @@ def test_navigation_anchor_fallback_dimensions(mock_asset):
     assert anchor.y == crate.state.position.y + crate.dimensions.l // 2
 
 
+def test_navigation_padding_with_hitbox_and_squeeze(mock_asset):
+    sprite = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value,
+    )
+    pad_x, pad_y = NavigationMechanics.padding(sprite)
+    hb = sprite.hitboxes[0]
+    squeeze = float(sprite.state.mutators.parameters.squeeze.radius)
+    assert pad_x == hb.dimensions.w / 2.0 + squeeze
+    assert pad_y == hb.dimensions.l / 2.0 + squeeze
+
+
+def test_navigation_padding_fallback_dimensions(mock_asset):
+    crate = mock_asset(
+        AssetCategories.OBJECTS.value,
+        AssetInstances.CRATES.value,
+    )
+    crate.properties.hitboxes = []
+    crate.state.mutators.parameters.squeeze = None
+    pad_x, pad_y = NavigationMechanics.padding(crate)
+    assert pad_x == crate.dimensions.w / 2.0
+    assert pad_y == crate.dimensions.l / 2.0
+
+
 def test_navigation_obstacles_offset_hitbox(mock_board):
     sprite = mock_board.instances(AssetInstances.SPRITES.value, "0")[0]
     hb = sprite.hitboxes[0]
@@ -84,6 +108,26 @@ def test_navigation_obstacles_offset_hitbox(mock_board):
         float(sprite.state.position.y + hb.position.y),
         float(hb.dimensions.w),
         float(hb.dimensions.l),
+    )
+    assert expected in obs
+
+
+def test_navigation_obstacles_minkowski_inflation(mock_board):
+    sprite = mock_board.instances(AssetInstances.SPRITES.value, "0")[0]
+    hb = sprite.hitboxes[0]
+    obs = NavigationMechanics.obstacles(
+        layer="0",
+        board=mock_board,
+        exclude=[],
+        pad_x=10.0,
+        pad_y=8.0,
+    )
+
+    expected = (
+        float(sprite.state.position.x + hb.position.x) - 10.0,
+        float(sprite.state.position.y + hb.position.y) - 8.0,
+        float(hb.dimensions.w) + 20.0,
+        float(hb.dimensions.l) + 16.0,
     )
     assert expected in obs
 
@@ -163,6 +207,31 @@ def test_navigation_obstacles_elevation_partitioning(mock_board):
     assert (50.0, 50.0, 30.0, 40.0) in obs_tier1
 
 
+def test_navigation_obstacles_queries_requested_elevation_tier(mock_board):
+    """
+    Verifies Bug B030: obstacles() resolves hitboxes at the target elevation
+    argument rather than the asset's base elevation.
+    """
+    strut = mock_board.asset("test-strut", "0")
+    hb_tier0 = Hitbox(Position(0, 0), Dimensions(10, 10))
+    hb_tier1 = Hitbox(Position(20, 20), Dimensions(30, 30))
+
+    strut.elevation = 0
+    strut.hitbox.elevations = lambda props, state: [0, 1]
+    strut.hitbox.get = lambda props, state, elev: [hb_tier0] if elev == 0 else [hb_tier1]
+
+    sx, sy = strut.state.position.x, strut.state.position.y
+    obs_tier1 = NavigationMechanics.obstacles(
+        layer="0",
+        board=mock_board,
+        exclude=[],
+        elevation=1,
+    )
+
+    assert (float(sx + 20), float(sy + 20), 30.0, 30.0) in obs_tier1
+    assert (float(sx), float(sy), 10.0, 10.0) not in obs_tier1
+
+
 # ---------------------------------------------------------------------------
 # STATE & TARGET ANCHOR TESTS
 # ---------------------------------------------------------------------------
@@ -221,6 +290,22 @@ def test_navigation_target_none_when_no_goal(mock_mechanic, mock_asset, mock_boa
         AssetInstances.SPRITES.value,
     )
     sprite.state.goal = None
+
+    assert mechanic._target(sprite, mock_board) is None
+
+
+def test_navigation_target_none_when_goal_position_none(mock_mechanic, mock_asset, mock_board):
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.SPRITES.value,
+    )
+    sprite.state.goal = Goal(
+        name="missing-entity",
+        category=Goals.TARGET.value,
+        layer="0",
+        position=None,
+    )
 
     assert mechanic._target(sprite, mock_board) is None
 
@@ -355,6 +440,35 @@ def test_navigation_clear_line_of_sight(mock_mechanic, mock_board):
     assert sprite.state.trajectory.cooldown == 0
 
 
+def test_navigation_clear_los_tracks_moving_same_layer_asset_when_goal_position_none(
+    mock_mechanic,
+    mock_board,
+):
+    """
+    Verifies Bug B031: when pursuing a same-layer asset with clear LOS and
+    goal.position=None, trajectory.target resolves to the target asset's
+    offset-adjusted coordinate.
+    """
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+    player = mock_board.player()
+
+    mock_board.relayer(player, sprite.state.layer)
+    sprite.state.position = Position(100, 800)
+    player.state.position = Position(200, 800)
+    sprite.state.intention = Intentions.FOLLOW.value
+    sprite.state.goal = Goal(
+        name=player.name,
+        category=Goals.TARGET.value,
+        layer=sprite.state.layer,
+        position=None,
+    )
+
+    mechanic._navigate(sprite, mock_board)
+
+    assert sprite.state.trajectory.target == Position(200, 800)
+
+
 def test_navigation_occluded_los_generates_waypoints(mock_mechanic, mock_board):
     mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
     sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
@@ -377,6 +491,33 @@ def test_navigation_occluded_los_generates_waypoints(mock_mechanic, mock_board):
     assert sprite.state.trajectory.target == sprite.state.trajectory.vertices[0]
     assert sprite.state.trajectory.stalled is False
     assert sprite.state.trajectory.cooldown == 0
+
+
+def test_navigation_minkowski_los_detects_grazing_obstacle(mock_mechanic, mock_board):
+    """
+    Verifies Bug B028: an obstacle whose top edge lies 1px below the raw 1D
+    anchor ray (y=542 vs y=541) but intersects the sprite's physical hitbox
+    and squeeze envelope triggers RRT waypoint generation instead of direct LOS.
+    """
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+    crate = mock_board.instances(AssetInstances.CRATES.value, "0")[0]
+
+    sprite.state.position = Position(100, 500)
+    sprite.state.intention = Intentions.FIND.value
+    crate.state.position = Position(180, 542)
+    sprite.state.goal = Goal(
+        name="grazing-crate",
+        category=Goals.POSITION.value,
+        layer=sprite.state.layer,
+        position=Position(260, 500),
+    )
+    mock_board.perimeters["0"] = {0: []}
+
+    mechanic._navigate(sprite, mock_board)
+
+    assert len(sprite.state.trajectory.vertices) >= 1
+    assert sprite.state.trajectory.target == sprite.state.trajectory.vertices[0]
 
 
 def test_navigation_stalled_path_enters_cooldown(mock_mechanic, mock_board):
@@ -455,6 +596,41 @@ def test_navigation_waypoint_arrival_advances_queue(mock_mechanic, mock_board):
 
     assert sprite.state.trajectory.vertices == [wp2]
     assert sprite.state.trajectory.target == wp2
+
+
+def test_navigation_intermediate_corner_waypoint_waits_for_los_clearance(
+    mock_mechanic,
+    mock_board,
+):
+    """
+    Verifies Bug B029: an intermediate corner waypoint within action.radius
+    is not popped while the ray to the next waypoint remains occluded by the corner.
+    """
+    mechanic = mock_mechanic(Mechanics.NAVIGATION.value)
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+
+    sprite.state.position = Position(95, 800)
+    sprite.state.intention = Intentions.FIND.value
+    sprite.state.goal = Goal(
+        name="destination",
+        category=Goals.POSITION.value,
+        layer=sprite.state.layer,
+        position=Position(300, 800),
+    )
+    mock_board.perimeters["0"] = {
+        0: [Boundary(Position(170, 820), Dimensions(40, 100))],
+    }
+
+    # wp1 is within action.radius (25px) of (95, 800), while wp2 is occluded behind the corner
+    wp1 = Position(110, 785)
+    wp2 = Position(240, 820)
+    sprite.state.trajectory.vertices = [wp1, wp2]
+    sprite.state.trajectory.target = wp1
+
+    mechanic._navigate(sprite, mock_board)
+
+    assert sprite.state.trajectory.vertices == [wp1, wp2]
+    assert sprite.state.trajectory.target == wp1
 
 
 def test_navigation_waypoint_arrival_final_sets_goal_target(mock_mechanic, mock_board):

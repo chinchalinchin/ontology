@@ -1,5 +1,4 @@
-
-##### Bug B023: `StageHitbox.get`, `OrientedHitbox.get`, and `DirectedHitbox.get` Raise `AttributeError` When `properties.hitboxes` Is `None`
+### Bug B023: `StageHitbox.get`, `OrientedHitbox.get`, and `DirectedHitbox.get` Raise `AttributeError` When `properties.hitboxes` Is `None`
 
 **STATUS**: OPEN
 **SEVERITY**: MEDIUM

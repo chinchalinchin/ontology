@@ -1,19 +1,47 @@
+{% set bugs = [ 
+    'patch-b028',
+    'patch-b029',
+    'patch-b030',
+    'patch-b031',
+    'patch-b032',
+    'patch-b033'
+] %}
+{% set path = properties.paths.root + properties.paths.phases + 'patch/open/'%}
 # Task: Ontology - Patch
 
-**Priority**
+**Priorities**
 
-Assist in debugging and patching the bug described on the [Task Board](#ontology-task-board).
+* **PATCHING** Implement fixes for the [Bugs](#bugs) described below.
+    * If fixes requires additional code, ensure that code is covered with tests.
+* **DEBUGGING**: If applicable, debug the current run of the test pipeline located in the [Test Pipeline](#view-test-pipeline) section.
+* **BUGHUNTING** If new bugs are detected, **do not implement the solution**. Instead, open a new [Bug Report](#template-bug) for **User Review**.
 
-**Patching Guidelines**
+## Patching Guidelines
 
-- Determine if the bug is due to a simple misconfiguration or error. If the bug can be easily patched, patch it.
-- If the bug is due to a deeper architectural issue and requires further analysis, use the [Backlog Template](#template-backlog) to open an item in the backlog.
-- If the bug is due to an ambiguity in design, use the [Documentation Template](#template-documentation) to suggest clarifications and further specifications.
+{% include 'blocks/controls/constraint-quality.md' %}
 
-{% include 'blocks/controls/debugging-guidelines.md' %}
+{% include 'blocks/controls/constraint-changes.md' %}
 
-## Templates
+{% include 'blocks/controls/guideline-models.md' %}
 
-{% include 'blocks/templates/template-documentation' %}
+{% include 'blocks/controls/guideline-docstrings.md' %}
 
-{% include 'blocks/templates/template-backlog.md' %} 
+## Coverage Guidelines
+
+{% include 'blocks/controls/guideline-fixtures.md' %}
+
+{% include 'blocks/controls/guideline-coverage.md' %}
+
+{% include 'blocks/controls/guideline-testbed.md' %}
+
+{% include 'blocks/controls/constraint-coverage.md' %}
+
+## Bugs
+
+### Reports
+
+{% for bug in bugs %}
+
+{{ file(path + bug + '.md') }}
+
+{% endfor %}

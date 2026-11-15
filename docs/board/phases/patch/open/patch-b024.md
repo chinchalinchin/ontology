@@ -1,5 +1,4 @@
-
-##### Bug B024: `SpatialMechanic.intersections` Overrides Intentional Empty Hitboxes (`[]`) with Full Asset Dimensions and Ignores Elevation Tiers
+### Bug B024: `SpatialMechanic.intersections` Overrides Intentional Empty Hitboxes (`[]`) with Full Asset Dimensions and Ignores Elevation Tiers
 
 **STATUS**: OPEN
 **SEVERITY**: MEDIUM

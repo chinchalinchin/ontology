@@ -16,7 +16,6 @@ import pytest
 
 # Application Libraries
 from app.game.logic.modules.paths.plan import (
-    Node,
     Planner,
 )
 
@@ -28,13 +27,6 @@ pytestmark = [
     pytest.mark.app_module,
     pytest.mark.workflow_navigation,
 ]
-
-
-def test_node_initialization():
-    node = Node(10.5, 20.25)
-    assert node.x == 10.5
-    assert node.y == 20.25
-    assert node.parent is None
 
 
 def test_planner_initialization():
@@ -176,3 +168,16 @@ def test_rrt_path_pruning_straightens_obstructed_corridor():
     assert path[-1].x == 100
     assert path[-1].y == 0
     assert all(isinstance(p, Position) for p in path)
+
+
+def test_rrt_steer_clamps_distance_near_target_with_rear_wall():
+    """
+    Verifies Bug B032: when the target lies closer than step_size with a wall
+    immediately behind it, _steer clamps to the sample distance rather than
+    overshooting into the wall.
+    """
+    wall = (25.0, -50.0, 10.0, 100.0)
+    path = rrt(0.0, 0.0, 20.0, 0.0, [wall], step_size=32.0, max_iter=300)
+    assert len(path) == 1
+    assert path[0].x == 20
+    assert path[0].y == 0

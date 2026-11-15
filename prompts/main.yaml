@@ -7,8 +7,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: index.md.j2
-  # template: draft.md.j2
+  # template: index.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
@@ -18,7 +17,7 @@ task:
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
   # template: maintain/codebase.md.j2
-  # template: maintain/patch.md.j2
+  template: maintain/patch.md.j2
   # template: maintain/session.md.j2
   # --------------------------------------------
   # --------------------------- TEMPLATES: DUMPS 
@@ -46,10 +45,8 @@ task:
   # template: design/style/mermaid.md.j2
 # ----------------------------------------------------
   parameters:
-    description: |
-      Having seen the collision pipeline, perform a [Code Review](#template-review) of the closely related navigation workflow and logical predicates.
-    title: |
-      Review
+    description: TODO
+    title: TODO
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ---------------------------------------------- TOOLS
@@ -63,7 +60,7 @@ tools:
     # --------------------------------------------
     manager:
       board: false
-      docs: false
+      docs: true
       templates: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
@@ -80,19 +77,19 @@ tools:
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      data: false
+      data: true
       filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: false
+      directory: true
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
-      configuration: false
+      configuration: true
       pipeline: true
       session: false
 # ----------------------------------------------------
@@ -110,7 +107,7 @@ tools:
           # - 01-assets
           # - 02-sprites
           - 03-compositions
-          - 04-intentions
+          # - 04-intentions
           # - 05-mechanics
           - 06-widgets
           - 07-acoustics
@@ -119,12 +116,12 @@ tools:
           - 10-chemistry
           - 11-emergence
           # - 12-architecture
-      templates: 
+      templates:
         # - template-backlog
-        # - template-bug
+        - template-bug
         # - template-design
         # - template-merge
-        - template-review
+        # - template-review
         # - template-spec
     metrics:
       pstats: 
@@ -139,6 +136,33 @@ tools:
       filter:
         default: AND
         queries:
+          # ------------------------------------
+          - title: Application Core Components
+            scan:
+              domain: [ system ]
+              app: [ core, component ]
+          # ------------------------------------
+          - title: Asset Abstracts
+            scan:
+              domain: [ abstract ]
+              app: [ asset ]
+          # ------------------------------------
+          - title: Core Asset Models
+            scan:
+              domain: [ model ]
+              app: [ core, asset ]
+          # ------------------------------------
+          - title: Sheet Models
+            scan:
+              domain: [ model ]
+              category: [ sheets ]
+          # ------------------------------------
+          - title: Sheet Hitboxes
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              asset: [ hitbox ]
+              category: [ sheets ]
           # ------------------------------------
           - title: Mechanic - Navigation
             scan: 

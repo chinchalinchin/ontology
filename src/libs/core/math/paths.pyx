@@ -7,10 +7,21 @@
 
 # Ontology: Libraries - libs.core.math.paths
 """
-# cython: language_level=3
-from libc.math cimport fabsf, fminf, fmaxf, atan2f, cosf, sinf, hypotf
-from libc.stdlib cimport malloc, free, rand, RAND_MAX
-
+from libc.math cimport (
+    fabsf, 
+    fminf, 
+    fmaxf, 
+    atan2f, 
+    cosf, 
+    sinf, 
+    hypotf
+)
+from libc.stdlib cimport (
+    malloc,
+    free, 
+    rand, 
+    RAND_MAX
+)
 from libs.core.models cimport Position
 from libs.core.math.geometry cimport c_punctures
 from libs.core.math.paths cimport RRTNode, RRTObstacle
@@ -83,9 +94,12 @@ cdef inline void _steer(
     float* out_x, 
     float* out_y
 ) noexcept nogil:
-    cdef float theta = atan2f(to_y - from_y, to_x - from_x)
-    out_x[0] = from_x + step_size * cosf(theta)
-    out_y[0] = from_y + step_size * sinf(theta)
+    cdef float dx = to_x - from_x
+    cdef float dy = to_y - from_y
+    cdef float dist = fminf(step_size, hypotf(dx, dy))
+    cdef float theta = atan2f(dy, dx)
+    out_x[0] = from_x + dist * cosf(theta)
+    out_y[0] = from_y + dist * sinf(theta)
 
 
 cdef inline int _prune_path(
@@ -262,7 +276,11 @@ cpdef list rrt(
                     nodes[new_idx].parent_idx = nearest_idx
                     node_count += 1
 
-                    if hypotf(tx - new_x, ty - new_y) <= step_size:
+                    if new_x == tx and new_y == ty:
+                        target_idx = new_idx
+                        found = True
+                        break
+                    elif hypotf(tx - new_x, ty - new_y) <= step_size:
                         if _is_segment_clear(new_x, new_y, tx, ty, c_obstacles, culled_count):
                             target_idx = node_count
                             nodes[target_idx].x = tx
