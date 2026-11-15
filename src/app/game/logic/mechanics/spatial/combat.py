@@ -56,7 +56,7 @@ class CombatMechanics(SpatialMechanic):
                 for asset 
                 in board.instances(AssetInstances.PLAYERS.value, layer) + \
                     board.instances(AssetInstances.SPRITES.value, layer)
-                if asset.state.intention == Intentions.ATTACK
+                if asset.state.intention == Intentions.ATTACK.value
             ]
             
             if not attackers:
@@ -66,11 +66,11 @@ class CombatMechanics(SpatialMechanic):
             
             for attacker in attackers:
                 # ---------- ATTACKBOX HANDLING
-                if attacker.state.animation.action not in [Actions.SHOOT.value, Actions.CAST.value]:
+                if attacker.state.animation.action not in [
+                    Actions.SHOOT.value, 
+                    Actions.CAST.value
+                ]:
                     attackboxes = CombatMap.attackboxes(attacker.state, board.equipment)
-                    logger.info(
-                        f"attackboxes: {[hb.to_dict() for hb in attackboxes] if attackboxes else None}"
-                    )
                     if attackboxes:
                         melee_attackers.append((attacker, attackboxes))
                     continue

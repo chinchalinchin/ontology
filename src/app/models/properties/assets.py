@@ -117,10 +117,10 @@ class SheetProperties(AssetProperties):
         str, 
         Dict[Enumerated[Actions], Action]
     ] = field(default_factory=dict)
-    attackboxes: Optional[
+    attackboxes: Optional[Union[
+        List[Hitbox],                                               # type: ignore
         Dict[str, List[Hitbox]]                                     # type: ignore
-    ] = field(default_factory=dict)
-    hitboxes: Optional[List[Hitbox]] = field(default_factory=list)  # type: ignore
+    ]] = field(default_factory=list)
 
     
 # --------------------------------------------------------------

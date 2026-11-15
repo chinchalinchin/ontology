@@ -134,7 +134,7 @@ recipes:
     tools:
       frame: state
       animation: none
-      hitbox: none
+      hitbox: attack
     shields:
       frame: state
       animation: none

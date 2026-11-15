@@ -5,6 +5,5 @@ sheets:
       dimensions:
         w: 80
         l: 64
-      attackboxes: null
       hitboxes: null
       actions: extended-walk

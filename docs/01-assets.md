@@ -139,10 +139,8 @@ Certain Assets have a dedicated Substrate to preserve the fidelity of their rend
 
 --8<-- "static/md/asset-substrates.md"
 
-!!! @TODO(07-03)
-    This entire procedure needs re-evaluation now that Substrates are not Elevations, i.e. prior to Phase 07.04 Substrates were used to lazily-load Elevations. Now they are a dedicated partition of the sort key `(elevation, substrate, ground, priority)`
 
-During [CollisionMechanics](./05-mechanics.md#spatial-mechanic-collisionmechanics) and Perimeter generation, all negative Substrates are collapsed into `elevation = 0`, i.e. $\text{elevation} \in [-\infty, 0] \to \text{elevation} = 0$, in order that all Assets on these Substrates may participate in collisions at `elevation = 0`.
+Because `substrate` is an independent secondary component of the rendering sort key `(elevation, substrate, ground, priority)`, Assets rendered on negative intra-elevation substrates (such as [Bridges](#craft-bridges) on `substrate = -1` or [Shorelines](#category-geography) on `substrate = -2`) retain their true topological `elevation` ($E \ge 0$) for spatial queries and collision partitioning.
 
 #### Concept: Materiality
 
@@ -936,13 +934,6 @@ This snippet from the [Schemas](./appendices/01-schemas.md#configuration-actions
 
 Many Sheet Assets reuse the same Action specification. Common Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as *ActionSets*. Each Sheet may specify an ActionSet in its Property index file to use in the construction of its Frame space. See [Action Configuration Schema](./appendices/01-schemas.md#configuration-actions) for more details. 
 
-**Hitbox: Attackboxes**
-
-!!! @TODO(06-03)
-    The Hitbox interface has been formally codified into a component of an Asset. Attackboxes are the last remaining legacy hitbox implementation that needs migrated to the new paradigm. They are complicated by their relationship with Equipment and specific Frames in an Animation.
-
-An Attackbox is a special type of hitbox unique to Sheet Assets. It is mapped to a canonical `<action>-<direction>-<frame>` key (where `setting.SEPARATOR = "-"`) and applied during the animation state identified by this key. Attackboxes are used to augment the Sheet's basic hitbox collision detection during [CombatMechanics](./05-mechanics.md#mechanics-spatial). While any Sprite can alter its Attackbox properties, this property is utilized mainly by [Equipment](./02-sprites.md#equipment).
-
 **Model: Stack**
 
 A Stack is a list of Sheet Asset IDs to superimpose over one another to form the resultant Sheet displayed on the [Screen](./00-overview.md#component-screen). A Sheet Stack is drawn in the order it is specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.
@@ -994,11 +985,18 @@ Sprite States are covered in more detail in the [Sprites documentation](./02-spr
 
 #### Sheet: Equipment 
 
-- Equipment: Weapons, Utilities, Tools, Armor, Shields
+* Equipment: Weapons, Utilities, Tools, Armor, Shields
 
 Equipment is a group of Asset Instances within the Category of Sheets (known as the Equipment Instance Group). They are closely tied to Sprites Animations. Equipment Assets are rendered on top of a Sprite when those pieces of Equipment are active in the Sprite's Inventory. Because of this relationship between the Assets,  i.e. Equipment rendering being dependent on Sprite state, Equipment does not possess its own State, Frame or Animation implementation. Equipment only has Properties.
 
 Equipment is covered in more detail in the [Sprites documentation](./02-sprites.md#equipment).
+
+**Hitbox: AttackHitbox**
+
+An Attackbox is a component of Equipment mapped to a Sprite's canonical `<action>-<direction>-<frame>` Frame key. It resolves the Hitbox governing Combat dynamically during [CombatMechanics](./05-mechanics.md#spatial-mechanic-collisionmechanics).
+
+* `elevations(properties, state): returns [max(0, state.elevation if state.elevation is not None else 0)]`
+* `get(properties, state, elevation)`: resolves active `Hitbox` list for the current animation frame at the requested `elevation`.
 
 ### Category: Widgets
 

@@ -4,8 +4,8 @@
 @domain.system
 @app.library
 @physics.space
+@workflow.combat
 @workflow.collisions
-@workflow.space
 
 # Ontology: Libraries - libs.core.math.space
 """

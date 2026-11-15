@@ -35,12 +35,14 @@ class AttackHitbox(HitboxSchema):
         state: SheetState,
         elevation: int
     ) -> List[Hitbox]:
+        if not properties or not isinstance(properties.hitboxes, dict):
+            return []
         target_e = max(0, state.elevation if state.elevation is not None else 0)
         if max(0, elevation) != target_e:
             return []
-        action_key = settings.SEPARATOR.join([
+        frame_key = settings.SEPARATOR.join([
             state.animation.action,
             state.animation.direction,
-            str(state.animation.frame)
+            str(state.animation.frame),
         ])
-        return properties.attackboxes.get(action_key, []) if properties.attackboxes else []
+        return properties.hitboxes.get(frame_key, [])

@@ -217,7 +217,7 @@ This module houses pure geometric evaluations, translating expensive Python floa
 
 * Address: `libs.core.math.paths`
 
-This module implements the Rapidly-exploring Random Tree (RRT) pathfinding algorithm in pure C memory.
+This module implements the Rapidly-exploring Random Tree (RRT) pathfinding algorithm in C memory.
 
 * **Memory Management**: Ingests obstacle lists at function entry into a flat `RRTObstacle*` contiguous buffer and allocates an `RRTNode*` tree buffer sized to `max_iter + 2` via `malloc()`. Both buffers are freed synchronously via a `try...finally` block.
 * **Tree Representation**: Nodes are represented as flat `RRTNode` structs containing coordinate values and an integer `parent_idx`, eliminating object pointer chasing and heap fragmentation.

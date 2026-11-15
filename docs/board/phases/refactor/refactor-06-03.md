@@ -8,26 +8,24 @@ Induct `AttackHitbox` and `Equipment` into the unified Entity-Component-System (
 
 In the Asset Hierarchy, `Sprites` (and `Players`) are stateful `Sheet` Assets deployed onto the `Board`, whereas `Equipment` (`weapons`, `tools`, `armor`, `shields`, `utilities`) are stateless `Sheet` Assets stored in `Board.equipment` (`EquipmentGroup`) and projected onto a wielding Sprite's state.
 
-1. **Dual Footprint Separation (Hurtbox vs. Attackbox)**:
-* **Body Footprint (`Hurtbox`)**: Owned by the deployed `Sprite` or `Player` (`Asset`). Resolved via `StaticHitbox` from `sprite.properties.hitboxes` (`List[Hitbox]`). Governs physical obstacle collision (`CollisionMechanics`), RRT pathfinding anchors (`NavigationMechanics`), environmental interactions (`InteractionMechanics`), fluid immersion (`MotionMechanics`), and incoming damage reception (`CombatMechanics`).
+1. **Dual Footprint Separation (Hitbox vs. Attackbox)**:
+
+* **Body Footprint (`Hitbox`)**: Owned by the deployed `Sprite` or `Player` (`Asset`). Resolved via `StaticHitbox` from `sprite.properties.hitboxes` (`List[Hitbox]`). Governs physical obstacle collision (`CollisionMechanics`), RRT pathfinding anchors (`NavigationMechanics`), environmental interactions (`InteractionMechanics`), fluid immersion (`MotionMechanics`), and incoming damage reception (`CombatMechanics`).
 * **Action Footprint (`Attackbox`)**: Owned by stateless `Equipment` (`weapons` and `tools`). Resolved via `AttackHitbox` from `equipment_properties.hitboxes` (`Dict[str, List[Hitbox]]`) projected against the wielding entity's `SheetState` (`state.animation` and `state.elevation`).
 
-
 2. **Property Schema Unification (`SheetProperties`)**:
+
 * Align `SheetProperties` with `ObjectProperties`, `CraftProperties`, and `ResourceProperties` by consolidating `attackboxes` into a single polymorphic `hitboxes` field:
 
 $$\text{SheetProperties.hitboxes} : \text{Optional}\Big[\text{Union}\big[\text{Dict}[\text{str}, \text{List}[\text{Hitbox}]],\; \text{List}[\text{Hitbox}]\big]\Big]$$
 
-
 * Deployed character sheets (`sprites`, `players`, `pixies`) configure `hitboxes` as `List[Hitbox]` (interpreted by `StaticHitbox`).
 * Stateless equipment sheets (`weapons`, `tools`) configure `hitboxes` as `Dict[str, List[Hitbox]]` keyed by `<action>-<direction>-<frame>` (interpreted by `AttackHitbox`).
 
-
 3. **Stateless Projection Contract (`AttackHitbox` & `CombatMap`)**:
+
 * Just as `StateFrame.keys(eq_key, sprite.state)` projects a Sprite's `AnimationState` onto stateless Equipment textures inside `SpriteFrame`, `AttackHitbox.get(weapon_props, sprite.state, elevation)` projects a Sprite's `AnimationState` and `elevation` onto stateless Equipment hitbox maps.
 * `CombatMap.attackboxes(state, equipment, elevation)` serves as the resolution bridge: it extracts the active weapon (or tool) `SheetProperties` from `EquipmentGroup` and delegates geometric lookup to `AttackHitbox().get(weapon_props, state, elevation)`.
-
-
 
 ##### Architectural Analysis I
 
@@ -35,30 +33,47 @@ $$\text{SheetProperties.hitboxes} : \text{Optional}\Big[\text{Union}\big[\text{D
 Every deployed `Asset` possesses a single `hitbox: HitboxSchema` slot. Replacing `StaticHitbox` with `AttackHitbox` on `sheets.sprites` or `sheets.players` would cause `sprite.hitboxes` to evaluate to `[]` on all non-attack frames—breaking solid-body collision resolution, door/chest interaction padding, fluid immersion checks, and target hurtbox detection—while causing weapon swing footprints on active attack frames to transfer physical impulse against walls and shift RRT sensory anchors. Keeping `StaticHitbox` on the `Sprite` and binding `AttackHitbox` to `Equipment` preserves strict separation between the body hurtbox and the weapon attackbox.
 2. **Defect in Existing `AttackHitbox.get()` Implementation (`src/app/assets/hitboxes/sheets.py`)**:
 The current implementation of `AttackHitbox.get()` delegates key generation to `frame.keys(state.id, state)`:
+
 ```python
 keys = frame.keys(state.id, state)
 frame_key = keys[0][0]
 return properties.attackboxes.get(frame_key, [])
-
 ```
 
-
 This contains two incompatibilities:
+
 * **Prefix Mismatch**: `StateFrame.keys(id, state)` prepends the Asset `id` to produce a Registry texture key (`f"{id}-{action}-{direction}-{frame}"`, e.g., `"player-slash-right-3"`), whereas weapon hitbox maps in `/src/assets/sheets/equipment/weapons/*.yaml` are keyed by canonical animation state (`f"{action}-{direction}-{frame}"`, e.g., `"slash-right-3"`).
 * **Coupling to `Frame**`: No other `HitboxSchema` (`LayeredHitbox`, `MaterialHitbox`, `StageHitbox`) calls `Frame.keys()`; each indexes `properties.hitboxes` directly from `state` attributes (`state.layer`, `state.blueprint`, `state.stage`). Constructing `frame_key` directly from `state.animation` (`f"{state.animation.action}-{state.animation.direction}-{state.animation.frame}"`) inside `AttackHitbox.get()` decouples `HitboxSchema` from `Frame` and matches the YAML schema.
 
-
 3. **Elevation Leakage and Unarmed/Ranged Crash in `CombatMechanics` (`src/app/game/logic/mechanics/spatial/combat.py`)**:
+
 * **Elevation Leakage**: `CombatMechanics.update()` currently hashes all melee attackers and targets on a `layer` into `self.grid` without checking `elevation`. An attacker at `elevation = 0` will damage a target at `elevation = 1` if their 2D `(x, y)` coordinates overlap. Evaluating collisions per elevation tier (`elevation = attacker.elevation`) and resolving target hurtboxes via `target.hitbox.get(target.properties, target.state, elevation)` enforces 3D topological isolation.
 * **Ranged / Unarmed Crash**: When an unarmed entity enters `Intentions.ATTACK.value`, `AnimationMap.action()` resolves its action to `Actions.CAST.value`. In `CombatMechanics.update()`, `Actions.CAST.value` and `Actions.SHOOT.value` enter the ranged combat branch, which accesses `attacker.state.mutators.triggers.executed` (an attribute that does not exist on `MutatorTriggers`) and passes `"TODO"` strings to `board.cradle.spawn_projectile()`.
 
-
 4. **Blackbox Mocking in `test_combat.py` (`tests/unit/app/game/logic/mechanics/spatial/test_combat.py`)**:
+
 `test_combat.py` currently relies on ad-hoc helper functions (`_create_player_attacker`, `_create_sprite_target`, `_create_reactable_target`, `_create_equipment`), `MagicMock` bus/payload objects, and monkeypatched `mock_board.instances` lambdas. All required assets (`player` with `shortsword`, `jasilynn`, `archaxes`, and `spinning-dummy`) are already hydrated in `world-testbed`.
 
 ##### User Review I
 
-{# Reserved Block for User #}
+**Inconsistencies In The Current Spec**
+
+There appears to be an inconsistency in the plan or a misunderstanding of the injection system, as the CombatMap is instantiating a AttackHitbox, but the Task list has it also being registered as a component injected via Recipes. Equipment is not instantiated in the game, so registering it in a Recipe in the current implementation achieves nothing.
+
+However, rather than storing Equipment Properties on the Board, it might be better to store Equipment *Assets* on the Board that can be referenced. That way, CombatMap has access to the hitbox and properties through the Asset interface.
+
+Adoption of this strategy, however, may have implications with respect to SpriteFrame, insofar that currently SpriteFrame manages the injection of EquipmentFrames. 
+
+**Projectile Implementation**
+
+Application is at the point where Projectiles need to be codified. There are two routes, as I see:
+
+- Atlasing Route: Different directions of the Projectile are atlased in an Asset file.
+- Rotation Route: A Projectile Asset contains a single Frame in a single Direction (say: `left`). When it is indexed by the Registry, it's coordinates are rotated by a fixed amount. 
+
+Atlasing fixes the number of Directions a Projectile can be fired. However, rotation allows for an arbitary division of degrees, e.g. arrows can fire in four directions (degree delta = 90) and cannonballs can fire in eight directions (degree delta = 45). However, rotation may require substantial changes in the rendering interface, so there are trade offs.
+
+Do an analysis of what would be required to adopt the rotation strategy.
 
 ##### Goals
 
@@ -174,37 +189,32 @@ Remove all `_create_*` helper functions, `MagicMock` instances, and monkeypatche
 
 *Objective*: Consolidate `attackboxes` into `hitboxes` on `SheetProperties` and update all Sheet property YAML definitions.
 
-* [] Subtask: Update `SheetProperties` in `src/app/models/properties/assets.py` so `hitboxes` accepts `Optional[Union[Dict[str, List[Hitbox]], List[Hitbox]]]` and remove the legacy `attackboxes` field.
-* [] Subtask: Replace `attackboxes` with `hitboxes` in `src/assets/sheets/equipment/weapons/slash.yaml`, `src/assets/sheets/equipment/weapons/thrust.yaml`, `src/assets/sheets/equipment/weapons/shoot.yaml`, `src/assets/sheets/equipment/tools/slash.yaml`, and `src/assets/sheets/equipment/tools/thrust.yaml`.
-* [] Subtask: Remove redundant `attackboxes: null` keys from `src/assets/sheets/sprites/main.yaml` and `src/assets/sheets/pixies/main.yaml`.
-* [] Subtask: Register `AttackHitbox` in `src/data/config/recipes/main.yaml` for `sheets.weapons` and `sheets.tools`.
+* [x] Subtask: Update `SheetProperties` in `src/app/models/properties/assets.py` so `hitboxes` accepts `Optional[Union[Dict[str, List[Hitbox]], List[Hitbox]]]` and remove the legacy `attackboxes` field.
+* [x] Subtask: Replace `attackboxes` with `hitboxes` in `src/assets/sheets/equipment/weapons/slash.yaml`, `src/assets/sheets/equipment/weapons/thrust.yaml`, `src/assets/sheets/equipment/weapons/shoot.yaml`, `src/assets/sheets/equipment/tools/slash.yaml`, and `src/assets/sheets/equipment/tools/thrust.yaml`.
+* [x] Subtask: Remove redundant `attackboxes: null` keys from `src/assets/sheets/sprites/main.yaml` and `src/assets/sheets/pixies/main.yaml`.
+* [?] Subtask: Register `AttackHitbox` in `src/data/config/recipes/main.yaml` for `sheets.weapons` and `sheets.tools`.
+    **NOTE**: What? This makes no sense.
 
-##### Tasks
-
-**2. Task: Refactor `AttackHitbox` and Wire `CombatMap**`
+**2. Task: Refactor `AttackHitbox` and Wire `CombatMap`**
 
 *Objective*: Fix `AttackHitbox.get()` to resolve canonical `<action>-<direction>-<frame>` keys from `state.animation` and route `CombatMap.attackboxes()` through `AttackHitbox`.
 
-* [] Subtask: Update `AttackHitbox.get()` in `src/app/assets/hitboxes/sheets.py` to guard against `None` or non-dict `properties.hitboxes`, validate elevation parity, and build `frame_key` from `state.animation.action`, `state.animation.direction`, and `str(state.animation.frame)`.
-* [] Subtask: Update `CombatMap.attackboxes()` in `src/app/game/logic/modules/maps/combat.py` to delegate hitbox resolution to `AttackHitbox().get(weapon_props, state, resolved_elevation)`.
-* [] Subtask: Add unit tests for `AttackHitbox.elevations()` and `AttackHitbox.get()` (covering matching frame, unmatched frame, elevation mismatch, and `None` hitboxes) and update `tests/unit/app/game/logic/modules/maps/test_combat_maps.py`.
-
-##### Tasks
+* [x] Subtask: Update `AttackHitbox.get()` in `src/app/assets/hitboxes/sheets.py` to guard against `None` or non-dict `properties.hitboxes`, validate elevation parity, and build `frame_key` from `state.animation.action`, `state.animation.direction`, and `str(state.animation.frame)`.
+* [x] Subtask: Update `CombatMap.attackboxes()` in `src/app/game/logic/modules/maps/combat.py` to delegate hitbox resolution to `AttackHitbox().get(weapon_props, state, resolved_elevation)`.
+* [!: dependent on user acceptance of phase] Subtask: Add unit tests for `AttackHitbox.elevations()` and `AttackHitbox.get()` (covering matching frame, unmatched frame, elevation mismatch, and `None` hitboxes) and update `tests/unit/app/game/logic/modules/maps/test_combat_maps.py`.
 
 **3. Task: Harden `CombatMechanics` Elevation & Ranged Execution**
 
 *Objective*: Prevent cross-elevation melee hits and guard ranged combat execution in `CombatMechanics.update()`.
 
-* [] Subtask: Normalize `asset.state.intention == Intentions.ATTACK.value` comparison in `src/app/game/logic/mechanics/spatial/combat.py` and remove the inner-loop `hb.to_dict()` logging call.
 * [] Subtask: Enforce elevation parity (`attacker.elevation == target.elevation`) during narrow-phase combat pair resolution in `CombatMechanics.update()`.
-* [] Subtask: Add `executed: bool = False` to `MutatorTriggers` (or guard the ranged projectile stub in `CombatMechanics.update()`) so unarmed `Actions.CAST` and bow `Actions.SHOOT` animations do not raise `AttributeError` at frame 0.
-
-##### Tasks
+* [?] Subtask: Add `executed: bool = False` to `MutatorTriggers` (or guard the ranged projectile stub in `CombatMechanics.update()`) so unarmed `Actions.CAST` and bow `Actions.SHOOT` animations do not raise `AttributeError` at frame 0.
+    **NOTE**: What? This also makes no sense.
 
 **4. Task: Refactor `test_combat.py` to Use `world-testbed` Fixtures**
 
 *Objective*: Replace all ad-hoc asset builders and `MagicMock` overrides in `tests/unit/app/game/logic/mechanics/spatial/test_combat.py` with live `mock_board` and `mock_mechanic` fixtures.
 
-* [] Subtask: Remove `_create_player_attacker`, `_create_sprite_target`, `_create_reactable_target`, and `_create_equipment` from `tests/unit/app/game/logic/mechanics/spatial/test_combat.py`.
-* [] Subtask: Refactor `test_combat_mechanics_melee_resolution`, `test_combat_mechanics_lethal_blow`, `test_combat_mechanics_reactable_trigger`, `test_combat_mechanics_inactive_attackbox_filtered`, and `test_combat_mechanics_unarmed_bypasses_melee` to query `mock_board.player()`, `mock_board.instances(AssetInstances.SPRITES.value, "0")`, and `mock_board.instances(AssetInstances.REACTABLES.value, "0")`.
-* [] Subtask: Add `test_combat_mechanics_elevation_isolation` to verify that an attacker at `elevation = 0` cannot damage a overlapping target at `elevation = 1`.
+* [!: Dependent on User Acceptance] Subtask: Remove `_create_player_attacker`, `_create_sprite_target`, `_create_reactable_target`, and `_create_equipment` from `tests/unit/app/game/logic/mechanics/spatial/test_combat.py`.
+* [!: Dependent on User Acceptance] Subtask: Refactor `test_combat_mechanics_melee_resolution`, `test_combat_mechanics_lethal_blow`, `test_combat_mechanics_reactable_trigger`, `test_combat_mechanics_inactive_attackbox_filtered`, and `test_combat_mechanics_unarmed_bypasses_melee` to query `mock_board.player()`, `mock_board.instances(AssetInstances.SPRITES.value, "0")`, and `mock_board.instances(AssetInstances.REACTABLES.value, "0")`.
+* [!: Dependent on User Acceptance] Subtask: Add `test_combat_mechanics_elevation_isolation` to verify that an attacker at `elevation = 0` cannot damage a overlapping target at `elevation = 1`.
