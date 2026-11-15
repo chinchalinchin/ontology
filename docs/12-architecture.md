@@ -62,7 +62,7 @@ def _play(self, delta) -> None:
 * **Core Mechanics:** Systems that must execute every frame regardless of game state. This includes [MenuMechanics](./05-mechanics.md#core) (to process input and layout traversals), [AnimationMechanics](./05-mechanics.md#core) (to keep Assets animating), and RemoveMechanics (garbage collection).
 * **World Mechanics:** Systems that govern gameplay logic, physics, and NPC behavior. This includes [MotionMechanics, CombatMechanics, and PlayerMechanics](./05-mechanics.md).
 
-When a [MenuEvent](./06-widgets.md#events) fires and a modal Menu is pushed to the screen, the Board is paused. The Engine skips the World Mechanics loop entirely. The World freezes, but Core Mechanics continue ticking, allowing the User to navigate the Menu.
+When an [Event](./06-widgets.md#events) fires and a Menu is pushed to the screen, the Board is paused. The Engine skips the World Mechanics loop entirely. The World freezes, but Core Mechanics continue ticking, allowing the User to navigate the Menu.
 
 ### Specification: Board Caches
 
@@ -410,25 +410,17 @@ This module orchestrates the physical simulation, bridging the broad-phase grid 
 
 * Address: `libs.core.graphics`
 
-The engine relies on a Cythonized bridge to C-level SDL2 bindings. To mitigate the overhead of crossing the Python-to-C boundary, the rendering pipeline does not pass heavy Python objects (like `SpriteState` or `Dimensions`) to the renderer. Instead, it extracts raw integers on the Python side and unpacks them cleanly onto the C-stack.
+This Library is a Cythonized interface for SDL2 bindings. 
 
-* **Context Initialization (`init`):** Sets up the SDL environment, including video, images, and typography (`SDL2_ttf`). If `headless`, a SDL software rendering context (`_renderer`) is bound to a master memory surface (`SDL_Surface`), bypassing window creation.
-* **Asset & Font Allocation (`_load_image`, `_load_font`):** Loads physical image (`.png`) and font (`.ttf`) assets from disk into system memory, returning Cython wrappers (`TexturePtr` and `TTFFont`). To prevent styling overhead in the inner loop, fonts are pre-styled (bold, italics, RGBA color, margins) natively via SDL during ingestion using the YAML configuration properties.
-* **Typography (`measure`, `write`):** The `measure` function queries the pixel dimensions of a string without allocating a rendering surface. The `write` function calculates wrapping bounds and alignment, rendering UTF-8 characters as a blended surface that is stamped  onto a target `TexturePtr`. This zero-allocation technique ensures typography does not generate memory garbage during the main game loop.
-* **Background Compilation (`canvas` & `construct`):** A blank texture (`SDL_TEXTUREACCESS_TARGET`) is created in memory to match the full size of the Board. Python passes a single list of flattened integer tuples representing the source/destination coordinates and grid multipliers. Cython unpacks these primitives and executes`SDL_RenderCopy` calls natively via the C-level software rasterizer. This caches a unified map texture, eliminating the need to instantiate and re-render tiles every frame.
-* **Buffer Management (`clear` & `present`):** `clear()` wipes the current VRAM buffer at the start of the frame, and `present()` finalizes the buffer (`SDL_RenderPresent`) while pumping SDL events at the end of the frame.
-* **World Rendering (`render`):** During the main game loop, `Screen.draw()` performs lightweight integer-based AABB camera culling natively in Python. The visible world assets are flattened into primitive integer tuples and passed across the C-boundary in a single list. `render()` copies the cropped background texture and then maps world-coordinates to camera-relative coordinates on the fly, stamping the active primitives onto the back buffer.
-* **Overlays (`superimpose`):** After the world is rendered, `Screen.interface()` passes a flattened list of active Menu and Widget primitives. `superimpose()` bypasses the camera offset logic, rendering these textures via strict absolute screen coordinates (`SDL_RenderCopy`) directly on top of the world view, ensuring Menus remain statically positioned.
+* **Context Initialization (`init`):** Sets up the SDL environment, including video, images, and typography.
+* **Asset & Font Allocation (`_load_image`, `_load_font`):** Loads physical image (`.png`) and font (`.ttf`) Assets from the file system into Application memory, returning Cython wrappers. Fonts are pre-styled during ingestion using Configurations.
+* **Typography (`measure`, `write`):** `measure` queries the pixel dimensions of a string without allocating a rendering surface. `write` calculates wrapping bounds and alignment, rendering characters as a blended surface that is stamped onto a target texture.
+* **Background Compilation (`canvas` & `construct`):** A blank texture is created in memory to match the full size of the Board. 
+* **Buffer Management (`clear` & `present`):** `clear` wipes the current buffer while `present` finalizes and displays the current buffer.
+* **World Rendering (`render`):** Copies the cropped background texture and then maps world-coordinates to camera-relative coordinates, stamping the active primitives onto the back buffer.
+* **Overlays (`superimpose`):** Bypasses the camera offset logic, rendering textures via absolute screen coordinates directly on top of the Screen.
 
 **Memory Management**
 
-The engine uses Cython extension types (`cdef class`) to bridge Python's garbage collector with SDL's manual memory management.
-
 * **`TexturePtr`**: Wraps a raw `SDL_Texture*` pointer alongside its integer dimensions (`w`, `l`).
 * **`TTFFont`**: Wraps a raw `TTF_Font*` pointer alongside its pre-configured styling metadata.
-
-Both classes implement the Cython `__dealloc__` method. When the Python interpreter garbage-collects these objects out of scope, they automatically invoke `SDL_DestroyTexture` and `TTF_CloseFont`. This architecture guarantees safe C-level memory cleanup for standard assets and prevents VRAM leaks without requiring explicit teardown commands in the Python application layer.
-
-While `__dealloc__` is sufficient for standard asset garbage collection, relying on Python's non-deterministic GC timing for massive VRAM allocations (e.g., the `Screen` background and foreground canvases) during scene transitions risks Out-Of-Memory (OOM) GPU crashes. 
-
-To mitigate this, the Cython layer exposes a `render.destroy()` interface. During a world transition, `Screen.rebake()` explicitly calls this method to force an immediate, synchronous `SDL_DestroyTexture` on the old `TexturePtr` canvases before allocating the new environment's memory footprint.
