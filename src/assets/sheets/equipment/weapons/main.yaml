@@ -4,7 +4,7 @@ themes:
     lpc: &lpc
       w: 64
       l: 64
-  attackboxes:
+  hitboxes:
     sword: &sword 
       slash-up-3:
         - position:
@@ -97,38 +97,32 @@ sheets:
     longbow:
       dimensions: *lpc
       hitboxes: null
-      attackboxes: null
       actions: lpc-shoot
       stack: [ longbow ]
     # --------------------------------------- ACTION: SLASH
     dagger:
       dimensions: *lpc
       hitboxes: null
-      attackboxes: null
       actions: lpc-slash
       stack: [ dagger ] 
     knife:
       dimensions: *lpc
       hitboxes: null
-      attackboxes: null
       actions: lpc-slash
       stack: [ knife ]
     sword:
       dimensions: *lpc
-      hitboxes: null
-      attackboxes: *sword
+      hitboxes: *sword
       actions: lpc-slash
       stack: [ sword ] 
     # --------------------------------------- ACTION: THRUST
     spear:
       dimensions: *lpc
       hitboxes: null
-      attackboxes: null
       actions: lpc-thrust 
       stack: [ spear ] 
     crossbow:
       dimensions: *lpc
       hitboxes: null
-      attackboxes: null
       actions: lpc-thrust
       stack: [ crossbow ]

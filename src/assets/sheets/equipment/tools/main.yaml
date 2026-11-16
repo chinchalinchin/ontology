@@ -12,13 +12,11 @@ sheets:
       dimensions: *lpc
       actions: lpc-slash
       hitboxes: null
-      attackboxes: null
       stack: [ axe ]
     # --------------------------------------- ACTION: THRUST
     shovel:
       dimensions: *lpc
       actions: lpc-thrust
-      attackboxes: null
       hitboxes: null
       stack: [ shovel ] 
     pickaxe:
