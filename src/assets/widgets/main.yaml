@@ -135,6 +135,19 @@ widgets:
         - crossbow
         - cane
     # -------------------- SPECIALIZED ICONS
+    crafts:
+      dimensions:
+        w: 20
+        l: 20
+      frames:
+        - road
+        - house
+        - tower
+        - carpentry
+        - railing
+        - decor
+        - stairs
+        - bridge
     digits:
       dimensions:
         w: 12
