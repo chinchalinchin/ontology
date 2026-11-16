@@ -996,7 +996,7 @@ Equipment is covered in more detail in the [Sprites documentation](./02-sprites.
 An Attackbox is a component of Equipment mapped to a Sprite's canonical `<action>-<direction>-<frame>` Frame key. It resolves the Hitbox governing Combat dynamically during [CombatMechanics](./05-mechanics.md#spatial-mechanic-collisionmechanics).
 
 * `elevations(properties, state): returns [max(0, state.elevation if state.elevation is not None else 0)]`
-* `get(properties, state, elevation)`: resolves active `Hitbox` list for the current animation frame at the requested `elevation`.
+* `get(properties, state, elevation)`: TODO
 
 ### Category: Widgets
 

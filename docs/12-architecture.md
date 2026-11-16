@@ -65,7 +65,7 @@ When an [Event](./06-widgets.md#events) fires and a Menu is pushed to the screen
 
 #### Cache: Spatial Grid
 
-The Board utilizes two discrete ($O(1)$) spatial hash grids $(c_x, c_y)$:
+The Board utilizes several spatial hash grids $(c_x, c_y)$:
 
 1. **Tile Grid**: Partitions Tiles into buckets nested by Layer and Instance
 
@@ -83,7 +83,7 @@ $$
 
 #### Rendering: Sort
 
-The [Screen](./00-overview.md#component-screen) calculates rendering order using elevations, substrates, ground baseline, and a static priority:
+The [Screen](./00-overview.md#component-screen) calculates rendering order using Elevations, Substrates, ground baseline, and a static priority:
 
 $$
 \text{sortkey}(A) = \Big(A.\text{elevation}, A.\text{substrate}, \text{ground}(A), A.\text{properties.priority}\Big)
@@ -148,8 +148,8 @@ While Python objects are fast enough for general logic, calculating collisions a
 
 **Model: Position**
 
-- `x: int`
-- `y: int`
+* `x: int`
+* `y: int`
 
 **Model: Dimensions**
 
@@ -194,10 +194,10 @@ $$
 R(x, y, w, l) = [x, x + w) \times [y, y + l)
 $$
 
-*  **Composite Footprints**: An Asset at world position $(x_a, y_a)$ with relative Hitboxes $\{(x_i, y_i, w_i, l_i)\}$ occupies the union of translated bounding boxes:
+* *Composite Footprints*: An Asset at world position $(x_a, y_a)$ with relative Hitboxes $\{(x_i, y_i, w_i, l_i)\}$ occupies the union of translated bounding boxes:
 
 $$
-\mathcal{H}(A) = \bigcup_{i} \big[x_a + x_i,\; x_a + x_i + w_i\big) \times \big[y_a + y_i,\; y_a + y_i + l_i\big)
+\mathcal{H}(A) = \bigcup_{i} \big[x_a + x_i, x_a + x_i + w_i\big) \times \big[y_a + y_i, y_a + y_i + l_i\big)
 $$
 
 ##### Math: Geometry

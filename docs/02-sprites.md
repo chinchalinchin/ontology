@@ -159,14 +159,14 @@ Mutators are *condition-driven*. They may also be *parameterized*; In other word
 
 **Fields: Triggers**
 
-* `trigger.action`: Triggers if a Sprite is within acting distance of its Goal.
-* `trigger.animated`: Triggered if a Sprite is currently able to animate, i.e. alter its AnimationState. When this Mutator trigger is false, the Sprite does not receive animation updates from the game loop.
+* `trigger.animated`: Triggered if a Sprite is currently able to animate, i.e. alter its AnimationState. When this Mutator trigger is false, the Sprite does not receive animation updates from the Engine Loop.
 * `triggers.dead`: Triggered if a Sprite dies. This can only occur if the Sprite's `meters.health.current == 0`
-* `triggers.fear`: Triggered for the logical disjunction of the following conditions:
-    * Triggered if Sprite's health dips below `fear.limit`
-    * Triggered if Sprite is surrounded by more than `fear.enemy` enemies with the pixel distance of `fear.radius`.
+* `triggers.frightened`: Triggered for the logical disjunction of the following conditions:
+    * If the Sprite's health dips below `fear.limit`
+    * If the Sprite is surrounded by more than `fear.enemy` enemies with the pixel distance of `fear.radius`.
 * `triggers.submerged`: Triggered when the entity's footprint intersects an active Fluid stream or pool without being aboard a Raft or Bridge. When active, `Screen.draw` renders a semi-transparent water tint over the lower half of the Sprite, and `Cradle` dispatches a temporary `splash` effect.
-* `triggers.vision`: Trigger if a Sprite is within visible distance of its Goal.
+* `triggers.falling`: Triggered when a Sprite at elevation $E > 0$ steps off its supporting substrate into freefall.
+* `triggers.vision`: Triggered if a Sprite is within visible distance of its Goal.
 
 **Fields: Parameters**
 
@@ -175,14 +175,15 @@ Mutators are *condition-driven*. They may also be *parameterized*; In other word
     * `limit`: Percentage of health below which Sprite triggers the `triggers.fear` mutator.
     * `enemy`: Number of enemies within the `parameters.fear.radius` that must be present to trigger the `triggers.fear` mutator.
 * `parameters.vision`:
-    * `radius`: Radius of separation within which the Sprite triggers the `triggers.vision` mutator. Measured in pixels.
+    * `radius`: Radius of separation for visual identification. Measured in pixels.
 * `parameters.action:`
-    * `radius`: Radius of separation within which the Sprite triggers the `triggers.action` mutator. Measured in pixels.
+    * `radius`: Radius of separation for interactions. Measured in pixels.
 * `parameters.squeeze`:
     * `radius`: Buffer radius used for avoiding obstacles during path-finding.
 * `parameters.community`: 
     * `radius`: Radius used for [Town Formation Mechanics](./11-emergence.md#towns).
-* `parameters.hand`: Active hand (`left` or `right`) parameterizing the `use` Intention to resolve the corresponding item in `slots.grip`.
+* `parameters.descension`: Vertical freefall accumulator tracking pixel displacement.
+* `parameters.hand`: Active hand (`left` or `right`) parameterizing the `use` Intention, used to resolve the corresponding item in `slots.grip`.
 
 ##### Model: Animation
 
