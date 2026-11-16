@@ -3,6 +3,7 @@
 @app.service
 @modality.material
 @workflow.compositions
+@workflow.crafting
 
 # Ontology: Source - app.services.generators.game.decomposer
 

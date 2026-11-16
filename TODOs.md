@@ -813,3 +813,266 @@ $$
      * **Player Kinematic Exemption**: The Player retains positive dynamic mass ($m > 0$) during spatial separation—halting against static walls ($m = 0$) and pushing movable Crates ($m > 0$)—but passes `is_kinematic = True` to `physics.collide` to bypass elastic velocity bounce.
 
 ``
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Architectural Analysis & Grooming: Phase 07.06 - Crafting
+
+Reviewing the current codebase against the Phase 07.06 specification reveals strong alignment in the underlying mathematical/relational services (`MaterialIndex`, `Materializer`, `Decomposer`, `CompositionCompiler`) alongside several structural gaps and architectural ambiguities in the Menu, Context, Widget, and Placement layers that must be resolved before implementation.
+
+---
+
+#### 1. Structural Gaps & Ambiguities in the Specification
+
+1. **Menu Identity & Controller Binding (`pack` vs. `craft` Menu)**
+* **Ambiguity**: The Phase 07.06 overview refers to a *"new Craft Menu"*, while the specification explicitly lays out `Menu: Pack`. In the codebase, `src/data/config/menus/inventory/pack/main.yaml` already defines `pack` with `controller: inventory`, containing the `RESOURCES` column (`inventory.pack` and `inventory.sack`) and an incomplete `CRAFT FORMULAE` column (currently only containing the `CRAFT FORMULAE` subheader). Meanwhile, `src/app/game/menus/controllers/craft.py` defines an empty `CraftController(MenuController)`.
+* **Resolution**: Unify around the `pack` menu (`menus.pack`) rather than spawning a redundant menu, or decide whether `pack` transitions to `controller: craft` (which extends/composes `InventoryController` so both resource inspection and crafting operate seamlessly within the Pack screen).
+
+
+2. **Icon-to-Key Mismatch in `widgets/main.yaml` vs. Phase 07.06 Spec**
+* **Discrepancy**: The Phase 07.06 spec lists `icon-filters: building, road, tower, carpentry, railing`. However, `src/assets/widgets/main.yaml` defines `icons.crafts.frames` as:
+```yaml
+- road
+- house      # <-- Spec says 'building', asset defines 'house' (and armature example uses 'armature/building/home')
+- tower
+- carpentry
+- railing
+- decor
+- stairs
+- bridge
+
+```
+
+
+* **Resolution**: `house` vs. `building` must be standardized across `widgets/main.yaml` (`icons.crafts`), `semantics.py`, and armature directory/key conventions (`armature/<icon-filter>/<strut>`). Furthermore, note that `decor`, `stairs`, and `bridge` already exist as frames in `icons.crafts` to represent the three Primitive Craft categories!
+
+
+3. **Unpacking the `(Blueprint, Material)` Ledger & Material Selection**
+* **Ambiguity**: The specification notes two contrasting mechanisms:
+* For **Primitives**, unpacking across `(Blueprints, Materials)` yields discrete entries (e.g., `steps-up-limestone`, `steps-left-limestone`, ...).
+* For **Armatures** (e.g., `armature/building/home`), the root strut leaves `material` unbound (`bind(root.material)`), stating: *"the parameter of Material is a degree of freedom determined by User selection."*
+
+
+* **Architectural Impact**: If Armatures are also pre-unpacked into the Cost Ledger across the root strut's `MaterialSpace` genus (e.g., `armature/building/home` with `id: home` whose `material.genus` is `geologics` $\to$ 4 variants: `limestone`, `feldspar`, `granite`, `marble`), then **Primitives and Armatures share a single uniform Cost Ledger schema** (`CraftEntry`), avoiding modal sub-dialogs for material selection inside the Pack menu.
+* **Chromatic Host Resolution**: Decor struts like `banner` (`genus: chromatics, host: cotton`) and `table` (`genus: chromatics, host: wood`) declare a `host` in `CraftProperties`. When unpacking `chromatics` entries for the Cost Ledger, the `Materializer` requires both `material` (e.g., `blue`) and `host` (`cotton` or `wood`) to compute the dual cost (structural host + dye).
+
+
+4. **Ledger Representation in `CollectionGizmo` (`Slot` Icons & Quantity/Tooltip Feedback)**
+* `CollectionState` (`app/models/state/assets/widgets.py`) expects `collection_function() -> List[str]` returning **Icon frame keys** for `ApertureBinding`, and `sync()` sets occupied slots to `Statuses.IDLE` and vacant slots to `Statuses.DISABLED`.
+* **Two Constraints**:
+1. Each `CraftEntry` in the Cost Ledger maps to a filter icon key from `icons.crafts` (e.g., `stairs`, `bridge`, `decor`, `house`, `road`, `tower`, `carpentry`, `railing`), NOT a unique per-variant icon, because `icons.crafts` only has 8 category frames. Therefore, the Craft Formulae grid requires either:
+* A dedicated **Cost / Preview Pane** below or beside the grid that updates on traversal/focus change (`menu.focus`) to display the selected craft's concrete name (`steps-up-limestone`), blueprint/material, and required resource cost (`3x limestone`), AND/OR
+* Distinct `CollectionState` status synchronization so unaffordable crafts remain traversable (`IDLE` or a inspectable state) or visually distinct (`DISABLED` vs `IDLE`) while allowing the player to inspect why a craft is disabled. (Note: `MenuMechanics._resolve_neighbor` currently blocks traversal onto `Statuses.DISABLED` widgets! If unaffordable crafts are set to `DISABLED`, the player cannot hover/focus them to see their recipe cost unless `MenuMechanics` allows focusing `DISABLED` slots in the Craft grid or uses a separate affordability indicator).
+
+
+
+
+
+
+5. **Filter Dock Traversal & Dynamic Binding (`dock(filters)`)**
+* The spec notes: *"`dock(filters)` needs to be able to bind to an Enum, i.e. the static list of Frames in the `crafts` Icon, and a dynamically generated list of Crafts."*
+* Currently, `Layout` builds a static cardinal `menu.graph` from buttons at menu creation time, and `GizmoParameters` (`app/models/config/menus.py`) only supports `CollectionTarget` (rendering a single Icon sheet specified by `gizmo.id`).
+* Because all 8 filter keys (`road`, `house`, `tower`, `carpentry`, `railing`, `decor`, `stairs`, `bridge`) belong to a single Icon sheet (`id: crafts`), a standard **1x8 (or 2x4) Collection Gizmo** bound to `context.filters` (returning the list of active filter frame keys) automatically renders the filter icons, supports edge-triggered pagination if needed, and integrates into `menu.graph` without inventing a new Widget type.
+
+
+6. **Placement Geometry & Adjacency (`level` and `adjacent` without overlap)**
+* Step 6 of the MVP workflow requires: *"A Craft is instantiated level with the Player (where level is defined as their ground baseline's being equal) and directly adjacent (where adjacent is defined as touching with no pixel overlap)."*
+* **Edge Cases to Formalize**:
+* **Ground Baseline Alignment**: Let player ground baseline be $y_{g,P} = P.\text{position}.y + P.\text{dimensions}.l$. For a spawned craft $C$ with multiplied span $(W_C, L_C)$ and anchor $a_C$, its ground baseline is $y_{g,C} = C.\text{position}.y + L_C + a_C$. Setting $y_{g,C} = y_{g,P}$ yields:
+
+$$C.\text{position}.y = (P.\text{position}.y + P.\text{dimensions}.l) - (L_C + a_C)$$
+
+
+* **Horizontal / Directional Adjacency**: Depending on `player.state.animation.direction` (`left`, `right`, `up`, `down`), $C.\text{position}.x$ (and $y$ for `up`/`down`) must offset by the full multiplied span $(W_C, L_C)$—not just unit `dimensions`—and account for `PerimeterMultiplier` / `ExpansionMultiplier` spans (`span.w`, `span.l`) so multi-tile armatures (like `armature/building/home`) do not spawn overlapping the player's hitbox.
+* **Collision & Boundary Validation**: Before deducting inventory resources and calling `board.cradle`, placement must verify that $\mathcal{H}(C)$ at the target `(x, y, elevation)` does not intersect existing obstacles (`board.obstacles`), weights (`board.weights`), or layer perimeters (`board.perimeters`).
+
+
+
+
+7. **Armature Macro Bindings (`root.material` & `PropertyState` Extension)**
+* In `src/data/config/compositions/armatures/**/*.yaml`, `root.strut` omits `material` so it can be supplied at deployment time (just like `position` and `layer`), while child struts declare `material: bind(root.material)`.
+* Checking `CompositionCompiler._evaluate_expression` and `Decomposer._hydrate_state`:
+* `CompositionCompiler` leaves `bind(root.material)` as a raw string when `root.strut` has no `material` (`target_node` lookup returns `None` $\to$ `unresolved = True` $\to$ preserved as string).
+* `Decomposer.unpack(deployed_state: PropertyState)` currently populates `root_context` with `id`, `name`, `layer`, `owner`, `position`, and `elevation`—**it does NOT copy `deployed_state.material` or `deployed_state.blueprint` into `root_context`!**
+* Therefore, `Decomposer.unpack` must be updated to include `"material": deployed_state.material` and `"blueprint": deployed_state.blueprint` in `root_context` so `_resolve_bind` resolves `bind(root.material)` at deployment time.
+
+
+
+
+
+---
+
+#### 2. Backlog Task Update (`Phase 07.06`)
+
+```markdown
+#### Refactor: Phase 07.06 - Crafting
+
+**Overview**
+
+Building upon the Material aspect of Assets, design and introduce a Crafting system managed through the Pack Menu (`menus.pack`) and `CraftController`.
+
+##### Specification
+
+**(Blueprints, Materials)**
+
+- materials: 
+    * organics: cotton, thatches, wood
+    * ceramics: clay
+    * geologics: limestone, feldspar, granite, marble
+    * metallics: copper, iron, gold
+    * chromatics: neutral, blue, red, yellow, green
+- blueprints: 
+    * buildings: floors, walls, flats, roofs, paths, halls
+    * corridors: solids, stripes, designs
+    * columns: crowns, shafts, bases 
+    * decor: decor
+    * directions: up, left, down, right
+    * enclosures: north, east, south, west
+    * inclines: up, left, right
+    * orientations: horizontal, vertical
+
+**Definition: Primitives**
+
+Primitive Crafts can be constructed by the User without a Composition container:
+- Stairs (`crafts.stairs`)
+- Bridges (`crafts.bridges`)
+- Decor Struts (`crafts.struts` where `blueprints == decor`)
+
+**Definition: Armatures**
+
+Armatures (`/src/data/config/compositions/armatures/**/*.yaml`) are parameterized Compositions integrating a Root Strut and its dependent components over a Material degree of freedom (`material: bind(root.material)`). Each Armature is keyed as `armature/<icon-filter>/<strut>`, where `<icon-filter>` maps to a frame in `icons.crafts` (`house`, `road`, `tower`, `carpentry`, `railing`).
+
+##### Architectural Analysis I
+
+1. **Unified Cost Ledger (`LedgerService` / `CraftEntry`)**: Rather than splitting UI flows between Primitives and Armatures, both are unpacked at boot into a flat, queryable Cost Ledger indexed by `(filter_icon, asset_id, blueprint, material, host)`. Each `CraftEntry` precomputes its unit `List[Cost]` via `Materializer` and its multiplied footprint `Dimensions` via `MaterialIndex`.
+2. **Decomposer Late-Binding Extension**: `Decomposer.unpack()` currently omits `material` and `blueprint` from `root_context`. Exposing `deployed_state.material` in `root_context` enables `bind(root.material)` on Armature branch and component struts to resolve cleanly during deployment.
+3. **Pack Menu & Traversal**: Extending `menus/inventory/pack/main.yaml` with a filter strip Gizmo (`icons.crafts`), a filtered formulae grid Gizmo, and a reactive cost/detail readout pane preserves the existing declarative `Binder` and `Fabricator` pipeline. To let players inspect recipes they cannot yet afford, `MenuMechanics` (or `CollectionState`) must distinguish between *vacant* slots (non-traversable) and *unaffordable* slots (traversable with visual disabled/dimmed state, or inspected via focus).
+4. **Spatial Placement Solver**: Spawning a Craft from `CraftController.select()` requires a deterministic placement check that aligns ground baselines ($y_{\text{craft}} + \text{span}.l + \text{anchor} = y_{\text{player}} + \text{dim}_{\text{player}}.l$), offsets horizontally/vertically clear of the player's hitbox along `player.state.animation.direction`, and validates against `board.obstacles()`, `board.weights()`, and `board.perimeters` before consuming `inventory.pack` resources.
+
+##### Goals
+
+###### Goal: Unified Craft Ledger & Cost Indexing
+
+Construct a `CraftLedger` (or extend `Materializer`) during bootstrap that enumerates all Primitive Crafts (`stairs`, `bridges`, `decor` struts) across their `(BlueprintPartition, MaterialSpace)` cross-products and all configured Armatures (`armature/<filter>/<strut>`) across their root strut's `MaterialSpace` (resolving `host` materials for `chromatics`), storing precomputed `List[Cost]` and `Dimensions` spans.
+
+###### Goal: Armature Late-Binding & Configuration
+
+Support parameterized `material` injection in `Decomposer.unpack()` and establish initial Armature YAML definitions under `/src/data/config/compositions/armatures/` keyed to `icons.crafts` filter frames.
+
+###### Goal: Pack Menu Craft UI & `CraftController`
+
+Wire `menus.pack` (`PackContext` / `InventoryContext`) to `CraftController`, adding the `crafts` filter dock, filtered formulae grid, live ingredient cost display, inventory sufficiency validation, and adjacent level placement via `board.cradle`.
+
+##### Tasks
+
+**1. Task: Semantics & Armature Composition Support**
+
+*Objective*: Align icon filter semantics and enable runtime `material` binding on Armature root struts.
+
+- [ ] Subtask: Reconcile `icons.crafts` frames (`road`, `house`, `tower`, `carpentry`, `railing`, `decor`, `stairs`, `bridge`) in `app/static/semantics.py` and `src/assets/widgets/main.yaml` so filter keys match armature directory prefixes.
+- [ ] Subtask: Update `Decomposer.unpack()` in `src/app/services/generators/game/decomposer.py` to inject `deployed_state.material` and `deployed_state.blueprint` into `root_context` for `bind(root.material)` resolution.
+- [ ] Subtask: Author baseline Armature configurations in `/src/data/config/compositions/armatures/` (e.g., `armature/house/home`).
+
+**2. Task: Craft Cost Ledger Compilation**
+
+*Objective*: Index all constructable Primitives and Armatures with their precomputed `Materializer` resource costs and spans.
+
+- [ ] Subtask: Define `CraftEntry` model (`key`, `filter`, `category`, `instance`, `id`, `blueprint`, `material`, `host`, `costs: List[Cost]`, `span: Dimensions`, `is_armature: bool`).
+- [ ] Subtask: Implement ledger compilation in `Materializer` (or `CraftLedger`) during `Orchestrator` bootstrap, unpacking Primitives across `(blueprints, materials)` and Armatures across root `materials` (including `chromatics` host pairing).
+- [ ] Subtask: Attach the compiled ledger to `Board` (or `Materializer`) for $O(1)$ lookup by filter category and craft key.
+
+**3. Task: Pack Menu Layout & Bindings**
+
+*Objective*: Complete the `CRAFT FORMULAE` column in `src/data/config/menus/inventory/pack/main.yaml` with filter traversal, formula slots, and recipe cost readout.
+
+- [ ] Subtask: Extend `InventoryContext` (or introduce `PackContext(InventoryContext)`) with `ledger`, `active_filter`, `filtered_crafts`, and `selected_cost` fields.
+- [ ] Subtask: Update `src/data/config/menus/inventory/pack/main.yaml` to include the `crafts` filter strip Gizmo (`dock`), the filtered craft slots Gizmo (`grid`), and a bound `TextBinding` / `IconBinding` cost readout pane.
+- [ ] Subtask: Ensure `CollectionState` and `MenuMechanics` allow focusing unaffordable craft slots to inspect costs while preventing `select()` execution when inventory resources are insufficient.
+
+**4. Task: `CraftController` Workflow & Spatial Placement**
+
+*Objective*: Implement craft filtering, affordability checks, resource deduction, and adjacent level instantiation.
+
+- [ ] Subtask: Implement `CraftController.open()` and `update()` to filter the Cost Ledger by `active_filter`, evaluate `inventory.pack` quantities against `CraftEntry.costs`, and update slot statuses and cost readouts.
+- [ ] Subtask: Implement placement coordinate calculation in `CraftController` (or a placement helper) ensuring ground-baseline equality ($y_{g,\text{craft}} = y_{g,\text{player}}$) and zero-overlap directional adjacency along `player.state.animation.direction`, validated against `board.obstacles()`, `board.weights()`, and `board.perimeters`.
+- [ ] Subtask: Implement `CraftController.select()` to switch filters when a filter button is activated, or—when an affordable craft is selected—deduct required materials from `inventory.pack`, instantiate the Primitive or Armature via `board.cradle` with `owner = player.name`, and emit `TerminalEvent()`.
+
+```
+
+---
+
+#### 3. Documentation Updates
+
+##### Draft: MaterialIndex Substrate Lookup & Pack Menu Context
+
+* **Page**: `docs/03-compositions.md` & `docs/06-widgets.md`
+* **Heading**: `Service: Materializer` / `Menu: Data`
+
+###### Drift
+
+1. In `docs/03-compositions.md`, `Decomposer` hydration documents late-binding for `bind(root.*)` and `bind(parent.*)` attributes (`layer`, `owner`), but omits `material` injection required by parameterized Armature compositions (`bind(root.material)`).
+2. In `docs/06-widgets.md`, `Menu: Data` item 3 (`Equipment, Pouch & Pack`) describes `pack` as displaying two 2x4 grid Gizmos alongside the Craft Formulae pane using `InventoryContext`, without specifying the filter strip or ledger context fields required for crafting.
+
+###### Update
+
+```markdown
+- **Compositions (`docs/03-compositions.md` — `Decomposer: Hydration`)**:
+  * **Root Context Attributes**: At deployment, `root_context` exposes `id`, `name`, `layer`, `owner`, `position`, `elevation`, `material`, and `blueprint` from the deployed `PropertyState`, allowing parameterized Armatures to resolve `bind(root.material)` across root and branch Struts.
+
+- **Widgets (`docs/06-widgets.md` — `Menu: Data`)**:
+  * **`pack`**: Displays two 2x4 grid Gizmos for `inventory.pack` (`materials`) and `inventory.sack` (`crops`) alongside the Craft Formulae column, which comprises a `crafts` filter strip Gizmo, a filtered formula grid Gizmo, and a recipe cost readout bound to `PackContext`.
+
+```
+
+---
+
+#### 4. Bug Reports
+
+##### Bug 07-06-A: `Decomposer.unpack` Omits `material` and `blueprint` from `root_context`
+
+**STATUS**: OPEN
+**SEVERITY**: HIGH
+
+**Description**
+
+In `src/app/services/generators/game/decomposer.py`, `Decomposer.unpack(deployed_state: PropertyState)` constructs `root_context` with only `id`, `name`, `layer`, `owner`, `position`, and `elevation`. When an Armature composition omits `material` on `root.strut` and declares `material: bind(root.material)` on component or branch struts, `CompositionCompiler` defers the macro string to deployment time, where `Decomposer._resolve_bind` fails to resolve `bind(root.material)` because `material` is absent from `root_context`.
+
+**Steps to Replicate**
+
+1. Define an Armature composition with `root.strut` omitting `material` and a component strut declaring `material: bind(root.material)`.
+2. Call `decomposer.unpack(PropertyState(id="armature/house/home", material="granite", ...))`.
+3. Inspect the hydrated child strut's `state.material`; it remains the literal string `"bind(root.material)"` instead of `"granite"`.
+
+**Proposed Remediation**
+
+Include `"material": deployed_state.material` and `"blueprint": deployed_state.blueprint` in `root_context` inside `Decomposer.unpack()`, and ensure `root.strut` inherits `deployed_state.material` when its own `material` field is `None`.
+
+---
+
+##### Bug 07-06-B: `MenuMechanics` Prevents Focusing `DISABLED` Slots in Craft Formulae
+
+**STATUS**: OPEN
+**SEVERITY**: MEDIUM
+
+**Description**
+
+In `src/app/game/logic/mechanics/core/menu.py`, `MenuMechanics._resolve_neighbor` enforces `neighbor.state.status != Statuses.DISABLED.value` before moving `menu.focus`. While appropriate for vacant inventory slots in `equipment` and `pouch`, applying `Statuses.DISABLED` to unaffordable recipes in the Craft Formulae grid prevents the player from traversing onto those slots to inspect their required material costs.
+
+**Proposed Remediation**
+
+Either introduce a dedicated `Statuses` / visual state distinction for unaffordable-but-inspectable recipes, or allow `MenuMechanics` / `CraftController` to traverse onto occupied Craft Formulae slots regardless of affordability while gating execution inside `CraftController.select()`.

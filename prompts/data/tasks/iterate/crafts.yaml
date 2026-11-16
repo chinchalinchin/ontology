@@ -109,9 +109,10 @@ tools:
               domain: [ model ]
               modality: [ material ]
           # ------------------------------------
-          - title: Composition Logic
+          - title: Composition Modules
             scan:
               domain: [ logic ]
+              app: [ module ]
               workflows: [ compositions ]
           # -------------------------------------
           - title: Craft Controller
@@ -121,10 +122,17 @@ tools:
               menu: [ controller ]
               workflows: [ crafting ]
           # -------------------------------------
+          - title: Craft Services
+            scan:
+              domain: [ concrete ]
+              app: [ menu ]
+              menu: [ controller ]
+              workflows: [ crafting ]
+          # -------------------------------------
       data:
         properties: [ widgets, crafts ]
         state: [ ]
-        configurations: [ menus/inventory/pack, materials ]
+        configurations: [ menus/inventory/pack, materials, compositions/armatures ]
         templates: [ ]
     # --------------------------------------------
     shell:

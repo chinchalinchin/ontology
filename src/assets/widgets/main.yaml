@@ -141,7 +141,7 @@ widgets:
         l: 20
       frames:
         - road
-        - house
+        - building
         - tower
         - carpentry
         - railing

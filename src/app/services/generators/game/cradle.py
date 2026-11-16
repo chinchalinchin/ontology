@@ -2,6 +2,7 @@
 @domain.system
 @app.service
 @workflow.injection
+@workflow.crafting
 
 # Ontology: Source - app.services.generators.game.cradle
 
