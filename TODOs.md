@@ -919,33 +919,6 @@ $$
 
 
 
-
-
-##### Math: Space
-
-- Address: `libs.core.math.space`
-
-To avoid $O(N^2)$ pairwise comparisons over $N$ entities, the plane is partitioned into a uniform grid of cell size $C > 0$ mapped across $M$ hash buckets:
-
-1. **Grid Discretization**:
-   An entity with bounding box $[x, x + w] \times [y, y + l]$ covers the integer cell coordinates:
-
-$$
-c_x \in \left[\left\lfloor \frac{x}{C} \right\rfloor,\; \left\lfloor \frac{x + w}{C} \right\rfloor\right], \qquad c_y \in \left[\left\lfloor \frac{y}{C} \right\rfloor,\; \left\lfloor \frac{y + l}{C} \right\rfloor\right]
-$$
-
-2. **Spatial Hashing**:
-   Each covered cell $(c_x, c_y)$ maps to a 1D bucket index $h(c_x, c_y) \in \{0, \dots, M - 1\}$ via multiplicative prime hashing:
-
-$$
-h(c_x, c_y) = (c_x \cdot p_1 \oplus c_y \cdot p_2) \bmod M
-$$
-
-   where $p_1, p_2$ are large coprime integers. The entity identifier is inserted into each bucket its bounding box intersects.
-
-3. **Candidate Pair Generation**:
-   Iterating through populated buckets yields unique unordered pairs $(i, j)$ with $i < j$ that share at least one spatial bucket, forming the broad-phase candidate set for narrow-phase evaluation.
-
 ##### Math: Physics
 
 - Address: `libs.core.math.physics`
