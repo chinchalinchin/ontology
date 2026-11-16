@@ -104,15 +104,29 @@ Each Armature will be keyed according to the following schema:
 * The MaterialIndex Relation and Materializer Service are used to construct a Cost Ledger for all indexed Primitive Crafts and configured Armatures.
     * Each separate instance of a Primitive Craft will need to be unpacked across the dimension of (Blueprints, Materials). For example, a `steps` Stair unpacks into `steps-up-limestone`, `steps-left-limestone`, `steps-right-limestone`, `steps-up-feldspar`, `steps-left-feldspar`, `steps-right-feldspar`, ... 
 
-**Minimum Viable Product: Craft Menu**
+**Menu: Crafts**
+
+* `dock(header)`: `pane(content="Crafts")`
+* `stack`:
+    * `dock(subheader)`: `pane(content="Resources")`
+    * `dock(materials)`: `gizmo(context.inventory.pack)`
+    * `dock(crops)`: `gizmo(context.inventory.sack)`
+* `stack`:
+    * `dock(subheader)`: `pane(content="Formulae")`
+    * `dock(filters)`: `gizmo(context.filters)` 
+    * `dock(crafts)`: `gizmo(context.crafts)`
+
+`dock(filters)` needs to be able to bind to an Enum, i.e. the static list of Frames in the `crafts` Icon, *and* a dynamically generated list of Crafts. These fields can be stored in the Menu context.
+
+**Minimum Viable Product: Craft Workflow**
 
 1. Player opens Craft Menu.
-2. Menu populates the Craft Formulae Pane with Slots hydrated from *all* entries in the Primitive Cost Ledger and initializes each one with the `disabled` Status. 
-3. Controller takes Player Inventory and compares it to the Primitive Cost Ledger. Any entry in the Primitive Cost Ledger that is satisfied by the Player Inventory is set to `enabled` Status.
+2. Menu populates the Craft Formulae Pane with Slots hydrated from *all* entries in the Cost Ledger and initializes each one with the `disabled` Status. 
+3. Controller takes Player Inventory and compares it to the Cost Ledger. Any entry in the Cost Ledger that is satisfied by the Player Inventory is set to `enabled` Status.
 4. Player selects a constructable Craft.
 5. Craft Menu closes.
 6. A Craft is instantiated *level* with the Player (where *level* is defined as their ground baseline's being equal) and directly *adjacent* (where *adjacent* is defined as touching with no pixel overlap).
  
 **Feature: Craft Filters**
 
-The `crafts` Icon Widget can be utilized to represent user-facing Crafts
+The `crafts` Icon Widget can be utilized to represent user-facing Crafts (Primitives & Armatures). The Craft Menu should have a traversible dock of `crafts` Icons. When one of the `crafts` is selected, the Cost Ledger hides any entries that do not match the filter.
