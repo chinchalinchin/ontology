@@ -22,6 +22,5 @@ sheets:
     pickaxe:
       dimensions: *lpc
       actions: lpc-thrust
-      attackboxes: null
       hitboxes: null
       stack: [ pickaxe ] 

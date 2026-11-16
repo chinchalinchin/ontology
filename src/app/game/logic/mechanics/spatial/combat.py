@@ -76,6 +76,8 @@ class CombatMechanics(SpatialMechanic):
                     continue
 
                 # ---------- RANGED COMBAT HANDLING
+                # ---------- TODO: phase 03-04
+                # ---------- ignore until then
                 if attacker.state.animation.frame == 0 and \
                     not attacker.state.mutators.triggers.executed:
                     proj_id = "TODO"
@@ -138,7 +140,7 @@ class CombatMechanics(SpatialMechanic):
                     continue
 
                 if attacker.name == target.name or (
-                    getattr(target.state, 'mutators', None) and target.state.mutators.triggers.dead
+                    target.state.mutators and target.state.mutators.triggers.dead
                 ):
                     continue
 

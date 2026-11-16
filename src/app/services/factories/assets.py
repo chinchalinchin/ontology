@@ -1,6 +1,7 @@
 """
 @domain.system
 @app.service
+@app.asset
 @workflow.injection
 @workflow.compositions
 

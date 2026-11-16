@@ -2,6 +2,7 @@
 @domain.logic
 @app.module
 @modality.intention
+@workflow.combat
 
 # Ontology: Source - app.game.maps.animation
 

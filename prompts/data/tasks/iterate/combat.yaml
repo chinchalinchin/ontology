@@ -6,7 +6,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/groom.md.j2
+  template: iterate/implement.md.j2
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ---------------------------------------------- TOOLS
@@ -21,7 +21,7 @@ tools:
     manager:
       board: true
       docs: true
-      templates: true
+      templates: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
@@ -88,6 +88,11 @@ tools:
             scan:
               domain: [ system ]
               app: [ orchestration ]
+          - title: Asset Factory
+            scan:
+              domain: [ system ]
+              app: [ service, asset ]
+              workflows: [ injection ]
           - title: Core Components
             scan:
               domain: [ system ]
@@ -122,13 +127,7 @@ tools:
               asset: [ frame ]
           - title: Combat Logic
             scan:
-              domain: [ logic ]
               workflows: [ combat ]
-          - title: Rendering Libraries
-            scan:
-              domain: [ system ]
-              app: [ library ]
-              workflows: [ rendering ]
       data:
         properties: [ sheets/sprites, sheets/equipment ]
         state: [  ]

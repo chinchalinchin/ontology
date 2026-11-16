@@ -221,26 +221,23 @@ This class serves to unpack the Application data structures into raw primitives 
 
 #### Spatial Mechanic: CollisionMechanics
 
-!!! @TODO
-    Out of date.
+CollisionMechanics resolves elevation transitions, perimeter collisions, and Asset collisions across three phases per active Layer. [Airborne entities](#field-gravity) are excluded from all three phases so freefall kinematics execute unobstructed across elevation planes.
 
-When Assets collide, overlap resolution uses inverse mass ratios to correct spatial positioning, ensuring immutable Assets with no Mass (`m = 0`) remain  immobile while dynamic Assets with Mass (`m > 0`) absorb the displacement shift. Post-separation, Velocities are updated via elastic collision formulas, conserving momentum across all participating masses,
+1. **Phase 0 — Stairs**:
+   * Prior to the evaluation of collisions, dynamic Asset intersecting Stairs are transitioned to the next elevation to participate in the correct elevation's collision calculations.
+2. **Phase 1 — Perimeters**:
+   * Queries the [Board's](./00-overview.md#component-board) perimeters and resolves overlap.
+3. **Phase 2 — Collisions**:
+   * Non-falling Asset are partitioned by elevation $E \in \mathbb{Z}_{\ge 0}$.
+   * Colliding Assets have their overlap resolved:
+     * **Spatial Separation**: Overlapping Assets shift apart along the minimum penetration axis proportional to their inverse mass ratios ($p_i = \frac{1/m_i}{1/m_1 + 1/m_2}$). Static Asset ($m = 0$) absorb $0\%$ of the shift ($1/m \to 0$), forcing dynamic Asset ($m > 0$) to absorb $100\%$ of the displacement.
+     * **1D Elastic Momentum Transfer**: Post-separation velocities update via conservation of momentum:
 
-$$
-v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
-$$
+    $$
+    v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}, \qquad v_{2f} = \frac{v_2(m_2 - m_1) + 2m_1v_1}{m_1 + m_2}
+    $$
 
-The [Player](./02-sprites.md#player) does not observe momentum transfers. Instead, the Player follows the procedures outlined below,
-
-* **Property Level:** The Player retains a normal, dynamic mass (e.g., $m = 10$).
-* **Phase 1 - Spatial Resolution:**
-    * **Player vs. Wall ($m=0$):** `inv_total` is $> 0$. The Wall absorbs 0% of the overlap shift, and the Player absorbs 100%. The Player halts at the wall boundary.
-    * **Player vs. Crate ($m=5$):** Both absorb the spatial shift proportional to their inverse mass. The Player pushes the Crate out of the way.
-* **Phase 2 - Momentum Transfer:** Bypass the 1D elastic collision calculation *only* for the Player.
-
-CollisionMechanics partitions active weights by discrete elevation tiers (`tier = max(0, w.elevation)`), isolating Phase 1 boundary constraint solving and Phase 2 elastic momentum resolution.
-
-Incline transitions (`_traverse_stairs`) execute in Phase 0 of `CollisionMechanics` strictly prior to tier partitioning, ensuring elevation mutations take effect within the current frame's broad-phase spatial hash.
+     * **Player Kinematic Exemption**: The Player retains positive mass ($m > 0$) during resolution against static walls ($m = 0$) and pushing movable Crates ($m > 0$), but bypasses velocity bounces.
 
 #### Spatial Mechanic: CombatMechanics
 
