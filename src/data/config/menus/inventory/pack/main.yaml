@@ -1,0 +1,169 @@
+# ---------------------------------------------------------------------
+# -------------------------------------------------------- MENU: THEMES
+# ---------------------------------------------------------------------
+themes:
+  colors:
+    pane: &pane dark-solid
+    pane-alt: &pane-alt dark-texture
+  alignments:
+    top: &top
+      horizontal: center
+      vertical: start
+    center: &center
+      horizontal: center
+      vertical: center
+    start: &start
+      horizontal: start
+      vertical: center
+  dimensions:
+    root: &root
+      pw: 0.67
+      pl: 0.80
+    column: &column
+      pw: 0.32
+      pl: 0.60
+    body: &body
+      pw: 0.65
+      pl: 0.65
+    label: &label
+      pw: 0.50
+      pl: 0.06
+    sublabel: &sublabel
+      pw: 0.30
+      pl: 0.06
+    row: &row
+      pw: 0.50
+      pl: 0.08
+    slot: &slot
+      pw: 0.08
+      pl: 0.08
+    gizmo-strip: &gizmo-strip
+      pw: 0.32
+      pl: 0.08
+    gizmo-grid: &gizmo-grid
+      pw: 0.32
+      pl: 0.16
+  parameters:
+    collection-strip: &collection-strip
+      capacity: 4
+      columns: 4
+      gap: 5
+      pane: transparent
+      button: slot
+      dimensions: *gizmo-strip
+    collection-grid: &collection-grid
+      capacity: 8
+      columns: 4
+      gap: 5
+      pane: transparent
+      button: slot
+      dimensions: *gizmo-grid
+    disabled: &disabled
+      status: disabled
+    selected: &selected
+      status: selected
+    display: &display
+      dimensions: *label
+      layout: overlay
+      alignment: *center
+    subdisplay: &subdisplay
+      dimensions: *sublabel
+      layout: overlay
+      alignment: *center
+# ---------------------------------------------------------------------
+# --------------------------------------------------------- MENU: PACK
+# ---------------------------------------------------------------------
+  pack:
+    controller: inventory
+    roots:
+      - instance: panes
+        id: *pane
+        name: pack-menu
+        parameters:
+          dimensions: *root
+          justification: *top
+          alignment: *center
+          layout: stack
+          font: menu
+          gap: 10
+          margins: 5
+          children:
+            # ------------------------------------------
+            # ----------------------------- PACK: HEADER
+            # ------------------------------------------
+            - instance: panes
+              id: transparent
+              name: pack-header-pane
+              parameters: *display
+              bind:
+                schema: text
+                target:
+                  content: PACK
+            # ------------------------------------------
+            # ------------------------------- PACK: BODY
+            # ------------------------------------------
+            - instance: panes
+              id: transparent
+              name: pack-body-row
+              parameters:
+                dimensions: *body
+                layout: dock
+                alignment: *center
+                gap: 15
+                children:
+                  # ---------------- COLUMN: RESOURCES
+                  - instance: panes
+                    id: transparent
+                    name: pack-resources-column
+                    parameters:
+                      dimensions: *column
+                      layout: stack
+                      alignment: *center
+                      gap: 8
+                      children:
+                        - instance: panes
+                          id: transparent
+                          name: pack-resources-subheader
+                          parameters: *subdisplay
+                          bind:
+                            schema: text
+                            target:
+                              content: RESOURCES
+                        - instance: gizmos
+                          id: materials
+                          name: inventory-pack-grid
+                          bind:
+                            schema: collection
+                            target:
+                              source: context.inventory.pack
+                              capacity: 8
+                              columns: 4
+                          parameters: *collection-grid
+                        - instance: gizmos
+                          id: crops
+                          name: inventory-sack-grid
+                          bind:
+                            schema: collection
+                            target:
+                              source: context.inventory.sack
+                              capacity: 8
+                              columns: 4
+                          parameters: *collection-grid
+                  # ----------- COLUMN: CRAFT FORMULAE
+                  - instance: panes
+                    id: transparent
+                    name: pack-formulae-column
+                    parameters:
+                      dimensions: *column
+                      layout: stack
+                      alignment: *center
+                      gap: 8
+                      children:
+                        - instance: panes
+                          id: transparent
+                          name: pack-formulae-subheader
+                          parameters: *subdisplay
+                          bind:
+                            schema: text
+                            target:
+                              content: CRAFT FORMULAE

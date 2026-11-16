@@ -104,15 +104,15 @@ Each Armature will be keyed according to the following schema:
 * The MaterialIndex Relation and Materializer Service are used to construct a Cost Ledger for all indexed Primitive Crafts and configured Armatures.
     * Each separate instance of a Primitive Craft will need to be unpacked across the dimension of (Blueprints, Materials). For example, a `steps` Stair unpacks into `steps-up-limestone`, `steps-left-limestone`, `steps-right-limestone`, `steps-up-feldspar`, `steps-left-feldspar`, `steps-right-feldspar`, ... 
 
-**Menu: Crafts**
+**Menu: Pack**
 
-* `dock(header)`: `pane(content="Crafts")`
+* `dock(header)`: `pane(content="Pack")`
 * `stack`:
     * `dock(subheader)`: `pane(content="Resources")`
     * `dock(materials)`: `gizmo(context.inventory.pack)`
     * `dock(crops)`: `gizmo(context.inventory.sack)`
 * `stack`:
-    * `dock(subheader)`: `pane(content="Formulae")`
+    * `dock(subheader)`: `pane(content="Crafts")`
     * `dock(filters)`: `gizmo(context.filters)` 
     * `dock(crafts)`: `gizmo(context.crafts)`
 

@@ -2,7 +2,6 @@
 @domain.abstract
 @app.base
 @app.module
-@category.crafts
 @workflow.compositions
 
 # Ontology: Source - app.game.logic.modules.multipliers.base

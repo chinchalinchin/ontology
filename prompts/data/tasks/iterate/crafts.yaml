@@ -3,45 +3,45 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/grooming.md.j2
+  template: iterate/groom.md.j2
 # ----------------------------------------------------
   parameters:
-    description: *description
-    title: *title
+    description:  TODO
+    title: TODO
 # ----------------------------------------------------
 tools:
 # ----------------------------------------------------
   views:
     # --------------------------------------------
     manager:
-      board: false
-      docs: false
-      templates: false
+      board: true
+      docs: true
+      templates: true
     # --------------------------------------------
     source:
       data: true
       filter: true
     # --------------------------------------------
     shell:
-      directory: false
+      directory: true
       commands: false
     # --------------------------------------------
     tests:  
       configuration: false
-      pipeline: true
+      pipeline: false
       session: false
 # -----------------------------------------------------
   parameters:
     # --------------------------------------------
     manager:
       board:
-        phase: 04-06
+        phase: 07-06
         action: refactor
       docs:
         exclude:
           # - 00-overview
           # - 01-assets
-          - 02-sprites
+          # - 02-sprites
           # - 03-compositions
           - 04-intentions
           - 05-mechanics
@@ -53,18 +53,14 @@ tools:
           - 11-emergence
           # - 12-architecture
       templates:
-        - template-review
+        - template-backlog
+        - template-docs
         - template-bug
     # --------------------------------------------
     source:
       filter:
         default: AND
         queries:
-          # -------------------------------------
-          - title: Orchestration Services
-            scan:
-              domain: [ system ]
-              app: [ orchestration ]
           # -------------------------------------
           - title: Application Core Components
             scan:
@@ -107,22 +103,28 @@ tools:
             scan:
               domain: [ concrete ]
               app: [ menu, mechanic ]
+          # ------------------------------------
+          - title: Material Models
+            scan:
+              domain: [ model ]
+              modality: [ material ]
+          # ------------------------------------
+          - title: Composition Logic
+            scan:
+              domain: [ logic ]
+              workflows: [ compositions ]
           # -------------------------------------
-          # - title: Menu Controllers
-          #   scan:
-          #     domain: [ concrete ]
-          #     app: [ menu ]
-          #     menu: [ controller ]
-          # -------------------------------------
-          # - title: Menu Services
-          #   scan:
-          #     domain: [ system ]
-          #     app: [ service, menu ]
+          - title: Craft Controller
+            scan:
+              domain: [ concrete ]
+              app: [ menu ]
+              menu: [ controller ]
+              workflows: [ crafting ]
           # -------------------------------------
       data:
-        properties: [ widgets ]
+        properties: [ widgets, crafts ]
         state: [ ]
-        configurations: [ menus ]
+        configurations: [ menus/inventory/pack, materials ]
         templates: [ ]
     # --------------------------------------------
     shell:
