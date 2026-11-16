@@ -1,12 +1,10 @@
 # Ontology Docs: Architecture
 
-This section contains an in-depth presentation of the [Application's](./00-overview.md#application) architecture.
-
 ## Specifications
 
 ### Specification: Initialization
 
-The engine utilizes a decoupled boot-and-hydrate lifecycle to achieve instantaneous menu rendering and non-blocking transitions. The general flow is shwon in the following diagram and detailed further in the following sections,
+The [Application](./00-overview.md#application) initialization can be traced through the following phases,
 
 ```mermaid
 flowchart LR
@@ -25,26 +23,25 @@ flowchart LR
 #### Phase 1: Boot
 
 1. **Bootstrapping**: Loads Configuration files via Pydantic TypeAdaptor, instantiates Service singletons, compiles [Executors](./05-mechanics.md#dependency-executors) and [Relations](./05-mechanics.md#dependency-relations)
-2. **Cython**: Initializes SDL2 video, image, and typography subsystems.
+2. **Cython**: Initializes video, image, and typography subsystems.
 3. **Registry**: Recursively parses the Asset directory, mapping file paths and generating crop-map indexes. *VRAM allocation is completely deferred.*
-4. **Components**: Instantiates [Mechanics](./05-mechanics.md) and an empty [Board database](./00-overview.md#component-board). 
-5. **Ignition**: The fixed-timestep loop begins. A [MenuEvent('main')](./06-widgets.md#events) is injected into the Engine bus prior to ignition to immediately render the [Main Menu](./06-widgets.md#menus).
+4. **Components**: Instantiates [Mechanics](./05-mechanics.md) and an empty [Board](./00-overview.md#component-board). 
+5. **Ignition**: The [Engine Loop](#specification-engine-loop) begins. A [MenuEvent](./06-widgets.md#events) is injected into the [Engine Bus](./00-overview.md#component-engine) prior to ignition to immediately render the [Main Menu](./06-widgets.md#menu-data).
 
 #### Phase 2: Hydration
 
-Triggered by a StateEvent (e.g., selecting "*New Game*" or "*Load*"), the Engine transitions into world generation without blocking the Python GIL.
+When the User selects "*New Game*" or "*Load*" from the [Main Menu](./06-widgets.md#menu-data), an [Event](./06-widgets.md#concept-asychronicity) is thrown to the [Engine Bus](./00-overview.md#component-engine), signaling the onset of the [World Mechanic context](./05-mechanics.md#mechanics-world).
 
 1. **Generation**: The [LoadController](./06-widgets.md#controllers) calls the Migrator each frame. The Migrator applies calls the [Factory](./00-overview.md#service-factory) to generate batches of Assets from the State file, injecting Frame, Animation, Hitbox, Properties, and State components, then yields execution back to the Engine.
-   *The StateSchema distinguishes between Physical Asset State (Assets requiring State, Frames, etc.) and World State. During hydration, the Migrator parses World State and assigns it to the Board.
-2. **Prewarming**: Concurrently, the Registry parses a queue of keys, loading Asset files into memory within a time budget.
-3. **Allocation**: Once hydration is complete, the Migrator triggers  all Screens to recalculate max dimensions and reallocate canvases for the Painter's Algorithm.
+2. **Prewarming**: Concurrently, the Registry parses a queue of keys, loading Asset files into memory.
+3. **Allocation**: Once hydration is complete, the Migrator triggers the Screen to reallocate canvases for the Painter's Algorithm.
 4. **Execution**: The LoadController emits a [TerminalEvent](./06-widgets.md#events), popping the loading screen, activating the Board, and unpausing the [World Mechanics](./05-mechanics.md#mechanics-world).
 
 ### Specification: Engine Loop
 
-The Engine delegates behavior to [Mechanics](./05-mechanics.md). Rather than the [Engine](./00-overview.md#component-engine) passing arguments to a system, a Mechanic is responsible for querying the [Board](./00-overview.md#component=board) for the exact data it requires, processing the state, and optionally pushing Events to the Engine's Bus.
+The Engine delegates behavior to [Mechanics](./05-mechanics.md). Rather than the [Engine](./00-overview.md#component-engine) passing arguments to a system, a Mechanic is responsible for querying the [Board](./00-overview.md#component=board) for the exact data it requires, processing the state, and optionally pushing Events to the Engine Bus.
 
-Mechanics are strictly segregated into `core` pipelines and `world` pipelines. The [Engine](./00-overview.md#component-engine) method processes these pipelines conditionally:
+Mechanics are segregated into `core` pipelines and `world` pipelines. The [Engine](./00-overview.md#component-engine) processes these pipelines conditionally:
 
 ```python
 def _play(self, delta) -> None:
@@ -59,8 +56,8 @@ def _play(self, delta) -> None:
             mechanic.update(self.board, delta, self.bus)
 ```
 
-* **Core Mechanics:** Systems that must execute every frame regardless of game state. This includes [MenuMechanics](./05-mechanics.md#core) (to process input and layout traversals), [AnimationMechanics](./05-mechanics.md#core) (to keep Assets animating), and RemoveMechanics (garbage collection).
-* **World Mechanics:** Systems that govern gameplay logic, physics, and NPC behavior. This includes [MotionMechanics, CombatMechanics, and PlayerMechanics](./05-mechanics.md).
+* **Core Mechanics:** Systems that must execute every tick regardless of the Board State. This includes [MenuMechanics](./05-mechanics.md#core) (to process input and layout traversals), [AnimationMechanics](./05-mechanics.md#core) (to keep Assets animating), and RemoveMechanics (to optimize memory).
+* **World Mechanics:** Systems that govern logic, physics, and behavior. This includes [MotionMechanics, CombatMechanics, and PlayerMechanics](./05-mechanics.md).
 
 When an [Event](./06-widgets.md#events) fires and a Menu is pushed to the screen, the Board is paused. The Engine skips the World Mechanics loop entirely. The World freezes, but Core Mechanics continue ticking, allowing the User to navigate the Menu.
 
@@ -86,14 +83,14 @@ $$
 
 #### Rendering: Sort
 
-World rendering evaluates spatial geometry using discrete elevations, intra-elevation substrate planes, ground perspective, and coplanar priority:
+The [Screen](./00-overview.md#component-screen) calculates rendering order using elevations, substrates, ground baseline, and a static priority:
 
 $$
 \text{sortkey}(A) = \Big(A.\text{elevation}, A.\text{substrate}, \text{ground}(A), A.\text{properties.priority}\Big)
 $$
 
 1. **Primary Key (`A.elevation` $\in \mathbb{Z}_{\ge 0}$)**: Discrete elevation (`0`, `1`, `2`, ...).
-2. **Secondary Key (`A.substrate` $\in \mathbb{Z}_{\le 0}$)**: Intra-elevation rendering plane within $E$:
+2. **Secondary Key (`A.substrate` $\in \mathbb{Z}_{\le 0}$)**: Rendering plane within a given elevation:
     * `-4`: [Environ Tiles](./01-assets.md#tile-environ)
     * `-3`: [Fluids](./01-assets.md#effect-fluids)
     * `-2`: [Struts](./03-compositions.md#craft-struts), [Geography](./09-ecology.md#category-geography).
@@ -112,21 +109,21 @@ See [Library: Graphics](#library-graphics) for more implementation details.
 
 **Properties: FontProperties**
 
-* `size: int`: Point size used during glyph rasterization (defaults to `24`).
-* `alignment: str`: Text alignment within the bounding box (`left`, `center`, `right`).
-* `bold: bool`: Toggles `TTF_STYLE_BOLD`.
-* `italics: bool`: Toggles `TTF_STYLE_ITALIC`.
-* `underline: bool`: Toggles `TTF_STYLE_UNDERLINE`.
-* `strikethrough: bool`: Toggles `TTF_STYLE_STRIKETHROUGH`.
+* `size: int`: Font size (defaults to `24`).
+* `alignment: str`: Text alignment (`left`, `center`, `right`).
+* `bold: bool`
+* `italics: bool`
+* `underline: bool`
+* `strikethrough: bool`
 * `margins: float`: Fractional padding applied to the target canvas bounds before wrapping (e.g., `0.05` for 5%).
-* `color`: Primary glyph fill color.
+* `color: Color`: 
     * `r: int` (0–255)
     * `g: int` (0–255)
     * `b: int` (0–255)
     * `a: int` (0–255)
-* `outline`: (*Optional*) Border styling configuration.
-    * `width: int`: Perimeter thickness in pixels (`outline > 0` enables two-pass rendering).
-    * `color`:
+* `outline`: (*Optional*) 
+    * `width: int`: Perimeter thickness in pixels
+    * `color: Color`:
         * `r: int` (0–255)
         * `g: int` (0–255)
         * `b: int` (0–255)
@@ -413,12 +410,12 @@ $$
 
 **Interfaces**
 
-1. **collisions**
+1. **`collisions`**
 
     * *Broad Phase*: Assets are hashed into the spatial grid by their bounding footprints to produce candidate pairs $(A_1, A_2)$.
     * *Narrow Phase*: Candidate pairs are evaluated for intersection across their offset hitboxes $\mathcal{H}(A_1) \cap \mathcal{H}(A_2) \neq \emptyset$.
 
-2. **collide**
+2. **`collide`**
 
     * *Minimum Translation Vector & Inverse-Mass Separation*: For two intersecting hitboxes $H_1 = [x_1, x_1 + w_1] \times [y_1, y_1 + l_1]$ and $H_2 = [x_2, x_2 + w_2] \times [y_2, y_2 + l_2]$ with centers $\mathbf{c}_1, \mathbf{c}_2$, the axial overlap depths are:
 
@@ -440,12 +437,44 @@ $$
 
     Against a static body ($m_2 = 0 \implies m_2 \to \infty$), the dynamic body's normal velocity inverts ($v_{1f} = -v_1$). Kinematic entities participate in inverse-mass spatial separation using their nominal mass $m_1 > 0$, but bypass velocity reassignment.
 
-* **`integrate`**: Executes Symplectic Euler Integration ($x_{n+1} = x_n + v_n \Delta t$). Maintains sub-pixel accumulators (`rx`, `ry`) to update discrete integer positions without drift.
-* **`friction`**: Decays the magnitude of a `Velocity` vector over time using an environmental friction coefficient, clamping to $0.0$ to prevent negative overshoot.
-* **`kinematics`**: Handles direct velocity assignment. Snaps non-input axes to zero and normalizes the resulting vector to the specified `speed`.
-* **`dynamics`**: Calculates acceleration vectors towards a target coordinate (`tx`, `ty`) based on a given `impulse`. Clamps the resulting velocity to `speed` and snaps directly to the target velocity if within the arrival threshold to prevent oscillation.
-* **`boundaries`**: Evaluates broad-phase and narrow-phase candidate collisions between dynamic assets and static environmental boundary hulls.
-* **`constrain`**: Resolves spatial overlap and inverts velocity vectors for assets colliding with infinitely massive boundary hulls.
+3. **`integrate`**: Executes Symplectic Euler Integration ($x_{n+1} = x_n + v_n \Delta t$). 
+
+    Because positions $(x_n, y_n) \in \mathbb{Z}^2$ are discrete integers while velocities $(v_x, v_y) \in \mathbb{R}^2$ and timesteps $\Delta t \in \mathbb{R}_{>0}$ are continuous, fractional sub-pixel remainders $(r_x, r_y) \in (-1, 1)$ are accumulated across frames:
+
+    $$
+    \begin{aligned}
+    \tilde{r}_x &= r_{x,n} + v_x \Delta t, & \Delta x &= \operatorname{trunc}(\tilde{r}_x), & x_{n+1} &= x_n + \Delta x, & r_{x,n+1} &= \tilde{r}_x - \Delta x \\
+    \tilde{r}_y &= r_{y,n} + v_y \Delta t, & \Delta y &= \operatorname{trunc}(\tilde{r}_y), & y_{n+1} &= y_n + \Delta y, & r_{y,n+1} &= \tilde{r}_y - \Delta y
+    \end{aligned}
+    $$
+
+4. **`friction`**: Decays the magnitude of a Velocity vector over time using an Environ Tile friction coefficient.
+
+    For an entity with velocity $\mathbf{v}_n$ traversing a surface with friction coefficient $\mu_f \ge 0$ over timestep $\Delta t$, speed decays linearly to a lower bound of $0$:
+
+    $$
+    s_{n+1} = \max\big(0,\; \|\mathbf{v}_n\| - \mu_f \Delta t\big), \qquad \mathbf{v}_{n+1} = \begin{cases} \dfrac{s_{n+1}}{\|\mathbf{v}_n\|}\mathbf{v}_n & \text{if } \|\mathbf{v}_n\| > 0 \\ \mathbf{0} & \text{otherwise} \end{cases}
+    $$
+
+5.  **`kinematics`**: Handles direct velocity assignment. Snaps non-input axes to zero and normalizes the resulting vector.
+
+    Given directional input vector $\mathbf{d}_{\text{input}}$ and speed $s$, non-active axes snap to $0$ and the velocity vector is normalized to magnitude $s$:
+
+    $$
+    \mathbf{v} = \begin{cases} s \dfrac{\mathbf{d}_{\text{input}}}{\|\mathbf{d}_{\text{input}}\|} & \text{if } \|\mathbf{d}_{\text{input}}\| > 0 \\ \mathbf{0} & \text{otherwise} \end{cases}
+    $$
+
+6.  **`dynamics`**: Calculates acceleration vectors towards a target coordinate. 
+
+    Given position $\mathbf{r} = (x, y)$, target $\mathbf{t} = (t_x, t_y)$, impulse $a$, and maximum speed $s$, let $\mathbf{d} = \mathbf{t} - \mathbf{r}$ and $\hat{\mathbf{d}} = \mathbf{d} / \|\mathbf{d}\|$. Velocity accelerates along $\hat{\mathbf{d}}$ and is clamped to $s$:
+
+    If $\|\mathbf{d}\|$ lies within the single-tick arrival threshold, velocity snaps to the remaining displacement to prevent oscillation.
+
+7. **`boundaries`**: Evaluates broad-phase and narrow-phase candidate collisions between dynamic assets and static environmental boundary hulls.
+
+    Environmental perimeters act as directed barriers with $\mu_{\text{bound}} = 0$. When an Asset's Hitbox penetrates a boundary segment, the Asset is displaced out of the overlap along the boundary normal by penetration depth $\delta$ and its normal velocity component is inverted.
+
+8.  **`constrain`**: Resolves spatial overlap and inverts velocity vectors for assets colliding with infinitely massive boundary hulls.
 
 #### Library: Graphics
 
@@ -456,7 +485,7 @@ This Library is a Cythonized interface for SDL2 bindings.
 * **Context Initialization (`init`):** Sets up the SDL environment, including video, images, and typography.
 * **Asset & Font Allocation (`_load_image`, `_load_font`):** Loads physical image (`.png`) and font (`.ttf`) Assets from the file system into Application memory, returning Cython wrappers. 
 * **Typography (`measure`, `write`):** `measure` queries the pixel dimensions of a string without allocating a rendering surface. `write` calculates wrapping bounds and alignment, rendering characters as a blended surface that is stamped onto a target texture.
-* **Background Compilation (`canvas` & `construct`):** `canvas` creates a blank texture in memory to match the full size of the Board. Flat lists of Tile tuples are passed into `construct` to cache prerendered textures for the background of the Screen.
+* **Background Compilation (`canvas` & `construct`):** `canvas` creates a blank texture in memory to match the full size of the Board. Flat lists of Environ Tile tuples are passed into `construct` to cache prerendered textures for the background of the Screen.
 * **Buffer Management (`clear` & `present`):** `clear` wipes the current buffer while `present` finalizes and displays the current buffer.
 * **World Rendering (`render`):** Copies the cropped background texture and then maps world-coordinates to camera-relative coordinates, stamping the active primitives onto the back buffer.
 * **Overlays (`superimpose`):** Bypasses the camera offset logic, rendering textures via absolute screen coordinates directly on top of the Screen.
