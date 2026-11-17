@@ -32,14 +32,17 @@ class TerminalEventHandler(EventHandler):
             return 
         
         menu = data.board.menus.pop()
+        player = data.board.player()
+        screen = (
+            data.screens.get(player.state.layer, next(iter(data.screens.values()), None))
+            if player
+            else next(iter(data.screens.values()), None)
+        )
+
+        if screen:
+            screen.release(menu)
             
         if menu.id == Menus.LOAD.value:
-            player = data.board.player()
-            screen = data.screens.get(
-                player.state.layer, 
-                next(iter(data.screens.values()))
-            )
-
             for old in data.board.overlays: 
                 screen.release(old)
 

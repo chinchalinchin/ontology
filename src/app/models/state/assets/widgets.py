@@ -84,7 +84,6 @@ class PaneState(WidgetState):
     pageindex: int = 0
     pagesize: int = 1
     font: Enumerated[Fonts] = Fonts.DIALOGUE.value
-    canvas: Any = None
 
     @property
     def content(self) -> Union[str, List[str]]:

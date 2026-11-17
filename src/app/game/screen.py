@@ -69,15 +69,13 @@ class Screen:
         return (asset.elevation, asset.substrate, ground_y, asset.properties.priority)
 
 
-    @staticmethod
-    def release(menu: Menu) -> None:
+    def release(self, menu: Menu) -> None:
         """Explicitly destroys hardware canvas textures held by a Menu's panes."""
         if not menu.widgets:
             return
         for widget in menu.widgets.values():
-            if isinstance(widget.state, PaneState) and widget.state.canvas is not None:
-                render.destroy(widget.state.canvas)
-                widget.state.canvas = None
+            if isinstance(widget.state, PaneState):
+                self.registry.destroy_canvas(widget.name)
 
 
     def __init__(
@@ -284,14 +282,15 @@ class Screen:
 
         primitives = []
         for widget in widgets:
-            if isinstance(widget.state, PaneState) and widget.state.canvas is not None:
-                tex = widget.state.canvas
-                primitives.append((
-                    tex, 0, 0, tex.w, tex.l,
-                    widget.state.position.x, widget.state.position.y,
-                    widget.dimensions.w, widget.dimensions.l,
-                ))
-                continue
+            if isinstance(widget.state, PaneState):
+                tex = self.registry.get_canvas(widget.name)
+                if tex is not None:
+                    primitives.append((
+                        tex, 0, 0, tex.w, tex.l,
+                        widget.state.position.x, widget.state.position.y,
+                        widget.dimensions.w, widget.dimensions.l,
+                    ))
+                    continue
 
             frame_keys = widget.frame.keys(widget.id, widget.state)
             for key, ox, oy in frame_keys:
@@ -425,10 +424,7 @@ class Screen:
         if not primitives and not active_content and widget.state.content_function is None:
             return
 
-        if widget.state.canvas is None:
-            widget.state.canvas = render.canvas(w, l)
-
-        tex = widget.state.canvas
+        tex = self.registry.canvas(widget.name, w, l)
 
         # 1. Clear target canvas and stamp 9-slice background (if any)
         render.construct(tex, primitives)
