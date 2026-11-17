@@ -5,7 +5,6 @@
 @app.asset
 @asset.frame
 @workflow.rendering
-@workflow.typography
 
 # Ontology: Tests - tests.unit.libs.graphics.test_registry
 
@@ -235,13 +234,12 @@ def test_registry_font_loading_and_retrieval(mock_registry):
 @pytest.mark.workflow_typography
 def test_registry_ttf_font_measure(mock_registry):
     """
-    Verify TTFFont.measure returns positive pixel dimensions for loaded fonts
-    and (0, 0) for uninitialized font wrappers.
+    Verify TTFFont.measure returns positive pixel dimensions for non-empty strings
+    and (0, 0) for empty strings.
     """
-    uninitialized_font = TTFFont()
-    assert uninitialized_font.measure("Ontology") == (0, 0)
-
     dialogue_font = mock_registry.font(Fonts.DIALOGUE.value)
+    assert dialogue_font.measure("") == (0, 0)
+
     w, h = dialogue_font.measure("Ontology")
     assert w > 0
     assert h > 0

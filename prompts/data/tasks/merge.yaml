@@ -19,4 +19,4 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: workflow_rendering
+        marker: '"workflow_rendering or workflow_typography"'

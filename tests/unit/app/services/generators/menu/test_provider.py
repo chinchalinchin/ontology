@@ -38,6 +38,9 @@ from app.static.semantics import (
     Statuses,
 )
 
+# Cython Libraries
+from libs.core.models import Dimensions
+
 # ---------------------------------------------------------------------------
 
 pytestmark = [
@@ -73,6 +76,41 @@ def test_provider_paginate(mock_render, mock_registry):
     assert pages[0] == "one\ntwo"
     assert pages[1] == "three\nfour"
     assert pages[2] == "five\nsix"
+
+
+@pytest.mark.workflow_typography
+def test_provider_bind_pane_honors_configured_font(
+    mock_provider,
+    mock_menu_context,
+    mock_registry,
+):
+    """
+    Verify Provider._bind_pane passes the pane's configured font to TextBinding.bind
+    and resolves that font from the Registry rather than hardcoding dialogue.
+    """
+    ctx = mock_menu_context(Menus.TEXT.value)
+    node = MenuNode(
+        id="neutral",
+        name="title-text-pane",
+        instance=AssetInstances.PANES.value,
+        bind=MenuBinding(
+            schema=Bindings.TEXT.value,
+            target=TextTarget(content="context.content"),
+        ),
+        parameters=PaneParameters(font=Fonts.TITLE.value),
+    )
+
+    widgets = {}
+    mock_provider._unpack_pane(node, ctx, widgets)
+    pane_widget = widgets["title-text-pane"]
+    pane_widget.state.span = Dimensions(w=200, l=100)
+    mock_provider._bind_pane(pane_widget)
+
+    assert Fonts.TITLE.value not in mock_registry._fonts
+    pages = pane_widget.state.content
+    assert isinstance(pages, list)
+    assert Fonts.TITLE.value in mock_registry._fonts
+
 
 def test_provider_unpack_widget_traversal(mock_provider, mock_menu_context):
     cfg = MenuNode(
