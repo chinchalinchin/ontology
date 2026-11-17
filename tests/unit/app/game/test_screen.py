@@ -27,7 +27,6 @@ from app.models.state import (
 )
 from app.static.semantics import (
     Actions,
-    AssetCategories,
     AssetInstances,
     ChannelTypes,
     Cycles,
@@ -287,48 +286,45 @@ def test_screen_assemble_tint_channel_deduplication_and_culling(mock_screen, moc
     Verify Screen._assemble culls off-screen TINT channel operations and emits
     TINT channel payloads once per asset rather than duplicating per frame key (Bug B034).
     """
-    doors = mock_board.instances(AssetInstances.DOORS.value)
-    if not doors:
-        pytest.skip("No Door assets present in testbed.")
+    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
+    orig_state = crate.state
+    orig_keys_fn = crate.frame.keys
 
-    door = doors[0]
-    door.state.projection = LayerProjections.OUT.value
-
-    # 1. Off-screen door: both active_assets and active_channels must be culled
-    door.state.position = Position(x=2000, y=2000)
-    active_assets, active_channels = mock_screen._assemble(
-        [door],
-        Position(x=0, y=0),
-        Dimensions(w=480, l=480),
+    crate.state = DoorState(
+        id=crate.id,
+        name=crate.name,
+        layer="0",
+        position=Position(x=2000, y=2000),
+        material=orig_state.material,
+        outlayer="0",
+        out=Position(x=0, y=0),
+        projection=LayerProjections.OUT.value,
     )
-    assert active_assets == []
-    assert active_channels == []
+    base_key = orig_keys_fn(crate.id, crate.state)[0][0]
+    crate.frame.keys = lambda _id, _state: [(base_key, 0, 0) for _ in range(3)]
 
-    # 2. On-screen multi-frame asset with DoorState OUT projection: TINT emitted once
-    player = mock_board.player()
-    player.state.position = Position(x=64, y=64)
-    player.state.slots.equipment.weapon = "sword"
-    player.state.slots.equipment.shield = "buckler"
-    multi_keys = player.frame.keys(player.id, player.state)
-    assert len(multi_keys) >= 3
-
-    # Swap Door's state onto a multi-key frame or verify Door's single TINT emission
-    door.state.position = Position(x=64, y=64)
-    orig_keys_fn = door.frame.keys
-    door.frame.keys = lambda _id, _state: [
-        (orig_keys_fn(door.id, door.state)[0][0], 0, 0)
-        for _ in range(3)
-    ]
     try:
+        # 1. Off-screen asset: both active_assets and active_channels must be culled
         active_assets, active_channels = mock_screen._assemble(
-            [door],
+            [crate],
+            Position(x=0, y=0),
+            Dimensions(w=480, l=480),
+        )
+        assert active_assets == []
+        assert active_channels == []
+
+        # 2. On-screen 3-key asset: 3 active_assets emitted, but only 1 TINT channel
+        crate.state.position = Position(x=64, y=64)
+        active_assets, active_channels = mock_screen._assemble(
+            [crate],
             Position(x=0, y=0),
             Dimensions(w=480, l=480),
         )
         assert len(active_assets) == 3
         assert len(active_channels) == 1
     finally:
-        door.frame.keys = orig_keys_fn
+        crate.frame.keys = orig_keys_fn
+        crate.state = orig_state
 
 
 def test_screen_sort_elevation_precedence(mock_board):
@@ -617,15 +613,18 @@ def test_screen_export_map_tint_channel_targets_full_canvas(
         projection=LayerProjections.OUT.value,
     )
 
-    mock_render.canvas.reset_mock()
+    mock_render.render.reset_mock()
     mock_render.channel.reset_mock()
+    mock_render.save.reset_mock()
     out_path = str(tmp_path / "map_tint.png")
 
     try:
         mock_screen.export_map(out_path, [crate])
-        full_target = mock_render.canvas.return_value
+        full_target = mock_render.render.call_args.kwargs.get("target")
+        assert full_target is not None
         mock_render.channel.assert_called_once()
         assert mock_render.channel.call_args.kwargs.get("target") is full_target
+        assert mock_render.save.call_args.kwargs.get("target") is full_target
     finally:
         crate.state = orig_state
 

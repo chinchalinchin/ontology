@@ -1,3 +1,4 @@
+context: false
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
@@ -15,8 +16,7 @@ tools:
     manager:
       templates:
         - template-merge
-        - template-docs
     tests:
       pipeline:
         command: pytest -m
-        marker: workflow_navigation
+        marker: workflow_rendering
