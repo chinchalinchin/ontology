@@ -1,6 +1,6 @@
 ##### Bug B034: `Screen._assemble` Appends Unculled `ChannelTypes.TINT` Payloads Inside the `frame_keys` Loop, Duplicating Channel Operations per Stacked Frame
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: MEDIUM
 
 **Description**

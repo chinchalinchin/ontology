@@ -22,6 +22,7 @@ from app.game.screen import Screen
 from app.models.state import (
     AnimationState,
     CalendarState,
+    DoorState,
     PaneState,
 )
 from app.static.semantics import (
@@ -280,6 +281,52 @@ def test_screen_draw_tint_channel_dispatch(mock_screen, mock_board, mock_render)
         assert mock_render.channel.called
 
 
+def test_screen_assemble_tint_channel_deduplication_and_culling(mock_screen, mock_board):
+    """
+    Verify Screen._assemble culls off-screen TINT channel operations and emits
+    TINT channel payloads once per asset rather than duplicating per frame key (Bug B034).
+    """
+    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
+    orig_state = crate.state
+    orig_keys_fn = crate.frame.keys
+
+    crate.state = DoorState(
+        id=crate.id,
+        name=crate.name,
+        layer="0",
+        position=Position(x=2000, y=2000),
+        material=orig_state.material,
+        outlayer="0",
+        out=Position(x=0, y=0),
+        projection=LayerProjections.OUT.value,
+    )
+    base_key = orig_keys_fn(crate.id, crate.state)[0][0]
+    crate.frame.keys = lambda _id, _state: [(base_key, 0, 0) for _ in range(3)]
+
+    try:
+        # 1. Off-screen asset: both active_assets and active_channels must be culled
+        active_assets, active_channels = mock_screen._assemble(
+            [crate],
+            Position(x=0, y=0),
+            Dimensions(w=480, l=480),
+        )
+        assert active_assets == []
+        assert active_channels == []
+
+        # 2. On-screen 3-key asset: 3 active_assets emitted, but only 1 TINT channel
+        crate.state.position = Position(x=64, y=64)
+        active_assets, active_channels = mock_screen._assemble(
+            [crate],
+            Position(x=0, y=0),
+            Dimensions(w=480, l=480),
+        )
+        assert len(active_assets) == 3
+        assert len(active_channels) == 1
+    finally:
+        crate.frame.keys = orig_keys_fn
+        crate.state = orig_state
+
+
 def test_screen_sort_elevation_precedence(mock_board):
     """
     Verify _sort enforces primary elevation tier ordering: higher elevation assets
@@ -432,10 +479,11 @@ def test_screen_reconstruct_updates_canvases_without_reallocating(
     mock_render,
 ):
     """
-    Ensure Screen.reconstruct queries eras() and rebuilds canvases
-    without reallocating or destroying existing TexturePtr references.
+    Ensure Screen.reconstruct clears fg_canvas, queries eras(), and rebuilds canvases
+    without reallocating or destroying existing TexturePtr references (Bug B013).
     """
     mock_render.canvas.reset_mock()
+    mock_render.clear.reset_mock()
     mock_render.construct.reset_mock()
 
     updated_calendar = CalendarState(
@@ -448,6 +496,7 @@ def test_screen_reconstruct_updates_canvases_without_reallocating(
     mock_screen.reconstruct([tile], updated_calendar)
 
     assert mock_render.canvas.call_count == 0
+    mock_render.clear.assert_called_once_with(mock_screen.fg_canvas)
     assert mock_render.construct.call_count == 2
     _, back_tiles = mock_render.construct.call_args_list[0][0]
     assert len(back_tiles) == 1
@@ -539,6 +588,46 @@ def test_screen_export_methods_and_destroy(
     mock_screen.destroy()
     assert mock_screen.bg_canvas is None
     assert mock_screen.fg_canvas is None
+
+
+def test_screen_export_map_tint_channel_targets_full_canvas(
+    mock_screen,
+    mock_board,
+    mock_render,
+    tmp_path,
+):
+    """
+    Verify Screen.export_map routes ChannelTypes.TINT operations to full_target
+    rather than the default viewport backbuffer (Bug B026).
+    """
+    crate = mock_board.instances(AssetInstances.CRATES.value)[0]
+    orig_state = crate.state
+    crate.state = DoorState(
+        id=crate.id,
+        name=crate.name,
+        layer="0",
+        position=Position(x=64, y=64),
+        material=orig_state.material,
+        outlayer="0",
+        out=Position(x=0, y=0),
+        projection=LayerProjections.OUT.value,
+    )
+
+    mock_render.render.reset_mock()
+    mock_render.channel.reset_mock()
+    mock_render.save.reset_mock()
+    out_path = str(tmp_path / "map_tint.png")
+
+    try:
+        mock_screen.export_map(out_path, [crate])
+        full_target = mock_render.render.call_args.kwargs.get("target")
+        assert full_target is not None
+        mock_render.channel.assert_called_once()
+        assert mock_render.channel.call_args.kwargs.get("target") is full_target
+        assert mock_render.save.call_args.kwargs.get("target") is full_target
+    finally:
+        crate.state = orig_state
+
 
 @pytest.mark.workflow_fluids
 def test_screen_export_map_submerge_channel_splitting(

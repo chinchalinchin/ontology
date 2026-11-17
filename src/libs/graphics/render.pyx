@@ -253,9 +253,18 @@ def show():
         SDL_PumpEvents()
 
 
-def clear():
+def clear(TexturePtr target=None):
     """
+    Clears the active backbuffer or a specific target canvas texture.
     """
+    if target is not None:
+        if target.ptr != NULL:
+            SDL_SetRenderTarget(_renderer, target.ptr)
+            SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0)
+            SDL_RenderClear(_renderer)
+            SDL_SetRenderTarget(_renderer, NULL)
+        return
+
     SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255)
     SDL_RenderClear(_renderer)
 
@@ -566,13 +575,16 @@ def render(
         SDL_SetRenderTarget(_renderer, NULL)
 
 
-def channel(list channel_ops, int cam_x, int cam_y):
+def channel(list channel_ops, int cam_x, int cam_y, TexturePtr target=None):
     """
     Renders auxiliary channel passes (tints, highlights) directly over the backbuffer.
     channel_ops format: (c_type, dx, dy, dw, dl, r, g, b, a)
     """
     cdef SDL_Rect rect
     cdef int c_type, dx, dy, dw, dl, r, g, b, a
+
+    if target is not None:
+        SDL_SetRenderTarget(_renderer, target.ptr)
 
     SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_BLEND)
 
@@ -586,6 +598,9 @@ def channel(list channel_ops, int cam_x, int cam_y):
         if c_type == 0:  # TINT / Fill Rect
             SDL_SetRenderDrawColor(_renderer, r, g, b, a)
             SDL_RenderFillRect(_renderer, &rect)
+
+    if target is not None:
+        SDL_SetRenderTarget(_renderer, NULL)
               
               
 def save(str filename, int w, int l, TexturePtr target=None):

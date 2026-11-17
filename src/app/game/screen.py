@@ -13,6 +13,7 @@ Implementation of the Screen, an abstraction over the Cython SDL rendering inter
 import logging
 from typing import (
     List,
+    Optional,
     Tuple,
     Union,
 )
@@ -196,14 +197,20 @@ class Screen:
                             r, g, b, a,
                         ))
 
-                # 2. Auxiliary Channel Tuples
-                for c_type, payload in channels:
-                    if c_type == ChannelTypes.TINT.value:
-                        cx, cy, cw, cl, r, g, b, a = payload
+            # 2. Auxiliary Channel Tuples
+            for c_type, payload in channels:
+                if c_type == ChannelTypes.TINT.value:
+                    cx, cy, cw, cl, r, g, b, a = payload
+                    dx = asset.state.position.x + cx
+                    dy = asset.state.position.y + cy
+                    if (
+                        dx + cw >= pov.x and dx <= pov.x + bounds.w and
+                        dy + cl >= pov.y and dy <= pov.y + bounds.l
+                    ):
                         active_channels.append((
                             c_type,
-                            asset.state.position.x + cx,
-                            asset.state.position.y + cy,
+                            dx,
+                            dy,
                             cw, cl,
                             r, g, b, a,
                         ))
@@ -423,6 +430,7 @@ class Screen:
             f"across {len(tiles)} tiles."
         )
         back_tiles, fore_tiles = self._prerender(tiles, calendar)
+        render.clear(self.fg_canvas)
         render.construct(self.bg_canvas, back_tiles)
         render.construct(self.fg_canvas, fore_tiles)
 
@@ -521,7 +529,7 @@ class Screen:
         )
 
         if active_channels:
-            render.channel(active_channels, pov.x, pov.y)
+            render.channel(active_channels, pov.x, pov.y, target=full_target)
 
         # 3. Read the pixels strictly from the custom target
         render.save(out_path, self.boardsize.w, self.boardsize.l, target=full_target)

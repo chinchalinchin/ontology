@@ -211,15 +211,9 @@ $$
 Two axis-aligned bounding boxes $R_1 = (x_1, y_1, w_1, l_1)$ and $R_2 = (x_2, y_2, w_2, l_2)$ intersect if and only if their projections overlap on both principal axes:
 
 $$
-(x_1 < x_2 + w_2)
-$$
-$$
-(x_1 + w_1 > x_2)
-$$
-$$
-(y_1 < y_2 + l_2)
-$$
-$$
+(x_1 < x_2 + w_2) \\
+(x_1 + w_1 > x_2) \\ 
+(y_1 < y_2 + l_2) \\
 (y_1 + l_1 > y_2)
 $$
 
@@ -230,9 +224,8 @@ A point $(p_x, p_y)$ lies inside $R(x, y, w, l)$ when $x \le p_x < x + w$ and $y
 For a Camera of dimensions $(w_s, l_s)$ centered on a focus at $(x_f, y_f)$ with dimensions $(w_f, l_f)$, the camera origin is:
 
 $$
-x_c = x_f + \left\lfloor \frac{w_f}{2} \right\rfloor - \left\lfloor \frac{w_s}{2} \right\rfloor
-$$
-$$y_c = y_f + \left\lfloor \frac{l_f}{2} \right\rfloor - \left\lfloor \frac{l_s}{2} \right\rfloor
+x_c = x_f + \left\lfloor \frac{w_f}{2} \right\rfloor - \left\lfloor \frac{w_s}{2} \right\rfloor \\
+y_c = y_f + \left\lfloor \frac{l_f}{2} \right\rfloor - \left\lfloor \frac{l_s}{2} \right\rfloor
 $$
 
 An Asset is visible on screen if its bounding box intersects $R(x_c, y_c, w_s, l_s)$.
@@ -268,24 +261,16 @@ An Asset is visible on screen if its bounding box intersects $R(x_c, y_c, w_s, l
     Intersection with an obstacle rectangle $R = [r_x, r_x + r_w] \times [r_y, r_y + r_l]$ satisfies the system of four linear inequalities $ p_k \le q_k$ for $k \in \{0, 1, 2, 3\}$:
 
     $$
-    p_0 = -\Delta x, \quad q_0 = x_1 - r_x
-    $$
-    $$
-    p_1 = +\Delta x, \quad q_1 = (r_x + r_w) - x_1
-    $$
-    $$
-    p_2 = -\Delta y,  \quad q_2 = y_1 - r_y
-    $$
-    $$
+    p_0 = -\Delta x, \quad q_0 = x_1 - r_x \\
+    p_1 = +\Delta x, \quad q_1 = (r_x + r_w) - x_1 \\
+    p_2 = -\Delta y,  \quad q_2 = y_1 - r_y \\
     p_3 = +\Delta y, \quad q_3 = (r_y + r_l) - y_1
     $$
 
     Let $u_1$ and $u_2$ denote the clipped entry and exit parameters:
 
     $$
-    u_1 = \max\Big(\{0\} \cup \{\frac{q_k}{p_k} \mid p_k < 0 \}\Big)
-    $$
-    $$
+    u_1 = \max\Big(\{0\} \cup \{\frac{q_k}{p_k} \mid p_k < 0 \}\Big) \\
     u_2 = \min\Big(\{1\} \cup \{\frac{q_k}{p_k} \mid p_k > 0 \}\Big)
     $$
 
@@ -298,18 +283,14 @@ An Asset is visible on screen if its bounding box intersects $R(x_c, y_c, w_s, l
     * *Vertical Propagation* ($o_x < s_x + s_w$ and $o_x + o_w > s_x$):
 
     $$
-    d_{\text{down}} = \min\Big(\{D_{\max}\} \cup \{ o_y - s_y \mid o_y > s_y \}\Big)
-    $$
-    $$
+    d_{\text{down}} = \min\Big(\{D_{\max}\} \cup \{ o_y - s_y \mid o_y > s_y \}\Big) \\
     d_{\text{up}} = \min\Big(\{D_{\max}\} \cup \{s_y - (o_y + o_l) \mid o_y + o_l < s_y\}\Big)
     $$
 
     * *Horizontal Propagation* ($o_y < s_y + s_l \land o_y + o_l > s_y$):
 
     $$
-    d_{\text{right}} = \min\Big(\{D_{\max}\} \cup \{o_x - s_x \mid o_x > s_x\}\Big)
-    $$
-    $$
+    d_{\text{right}} = \min\Big(\{D_{\max}\} \cup \{o_x - s_x \mid o_x > s_x\}\Big) \\
     d_{\text{left}} = \min\Big(\{D_{\max}\} \cup \{s_x - (o_x + o_w) \mid o_x + o_w < s_x\}\Big)
     $$
 
@@ -320,9 +301,7 @@ An Asset is visible on screen if its bounding box intersects $R(x_c, y_c, w_s, l
     * *Vertical Sweep*: Sort all vertical edges by $x$-coordinate, pairing $x_{i,\min}$ with event $+1$ and $x_{i,\max}$ with event $-1$. At each event coordinate $x$, let $I_{\text{prev}}$ and $I_{\text{curr}}$ denote the merged 1D $y$-intervals of active rectangles before and after $x$. The asymmetric set differences isolate the exposed vertical contour segments at $x$:
 
     $$
-    E_{\text{left}}(x) = I_{\text{curr}} \setminus I_{\text{prev}}
-    $$
-    $$
+    E_{\text{left}}(x) = I_{\text{curr}} \setminus I_{\text{prev}} \\
     E_{\text{right}}(x) = I_{\text{prev}} \setminus I_{\text{curr}}
     $$
 
@@ -342,9 +321,7 @@ Given a start coordinate $\mathbf{s} = (s_x, s_y)$, a target coordinate $\mathbf
     * *Search Window Partitioning*: Define a padded search domain enclosing $\mathbf{s}$ and $\mathbf{t}$ with margin $\mathbf{m} = (0.2|t_x - s_x| + 2\delta, 0.2|t_y - s_y| + 2\delta)$:
 
     $$
-    [x_{\min}, x_{\max}] = [\min(s_x, t_x) - m_x, \max(s_x, t_x) + m_x]
-    $$
-    $$
+    [x_{\min}, x_{\max}] = [\min(s_x, t_x) - m_x, \max(s_x, t_x) + m_x] \\
     [y_{\min}, y_{\max}] = [\min(s_y, t_y) - m_y,\; \max(s_y, t_y) + m_y]
     $$
 
@@ -383,9 +360,8 @@ Given a start coordinate $\mathbf{s} = (s_x, s_y)$, a target coordinate $\mathbf
 An Asset with Dimensions $[x, x + w] \times [y, y + l]$ covers the integer cell coordinates:
 
 $$
-c_x \in \left[\left\lfloor \frac{x}{C} \right\rfloor,\; \left\lfloor \frac{x + w}{C} \right\rfloor\right]
-$$
-$$c_y \in \left[\left\lfloor \frac{y}{C} \right\rfloor,\; \left\lfloor \frac{y + l}{C} \right\rfloor\right]
+c_x \in \left[\left\lfloor \frac{x}{C} \right\rfloor,\; \left\lfloor \frac{x + w}{C} \right\rfloor\right] \\
+c_y \in \left[\left\lfloor \frac{y}{C} \right\rfloor,\; \left\lfloor \frac{y + l}{C} \right\rfloor\right]
 $$
 
 **Interfaces**

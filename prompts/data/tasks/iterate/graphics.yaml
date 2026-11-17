@@ -1,0 +1,147 @@
+context: true
+# ----------------------------------------------------
+# ----------------------------------------------------
+# ----------------------------------------------- TASK
+# ----------------------------------------------------
+# ----------------------------------------------------
+task:
+# ----------------------------------------------------
+  template: maintain/patch.md.j2
+# ----------------------------------------------------
+# ----------------------------------------------------
+# ---------------------------------------------- TOOLS
+# ----------------------------------------------------
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: MANAGER
+    # --------------------------------------------
+    manager:
+      board: false
+      docs: false
+      templates: false
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: SOURCE
+    # --------------------------------------------
+    source:
+      filter: false
+      data: false
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: SHELL
+    # --------------------------------------------
+    shell:
+      directory: false
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: TESTS
+    # --------------------------------------------
+    tests:  
+      configuration: false
+      pipeline: true
+      session: false
+# ----------------------------------------------------
+  parameters:
+    # --------------------------------------------
+    # ------------------------ PARAMETERS: MANAGER
+    # --------------------------------------------
+    manager:
+      board:
+        phase: '06-03'
+        action: refactor
+      docs:
+        exclude:
+          # - 00-overview
+          # - 01-assets
+          - 02-sprites
+          - 03-compositions
+          - 04-intentions
+          - 05-mechanics
+          - 06-widgets
+          - 07-acoustics
+          - 08-narratives
+          - 09-ecology
+          - 10-chemistry
+          - 11-emergence
+          # - 12-architecture
+      templates:
+        - template-bug
+    # --------------------------------------------
+    # ------------------------ PARAMETERS: METRICS
+    # --------------------------------------------
+    metrics:
+      pstats: 
+        run: |
+          python -m cProfile -o $ROOT/engine-run.pstats src/main.py start world-01
+        dot: |
+          gprof2dot -f pstats --node-thres=1.0 --edge-thres=0.5 $ROOT/engine-run.pstats
+    # --------------------------------------------
+    # ------------------------- PARAMETERS: SOURCE
+    # --------------------------------------------
+    source:
+      filter:
+        default: AND
+        queries:
+          - title: Core Components
+            scan:
+              domain: [ system ]
+              app: [ core, component ]
+          - title: Asset Abstract
+            scan:
+              domain: [ abstract ]
+              app: [ asset ]
+          - title: Asset Frame Implementations
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              asset: [ frame ]
+          - title: Asset Animation Implementations
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              asset: [ animation ]
+          - title: Rendering Mechanics
+            scan:
+              domain: [ concrete ]
+              app: [ mechanic ]
+              workflows: [ rendering ]
+          - title: Rendering Handlers
+            scan:
+              domain: [ concrete ]
+              app: [ menu ]
+              menu: [ handler ]
+              workflows: [ rendering ]
+          - title: Rendering Libraries
+            scan:
+              domain: [ system ]
+              app: [ library ]
+              workflows: [ rendering ]
+          - title: Test Fixtures
+            scan:
+              domain: [ test ]
+              test: [ fixtures ]
+          - title: Rendering Tests
+            scan:
+              domain: [ test ]
+              workflows: [ rendering ]
+      data:
+        properties: [ ]
+        state: [ world-testbed ]
+        configurations: [  ]
+        templates: [ ]
+    # --------------------------------------------
+    # -------------------------- PARAMETERS: SHELL
+    # --------------------------------------------
+    shell:
+      directory: |
+        tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
+      commands: 
+        - python /Users/gmoore/Home/projects/ontology/src/main.py start
+    # --------------------------------------------
+    # -------------------------- PARAMETERS: TESTS
+    # --------------------------------------------
+    tests:
+      pipeline:
+        command: pytest -m
+        marker: workflow_rendering
+        # scope: '**/test_{actuator,cartographer}.py'
