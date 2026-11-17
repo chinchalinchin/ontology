@@ -16,5 +16,5 @@ from app.models.adapters import Enumerated
 
 @dataclass(slots=True, frozen=True)
 class AxisAlignment:
-    horizontal: Enumerated[Alignments] = Alignments.CENTER.value
-    vertical: Enumerated[Alignments] = Alignments.CENTER.value
+    horizontal: Enumerated[Alignments] = Alignments.CENTER
+    vertical: Enumerated[Alignments] = Alignments.CENTER

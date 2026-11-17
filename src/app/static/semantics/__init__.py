@@ -87,7 +87,8 @@ from app.static.semantics.menus import (
     Interactions,
     Menus,
     Selections,
-    Statuses
+    Statuses,
+    SystemPanes
 )
 from app.static.semantics.config import (
     FrameRecipe,
@@ -208,5 +209,6 @@ __all__ = [
     'Interactions',
     'Menus',
     'Selections',
-    'Statuses'
+    'Statuses',
+    'SystemPanes'
 ]

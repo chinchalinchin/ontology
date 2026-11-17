@@ -45,7 +45,10 @@ class SeasonalFrame(Frame):
                 for period in range(3):
                     col = col_cycle * 3 + period
                     key = settings.SEPARATOR.join([
-                        id, season.value, cycle.value, str(period)
+                        id, 
+                        season, 
+                        cycle, 
+                        str(period)
                     ])
                     crops[key] = (col * w, row * l, w, l)
         return crops
@@ -64,7 +67,7 @@ class SeasonalFrame(Frame):
         return [(
             settings.SEPARATOR.join([
                 id,
-                Seasons.SPRING.value,
-                Cycles.ONSET.value,
+                Seasons.SPRING,
+                Cycles.ONSET,
                 "0"
             ]),0, 0)]

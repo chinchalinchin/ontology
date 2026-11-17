@@ -80,7 +80,10 @@ def mock_render(monkeypatch) -> MagicMock:
     Patches Cython SDL rendering calls across libs.graphics.render and all
     consumer modules so no GPU textures are allocated during unit tests.
     """
+    real_assemble = sdl_render.assemble
+
     mock = MagicMock()
+    mock.assemble.side_effect = real_assemble
     mock.canvas.side_effect = lambda w, l, opaque=False: MagicMock(
         w=w, l=l, opaque=opaque
     )
@@ -98,7 +101,6 @@ def mock_render(monkeypatch) -> MagicMock:
     monkeypatch.setattr("libs.graphics.registry.render", mock)
     monkeypatch.setattr("app.services.orchestration.builder.render", mock)
     return mock
-
 
 @pytest.fixture
 def mock_registry(

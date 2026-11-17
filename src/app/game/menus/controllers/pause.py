@@ -54,20 +54,20 @@ class PauseController(MenuController):
         selection = widget.binding.selection
         selector = widget.binding.selector
 
-        if selection == Selections.SAVE.value:
+        if selection == Selections.SAVE:
             world = selector
             logger.info(f"Executing save of world '{world}'...")
             # TODO: parameterize slot selection
             board.serialize(world, '0')
 
-        elif selection == Selections.LOAD.value:
+        elif selection == Selections.LOAD:
             slot = selector
             logger.info(f"Requesting load for slot '{slot}'...")
             # Pop pause menu and signal the Migrator to load new state
             bus.append(TerminalEvent())
             bus.append(StateEvent(id=slot))
 
-        elif selection == Selections.MENU.value:
+        elif selection == Selections.MENU:
             target_menu = selector
             logger.info(f"Opening submenu '{target_menu}'...")
             bus.append(MenuEvent(
@@ -75,13 +75,13 @@ class PauseController(MenuController):
                 context=menu.context
             ))
 
-        elif selection == Selections.QUIT.value:
+        elif selection == Selections.QUIT:
             logger.info("Quitting session to main menu...")
             # Clear active world assets and caches
             board.clear()
             registry = getattr(board, "registry", None)
             bus.append(MenuEvent(
-                id=Menus.MAIN.value, 
+                id=Menus.MAIN, 
                 context=MainContext(registry=registry)
             ))
 

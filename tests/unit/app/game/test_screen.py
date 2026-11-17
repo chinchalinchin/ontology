@@ -672,3 +672,30 @@ def test_screen_export_map_submerge_channel_splitting(
     assert lower[4] == rem_l
     assert lower[8] == rem_l
     assert lower[9:] == (r, g, b, a)
+
+@pytest.mark.menu_handler
+def test_screen_release_destroys_menu_pane_canvases(
+    mock_screen,
+    mock_menu,
+    mock_render,
+):
+    """
+    Verify Screen.bake allocates widget canvases in Registry and Screen.release
+    destroys and removes them from Registry._canvases.
+    """
+    pause_menu = mock_menu(Menus.PAUSE.value)
+    mock_screen.bake(pause_menu)
+
+    baked_panes = [
+        w.name
+        for w in pause_menu.widgets.values()
+        if isinstance(w.state, PaneState) and mock_screen.registry.get_canvas(w.name) is not None
+    ]
+    assert len(baked_panes) > 0
+
+    mock_render.destroy.reset_mock()
+    mock_screen.release(pause_menu)
+
+    assert mock_render.destroy.called
+    for name in baked_panes:
+        assert mock_screen.registry.get_canvas(name) is None

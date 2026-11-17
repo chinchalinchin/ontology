@@ -24,12 +24,10 @@ from app.game.menus.core import Menu
 from app.models.state import (
     CalendarState,
     PaneState,
-    SheetState,
 )
 from app.static.semantics import (
-    AssetCategories,
     AssetInstances,
-    ChannelTypes,
+    SystemPanes
 )
 
 # Cython Libraries
@@ -50,11 +48,32 @@ class Screen:
     """
     Manages the rendering layer and camera calculations.
     """
+    # Fields
     screensize: Dimensions
     boardsize: Dimensions
     bg_canvas: TexturePtr
     fg_canvas: TexturePtr
     registry: Registry
+    # Constants
+    _CULL_MARGIN: int = 64
+
+    # ------------------------------------------------ STATIC METHODS
+
+    @staticmethod
+    def _sort(asset: Asset) -> Tuple[int, int, int, int]:
+        dim_l = asset.dimensions.l if asset.dimensions else 0
+        ground_y = int(asset.state.position.y + dim_l + asset.state.anchor)
+        return (asset.elevation, asset.substrate, ground_y, asset.properties.priority)
+
+
+    def release(self, menu: Menu) -> None:
+        """Explicitly destroys hardware canvas textures held by a Menu's panes."""
+        if not menu.widgets:
+            return
+        for widget in menu.widgets.values():
+            if isinstance(widget.state, PaneState):
+                self.registry.destroy_canvas(widget.name)
+
 
     def __init__(
         self,
@@ -86,7 +105,37 @@ class Screen:
         render.construct(self.bg_canvas, back_tiles)
         render.construct(self.fg_canvas, fore_tiles)
 
+    # ------------------------------------------------ PRIVATE METHODS
 
+    def _in_viewport(
+        self,
+        asset: Asset,
+        min_x: int,
+        min_y: int,
+        max_x: int,
+        max_y: int,
+    ) -> bool:
+        """
+        Broad-phase viewport AABB check. Bypasses unit-tile bounds for procedural
+        multi-tile assets (Fluids, Shorelines) whose geometry extends beyond asset.dimensions.
+        """
+        if asset.instance in (
+            AssetInstances.FLUIDS,
+            AssetInstances.SHORELINES,
+        ):
+            return True
+
+        px = asset.state.position.x
+        py = asset.state.position.y
+        dw = asset.dimensions.w if asset.dimensions else 0
+        dl = asset.dimensions.l if asset.dimensions else 0
+
+        return (
+            px + dw >= min_x and px <= max_x and
+            py + dl >= min_y and py <= max_y
+        )
+
+    
     def _prerender(
         self,
         tiles: List[Asset],
@@ -112,19 +161,12 @@ class Screen:
                     tile.state.multiple.nx, tile.state.multiple.ny,
                 )
 
-                if tile.taxonomy.instance == AssetInstances.ENVIRON.value:
+                if tile.taxonomy.instance == AssetInstances.ENVIRON:
                     back_tiles.append(tile_tuple)
-                elif tile.taxonomy.instance == AssetInstances.CANOPY.value:
+                elif tile.taxonomy.instance == AssetInstances.CANOPY:
                     fore_tiles.append(tile_tuple)
 
         return back_tiles, fore_tiles
-
-
-    @staticmethod
-    def _sort(asset: Asset) -> Tuple[int, int, int, int]:
-        dim_l = asset.dimensions.l if asset.dimensions else 0
-        ground_y = int(asset.state.position.y + dim_l + asset.state.anchor)
-        return (asset.elevation, asset.substrate, ground_y, asset.properties.priority)
 
 
     def _assemble(
@@ -133,91 +175,8 @@ class Screen:
         pov: Position,
         bounds: Dimensions,
     ) -> Tuple[list, list]:
-        """
-        Height-sorts assets, culls geometry outside the target bounds,
-        and assembles render primitives and auxiliary channel operations.
-        """
-        active_assets = []
-        active_channels = []
-
-        # Height-sort the assets directly prior to querying asset.frame.keys()
-        assets.sort(key=self._sort)
-
-        for asset in assets:
-            if asset.category == AssetCategories.TILES.value:
-                continue
-
-            frame_keys = asset.frame.keys(asset.id, asset.state)
-            channels = asset.frame.channels(asset.id, asset.state, asset.properties)
-            submerge_channel = next(
-                (
-                    op for op in channels
-                    if op[0] == ChannelTypes.SUBMERGE.value
-                ),
-                None,
-            )
-
-            for frame_key, ox, oy in frame_keys:
-                tex_data = self.registry.image(frame_key)
-
-                if not tex_data:
-                    if not isinstance(asset.state, SheetState):
-                        logger.warning(f"Registry MISS! Frame key not found: '{frame_key}'")
-                    continue
-
-                # Flatten mapping to C-level PRIMITIVE INTEGERS for destination logic
-                tex, sx, sy, sw, sl = tex_data
-                dx, dy = asset.state.position.x + ox, asset.state.position.y + oy
-                dw, dl = sw, sl
-
-                # Strict Culling: Only pass geometry if intersecting the target frame
-                if (
-                    dx + dw >= pov.x and dx <= pov.x + bounds.w and
-                    dy + dl >= pov.y and dy <= pov.y + bounds.l
-                ):
-                    if submerge_channel is None:
-                        active_assets.append((
-                            tex, sx, sy, sw, sl,
-                            dx, dy, dw, dl,
-                            255, 255, 255, 255,
-                        ))
-                    else:
-                        split_y, r, g, b, a = submerge_channel[1]
-                        # Upper slice: normal rendering
-                        active_assets.append((
-                            tex, sx, sy, sw, split_y,
-                            dx, dy, dw, split_y,
-                            255, 255, 255, 255,
-                        ))
-                        # Lower slice: submerged texture modulation
-                        rem_l = sl - split_y
-                        active_assets.append((
-                            tex, sx, sy + split_y, sw, rem_l,
-                            dx, dy + split_y, dw, rem_l,
-                            r, g, b, a,
-                        ))
-
-            # 2. Auxiliary Channel Tuples
-            for c_type, payload in channels:
-                if c_type == ChannelTypes.TINT.value:
-                    cx, cy, cw, cl, r, g, b, a = payload
-                    dx = asset.state.position.x + cx
-                    dy = asset.state.position.y + cy
-                    if (
-                        dx + cw >= pov.x and dx <= pov.x + bounds.w and
-                        dy + cl >= pov.y and dy <= pov.y + bounds.l
-                    ):
-                        active_channels.append((
-                            c_type,
-                            dx,
-                            dy,
-                            cw, cl,
-                            r, g, b, a,
-                        ))
-
-        return active_assets, active_channels
-
-
+        return render.assemble(assets, self.registry, pov, bounds)
+    
     def _widgets(self, menus: List[Menu]) -> None:
         """Helper to collect and superimpose widget primitives for a set of menus."""
         widgets = []
@@ -227,14 +186,15 @@ class Screen:
 
         primitives = []
         for widget in widgets:
-            if isinstance(widget.state, PaneState) and widget.state.canvas is not None:
-                tex = widget.state.canvas
-                primitives.append((
-                    tex, 0, 0, tex.w, tex.l,
-                    widget.state.position.x, widget.state.position.y,
-                    widget.dimensions.w, widget.dimensions.l,
-                ))
-                continue
+            if isinstance(widget.state, PaneState):
+                tex = self.registry.get_canvas(widget.name)
+                if tex is not None:
+                    primitives.append((
+                        tex, 0, 0, tex.w, tex.l,
+                        widget.state.position.x, widget.state.position.y,
+                        widget.dimensions.w, widget.dimensions.l,
+                    ))
+                    continue
 
             frame_keys = widget.frame.keys(widget.id, widget.state)
             for key, ox, oy in frame_keys:
@@ -283,12 +243,10 @@ class Screen:
         return Position(x=cam_x, y=cam_y)
 
 
-    def clear(self) -> None:
-        render.clear()
+    def clear(self) -> None: render.clear()
 
 
-    def present(self) -> None:
-        render.present()
+    def present(self) -> None: render.present()
 
 
     def destroy(self) -> None:
@@ -340,7 +298,10 @@ class Screen:
             render.channel(active_channels, pov.x, pov.y)
 
 
-    def stamp(self, widget: Asset, content: Optional[Union[str, List[str]]] = None) -> None:
+    def stamp(self, 
+        widget: Asset, 
+        content: Optional[Union[str, List[str]]] = None
+    ) -> None:
         """
         Allocates PaneState.canvas on demand, constructs the 9-slice backdrop,
         and rasterizes bound text onto the canvas.
@@ -353,8 +314,7 @@ class Screen:
             return
 
         primitives = []
-        # TODO: this is hacky
-        if widget.id != "transparent":
+        if widget.id != SystemPanes.TRANSPARENT:
             for base_key, ox, oy in widget.frame.keys(widget.id, widget.state):
                 tex_data = self.registry.image(base_key)
                 if not tex_data:
@@ -368,10 +328,7 @@ class Screen:
         if not primitives and not active_content and widget.state.content_function is None:
             return
 
-        if widget.state.canvas is None:
-            widget.state.canvas = render.canvas(w, l)
-
-        tex = widget.state.canvas
+        tex = self.registry.canvas(widget.name, w, l)
 
         # 1. Clear target canvas and stamp 9-slice background (if any)
         render.construct(tex, primitives)
@@ -385,7 +342,12 @@ class Screen:
                     f"Registry MISS: Font '{font_key}' not found for widget '{widget.name}'."
                 )
                 return
-            render.write((tex, 0, 0, tex.w, tex.l, 0, 0, tex.w, tex.l), active_content, font)
+            render.write(
+                (tex, 0, 0, tex.w, tex.l, 0, 0, tex.w, tex.l), 
+                active_content, 
+                font
+            )
+
 
     def bake(self, menu: Menu) -> None:
         """Initializes and stamps all Pane canvases for a newly unpacked Menu."""
@@ -395,15 +357,6 @@ class Screen:
             if isinstance(widget.state, PaneState):
                 self.stamp(widget)
 
-    @staticmethod
-    def release(menu: Menu) -> None:
-        """Explicitly destroys hardware canvas textures held by a Menu's panes."""
-        if not menu.widgets:
-            return
-        for widget in menu.widgets.values():
-            if isinstance(widget.state, PaneState) and widget.state.canvas is not None:
-                render.destroy(widget.state.canvas)
-                widget.state.canvas = None
 
     def interface(self, menus: List[Menu], overlays: List[Menu]) -> None:
         """

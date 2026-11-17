@@ -19,11 +19,6 @@ from app.models.menus import (
 )
 from app.game.menus.core import EventData
 from app.game.menus.handlers.base import EventHandler
-from app.models.state import PaneState
-
-# Cython Libraries
-import libs.graphics.render as render
-
 # ---------------------------------------------------------------
 
 logger = logging.getLogger(__name__)
@@ -37,20 +32,23 @@ class TerminalEventHandler(EventHandler):
             return 
         
         menu = data.board.menus.pop()
-            
-        if menu.id == Menus.LOAD.value:
-            player = data.board.player()
-            screen = data.screens.get(
-                player.state.layer, 
-                next(iter(data.screens.values()))
-            )
+        player = data.board.player()
+        screen = (
+            data.screens.get(player.state.layer, next(iter(data.screens.values()), None))
+            if player is not None
+            else next(iter(data.screens.values()), None)
+        )
 
+        if screen:
+            screen.release(menu)
+            
+        if menu.id == Menus.LOAD:
             for old in data.board.overlays: 
                 screen.release(old)
 
             hud_menu = data.provider.unpack(
-                Menus.VIEW.value, 
-                data.board.configurations.menus.get(Menus.VIEW.value), 
+                Menus.VIEW, 
+                data.board.configurations.menus.get(Menus.VIEW), 
                 ViewContext(sprite=player.state), 
                 screen.screensize
             )

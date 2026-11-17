@@ -41,43 +41,43 @@ class AnimationMap:
         intention = state.intention
 
         if intention in StaticIntentions:
-            return Actions.WALK.value
+            return Actions.WALK
 
-        if intention == Intentions.ATTACK.value:
+        if intention == Intentions.ATTACK:
             if not weapon:
-                return Actions.CAST.value # Default
+                return Actions.CAST # Default
             
             weapon_asset = equipment.weapons.get(weapon)
 
             if weapon_asset and weapon_asset.properties.actions:
                 return next(iter(weapon_asset.properties.actions))
             
-            return Actions.CAST.value
+            return Actions.CAST
     
-        if intention == Intentions.MINE.value:
+        if intention == Intentions.MINE:
             if not tool:
-                return Actions.THRUST.value # Default mining action fallback
+                return Actions.THRUST # Default mining action fallback
             
             tool_asset = equipment.tools.get(tool)
             
             if tool_asset and tool_asset.properties.actions:
                 return next(iter(tool_asset.properties.actions))
                 
-            return Actions.THRUST.value
+            return Actions.THRUST
 
-        if intention == Intentions.BUILD.value:
+        if intention == Intentions.BUILD:
             if not utility:
-                return Actions.CAST.value # Default build action fallback
+                return Actions.CAST # Default build action fallback
             
             utility_asset = equipment.utilities.get(utility)
             
             if utility_asset and utility_asset.properties.actions:
                 return next(iter(utility_asset.properties.actions))
                 
-            return Actions.CAST.value
+            return Actions.CAST
 
         if intention in (
-            Intentions.INTERACT.value,
+            Intentions.INTERACT,
             Intentions.WANDER, 
             Intentions.FIND, 
             Intentions.FOLLOW, 
@@ -85,9 +85,9 @@ class AnimationMap:
             Intentions.ESCAPE, 
             Intentions.RETURN
         ):
-            return Actions.WALK.value
+            return Actions.WALK
 
-        return Actions.WALK.value
+        return Actions.WALK
     
 
     @staticmethod
@@ -98,7 +98,7 @@ class AnimationMap:
         # In graphics coordinates, larger y is physically lower.
         if dy > dx:
             # Lower than both diagonals means it is physically DOWN
-            return Directions.DOWN.value if dy > -dx else Directions.LEFT.value
+            return Directions.DOWN if dy > -dx else Directions.LEFT
         
         # Higher than both diagonals means it is physically UP
-        return Directions.RIGHT.value if dy > -dx else Directions.UP.value
+        return Directions.RIGHT if dy > -dx else Directions.UP

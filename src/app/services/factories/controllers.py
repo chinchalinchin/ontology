@@ -30,13 +30,13 @@ class ControllerFactory:
     Resolves MenuController implementations from declarative controller keys.
     """
     _CONTROLLERS = {
-        Controllers.DISPLAY.value: DisplayController,
-        Controllers.INVENTORY.value: InventoryController,
-        Controllers.LOAD.value: LoadController,
-        Controllers.MAIN.value: MainController,
-        Controllers.OPTIONS.value: OptionsController,
-        Controllers.PAUSE.value: PauseController,
-        Controllers.SCROLL.value: ScrollController,
+        Controllers.DISPLAY: DisplayController,
+        Controllers.INVENTORY: InventoryController,
+        Controllers.LOAD: LoadController,
+        Controllers.MAIN: MainController,
+        Controllers.OPTIONS: OptionsController,
+        Controllers.PAUSE: PauseController,
+        Controllers.SCROLL: ScrollController,
     }
 
     @classmethod

@@ -2,7 +2,7 @@
 @domain.concrete
 @app.menu
 @menu.binding
-
+@workflow.plot
 
 # Ontology: Source - app.game.menus.bindings.library
 
@@ -20,6 +20,7 @@ from typing import (
 )
 
 # Application Libraries
+from app.static.semantics import Fonts
 from app.game.menus.bindings.base import Binding
 from app.models.config.menus import (
     LibraryTarget,
@@ -36,7 +37,6 @@ if TYPE_CHECKING:
 ##       Research should be done into alternate implementations
 ##       that don't require over-complicating the application
 ##       dependency tree.
-import libs.graphics.render as render
 from libs.graphics.registry import Registry
 
 
@@ -62,7 +62,7 @@ def paginate(text: str, font: Any, w: int, l: int) -> List[str]:
     
     for word in words:
         test_line = f"{current_line} {word}".strip() if current_line else word
-        tw, th = render.measure(test_line, font)
+        tw, th = font.measure(test_line)
         
         if tw > wrap_width and current_line:
             lines.append(current_line)
@@ -76,7 +76,7 @@ def paginate(text: str, font: Any, w: int, l: int) -> List[str]:
     if not lines:
         return [""]
         
-    _, line_height = render.measure(lines[0], font)
+    _, line_height = font.measure(lines[0])
     line_height = max(line_height, 10)
         
     max_lines_per_page = max(1, wrap_height // line_height)
@@ -114,7 +114,8 @@ class LibraryBinding(Binding):
     def bind(self, **kwargs) -> Tuple[Callable, ...]:
         """
         """
-        w, l = kwargs.get('w', 0), kwargs.get('l', 0)
+        w, l = kwargs.get("w", 0), kwargs.get("l", 0)
+        font_key = kwargs.get("font", Fonts.DIALOGUE)
         
         def content_function():
             if self._cached_pages is not None:
@@ -125,7 +126,7 @@ class LibraryBinding(Binding):
             lexicon = self._deref(self._lexicon_ref)
                 
             raw = self.library.fetch(plot, persona, lexicon) if self.library else ""
-            font = self.registry.font("dialogue") if self.registry else None
+            font = self.registry.font(font_key) if self.registry else None
             
             self._cached_pages = paginate(str(raw), font, w, l)
             return self._cached_pages
@@ -148,14 +149,15 @@ class TextBinding(Binding):
         self._content_ref = self._resolve_path(target.content, context)
 
     def bind(self, **kwargs) -> Tuple[Callable, ...]:
-        w, l = kwargs.get('w', 0), kwargs.get('l', 0)
+        w, l = kwargs.get("w", 0), kwargs.get("l", 0)
+        font_key = kwargs.get("font", Fonts.DIALOGUE)
         
         def content_function():
             if self._cached_pages is not None:
                 return self._cached_pages
                 
             raw = self._deref(self._content_ref, self.target.content)
-            font = self.registry.font("dialogue") if self.registry else None
+            font = self.registry.font(font_key) if self.registry else None
             
             self._cached_pages = paginate(str(raw), font, w, l)
             return self._cached_pages

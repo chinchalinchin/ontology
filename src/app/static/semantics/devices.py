@@ -8,15 +8,15 @@
 Enumeration of Device semanatics.
 """
 # Standard Libraries
-from enum import Enum
+from enum import StrEnum
 
 # ---------------------------------------
 
-class Devices(str, Enum):
+class Devices(StrEnum):
     CONTROLLER      = "controller"
     KEYBOARD        = "keyboard"
 
-class DeviceContexts(str, Enum):
+class DeviceContexts(StrEnum):
     WORLD           = "world"
     MENU            = "menu"
     

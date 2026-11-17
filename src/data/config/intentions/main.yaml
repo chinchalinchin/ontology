@@ -4,7 +4,7 @@ intentions:
     - next: attack
       conditions:  
         - sprite.goal
-        - sprite.goal.category == constants.Goals.TARGET.value
+        - sprite.goal.category == constants.Goals.TARGET
         - sprite.layer == sprite.goal.layer
         - not sprites.get(sprite.goal.name).mutators.triggers.dead
     - next: hunt
@@ -13,7 +13,7 @@ intentions:
         - sprite.memory.goals 
         - functions.any_goals(
             sprite.memory.goals, 
-            constants.Goals.TARGET.value
+            constants.Goals.TARGET
           )
     - next: scavenge
       conditions: 
@@ -26,9 +26,9 @@ intentions:
     - next: threaten
       conditions:
         - sprite.goal 
-        - sprite.goal.category == constants.Goals.LOOT.value
+        - sprite.goal.category == constants.Goals.LOOT
         - sprite.inventory.wallet < sprite.memory.prices.get(sprite.goal.name)
-        - sprite.psyche.motivation == constants.Motivations.SURVIVAL.value
+        - sprite.psyche.motivation == constants.Motivations.SURVIVAL
     - next: idle
       conditions: 
         - not sprite.goal
@@ -43,7 +43,7 @@ intentions:
       conditions: 
         - sprite.goal
         - sprites.get(sprite.goal.name)
-        - sprites.get(sprite.goal.name).intention == constants.Intentions.ATTACK.value
+        - sprites.get(sprite.goal.name).intention == constants.Intentions.ATTACK
     - next: return
       conditions: 
         - not sprite.goal
@@ -52,7 +52,7 @@ intentions:
     - next: interact
       conditions: 
         - sprite.goal
-        - sprite.goal.category == constants.Goals.OBJECT.value
+        - sprite.goal.category == constants.Goals.OBJECT
         - sprite.layer == sprite.goal.layer
         - functions.is_near(
             sprite.position, 
@@ -63,13 +63,13 @@ intentions:
       conditions: 
         - sprite.goal
         - sprite.psyche.dialogue
-        - sprite.goal.category == constants.Goals.SUBJECT.value
+        - sprite.goal.category == constants.Goals.SUBJECT
         - sprite.layer == sprite.goal.layer
         - sprites.get(sprite.goal.name)
         - sprite.memory.relationships.get(sprite.goal.name)
         - sprite.memory.relationships[sprite.goal.name] in [
-            constants.Relationships.FRIEND.value, 
-            constants.Relationships.FAMILY.value
+            constants.Relationships.FRIEND, 
+            constants.Relationships.FAMILY
           ]
         - functions.is_near(
             sprite.position, 
@@ -99,7 +99,7 @@ intentions:
     - next: attack
       conditions: 
         - sprite.goal
-        - sprite.goal.category == constants.Goals.TARGET.value
+        - sprite.goal.category == constants.Goals.TARGET
         - sprite.layer == sprite.goal.layer
         - functions.is_near(
             sprite.position, 
@@ -114,12 +114,12 @@ intentions:
     - next: wander
       conditions:
         - sprite.goal
-        - sprite.goal.category == constants.Goals.POSITION.value
+        - sprite.goal.category == constants.Goals.POSITION
         - sprite.layer == sprite.goal.layer
     - next: find
       conditions: 
         - sprite.goal
-        - sprite.goal.category == constants.Goals.SUBJECT.value
+        - sprite.goal.category == constants.Goals.SUBJECT
         - sprite.layer == sprite.goal.layer
         - sprites.get(sprite.goal.name)
         - not functions.is_near(
@@ -130,7 +130,7 @@ intentions:
     - next: find
       conditions: 
         - sprite.goal
-        - sprite.goal.category == constants.Goals.OBJECT.value
+        - sprite.goal.category == constants.Goals.OBJECT
         - sprite.layer == sprite.goal.layer
         - not functions.is_near(
             sprite.position, 
@@ -140,7 +140,7 @@ intentions:
     - next: hunt
       conditions:
         - sprite.goal
-        - sprite.goal.category == constants.Goals.TARGET.value
+        - sprite.goal.category == constants.Goals.TARGET
         - sprite.layer == sprite.goal.layer
     - next: wander
       conditions:
@@ -155,11 +155,11 @@ intentions:
     - next: build
       conditions:
         - sprite.goal
-        - sprite.goal.category == constants.Goals.LOOT.value
+        - sprite.goal.category == constants.Goals.LOOT
     - next: mine
       conditions:
         - sprite.goal
-        - sprite.goal.category == constants.Goals.LOOT.value
+        - sprite.goal.category == constants.Goals.LOOT
     - next: idle
       conditions:
         - not sprite.goal
@@ -168,9 +168,9 @@ intentions:
     - next: threaten
       conditions:
         - sprite.goal
-        - sprite.goal.category == constants.Goals.TARGET.value
+        - sprite.goal.category == constants.Goals.TARGET
         - sprites.get(sprite.goal.name)
-        - sprites.get(sprite.goal.name).intention == constants.Intentions.ATTACK.value
+        - sprites.get(sprite.goal.name).intention == constants.Intentions.ATTACK
     - next: idle
       conditions:
         - not sprite.goal
@@ -189,7 +189,7 @@ intentions:
     - next: idle
       conditions:
         - sprite.goal
-        - sprite.goal.name == constants.RequiredAssets.PLAYER.value
+        - sprite.goal.name == constants.RequiredAssets.PLAYER
     - next: idle
       conditions:
         - not sprite.psyche.expression
@@ -203,7 +203,7 @@ intentions:
     - next: attack
       conditions:
         - sprite.goal
-        - sprite.goal.category == constants.Goals.TARGET.value
+        - sprite.goal.category == constants.Goals.TARGET
         - sprite.layer == sprite.goal.layer
         - functions.is_near(
             sprite.position, 
@@ -213,7 +213,7 @@ intentions:
     - next: hunt
       conditions:
         - sprite.goal
-        - sprite.goal.category == constants.Goals.TARGET.value
+        - sprite.goal.category == constants.Goals.TARGET
         - sprite.layer == sprite.goal.layer
         - not functions.is_near(
             sprite.position, 
@@ -231,7 +231,7 @@ intentions:
         - functions.any_memories_visible(
             sprite,
             sprites,
-            [ constants.Goals.TARGET.value ], 
+            [ constants.Goals.TARGET ], 
           )
     - next: find
       conditions:
@@ -239,7 +239,7 @@ intentions:
         - functions.any_memories_visible(
             sprite,
             sprites,
-            [ constants.Goals.SUBJECT.value ], 
+            [ constants.Goals.SUBJECT ], 
           )
     - next: idle
       conditions:

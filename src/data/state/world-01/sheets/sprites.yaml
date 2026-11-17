@@ -27,7 +27,7 @@ sheets:
           vision:
             radius: 150
           action:
-            radius: 25
+            radius: 5
           squeeze: 
             radius: 10
           hand: right

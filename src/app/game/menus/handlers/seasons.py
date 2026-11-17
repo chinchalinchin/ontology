@@ -45,7 +45,7 @@ class SeasonEventHandler(EventHandler):
         # 1. Screen Reconstruction: Re-bake seasonal tile canvases
         if data.screens:
             for layer, screen in data.screens.items():
-                tiles = data.board.categories(AssetCategories.TILES.value, layer)
+                tiles = data.board.categories(AssetCategories.TILES, layer)
                 logger.info(
                     f"SeasonEventHandler: Triggering canvas reconstruction for layer='{layer}' "
                     f"({len(tiles)} tiles) to season='{active_season}'."
@@ -55,7 +55,7 @@ class SeasonEventHandler(EventHandler):
         # 2. Shoreline Frame Invalidation (Zero Geometry Regeneration)
         shorelines = data.board.shorelines()
         if not shorelines:
-            shorelines = data.board.instances(AssetInstances.SHORELINES.value)
+            shorelines = data.board.instances(AssetInstances.SHORELINES)
 
         updated_count = 0
         for shore in shorelines:

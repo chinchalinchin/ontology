@@ -122,7 +122,7 @@ class Provider:
         cfg: MenuNode,
         binding: Optional[Binding]
     ) -> TraversalState:
-        status_val = Statuses.IDLE.value
+        status_val = Statuses.IDLE
         if isinstance(cfg.parameters, ButtonParameters):
             status_val = cfg.parameters.status
         return TraversalState(
@@ -145,9 +145,9 @@ class Provider:
         binding = self.binder.binding(cfg.bind, context, widgets=widgets)
 
         delegator = {
-            AssetInstances.METERS.value: self._meter,
-            AssetInstances.BUTTONS.value: self._button,
-            AssetInstances.ICONS.value: self._icon
+            AssetInstances.METERS: self._meter,
+            AssetInstances.BUTTONS: self._button,
+            AssetInstances.ICONS: self._icon
         }
 
         state = delegator[instance_key](cfg, binding)
@@ -176,7 +176,7 @@ class Provider:
         widgets: Dict[str, Widget],
         font: Optional[Fonts]
     ) -> None:
-        if cfg.instance == AssetInstances.PANES.value:
+        if cfg.instance == AssetInstances.PANES:
             self._unpack_pane(cfg, context, widgets, font)
         else:
             widgets[cfg.name] = self._widget(cfg, context, widgets)
@@ -192,7 +192,7 @@ class Provider:
         Hydrates a Pane node and recursively unpacks its children.
         """
         params = pane.parameters if isinstance(pane.parameters, PaneParameters) else PaneParameters()
-        active_font = params.font or font or Fonts.DIALOGUE.value
+        active_font = params.font or font or Fonts.DIALOGUE
         props = self.properties.panes.get(pane.id)
         recipe = self.recipes.panes
 
@@ -247,11 +247,11 @@ class Provider:
         """
         Recursively compiles virtual macro nodes (gizmos) into concrete pane subtrees.
         """
-        if node.instance == Shortcuts.GIZMOS.value:
+        if node.instance == Shortcuts.GIZMOS:
             expanded = self.fabricator.expand(node, context)
             return self._expand(expanded, context)
 
-        if node.instance == AssetInstances.PANES.value:
+        if node.instance == AssetInstances.PANES:
             params = node.parameters if isinstance(node.parameters, PaneParameters) else PaneParameters()
             new_children = [self._expand(child, context) for child in params.children]
             new_params = PaneParameters(
@@ -284,12 +284,12 @@ class Provider:
         widgets: Dict[str, Widget],
         graph: dict
     ) -> Optional[str]:
-        if id == Menus.VIEW.value or not graph:
+        if id == Menus.VIEW or not graph:
             return None
 
         for focus in graph.keys():
-            if widgets[focus].state.status != Statuses.DISABLED.value:
-                widgets[focus].state.status = Statuses.ACTIVE.value
+            if widgets[focus].state.status != Statuses.DISABLED:
+                widgets[focus].state.status = Statuses.ACTIVE
                 return focus
 
         return None

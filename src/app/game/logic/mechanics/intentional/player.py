@@ -48,9 +48,9 @@ from libs.core.models import Position
 logger = logging.getLogger(__name__)
 
 _INVENTORY_MENUS = frozenset((
-    Menus.EQUIPMENT.value,
-    Menus.POUCH.value,
-    Menus.PACK.value,
+    Menus.EQUIPMENT,
+    Menus.POUCH,
+    Menus.PACK,
 ))
 
 # --------------------------------------------------------------
@@ -78,9 +78,9 @@ class PlayerMechanics(Mechanic):
                     )
                 ))
                 return
-            if payload.world.menu == Menus.PAUSE.value:
+            if payload.world.menu == Menus.PAUSE:
                 bus.append(MenuEvent(
-                    id=Menus.PAUSE.value,
+                    id=Menus.PAUSE,
                     context=PauseContext(board=board)
                 ))
                 return
@@ -92,7 +92,7 @@ class PlayerMechanics(Mechanic):
 
         intention = payload.world.intention
         if payload.world.grip and not intention:
-            intention = Intentions.USE.value
+            intention = Intentions.USE
 
         if intention:
             if not is_locked:
@@ -104,7 +104,7 @@ class PlayerMechanics(Mechanic):
                     player.state.animation.tick = 0
         else:
             if not is_locked:
-                player.state.intention = Intentions.IDLE.value
+                player.state.intention = Intentions.IDLE
         
         # 3. Process Goals / Movement
         speed = player.state.character.speed
@@ -128,7 +128,7 @@ class PlayerMechanics(Mechanic):
         if has_movement and not player.state.goal:
             player.state.goal = Goal(
                 name=player.name, 
-                category=Goals.POSITION.value, 
+                category=Goals.POSITION, 
                 position=Position(goal_x, goal_y)
             )
         elif player.state.goal:
@@ -151,7 +151,7 @@ class PlayerMechanics(Mechanic):
                 player.state.goal.position
             )
 
-        if player.state.intention == Intentions.ATTACK.value:
+        if player.state.intention == Intentions.ATTACK:
             eq = player.state.slots.equipment
             logger.info(
                 f"SheetState("

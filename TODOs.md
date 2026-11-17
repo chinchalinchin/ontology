@@ -1,32 +1,3 @@
-# Hardware & VRAM Coupling in the State Database and Models
-
-The rendering abstraction boundary (`Screen` $\to$ `libs.graphics.render`) is breached by both the domain state models and the `Board` database:
-
-* **VRAM Pointers Stored in Domain State**: `PaneState` (`src/app/models/state/assets/widgets.py`, line 81) stores `canvas: Any = None`, which at runtime holds a Cython `TexturePtr` wrapping a raw `SDL_Texture*` GPU allocation (`src/app/game/screen.py`, line 269).
-
-* **Duplicate VRAM Teardown Across Layers**: Because `PaneState` holds a hardware pointer, `src/app/game/board/core.py` imports `libs.graphics.render as render` (line 59) and manually destroys GPU textures inside `Board.clear()` (lines 363–369):
-
-```python
-for menu in self.menus + self.overlays:
-    if menu.widgets:
-        for widget in menu.widgets.values():
-            if isinstance(widget.state, PaneState) and widget.state.canvas is not None:
-                render.destroy(widget.state.canvas)
-                widget.state.canvas = None
-
-```
-
-
-This duplicates `Screen.release(menu)` (`src/app/game/screen.py`, lines 289–296). Consequently, the database layer (`Board`) has a hard compile-time and runtime dependency on the SDL2 Cython rendering module.
-
-* **SDL Font Measurement Inside Data Bindings**: `src/app/game/menus/bindings/text.py` imports `libs.graphics.render as render` (line 40) to call `render.measure(test_line, font)` inside `paginate()` (lines 67, 81). As noted in the file's own comment (lines 34–39), this couples declarative data binding to an active SDL2 TTF context. Furthermore, both `LibraryBinding.bind` (line 136) and `TextBinding.bind` (line 167) ignore the `font=widget.state.font` keyword argument passed by `Provider._bind_pane` (`src/app/services/generators/menus/provider.py`, line 155) and hardcode `self.registry.font("dialogue")`.
-
-* **Remediation**: Store widget canvas `TexturePtr` instances in a renderer-owned dictionary (`Screen._widget_canvases: Dict[str, TexturePtr]`) keyed by `widget.name`, and pass a callable text-measurement interface (or execute pagination inside `Screen.stamp`) so `Board`, `PaneState`, and `Binding` have zero dependencies on `libs.graphics.render`.
-
-
----
-
-
 # Erosion of ECS Polymorphism via `isinstance` and ID Branching
 
 Although `Asset` (`src/app/assets/base.py`, line 139) is designed as a uniform component container, core systems bypass its strategy interfaces:
@@ -50,29 +21,6 @@ Although `Asset` (`src/app/assets/base.py`, line 139) is designed as a uniform c
 
 * **Nullable Late-Bound Dependencies Violating Type Annotations**: In `src/app/game/board/core.py` (lines 69–77), `plot: PlotState`, `device: Device`, and `cradle: Cradle` are annotated as non-optional, while `self.materializer` is unannotated. In `Board.__init__` (lines 90–95), all five are initialized to `None` and mutated later via setter methods (`set_device`, `set_cradle`, `set_plot`, `set_migrator`). Any mechanic or handler invoked before all setters run encounters `AttributeError` on `None`.
 * **11 Private Cache Structures Exposed on `Board**`: Lines 111–155 of `src/app/game/board/core.py` expose `_cached_categories`, `_cached_instances`, `_cached_layers`, `_cached_renderables`, `_cached_weights`, `_cached_tilemap`, `_cached_fluidmap`, `_cached_characters`, `_all_categories`, `_all_instances`, and `_shorelines` directly from `self._cache`. External callers inspecting these properties bypass `Board`'s query API and couple directly to `Cache` implementation details.
-
-
----
-
-
-# Unculled Heap Allocations, Registry Lookups, and Full-Layer Sorting in `Screen._assemble`
-
-In `src/app/game/screen.py` (`_assemble`, lines 126–205), the rendering pipeline executes operations in the following order every frame (60 Hz):
-
-1. `self.board.renderables(player.state.layer)` (`src/app/game/engine.py`, line 127) returns the cached list of **all** non-tile assets on the active layer (`src/app/game/board/core.py`, line 276).
-2. `assets.sort(key=self._sort)` (line 138) sorts the **entire layer's asset list** in-place ($O(N_{\text{layer}} \log N_{\text{layer}})$), mutating the list stored inside `Board._cache.cached_renderables[layer]`.
-3. For **every** asset on the layer (lines 140–154), the loop calls `asset.frame.keys(asset.id, asset.state)`, `asset.frame.channels(...)`, and `self.registry.image(frame_key)` **before** checking whether the asset is inside the camera viewport (lines 171–174).
-
-**Impact**:
-
-In `StateFrame.keys` and `SpriteFrame.keys` (`src/app/assets/frames/sheets.py`, lines 46–51, 88–107), every call to `keys()` executes `settings.SEPARATOR.join([...])` and allocates a new list of tuples on the Python heap. If a layer contains $2,000$ assets and only $40$ are within the camera viewport (`pov`, `bounds`), the engine performs $2,000$ sort key evaluations, $2,000+$ dynamic string concatenations, list allocations, and `Registry.image()` dictionary lookups per frame ($120,000+$ allocations per second) only to discard $98\%$ of them at line 171.
-
-**Remediation**:
-
-Perform broad-phase camera AABB culling **first** using `asset.state.position` and `asset.dimensions` (with a constant margin $M$ for expression offsets), collect only the visible subset $V$ ($\vert{}V\vert{} \ll N_{\text{layer}}$), sort $V$ into a local list without mutating `Board._cache`, and invoke `asset.frame.keys()`, `asset.frame.channels()`, and `self.registry.image()` exclusively on $a \in V$:
-
-$$\text{Complexity}_{\text{frame}}: \quad O(N_{\text{layer}} \log N_{\text{layer}}) + N_{\text{layer}} \cdot C_{\text{alloc}} \;\longrightarrow\; O(N_{\text{layer}}) + O(\vert{}V\vert{} \log \vert{}V\vert{}) + \vert{}V\vert{} \cdot C_{\text{alloc}}$$
-
 
 ---
 
@@ -138,25 +86,6 @@ Because `SDL_PollEvent` removes all OS window events from SDL's internal queue a
 # `dataclasses.asdict` Serialization on Cython Extension Types in `Board.serialize`
 
 In `src/app/game/board/core.py` (line 408), `Board.serialize` converts runtime states to dictionaries via `asdict(asset.state)`. However, `SheetState`, `ObjectState`, `CraftState`, etc., store Cython `cdef class` extension types (`libs.core.models.Position`, `Velocity`, `Dimensions`, `Multiple`) in their fields (`src/app/models/state/assets/sheets.py`, lines 130–131). Python's `dataclasses.asdict()` only unpacks standard Python `@dataclass` objects, lists, tuples, and dicts; for Cython `cdef class` instances, `asdict()` falls back to `copy.deepcopy(obj)`, leaving raw Cython extension instances in the output dict (or raising `TypeError` if `__reduce__`/`__deepcopy__` is not implemented on every `cdef class` in `libs.core.models`).
-
-
----
-
-
-# Cross-Domain Enum Default Bug in `SelectTarget` and Off-Target Channel Rendering in `Screen.export_map`
-
-* **Invalid Default Enum Type on `SelectTarget**`: In `src/app/models/config/menus.py` (line 87):
-```python
-@dataclass(slots=True, frozen=True)
-class SelectTarget:
-    selection: Enumerated[Selections] = Statuses.IDLE.value
-
-```
-
-
-`selection` is validated against `Enumerated[Selections]`, but its default value is `Statuses.IDLE.value` (`"idle"`), which is a `Statuses` enum value rather than a `Selections` enum value. Additionally, `from app.models.adapters import Enumerated` is imported twice in `src/app/models/config/menus.py` (lines 34 and 39).
-* **Channel Operations Drawn to Default Viewport Instead of `full_target` in `Screen.export_map**`: In `src/app/game/screen.py` (lines 398–411), `render.render(..., target=full_target)` renders the map onto the temporary offscreen texture `full_target`, but the subsequent line `render.channel(active_channels, pov.x, pov.y)` (line 411) omits `target=full_target`, causing auxiliary tint channels to render onto the screen backbuffer rather than the exported map texture.
-
 
 ---
 
@@ -226,3 +155,294 @@ In `src/app/game/logic/mechanics/core/menu.py`, `MenuMechanics._resolve_neighbor
 **Proposed Remediation**
 
 Either introduce a dedicated `Statuses` / visual state distinction for unaffordable-but-inspectable recipes, or allow `MenuMechanics` / `CraftController` to traverse onto occupied Craft Formulae slots regardless of affordability while gating execution inside `CraftController.select()`.
+
+
+
+
+##### Review: Ontology Engine & Runtime Profile Analysis
+
+###### Overview
+
+An analysis of the runtime execution profile (`latest.pstats`, captured across **6,019 rendered frames** and **6,092 logic updates** / **5,447 active world ticks**, or ~100.3 seconds at 60 FPS) alongside the core codebase reveals that the Engine easily maintains its 60 FPS frame budget (**72.78%** of wall-clock time is spent in frame-pacing/idle), but exhibits several structural hotspots in the **25.85%** of wall-clock time dedicated to active execution:
+
+| Subsystem | Wall-Clock % | Self % | Active Work Share (%) | Calls | Calls / Frame |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **`Engine.start` Pacing (`sleep` + `time` + spin)** | **72.78%** | **72.07%** | *N/A (Idle/Spin)* | 15,979,892 | ~2,655 |
+| **`Engine._render` (Total Rendering)** | **13.28%** | 0.03% | **51.37%** | 6,019 | 1.0 |
+| ├─ `Screen._assemble` (World Culling & Sort) | 7.29% | **5.18%** | **28.20%** | 6,013 | 1.0 |
+| │  └─ `Screen._in_viewport` | 1.02% | 0.58% | 3.95% | 617,989 | ~102.8 |
+| └─ `Screen._widgets` (HUD / Menu Overlays) | 4.90% | 1.04% | **18.96%** | 6,636 | 1.1 |
+|    └─ `WidgetFrame.keys` (`widgets:67:keys`) | 3.34% | 1.73% | 12.92% | 83,118 | ~13.8 |
+| **`Engine._play` (Total Mechanics)** | **12.57%** | 0.06% | **48.63%** | 6,092 | 1.01 |
+| ├─ `CollisionMechanics.update` | 5.91% | 1.25% | **22.86%** | 5,447 | 0.91 |
+| │  ├─ `MaterialHitbox.elevations` (`crafts:64`) | 1.91% *(2.37% tot)* | 1.34% | 7.39% *(9.17% tot)* | 1,737,593 *(2.27M)* | ~319.0 |
+| │  ├─ `SpatialMechanic.collisions` (`base:60`) | 1.85% | 0.48% | 7.16% | 81,896 | ~15.0 |
+| │  └─ `MaterialHitbox.get` (`crafts:73`) | 0.92% *(1.28% tot)* | 0.81% | 3.56% *(4.95% tot)* | 501,124 *(698k)* | ~92.0 |
+| └─ `MotionMechanics.update` (`fields.update`) | 1.92% | 0.81% | **7.43%** | 5,447 | 0.91 |
+| **`enum.__get__` (Global Descriptor Overhead)** | **1.73%** | **1.25%** | **6.69%** | **7,685,348** | **~1,276.8** |
+
+At a macro level, **rendering preparation in Python (`_render` at 13.28%) costs more CPU time than the entire game simulation (`_play` at 12.57%)**, and **static-environment queries inside `CollisionMechanics` (5.91%) and `Screen._widgets` (4.90%)** dominate the active frame budget despite Cython acceleration at the leaf nodes.
+
+---
+
+###### Review: Implementation
+
+1. **Spin-Wait Syscall Churn in `Engine.start` (`src/app/game/engine.py`)**:
+   * In `Engine.start`, the hybrid sleep-spin loop executes:
+     ```python
+     while (self.time() - current_time) < delta:
+         time.sleep(0)
+     ```
+   * Over 6,019 frames, `time.sleep` is called **7,983,914 times** (~1,326 times per frame) and `Engine.time` is called **7,995,978 times**, consuming **3.55%** of total execution time just in Python staticmethod dispatch and `sched_yield` overhead during the `SPIN_RATE` window.
+   * Furthermore, `frame_time = current_time - last_time` has no upper clamp before `accumulator += frame_time`. Any OS window stall, breakpoint, or synchronous I/O operation (such as `Board.serialize` or `Screen.rebake`) will inflate `accumulator` and trigger an unbounded burst of `_play(delta)` updates ("spiral of death").
+
+2. **Submerged Channel Slicing on Multi-Frame / Offset Assets (`src/app/game/screen.py`)**:
+   * In `Screen._assemble`, when an asset has `submerge_channel` active (`state.mutators.triggers.submerged == True`), `split_y = properties.dimensions.l // 2` is applied uniformly across every tuple `(frame_key, ox, oy)` in `asset.frame.keys(asset.id, asset.state)`.
+   * For composite assets like `Sprites` that emit superimposed `Expression` cursor frames with smaller dimensions (`sl < split_y`) and vertical offsets (`oy`), `rem_l = sl - split_y` evaluates to a **negative height**, and the upper slice requests a crop height `split_y > sl` beyond the expression texture's bounds.
+
+3. **Un-cleared `bg_canvas` in `Screen.reconstruct` & Destructive Blend Mode Mutation in `render.construct` (`src/app/game/screen.py`, `src/libs/graphics/render.pyx`)**:
+   * `Screen.reconstruct` clears `self.fg_canvas` (`render.clear(self.fg_canvas)`), but omits `render.clear(self.bg_canvas)` before stamping seasonal `back_tiles`.
+   * Inside `render.construct`, every tile iteration calls `SDL_SetTextureBlendMode(tex.ptr, SDL_BLENDMODE_NONE)` on the shared texture in `Registry` and never restores `SDL_BLENDMODE_BLEND`. When `construct` runs on `fore_tiles` (`CANOPY` tiles) or UI `Pane` 9-slice primitives in `Screen.stamp`, transparency is disabled, causing transparent pixels in canopy foliage or overlapping 9-slice regions to overwrite underlying pixels with raw `(0, 0, 0, 0)` and leaving shared textures in `SDL_BLENDMODE_NONE`.
+
+4. **Broken Index Alignment in `SpatialMechanic.proximities` (`src/app/game/logic/mechanics/spatial/base.py`)**:
+   * `proximities` builds `asset_map = dict(enumerate(assets))` using the original enumeration index `i`, but executes `continue` when `not asset.state.mutators or not asset.state.mutators.parameters`.
+   * Because `physics.collisions(primitive_data, self.grid)` inserts `data[0]` (`i`) into the `Space` grid and then indexes `primitive_data[id_a]` and `primitive_data[id_b]` directly by `entity_id`, skipping any element makes `len(primitive_data) < len(assets)`. This causes `physics.collisions` to either raise an `IndexError` or test narrow-phase geometry against the wrong asset in `primitive_data`.
+
+---
+
+###### Review: Quality
+
+1. **Pervasive Enum `.value` Descriptor Overhead in Inner Loops**:
+   * Python's `Enum.__get__` (`enum:187:__get__`) is invoked **7,685,348 times** (**1.73%** of total runtime, or **6.69% of all active CPU work**).
+   * In `Screen._assemble`, `Screen._in_viewport`, `CollisionMechanics`, and `widgets:67:keys` (which alone accounts for **3,796,004** `Enum.__get__` calls), `.value` is repeatedly resolved on `Enum` members inside per-entity, per-frame loops. Defining `StrEnum` (Python 3.11+) or binding module-level string/integer constants eliminates descriptor lookup overhead while preserving semantic type safety.
+
+2. **Documentation & Schema Drift**:
+   * **Stairs (`01-assets.md` vs `collision.py`)**: Documentation specifies `stairs.state.blueprint` with `Directions.RIGHT`, `Directions.LEFT`, and `Directions.DOWN` (and inverted velocity signs for `RIGHT`), whereas `CollisionMechanics._traverse_stairs` inspects `stairs.state.direction` and branches on `Directions.UP`, `Directions.LEFT`, and `Directions.RIGHT` (noting `# NOTE: DOWN is impossible due to LPC perspective specification`).
+   * **Mutators (`01-assets.md` vs `base.py`)**: Documentation lists `mutators.parameters.action: bool` and `vision: bool`, whereas `SpatialMechanic.proximities` accesses `asset.state.mutators.parameters.action.radius`.
+   * **SpatialHash Capacity (`base.py` vs `collision.py`)**: `SpatialMechanic.__init__` defaults to `max_entities: int = 2000`, but `CollisionMechanics.__init__` overrides this to `max_entities: int = 200` (`num_buckets = 400`). In `Space.insert`, bucket overflow (`count >= 50`) silently drops entities without logging or resizing.
+
+3. **Redundant Singleton Lookups (`MaterialHitbox`)**:
+   * In `src/app/assets/hitboxes/crafts.py`, `MaterialHitbox.elevations` and `MaterialHitbox.get` instantiate/lookup `MaterialIndex().is_obstacle(state.blueprint)` on every call (**2,970,055 combined calls** in the profile), rather than caching the `MaterialIndex` singleton reference on the `MaterialHitbox` instance or precomputing obstacle status on `CraftState` / `Board._cache`.
+
+---
+
+###### Review: Logic
+
+1. **All-Layer Physics Execution vs. Single-Layer Rendering**:
+   * In `CollisionMechanics.update`, the outer loop iterates over `for layer in board.layers():`, running stair traversal, elevation partitioning, perimeter constraints, and broad/narrow-phase collision resolution across **every layer in the Board** on every tick.
+   * Because `81,896` calls to `SpatialMechanic.collisions` occur across `5,447` world ticks, `CollisionMechanics` is executing an average of **15.04 elevation-tier collision passes per tick** across all layers.
+
+2. **Static-vs-Static Broad/Narrow-Phase Evaluation in `CollisionMechanics`**:
+   * `board.weights(layer)` returns all assets with $m \ge 0$, which includes both dynamic bodies ($m > 0$) and all static bodies ($m = 0$: walls, buildings, obstacle struts, resources, chests, etc.).
+   * In Phase 2 of `CollisionMechanics.update`, all `tier_weights` (dominated by static $m = 0$ assets) are passed to `self.collisions(tier_weights, elevation=elevation)`.
+   * `physics.collisions` inserts all static and dynamic hitboxes into `Space`, queries all overlapping cell pairs (including **static-vs-static** pairs), and runs `geometry.intersects` on them.
+   * For every intersecting pair, `_resolve` re-fetches hitboxes and calls `geometry.intersects` a **second time**, only for `physics.collide` to compute `inv_m1 = 0.0`, `inv_m2 = 0.0`, `inv_total = 0.0` and no-op on static-vs-static pairs.
+   * Additionally, `geometry.intersects` returns only the **first** intersecting `(hb1, hb2)` tuple (`return (hb1, hb2)`). If a dynamic entity simultaneously overlaps two hitboxes of a compound asset (e.g., an L-shaped enclosure or multi-hitbox fluid/shoreline), only the first hitbox is resolved per tick.
+
+3. **Perimeter Union Collapse in `Perimeter.extract` (`src/app/services/generators/game/perimeter.py`)**:
+   * `Perimeter.extract` collects rectangles for Tier 0 `ENVIRON` and `CANOPY` tiles (Step 1) and then appends static `OBJECTS` and `CRAFTS` rectangles (Step 3) into the same `rects` list passed to `geometry.contours(rects)`.
+   * Because `geometry.contours` computes the outer boundary of the **union** $\bigcup_i R_i$ via interval merging (`merge()`), any static object or craft situated *inside* the bounding footprint of the background `ENVIRON` tiles is completely absorbed into the tile interval and produces zero contour edges. Conversely, including `CANOPY` tiles in Step 1 expands the walkable Tier 0 perimeter out to overhead tree/roof canopies.
+   * Furthermore, `Perimeter.generate` computes `perimeters_by_tier` for all elevations $E > 0$ (including Step 2 for elevated stairs), but `CollisionMechanics.update` restricts Phase 1 to `if elevation == 0:`, leaving elevated perimeters unused by collision constraints.
+
+---
+
+###### Review: Architecture
+
+1. **Passable Craft Inclusion in `Board._cached_weights`**:
+   * `CraftProperties` defaults to `mass: int = 0`. Consequently, decorative or passable surface crafts (e.g., `floors`, `flats`, `paths`, `corridors`) satisfy $m \ge 0$ (`predicates.is_weight`) and are indexed into `board.weights(layer)`.
+   * Every tick, `CollisionMechanics.update` (and `fields.update`) iterates through all of these passable crafts and calls `w.hitbox.elevations(w.properties, w.state)` (**2.27 million calls**, **2.37%** of total runtime) just for `MaterialHitbox.elevations` to check `MaterialIndex().is_obstacle(state.blueprint)` and return `[]`.
+   * Filtering passable `MaterialHitbox` crafts out of `_cached_weights` at board indexing time (or caching `elevations` on the asset/cache) would eliminate over **2 million Python calls** per 100 seconds.
+
+2. **Uncached Per-Frame HUD / Overlay Resolution (`Screen._widgets`)**:
+   * `Screen.interface` -> `Screen._widgets` consumes **4.90%** of total wall-clock time (**18.96% of active CPU time**)—nearly as much as `CollisionMechanics` (**5.91%**).
+   * Unlike `PaneState` widgets which bake to a texture via `Screen.stamp`, non-pane overlay widgets (e.g., HUD meters, slots, buttons) execute `widget.frame.keys(widget.id, widget.state)` (**83,118 calls**, **3.34%**) and `registry.image(key)` on every single frame, even when the underlying widget state has not mutated.
+
+3. **Serialization Contamination in `Board.serialize` (`src/app/game/board/core.py`)**:
+   * `Board.serialize` filters out `WIDGETS`, non-persistent `TEMPORARY` effects, and `Equipment` sheets, but does not filter out procedurally synthesized `GEOGRAPHY` (`SHORELINES`) or hydrated reciprocal `Door` shadow projections (`DoorState.projection == LayerProjections.OUT.value`). Saving and reloading a board state will persist procedural/projected entities as static state entries.
+
+---
+
+###### Review: Optimization
+
+1. **Move `Screen._assemble` Culling, Sorting, and Tuple Packing to Cython (`5.18%` self-time -> `<0.5%`)**:
+   * `Screen._assemble` is the single largest Python self-time hotspot in the entire application (**5.18%** wall-clock, or **20.04% of active CPU time**).
+   * Currently, `_assemble` iterates over every asset on the layer in Python, calls `_in_viewport` (617,989 times), sorts `visible` using a Python `@staticmethod` key (`Screen._sort`), calls `frame.keys` and `frame.channels`, queries `registry.image`, and allocates new 13-element tuples every frame.
+   * **Remediation**:
+     1. Maintain a dirty-flagged `_frame_keys` / `_sort_key` cache on `Asset` (invalidated only when `position.y`, `elevation`, `animation.frame`, or `mutators` change).
+     2. Move the viewport AABB cull and render-list assembly into `libs.graphics.render` (Cython), operating directly on C-level attributes.
+
+2. **Separate Static ($m = 0$) and Dynamic ($m > 0$) Bodies in `CollisionMechanics` & `Space`**:
+   * In `CollisionMechanics.update`, static weights ($m = 0$) never collide with one another.
+   * **Remediation**:
+     1. Exclude passable crafts (`not MaterialIndex().is_obstacle(blueprint)`) from `Board._cached_weights` during `Cache.index_batch`.
+     2. Use the existing asymmetric query pattern (similar to `physics.boundaries` / `physics.environment`) where only dynamic bodies ($m > 0$) initiate queries against static bodies ($m = 0$), and return the intersecting `(hb_a, hb_b)` directly from `physics.collisions` so `_resolve` does not re-execute `geometry.intersects`.
+
+3. **Dirty-Flag HUD Overlays & Eliminate `Enum.value` in `WidgetFrame.keys` (`4.90%` -> `<0.3%`)**:
+   * Cache the compiled `primitives` list for `board.overlays` on `Screen` (or cache `widget.frame.keys` per widget) and rebuild only when an `UpdateEvent` or state mutation occurs.
+   * Replace repeated `Enum.value` lookups inside `src/app/assets/frames/widgets.py` with pre-bound string constants or `StrEnum`.
+
+4. **Replace `time.sleep(0)` Spin Loop in `Engine.start`**:
+   * Replace the `while (self.time() - current_time) < delta: time.sleep(0)` loop (or reduce `settings.SPIN_RATE` and use a pure `pass` spin over a sub-millisecond window `< 0.2ms` with a local `perf_counter = time.perf_counter` binding) to eliminate ~8 million `time.sleep(0)` and `self.time()` calls per 100 seconds.
+
+---
+
+##### Bug B001: Index Desynchronization & Out-of-Bounds Access in `SpatialMechanic.proximities`
+
+**STATUS**: OPEN
+**SEVERITY**: High
+
+**Description**
+
+In `src/app/game/logic/mechanics/spatial/base.py`, `SpatialMechanic.proximities` constructs `asset_map = dict(enumerate(assets))` using the enumeration index `i` ($0 \le i < N$), and passes `i` as the first element (`entity_id`) of `asset.primitive(i, hitboxes=[pad_hb])` appended to `primitive_data`. However, if any asset in `assets` fails the guard condition (`if not asset.state.mutators or not asset.state.mutators.parameters: continue`), that iteration is skipped, making `len(primitive_data) < len(assets)` while `data[0]` still holds the original index `i`.
+
+When `physics.collisions(primitive_data, self.grid)` executes in `src/libs/core/math/physics.pyx`, it inserts `data[0]` (`i`) into `self.grid`, and then indexes `primitive_data[id_a]` and `primitive_data[id_b]` using those `entity_id` values:
+1. Any `entity_id >= len(primitive_data)` raises an `IndexError: list index out of range`.
+2. Any `entity_id < len(primitive_data)` occurring after a skipped element accesses the wrong asset's tuple in `primitive_data`, evaluating narrow-phase intersections with mismatched coordinates before mapping the result back to `asset_map[id_a]`.
+3. Additionally, if `asset.state.mutators.parameters.action` is `None`, accessing `.radius` raises an `AttributeError`.
+
+**Steps to Replicate** 
+
+1. Instantiate a list of 3 `Asset` instances `[asset_0, asset_1, asset_2]` where `asset_0` has `asset_0.state.mutators = None`, and `asset_1`, `asset_2` have valid `mutators.parameters.action.radius` and overlapping positions.
+2. Call `SpatialMechanic().proximities([asset_0, asset_1, asset_2])`.
+3. `primitive_data` has length 2, containing `entity_id` values `1` and `2`.
+4. `physics.collisions` queries the grid, receives candidate pair `(1, 2)`, and attempts to access `primitive_data[2]`, raising `IndexError: list index out of range`.
+
+**Proposed Remeditation**
+
+Maintain a contiguous local index `idx = len(primitive_data)` for `primitive_data` and `asset_map` (and guard `asset.state.mutators.parameters.action`), ensuring a 1-to-1 correspondence between `entity_id` and `primitive_data` indices:
+* Assign `idx = len(primitive_data)`, map `asset_map[idx] = asset`, and append `asset.primitive(idx, hitboxes=[pad_hb])`.
+
+---
+
+##### Bug B002: Negative Crop Height & Corrupt Slicing on Submerged Composite Assets in `Screen._assemble`
+
+**STATUS**: OPEN
+**SEVERITY**: High
+
+**Description**
+
+In `src/app/game/screen.py` (`Screen._assemble`, lines 218–246), when an asset has `state.mutators.triggers.submerged == True`, `Frame.channels` emits a `ChannelTypes.SUBMERGE` directive with `split_y = properties.dimensions.l // 2` (e.g., `32` for a 64x64 `Sprite`). `Screen._assemble` then applies this `split_y` to **every** `(frame_key, ox, oy)` returned by `asset.frame.keys(asset.id, asset.state)`:
+```python
+rem_l = sl - split_y
+active_assets.append((
+    tex, sx, sy + split_y, sw, rem_l,
+    dx, dy + split_y, dw, rem_l,
+    r, g, b, a,
+))
+```
+When a submerged `Sprite` has an active `Expression` cursor (which is superimposed via `SpriteFrame.keys` with a non-zero offset `(ox, oy)` and smaller dimensions, e.g., `16x16` where `sl < split_y`), `split_y` is neither offset by `oy` nor clamped to `[0, sl]`. Consequently, the upper slice crops out-of-bounds texture memory (`split_y > sl`) and stretches the expression icon to `split_y` pixels, while the lower slice computes a **negative** height (`rem_l = sl - split_y < 0`) passed to `SDL_RenderCopy`.
+
+**Steps to Replicate** 
+
+1. Place a `Sprite` (dimensions `64x64`, `split_y = 32`) in a `Fluid` stream so `state.mutators.triggers.submerged == True`.
+2. Trigger an `Expression` bubble on the `Sprite` (e.g., `surprise` or `loquacity` with dimensions `16x16` or `32x32` at an overhead offset `oy < 0`).
+3. Execute `Screen._assemble`: the expression frame is sliced using the Sprite's `split_y = 32`, producing corrupted rendering and `rem_l <= 0`.
+
+**Proposed Remeditation**
+
+Compute the local split offset relative to each frame's vertical offset `oy` (`local_split = split_y - oy`):
+* If `local_split >= sl`: render the frame normally (entirely above the waterline).
+* If `local_split <= 0`: render the entire frame with submerged RGBA modulation (entirely below the waterline).
+* Otherwise (`0 < local_split < sl`): split into upper (`local_split`) and lower (`sl - local_split`) slices.
+
+---
+
+##### Bug B003: Texture Blend Mode Corruption in `render.construct` & Un-cleared `bg_canvas` in `Screen.reconstruct`
+
+**STATUS**: OPEN
+**SEVERITY**: Medium
+
+**Description**
+
+1. In `src/libs/graphics/render.pyx` (`construct`, line 325), every tile/primitive iteration executes:
+   ```cython
+   SDL_SetTextureBlendMode(tex.ptr, SDL_BLENDMODE_NONE)
+   ```
+   `construct` is used not only for `bg_canvas` (`ENVIRON` tiles), but also for `fg_canvas` (`CANOPY` tiles) and UI `Pane` 9-slice canvases in `Screen.stamp(widget)`. Setting `SDL_BLENDMODE_NONE` disables alpha blending when stamping canopy tiles or 9-slice borders onto transparent target canvases (causing overlapping canopy tiles to overwrite adjacent foliage with transparent black `(0, 0, 0, 0)`), and permanently leaves the shared `TexturePtr` in `Registry._textures` with `SDL_BLENDMODE_NONE`.
+2. In `src/app/game/screen.py` (`Screen.reconstruct`, lines 473–482), `render.clear(self.fg_canvas)` is called prior to `render.construct`, but `render.clear(self.bg_canvas)` is omitted, leaving stale pixels on `bg_canvas` if any area is not fully overwritten.
+
+**Steps to Replicate** 
+
+1. Deploy two overlapping `CANOPY` tiles on a layer, or render a texture in `construct` that is subsequently drawn with alpha modulation in `render.render`.
+2. During `Screen.__init__` or `Screen.reconstruct`, `render.construct(self.fg_canvas, fore_tiles)` sets `SDL_BLENDMODE_NONE` on the canopy texture, causing the second canopy tile's transparent bounding box to erase the overlapping portion of the first canopy tile on `fg_canvas`.
+
+**Proposed Remeditation**
+
+1. In `Screen.reconstruct`, call `render.clear(self.bg_canvas)` alongside `render.clear(self.fg_canvas)` (and in `Screen.stamp`, call `render.clear(tex)` before `render.construct`).
+2. In `render.construct`, preserve `SDL_BLENDMODE_BLEND` for foreground/UI composition (or restore `SDL_SetTextureBlendMode(tex.ptr, SDL_BLENDMODE_BLEND)` after copying).
+
+---
+
+##### Bug B004: Outlined Text Glyph Misalignment & Missing Vertical Offset in `render.write`
+
+**STATUS**: OPEN
+**SEVERITY**: Medium
+
+**Description**
+
+In `src/libs/graphics/render.pyx` (`write`, lines 354–439):
+1. When rendering outlined text (`font.outline_ptr != NULL and font.outline_width > 0`), `TTF_RenderUTF8_Blended_Wrapped` is called on the entire string `b_content` using `font.outline_ptr` (which has `TTF_SetFontOutline` applied), and the resulting surface is stamped once at `outline_rect.x = dst_rect.x - font.outline_width`. In `SDL2_ttf`, `TTF_SetFontOutline` increases the width and horizontal advance of **each individual glyph** by `2 * outline_width`. For a line of $N$ characters, the outlined surface is wider by $2 \cdot N \cdot \text{outline\_width}$ pixels, causing every character after the first to drift progressively further right relative to `text_surface` and causing multi-line text to wrap at different word boundaries.
+2. `dst_rect.y = margin_px_h` omits the target crop offset `sy` (unlike `dst_rect.x`, which adds `sx`).
+
+**Steps to Replicate** 
+
+1. Configure a `Font` in `/src/assets/fonts/**/*.yaml` with `outline.width: 2` and render a multi-character string onto a `Pane` via `Screen.stamp`.
+2. Observe that the outline aligns with the first character on the left, but shifts progressively to the right by `2 * outline_width` pixels per character across the string.
+
+**Proposed Remeditation**
+
+To outline wrapped text accurately in `SDL2_ttf`, either:
+* Stamp `text_tex` (or `text_surface` rendered in `outline_color` using the base `font.ptr`) at 8-directional offsets $(\pm w, \pm w)$ behind the foreground `text_tex`, which guarantees identical glyph advances and word-wrapping bounds; or
+* Render glyph-by-glyph using `TTF_GlyphMetrics` advances from the base font.
+Additionally, set `dst_rect.y = sy + margin_px_h`.
+
+---
+
+##### Bug B005: Unclamped Camera Coordinates in `geometry.onscreen`
+
+**STATUS**: OPEN
+**SEVERITY**: Low
+
+**Description**
+
+In `src/libs/core/math/geometry.pyx` (`onscreen`, lines 60–71), camera coordinates are computed as:
+```cython
+cdef int cam_x = p_pos.x + (p_dim.w // 2) - (screen.w // 2)
+cdef int cam_y = p_pos.y + (p_dim.l // 2) - (screen.l // 2)
+```
+Unlike `Screen.camera` in `src/app/game/screen.py` (lines 318–341), which clamps `cam_x` to `[0, boardsize.w - screensize.w]` and `cam_y` to `[0, boardsize.l - screensize.l]` (or centers layers smaller than the viewport), `geometry.onscreen` does not clamp to board boundaries. When the player (`p_pos`) is near any edge of the board (e.g., `p_pos.x = 0`), `Screen.camera` clamps `cam_x = 0` so the viewport displays `[0, screen.w]`, whereas `geometry.onscreen` evaluates `[ -screen.w // 2, screen.w // 2 ]`, falsely reporting visible entities in `[screen.w // 2, screen.w]` as offscreen.
+
+**Steps to Replicate** 
+
+1. Position the Player at `(0, 0)` on a board of size `1920x1080` with a `1280x720` screen viewport.
+2. Place an Asset at `(800, 200)` (which is visible on screen since `Screen.camera` clamps `cam_x = 0`).
+3. Call `geometry.onscreen(asset.pos, asset.dim, player.pos, player.dim, screen_dim)` — it returns `False` because `cam_x + screen.w` is computed as `-640 + 1280 = 640 < 800`.
+
+**Proposed Remeditation**
+
+Pass `board: Dimensions` (or the already-clamped camera `pov: Position` from `Screen.camera`) into `geometry.onscreen` so its viewport rectangle matches `Screen.camera`.
+
+---
+
+##### Bug B006: Procedural Shorelines & Projected Door Shadows Persisted in `Board.serialize`
+
+**STATUS**: OPEN
+**SEVERITY**: Medium
+
+**Description**
+
+In `src/app/game/board/core.py` (`Board.serialize`, lines 397–436), the serializer iterates over `self._assets` and excludes `WIDGETS`, non-persistent `TEMPORARY` effects, and `Equipment` sheets, but does not exclude:
+1. Procedurally generated `GEOGRAPHY` assets (`AssetInstances.SHORELINES`), which are synthesized dynamically by `Cartographer` / `FluidMechanics`.
+2. Reciprocal shadow footprints projected by `Doors` (`DoorState.projection == LayerProjections.OUT.value`), which are generated automatically during hydration.
+
+Serializing a running board writes these runtime-synthesized entities into the state dump file, causing duplicate door projections and stale shoreline state entries upon reloading the saved slot.
+
+**Steps to Replicate** 
+
+1. Hydrate a board containing a `Door` (which projects a reciprocal `OUT` door onto `outlayer`) and `Fluids` (which synthesize `Shorelines`).
+2. Call `board.serialize(world, slot)`.
+3. Inspect the saved state YAML: both `geography.shorelines` and the reciprocal `OUT` door state are written to disk.
+
+**Proposed Remeditation**
+
+In `Board.serialize`, skip assets where `asset.category == AssetCategories.GEOGRAPHY.value` or where `asset.instance == AssetInstances.DOORS.value and getattr(asset.state, "projection", None) == LayerProjections.OUT.value`.

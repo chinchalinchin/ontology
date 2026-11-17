@@ -59,7 +59,7 @@ class Orchestrator:
             engine.bus.append(StateEvent(id=state_key))
         else:
             engine.bus.append(
-                MenuEvent(Menus.MAIN.value, MainContext(registry=self.builder.registry))
+                MenuEvent(Menus.MAIN, MainContext(registry=self.builder.registry))
             )
 
         return engine

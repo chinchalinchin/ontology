@@ -25,7 +25,7 @@ from app.models.config.core import Configuration
 class Recipe:
     frame: FrameRecipe = None
     animation: AnimationRecipe = None
-    hitbox: Optional[HitboxRecipe] = HitboxRecipe.STATIC.value
+    hitbox: Optional[HitboxRecipe] = HitboxRecipe.STATIC
 
 @dataclass(slots=True, frozen=True)
 class TileRecipe:

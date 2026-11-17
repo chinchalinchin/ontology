@@ -2,7 +2,7 @@
 
 Widgets are a type of specialized [Asset](./01-assets.md) leveraged for user interfaces. Similar to the core [Asset Categories](./01-assets.md#asset-hierarchy), they possess Properties, State and have extensible components injected into their Frame and Animation interfaces. However, they play a unique role in the [Engine Loop](./00-overview.md#component-engine) and have dedicated systems for their processing and deployment.
 
-Widgets are not declared in a [State file](./00-overview.md#core-state) and are thus not migrated onto the [Board](./00-overview.md#component-board) during [hydration](./12-architecture.md#phase-2-hydration). Widgets have their [Bindings](#bindings) and [Layout](#layouts) configured into [Menus](#configuration-menus), that are subsequently injected into the [Application](./00-overview.md#application) when [Events](#events) are thrown.
+Widgets are not declared in a [State file](./00-overview.md#core-state) and are thus not migrated onto the [Board](./00-overview.md#component-board) during [hydration](./12-architecture.md#phase-2-hydration). Instead, Widgets have their [Bindings](#bindings) and [Layout](#layouts) configured into [Menus](#configuration-menus), that are subsequently injected into the [Application](./00-overview.md#application) when [Events](#events) are thrown.
 
 ## Widgets: Overview
 
@@ -144,10 +144,6 @@ Panes use a *Layout* to determine the general shape that child Widgets assumed w
 * `stack`: A vertical axis of Widgets.
 * `dock`: A horizontal axis of Widgets.
 
-**Field: Canvas**
-
-Panes contain a `canvas` to hold a reference to an [Texture](./12-architecture.md#library-graphics). The `canvas` is created at runtime as a blank buffer for rendering [Fonts](./12-architecture.md#rendering-typography) without altering the underlying Asset loaded into the [Registry](./00-overview.md#library-registry).
-
 **State: PaneState**
 
 * `layout: Layout`
@@ -161,7 +157,6 @@ Panes contain a `canvas` to hold a reference to an [Texture](./12-architecture.m
 * `pageindex: int`
 * `pagesize: int`
 * `font: Fonts`
-* `canvas: TexturePtr`
 
 **Frame: PaneFrame**
 

@@ -97,11 +97,6 @@ class Engine:
         }
 
 
-    @staticmethod
-    def time() -> float:
-        return time.perf_counter()
-
-
     def _drain(self) -> None:
         """
         Drains the event bus and routes events to their handlers.
@@ -168,7 +163,7 @@ class Engine:
         Returns True if telemetry was logged.
         """
         if frames % ticks == 0:
-            elapsed = self.time() - start
+            elapsed = time.perf_counter() - start
             avg_fps = frames / elapsed
             avg_ups = updates / elapsed
             
@@ -187,7 +182,7 @@ class Engine:
         logger.info("Entering Game Loop...")
 
         accumulator = 0.0
-        last_time = self.time()
+        last_time = time.perf_counter()
 
         telemetry_frames = 0
         telemetry_updates = 0
@@ -195,8 +190,8 @@ class Engine:
 
         self.running = True
         while self.running:
-            current_time = self.time()
-            frame_time = current_time - last_time
+            current_time = time.perf_counter()
+            frame_time = frame_time = min(current_time - last_time, settings.MAX_FRAME_TIME)
             last_time = current_time
             accumulator += frame_time
             
@@ -212,15 +207,15 @@ class Engine:
             telemetry_frames += 1
 
             #  Hybrid Pacing (Sleep + Spin)
-            work_time = self.time() - current_time
+            work_time = time.perf_counter()- current_time
             sleep_time = delta - work_time
             
             if sleep_time > 0:
                 if sleep_time > spin:
                     time.sleep(sleep_time - spin)
                 
-                while (self.time() - current_time) < delta:
-                    time.sleep(0)
+                while (time.perf_counter() - current_time) < delta:
+                    time.sleep(spin)
 
             if self._telemetry(
                 telemetry_frames,
@@ -229,7 +224,7 @@ class Engine:
             ):
                 telemetry_frames = 0
                 telemetry_updates = 0
-                telemetry_start_time = self.time()
+                telemetry_start_time = time.perf_counter()
 
 
     def stop(self) -> None:

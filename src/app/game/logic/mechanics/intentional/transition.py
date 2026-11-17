@@ -51,9 +51,9 @@ class TransitionMechanics(Mechanic):
     @executor.setter
     def executor(self, executor: Optional[Executor]) -> None:
         if executor is None:
-            self.executors.pop(Executors.INTENTION.value, None)
+            self.executors.pop(Executors.INTENTION, None)
         else:
-            self.executors[Executors.INTENTION.value] = executor
+            self.executors[Executors.INTENTION] = executor
 
     def update(self, 
         board: Board, 
@@ -61,22 +61,20 @@ class TransitionMechanics(Mechanic):
         bus: collections.deque,
         payload: DevicePayload
     ) -> None:
-        sprites = board.instances(AssetInstances.SPRITES.value)
+        sprites = board.instances(AssetInstances.SPRITES)
         sprites_dict = board.characters()  
 
         for sprite in sprites:
             # 1. Evaluate State ISL Conditions
             if self.executor and sprite.state.intention:
-                next_intent_str = self.executor.evaluate(
+                next_intent = self.executor.evaluate(
                     current_state=sprite.state.intention,
                     locals={'sprite': sprite.state, 'sprites': sprites_dict}
                 )
                 
                 current_intent = sprite.state.intention
 
-                if next_intent_str:
-                    next_intent = Intentions(next_intent_str).value
-                    if next_intent != current_intent:
+                if next_intent and next_intent != current_intent:
                         logger.info(
                             f"Transition({sprite.name}): "
                             f"{sprite.state.intention} -> "

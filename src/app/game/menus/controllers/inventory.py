@@ -41,12 +41,12 @@ if TYPE_CHECKING:
     from app.game.board import Board
 
 
-_WEAPONS = frozenset(e.value for e in WeaponPalette)
-_TOOLS = frozenset(e.value for e in ToolPalette)
-_UTILITIES = frozenset(e.value for e in UtilityPalette)
-_ARMOR = frozenset(e.value for e in ArmorPalette)
-_SHIELDS = frozenset(e.value for e in ShieldPalette)
-_ITEMS = frozenset(e.value for e in ItemPalette)
+_WEAPONS = frozenset(e for e in WeaponPalette)
+_TOOLS = frozenset(e for e in ToolPalette)
+_UTILITIES = frozenset(e for e in UtilityPalette)
+_ARMOR = frozenset(e for e in ArmorPalette)
+_SHIELDS = frozenset(e for e in ShieldPalette)
+_ITEMS = frozenset(e for e in ItemPalette)
 
 
 class InventoryController(MenuController):
@@ -69,14 +69,14 @@ class InventoryController(MenuController):
         for name, widget in menu.widgets.items():
             if not isinstance(widget.binding, SelectBinding):
                 continue
-            if widget.binding.selection != Selections.GRIP.value:
+            if widget.binding.selection != Selections.GRIP:
                 continue
 
             if widget.binding.selector == active_grip:
                 if name != menu.focus:
-                    widget.state.status = Statuses.SELECTED.value
+                    widget.state.status = Statuses.SELECTED
             elif name != menu.focus:
-                widget.state.status = Statuses.IDLE.value
+                widget.state.status = Statuses.IDLE
 
     def open(self, menu: Menu, board: Board, bus: collections.deque) -> None:
         self._sync_grips(menu)
@@ -90,14 +90,14 @@ class InventoryController(MenuController):
         selection = binding.selection
         target_key = binding.selector
 
-        if selection == Selections.GRIP.value:
+        if selection == Selections.GRIP:
             if isinstance(menu.context, InventoryContext) and target_key:
                 menu.context.active_grip = target_key
                 self._sync_grips(menu)
-                widget.state.status = Statuses.SELECTED.value
+                widget.state.status = Statuses.SELECTED
             return
 
-        if selection == Selections.SLOT.value:
+        if selection == Selections.SLOT:
             target_widget = menu.widgets.get(target_key)
             if not target_widget or not isinstance(target_widget.state, CollectionState):
                 return
@@ -130,7 +130,7 @@ class InventoryController(MenuController):
         board: Board
     ) -> None:
         """Equips an item into the matching equipment or grip slot."""
-        if menu_id == Menus.POUCH.value or item in _ITEMS:
+        if menu_id == Menus.POUCH or item in _ITEMS:
             setattr(slots.grip, active_grip, item)
             return
 

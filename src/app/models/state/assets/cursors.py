@@ -36,7 +36,7 @@ from libs.core.models import Velocity as CoreVelocity
 class MotorState(AssetState):
     position: Optional[Position] = None # type: ignore
     initial: Optional[Position] = None # type: ignore
-    direction: Enumerated[Directions] = Directions.DOWN.value
+    direction: Enumerated[Directions] = Directions.DOWN
     speed: int = 10
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
 

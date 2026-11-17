@@ -48,24 +48,24 @@ class InteractionMechanics(SpatialMechanic):
         processed_sources = set()
 
         for layer in board.layers():
-            sprites = board.instances(AssetInstances.SPRITES.value, layer)
-            players = board.instances(AssetInstances.PLAYERS.value, layer)
+            sprites = board.instances(AssetInstances.SPRITES, layer)
+            players = board.instances(AssetInstances.PLAYERS, layer)
             
             sources = [
                 asset for asset in sprites + players
-                if asset.state.intention == Intentions.INTERACT.value
+                if asset.state.intention == Intentions.INTERACT
                 and asset.name not in processed_sources 
             ]
             
             if not sources:
                 continue
 
-            doors = board.instances(AssetInstances.DOORS.value, layer)
-            chests = board.instances(AssetInstances.CHESTS.value, layer)
-            signs = board.instances(AssetInstances.SIGNS.value, layer)
+            doors = board.instances(AssetInstances.DOORS, layer)
+            chests = board.instances(AssetInstances.CHESTS, layer)
+            signs = board.instances(AssetInstances.SIGNS, layer)
             reactables = [
-                effect for effect in board.instances(AssetInstances.REACTABLES.value, layer)
-                if effect.state.intention == Intentions.INTERACT.value
+                effect for effect in board.instances(AssetInstances.REACTABLES, layer)
+                if effect.state.intention == Intentions.INTERACT
             ]
             targets = doors + chests + signs + reactables
 
@@ -85,30 +85,30 @@ class InteractionMechanics(SpatialMechanic):
                 if source.name in processed_sources:
                     continue
 
-                if target.taxonomy.instance == AssetInstances.DOORS.value:
-                    if source.taxonomy.instance == AssetInstances.SPRITES.value:
+                if target.taxonomy.instance == AssetInstances.DOORS:
+                    if source.taxonomy.instance == AssetInstances.SPRITES:
                         source.state.memory.doors[target.name] = target.state.outlayer
                         
                     board.relayer(source, target.state.outlayer)
                     source.state.position.x = target.state.out.x
                     source.state.position.y = target.state.out.y
 
-                    if source.taxonomy.instance == AssetInstances.PLAYERS.value:
-                        source.state.intention = Intentions.IDLE.value
+                    if source.taxonomy.instance == AssetInstances.PLAYERS:
+                        source.state.intention = Intentions.IDLE
 
                     processed_sources.add(source.name)
 
-                elif target.taxonomy.instance == AssetInstances.CHESTS.value:
-                    if source.taxonomy.instance == AssetInstances.SPRITES.value:
+                elif target.taxonomy.instance == AssetInstances.CHESTS:
+                    if source.taxonomy.instance == AssetInstances.SPRITES:
                         if target.state.content:
                             pass
                             # TODO: Inventory Management
                         processed_sources.add(source.name)
 
-                elif target.taxonomy.instance == AssetInstances.SIGNS.value:
-                    if source.taxonomy.instance == AssetInstances.PLAYERS.value:
+                elif target.taxonomy.instance == AssetInstances.SIGNS:
+                    if source.taxonomy.instance == AssetInstances.PLAYERS:
                         bus.append(MenuEvent(
-                            id=Menus.TEXT.value,
+                            id=Menus.TEXT,
                             context=DialogueContext(
                                 plot=board.plot, 
                                 object=target.state
@@ -116,6 +116,6 @@ class InteractionMechanics(SpatialMechanic):
                         ))
                         processed_sources.add(source.name)
 
-                elif target.taxonomy.instance == AssetInstances.REACTABLES.value:
+                elif target.taxonomy.instance == AssetInstances.REACTABLES:
                     target.state.active = True
                     processed_sources.add(source.name)

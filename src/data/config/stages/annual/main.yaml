@@ -1,0 +1,45 @@
+stages:
+  annual:
+    sprout:
+      - next: growth
+        conditions:
+          - "calendar.season == constants.Seasons.SPRING"
+          - "resource.retention >= 50.0"
+      - next: stump
+        conditions:
+          - "calendar.season == constants.Seasons.WINTER"
+
+    growth:
+      - next: stalk
+        conditions:
+          - "calendar.season in constants.Seasons.SUMMER"
+          - "resource.retention >= 75.0"
+      - next: stump
+        conditions:
+          - "calendar.season == constants.Seasons.WINTER"
+
+    stalk:
+      - next: bloom
+        conditions:
+          - "calendar.season == constants.Seasons.AUTUMN"
+          - "resource.retention >= 85.0"
+      - next: stump
+        conditions:
+          - "calendar.season == constants.Seasons.WINTER"
+
+    bloom:
+      - next: stump
+        conditions:
+          - "calendar.season == constants.Seasons.AUTUMN"
+          - "resource.harvested"
+      - next: stump
+        conditions:
+          - "calendar.season == constants.Seasons.WINTER"
+
+    stump:
+      - next: sprout
+        conditions:
+          - "calendar.season == constants.Seasons.SPRING"
+          - "calendar.cycle == constants.Cycles.ONSET"
+          - "calendar.period == 0"
+          - "resource.retention >= 10.0"

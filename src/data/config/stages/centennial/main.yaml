@@ -1,0 +1,22 @@
+stages:
+  centennial:
+    trace:
+      - next: deposit
+        conditions: 
+          - 'false'
+    deposit:
+      - next: nugget
+        conditions:
+          - 'false'
+    nugget:
+      - next: vein
+        conditions: 
+          - 'false'
+    vein:
+      - next: crystal
+        conditions:
+          - 'false'
+    crystal:
+      - next: alloy
+        conditions:
+          - 'false'

@@ -48,6 +48,9 @@ SOCKET: Final[str] = os.getenv("ONTOLOGY_SOCKET", "/tmp/ontology.sock")
 TARGET_FPS: Final[int] = int(os.getenv("ONTOLOGY_TARGET_FPS", "60"))
 """Engine target frame rate."""
 
+MAX_FRAME_TIME: Final[float] = float(os.getenv("ONTOLOGY_MAX_FRAME_TIME", "0.25"))
+"""Maximum time spent in the engine loop per tick."""
+
 TILE_HASH_SIZE: Final[int] = int(os.getenv("ONTOLOGY_TILE_HASH_SIZE", "32"))
 """Size of spatial cache hash on Board."""
 
@@ -74,10 +77,10 @@ SEASON_DURATION_SECONDS: Final[int] = int(
 """Length of a Season in seconds."""
 
 SEASON_EVAPORATION_MODIFIERS: Final[dict[str, float]] = {
-    Seasons.SPRING.value: 1.0,
-    Seasons.SUMMER.value: 1.5,
-    Seasons.AUTUMN.value: 1.0,
-    Seasons.WINTER.value: 0.5,
+    Seasons.SPRING: 1.0,
+    Seasons.SUMMER: 1.5,
+    Seasons.AUTUMN: 1.0,
+    Seasons.WINTER: 0.5,
 }
 """Multiplicative factors scaling moisture evaporation by Board Season."""
 
@@ -100,7 +103,7 @@ PERSPECTIVE_ANGLE_DEG: Final[float] = 60.0
 """"""
 
 TIER_DROP_DISTANCE: Final[int] = int(TILE_HASH_SIZE * math.tan(math.radians(60.0)))
-""""""
+"""Number of pixels travelled in the y-direction per unit drop in elevation during freefall."""
 
 GRAVITY_ACCELERATION: Final[float] = 400.0
 """"""

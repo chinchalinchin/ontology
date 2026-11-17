@@ -65,12 +65,12 @@ class MaterialSpace:
 @dataclass(slots=True, frozen=True)
 class BlueprintPartition:
     delta: float = 1.0
-    substrate: Enumerated[Substrates] = Substrates.STANDARD.value
+    substrate: Enumerated[Substrates] = Substrates.STANDARD
     obstacle: bool = False
 
 @dataclass(slots=True, frozen=True)
 class BlueprintSpace:
-    strategy: MultiplicationStrategies = MultiplicationStrategies.SIMPLE.value
+    strategy: MultiplicationStrategies = MultiplicationStrategies.SIMPLE
     partitions: Dict[Union[
         Enumerated[Buildings],
         Enumerated[Corridors],

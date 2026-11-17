@@ -10,11 +10,14 @@
 Enumeration of Engine semantics.
 """
 # Standard Libraries
-from enum import Enum
+from enum import (
+    StrEnum,
+    IntEnum
+)
 
 # -------------------------------- ENGINE ENUMERATIONS
 
-class Mechanics(str, Enum):
+class Mechanics(StrEnum):
     """Enumeration of Mechanics."""
     ANIMATION       = "animation"
     COGNITION       = "cognition"
@@ -35,7 +38,7 @@ class Mechanics(str, Enum):
     TELEMETRY       = "telemetry"
     TRANSITION      = "transition"
 
-class Shortcuts(str, Enum):
+class Shortcuts(StrEnum):
     """Enumeration of Asset hydration shortcuts."""
     ASSETS          = "assets"
     CALENDAR        = "calendar"
@@ -44,7 +47,7 @@ class Shortcuts(str, Enum):
     GIZMOS          = "gizmos"
     PLOTS           = "plots"
 
-class Substrates(int, Enum):
+class Substrates(IntEnum):
     """Enumeration of Asset rendering substrates"""
     ENVIRON         = -4 
     FLUIDS          = -3
@@ -52,27 +55,27 @@ class Substrates(int, Enum):
     OVERLAYS        = -1
     STANDARD        = 0
 
-class LayerProjections(str, Enum):
+class LayerProjections(StrEnum):
     """Enumeration of Door Projections"""
     IN              = "in"
     OUT             = "out"
     
 # -------------------------------- ENGINE ASSET ENUMERATIONS
 
-class MotiveAssets(str, Enum):
+class MotiveAssets(StrEnum):
     """Enumeration of Assets registered for Motive Motion updates."""
     PLAYERS         = "players"
     SPRITES         = "sprites"
 
-class FrictiveAssets(str, Enum):
+class FrictiveAssets(StrEnum):
     """Enumeration of Assets registered for Frictive Motion updates."""
     CRATES          = "crates"
 
-class InertAssets(str, Enum):
+class InertAssets(StrEnum):
     """Enumeration of Assets registered for Inert Motion updates."""
     PROJECTILES     = "projectiles"
 
-class MultipliedAssets(str, Enum):
+class MultipliedAssets(StrEnum):
     """Enumeration of Assets registered for Multiplication Strategies"""
     BRIDGES         = "bridges"
     ENCLOSURES      = "enclosures"
@@ -82,17 +85,17 @@ class MultipliedAssets(str, Enum):
 
 # -------------------------------- MECHANIC ENUMERATIONS
 
-class Reactions(str, Enum):
+class Reactions(StrEnum):
     """Enumeration of Hazard Reactions"""
     BOUNCE          = "bounce"
     HINDER          = "hinder"
     
-class Relations(str, Enum):
+class Relations(StrEnum):
     """Enumeration of Relations"""
     SHORELINES      = "shorelines"
     MATERIALS       = "materials"
 
-class Executors(str, Enum):
+class Executors(StrEnum):
     """Enumeration of Mechanic Executors"""
     # TRANSITION EXECUTORS
     PLOT            = "plot"
@@ -103,12 +106,12 @@ class Executors(str, Enum):
     # GENERATORS
     ACTUATOR        = "actuator"
 
-class Translators(str, Enum):
+class Translators(StrEnum):
     """Enumeration of Transition compilation techniques."""
     COMPILER        = "compiler"
     LAMBDA          = "lambda"
 
-class MultiplicationStrategies(str, Enum):
+class MultiplicationStrategies(StrEnum):
     """Enumeration of strategies for Asset multiplication"""
     SIMPLE          = "simple"
     EXPANSION       = "expansion"

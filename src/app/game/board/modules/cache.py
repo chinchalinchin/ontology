@@ -80,8 +80,8 @@ class Cache:
         self.cached_renderables.setdefault(layer, [])
         self.cached_weights.setdefault(layer, [])
         self.cached_tilemap.setdefault(layer, {
-            AssetInstances.ENVIRON.value: {},
-            AssetInstances.CANOPY.value: {}
+            AssetInstances.ENVIRON: {},
+            AssetInstances.CANOPY: {}
         })
         self.cached_fluidmap.setdefault(layer, {})
         self.shorelines.setdefault(layer, [])
@@ -101,7 +101,6 @@ class Cache:
         fl = fluid.properties.dimensions.l
         length = fluid.state.length
         direction = fluid.state.source
-        direction_val = direction.value if hasattr(direction, "value") else str(direction)
 
         def _index_box(x1: int, y1: int, x2: int, y2: int) -> None:
             if x2 > x1 and y2 > y1:
@@ -117,22 +116,22 @@ class Cache:
 
         # 1. Parent directional stream corridor
         if length > 0:
-            if direction_val == Directions.DOWN.value:
+            if direction == Directions.DOWN:
                 _index_box(fx, fy, fx + fw, fy + length)
-            elif direction_val == Directions.UP.value:
+            elif direction == Directions.UP:
                 _index_box(fx, fy - length, fx + fw, fy)
-            elif direction_val == Directions.RIGHT.value:
+            elif direction == Directions.RIGHT:
                 _index_box(fx, fy, fx + length, fy + fl)
-            elif direction_val == Directions.LEFT.value:
+            elif direction == Directions.LEFT:
                 _index_box(fx - length, fy, fx, fy + fl)
 
         # 2. Annular pool
-        pool = getattr(fluid.state, "pool", None)
+        pool = fluid.state.pool
         if pool and pool.w > 0 and pool.l > 0:
             _index_box(pool.x, pool.y, pool.x + pool.w, pool.y + pool.l)
 
         # 3. Child branch corridors
-        branches = getattr(fluid.state, "branches", None)
+        branches = fluid.state.branches
         if branches:
             for branch in branches:
                 if branch.length <= 0:
@@ -140,15 +139,14 @@ class Cache:
                 bx = branch.position.x
                 by = branch.position.y
                 b_dir = branch.source
-                b_dir_val = b_dir.value if hasattr(b_dir, "value") else str(b_dir)
 
-                if b_dir_val == Directions.DOWN.value:
+                if b_dir == Directions.DOWN:
                     _index_box(bx, by, bx + fw, by + branch.length)
-                elif b_dir_val == Directions.UP.value:
+                elif b_dir == Directions.UP:
                     _index_box(bx, by - branch.length, bx + fw, by)
-                elif b_dir_val == Directions.RIGHT.value:
+                elif b_dir == Directions.RIGHT:
                     _index_box(bx, by, bx + branch.length, by + fl)
-                elif b_dir_val == Directions.LEFT.value:
+                elif b_dir == Directions.LEFT:
                     _index_box(bx - branch.length, by, bx, by + fl)
 
 
@@ -161,7 +159,7 @@ class Cache:
         else:
             self.cached_fluidmap[layer].clear()
 
-        fluids = self.get_instances(AssetInstances.FLUIDS.value, layer)
+        fluids = self.get_instances(AssetInstances.FLUIDS, layer)
         for fluid in fluids:
             self.map_fluid(layer, fluid)
 
@@ -187,26 +185,26 @@ class Cache:
             self.cached_instances[layer].setdefault(inst, []).append(asset)
             self.cached_layers[layer].append(asset)
 
-            if cat != AssetCategories.TILES.value:
+            if cat != AssetCategories.TILES:
                 self.cached_renderables[layer].append(asset)
 
             if predicates.is_weight(asset):
                 self.cached_weights[layer].append(asset)
 
-            if cat == AssetCategories.SHEETS.value and inst in (
-                AssetInstances.SPRITES.value,
-                AssetInstances.PLAYERS.value
+            if cat == AssetCategories.SHEETS and inst in (
+                AssetInstances.SPRITES,
+                AssetInstances.PLAYERS
             ):
                 if asset.name:
                     self.cached_characters[asset.name] = asset.state
 
-            if inst == AssetInstances.SHORELINES.value:
+            if inst == AssetInstances.SHORELINES:
                 self.shorelines[layer].append(asset)
 
-            if inst == AssetInstances.FLUIDS.value:
+            if inst == AssetInstances.FLUIDS:
                 affected_fluid_layers.add(layer)
 
-            if cat == AssetCategories.TILES.value:
+            if cat == AssetCategories.TILES:
                 w = asset.properties.dimensions.w
                 l = asset.properties.dimensions.l
 
@@ -319,7 +317,7 @@ class Cache:
                 del self.cached_characters[name]
 
         # 4. Invalidate fluid cache if fluids removed
-        if AssetInstances.FLUIDS.value in affected_instances:
+        if AssetInstances.FLUIDS in affected_instances:
             for layer in affected_layers:
                 self.rebuild_fluid(layer)
 
@@ -366,16 +364,16 @@ class Cache:
         self.cached_instances[new_layer].setdefault(inst, []).append(asset)
         self.cached_layers[new_layer].append(asset)
 
-        if cat != AssetCategories.TILES.value:
+        if cat != AssetCategories.TILES:
             self.cached_renderables[new_layer].append(asset)
 
         if predicates.is_weight(asset):
             self.cached_weights[new_layer].append(asset)
 
-        if inst == AssetInstances.SHORELINES.value:
+        if inst == AssetInstances.SHORELINES:
             self.shorelines[new_layer].append(asset)
 
-        if inst == AssetInstances.FLUIDS.value:
+        if inst == AssetInstances.FLUIDS:
             self.rebuild_fluid(old_layer)
             self.rebuild_fluid(new_layer)
 
@@ -424,11 +422,11 @@ class Cache:
         obstacles: List[Asset] = []
         layer_inst = self.cached_instances.get(layer, {})
         for inst_key in (
-            AssetInstances.CRATES.value,
-            AssetInstances.GATES.value,
-            AssetInstances.STRUTS.value,
-            AssetInstances.SIGNS.value,
-            AssetInstances.CHESTS.value
+            AssetInstances.CRATES,
+            AssetInstances.GATES,
+            AssetInstances.STRUTS,
+            AssetInstances.SIGNS,
+            AssetInstances.CHESTS
         ):
             obstacles.extend(layer_inst.get(inst_key, []))
         return obstacles
@@ -445,7 +443,7 @@ class Cache:
         self,
         layer: str,
         position: Position,
-        instance: str = AssetInstances.ENVIRON.value
+        instance: str = AssetInstances.ENVIRON
     ) -> Optional[Asset]:
         cx = int(position.x) // settings.TILE_HASH_SIZE
         cy = int(position.y) // settings.TILE_HASH_SIZE

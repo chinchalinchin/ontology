@@ -8,9 +8,9 @@
 Configuration semantics enumerations.
 """
 # Standard Libraries
-from enum import Enum
+from enum import StrEnum
 
-class Configurations(str, Enum):
+class Configurations(StrEnum):
     """Enumeration of Configurations"""
     ACTIONS         = "actions"
     COMPOSITIONS    = "compositions"
@@ -28,7 +28,7 @@ class Configurations(str, Enum):
 # ----------------------------------------------------------
 #   NOTE: These are required Recipe configuration keys
 
-class FrameRecipe(str, Enum):
+class FrameRecipe(StrEnum):
     BINARY          = "binary"
     CARDINAL        = "cardinal"
     DIRECTED        = "directed"
@@ -48,13 +48,13 @@ class FrameRecipe(str, Enum):
     STATE           = "state"
     TRAVERSAL       = "traversal"
     
-class AnimationRecipe(str, Enum):
+class AnimationRecipe(StrEnum):
     NONE            = "none"
     STATE           = "state"
     SPRITE          = "sprite"
     FREQUENCY       = "frequency"
 
-class HitboxRecipe(str, Enum):
+class HitboxRecipe(StrEnum):
     ATTACK          = "attack"
     DIRECTED        = "directed"
     DYNAMIC         = "dynamic"

@@ -49,11 +49,11 @@ class Perimeter:
         
         # 1. Map Tiles (Substrates belong to Tier 0)
         if elevation is None or elevation == 0:
-            tiles = board.categories(AssetCategories.TILES.value, layer)
+            tiles = board.categories(AssetCategories.TILES, layer)
             for tile in tiles:
                 if tile.taxonomy.instance not in (
-                    AssetInstances.ENVIRON.value, 
-                    AssetInstances.CANOPY.value
+                    AssetInstances.ENVIRON, 
+                    AssetInstances.CANOPY
                 ):
                     continue
                 w = tile.properties.dimensions.w
@@ -66,10 +66,10 @@ class Perimeter:
 
         # 2. Map Elevated Substrates (Platform decks and Stair inclines at E > base elevation)
         if elevation is not None and elevation > 0:
-            crafts = board.categories(AssetCategories.CRAFTS.value, layer)
+            crafts = board.categories(AssetCategories.CRAFTS, layer)
             for craft in crafts:
                 base_e = craft.state.elevation if craft.state.elevation is not None else 0
-                if craft.taxonomy.instance == AssetInstances.STAIRS.value:
+                if craft.taxonomy.instance == AssetInstances.STAIRS:
                     if base_e + craft.state.delta == elevation:
                         x1 = int(craft.state.position.x)
                         y1 = int(craft.state.position.y)
@@ -83,18 +83,18 @@ class Perimeter:
                             rects.append((x1, y1, x1 + craft.dimensions.w, y1 + craft.dimensions.l))
 
         # 3. Map Static Architecture
-        objects = board.categories(AssetCategories.OBJECTS.value, layer)
-        crafts = board.categories(AssetCategories.CRAFTS.value, layer)
+        objects = board.categories(AssetCategories.OBJECTS, layer)
+        crafts = board.categories(AssetCategories.CRAFTS, layer)
         space = objects + crafts
         for obj in space:
             # Exclude movable bodies, dynamic crafts, and platforms from standard hulls
             mass = getattr(obj.properties, 'mass', 0)
             if mass > 0 or obj.taxonomy.instance in (
-                AssetInstances.CRATES.value,
-                AssetInstances.CHESTS.value,
-                AssetInstances.RAFTS.value,
-                AssetInstances.STAIRS.value,
-                AssetInstances.BRIDGES.value
+                AssetInstances.CRATES,
+                AssetInstances.CHESTS,
+                AssetInstances.RAFTS,
+                AssetInstances.STAIRS,
+                AssetInstances.BRIDGES
             ):
                 continue
 
@@ -115,7 +115,7 @@ class Perimeter:
     @classmethod
     def generate(cls, board: Board, layer: str) -> Dict[int, List[Boundary]]:
         weights = board.weights(layer)
-        stairs = board.instances(AssetInstances.STAIRS.value, layer)
+        stairs = board.instances(AssetInstances.STAIRS, layer)
         # Collapse all non-positive elevations to Tier 0
         elevations = (
             {

@@ -91,7 +91,7 @@ class OrientedMultiplier(SimpleMultiplier):
     ) -> List[Asset]:
         """
         """
-        if state.blueprint == Orientations.HORIZONTAL.value:
+        if state.blueprint == Orientations.HORIZONTAL:
             nx, ny = nx, 1
         else:
             nx, ny = 1, ny

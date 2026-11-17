@@ -72,19 +72,19 @@ class Actuator:
         # 1. Map boundaries from procedural perimeter sweep for current elevation tier
         perimeters = board.perimeters.get(layer, {}).get(elevation, [])
         for b in perimeters:
-            if direction == Directions.DOWN.value and (
+            if direction == Directions.DOWN and (
                 b.position.y <= fy
             ):
                 continue
-            elif direction == Directions.UP.value and (
+            elif direction == Directions.UP and (
                 (b.position.y + b.dimensions.l) >= fy
             ):
                 continue
-            elif direction == Directions.RIGHT.value and (
+            elif direction == Directions.RIGHT and (
                 b.position.x <= fx
             ):
                 continue
-            elif direction == Directions.LEFT.value and (
+            elif direction == Directions.LEFT and (
                 (b.position.x + b.dimensions.w) >= fx
             ):
                 continue
@@ -106,15 +106,15 @@ class Actuator:
                 continue
 
             if asset.category in (
-                AssetCategories.SHEETS.value,
-                AssetCategories.EFFECTS.value,
+                AssetCategories.SHEETS,
+                AssetCategories.EFFECTS,
             ):
                 continue
 
-            if asset.instance == AssetInstances.RAFTS.value:
+            if asset.instance == AssetInstances.RAFTS:
                 continue
 
-            if asset.instance == AssetInstances.GATES.value and (
+            if asset.instance == AssetInstances.GATES and (
                 asset.state.switch
             ):
                 continue
@@ -128,19 +128,19 @@ class Actuator:
                 ow = hb.dimensions.w
                 ol = hb.dimensions.l
 
-                if direction == Directions.UP.value and (
+                if direction == Directions.UP and (
                     oy >= fy
                 ):
                     continue
-                elif direction == Directions.DOWN.value and (
+                elif direction == Directions.DOWN and (
                     (oy + ol) <= fy
                 ):
                     continue
-                elif direction == Directions.LEFT.value and (
+                elif direction == Directions.LEFT and (
                     ox >= fx
                 ):
                     continue
-                elif direction == Directions.RIGHT.value and (
+                elif direction == Directions.RIGHT and (
                     (ox + ow) <= fx
                 ):
                     continue
@@ -164,13 +164,13 @@ class Actuator:
         if not layer_size or layer_size.w == 0 or layer_size.l == 0:
             return 10000
 
-        if direction == Directions.DOWN.value:
+        if direction == Directions.DOWN:
             return max(0, layer_size.l - y)
-        elif direction == Directions.UP.value:
+        elif direction == Directions.UP:
             return max(0, y)
-        elif direction == Directions.RIGHT.value:
+        elif direction == Directions.RIGHT:
             return max(0, layer_size.w - x)
-        elif direction == Directions.LEFT.value:
+        elif direction == Directions.LEFT:
             return max(0, x)
 
         return 10000
@@ -186,13 +186,13 @@ class Actuator:
         if length <= 0:
             return None
 
-        if direction == Directions.DOWN.value:
+        if direction == Directions.DOWN:
             return Hitbox(Position(0, 0), Dimensions(fw, length))
-        elif direction == Directions.UP.value:
+        elif direction == Directions.UP:
             return Hitbox(Position(0, -length), Dimensions(fw, length))
-        elif direction == Directions.RIGHT.value:
+        elif direction == Directions.RIGHT:
             return Hitbox(Position(0, 0), Dimensions(length, fl))
-        elif direction == Directions.LEFT.value:
+        elif direction == Directions.LEFT:
             return Hitbox(Position(-length, 0), Dimensions(length, fl))
 
         return None
@@ -266,26 +266,38 @@ class Actuator:
         if child_flow <= 0 or pool.w <= 0 or pool.l <= 0:
             return []
 
-        if direction == Directions.DOWN.value:
+        if direction == Directions.DOWN:
             y = pool.y + pool.l
             left_pos = Position(pool.x, y)
             right_pos = Position(max(pool.x, pool.x + pool.w - fw), y)
-            return [(left_pos, direction, child_flow), (right_pos, direction, child_flow)]
-        elif direction == Directions.UP.value:
+            return [
+                (left_pos, direction, child_flow), 
+                (right_pos, direction, child_flow)
+            ]
+        elif direction == Directions.UP:
             y = pool.y
             left_pos = Position(pool.x, y)
             right_pos = Position(max(pool.x, pool.x + pool.w - fw), y)
-            return [(left_pos, direction, child_flow), (right_pos, direction, child_flow)]
-        elif direction == Directions.RIGHT.value:
+            return [
+                (left_pos, direction, child_flow), 
+                (right_pos, direction, child_flow)
+            ]
+        elif direction == Directions.RIGHT:
             x = pool.x + pool.w
             top_pos = Position(x, pool.y)
             bottom_pos = Position(x, max(pool.y, pool.y + pool.l - fl))
-            return [(top_pos, direction, child_flow), (bottom_pos, direction, child_flow)]
-        elif direction == Directions.LEFT.value:
+            return [
+                (top_pos, direction, child_flow), 
+                (bottom_pos, direction, child_flow)
+            ]
+        elif direction == Directions.LEFT:
             x = pool.x
             top_pos = Position(x, pool.y)
             bottom_pos = Position(x, max(pool.y, pool.y + pool.l - fl))
-            return [(top_pos, direction, child_flow), (bottom_pos, direction, child_flow)]
+            return [
+                (top_pos, direction, child_flow), 
+                (bottom_pos, direction, child_flow)
+            ]
         return []
 
     @classmethod
@@ -296,13 +308,13 @@ class Actuator:
         direction: str,
         pool_bounds: Pool,
     ) -> int:
-        if direction == Directions.DOWN.value:
+        if direction == Directions.DOWN:
             return max(0, pool_bounds.y - origin_y)
-        elif direction == Directions.UP.value:
+        elif direction == Directions.UP:
             return max(0, origin_y - (pool_bounds.y + pool_bounds.l))
-        elif direction == Directions.RIGHT.value:
+        elif direction == Directions.RIGHT:
             return max(0, pool_bounds.x - origin_x)
-        elif direction == Directions.LEFT.value:
+        elif direction == Directions.LEFT:
             return max(0, origin_x - (pool_bounds.x + pool_bounds.w))
         return 0
 
@@ -319,13 +331,13 @@ class Actuator:
     ) -> Optional[Hitbox]:
         if b_len <= 0:
             return None
-        if branch_dir == Directions.DOWN.value:
+        if branch_dir == Directions.DOWN:
             return Hitbox(Position(origin_pos.x - fx, origin_pos.y - fy), Dimensions(fw, b_len))
-        elif branch_dir == Directions.UP.value:
+        elif branch_dir == Directions.UP:
             return Hitbox(Position(origin_pos.x - fx, origin_pos.y - fy - b_len), Dimensions(fw, b_len))
-        elif branch_dir == Directions.RIGHT.value:
+        elif branch_dir == Directions.RIGHT:
             return Hitbox(Position(origin_pos.x - fx, origin_pos.y - fy), Dimensions(b_len, fl))
-        elif branch_dir == Directions.LEFT.value:
+        elif branch_dir == Directions.LEFT:
             return Hitbox(Position(origin_pos.x - fx - b_len, origin_pos.y - fy), Dimensions(b_len, fl))
         return None
 
@@ -444,7 +456,7 @@ class Actuator:
         stream corridors, annular pools, and branches across the layer.
         """
         field = MoistureField()
-        layer_fluids = board.instances(AssetInstances.FLUIDS.value, layer)
+        layer_fluids = board.instances(AssetInstances.FLUIDS, layer)
 
         for fluid in layer_fluids:
             fx = fluid.state.position.x
@@ -453,19 +465,19 @@ class Actuator:
             fl = fluid.properties.dimensions.l
             flow = fluid.state.flow
             length = fluid.state.length
-            dir_val = Directions(fluid.state.source).value
+            dir_val = fluid.state.source
 
             # 1. Linear parent corridor line segment
             if length > 0 and flow > 0:
                 mid_x = fx + (fw // 2)
                 mid_y = fy + (fl // 2)
-                if dir_val == Directions.DOWN.value:
+                if dir_val == Directions.DOWN:
                     field.add_stream(mid_x, fy, mid_x, fy + length, flow)
-                elif dir_val == Directions.UP.value:
+                elif dir_val == Directions.UP:
                     field.add_stream(mid_x, fy, mid_x, fy - length, flow)
-                elif dir_val == Directions.RIGHT.value:
+                elif dir_val == Directions.RIGHT:
                     field.add_stream(fx, mid_y, fx + length, mid_y, flow)
-                elif dir_val == Directions.LEFT.value:
+                elif dir_val == Directions.LEFT:
                     field.add_stream(fx, mid_y, fx - length, mid_y, flow)
 
             # 2. Annular pool disk source
@@ -485,26 +497,29 @@ class Actuator:
                     by = branch.position.y
                     b_mid_x = bx + (fw // 2)
                     b_mid_y = by + (fl // 2)
-                    b_dir_val = Directions(branch.source).value
+                    b_dir = branch.source
 
-                    if b_dir_val == Directions.DOWN.value:
+                    if b_dir == Directions.DOWN:
                         field.add_stream(b_mid_x, by, b_mid_x, by + branch.length, branch.flow)
-                    elif b_dir_val == Directions.UP.value:
+                    elif b_dir == Directions.UP:
                         field.add_stream(b_mid_x, by, b_mid_x, by - branch.length, branch.flow)
-                    elif b_dir_val == Directions.RIGHT.value:
+                    elif b_dir == Directions.RIGHT:
                         field.add_stream(bx, b_mid_y, bx + branch.length, b_mid_y, branch.flow)
-                    elif b_dir_val == Directions.LEFT.value:
+                    elif b_dir == Directions.LEFT:
                         field.add_stream(bx, b_mid_y, bx - branch.length, b_mid_y, branch.flow)
 
         return field
 
     @classmethod
-    def propagate(cls, fluid: Asset, board: Board) -> Tuple[int, Optional[Pool], List[Hitbox]]:
+    def propagate(cls, 
+        fluid: Asset, 
+        board: Board
+    ) -> Tuple[int, Optional[Pool], List[Hitbox]]:
         """
         Truncates fluid corridor against map bounds and static obstacles, expands annular
         pooling, raycasts downstream flank bifurcation branches, and compiles compound hitboxes.
         """
-        direction = Directions(fluid.state.source).value
+        direction = fluid.state.source
         flow = fluid.state.flow
         fw = fluid.properties.dimensions.w
         fl = fluid.properties.dimensions.l

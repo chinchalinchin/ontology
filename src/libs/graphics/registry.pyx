@@ -8,10 +8,6 @@
 # Ontology: Libraries - libs.graphics.registry
 
 Registry class for indexing and loading Asset files.
-
-## TODOs
-
-1. Redundancy in the constructor arguments. FontProperties is part of the PropertiesSchema.
 """
 # Standard Libraries
 import os
@@ -48,9 +44,11 @@ cdef extern from "SDL2/SDL_ttf.h":
     void TTF_SetFontStyle(TTF_Font* font, int style)
     void TTF_SetFontOutline(TTF_Font* font, int outline)
 
+    int TTF_Init()
     int TTF_WasInit()
     TTF_Font* TTF_OpenFont(const char* file, int ptsize)
     void TTF_CloseFont(TTF_Font* font)
+    int TTF_SizeUTF8(TTF_Font* font, const char* text, int* w, int* h)
 
 # -------------------------------------------------------------------------------
 
@@ -73,6 +71,16 @@ cdef class TTFFont:
                 TTF_CloseFont(self.outline_ptr)
                 self.outline_ptr = NULL
 
+    def measure(self, str content) -> tuple:
+        if not content:
+            return (0, 0)
+        if self.ptr == NULL:
+            return render.measure(content, self)
+        cdef int w = 0, h = 0
+        cdef bytes b_content = content.encode('utf-8')
+        TTF_SizeUTF8(self.ptr, b_content, &w, &h)
+        return (w, h)
+
 # -------------------------------------------------------------------------------
 
 def _sys_load_image(filepath: str):
@@ -92,6 +100,9 @@ def _sys_load_image(filepath: str):
     return wrapper
 
 def _sys_load_font(filepath: str, object style):
+    if not TTF_WasInit():
+        TTF_Init()
+
     cdef int pt_size = style.size
     cdef bytes b_filepath = filepath.encode('utf-8')
     cdef TTF_Font* f_ptr = TTF_OpenFont(b_filepath, pt_size)
@@ -138,21 +149,11 @@ def _sys_load_font(filepath: str, object style):
 # -------------------------------------------------------------------------------
 
 cdef class Registry:
-    cdef public object properties   # PropertiesSchema
-    cdef public object recipes      # RecipeConfiguration
-
-    cdef public dict _textures
-    cdef public dict _frames
-    cdef public dict _fonts
-    cdef public dict _filepaths
-    cdef public dict _stacks
-    cdef public list _pending_assets
-    cdef public int maximum
-    cdef public int current
 
     def __init__(self, object properties, object recipes):
         logger.debug("Initializing Asset Registry with native application models...")
         self._textures = {}
+        self._canvases = {}
         self._frames = {}
         self._fonts = {}
         self._filepaths = {}
@@ -300,7 +301,7 @@ cdef class Registry:
                         self._frames[frame_key] = (item_id, crop[0], crop[1], crop[2], crop[3])
 
 
-    def image(self, frame_key: str) -> tuple:
+    cpdef tuple image(self, str frame_key):
         if frame_key in self._frames:
             item_id, sx, sy, sw, sl = self._frames[frame_key]
             tex = self._get_or_load_texture(item_id)
@@ -313,8 +314,30 @@ cdef class Registry:
         return None
 
 
+
     def font(self, font_key: str):
         return self._get_or_load_font(font_key)
+
+
+    def canvas(self, str key, int w, int l, bint opaque=False):
+        tex = self._canvases.get(key, None)
+        if tex is not None:
+            if (not isinstance(tex, TexturePtr) or (<TexturePtr>tex).ptr != NULL) and tex.w == w and tex.l == l:
+                return tex
+            render.destroy(tex)
+        tex = render.canvas(w, l, opaque=opaque)
+        self._canvases[key] = tex
+        return tex
+
+
+    def get_canvas(self, str key):
+        return self._canvases.get(key, None)
+
+
+    cpdef void destroy_canvas(self, str key):
+        tex = self._canvases.pop(key, None)
+        if tex is not None:
+            render.destroy(tex)
         
 
     def prewarm(self, budget_ms: int) -> bool:
@@ -338,12 +361,23 @@ cdef class Registry:
         cdef TexturePtr tex
         cdef TTFFont font_obj
 
-        for tex in list(self._textures.values()):
-            if tex is not None and tex.ptr != NULL:
-                if _renderer != NULL:
-                    SDL_DestroyTexture(tex.ptr)
-                tex.ptr = NULL
+        for obj in list(self._textures.values()):
+            if isinstance(obj, TexturePtr):
+                tex = <TexturePtr>obj
+                if tex.ptr != NULL:
+                    if _renderer != NULL:
+                        SDL_DestroyTexture(tex.ptr)
+                    tex.ptr = NULL
         self._textures.clear()
+
+        for obj in list(self._canvases.values()):
+            if isinstance(obj, TexturePtr):
+                tex = <TexturePtr>obj
+                if tex.ptr != NULL:
+                    if _renderer != NULL:
+                        SDL_DestroyTexture(tex.ptr)
+                    tex.ptr = NULL
+        self._canvases.clear()
 
         for font_obj in list(self._fonts.values()):
             if font_obj is not None:

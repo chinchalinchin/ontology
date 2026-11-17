@@ -159,24 +159,24 @@ class Builder:
         plot_executor = translator.compile(self.context.configurations.plots)
 
         self.executors = {
-            Executors.INTENTION.value: intention_executor,
-            Executors.PLOT.value: plot_executor,
+            Executors.INTENTION: intention_executor,
+            Executors.PLOT: plot_executor,
         }
 
         # Compile independent stage executors keyed by Lifespan enum values
         for lifespan in Lifespans:
-            stage_rules = self.context.configurations.stages.get(lifespan.value)
+            stage_rules = self.context.configurations.stages.get(lifespan)
             if stage_rules:
-                self.executors[lifespan.value] = translator.compile(stage_rules)
+                self.executors[lifespan] = translator.compile(stage_rules)
 
 
     def build_relations(self) -> None:
         logger.info("Compiling relational indices...")
         self.relations = {
-            Relations.SHORELINES.value: ShorelineIndex.from_properties(
+            Relations.SHORELINES: ShorelineIndex.from_properties(
                 self.context.properties.geography.shorelines
             ),
-            Relations.MATERIALS.value: MaterialIndex.from_configuration(
+            Relations.MATERIALS: MaterialIndex.from_configuration(
                 self.context.configurations.materials
             )
         }
@@ -209,7 +209,7 @@ class Builder:
         device_mapping = getattr(self.context.configurations.mappings, device, None)
         self.device = MechanicFactory.device(device, device_mapping)
 
-        materials = self.relations[Relations.MATERIALS.value]
+        materials = self.relations[Relations.MATERIALS]
 
         self.materializer = Materializer(
             materials=materials
@@ -264,7 +264,7 @@ class Builder:
                     taxonomy=Taxonomy(
                         id=eq_id,
                         name=eq_id,
-                        category=AssetCategories.SHEETS.value,
+                        category=AssetCategories.SHEETS,
                         instance=instance
                     ),
                     properties=eq_props,
@@ -287,7 +287,7 @@ class Builder:
             properties=self.context.properties,
             configurations=self.context.configurations,
             decomposer=self.decomposer,
-            materials=self.relations[Relations.MATERIALS.value]
+            materials=self.relations[Relations.MATERIALS]
         )
         self.board.set_migrator(migrator)
 
@@ -305,15 +305,15 @@ class Builder:
         }
 
         core_cfg = self.context.configurations.mechanics.core or [
-            MechanicsInstance(Mechanics.MENU.value), 
-            MechanicsInstance(Mechanics.ANIMATION.value), 
-            MechanicsInstance(Mechanics.REMOVE.value)
+            MechanicsInstance(Mechanics.MENU), 
+            MechanicsInstance(Mechanics.ANIMATION), 
+            MechanicsInstance(Mechanics.REMOVE)
         ]
         world_cfg = self.context.configurations.mechanics.world or [
-            MechanicsInstance(Mechanics.PLAYER.value), 
-            MechanicsInstance(Mechanics.COGNITION.value), 
-            MechanicsInstance(Mechanics.TRANSITION.value), 
-            MechanicsInstance(Mechanics.MOTION.value)
+            MechanicsInstance(Mechanics.PLAYER), 
+            MechanicsInstance(Mechanics.COGNITION), 
+            MechanicsInstance(Mechanics.TRANSITION), 
+            MechanicsInstance(Mechanics.MOTION)
         ]
         
         self.core = [

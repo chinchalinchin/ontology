@@ -13,7 +13,17 @@ SDL Interfaces for rendering Assets.
 import logging
 
 # Cython Libraries
-from libs.graphics.registry cimport TexturePtr, TTFFont, TTF_Font, SDL_Color
+from libs.graphics.registry cimport (
+    Registry,
+    TexturePtr, 
+    TTFFont, 
+    TTF_Font, 
+    SDL_Color
+)
+from libs.core.models cimport (
+    Position, 
+    Dimensions
+)
 
 logger = logging.getLogger("libs.graphics.render")
 
@@ -173,6 +183,14 @@ cdef extern from "SDL2/SDL_ttf.h":
 cdef SDL_Surface* _canvas_surface = NULL
 cdef SDL_Window* _window = NULL
 # Note: _renderer is maintained in render.pxd
+
+# Module-level string constants (avoids Enum.__get__ in inner loop)
+cdef str _CAT_TILES = "tiles"
+cdef str _INST_FLUIDS = "fluids"
+cdef str _INST_SHORELINES = "shorelines"
+cdef int _CH_TINT = 0       # ChannelTypes.TINT.value
+cdef int _CH_SUBMERGE = 1   # ChannelTypes.SUBMERGE.value
+cdef int _CULL_MARGIN = 64
 
 # -----------------------------------------------------------------------------
 # Public Python/Cython API
@@ -366,36 +384,40 @@ def compose(TexturePtr base_ptr, list feature_ptrs) -> TexturePtr:
     logger.debug(f"[TELEMETRY] Composition complete.")
     return target
 
-
-def construct(TexturePtr target, list tiles):
+def construct(TexturePtr target, list tiles, bint clear_target=True):
     """
-    Constructs the static background entirely in C using zero-allocation primitives.
+    Constructs a static layer or UI canvas in C using zero-allocation primitives.
     tiles format: 
         (TexturePtr, src_x, src_y, src_w, src_l, dst_x, dst_y, dst_w, dst_l, mul_nx, mul_ny)
     """
-    logger.debug(f"Constructing layer chunk with {len(tiles)} primitive tile coordinates.")
-    
+    if target is None or target.ptr == NULL:
+        return
+
     SDL_SetRenderTarget(_renderer, target.ptr)
-    
+
+    if clear_target:
+        SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0)
+        SDL_RenderClear(_renderer)
+
     cdef SDL_Rect c_src, c_dst
     cdef TexturePtr tex
     cdef int sx, sy, sw, sl, dx, dy, dw, dl, nx, ny
     cdef int i, j
-    
+
     for tile in tiles:
         tex, sx, sy, sw, sl, dx, dy, dw, dl, nx, ny = tile
-        
-        SDL_SetTextureBlendMode(tex.ptr, SDL_BLENDMODE_NONE)
-        
+
+        SDL_SetTextureBlendMode(tex.ptr, SDL_BLENDMODE_BLEND)
+
         c_src.x, c_src.y, c_src.w, c_src.h = sx, sy, sw, sl
         c_dst.w, c_dst.h = dw, dl
-        
+
         for i in range(nx):
             for j in range(ny):
                 c_dst.x = dx + (i * dw)
                 c_dst.y = dy + (j * dl)
                 SDL_RenderCopy(_renderer, tex.ptr, &c_src, &c_dst)
-                
+
     SDL_SetRenderTarget(_renderer, NULL)
 
 
@@ -505,7 +527,179 @@ def write(
     SDL_DestroyTexture(text_tex)
     SDL_FreeSurface(text_surface)
                  
- 
+
+cpdef tuple assemble(
+    list assets,
+    Registry registry,
+    Position pov,
+    Dimensions bounds
+):
+    """
+    Cythonized broad-phase viewport cull, 4-tuple perspective sort, and narrow-phase
+    primitive/channel assembly.
+    """
+    cdef int pov_x = pov.x
+    cdef int pov_y = pov.y
+    cdef int bounds_w = bounds.w
+    cdef int bounds_l = bounds.l
+
+    cdef int min_x = pov_x - _CULL_MARGIN
+    cdef int min_y = pov_y - _CULL_MARGIN
+    cdef int max_x = pov_x + bounds_w + _CULL_MARGIN
+    cdef int max_y = pov_y + bounds_l + _CULL_MARGIN
+    cdef int view_max_x = pov_x + bounds_w
+    cdef int view_max_y = pov_y + bounds_l
+
+    cdef list sortable = []
+    cdef object asset, state, props, taxonomy
+    cdef str cat, inst
+    cdef Position pos
+    cdef Dimensions dim
+    cdef int px, py, dw, dl, elev, sub, anchor, prio, ground_y
+    cdef int idx = 0
+
+    # 1. Broad-phase filter + sort-key tuple construction in a single C loop
+    for asset in assets:
+        taxonomy = asset.taxonomy
+        cat = <str>taxonomy.category
+        if cat == _CAT_TILES:
+            continue
+
+        state = asset.state
+        props = asset.properties
+        pos = <Position>state.position
+        dim = <Dimensions>props.dimensions
+
+        px = pos.x
+        py = pos.y
+        dw = dim.w if dim is not None else 0
+        dl = dim.l if dim is not None else 0
+
+        inst = <str>taxonomy.instance
+        if inst != _INST_FLUIDS and inst != _INST_SHORELINES:
+            if px + dw < min_x or px > max_x or py + dl < min_y or py > max_y:
+                continue
+
+        elev = state.elevation if state.elevation is not None else 0
+        sub = asset.substrate
+        anchor = state.anchor
+        prio = props.priority
+        ground_y = py + dl + anchor
+
+        # Decorate with C-computed sort key (avoids Python key= callback per element)
+        sortable.append((elev, sub, ground_y, prio, idx, px, py, asset))
+        idx += 1
+
+    # 2. Native tuple sort
+    sortable.sort()
+
+    # 3. Narrow-phase frame resolution and primitive assembly
+    cdef list active_assets = []
+    cdef list active_channels = []
+    cdef tuple entry, fk_tuple, tex_data, ch_op, sub_payload, tint_payload
+    cdef list frame_keys, channels
+    cdef str asset_id, frame_key
+    cdef int ox, oy, sx, sy, sw, sl, dx, dy
+    cdef int split_y, local_split, rem_l, r, g, b, a
+    cdef int c_type, cx, cy, cw, cl
+    cdef bint has_submerge
+    cdef TexturePtr tex
+
+    for entry in sortable:
+        px = entry[5]
+        py = entry[6]
+        asset = entry[7]
+        state = asset.state
+        props = asset.properties
+        asset_id = <str>asset.taxonomy.id
+
+        frame_keys = asset.frame.keys(asset_id, state)
+        channels = asset.frame.channels(asset_id, state, props)
+
+        has_submerge = False
+        for ch_op in channels:
+            if <int>ch_op[0] == _CH_SUBMERGE:
+                sub_payload = <tuple>ch_op[1]
+                split_y = sub_payload[0]
+                r = sub_payload[1]
+                g = sub_payload[2]
+                b = sub_payload[3]
+                a = sub_payload[4]
+                has_submerge = True
+                break
+
+        for fk_tuple in frame_keys:
+            frame_key = <str>fk_tuple[0]
+            ox = fk_tuple[1]
+            oy = fk_tuple[2]
+
+            tex_data = registry.image(frame_key)
+            if tex_data is None:
+                continue
+
+            tex = <TexturePtr>tex_data[0]
+            sx = tex_data[1]
+            sy = tex_data[2]
+            sw = tex_data[3]
+            sl = tex_data[4]
+
+            dx = px + ox
+            dy = py + oy
+
+            if dx + sw >= pov_x and dx <= view_max_x and dy + sl >= pov_y and dy <= view_max_y:
+                if not has_submerge:
+                    active_assets.append((
+                        tex, sx, sy, sw, sl,
+                        dx, dy, sw, sl,
+                        255, 255, 255, 255,
+                    ))
+                else:
+                    local_split = split_y - oy
+                    if local_split >= sl:
+                        active_assets.append((
+                            tex, sx, sy, sw, sl,
+                            dx, dy, sw, sl,
+                            255, 255, 255, 255,
+                        ))
+                    elif local_split <= 0:
+                        active_assets.append((
+                            tex, sx, sy, sw, sl,
+                            dx, dy, sw, sl,
+                            r, g, b, a,
+                        ))
+                    else:
+                        rem_l = sl - local_split
+                        active_assets.append((
+                            tex, sx, sy, sw, local_split,
+                            dx, dy, sw, local_split,
+                            255, 255, 255, 255,
+                        ))
+                        active_assets.append((
+                            tex, sx, sy + local_split, sw, rem_l,
+                            dx, dy + local_split, sw, rem_l,
+                            r, g, b, a,
+                        ))
+
+        for ch_op in channels:
+            c_type = ch_op[0]
+            if c_type == _CH_TINT:
+                tint_payload = <tuple>ch_op[1]
+                cx = tint_payload[0]
+                cy = tint_payload[1]
+                cw = tint_payload[2]
+                cl = tint_payload[3]
+                r = tint_payload[4]
+                g = tint_payload[5]
+                b = tint_payload[6]
+                a = tint_payload[7]
+                dx = px + cx
+                dy = py + cy
+                if dx + cw >= pov_x and dx <= view_max_x and dy + cl >= pov_y and dy <= view_max_y:
+                    active_channels.append((c_type, dx, dy, cw, cl, r, g, b, a))
+
+    return active_assets, active_channels
+
+
 def render(
     TexturePtr background, 
     TexturePtr foreground, 

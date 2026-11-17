@@ -85,7 +85,7 @@ class Frame(Singleton):
                 #       to pass to the screen. Screen should unpack channel payload 
                 #       into Cython primitives.  
                 directives.append((
-                    ChannelTypes.SUBMERGE.value,
+                    ChannelTypes.SUBMERGE,
                     (half_l, 40, 110, 180, 170)
                 ))
         return directives
@@ -160,7 +160,7 @@ class Asset:
         frame: Frame=None, 
         animation: Animation=None,
         hitbox: HitboxSchema=None,
-        substrate: int = Substrates.STANDARD.value
+        substrate: int = Substrates.STANDARD
     ):
         self.taxonomy = taxonomy
         self.properties = properties

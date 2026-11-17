@@ -42,7 +42,7 @@ class ResourceState(AssetState):
         Enumerated[AnnualStages],
         Enumerated[PerennialStages],
         Enumerated[CentennialStages]
-    ]= AnnualStages.STUMP.value
+    ]= AnnualStages.STUMP
     position: Optional[Position] = None  # type: ignore
     retention: float = 0.0
     moisture_flux: float = 0.0

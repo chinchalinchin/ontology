@@ -4,11 +4,15 @@
 @app.core
 @app.component
 @workflow.main
+@workflow.rendering
 
 # Ontology: Tests - tests.unit.app.game.test_engine
 
 Unit tests for the core Engine loop and time management.
 """
+# Standard Libraries
+import time
+
 # External Libraries
 import pytest
 
@@ -39,14 +43,6 @@ pytestmark = [
 # ---------------------------------------------------------------------------
 
 
-def test_engine_time():
-    """Test the static time method returns a monotonic float from perf_counter."""
-    t1 = Engine.time()
-    t2 = Engine.time()
-    assert isinstance(t1, float)
-    assert t2 >= t1
-
-
 def test_engine_start(mock_engine: Engine, mock_render, monkeypatch):
     """
     Ensure the engine loop executes live core and world mechanics, renders the screen,
@@ -75,6 +71,7 @@ def test_engine_start(mock_engine: Engine, mock_render, monkeypatch):
     assert len(rendered_assets) > 0
 
 
+@pytest.mark.workflow_rendering
 def test_engine_drain_routes_live_events_to_handlers(mock_engine: Engine):
     """
     Validates EventBus draining with live MenuEvent and TerminalEvent handlers.
@@ -143,6 +140,7 @@ def test_engine_play_respects_paused_and_loaded_flags(
     assert player.state.mutators.triggers.animated is True
 
 
+@pytest.mark.workflow_rendering
 def test_engine_render_traps_unloaded_board_or_missing_player(
     mock_engine: Engine,
     mock_render,
@@ -165,7 +163,7 @@ def test_engine_telemetry_interval(mock_engine: Engine):
     """
     Validate _telemetry returns True only on tick multiples and False otherwise.
     """
-    start = Engine.time() - 1.0
+    start = time.perf_counter() - 1.0
     assert mock_engine._telemetry(frames=5, updates=5, start=start, ticks=10) is False
     assert mock_engine._telemetry(frames=10, updates=10, start=start, ticks=10) is True
 
@@ -182,6 +180,7 @@ def test_engine_get_mechanic(mock_engine: Engine):
     assert mock_engine.get_mechanic(dict) is None
 
 
+@pytest.mark.workflow_rendering
 def test_engine_stop_releases_resources(mock_engine: Engine):
     """
     Ensure stop() halts the engine, clears the event bus, destroys screen canvases,

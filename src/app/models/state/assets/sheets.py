@@ -167,7 +167,7 @@ class SheetState(AssetState):
     position: Optional[Position] = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
     animation: AnimationState = field(default_factory=AnimationState)
-    intention: Optional[Enumerated[Intentions]] = Intentions.IDLE.value
+    intention: Optional[Enumerated[Intentions]] = Intentions.IDLE
     character: Optional[Character] = field(default_factory=Character)
     slots: Optional[Slots] = field(default_factory=Slots)
     inventory: Optional[Inventory] = field(default_factory=Inventory)    

@@ -1,44 +1,28 @@
 {% set bugs = [ 
-    'patch-b013',
-    'patch-b026',
-    'patch-b034'
+    'patch-b038'
 ] %}
 {% set path = properties.paths.root + properties.paths.phases + 'patch/open/'%}
 # Task: Ontology - Patch
 
 **Priorities**
 
-* **PATCHING** Implement fixes for the [Bugs](#bugs) described below.
-    * If fixes requires additional code, ensure that code is covered with tests.
-* **DEBUGGING**: If applicable, debug the current run of the test pipeline located in the [Test Pipeline](#view-test-pipeline) section.
-* **BUGHUNTING** If new bugs are detected, **do not implement the solution**. Instead, open a new [Bug Report](#template-bug) for **User Review**.
+* **PATCHING** Review the [Bugs](#task-bug-reports) described below. Determine if a patch can be easily implemented. 
+    * **IMPLEMENT** If the bug can be fixed easily, then implement a fix according to the **Task Guidelines**.
+    * **BACKLOG** If the bug is complex and warrants more than a simple patch, provide an outline of the considerations that need to be taken into account and the general modifications that are necessary to solve the problem. Use the [Backlog Template](#template-backlog) to layout a new Phase to address the Bug.
+* **BUGHUNTING** If new, unrelated bugs are detected, **do not implement the solution**. Instead, open a new [Bug Report](#template-bug) for **User Review**.
 
-## Patching Guidelines
+## Task: Context
+
+This section contains **Constraints** and **Guidelines** that must be observed while accomplishing the **Task**.
+
+### Context: Changes
+
+#### Changes: Constraints 
 
 {% include 'blocks/controls/constraint-quality.md' %}
 
 {% include 'blocks/controls/constraint-changes.md' %}
 
+#### Changes: Guidelines
+
 {% include 'blocks/controls/guideline-models.md' %}
-
-{% include 'blocks/controls/guideline-docstrings.md' %}
-
-## Coverage Guidelines
-
-{% include 'blocks/controls/guideline-fixtures.md' %}
-
-{% include 'blocks/controls/guideline-coverage.md' %}
-
-{% include 'blocks/controls/guideline-testbed.md' %}
-
-{% include 'blocks/controls/constraint-coverage.md' %}
-
-## Bugs
-
-### Reports
-
-{% for bug in bugs %}
-
-{{ file(path + bug + '.md') }}
-
-{% endfor %}

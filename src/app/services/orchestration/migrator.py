@@ -83,13 +83,13 @@ class Migrator:
         if self.state.compositions:
             for comp_state in self.state.compositions:
                 tasks.append((
-                    Shortcuts.COMPOSITIONS.value, 
+                    Shortcuts.COMPOSITIONS, 
                     comp_state
                 ))
 
         if self.state.plots:
             tasks.append((
-                Shortcuts.PLOTS.value, 
+                Shortcuts.PLOTS, 
                 self.state.plots
             ))
 
@@ -113,7 +113,7 @@ class Migrator:
                 
                 for state_obj in instance_list:
                     tasks.append((
-                        Shortcuts.ASSETS.value, 
+                        Shortcuts.ASSETS, 
                         category_key, 
                         instance_key, 
                         state_obj
@@ -125,13 +125,13 @@ class Migrator:
         # 2. Yield through component injection
         for task in tasks:
 
-            if task[0] == Shortcuts.COMPOSITIONS.value:
+            if task[0] == Shortcuts.COMPOSITIONS:
                 comp_state = task[1]
                 expanded_assets = self.decomposer.unpack(comp_state)
                 self.board.add(expanded_assets)
 
             elif (
-                task[0] == Shortcuts.ASSETS.value 
+                task[0] == Shortcuts.ASSETS 
                 and task[2] in MultipliedAssets
             ):
                 multiplied_state = task[3]
@@ -143,13 +143,13 @@ class Migrator:
                 self.board.add(multiplied_asset)
 
             elif (
-                task[0] == Shortcuts.ASSETS.value
-                and task[2] == AssetInstances.DOORS.value
+                task[0] == Shortcuts.ASSETS
+                and task[2] == AssetInstances.DOORS
             ):
                 door_state = task[3]
                 self.board.add(self.decomposer.project(door_state))
 
-            elif task[0] == Shortcuts.PLOTS.value:
+            elif task[0] == Shortcuts.PLOTS:
                 plot = task[1]
                 self.board.set_plot(plot)
 
@@ -161,10 +161,10 @@ class Migrator:
                 
                 prop_instance_key = instance_key
                 # NOTE: Register Sprite properties as Player properties
-                if category_key == AssetCategories.SHEETS.value and (
-                    instance_key == AssetInstances.PLAYERS.value
+                if category_key == AssetCategories.SHEETS and (
+                    instance_key == AssetInstances.PLAYERS
                 ):
-                    prop_instance_key = AssetInstances.SPRITES.value
+                    prop_instance_key = AssetInstances.SPRITES
                     
                 cat_props = getattr(self.properties, category_key)
                 inst_props = getattr(cat_props, prop_instance_key)
@@ -187,7 +187,7 @@ class Migrator:
         for layer in self.board.layers():
             self.board.perimeters[layer] = Perimeter.generate(self.board, layer)
 
-        fluids = self.board.instances(AssetInstances.FLUIDS.value)
+        fluids = self.board.instances(AssetInstances.FLUIDS)
         for fluid in fluids:
             Actuator.pump(fluid, self.board)
 

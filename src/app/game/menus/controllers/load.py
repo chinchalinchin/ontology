@@ -65,7 +65,7 @@ class LoadController(MenuController):
             screens.clear()
             
             for i, layer in enumerate(board.layers()):
-                tiles = board.categories(AssetCategories.TILES.value, layer)
+                tiles = board.categories(AssetCategories.TILES, layer)
                 layer_sizes = board.size(layer)
                 size = layer_sizes[0] if layer_sizes else screensize
                 

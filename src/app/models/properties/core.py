@@ -42,7 +42,7 @@ class Action:
 
 @dataclass(slots=True)
 class Frequency:
-    type: Enumerated[Frequencies] = Frequencies.CONTINUOUS.value
+    type: Enumerated[Frequencies] = Frequencies.CONTINUOUS
     delay: int = 1
     frequency: int = 0
     cooldown: int = 60
@@ -57,7 +57,7 @@ class Material:
     ]] = None
 
     def __post_init__(self):
-        if self.genus == Materials.CHROMATICS.value:
+        if self.genus == Materials.CHROMATICS:
             valid_hosts = (*Organics, *Ceramics)
             if self.host not in valid_hosts:
                 raise ValueError(

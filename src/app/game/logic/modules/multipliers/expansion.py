@@ -71,16 +71,20 @@ class ExpansionMultiplier(SimpleMultiplier):
             base_y = base_pos.y + (ny + 1) * l
             base_ground = base_y + l
             segments: List[Tuple[str, int]] = [
-                (Columns.CROWNS.value, base_pos.y)
+                (Columns.CROWNS, base_pos.y)
             ]
             for k in range(ny):
                 segments.append(
-                    (Columns.SHAFTS.value, base_pos.y + (k + 1) * l)
+                    (Columns.SHAFTS, base_pos.y + (k + 1) * l)
                 )
-            segments.append((Columns.BASES.value, base_y))
+            segments.append((Columns.BASES, base_y))
 
             for bp_part, seg_y in segments:
-                unit_name = settings.SEPARATOR.join([base_name, bp_part, str(idx)])
+                unit_name = settings.SEPARATOR.join([
+                    base_name, 
+                    bp_part, 
+                    str(idx)
+                ])
                 idx += 1
                 seg_anchor = int(base_ground + base_anchor - (seg_y + l))
                 units.append(

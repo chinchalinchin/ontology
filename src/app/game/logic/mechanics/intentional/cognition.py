@@ -100,25 +100,25 @@ class CognitionMechanics(Mechanic):
         if not goal:
             return True
 
-        if goal.category == Goals.TARGET.value:
+        if goal.category == Goals.TARGET:
             target_state = board.character(goal.name)
             return target_state is None or target_state.mutators.triggers.dead
 
-        if goal.category == Goals.SUBJECT.value:
+        if goal.category == Goals.SUBJECT:
             return sprite.state.psyche.dialogue is None
 
-        if goal.category == Goals.POSITION.value:
+        if goal.category == Goals.POSITION:
             return CognitionMechanics.nearby(
                 sprite.state.goal.position, 
                 sprite.state.position,
                 sprite.state.mutators.parameters.action.radius
             )
         
-        elif goal.category == Goals.OBJECT.value:
+        elif goal.category == Goals.OBJECT:
             # TODO:
             return True
 
-        elif goal.category == Goals.PROPERTY.value:
+        elif goal.category == Goals.PROPERTY:
             # TODO:
             return True
 
@@ -142,7 +142,7 @@ class CognitionMechanics(Mechanic):
 
             target_door = next((
                 d for d in board.instances(
-                    AssetInstances.DOORS.value, 
+                    AssetInstances.DOORS, 
                     sprite.state.layer
                 ) if d.name not in sprite.state.memory.doors 
                 and CognitionMechanics.nearby(
@@ -166,7 +166,7 @@ class CognitionMechanics(Mechanic):
 
         Mechanic interface for receiving information from the Engine.
         """
-        sprites = board.instances(AssetInstances.SPRITES.value)
+        sprites = board.instances(AssetInstances.SPRITES)
         
         for sprite in sprites:
             # Skip the player
@@ -203,8 +203,8 @@ class CognitionMechanics(Mechanic):
 
         # Clear stale wander goal when TransitionMechanics switches intention
         if sprite.state.intention in (
-            Intentions.FIND.value, 
-            Intentions.HUNT.value
+            Intentions.FIND, 
+            Intentions.HUNT
         ):
             if goal.name == WANDER:
                 CognitionMechanics.log_goal(sprite, verb="dropped")
@@ -214,7 +214,7 @@ class CognitionMechanics(Mechanic):
         # ------------------------------------------------------------------------
         # ------------------------------------------------- TARGET GOAL RESOLUTION
         # ------------------------------------------------------------------------
-        if goal.category == Goals.TARGET.value:
+        if goal.category == Goals.TARGET:
             target_state = board.character(goal.name)
 
             if target_state is None or target_state.mutators.triggers.dead:
@@ -235,7 +235,7 @@ class CognitionMechanics(Mechanic):
         # ------------------------------------------------------------------------
         # ------------------------------------------------ SUBJECT GOAL RESOLUTION
         # ------------------------------------------------------------------------
-        elif goal.category == Goals.SUBJECT.value:
+        elif goal.category == Goals.SUBJECT:
             if not sprite.state.psyche.dialogue:
                 CognitionMechanics.log_goal(sprite, verb="resolved")
                 sprite.state.goal = None
@@ -251,15 +251,15 @@ class CognitionMechanics(Mechanic):
                 sprite.state.goal = None
                 sprite.state.memory.goals[goal.name] = goal
                 sprite.state.psyche.expression = board.cradle.spawn_expression(
-                    ExpressionsPalette.BUBBLES.value, 
-                    Expressions.CONFUSION.value, 
+                    ExpressionsPalette.BUBBLES, 
+                    Expressions.CONFUSION, 
                     sprite
                 )
 
         # ------------------------------------------------------------------------
         # ----------------------------------------------- POSITION GOAL RESOLUTION
         # ------------------------------------------------------------------------
-        elif goal.category == Goals.POSITION.value:
+        elif goal.category == Goals.POSITION:
             if self.nearby(
                 goal.position, 
                 sprite.state.position, 
@@ -271,7 +271,7 @@ class CognitionMechanics(Mechanic):
         # ------------------------------------------------------------------------
         # ------------------------------------------------- OBJECT GOAL RESOLUTION
         # ------------------------------------------------------------------------
-        elif goal.category == Goals.OBJECT.value:
+        elif goal.category == Goals.OBJECT:
             # If the Sprite's layer no longer matches the door's layer, 
             # InteractionMechanics successfully pushed them through.
             # TODO: what if the sprite is seeking a Chest on a different layer?
@@ -285,7 +285,7 @@ class CognitionMechanics(Mechanic):
         # ------------------------------------------------------------------------
         # ---------------------------------------------- PROPERTY GOAL RESOLUTION
         # ------------------------------------------------------------------------
-        elif goal.category == Goals.PROPERTY.value:
+        elif goal.category == Goals.PROPERTY:
             # TODO:
             pass
 
@@ -333,9 +333,9 @@ class CognitionMechanics(Mechanic):
         Pops the remembered goals onto the stack.
         """
         if sprite.state.intention not in [
-            Intentions.IDLE.value,
-            Intentions.HUNT.value, 
-            Intentions.FIND.value
+            Intentions.IDLE,
+            Intentions.HUNT, 
+            Intentions.FIND
         ]: 
             return
         
@@ -350,8 +350,8 @@ class CognitionMechanics(Mechanic):
                 # If we reached the target's last-known coordinates and found it empty,
                 # leave it dormant in memory until any_memories_visible spots it.
                 if candidate.category in (
-                    Goals.TARGET.value, 
-                    Goals.SUBJECT.value
+                    Goals.TARGET, 
+                    Goals.SUBJECT
                 ):
                     if self.nearby(
                         candidate.position, 
@@ -377,10 +377,10 @@ class CognitionMechanics(Mechanic):
 
         1. `idle:find`:
             - sprite.goal
-            - sprite.goal.category == constants.Goals.SUBJECT.value
+            - sprite.goal.category == constants.Goals.SUBJECT
         2. `find:speak`:
             - sprite.state.psyche.dialogue
-            - sprite.goal.category == constants.Goals.SUBJECT.value
+            - sprite.goal.category == constants.Goals.SUBJECT
         3. `speak:idle`:
             - not sprite.psyche.expression
 
@@ -401,12 +401,12 @@ class CognitionMechanics(Mechanic):
             6. Sprite transitions into `idle` (TransitionMechanics).
 
         """
-        if sprite.state.intention != Intentions.IDLE.value:
+        if sprite.state.intention != Intentions.IDLE:
             return
         
         # Prevent endless targeting and memory leaks if we already have a dialogue goal
         if sprite.state.goal and ( 
-            sprite.state.goal.category == Goals.SUBJECT.value
+            sprite.state.goal.category == Goals.SUBJECT
         ): return
 
         if sprite.state.mutators.parameters is None:
@@ -438,7 +438,7 @@ class CognitionMechanics(Mechanic):
                     
                     sprite.state.goal = Goal(
                         name=other_name, 
-                        category=Goals.SUBJECT.value, 
+                        category=Goals.SUBJECT, 
                         layer=other_state.layer,
                         position=Position(x=other_state.position.x, y=other_state.position.y)
                     )
@@ -452,7 +452,7 @@ class CognitionMechanics(Mechanic):
 
         Scans the environment for targets matching the Sprite's motivation.
         """
-        if sprite.state.intention != Intentions.IDLE.value:
+        if sprite.state.intention != Intentions.IDLE:
             return
         
         if sprite.state.mutators.parameters is None:
@@ -464,37 +464,37 @@ class CognitionMechanics(Mechanic):
         motivation = sprite.state.psyche.motivation
 
         # ------------------------------------------------------------------------
-        if motivation == Motivations.CONQUEST.value:
+        if motivation == Motivations.CONQUEST:
             # TODO
             pass
 
         # ------------------------------------------------------------------------ 
-        elif motivation == Motivations.PROFIT.value:
+        elif motivation == Motivations.PROFIT:
             # TODO
             pass
 
         # ------------------------------------------------------------------------ 
-        elif motivation == Motivations.SURVIVAL.value:
+        elif motivation == Motivations.SURVIVAL:
             # TODO
             pass
 
         # ------------------------------------------------------------------------ 
-        elif motivation == Motivations.LOVE.value:
+        elif motivation == Motivations.LOVE:
             # TODO
             pass
 
         # ------------------------------------------------------------------------ 
-        elif motivation == Motivations.REVENGE.value:
+        elif motivation == Motivations.REVENGE:
             # TODO
             pass
 
         # ------------------------------------------------------------------------ 
-        elif motivation == Motivations.REBELLION.value:
+        elif motivation == Motivations.REBELLION:
             # TODO
             pass
 
         # ------------------------------------------------------------------------ 
-        elif motivation == Motivations.SAFETY.value:
+        elif motivation == Motivations.SAFETY:
             # TODO
             pass
 
@@ -515,8 +515,8 @@ class CognitionMechanics(Mechanic):
 
         # ------------------------------------------------------------------------ 
         if goal.category in [
-            Goals.TARGET.value,
-            Goals.SUBJECT.value
+            Goals.TARGET,
+            Goals.SUBJECT
         ]:
             target_state = board.character(goal.name)
             if target_state:
@@ -524,9 +524,9 @@ class CognitionMechanics(Mechanic):
 
         # ------------------------------------------------------------------------ 
         elif goal.category in [
-            Goals.POSITION.value,
-            Goals.OBJECT.value, 
-            Goals.PROPERTY.value
+            Goals.POSITION,
+            Goals.OBJECT, 
+            Goals.PROPERTY
 
         ]:
             if not sprite.state.mutators.triggers.vision:
@@ -549,7 +549,7 @@ class CognitionMechanics(Mechanic):
                 # Path found. Inject prerequisite OBJECT door goal.
                 sprite.state.goal   = Goal(
                     name            = target_door.name,
-                    category        = Goals.OBJECT.value,
+                    category        = Goals.OBJECT,
                     layer           = sprite.state.layer,
                     position        = Position(
                         x           = target_door.state.position.x, 
@@ -590,7 +590,7 @@ class CognitionMechanics(Mechanic):
         intention = sprite.state.intention
         vision_radius = sprite.state.mutators.parameters.vision.radius
 
-        if intention == Intentions.ESCAPE.value and sprite.state.mutators.triggers.vision:
+        if intention == Intentions.ESCAPE and sprite.state.mutators.triggers.vision:
             # Invert the target vector to run away
             dx = sprite.state.position.x - sprite.state.goal.position.x
             dy = sprite.state.position.y - sprite.state.goal.position.y
@@ -599,7 +599,7 @@ class CognitionMechanics(Mechanic):
             sprite.state.goal.position.x = sprite.state.position.x + (dx * 10)
             sprite.state.goal.position.y = sprite.state.position.y + (dy * 10)
 
-        elif intention == Intentions.WANDER.value: 
+        elif intention == Intentions.WANDER: 
             if not sprite.state.goal or self.complete(sprite, board):
                 offset_x = random.randint(-vision_radius, vision_radius)
                 offset_y = random.randint(-vision_radius, vision_radius)
@@ -623,7 +623,7 @@ class CognitionMechanics(Mechanic):
 
                 sprite.state.goal = Goal(
                     name=WANDER, # TODO: enumerate
-                    category=Goals.POSITION.value,
+                    category=Goals.POSITION,
                     layer=sprite.state.layer,
                     position=Position(x=int(clamped_x), y=int(clamped_y))
                 )

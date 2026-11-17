@@ -43,11 +43,11 @@ from app.models.state.core import (
 class Damage:
     amount: int = 0
     duration: int = 0
-    reaction: Enumerated[Reactions] = Reactions.BOUNCE.value
+    reaction: Enumerated[Reactions] = Reactions.BOUNCE
 
 @dataclass(slots=True)
 class Lot:
-    inventory: Enumerated[Inventories] = Inventories.EQUIPMENT.value
+    inventory: Enumerated[Inventories] = Inventories.EQUIPMENT
     item: Optional[str] = None 
     quantity: int = 0
 
@@ -82,7 +82,7 @@ class HazardState(EffectState):
 
 @dataclass(slots=True)
 class ReactableState(EffectState):
-    intention: Enumerated[Intentions] = Intentions.INTERACT.value
+    intention: Enumerated[Intentions] = Intentions.INTERACT
     cooldown: int = 60
     active: bool = False
 
@@ -99,5 +99,5 @@ class FluidState(EffectState):
     hitboxes: List[Hitbox] = field(default_factory=list) # type: ignore
     dirty: bool = True
     flow: int = 1
-    source: Enumerated[Directions] = Directions.DOWN.value
+    source: Enumerated[Directions] = Directions.DOWN
     _keys: Dict[int, List[Tuple[str, int, int]]] = field(default_factory=dict)

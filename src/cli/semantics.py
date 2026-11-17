@@ -8,9 +8,9 @@
 Command Line semantics.
 """
 
-from enum import Enum
+from enum import StrEnum
 
-class Commands(str, Enum):
+class Commands(StrEnum):
     PRERENDER   = "prerender"
     RENDER      = "render"
     MAP         = "map"
@@ -19,19 +19,19 @@ class Commands(str, Enum):
     TAGS        = "tags"
     TELEMETRY   = "telemetry"
 
-class EngineCommands(str, Enum):
+class EngineCommands(StrEnum):
     PRERENDER   = "prerender"
     RENDER      = "render"
     MAP         = "map"
     START       = "start"
 
-class Dumps(str, Enum):
+class Dumps(StrEnum):
     STATE       = "state"
     MENUS       = "menus"
     REGISTRY    = "registry"
     SDL         = "sdl"
 
-class Filters(str, Enum):
+class Filters(StrEnum):
     INSTANCE    = "instance"
     CATEGORY    = "category"
     ID          = "id"

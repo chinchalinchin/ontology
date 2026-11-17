@@ -101,7 +101,7 @@ class ObjectProperties(AssetProperties):
 @dataclass(slots=True)
 class ResourceProperties(AssetProperties):
     loot: str = None
-    lifespan: Enumerated[Lifespans] = Lifespans.ANNUAL.value
+    lifespan: Enumerated[Lifespans] = Lifespans.ANNUAL
     mass: int = 0
     hitboxes: Dict[str, Optional[List[Hitbox]]] = None              # type: ignore
 

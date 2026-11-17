@@ -3,7 +3,7 @@
 @test.unit
 @app.service
 @modality.intention
-@workflow.plots
+@workflow.plot
 @workflow.seasons
 @workflow.transitions
 

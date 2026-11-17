@@ -61,7 +61,7 @@ class MenuMechanics(Mechanic):
         if not isinstance(focused.binding, SelectBinding):
             return False
 
-        if focused.binding.selection != Selections.SLOT.value:
+        if focused.binding.selection != Selections.SLOT:
             return False
 
         gizmo_name = focused.binding.selector
@@ -78,9 +78,13 @@ class MenuMechanics(Mechanic):
 
         clamped_idx = gizmo_pane.state.clamp_slot(slot_index)
         if clamped_idx is not None:
-            target_name = settings.SEPARATOR.join([gizmo_name, Selections.SLOT.value, str(clamped_idx)])
+            target_name = settings.SEPARATOR.join([
+                gizmo_name, 
+                Selections.SLOT, 
+                str(clamped_idx)
+            ])
             menu.focus = target_name
-            menu.widgets[target_name].state.status = Statuses.ACTIVE.value
+            menu.widgets[target_name].state.status = Statuses.ACTIVE
 
         return True
 
@@ -98,7 +102,7 @@ class MenuMechanics(Mechanic):
         if not neighbor:
             return None
 
-        if neighbor.state.status != Statuses.DISABLED.value:
+        if neighbor.state.status != Statuses.DISABLED:
             return neighbor_name
 
         return None
@@ -118,9 +122,9 @@ class MenuMechanics(Mechanic):
         if not neighbor_name:
             return
 
-        focused.state.status = Statuses.IDLE.value
+        focused.state.status = Statuses.IDLE
         menu.focus = neighbor_name
-        menu.widgets[neighbor_name].state.status = Statuses.ACTIVE.value
+        menu.widgets[neighbor_name].state.status = Statuses.ACTIVE
 
     def update(
         self,
@@ -134,17 +138,17 @@ class MenuMechanics(Mechanic):
                 overlay.controller.update(overlay, board, bus)
 
         if not board.menus:
-            board.device.context(DeviceContexts.WORLD.value)
+            board.device.context(DeviceContexts.WORLD)
             return
 
-        board.device.context(DeviceContexts.MENU.value)
+        board.device.context(DeviceContexts.MENU)
         menu = board.menus[-1]
 
-        if payload.menu.interaction == Interactions.CANCEL.value:
+        if payload.menu.interaction == Interactions.CANCEL:
             bus.append(TerminalEvent())
             return
 
-        if payload.menu.interaction == Interactions.SELECT.value:
+        if payload.menu.interaction == Interactions.SELECT:
             if menu.focus:
                 menu.controller.select(menu.focus, menu, board, bus)
             menu.controller.update(menu, board, bus)

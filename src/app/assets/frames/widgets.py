@@ -45,9 +45,9 @@ class PaneFrame(Frame):
     (nx + 2) * (ny + 2) tile offsets from PaneState.multiple.
     """
     _PARTITIONS = (
-        Alignments.START.value,
-        Alignments.CENTER.value,
-        Alignments.END.value,
+        Alignments.START,
+        Alignments.CENTER,
+        Alignments.END,
     )
 
     def index(
@@ -77,15 +77,15 @@ class PaneFrame(Frame):
         primitives: List[Tuple[str, int, int]] = []
         for iy in range(ny + 2):
             v = (
-                Alignments.START.value if iy == 0
-                else Alignments.END.value if iy == ny + 1
-                else Alignments.CENTER.value
+                Alignments.START if iy == 0
+                else Alignments.END if iy == ny + 1
+                else Alignments.CENTER
             )
             for ix in range(nx + 2):
                 h = (
-                    Alignments.START.value if ix == 0
-                    else Alignments.END.value if ix == nx + 1
-                    else Alignments.CENTER.value
+                    Alignments.START if ix == 0
+                    else Alignments.END if ix == nx + 1
+                    else Alignments.CENTER
                 )
                 key = settings.SEPARATOR.join([id, v, h])
                 primitives.append((key, ix * wc, iy * lc))
@@ -117,19 +117,19 @@ class TraversalFrame(Frame):
         return {
             settings.SEPARATOR.join([
                 id,
-                Statuses.IDLE.value
+                Statuses.IDLE
             ]): (0, 0, w, l),
             settings.SEPARATOR.join([
                 id,
-                Statuses.ACTIVE.value
+                Statuses.ACTIVE
             ]): (w, 0, w, l),
             settings.SEPARATOR.join([
                 id,
-                Statuses.SELECTED.value
+                Statuses.SELECTED
             ]): (2 * w, 0, w, l),
             settings.SEPARATOR.join([
                 id,
-                Statuses.DISABLED.value
+                Statuses.DISABLED
             ]): (3 * w, 0, w, l)
         }
 
@@ -150,7 +150,7 @@ class MeterFrame(Frame):
         frames = [
             (settings.SEPARATOR.join([
                 id,
-                str(Gauges.EMPTY.value)
+                str(Gauges.EMPTY)
             ]), 0, 0)
         ]
         if res > 0:
@@ -162,7 +162,10 @@ class MeterFrame(Frame):
             )
         return frames
 
-    def index(self, id: str, properties: WidgetProperties) -> dict[str, tuple[int, int, int, int]]:
+    def index(self, 
+        id: str, 
+        properties: WidgetProperties
+    ) -> dict[str, tuple[int, int, int, int]]:
         """
         """
         w = properties.dimensions.w
@@ -170,15 +173,15 @@ class MeterFrame(Frame):
         crops = {
             settings.SEPARATOR.join([
                 id,
-                str(Gauges.EMPTY.value)
+                str(Gauges.EMPTY)
             ]): (0, 0, w, l)
         }
-        for res in range(1, Gauges.FULL.value + 1):
+        for res in range(1, Gauges.FULL + 1):
             frame_index = settings.SEPARATOR.join([
                 id,
                 str(res)
             ])
-            crops[frame_index] = (w, 0, int(w * (res / Gauges.FULL.value)), l)
+            crops[frame_index] = (w, 0, int(w * (res / Gauges.FULL)), l)
         return crops
 
 # -------------------------------------------------------------
@@ -198,7 +201,10 @@ class IconFrame(Frame):
             state.icon
         ]), 0, 0)]
 
-    def index(self, id: str, properties: WidgetProperties) -> Dict[str, Tuple[int, int, int, int]]:
+    def index(self, 
+        id: str, 
+        properties: WidgetProperties
+    ) -> dict[str, Tuple[int, int, int, int]]:
         w = properties.dimensions.w
         l = properties.dimensions.l
         frames = properties.frames
