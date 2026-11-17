@@ -5,6 +5,7 @@
 @app.asset
 @asset.frame
 @workflow.rendering
+@workflow.typography
 
 # Ontology: Tests - tests.unit.libs.graphics.test_registry
 
@@ -48,6 +49,7 @@ def test_registry_initialization_and_caching(mock_registry):
     assert mock_registry.maximum == len(mock_registry._pending_assets)
     assert mock_registry.current == 0
     assert len(mock_registry._textures) == 0
+    assert len(mock_registry._canvases) == 0
     assert len(mock_registry._fonts) == 0
 
 
@@ -231,6 +233,21 @@ def test_registry_font_loading_and_retrieval(mock_registry):
 
 
 @pytest.mark.workflow_typography
+def test_registry_ttf_font_measure(mock_registry):
+    """
+    Verify TTFFont.measure returns positive pixel dimensions for loaded fonts
+    and (0, 0) for uninitialized font wrappers.
+    """
+    uninitialized_font = TTFFont()
+    assert uninitialized_font.measure("Ontology") == (0, 0)
+
+    dialogue_font = mock_registry.font(Fonts.DIALOGUE.value)
+    w, h = dialogue_font.measure("Ontology")
+    assert w > 0
+    assert h > 0
+
+
+@pytest.mark.workflow_typography
 def test_registry_missing_and_unconfigured_font(mock_registry):
     """
     Verify font retrieval returns None for both unknown font keys and .ttf files
@@ -245,19 +262,54 @@ def test_registry_missing_and_unconfigured_font(mock_registry):
     assert unconfigured_key not in mock_registry._fonts
 
 
+@pytest.mark.category_widgets
+def test_registry_canvas_lifecycle(mock_registry, mock_render):
+    """
+    Verify Registry.canvas caches dynamic widget canvases by key and dimensions,
+    reallocates when dimensions change, and destroys canvases on release.
+    """
+    mock_render.canvas.reset_mock()
+    mock_render.destroy.reset_mock()
+
+    first = mock_registry.canvas("dialogue-pane", 200, 100)
+    assert first is not None
+    assert mock_registry.get_canvas("dialogue-pane") is first
+    assert mock_render.canvas.call_count == 1
+
+    # Matching dimensions return cached canvas without reallocating
+    cached = mock_registry.canvas("dialogue-pane", 200, 100)
+    assert cached is first
+    assert mock_render.canvas.call_count == 1
+    assert not mock_render.destroy.called
+
+    # Dimension change destroys old canvas and allocates new texture
+    resized = mock_registry.canvas("dialogue-pane", 300, 120)
+    assert resized is not first
+    assert mock_render.destroy.called
+    assert mock_registry.get_canvas("dialogue-pane") is resized
+
+    # Explicit destruction removes key from _canvases
+    mock_render.destroy.reset_mock()
+    mock_registry.destroy_canvas("dialogue-pane")
+    assert mock_render.destroy.called
+    assert mock_registry.get_canvas("dialogue-pane") is None
+
+
 def test_registry_clear_releases_caches(monkeypatch, mock_registry):
     """
-    Verify Registry.clear empties all cached textures, fonts, frames, stacks,
-    and pending asset queues.
+    Verify Registry.clear empties all cached textures, canvases, fonts, frames,
+    stacks, and pending asset queues.
     """
     monkeypatch.setattr(
         "libs.graphics.registry._sys_load_image",
         lambda *args, **kwargs: TexturePtr(),
     )
     mock_registry.image("temperate-spring-onset-0")
+    mock_registry.canvas("test-pane", 120, 80)
     mock_registry.font(Fonts.DIALOGUE.value)
 
     assert len(mock_registry._textures) > 0
+    assert len(mock_registry._canvases) > 0
     assert len(mock_registry._fonts) > 0
     assert len(mock_registry._frames) > 0
     assert len(mock_registry._stacks) > 0
@@ -265,6 +317,7 @@ def test_registry_clear_releases_caches(monkeypatch, mock_registry):
     mock_registry.clear()
 
     assert len(mock_registry._textures) == 0
+    assert len(mock_registry._canvases) == 0
     assert len(mock_registry._fonts) == 0
     assert len(mock_registry._frames) == 0
     assert len(mock_registry._stacks) == 0

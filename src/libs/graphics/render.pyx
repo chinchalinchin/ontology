@@ -406,9 +406,14 @@ def measure(
     """
     Determines how many pixels wide and high a given string is in a given font.
     """
-    if font is None:
+    if font is None or font.ptr == NULL:
         return (0, 0)
-    return font.measure(content)
+        
+    cdef int w = 0, h = 0
+    cdef bytes b_content = content.encode('utf-8')
+    TTF_SizeUTF8(font.ptr, b_content, &w, &h)
+    
+    return (w, h)
 
 
 def write(

@@ -8,10 +8,6 @@
 # Ontology: Libraries - libs.graphics.registry
 
 Registry class for indexing and loading Asset files.
-
-## TODOs
-
-1. Redundancy in the constructor arguments. FontProperties is part of the PropertiesSchema.
 """
 # Standard Libraries
 import os
@@ -48,6 +44,7 @@ cdef extern from "SDL2/SDL_ttf.h":
     void TTF_SetFontStyle(TTF_Font* font, int style)
     void TTF_SetFontOutline(TTF_Font* font, int outline)
 
+    int TTF_Init()
     int TTF_WasInit()
     TTF_Font* TTF_OpenFont(const char* file, int ptsize)
     void TTF_CloseFont(TTF_Font* font)
@@ -75,8 +72,10 @@ cdef class TTFFont:
                 self.outline_ptr = NULL
 
     def measure(self, str content) -> tuple:
-        if self.ptr == NULL:
+        if not content:
             return (0, 0)
+        if self.ptr == NULL:
+            return render.measure(content, self)
         cdef int w = 0, h = 0
         cdef bytes b_content = content.encode('utf-8')
         TTF_SizeUTF8(self.ptr, b_content, &w, &h)
@@ -101,6 +100,9 @@ def _sys_load_image(filepath: str):
     return wrapper
 
 def _sys_load_font(filepath: str, object style):
+    if not TTF_WasInit():
+        TTF_Init()
+
     cdef int pt_size = style.size
     cdef bytes b_filepath = filepath.encode('utf-8')
     cdef TTF_Font* f_ptr = TTF_OpenFont(b_filepath, pt_size)
@@ -328,23 +330,23 @@ cdef class Registry:
         return self._get_or_load_font(font_key)
 
 
-    def canvas(self, str key, int w, int l, bint opaque=False) -> TexturePtr:
-        cdef TexturePtr tex = self._canvases.get(key, None)
-        if tex is not None and tex.ptr != NULL and tex.w == w and tex.l == l:
-            return tex
+    def canvas(self, str key, int w, int l, bint opaque=False):
+        tex = self._canvases.get(key, None)
         if tex is not None:
+            if (not isinstance(tex, TexturePtr) or (<TexturePtr>tex).ptr != NULL) and tex.w == w and tex.l == l:
+                return tex
             render.destroy(tex)
         tex = render.canvas(w, l, opaque=opaque)
         self._canvases[key] = tex
         return tex
 
 
-    def get_canvas(self, str key) -> TexturePtr:
+    def get_canvas(self, str key):
         return self._canvases.get(key, None)
 
 
     cpdef void destroy_canvas(self, str key):
-        cdef TexturePtr tex = self._canvases.pop(key, None)
+        tex = self._canvases.pop(key, None)
         if tex is not None:
             render.destroy(tex)
         
@@ -370,18 +372,22 @@ cdef class Registry:
         cdef TexturePtr tex
         cdef TTFFont font_obj
 
-        for tex in list(self._textures.values()):
-            if tex is not None and tex.ptr != NULL:
-                if _renderer != NULL:
-                    SDL_DestroyTexture(tex.ptr)
-                tex.ptr = NULL
+        for obj in list(self._textures.values()):
+            if isinstance(obj, TexturePtr):
+                tex = <TexturePtr>obj
+                if tex.ptr != NULL:
+                    if _renderer != NULL:
+                        SDL_DestroyTexture(tex.ptr)
+                    tex.ptr = NULL
         self._textures.clear()
 
-        for tex in list(self._canvases.values()):
-            if tex is not None and tex.ptr != NULL:
-                if _renderer != NULL:
-                    SDL_DestroyTexture(tex.ptr)
-                tex.ptr = NULL
+        for obj in list(self._canvases.values()):
+            if isinstance(obj, TexturePtr):
+                tex = <TexturePtr>obj
+                if tex.ptr != NULL:
+                    if _renderer != NULL:
+                        SDL_DestroyTexture(tex.ptr)
+                    tex.ptr = NULL
         self._canvases.clear()
 
         for font_obj in list(self._fonts.values()):

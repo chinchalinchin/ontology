@@ -1,5 +1,5 @@
 # ----------------------------------------------------
-context: true
+context: false
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ----------------------------------------------- TASK
@@ -29,8 +29,8 @@ task:
   # --------------------------------------------
   # template: iterate/document.md.j2
   # template: iterate/groom.md.j2
-  template: iterate/implement.md.j2
-  # template: iterate/cover.md.j2
+  # template: iterate/implement.md.j2
+  template: iterate/cover.md.j2
   # template: iterate/merge.md.j2
   # template: iterate/review.md.j2
   # --------------------------------------------
@@ -59,8 +59,8 @@ tools:
     # ------------------------ TOOL VIEWS: MANAGER
     # --------------------------------------------
     manager:
-      board: true
-      docs: true
+      board: false
+      docs: false
       templates: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
@@ -83,14 +83,14 @@ tools:
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: true
+      directory: false
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
       configuration: false
-      pipeline: false
+      pipeline: true
       session: false
 # ----------------------------------------------------
   parameters:
@@ -137,54 +137,62 @@ tools:
       filter:
         default: AND
         queries:
-          - title: 'Application - Core'
+          # - title: Test Fixtures
+          #   scan:
+          #     domain: [ test ]
+          #     test: [ fixtures ]
+          - title: Typography Tests
             scan:
-              domain: [ system ]
-              app: [ core, component ]
-          - title: 'Asset - Abstract'
-            scan:
-              domain: [ abstract ]
-              app: [ asset ]
-          - title: 'Asset - Model: Widgets'
-            scan:
-              domain: [ model ]
-              category: [ widgets ]
-          - title: 'Asset - Implementation: Widgets'
-            scan:
-              domain: [ concrete ]
-              app: [ asset ]
-              category: [ widgets ]
-              asset: [ frame ]
-          - title: 'Menu - Models: Core'
-            scan:
-              domain: [ model ]
-              app: [ menu ]
-          - title: 'Menu - Binding: Text'
-            scan:
-              domain: [ concrete ]
-              app: [ menu ]
-              menu: [ binding ]
-              workflows: [ plot ]
-          - title: 'Menu - Service: Provider'
-            scan:
-              domain: [ system ]
-              app: [ service, menu, asset ]
-              category: [ widgets ]
-          - title: 'Menu - Service: Binder'
-            scan:
-              domain: [ system ]
-              app: [ service, menu ]
-              menu: [ binding ]
-          - title: 'Menu - Handlers'
-            scan:
-              domain: [ concrete ]
-              app: [ menu ]
-              menu: [ handler ]
-          - title: 'Libraries - Core: Rendering'
-            scan:
-              domain: [ system ]
-              app: [ library ]
-              workflows: [ rendering ]
+              domain: [ test ]
+              workflows: [ typography ]
+          # - title: 'Application - Core'
+          #   scan:
+          #     domain: [ system ]
+          #     app: [ core, component ]
+          # - title: 'Asset - Abstract'
+          #   scan:
+          #     domain: [ abstract ]
+          #     app: [ asset ]
+          # - title: 'Asset - Model: Widgets'
+          #   scan:
+          #     domain: [ model ]
+          #     category: [ widgets ]
+          # - title: 'Asset - Implementation: Widgets'
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ asset ]
+          #     category: [ widgets ]
+          #     asset: [ frame ]
+          # - title: 'Menu - Models: Core'
+          #   scan:
+          #     domain: [ model ]
+          #     app: [ menu ]
+          # - title: 'Menu - Binding: Text'
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ menu ]
+          #     menu: [ binding ]
+          #     workflows: [ plot ]
+          # - title: 'Menu - Service: Provider'
+          #   scan:
+          #     domain: [ system ]
+          #     app: [ service, menu, asset ]
+          #     category: [ widgets ]
+          # - title: 'Menu - Service: Binder'
+          #   scan:
+          #     domain: [ system ]
+          #     app: [ service, menu ]
+          #     menu: [ binding ]
+          # - title: 'Menu - Handlers'
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ menu ]
+          #     menu: [ handler ]
+          # - title: 'Libraries - Core: Rendering'
+          #   scan:
+          #     domain: [ system ]
+          #     app: [ library ]
+          #     workflows: [ rendering ]
       data:
         properties: [ ]
         state: [ ]
@@ -204,5 +212,5 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: workflow_rendering
+        marker: '"workflow_rendering or workflow_typography"'
         # scope: '**/test_{actuator,cartographer}.py'

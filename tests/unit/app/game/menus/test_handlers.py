@@ -3,6 +3,7 @@
 @test.unit
 @app.menu
 @menu.handler
+@workflow.rendering
 
 # Ontology: Tests - tests.unit.app.game.menus.test_handlers
 
@@ -39,6 +40,7 @@ from app.static.semantics import (
 pytestmark = [
     pytest.mark.app_menu,
     pytest.mark.menu_handler,
+    pytest.mark.workflow_rendering
 ]
 
 # ---------------------------------------------------------------------------
@@ -64,9 +66,10 @@ def test_menu_event_handler_pushes_menu_and_stamps_canvases(
     assert mock_event_data.board.paused is True
     assert len(mock_event_data.board.menus) == 1
     active_menu = mock_event_data.board.menus[-1]
+    screen = next(iter(mock_event_data.screens.values()))
     assert active_menu.id == Menus.MAIN.value
     assert any(
-        isinstance(w.state, PaneState) and w.state.canvas is not None
+        isinstance(w.state, PaneState) and screen.registry.get_canvas(w.name) is not None
         for w in active_menu.widgets.values()
     )
     mock_render.construct.assert_called()
@@ -118,6 +121,44 @@ def test_terminal_event_handler_popping_load_menu_hydrates_hud_overlay(
     assert len(mock_event_data.board.menus) == 0
     assert len(mock_event_data.board.overlays) == 1
     assert mock_event_data.board.overlays[0].id == Menus.VIEW.value
+
+
+@pytest.mark.workflow_rendering
+def test_terminal_event_handler_releases_popped_menu_canvases(
+    mock_event_data: EventData,
+    mock_menu_context,
+    mock_render,
+):
+    """
+    Verify popping a modal menu via TerminalEventHandler destroys its pane
+    canvases in the Registry.
+    """
+    menu_handler = MenuEventHandler()
+    terminal_handler = TerminalEventHandler()
+    screen = next(iter(mock_event_data.screens.values()))
+
+    menu_handler.handle(
+        MenuEvent(
+            id=Menus.MAIN.value,
+            context=mock_menu_context(Menus.MAIN.value),
+        ),
+        mock_event_data,
+    )
+    active_menu = mock_event_data.board.menus[-1]
+    pane_names = [
+        w.name
+        for w in active_menu.widgets.values()
+        if isinstance(w.state, PaneState) and screen.registry.get_canvas(w.name) is not None
+    ]
+    assert len(pane_names) > 0
+
+    mock_render.destroy.reset_mock()
+    terminal_handler.handle(TerminalEvent(), mock_event_data)
+
+    assert len(mock_event_data.board.menus) == 0
+    assert mock_render.destroy.called
+    for name in pane_names:
+        assert screen.registry.get_canvas(name) is None
 
 
 @pytest.mark.workflow_rendering

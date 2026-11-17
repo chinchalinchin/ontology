@@ -4,6 +4,7 @@
 @app.service
 @app.menu
 @category.widgets
+@workflow.typography
 
 # Ontology: Tests - tests.unit.app.services.generators.menu.test_provider
 
@@ -19,35 +20,22 @@ from app.game.menus.bindings.text import (
 )
 from app.models.config.menus import (
     ButtonParameters,
-    CollectionTarget,
     IconTarget,
     MenuBinding,
-    MenuConfiguration,
     MenuNode,
     MeterTarget,
     PaneParameters,
     TextTarget,
 )
-from app.models.core import AxisAlignment
 from app.models.state.assets.widgets import (
     CollectionState,
-    PaneState,
 )
 from app.static.semantics import (
-    Alignments,
     AssetInstances,
     Bindings,
-    Controllers,
     Fonts,
-    Layouts,
     Menus,
     Statuses,
-)
-
-# Cython Libraries
-from libs.core.models import (
-    Dimensions,
-    Scale,
 )
 
 # ---------------------------------------------------------------------------

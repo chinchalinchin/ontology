@@ -219,15 +219,15 @@ def bind(self, **kwargs) -> Tuple[Callable, ...]:
 
 * [x] Subtask: Remove `canvas: Any = None` from `PaneState` in `src/app/models/state/assets/widgets.py`.
 * [x] Subtask: Add `cdef public dict _canvases` to `Registry` in `src/libs/graphics/registry.pyx` and implement `canvas(key, w, l, opaque=False)`, `get_canvas(key)`, `destroy_canvas(key)`, and teardown cleanup inside `Registry.clear()`.
-* [] Subtask: Update `Screen.stamp()`, `Screen._widgets()`, and `Screen.release()` in `src/app/game/screen.py` to allocate, retrieve, and destroy widget canvases through `self.registry`.
-* [] Subtask: Update `TerminalEventHandler.handle()` in `src/app/game/menus/handlers/terminal.py` to invoke `screen.release(menu)` on every popped modal menu.
-* [] Subtask: Remove `import libs.graphics.render as render`, `from app.models.state import PaneState`, and the manual canvas destruction loop from `Board.clear()` in `src/app/game/board/core.py`.
+* [x] Subtask: Update `Screen.stamp()`, `Screen._widgets()`, and `Screen.release()` in `src/app/game/screen.py` to allocate, retrieve, and destroy widget canvases through `self.registry`.
+* [x] Subtask: Update `TerminalEventHandler.handle()` in `src/app/game/menus/handlers/terminal.py` to invoke `screen.release(menu)` on every popped modal menu.
+* [x] Subtask: Remove `import libs.graphics.render as render`, `from app.models.state import PaneState`, and the manual canvas destruction loop from `Board.clear()` in `src/app/game/board/core.py`.
 
 **2. Task: Move Font Measurement to `Registry` (`TTFFont`) and Fix Binding Font Resolution**
 
 *Objective*: Remove `libs.graphics.render` from `src/app/game/menus/bindings/text.py` and respect the `font` parameter passed by `Provider._bind_pane()`.
 
-* [] Subtask: Declare `int TTF_SizeUTF8(TTF_Font* font, const char* text, int* w, int* h)` in `src/libs/graphics/registry.pyx` and implement `TTFFont.measure(self, str content) -> tuple` (delegating `render.measure` to `font.measure` for compatibility if needed).
-* [] Subtask: Update `paginate()` in `src/app/game/menus/bindings/text.py` to call `font.measure(test_line)` and remove `import libs.graphics.render as render`.
-* [] Subtask: Update `LibraryBinding.bind()` and `TextBinding.bind()` in `src/app/game/menus/bindings/text.py` to resolve `font_key = kwargs.get("font", Fonts.DIALOGUE.value)` instead of hardcoding `"dialogue"`.
-* [!: Dependent on Prior Task Completion] Subtask: Recompile Cython extensions and update unit tests and documentation (`docs/06-widgets.md`, `docs/12-architecture.md`) to reflect `Registry`-owned widget canvases and `TTFFont.measure`.
+* [x] Subtask: Declare `int TTF_SizeUTF8(TTF_Font* font, const char* text, int* w, int* h)` in `src/libs/graphics/registry.pyx` and implement `TTFFont.measure(self, str content) -> tuple` (delegating `render.measure` to `font.measure` for compatibility if needed).
+* [x] Subtask: Update `paginate()` in `src/app/game/menus/bindings/text.py` to call `font.measure(test_line)` and remove `import libs.graphics.render as render`.
+* [x] Subtask: Update `LibraryBinding.bind()` and `TextBinding.bind()` in `src/app/game/menus/bindings/text.py` to resolve `font_key = kwargs.get("font", Fonts.DIALOGUE.value)` instead of hardcoding `"dialogue"`.
+* [x] Subtask: Recompile Cython extensions and update unit tests and documentation (`docs/06-widgets.md`, `docs/12-architecture.md`) to reflect `Registry`-owned widget canvases and `TTFFont.measure`.

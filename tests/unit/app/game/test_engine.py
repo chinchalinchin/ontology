@@ -4,6 +4,7 @@
 @app.core
 @app.component
 @workflow.main
+@workflow.rendering
 
 # Ontology: Tests - tests.unit.app.game.test_engine
 
@@ -75,6 +76,7 @@ def test_engine_start(mock_engine: Engine, mock_render, monkeypatch):
     assert len(rendered_assets) > 0
 
 
+@pytest.mark.workflow_rendering
 def test_engine_drain_routes_live_events_to_handlers(mock_engine: Engine):
     """
     Validates EventBus draining with live MenuEvent and TerminalEvent handlers.
@@ -143,6 +145,7 @@ def test_engine_play_respects_paused_and_loaded_flags(
     assert player.state.mutators.triggers.animated is True
 
 
+@pytest.mark.workflow_rendering
 def test_engine_render_traps_unloaded_board_or_missing_player(
     mock_engine: Engine,
     mock_render,
@@ -182,6 +185,7 @@ def test_engine_get_mechanic(mock_engine: Engine):
     assert mock_engine.get_mechanic(dict) is None
 
 
+@pytest.mark.workflow_rendering
 def test_engine_stop_releases_resources(mock_engine: Engine):
     """
     Ensure stop() halts the engine, clears the event bus, destroys screen canvases,

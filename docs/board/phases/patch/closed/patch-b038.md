@@ -1,6 +1,6 @@
 #### Bug 038: Hardware & VRAM Coupling in the State Database and Models
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: MEDIUM
 
 **Description**
