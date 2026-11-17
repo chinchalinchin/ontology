@@ -2100,6 +2100,84 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Refactor: Phase 03.04 - Projectiles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-implement-renderrotate-in-cython-sdl2-bindings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Implement render.rotate in Cython SDL2 Bindings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-implement-projectileframe-and-rotatedhitbox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Implement ProjectileFrame and RotatedHitbox
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-wire-ranged-spawning-in-cradle-and-impact-resolution-in-projectilemechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Wire Ranged Spawning in Cradle and Impact Resolution in ProjectileMechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -3284,6 +3362,84 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Refactor: Phase 03.04 - Projectiles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-implement-renderrotate-in-cython-sdl2-bindings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Implement render.rotate in Cython SDL2 Bindings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-implement-projectileframe-and-rotatedhitbox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Implement ProjectileFrame and RotatedHitbox
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-wire-ranged-spawning-in-cradle-and-impact-resolution-in-projectilemechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Wire Ranged Spawning in Cradle and Impact Resolution in ProjectileMechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -3309,24 +3465,60 @@
   <h1>Phase 03.04 - Projectiles</h1>
 
 <h4 id="refactor-phase-0304-projectiles">Refactor: Phase 03.04 - Projectiles</h4>
-<p><strong>Overview</strong> </p>
-<p>Projectiles are currently stubbed and their mechanics are largely unimplemented. The goal of this refactor is to implement Projectiles.</p>
-<p><strong>Notes</strong></p>
+<p><strong>Overview</strong></p>
+<p>Codify <code>Projectiles</code> (<code>cursors.projectiles</code>) using the Registry Load-Time Rotation strategy (<code>ProjectileFrame</code>, <code>RotatedHitbox</code>, and <code>render.rotate</code>), allowing a single canonical projectile texture frame to be quantized into arbitrary angular increments (<span class="arithmatex">\(\Delta\theta \in (0, 360]\)</span>) in VRAM without modifying the 60 Hz <code>Screen._assemble()</code> / <code>render.render()</code> pipeline. Wire ranged combat spawning in <code>CombatMechanics</code> and trajectory/impact resolution in <code>ProjectileMechanics</code>.</p>
+<h5 id="specification">Specification</h5>
+<ol>
+<li><strong>Angular Partitioning (<code>CursorProperties</code>)</strong>:</li>
+<li>Extend <code>CursorProperties</code> (<code>src/app/models/properties/assets.py</code>) with <code>delta: int = 90</code> (degrees per discrete rotational step, where <span class="arithmatex">\(360 \bmod \text{delta} == 0\)</span>) and <code>speed: int = 200</code>.</li>
+<li>
+<p>The discrete set of valid projectile angles is <span class="arithmatex">\(\Theta = \{ k \cdot \text{delta} \mid 0 \le k &lt; 360 // \text{delta} \}\)</span>.</p>
+</li>
+<li>
+<p><strong>Load-Time Texture Strip Synthesis (<code>ProjectileFrame</code> &amp; <code>Registry</code>)</strong>:</p>
+</li>
+<li>Authored projectile <code>.png</code> files contain a single canonical frame of square dimensions <span class="arithmatex">\((S, S)\)</span> oriented at <span class="arithmatex">\(\theta = 0^\circ\)</span> (or canonical <code>left</code>).</li>
+<li><code>ProjectileFrame.index(id, properties)</code> maps each discrete angle key <code>f"{id}-{angle}"</code> (<span class="arithmatex">\(\text{angle} = k \cdot \text{delta}\)</span>) to crop coordinate <span class="arithmatex">\((k \cdot S, 0, S, S)\)</span>.</li>
+<li><code>Registry._get_or_load_texture()</code> detects <code>delta</code> on projectile properties and invokes <code>render.rotate(raw_tex, delta)</code>, which allocates a target <code>TexturePtr</code> of dimensions <span class="arithmatex">\((N \cdot S, S)\)</span> where <span class="arithmatex">\(N = 360 // \text{delta}\)</span> and stamps the base texture <span class="arithmatex">\(N\)</span> times via <code>SDL_RenderCopyEx</code>.</li>
+<li>
+<p><code>ProjectileFrame.keys(id, state)</code> projects <code>state.angle</code> directly to <code>[(f"{id}-{state.angle}", 0, 0)]</code>.</p>
+</li>
+<li>
+<p><strong>Rotated AABB Hitbox Projection (<code>RotatedHitbox</code>)</strong>:</p>
+</li>
+<li><code>RotatedHitbox.get(properties, state, elevation)</code> rotates each base <code>Hitbox</code> in <code>properties.hitboxes</code> by <span class="arithmatex">\(\Delta\theta = \text{state.angle}\)</span> around the frame center <span class="arithmatex">\((S/2, S/2)\)</span>:</li>
+</ol>
+<div class="arithmatex">\[\begin{pmatrix} h'_{cx} \\ h'_{cy} \end{pmatrix} = \begin{pmatrix} \cos\Delta\theta &amp; -\sin\Delta\theta \\ \sin\Delta\theta &amp; \cos\Delta\theta \end{pmatrix} \begin{pmatrix} h_{cx} \\ h_{cy} \end{pmatrix}\]</div>
+<div class="arithmatex">\[w'(\Delta\theta) = \max\Big(1,\; \text{round}\big(w_0 |\cos\Delta\theta| + l_0 |\sin\Delta\theta|\big)\Big), \qquad l'(\Delta\theta) = \max\Big(1,\; \text{round}\big(w_0 |\sin\Delta\theta| + l_0 |\cos\Delta\theta|\big)\Big)\]</div>
+<h5 id="goals">Goals</h5>
+<h6 id="goal-implement-renderrotate-in-cython-sdl2-bindings">Goal: Implement <code>render.rotate</code> in Cython SDL2 Bindings</h6>
+<p>Expose <code>SDL_RenderCopyEx</code> in <code>src/libs/graphics/render.pyx</code> and implement <code>rotate(TexturePtr base_ptr, int delta) -&gt; TexturePtr</code> to pre-bake rotated projectile frames into a single horizontal <code>TexturePtr</code> strip during Registry texture loading.</p>
+<h6 id="goal-implement-projectileframe-and-rotatedhitbox">Goal: Implement <code>ProjectileFrame</code> and <code>RotatedHitbox</code></h6>
+<p>Create <code>ProjectileFrame</code> (<code>src/app/assets/frames/cursors.py</code>) and <code>RotatedHitbox</code> (<code>src/app/assets/hitboxes/cursors.py</code>) and register them under <code>recipes.cursors.projectiles</code> in <code>src/data/config/recipes/main.yaml</code>.</p>
+<h6 id="goal-wire-ranged-spawning-in-cradle-and-impact-resolution-in-projectilemechanics">Goal: Wire Ranged Spawning in <code>Cradle</code> and Impact Resolution in <code>ProjectileMechanics</code></h6>
+<p>Update <code>Cradle.spawn_projectile()</code> to quantize launch angles to <code>properties.delta</code>, compute initial <code>Velocity(vx, vy)</code>, and instantiate the projectile <code>Asset</code> at the attacker's <code>elevation</code>. Update <code>ProjectileMechanics</code> to integrate trajectories, enforce elevation-isolated impact detection, apply damage, and garbage-collect expired projectiles.</p>
+<h5 id="tasks">Tasks</h5>
+<p><strong>1. Task: Add Cython <code>render.rotate</code> and Registry Load-Time Rotation</strong></p>
+<p><em>Objective</em>: Synthesize rotated texture strips in VRAM during <code>Registry</code> texture loading.</p>
 <ul>
-<li>Possible Approaches:<ul>
-<li>Manually construct Projectile frame rows corresponding to Directions.</li>
-<li>Create a RotationFrame to operate on a single Projectile frame.</li>
+<li>[] Subtask: Declare <code>SDL_Point</code>, <code>SDL_RendererFlip</code>, and <code>SDL_RenderCopyEx</code> in <code>src/libs/graphics/render.pyx</code> and implement <code>rotate(TexturePtr base_ptr, int delta) -&gt; TexturePtr</code>.</li>
+<li>[] Subtask: Update <code>CursorProperties</code> in <code>src/app/models/properties/assets.py</code> to include <code>delta: Optional[int] = None</code> and <code>speed: int = 200</code>, and update <code>MotorState</code> (<code>src/app/models/state/assets/cursors.py</code>) to include <code>angle: int = 0</code>.</li>
+<li>[] Subtask: Update <code>Registry._get_or_load_texture()</code> in <code>src/libs/graphics/registry.pyx</code> to invoke <code>render.rotate()</code> when loading a projectile texture with a configured <code>delta</code>.</li>
 </ul>
-</li>
-<li>RotationFrame: Assume Projectile always facing to the right in the Asset file. <ul>
-<li><code>if direction == RIGHT: rotate(0 degrees)</code></li>
-<li><code>if direction == DOWN: rotate(90 degrees)</code></li>
-<li><code>if direction == LEFT: rotate(180 degrees)</code></li>
-<li><code>if direction == UP: rotate(270 degrees or -90 degrees)</code> (whichever is less expensive computationally, if it matters)</li>
+<p>**2. Task: Implement <code>ProjectileFrame</code> and <code>RotatedHitbox**</code></p>
+<p><em>Objective</em>: Index rotated projectile frame crops and transform base AABB hitboxes by <code>state.angle</code>.</p>
+<ul>
+<li>[] Subtask: Implement <code>ProjectileFrame</code> in <code>src/app/assets/frames/cursors.py</code> to index <code>f"{id}-{k * delta}"</code> crops and resolve <code>[(f"{id}-{state.angle}", 0, 0)]</code> in <code>keys()</code>.</li>
+<li>[] Subtask: Implement <code>RotatedHitbox</code> in <code>src/app/assets/hitboxes/cursors.py</code> to project base <code>properties.hitboxes</code> around the frame center by <code>state.angle</code> at the projectile's <code>elevation</code>.</li>
+<li>[] Subtask: Register <code>ProjectileFrame</code> and <code>RotatedHitbox</code> under <code>cursors.projectiles</code> in <code>src/data/config/recipes/main.yaml</code>.</li>
 </ul>
-</li>
+<p>**3. Task: Implement <code>Cradle.spawn_projectile</code>, <code>CombatMechanics</code> Ranged Trigger, and <code>ProjectileMechanics**</code></p>
+<p><em>Objective</em>: Complete the end-to-end lifecycle of ranged projectiles from release frame to target impact or boundary removal.</p>
+<ul>
+<li>[] Subtask: Update <code>Cradle.spawn_projectile()</code> to quantize direction/target vectors onto the nearest multiple of <code>properties.delta</code> and populate <code>MotorState</code>.</li>
+<li>[] Subtask: Wire ranged projectile spawning in <code>CombatMechanics.update()</code> on the release frame of <code>Actions.SHOOT</code>.</li>
+<li>[] Subtask: Update <code>ProjectileMechanics.update()</code> to evaluate elevation-partitioned intersections against targets and obstacles and queue impacted or out-of-bounds projectiles for removal.</li>
 </ul>
-<p><strong>Consideration</strong>: Only matters for line-segment projectiles, like arrows or bolts. Doesn't matter for circular projectiles like cannonballs or magic. May not be worth formalizing this distinction, as the instances of perfect circular projectiles are likely not to be numerous.</p>
 
 
 

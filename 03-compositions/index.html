@@ -382,17 +382,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#craft-platforms" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Craft: Platforms
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -3516,17 +3505,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#craft-platforms" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Craft: Platforms
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -3882,36 +3860,15 @@
 <p><strong>Behavior: Multiplication</strong></p>
 <p>Each Blueprint Schema has a unique Multiplication Strategy associated with it in the <a href="../appendices/01-schemas/#configuration-materials">Materials Configuration</a> that determines how its <code>multiple</code> will be expanded during <a href="../00-overview/#component-board">Board</a> hydration. Multiplication is executed by a dedicated Multiplier implementation dispatched by the <a href="#service-decomposer">Decomposer</a>.</p>
 <ul>
-<li><code>simple</code> (SimpleMultiplier): 2D grid tiling across <span class="arithmatex">\((x_0 + i_x \cdot w,\; y_0 + i_y \cdot l)\)</span> for <span class="arithmatex">\(i_x \in [0, n_x),\; i_y \in [0, n_y)\)</span>[cite: 1].</li>
-<li><code>oriented</code> (<code>OrientedMultiplier</code>): 1D axis-locked tiling across <span class="arithmatex">\((x_0 + i_x \cdot w,\; y_0)\)</span> when <code>blueprint == 'horizontal'</code> (<span class="arithmatex">\(n_x \times 1\)</span>) or <span class="arithmatex">\((x_0,\; y_0 + i_y \cdot l)\)</span> when <code>blueprint == 'vertical'</code> (<span class="arithmatex">\(1 \times n_y\)</span>)[cite: 1].</li>
-<li><code>expansion</code> (ExpansionMultiplier): Vertical column interpolation placing <code>crowns</code> at <span class="arithmatex">\((x_0 + i_x \cdot w,\; y_0)\)</span>, <span class="arithmatex">\(n_y\)</span> contiguous <code>shafts</code> at <span class="arithmatex">\((x_0 + i_x \cdot w,\; y_0 + (k + 1) \cdot l)\)</span>, and <code>bases</code> at <span class="arithmatex">\((x_0 + i_x \cdot w,\; y_0 + (n_y + 1) \cdot l)\)</span>, locking each segment's perspective <code>anchor</code> to the column's <code>base</code> ground line (<span class="arithmatex">\(\text{base.y} + l\)</span>)[cite: 1].</li>
+<li><code>simple</code> (SimpleMultiplier): 2D grid tiling across <span class="arithmatex">\((x_0 + i_x \cdot w, y_0 + i_y \cdot l)\)</span> for <span class="arithmatex">\(i_x \in [0, n_x),\; i_y \in [0, n_y)\)</span>[cite: 1].</li>
+<li><code>oriented</code> (<code>OrientedMultiplier</code>): 1D axis-locked tiling across <span class="arithmatex">\((x_0 + i_x \cdot w, y_0)\)</span> when <code>blueprint == 'horizontal'</code> (<span class="arithmatex">\(n_x \times 1\)</span>) or <span class="arithmatex">\((x_0, y_0 + i_y \cdot l)\)</span> when <code>blueprint == 'vertical'</code> (<span class="arithmatex">\(1 \times n_y\)</span>)[cite: 1].</li>
+<li><code>expansion</code> (ExpansionMultiplier): Vertical column interpolation placing <code>crowns</code> at <span class="arithmatex">\((x_0 + i_x \cdot w, y_0)\)</span>, <span class="arithmatex">\(n_y\)</span> contiguous <code>shafts</code> at <span class="arithmatex">\((x_0 + i_x \cdot w, y_0 + (k + 1) \cdot l)\)</span>, and <code>bases</code> at <span class="arithmatex">\((x_0 + i_x \cdot w, y_0 + (n_y + 1) \cdot l)\)</span>, locking each segment's perspective <code>anchor</code> to the column's <code>base</code> ground line (<span class="arithmatex">\(\text{base.y} + l\)</span>)[cite: 1].</li>
 <li><code>perimeter</code> (PerimeterMultiplier): Hollow 2D boundary of <span class="arithmatex">\(2(n_x + n_y + 4)\)</span> segments spanning <span class="arithmatex">\((n_x + 2)w \times (n_y + 2)l\)</span> with superimposed <code>L</code>-corners, an open interior, and <code>north</code> baseline <code>anchor</code> adjustment[cite: 1].</li>
 </ul>
 <h3 id="craft-struts">Craft: Struts</h3>
 <p><em>Struts</em> are structural Assets that encapsulate architecture. Struts may be placed on the Board through the State files manually, but they are generally instantiated during the <a href="../00-overview/#component-engine">Engine Loop</a> through the <code>build</code> <a href="../04-intentions/">Intention</a>.</p>
 <p><strong>Behavior: Composability</strong></p>
 <p>Struts are the "<em>bedrock</em>" upon which Compositions of Assets can be built. A Strut's main purpose is to provide a coordinate system for the relative positioning of Assets in a Composition. </p>
-<h3 id="craft-platforms">Craft: Platforms</h3>
-<p>!!! @TODO(07-03)
-    To be subsumed and rendered obsolete by the introduction of Gravity. Slated for removal. Should be using elevated surfaces instead. "Platforming" should fall naturally out of the physics.</p>
-<p>Platforms are inanimate, immutable Assets that model elevated surfaces. In order to be traversed, the Asset traversing must be on the same elevation as the Platform. </p>
-<p>Platforms have two kinds of hitboxes: baseline hitboxes and elevated hitboxes, where the former determines the Platform's collision physics on its ground level (<code>platform.state.elevation</code>) and the latter determines the Platform's collision physics on the elevated level (<code>platform.state.elevation + properties.hitboxes[target.state.elevation]</code>)</p>
-<p><strong>Frame: SingleFrame</strong></p>
-<ul>
-<li><code>keys(id, state): returns [(id, 0, 0)]</code></li>
-<li><code>index(id, properties): returns {id: (0, 0, properties.dimensions.w, properties.dimensions.l)}</code></li>
-</ul>
-<p><strong>State: PlatformState</strong></p>
-<ul>
-<li><code>position: Position</code></li>
-<li><code>elevation: int = 0</code></li>
-<li><code>owner: Optional[str] = None</code></li>
-</ul>
-<p><strong>Hitbox: ElevatedHitbox</strong></p>
-<ul>
-<li><code>elevations(properties, state): returns [state.elevation + k for k in properties.hitboxes.keys()]</code></li>
-<li><code>get(properties, state, elevation, frame): returns properties.hitboxes.get(elevation - state.elevation, [])</code></li>
-</ul>
 <h2 id="definitions">Definitions</h2>
 <h3 id="definition-composition">Definition: Composition</h3>
 <p>From the perspective of the <a href="../00-overview/#core-state">State files</a>, Compositions are another type of Asset that can be deployed onto the <a href="../00-overview/#component-board">Board</a>. However, they are a "<em>virtual</em>" Asset composed of other Assets, i.e. they do not have Properties of their own nor are they localized to a single image on the fileystem. </p>

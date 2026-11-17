@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#refactor-phase-0706-primitive-crafting" class="md-skip">
+        <a href="#refactor-phase-0706-crafting" class="md-skip">
           Skip to content
         </a>
       
@@ -3218,15 +3218,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#refactor-phase-0706-primitive-crafting" class="md-nav__link">
+  <a href="#refactor-phase-0706-crafting" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Refactor: Phase 07.06 - Primitive Crafting
+        Refactor: Phase 07.06 - Crafting
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Refactor: Phase 07.06 - Primitive Crafting">
+    <nav class="md-nav" aria-label="Refactor: Phase 07.06 - Crafting">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3234,6 +3234,89 @@
     <span class="md-ellipsis">
       
         Specification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-unified-craft-ledger-cost-indexing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Unified Craft Ledger &amp; Cost Indexing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-armature-late-binding-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Armature Late-Binding &amp; Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-pack-menu-craft-ui-craftcontroller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Pack Menu Craft UI &amp; CraftController
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tasks
       
     </span>
   </a>
@@ -3267,30 +3350,132 @@
 
   <h1>Refactor 07 06</h1>
 
-<h4 id="refactor-phase-0706-primitive-crafting">Refactor: Phase 07.06 - Primitive Crafting</h4>
+<h4 id="refactor-phase-0706-crafting">Refactor: Phase 07.06 - Crafting</h4>
 <p><strong>Overview</strong></p>
-<p>Before tackling the Crafting of Compositions, the basis of Crafting will be laid with <em>Primitive Crafting</em>, where a Player or Sprite creates a single instance, possibly multiplied, of a Craft. </p>
+<p>Building upon the Material aspect of Assets, design and introduce a Crafting system managed through a new Craft Menu.</p>
 <h5 id="specification">Specification</h5>
-<p><strong>Initialization</strong>: </p>
+<p><strong>(Blueprints, Materials)</strong></p>
 <ul>
-<li>The MaterialIndex Relation and Materializer Service are used to construct a Primitive Cost Ledger for all indexed Crafts (Stairs, Struts, Bridges, and all future additions).<ul>
-<li>Each separate instance of Craft will need to be unpacked across the dimensions of (Blueprints, Materials). For example, a <code>steps</code> Stair unpacks into <code>steps-limestone</code>, <code>steps-feldspar</code>, <code>steps-granite</code>, <code>steps-marble</code>.</li>
+<li>materials: <ul>
+<li>organics: cottons, thatches, wood</li>
+<li>ceramics: clay</li>
+<li>geologics: limestone, feldspar, granite, marble</li>
+<li>metallics: copper, iron, gold</li>
+<li>chromatics: neutral, blue, red, yellow, green</li>
+</ul>
+</li>
+<li>blueprints: <ul>
+<li>buildings: floors, walls, flats, roofs, paths, halls</li>
+<li>corridors: solids, stripes, designs</li>
+<li>columns: crowns, shafts, bases </li>
+<li>decor: decor</li>
+<li>enclosures: north, east, south, west</li>
+<li>inclines: up, left, right</li>
+<li>orientations: horizontal, vertical</li>
 </ul>
 </li>
 </ul>
-<p><strong>Minimum Viable Product: Craft Menu</strong></p>
+<p><strong>Definition: Primitives</strong></p>
+<p>Primitive Crafts can be constructed by the User without a Composition container.</p>
+<ul>
+<li>Stairs</li>
+<li>Bridges</li>
+<li>Decor Struts</li>
+</ul>
+<p><strong>Definition: Armatures</strong></p>
+<p>To hide the complexity of the Strut (Blueprint, Material) space from the User, a subdirectory of Compositions (<code>/src/data/config/compositions/armatures/**/*.yaml</code>) will be maintained, known as <em>Armatures</em>. In a sense, Armatures integrate a Strut over its Blueprint partition. </p>
+<p>These are "<em>User Facing Crafts</em>". Users do not directly instantiate Struts. They instantiate Armatures of Struts (e.g. parameterized Compositions). In the <code>src/data/config/compositions/armatures/buildings/home/main.yaml</code> example, the branch Struts depend on the <code>material</code> of the root Struts, which is dependent on the parameter passed into the Composition. In this way, the parameter of Material is a degree of freedom determined by User selection.</p>
+<p>Each Armature will be keyed according to the following schema:</p>
+<ul>
+<li>
+<p><code>armature/&lt;icon-filter&gt;/&lt;strut&gt;</code></p>
+<ul>
+<li><code>&lt;icon-filter&gt;</code>: The Icon to which the Armature activates when filtering. (See <strong>Feature: Craft Filters</strong>)</li>
+<li><code>&lt;strut&gt;</code>: The Primitive Strut which the Armature integrates over its Blueprint Partition.</li>
+</ul>
+</li>
+<li>
+<p><code>icon-filters</code>: <code>building</code>, <code>road</code>, <code>tower</code>, <code>carpentry</code>, <code>railing</code></p>
+</li>
+</ul>
+<p><strong>Initialization</strong>: </p>
+<ul>
+<li>The MaterialIndex Relation and Materializer Service are used to construct a Cost Ledger for all indexed Primitive Crafts and configured Armatures.<ul>
+<li>Each separate instance of a Primitive Craft will need to be unpacked across the dimension of (Blueprints, Materials). For example, a <code>steps</code> Stair unpacks into <code>steps-up-limestone</code>, <code>steps-left-limestone</code>, <code>steps-right-limestone</code>, <code>steps-up-feldspar</code>, <code>steps-left-feldspar</code>, <code>steps-right-feldspar</code>, ... </li>
+</ul>
+</li>
+</ul>
+<p><strong>Menu: Pack</strong></p>
+<ul>
+<li><code>dock(header)</code>: <code>pane(content="Pack")</code></li>
+<li><code>stack</code>:<ul>
+<li><code>dock(subheader)</code>: <code>pane(content="Resources")</code></li>
+<li><code>dock(materials)</code>: <code>gizmo(context.inventory.pack)</code></li>
+<li><code>dock(crops)</code>: <code>gizmo(context.inventory.sack)</code></li>
+</ul>
+</li>
+<li><code>stack</code>:<ul>
+<li><code>dock(subheader)</code>: <code>pane(content="Crafts")</code></li>
+<li><code>dock(filters)</code>: <code>gizmo(context.filters)</code> </li>
+<li><code>dock(crafts)</code>: <code>gizmo(context.crafts)</code></li>
+</ul>
+</li>
+</ul>
+<p><code>dock(filters)</code> needs to be able to bind to an Enum, i.e. the static list of Frames in the <code>crafts</code> Icon, <em>and</em> a dynamically generated list of Crafts. These fields can be stored in the Menu context.</p>
+<p><strong>Minimum Viable Product: Craft Workflow</strong></p>
 <ol>
 <li>Player opens Craft Menu.</li>
-<li>Menu populates the Craft Formulae Pane with Slots hydrated from <em>all</em> entries in the Primitive Cost Ledger and initializes each one with the <code>disabled</code> Status. </li>
-<li>Controller takes Player Inventory and compares it to the Primitive Cost Ledger. Any entry in the Primitive Cost Ledger that is satisfied by the Player Inventory is set to <code>enabled</code> Status.</li>
+<li>Menu populates the Craft Formulae Pane with Slots hydrated from <em>all</em> entries in the Cost Ledger and initializes each one with the <code>disabled</code> Status. </li>
+<li>Controller takes Player Inventory and compares it to the Cost Ledger. Any entry in the Cost Ledger that is satisfied by the Player Inventory is set to <code>enabled</code> Status.</li>
 <li>Player selects a constructable Craft.</li>
 <li>Craft Menu closes.</li>
 <li>A Craft is instantiated <em>level</em> with the Player (where <em>level</em> is defined as their ground baseline's being equal) and directly <em>adjacent</em> (where <em>adjacent</em> is defined as touching with no pixel overlap).</li>
 </ol>
-<p><strong>Considerations: Icons vs Text</strong></p>
+<p><strong>Feature: Craft Filters</strong></p>
+<p>The <code>crafts</code> Icon Widget can be utilized to represent user-facing Crafts (Primitives &amp; Armatures). The Craft Menu should have a traversible dock of <code>crafts</code> Icons. When one of the <code>crafts</code> is selected, the Cost Ledger hides any entries that do not match the filter.</p>
+<h5 id="architectural-analysis-i">Architectural Analysis I</h5>
+<ol>
+<li><strong>Unified Cost Ledger (<code>LedgerService</code> / <code>CraftEntry</code>)</strong>: Rather than splitting UI flows between Primitives and Armatures, both are unpacked at boot into a flat, queryable Cost Ledger indexed by <code>(filter_icon, asset_id, blueprint, material, host)</code>. Each <code>CraftEntry</code> precomputes its unit <code>List[Cost]</code> via <code>Materializer</code> and its multiplied footprint <code>Dimensions</code> via <code>MaterialIndex</code>.</li>
+<li><strong>Decomposer Late-Binding Extension</strong>: <code>Decomposer.unpack()</code> currently omits <code>material</code> and <code>blueprint</code> from <code>root_context</code>. Exposing <code>deployed_state.material</code> in <code>root_context</code> enables <code>bind(root.material)</code> on Armature branch and component struts to resolve cleanly during deployment.</li>
+<li><strong>Pack Menu &amp; Traversal</strong>: Extending <code>menus/inventory/pack/main.yaml</code> with a filter strip Gizmo (<code>icons.crafts</code>), a filtered formulae grid Gizmo, and a reactive cost/detail readout pane preserves the existing declarative <code>Binder</code> and <code>Fabricator</code> pipeline. To let players inspect recipes they cannot yet afford, <code>MenuMechanics</code> (or <code>CollectionState</code>) must distinguish between <em>vacant</em> slots (non-traversable) and <em>unaffordable</em> slots (traversable with visual disabled/dimmed state, or inspected via focus).</li>
+<li><strong>Spatial Placement Solver</strong>: Spawning a Craft from <code>CraftController.select()</code> requires a deterministic placement check that aligns ground baselines (<span class="arithmatex">\(y_{\text{craft}} + \text{span}.l + \text{anchor} = y_{\text{player}} + \text{dim}_{\text{player}}.l\)</span>), offsets horizontally/vertically clear of the player's hitbox along <code>player.state.animation.direction</code>, and validates against <code>board.obstacles()</code>, <code>board.weights()</code>, and <code>board.perimeters</code> before consuming <code>inventory.pack</code> resources.</li>
+</ol>
+<h5 id="user-review-i">User Review I</h5>
+<p>In order to parameterize Compositions, the PseudoState needs alteration. Since Compositions use the StateSchema for their configuration schema, they get validated against the State Models. This means when the Composition leaves a parameter empty, the PseudoState will fail to validate.</p>
+<h5 id="goals">Goals</h5>
+<h6 id="goal-unified-craft-ledger-cost-indexing">Goal: Unified Craft Ledger &amp; Cost Indexing</h6>
+<p>Construct a <code>CraftLedger</code> (or extend <code>Materializer</code>) during bootstrap that enumerates all Primitive Crafts (<code>stairs</code>, <code>bridges</code>, <code>decor</code> struts) across their <code>(BlueprintPartition, MaterialSpace)</code> cross-products and all configured Armatures (<code>armature/&lt;filter&gt;/&lt;strut&gt;</code>) across their root strut's <code>MaterialSpace</code> (resolving <code>host</code> materials for <code>chromatics</code>), storing precomputed <code>List[Cost]</code> and <code>Dimensions</code> spans.</p>
+<h6 id="goal-armature-late-binding-configuration">Goal: Armature Late-Binding &amp; Configuration</h6>
+<p>Support parameterized <code>material</code> injection in <code>Decomposer.unpack()</code> and establish initial Armature YAML definitions under <code>/src/data/config/compositions/armatures/</code> keyed to <code>icons.crafts</code> filter frames.</p>
+<h6 id="goal-pack-menu-craft-ui-craftcontroller">Goal: Pack Menu Craft UI &amp; <code>CraftController</code></h6>
+<p>Wire <code>menus.pack</code> (<code>PackContext</code> / <code>InventoryContext</code>) to <code>CraftController</code>, adding the <code>crafts</code> filter dock, filtered formulae grid, live ingredient cost display, inventory sufficiency validation, and adjacent level placement via <code>board.cradle</code>.</p>
+<h5 id="tasks">Tasks</h5>
+<p><strong>1. Task: Semantics &amp; Armature Composition Support</strong></p>
+<p><em>Objective</em>: Align icon filter semantics and enable runtime <code>material</code> binding on Armature root struts.</p>
 <ul>
-<li>Craft Formulae Icon: If using Icons, the Assets will need to be atlased and indexed for each Primitive Craft. This present a problem. Will need to do an assessment of what Assets are available for this task before making any decisions.</li>
-<li>Craft Formula Labels: Could just use text labels that are binding to the Primitive Cost Ledger entries. </li>
+<li>[x] Subtask: Update <code>Decomposer.unpack()</code> in <code>src/app/services/generators/game/decomposer.py</code> to inject <code>deployed_state.material</code> and <code>deployed_state.blueprint</code> into <code>root_context</code> for <code>bind(root.material)</code> resolution.</li>
+<li>[ ] Subtask: Author baseline Armature configurations in <code>/src/data/config/compositions/armatures/</code> (e.g., <code>armature/house/home</code>).</li>
+</ul>
+<p><strong>2. Task: Craft Cost Ledger Compilation</strong></p>
+<p><em>Objective</em>: Index all constructable Primitives and Armatures with their precomputed <code>Materializer</code> resource costs and spans.</p>
+<ul>
+<li>[ ] Subtask: Define <code>CraftEntry</code> model (<code>key</code>, <code>filter</code>, <code>category</code>, <code>instance</code>, <code>id</code>, <code>blueprint</code>, <code>material</code>, <code>host</code>, <code>costs: List[Cost]</code>, <code>span: Dimensions</code>, <code>is_armature: bool</code>).</li>
+<li>[ ] Subtask: Implement ledger compilation in <code>Materializer</code> (or <code>CraftLedger</code>) during <code>Orchestrator</code> bootstrap, unpacking Primitives across <code>(blueprints, materials)</code> and Armatures across root <code>materials</code> (including <code>chromatics</code> host pairing).</li>
+<li>[ ] Subtask: Attach the compiled ledger to <code>Board</code> (or <code>Materializer</code>) for <span class="arithmatex">\(O(1)\)</span> lookup by filter category and craft key.</li>
+</ul>
+<p><strong>3. Task: Pack Menu Layout &amp; Bindings</strong></p>
+<p><em>Objective</em>: Complete the <code>CRAFT FORMULAE</code> column in <code>src/data/config/menus/inventory/pack/main.yaml</code> with filter traversal, formula slots, and recipe cost readout.</p>
+<ul>
+<li>[ ] Subtask: Extend <code>PackContext(InventoryContext)</code> with <code>ledger</code>, <code>active_filter</code>, <code>filtered_crafts</code>, and <code>selected_cost</code> fields.</li>
+<li>[ ] Subtask: Update <code>src/data/config/menus/inventory/pack/main.yaml</code> to include the <code>crafts</code> filter strip Gizmo (<code>dock</code>), the filtered craft slots Gizmo (<code>grid</code>), and a bound <code>TextBinding</code> / <code>IconBinding</code> cost readout pane.</li>
+<li>[ ] Subtask: Ensure <code>CollectionState</code> and <code>MenuMechanics</code> allow focusing unaffordable craft slots to inspect costs while preventing <code>select()</code> execution when inventory resources are insufficient.</li>
+</ul>
+<p><strong>4. Task: <code>CraftController</code> Workflow &amp; Spatial Placement</strong></p>
+<p><em>Objective</em>: Implement craft filtering, affordability checks, resource deduction, and adjacent level instantiation.</p>
+<ul>
+<li>[ ] Subtask: Implement <code>CraftController.open()</code> and <code>update()</code> to filter the Cost Ledger by <code>active_filter</code>, evaluate <code>inventory.pack</code> quantities against <code>CraftEntry.costs</code>, and update slot statuses and cost readouts.</li>
+<li>[ ] Subtask: Implement placement coordinate calculation in <code>CraftController</code> (or a placement helper) ensuring ground-baseline equality (<span class="arithmatex">\(y_{g,\text{craft}} = y_{g,\text{player}}\)</span>) and zero-overlap directional adjacency along <code>player.state.animation.direction</code>, validated against <code>board.obstacles()</code>, <code>board.weights()</code>, and <code>board.perimeters</code>.</li>
+<li>[ ] Subtask: Implement <code>CraftController.select()</code> to switch filters when a filter button is activated, or—when an affordable craft is selected—deduct required materials from <code>inventory.pack</code>, instantiate the Primitive or Armature via <code>board.cradle</code> with <code>owner = player.name</code>, and emit <code>TerminalEvent()</code>.</li>
 </ul>
 
 

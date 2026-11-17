@@ -752,6 +752,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Library: Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#models-rendering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Models: Rendering
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -3654,6 +3671,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Library: Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#models-rendering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Models: Rendering
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -3759,10 +3793,9 @@
 
 
 <h1 id="ontology-docs-architecture">Ontology Docs: Architecture</h1>
-<p>This section contains an in-depth presentation of the <a href="../00-overview/#application">Application's</a> architecture.</p>
 <h2 id="specifications">Specifications</h2>
 <h3 id="specification-initialization">Specification: Initialization</h3>
-<p>The engine utilizes a decoupled boot-and-hydrate lifecycle to achieve instantaneous menu rendering and non-blocking transitions. The general flow is shwon in the following diagram and detailed further in the following sections,</p>
+<p>The <a href="../00-overview/#application">Application</a> initialization can be traced through the following phases,</p>
 <pre class="mermaid"><code>flowchart LR
     A[Orchestrator] --&gt; B[Registry]
     B --&gt; C[Engine]
@@ -3773,29 +3806,27 @@
     G --&gt; H[Engine]</code></pre>
 <div class="admonition important">
 <p class="admonition-title">Hardware Rendering Context Pre-requisites</p>
-<p>When running in live (non-headless) mode, the hardware window context (<code>render.show()</code>) <strong>must</strong> be instantiated strictly <em>after</em> <code>render.init()</code> but <em>before</em> Registry initialization. </p>
-<p>The Registry caches textures directly into GPU memory via Cython (<code>TexturePtr</code>). If the window context does not exist when the Registry attempts to index and load <code>.png</code> files, the textures will silently resolve as empty <code>0x0</code> null pointers. This results in a "ghost state" where the entire game board is invisible, but the Board database and Mechanic systems continue to operate normally.</p>
+<p>When running in live (non-headless) mode, the hardware window context <strong>must</strong> be instantiated strictly <em>after</em> the rendering subsystem is intialized but <em>before</em> Registry initialization. The Registry caches textures directly into GPU memory via Cython. If the window context does not exist when the Registry attempts to index and load <code>.png</code> files, the textures will silently resolve as empty <code>0x0</code> null pointers. This results in a "ghost game" where the entire Screen is invisible, but the Board database and Mechanic systems continue to operate normally.</p>
 </div>
 <h4 id="phase-1-boot">Phase 1: Boot</h4>
 <ol>
 <li><strong>Bootstrapping</strong>: Loads Configuration files via Pydantic TypeAdaptor, instantiates Service singletons, compiles <a href="../05-mechanics/#dependency-executors">Executors</a> and <a href="../05-mechanics/#dependency-relations">Relations</a></li>
-<li><strong>Cython</strong>: Initializes SDL2 video, image, and typography subsystems.</li>
+<li><strong>Cython</strong>: Initializes video, image, and typography subsystems.</li>
 <li><strong>Registry</strong>: Recursively parses the Asset directory, mapping file paths and generating crop-map indexes. <em>VRAM allocation is completely deferred.</em></li>
-<li><strong>Components</strong>: Instantiates <a href="../05-mechanics/">Mechanics</a> and an empty <a href="../00-overview/#component-board">Board database</a>. </li>
-<li><strong>Ignition</strong>: The fixed-timestep loop begins. A <a href="../06-widgets/#events">MenuEvent('main')</a> is injected into the Engine bus prior to ignition to immediately render the <a href="../06-widgets/#menus">Main Menu</a>.</li>
+<li><strong>Components</strong>: Instantiates <a href="../05-mechanics/">Mechanics</a> and an empty <a href="../00-overview/#component-board">Board</a>. </li>
+<li><strong>Ignition</strong>: The <a href="#specification-engine-loop">Engine Loop</a> begins. A <a href="../06-widgets/#events">MenuEvent</a> is injected into the <a href="../00-overview/#component-engine">Engine Bus</a> prior to ignition to immediately render the <a href="../06-widgets/#menu-data">Main Menu</a>.</li>
 </ol>
 <h4 id="phase-2-hydration">Phase 2: Hydration</h4>
-<p>Triggered by a StateEvent (e.g., selecting "<em>New Game</em>" or "<em>Load</em>"), the Engine transitions into world generation without blocking the Python GIL.</p>
+<p>When the User selects "<em>New Game</em>" or "<em>Load</em>" from the <a href="../06-widgets/#menu-data">Main Menu</a>, an <a href="../06-widgets/#concept-asychronicity">Event</a> is thrown to the <a href="../00-overview/#component-engine">Engine Bus</a>, signaling the onset of the <a href="../05-mechanics/#mechanics-world">World Mechanic context</a>.</p>
 <ol>
-<li><strong>Generation</strong>: The <a href="../06-widgets/#controllers">LoadController</a> calls the Migrator each frame. The Migrator applies calls the <a href="../00-overview/#service-factory">Factory</a> to generate batches of Assets from the State file, injecting Frame, Animation, Hitbox, Properties, and State components, then yields execution back to the Engine.
-   *The StateSchema distinguishes between Physical Asset State (Assets requiring State, Frames, etc.) and World State. During hydration, the Migrator parses World State and assigns it to the Board.</li>
-<li><strong>Prewarming</strong>: Concurrently, the Registry parses a queue of keys, loading Asset files into memory within a time budget.</li>
-<li><strong>Allocation</strong>: Once hydration is complete, the Migrator triggers  all Screens to recalculate max dimensions and reallocate canvases for the Painter's Algorithm.</li>
+<li><strong>Generation</strong>: The <a href="../06-widgets/#controllers">LoadController</a> calls the Migrator each frame. The Migrator applies calls the <a href="../00-overview/#service-factory">Factory</a> to generate batches of Assets from the State file, injecting Frame, Animation, Hitbox, Properties, and State components, then yields execution back to the Engine.</li>
+<li><strong>Prewarming</strong>: Concurrently, the Registry parses a queue of keys, loading Asset files into memory.</li>
+<li><strong>Allocation</strong>: Once hydration is complete, the Migrator triggers the Screen to reallocate canvases for the Painter's Algorithm.</li>
 <li><strong>Execution</strong>: The LoadController emits a <a href="../06-widgets/#events">TerminalEvent</a>, popping the loading screen, activating the Board, and unpausing the <a href="../05-mechanics/#mechanics-world">World Mechanics</a>.</li>
 </ol>
 <h3 id="specification-engine-loop">Specification: Engine Loop</h3>
-<p>The Engine delegates behavior to <a href="../05-mechanics/">Mechanics</a>. Rather than the <a href="../00-overview/#component-engine">Engine</a> passing arguments to a system, a Mechanic is responsible for querying the <a href="../00-overview/#component=board">Board</a> for the exact data it requires, processing the state, and optionally pushing Events to the Engine's Bus.</p>
-<p>Mechanics are strictly segregated into <code>core</code> pipelines and <code>world</code> pipelines. The <a href="../00-overview/#component-engine">Engine</a> method processes these pipelines conditionally:</p>
+<p>The Engine delegates behavior to <a href="../05-mechanics/">Mechanics</a>. Rather than the <a href="../00-overview/#component-engine">Engine</a> passing arguments to a system, a Mechanic is responsible for querying the <a href="../00-overview/#component=board">Board</a> for the exact data it requires, processing the state, and optionally pushing Events to the Engine Bus.</p>
+<p>Mechanics are segregated into <code>core</code> pipelines and <code>world</code> pipelines. The <a href="../00-overview/#component-engine">Engine</a> processes these pipelines conditionally:</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_play</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Apply Mechanics.</span>
@@ -3808,68 +3839,67 @@
             <span class="n">mechanic</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bus</span><span class="p">)</span>
 </code></pre></div>
 <ul>
-<li><strong>Core Mechanics:</strong> Systems that must execute every frame regardless of game state. This includes <a href="../05-mechanics/#core">MenuMechanics</a> (to process input and layout traversals), <a href="../05-mechanics/#core">AnimationMechanics</a> (to keep Assets animating), and RemoveMechanics (garbage collection).</li>
-<li><strong>World Mechanics:</strong> Systems that govern gameplay logic, physics, and NPC behavior. This includes <a href="../05-mechanics/">MotionMechanics, CombatMechanics, and PlayerMechanics</a>.</li>
+<li><strong>Core Mechanics:</strong> Systems that must execute every tick regardless of the Board State. This includes <a href="../05-mechanics/#core">MenuMechanics</a> (to process input and layout traversals), <a href="../05-mechanics/#core">AnimationMechanics</a> (to keep Assets animating), and RemoveMechanics (to optimize memory).</li>
+<li><strong>World Mechanics:</strong> Systems that govern logic, physics, and behavior. This includes <a href="../05-mechanics/">MotionMechanics, CombatMechanics, and PlayerMechanics</a>.</li>
 </ul>
-<p>When a <a href="../06-widgets/#events">MenuEvent</a> fires and a modal Menu is pushed to the screen, the Board is paused. The Engine skips the World Mechanics loop entirely. The World freezes, but Core Mechanics continue ticking, allowing the User to navigate the Menu.</p>
+<p>When an <a href="../06-widgets/#events">Event</a> fires and a Menu is pushed to the screen, the Board is paused. The Engine skips the World Mechanics loop entirely. The World freezes, but Core Mechanics continue ticking, allowing the User to navigate the Menu.</p>
 <h3 id="specification-board-caches">Specification: Board Caches</h3>
 <h4 id="cache-spatial-grid">Cache: Spatial Grid</h4>
-<p>To optimize environmental lookups without traversing linear asset arrays, the Board utilizes two discrete (<span class="arithmatex">\(O(1)\)</span>) spatial hash grids managed by <code>BoardCaches</code>:</p>
+<p>The Board utilizes several spatial hash grids <span class="arithmatex">\((c_x, c_y)\)</span>:</p>
 <ol>
-<li><strong>Tile Spatial Grid (<code>tilemap</code>)</strong>:</li>
+<li><strong>Tile Grid</strong>: Partitions Tiles into buckets nested by Layer and Instance</li>
 </ol>
-<p>Partitions Tiles into spatial buckets. To prevent <a href="../01-assets/#tile-canopy">Canopy Tiles</a> from overwriting <a href="../01-assets/#tile-environ">Environ Tiles</a>, buckets nest by layer and instance:</p>
 <div class="arithmatex">\[
 \text{tilemap}[\text{layer}][\text{instance}][(c_x, c_y)] \to \text{Asset}
 \]</div>
 <ol>
-<li><strong>Hydrological Broad-Phase Grid</strong>:</li>
+<li><strong>Fluid Grid</strong>: Paritions Fluid streams and their Pools into buckets. Each bucket stores references to overlapping Fluids:</li>
 </ol>
-<p>Indexes active Fluid streams, annular pools, and branching corridors into spatial buckets. Each bucket stores references to overlapping Fluids:</p>
 <div class="arithmatex">\[
 \text{fluidmap}[\text{layer}][(c_x, c_y)] \to \text{List}[\text{Asset}]
 \]</div>
-<p>When asserting Fluid immersion, the Engine queries the bucket corresponding to the coordinate, then delegates to narrow-phase AABB segment validation.</p>
 <h3 id="specification-graphics">Specification: Graphics</h3>
 <h4 id="rendering-sort">Rendering: Sort</h4>
-<p>World rendering evaluates spatial geometry using discrete elevations, intra-elevation substrate planes, ground perspective, and coplanar priority:</p>
+<p>The <a href="../00-overview/#component-screen">Screen</a> calculates rendering order using Elevations, Substrates, ground baseline, and a static priority:</p>
 <div class="arithmatex">\[
-\text{sort_key}(A) = \Big(A.\text{elevation}, A.\text{substrate}, \text{ground_y}(A), A.\text{properties.priority}\Big)
+\text{sortkey}(A) = \Big(A.\text{elevation}, A.\text{substrate}, \text{ground}(A), A.\text{properties.priority}\Big)
 \]</div>
 <ol>
 <li><strong>Primary Key (<code>A.elevation</code> <span class="arithmatex">\(\in \mathbb{Z}_{\ge 0}\)</span>)</strong>: Discrete elevation (<code>0</code>, <code>1</code>, <code>2</code>, ...).</li>
-<li><strong>Secondary Key (<code>A.substrate</code> <span class="arithmatex">\(\in \mathbb{Z}_{\le 0}\)</span>)</strong>: Intra-elevation rendering plane within <span class="arithmatex">\(E\)</span>:</li>
-<li><code>Substrates.ENVIRON (-4)</code>: <code>tiles.environ</code></li>
-<li><code>Substrates.FLUIDS (-3)</code>: <code>effects.fluids</code></li>
-<li><code>Substrates.SURFACES (-2)</code>: <code>geography.shorelines</code>, <code>crafts.struts.floors</code>, <code>crafts.struts.paths</code>, <code>crafts.strtuts.flats</code></li>
-<li><code>Substrates.OVERLAYS (-1)</code>: <code>crafts.bridges</code>, <code>crafts.stairs</code>, <code>objects.doors</code>, <code>crafts.struts.solids</code>, <code>crafts.struts.stripes</code>, <code>crafts.struts.designs</code></li>
-<li><code>Substrates.STANDARD (0)</code>: All upright entities, walls, columns, enclosures, objects, and sheets.</li>
-<li><strong>Tertiary Key (<code>ground_y</code> <span class="arithmatex">\(\in \mathbb{Z}\)</span>)</strong>: Geometric perspective offset by Anchor: <span class="arithmatex">\(\text{ground_y} = \text{int}(A.\text{state.position.y} + A.\text{dimensions.l} + A.\text{state.anchor})\)</span>.</li>
-<li><strong>Quaternary Key (<code>priority</code> <span class="arithmatex">\(\in \mathbb{Z}\)</span>)</strong>: Coplanar tie-breaker for Assets sharing an identical <code>(elevation, substrate, ground_y)</code> baseline.</li>
+<li><strong>Secondary Key (<code>A.substrate</code> <span class="arithmatex">\(\in \mathbb{Z}_{\le 0}\)</span>)</strong>: Rendering plane within a given elevation:<ul>
+<li><code>-4</code>: <a href="../01-assets/#tile-environ">Environ Tiles</a></li>
+<li><code>-3</code>: <a href="../01-assets/#effect-fluids">Fluids</a></li>
+<li><code>-2</code>: <a href="../03-compositions/#craft-struts">Struts</a>, <a href="../09-ecology/#category-geography">Geography</a>.</li>
+<li><code>-1</code>: <a href="../01-assets/#craft-bridges">Bridges</a>, <a href="../01-assets/#craft-stairs">Stairs</a>.</li>
+<li><code>0</code>: Standard Substrate.</li>
+</ul>
+</li>
+<li><strong>Tertiary Key (<span class="arithmatex">\(\text{ground} \in \mathbb{Z}\)</span>)</strong>: Geometric perspective offset by Anchor: <span class="arithmatex">\(\text{ground} = \text{int}(A.\text{state.position.y} + A.\text{dimensions.l} + A.\text{state.anchor})\)</span>.</li>
+<li><strong>Quaternary Key (<span class="arithmatex">\(\text{priority} \in \mathbb{Z}\)</span>)</strong>: Coplanar tie-breaker for Assets sharing an identical <code>(elevation, substrate, ground)</code> baseline.</li>
 </ol>
 <h4 id="rendering-typography">Rendering: Typography</h4>
-<p>A Font configuration pairs a <code>.ttf</code> file with styling rules. During bootstrap, the Registry ingests each Font declared in <code>/src/assets/fonts/**/*.yaml</code>, storing them as styled Cython <code>TTFFont</code> wrappers. When <code>outline</code> is specified, the Registry instantiates a secondary internal outline pointer configured via <code>TTF_SetFontOutline</code>, enabling <code>render.write()</code> to execute two-pass blended rendering (outline pass followed by foreground fill) without runtime glyph cache invalidation.</p>
-<p>In Menu hierarchies, Font are scoped lexically at the MenuPane level: any <code>font</code> declared on a parent pane cascades down to all child Widgets unless explicitly shadowed by a nested pane.</p>
+<p>A Font configuration pairs a <code>.ttf</code> file with styling rules. During bootstrap, the Registry ingests each Font declared in <code>/src/assets/fonts/**/*.yaml</code>, storing them as styled Cython wrappers. </p>
+<p>In <a href="../06-widgets/#configuration-menus">Menu Configurations</a>, Font are scoped at the <a href="../06-widgets/#widget-panes">Pane</a> level: any Fany declared on a parent Pane cascades down to all child Widgets unless explicitly overridden by a nested pane.</p>
 <p>See <a href="#library-graphics">Library: Graphics</a> for more implementation details.</p>
 <p><strong>Properties: FontProperties</strong></p>
 <ul>
-<li><code>size: int</code>: Point size used during glyph rasterization (defaults to <code>24</code>).</li>
-<li><code>alignment: str</code>: Text alignment within the bounding box (<code>left</code>, <code>center</code>, <code>right</code>).</li>
-<li><code>bold: bool</code>: Toggles <code>TTF_STYLE_BOLD</code>.</li>
-<li><code>italics: bool</code>: Toggles <code>TTF_STYLE_ITALIC</code>.</li>
-<li><code>underline: bool</code>: Toggles <code>TTF_STYLE_UNDERLINE</code>.</li>
-<li><code>strikethrough: bool</code>: Toggles <code>TTF_STYLE_STRIKETHROUGH</code>.</li>
+<li><code>size: int</code>: Font size (defaults to <code>24</code>).</li>
+<li><code>alignment: str</code>: Text alignment (<code>left</code>, <code>center</code>, <code>right</code>).</li>
+<li><code>bold: bool</code></li>
+<li><code>italics: bool</code></li>
+<li><code>underline: bool</code></li>
+<li><code>strikethrough: bool</code></li>
 <li><code>margins: float</code>: Fractional padding applied to the target canvas bounds before wrapping (e.g., <code>0.05</code> for 5%).</li>
-<li><code>color</code>: Primary glyph fill color.<ul>
+<li><code>color: Color</code>: <ul>
 <li><code>r: int</code> (0–255)</li>
 <li><code>g: int</code> (0–255)</li>
 <li><code>b: int</code> (0–255)</li>
 <li><code>a: int</code> (0–255)</li>
 </ul>
 </li>
-<li><code>outline</code>: (<em>Optional</em>) Border styling configuration.<ul>
-<li><code>width: int</code>: Perimeter thickness in pixels (<code>outline &gt; 0</code> enables two-pass rendering).</li>
-<li><code>color</code>:<ul>
+<li><code>outline</code>: (<em>Optional</em>) <ul>
+<li><code>width: int</code>: Perimeter thickness in pixels</li>
+<li><code>color: Color</code>:<ul>
 <li><code>r: int</code> (0–255)</li>
 <li><code>g: int</code> (0–255)</li>
 <li><code>b: int</code> (0–255)</li>
@@ -3881,9 +3911,9 @@
 </ul>
 <p><strong>Required: Fonts</strong></p>
 <ul>
-<li><code>dialogue</code>: Standard proportional font used to render NPC conversations and narrative logs.</li>
-<li><code>menu</code>: High-contrast, styled font used for interactive UI controls and button labels.</li>
-<li><code>title</code>: Large-format font used for menu headers and screen titles.</li>
+<li><code>dialogue</code>: Font used to render text.</li>
+<li><code>menu</code>: Font used for Buttons.</li>
+<li><code>title</code>: Font used for headings.</li>
 </ul>
 <h3 id="specification-cython-libraries">Specification: Cython Libraries</h3>
 <p>While Python objects are fast enough for general logic, calculating collisions and processing rendering instructions for thousands of entities requires maximum performance. The engine uses Cython to bridge this gap, adhering to a <strong>"Zero Heap Allocation in the Inner Loop"</strong> philosophy to prevent frame stutters caused by the Python Garbage Collector.</p>
@@ -3920,102 +3950,321 @@
 <li><code>position: Position</code></li>
 <li><code>dimension Dimensions</code></li>
 </ul>
-<p><strong>ScreenPosition</strong>:</p>
+<p><strong>Model: Scale</strong>:</p>
 <ul>
-<li><code>px: double</code></li>
-<li><code>py: double</code></li>
+<li><code>pw: double</code></li>
+<li><code>pl: double</code></li>
+</ul>
+<h5 id="models-rendering">Models: Rendering</h5>
+<ul>
+<li><strong><code>TexturePtr</code></strong>: Wraps a raw <code>SDL_Texture*</code> pointer alongside its integer dimensions (<code>w</code>, <code>l</code>).</li>
+<li><strong><code>TTFFont</code></strong>: Wraps a raw <code>TTF_Font*</code> pointer alongside its pre-configured styling metadata.</li>
 </ul>
 <h4 id="library-math">Library: Math</h4>
 <ul>
 <li>Address: <code>libs.core.math</code></li>
 </ul>
-<p>The engine leverages Cython for high-frequency mathematical, geometric, and physical calculations. To achieve maximum throughput, stateless operations are implemented as module-level <code>cpdef</code> and <code>cdef</code> functions within the <code>libs.core.math</code> package, avoiding the Virtual Method Table (vtable) overhead of class wrappers.</p>
-<p>Spatial data (such as <code>Position</code>, <code>Velocity</code>, <code>Dimensions</code>, and <code>Hitbox</code>) are modeled as Cython Extension Types (<code>cdef class</code> in <code>libs.core.models</code>). This structure allows the engine to pass objects across the Python/C boundary while allowing C-level functions to access spatial properties (e.g., <code>pos.x</code>, <code>hb.dimensions.l</code>) natively without dictionary lookups.</p>
-<p>The engine selectively manages the Global Interpreter Lock (GIL). Standard spatial routines retain the GIL to preserve reference counting and clean iteration syntax over Python collections. Performance-critical, loop-intensive mathematical routines—specifically RRT tree generation in <code>paths.pyx</code>—release the GIL (<code>nogil</code>) and execute entirely against contiguous C-allocated buffers.</p>
+<p>The mathematical foundation of the Engine operates over the two-dimensional Euclidean plane <span class="arithmatex">\(\mathbb{R}^2\)</span> and its discrete integer lattice <span class="arithmatex">\(\mathbb{Z}^2\)</span>:</p>
+<ul>
+<li><em>Coordinate Space</em>: Each Layer defines an independent Cartesian plane with origin <span class="arithmatex">\((0, 0)\)</span> at the upper-left corner, <span class="arithmatex">\(+x\)</span> directed right, and <span class="arithmatex">\(+y\)</span> directed down.</li>
+<li><em>Bounding Primitives</em>: A rectangular region (Axis-Aligned Bounding Box, or AABB) is parameterized by its upper-left origin <span class="arithmatex">\((x, y)\)</span> and non-negative dimensions <span class="arithmatex">\((w, l)\)</span>, spanning the half-open interval:</li>
+</ul>
+<div class="arithmatex">\[
+R(x, y, w, l) = [x, x + w) \times [y, y + l)
+\]</div>
+<ul>
+<li><em>Composite Footprints</em>: An Asset at world position <span class="arithmatex">\((x_a, y_a)\)</span> with relative Hitboxes <span class="arithmatex">\(\{(x_i, y_i, w_i, l_i)\}\)</span> occupies the union of translated bounding boxes:</li>
+</ul>
+<div class="arithmatex">\[
+\mathcal{H}(A) = \bigcup_{i} \big[x_a + x_i, x_a + x_i + w_i\big) \times \big[y_a + y_i, y_a + y_i + l_i\big)
+\]</div>
 <h5 id="math-geometry">Math: Geometry</h5>
 <ul>
 <li>Address: <code>libs.core.math.geometry</code></li>
 </ul>
-<p>This module houses pure geometric evaluations, translating expensive Python float and distance calculations into C-level primitives.</p>
+<p><strong>Interfaces</strong></p>
+<ol>
+<li><strong><code>intersects</code></strong>: Calculates Axis-Aligned Bounding Box intersections.</li>
+</ol>
+<p>Two axis-aligned bounding boxes <span class="arithmatex">\(R_1 = (x_1, y_1, w_1, l_1)\)</span> and <span class="arithmatex">\(R_2 = (x_2, y_2, w_2, l_2)\)</span> intersect if and only if their projections overlap on both principal axes:</p>
+<div class="arithmatex">\[
+(x_1 &lt; x_2 + w_2)
+$$
+$$
+(x_1 + w_1 &gt; x_2)
+$$
+$$
+(y_1 &lt; y_2 + l_2)
+$$
+$$
+(y_1 + l_1 &gt; y_2)
+\]</div>
+<p>A point <span class="arithmatex">\((p_x, p_y)\)</span> lies inside <span class="arithmatex">\(R(x, y, w, l)\)</span> when <span class="arithmatex">\(x \le p_x &lt; x + w\)</span> and <span class="arithmatex">\(y \le p_y &lt; y + l\)</span>.</p>
+<ol>
+<li><strong><code>onscreen</code></strong>: Evaluates if an Asset intersects with the Screen Camera.</li>
+</ol>
+<p>For a Camera of dimensions <span class="arithmatex">\((w_s, l_s)\)</span> centered on a focus at <span class="arithmatex">\((x_f, y_f)\)</span> with dimensions <span class="arithmatex">\((w_f, l_f)\)</span>, the camera origin is:</p>
+<div class="arithmatex">\[
+x_c = x_f + \left\lfloor \frac{w_f}{2} \right\rfloor - \left\lfloor \frac{w_s}{2} \right\rfloor
+$$
+$$y_c = y_f + \left\lfloor \frac{l_f}{2} \right\rfloor - \left\lfloor \frac{l_s}{2} \right\rfloor
+\]</div>
+<p>An Asset is visible on screen if its bounding box intersects <span class="arithmatex">\(R(x_c, y_c, w_s, l_s)\)</span>.</p>
+<ol>
+<li>
+<p><strong><code>cone</code></strong>: Field-of-view check validating whether a target coordinate falls within a parameterized directional vision cone.</p>
+<p>Given a source point <span class="arithmatex">\(\mathbf{s} = (s_x, s_y)\)</span> and a target point <span class="arithmatex">\(\mathbf{t} = (t_x, t_y)\)</span> with displacement <span class="arithmatex">\(\mathbf{d} = \mathbf{t} - \mathbf{s} = (\Delta x, \Delta y)\)</span>:</p>
+<p>Given a cardinal unit heading vector <span class="arithmatex">\(\hat{\mathbf{u}} \in \{(0, -1), (0, 1), (-1, 0), (1, 0)\}\)</span> and angular cosine threshold <span class="arithmatex">\(\cos\alpha\)</span>, <span class="arithmatex">\(\mathbf{t}\)</span> lies within the field of view of radius <span class="arithmatex">\(r\)</span> when <span class="arithmatex">\(\|\mathbf{d}\|^2 \le r^2\)</span> and:</p>
+<div class="arithmatex">\[
+(\mathbf{d} = \mathbf{0})
+\lor
+(\frac{\mathbf{d} \cdot \hat{\mathbf{u}}}{\|\mathbf{d}\|} \ge \cos\alpha)
+\]</div>
+<ol>
+<li><strong><code>nearby</code></strong>: Euclidean distance check.</li>
+</ol>
+<p><span class="arithmatex">\(\mathbf{t}\)</span> lies within radius <span class="arithmatex">\(r\)</span> of <span class="arithmatex">\(\mathbf{s}\)</span> if and only if:</p>
+<div class="arithmatex">\[
+\|\mathbf{d}\|^2 = \Delta x^2 + \Delta y^2 &lt; r^2
+\]</div>
+</li>
+<li>
+<p><strong><code>punctures</code></strong>: Implementation of the Liang-Barsky line clipping algorithm. Evaluates whether a line segment <span class="arithmatex">\((x_1, y_1) \to (x_2, y_2)\)</span> penetrates the interior of an AABB obstacle with non-degenerate penetration depth (<span class="arithmatex">\(u_1 &lt; u_2 - \epsilon\)</span>).</p>
+<p>A directed line segment from <span class="arithmatex">\(\mathbf{p}_1 = (x_1, y_1)\)</span> to <span class="arithmatex">\(\mathbf{p}_2 = (x_2, y_2)\)</span> is parameterized over <span class="arithmatex">\(u \in [0, 1]\)</span> by:</p>
+<div class="arithmatex">\[
+\mathbf{p}(u) = \mathbf{p}_1 + u(\mathbf{p}_2 - \mathbf{p}_1) = (x_1 + u\Delta x,\; y_1 + u\Delta y)
+\]</div>
+<p>Intersection with an obstacle rectangle <span class="arithmatex">\(R = [r_x, r_x + r_w] \times [r_y, r_y + r_l]\)</span> satisfies the system of four linear inequalities $ p_k \le q_k$ for <span class="arithmatex">\(k \in \{0, 1, 2, 3\}\)</span>:</p>
+<div class="arithmatex">\[
+p_0 = -\Delta x, \quad q_0 = x_1 - r_x
+$$
+$$
+p_1 = +\Delta x, \quad q_1 = (r_x + r_w) - x_1
+$$
+$$
+p_2 = -\Delta y,  \quad q_2 = y_1 - r_y
+$$
+$$
+p_3 = +\Delta y, \quad q_3 = (r_y + r_l) - y_1
+\]</div>
+<p>Let <span class="arithmatex">\(u_1\)</span> and <span class="arithmatex">\(u_2\)</span> denote the clipped entry and exit parameters:</p>
+<div class="arithmatex">\[
+u_1 = \max\Big(\{0\} \cup \{\frac{q_k}{p_k} \mid p_k &lt; 0 \}\Big)
+$$
+$$
+u_2 = \min\Big(\{1\} \cup \{\frac{q_k}{p_k} \mid p_k &gt; 0 \}\Big)
+\]</div>
+<p>The segment punctures the interior of <span class="arithmatex">\(R\)</span> if no parallel boundary is violated (<span class="arithmatex">\(p_k = 0 \implies q_k &gt; \epsilon\)</span>) and <span class="arithmatex">\(u_1 &lt; u_2 - \epsilon\)</span> for tolerance <span class="arithmatex">\(\epsilon &gt; 0\)</span>. Line of sight holds between <span class="arithmatex">\(\mathbf{p}_1\)</span> and <span class="arithmatex">\(\mathbf{p}_2\)</span> over an obstacle set <span class="arithmatex">\(\mathcal{O}\)</span> if the segment punctures no rectangle in <span class="arithmatex">\(\mathcal{O}\)</span>.</p>
+</li>
+<li>
+<p><strong><code>los</code></strong>: Raycasts a line-of-sight segment across a collection of primitive AABB tuples.</p>
+<p>For a corridor of cross-section <span class="arithmatex">\((s_w, s_l)\)</span> originating at <span class="arithmatex">\((s_x, s_y)\)</span> and propagating along a cardinal direction up to distance <span class="arithmatex">\(D_{\max}\)</span>, the distance to the nearest obstructing rectangle <span class="arithmatex">\((o_x, o_y, o_w, o_l) \in \mathcal{O}\)</span> is evaluated over obstacles whose transverse projection overlaps the corridor:</p>
 <ul>
-<li><strong><code>intersects</code></strong>: Calculates Axis-Aligned Bounding Box (AABB) intersections. Iterates through entity hitboxes, returning the overlapping tuple pair or <code>None</code>.</li>
-<li><strong><code>onscreen</code></strong>: AABB camera culling check used by the renderer. Evaluates if an asset's absolute position intersects with the camera viewport.</li>
-<li><strong><code>cone</code></strong>: A zero-allocation field-of-view check validating whether a target coordinate falls within a parameterized directional vision cone.</li>
-<li><strong><code>nearby</code></strong>: Pure integer squared-distance check (<span class="arithmatex">\(dx^2 + dy^2 &lt; r^2\)</span>).</li>
-<li>**<code>punctures</code> / <code>c_punctures**</code>: A <code>noexcept nogil</code> implementation of the Liang-Barsky line clipping algorithm. Evaluates whether a line segment <span class="arithmatex">\((x_1, y_1) \to (x_2, y_2)\)</span> penetrates the interior of an AABB obstacle with non-degenerate penetration depth (<span class="arithmatex">\(u_1 &lt; u_2 - \epsilon\)</span>).</li>
-<li><strong><code>los</code></strong>: Raycasts a line-of-sight segment across a collection of primitive AABB tuples using <code>c_punctures</code>, returning <code>True</code> if clear and <code>False</code> if occluded.</li>
-<li><strong><code>contours</code></strong>: Executes a two-pass Sweep-Line algorithm over primitive AABBs to dynamically generate map boundaries. Uses C-level interval merging and XOR symmetric differences to isolate exposed contour edges, returning boundary segments.</li>
-<li><strong><code>bounded</code></strong>: Narrow-phase validation checking whether an asset's offset hitboxes intersect a raw mathematical boundary constraint.</li>
+<li><em>Vertical Propagation</em> (<span class="arithmatex">\(o_x &lt; s_x + s_w\)</span> and <span class="arithmatex">\(o_x + o_w &gt; s_x\)</span>):</li>
 </ul>
+<div class="arithmatex">\[
+d_{\text{down}} = \min\Big(\{D_{\max}\} \cup \{ o_y - s_y \mid o_y &gt; s_y \}\Big)
+$$
+$$
+d_{\text{up}} = \min\Big(\{D_{\max}\} \cup \{s_y - (o_y + o_l) \mid o_y + o_l &lt; s_y\}\Big)
+\]</div>
+<ul>
+<li><em>Horizontal Propagation</em> (<span class="arithmatex">\(o_y &lt; s_y + s_l \land o_y + o_l &gt; s_y\)</span>):</li>
+</ul>
+<div class="arithmatex">\[
+d_{\text{right}} = \min\Big(\{D_{\max}\} \cup \{o_x - s_x \mid o_x &gt; s_x\}\Big)
+$$
+$$
+d_{\text{left}} = \min\Big(\{D_{\max}\} \cup \{s_x - (o_x + o_w) \mid o_x + o_w &lt; s_x\}\Big)
+\]</div>
+</li>
+<li>
+<p><strong><code>contours</code></strong>: Executes a two-pass Sweep-Line algorithm over primitive AABBs to generate map boundaries. Uses interval merging and XOR symmetric differences to isolate exposed contour edges, returning boundary segments.</p>
+<p>Given a family of axis-aligned rectangles <span class="arithmatex">\(\{R_i = [x_{i,\min}, x_{i,\max}] \times [y_{i,\min}, y_{i,\max}]\}\)</span>, the exposed boundary contours of their union <span class="arithmatex">\(\mathcal{U} = \bigcup_i R_i\)</span> are derived via a two-pass orthogonal sweep:</p>
+<ul>
+<li><em>Vertical Sweep</em>: Sort all vertical edges by <span class="arithmatex">\(x\)</span>-coordinate, pairing <span class="arithmatex">\(x_{i,\min}\)</span> with event <span class="arithmatex">\(+1\)</span> and <span class="arithmatex">\(x_{i,\max}\)</span> with event <span class="arithmatex">\(-1\)</span>. At each event coordinate <span class="arithmatex">\(x\)</span>, let <span class="arithmatex">\(I_{\text{prev}}\)</span> and <span class="arithmatex">\(I_{\text{curr}}\)</span> denote the merged 1D <span class="arithmatex">\(y\)</span>-intervals of active rectangles before and after <span class="arithmatex">\(x\)</span>. The asymmetric set differences isolate the exposed vertical contour segments at <span class="arithmatex">\(x\)</span>:</li>
+</ul>
+<div class="arithmatex">\[
+E_{\text{left}}(x) = I_{\text{curr}} \setminus I_{\text{prev}}
+$$
+$$
+E_{\text{right}}(x) = I_{\text{prev}} \setminus I_{\text{curr}}
+\]</div>
+<ul>
+<li><em>Horizontal Sweep</em>: Sort all horizontal edges by <span class="arithmatex">\(y\)</span>-coordinate, pairing <span class="arithmatex">\(y_{i,\min}\)</span> with <span class="arithmatex">\(+1\)</span> and <span class="arithmatex">\(y_{i,\max}\)</span> with <span class="arithmatex">\(-1\)</span>. Comparing the merged 1D <span class="arithmatex">\(x\)</span>-intervals <span class="arithmatex">\(J_{\text{prev}}\)</span> and <span class="arithmatex">\(J_{\text{curr}}\)</span> isolates the exposed horizontal contour segments at <span class="arithmatex">\(y\)</span>:</li>
+</ul>
+</li>
+<li>
+<p><strong><code>bounded</code></strong> Narrow-phase validation checking whether an Asset's offset hitboxes intersect a raw mathematical boundary constraint.</p>
+</li>
+</ol>
 <h5 id="math-paths">Math: Paths</h5>
 <ul>
 <li>Address: <code>libs.core.math.paths</code></li>
 </ul>
-<p>This module implements the Rapidly-exploring Random Tree (RRT) pathfinding algorithm in pure C memory.</p>
+<p>Given a start coordinate <span class="arithmatex">\(\mathbf{s} = (s_x, s_y)\)</span>, a target coordinate <span class="arithmatex">\(\mathbf{t} = (t_x, t_y)\)</span>, a step size <span class="arithmatex">\(\delta &gt; 0\)</span>, an iteration limit <span class="arithmatex">\(N_{\max}\)</span>, and a set of obstacle rectangles <span class="arithmatex">\(\mathcal{O}\)</span> (inflated in configuration space by the navigating Sprite's Hitbox half-dimensions and clearance radius), pathfinding constructs a collision-free trajectory from <span class="arithmatex">\(\mathbf{s}\)</span> to <span class="arithmatex">\(\mathbf{t}\)</span> via a Rapidly-exploring Random Tree (RRT).</p>
+<p><strong>Interface</strong></p>
+<ol>
+<li>
+<p><strong><code>rrt</code></strong></p>
 <ul>
-<li><strong>Memory Management</strong>: Ingests obstacle lists at function entry into a flat <code>RRTObstacle*</code> contiguous buffer and allocates an <code>RRTNode*</code> tree buffer sized to <code>max_iter + 2</code> via <code>malloc()</code>. Both buffers are freed synchronously via a <code>try...finally</code> block.</li>
-<li><strong>Tree Representation</strong>: Nodes are represented as flat <code>RRTNode</code> structs containing coordinate values and an integer <code>parent_idx</code>, eliminating object pointer chasing and heap fragmentation.</li>
-<li><strong>Inner Loop (<code>nogil</code>)</strong>: Releases the Python GIL during the exploratory phase. Executes 5% goal-biased continuous coordinate sampling, <span class="arithmatex">\(O(N)\)</span> nearest-neighbor distance minimization via <code>hypotf()</code>, fixed-distance trigonometric node steering via <code>atan2f()</code>, <code>cosf()</code>, and <code>sinf()</code>, and line-of-sight segment verification via <code>c_punctures</code>.</li>
-<li><strong>Path Reconstruction</strong>: Re-acquires the GIL upon reaching the goal, traverses the <code>parent_idx</code> chain in reverse into an integer path buffer, and instantiates the final list of Python <code>Position</code> models. Returns an empty list if iterations expire without resolving a route.</li>
+<li><em>Search Window Partitioning</em>: Define a padded search domain enclosing <span class="arithmatex">\(\mathbf{s}\)</span> and <span class="arithmatex">\(\mathbf{t}\)</span> with margin <span class="arithmatex">\(\mathbf{m} = (0.2|t_x - s_x| + 2\delta, 0.2|t_y - s_y| + 2\delta)\)</span>:</li>
 </ul>
+<div class="arithmatex">\[
+[x_{\min}, x_{\max}] = [\min(s_x, t_x) - m_x, \max(s_x, t_x) + m_x]
+$$
+$$
+[y_{\min}, y_{\max}] = [\min(s_y, t_y) - m_y,\; \max(s_y, t_y) + m_y]
+\]</div>
+<p>If <span class="arithmatex">\(x_{\min} &lt; 0\)</span> or <span class="arithmatex">\(y_{\min} &lt; 0\)</span>, the negative offset is added to the corresponding upper bound and the lower bound is clamped to <span class="arithmatex">\(0\)</span>. The active obstacle set is restricted to <span class="arithmatex">\(\mathcal{O}_{\text{local}} = \{R \in \mathcal{O} \mid R \cap ([x_{\min}, x_{\max}] \times [y_{\min}, y_{\max}]) \neq \emptyset\}\)</span>.</p>
+<ul>
+<li>
+<p><em>Goal-Biased Tree Expansion</em>: Initialize a tree <span class="arithmatex">\(\mathcal{T} = (V, E)\)</span> rooted at <span class="arithmatex">\(\mathbf{v}_0 = \mathbf{s}\)</span>. For up to <span class="arithmatex">\(N_{\max}\)</span> iterations:</p>
+</li>
+<li>
+<p><em>Sampling</em>: Draw <span class="arithmatex">\(u, u_x, u_y \sim \mathcal{U}(0, 1)\)</span> with goal bias <span class="arithmatex">\(p_{\text{goal}} = 0.05\)</span>:</p>
+</li>
+</ul>
+<div class="arithmatex">\[
+\mathbf{q} = \begin{cases} \mathbf{t} &amp; \text{if } u \le p_{\text{goal}} \\ \big(x_{\min} + u_x(x_{\max} - x_{\min}),\; y_{\min} + u_y(y_{\max} - y_{\min})\big) &amp; \text{otherwise} \end{cases}
+\]</div>
+<ul>
+<li><em>Nearest Neighbor</em>: Select the tree vertex <span class="arithmatex">\(\mathbf{v}_{\text{near}} \in V\)</span> minimizing Euclidean distance to <span class="arithmatex">\(\mathbf{q}\)</span>:</li>
+</ul>
+<div class="arithmatex">\[
+\mathbf{v}_{\text{near}} = \arg\min_{\mathbf{v} \in V} \|\mathbf{v} - \mathbf{q}\|_2
+\]</div>
+<ul>
+<li><em>Clamped Steering</em>: Step from <span class="arithmatex">\(\mathbf{v}_{\text{near}}\)</span> toward <span class="arithmatex">\(\mathbf{q}\)</span> by distance <span class="arithmatex">\(d = \min(\delta, \|\mathbf{q} - \mathbf{v}_{\text{near}}\|_2)\)</span> along angle <span class="arithmatex">\(\theta = \operatorname{atan2}(q_y - v_{\text{near},y},\; q_x - v_{\text{near},x})\)</span>:</li>
+</ul>
+<div class="arithmatex">\[
+\mathbf{v}_{\text{new}} = \mathbf{v}_{\text{near}} + d\begin{pmatrix} \cos\theta \\ \sin\theta \end{pmatrix}
+\]</div>
+<ul>
+<li>
+<p><em>Edge Validation &amp; Termination</em>: If the segment <span class="arithmatex">\(\overline{\mathbf{v}_{\text{near}}\mathbf{v}_{\text{new}}}\)</span> is unobstructed across <span class="arithmatex">\(\mathcal{O}_{\text{local}}\)</span>, add <span class="arithmatex">\(\mathbf{v}_{\text{new}}\)</span> to <span class="arithmatex">\(V\)</span> with parent <span class="arithmatex">\(\mathbf{v}_{\text{near}}\)</span>. If <span class="arithmatex">\(\mathbf{v}_{\text{new}} = \mathbf{t}\)</span>, or if <span class="arithmatex">\(\|\mathbf{t} - \mathbf{v}_{\text{new}}\|_2 \le \delta\)</span> and <span class="arithmatex">\(\overline{\mathbf{v}_{\text{new}}\mathbf{t}}\)</span> is unobstructed, append <span class="arithmatex">\(\mathbf{t}\)</span> to <span class="arithmatex">\(\mathcal{T}\)</span> and terminate exploration.</p>
+</li>
+<li>
+<p>*Backtracing &amp; String-Pulling Pruning**: Traverse parent links from <span class="arithmatex">\(\mathbf{t}\)</span> to <span class="arithmatex">\(\mathbf{v}_0\)</span> and reverse the sequence to form the unpruned chain <span class="arithmatex">\(\mathbf{p}_0, \mathbf{p}_1, \dots, \mathbf{p}_k\)</span> (<span class="arithmatex">\(\mathbf{p}_0 = \mathbf{s}\)</span>, <span class="arithmatex">\(\mathbf{p}_k = \mathbf{t}\)</span>). Redundant intermediate vertices are collapsed via greedy line-of-sight string-pulling:</p>
+<ul>
+<li>From current anchor index <span class="arithmatex">\(i\)</span> (initialized to <span class="arithmatex">\(0\)</span>), select the largest index <span class="arithmatex">\(j \in (i, k]\)</span> for which <span class="arithmatex">\(\overline{\mathbf{p}_i\mathbf{p}_j}\)</span> is unobstructed across <span class="arithmatex">\(\mathcal{O}_{\text{local}}\)</span> (defaulting to <span class="arithmatex">\(j = i + 1\)</span> if no further vertex has line of sight).</li>
+<li>Emit <span class="arithmatex">\(\mathbf{p}_j\)</span>, advance <span class="arithmatex">\(i \leftarrow j\)</span>, and repeat until <span class="arithmatex">\(i = k\)</span>.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
 <h5 id="math-space">Math: Space</h5>
 <ul>
 <li>Address: <code>libs.core.math.space</code></li>
 </ul>
-<p>This module manages the broad-phase spatial partitioning grid.</p>
-<ul>
-<li><strong>Memory Management (<code>__init__</code>, <code>__dealloc__</code>)</strong>: Manually allocates continuous blocks of system memory (<code>malloc</code>) for its <code>bucket_counts</code> and <code>bucket_data</code> arrays. Enforces safe teardown via <code>__dealloc__</code> calling <code>free()</code>, preventing memory leaks.</li>
-<li><strong><code>clear</code></strong>: Resets the grid for the current frame by zeroing out the allocated memory block using C's <code>memset()</code>.</li>
-<li>**<code>insert</code> &amp; <code>_hash**</code>: Maps 2D spatial coordinates to a 1D flat array. Assets intersecting cell boundaries are hashed into multiple buckets dynamically.</li>
-<li><strong><code>query</code></strong>: Iterates through populated buckets and yields a list of unique <code>(id1, id2)</code> integer tuples, generating candidate pairs for narrow-phase evaluation.</li>
-</ul>
+<p>An Asset with Dimensions <span class="arithmatex">\([x, x + w] \times [y, y + l]\)</span> covers the integer cell coordinates:</p>
+<div class="arithmatex">\[
+c_x \in \left[\left\lfloor \frac{x}{C} \right\rfloor,\; \left\lfloor \frac{x + w}{C} \right\rfloor\right]
+$$
+$$c_y \in \left[\left\lfloor \frac{y}{C} \right\rfloor,\; \left\lfloor \frac{y + l}{C} \right\rfloor\right]
+\]</div>
+<p><strong>Interfaces</strong></p>
+<ol>
+<li>
+<p><strong><code>insert</code></strong>: Maps coordinates to their flat hashed array.</p>
+<p>Each covered cell <span class="arithmatex">\((c_x, c_y)\)</span> maps to a bucket index <span class="arithmatex">\(h(c_x, c_y) \in \{0, \dots, M - 1\}\)</span> via multiplicative prime hashing:</p>
+<div class="arithmatex">\[
+h(c_x, c_y) = (c_x \cdot p_1 \oplus c_y \cdot p_2) \bmod M
+\]</div>
+<p>where <span class="arithmatex">\(p_1, p_2\)</span> are large coprime integers. The Asset identifier is inserted into each bucket its bounding box intersects.</p>
+</li>
+<li>
+<p><strong><code>query</code></strong>: Iterating through populated buckets yields unique unordered pairs <span class="arithmatex">\((i, j)\)</span> with <span class="arithmatex">\(i &lt; j\)</span> that share at least one bucket, forming the broad-phase candidate set for narrow-phase evaluation.</p>
+</li>
+<li>
+<p><strong><code>clear</code></strong>: Resets the grid for the current frame by zeroing out the allocated memory block.</p>
+</li>
+</ol>
 <h5 id="math-physics">Math: Physics</h5>
 <ul>
 <li>Address: <code>libs.core.math.physics</code></li>
 </ul>
-<p>This module orchestrates the physical simulation, bridging the broad-phase grid with narrow-phase resolution, computing forces, and applying velocities to engine states.</p>
+<p><strong>Interfaces</strong></p>
+<ol>
+<li>
+<p><strong><code>collisions</code></strong></p>
 <ul>
-<li><strong><code>collisions</code></strong>: The collision pipeline. Ingests a flat list of primitive integer tuples to avoid Python object overhead:<ol>
-<li><strong>Hash</strong>: Inserts dynamic assets into the <code>Space</code> grid using physical dimensions.</li>
-<li><strong>Query</strong>: Retrieves the reduced list of candidate pairs occupying the same spatial buckets.</li>
-<li><strong>Narrow Phase</strong>: Pre-allocates dummy <code>Position</code> and <code>Dimensions</code> objects on the C-stack, unpacks candidate primitives, and evaluates overlaps via <code>geometry.intersects</code>. Returns verified colliding pairs.</li>
-</ol>
-</li>
-<li><strong><code>collide</code></strong>: Resolves confirmed physical overlaps, accounting for local <code>Hitbox</code> offsets:<ol>
-<li><strong>Spatial Resolution</strong>: Shifts overlapping entities apart based on inverse mass ratios (e.g., an <span class="arithmatex">\(m=0\)</span> wall absorbs 0% of the shift, forcing dynamic bodies out).</li>
-<li><strong>Momentum Transfer</strong>: Evaluates 1D elastic collision formulas, updating the <code>.vx</code> and <code>.vy</code> attributes of participating <code>Velocity</code> objects. Kinematic assets bypass momentum transfer to retain immediate vector control.</li>
-</ol>
-</li>
-<li><strong><code>integrate</code></strong>: Executes Symplectic Euler Integration (<span class="arithmatex">\(x_{n+1} = x_n + v_n \Delta t\)</span>). Maintains sub-pixel accumulators (<code>rx</code>, <code>ry</code>) to update discrete integer positions without drift.</li>
-<li><strong><code>friction</code></strong>: Decays the magnitude of a <code>Velocity</code> vector over time using an environmental friction coefficient, clamping to <span class="arithmatex">\(0.0\)</span> to prevent negative overshoot.</li>
-<li><strong><code>kinematics</code></strong>: Handles direct velocity assignment. Snaps non-input axes to zero and normalizes the resulting vector to the specified <code>speed</code>.</li>
-<li><strong><code>dynamics</code></strong>: Calculates acceleration vectors towards a target coordinate (<code>tx</code>, <code>ty</code>) based on a given <code>impulse</code>. Clamps the resulting velocity to <code>speed</code> and snaps directly to the target velocity if within the arrival threshold to prevent oscillation.</li>
-<li><strong><code>boundaries</code></strong>: Evaluates broad-phase and narrow-phase candidate collisions between dynamic assets and static environmental boundary hulls.</li>
-<li><strong><code>constrain</code></strong>: Resolves spatial overlap and inverts velocity vectors for assets colliding with infinitely massive boundary hulls.</li>
+<li><em>Broad Phase</em>: Assets are hashed into the spatial grid by their bounding footprints to produce candidate pairs <span class="arithmatex">\((A_1, A_2)\)</span>.</li>
+<li><em>Narrow Phase</em>: Candidate pairs are evaluated for intersection across their offset hitboxes <span class="arithmatex">\(\mathcal{H}(A_1) \cap \mathcal{H}(A_2) \neq \emptyset\)</span>.</li>
 </ul>
+</li>
+<li>
+<p><strong><code>collide</code></strong></p>
+<ul>
+<li><em>Minimum Translation Vector &amp; Inverse-Mass Separation</em>: For two intersecting hitboxes <span class="arithmatex">\(H_1 = [x_1, x_1 + w_1] \times [y_1, y_1 + l_1]\)</span> and <span class="arithmatex">\(H_2 = [x_2, x_2 + w_2] \times [y_2, y_2 + l_2]\)</span> with centers <span class="arithmatex">\(\mathbf{c}_1, \mathbf{c}_2\)</span>, the axial overlap depths are:</li>
+</ul>
+<div class="arithmatex">\[
+\delta_x = \frac{w_1 + w_2}{2} - |c_{1,x} - c_{2,x}|, \qquad \delta_y = \frac{l_1 + l_2}{2} - |c_{1,y} - c_{2,y}|
+\]</div>
+<p>Separation occurs along the axis of minimum penetration <span class="arithmatex">\(\delta = \min(\delta_x, \delta_y)\)</span> with unit normal <span class="arithmatex">\(\hat{\mathbf{n}}\)</span>. Define each body's inverse mass <span class="arithmatex">\(\mu_i\)</span> such that static obstacles (<span class="arithmatex">\(m_i = 0\)</span>) have <span class="arithmatex">\(\mu_i = 0\)</span> (<span class="arithmatex">\(m_i \to \infty\)</span>) and dynamic bodies (<span class="arithmatex">\(m_i &gt; 0\)</span>) have <span class="arithmatex">\(\mu_i = 1 / m_i\)</span>. For <span class="arithmatex">\(\mu_{\text{total}} = \mu_1 + \mu_2 &gt; 0\)</span>, each body is displaced in proportion to its inverse mass share:</p>
+<div class="arithmatex">\[
+\Delta \mathbf{r}_1 = -\delta \left(\frac{\mu_1}{\mu_{\text{total}}}\right) \hat{\mathbf{n}}, \qquad \Delta \mathbf{r}_2 = +\delta \left(\frac{\mu_2}{\mu_{\text{total}}}\right) \hat{\mathbf{n}}
+\]</div>
+<ul>
+<li><em>One-Dimensional Elastic Momentum Transfer</em> Along the collision normal, post-separation velocities <span class="arithmatex">\((v_{1f}, v_{2f})\)</span> follow conservation of momentum and kinetic energy:</li>
+</ul>
+<div class="arithmatex">\[
+v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2 v_2}{m_1 + m_2}, \qquad v_{2f} = \frac{v_2(m_2 - m_1) + 2m_1 v_1}{m_1 + m_2}
+\]</div>
+<p>Against a static body (<span class="arithmatex">\(m_2 = 0 \implies m_2 \to \infty\)</span>), the dynamic body's normal velocity inverts (<span class="arithmatex">\(v_{1f} = -v_1\)</span>). Kinematic entities participate in inverse-mass spatial separation using their nominal mass <span class="arithmatex">\(m_1 &gt; 0\)</span>, but bypass velocity reassignment.</p>
+</li>
+<li>
+<p><strong><code>integrate</code></strong>: Executes Symplectic Euler Integration (<span class="arithmatex">\(x_{n+1} = x_n + v_n \Delta t\)</span>). </p>
+<p>Because positions <span class="arithmatex">\((x_n, y_n) \in \mathbb{Z}^2\)</span> are discrete integers while velocities <span class="arithmatex">\((v_x, v_y) \in \mathbb{R}^2\)</span> and timesteps <span class="arithmatex">\(\Delta t \in \mathbb{R}_{&gt;0}\)</span> are continuous, fractional sub-pixel remainders <span class="arithmatex">\((r_x, r_y) \in (-1, 1)\)</span> are accumulated across frames:</p>
+<div class="arithmatex">\[
+\begin{aligned}
+\tilde{r}_x &amp;= r_{x,n} + v_x \Delta t, &amp; \Delta x &amp;= \operatorname{trunc}(\tilde{r}_x), &amp; x_{n+1} &amp;= x_n + \Delta x, &amp; r_{x,n+1} &amp;= \tilde{r}_x - \Delta x \\
+\tilde{r}_y &amp;= r_{y,n} + v_y \Delta t, &amp; \Delta y &amp;= \operatorname{trunc}(\tilde{r}_y), &amp; y_{n+1} &amp;= y_n + \Delta y, &amp; r_{y,n+1} &amp;= \tilde{r}_y - \Delta y
+\end{aligned}
+\]</div>
+</li>
+<li>
+<p><strong><code>friction</code></strong>: Decays the magnitude of a Velocity vector over time using an Environ Tile friction coefficient.</p>
+<p>For an entity with velocity <span class="arithmatex">\(\mathbf{v}_n\)</span> traversing a surface with friction coefficient <span class="arithmatex">\(\mu_f \ge 0\)</span> over timestep <span class="arithmatex">\(\Delta t\)</span>, speed decays linearly to a lower bound of <span class="arithmatex">\(0\)</span>:</p>
+<div class="arithmatex">\[
+s_{n+1} = \max\big(0,\; \|\mathbf{v}_n\| - \mu_f \Delta t\big), \qquad \mathbf{v}_{n+1} = \begin{cases} \dfrac{s_{n+1}}{\|\mathbf{v}_n\|}\mathbf{v}_n &amp; \text{if } \|\mathbf{v}_n\| &gt; 0 \\ \mathbf{0} &amp; \text{otherwise} \end{cases}
+\]</div>
+</li>
+<li>
+<p><strong><code>kinematics</code></strong>: Handles direct velocity assignment. Snaps non-input axes to zero and normalizes the resulting vector.</p>
+<p>Given directional input vector <span class="arithmatex">\(\mathbf{d}_{\text{input}}\)</span> and speed <span class="arithmatex">\(s\)</span>, non-active axes snap to <span class="arithmatex">\(0\)</span> and the velocity vector is normalized to magnitude <span class="arithmatex">\(s\)</span>:</p>
+<div class="arithmatex">\[
+\mathbf{v} = \begin{cases} s \dfrac{\mathbf{d}_{\text{input}}}{\|\mathbf{d}_{\text{input}}\|} &amp; \text{if } \|\mathbf{d}_{\text{input}}\| &gt; 0 \\ \mathbf{0} &amp; \text{otherwise} \end{cases}
+\]</div>
+</li>
+<li>
+<p><strong><code>dynamics</code></strong>: Calculates acceleration vectors towards a target coordinate. </p>
+<p>Given position <span class="arithmatex">\(\mathbf{r} = (x, y)\)</span>, target <span class="arithmatex">\(\mathbf{t} = (t_x, t_y)\)</span>, impulse <span class="arithmatex">\(a\)</span>, and maximum speed <span class="arithmatex">\(s\)</span>, let <span class="arithmatex">\(\mathbf{d} = \mathbf{t} - \mathbf{r}\)</span> and <span class="arithmatex">\(\hat{\mathbf{d}} = \mathbf{d} / \|\mathbf{d}\|\)</span>. Velocity accelerates along <span class="arithmatex">\(\hat{\mathbf{d}}\)</span> and is clamped to <span class="arithmatex">\(s\)</span>:</p>
+<p>If <span class="arithmatex">\(\|\mathbf{d}\|\)</span> lies within the single-tick arrival threshold, velocity snaps to the remaining displacement to prevent oscillation.</p>
+</li>
+<li>
+<p><strong><code>boundaries</code></strong>: Evaluates broad-phase and narrow-phase candidate collisions between dynamic assets and static environmental boundary hulls.</p>
+<p>Environmental perimeters act as directed barriers with <span class="arithmatex">\(\mu_{\text{bound}} = 0\)</span>. When an Asset's Hitbox penetrates a boundary segment, the Asset is displaced out of the overlap along the boundary normal by penetration depth <span class="arithmatex">\(\delta\)</span> and its normal velocity component is inverted.</p>
+</li>
+<li>
+<p><strong><code>constrain</code></strong>: Resolves spatial overlap and inverts velocity vectors for assets colliding with infinitely massive boundary hulls.</p>
+</li>
+</ol>
 <h4 id="library-graphics">Library: Graphics</h4>
 <ul>
 <li>Address: <code>libs.core.graphics</code></li>
 </ul>
-<p>The engine relies on a Cythonized bridge to C-level SDL2 bindings. To mitigate the overhead of crossing the Python-to-C boundary, the rendering pipeline does not pass heavy Python objects (like <code>SpriteState</code> or <code>Dimensions</code>) to the renderer. Instead, it extracts raw integers on the Python side and unpacks them cleanly onto the C-stack.</p>
+<p>This Library is a Cythonized interface for SDL2 bindings. </p>
 <ul>
-<li><strong>Context Initialization (<code>init</code>):</strong> Sets up the SDL environment, including video, images, and typography (<code>SDL2_ttf</code>). If <code>headless</code>, a SDL software rendering context (<code>_renderer</code>) is bound to a master memory surface (<code>SDL_Surface</code>), bypassing window creation.</li>
-<li><strong>Asset &amp; Font Allocation (<code>_load_image</code>, <code>_load_font</code>):</strong> Loads physical image (<code>.png</code>) and font (<code>.ttf</code>) assets from disk into system memory, returning Cython wrappers (<code>TexturePtr</code> and <code>TTFFont</code>). To prevent styling overhead in the inner loop, fonts are pre-styled (bold, italics, RGBA color, margins) natively via SDL during ingestion using the YAML configuration properties.</li>
-<li><strong>Typography (<code>measure</code>, <code>write</code>):</strong> The <code>measure</code> function queries the pixel dimensions of a string without allocating a rendering surface. The <code>write</code> function calculates wrapping bounds and alignment, rendering UTF-8 characters as a blended surface that is stamped  onto a target <code>TexturePtr</code>. This zero-allocation technique ensures typography does not generate memory garbage during the main game loop.</li>
-<li><strong>Background Compilation (<code>canvas</code> &amp; <code>construct</code>):</strong> A blank texture (<code>SDL_TEXTUREACCESS_TARGET</code>) is created in memory to match the full size of the Board. Python passes a single list of flattened integer tuples representing the source/destination coordinates and grid multipliers. Cython unpacks these primitives and executes<code>SDL_RenderCopy</code> calls natively via the C-level software rasterizer. This caches a unified map texture, eliminating the need to instantiate and re-render tiles every frame.</li>
-<li><strong>Buffer Management (<code>clear</code> &amp; <code>present</code>):</strong> <code>clear()</code> wipes the current VRAM buffer at the start of the frame, and <code>present()</code> finalizes the buffer (<code>SDL_RenderPresent</code>) while pumping SDL events at the end of the frame.</li>
-<li><strong>World Rendering (<code>render</code>):</strong> During the main game loop, <code>Screen.draw()</code> performs lightweight integer-based AABB camera culling natively in Python. The visible world assets are flattened into primitive integer tuples and passed across the C-boundary in a single list. <code>render()</code> copies the cropped background texture and then maps world-coordinates to camera-relative coordinates on the fly, stamping the active primitives onto the back buffer.</li>
-<li><strong>Overlays (<code>superimpose</code>):</strong> After the world is rendered, <code>Screen.interface()</code> passes a flattened list of active Menu and Widget primitives. <code>superimpose()</code> bypasses the camera offset logic, rendering these textures via strict absolute screen coordinates (<code>SDL_RenderCopy</code>) directly on top of the world view, ensuring Menus remain statically positioned.</li>
+<li><strong>Context Initialization (<code>init</code>):</strong> Sets up the SDL environment, including video, images, and typography.</li>
+<li><strong>Asset &amp; Font Allocation (<code>_load_image</code>, <code>_load_font</code>):</strong> Loads physical image (<code>.png</code>) and font (<code>.ttf</code>) Assets from the file system into Application memory, returning Cython wrappers. </li>
+<li><strong>Typography (<code>measure</code>, <code>write</code>):</strong> <code>measure</code> queries the pixel dimensions of a string without allocating a rendering surface. <code>write</code> calculates wrapping bounds and alignment, rendering characters as a blended surface that is stamped onto a target texture.</li>
+<li><strong>Background Compilation (<code>canvas</code> &amp; <code>construct</code>):</strong> <code>canvas</code> creates a blank texture in memory to match the full size of the Board. Flat lists of Environ Tile tuples are passed into <code>construct</code> to cache prerendered textures for the background of the Screen.</li>
+<li><strong>Buffer Management (<code>clear</code> &amp; <code>present</code>):</strong> <code>clear</code> wipes the current buffer while <code>present</code> finalizes and displays the current buffer.</li>
+<li><strong>World Rendering (<code>render</code>):</strong> Copies the cropped background texture and then maps world-coordinates to camera-relative coordinates, stamping the active primitives onto the back buffer.</li>
+<li><strong>Overlays (<code>superimpose</code>):</strong> Bypasses the camera offset logic, rendering textures via absolute screen coordinates directly on top of the Screen.</li>
 </ul>
-<p><strong>Memory Management</strong></p>
-<p>The engine uses Cython extension types (<code>cdef class</code>) to bridge Python's garbage collector with SDL's manual memory management.</p>
-<ul>
-<li><strong><code>TexturePtr</code></strong>: Wraps a raw <code>SDL_Texture*</code> pointer alongside its integer dimensions (<code>w</code>, <code>l</code>).</li>
-<li><strong><code>TTFFont</code></strong>: Wraps a raw <code>TTF_Font*</code> pointer alongside its pre-configured styling metadata.</li>
-</ul>
-<p>Both classes implement the Cython <code>__dealloc__</code> method. When the Python interpreter garbage-collects these objects out of scope, they automatically invoke <code>SDL_DestroyTexture</code> and <code>TTF_CloseFont</code>. This architecture guarantees safe C-level memory cleanup for standard assets and prevents VRAM leaks without requiring explicit teardown commands in the Python application layer.</p>
-<p>While <code>__dealloc__</code> is sufficient for standard asset garbage collection, relying on Python's non-deterministic GC timing for massive VRAM allocations (e.g., the <code>Screen</code> background and foreground canvases) during scene transitions risks Out-Of-Memory (OOM) GPU crashes. </p>
-<p>To mitigate this, the Cython layer exposes a <code>render.destroy()</code> interface. During a world transition, <code>Screen.rebake()</code> explicitly calls this method to force an immediate, synchronous <code>SDL_DestroyTexture</code> on the old <code>TexturePtr</code> canvases before allocating the new environment's memory footprint.</p>
 
 
 

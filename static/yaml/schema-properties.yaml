@@ -570,16 +570,12 @@ $defs:
             $ref: '#/$defs/Actions'
           type: object
         title: Actions
-      attackboxes:
+      hitboxes:
         anyOf:
         - additionalProperties:
             items: {}
             type: array
           type: object
-        - type: 'null'
-        title: Attackboxes
-      hitboxes:
-        anyOf:
         - items: {}
           type: array
         - type: 'null'

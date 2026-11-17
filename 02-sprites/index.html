@@ -3982,16 +3982,16 @@
 </ul>
 <p><strong>Fields: Triggers</strong></p>
 <ul>
-<li><code>trigger.action</code>: Triggers if a Sprite is within acting distance of its Goal.</li>
-<li><code>trigger.animated</code>: Triggered if a Sprite is currently able to animate, i.e. alter its AnimationState. When this Mutator trigger is false, the Sprite does not receive animation updates from the game loop.</li>
+<li><code>trigger.animated</code>: Triggered if a Sprite is currently able to animate, i.e. alter its AnimationState. When this Mutator trigger is false, the Sprite does not receive animation updates from the Engine Loop.</li>
 <li><code>triggers.dead</code>: Triggered if a Sprite dies. This can only occur if the Sprite's <code>meters.health.current == 0</code></li>
-<li><code>triggers.fear</code>: Triggered for the logical disjunction of the following conditions:<ul>
-<li>Triggered if Sprite's health dips below <code>fear.limit</code></li>
-<li>Triggered if Sprite is surrounded by more than <code>fear.enemy</code> enemies with the pixel distance of <code>fear.radius</code>.</li>
+<li><code>triggers.frightened</code>: Triggered for the logical disjunction of the following conditions:<ul>
+<li>If the Sprite's health dips below <code>fear.limit</code></li>
+<li>If the Sprite is surrounded by more than <code>fear.enemy</code> enemies with the pixel distance of <code>fear.radius</code>.</li>
 </ul>
 </li>
 <li><code>triggers.submerged</code>: Triggered when the entity's footprint intersects an active Fluid stream or pool without being aboard a Raft or Bridge. When active, <code>Screen.draw</code> renders a semi-transparent water tint over the lower half of the Sprite, and <code>Cradle</code> dispatches a temporary <code>splash</code> effect.</li>
-<li><code>triggers.vision</code>: Trigger if a Sprite is within visible distance of its Goal.</li>
+<li><code>triggers.falling</code>: Triggered when a Sprite at elevation <span class="arithmatex">\(E &gt; 0\)</span> steps off its supporting substrate into freefall.</li>
+<li><code>triggers.vision</code>: Triggered if a Sprite is within visible distance of its Goal.</li>
 </ul>
 <p><strong>Fields: Parameters</strong></p>
 <ul>
@@ -4002,11 +4002,11 @@
 </ul>
 </li>
 <li><code>parameters.vision</code>:<ul>
-<li><code>radius</code>: Radius of separation within which the Sprite triggers the <code>triggers.vision</code> mutator. Measured in pixels.</li>
+<li><code>radius</code>: Radius of separation for visual identification. Measured in pixels.</li>
 </ul>
 </li>
 <li><code>parameters.action:</code><ul>
-<li><code>radius</code>: Radius of separation within which the Sprite triggers the <code>triggers.action</code> mutator. Measured in pixels.</li>
+<li><code>radius</code>: Radius of separation for interactions. Measured in pixels.</li>
 </ul>
 </li>
 <li><code>parameters.squeeze</code>:<ul>
@@ -4017,7 +4017,8 @@
 <li><code>radius</code>: Radius used for <a href="../11-emergence/#towns">Town Formation Mechanics</a>.</li>
 </ul>
 </li>
-<li><code>parameters.hand</code>: Active hand (<code>left</code> or <code>right</code>) parameterizing the <code>use</code> Intention to resolve the corresponding item in <code>slots.grip</code>.</li>
+<li><code>parameters.descension</code>: Vertical freefall accumulator tracking pixel displacement.</li>
+<li><code>parameters.hand</code>: Active hand (<code>left</code> or <code>right</code>) parameterizing the <code>use</code> Intention, used to resolve the corresponding item in <code>slots.grip</code>.</li>
 </ul>
 <h5 id="model-animation">Model: Animation</h5>
 <p>Animations are tuples of (Action, Direction, Frame). Action and Direction were previously defined in the <a href="../01-assets/#category-sheets">Assets documentation</a>.</p>
@@ -4163,7 +4164,7 @@
 <p>It assumed Equipment Sheets conform to the same (Action, Direction) grouping utilized by the <a href="../01-assets/#category-sheets">Sprite Sheet</a> equipping it. In other words, the frames coordinates and dimensions in an Equipment Sheet must correspond exactly to frames in a Sprite Sheet. This does not mean Equipment frames may not be present in every frame, but rather what is present must conform to the schema. For example, the <code>longbow</code> only occupies the <code>(shoot, *)</code> rows of a Sheet, while all other rows of the <code>longbow</code> Asset file are blank.</p>
 </div>
 <h5 id="equipment-frame">Equipment: Frame</h5>
-<p>Equipment is a stateless Sheet Asset. It is not deployed onto the Board in a fashion like other Assets. Instead, only Properties and Frames are supplied for Equipment, i.e. Equipment has a Frame Recipe. This allows the Registry to index and load all Equipment Sheets. However, since Equipment does not possess a State, it is not instantiated by the <a href="../00-overview/#application">Application</a> when the State directory is traversed during the <a href="../12-architecture/#specification-initialization">bootstrapping</a>. Instead, Equipment Frame keys are generated by SpriteFrames when Sprites have Equipment slotted into their <code>sprite.state.inventory.equipment</code>, e.g.</p>
+<p>Equipment is a stateless Sheet Asset. It is not deployed onto the Board in a fashion like other Assets. Instead, only Properties and Frames are supplied for Equipment, i.e. Equipment has a Frame Recipe. This allows the Registry to index and load all Equipment Sheets. However, since Equipment does not possess a State, it is not instantiated by the <a href="../00-overview/#application">Application</a> when the State directory is traversed during the <a href="../12-architecture/#specification-initialization">bootstrapping</a>. Instead, Equipment Frame keys are generated by SpriteFrames when Sprites have Equipment slotted into their <code>sprite.state.slots.equipment</code>, e.g.</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># /src/data/state/&lt;board-key&gt;/sheets.sprites.state.slots: </span>
 <span class="nt">equipment</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">armor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">plate</span>
@@ -4183,7 +4184,7 @@
 <li><code>index(id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <h5 id="equipment-animation">Equipment: Animation</h5>
-<p>When Equipment is configured in the Sheet Property index file, the Equipment <code>actions</code> property determines which Actions in a Sprite's state will result in extra Frame Keys being appended to the <code>keys()</code> return result. </p>
+<p>When Equipment is configured in the Sheet Property index file, the Equipment <code>actions</code> property determines which Actions in a Sprite's state will result in extra Frame Keys being appended to the return result. </p>
 <p>Equipment is divided in four kinds: Armor, Tools, Utilities and Weapons. Each Kind modifies the gameplay in different ways. Just as active Equipment affects the Frame Keys returned by a Sheet Asset, it also affects State transitions. When a piece of Equipment is active, it directly determines which Animation Action state are enterable from the <code>attack</code> Intention (or the <code>build</code> Intention, etc.). The translation between <a href="../04-intentions/">Intention</a> and Equipment into Animation is achieved through an <a href="../04-intentions/#animationmap">AnimationMap</a></p>
 <div class="highlight"><pre><span></span><code><span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">animation</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">AnimationMap</span><span class="o">.</span><span class="n">action</span><span class="p">(</span>
     <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>

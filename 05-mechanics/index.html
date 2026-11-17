@@ -582,6 +582,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#intentional-mechanic-playermechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intentional Mechanic: PlayerMechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#intentional-mechanic-cognitionmechanics" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -739,6 +750,34 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Modules: Maps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#map-animation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Map: Animation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#map-combat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Map: Combat
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -3773,6 +3812,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#intentional-mechanic-playermechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intentional Mechanic: PlayerMechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#intentional-mechanic-cognitionmechanics" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3931,6 +3981,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Modules: Maps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#map-animation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Map: Animation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#map-combat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Map: Combat
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -4082,7 +4160,7 @@ v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)
 <p><strong>Behavior: System Suppression</strong></p>
 <p>While <code>state.mutators.triggers.falling == True</code>, the entity is between discrete topological planes:</p>
 <ul>
-<li><strong>Locomotion &amp; Navigation</strong>: <code>kinematic.update()</code>, <code>motive.update()</code>, <code>frictive.update()</code>, and <code>NavigationMechanics</code> bypass the entity, preventing mid-air directional input, RVO steering, idle velocity zeroing, or tile friction from overriding freefall kinematics.</li>
+<li><strong>Locomotion &amp; Navigation</strong>: <code>kinematic.update()</code>, <code>motive.update()</code>, <code>frictive.update()</code>, and <a href="#intentional-mechanic-navigationmechanics">NavigationMechanics</a> bypass the entity, preventing mid-air directional input, RVO steering, idle velocity zeroing, or tile friction from overriding freefall kinematics.</li>
 <li><strong>Environmental Fields</strong>: Airborne entities are excluded from Bridge/Raft surface interception, Shoreline step-down nudges, and Fluid immersion in <code>fields.update()</code>.</li>
 <li><strong>Collisions &amp; Ledges</strong>: <code>CollisionMechanics</code> excludes airborne entities from Phase 0 stair traversal and Phase 2 solid collisions, and restricts Phase 1 environmental perimeter constraints to <code>elevation == 0</code> so dynamic entities can walk off un-walled ledges at <span class="arithmatex">\(E &gt; 0\)</span>.</li>
 </ul>
@@ -4165,24 +4243,28 @@ v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)
 </li>
 </ul>
 <h4 id="spatial-mechanic-collisionmechanics">Spatial Mechanic: CollisionMechanics</h4>
-<p>!!! @TODO
-    Out of date.</p>
-<p>When Assets collide, overlap resolution uses inverse mass ratios to correct spatial positioning, ensuring immutable Assets with no Mass (<code>m = 0</code>) remain  immobile while dynamic Assets with Mass (<code>m &gt; 0</code>) absorb the displacement shift. Post-separation, Velocities are updated via elastic collision formulas, conserving momentum across all participating masses,</p>
-<div class="arithmatex">\[
-v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
-\]</div>
-<p>The <a href="../02-sprites/#player">Player</a> does not observe momentum transfers. Instead, the Player follows the procedures outlined below,</p>
+<p>CollisionMechanics resolves elevation transitions, perimeter collisions, and Asset collisions across three phases per active Layer. <a href="#field-gravity">Airborne entities</a> are excluded from all three phases so freefall kinematics execute unobstructed across elevation planes.</p>
+<ol>
+<li><strong>Phase 0 — Stairs</strong>:</li>
+<li>Prior to the evaluation of collisions, dynamic Asset intersecting Stairs are transitioned to the next elevation to participate in the correct elevation's collision calculations.</li>
+<li><strong>Phase 1 — Perimeters</strong>:</li>
+<li>Queries the <a href="../00-overview/#component-board">Board's</a> perimeters and resolves overlap.</li>
+<li><strong>Phase 2 — Collisions</strong>:</li>
+<li>Non-falling Asset are partitioned by elevation <span class="arithmatex">\(E \in \mathbb{Z}_{\ge 0}\)</span>.</li>
+<li>
+<p>Colliding Assets have their overlap resolved:</p>
 <ul>
-<li><strong>Property Level:</strong> The Player retains a normal, dynamic mass (e.g., <span class="arithmatex">\(m = 10\)</span>).</li>
-<li><strong>Phase 1 - Spatial Resolution:</strong><ul>
-<li><strong>Player vs. Wall (<span class="arithmatex">\(m=0\)</span>):</strong> <code>inv_total</code> is <span class="arithmatex">\(&gt; 0\)</span>. The Wall absorbs 0% of the overlap shift, and the Player absorbs 100%. The Player halts at the wall boundary.</li>
-<li><strong>Player vs. Crate (<span class="arithmatex">\(m=5\)</span>):</strong> Both absorb the spatial shift proportional to their inverse mass. The Player pushes the Crate out of the way.</li>
+<li><strong>Spatial Separation</strong>: Overlapping Assets shift apart along the minimum penetration axis proportional to their inverse mass ratios (<span class="arithmatex">\(p_i = \frac{1/m_i}{1/m_1 + 1/m_2}\)</span>). Static Asset (<span class="arithmatex">\(m = 0\)</span>) absorb <span class="arithmatex">\(0\%\)</span> of the shift (<span class="arithmatex">\(1/m \to 0\)</span>), forcing dynamic Asset (<span class="arithmatex">\(m &gt; 0\)</span>) to absorb <span class="arithmatex">\(100\%\)</span> of the displacement.</li>
+<li><strong>1D Elastic Momentum Transfer</strong>: Post-separation velocities update via conservation of momentum:</li>
+</ul>
+<div class="arithmatex">\[
+v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}, \qquad v_{2f} = \frac{v_2(m_2 - m_1) + 2m_1v_1}{m_1 + m_2}
+\]</div>
+<ul>
+<li><strong>Player Kinematic Exemption</strong>: The Player retains positive mass (<span class="arithmatex">\(m &gt; 0\)</span>) during resolution against static walls (<span class="arithmatex">\(m = 0\)</span>) and pushing movable Crates (<span class="arithmatex">\(m &gt; 0\)</span>), but bypasses velocity bounces.</li>
 </ul>
 </li>
-<li><strong>Phase 2 - Momentum Transfer:</strong> Bypass the 1D elastic collision calculation <em>only</em> for the Player.</li>
-</ul>
-<p>CollisionMechanics partitions active weights by discrete elevation tiers (<code>tier = max(0, w.elevation)</code>), isolating Phase 1 boundary constraint solving and Phase 2 elastic momentum resolution.</p>
-<p>Incline transitions (<code>_traverse_stairs</code>) execute in Phase 0 of <code>CollisionMechanics</code> strictly prior to tier partitioning, ensuring elevation mutations take effect within the current frame's broad-phase spatial hash.</p>
+</ol>
 <h4 id="spatial-mechanic-combatmechanics">Spatial Mechanic: CombatMechanics</h4>
 <pre class="mermaid"><code>flowchart TD
     subgraph Input ["Intention &amp; Action Resolution"]
@@ -4260,8 +4342,8 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 </ul>
 </li>
 </ol>
-<p><strong>Sprite AI</strong></p>
-<p>Much of the logic in Mechanics is in support of Sprite AI, via the management of <a href="../04-intentions/">Goals &amp; Intentions</a>. NPC behavior is distributed across four sequential Mechanics in the World pipeline:</p>
+<p><strong>Concept: Intelligence</strong></p>
+<p>Much of the logic in Mechanics is in support of Sprite Intellignece, via the management of <a href="../04-intentions/">Goals &amp; Intentions</a>. NPC behavior is distributed across four sequential Mechanics in the World pipeline:</p>
 <ul>
 <li><strong>CognitionMechanics</strong>: Manages high-level strategic Goal models (target tracking, cross-layer door subsumption, autonomous wander sampling, etc.).</li>
 <li><strong>TransitionMechanics</strong>: Evaluates the <a href="../04-intentions/#transition-matrix">Intention Transition Matrix</a> to transition Intention States and map Actions to Animations.</li>
@@ -4300,22 +4382,24 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 
     %% Edge Labels
     linkStyle default color:#e0e0e0,stroke:#90caf9,stroke-width:1.5px;</code></pre>
+<h4 id="intentional-mechanic-playermechanics">Intentional Mechanic: PlayerMechanics</h4>
+<p>TODO </p>
 <h4 id="intentional-mechanic-cognitionmechanics">Intentional Mechanic: CognitionMechanics</h4>
 <p>CognitionMechanics acts as the Sprite's deliberative core. It operates exclusively on high-level Goals. </p>
 <p>For example, for Sprites in the given Intention states, CognitionMechanics generates and manages the following Goals:</p>
 <ul>
-<li><code>wander</code>: Samples a random coordinate within the vision radius bounded by layer dimensions and commits a <code>Goal(name="wander", category=POSITION)</code>.</li>
+<li><code>wander</code>: Samples a random coordinate within the vision radius bounded by layer dimensions and commits a Position Goal.</li>
 <li><code>find / follow / hunt</code>: Queries the Board for the target entity. If visible, updates the Sprite Goal to match the target's coordinates. If the target leaves the Sprite's vision radius, coordinates freeze at the last known position.</li>
 <li><code>escape</code>: Extrapolates a spatial coordinate in the vector direction opposite to the threat.</li>
-<li><strong>Cross-Layer Subsumption</strong>: When a Goal's layer mismatches the sprite's layer, Cognition pushes the goal to Memory and substitutes a Goal for the nearest Door.</li>
+<li><strong>Cross-Layer Subsumption</strong>: When a Goal's Layer mismatches the Sprite's Layer, Cognition pushes the goal to Memory and substitutes a Goal for the nearest Door.</li>
 </ul>
-<p>This is by no means an exhaustive list of CognitionMechanics' responsibility, but instead an example of its domain OF operation, e.g. Sprites and their Goals. CognitionMechanics is completely decoupled from geometric obstacles, intermediate waypoints, and line-of-sight raycasts. Intermediate path planning is offloaded entirely to <a href="#intentional-mechanic-navigationmechanics">NavigationMechanics</a>.</p>
+<p>This is by no means an exhaustive list of CognitionMechanics' responsibility, but instead an example of its domain of operation, e.g. Sprites and their Goals. CognitionMechanics is completely decoupled from geometric obstacles, intermediate waypoints, and line-of-sight raycasts. Intermediate path planning is offloaded entirely to <a href="#intentional-mechanic-navigationmechanics">NavigationMechanics</a>.</p>
 <p>Since CognitionMechanics is intrinsically tied to Sprite Intentions and Goals, the cognition workflow is covered in more detail in the <a href="../04-intentions/#cognition">Intentions amd Goals documentation</a>.</p>
 <h4 id="intentional-mechanic-navigationmechanics">Intentional Mechanic: NavigationMechanics</h4>
-<p>NavigationMechanics acts as the Sprite's tactical navigator, bridging strategic Goals with physical locomotion:</p>
+<p>NavigationMechanics acts as a <a href="../02-sprites/#model-trajectory">Sprite's Trajectory</a> manager, bridging strategic Goals with physical locomotion:</p>
 <ol>
 <li><strong>Goal Verification</strong>: Verifies Goal exists and Intention belongs to NavigationIntentions. Clears Trajectory and yields if false.</li>
-<li><strong>Anchor Resolution</strong>: Computes sensory footprints using Anchors and targets footprint offsets, preventing top-left origin hitbox drift.</li>
+<li><strong>Anchor Resolution</strong>: Computes sensory footprints using Anchors and targets Assets using Minkowski inflation extents. </li>
 <li><strong>Line-of-Sight Check</strong>: Raycasts against active Layer obstacles and boundary perimeters.</li>
 <li><strong>Path Maintenance</strong>:<ul>
 <li><strong>Clear LOS</strong>: Clears Trajectory and sets new target to Goal.</li>
@@ -4324,7 +4408,7 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 </ul>
 </li>
 <li><strong>Waypoint Arrival</strong>: When the entity arrives within proximal range of target, pops the completed segment from its Trajectory and sets target to the next vertex (or Goal when vertices are exhausted).</li>
-<li><strong>Stall &amp; Cooldown Handling</strong>: When Navigation cannot resolve a collision-free path, sets to <code>stalled</code> and starts a <code>cooldown</code> timer to prevent per-frame re-planning thrash.</li>
+<li><strong>Stall &amp; Cooldown Handling</strong>: When Navigation cannot resolve a collision-free path, starts a cooldown timer to prevent per-frame re-planning thrash.</li>
 </ol>
 <p><strong>Module: Planner</strong></p>
 <ul>
@@ -4365,16 +4449,16 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <li><strong>Spatial Corridor Filtering</strong>: Inspects switch-linked gates (<code>AssetInstances.GATES</code>). A mutating gate only flags the layer's fluids as <code>dirty</code> if the gate's AABB intersects active fluid compound hitboxes or falls within downstream emission corridors.</li>
 <li><strong>Debounce Accumulator</strong>: Consecutive gate oscillations are coalesced using <code>settings.FLUID_INVALIDATION_DEBOUNCE_TICKS</code> before triggering propagation.</li>
 <li><strong>Pass 1 (Fluid Propagation &amp; Bifurcation)</strong>: For invalidated layers, <code>Actuator.propagate()</code> updates stream lengths, expands annular pools around static obstacles (<span class="arithmatex">\(m = 0\)</span>), derives secondary branch corridors, and updates <code>board.update_fluid_cache(layer)</code>. Cache slots (<code>fluid.state._keys</code>) are cleared.</li>
-<li><strong>Pass 2 (Geometric Shift Detection &amp; Shoreline Synthesis)</strong>: Compares the pre- and post-propagation geometric signature (<code>_fluid_signature</code>: stream lengths, pool bounds, branch positions). If water geometry is invariant, shoreline regeneration is bypassed. If geometry shifted (or during hydration), <code>Cartographer.purge()</code> and <code>Cartographer.generate()</code> synthesize updated boundary contours.</li>
+<li><strong>Pass 2 (Geometric Shift Detection &amp; Shoreline Synthesis)</strong>: Compares the pre- and post-propagation geometric signature (<code>_fluid_signature</code>: stream lengths, pool bounds, branch positions). If water geometry is invariant, shoreline regeneration is bypassed. If geometry shifted (or during hydration), the Cartographer synthesizes updated boundary contours.</li>
 </ol>
 <h4 id="world-mechanic-seasonmechanics">World Mechanic: SeasonMechanics</h4>
-<p><code>SeasonMechanics</code> executes within the <code>world</code> mechanics pipeline, driving global time, soil hydrology, and biological resource lifecycles:</p>
+<p>SeasonMechanics executes within the <code>world</code> mechanics pipeline, driving global time, soil hydrology, and biological resource lifecycles:</p>
 <ol>
-<li><strong>Temporal Integration</strong>: Accumulates frame <span class="arithmatex">\(\Delta t\)</span> into <code>board.calendar.elapsed</code>. When elapsed time reaches <code>settings.PERIOD_DURATION_SECONDS</code>, the mechanic advances <code>period</code> (0..2), <code>cycle</code> (<code>onset</code>, <code>peak</code>, <code>decline</code>), <code>season</code> (<code>spring</code>, <code>summer</code>, <code>autumn</code>, <code>winter</code>), and <code>year</code>, appending a <code>SeasonEvent</code> to the engine bus.</li>
-<li><strong>Environmental Hydrology (Potential Field Integration)</strong>: Soil moisture diffusion operates via a continuous scalar potential field calculated during <code>FluidMechanics</code> propagation and cached on <code>Board</code>. Dynamic 60 Hz updates avoid spatial lookups by reading <code>resource.state.moisture_flux</code>:</li>
+<li><strong>Temporal Integration</strong>: Accumulates frame <span class="arithmatex">\(\Delta t\)</span> into the <a href="../00-overview/#component-board">Board's Calendar</a>. When the accumulated reaches certain thresholds, this Mechanic emits a <a href="../06-widgets/#concept-asychronicity">SeasonEvent</a> to the <a href="../00-overview/#component-engine">Engine Bus</a>.</li>
+<li><strong>Environmental Hydrology (Potential Field Integration)</strong>: Soil moisture diffusion operates via a continuous scalar potential field calculated during <a href="#world-mechanic-fluidmechanics">FluidMechanics</a> propagation and cached on <a href="../00-overview/#component-board">Board</a>. Updates avoid spatial lookups by reading <code>resource.state.moisture_flux</code>:</li>
 <li><strong>Positive Flux</strong>: Accumulates moisture via <span class="arithmatex">\(\text{retention} \mathrel{+}= \kappa_{\text{diffusion}} \cdot \text{moisture_flux} \cdot \Delta t\)</span>.</li>
 <li><strong>Zero Flux</strong>: Evaporates moisture via <span class="arithmatex">\(\text{retention} \mathrel{-}= \kappa_{\text{evap}} \cdot \mu_{\text{season}} \cdot \Delta t\)</span>.</li>
-<li><strong>Throttled Stage Transitions</strong>: Biological and geological progression checks (<code>executor.evaluate(stage, locals)</code>) are decoupled from the 60 Hz physics loop, evaluating at a 1.0-second throttled frequency or upon calendar period transitions (<code>period_changed == True</code>).</li>
+<li><strong>Throttled Stage Transitions</strong>: Biological and geological progression checks are decoupled from the <a href="../00-overview/#component-engine">Engine Loop</a>, evaluating at a 1.0-second throttled frequency or upon calendar period transitions.</li>
 </ol>
 <h4 id="world-mechanic-plotmechanics">World Mechanic: PlotMechanics</h4>
 <p>TODO</p>
@@ -4397,7 +4481,7 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <span class="w">          </span><span class="nt">relations</span><span class="p">:</span>
 <span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;relation-key&gt;</span>
 </code></pre></div>
-<p>Mechanics are divided into <a href="#mechanics-world">World Mechanics</a> and <a href="#mechanics-core">Core Mechanics</a>. Core Mechanics execute every single <a href="../00-overview/#component-engine">Engine loop</a>, regardless of whether or not the <a href="../00-overview/#component-board">Board</a> is paused; These include <a href="#core-mechanic-animationmechanics">AnimationMechanics</a> and <a href="#core-mechanic-menumechanics">MenuMechanics</a>. World Mechanics only execute when the <a href="../00-overview/#component-board">Board</a> is unpaused.</p>
+<p>Mechanics are divided into <a href="#mechanics-world">World Mechanics</a> and <a href="#mechanics-core">Core Mechanics</a>. Core Mechanics execute every single <a href="../00-overview/#component-engine">Engine Loop</a>, regardless of whether or not the <a href="../00-overview/#component-board">Board</a> is paused; These include <a href="#core-mechanic-animationmechanics">AnimationMechanics</a> and <a href="#core-mechanic-menumechanics">MenuMechanics</a>. World Mechanics only execute when the <a href="../00-overview/#component-board">Board</a> is unpaused.</p>
 <p>The order in which Mechanics are specified in the schema becomes the order of execution in the <a href="../00-overview/#component-engine">Engine loop</a>.</p>
 <h2 id="dependencies">Dependencies</h2>
 <p>Systems requiring external services (such as the Actuator for <a href="./#world-mechanic-fluidmechanics">FluidMechanics</a>, or compiled Transition Executors for <a href="./#intentional-mechanic-transitionmechanics">TransitionMechanics</a> and <a href="./#world-mechanic-plotmechanics">PlotMechanics</a>) receive them through their constructor via Factory.</p>
@@ -4430,18 +4514,25 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <li><code>centennial</code>: Executor evalutating <a href="../01-assets/#resources">Resource Stage</a> transitions for centennial lifespans.</li>
 </ul>
 <h3 id="dependency-relations">Dependency: Relations</h3>
-<p>Relations are static mappings configured at runtime. Available Relations are enumerated below,</p>
+<p>Relations are static mappings configured at runtime and then injected into requesting Mechanics.</p>
 <ul>
-<li><code>shorelines</code>: A map of <a href="../01-assets/#shorelines">Shoreline Geography Asset IDs</a> to a compound index of <a href="../01-assets/#category-tiles">Tile Asset IDs</a> and <a href="../01-assets/#effect-fluids">Fluid Asset ID</a>. This relation maps Fluid Shorelines to the Tiles in which they are embedded, e.g. <code>grassy-shore</code> Shorelines are mapped to <code>grass</code> Tiles and <code>water</code> Fluids. </li>
+<li><code>shorelines</code>: A map of <a href="../01-assets/#shorelines">Shoreline Geography Asset IDs</a> to a compound index of <a href="../01-assets/#category-tiles">Tile Asset IDs</a> and <a href="../01-assets/#effect-fluids">Fluid Asset ID</a>. This relation maps <a href="../09-ecology/#geography-shorelines">Fluid Shorelines</a> to the <a href="../01-assets/#tile-environ">Environ Tiles</a> in which they are embedded, e.g. <code>grassy-shore</code> Shorelines are mapped to <code>grass</code> Environ Tiles and <code>water</code> Fluids. </li>
 <li><code>materials</code>: TODO</li>
 </ul>
 <h2 id="modules">Modules</h2>
 <h3 id="modules-maps">Modules: Maps</h3>
-<p>Maps associate ancillary Asset states to their final Animation state. See <a href="../04-intentions/#animationmap">AnimationMap</a> for more information.</p>
-<p>The AnimationMap plays a crucial role in enforcing logical constraints for Animations. For example, TransitionMechanics and PlayerMechanics utilize AnimationMaps to resolve whether an intended action is possible. This guarantees that an <code>attack</code> Intention will not translate into a <code>thrust</code> Action if the Sprite currently lacks the required tool or weapon equipped in its inventory.</p>
-<p><strong>Interface: Queries</strong></p>
+<p>Maps associate ancillary Asset States to their final Animation State. See <a href="../04-intentions/#animationmap">AnimationMap</a> for more information.</p>
+<h4 id="map-animation">Map: Animation</h4>
+<p>AnimationMapS plays a crucial role in enforcing logical constraints for Animations. For example, <a href="#intentional-mechanic-transitionmechanics">TransitionMechanics</a> and <a href="#intentional-mechanic-playermechanics">PlayerMechanics</a> utilize AnimationMaps to resolve whether an intended Action is possible. This guarantees that an <code>attack</code> Intention will not translate into a <code>thrust</code> Action if the Sprite currently lacks the required Tool or Weapon in its <a href="../02-sprites/#model-slots">Slots</a>.</p>
+<p><strong>Interface: Action Mapping</strong></p>
 <ul>
 <li><code>action(state, equipment): returns Action</code></li>
+</ul>
+<h4 id="map-combat">Map: Combat</h4>
+<p>TODO</p>
+<p><strong>Interface: Attack Hitbox Mapping</strong></p>
+<ul>
+<li><code>attackboxes()</code>: TODO</li>
 </ul>
 
 

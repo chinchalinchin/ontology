@@ -54,8 +54,8 @@
             </div>
         </aside>
         <h2>
-            <span class="text">53 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">53<span class="text"> run</span></button>
+            <span class="text">52 statements &nbsp;</span>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">52<span class="text"> run</span></button>
             <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">0<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="z_6f9488b53ad9e3ca_core_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.17.3">coverage.py v7.17.3</a>,
-            created at 2026-11-15 17:12 +0000
+            created at 2026-11-17 01:15 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -199,10 +199,10 @@
     <p class="run run2"><span class="n"><a id="t117" href="#t117">117</a></span><span class="t">        <span class="nam">str</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t118" href="#t118">118</a></span><span class="t">        <span class="nam">Dict</span><span class="op">[</span><span class="nam">Enumerated</span><span class="op">[</span><span class="nam">Actions</span><span class="op">]</span><span class="op">,</span> <span class="nam">Action</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t119" href="#t119">119</a></span><span class="t">    <span class="op">]</span> <span class="op">=</span> <span class="nam">field</span><span class="op">(</span><span class="nam">default_factory</span><span class="op">=</span><span class="nam">dict</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t120" href="#t120">120</a></span><span class="t">    <span class="nam">attackboxes</span><span class="op">:</span> <span class="nam">Optional</span><span class="op">[</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t121" href="#t121">121</a></span><span class="t">        <span class="nam">Dict</span><span class="op">[</span><span class="nam">str</span><span class="op">,</span> <span class="nam">List</span><span class="op">[</span><span class="nam">Hitbox</span><span class="op">]</span><span class="op">]</span>                                     <span class="com"># type: ignore</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t122" href="#t122">122</a></span><span class="t">    <span class="op">]</span> <span class="op">=</span> <span class="nam">field</span><span class="op">(</span><span class="nam">default_factory</span><span class="op">=</span><span class="nam">dict</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t123" href="#t123">123</a></span><span class="t">    <span class="nam">hitboxes</span><span class="op">:</span> <span class="nam">Optional</span><span class="op">[</span><span class="nam">List</span><span class="op">[</span><span class="nam">Hitbox</span><span class="op">]</span><span class="op">]</span> <span class="op">=</span> <span class="nam">field</span><span class="op">(</span><span class="nam">default_factory</span><span class="op">=</span><span class="nam">list</span><span class="op">)</span>  <span class="com"># type: ignore</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t120" href="#t120">120</a></span><span class="t">    <span class="nam">hitboxes</span><span class="op">:</span> <span class="nam">Optional</span><span class="op">[</span><span class="nam">Union</span><span class="op">[</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t121" href="#t121">121</a></span><span class="t">        <span class="nam">List</span><span class="op">[</span><span class="nam">Hitbox</span><span class="op">]</span><span class="op">,</span>                                               <span class="com"># type: ignore</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t122" href="#t122">122</a></span><span class="t">        <span class="nam">Dict</span><span class="op">[</span><span class="nam">str</span><span class="op">,</span> <span class="nam">List</span><span class="op">[</span><span class="nam">Hitbox</span><span class="op">]</span><span class="op">]</span>                                     <span class="com"># type: ignore</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t123" href="#t123">123</a></span><span class="t">    <span class="op">]</span><span class="op">]</span> <span class="op">=</span> <span class="nam">field</span><span class="op">(</span><span class="nam">default_factory</span><span class="op">=</span><span class="nam">list</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t124" href="#t124">124</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t125" href="#t125">125</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t126" href="#t126">126</a></span><span class="t"><span class="com"># --------------------------------------------------------------</span>&nbsp;</span><span class="r"></span></p>
@@ -225,7 +225,7 @@
             <a class="nav" href="z_6f9488b53ad9e3ca_core_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.17.3">coverage.py v7.17.3</a>,
-            created at 2026-11-15 17:12 +0000
+            created at 2026-11-17 01:15 +0000
         </p>
     </div>
 </footer>

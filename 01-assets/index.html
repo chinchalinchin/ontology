@@ -4562,9 +4562,7 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 | Surfaces | -2 | <code>geography.shorelines</code>, <code>crafts.struts.floors</code>, <code>crafts.struts.paths</code>, <code>crafts.struts.flats</code> |
 | Overlay | -1 | <code>crafts.bridges</code>, <code>crafts.stairs</code>, <code>objects.doors</code>, <code>crafts.struts.solids</code>, <code>crafts.struts.stripes</code>, <code>crafts.struts.designs</code> |
 | Standard | 0 | <code>*</code>| </p>
-<p>!!! @TODO(07-03)
-    This entire procedure needs re-evaluation now that Substrates are not Elevations, i.e. prior to Phase 07.04 Substrates were used to lazily-load Elevations. Now they are a dedicated partition of the sort key <code>(elevation, substrate, ground, priority)</code></p>
-<p>During <a href="../05-mechanics/#spatial-mechanic-collisionmechanics">CollisionMechanics</a> and Perimeter generation, all negative Substrates are collapsed into <code>elevation = 0</code>, i.e. <span class="arithmatex">\(\text{elevation} \in [-\infty, 0] \to \text{elevation} = 0\)</span>, in order that all Assets on these Substrates may participate in collisions at <code>elevation = 0</code>.</p>
+<p>Because <code>substrate</code> is an independent secondary component of the rendering sort key <code>(elevation, substrate, ground, priority)</code>, Assets rendered on negative intra-elevation substrates (such as <a href="#craft-bridges">Bridges</a> on <code>substrate = -1</code> or <a href="#category-geography">Shorelines</a> on <code>substrate = -2</code>) retain their true topological <code>elevation</code> (<span class="arithmatex">\(E \ge 0\)</span>) for spatial queries and collision partitioning.</p>
 <h4 id="concept-materiality">Concept: Materiality</h4>
 <p>Many Assets have their Frame space defined over a Material partition. Material affects the color palette of an Asset and has other consequences in the <a href="../11-emergence/#economy">Economy</a>.</p>
 <p>The <em>Material Space</em> is further subdivded into non-overlapping Genera,</p>
@@ -5608,10 +5606,6 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 </ul>
 <p><strong>Configuration: ActionSets</strong></p>
 <p>Many Sheet Assets reuse the same Action specification. Common Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as <em>ActionSets</em>. Each Sheet may specify an ActionSet in its Property index file to use in the construction of its Frame space. See <a href="../appendices/01-schemas/#configuration-actions">Action Configuration Schema</a> for more details. </p>
-<p><strong>Hitbox: Attackboxes</strong></p>
-<p>!!! @TODO(06-03)
-    The Hitbox interface has been formally codified into a component of an Asset. Attackboxes are the last remaining legacy hitbox implementation that needs migrated to the new paradigm. They are complicated by their relationship with Equipment and specific Frames in an Animation.</p>
-<p>An Attackbox is a special type of hitbox unique to Sheet Assets. It is mapped to a canonical <code>&lt;action&gt;-&lt;direction&gt;-&lt;frame&gt;</code> key (where <code>setting.SEPARATOR = "-"</code>) and applied during the animation state identified by this key. Attackboxes are used to augment the Sheet's basic hitbox collision detection during <a href="../05-mechanics/#mechanics-spatial">CombatMechanics</a>. While any Sprite can alter its Attackbox properties, this property is utilized mainly by <a href="../02-sprites/#equipment">Equipment</a>.</p>
 <p><strong>Model: Stack</strong></p>
 <p>A Stack is a list of Sheet Asset IDs to superimpose over one another to form the resultant Sheet displayed on the <a href="../00-overview/#component-screen">Screen</a>. A Sheet Stack is drawn in the order it is specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.</p>
 <p>For example, the <code>src/assets/sheets/&lt;sheet-category&gt;/features/hair-blonde-bangs.png</code> might be stacked on top of <code>src/assets/sheets/&lt;sheet-category&gt;/skins/male-dark-human.png</code> to create a new Sheet asset used in the game. This Sprite stack is assembled in the <a href="../00-overview/#library-registry">Registry</a> using the <code>stack</code> property during the <a href="../12-architecture/#specification-initialization">application bootstrap</a>. The assembled <code>stack</code> is saved as a Sheet Asset, using the <code>&lt;sheet-id&gt;</code> as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.</p>
@@ -5657,6 +5651,12 @@ Mutators likely need to be another component, like Frame or Animation, that is i
 </ul>
 <p>Equipment is a group of Asset Instances within the Category of Sheets (known as the Equipment Instance Group). They are closely tied to Sprites Animations. Equipment Assets are rendered on top of a Sprite when those pieces of Equipment are active in the Sprite's Inventory. Because of this relationship between the Assets,  i.e. Equipment rendering being dependent on Sprite state, Equipment does not possess its own State, Frame or Animation implementation. Equipment only has Properties.</p>
 <p>Equipment is covered in more detail in the <a href="../02-sprites/#equipment">Sprites documentation</a>.</p>
+<p><strong>Hitbox: AttackHitbox</strong></p>
+<p>An Attackbox is a component of Equipment mapped to a Sprite's canonical <code>&lt;action&gt;-&lt;direction&gt;-&lt;frame&gt;</code> Frame key. It resolves the Hitbox governing Combat dynamically during <a href="../05-mechanics/#spatial-mechanic-collisionmechanics">CombatMechanics</a>.</p>
+<ul>
+<li><code>elevations(properties, state): returns [max(0, state.elevation if state.elevation is not None else 0)]</code></li>
+<li><code>get(properties, state, elevation)</code>: TODO</li>
+</ul>
 <h3 id="category-widgets">Category: Widgets</h3>
 <p>Widgets are used to constructs Menus. They are not a part of the core <a href="../00-overview/#component-engine">Engine</a> loop and have special <a href="../05-mechanics/">Mechanics</a> that govern their lifecycle.  </p>
 <p>Widgets are covered in the <a href="../06-widgets/">Widget documentation</a>.</p>
