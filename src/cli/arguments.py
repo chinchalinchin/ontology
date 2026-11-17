@@ -40,13 +40,13 @@ def construct(root: Path):
     parser.add_argument("--software", action="store_true", default=False)
 
     # State Dump Filter Arguments (Regex enabled, comma-delimited)
-    parser.add_argument(f"--{Filters.INSTANCE.value}", type=str, default=None,
+    parser.add_argument(f"--{Filters.INSTANCE}", type=str, default=None,
                         help="Comma-separated regex patterns to filter asset instances (e.g. 'sprites,crate.*').")
-    parser.add_argument(f"--{Filters.CATEGORY.value}", type=str, default=None,
+    parser.add_argument(f"--{Filters.CATEGORY}", type=str, default=None,
                         help="Comma-separated regex patterns to filter asset categories (e.g. 'sheets,objects').")
-    parser.add_argument(f"--{Filters.ID.value}", type=str, default=None,
+    parser.add_argument(f"--{Filters.ID}", type=str, default=None,
                         help="Comma-separated regex patterns to filter asset IDs.")
-    parser.add_argument(f"--{Filters.NAME.value}", type=str, default=None,
+    parser.add_argument(f"--{Filters.NAME}", type=str, default=None,
                         help="Comma-separated regex patterns to filter asset names.")
 
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -59,7 +59,7 @@ def construct(root: Path):
         p.add_argument("--layer", type=str, required=True)
         p.add_argument("--width", type=int, default=SCREENSIZE)
         p.add_argument("--length", type=int, default=SCREENSIZE)
-        p.add_argument("--device", type=str, default=Devices.KEYBOARD.value)
+        p.add_argument("--device", type=str, default=Devices.KEYBOARD)
 
     # Interactive start subcommand: board_key is optional (nargs="?", default=None)
     p_start = subparsers.add_parser("start")
@@ -67,7 +67,7 @@ def construct(root: Path):
                          help="Optional board key to bypass the Main Menu and start immediately.")
     p_start.add_argument("--width", type=int, default=SCREENSIZE)
     p_start.add_argument("--length", type=int, default=SCREENSIZE)
-    p_start.add_argument("--device", type=str, default=Devices.KEYBOARD.value)
+    p_start.add_argument("--device", type=str, default=Devices.KEYBOARD)
 
     # Schema Dump subcommand (Headless, no board_key required)
     p_schema = subparsers.add_parser("schema", help="Export JSON or YAML model schemas.")

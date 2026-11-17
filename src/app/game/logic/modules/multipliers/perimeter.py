@@ -63,14 +63,18 @@ class PerimeterMultiplier(SimpleMultiplier):
         units: List[Asset] = []
         idx = 0
 
-        north_hbs = props.hitboxes.get(Enclosures.NORTH.value, []) if props.hitboxes else []
+        north_hbs = props.hitboxes.get(Enclosures.NORTH, []) if props.hitboxes else []
         north_bottom = max((hb.position.y + hb.dimensions.l for hb in north_hbs), default=l)
         north_anchor = int(north_bottom - l)
 
         # Horizontal caps/shafts across [0, nx + 1]
         for ix in range(nx + 2):
             seg_x = base_pos.x + ix * w
-            n_name = settings.SEPARATOR.join([base_name, Enclosures.NORTH.value, str(idx)])
+            n_name = settings.SEPARATOR.join([
+                base_name, 
+                Enclosures.NORTH, 
+                str(idx)
+            ])
             idx += 1
             units.append(
                 self._unit(
@@ -82,12 +86,16 @@ class PerimeterMultiplier(SimpleMultiplier):
                     n_name,
                     layer,
                     Position(seg_x, base_pos.y),
-                    Enclosures.NORTH.value,
+                    Enclosures.NORTH,
                     north_anchor
                 )
             )
 
-            s_name = settings.SEPARATOR.join([base_name, Enclosures.SOUTH.value, str(idx)])
+            s_name = settings.SEPARATOR.join([
+                base_name, 
+                Enclosures.SOUTH, 
+                str(idx)
+            ])
             idx += 1
             units.append(
                 self._unit(
@@ -99,7 +107,7 @@ class PerimeterMultiplier(SimpleMultiplier):
                     s_name,
                     layer,
                     Position(seg_x, base_pos.y + (ny + 1) * l),
-                    Enclosures.SOUTH.value,
+                    Enclosures.SOUTH,
                     0
                 )
             )
@@ -107,7 +115,11 @@ class PerimeterMultiplier(SimpleMultiplier):
         # Vertical caps/shafts across [0, ny + 1] (superimposes at corners to seal L-hitboxes)
         for iy in range(ny + 2):
             seg_y = base_pos.y + iy * l
-            w_name = settings.SEPARATOR.join([base_name, Enclosures.WEST.value, str(idx)])
+            w_name = settings.SEPARATOR.join([
+                base_name, 
+                Enclosures.WEST, 
+                str(idx)
+            ])
             idx += 1
             units.append(
                 self._unit(
@@ -119,12 +131,16 @@ class PerimeterMultiplier(SimpleMultiplier):
                     w_name,
                     layer,
                     Position(base_pos.x, seg_y),
-                    Enclosures.WEST.value,
+                    Enclosures.WEST,
                     0
                 )
             )
 
-            e_name = settings.SEPARATOR.join([base_name, Enclosures.EAST.value, str(idx)])
+            e_name = settings.SEPARATOR.join([
+                base_name, 
+                Enclosures.EAST, 
+                str(idx)
+            ])
             idx += 1
             units.append(
                 self._unit(
@@ -136,7 +152,7 @@ class PerimeterMultiplier(SimpleMultiplier):
                     e_name,
                     layer,
                     Position(base_pos.x + (nx + 1) * w, seg_y),
-                    Enclosures.EAST.value,
+                    Enclosures.EAST,
                     0
                 )
             )

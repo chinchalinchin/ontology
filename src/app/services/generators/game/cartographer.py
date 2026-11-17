@@ -73,7 +73,7 @@ class Cartographer:
         Extracts active fluid stream corridors, annular pools, and child branch
         corridors into primitive (min_x, min_y, max_x, max_y) AABB tuples for contour sweeps.
         """
-        fluids = board.instances(AssetInstances.FLUIDS.value, layer)
+        fluids = board.instances(AssetInstances.FLUIDS, layer)
         rects: List[Tuple[int, int, int, int]] = []
 
         for fluid in fluids:
@@ -86,13 +86,13 @@ class Cartographer:
 
             # 1. Directional stream corridor bounding box
             if length > 0:
-                if direction == Directions.DOWN.value:
+                if direction == Directions.DOWN:
                     rects.append((fx, fy, fx + fw, fy + length))
-                elif direction == Directions.UP.value:
+                elif direction == Directions.UP:
                     rects.append((fx, fy - length, fx + fw, fy))
-                elif direction == Directions.RIGHT.value:
+                elif direction == Directions.RIGHT:
                     rects.append((fx, fy, fx + length, fy + fl))
-                elif direction == Directions.LEFT.value:
+                elif direction == Directions.LEFT:
                     rects.append((fx - length, fy, fx, fy + fl))
 
             # 2. Annular pool bounding box
@@ -108,13 +108,13 @@ class Cartographer:
                 by = branch.position.y
                 b_dir = branch.source
 
-                if b_dir == Directions.DOWN.value:
+                if b_dir == Directions.DOWN:
                     rects.append((bx, by, bx + fw, by + branch.length))
-                elif b_dir == Directions.UP.value:
+                elif b_dir == Directions.UP:
                     rects.append((bx, by - branch.length, bx + fw, by))
-                elif b_dir == Directions.RIGHT.value:
+                elif b_dir == Directions.RIGHT:
                     rects.append((bx, by, bx + branch.length, by + fl))
-                elif b_dir == Directions.LEFT.value:
+                elif b_dir == Directions.LEFT:
                     rects.append((bx - branch.length, by, bx, by + fl))
 
             # 4. Compound hitboxes (captures secondary pools from recursive bifurcations)
@@ -144,7 +144,7 @@ class Cartographer:
         Identifies the fluid entity occupying the interior water coordinate adjacent to the margin.
         """
         water_pos = Position(sample_c, water_coord) if axis == 'x' else Position(water_coord, sample_c)
-        fluids = board.instances(AssetInstances.FLUIDS.value, layer)
+        fluids = board.instances(AssetInstances.FLUIDS, layer)
 
         for fluid in fluids:
             fx = fluid.state.position.x
@@ -183,13 +183,13 @@ class Cartographer:
         tile_w = dimensions.w if dimensions is not None else STEP_SIZE
         tile_l = dimensions.l if dimensions is not None else STEP_SIZE
 
-        if orientation == Directions.UP.value:
+        if orientation == Directions.UP:
             return Hitbox(Position(0, 0), Dimensions(length, thickness))
-        elif orientation == Directions.DOWN.value:
+        elif orientation == Directions.DOWN:
             return Hitbox(Position(0, max(0, tile_l - thickness)), Dimensions(length, thickness))
-        elif orientation == Directions.LEFT.value:
+        elif orientation == Directions.LEFT:
             return Hitbox(Position(0, 0), Dimensions(thickness, length))
-        elif orientation == Directions.RIGHT.value:
+        elif orientation == Directions.RIGHT:
             return Hitbox(Position(max(0, tile_w - thickness), 0), Dimensions(thickness, length))
         return Hitbox(Position(0, 0), Dimensions(length, thickness))
 
@@ -251,13 +251,13 @@ class Cartographer:
 
         for asset in candidates:
             if asset.category in (
-                AssetCategories.SHEETS.value, 
-                AssetCategories.EFFECTS.value
+                AssetCategories.SHEETS, 
+                AssetCategories.EFFECTS
             ):
                 continue
-            if asset.instance == AssetInstances.RAFTS.value:
+            if asset.instance == AssetInstances.RAFTS:
                 continue
-            if asset.instance == AssetInstances.GATES.value and asset.state.switch:
+            if asset.instance == AssetInstances.GATES and asset.state.switch:
                 continue
             if asset.properties.mass != 0:
                 continue
@@ -333,11 +333,11 @@ class Cartographer:
         """
         Computes the top-left world coordinate for a shoreline segment.
         """
-        if orientation == Directions.UP.value:
+        if orientation == Directions.UP:
             return Position(c, margin_coord)
-        elif orientation == Directions.DOWN.value:
+        elif orientation == Directions.DOWN:
             return Position(c, margin_coord - dimensions.l)
-        elif orientation == Directions.LEFT.value:
+        elif orientation == Directions.LEFT:
             return Position(margin_coord, c)
         return Position(margin_coord - dimensions.w, c)
 
@@ -446,8 +446,11 @@ class Cartographer:
         """
         Translates a raw (x, y, w, l, orientation) contour tuple into a 1D sweep descriptor.
         """
-        if orientation in (Directions.UP.value, Directions.DOWN.value):
-            is_up = orientation == Directions.UP.value
+        if orientation in (
+            Directions.UP, 
+            Directions.DOWN
+        ):
+            is_up = orientation == Directions.UP
             return {
                 'orientation': orientation,
                 'axis': 'x',
@@ -458,7 +461,7 @@ class Cartographer:
                 'water_coord': y + 1 if is_up else y - 1,
             }
 
-        is_left = orientation == Directions.LEFT.value
+        is_left = orientation == Directions.LEFT
         return {
             'orientation': orientation,
             'axis': 'y',

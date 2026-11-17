@@ -51,7 +51,7 @@ def filter(
     # 1. Filter out Widgets
     non_widgets = [
         a for a in assets 
-        if a.category != AssetCategories.WIDGETS.value
+        if a.category != AssetCategories.WIDGETS
     ]
 
     if not filters:
@@ -110,7 +110,7 @@ def dump(
         "timestamp": timestamp
     }
 
-    if temp == Dumps.STATE.value:
+    if temp == Dumps.STATE:
         raw_assets = context.assets() if hasattr(context, "assets") else []
         args["assets"] = filter(raw_assets, filters)
         if hasattr(context, "perimeters"):
@@ -120,14 +120,14 @@ def dump(
         if hasattr(context, "plot"):
             args["plot"] = context.plot
 
-    elif temp == Dumps.MENUS.value:
+    elif temp == Dumps.MENUS:
         args["menus"] = context.menus
         args["overlays"] = context.overlays
         
-    elif temp == Dumps.SDL.value:
+    elif temp == Dumps.SDL:
         args["sys_info"] = sysinfo()
         
-    elif temp == Dumps.REGISTRY.value:
+    elif temp == Dumps.REGISTRY:
         screen = next(iter(context.screens.values()))
         
         frames = {}
@@ -177,7 +177,7 @@ def hydrate(engine, board_key, screensize):
     engine.screens.clear()
     
     for i, layer in enumerate(engine.board.layers()):
-        tiles = engine.board.categories(AssetCategories.TILES.value, layer)
+        tiles = engine.board.categories(AssetCategories.TILES, layer)
         layer_sizes = engine.board.size(layer)
         size = layer_sizes[0] if layer_sizes else screensize
         

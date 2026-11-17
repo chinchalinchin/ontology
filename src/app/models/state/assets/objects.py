@@ -53,7 +53,7 @@ class ContainerState(ObjectState):
 class DoorState(ObjectState):
     out: Optional[Position] = None # type: ignore
     outlayer: Optional[str] = None
-    projection: Enumerated[LayerProjections] = LayerProjections.IN.value
+    projection: Enumerated[LayerProjections] = LayerProjections.IN
 
 @dataclass(slots=True)
 class SwitchState(ObjectState):

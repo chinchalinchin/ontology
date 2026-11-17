@@ -71,14 +71,14 @@ class FluidFrame(Frame):
                 slice_key = settings.SEPARATOR.join([
                     id,
                     frame_str,
-                    Directions.DOWN.value,
+                    Directions.DOWN,
                     str(s),
                 ])
                 crops[slice_key] = (base_x, 0, w, s)
                 crops[settings.SEPARATOR.join([
                     id,
                     frame_str,
-                    Directions.DOWN.value,
+                    Directions.DOWN,
                     "slice",
                     str(s),
                 ])] = (base_x, 0, w, s)
@@ -88,14 +88,14 @@ class FluidFrame(Frame):
                 slice_key = settings.SEPARATOR.join([
                     id,
                     frame_str,
-                    Directions.UP.value,
+                    Directions.UP,
                     str(s),
                 ])
                 crops[slice_key] = (base_x, l - s, w, s)
                 crops[settings.SEPARATOR.join([
                     id,
                     frame_str,
-                    Directions.UP.value,
+                    Directions.UP,
                     "slice",
                     str(s),
                 ])] = (base_x, l - s, w, s)
@@ -105,14 +105,14 @@ class FluidFrame(Frame):
                 slice_key = settings.SEPARATOR.join([
                     id,
                     frame_str,
-                    Directions.RIGHT.value,
+                    Directions.RIGHT,
                     str(s),
                 ])
                 crops[slice_key] = (base_x, 0, s, l)
                 crops[settings.SEPARATOR.join([
                     id,
                     frame_str,
-                    Directions.RIGHT.value,
+                    Directions.RIGHT,
                     "slice",
                     str(s),
                 ])] = (base_x, 0, s, l)
@@ -122,14 +122,14 @@ class FluidFrame(Frame):
                 slice_key = settings.SEPARATOR.join([
                     id,
                     frame_str,
-                    Directions.LEFT.value,
+                    Directions.LEFT,
                     str(s),
                 ])
                 crops[slice_key] = (base_x + w - s, 0, s, l)
                 crops[settings.SEPARATOR.join([
                     id,
                     frame_str,
-                    Directions.LEFT.value,
+                    Directions.LEFT,
                     "slice",
                     str(s),
                 ])] = (base_x + w - s, 0, s, l)
@@ -158,56 +158,56 @@ class FluidFrame(Frame):
         # 1. STREAM CORRIDOR DECOMPOSITION
         # ---------------------------------------------------------
         dim = l if direction in (
-            Directions.DOWN.value,
-            Directions.UP.value,
+            Directions.DOWN,
+            Directions.UP,
         ) else w
         full_tiles = length // dim
         rem = length % dim
 
-        if direction == Directions.DOWN.value:
+        if direction == Directions.DOWN:
             for i in range(full_tiles):
                 frame_keys.append((full_key, 0, i * l))
             if rem > 0:
                 slice_key = settings.SEPARATOR.join([
                     id,
                     frame_str,
-                    Directions.DOWN.value,
+                    Directions.DOWN,
                     str(rem),
                 ])
                 frame_keys.append((slice_key, 0, full_tiles * l))
 
-        elif direction == Directions.UP.value:
+        elif direction == Directions.UP:
             for i in range(1, full_tiles + 1):
                 frame_keys.append((full_key, 0, -i * l))
             if rem > 0:
                 slice_key = settings.SEPARATOR.join([
                     id,
                     frame_str,
-                    Directions.UP.value,
+                    Directions.UP,
                     str(rem),
                 ])
                 frame_keys.append((slice_key, 0, -length))
 
-        elif direction == Directions.RIGHT.value:
+        elif direction == Directions.RIGHT:
             for i in range(full_tiles):
                 frame_keys.append((full_key, i * w, 0))
             if rem > 0:
                 slice_key = settings.SEPARATOR.join([
                     id,
                     frame_str,
-                    Directions.RIGHT.value,
+                    Directions.RIGHT,
                     str(rem),
                 ])
                 frame_keys.append((slice_key, full_tiles * w, 0))
 
-        elif direction == Directions.LEFT.value:
+        elif direction == Directions.LEFT:
             for i in range(1, full_tiles + 1):
                 frame_keys.append((full_key, -i * w, 0))
             if rem > 0:
                 slice_key = settings.SEPARATOR.join([
                     id,
                     frame_str,
-                    Directions.LEFT.value,
+                    Directions.LEFT,
                     str(rem),
                 ])
                 frame_keys.append((slice_key, -length, 0))
@@ -242,61 +242,60 @@ class FluidFrame(Frame):
                     continue
 
                 b_dir = branch.source
-                b_dir_val = b_dir.value if hasattr(b_dir, "value") else str(b_dir)
                 b_off_x = branch.position.x - pos_x
                 b_off_y = branch.position.y - pos_y
 
-                b_dim = l if b_dir_val in (
-                    Directions.DOWN.value,
-                    Directions.UP.value,
+                b_dim = l if b_dir in (
+                    Directions.DOWN,
+                    Directions.UP,
                 ) else w
                 b_full = b_len // b_dim
                 b_rem = b_len % b_dim
 
-                if b_dir_val == Directions.DOWN.value:
+                if b_dir == Directions.DOWN:
                     for i in range(b_full):
                         frame_keys.append((full_key, b_off_x, b_off_y + i * l))
                     if b_rem > 0:
                         slice_key = settings.SEPARATOR.join([
                             id,
                             frame_str,
-                            Directions.DOWN.value,
+                            Directions.DOWN,
                             str(b_rem),
                         ])
                         frame_keys.append((slice_key, b_off_x, b_off_y + b_full * l))
 
-                elif b_dir_val == Directions.UP.value:
+                elif b_dir == Directions.UP:
                     for i in range(1, b_full + 1):
                         frame_keys.append((full_key, b_off_x, b_off_y - i * l))
                     if b_rem > 0:
                         slice_key = settings.SEPARATOR.join([
                             id,
                             frame_str,
-                            Directions.UP.value,
+                            Directions.UP,
                             str(b_rem),
                         ])
                         frame_keys.append((slice_key, b_off_x, b_off_y - b_len))
 
-                elif b_dir_val == Directions.RIGHT.value:
+                elif b_dir == Directions.RIGHT:
                     for i in range(b_full):
                         frame_keys.append((full_key, b_off_x + i * w, b_off_y))
                     if b_rem > 0:
                         slice_key = settings.SEPARATOR.join([
                             id,
                             frame_str,
-                            Directions.RIGHT.value,
+                            Directions.RIGHT,
                             str(b_rem),
                         ])
                         frame_keys.append((slice_key, b_off_x + b_full * w, b_off_y))
 
-                elif b_dir_val == Directions.LEFT.value:
+                elif b_dir == Directions.LEFT:
                     for i in range(1, b_full + 1):
                         frame_keys.append((full_key, b_off_x - i * w, b_off_y))
                     if b_rem > 0:
                         slice_key = settings.SEPARATOR.join([
                             id,
                             frame_str,
-                            Directions.LEFT.value,
+                            Directions.LEFT,
                             str(b_rem),
                         ])
                         frame_keys.append((slice_key, b_off_x - b_len, b_off_y))

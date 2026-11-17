@@ -46,12 +46,12 @@ class Materializer:
         nx: int,
         ny: int
     ) -> int:
-        if strategy == MultiplicationStrategies.EXPANSION.value:
+        if strategy == MultiplicationStrategies.EXPANSION:
             return nx * (ny + 2)
-        if strategy == MultiplicationStrategies.PERIMETER.value:
+        if strategy == MultiplicationStrategies.PERIMETER:
             return 2 * (nx + ny + 2)
-        if strategy == MultiplicationStrategies.ORIENTED.value:
-            return nx if blueprint_key == Orientations.HORIZONTAL.value else ny
+        if strategy == MultiplicationStrategies.ORIENTED:
+            return nx if blueprint_key == Orientations.HORIZONTAL else ny
         return nx * ny
 
     def cost(
@@ -73,16 +73,16 @@ class Materializer:
 
         costs: List[Cost] = []
 
-        if materials and materials.genus == Materials.CHROMATICS.value:
+        if materials and materials.genus == Materials.CHROMATICS:
             host_item = materials.host
             mu_host = self.materials.material_weight(host_item)
             host_qty = max(1, round(norm_area * mu_host * delta))
             costs.append(Cost(item=host_item, quantity=host_qty))
 
-            if material_key != Chromatics.NEUTRAL.value:
+            if material_key != Chromatics.NEUTRAL:
                 mu_dye = self.materials.material_weight(
                     material_key,
-                    Materials.CHROMATICS.value
+                    Materials.CHROMATICS
                 )
                 dye_qty = max(1, round(norm_area * mu_dye))
                 costs.append(Cost(item=material_key, quantity=dye_qty))

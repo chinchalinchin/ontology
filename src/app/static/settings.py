@@ -77,10 +77,10 @@ SEASON_DURATION_SECONDS: Final[int] = int(
 """Length of a Season in seconds."""
 
 SEASON_EVAPORATION_MODIFIERS: Final[dict[str, float]] = {
-    Seasons.SPRING.value: 1.0,
-    Seasons.SUMMER.value: 1.5,
-    Seasons.AUTUMN.value: 1.0,
-    Seasons.WINTER.value: 0.5,
+    Seasons.SPRING: 1.0,
+    Seasons.SUMMER: 1.5,
+    Seasons.AUTUMN: 1.0,
+    Seasons.WINTER: 0.5,
 }
 """Multiplicative factors scaling moisture evaporation by Board Season."""
 

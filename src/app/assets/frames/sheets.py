@@ -93,15 +93,15 @@ class SpriteFrame(StateFrame):
                 if eq_key:
                     frame_keys.extend(super().keys(eq_key, state))
 
-        if id != RequiredAssets.PLAYER.value and state.psyche.expression:
+        if id != RequiredAssets.PLAYER and state.psyche.expression:
             expr = state.psyche.expression
             expr_key = settings.SEPARATOR.join([
-                ExpressionsPalette.BUBBLES.value,
+                ExpressionsPalette.BUBBLES,
                 state.psyche.expression.icon
             ])
             frame_keys.append((expr_key, expr.offset.x, expr.offset.y))
             
-        if state.intention is not None and state.intention == Intentions.ATTACK.value:
+        if state.intention is not None and state.intention == Intentions.ATTACK:
             logger.info(f"SpriteFrame generated keys: {frame_keys}")
         
         return frame_keys

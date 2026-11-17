@@ -115,7 +115,7 @@ class LibraryBinding(Binding):
         """
         """
         w, l = kwargs.get("w", 0), kwargs.get("l", 0)
-        font_key = kwargs.get("font", Fonts.DIALOGUE.value)
+        font_key = kwargs.get("font", Fonts.DIALOGUE)
         
         def content_function():
             if self._cached_pages is not None:
@@ -150,7 +150,7 @@ class TextBinding(Binding):
 
     def bind(self, **kwargs) -> Tuple[Callable, ...]:
         w, l = kwargs.get("w", 0), kwargs.get("l", 0)
-        font_key = kwargs.get("font", Fonts.DIALOGUE.value)
+        font_key = kwargs.get("font", Fonts.DIALOGUE)
         
         def content_function():
             if self._cached_pages is not None:

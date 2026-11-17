@@ -83,7 +83,7 @@ class SelectTarget:
     selection: Union[
         Enumerated[Selections],
         Enumerated[Statuses]
-    ] = Statuses.IDLE.value
+    ] = Statuses.IDLE
     selector: Optional[str] = None
     index: Optional[int] = None
 
@@ -121,7 +121,7 @@ class PaneParameters:
     """
     Structural and spatial layout parameters for container panes.
     """
-    layout: Enumerated[Layouts] = Layouts.STACK.value
+    layout: Enumerated[Layouts] = Layouts.STACK
     alignment: AxisAlignment = field(default_factory=AxisAlignment)
     justification: AxisAlignment = field(default_factory=AxisAlignment)
     gap: int = 0
@@ -159,7 +159,7 @@ class ButtonParameters:
     """
     State parameters for traversable interactive button widgets.
     """
-    status: Enumerated[Statuses] = Statuses.IDLE.value
+    status: Enumerated[Statuses] = Statuses.IDLE
 
 # ---------------------------------------------------------
 

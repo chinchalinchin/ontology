@@ -138,7 +138,7 @@ class Cradle:
             position    = position, 
             initial     = position, 
             # TODO: determine
-            direction   = Directions.DOWN.value, 
+            direction   = Directions.DOWN, 
             # TODO: determine
             speed       = 10
         )
@@ -146,12 +146,12 @@ class Cradle:
         state.velocity = velocity 
 
         return AssetFactory.asset(
-            category=AssetCategories.CURSORS.value,
-            instance=AssetInstances.PROJECTILES.value,
+            category=AssetCategories.CURSORS,
+            instance=AssetInstances.PROJECTILES,
             properties=self.spawnables.projectiles.get(id),
             state=state,
             recipe=self.recipes.cursors.projectiles,
-            substrate=self.materials.substrate(AssetInstances.PROJECTILES.value)
+            substrate=self.materials.substrate(AssetInstances.PROJECTILES)
         )
 
 
@@ -169,12 +169,12 @@ class Cradle:
             lot=lot
         )
         return AssetFactory.asset(
-            category=AssetCategories.EFFECTS.value,
-            instance=AssetInstances.COLLECTABLES.value,
+            category=AssetCategories.EFFECTS,
+            instance=AssetInstances.COLLECTABLES,
             properties=self.spawnables.collectables.get(id),
             state=state,
             recipe=self.recipes.effects.collectables,
-            substrate=self.materials.substrate(AssetInstances.COLLECTABLES.value)
+            substrate=self.materials.substrate(AssetInstances.COLLECTABLES)
         )
 
 
@@ -192,12 +192,12 @@ class Cradle:
             damage=damage
         )
         return AssetFactory.asset(
-            category=AssetCategories.EFFECTS.value,
-            instance=AssetInstances.HAZARDS.value,
+            category=AssetCategories.EFFECTS,
+            instance=AssetInstances.HAZARDS,
             properties=self.spawnables.hazards.get(id),
             state=state,
             recipe=self.recipes.effects.hazards,
-            substrate=self.materials.substrate(AssetInstances.HAZARDS.value)
+            substrate=self.materials.substrate(AssetInstances.HAZARDS)
         )
 
 
@@ -210,12 +210,12 @@ class Cradle:
             animation=AnimationState()
         )
         return AssetFactory.asset(
-            category=AssetCategories.EFFECTS.value,
-            instance=AssetInstances.PASSIVE.value,
+            category=AssetCategories.EFFECTS,
+            instance=AssetInstances.PASSIVE,
             properties=self.spawnables.passive.get(id),
             state=state,
             recipe=self.recipes.effects.passive,
-            substrate=self.materials.substrate(AssetInstances.PASSIVE.value)
+            substrate=self.materials.substrate(AssetInstances.PASSIVE)
         )
 
 
@@ -239,12 +239,12 @@ class Cradle:
             hitboxes=hitboxes
         )
         return AssetFactory.asset(
-            category=AssetCategories.GEOGRAPHY.value,
-            instance=AssetInstances.SHORELINES.value,
+            category=AssetCategories.GEOGRAPHY,
+            instance=AssetInstances.SHORELINES,
             properties=properties,
             state=state,
             recipe=self.recipes.geography.shorelines,
-            substrate=self.materials.substrate(AssetInstances.SHORELINES.value)
+            substrate=self.materials.substrate(AssetInstances.SHORELINES)
         )
 
 
@@ -264,6 +264,8 @@ class Cradle:
             name        = self.name(), 
             layer       = layer, 
             position    = position, 
+            material    = material,
+            blueprint   = blueprint,
             owner       = owner
         )
         return self.decomposer.unpack(pseudo_state)
@@ -292,6 +294,6 @@ class Cradle:
         )
         return self.decomposer.multiply(
             bridge_state,
-            AssetCategories.CRAFTS.value,
-            AssetInstances.BRIDGES.value
+            AssetCategories.CRAFTS,
+            AssetInstances.BRIDGES
         )

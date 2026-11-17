@@ -84,54 +84,54 @@ class AssetFactory:
     """
     # ----------- FLYWEIGHT COMPONENTS
     _FRAMES = {
-        FrameRecipe.BINARY.value: BinaryFrame(),
-        FrameRecipe.CARDINAL.value: CardinalFrame(),
-        FrameRecipe.FLUID.value: FluidFrame(),
-        FrameRecipe.ICON.value: IconFrame(),
-        FrameRecipe.ITERABLE.value: IterableFrame(),
-        FrameRecipe.MATERIAL.value: MaterialFrame(),
-        FrameRecipe.METER.value: MeterFrame(),
-        FrameRecipe.NONE.value: NoFrame(),
-        FrameRecipe.OBJECT.value: ObjectFrame(),
-        FrameRecipe.PANE.value: PaneFrame(),
-        FrameRecipe.SEASONAL.value: SeasonalFrame(),
-        FrameRecipe.SINGLE.value: SingleFrame(),
-        FrameRecipe.SPRITE.value: SpriteFrame(),
-        FrameRecipe.STAGE.value: StageFrame(),
-        FrameRecipe.STATE.value: StateFrame(),
-        FrameRecipe.TRAVERSAL.value: TraversalFrame(),
+        FrameRecipe.BINARY: BinaryFrame(),
+        FrameRecipe.CARDINAL: CardinalFrame(),
+        FrameRecipe.FLUID: FluidFrame(),
+        FrameRecipe.ICON: IconFrame(),
+        FrameRecipe.ITERABLE: IterableFrame(),
+        FrameRecipe.MATERIAL: MaterialFrame(),
+        FrameRecipe.METER: MeterFrame(),
+        FrameRecipe.NONE: NoFrame(),
+        FrameRecipe.OBJECT: ObjectFrame(),
+        FrameRecipe.PANE: PaneFrame(),
+        FrameRecipe.SEASONAL: SeasonalFrame(),
+        FrameRecipe.SINGLE: SingleFrame(),
+        FrameRecipe.SPRITE: SpriteFrame(),
+        FrameRecipe.STAGE: StageFrame(),
+        FrameRecipe.STATE: StateFrame(),
+        FrameRecipe.TRAVERSAL: TraversalFrame(),
     }
 
     _ANIMATIONS = {
-        AnimationRecipe.FREQUENCY.value: FrequencyAnimation(),
-        AnimationRecipe.NONE.value: NoAnimation(),
-        AnimationRecipe.SPRITE.value: SpriteAnimation(),
-        AnimationRecipe.STATE.value: StateAnimation(),
+        AnimationRecipe.FREQUENCY: FrequencyAnimation(),
+        AnimationRecipe.NONE: NoAnimation(),
+        AnimationRecipe.SPRITE: SpriteAnimation(),
+        AnimationRecipe.STATE: StateAnimation(),
     }
 
     _HITBOXES = {
-        HitboxRecipe.ATTACK.value: AttackHitbox(),
-        HitboxRecipe.DYNAMIC.value: DynamicHitbox(),
-        HitboxRecipe.ELEVATED.value: ElevatedHitbox(),
-        HitboxRecipe.LAYERED.value: LayeredHitbox(),
-        HitboxRecipe.MATERIAL.value: MaterialHitbox(),
-        HitboxRecipe.NONE.value: NoHitbox(),
-        HitboxRecipe.STAGE.value: StageHitbox(),
-        HitboxRecipe.STATIC.value: StaticHitbox(),
-        HitboxRecipe.SWITCH.value: SwitchHitbox(),
+        HitboxRecipe.ATTACK: AttackHitbox(),
+        HitboxRecipe.DYNAMIC: DynamicHitbox(),
+        HitboxRecipe.ELEVATED: ElevatedHitbox(),
+        HitboxRecipe.LAYERED: LayeredHitbox(),
+        HitboxRecipe.MATERIAL: MaterialHitbox(),
+        HitboxRecipe.NONE: NoHitbox(),
+        HitboxRecipe.STAGE: StageHitbox(),
+        HitboxRecipe.STATIC: StaticHitbox(),
+        HitboxRecipe.SWITCH: SwitchHitbox(),
     }
 
     @classmethod
     def frame(cls, recipe: str) -> Frame:
-        return cls._FRAMES.get(recipe, cls._FRAMES[FrameRecipe.NONE.value])
+        return cls._FRAMES.get(recipe, cls._FRAMES[FrameRecipe.NONE])
 
     @classmethod
     def animation(cls, recipe: str) -> Animation:
-        return cls._ANIMATIONS.get(recipe, cls._ANIMATIONS[AnimationRecipe.NONE.value])
+        return cls._ANIMATIONS.get(recipe, cls._ANIMATIONS[AnimationRecipe.NONE])
 
     @classmethod
     def hitbox(cls, recipe: str) -> HitboxSchema:
-        return cls._HITBOXES.get(recipe, cls._HITBOXES[HitboxRecipe.STATIC.value])
+        return cls._HITBOXES.get(recipe, cls._HITBOXES[HitboxRecipe.STATIC])
 
     @classmethod
     def asset(cls,
@@ -140,7 +140,7 @@ class AssetFactory:
         properties: AssetProperties,
         state: AssetState,
         recipe: Recipe,
-        substrate: int = Substrates.STANDARD.value
+        substrate: int = Substrates.STANDARD
     ) -> Asset:
         """
         Unified point of instantiation for all in-game Assets.
@@ -172,7 +172,7 @@ class AssetFactory:
         taxonomy = Taxonomy(
             node.id, 
             node.name, 
-            AssetCategories.WIDGETS.value, 
+            AssetCategories.WIDGETS, 
             node.instance
         )
         return Widget(

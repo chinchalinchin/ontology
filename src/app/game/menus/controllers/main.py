@@ -51,17 +51,17 @@ class MainController(MenuController):
         selector = widget.binding.selector
 
         # Target the requested board state mapping
-        if selection == Selections.NEW.value:
+        if selection == Selections.NEW:
             # Terminate the Main Menu before triggering the State transition
             bus.append(TerminalEvent())
             bus.append(StateEvent(id=settings.NEW_BOARD))
             
-        elif selection == Selections.LOAD.value:
+        elif selection == Selections.LOAD:
             # TODO: resolve through binding somehow
             bus.append(TerminalEvent())
             bus.append(StateEvent(id=settings.NEW_BOARD))
 
-        elif selection == Selections.MENU.value:
+        elif selection == Selections.MENU:
             bus.append(MenuEvent(
                 id=selector, 
                 context=menu.context

@@ -131,10 +131,10 @@ class MaterialIndex(Singleton):
 
     def strategy(self, schema: Optional[str]) -> str:
         if not schema:
-            return MultiplicationStrategies.SIMPLE.value
+            return MultiplicationStrategies.SIMPLE
         return (
             self._blueprint_strategies.get(schema)
-            or MultiplicationStrategies.SIMPLE.value
+            or MultiplicationStrategies.SIMPLE
         )
 
     def is_obstacle(self, blueprint: Optional[str]) -> bool:
@@ -149,13 +149,13 @@ class MaterialIndex(Singleton):
         projection: Optional[str] = None
     ) -> int:
         if (
-            instance == AssetInstances.DOORS.value
-            and projection == LayerProjections.OUT.value
+            instance == AssetInstances.DOORS
+            and projection == LayerProjections.OUT
         ):
-            return Substrates.OVERLAYS.value
-        if instance == AssetInstances.STRUTS.value and blueprint:
-            return self._blueprint_substrates.get(blueprint, Substrates.STANDARD.value)
-        return self._instance_substrates.get(instance, Substrates.STANDARD.value)
+            return Substrates.OVERLAYS
+        if instance == AssetInstances.STRUTS and blueprint:
+            return self._blueprint_substrates.get(blueprint, Substrates.STANDARD)
+        return self._instance_substrates.get(instance, Substrates.STANDARD)
 
     def material_weight(
         self,

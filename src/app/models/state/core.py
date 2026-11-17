@@ -82,8 +82,8 @@ class AssetState:
 
 @dataclass(slots=True)
 class AnimationState:
-    action: Enumerated[Actions] = Actions.WALK.value
-    direction: Enumerated[Directions] = Directions.DOWN.value
+    action: Enumerated[Actions] = Actions.WALK
+    direction: Enumerated[Directions] = Directions.DOWN
     frame: int = 0
     tick: int = 1
 
@@ -95,7 +95,7 @@ class PlotState:
 @dataclass(slots=True)
 class CalendarState:
     year: int = 1
-    season: Enumerated[Seasons] = Seasons.SPRING.value
-    cycle: Enumerated[Cycles]= Cycles.ONSET.value
+    season: Enumerated[Seasons] = Seasons.SPRING
+    cycle: Enumerated[Cycles]= Cycles.ONSET
     period: int = 0
     elapsed: float = 0.0

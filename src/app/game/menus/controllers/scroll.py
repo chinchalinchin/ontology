@@ -52,14 +52,14 @@ class ScrollController(MenuController):
         if not isinstance(pane.state, PaneState):
             return
         
-        if selection == Selections.SCROLLDOWN.value:
+        if selection == Selections.SCROLLDOWN:
             pane.state.scrolldown()
             bus.append(UpdateEvent(
                 widget=pane, 
                 content=pane.state.current()
             ))
 
-        elif selection == Selections.SCROLLUP.value:
+        elif selection == Selections.SCROLLUP:
             pane.state.scrollup()
             bus.append(UpdateEvent(
                 widget=pane, 

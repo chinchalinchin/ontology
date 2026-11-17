@@ -42,13 +42,13 @@ class TerminalEventHandler(EventHandler):
         if screen:
             screen.release(menu)
             
-        if menu.id == Menus.LOAD.value:
+        if menu.id == Menus.LOAD:
             for old in data.board.overlays: 
                 screen.release(old)
 
             hud_menu = data.provider.unpack(
-                Menus.VIEW.value, 
-                data.board.configurations.menus.get(Menus.VIEW.value), 
+                Menus.VIEW, 
+                data.board.configurations.menus.get(Menus.VIEW), 
                 ViewContext(sprite=player.state), 
                 screen.screensize
             )

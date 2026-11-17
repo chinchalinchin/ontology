@@ -36,8 +36,8 @@ from app.models.state.core import (
 class ShorelineState(AssetState):
     # Shoreline fields
     position: Optional[Position] = None  # type: ignore
-    orientation: Enumerated[Directions] = Directions.DOWN.value
-    season: Enumerated[Seasons] = Seasons.SPRING.value
+    orientation: Enumerated[Directions] = Directions.DOWN
+    season: Enumerated[Seasons] = Seasons.SPRING
     length: int = 0
     hitboxes: List[Hitbox] = field(default_factory=list)  # type: ignore
     _keys: Optional[List[Tuple[str, int, int]]] = None

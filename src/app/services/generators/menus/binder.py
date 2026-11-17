@@ -34,13 +34,13 @@ from app.game.menus.bindings import (
 
 class Binder:
     _BINDING_MAP = {
-        Bindings.LIBRARY.value: LibraryBinding,
-        Bindings.METER.value: MeterBinding,
-        Bindings.ICON.value: IconBinding,
-        Bindings.SELECT.value: SelectBinding,
-        Bindings.COLLECTION.value: CollectionBinding,
-        Bindings.APERTURE.value: ApertureBinding,
-        Bindings.TEXT.value: TextBinding
+        Bindings.LIBRARY: LibraryBinding,
+        Bindings.METER: MeterBinding,
+        Bindings.ICON: IconBinding,
+        Bindings.SELECT: SelectBinding,
+        Bindings.COLLECTION: CollectionBinding,
+        Bindings.APERTURE: ApertureBinding,
+        Bindings.TEXT: TextBinding
     }
 
     def __init__(self, registry: Any, library: Any):

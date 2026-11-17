@@ -73,7 +73,7 @@ class DialogueContext(MenuContext):
 class InventoryContext(MenuContext):
     inventory: Inventory
     slots: Slots
-    active_grip: str = Hands.RIGHT.value
+    active_grip: str = Hands.RIGHT
 
 
 @dataclass(slots=True)

@@ -33,7 +33,7 @@ class StateEventHandler(EventHandler):
         
         data.board.migrator.target = event.id    
         data.bus.append(MenuEvent(
-            id=Menus.LOAD.value, 
+            id=Menus.LOAD, 
             context=LoadContext(
                 registry=next(iter(data.screens.values())).registry,
                 screens=data.screens,

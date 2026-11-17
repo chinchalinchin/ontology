@@ -50,19 +50,19 @@ class FrequencyAnimation(Animation):
             anim.tick = 0
             return state
         
-        if frequency.type == Frequencies.CONTINUOUS.value:
+        if frequency.type == Frequencies.CONTINUOUS:
             if anim.tick >= frequency.delay:
                 anim.tick = 0
                 anim.frame = (anim.frame + 1) % properties.count
 
-        elif frequency.type == Frequencies.TEMPORARY.value:
+        elif frequency.type == Frequencies.TEMPORARY:
             limit = properties.count - 1 if frequency.persist else properties.count
             if anim.frame < limit:
                 if anim.tick >= frequency.delay:
                     anim.tick = 0
                     anim.frame += 1
 
-        elif frequency.type == Frequencies.PERIODIC.value:
+        elif frequency.type == Frequencies.PERIODIC:
             active_duration = properties.count * frequency.delay
             if anim.tick < active_duration:
                 anim.frame = anim.tick // frequency.delay

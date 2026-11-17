@@ -79,11 +79,11 @@ class ObjectFrame(Frame):
         properties: ObjectProperties
     ) -> List[Tuple]:
         directives = super().channels(id, state, properties)
-        if isinstance(state, DoorState) and state.projection == LayerProjections.OUT.value:
+        if isinstance(state, DoorState) and state.projection == LayerProjections.OUT:
             w = properties.dimensions.w if properties.dimensions else 0
             l = properties.dimensions.l if properties.dimensions else 0
             directives.append((
-                ChannelTypes.TINT.value,
+                ChannelTypes.TINT,
                 (0, 0, w, l, 0, 0, 0, 110)
             ))
 
@@ -114,7 +114,11 @@ class BinaryFrame(Frame):
         atlas: Dict[str, Tuple[int, int, int, int]] = {}
         for r_idx in range(properties.count):
             for c_idx, mat in enumerate(cols):
-                key = settings.SEPARATOR.join([id, mat, str(r_idx),])
+                key = settings.SEPARATOR.join([
+                    id, 
+                    mat, 
+                    str(r_idx)
+                ])
                 atlas[key] = (c_idx * w, r_idx * l, w, l)
         return atlas
 
@@ -123,8 +127,12 @@ class BinaryFrame(Frame):
         id: str,
         state: Union[ContainerState, SwitchState]
     ) -> List[Tuple[str, int, int]]:
-        frame_idx = str(Switches.ON.value if state.switch else Switches.OFF.value)
+        frame_idx = str(Switches.ON if state.switch else Switches.OFF)
         if not state.material:
             return [(settings.SEPARATOR.join([id, frame_idx]), 0, 0)]
-        key = settings.SEPARATOR.join([id, state.material, frame_idx])
+        key = settings.SEPARATOR.join([
+            id, 
+            state.material, 
+            frame_idx
+        ])
         return [(key, 0, 0)]

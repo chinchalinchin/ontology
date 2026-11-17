@@ -62,9 +62,9 @@ class Layout:
         margin: int,
         mode: str
     ) -> int:
-        if mode == Alignments.START.value:
+        if mode == Alignments.START:
             return origin + margin
-        if mode == Alignments.END.value:
+        if mode == Alignments.END:
             return origin + span - content - margin
         return origin + (span - content) // 2
 
@@ -74,12 +74,12 @@ class Layout:
         Includes all Gizmo aperture slot buttons in the spatial adjacency graph
         regardless of initial vacancy, while excluding passive display slots.
         """
-        if isinstance(button.binding, SelectBinding) and button.binding.selection == Selections.SLOT.value:
+        if isinstance(button.binding, SelectBinding) and button.binding.selection == Selections.SLOT:
             return True
-        return button.state.status != Statuses.DISABLED.value
+        return button.state.status != Statuses.DISABLED
 
     def _quantize(self, cfg: MenuNode, widgets: Dict[str, Asset]) -> None:
-        if cfg.instance != AssetInstances.PANES.value:
+        if cfg.instance != AssetInstances.PANES:
             return
 
         pane = widgets.get(cfg.name)
@@ -104,10 +104,10 @@ class Layout:
             margin = pane.state.margins
             layout = pane.state.layout
 
-            if layout == Layouts.DOCK.value:
+            if layout == Layouts.DOCK:
                 content_w = sum(c.dimensions.w for c in children) + gap * (len(children) - 1) + 2 * margin
                 content_l = max(c.dimensions.l for c in children) + 2 * margin
-            elif layout == Layouts.STACK.value:
+            elif layout == Layouts.STACK:
                 content_w = max(c.dimensions.w for c in children) + 2 * margin
                 content_l = sum(c.dimensions.l for c in children) + gap * (len(children) - 1) + 2 * margin
             else:
@@ -147,7 +147,7 @@ class Layout:
         graph = self._build_graph([
             w
             for w in flattened
-            if w.instance == AssetInstances.BUTTONS.value
+            if w.instance == AssetInstances.BUTTONS
         ])
         return flattened, graph
 
@@ -159,7 +159,7 @@ class Layout:
         flattened.append(asset)
 
         # Non-pane endpoints terminate branch recursion
-        if cfg.instance != AssetInstances.PANES.value:
+        if cfg.instance != AssetInstances.PANES:
             return
 
         params = cfg.parameters if isinstance(cfg.parameters, PaneParameters) else PaneParameters()
@@ -170,11 +170,11 @@ class Layout:
 
         children_assets = [widgets[c.name] for c in children if c.name in widgets]
 
-        if layout == Layouts.DOCK.value:
+        if layout == Layouts.DOCK:
             self._layout_dock(asset, children_assets, alignment, gap)
-        elif layout == Layouts.STACK.value:
+        elif layout == Layouts.STACK:
             self._layout_stack(asset, children_assets, alignment, gap)
-        elif layout == Layouts.OVERLAY.value:
+        elif layout == Layouts.OVERLAY:
             self._layout_overlay(asset, children_assets, alignment)
 
         for child_cfg in children:
@@ -308,15 +308,15 @@ class Layout:
 
             if south_candidates:
                 closest = min(south_candidates, key=lambda b: b.state.position.y)
-                graph[b1_name][Traversal.SOUTH.value] = closest.name
+                graph[b1_name][Traversal.SOUTH] = closest.name
             if north_candidates:
                 closest = max(north_candidates, key=lambda b: b.state.position.y)
-                graph[b1_name][Traversal.NORTH.value] = closest.name
+                graph[b1_name][Traversal.NORTH] = closest.name
             if east_candidates:
                 closest = min(east_candidates, key=lambda b: b.state.position.x)
-                graph[b1_name][Traversal.EAST.value] = closest.name
+                graph[b1_name][Traversal.EAST] = closest.name
             if west_candidates:
                 closest = max(west_candidates, key=lambda b: b.state.position.x)
-                graph[b1_name][Traversal.WEST.value] = closest.name
+                graph[b1_name][Traversal.WEST] = closest.name
 
         return graph

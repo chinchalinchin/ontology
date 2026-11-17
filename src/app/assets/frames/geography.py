@@ -38,10 +38,10 @@ class CardinalFrame(Frame):
     """
 
     CARDINAL_ROWS = {
-        Directions.UP.value: 0,     # NORTH (Land North, Water South)
-        Directions.LEFT.value: 1,   # WEST  (Land West, Water East)
-        Directions.DOWN.value: 2,   # SOUTH (Land South, Water North)
-        Directions.RIGHT.value: 3,  # EAST  (Land East, Water West)
+        Directions.UP: 0,     # NORTH (Land North, Water South)
+        Directions.LEFT: 1,   # WEST  (Land West, Water East)
+        Directions.DOWN: 2,   # SOUTH (Land South, Water North)
+        Directions.RIGHT: 3,  # EAST  (Land East, Water West)
     }
 
     def __init__(self, tile_w: int = 32, tile_l: int = 32):
@@ -72,19 +72,23 @@ class CardinalFrame(Frame):
                 base_y = row * l
 
                 # 1. Base full tile key: {id}-{season}-{direction}
-                full_key = settings.SEPARATOR.join([id, season.value, direction])
+                full_key = settings.SEPARATOR.join([
+                    id, 
+                    season, 
+                    direction
+                ])
                 crops[full_key] = (base_x, base_y, w, l)
 
                 # 2. Fractional slices along the active propagation axis
                 if direction in (
-                    Directions.UP.value,
-                    Directions.DOWN.value,
+                    Directions.UP,
+                    Directions.DOWN,
                 ):
                     # Horizontal bank: sliced along width W
                     for s in range(1, w):
                         slice_key = settings.SEPARATOR.join([
                             id,
-                            season.value,
+                            season,
                             direction,
                             str(s),
                         ])
@@ -94,7 +98,7 @@ class CardinalFrame(Frame):
                     for s in range(1, l):
                         slice_key = settings.SEPARATOR.join([
                             id,
-                            season.value,
+                            season,
                             direction,
                             str(s),
                         ])
@@ -126,8 +130,8 @@ class CardinalFrame(Frame):
         frame_keys: List[Tuple[str, int, int]] = []
 
         if direction in (
-            Directions.UP.value,
-            Directions.DOWN.value,
+            Directions.UP,
+            Directions.DOWN,
         ):
             full_tiles = length // w
             rem = length % w
@@ -145,8 +149,8 @@ class CardinalFrame(Frame):
                 frame_keys.append((slice_key, full_tiles * w, 0))
 
         elif direction in (
-            Directions.LEFT.value,
-            Directions.RIGHT.value,
+            Directions.LEFT,
+            Directions.RIGHT,
         ):
             full_tiles = length // l
             rem = length % l

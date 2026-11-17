@@ -74,7 +74,7 @@ class LayeredHitbox(HitboxSchema):
         properties: ObjectProperties,
         state: DoorState
     ) -> List[int]:
-        if state.projection == LayerProjections.OUT.value:
+        if state.projection == LayerProjections.OUT:
             return []
         return [max(0, state.elevation if state.elevation is not None else 0)]
 
@@ -88,12 +88,12 @@ class LayeredHitbox(HitboxSchema):
         if max(0, elevation) != target_e:
             return []
 
-        projection = state.projection or LayerProjections.IN.value
+        projection = state.projection or LayerProjections.IN
 
         if isinstance(properties.hitboxes, dict):
             return properties.hitboxes.get(projection, []) or []
 
-        if properties.hitboxes is not None and projection == LayerProjections.IN.value:
+        if properties.hitboxes is not None and projection == LayerProjections.IN:
             return properties.hitboxes
 
         if not properties.dimensions:
@@ -102,7 +102,7 @@ class LayeredHitbox(HitboxSchema):
         w = properties.dimensions.w
         l = properties.dimensions.l
 
-        if projection == LayerProjections.OUT.value:
+        if projection == LayerProjections.OUT:
             sensor_l = min(l, DEFAULT_OUT_SENSOR_THICKNESS)
             return [
                 Hitbox(

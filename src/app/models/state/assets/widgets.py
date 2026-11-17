@@ -67,13 +67,13 @@ class IconState(WidgetState):
 
 @dataclass(slots=True)
 class TraversalState(WidgetState):
-    status: Enumerated[Statuses] = Statuses.IDLE.value
+    status: Enumerated[Statuses] = Statuses.IDLE
 
 # ------------------------------------------------------------
 
 @dataclass(slots=True)
 class PaneState(WidgetState):
-    layout: Enumerated[Layouts] = Layouts.STACK.value
+    layout: Enumerated[Layouts] = Layouts.STACK
     alignment: AxisAlignment = field(default_factory=AxisAlignment)
     justification: AxisAlignment = field(default_factory=AxisAlignment)
     gap: int = 0
@@ -83,7 +83,7 @@ class PaneState(WidgetState):
     content_function: Optional[Callable[[], Union[str, List[str]]]] = None
     pageindex: int = 0
     pagesize: int = 1
-    font: Enumerated[Fonts] = Fonts.DIALOGUE.value
+    font: Enumerated[Fonts] = Fonts.DIALOGUE
 
     @property
     def content(self) -> Union[str, List[str]]:
@@ -190,10 +190,14 @@ class CollectionState(PaneState):
         Synchronizes child aperture slot button statuses with current window occupancy.
         """
         for i in range(self.capacity):
-            slot_name = settings.SEPARATOR.join([pane_name, Selections.SLOT.value, str(i)])
+            slot_name = settings.SEPARATOR.join([
+                pane_name, 
+                Selections.SLOT, 
+                str(i)
+            ])
             slot_widget = widgets.get(slot_name)
             if slot_widget and isinstance(slot_widget.state, TraversalState):
-                status = Statuses.IDLE.value if self.is_occupied(i) else Statuses.DISABLED.value
+                status = Statuses.IDLE if self.is_occupied(i) else Statuses.DISABLED
                 slot_widget.state.status = status
 
     def can_scroll_west(self, slot_index: int) -> bool:
@@ -229,19 +233,19 @@ class CollectionState(PaneState):
         Executes edge-triggered window pagination along the Gizmo's active scroll axis.
         Returns True if the aperture offset mutated.
         """
-        if direction == Traversal.WEST.value and self.can_scroll_west(slot_index):
+        if direction == Traversal.WEST and self.can_scroll_west(slot_index):
             self.offset = max(0, self.offset - 1)
             return True
 
-        if direction == Traversal.EAST.value and self.can_scroll_east(slot_index):
+        if direction == Traversal.EAST and self.can_scroll_east(slot_index):
             self.offset += 1
             return True
 
-        if direction == Traversal.NORTH.value and self.can_scroll_north(slot_index):
+        if direction == Traversal.NORTH and self.can_scroll_north(slot_index):
             self.scrollup()
             return True
 
-        if direction == Traversal.SOUTH.value and self.can_scroll_south(slot_index):
+        if direction == Traversal.SOUTH and self.can_scroll_south(slot_index):
             self.scrolldown()
             return True
 

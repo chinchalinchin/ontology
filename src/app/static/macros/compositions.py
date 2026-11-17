@@ -114,7 +114,7 @@ class CompositionCompiler:
         merged_config: Dict[str, Any],
         properties: PropertiesSchema
     ) -> Dict[str, Any]:
-        compositions = merged_config.get(Shortcuts.COMPOSITIONS.value)
+        compositions = merged_config.get(Shortcuts.COMPOSITIONS)
         if not isinstance(compositions, dict) or properties is None:
             return merged_config
 
@@ -147,9 +147,9 @@ class CompositionCompiler:
         if not asset_id:
             return None
         prop_inst = (
-            AssetInstances.SPRITES.value
-            if cat_key == AssetCategories.SHEETS.value
-            and inst_key == AssetInstances.PLAYERS.value
+            AssetInstances.SPRITES
+            if cat_key == AssetCategories.SHEETS
+            and inst_key == AssetInstances.PLAYERS
             else inst_key
         )
         cat_props = getattr(properties, cat_key, None)
@@ -173,17 +173,17 @@ class CompositionCompiler:
 
         bp_schema = getattr(props, "blueprints", None)
         strategy = (
-            bp_cfg.get(bp_schema, {}).get("strategy", MultiplicationStrategies.SIMPLE.value)
+            bp_cfg.get(bp_schema, {}).get("strategy", MultiplicationStrategies.SIMPLE)
             if bp_schema and isinstance(bp_cfg.get(bp_schema), dict)
-            else MultiplicationStrategies.SIMPLE.value
+            else MultiplicationStrategies.SIMPLE
         )
 
-        if strategy == MultiplicationStrategies.EXPANSION.value:
+        if strategy == MultiplicationStrategies.EXPANSION:
             return Dimensions(w * nx, l * (ny + 2))
-        if strategy == MultiplicationStrategies.PERIMETER.value:
+        if strategy == MultiplicationStrategies.PERIMETER:
             return Dimensions(w * (nx + 2), l * (ny + 2))
-        if strategy == MultiplicationStrategies.ORIENTED.value:
-            if raw_state.get("blueprint") == Orientations.HORIZONTAL.value:
+        if strategy == MultiplicationStrategies.ORIENTED:
+            if raw_state.get("blueprint") == Orientations.HORIZONTAL:
                 return Dimensions(w * nx, l)
             return Dimensions(w, l * ny)
 
@@ -227,8 +227,8 @@ class CompositionCompiler:
         root_strut_raw = root_data.get("strut") or {}
         root_node = cls._build_node(
             root_strut_raw,
-            AssetCategories.CRAFTS.value,
-            AssetInstances.STRUTS.value,
+            AssetCategories.CRAFTS,
+            AssetInstances.STRUTS,
             properties,
             bp_cfg
         )
@@ -256,8 +256,8 @@ class CompositionCompiler:
             branch_strut_raw = branch_data.get("strut") or {}
             branch_node = cls._build_node(
                 branch_strut_raw,
-                AssetCategories.CRAFTS.value,
-                AssetInstances.STRUTS.value,
+                AssetCategories.CRAFTS,
+                AssetInstances.STRUTS,
                 properties,
                 bp_cfg,
                 parent_node=root_node,

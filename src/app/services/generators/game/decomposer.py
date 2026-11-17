@@ -84,10 +84,10 @@ class Decomposer:
         self.materials = materials
         self._increment = 0
         self._strategies = {
-            MultiplicationStrategies.SIMPLE.value: SimpleMultiplier(self.materials).multiply,
-            MultiplicationStrategies.ORIENTED.value: OrientedMultiplier(self.materials).multiply,
-            MultiplicationStrategies.EXPANSION.value: ExpansionMultiplier(self.materials).multiply,
-            MultiplicationStrategies.PERIMETER.value: PerimeterMultiplier(self.materials).multiply,
+            MultiplicationStrategies.SIMPLE: SimpleMultiplier(self.materials).multiply,
+            MultiplicationStrategies.ORIENTED: OrientedMultiplier(self.materials).multiply,
+            MultiplicationStrategies.EXPANSION: ExpansionMultiplier(self.materials).multiply,
+            MultiplicationStrategies.PERIMETER: PerimeterMultiplier(self.materials).multiply,
         }
 
     # ---------------------------------------------------------
@@ -295,9 +295,9 @@ class Decomposer:
         recipe = getattr(cat_recipes, instance)
 
         prop_instance_key = (
-            AssetInstances.SPRITES.value
-            if cat_key == AssetCategories.SHEETS.value
-            and instance == AssetInstances.PLAYERS.value
+            AssetInstances.SPRITES
+            if cat_key == AssetCategories.SHEETS
+            and instance == AssetInstances.PLAYERS
             else instance
         )
 
@@ -332,14 +332,14 @@ class Decomposer:
             root_context,
             parent_context,
             inc,
-            AssetInstances.STRUTS.value,
+            AssetInstances.STRUTS,
             is_strut=True
         )
         assets.extend(
             self.multiply(
                 strut_state,
-                AssetCategories.CRAFTS.value,
-                AssetInstances.STRUTS.value
+                AssetCategories.CRAFTS,
+                AssetInstances.STRUTS
             )
         )
 
@@ -393,7 +393,7 @@ class Decomposer:
 
                     if inst_key in MultipliedAssets:
                         assets.extend(self.multiply(new_state, cat_key, inst_key))
-                    elif inst_key == AssetInstances.DOORS.value:
+                    elif inst_key == AssetInstances.DOORS:
                         assets.extend(self.project(new_state))
                     else:
                         assets.append(self._asset(cat_key, inst_key, new_state))
@@ -407,26 +407,26 @@ class Decomposer:
         Instantiates a primary Door on state.layer (Substrates.STANDARD) and its
         reciprocal shadow footprint on state.outlayer (Substrates.OVERLAYS).
         """
-        if state.projection == LayerProjections.OUT.value:
+        if state.projection == LayerProjections.OUT:
             return [
                 self._asset(
-                    AssetCategories.OBJECTS.value,
-                    AssetInstances.DOORS.value,
+                    AssetCategories.OBJECTS,
+                    AssetInstances.DOORS,
                     state,
-                    substrate=Substrates.OVERLAYS.value
+                    substrate=Substrates.OVERLAYS
                 )
             ]
 
         primary_state = dataclasses.replace(
             state,
-            projection=LayerProjections.IN.value
+            projection=LayerProjections.IN
         )
         doors = [
             self._asset(
-                AssetCategories.OBJECTS.value,
-                AssetInstances.DOORS.value,
+                AssetCategories.OBJECTS,
+                AssetInstances.DOORS,
                 primary_state,
-                substrate=Substrates.STANDARD.value
+                substrate=Substrates.STANDARD
             )
         ]
 
@@ -434,13 +434,13 @@ class Decomposer:
             return doors
 
         door_l = self._get_length(
-            AssetCategories.OBJECTS.value,
-            AssetInstances.DOORS.value,
+            AssetCategories.OBJECTS,
+            AssetInstances.DOORS,
             state.id
         )
         shadow_name = settings.SEPARATOR.join([
             state.name or state.id,
-            LayerProjections.OUT.value
+            LayerProjections.OUT
         ])
         shadow_state = dataclasses.replace(
             state,
@@ -450,14 +450,14 @@ class Decomposer:
             outlayer=state.layer,
             out=Position(state.position.x, state.position.y + door_l),
             anchor=0,
-            projection=LayerProjections.OUT.value
+            projection=LayerProjections.OUT
         )
         doors.append(
             self._asset(
-                AssetCategories.OBJECTS.value,
-                AssetInstances.DOORS.value,
+                AssetCategories.OBJECTS,
+                AssetInstances.DOORS,
                 shadow_state,
-                substrate=Substrates.OVERLAYS.value
+                substrate=Substrates.OVERLAYS
             )
         )
         return doors
@@ -529,7 +529,7 @@ class Decomposer:
         strategy_key = self.materials.strategy(props.blueprints)
         handler = self._strategies.get(
             strategy_key,
-            self._strategies[MultiplicationStrategies.SIMPLE.value]
+            self._strategies[MultiplicationStrategies.SIMPLE]
         )
 
         cat_recipes = getattr(self.recipes, category)

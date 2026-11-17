@@ -46,13 +46,13 @@ logger = logging.getLogger(__name__)
 # ------------------------------------------------------
 
 COMMAND_REGISTRY = {
-    Commands.PRERENDER.value: handlers.handle_prerender,
-    Commands.RENDER.value: handlers.handle_render,
-    Commands.MAP.value: handlers.handle_map,
-    Commands.START.value: handlers.handle_start,
-    Commands.TELEMETRY.value: handlers.handle_telemetry,
-    Commands.SCHEMA.value: handlers.handle_schema,
-    Commands.TAGS.value: handlers.handle_tags
+    Commands.PRERENDER: handlers.handle_prerender,
+    Commands.RENDER: handlers.handle_render,
+    Commands.MAP: handlers.handle_map,
+    Commands.START: handlers.handle_start,
+    Commands.TELEMETRY: handlers.handle_telemetry,
+    Commands.SCHEMA: handlers.handle_schema,
+    Commands.TAGS: handlers.handle_tags
 }
 
 # ------------------------------------------------------
@@ -97,15 +97,15 @@ def commandline():
     if args.dump_state:
         # State Query Filter Configuration
         state_filters = {
-            Filters.INSTANCE.value: args.instance,
-            Filters.CATEGORY.value: args.category,
-            Filters.ID.value: args.id,
-            Filters.NAME.value: args.name
+            Filters.INSTANCE: args.instance,
+            Filters.CATEGORY: args.category,
+            Filters.ID: args.id,
+            Filters.NAME: args.name
         }
         utilities.dump(
             args.board, 
             engine.board, 
-            Dumps.STATE.value, 
+            Dumps.STATE, 
             filters=state_filters
         )
 
@@ -113,21 +113,21 @@ def commandline():
         utilities.dump(
             args.board, 
             engine.board, 
-            Dumps.MENUS.value
+            Dumps.MENUS
         )
         
     if args.dump_sdl:
         utilities.dump(
             args.board, 
             engine.board, 
-            Dumps.SDL.value
+            Dumps.SDL
         )
         
     if args.dump_registry:
         utilities.dump(
             args.board, 
             engine, 
-            Dumps.REGISTRY.value
+            Dumps.REGISTRY
         )
     
     # Strictly ordered teardown to prevent post-SDL_Quit use-after-free

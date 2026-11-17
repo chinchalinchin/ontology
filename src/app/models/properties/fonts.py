@@ -35,7 +35,7 @@ class Outline:
 
 @dataclass(slots=True)
 class FontProperties:
-    alignment: Alignments = Alignments.START.value
+    alignment: Alignments = Alignments.START
     color: RGBA = field(default_factory=lambda: RGBA(r=255, g=255, b=255, a=255))    
     outline: Optional[Outline] = None
     bold: bool = False

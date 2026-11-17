@@ -59,7 +59,7 @@ class Fabricator:
         handlers: Dict[str, Callable[
             [MenuNode, MenuContext], MenuNode
         ]] = {
-            Bindings.COLLECTION.value: cls._collection,
+            Bindings.COLLECTION: cls._collection,
         }
 
         handler = handlers.get(node.bind.schema)
@@ -110,24 +110,24 @@ class Fabricator:
                 button_node = MenuNode(
                     id=button_id,
                     name=f"{node.name}-slot-{slot_idx}",
-                    instance=AssetInstances.BUTTONS.value,
+                    instance=AssetInstances.BUTTONS,
                     bind=MenuBinding(
-                        schema=Bindings.SELECT.value,
+                        schema=Bindings.SELECT,
                         target=SelectTarget(
-                            selection=Selections.SLOT.value,
+                            selection=Selections.SLOT,
                             selector=node.name,
                             index=slot_idx
                         )
                     ),
-                    parameters=ButtonParameters(status=Statuses.IDLE.value)
+                    parameters=ButtonParameters(status=Statuses.IDLE)
                 )
 
                 icon_node = MenuNode(
                     id=node.id,
                     name=f"{node.name}-icon-{slot_idx}",
-                    instance=AssetInstances.ICONS.value,
+                    instance=AssetInstances.ICONS,
                     bind=MenuBinding(
-                        schema=Bindings.APERTURE.value,
+                        schema=Bindings.APERTURE,
                         target=ApertureTarget(
                             selector=node.name,
                             index=slot_idx
@@ -138,12 +138,12 @@ class Fabricator:
                 slot_container = MenuNode(
                     id=pane_id,
                     name=f"{node.name}-slot-{slot_idx}-pane",
-                    instance=AssetInstances.PANES.value,
+                    instance=AssetInstances.PANES,
                     parameters=PaneParameters(
-                        layout=Layouts.OVERLAY.value,
+                        layout=Layouts.OVERLAY,
                         alignment=AxisAlignment(
-                            horizontal=Alignments.CENTER.value,
-                            vertical=Alignments.CENTER.value
+                            horizontal=Alignments.CENTER,
+                            vertical=Alignments.CENTER
                         ),
                         gap=0,
                         margins=0,
@@ -156,12 +156,12 @@ class Fabricator:
             row_pane = MenuNode(
                 id=pane_id,
                 name=f"{node.name}-row-{row_idx}",
-                instance=AssetInstances.PANES.value,
+                instance=AssetInstances.PANES,
                 parameters=PaneParameters(
-                    layout=Layouts.DOCK.value,
+                    layout=Layouts.DOCK,
                     alignment=AxisAlignment(
-                        horizontal=Alignments.CENTER.value,
-                        vertical=Alignments.CENTER.value
+                        horizontal=Alignments.CENTER,
+                        vertical=Alignments.CENTER
                     ),
                     gap=gap,
                     margins=0,
@@ -172,7 +172,7 @@ class Fabricator:
             row_panes.append(row_pane)
 
         root_binding = MenuBinding(
-            schema=Bindings.COLLECTION.value,
+            schema=Bindings.COLLECTION,
             target=CollectionTarget(
                 source=target.source,
                 capacity=capacity,
@@ -183,13 +183,13 @@ class Fabricator:
         return MenuNode(
             id=pane_id,
             name=node.name,
-            instance=AssetInstances.PANES.value,
+            instance=AssetInstances.PANES,
             bind=root_binding,
             parameters=PaneParameters(
-                layout=Layouts.STACK.value,
+                layout=Layouts.STACK,
                 alignment=AxisAlignment(
-                    horizontal=Alignments.CENTER.value,
-                    vertical=Alignments.CENTER.value
+                    horizontal=Alignments.CENTER,
+                    vertical=Alignments.CENTER
                 ),
                 gap=gap,
                 margins=0,
