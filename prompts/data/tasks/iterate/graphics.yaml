@@ -20,24 +20,24 @@ tools:
     # --------------------------------------------
     manager:
       board: false
-      docs: true
-      templates: true
+      docs: false
+      templates: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      filter: true
-      data: true
+      filter: false
+      data: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: true
+      directory: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
-      configuration: true
+      configuration: false
       pipeline: true
       session: false
 # ----------------------------------------------------

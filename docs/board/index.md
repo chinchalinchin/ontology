@@ -2,14 +2,14 @@
 
 This is the Task Board for the project. Below is a backlog of completed and pending Tasks. Tasks are divided into Phases. Phases are not necessarily sequential.
 
-!!! "Task Progress Key"
+!!! note "Task Progress Key"
   `[ ]`: Open
   `[~]`: In Progress
   `[?]`: Needs Further Analysis
   `[x]`: Closed/Implemented
   `[!]`: DO NOT COMPLETE
 
-!!! "Phase Actions"
+!!! note "Phase Actions"
   * **Implement**: Complex, multi-task development of new functionality.
   * **Refactor**: Complex, multi-task iteration of existing functionality.
   * **Patch**: Tasks for fixing logical bugs or errors in the codebase.
