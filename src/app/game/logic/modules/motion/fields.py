@@ -43,28 +43,26 @@ from libs.core.models import Position
 logger = logging.getLogger(__name__)
 
 DIRECTION_VECTORS = {
-    Directions.UP.value: (0.0, -1.0),
-    Directions.DOWN.value: (0.0, 1.0),
-    Directions.LEFT.value: (-1.0, 0.0),
-    Directions.RIGHT.value: (1.0, 0.0),
+    Directions.UP: (0.0, -1.0),
+    Directions.DOWN: (0.0, 1.0),
+    Directions.LEFT: (-1.0, 0.0),
+    Directions.RIGHT: (1.0, 0.0),
 }
 
 SHORELINE_NORMALS = {
-    Directions.UP.value: (0.0, 1.0),     # Land North -> Inward water normal points South (+Y)
-    Directions.DOWN.value: (0.0, -1.0),  # Land South -> Inward water normal points North (-Y)
-    Directions.LEFT.value: (1.0, 0.0),   # Land West  -> Inward water normal points East (+X)
-    Directions.RIGHT.value: (-1.0, 0.0), # Land East  -> Inward water normal points West (-X)
+    Directions.UP: (0.0, 1.0),     # Land North -> Inward water normal points South (+Y)
+    Directions.DOWN: (0.0, -1.0),  # Land South -> Inward water normal points North (-Y)
+    Directions.LEFT: (1.0, 0.0),   # Land West  -> Inward water normal points East (+X)
+    Directions.RIGHT: (-1.0, 0.0), # Land East  -> Inward water normal points West (-X)
 }
 
 
 def _direction_vector(source: Any) -> Tuple[float, float]:
-    direction = source.value if hasattr(source, "value") else str(source)
-    return DIRECTION_VECTORS.get(direction, (0.0, 0.0))
+    return DIRECTION_VECTORS.get(source, (0.0, 0.0))
 
 
 def _shoreline_normal(orientation: Any) -> Tuple[float, float]:
-    direction = orientation.value if hasattr(orientation, "value") else str(orientation)
-    return SHORELINE_NORMALS.get(direction, (0.0, 0.0))
+    return SHORELINE_NORMALS.get(orientation, (0.0, 0.0))
 
 
 def _fluid_velocity(fluid: Asset) -> Tuple[float, float]:
@@ -111,11 +109,11 @@ def _extract_tier_support_aabbs(
     """
     aabbs: List[Tuple[int, int, int, int]] = []
 
-    for craft in board.categories(AssetCategories.CRAFTS.value, layer):
+    for craft in board.categories(AssetCategories.CRAFTS, layer):
         inst = craft.taxonomy.instance
         base_e = craft.elevation
 
-        if inst == AssetInstances.STAIRS.value:
+        if inst == AssetInstances.STAIRS:
             # Use full stair tread bounds so ascending/descending entities remain supported
             if base_e < elevation <= base_e + craft.state.delta:
                 aabbs.append((
@@ -125,7 +123,7 @@ def _extract_tier_support_aabbs(
                     int(craft.dimensions.l)
                 ))
 
-        elif inst == AssetInstances.BRIDGES.value:
+        elif inst == AssetInstances.BRIDGES:
             if base_e == elevation:
                 aabbs.append((
                     int(craft.state.position.x),
@@ -134,7 +132,7 @@ def _extract_tier_support_aabbs(
                     int(craft.dimensions.l)
                 ))
 
-        elif inst == AssetInstances.STRUTS.value:
+        elif inst == AssetInstances.STRUTS:
             # Support sensor struts (mass < 0) and passable surface blueprints at tier E
             if base_e == elevation and (
                 craft.properties.mass < 0
@@ -291,7 +289,7 @@ def _update_rafts(rafts: List[Asset], board: Board, grid: Space) -> None:
         layer_rafts.setdefault(raft.state.layer, []).append(raft)
 
     for layer, l_rafts in layer_rafts.items():
-        fluids = board.instances(AssetInstances.FLUIDS.value, layer)
+        fluids = board.instances(AssetInstances.FLUIDS, layer)
         if not fluids:
             for raft in l_rafts:
                 raft.state.velocity.vx = 0.0
@@ -351,15 +349,15 @@ def update(
 
     rafts = [
         a for a in assets 
-        if a.instance == AssetInstances.RAFTS.value
+        if a.instance == AssetInstances.RAFTS
     ]
     _update_rafts(rafts, board, grid)
 
     target_assets = [
         a for a in assets 
         if a.instance not in (
-            AssetInstances.RAFTS.value, 
-            AssetInstances.PROJECTILES.value
+            AssetInstances.RAFTS, 
+            AssetInstances.PROJECTILES
         )
     ]
 
@@ -389,7 +387,7 @@ def update(
         # -------------------------------------------------------------
         # 1. SURFACE HIERARCHY INTERCEPTION (BRIDGES & RAFTS)
         # -------------------------------------------------------------
-        layer_bridges = board.instances(AssetInstances.BRIDGES.value, layer)
+        layer_bridges = board.instances(AssetInstances.BRIDGES, layer)
         if layer_bridges:
             bridge_prims, _ = _extract_compound_sensor_primitives(layer_bridges)
             if bridge_prims:
@@ -399,7 +397,7 @@ def update(
                     asset = l_assets[a_idx]
                     asset.state.mutators.triggers.submerged = False
 
-        layer_rafts = board.instances(AssetInstances.RAFTS.value, layer)
+        layer_rafts = board.instances(AssetInstances.RAFTS, layer)
         if layer_rafts:
             raft_prims = [r.primitive(i) for i, r in enumerate(layer_rafts)]
             raft_matches = physics.environment(asset_primitives, raft_prims, grid)
@@ -426,7 +424,7 @@ def update(
         # 2. VIRTUAL EDGE CROSSING (SHORELINES)
         # -------------------------------------------------------------
         in_shoreline_indices: set[int] = set()
-        shorelines = board.instances(AssetInstances.SHORELINES.value, layer)
+        shorelines = board.instances(AssetInstances.SHORELINES, layer)
         if shorelines:
             shore_prims, shore_lookup = _extract_compound_sensor_primitives(shorelines)
             if shore_prims:
@@ -455,7 +453,7 @@ def update(
                             int(asset.state.position.y + (asset.dimensions.l // 2))
                         )
                         splash = board.cradle.spawn_passive(
-                            EffectsPalette.SPLASH.value, 
+                            EffectsPalette.SPLASH, 
                             layer, 
                             splash_pos
                         )
@@ -464,7 +462,7 @@ def update(
         # -------------------------------------------------------------
         # 3. DIRECT ENVIRONMENTAL FLUID IMMERSION
         # -------------------------------------------------------------
-        fluids = board.instances(AssetInstances.FLUIDS.value, layer)
+        fluids = board.instances(AssetInstances.FLUIDS, layer)
         in_fluid_indices: set[int] = set()
         fluid_flows: Dict[int, Tuple[float, float]] = {orig_idx: (0.0, 0.0) for orig_idx in immersible_indices}
 
@@ -484,7 +482,7 @@ def update(
             asset = l_assets[orig_idx]
             if orig_idx in in_fluid_indices:
                 flow_vx, flow_vy = fluid_flows[orig_idx]
-                if asset.instance == AssetInstances.CRATES.value:
+                if asset.instance == AssetInstances.CRATES:
                     asset.state.velocity.vx = flow_vx
                     asset.state.velocity.vy = flow_vy
                 else:
@@ -500,7 +498,7 @@ def update(
                         int(asset.state.position.y + (asset.dimensions.l // 2))
                     )
                     splash = board.cradle.spawn_passive(
-                        EffectsPalette.SPLASH.value, 
+                        EffectsPalette.SPLASH, 
                         layer, 
                         splash_pos
                     )

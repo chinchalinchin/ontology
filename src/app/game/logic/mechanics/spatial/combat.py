@@ -54,9 +54,9 @@ class CombatMechanics(SpatialMechanic):
             # Gather all attacking entities
             attackers = [ asset 
                 for asset 
-                in board.instances(AssetInstances.PLAYERS.value, layer) + \
-                    board.instances(AssetInstances.SPRITES.value, layer)
-                if asset.state.intention == Intentions.ATTACK.value
+                in board.instances(AssetInstances.PLAYERS, layer) + \
+                    board.instances(AssetInstances.SPRITES, layer)
+                if asset.state.intention == Intentions.ATTACK
             ]
             
             if not attackers:
@@ -69,8 +69,8 @@ class CombatMechanics(SpatialMechanic):
                 # ---------- TODO: phase 03-04
                 # ---------- ignore until then
                 if attacker.state.animation.action in (
-                    Actions.SHOOT.value, 
-                    Actions.CAST.value,
+                    Actions.SHOOT, 
+                    Actions.CAST,
                 ):
                     continue
 
@@ -88,12 +88,12 @@ class CombatMechanics(SpatialMechanic):
 
             reactables = [
                 effect for effect in board.instances(
-                    AssetInstances.REACTABLES.value, layer)
-                if effect.state.intention == Intentions.ATTACK.value
+                    AssetInstances.REACTABLES, layer)
+                if effect.state.intention == Intentions.ATTACK
             ]
             targets = (
-                board.instances(AssetInstances.SPRITES.value, layer) +
-                board.instances(AssetInstances.PLAYERS.value, layer) +
+                board.instances(AssetInstances.SPRITES, layer) +
+                board.instances(AssetInstances.PLAYERS, layer) +
                 reactables
             )
 
@@ -135,7 +135,7 @@ class CombatMechanics(SpatialMechanic):
                     continue
 
                 # Trigger reactable activation on confirmed attackbox intersection
-                if target.instance == AssetInstances.REACTABLES.value:
+                if target.instance == AssetInstances.REACTABLES:
                     target.state.active = True
                 else:
                     # Calculate and apply damage

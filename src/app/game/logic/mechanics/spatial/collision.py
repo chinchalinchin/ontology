@@ -67,7 +67,6 @@ class CollisionMechanics(SpatialMechanic):
             return
 
         direction = stairs.state.direction
-        direction_val = direction.value if hasattr(direction, "value") else str(direction)
 
         vel = getattr(sprite.state, "velocity", None)
         vx = vel.vx if vel is not None else 0.0
@@ -84,7 +83,7 @@ class CollisionMechanics(SpatialMechanic):
         # VERTICAL STAIRS (UP)
         # -----------------------------------------------------------------
         # NOTE: DOWN is impossible due to LPC perspective specification.
-        if direction_val == Directions.UP.value:
+        if direction == Directions.UP:
             stair_l = stairs.dimensions.l
             if stair_l == 0:
                 return
@@ -100,21 +99,24 @@ class CollisionMechanics(SpatialMechanic):
         # -----------------------------------------------------------------
         # HORIZONTAL STAIRS (LEFT / RIGHT)
         # -----------------------------------------------------------------
-        elif direction_val in (Directions.LEFT.value, Directions.RIGHT.value):
+        elif direction in (
+            Directions.LEFT, 
+            Directions.RIGHT
+        ):
             stair_w = stairs.dimensions.w
             if stair_w == 0:
                 return
 
             tread_progress = (foot_x - stairs.state.position.x) / stair_w
 
-            if direction_val == Directions.RIGHT.value:
+            if direction == Directions.RIGHT:
                 # Ascent moves East (vx > 0); Descent moves West (vx < 0)
                 if tread_progress >= 0.15 and vx > 0:
                     sprite.elevation = e_top
                 elif tread_progress <= 0.15 and vx < 0:
                     sprite.elevation = e_base
 
-            elif direction_val == Directions.LEFT.value:
+            elif direction == Directions.LEFT:
                 # Ascent moves West (vx < 0); Descent moves East (vx > 0)
                 if tread_progress <= 0.85 and vx < 0:
                     sprite.elevation = e_top
@@ -124,7 +126,7 @@ class CollisionMechanics(SpatialMechanic):
         if sprite.elevation != prev_e:
             logger.info(
                 f"Telemetry:Stairs:{sprite.name} traversed {stairs.name} "
-                f"dir={direction_val} progress={tread_progress:.2f} "
+                f"dir={direction} progress={tread_progress:.2f} "
                 f"foot=({foot_x},{foot_y}) vel=({vx:.1f},{vy:.1f}) "
                 f"elevation: {prev_e} -> {sprite.elevation}"
             )
@@ -134,7 +136,7 @@ class CollisionMechanics(SpatialMechanic):
         Delegates Asset vs Boundary interaction to the specialized Cython constraint solver,
         evaluating hitboxes specific to the active elevation tier.
         """
-        is_kinematic = asset.taxonomy.instance == AssetInstances.PLAYERS.value
+        is_kinematic = asset.taxonomy.instance == AssetInstances.PLAYERS
         mass = getattr(asset.properties, 'mass', 0)
 
         # Static environment architecture (m == 0) cannot be shifted by boundary hulls
@@ -181,8 +183,8 @@ class CollisionMechanics(SpatialMechanic):
         m1 = getattr(asset_a.properties, 'mass', 0)
         m2 = getattr(asset_b.properties, 'mass', 0)
 
-        is_kinematic1 = asset_a.taxonomy.instance == AssetInstances.PLAYERS.value
-        is_kinematic2 = asset_b.taxonomy.instance == AssetInstances.PLAYERS.value
+        is_kinematic1 = asset_a.taxonomy.instance == AssetInstances.PLAYERS
+        is_kinematic2 = asset_b.taxonomy.instance == AssetInstances.PLAYERS
 
         vel1 = getattr(asset_a.state, 'velocity', None)
         vel2 = getattr(asset_b.state, 'velocity', None)
@@ -238,7 +240,7 @@ class CollisionMechanics(SpatialMechanic):
             # -------------------------------------------------------------
             # PHASE 0: Incline Traversal & Elevation State Mutation
             # -------------------------------------------------------------
-            stairs = board.instances(AssetInstances.STAIRS.value, layer)
+            stairs = board.instances(AssetInstances.STAIRS, layer)
             if stairs:
                 movers = [
                     w for w in board.weights(layer)

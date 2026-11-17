@@ -57,7 +57,7 @@ def _obstacle_intersects_fluid(gate: Asset, fluid: Asset) -> bool:
     fy = fluid.state.position.y
     fw = fluid.properties.dimensions.w
     fl = fluid.properties.dimensions.l
-    dir_val = Directions(fluid.state.source).value
+    dir_val = Directions(fluid.state.source)
 
     # 1. Broad-phase edge-touching AABB check against active compound hitboxes
     for hb in fluid.hitboxes:
@@ -76,16 +76,16 @@ def _obstacle_intersects_fluid(gate: Asset, fluid: Asset) -> bool:
             return True
 
     # 2. Forward emission corridor check (obstacle directly downstream of emitter)
-    if dir_val == Directions.DOWN.value:
+    if dir_val == Directions.DOWN:
         if gx < fx + fw and gx + gw > fx and gy >= fy:
             return True
-    elif dir_val == Directions.UP.value:
+    elif dir_val == Directions.UP:
         if gx < fx + fw and gx + gw > fx and (gy + gl) <= fy:
             return True
-    elif dir_val == Directions.RIGHT.value:
+    elif dir_val == Directions.RIGHT:
         if gy < fy + fl and gy + gl > fy and gx >= fx:
             return True
-    elif dir_val == Directions.LEFT.value:
+    elif dir_val == Directions.LEFT:
         if gy < fy + fl and gy + gl > fy and (gx + gw) <= fx:
             return True
 
@@ -103,11 +103,11 @@ class FluidMechanics(Mechanic):
 
     @property
     def shorelines(self) -> Optional[ShorelineIndex]:
-        return self.relations.get(Relations.SHORELINES.value)
+        return self.relations.get(Relations.SHORELINES)
 
     @shorelines.setter
     def shorelines(self, value: ShorelineIndex) -> None:
-        self.set_relation(Relations.SHORELINES.value, value)
+        self.set_relation(Relations.SHORELINES, value)
 
     def __init__(self):
         super().__init__()
@@ -136,11 +136,11 @@ class FluidMechanics(Mechanic):
         from app.services.generators.game.actuator import Actuator
         from app.services.generators.game.cartographer import Cartographer
 
-        fluids = board.instances(AssetInstances.FLUIDS.value)
+        fluids = board.instances(AssetInstances.FLUIDS)
         if not fluids:
             return
 
-        gates = board.instances(AssetInstances.GATES.value)
+        gates = board.instances(AssetInstances.GATES)
         invalidated_layers: Set[str] = set()
 
         # Capture initial run state prior to mutation
@@ -167,7 +167,7 @@ class FluidMechanics(Mechanic):
                     del self._debounce[gate.name]
 
                     # Spatial Bounding: Check intersection with layer fluid hitboxes or corridor
-                    layer_fluids = board.instances(AssetInstances.FLUIDS.value, layer)
+                    layer_fluids = board.instances(AssetInstances.FLUIDS, layer)
                     spatially_linked = any(
                         _obstacle_intersects_fluid(gate, f)
                         for f in layer_fluids
@@ -198,7 +198,7 @@ class FluidMechanics(Mechanic):
             dirty_layers.update({f.state.layer for f in fluids})
 
         for layer in dirty_layers:
-            layer_fluids = board.instances(AssetInstances.FLUIDS.value, layer)
+            layer_fluids = board.instances(AssetInstances.FLUIDS, layer)
             pre_sig = self._fluid_signature(layer_fluids)
 
             # Pass 1: Propagate fluid dynamics across all layer fluids

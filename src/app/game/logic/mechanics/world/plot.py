@@ -33,14 +33,14 @@ class PlotMechanics(Mechanic):
     """
     @property
     def executor(self) -> Optional[Executor]:
-        return self.executors.get(Executors.PLOT.value)
+        return self.executors.get(Executors.PLOT)
 
     @executor.setter
     def executor(self, executor: Optional[Executor]) -> None:
         if executor is None:
-            self.executors.pop(Executors.PLOT.value, None)
+            self.executors.pop(Executors.PLOT, None)
         else:
-            self.executors[Executors.PLOT.value] = executor
+            self.executors[Executors.PLOT] = executor
 
     def update(self, 
         board: Board, 

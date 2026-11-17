@@ -43,7 +43,7 @@ class RemoveMechanics(Mechanic):
         removals = []
         for effect in board.categories(AssetCategories.EFFECTS):
             if effect.properties.frequency.persist or (
-                effect.properties.frequency.type != Frequencies.TEMPORARY.value
+                effect.properties.frequency.type != Frequencies.TEMPORARY
             ): continue
 
             if effect.state.animation.frame >= effect.properties.count:

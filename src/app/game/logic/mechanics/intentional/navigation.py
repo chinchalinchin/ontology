@@ -384,7 +384,7 @@ class NavigationMechanics(Mechanic):
         Mechanic update loop iterating over all autonomous sprites.
         """
         player = board.player()
-        for sprite in board.instances(AssetInstances.SPRITES.value):
+        for sprite in board.instances(AssetInstances.SPRITES):
 
             if player and sprite.name == player.name: 
                 continue

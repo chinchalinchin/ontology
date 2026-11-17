@@ -55,15 +55,15 @@ class SocialMechanics(SpatialMechanic):
         processed_sources = set()
 
         for layer in board.layers():
-            players = board.instances(AssetInstances.PLAYERS.value, layer)
-            sprites = board.instances(AssetInstances.SPRITES.value, layer)
+            players = board.instances(AssetInstances.PLAYERS, layer)
+            sprites = board.instances(AssetInstances.SPRITES, layer)
 
             # -------------------------------------------------------------
             # PHASE 1: PLAYER-TO-NPC INTERACTION (Spatial Resolution)
             # -------------------------------------------------------------
             interacting_players = [
                 p for p in players 
-                if p.state.intention == Intentions.INTERACT.value
+                if p.state.intention == Intentions.INTERACT
                 and p.name not in processed_sources
             ]
 
@@ -93,7 +93,7 @@ class SocialMechanics(SpatialMechanic):
                     if npc.state.psyche.dialogue:
                         logger.info(f"Processing Dialogue: {npc.state.psyche.dialogue}")
                         bus.append(MenuEvent(
-                            id=Menus.DIALOGUE.value,
+                            id=Menus.DIALOGUE,
                             context=DialogueContext(
                                 plot=board.plot,
                                 sprite=npc.state
@@ -102,7 +102,7 @@ class SocialMechanics(SpatialMechanic):
                         # NOTE: Consume PLAYER intention ONLY!
                         #       Sprite Intentions MUST NOT be altered by 
                         #       logic to preserve Transition Matrix.
-                        player.state.intention = Intentions.IDLE.value
+                        player.state.intention = Intentions.IDLE
 
                     processed_sources.add(player.name)
 
@@ -111,27 +111,27 @@ class SocialMechanics(SpatialMechanic):
             # -------------------------------------------------------------
             for sprite in sprites:
                 if sprite.state.intention in [
-                    Intentions.SPEAK.value, 
-                    Intentions.BARTER.value, 
-                    Intentions.THREATEN.value
+                    Intentions.SPEAK, 
+                    Intentions.BARTER, 
+                    Intentions.THREATEN
                 ]:
                     # Check lock: Only fire data transfer if expression doesn't exist
                     if not sprite.state.psyche.expression:
                         goal = sprite.state.goal
 
-                        if goal and goal.category == Goals.SUBJECT.value:
+                        if goal and goal.category == Goals.SUBJECT:
                             target = board.asset(goal.name, sprite.state.layer)
                             
                             if target:
                                 # NPC-to-NPC Rumor passing
-                                if target.instance == AssetInstances.SPRITES.value:
+                                if target.instance == AssetInstances.SPRITES:
                                     if sprite.state.psyche.dialogue:
                                         target.state.memory.rumors.append(sprite.state.psyche.dialogue)
                                         sprite.state.psyche.dialogue = None
 
                                 # Spawns LOQUACITY for BOTH NPC-to-NPC and Player-to-NPC
                                 sprite.state.psyche.expression = board.cradle.spawn_expression(
-                                    ExpressionsPalette.BUBBLES.value, 
-                                    Expressions.LOQUACITY.value, 
+                                    ExpressionsPalette.BUBBLES, 
+                                    Expressions.LOQUACITY, 
                                     sprite
                                 )

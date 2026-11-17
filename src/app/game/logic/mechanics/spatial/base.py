@@ -98,8 +98,8 @@ class SpatialMechanic(Mechanic):
                 base_hbs = [Hitbox(position=Position(x=0, y=0), dimensions=asset.dimensions)]
 
             if asset.instance in (
-                AssetInstances.PLAYERS.value, 
-                AssetInstances.SPRITES.value
+                AssetInstances.PLAYERS, 
+                AssetInstances.SPRITES
             ):
                 padded_hbs = [
                     Hitbox(

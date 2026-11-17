@@ -57,8 +57,8 @@ class SeasonMechanics(Mechanic):
         period (0..2) -> cycle (onset, peak, decline) -> season -> year.
         Emits log entries on period, cycle, season, and year transitions.
         """
-        seasons = [s.value for s in Seasons]
-        cycles = [c.value for c in Cycles]
+        seasons = [s for s in Seasons]
+        cycles = [c for c in Cycles]
 
         calendar.period += 1
         if calendar.period >= 3:
@@ -117,7 +117,7 @@ class SeasonMechanics(Mechanic):
             )
             bus.append(SeasonEvent())
 
-        resources = board.categories(AssetCategories.RESOURCES.value)
+        resources = board.categories(AssetCategories.RESOURCES)
         if not resources:
             return
 
@@ -147,9 +147,7 @@ class SeasonMechanics(Mechanic):
             self._transition_accumulator = 0.0
 
             for resource in resources:
-                lifespan_prop = resource.properties.lifespan
-                lifespan_key = lifespan_prop.value if hasattr(lifespan_prop, "value") else str(lifespan_prop)
-                executor = self.executors.get(lifespan_key)
+                executor = self.executors.get(resource.properties.lifespan)
                 if not executor:
                     continue
 

@@ -43,11 +43,11 @@ class StageFrame(Frame):
 
     @staticmethod
     def _stages(lifespan: str):
-        if lifespan == Lifespans.ANNUAL.value:
+        if lifespan == Lifespans.ANNUAL:
             return AnnualStages
-        if lifespan == Lifespans.PERENNIAL.value:
+        if lifespan == Lifespans.PERENNIAL:
             return PerennialStages
-        if lifespan == Lifespans.CENTENNIAL.value:
+        if lifespan == Lifespans.CENTENNIAL:
             return CentennialStages
 
     def index(self, id: str, properties: ResourceProperties) -> Dict[str, Tuple[int, int, int, int]]:
@@ -56,7 +56,7 @@ class StageFrame(Frame):
         stages = StageFrame._stages(properties.lifespan)
         
         return {
-            settings.SEPARATOR.join([id, stage.value]): (i * w, 0, w, l)
+            settings.SEPARATOR.join([id, stage]): (i * w, 0, w, l)
             for i, stage in enumerate(stages)
         }
 
