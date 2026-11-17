@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="z_d60b1ece6f8d7a29_state_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.17.3">coverage.py v7.17.3</a>,
-            created at 2026-11-17 02:17 +0000
+            created at 2026-11-17 22:03 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -127,7 +127,7 @@
     <p class="pln"><span class="n"><a id="t45" href="#t45">45</a></span><span class="t">        <span class="com"># 1. Screen Reconstruction: Re-bake seasonal tile canvases</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t46" href="#t46">46</a></span><span class="t">        <span class="key">if</span> <span class="nam">data</span><span class="op">.</span><span class="nam">screens</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t47" href="#t47">47</a></span><span class="t">            <span class="key">for</span> <span class="nam">layer</span><span class="op">,</span> <span class="nam">screen</span> <span class="key">in</span> <span class="nam">data</span><span class="op">.</span><span class="nam">screens</span><span class="op">.</span><span class="nam">items</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t48" href="#t48">48</a></span><span class="t">                <span class="nam">tiles</span> <span class="op">=</span> <span class="nam">data</span><span class="op">.</span><span class="nam">board</span><span class="op">.</span><span class="nam">categories</span><span class="op">(</span><span class="nam">AssetCategories</span><span class="op">.</span><span class="nam">TILES</span><span class="op">.</span><span class="nam">value</span><span class="op">,</span> <span class="nam">layer</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t48" href="#t48">48</a></span><span class="t">                <span class="nam">tiles</span> <span class="op">=</span> <span class="nam">data</span><span class="op">.</span><span class="nam">board</span><span class="op">.</span><span class="nam">categories</span><span class="op">(</span><span class="nam">AssetCategories</span><span class="op">.</span><span class="nam">TILES</span><span class="op">,</span> <span class="nam">layer</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t49" href="#t49">49</a></span><span class="t">                <span class="nam">logger</span><span class="op">.</span><span class="nam">info</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t50" href="#t50">50</a></span><span class="t">                    <span class="fst">f&quot;</span><span class="fst">SeasonEventHandler: Triggering canvas reconstruction for layer=&#x27;</span><span class="op">{</span><span class="nam">layer</span><span class="op">}</span><span class="fst">&#x27; </span><span class="fst">&quot;</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t51" href="#t51">51</a></span><span class="t">                    <span class="fst">f&quot;</span><span class="fst">(</span><span class="op">{</span><span class="nam">len</span><span class="op">(</span><span class="nam">tiles</span><span class="op">)</span><span class="op">}</span><span class="fst"> tiles) to season=&#x27;</span><span class="op">{</span><span class="nam">active_season</span><span class="op">}</span><span class="fst">&#x27;.</span><span class="fst">&quot;</span>&nbsp;</span><span class="r"></span></p>
@@ -137,7 +137,7 @@
     <p class="pln"><span class="n"><a id="t55" href="#t55">55</a></span><span class="t">        <span class="com"># 2. Shoreline Frame Invalidation (Zero Geometry Regeneration)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t56" href="#t56">56</a></span><span class="t">        <span class="nam">shorelines</span> <span class="op">=</span> <span class="nam">data</span><span class="op">.</span><span class="nam">board</span><span class="op">.</span><span class="nam">shorelines</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t57" href="#t57">57</a></span><span class="t">        <span class="key">if</span> <span class="key">not</span> <span class="nam">shorelines</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t58" href="#t58">58</a></span><span class="t">            <span class="nam">shorelines</span> <span class="op">=</span> <span class="nam">data</span><span class="op">.</span><span class="nam">board</span><span class="op">.</span><span class="nam">instances</span><span class="op">(</span><span class="nam">AssetInstances</span><span class="op">.</span><span class="nam">SHORELINES</span><span class="op">.</span><span class="nam">value</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t58" href="#t58">58</a></span><span class="t">            <span class="nam">shorelines</span> <span class="op">=</span> <span class="nam">data</span><span class="op">.</span><span class="nam">board</span><span class="op">.</span><span class="nam">instances</span><span class="op">(</span><span class="nam">AssetInstances</span><span class="op">.</span><span class="nam">SHORELINES</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t59" href="#t59">59</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t60" href="#t60">60</a></span><span class="t">        <span class="nam">updated_count</span> <span class="op">=</span> <span class="num">0</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t61" href="#t61">61</a></span><span class="t">        <span class="key">for</span> <span class="nam">shore</span> <span class="key">in</span> <span class="nam">shorelines</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -162,7 +162,7 @@
             <a class="nav" href="z_d60b1ece6f8d7a29_state_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.17.3">coverage.py v7.17.3</a>,
-            created at 2026-11-17 02:17 +0000
+            created at 2026-11-17 22:03 +0000
         </p>
     </div>
 </footer>

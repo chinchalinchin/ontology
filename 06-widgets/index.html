@@ -3970,7 +3970,7 @@
 
 <h1 id="ontology-docs-widgets">Ontology Docs: Widgets</h1>
 <p>Widgets are a type of specialized <a href="../01-assets/">Asset</a> leveraged for user interfaces. Similar to the core <a href="../01-assets/#asset-hierarchy">Asset Categories</a>, they possess Properties, State and have extensible components injected into their Frame and Animation interfaces. However, they play a unique role in the <a href="../00-overview/#component-engine">Engine Loop</a> and have dedicated systems for their processing and deployment.</p>
-<p>Widgets are not declared in a <a href="../00-overview/#core-state">State file</a> and are thus not migrated onto the <a href="../00-overview/#component-board">Board</a> during <a href="../12-architecture/#phase-2-hydration">hydration</a>. Widgets have their <a href="#bindings">Bindings</a> and <a href="#layouts">Layout</a> configured into <a href="#configuration-menus">Menus</a>, that are subsequently injected into the <a href="../00-overview/#application">Application</a> when <a href="#events">Events</a> are thrown.</p>
+<p>Widgets are not declared in a <a href="../00-overview/#core-state">State file</a> and are thus not migrated onto the <a href="../00-overview/#component-board">Board</a> during <a href="../12-architecture/#phase-2-hydration">hydration</a>. Instead, Widgets have their <a href="#bindings">Bindings</a> and <a href="#layouts">Layout</a> configured into <a href="#configuration-menus">Menus</a>, that are subsequently injected into the <a href="../00-overview/#application">Application</a> when <a href="#events">Events</a> are thrown.</p>
 <h2 id="widgets-overview">Widgets: Overview</h2>
 <h3 id="overview-concepts">Overview: Concepts</h3>
 <h4 id="concept-recursivity">Concept: Recursivity</h4>
@@ -4067,8 +4067,6 @@ x \in \max\!\left(0,\; \left\lceil \frac{W - 2w_c}{w_c} \right\rceil\right), y \
 <li><code>stack</code>: A vertical axis of Widgets.</li>
 <li><code>dock</code>: A horizontal axis of Widgets.</li>
 </ul>
-<p><strong>Field: Canvas</strong></p>
-<p>Panes contain a <code>canvas</code> to hold a reference to an <a href="../12-architecture/#library-graphics">Texture</a>. The <code>canvas</code> is created at runtime as a blank buffer for rendering <a href="../12-architecture/#rendering-typography">Fonts</a> without altering the underlying Asset loaded into the <a href="../00-overview/#library-registry">Registry</a>.</p>
 <p><strong>State: PaneState</strong></p>
 <ul>
 <li><code>layout: Layout</code></li>
@@ -4082,7 +4080,6 @@ x \in \max\!\left(0,\; \left\lceil \frac{W - 2w_c}{w_c} \right\rceil\right), y \
 <li><code>pageindex: int</code></li>
 <li><code>pagesize: int</code></li>
 <li><code>font: Fonts</code></li>
-<li><code>canvas: TexturePtr</code></li>
 </ul>
 <p><strong>Frame: PaneFrame</strong></p>
 <ul>

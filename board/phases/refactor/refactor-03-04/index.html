@@ -3488,8 +3488,10 @@
 </li>
 <li><code>RotatedHitbox.get(properties, state, elevation)</code> rotates each base <code>Hitbox</code> in <code>properties.hitboxes</code> by <span class="arithmatex">\(\Delta\theta = \text{state.angle}\)</span> around the frame center <span class="arithmatex">\((S/2, S/2)\)</span>:</li>
 </ol>
-<div class="arithmatex">\[\begin{pmatrix} h'_{cx} \\ h'_{cy} \end{pmatrix} = \begin{pmatrix} \cos\Delta\theta &amp; -\sin\Delta\theta \\ \sin\Delta\theta &amp; \cos\Delta\theta \end{pmatrix} \begin{pmatrix} h_{cx} \\ h_{cy} \end{pmatrix}\]</div>
-<div class="arithmatex">\[w'(\Delta\theta) = \max\Big(1,\; \text{round}\big(w_0 |\cos\Delta\theta| + l_0 |\sin\Delta\theta|\big)\Big), \qquad l'(\Delta\theta) = \max\Big(1,\; \text{round}\big(w_0 |\sin\Delta\theta| + l_0 |\cos\Delta\theta|\big)\Big)\]</div>
+<div class="arithmatex">\[
+\begin{pmatrix} h'_{cx} \\ h'_{cy} \end{pmatrix} = \begin{pmatrix} \cos\Delta\theta &amp; -\sin\Delta\theta \\ \sin\Delta\theta &amp; \cos\Delta\theta \end{pmatrix} \begin{pmatrix} h_{cx} \\ h_{cy} \end{pmatrix} \\
+w'(\Delta\theta) = \max\Big(1,\; \text{round}\big(w_0 |\cos\Delta\theta| + l_0 |\sin\Delta\theta|\big)\Big), \qquad l'(\Delta\theta) = \max\Big(1,\; \text{round}\big(w_0 |\sin\Delta\theta| + l_0 |\cos\Delta\theta|\big)\Big)
+\]</div>
 <h5 id="goals">Goals</h5>
 <h6 id="goal-implement-renderrotate-in-cython-sdl2-bindings">Goal: Implement <code>render.rotate</code> in Cython SDL2 Bindings</h6>
 <p>Expose <code>SDL_RenderCopyEx</code> in <code>src/libs/graphics/render.pyx</code> and implement <code>rotate(TexturePtr base_ptr, int delta) -&gt; TexturePtr</code> to pre-bake rotated projectile frames into a single horizontal <code>TexturePtr</code> strip during Registry texture loading.</p>

@@ -2538,8 +2538,11 @@ $defs:
   SelectTarget:
     properties:
       selection:
-        $ref: '#/$defs/Selections'
+        anyOf:
+        - $ref: '#/$defs/Selections'
+        - $ref: '#/$defs/Statuses'
         default: idle
+        title: Selection
       selector:
         anyOf:
         - type: string
