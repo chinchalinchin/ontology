@@ -217,8 +217,8 @@ def bind(self, **kwargs) -> Tuple[Callable, ...]:
 
 *Objective*: Remove `canvas` from `PaneState` and manage all widget canvas `TexturePtr` instances inside `Registry._canvases`.
 
-* [] Subtask: Remove `canvas: Any = None` from `PaneState` in `src/app/models/state/assets/widgets.py`.
-* [] Subtask: Add `cdef public dict _canvases` to `Registry` in `src/libs/graphics/registry.pyx` and implement `canvas(key, w, l, opaque=False)`, `get_canvas(key)`, `destroy_canvas(key)`, and teardown cleanup inside `Registry.clear()`.
+* [x] Subtask: Remove `canvas: Any = None` from `PaneState` in `src/app/models/state/assets/widgets.py`.
+* [x] Subtask: Add `cdef public dict _canvases` to `Registry` in `src/libs/graphics/registry.pyx` and implement `canvas(key, w, l, opaque=False)`, `get_canvas(key)`, `destroy_canvas(key)`, and teardown cleanup inside `Registry.clear()`.
 * [] Subtask: Update `Screen.stamp()`, `Screen._widgets()`, and `Screen.release()` in `src/app/game/screen.py` to allocate, retrieve, and destroy widget canvases through `self.registry`.
 * [] Subtask: Update `TerminalEventHandler.handle()` in `src/app/game/menus/handlers/terminal.py` to invoke `screen.release(menu)` on every popped modal menu.
 * [] Subtask: Remove `import libs.graphics.render as render`, `from app.models.state import PaneState`, and the manual canvas destruction loop from `Board.clear()` in `src/app/game/board/core.py`.

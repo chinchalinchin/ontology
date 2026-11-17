@@ -35,7 +35,7 @@ class TerminalEventHandler(EventHandler):
         player = data.board.player()
         screen = (
             data.screens.get(player.state.layer, next(iter(data.screens.values()), None))
-            if player
+            if player is not None
             else next(iter(data.screens.values()), None)
         )
 
