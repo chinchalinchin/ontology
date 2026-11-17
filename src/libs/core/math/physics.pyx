@@ -4,6 +4,7 @@
 @domain.logic
 @app.library
 @physics.motion
+@workflow.combat
 @workflow.collisions
 
 # Ontology: Libraries - libs.core.math.physics

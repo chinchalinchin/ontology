@@ -60,9 +60,8 @@ def test_combat_map_attackboxes_matching_frame(
     player.state.animation.frame = 3
 
     boxes = CombatMap.attackboxes(player.state, equipment)
-    print(boxes)
     assert len(boxes) == 1
-    assert boxes[0] == equipment.weapons['sword'].attackboxes['slash-right-3'][0]
+    assert boxes[0] == equipment.weapons["sword"].properties.hitboxes["slash-right-3"][0]
 
 
 def test_combat_map_attackboxes_unmatched_frame(mock_board):
@@ -73,3 +72,14 @@ def test_combat_map_attackboxes_unmatched_frame(mock_board):
     player.state.animation.frame = 0
 
     assert CombatMap.attackboxes(player.state, mock_board.equipment) == []
+
+
+def test_combat_map_attackboxes_elevation_mismatch(mock_board):
+    player = mock_board.player()
+    player.state.elevation = 0
+    player.state.slots.equipment.weapon = "sword"
+    player.state.animation.action = Actions.SLASH.value
+    player.state.animation.direction = Directions.RIGHT.value
+    player.state.animation.frame = 3
+
+    assert CombatMap.attackboxes(player.state, mock_board.equipment, elevation=1) == []

@@ -24,7 +24,7 @@
 
 Each non-Gear row of `Equipment` is traversible. Selecting a slottable equipment piece from a row updates the corresponding slot at the beginning of the row, mutating `SheetState.slots.equipment` in place and updating the bound icon closure.
 
-**Menu: Crafts**
+**Menu: Pack**
 
 * `dock(header)`: `pane(content="Crafts")`
 * `stack`:

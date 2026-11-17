@@ -56,7 +56,7 @@ class CombatMechanics(SpatialMechanic):
                 for asset 
                 in board.instances(AssetInstances.PLAYERS.value, layer) + \
                     board.instances(AssetInstances.SPRITES.value, layer)
-                if asset.state.intention == Intentions.ATTACK
+                if asset.state.intention == Intentions.ATTACK.value
             ]
             
             if not attackers:
@@ -65,33 +65,23 @@ class CombatMechanics(SpatialMechanic):
             melee_attackers = []
             
             for attacker in attackers:
-                # ---------- ATTACKBOX HANDLING
-                if attacker.state.animation.action not in [Actions.SHOOT.value, Actions.CAST.value]:
-                    attackboxes = CombatMap.attackboxes(attacker.state, board.equipment)
-                    logger.info(
-                        f"attackboxes: {[hb.to_dict() for hb in attackboxes] if attackboxes else None}"
-                    )
-                    if attackboxes:
-                        melee_attackers.append((attacker, attackboxes))
+                # ---------- RANGED COMBAT HANDLING
+                # ---------- TODO: phase 03-04
+                # ---------- ignore until then
+                if attacker.state.animation.action in (
+                    Actions.SHOOT.value, 
+                    Actions.CAST.value,
+                ):
                     continue
 
-                # ---------- RANGED COMBAT HANDLING
-                if attacker.state.animation.frame == 0 and \
-                    not attacker.state.mutators.triggers.executed:
-                    proj_id = "TODO"
-                    
-                    proj = board.cradle.spawn_projectile(
-                        id          = proj_id,
-                        layer       = attacker.state.layer,
-                        position    = attacker.state.position,
-                        velocity    = "TODO"
-                    )
-
-                    board.add([proj])
-                    attacker.state.mutators.triggers.executed = True
-
-                elif attacker.state.animation.frame != 0:
-                    attacker.state.mutators.triggers.executed = False
+                # ---------- ATTACKBOX HANDLING
+                attackboxes = CombatMap.attackboxes(
+                    attacker.state,
+                    board.equipment,
+                    attacker.elevation
+                )
+                if attackboxes:
+                    melee_attackers.append((attacker, attackboxes))
 
             if not melee_attackers:
                 continue
@@ -137,8 +127,10 @@ class CombatMechanics(SpatialMechanic):
                 else:
                     continue
 
-                if attacker.name == target.name or (
-                    getattr(target.state, 'mutators', None) and target.state.mutators.triggers.dead
+                if (
+                    attacker.name == target.name
+                    or attacker.elevation != target.elevation
+                    or target.state.mutators.triggers.dead
                 ):
                     continue
 

@@ -1,0 +1,176 @@
+# ---------------------------------------------------------------------
+# -------------------------------------------------------- MENU: THEMES
+# ---------------------------------------------------------------------
+themes:
+  colors:
+    pane: &pane dark-solid
+    pane-alt: &pane-alt dark-texture
+  alignments:
+    top: &top
+      horizontal: center
+      vertical: start
+    center: &center
+      horizontal: center
+      vertical: center
+    start: &start
+      horizontal: start
+      vertical: center
+  dimensions:
+    root: &root
+      pw: 0.67
+      pl: 0.80
+    column: &column
+      pw: 0.32
+      pl: 0.60
+    body: &body
+      pw: 0.65
+      pl: 0.65
+    label: &label
+      pw: 0.50
+      pl: 0.06
+    sublabel: &sublabel
+      pw: 0.30
+      pl: 0.06
+    row: &row
+      pw: 0.50
+      pl: 0.08
+    slot: &slot
+      pw: 0.08
+      pl: 0.08
+    gizmo-strip: &gizmo-strip
+      pw: 0.32
+      pl: 0.08
+    gizmo-grid: &gizmo-grid
+      pw: 0.32
+      pl: 0.16
+  parameters:
+    collection-strip: &collection-strip
+      capacity: 4
+      columns: 4
+      gap: 5
+      pane: transparent
+      button: slot
+      dimensions: *gizmo-strip
+    collection-grid: &collection-grid
+      capacity: 8
+      columns: 4
+      gap: 5
+      pane: transparent
+      button: slot
+      dimensions: *gizmo-grid
+    disabled: &disabled
+      status: disabled
+    selected: &selected
+      status: selected
+    display: &display
+      dimensions: *label
+      layout: overlay
+      alignment: *center
+    subdisplay: &subdisplay
+      dimensions: *sublabel
+      layout: overlay
+      alignment: *center
+# ---------------------------------------------------------------------
+# -------------------------------------------------------- MENU: POUCH
+# ---------------------------------------------------------------------
+menus:
+  pouch:
+    controller: inventory
+    roots:
+      - instance: panes
+        id: *pane
+        name: pouch-menu
+        parameters:
+          dimensions: *root
+          justification: *top
+          alignment: *center
+          layout: stack
+          font: menu
+          gap: 10
+          margins: 5
+          children:
+            # ------------------------------------------
+            # ---------------------------- POUCH: HEADER
+            # ------------------------------------------
+            - instance: panes
+              id: transparent
+              name: pouch-header-pane
+              parameters: *display
+              bind:
+                schema: text
+                target:
+                  content: POUCH
+            # ------------------------------------------
+            # ------------------------------ POUCH: GRIP
+            # ------------------------------------------
+            - instance: panes
+              id: transparent
+              name: pouch-grip-row
+              parameters:
+                dimensions: *row
+                layout: dock
+                alignment: *center
+                gap: 10
+                children:
+                  # ------------------- GRIP: RIGHT HAND
+                  - instance: panes
+                    id: transparent
+                    name: pouch-grip-right-slot-pane
+                    parameters:
+                      dimensions: *slot
+                      layout: overlay
+                      alignment: *center
+                      children:
+                        - instance: buttons
+                          id: slot
+                          name: pouch-grip-right-slot
+                          parameters: *selected
+                          bind:
+                            schema: select
+                            target:
+                              selection: grip
+                              selector: right
+                        - instance: icons
+                          id: items
+                          name: pouch-grip-right-icon
+                          bind:
+                            schema: icon
+                            target:
+                              icon: context.slots.grip.right
+                  # -------------------- GRIP: LEFT HAND
+                  - instance: panes
+                    id: transparent
+                    name: pouch-grip-left-slot-pane
+                    parameters:
+                      dimensions: *slot
+                      layout: overlay
+                      alignment: *center
+                      children:
+                        - instance: buttons
+                          id: slot
+                          name: pouch-grip-left-slot
+                          bind:
+                            schema: select
+                            target:
+                              selection: grip
+                              selector: left
+                        - instance: icons
+                          id: items
+                          name: pouch-grip-left-icon
+                          bind:
+                            schema: icon
+                            target:
+                              icon: context.slots.grip.left
+            # ------------------------------------------
+            # ----------------------------- POUCH: ITEMS
+            # ------------------------------------------
+            - instance: gizmos
+              id: items
+              name: inventory-pouch-grid
+              bind:
+                schema: collection
+                target:
+                  source: context.inventory.pouch
+                  capacity: 8
+                  columns: 4
+              parameters: *collection-grid

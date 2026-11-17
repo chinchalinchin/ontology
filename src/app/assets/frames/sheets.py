@@ -91,13 +91,7 @@ class SpriteFrame(StateFrame):
             eq = state.slots.equipment
             for eq_key in (eq.armor, eq.utility, eq.tool, eq.weapon, eq.shield):
                 if eq_key:
-                    key_str = settings.SEPARATOR.join([
-                        eq_key,
-                        state.animation.action,
-                        state.animation.direction,
-                        str(state.animation.frame)
-                    ])
-                    frame_keys.append((key_str, 0, 0))
+                    frame_keys.extend(super().keys(eq_key, state))
 
         if id != RequiredAssets.PLAYER.value and state.psyche.expression:
             expr = state.psyche.expression

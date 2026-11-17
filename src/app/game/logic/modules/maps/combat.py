@@ -8,14 +8,14 @@
 CombatMaps for mapping SpriteState Frame keys to Equipment Attackboxes.
 """
 # Standard Libraries
-from typing import List
+from typing import (
+    List,
+    Optional
+)
 
 # Application Libraries
-import app.static.settings as settings
 from app.models.groups import EquipmentGroup
-from app.models.state import (
-    SpriteState
-)
+from app.models.state import SheetState
 
 # Cython Libraries
 from libs.core.models import Hitbox
@@ -25,14 +25,17 @@ class CombatMap:
     """
 
     @staticmethod
-    def attackboxes(sprite: SpriteState, equipment: EquipmentGroup) -> List[Hitbox]:
-        frame_key = settings.SEPARATOR.join([
-            sprite.animation.action,
-            sprite.animation.direction,
-            str(sprite.animation.frame)
-        ]) 
-        weapon_key = sprite.slots.equipment.weapon
-        weapon_props = equipment.weapons.get(weapon_key) if weapon_key else None
-        if not weapon_props or not weapon_props.attackboxes:
+    def attackboxes(
+        state: SheetState,
+        equipment: EquipmentGroup,
+        elevation: Optional[int] = None
+    ) -> List[Hitbox]:
+        weapon_key = state.slots.equipment.weapon
+        weapon = equipment.weapons.get(weapon_key) if weapon_key else None
+        if not weapon or not weapon.hitbox:
             return []
-        return weapon_props.attackboxes.get(frame_key, [])
+        resolved_elevation = (
+            elevation if elevation is not None
+            else (state.elevation if state.elevation is not None else 0)
+        )
+        return weapon.hitbox.get(weapon.properties, state, resolved_elevation)

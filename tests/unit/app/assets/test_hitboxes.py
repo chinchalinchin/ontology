@@ -4,6 +4,7 @@
 @app.asset
 @asset.hitbox
 @workflow.collisions
+@workflow.combat
 
 # Ontology: Test - tests.unit.app.assets.test_hitboxes
 
@@ -14,9 +15,11 @@ import pytest
 
 # Application Libraries
 from app.static.semantics import (
+    Actions,
     AnnualStages,
     AssetCategories,
     AssetInstances,
+    Directions,
     PerennialStages,
 )
 
@@ -203,3 +206,49 @@ def test_stage_hitbox_perennial_transitions(mock_asset):
     assert stump_hbs[0].position.y == 120
     assert stump_hbs[0].dimensions.w == 18
     assert stump_hbs[0].dimensions.l == 14
+
+
+@pytest.mark.category_sheets
+@pytest.mark.workflow_combat
+def test_attack_hitbox_elevations_and_frame_resolution(mock_equipment, mock_asset):
+    """Verifies AttackHitbox resolves elevations and frame-keyed weapon hitboxes on matching tiers."""
+    sword = mock_equipment.weapons["sword"]
+    player = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.PLAYERS.value,
+    )
+
+    player.state.elevation = 0
+    assert sword.hitbox.elevations(sword.properties, player.state) == [0]
+
+    player.state.elevation = 2
+    assert sword.hitbox.elevations(sword.properties, player.state) == [2]
+
+    player.state.elevation = -1
+    assert sword.hitbox.elevations(sword.properties, player.state) == [0]
+
+    player.state.elevation = 0
+    player.state.animation.action = Actions.SLASH.value
+    player.state.animation.direction = Directions.RIGHT.value
+    player.state.animation.frame = 3
+
+    expected = sword.properties.hitboxes["slash-right-3"]
+    assert sword.hitbox.get(sword.properties, player.state, elevation=0) == expected
+    assert sword.hitbox.get(sword.properties, player.state, elevation=1) == []
+
+    player.state.animation.frame = 0
+    assert sword.hitbox.get(sword.properties, player.state, elevation=0) == []
+
+
+@pytest.mark.category_sheets
+@pytest.mark.workflow_combat
+def test_attack_hitbox_non_dict_hitboxes_returns_empty(mock_equipment, mock_asset):
+    """Verifies AttackHitbox returns an empty list when weapon hitboxes are None."""
+    longbow = mock_equipment.weapons["longbow"]
+    player = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.PLAYERS.value,
+    )
+
+    player.state.elevation = 0
+    assert longbow.hitbox.get(longbow.properties, player.state, elevation=0) == []

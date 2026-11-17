@@ -2,7 +2,6 @@
 @domain.concrete
 @domain.logic
 @app.module
-@category.crafts
 @workflow.compositions
 
 # Ontology: Source - app.game.logic.modules.multipliers.perimeter

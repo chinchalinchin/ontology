@@ -1,8 +1,7 @@
 """
 @domain.logic
 @app.module
-@category.crafts
-@category.objects
+@modality.material
 @workflow.compositions
 
 # Ontology: Source - app.game.logic.relations.materials

@@ -8,7 +8,6 @@ sheets:
       dimensions:
         w: 64
         l: 64
-      attackboxes: null
       hitboxes: 
         - position: 
             x: 23
@@ -35,7 +34,6 @@ sheets:
       dimensions:
         w: 64
         l: 64
-      attackboxes: null
       hitboxes: 
         - position: 
             x: 23

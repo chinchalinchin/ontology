@@ -14,7 +14,10 @@ from typing import Optional
 import pytest
 
 # Application Libraries
-from app.assets.base import Asset
+from app.assets.base import (
+    Asset,
+    Taxonomy,
+)
 from app.game.logic.relations import MaterialIndex
 from app.models.config import (
     ConfigurationSchema,
@@ -28,6 +31,7 @@ from app.models.state import (
     AssetState,
     IconState,
     MeterState,
+    NoState,
     PaneState,
     StateSchema,
     TraversalState,
@@ -100,6 +104,7 @@ def mock_asset(
     mock_properties_schema: PropertiesSchema,
     mock_configurations_schema: ConfigurationSchema,
     mock_material_index: MaterialIndex,
+    mock_state_schema: StateSchema,
     mock_state,
 ):
     """
@@ -148,6 +153,25 @@ def mock_asset(
                 resolved_state,
                 recipe,
                 None,
+            )
+
+        cat_state_node = getattr(mock_state_schema, category, None)
+        if cat_state_node is not None and not hasattr(cat_state_node, instance):
+            resolved_id = id if id is not None else next(iter(prop_map.keys()))
+            properties = prop_map[resolved_id]
+            return Asset(
+                taxonomy=Taxonomy(
+                    id=resolved_id,
+                    name=resolved_id,
+                    category=category,
+                    instance=instance,
+                ),
+                properties=properties,
+                state=asset_state if asset_state is not None else NoState(),
+                frame=AssetFactory.frame(recipe.frame),
+                animation=AssetFactory.animation(recipe.animation),
+                hitbox=AssetFactory.hitbox(recipe.hitbox),
+                substrate=substrate,
             )
 
         resolved_state = asset_state or mock_state(category, instance, id=id)

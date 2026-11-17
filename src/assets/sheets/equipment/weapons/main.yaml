@@ -4,7 +4,262 @@ themes:
     lpc: &lpc
       w: 64
       l: 64
-  attackboxes:
+  hitboxes:
+    dagger: &dagger
+      slash-up-3:
+        - position:
+            x: 26
+            y: 32
+          dimensions:
+            w: 15
+            l: 6
+      slash-up-4:
+        - position:
+            x: 38
+            y: 19
+          dimensions:
+            w: 14
+            l: 12
+      slash-up-5:
+        - position:
+            x: 49
+            y: 18
+          dimensions:
+            w: 8
+            l: 17
+      slash-left-3:
+        - position:
+            x: 3
+            y: 45
+          dimensions:
+            w: 11
+            l: 13
+      slash-left-4:
+        - position:
+            x: 0
+            y: 30
+          dimensions:
+            w: 13
+            l: 8
+      slash-left-5:
+        - position:
+            x: 0
+            y: 29
+          dimensions:
+            w: 13
+            l: 9
+      slash-down-3:
+        - position:
+            x: 22
+            y: 44
+          dimensions:
+            w: 16
+            l: 7
+      slash-down-4:
+        - position:
+            x: 47
+            y: 45
+          dimensions:
+            w: 8
+            l: 17
+      slash-down-5:
+        - position:
+            x: 52
+            y: 38
+          dimensions:
+            w: 12
+            l: 14
+      slash-right-3:
+        - position:
+            x: 47
+            y: 42
+          dimensions:
+            w: 14
+            l: 16
+      slash-right-4:
+        - position:
+            x: 51
+            y: 30
+          dimensions:
+            w: 13
+            l: 8
+      slash-right-5:
+        - position:
+            x: 51
+            y: 29
+          dimensions:
+            w: 13
+            l: 8
+    knife: &knife
+      slash-up-3:
+        - position:
+            x: 27
+            y: 18
+          dimensions:
+            w: 13
+            l: 13
+      slash-up-4:
+        - position:
+            x: 38
+            y: 19
+          dimensions:
+            w: 13
+            l: 12
+      slash-up-5:
+        - position:
+            x: 48
+            y: 22
+          dimensions:
+            w: 8
+            l: 12
+      slash-left-3:
+        - position:
+            x: 6
+            y: 41
+          dimensions:
+            w: 10
+            l: 11
+      slash-left-4:
+        - position:
+            x: 0
+            y: 29
+          dimensions:
+            w: 12
+            l: 8
+      slash-left-5:
+        - position:
+            x: 0
+            y: 28
+          dimensions:
+            w: 12
+            l: 8
+      slash-down-3:
+        - position:
+            x: 25
+            y: 42
+          dimensions:
+            w: 13
+            l: 8
+      slash-down-4:
+        - position:
+            x: 46
+            y: 43
+          dimensions:
+            w: 8
+            l: 13
+      slash-down-5:
+        - position:
+            x: 52
+            y: 38
+          dimensions:
+            w: 10
+            l: 11
+      slash-right-3:
+        - position:
+            x: 46
+            y: 41
+          dimensions:
+            w: 10
+            l: 11
+      slash-right-4:
+        - position:
+            x: 50
+            y: 29
+          dimensions:
+            w: 13
+            l: 8
+      slash-right-5:
+        - position:
+            x: 50
+            y: 28
+          dimensions:
+            w: 12
+            l: 8
+    spear: &spear
+      thrust-up-4:
+        - position:
+            x: 38
+            y: 5
+          dimensions:
+            w: 5
+            l: 11
+      thrust-up-5:
+        - position:
+            x: 38
+            y: 1
+          dimensions:
+            w: 5
+            l: 10
+      thrust-up-6:
+        - position:
+            x: 38
+            y: 5
+          dimensions:
+            w: 5
+            l: 11
+      thrust-left-4:
+        - position:
+            x: 3
+            y: 42
+          dimensions:
+            w: 11
+            l: 5
+      thrust-left-5:
+        - position:
+            x: 0
+            y: 42
+          dimensions:
+            w: 11
+            l: 5
+      thrust-left-6:
+        - position:
+            x: 3
+            y: 42
+          dimensions:
+            w: 11
+            l: 5
+      thrust-down-4:
+        - position:
+            x: 24
+            y: 48
+          dimensions:
+            w: 5
+            l: 11
+      thrust-down-5:
+        - position:
+            x: 24
+            y: 53
+          dimensions:
+            w: 5
+            l: 11
+      thrust-down-6:
+        - position:
+            x: 24
+            y: 48
+          dimensions:
+            w: 5
+            l: 11
+      thrust-right-4:
+        - position:
+            x: 50
+            y: 42
+          dimensions:
+            w: 11
+            l: 5
+      thrust-right-5:
+        - position:
+            x: 53
+            y: 42
+          dimensions:
+            w: 11
+            l: 5
+      thrust-right-6:
+        - position:
+            x: 50
+            y: 42
+          dimensions:
+            w: 11
+            l: 5
     sword: &sword 
       slash-up-3:
         - position:
@@ -97,38 +352,32 @@ sheets:
     longbow:
       dimensions: *lpc
       hitboxes: null
-      attackboxes: null
       actions: lpc-shoot
       stack: [ longbow ]
     # --------------------------------------- ACTION: SLASH
     dagger:
       dimensions: *lpc
-      hitboxes: null
-      attackboxes: null
+      hitboxes: *dagger
       actions: lpc-slash
       stack: [ dagger ] 
     knife:
       dimensions: *lpc
-      hitboxes: null
-      attackboxes: null
+      hitboxes: *knife
       actions: lpc-slash
       stack: [ knife ]
     sword:
       dimensions: *lpc
-      hitboxes: null
-      attackboxes: *sword
+      hitboxes: *sword
       actions: lpc-slash
       stack: [ sword ] 
     # --------------------------------------- ACTION: THRUST
     spear:
       dimensions: *lpc
-      hitboxes: null
-      attackboxes: null
+      hitboxes: *spear
       actions: lpc-thrust 
       stack: [ spear ] 
     crossbow:
       dimensions: *lpc
       hitboxes: null
-      attackboxes: null
       actions: lpc-thrust
       stack: [ crossbow ]

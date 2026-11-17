@@ -1,5 +1,7 @@
 """
 @domain.model
+@app.asset
+@app.core
 @asset.property
 @workflow.injection
 
@@ -14,21 +16,21 @@ from typing import Dict
 from dataclasses import dataclass, field
 
 # Application Libraries
+from app.assets.base import Asset
 from app.models.properties import (
     CursorProperties,
     EffectProperties,
     CraftProperties,
-    GeographyProperties,
-    SheetProperties
+    GeographyProperties
 )
 
 @dataclass(slots=True)
 class EquipmentGroup:
-    armor: Dict[str, SheetProperties] = field(default_factory=dict)
-    weapons: Dict[str, SheetProperties] = field(default_factory=dict)
-    tools: Dict[str, SheetProperties] = field(default_factory=dict)
-    utilities: Dict[str, SheetProperties] = field(default_factory=dict)
-    shields: Dict[str, SheetProperties] = field(default_factory=dict)
+    armor: Dict[str, Asset] = field(default_factory=dict)
+    weapons: Dict[str, Asset] = field(default_factory=dict)
+    tools: Dict[str, Asset] = field(default_factory=dict)
+    utilities: Dict[str, Asset] = field(default_factory=dict)
+    shields: Dict[str, Asset] = field(default_factory=dict)
 
 
 @dataclass(slots=True)

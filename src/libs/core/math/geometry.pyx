@@ -3,6 +3,7 @@
 @domain.system
 @domain.logic
 @app.library
+@workflow.combat
 @workflow.collisions
 @workflow.navigation
 

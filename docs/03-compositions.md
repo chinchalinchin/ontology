@@ -59,9 +59,9 @@ Blueprints describe specific structural implementations of a Craft. Blueprints a
 
 Each Blueprint Schema has a unique Multiplication Strategy associated with it in the [Materials Configuration](./appendices/01-schemas.md#configuration-materials) that determines how its `multiple` will be expanded during [Board](./00-overview.md#component-board) hydration. Multiplication is executed by a dedicated Multiplier implementation dispatched by the [Decomposer](#service-decomposer).
 
-* `simple` (SimpleMultiplier): 2D grid tiling across $(x_0 + i_x \cdot w,\; y_0 + i_y \cdot l)$ for $i_x \in [0, n_x),\; i_y \in [0, n_y)$[cite: 1].
-- `oriented` (`OrientedMultiplier`): 1D axis-locked tiling across $(x_0 + i_x \cdot w,\; y_0)$ when `blueprint == 'horizontal'` ($n_x \times 1$) or $(x_0,\; y_0 + i_y \cdot l)$ when `blueprint == 'vertical'` ($1 \times n_y$)[cite: 1].
-* `expansion` (ExpansionMultiplier): Vertical column interpolation placing `crowns` at $(x_0 + i_x \cdot w,\; y_0)$, $n_y$ contiguous `shafts` at $(x_0 + i_x \cdot w,\; y_0 + (k + 1) \cdot l)$, and `bases` at $(x_0 + i_x \cdot w,\; y_0 + (n_y + 1) \cdot l)$, locking each segment's perspective `anchor` to the column's `base` ground line ($\text{base.y} + l$)[cite: 1].
+* `simple` (SimpleMultiplier): 2D grid tiling across $(x_0 + i_x \cdot w, y_0 + i_y \cdot l)$ for $i_x \in [0, n_x),\; i_y \in [0, n_y)$[cite: 1].
+- `oriented` (`OrientedMultiplier`): 1D axis-locked tiling across $(x_0 + i_x \cdot w, y_0)$ when `blueprint == 'horizontal'` ($n_x \times 1$) or $(x_0, y_0 + i_y \cdot l)$ when `blueprint == 'vertical'` ($1 \times n_y$)[cite: 1].
+* `expansion` (ExpansionMultiplier): Vertical column interpolation placing `crowns` at $(x_0 + i_x \cdot w, y_0)$, $n_y$ contiguous `shafts` at $(x_0 + i_x \cdot w, y_0 + (k + 1) \cdot l)$, and `bases` at $(x_0 + i_x \cdot w, y_0 + (n_y + 1) \cdot l)$, locking each segment's perspective `anchor` to the column's `base` ground line ($\text{base.y} + l$)[cite: 1].
 * `perimeter` (PerimeterMultiplier): Hollow 2D boundary of $2(n_x + n_y + 4)$ segments spanning $(n_x + 2)w \times (n_y + 2)l$ with superimposed `L`-corners, an open interior, and `north` baseline `anchor` adjustment[cite: 1].
 
 ### Craft: Struts 
@@ -71,31 +71,6 @@ Each Blueprint Schema has a unique Multiplication Strategy associated with it in
 **Behavior: Composability**
 
 Struts are the "*bedrock*" upon which Compositions of Assets can be built. A Strut's main purpose is to provide a coordinate system for the relative positioning of Assets in a Composition. 
-
-### Craft: Platforms
-
-!!! @TODO(07-03)
-    To be subsumed and rendered obsolete by the introduction of Gravity. Slated for removal. Should be using elevated surfaces instead. "Platforming" should fall naturally out of the physics.
-
-Platforms are inanimate, immutable Assets that model elevated surfaces. In order to be traversed, the Asset traversing must be on the same elevation as the Platform. 
-
-Platforms have two kinds of hitboxes: baseline hitboxes and elevated hitboxes, where the former determines the Platform's collision physics on its ground level (`platform.state.elevation`) and the latter determines the Platform's collision physics on the elevated level (`platform.state.elevation + properties.hitboxes[target.state.elevation]`)
-
-**Frame: SingleFrame**
-
-- `keys(id, state): returns [(id, 0, 0)]`
-- `index(id, properties): returns {id: (0, 0, properties.dimensions.w, properties.dimensions.l)}`
-
-**State: PlatformState**
-
-- `position: Position`
-- `elevation: int = 0`
-- `owner: Optional[str] = None`
-
-**Hitbox: ElevatedHitbox**
-
-- `elevations(properties, state): returns [state.elevation + k for k in properties.hitboxes.keys()]`
-- `get(properties, state, elevation, frame): returns properties.hitboxes.get(elevation - state.elevation, [])`
 
 ## Definitions
 
