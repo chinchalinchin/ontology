@@ -230,4 +230,4 @@ def bind(self, **kwargs) -> Tuple[Callable, ...]:
 * [] Subtask: Declare `int TTF_SizeUTF8(TTF_Font* font, const char* text, int* w, int* h)` in `src/libs/graphics/registry.pyx` and implement `TTFFont.measure(self, str content) -> tuple` (delegating `render.measure` to `font.measure` for compatibility if needed).
 * [] Subtask: Update `paginate()` in `src/app/game/menus/bindings/text.py` to call `font.measure(test_line)` and remove `import libs.graphics.render as render`.
 * [] Subtask: Update `LibraryBinding.bind()` and `TextBinding.bind()` in `src/app/game/menus/bindings/text.py` to resolve `font_key = kwargs.get("font", Fonts.DIALOGUE.value)` instead of hardcoding `"dialogue"`.
-* [] Subtask: Recompile Cython extensions and update unit tests and documentation (`docs/06-widgets.md`, `docs/12-architecture.md`) to reflect `Registry`-owned widget canvases and `TTFFont.measure`.
+* [!: Dependent on Prior Task Completion] Subtask: Recompile Cython extensions and update unit tests and documentation (`docs/06-widgets.md`, `docs/12-architecture.md`) to reflect `Registry`-owned widget canvases and `TTFFont.measure`.

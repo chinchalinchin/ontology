@@ -17,7 +17,7 @@ task:
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
   # template: maintain/codebase.md.j2
-  template: maintain/patch.md.j2
+  # template: maintain/patch.md.j2
   # template: maintain/session.md.j2
   # --------------------------------------------
   # --------------------------- TEMPLATES: DUMPS 
@@ -29,7 +29,7 @@ task:
   # --------------------------------------------
   # template: iterate/document.md.j2
   # template: iterate/groom.md.j2
-  # template: iterate/implement.md.j2
+  template: iterate/implement.md.j2
   # template: iterate/cover.md.j2
   # template: iterate/merge.md.j2
   # template: iterate/review.md.j2
@@ -61,7 +61,7 @@ tools:
     manager:
       board: true
       docs: true
-      templates: true
+      templates: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
     # --------------------------------------------

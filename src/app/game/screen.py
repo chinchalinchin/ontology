@@ -30,6 +30,7 @@ from app.static.semantics import (
     AssetCategories,
     AssetInstances,
     ChannelTypes,
+    SystemPanes
 )
 
 # Cython Libraries
@@ -410,8 +411,7 @@ class Screen:
             return
 
         primitives = []
-        # TODO: this is hacky
-        if widget.id != "transparent":
+        if widget.id != SystemPanes.TRANSPARENT.value:
             for base_key, ox, oy in widget.frame.keys(widget.id, widget.state):
                 tex_data = self.registry.image(base_key)
                 if not tex_data:
