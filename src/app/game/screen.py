@@ -50,11 +50,34 @@ class Screen:
     """
     Manages the rendering layer and camera calculations.
     """
+    # Fields
     screensize: Dimensions
     boardsize: Dimensions
     bg_canvas: TexturePtr
     fg_canvas: TexturePtr
     registry: Registry
+    # Constants
+    _CULL_MARGIN: int = 64
+
+    # ------------------------------------------------ STATIC METHODS
+
+    @staticmethod
+    def _sort(asset: Asset) -> Tuple[int, int, int, int]:
+        dim_l = asset.dimensions.l if asset.dimensions else 0
+        ground_y = int(asset.state.position.y + dim_l + asset.state.anchor)
+        return (asset.elevation, asset.substrate, ground_y, asset.properties.priority)
+
+
+    @staticmethod
+    def release(menu: Menu) -> None:
+        """Explicitly destroys hardware canvas textures held by a Menu's panes."""
+        if not menu.widgets:
+            return
+        for widget in menu.widgets.values():
+            if isinstance(widget.state, PaneState) and widget.state.canvas is not None:
+                render.destroy(widget.state.canvas)
+                widget.state.canvas = None
+
 
     def __init__(
         self,
@@ -86,7 +109,37 @@ class Screen:
         render.construct(self.bg_canvas, back_tiles)
         render.construct(self.fg_canvas, fore_tiles)
 
+    # ------------------------------------------------ PRIVATE METHODS
 
+    def _in_viewport(
+        self,
+        asset: Asset,
+        min_x: int,
+        min_y: int,
+        max_x: int,
+        max_y: int,
+    ) -> bool:
+        """
+        Broad-phase viewport AABB check. Bypasses unit-tile bounds for procedural
+        multi-tile assets (Fluids, Shorelines) whose geometry extends beyond asset.dimensions.
+        """
+        if asset.instance in (
+            AssetInstances.FLUIDS.value,
+            AssetInstances.SHORELINES.value,
+        ):
+            return True
+
+        px = asset.state.position.x
+        py = asset.state.position.y
+        dw = asset.dimensions.w if asset.dimensions else 0
+        dl = asset.dimensions.l if asset.dimensions else 0
+
+        return (
+            px + dw >= min_x and px <= max_x and
+            py + dl >= min_y and py <= max_y
+        )
+
+    
     def _prerender(
         self,
         tiles: List[Asset],
@@ -120,13 +173,6 @@ class Screen:
         return back_tiles, fore_tiles
 
 
-    @staticmethod
-    def _sort(asset: Asset) -> Tuple[int, int, int, int]:
-        dim_l = asset.dimensions.l if asset.dimensions else 0
-        ground_y = int(asset.state.position.y + dim_l + asset.state.anchor)
-        return (asset.elevation, asset.substrate, ground_y, asset.properties.priority)
-
-
     def _assemble(
         self,
         assets: List[Asset],
@@ -134,19 +180,29 @@ class Screen:
         bounds: Dimensions,
     ) -> Tuple[list, list]:
         """
-        Height-sorts assets, culls geometry outside the target bounds,
-        and assembles render primitives and auxiliary channel operations.
+        Broad-phase culls assets to the camera viewport, height-sorts the visible
+        subset, and assembles render primitives and auxiliary channel operations.
         """
         active_assets = []
         active_channels = []
 
-        # Height-sort the assets directly prior to querying asset.frame.keys()
-        assets.sort(key=self._sort)
+        min_x = pov.x - self._CULL_MARGIN
+        min_y = pov.y - self._CULL_MARGIN
+        max_x = pov.x + bounds.w + self._CULL_MARGIN
+        max_y = pov.y + bounds.l + self._CULL_MARGIN
 
-        for asset in assets:
-            if asset.category == AssetCategories.TILES.value:
-                continue
+        # 1. Broad-phase filter without mutating Board._cache.cached_renderables
+        visible = [
+            asset for asset in assets
+            if asset.category != AssetCategories.TILES.value
+            and self._in_viewport(asset, min_x, min_y, max_x, max_y)
+        ]
 
+        # 2. Height-sort only the visible subset prior to querying asset.frame.keys()
+        visible.sort(key=self._sort)
+
+        # 3. Narrow-phase frame resolution and crop culling
+        for asset in visible:
             frame_keys = asset.frame.keys(asset.id, asset.state)
             channels = asset.frame.channels(asset.id, asset.state, asset.properties)
             submerge_channel = next(
@@ -197,7 +253,7 @@ class Screen:
                             r, g, b, a,
                         ))
 
-            # 2. Auxiliary Channel Tuples
+            # 4. Auxiliary Channel Tuples
             for c_type, payload in channels:
                 if c_type == ChannelTypes.TINT.value:
                     cx, cy, cw, cl, r, g, b, a = payload
@@ -283,12 +339,10 @@ class Screen:
         return Position(x=cam_x, y=cam_y)
 
 
-    def clear(self) -> None:
-        render.clear()
+    def clear(self) -> None: render.clear()
 
 
-    def present(self) -> None:
-        render.present()
+    def present(self) -> None: render.present()
 
 
     def destroy(self) -> None:
@@ -340,7 +394,10 @@ class Screen:
             render.channel(active_channels, pov.x, pov.y)
 
 
-    def stamp(self, widget: Asset, content: Optional[Union[str, List[str]]] = None) -> None:
+    def stamp(self, 
+        widget: Asset, 
+        content: Optional[Union[str, List[str]]] = None
+    ) -> None:
         """
         Allocates PaneState.canvas on demand, constructs the 9-slice backdrop,
         and rasterizes bound text onto the canvas.
@@ -394,16 +451,6 @@ class Screen:
         for widget in menu.widgets.values():
             if isinstance(widget.state, PaneState):
                 self.stamp(widget)
-
-    @staticmethod
-    def release(menu: Menu) -> None:
-        """Explicitly destroys hardware canvas textures held by a Menu's panes."""
-        if not menu.widgets:
-            return
-        for widget in menu.widgets.values():
-            if isinstance(widget.state, PaneState) and widget.state.canvas is not None:
-                render.destroy(widget.state.canvas)
-                widget.state.canvas = None
 
     def interface(self, menus: List[Menu], overlays: List[Menu]) -> None:
         """
