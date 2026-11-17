@@ -9,11 +9,11 @@
 Intention semantics enumerations.
 """
 # Standard Libraries
-from enum import Enum
+from enum import StrEnum
 
 # -------------------------------- SPRITE STATE ENUMERATIONS
 
-class Intentions(str, Enum):
+class Intentions(StrEnum):
     ATTACK          = "attack"
     ATTRACT         = "attract"
     BARTER          = "barter"
@@ -35,17 +35,17 @@ class Intentions(str, Enum):
     USE             = "use"
     WANDER          = "wander"
 
-class BlockingIntentions(str, Enum):
+class BlockingIntentions(StrEnum):
     # Intentions that must complete to release animation control
     ATTACK          = "attack"
     MINE            = "mine"
 
-class AnimatedIntentions(str, Enum):
+class AnimatedIntentions(StrEnum):
     # Intentions that are animated
     ATTACK          = "attack"
     MINE            = "mine"
 
-class StaticIntentions(str, Enum):
+class StaticIntentions(StrEnum):
     # Intentions that are not animated
     BARTER          = "barter"
     IDLE            = "idle"
@@ -54,7 +54,7 @@ class StaticIntentions(str, Enum):
     SPEAK           = "speak"
     THREATEN        = "threaten"
 
-class NavigationIntentions(str, Enum):
+class NavigationIntentions(StrEnum):
     # Intentions with Velocity
     FIND            = "find" 
     FOLLOW          = "follow" 
@@ -63,7 +63,7 @@ class NavigationIntentions(str, Enum):
     WANDER          = "wander"
     RETURN          = "return"
 
-class StationaryIntentions(str, Enum):
+class StationaryIntentions(StrEnum):
     # Intentions with no Velocity
     BARTER          = "barter"
     BUILD           = "build"
@@ -72,7 +72,7 @@ class StationaryIntentions(str, Enum):
     MINE            = "mine"
     SPEAK           = "speak"
 
-class Motivations(str, Enum):
+class Motivations(StrEnum):
     CONQUEST        = "conquest"
     LOVE            = "love"
     PROFIT          = "profit"
@@ -81,13 +81,13 @@ class Motivations(str, Enum):
     SAFETY          = "safety"
     SURVIVAL        = "survival"
 
-class Relationships(str, Enum):
+class Relationships(StrEnum):
     FAMILY          = "family"
     FOE             = "foe"
     FRIEND          = "friend"
     STRANGER        = "stranger"
 
-class Inventories(str, Enum):
+class Inventories(StrEnum):
     EQUIPMENT       = "equipment"
     POUCH           = "pouch"
     PACK            = "pack"
@@ -95,14 +95,14 @@ class Inventories(str, Enum):
     
 # -------------------------------- GOAL ENUMERATIONS
 
-class Goals(str, Enum):
+class Goals(StrEnum):
     OBJECT          = "object"
     PROPERTY        = "property"
     POSITION        = "position"
     TARGET          = "target"
     SUBJECT         = "subject"
 
-class PlayerGoals(str, Enum):
+class PlayerGoals(StrEnum):
     UP              = "up"
     LEFT            = "left"
     DOWN            = "down"
@@ -110,6 +110,6 @@ class PlayerGoals(str, Enum):
 
 # ---------------------------------
 
-class Hands(str, Enum):
+class Hands(StrEnum):
     LEFT            = "left"
     RIGHT           = "right"

@@ -10,11 +10,11 @@
 Menu semantics enumerations
 """
 # Standard Libraries
-from enum import Enum
+from enum import StrEnum
 
 # -------------------------------- WIDGET ENUMERATIONS
 
-class Controllers(str, Enum):
+class Controllers(StrEnum):
     DISPLAY         = "display"
     INVENTORY       = "inventory"
     LOAD            = "load"
@@ -23,17 +23,17 @@ class Controllers(str, Enum):
     PAUSE           = "pause"
     SCROLL          = "scroll"
     
-class Layouts(str, Enum):
+class Layouts(StrEnum):
     DOCK            = "dock"
     STACK           = "stack"
     OVERLAY         = "overlay"
 
-class Alignments(str, Enum):
+class Alignments(StrEnum):
     START           = "start"
     CENTER          = "center"
     END             = "end"
 
-class Bindings(str, Enum):
+class Bindings(StrEnum):
     APERTURE        = "aperture"
     COLLECTION      = "collection"
     ICON            = "icon"
@@ -42,18 +42,18 @@ class Bindings(str, Enum):
     SELECT          = "select"
     TEXT            = "text"
 
-class Traversal(str, Enum):
+class Traversal(StrEnum):
     NORTH           = "north"
     SOUTH           = "south"
     EAST            = "east"
     WEST            = "west"
 
-class Interactions(str, Enum):
+class Interactions(StrEnum):
     SELECT          = "select"
     CANCEL          = "cancel"
     PAUSE           = "pause"
 
-class Menus(str, Enum):
+class Menus(StrEnum):
     DIALOGUE        = "dialogue"
     EQUIPMENT       = "equipment"
     LOAD            = "load"
@@ -66,7 +66,7 @@ class Menus(str, Enum):
     TRADE           = "trade"
     VIEW            = "view"
 
-class Selections(str, Enum):
+class Selections(StrEnum):
     LOAD            = "load"
     MENU            = "menu"
     GRIP            = "grip"
@@ -77,7 +77,7 @@ class Selections(str, Enum):
     SLOT            = "slot"
     QUIT            = "quit"
 
-class Statuses(str, Enum):
+class Statuses(StrEnum):
     ACTIVE          = "active"
     IDLE            = "idle"
     SELECTED        = "selected"
@@ -85,5 +85,5 @@ class Statuses(str, Enum):
 
 # -------------------------------- REQUIRED WIDGETS
 
-class SystemPanes(str, Enum):
+class SystemPanes(StrEnum):
     TRANSPARENT     = "transparent"

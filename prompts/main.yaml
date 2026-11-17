@@ -7,7 +7,7 @@ context: false
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  # template: index.md.j2
+  template: index.md.j2
   # --------------------------------------------
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
@@ -45,8 +45,8 @@ task:
   # template: design/style/mermaid.md.j2
 # ----------------------------------------------------
   parameters:
-    description: TODO
-    title: TODO
+    description: Changes implemented. Engine profile regenerated. Compare the change in results. Does the new profile reveal anything about the Engine that wasn't apparent before?
+    title: Ontology - Analyze
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ---------------------------------------------- TOOLS
@@ -66,7 +66,7 @@ tools:
     # ------------------------ TOOL VIEWS: METRICS
     # --------------------------------------------
     metrics:
-      pstats: false
+      pstats: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
     # --------------------------------------------
@@ -78,7 +78,7 @@ tools:
     # --------------------------------------------
     source:
       data: false
-      filter: true
+      filter: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
@@ -90,7 +90,7 @@ tools:
     # --------------------------------------------
     tests:  
       configuration: false
-      pipeline: true
+      pipeline: false
       session: false
 # ----------------------------------------------------
   parameters:

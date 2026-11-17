@@ -9,13 +9,16 @@
 Asset semantics enumerations.
 """
 # Standard Libraries
-from enum import Enum
+from enum import (
+    StrEnum,
+    IntEnum
+)
 
 # -------------------------------------------------------
 # -------------------------------- HIERARCHY ENUMERATIONS
 # -------------------------------------------------------
 
-class AssetCategories(str, Enum):
+class AssetCategories(StrEnum):
     """Enumeration of Asset Categories."""
     CRAFTS          = "crafts"
     CURSORS         = "cursors"
@@ -27,7 +30,7 @@ class AssetCategories(str, Enum):
     TILES           = "tiles"
     WIDGETS         = "widgets"
 
-class AssetInstances(str, Enum):
+class AssetInstances(StrEnum):
     """Enumeration of Asset Instances."""
     # TILES
     CANOPY          = "canopy"
@@ -85,7 +88,7 @@ class AssetInstances(str, Enum):
 # -------------------------------------------------------
 #   NOTE: Abstract groups of Assets.
 
-class Spawnables(str, Enum):
+class Spawnables(StrEnum):
     """Enumeration of Spawnable Assets."""
     COLLECTABLES    = "collectables"
     COMPOSITIONS    = "compositions"
@@ -96,7 +99,7 @@ class Spawnables(str, Enum):
     PROJECTILES     = "projectiles"
     STRUTS          = "struts"
 
-class Equipment(str, Enum):
+class Equipment(StrEnum):
     """Enumeration of Equipment Sheets."""
     ARMOR           = "armor"
     SHIELDS         = "shields"
@@ -104,7 +107,7 @@ class Equipment(str, Enum):
     UTILITIES       = "utilities"
     WEAPONS         = "weapons"
 
-class Widgets(str, Enum):
+class Widgets(StrEnum):
     """Enumeration of Widgets, physical and virtualized."""
     BUTTONS         = "buttons"
     ICONS           = "icons"
@@ -112,7 +115,7 @@ class Widgets(str, Enum):
     METERS          = "meters"
     PANES           = "panes"
 
-class Groups(str, Enum):
+class Groups(StrEnum):
     """Enumeration of Asset Groups."""
     EQUIPMENT       = "equipment"
     SPAWNABLES      = "spawnables"
@@ -124,20 +127,20 @@ class Groups(str, Enum):
 #   NOTE: Different partitions of Asset image files.
 #           Order matters.
 
-class Frequencies(str, Enum):
+class Frequencies(StrEnum):
     """Enumeration of Asset Frequencies."""
     CONTINUOUS      = "continuous"
     PERIODIC        = "periodic"
     TEMPORARY       = "temporary"
 
-class Directions(str, Enum):
+class Directions(StrEnum):
     """Enumeration of Asset Directions."""
     UP              = "up"
     LEFT            = "left"
     DOWN            = "down"
     RIGHT           = "right"
 
-class Actions(str, Enum):
+class Actions(StrEnum):
     """Enumeration of Asset Actions."""
     CAST            = "cast"
     THRUST          = "thrust"
@@ -146,21 +149,21 @@ class Actions(str, Enum):
     SHOOT           = "shoot"
     DIE             = "die"
 
-class Orientations(str, Enum):
+class Orientations(StrEnum):
     """Enumeration of Asset Orientations."""
     HORIZONTAL      = "horizontal"
     VERTICAL        = "vertical"
 
-class Switches(int, Enum):
+class Switches(IntEnum):
     """Enumeration of Asset Switch States."""
     ON              = 1
     OFF             = 0
 
-class Gauges(int, Enum):
+class Gauges(IntEnum):
     EMPTY           = 0
     FULL            = 101
     
-class Expressions(str, Enum):
+class Expressions(StrEnum):
     AGREEMENT       = "agreement"
     ANGER           = "anger"
     CONFUSION       = "confusion"
@@ -170,30 +173,30 @@ class Expressions(str, Enum):
     SURPRISE        = "surprise"
     TIRED           = "tired"
 
-class Seasons(str, Enum):
+class Seasons(StrEnum):
     SPRING          = "spring"
     SUMMER          = "summer"
     AUTUMN          = "autumn"
     WINTER          = "winter"
 
-class Cycles(str, Enum):
+class Cycles(StrEnum):
     ONSET           = "onset"
     PEAK            = "peak"
     DECLINE         = "decline"
 
-class Lifespans(str, Enum):
+class Lifespans(StrEnum):
     ANNUAL          = "annual"
     PERENNIAL       = "perennial"
     CENTENNIAL      = "centennial"
 
-class AnnualStages(str, Enum):
+class AnnualStages(StrEnum):
     SPROUT          = "sprout"
     GROWTH          = "growth"
     STALK           = "stalk"
     BLOOM           = "bloom"
     STUMP           = "stump"
 
-class PerennialStages(str, Enum):
+class PerennialStages(StrEnum):
     SAPLING         = "sapling"
     BUSH            = "bush"
     BRANCH          = "branch"
@@ -206,7 +209,7 @@ class PerennialStages(str, Enum):
     DEAD            = "dead"
     STUMP           = "stump"
 
-class CentennialStages(str, Enum):
+class CentennialStages(StrEnum):
     TRACE           = "trace"
     DEPOSIT         = "deposit"
     NUGGET          = "nugget"
@@ -214,40 +217,40 @@ class CentennialStages(str, Enum):
     CRYSTAL         = "crystal"
     ALLOY           = "alloy"
 
-class Materials(str, Enum):
+class Materials(StrEnum):
     CERAMICS        = "ceramics"
     CHROMATICS      = "chromatics"
     ORGANICS        = "organics"
     GEOLOGICS       = "geologics"
     METALLICS       = "metallics"
 
-class Organics(str, Enum):
+class Organics(StrEnum):
     COTTON          = "cotton"
     THATCHES        = "thatches"
     WOOD            = "wood"
 
-class Ceramics(str, Enum):
+class Ceramics(StrEnum):
     CLAY            = "clay"
 
-class Geologics(str, Enum):
+class Geologics(StrEnum):
     LIMESTONE       = "limestone"
     FELDSPAR        = "feldspar"
     GRANITE         = "granite"
     MARBLE          = "marble"
     
-class Metallics(str, Enum):
+class Metallics(StrEnum):
     COPPER          = "copper"
     IRON            = "iron"
     GOLD            = "gold"
 
-class Chromatics(str, Enum):
+class Chromatics(StrEnum):
     NEUTRAL         = "neutral"
     BLUE            = "blue"
     RED             = "red"
     YELLOW          = "yellow"
     GREEN           = "green"
 
-class Blueprints(str, Enum):
+class Blueprints(StrEnum):
     BUILDINGS       = "buildings"
     CORRIDORS       = "corridors"
     COLUMNS         = "columns"
@@ -257,7 +260,7 @@ class Blueprints(str, Enum):
     ORIENTATIONS    = "orientations"
     INCLINES        = "inclines"
 
-class Buildings(str, Enum):
+class Buildings(StrEnum):
     FLOORS          = "floors"
     WALLS           = "walls"
     FLATS           = "flats"
@@ -265,26 +268,26 @@ class Buildings(str, Enum):
     PATHS           = "paths"
     HALLS           = "halls"
 
-class Corridors(str, Enum):
+class Corridors(StrEnum):
     SOLIDS          = "solids"
     STRIPES         = "stripes"
     DESIGNS         = "designs"
 
-class Columns(str, Enum):
+class Columns(StrEnum):
     CROWNS          = "crowns"
     SHAFTS          = "shafts"
     BASES           = "bases"
 
-class Decor(str, Enum):
+class Decor(StrEnum):
     DECOR           = "decor"
     
-class Enclosures(str, Enum):
+class Enclosures(StrEnum):
     NORTH           = "north"
     EAST            = "east"
     SOUTH           = "south"
     WEST            = "west"
 
-class Inclines(str, Enum):
+class Inclines(StrEnum):
     UP              = "up"
     LEFT            = "left"
     RIGHT           = "right"
@@ -294,23 +297,23 @@ class Inclines(str, Enum):
 # -------------------------------------------------------
 #   NOTE: These are required Assets.
 
-class RequiredAssets(str, Enum):
+class RequiredAssets(StrEnum):
     PLAYER          = "player"
     
-class ExpressionsPalette(str, Enum):
+class ExpressionsPalette(StrEnum):
     BUBBLES         = "bubbles"
     BUFFS           = "buffs"
 
-class EffectsPalette(str, Enum):
+class EffectsPalette(StrEnum):
     SPLASH          = "splash"
 
-class ArmorPalette(str, Enum):
+class ArmorPalette(StrEnum):
     LEATHER         = "leather"
     COPPER          = "copper"
     IRON            = "iron"
     GOLD            = "gold"
 
-class CropPalette(str, Enum):
+class CropPalette(StrEnum):
     CARROT          = "carrot"
     LETTUCE         = "lettuce"
     MAIZE           = "maize"
@@ -323,7 +326,7 @@ class CropPalette(str, Enum):
     BERRY           = "berry"
     CHARD           = "chard"
 
-class ItemPalette(str, Enum):
+class ItemPalette(StrEnum):
     BOMB            = "bomb"
     CONTAINER       = "container"
     KEY             = "key"
@@ -331,7 +334,7 @@ class ItemPalette(str, Enum):
     BOLT            = "bolt"
     COIN            = "coin"
 
-class MaterialPalette(str, Enum):
+class MaterialPalette(StrEnum):
     COTTON          = "cotton"
     THATCHES        = "thatches"
     WOOD            = "wood"
@@ -347,19 +350,19 @@ class MaterialPalette(str, Enum):
     COPPER          = "copper"
     GOLD            = "gold"
 
-class ShieldPalette(str, Enum):
+class ShieldPalette(StrEnum):
     BUCKLER         = "buckler"
     KITE            = "kite"
     EMBLEM          = "emblem"
 
-class UtilityPalette(str, Enum):
+class UtilityPalette(StrEnum):
     LANTERN         = "lantern"
     STAVE           = "stave"
     SAPPHIRE        = "sapphire"
     EMERALD         = "emerald"
     RUBY            = "ruby"
 
-class ToolPalette(str, Enum):
+class ToolPalette(StrEnum):
     SHOVEL          = "shovel"
     AXE             = "axe"
     PICKAXE         = "pickaxe"
@@ -367,7 +370,7 @@ class ToolPalette(str, Enum):
     HOE             = "hoe"
     SCYTHE          = "scythe"
 
-class WeaponPalette(str, Enum):
+class WeaponPalette(StrEnum):
     SWORD           = "sword"
     DAGGER          = "dagger"
     KNIFE           = "knife"

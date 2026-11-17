@@ -215,7 +215,7 @@ class Board:
     # ------------------------------------------------ GETTERS
 
     def player(self, slot: int = 0) -> Optional[Asset]:
-        players = self._cache.get_instances(AssetInstances.PLAYERS.value)
+        players = self._cache.get_instances(AssetInstances.PLAYERS)
         if not players:
             return None
         if slot < len(players):
@@ -227,7 +227,7 @@ class Board:
         self,
         layer: str,
         position: Position,
-        instance: str = AssetInstances.ENVIRON.value
+        instance: str = AssetInstances.ENVIRON
     ) -> Optional[Asset]:
         return self._cache.get_tile(layer, position, instance)
 
@@ -276,7 +276,7 @@ class Board:
 
     def bridges(self, layer: Optional[str] = None) -> List[Asset]:
         """Retrieves static sensor bridge assets for a specific layer or across all layers."""
-        return self.instances(AssetInstances.BRIDGES.value, layer)
+        return self.instances(AssetInstances.BRIDGES, layer)
 
 
     def layers(self) -> List[str]:
@@ -299,7 +299,7 @@ class Board:
 
     def renderables(self, layer: Optional[str] = None) -> List[Asset]:
         if layer is None:
-            return [asset for asset in self._assets if asset.category != AssetCategories.TILES.value]
+            return [asset for asset in self._assets if asset.category != AssetCategories.TILES]
         return self._cache.get_renderables(layer)
 
 
@@ -309,7 +309,7 @@ class Board:
         """
         if layer is not None:
             return self._cache.get_shorelines(layer)
-        return self.instances(AssetInstances.SHORELINES.value)
+        return self.instances(AssetInstances.SHORELINES)
 
     
     def moisture(self, layer: str, x: int, y: int) -> float:
@@ -332,7 +332,7 @@ class Board:
             max_l = 0
 
             for asset in layer_assets:
-                if asset.category == AssetCategories.TILES.value:
+                if asset.category == AssetCategories.TILES:
                     ext_w = int(asset.state.position.x) + (asset.state.multiple.nx * asset.properties.dimensions.w)
                     ext_l = int(asset.state.position.y) + (asset.state.multiple.ny * asset.properties.dimensions.l)
                 elif asset.dimensions:
@@ -358,7 +358,7 @@ class Board:
         moisture_flux directly on all static ResourceState instances.
         """
         self._moisture_fields[layer] = field
-        resources = self.categories(AssetCategories.RESOURCES.value, layer)
+        resources = self.categories(AssetCategories.RESOURCES, layer)
         for resource in resources:
             if resource.state.position:
                 flux = field.evaluate(
@@ -436,19 +436,19 @@ class Board:
         dump: Dict[str, Any] = {}
 
         for asset in self._assets:
-            if asset.category == AssetCategories.WIDGETS.value:
+            if asset.category == AssetCategories.WIDGETS:
                 continue
 
-            if asset.category == AssetCategories.EFFECTS.value:
+            if asset.category == AssetCategories.EFFECTS:
                 if asset.properties.frequency and \
-                    asset.properties.frequency.type == Frequencies.TEMPORARY.value and \
+                    asset.properties.frequency.type == Frequencies.TEMPORARY and \
                     not asset.properties.frequency.persist:
                     continue
 
-            if asset.category == AssetCategories.SHEETS.value and asset.instance not in (
-                AssetInstances.SPRITES.value,
-                AssetInstances.PLAYERS.value,
-                AssetInstances.PIXIES.value
+            if asset.category == AssetCategories.SHEETS and asset.instance not in (
+                AssetInstances.SPRITES,
+                AssetInstances.PLAYERS,
+                AssetInstances.PIXIES
             ):
                 continue
 
@@ -464,8 +464,8 @@ class Board:
 
         # Serialize abstract world metadata
         if self.calendar:
-            dump[Shortcuts.CALENDAR.value] = asdict(self.calendar)
+            dump[Shortcuts.CALENDAR] = asdict(self.calendar)
         if self.plot:
-            dump[Shortcuts.PLOTS.value] = asdict(self.plot) if hasattr(self.plot, "__dataclass_fields__") else self.plot
+            dump[Shortcuts.PLOTS] = asdict(self.plot) if hasattr(self.plot, "__dataclass_fields__") else self.plot
 
         Loader.save_state(world, slot, dump)

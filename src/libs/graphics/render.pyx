@@ -366,36 +366,40 @@ def compose(TexturePtr base_ptr, list feature_ptrs) -> TexturePtr:
     logger.debug(f"[TELEMETRY] Composition complete.")
     return target
 
-
-def construct(TexturePtr target, list tiles):
+def construct(TexturePtr target, list tiles, bint clear_target=True):
     """
-    Constructs the static background entirely in C using zero-allocation primitives.
+    Constructs a static layer or UI canvas in C using zero-allocation primitives.
     tiles format: 
         (TexturePtr, src_x, src_y, src_w, src_l, dst_x, dst_y, dst_w, dst_l, mul_nx, mul_ny)
     """
-    logger.debug(f"Constructing layer chunk with {len(tiles)} primitive tile coordinates.")
-    
+    if target is None or target.ptr == NULL:
+        return
+
     SDL_SetRenderTarget(_renderer, target.ptr)
-    
+
+    if clear_target:
+        SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0)
+        SDL_RenderClear(_renderer)
+
     cdef SDL_Rect c_src, c_dst
     cdef TexturePtr tex
     cdef int sx, sy, sw, sl, dx, dy, dw, dl, nx, ny
     cdef int i, j
-    
+
     for tile in tiles:
         tex, sx, sy, sw, sl, dx, dy, dw, dl, nx, ny = tile
-        
-        SDL_SetTextureBlendMode(tex.ptr, SDL_BLENDMODE_NONE)
-        
+
+        SDL_SetTextureBlendMode(tex.ptr, SDL_BLENDMODE_BLEND)
+
         c_src.x, c_src.y, c_src.w, c_src.h = sx, sy, sw, sl
         c_dst.w, c_dst.h = dw, dl
-        
+
         for i in range(nx):
             for j in range(ny):
                 c_dst.x = dx + (i * dw)
                 c_dst.y = dy + (j * dl)
                 SDL_RenderCopy(_renderer, tex.ptr, &c_src, &c_dst)
-                
+
     SDL_SetRenderTarget(_renderer, NULL)
 
 

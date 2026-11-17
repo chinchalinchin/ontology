@@ -9,14 +9,17 @@
 Graphics semantics enumerations.
 """
 # Standard Libraries
-from enum import Enum
+from enum import (
+    StrEnum,
+    IntEnum
+)
 
-class ChannelTypes(int, Enum):
+class ChannelTypes(IntEnum):
     """Enumeration of Frame Channels"""
     TINT            = 0
     SUBMERGE        = 1
 
-class Fonts(str, Enum):
+class Fonts(StrEnum):
     """Enumeration of Font Assets."""
     DIALOGUE        = "dialogue"
     MENU            = "menu"

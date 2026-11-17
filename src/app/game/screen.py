@@ -123,8 +123,8 @@ class Screen:
         multi-tile assets (Fluids, Shorelines) whose geometry extends beyond asset.dimensions.
         """
         if asset.instance in (
-            AssetInstances.FLUIDS.value,
-            AssetInstances.SHORELINES.value,
+            AssetInstances.FLUIDS,
+            AssetInstances.SHORELINES,
         ):
             return True
 
@@ -164,9 +164,9 @@ class Screen:
                     tile.state.multiple.nx, tile.state.multiple.ny,
                 )
 
-                if tile.taxonomy.instance == AssetInstances.ENVIRON.value:
+                if tile.taxonomy.instance == AssetInstances.ENVIRON:
                     back_tiles.append(tile_tuple)
-                elif tile.taxonomy.instance == AssetInstances.CANOPY.value:
+                elif tile.taxonomy.instance == AssetInstances.CANOPY:
                     fore_tiles.append(tile_tuple)
 
         return back_tiles, fore_tiles
@@ -193,7 +193,7 @@ class Screen:
         # 1. Broad-phase filter without mutating Board._cache.cached_renderables
         visible = [
             asset for asset in assets
-            if asset.category != AssetCategories.TILES.value
+            if asset.category != AssetCategories.TILES
             and self._in_viewport(asset, min_x, min_y, max_x, max_y)
         ]
 
@@ -207,7 +207,7 @@ class Screen:
             submerge_channel = next(
                 (
                     op for op in channels
-                    if op[0] == ChannelTypes.SUBMERGE.value
+                    if op[0] == ChannelTypes.SUBMERGE
                 ),
                 None,
             )
@@ -254,7 +254,7 @@ class Screen:
 
             # 4. Auxiliary Channel Tuples
             for c_type, payload in channels:
-                if c_type == ChannelTypes.TINT.value:
+                if c_type == ChannelTypes.TINT:
                     cx, cy, cw, cl, r, g, b, a = payload
                     dx = asset.state.position.x + cx
                     dy = asset.state.position.y + cy
@@ -410,7 +410,7 @@ class Screen:
             return
 
         primitives = []
-        if widget.id != SystemPanes.TRANSPARENT.value:
+        if widget.id != SystemPanes.TRANSPARENT:
             for base_key, ox, oy in widget.frame.keys(widget.id, widget.state):
                 tex_data = self.registry.image(base_key)
                 if not tex_data:
