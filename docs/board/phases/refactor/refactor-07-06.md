@@ -84,6 +84,10 @@ The `crafts` Icon Widget can be utilized to represent user-facing Crafts (Primit
 3. **Pack Menu & Traversal**: Extending `menus/inventory/pack/main.yaml` with a filter strip Gizmo (`icons.crafts`), a filtered formulae grid Gizmo, and a reactive cost/detail readout pane preserves the existing declarative `Binder` and `Fabricator` pipeline. To let players inspect recipes they cannot yet afford, `MenuMechanics` (or `CollectionState`) must distinguish between *vacant* slots (non-traversable) and *unaffordable* slots (traversable with visual disabled/dimmed state, or inspected via focus).
 4. **Spatial Placement Solver**: Spawning a Craft from `CraftController.select()` requires a deterministic placement check that aligns ground baselines ($y_{\text{craft}} + \text{span}.l + \text{anchor} = y_{\text{player}} + \text{dim}_{\text{player}}.l$), offsets horizontally/vertically clear of the player's hitbox along `player.state.animation.direction`, and validates against `board.obstacles()`, `board.weights()`, and `board.perimeters` before consuming `inventory.pack` resources.
 
+##### User Review I
+
+In order to parameterize Compositions, the PseudoState needs alteration. Since Compositions use the StateSchema for their configuration schema, they get validated against the State Models. This means when the Composition leaves a parameter empty, the PseudoState will fail to validate.
+
 ##### Goals
 
 ###### Goal: Unified Craft Ledger & Cost Indexing

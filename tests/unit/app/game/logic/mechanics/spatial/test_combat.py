@@ -10,39 +10,22 @@
 
 Unit tests for CombatMechanics.
 """
-# Standard Libraries
-from unittest.mock import MagicMock
-
 # External Libraries
 import pytest
 
 # Application Libraries
-from app.game.logic.mechanics import CombatMechanics
 from app.static.semantics import (
-    Intentions, 
-    AssetInstances, 
-    AssetCategories,
-    Mechanics
+    Actions,
+    AssetInstances,
+    Directions,
+    Intentions,
+    Mechanics,
 )
-from app.models.state import (
-    SpriteState, 
-    SheetState, 
-    Character, 
-    Meters, 
-    Meter, 
-    Mutators, 
-    MutatorTriggers, 
-    AnimationState, 
-    ReactableState
-)
-from app.models.groups import EquipmentGroup
 
 # Cython Libraries
 from libs.core.models import (
-    Position, 
-    Dimensions, 
-    Hitbox,
-    Velocity
+    Position,
+    Velocity,
 )
 
 # -----------------------------------------------------
@@ -50,122 +33,40 @@ from libs.core.models import (
 pytestmark = [
     pytest.mark.app_mechanic,
     pytest.mark.physics_space,
-    pytest.mark.workflow_combat
+    pytest.mark.workflow_combat,
 ]
 
 # -----------------------------------------------------
 
-# TODO: MIGRATE ALL OF THIS INTO PROPER FIXTURES
-
-# --------------------------------------------------------------------------------------
-
-from app.models.groups import EquipmentGroup
-from app.assets.base import (
-    Asset, 
-    Taxonomy
-)
-from app.assets.frames import (
-    SpriteFrame,
-    IterableFrame
-)
-from app.assets.hitboxes import (
-    StaticHitbox
-)
-from app.assets.animations import (
-    SpriteAnimation,
-    FrequencyAnimation
-)
-from app.models.properties import (
-    SheetProperties, 
-    EffectProperties, 
-    Frequency
-)
-
-def _create_player_attacker(x=10, y=10, action="slash", direction="right", frame=3, strength=20):
-    tax = Taxonomy("player-1", "hero", AssetCategories.SHEETS.value, AssetInstances.PLAYERS.value)
-    props = SheetProperties(dimensions=Dimensions(w=64, l=64), mass=10)
-    state = SheetState(
-        id="player-1",
-        name="hero",
-        layer="0",
-        position=Position(x=x, y=y),
-        character=Character(strength=strength, defense=10, speed=5),
-        meters=Meters(health=Meter(current=100, maximum=100), magic=Meter(current=100, maximum=100)),
-        mutators=Mutators(triggers=MutatorTriggers()),
-        animation=AnimationState(action=action, direction=direction, frame=frame),
-        intention=Intentions.ATTACK
-    )
-    state.slots.equipment.weapon = "sword"
-    return Asset(tax, props, state, SpriteFrame(), SpriteAnimation(), StaticHitbox())
-
-
-def _create_sprite_target(x=50, y=20, defense=5, health=50):
-    tax = Taxonomy("enemy-1", "enemy", AssetCategories.SHEETS.value, AssetInstances.SPRITES.value)
-    props = SheetProperties(
-        dimensions=Dimensions(w=64, l=64),
-        mass=10,
-        hitboxes=[Hitbox(Position(0, 0), Dimensions(32, 32))]
-    )
-    state = SpriteState(
-        id="enemy-1",
-        name="enemy",
-        layer="0",
-        position=Position(x=x, y=y),
-        character=Character(strength=10, defense=defense, speed=5),
-        meters=Meters(health=Meter(current=health, maximum=health), magic=Meter(current=50, maximum=50)),
-        mutators=Mutators(triggers=MutatorTriggers(dead=False)),
-        animation=AnimationState(frame=0, tick=0)
-    )
-    return Asset(tax, props, state, SpriteFrame(), SpriteAnimation(), StaticHitbox())
-
-
-def _create_reactable_target(x=50, y=20):
-    tax = Taxonomy("dummy-1", "test-dummy", AssetCategories.EFFECTS.value, AssetInstances.REACTABLES.value)
-    props = EffectProperties(
-        dimensions=Dimensions(w=64, l=64),
-        count=8,
-        frequency=Frequency(type="temporary", persist=True),
-        mass=0,
-        hitboxes=[Hitbox(Position(0, 0), Dimensions(64, 64))]
-    )
-    state = ReactableState(
-        id="dummy-1",
-        name="test-dummy",
-        layer="0",
-        position=Position(x=x, y=y),
-        intention=Intentions.ATTACK.value,
-        active=False
-    )
-    return Asset(tax, props, state, IterableFrame(), FrequencyAnimation(), StaticHitbox())
-
-
-def _create_equipment():
-    sword_props = SheetProperties(
-        dimensions=Dimensions(w=64, l=64),
-        attackboxes={
-            "slash-right-3": [Hitbox(Position(40, 16), Dimensions(24, 32))]
-        }
-    )
-    return EquipmentGroup(
-        armor={},
-        tools={},
-        utilities={},
-        weapons={"sword": sword_props}
-    )
-
-# --------------------------------------------------------------------------------------
 
 @pytest.mark.workflow_combat
-def test_combat_mechanics_melee_resolution(mock_board):
-    mechanic = CombatMechanics()
-    attacker = _create_player_attacker(x=10, y=10, strength=20)
-    target = _create_sprite_target(x=50, y=20, defense=5, health=50)
+def test_combat_mechanics_melee_resolution(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    mechanic = mock_mechanic(Mechanics.COMBAT.value)
+    payload = mock_payload()
+    attacker = mock_board.player()
+    target = mock_board.instances(AssetInstances.SPRITES.value, "0")[0]
 
-    mock_board.equipment = _create_equipment()
-    mock_board.layers = lambda: ["0"]
-    mock_board.instances = lambda inst, layer=None: [attacker] if inst == AssetInstances.PLAYERS.value else [target]
+    attacker.elevation = 0
+    attacker.state.position = Position(2000, 2000)
+    attacker.state.intention = Intentions.ATTACK.value
+    attacker.state.slots.equipment.weapon = "sword"
+    attacker.state.animation.action = Actions.SLASH.value
+    attacker.state.animation.direction = Directions.RIGHT.value
+    attacker.state.animation.frame = 3
+    attacker.state.character.strength = 20
 
-    mechanic.update(mock_board, 0.016, MagicMock(), MagicMock())
+    target.elevation = 0
+    target.state.position = Position(2025, 2015)
+    target.state.character.defense = 5
+    target.state.meters.health.current = 50
+    target.state.mutators.triggers.dead = False
+
+    mechanic.update(mock_board, 0.016, mock_bus, payload)
 
     # Strength 20 - Defense 5 = 15 damage (50 -> 35)
     assert target.state.meters.health.current == 35
@@ -173,167 +74,155 @@ def test_combat_mechanics_melee_resolution(mock_board):
 
 
 @pytest.mark.workflow_combat
-def test_combat_mechanics_lethal_blow(mock_board):
-    mechanic = CombatMechanics()
-    attacker = _create_player_attacker(x=10, y=10, strength=100)
-    target = _create_sprite_target(x=50, y=20, defense=0, health=10)
+def test_combat_mechanics_lethal_blow(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    mechanic = mock_mechanic(Mechanics.COMBAT.value)
+    payload = mock_payload()
+    attacker = mock_board.player()
+    target = mock_board.instances(AssetInstances.SPRITES.value, "0")[0]
 
-    mock_board.equipment = _create_equipment()
-    mock_board.layers = lambda: ["0"]
-    mock_board.instances = lambda inst, layer=None: [attacker] if inst == AssetInstances.PLAYERS.value else [target]
+    attacker.elevation = 0
+    attacker.state.position = Position(2000, 2000)
+    attacker.state.intention = Intentions.ATTACK.value
+    attacker.state.slots.equipment.weapon = "sword"
+    attacker.state.animation.action = Actions.SLASH.value
+    attacker.state.animation.direction = Directions.RIGHT.value
+    attacker.state.animation.frame = 3
+    attacker.state.character.strength = 100
 
-    mechanic.update(mock_board, 0.016, MagicMock(), MagicMock())
+    target.elevation = 0
+    target.state.position = Position(2025, 2015)
+    target.state.character.defense = 0
+    target.state.meters.health.current = 10
+    target.state.mutators.triggers.dead = False
+
+    mechanic.update(mock_board, 0.016, mock_bus, payload)
 
     assert target.state.meters.health.current == 0
     assert target.state.mutators.triggers.dead is True
 
 
 @pytest.mark.workflow_combat
-def test_combat_mechanics_reactable_trigger(mock_board):
-    mechanic = CombatMechanics()
-    attacker = _create_player_attacker(x=10, y=10)
-    dummy = _create_reactable_target(x=50, y=20)
+def test_combat_mechanics_reactable_trigger(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    mechanic = mock_mechanic(Mechanics.COMBAT.value)
+    payload = mock_payload()
+    attacker = mock_board.player()
+    dummy = mock_board.instances(AssetInstances.REACTABLES.value, "0")[0]
 
-    mock_board.equipment = _create_equipment()
-    mock_board.layers = lambda: ["0"]
+    attacker.elevation = 0
+    attacker.state.position = Position(2000, 2000)
+    attacker.state.intention = Intentions.ATTACK.value
+    attacker.state.slots.equipment.weapon = "sword"
+    attacker.state.animation.action = Actions.SLASH.value
+    attacker.state.animation.direction = Directions.RIGHT.value
+    attacker.state.animation.frame = 3
 
-    # what the fuck is this AI slop bullshit?
-    def mock_instances(inst, layer=None):
-        if inst == AssetInstances.PLAYERS.value:
-            return [attacker]
-        if inst == AssetInstances.REACTABLES.value:
-            return [dummy]
-        return []
+    hb = dummy.hitboxes[0]
+    dummy.elevation = 0
+    dummy.state.position = Position(2046 - hb.position.x, 2044 - hb.position.y)
+    dummy.state.intention = Intentions.ATTACK.value
+    dummy.state.active = False
 
-    mock_board.instances = mock_instances
-
-    mechanic.update(mock_board, 0.016, MagicMock(), MagicMock())
+    mechanic.update(mock_board, 0.016, mock_bus, payload)
     assert dummy.state.active is True
 
 
 @pytest.mark.workflow_combat
-def test_combat_mechanics_inactive_attackbox_filtered(mock_board):
-    mechanic = CombatMechanics()
+def test_combat_mechanics_inactive_attackbox_filtered(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    mechanic = mock_mechanic(Mechanics.COMBAT.value)
+    payload = mock_payload()
+    attacker = mock_board.player()
+    target = mock_board.instances(AssetInstances.SPRITES.value, "0")[0]
+
     # Frame 0 has no active attackboxes configured
-    attacker = _create_player_attacker(x=10, y=10, frame=0)
-    target = _create_sprite_target(x=50, y=20, health=50)
+    attacker.elevation = 0
+    attacker.state.position = Position(2000, 2000)
+    attacker.state.intention = Intentions.ATTACK.value
+    attacker.state.slots.equipment.weapon = "sword"
+    attacker.state.animation.action = Actions.SLASH.value
+    attacker.state.animation.direction = Directions.RIGHT.value
+    attacker.state.animation.frame = 0
 
-    mock_board.equipment = _create_equipment()
-    mock_board.layers = lambda: ["0"]
-    mock_board.instances = lambda inst, layer=None: [attacker] if inst == AssetInstances.PLAYERS.value else [target]
+    target.elevation = 0
+    target.state.position = Position(2025, 2015)
+    target.state.meters.health.current = 50
 
-    mechanic.update(mock_board, 0.016, MagicMock(), MagicMock())
+    mechanic.update(mock_board, 0.016, mock_bus, payload)
     assert target.state.meters.health.current == 50
 
 
 @pytest.mark.workflow_combat
-def test_combat_mechanics_unarmed_bypasses_melee(mock_board):
-    mechanic = CombatMechanics()
-    attacker = _create_player_attacker(x=10, y=10)
+def test_combat_mechanics_unarmed_bypasses_melee(
+    mock_mechanic,
+    mock_board,
+    mock_bus,
+    mock_payload,
+):
+    mechanic = mock_mechanic(Mechanics.COMBAT.value)
+    payload = mock_payload()
+    attacker = mock_board.player()
+    target = mock_board.instances(AssetInstances.SPRITES.value, "0")[0]
+
+    attacker.elevation = 0
+    attacker.state.position = Position(2000, 2000)
+    attacker.state.intention = Intentions.ATTACK.value
     attacker.state.slots.equipment.weapon = None
-    target = _create_sprite_target(x=50, y=20, health=50)
+    attacker.state.animation.action = Actions.CAST.value
+    attacker.state.animation.direction = Directions.RIGHT.value
+    attacker.state.animation.frame = 0
 
-    mock_board.equipment = _create_equipment()
-    mock_board.layers = lambda: ["0"]
-    mock_board.instances = lambda inst, layer=None: [attacker] if inst == AssetInstances.PLAYERS.value else [target]
+    target.elevation = 0
+    target.state.position = Position(2025, 2015)
+    target.state.meters.health.current = 50
 
-    mechanic.update(mock_board, 0.016, MagicMock(), MagicMock())
+    mechanic.update(mock_board, 0.016, mock_bus, payload)
     assert target.state.meters.health.current == 50
 
-def test_collision_mechanics_traverse_stairs_up_ascent_and_descent(
+
+@pytest.mark.workflow_combat
+def test_combat_mechanics_elevation_isolation(
     mock_mechanic,
     mock_board,
     mock_bus,
     mock_payload,
 ):
-    """
-    Verifies Phase 0 vertical stair (UP) elevation ascent (vy < 0) and descent (vy > 0).
-    """
+    mechanic = mock_mechanic(Mechanics.COMBAT.value)
     payload = mock_payload()
-    mechanics = mock_mechanic(Mechanics.COLLISION.value)
-    player = mock_board.player()
-    stairs = mock_board.instances(AssetInstances.STAIRS.value)[0]
+    attacker = mock_board.player()
+    target = mock_board.instances(AssetInstances.SPRITES.value, "0")[0]
 
-    stairs.elevation = 0
-    stairs.state.delta = 1
-    stairs.state.direction = "up"
-    stairs.state.position = Position(500, 500)
+    attacker.elevation = 0
+    attacker.state.position = Position(2000, 2000)
+    attacker.state.intention = Intentions.ATTACK.value
+    attacker.state.slots.equipment.weapon = "sword"
+    attacker.state.animation.action = Actions.SLASH.value
+    attacker.state.animation.direction = Directions.RIGHT.value
+    attacker.state.animation.frame = 3
+    attacker.state.character.strength = 20
 
-    # Ascent: place foot inside upper 85% of stair tread with northward velocity (vy < 0)
-    player.elevation = 0
-    player.state.position = Position(
-        stairs.state.position.x,
-        stairs.state.position.y - player.dimensions.l + int(stairs.dimensions.l * 0.5),
-    )
-    player.state.velocity = Velocity(0.0, -20.0)
+    target.elevation = 1
+    target.state.position = Position(2025, 2015)
+    target.state.character.defense = 5
+    target.state.meters.health.current = 50
+    target.state.mutators.triggers.dead = False
 
-    mechanics.update(mock_board, 0.016, mock_bus, payload)
-    assert player.elevation == 1
+    mechanic.update(mock_board, 0.016, mock_bus, payload)
+    assert target.state.meters.health.current == 50
 
-    # Descent: place foot in lower 15% (>= 0.85) of stair tread with southward velocity (vy > 0)
-    player.state.position = Position(
-        stairs.state.position.x,
-        stairs.state.position.y - player.dimensions.l + int(stairs.dimensions.l * 0.9),
-    )
-    player.state.velocity = Velocity(0.0, 20.0)
-
-    mechanics.update(mock_board, 0.016, mock_bus, payload)
-    assert player.elevation == 0
-
-
-def test_collision_mechanics_traverse_stairs_horizontal_left_and_right(
-    mock_mechanic,
-    mock_board,
-    mock_bus,
-    mock_payload,
-):
-    """
-    Verifies Phase 0 horizontal stair (RIGHT and LEFT) elevation transitions.
-    """
-    payload = mock_payload()
-    mechanics = mock_mechanic(Mechanics.COLLISION.value)
-    player = mock_board.player()
-    stairs = mock_board.instances(AssetInstances.STAIRS.value)[0]
-
-    stairs.elevation = 0
-    stairs.state.delta = 1
-    stairs.state.direction = "right"
-    stairs.state.position = Position(500, 500)
-
-    # RIGHT Ascent (vx > 0, tread_progress >= 0.15)
-    player.elevation = 0
-    player.state.position = Position(
-        stairs.state.position.x - (player.dimensions.w // 2) + int(stairs.dimensions.w * 0.5),
-        stairs.state.position.y,
-    )
-    player.state.velocity = Velocity(20.0, 0.0)
-    mechanics.update(mock_board, 0.016, mock_bus, payload)
-    assert player.elevation == 1
-
-    # RIGHT Descent (vx < 0, tread_progress <= 0.15)
-    player.state.position = Position(
-        stairs.state.position.x - (player.dimensions.w // 2) + int(stairs.dimensions.w * 0.1),
-        stairs.state.position.y,
-    )
-    player.state.velocity = Velocity(-20.0, 0.0)
-    mechanics.update(mock_board, 0.016, mock_bus, payload)
-    assert player.elevation == 0
-
-    # LEFT Ascent (vx < 0, tread_progress <= 0.85)
-    stairs.state.direction = "left"
-    player.state.position = Position(
-        stairs.state.position.x - (player.dimensions.w // 2) + int(stairs.dimensions.w * 0.5),
-        stairs.state.position.y,
-    )
-    player.state.velocity = Velocity(-20.0, 0.0)
-    mechanics.update(mock_board, 0.016, mock_bus, payload)
-    assert player.elevation == 1
-
-    # LEFT Descent (vx > 0, tread_progress >= 0.85)
-    player.state.position = Position(
-        stairs.state.position.x - (player.dimensions.w // 2) + int(stairs.dimensions.w * 0.9),
-        stairs.state.position.y,
-    )
-    player.state.velocity = Velocity(20.0, 0.0)
-    mechanics.update(mock_board, 0.016, mock_bus, payload)
-    assert player.elevation == 0
+    target.elevation = 0
+    mechanic.update(mock_board, 0.016, mock_bus, payload)
+    assert target.state.meters.health.current == 35

@@ -7,6 +7,7 @@
 Relational indices, property groups, and spatial structure fixtures.
 """
 # Standard Libraries
+from dataclasses import fields
 from typing import Any
 
 # External Libraries
@@ -14,6 +15,10 @@ import pytest
 
 # Application Libraries
 import app.static.settings as settings
+from app.assets.base import (
+    Asset,
+    Taxonomy,
+)
 from app.game.logic.modules.fields import MoistureField
 from app.game.logic.relations import (
     MaterialIndex,
@@ -25,7 +30,12 @@ from app.models.groups import (
     SpawnableGroup,
 )
 from app.models.properties import PropertiesSchema
-from app.static.semantics import Relations
+from app.models.state import NoState
+from app.services.factories import AssetFactory
+from app.static.semantics import (
+    AssetCategories,
+    Relations,
+)
 
 # Cython Libraries
 from libs.core.math.space import Space
@@ -92,14 +102,34 @@ def mock_spawnables(
 @pytest.fixture
 def mock_equipment(
     mock_properties_schema: PropertiesSchema,
+    mock_configurations_schema: ConfigurationSchema,
 ) -> EquipmentGroup:
-    return EquipmentGroup(
-        armor=mock_properties_schema.sheets.armor,
-        weapons=mock_properties_schema.sheets.weapons,
-        tools=mock_properties_schema.sheets.tools,
-        utilities=mock_properties_schema.sheets.utilities,
-        shields=mock_properties_schema.sheets.shields,
-    )
+    sheets_props = mock_properties_schema.sheets
+    sheets_recipes = mock_configurations_schema.recipes.sheets
+    equipment_groups = {}
+
+    for eq_field in fields(EquipmentGroup):
+        instance = eq_field.name
+        props_dict = getattr(sheets_props, instance, {}) or {}
+        recipe = getattr(sheets_recipes, instance)
+        equipment_groups[instance] = {
+            eq_id: Asset(
+                taxonomy=Taxonomy(
+                    id=eq_id,
+                    name=eq_id,
+                    category=AssetCategories.SHEETS.value,
+                    instance=instance,
+                ),
+                properties=eq_props,
+                state=NoState(),
+                frame=AssetFactory.frame(recipe.frame),
+                animation=AssetFactory.animation(recipe.animation),
+                hitbox=AssetFactory.hitbox(recipe.hitbox),
+            )
+            for eq_id, eq_props in props_dict.items()
+        }
+
+    return EquipmentGroup(**equipment_groups)
 
 
 # ---------------------------------------------------------------------------

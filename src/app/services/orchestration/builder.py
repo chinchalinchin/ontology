@@ -21,8 +21,13 @@ from typing import (
 
 # Application Libraries
 import app.static.settings as settings
+from app.assets.base import (
+    Asset,
+    Taxonomy
+)
 from app.static.loader import Loader
 from app.static.semantics import (
+    AssetCategories,
     Devices, 
     Mechanics,
     Executors,
@@ -43,12 +48,16 @@ from app.models.groups import (
     EquipmentGroup
 )
 from app.models.properties import PropertiesSchema
+from app.models.state import NoState
 from app.models.config import (
     ConfigurationSchema, 
     MechanicsInstance
 )
 from app.services.markets import Materializer
-from app.services.factories import MechanicFactory
+from app.services.factories import (
+    AssetFactory,
+    MechanicFactory
+)
 from app.services.generators.game import (
     Cradle,
     Decomposer
@@ -242,13 +251,32 @@ class Builder:
 
     def build_board(self) -> None:
         logger.info("Constructing Empty Board and Migrator subsystem...")
-        equipment = EquipmentGroup(
-            armor=self.context.properties.sheets.armor,
-            weapons=self.context.properties.sheets.weapons,
-            tools=self.context.properties.sheets.tools,
-            utilities=self.context.properties.sheets.utilities,
-            shields=self.context.properties.sheets.shields
-        )
+        sheets_props = self.context.properties.sheets
+        sheets_recipes = self.context.configurations.recipes.sheets
+        equipment_groups = {}
+
+        for eq_field in dataclasses.fields(EquipmentGroup):
+            instance = eq_field.name
+            props_dict = getattr(sheets_props, instance, {}) or {}
+            recipe = getattr(sheets_recipes, instance)
+            equipment_groups[instance] = {
+                eq_id: Asset(
+                    taxonomy=Taxonomy(
+                        id=eq_id,
+                        name=eq_id,
+                        category=AssetCategories.SHEETS.value,
+                        instance=instance
+                    ),
+                    properties=eq_props,
+                    state=NoState(),
+                    frame=AssetFactory.frame(recipe.frame),
+                    animation=AssetFactory.animation(recipe.animation),
+                    hitbox=AssetFactory.hitbox(recipe.hitbox)
+                )
+                for eq_id, eq_props in props_dict.items()
+            }
+
+        equipment = EquipmentGroup(**equipment_groups)
 
         self.board = Board([], self.context.configurations, equipment)
         self.board.set_device(self.device)

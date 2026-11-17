@@ -62,7 +62,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     * *Phase 06:*
       * [x]: [Phase 06.01: Expressions](./phases/refactor/refactor-06-01.md)
       * [ ]: [Phase 06.02: Goals](./phases/refactor/refactor-06-02.md)
-      * [~]: [Phase 06.03: Combat](./phases/refactor/refactor-06-03.md)
+      * [x]: [Phase 06.03: Combat](./phases/refactor/refactor-06-03.md)
       * [x]: [Phase 06.04: Inventory](./phases/refactor/refactor-06-04.md)
     * *Phase 07:*
       * [x]: [Phase 07.01: Elevation Sorting](./phases/refactor/refactor-07-01.md)

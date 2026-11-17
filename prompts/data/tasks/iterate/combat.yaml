@@ -6,7 +6,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/implement.md.j2
+  template: iterate/merge.md.j2
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ---------------------------------------------- TOOLS
@@ -19,20 +19,20 @@ tools:
     # ------------------------ TOOL VIEWS: MANAGER
     # --------------------------------------------
     manager:
-      board: true
-      docs: true
-      templates: false
+      board: false
+      docs: false
+      templates: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      filter: true
-      data: true
+      filter: false
+      data: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: true
+      directory: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
@@ -65,9 +65,7 @@ tools:
           - 11-emergence
           # - 12-architecture
       templates:
-        - template-backlog
-        - template-bug
-        - template-docs
+        - template-merge
     # --------------------------------------------
     # ------------------------ PARAMETERS: METRICS
     # --------------------------------------------
@@ -84,53 +82,62 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Dependency Injection Pipeline
+          # - title: Dependency Injection Pipeline
+          #   scan:
+          #     domain: [ system ]
+          #     app: [ orchestration ]
+          # - title: Asset Factory
+          #   scan:
+          #     domain: [ system ]
+          #     app: [ service, asset ]
+          #     workflows: [ injection ]
+          # - title: Core Components
+          #   scan:
+          #     domain: [ system ]
+          #     app: [ core, component ]
+          # - title: Asset Abstract
+          #   scan:
+          #     domain: [ abstract ]
+          #     app: [ asset ]
+          # - title: Mechanic Abstract
+          #   scan:
+          #     domain: [ abstract ]
+          #     app: [ mechanic ]
+          # - title: Core Models
+          #   scan:
+          #     domain: [ model ]
+          #     app: [ core, asset ]
+          # - title: Sheet Models
+          #   scan:
+          #     domain: [ model ]
+          #     category: [ sheets ]
+          # - title: Sheet Hitbox Implementations
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ asset ]
+          #     category: [ sheets ]
+          #     asset: [ hitbox ]
+          # - title: Sheet Frame Implementations
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ asset ]
+          #     category: [ sheets ]
+          #     asset: [ frame ]
+          # - title: Combat Logic
+          #   scan:
+          #     domain: [ logic ]
+          #     workflows: [ combat ]
+          - title: Combat Tests
             scan:
-              domain: [ system ]
-              app: [ orchestration ]
-          - title: Asset Factory
-            scan:
-              domain: [ system ]
-              app: [ service, asset ]
-              workflows: [ injection ]
-          - title: Core Components
-            scan:
-              domain: [ system ]
-              app: [ core, component ]
-          - title: Asset Abstract
-            scan:
-              domain: [ abstract ]
-              app: [ asset ]
-          - title: Mechanic Abstract
-            scan:
-              domain: [ abstract ]
-              app: [ mechanic ]
-          - title: Core Models
-            scan:
-              domain: [ model ]
-              app: [ core, asset ]
-          - title: Sheet Models
-            scan:
-              domain: [ model ]
-              category: [ sheets ]
-          - title: Sheet Hitbox Implementations
-            scan:
-              domain: [ concrete ]
-              app: [ asset ]
-              category: [ sheets ]
-              asset: [ hitbox ]
-          - title: Sheet Frame Implementations
-            scan:
-              domain: [ concrete ]
-              app: [ asset ]
-              category: [ sheets ]
-              asset: [ frame ]
-          - title: Combat Logic
-            scan:
+              domain: [ test ]
               workflows: [ combat ]
+          - title: Test Fixtures
+            scan:
+              domain: [ test ]
+              test: [ fixtures ]
       data:
-        properties: [ sheets/sprites, sheets/equipment ]
-        state: [  ]
+        # properties: [ sheets/sprites, sheets/equipment ]
+        state: [ world-testbed ]
         configurations: [  ]
         templates: [ ]
     # --------------------------------------------

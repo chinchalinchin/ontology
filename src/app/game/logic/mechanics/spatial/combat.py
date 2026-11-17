@@ -65,35 +65,23 @@ class CombatMechanics(SpatialMechanic):
             melee_attackers = []
             
             for attacker in attackers:
-                # ---------- ATTACKBOX HANDLING
-                if attacker.state.animation.action not in [
-                    Actions.SHOOT.value, 
-                    Actions.CAST.value
-                ]:
-                    attackboxes = CombatMap.attackboxes(attacker.state, board.equipment)
-                    if attackboxes:
-                        melee_attackers.append((attacker, attackboxes))
-                    continue
-
                 # ---------- RANGED COMBAT HANDLING
                 # ---------- TODO: phase 03-04
                 # ---------- ignore until then
-                if attacker.state.animation.frame == 0 and \
-                    not attacker.state.mutators.triggers.executed:
-                    proj_id = "TODO"
-                    
-                    proj = board.cradle.spawn_projectile(
-                        id          = proj_id,
-                        layer       = attacker.state.layer,
-                        position    = attacker.state.position,
-                        velocity    = "TODO"
-                    )
+                if attacker.state.animation.action in (
+                    Actions.SHOOT.value, 
+                    Actions.CAST.value,
+                ):
+                    continue
 
-                    board.add([proj])
-                    attacker.state.mutators.triggers.executed = True
-
-                elif attacker.state.animation.frame != 0:
-                    attacker.state.mutators.triggers.executed = False
+                # ---------- ATTACKBOX HANDLING
+                attackboxes = CombatMap.attackboxes(
+                    attacker.state,
+                    board.equipment,
+                    attacker.elevation
+                )
+                if attackboxes:
+                    melee_attackers.append((attacker, attackboxes))
 
             if not melee_attackers:
                 continue
@@ -139,8 +127,10 @@ class CombatMechanics(SpatialMechanic):
                 else:
                     continue
 
-                if attacker.name == target.name or (
-                    target.state.mutators and target.state.mutators.triggers.dead
+                if (
+                    attacker.name == target.name
+                    or attacker.elevation != target.elevation
+                    or target.state.mutators.triggers.dead
                 ):
                     continue
 

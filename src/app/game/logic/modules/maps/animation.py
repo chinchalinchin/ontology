@@ -9,7 +9,6 @@
 Animation Maps for mapping SpriteState to Equipment Frames.
 """
 # Application Libraries
-import app.static.settings as settings
 from app.static.semantics import (
     Actions, 
     Directions, 
@@ -48,10 +47,10 @@ class AnimationMap:
             if not weapon:
                 return Actions.CAST.value # Default
             
-            weapon_property = equipment.weapons.get(weapon)
+            weapon_asset = equipment.weapons.get(weapon)
 
-            if weapon_property and weapon_property.actions:
-                return next(iter(weapon_property.actions))
+            if weapon_asset and weapon_asset.properties.actions:
+                return next(iter(weapon_asset.properties.actions))
             
             return Actions.CAST.value
     
@@ -59,10 +58,10 @@ class AnimationMap:
             if not tool:
                 return Actions.THRUST.value # Default mining action fallback
             
-            tool_property = equipment.tools.get(tool)
+            tool_asset = equipment.tools.get(tool)
             
-            if tool_property and tool_property.actions:
-                return next(iter(tool_property.actions))
+            if tool_asset and tool_asset.properties.actions:
+                return next(iter(tool_asset.properties.actions))
                 
             return Actions.THRUST.value
 
@@ -70,10 +69,10 @@ class AnimationMap:
             if not utility:
                 return Actions.CAST.value # Default build action fallback
             
-            utility_property = equipment.utilities.get(utility)
+            utility_asset = equipment.utilities.get(utility)
             
-            if utility_property and utility_property.actions:
-                return next(iter(utility_property.actions))
+            if utility_asset and utility_asset.properties.actions:
+                return next(iter(utility_asset.properties.actions))
                 
             return Actions.CAST.value
 
