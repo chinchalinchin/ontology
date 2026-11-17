@@ -3988,15 +3988,9 @@ R(x, y, w, l) = [x, x + w) \times [y, y + l)
 </ol>
 <p>Two axis-aligned bounding boxes <span class="arithmatex">\(R_1 = (x_1, y_1, w_1, l_1)\)</span> and <span class="arithmatex">\(R_2 = (x_2, y_2, w_2, l_2)\)</span> intersect if and only if their projections overlap on both principal axes:</p>
 <div class="arithmatex">\[
-(x_1 &lt; x_2 + w_2)
-$$
-$$
-(x_1 + w_1 &gt; x_2)
-$$
-$$
-(y_1 &lt; y_2 + l_2)
-$$
-$$
+(x_1 &lt; x_2 + w_2) \\
+(x_1 + w_1 &gt; x_2) \\ 
+(y_1 &lt; y_2 + l_2) \\
 (y_1 + l_1 &gt; y_2)
 \]</div>
 <p>A point <span class="arithmatex">\((p_x, p_y)\)</span> lies inside <span class="arithmatex">\(R(x, y, w, l)\)</span> when <span class="arithmatex">\(x \le p_x &lt; x + w\)</span> and <span class="arithmatex">\(y \le p_y &lt; y + l\)</span>.</p>
@@ -4005,9 +3999,8 @@ $$
 </ol>
 <p>For a Camera of dimensions <span class="arithmatex">\((w_s, l_s)\)</span> centered on a focus at <span class="arithmatex">\((x_f, y_f)\)</span> with dimensions <span class="arithmatex">\((w_f, l_f)\)</span>, the camera origin is:</p>
 <div class="arithmatex">\[
-x_c = x_f + \left\lfloor \frac{w_f}{2} \right\rfloor - \left\lfloor \frac{w_s}{2} \right\rfloor
-$$
-$$y_c = y_f + \left\lfloor \frac{l_f}{2} \right\rfloor - \left\lfloor \frac{l_s}{2} \right\rfloor
+x_c = x_f + \left\lfloor \frac{w_f}{2} \right\rfloor - \left\lfloor \frac{w_s}{2} \right\rfloor \\
+y_c = y_f + \left\lfloor \frac{l_f}{2} \right\rfloor - \left\lfloor \frac{l_s}{2} \right\rfloor
 \]</div>
 <p>An Asset is visible on screen if its bounding box intersects <span class="arithmatex">\(R(x_c, y_c, w_s, l_s)\)</span>.</p>
 <ol>
@@ -4036,22 +4029,14 @@ $$y_c = y_f + \left\lfloor \frac{l_f}{2} \right\rfloor - \left\lfloor \frac{l_s}
 \]</div>
 <p>Intersection with an obstacle rectangle <span class="arithmatex">\(R = [r_x, r_x + r_w] \times [r_y, r_y + r_l]\)</span> satisfies the system of four linear inequalities $ p_k \le q_k$ for <span class="arithmatex">\(k \in \{0, 1, 2, 3\}\)</span>:</p>
 <div class="arithmatex">\[
-p_0 = -\Delta x, \quad q_0 = x_1 - r_x
-$$
-$$
-p_1 = +\Delta x, \quad q_1 = (r_x + r_w) - x_1
-$$
-$$
-p_2 = -\Delta y,  \quad q_2 = y_1 - r_y
-$$
-$$
+p_0 = -\Delta x, \quad q_0 = x_1 - r_x \\
+p_1 = +\Delta x, \quad q_1 = (r_x + r_w) - x_1 \\
+p_2 = -\Delta y,  \quad q_2 = y_1 - r_y \\
 p_3 = +\Delta y, \quad q_3 = (r_y + r_l) - y_1
 \]</div>
 <p>Let <span class="arithmatex">\(u_1\)</span> and <span class="arithmatex">\(u_2\)</span> denote the clipped entry and exit parameters:</p>
 <div class="arithmatex">\[
-u_1 = \max\Big(\{0\} \cup \{\frac{q_k}{p_k} \mid p_k &lt; 0 \}\Big)
-$$
-$$
+u_1 = \max\Big(\{0\} \cup \{\frac{q_k}{p_k} \mid p_k &lt; 0 \}\Big) \\
 u_2 = \min\Big(\{1\} \cup \{\frac{q_k}{p_k} \mid p_k &gt; 0 \}\Big)
 \]</div>
 <p>The segment punctures the interior of <span class="arithmatex">\(R\)</span> if no parallel boundary is violated (<span class="arithmatex">\(p_k = 0 \implies q_k &gt; \epsilon\)</span>) and <span class="arithmatex">\(u_1 &lt; u_2 - \epsilon\)</span> for tolerance <span class="arithmatex">\(\epsilon &gt; 0\)</span>. Line of sight holds between <span class="arithmatex">\(\mathbf{p}_1\)</span> and <span class="arithmatex">\(\mathbf{p}_2\)</span> over an obstacle set <span class="arithmatex">\(\mathcal{O}\)</span> if the segment punctures no rectangle in <span class="arithmatex">\(\mathcal{O}\)</span>.</p>
@@ -4063,18 +4048,14 @@ u_2 = \min\Big(\{1\} \cup \{\frac{q_k}{p_k} \mid p_k &gt; 0 \}\Big)
 <li><em>Vertical Propagation</em> (<span class="arithmatex">\(o_x &lt; s_x + s_w\)</span> and <span class="arithmatex">\(o_x + o_w &gt; s_x\)</span>):</li>
 </ul>
 <div class="arithmatex">\[
-d_{\text{down}} = \min\Big(\{D_{\max}\} \cup \{ o_y - s_y \mid o_y &gt; s_y \}\Big)
-$$
-$$
+d_{\text{down}} = \min\Big(\{D_{\max}\} \cup \{ o_y - s_y \mid o_y &gt; s_y \}\Big) \\
 d_{\text{up}} = \min\Big(\{D_{\max}\} \cup \{s_y - (o_y + o_l) \mid o_y + o_l &lt; s_y\}\Big)
 \]</div>
 <ul>
 <li><em>Horizontal Propagation</em> (<span class="arithmatex">\(o_y &lt; s_y + s_l \land o_y + o_l &gt; s_y\)</span>):</li>
 </ul>
 <div class="arithmatex">\[
-d_{\text{right}} = \min\Big(\{D_{\max}\} \cup \{o_x - s_x \mid o_x &gt; s_x\}\Big)
-$$
-$$
+d_{\text{right}} = \min\Big(\{D_{\max}\} \cup \{o_x - s_x \mid o_x &gt; s_x\}\Big) \\
 d_{\text{left}} = \min\Big(\{D_{\max}\} \cup \{s_x - (o_x + o_w) \mid o_x + o_w &lt; s_x\}\Big)
 \]</div>
 </li>
@@ -4085,9 +4066,7 @@ d_{\text{left}} = \min\Big(\{D_{\max}\} \cup \{s_x - (o_x + o_w) \mid o_x + o_w 
 <li><em>Vertical Sweep</em>: Sort all vertical edges by <span class="arithmatex">\(x\)</span>-coordinate, pairing <span class="arithmatex">\(x_{i,\min}\)</span> with event <span class="arithmatex">\(+1\)</span> and <span class="arithmatex">\(x_{i,\max}\)</span> with event <span class="arithmatex">\(-1\)</span>. At each event coordinate <span class="arithmatex">\(x\)</span>, let <span class="arithmatex">\(I_{\text{prev}}\)</span> and <span class="arithmatex">\(I_{\text{curr}}\)</span> denote the merged 1D <span class="arithmatex">\(y\)</span>-intervals of active rectangles before and after <span class="arithmatex">\(x\)</span>. The asymmetric set differences isolate the exposed vertical contour segments at <span class="arithmatex">\(x\)</span>:</li>
 </ul>
 <div class="arithmatex">\[
-E_{\text{left}}(x) = I_{\text{curr}} \setminus I_{\text{prev}}
-$$
-$$
+E_{\text{left}}(x) = I_{\text{curr}} \setminus I_{\text{prev}} \\
 E_{\text{right}}(x) = I_{\text{prev}} \setminus I_{\text{curr}}
 \]</div>
 <ul>
@@ -4111,9 +4090,7 @@ E_{\text{right}}(x) = I_{\text{prev}} \setminus I_{\text{curr}}
 <li><em>Search Window Partitioning</em>: Define a padded search domain enclosing <span class="arithmatex">\(\mathbf{s}\)</span> and <span class="arithmatex">\(\mathbf{t}\)</span> with margin <span class="arithmatex">\(\mathbf{m} = (0.2|t_x - s_x| + 2\delta, 0.2|t_y - s_y| + 2\delta)\)</span>:</li>
 </ul>
 <div class="arithmatex">\[
-[x_{\min}, x_{\max}] = [\min(s_x, t_x) - m_x, \max(s_x, t_x) + m_x]
-$$
-$$
+[x_{\min}, x_{\max}] = [\min(s_x, t_x) - m_x, \max(s_x, t_x) + m_x] \\
 [y_{\min}, y_{\max}] = [\min(s_y, t_y) - m_y,\; \max(s_y, t_y) + m_y]
 \]</div>
 <p>If <span class="arithmatex">\(x_{\min} &lt; 0\)</span> or <span class="arithmatex">\(y_{\min} &lt; 0\)</span>, the negative offset is added to the corresponding upper bound and the lower bound is clamped to <span class="arithmatex">\(0\)</span>. The active obstacle set is restricted to <span class="arithmatex">\(\mathcal{O}_{\text{local}} = \{R \in \mathcal{O} \mid R \cap ([x_{\min}, x_{\max}] \times [y_{\min}, y_{\max}]) \neq \emptyset\}\)</span>.</p>
@@ -4160,9 +4137,8 @@ $$
 </ul>
 <p>An Asset with Dimensions <span class="arithmatex">\([x, x + w] \times [y, y + l]\)</span> covers the integer cell coordinates:</p>
 <div class="arithmatex">\[
-c_x \in \left[\left\lfloor \frac{x}{C} \right\rfloor,\; \left\lfloor \frac{x + w}{C} \right\rfloor\right]
-$$
-$$c_y \in \left[\left\lfloor \frac{y}{C} \right\rfloor,\; \left\lfloor \frac{y + l}{C} \right\rfloor\right]
+c_x \in \left[\left\lfloor \frac{x}{C} \right\rfloor,\; \left\lfloor \frac{x + w}{C} \right\rfloor\right] \\
+c_y \in \left[\left\lfloor \frac{y}{C} \right\rfloor,\; \left\lfloor \frac{y + l}{C} \right\rfloor\right]
 \]</div>
 <p><strong>Interfaces</strong></p>
 <ol>
