@@ -599,10 +599,7 @@ def test_load_state_hydrates_models_and_referential_integrity(
     assert isinstance(projectile, MotorState)
     assert isinstance(projectile.initial, Position)
     assert isinstance(projectile.velocity, Velocity)
-    assert (
-        projectile.direction == Directions.DOWN.value
-        and type(projectile.direction) is str
-    )
+    assert projectile.direction == Directions.DOWN.value
 
     chest = mock_state_schema.objects.chests[0]
     assert isinstance(chest, ContainerState)

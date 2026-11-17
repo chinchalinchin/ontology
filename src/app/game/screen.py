@@ -24,12 +24,9 @@ from app.game.menus.core import Menu
 from app.models.state import (
     CalendarState,
     PaneState,
-    SheetState,
 )
 from app.static.semantics import (
-    AssetCategories,
     AssetInstances,
-    ChannelTypes,
     SystemPanes
 )
 
