@@ -41,9 +41,9 @@ To add new Tasks to the backlog, use the following template,
 
 {% endfor %}
 
-{% for task in tasks %}
 ##### Tasks
 
+{% for task in tasks %}
 **{{ loop.index }}. Task: {{ task.title }}**
 
 *Objective*: {{ task.objective }}

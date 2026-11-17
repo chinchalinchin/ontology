@@ -82,3 +82,8 @@ class Statuses(str, Enum):
     IDLE            = "idle"
     SELECTED        = "selected"
     DISABLED        = "disabled"
+
+# -------------------------------- REQUIRED WIDGETS
+
+class SystemPanes(str, Enum):
+    TRANSPARENT     = "transparent"

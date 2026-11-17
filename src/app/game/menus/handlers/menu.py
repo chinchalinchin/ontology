@@ -32,10 +32,10 @@ class MenuEventHandler(EventHandler):
         
         data.board.paused = True
         player = data.board.player()
-        screen = data.screens[player.state.layer] \
-                    if player and data.board.loaded \
-                        else next(iter(data.screens.values()))
-        
+        screen = data.screens.get(
+            player.state.layer, 
+            next(iter(data.screens.values()))
+        )
         menu = data.provider.unpack(
             event.id, 
             data.board.configurations.menus.get(event.id), 

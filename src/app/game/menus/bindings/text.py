@@ -2,7 +2,7 @@
 @domain.concrete
 @app.menu
 @menu.binding
-
+@workflow.plot
 
 # Ontology: Source - app.game.menus.bindings.library
 

@@ -17,7 +17,7 @@ task:
   # --------------------- TEMPLATES: MAINTENANCE
   # --------------------------------------------
   # template: maintain/codebase.md.j2
-  # template: maintain/patch.md.j2
+  template: maintain/patch.md.j2
   # template: maintain/session.md.j2
   # --------------------------------------------
   # --------------------------- TEMPLATES: DUMPS 
@@ -32,7 +32,7 @@ task:
   # template: iterate/implement.md.j2
   # template: iterate/cover.md.j2
   # template: iterate/merge.md.j2
-  template: iterate/review.md.j2
+  # template: iterate/review.md.j2
   # --------------------------------------------
   # -------------------------- TEMPLATES: DESIGN
   # --------------------------------------------
@@ -59,8 +59,8 @@ tools:
     # ------------------------ TOOL VIEWS: MANAGER
     # --------------------------------------------
     manager:
-      board: false
-      docs: false
+      board: true
+      docs: true
       templates: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
@@ -78,12 +78,12 @@ tools:
     # --------------------------------------------
     source:
       data: false
-      filter: false
+      filter: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: false
+      directory: true
       commands: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
@@ -99,30 +99,30 @@ tools:
     # --------------------------------------------
     manager:
       board:
-        phase: 04-06
+        phase: 01-02
         action: refactor
       docs:
         exclude:
           # - 00-overview
           # - 01-assets
-          # - 02-sprites
+          - 02-sprites
           - 03-compositions
-          # - 04-intentions
-          # - 05-mechanics
-          - 06-widgets
+          - 04-intentions
+          - 05-mechanics
+          # - 06-widgets
           - 07-acoustics
           - 08-narratives
           - 09-ecology
           - 10-chemistry
           - 11-emergence
           # - 12-architecture
-      templates:
-        - template-docs
+      templates: [ ]
+        # - template-docs
         # - template-backlog
-        - template-bug
+        # - template-bug
         # - template-design
         # - template-merge
-        - template-review
+        # - template-review
         # - template-spec
     metrics:
       pstats: 
@@ -137,60 +137,58 @@ tools:
       filter:
         default: AND
         queries:
-          - title: Test Fixtures
+          - title: 'Application - Core'
             scan:
-              domain: [ test ]
-              test: [ fixtures ]
-          # # ------------------------------------
-          # - title: Application Core Components
-          #   scan:
-          #     domain: [ system ]
-          #     app: [ core, component ]
-          # # ------------------------------------
-          # - title: Asset Abstracts
-          #   scan:
-          #     domain: [ abstract ]
-          #     app: [ asset ]
-          # # ------------------------------------
-          # - title: Core Asset Models
-          #   scan:
-          #     domain: [ model ]
-          #     app: [ core, asset ]
-          # # ------------------------------------
-          # - title: Sheet Models
-          #   scan:
-          #     domain: [ model ]
-          #     category: [ sheets ]
-          # # ------------------------------------
-          # - title: Sheet Hitboxes
-          #   scan:
-          #     domain: [ concrete ]
-          #     app: [ asset ]
-          #     asset: [ hitbox ]
-          #     category: [ sheets ]
-          # # ------------------------------------
-          # - title: Mechanic - Navigation
-          #   scan: 
-          #     app: [ mechanic ]
-          #     workflows: [ navigation ]
-          # # ------------------------------------
-          # - title: Modules - Navigation Workflow
-          #   scan:
-          #     app: [ module ]
-          #     workflows: [ navigation ]
-          # # ------------------------------------
-          # - title: Libraries - Navigation Workflow
-          #   scan:
-          #     app: [ library ]
-          #     workflows: [ navigation ]
-          # # ------------------------------------
-          # - title: Logical Predicates
-          #   scan:
-          #     app: [ module, semantics ]
+              domain: [ system ]
+              app: [ core, component ]
+          - title: 'Asset - Abstract'
+            scan:
+              domain: [ abstract ]
+              app: [ asset ]
+          - title: 'Asset - Model: Widgets'
+            scan:
+              domain: [ model ]
+              category: [ widgets ]
+          - title: 'Asset - Implementation: Widgets'
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              category: [ widgets ]
+              asset: [ frame ]
+          - title: 'Menu - Models: Core'
+            scan:
+              domain: [ model ]
+              app: [ menu ]
+          - title: 'Menu - Binding: Text'
+            scan:
+              domain: [ concrete ]
+              app: [ menu ]
+              menu: [ binding ]
+              workflows: [ plot ]
+          - title: 'Menu - Service: Provider'
+            scan:
+              domain: [ system ]
+              app: [ service, menu, asset ]
+              category: [ widgets ]
+          - title: 'Menu - Service: Binder'
+            scan:
+              domain: [ system ]
+              app: [ service, menu ]
+              menu: [ binding ]
+          - title: 'Menu - Handlers'
+            scan:
+              domain: [ concrete ]
+              app: [ menu ]
+              menu: [ handler ]
+          - title: 'Libraries - Core: Rendering'
+            scan:
+              domain: [ system ]
+              app: [ library ]
+              workflows: [ rendering ]
       data:
-        properties: [ objects, crafts, sheets/sprites ]
-        state: [ world-testbed ]
-        configurations: [ materials ]
+        properties: [ ]
+        state: [ ]
+        configurations: [  ]
         templates: [ ]
     # --------------------------------------------
     # -------------------------- PARAMETERS: SHELL
@@ -206,5 +204,5 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: workflow_navigation
+        marker: workflow_rendering
         # scope: '**/test_{actuator,cartographer}.py'

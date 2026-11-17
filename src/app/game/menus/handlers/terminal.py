@@ -19,11 +19,6 @@ from app.models.menus import (
 )
 from app.game.menus.core import EventData
 from app.game.menus.handlers.base import EventHandler
-from app.models.state import PaneState
-
-# Cython Libraries
-import libs.graphics.render as render
-
 # ---------------------------------------------------------------
 
 logger = logging.getLogger(__name__)

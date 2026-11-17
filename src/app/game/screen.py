@@ -442,7 +442,12 @@ class Screen:
                     f"Registry MISS: Font '{font_key}' not found for widget '{widget.name}'."
                 )
                 return
-            render.write((tex, 0, 0, tex.w, tex.l, 0, 0, tex.w, tex.l), active_content, font)
+            render.write(
+                (tex, 0, 0, tex.w, tex.l, 0, 0, tex.w, tex.l), 
+                active_content, 
+                font
+            )
+
 
     def bake(self, menu: Menu) -> None:
         """Initializes and stamps all Pane canvases for a newly unpacked Menu."""
@@ -451,6 +456,7 @@ class Screen:
         for widget in menu.widgets.values():
             if isinstance(widget.state, PaneState):
                 self.stamp(widget)
+
 
     def interface(self, menus: List[Menu], overlays: List[Menu]) -> None:
         """
