@@ -61,34 +61,34 @@ class MechanicFactory:
     Factory for constructing engine pipeline Mechanics, Translators, and Devices.
     """
     DEVICE_MAP = {
-        Devices.KEYBOARD.value: Keyboard,
-        Devices.CONTROLLER.value: Controller,
+        Devices.KEYBOARD: Keyboard,
+        Devices.CONTROLLER: Controller,
     }
 
     MECHANICS_MAP = {
-        Mechanics.ANIMATION.value: AnimationMechanics,
-        Mechanics.COGNITION.value: CognitionMechanics,
-        Mechanics.COLLISION.value: CollisionMechanics,
-        Mechanics.COMBAT.value: CombatMechanics,
-        Mechanics.FLUID.value: FluidMechanics,
-        Mechanics.INTERACTION.value: InteractionMechanics,
-        Mechanics.MENU.value: MenuMechanics,
-        Mechanics.MOTION.value: MotionMechanics,
-        Mechanics.NAVIGATION.value: NavigationMechanics,
-        Mechanics.PLAYER.value: PlayerMechanics,
-        Mechanics.PLOT.value: PlotMechanics,
-        Mechanics.PROJECTILE.value: ProjectileMechanics,
-        Mechanics.REMOVE.value: RemoveMechanics,
-        Mechanics.SEASON.value: SeasonMechanics,
-        Mechanics.SOCIAL.value: SocialMechanics,
-        Mechanics.SWITCH.value: SwitchMechanics,
-        Mechanics.TELEMETRY.value: TelemetryMechanics,
-        Mechanics.TRANSITION.value: TransitionMechanics,
+        Mechanics.ANIMATION: AnimationMechanics,
+        Mechanics.COGNITION: CognitionMechanics,
+        Mechanics.COLLISION: CollisionMechanics,
+        Mechanics.COMBAT: CombatMechanics,
+        Mechanics.FLUID: FluidMechanics,
+        Mechanics.INTERACTION: InteractionMechanics,
+        Mechanics.MENU: MenuMechanics,
+        Mechanics.MOTION: MotionMechanics,
+        Mechanics.NAVIGATION: NavigationMechanics,
+        Mechanics.PLAYER: PlayerMechanics,
+        Mechanics.PLOT: PlotMechanics,
+        Mechanics.PROJECTILE: ProjectileMechanics,
+        Mechanics.REMOVE: RemoveMechanics,
+        Mechanics.SEASON: SeasonMechanics,
+        Mechanics.SOCIAL: SocialMechanics,
+        Mechanics.SWITCH: SwitchMechanics,
+        Mechanics.TELEMETRY: TelemetryMechanics,
+        Mechanics.TRANSITION: TransitionMechanics,
     }
 
     TRANSLATOR_MAP = {
-        Translators.LAMBDA.value: LambdaTranslator,
-        Translators.COMPILER.value: CompilerTranslator,
+        Translators.LAMBDA: LambdaTranslator,
+        Translators.COMPILER: CompilerTranslator,
     }
 
     @classmethod

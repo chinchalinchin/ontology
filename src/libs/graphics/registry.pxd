@@ -19,6 +19,24 @@ cdef extern from "SDL2/SDL_ttf.h":
         Uint8 b
         Uint8 a
 
+cdef class Registry:
+    cdef public object properties
+    cdef public object recipes
+
+    cdef public dict _textures
+    cdef public dict _canvases
+    cdef public dict _frames
+    cdef public dict _fonts
+    cdef public dict _filepaths
+    cdef public dict _stacks
+    cdef public list _pending_assets
+    cdef public int maximum
+    cdef public int current
+
+    cpdef tuple image(self, str frame_key)
+    cpdef void destroy_canvas(self, str key)
+    cpdef void clear(self)
+    
 # Define the memory layout for the TexturePtr extension type.
 cdef class TexturePtr:
     cdef SDL_Texture* ptr

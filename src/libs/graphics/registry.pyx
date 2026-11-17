@@ -149,18 +149,6 @@ def _sys_load_font(filepath: str, object style):
 # -------------------------------------------------------------------------------
 
 cdef class Registry:
-    cdef public object properties   # PropertiesSchema
-    cdef public object recipes      # RecipeConfiguration
-
-    cdef public dict _textures
-    cdef public dict _canvases
-    cdef public dict _frames
-    cdef public dict _fonts
-    cdef public dict _filepaths
-    cdef public dict _stacks
-    cdef public list _pending_assets
-    cdef public int maximum
-    cdef public int current
 
     def __init__(self, object properties, object recipes):
         logger.debug("Initializing Asset Registry with native application models...")
@@ -313,7 +301,7 @@ cdef class Registry:
                         self._frames[frame_key] = (item_id, crop[0], crop[1], crop[2], crop[3])
 
 
-    def image(self, frame_key: str) -> tuple:
+    cpdef tuple image(self, str frame_key):
         if frame_key in self._frames:
             item_id, sx, sy, sw, sl = self._frames[frame_key]
             tex = self._get_or_load_texture(item_id)
@@ -324,6 +312,7 @@ cdef class Registry:
             if tex: return (tex, 0, 0, tex.w, tex.l)
             
         return None
+
 
 
     def font(self, font_key: str):

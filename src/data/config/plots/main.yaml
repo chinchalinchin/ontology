@@ -2,10 +2,10 @@ plots:
   castle-dawn-locked:
     - next: castle-dawn-unlocked
       conditions:
-        - sprites.get(constants.RequiredAssets.PLAYER.value)
-        - sprites.get(constants.RequiredAssets.PLAYER.value).inventory.pack
-        - sprites.get(constants.RequiredAssets.PLAYER.value).inventory.pack.get('writ-of-dawn')
-        - sprites.get(constants.RequiredAssets.PLAYER.value).inventory.pack.get('writ-of-dawn') >= 1
+        - sprites.get(constants.RequiredAssets.PLAYER)
+        - sprites.get(constants.RequiredAssets.PLAYER).inventory.pack
+        - sprites.get(constants.RequiredAssets.PLAYER).inventory.pack.get('writ-of-dawn')
+        - sprites.get(constants.RequiredAssets.PLAYER).inventory.pack.get('writ-of-dawn') >= 1
     - next: castle-dawn-unlocked
       conditions:
         - sprites.get('castle-dawn-champion')
@@ -14,19 +14,19 @@ plots:
       conditions:
         - sprites.get('evil-empress-jasilynn')
         - sprites.get('evil-empress-jasilynn').memory.relationships
-        - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER.value)
-        - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER.value) == constants.Relationships.FRIEND.value
+        - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER)
+        - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER) == constants.Relationships.FRIEND
   castle-dawn-unlocked:
     - next: castle-dawn-hostile
       conditions:
         - sprites.get('evil-empress-jasilynn')
         - sprites.get('evil-empress-jasilynn').memory.relationships
-        - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER.value)
-        - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER.value) == constants.Relationships.FOE.value
+        - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER)
+        - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER) == constants.Relationships.FOE
   castle-dawn-hostile:
     - next: castle-dawn-unlocked
       conditions:
         - sprites.get('evil-empress-jasilynn')
         - sprites.get('evil-empress-jasilynn').memory.relationships
-        - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER.value)
-        - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER.value) != constants.Relationships.FOE.value
+        - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER)
+        - sprites.get('evil-empress-jasilynn').memory.relationships.get(constants.RequiredAssets.PLAYER) != constants.Relationships.FOE

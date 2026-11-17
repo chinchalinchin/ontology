@@ -1,0 +1,128 @@
+stages:
+  perennial:
+    # -------------------------------------------------------------------------
+    # GENESIS EPICYCLE
+    # -------------------------------------------------------------------------
+    sapling:
+      - next: bush
+        conditions:
+          - "calendar.season == constants.Seasons.SPRING"
+          - "calendar.cycle == constants.Cycles.PEAK"
+          - "resource.retention >= 15.0"
+
+    bush:
+      - next: branch
+        conditions:
+          - "calendar.season == constants.Seasons.SPRING"
+          - "calendar.cycle == constants.Cycles.DECLINE"
+          - "resource.retention >= 20.0"
+
+    branch:
+      - next: adult
+        conditions:
+          - "calendar.season == constants.Seasons.SUMMER"
+          - "calendar.cycle == constants.Cycles.ONSET"
+          - "resource.retention >= 25.0"
+
+    # -------------------------------------------------------------------------
+    # BRIDGE STAGE: GENESIS COMPLETION & RECOVERY
+    # -------------------------------------------------------------------------
+    adult:
+      # Genesis -> Homeostasis transition
+      - next: healthy
+        conditions:
+          - "calendar.season == constants.Seasons.SUMMER"
+          - "calendar.cycle == constants.Cycles.PEAK"
+          - "resource.retention >= 25.0"
+      # Recovered tree in Homeostasis rejoining seasonal cycle
+      - next: vibrant
+        conditions:
+          - "calendar.season == constants.Seasons.SPRING"
+          - "resource.retention >= 15.0"
+      - next: healthy
+        conditions:
+          - "calendar.season == constants.Seasons.SUMMER"
+          - "resource.retention >= 20.0"
+      - next: abscise
+        conditions:
+          - "calendar.season == constants.Seasons.AUTUMN"
+          - "resource.retention >= 15.0"
+      - next: snowcapt
+        conditions:
+          - "calendar.season == constants.Seasons.WINTER"
+          - "resource.retention >= 10.0"
+      # Dehydration into Apoptosis
+      - next: dying
+        conditions:
+          - "resource.retention < 5.0"
+
+    # -------------------------------------------------------------------------
+    # HOMEOSTASIS EPICYCLE (ANNUAL REVERSIBLE constants.Seasons)
+    # -------------------------------------------------------------------------
+    vibrant:
+      - next: healthy
+        conditions:
+          - "calendar.season == constants.Seasons.SUMMER"
+          - "resource.retention >= 20.0"
+      - next: dying
+        conditions:
+          - "resource.retention < 5.0"
+
+    healthy:
+      - next: abscise
+        conditions:
+          - "calendar.season == constants.Seasons.AUTUMN"
+          - "resource.retention >= 15.0"
+      - next: dying
+        conditions:
+          - "resource.retention < 5.0"
+
+    abscise:
+      - next: snowcapt
+        conditions:
+          - "calendar.season == constants.Seasons.WINTER"
+          - "resource.retention >= 10.0"
+      - next: dying
+        conditions:
+          - "resource.retention < 5.0"
+
+    snowcapt:
+      - next: vibrant
+        conditions:
+          - "calendar.season == constants.Seasons.SPRING"
+          - "resource.retention >= 15.0"
+      - next: dying
+        conditions:
+          - "resource.retention < 5.0"
+
+    # -------------------------------------------------------------------------
+    # APOPTOSIS EPICYCLE (DECAY & DEATH)
+    # -------------------------------------------------------------------------
+    dying:
+      # Direct Homeostasis recovery edges
+      - next: vibrant
+        conditions:
+          - "calendar.season == constants.Seasons.SPRING"
+          - "resource.retention >= 20.0"
+      - next: healthy
+        conditions:
+          - "calendar.season == constants.Seasons.SUMMER"
+          - "resource.retention >= 20.0"
+      # Apoptosis progression: fails to recover before autumn
+      - next: dead
+        conditions:
+          - "calendar.season == constants.Seasons.AUTUMN"
+          - "resource.retention < 5.0"
+
+    dead:
+      - next: stump
+        conditions:
+          - "calendar.season == constants.Seasons.WINTER"
+
+    stump:
+      - next: sapling
+        conditions:
+          - "calendar.season == constants.Seasons.SPRING"
+          - "calendar.cycle == constants.Cycles.ONSET"
+          - "calendar.period == 0"
+          - "resource.retention >= 15.0"

@@ -162,7 +162,10 @@ class MeterFrame(Frame):
             )
         return frames
 
-    def index(self, id: str, properties: WidgetProperties) -> dict[str, tuple[int, int, int, int]]:
+    def index(self, 
+        id: str, 
+        properties: WidgetProperties
+    ) -> dict[str, tuple[int, int, int, int]]:
         """
         """
         w = properties.dimensions.w
@@ -198,7 +201,10 @@ class IconFrame(Frame):
             state.icon
         ]), 0, 0)]
 
-    def index(self, id: str, properties: WidgetProperties) -> Dict[str, Tuple[int, int, int, int]]:
+    def index(self, 
+        id: str, 
+        properties: WidgetProperties
+    ) -> dict[str, Tuple[int, int, int, int]]:
         w = properties.dimensions.w
         l = properties.dimensions.l
         frames = properties.frames

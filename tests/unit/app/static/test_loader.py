@@ -577,8 +577,6 @@ def test_load_state_hydrates_models_and_referential_integrity(
     assert isinstance(mock_state_schema.calendar, CalendarState)
     assert mock_state_schema.calendar.season == Seasons.SPRING.value
     assert mock_state_schema.calendar.cycle == Cycles.ONSET.value
-    assert type(mock_state_schema.calendar.season) is str
-    assert type(mock_state_schema.calendar.cycle) is str
 
     # 2. Virtualized Compositions
     assert len(mock_state_schema.compositions) == 1
@@ -591,8 +589,7 @@ def test_load_state_hydrates_models_and_referential_integrity(
     # 3. Specific State Subclasses & Enumerated Attributes
     stair = mock_state_schema.crafts.stairs[0]
     assert isinstance(stair, StairState)
-    assert stair.material == Geologics.GRANITE.value and type(stair.material) is str
-    assert type(stair.blueprint) is str
+    assert stair.material == Geologics.GRANITE.value 
 
     bridge = mock_state_schema.crafts.bridges[0]
     assert isinstance(bridge, CraftState)
@@ -629,17 +626,17 @@ def test_load_state_hydrates_models_and_referential_integrity(
     tree = mock_state_schema.resources.trees[0]
     assert isinstance(crop, ResourceState)
     assert isinstance(tree, ResourceState)
-    assert crop.stage == AnnualStages.SPROUT.value and type(crop.stage) is str
-    assert tree.stage == PerennialStages.SAPLING.value and type(tree.stage) is str
+    assert crop.stage == AnnualStages.SPROUT.value
+    assert tree.stage == PerennialStages.SAPLING.value
 
     fluid = mock_state_schema.effects.fluids[0]
     passive = mock_state_schema.effects.passive[0]
     reactable = mock_state_schema.effects.reactables[0]
     assert isinstance(fluid, FluidState)
-    assert fluid.source == Directions.DOWN.value and type(fluid.source) is str
+    assert fluid.source == Directions.DOWN.value
     assert isinstance(passive, EffectState)
     assert isinstance(reactable, ReactableState)
-    assert reactable.intention == Intentions.ATTACK.value and type(reactable.intention) is str
+    assert reactable.intention == Intentions.ATTACK.value
 
     player = mock_state_schema.sheets.players[0]
     sprite = mock_state_schema.sheets.sprites[0]
@@ -657,9 +654,8 @@ def test_load_state_hydrates_models_and_referential_integrity(
     assert isinstance(sprite.trajectory, Trajectory)
     assert isinstance(sprite.mutators, Mutators)
     assert isinstance(sprite.animation, AnimationState)
-    assert sprite.intention == Intentions.FIND.value and type(sprite.intention) is str
+    assert sprite.intention == Intentions.FIND.value 
     assert sprite.memory.relationships["player"] == Relationships.FRIEND.value
-    assert type(sprite.memory.relationships["player"]) is str
 
     tile = mock_state_schema.tiles.environ[0]
     assert isinstance(tile, MultiplierState)

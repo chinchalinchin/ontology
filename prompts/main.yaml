@@ -30,7 +30,7 @@ task:
   # template: iterate/document.md.j2
   # template: iterate/groom.md.j2
   # template: iterate/implement.md.j2
-  template: iterate/cover.md.j2
+  # template: iterate/cover.md.j2
   # template: iterate/merge.md.j2
   # template: iterate/review.md.j2
   # --------------------------------------------
@@ -45,8 +45,14 @@ task:
   # template: design/style/mermaid.md.j2
 # ----------------------------------------------------
   parameters:
-    description: Changes implemented. Engine profile regenerated. Compare the change in results. Does the new profile reveal anything about the Engine that wasn't apparent before?
-    title: Ontology - Analyze
+    description: |
+      All proposed changes implemented. User acceptance passing. Unit tests passing.
+
+      **Priorities**
+
+      * **ANALYSIS** Reanalyze the latest .pstats dump after the changes. 
+      * **MERGE REQUEST** Use the [Merge Request Template](#template-merge) to summarize the changes introduced as a result of this session.
+    title: Ontology - Re-Analyze & Merge
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ---------------------------------------------- TOOLS
@@ -61,7 +67,7 @@ tools:
     manager:
       board: false
       docs: false
-      templates: false
+      templates: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
     # --------------------------------------------
@@ -116,20 +122,20 @@ tools:
           - 10-chemistry
           - 11-emergence
           # - 12-architecture
-      templates: [ ]
+      templates:
         # - template-docs
         # - template-backlog
         # - template-bug
         # - template-design
-        # - template-merge
+        - template-merge
         # - template-review
         # - template-spec
     metrics:
       pstats: 
         run: |
-          python -m cProfile -o $ROOT/engine-run.pstats src/main.py start world-01
+          python -m cProfile -o $ROOT/docs/static/pstats/latest.pstats src/main.py start world-01
         dot: |
-          gprof2dot -f pstats --node-thres=1.0 --edge-thres=0.5 $ROOT/engine-run.pstats
+          gprof2dot -f pstats --node-thres=1.0 --edge-thres=0.5 $ROOT/docs/static/pstats/latest.pstats
     # --------------------------------------------
     # ------------------------ PARAMETERS: SOURCE
     # --------------------------------------------

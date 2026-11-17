@@ -10,6 +10,9 @@
 
 Unit tests for the core Engine loop and time management.
 """
+# Standard Libraries
+import time
+
 # External Libraries
 import pytest
 
@@ -38,14 +41,6 @@ pytestmark = [
 ]
 
 # ---------------------------------------------------------------------------
-
-
-def test_engine_time():
-    """Test the static time method returns a monotonic float from perf_counter."""
-    t1 = Engine.time()
-    t2 = Engine.time()
-    assert isinstance(t1, float)
-    assert t2 >= t1
 
 
 def test_engine_start(mock_engine: Engine, mock_render, monkeypatch):
@@ -168,7 +163,7 @@ def test_engine_telemetry_interval(mock_engine: Engine):
     """
     Validate _telemetry returns True only on tick multiples and False otherwise.
     """
-    start = Engine.time() - 1.0
+    start = time.perf_counter() - 1.0
     assert mock_engine._telemetry(frames=5, updates=5, start=start, ticks=10) is False
     assert mock_engine._telemetry(frames=10, updates=10, start=start, ticks=10) is True
 
