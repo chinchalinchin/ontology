@@ -196,7 +196,7 @@ class Engine:
         self.running = True
         while self.running:
             current_time = self.time()
-            frame_time = current_time - last_time
+            frame_time = frame_time = min(current_time - last_time, settings.MAX_FRAME_TIME)
             last_time = current_time
             accumulator += frame_time
             

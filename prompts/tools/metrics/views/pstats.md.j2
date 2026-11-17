@@ -3,12 +3,13 @@
 The following command is run during **User Acceptance Testing**,
 
 ```bash
-{{ tools.parameters.metrics.pstats.run }}
+{{ properties.user.username }}@{{ properties.user.hostname }}% {{ tools.parameters.metrics.pstats.run }}
 ```
 
 #### pstats: Results
 
-
 ```bash
+{{ properties.user.username }}@{{ properties.user.hostname }}%  {{ tools.parameters.metrics.pstats.dot }}
+
 {{ command(tools.parameters.metrics.pstats.dot, {"ROOT": properties.paths.root}) }}
 ```
