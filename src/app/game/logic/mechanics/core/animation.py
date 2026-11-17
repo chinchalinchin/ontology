@@ -52,7 +52,7 @@ class AnimationMechanics(Mechanic):
             for asset in board.categories(AssetCategories.SHEETS):
                 asset.animation.animate(asset.state, asset.properties)
             # --------------------------------- SPECIAL ANIMATIONS
-            for effect in board.instances(AssetInstances.REACTABLES.value):
+            for effect in board.instances(AssetInstances.REACTABLES):
                 if effect.state.active:
                     effect.animation.cooldown(effect.state, effect.properties)
 

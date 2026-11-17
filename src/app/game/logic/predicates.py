@@ -36,10 +36,10 @@ def is_weight(asset: Asset) -> bool:
         return (
             mass >= 0
             and asset.category not in (
-                AssetCategories.CURSORS.value,
-                AssetCategories.EFFECTS.value,
-                AssetCategories.GEOGRAPHY.value,
-                AssetCategories.TILES.value
+                AssetCategories.CURSORS,
+                AssetCategories.EFFECTS,
+                AssetCategories.GEOGRAPHY,
+                AssetCategories.TILES
             )
         )
     except AttributeError:
@@ -51,13 +51,13 @@ def is_obstacle(asset: Asset) -> bool:
     Evaluates whether an entity instance qualifies as a physical navigational obstacle.
     """
     return asset.instance in (
-        AssetInstances.CHESTS.value,
-        AssetInstances.SIGNS.value,
-        AssetInstances.CRATES.value,
-        AssetInstances.GATES.value,
-        AssetInstances.STRUTS.value,
-        AssetInstances.OBSTACLES.value,
-        AssetInstances.TREES.value,
+        AssetInstances.CHESTS,
+        AssetInstances.SIGNS,
+        AssetInstances.CRATES,
+        AssetInstances.GATES,
+        AssetInstances.STRUTS,
+        AssetInstances.OBSTACLES,
+        AssetInstances.TREES,
     )
 
 
@@ -96,13 +96,13 @@ def in_stream(position: Position, fluid: Asset) -> bool:
     aabbs: List[Tuple[int, int, int, int]] = []
 
     if slen > 0:
-        if direction == Directions.DOWN.value:
+        if direction == Directions.DOWN:
             aabbs.append((fx, fy, fx + fw, fy + slen))
-        elif direction == Directions.UP.value:
+        elif direction == Directions.UP:
             aabbs.append((fx, fy - slen, fx + fw, fy))
-        elif direction == Directions.RIGHT.value:
+        elif direction == Directions.RIGHT:
             aabbs.append((fx, fy, fx + slen, fy + fl))
-        elif direction == Directions.LEFT.value:
+        elif direction == Directions.LEFT:
             aabbs.append((fx - slen, fy, fx, fy + fl))
 
     if fluid.state.branches:
@@ -113,13 +113,13 @@ def in_stream(position: Position, fluid: Asset) -> bool:
             by = int(branch.position.y)
             b_dir = branch.source
             
-            if b_dir == Directions.DOWN.value:
+            if b_dir == Directions.DOWN:
                 aabbs.append((bx, by, bx + fw, by + branch.length))
-            elif b_dir == Directions.UP.value:
+            elif b_dir == Directions.UP:
                 aabbs.append((bx, by - branch.length, bx + fw, by))
-            elif b_dir == Directions.RIGHT.value:
+            elif b_dir == Directions.RIGHT:
                 aabbs.append((bx, by, bx + branch.length, by + fl))
-            elif b_dir == Directions.LEFT.value:
+            elif b_dir == Directions.LEFT:
                 aabbs.append((bx - branch.length, by, bx, by + fl))
 
     if not aabbs:
