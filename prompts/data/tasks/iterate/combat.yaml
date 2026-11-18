@@ -6,7 +6,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/merge.md.j2
+  template: iterate/groom.md.j2
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ---------------------------------------------- TOOLS
@@ -19,20 +19,25 @@ tools:
     # ------------------------ TOOL VIEWS: MANAGER
     # --------------------------------------------
     manager:
-      board: false
-      docs: false
+      board: true
+      docs: true
       templates: true
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: METRICS
+    # --------------------------------------------
+    metrics:
+      pstats: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      filter: false
-      data: false
+      filter: true
+      data: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: false
+      directory: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
@@ -47,7 +52,7 @@ tools:
     # --------------------------------------------
     manager:
       board:
-        phase: '06-03'
+        phase: '03-04'
         action: refactor
       docs:
         exclude:
@@ -65,7 +70,9 @@ tools:
           - 11-emergence
           # - 12-architecture
       templates:
-        - template-merge
+        - template-backlog
+        - template-bug
+        - template-docs
     # --------------------------------------------
     # ------------------------ PARAMETERS: METRICS
     # --------------------------------------------
@@ -82,62 +89,68 @@ tools:
       filter:
         default: AND
         queries:
-          # - title: Dependency Injection Pipeline
-          #   scan:
-          #     domain: [ system ]
-          #     app: [ orchestration ]
-          # - title: Asset Factory
-          #   scan:
-          #     domain: [ system ]
-          #     app: [ service, asset ]
-          #     workflows: [ injection ]
-          # - title: Core Components
-          #   scan:
-          #     domain: [ system ]
-          #     app: [ core, component ]
-          # - title: Asset Abstract
-          #   scan:
-          #     domain: [ abstract ]
-          #     app: [ asset ]
-          # - title: Mechanic Abstract
-          #   scan:
-          #     domain: [ abstract ]
-          #     app: [ mechanic ]
-          # - title: Core Models
-          #   scan:
-          #     domain: [ model ]
-          #     app: [ core, asset ]
-          # - title: Sheet Models
-          #   scan:
-          #     domain: [ model ]
-          #     category: [ sheets ]
-          # - title: Sheet Hitbox Implementations
-          #   scan:
-          #     domain: [ concrete ]
-          #     app: [ asset ]
-          #     category: [ sheets ]
-          #     asset: [ hitbox ]
-          # - title: Sheet Frame Implementations
-          #   scan:
-          #     domain: [ concrete ]
-          #     app: [ asset ]
-          #     category: [ sheets ]
-          #     asset: [ frame ]
-          # - title: Combat Logic
-          #   scan:
-          #     domain: [ logic ]
-          #     workflows: [ combat ]
-          - title: Combat Tests
+          - title: Application - Core
             scan:
-              domain: [ test ]
+              domain: [ system ]
+              app: [ core, component ]
+          - title: Asset - Abstract
+            scan:
+              domain: [ abstract ]
+              app: [ asset ]
+          - title: Mechanic - Abstract
+            scan:
+              domain: [ abstract ]
+              app: [ mechanic ]
+          - title: Models - Core
+            scan:
+              domain: [ model ]
+              app: [ core, asset ]
+          - title: Models - Sheets
+            scan:
+              domain: [ model ]
+              category: [ sheets ]
+          - title: Implementations  - Hitboxes
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              asset: [ hitbox ]
+          - title: 'Implementation - Frames: Sheets'
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              category: [ sheets ]
+              asset: [ frame ]
+          - title: 'Implementation - Frames: Cursors'
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              category: [ cursors ]
+              asset: [ frame ]
+          - title: Logic - Combat
+            scan:
+              domain: [ logic ]
               workflows: [ combat ]
-          - title: Test Fixtures
+          - title: Service - Cradle
             scan:
-              domain: [ test ]
-              test: [ fixtures ]
+              domain: [ system ]
+              app: [ service ]
+              workflows: [ combat ]
+          - title: Libraries - Rendering
+            scan:
+              domain: [ system ]
+              app: [ library ]
+              workflows: [ rendering ]
+          # - title: Combat Tests
+          #   scan:
+          #     domain: [ test ]
+          #     workflows: [ combat ]
+          # - title: Test Fixtures
+          #   scan:
+          #     domain: [ test ]
+          #     test: [ fixtures ]
       data:
-        # properties: [ sheets/sprites, sheets/equipment ]
-        state: [ world-testbed ]
+        properties: [ cursors ]
+        state: [ ]
         configurations: [  ]
         templates: [ ]
     # --------------------------------------------

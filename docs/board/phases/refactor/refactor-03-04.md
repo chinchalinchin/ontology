@@ -8,32 +8,31 @@ Codify `Projectiles` (`cursors.projectiles`) using the Registry Load-Time Rotati
 ##### Specification
 
 1. **Angular Partitioning (`CursorProperties`)**:
-* Extend `CursorProperties` (`src/app/models/properties/assets.py`) with `delta: int = 90` (degrees per discrete rotational step, where $360 \bmod \text{delta} == 0$) and `speed: int = 200`.
-* The discrete set of valid projectile angles is $\Theta = \{ k \cdot \text{delta} \mid 0 \le k < 360 // \text{delta} \}$.
-
-
+    * Extend `CursorProperties` (`src/app/models/properties/assets.py`) with `rotation: int = 90` (degrees per discrete rotational step, where $360 \bmod \text{rotation} == 0$) and `speed: int = 200`.
+    * The discrete set of valid projectile angles is $\Theta = \{ k \cdot \text{rotation} \mid 0 \le k < 360 // \text{rotation} \}$.
 2. **Load-Time Texture Strip Synthesis (`ProjectileFrame` & `Registry`)**:
-* Authored projectile `.png` files contain a single canonical frame of square dimensions $(S, S)$ oriented at $\theta = 0^\circ$ (or canonical `left`).
-* `ProjectileFrame.index(id, properties)` maps each discrete angle key `f"{id}-{angle}"` ($\text{angle} = k \cdot \text{delta}$) to crop coordinate $(k \cdot S, 0, S, S)$.
-* `Registry._get_or_load_texture()` detects `delta` on projectile properties and invokes `render.rotate(raw_tex, delta)`, which allocates a target `TexturePtr` of dimensions $(N \cdot S, S)$ where $N = 360 // \text{delta}$ and stamps the base texture $N$ times via `SDL_RenderCopyEx`.
-* `ProjectileFrame.keys(id, state)` projects `state.angle` directly to `[(f"{id}-{state.angle}", 0, 0)]`.
-
-
+    * Authored projectile `.png` files contain a single canonical frame of square dimensions $(S, S)$ oriented at $\theta = 0^\circ$ (or canonical `left`).
+    * `ProjectileFrame.index(id, properties)` maps each discrete angle key `f"{id}-{angle}"` ($\text{angle} = k \cdot \text{rotation}$) to crop coordinate $(k \cdot S, 0, S, S)$.
+    * `Registry._get_or_load_texture()` detects `rotation` on projectile properties and invokes `render.rotate(raw_tex, rotation)`, which allocates a target `TexturePtr` of dimensions $(N \cdot S, S)$ where $N = 360 // \text{rotation}$ and stamps the base texture $N$ times via `SDL_RenderCopyEx`.
+    * `ProjectileFrame.keys(id, state)` projects `state.angle` directly to `[(f"{id}-{state.angle}", 0, 0)]`.
 3. **Rotated AABB Hitbox Projection (`RotatedHitbox`)**:
-* `RotatedHitbox.get(properties, state, elevation)` rotates each base `Hitbox` in `properties.hitboxes` by $\Delta\theta = \text{state.angle}$ around the frame center $(S/2, S/2)$:
+    * `RotatedHitbox.get(properties, state, elevation)` rotates each base `Hitbox` in `properties.hitboxes` by $\Delta\theta = \text{state.angle}$ around the frame center $(S/2, S/2)$:
 
+    $$
+    \begin{pmatrix} h'_{cx} \\ h'_{cy} \end{pmatrix} = \begin{pmatrix} \cos\Delta\theta & -\sin\Delta\theta \\ \sin\Delta\theta & \cos\Delta\theta \end{pmatrix} \begin{pmatrix} h_{cx} \\ h_{cy} \end{pmatrix} \\
+    w'(\Delta\theta) = \max\Big(1,\; \text{round}\big(w_0 |\cos\Delta\theta| + l_0 |\sin\Delta\theta|\big)\Big), \qquad l'(\Delta\theta) = \max\Big(1,\; \text{round}\big(w_0 |\sin\Delta\theta| + l_0 |\cos\Delta\theta|\big)\Big)
+    $$
 
+##### User Review I
 
-$$
-\begin{pmatrix} h'_{cx} \\ h'_{cy} \end{pmatrix} = \begin{pmatrix} \cos\Delta\theta & -\sin\Delta\theta \\ \sin\Delta\theta & \cos\Delta\theta \end{pmatrix} \begin{pmatrix} h_{cx} \\ h_{cy} \end{pmatrix} \\
-w'(\Delta\theta) = \max\Big(1,\; \text{round}\big(w_0 |\cos\Delta\theta| + l_0 |\sin\Delta\theta|\big)\Big), \qquad l'(\Delta\theta) = \max\Big(1,\; \text{round}\big(w_0 |\sin\Delta\theta| + l_0 |\cos\Delta\theta|\big)\Big)
-$$
+* `speed` is not a Property. `mass` is a Property, i.e. intrinsic to the Asset. `speed` is State; it is dependENT on the particular occasion of the Asset, i.e. different Projectiles of the same Instance and Category could have different speeds. Changing proposed tasks to align with this.
+* "*detects `rotation` on projectile properties and invokes `render.rotate(raw_tex, delta)`*" sounds a lot like duck-typing. Any solution that requires duck-typing needs to be re-evaluated from the ground up. Models are well defined. Code should not be inferring type based on properties. The Registry literally walks the Asset Hierarchy nodes when indexing, so it makes no sense to infer the type when the type is already available. Just check if the ID is in `properties.cursors.projectiles` or something. I am concerned the Registry is about to be turned into spaghetti. Please re-evaluate the plan.
 
 ##### Goals
 
 ###### Goal: Implement `render.rotate` in Cython SDL2 Bindings
 
-Expose `SDL_RenderCopyEx` in `src/libs/graphics/render.pyx` and implement `rotate(TexturePtr base_ptr, int delta) -> TexturePtr` to pre-bake rotated projectile frames into a single horizontal `TexturePtr` strip during Registry texture loading.
+Expose `SDL_RenderCopyEx` in `src/libs/graphics/render.pyx` and implement `rotate(TexturePtr base_ptr, int rotation) -> TexturePtr` to pre-bake rotated projectile frames into a single horizontal `TexturePtr` strip during Registry texture loading.
 
 ###### Goal: Implement `ProjectileFrame` and `RotatedHitbox`
 
@@ -50,21 +49,21 @@ Update `Cradle.spawn_projectile()` to quantize launch angles to `properties.delt
 *Objective*: Synthesize rotated texture strips in VRAM during `Registry` texture loading.
 
 * [] Subtask: Declare `SDL_Point`, `SDL_RendererFlip`, and `SDL_RenderCopyEx` in `src/libs/graphics/render.pyx` and implement `rotate(TexturePtr base_ptr, int delta) -> TexturePtr`.
-* [] Subtask: Update `CursorProperties` in `src/app/models/properties/assets.py` to include `delta: Optional[int] = None` and `speed: int = 200`, and update `MotorState` (`src/app/models/state/assets/cursors.py`) to include `angle: int = 0`.
-* [] Subtask: Update `Registry._get_or_load_texture()` in `src/libs/graphics/registry.pyx` to invoke `render.rotate()` when loading a projectile texture with a configured `delta`.
+* [] Subtask: Update `CursorProperties` in `src/app/models/properties/assets.py` to include `rotation: Optional[int] = None` and update `MotorState` (`src/app/models/state/assets/cursors.py`) to include `angle: int = 0` and `speed: int = 200`.
+* [] Subtask: Update `Registry._get_or_load_texture()` in `src/libs/graphics/registry.pyx` to invoke `render.rotate()` when loading a projectile texture with a configured `rotation`.
 
-**2. Task: Implement `ProjectileFrame` and `RotatedHitbox**`
+**2. Task: Implement `ProjectileFrame` and `RotatedHitbox`**
 
 *Objective*: Index rotated projectile frame crops and transform base AABB hitboxes by `state.angle`.
 
-* [] Subtask: Implement `ProjectileFrame` in `src/app/assets/frames/cursors.py` to index `f"{id}-{k * delta}"` crops and resolve `[(f"{id}-{state.angle}", 0, 0)]` in `keys()`.
+* [] Subtask: Implement `ProjectileFrame` in `src/app/assets/frames/cursors.py` to index `f"{id}-{k * rotation}"` crops and resolve `[(f"{id}-{state.angle}", 0, 0)]` in `keys()`.
 * [] Subtask: Implement `RotatedHitbox` in `src/app/assets/hitboxes/cursors.py` to project base `properties.hitboxes` around the frame center by `state.angle` at the projectile's `elevation`.
-* [] Subtask: Register `ProjectileFrame` and `RotatedHitbox` under `cursors.projectiles` in `src/data/config/recipes/main.yaml`.
+* [x] Subtask: Register `ProjectileFrame` and `RotatedHitbox` under `cursors.projectiles` in `src/data/config/recipes/main.yaml`.
 
-**3. Task: Implement `Cradle.spawn_projectile`, `CombatMechanics` Ranged Trigger, and `ProjectileMechanics**`
+**3. Task: Implement `Cradle.spawn_projectile`, `CombatMechanics` Ranged Trigger, and `ProjectileMechanics`**
 
 *Objective*: Complete the end-to-end lifecycle of ranged projectiles from release frame to target impact or boundary removal.
 
-* [] Subtask: Update `Cradle.spawn_projectile()` to quantize direction/target vectors onto the nearest multiple of `properties.delta` and populate `MotorState`.
+* [] Subtask: Update `Cradle.spawn_projectile()` to quantize direction/target vectors onto the nearest multiple of `properties.angle` and populate `MotorState`.
 * [] Subtask: Wire ranged projectile spawning in `CombatMechanics.update()` on the release frame of `Actions.SHOOT`.
 * [] Subtask: Update `ProjectileMechanics.update()` to evaluate elevation-partitioned intersections against targets and obstacles and queue impacted or out-of-bounds projectiles for removal.

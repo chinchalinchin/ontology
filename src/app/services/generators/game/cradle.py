@@ -3,6 +3,7 @@
 @app.service
 @workflow.injection
 @workflow.crafting
+@workflow.combat
 
 # Ontology: Source - app.services.generators.game.cradle
 
