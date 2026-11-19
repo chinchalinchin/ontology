@@ -184,6 +184,7 @@ Mutators are *condition-driven*. They may also be *parameterized*; In other word
     * `radius`: Radius used for [Town Formation Mechanics](./11-emergence.md#towns).
 * `parameters.descension`: Vertical freefall accumulator tracking pixel displacement.
 * `parameters.hand`: Active hand (`left` or `right`) parameterizing the `use` Intention, used to resolve the corresponding item in `slots.grip`.
+* `parameters.charge`: Tick accumulator tracking how long the `attack` Intention has been held prior to projectile release.
 
 ##### Model: Animation
 

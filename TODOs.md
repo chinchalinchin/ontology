@@ -185,47 +185,6 @@ At a macro level, **rendering preparation in Python (`_render` at 13.28%) costs 
 
 ---
 
-###### Review: Implementation
-
-1. **Spin-Wait Syscall Churn in `Engine.start` (`src/app/game/engine.py`)**:
-   * In `Engine.start`, the hybrid sleep-spin loop executes:
-     ```python
-     while (self.time() - current_time) < delta:
-         time.sleep(0)
-     ```
-   * Over 6,019 frames, `time.sleep` is called **7,983,914 times** (~1,326 times per frame) and `Engine.time` is called **7,995,978 times**, consuming **3.55%** of total execution time just in Python staticmethod dispatch and `sched_yield` overhead during the `SPIN_RATE` window.
-   * Furthermore, `frame_time = current_time - last_time` has no upper clamp before `accumulator += frame_time`. Any OS window stall, breakpoint, or synchronous I/O operation (such as `Board.serialize` or `Screen.rebake`) will inflate `accumulator` and trigger an unbounded burst of `_play(delta)` updates ("spiral of death").
-
-2. **Submerged Channel Slicing on Multi-Frame / Offset Assets (`src/app/game/screen.py`)**:
-   * In `Screen._assemble`, when an asset has `submerge_channel` active (`state.mutators.triggers.submerged == True`), `split_y = properties.dimensions.l // 2` is applied uniformly across every tuple `(frame_key, ox, oy)` in `asset.frame.keys(asset.id, asset.state)`.
-   * For composite assets like `Sprites` that emit superimposed `Expression` cursor frames with smaller dimensions (`sl < split_y`) and vertical offsets (`oy`), `rem_l = sl - split_y` evaluates to a **negative height**, and the upper slice requests a crop height `split_y > sl` beyond the expression texture's bounds.
-
-3. **Un-cleared `bg_canvas` in `Screen.reconstruct` & Destructive Blend Mode Mutation in `render.construct` (`src/app/game/screen.py`, `src/libs/graphics/render.pyx`)**:
-   * `Screen.reconstruct` clears `self.fg_canvas` (`render.clear(self.fg_canvas)`), but omits `render.clear(self.bg_canvas)` before stamping seasonal `back_tiles`.
-   * Inside `render.construct`, every tile iteration calls `SDL_SetTextureBlendMode(tex.ptr, SDL_BLENDMODE_NONE)` on the shared texture in `Registry` and never restores `SDL_BLENDMODE_BLEND`. When `construct` runs on `fore_tiles` (`CANOPY` tiles) or UI `Pane` 9-slice primitives in `Screen.stamp`, transparency is disabled, causing transparent pixels in canopy foliage or overlapping 9-slice regions to overwrite underlying pixels with raw `(0, 0, 0, 0)` and leaving shared textures in `SDL_BLENDMODE_NONE`.
-
-4. **Broken Index Alignment in `SpatialMechanic.proximities` (`src/app/game/logic/mechanics/spatial/base.py`)**:
-   * `proximities` builds `asset_map = dict(enumerate(assets))` using the original enumeration index `i`, but executes `continue` when `not asset.state.mutators or not asset.state.mutators.parameters`.
-   * Because `physics.collisions(primitive_data, self.grid)` inserts `data[0]` (`i`) into the `Space` grid and then indexes `primitive_data[id_a]` and `primitive_data[id_b]` directly by `entity_id`, skipping any element makes `len(primitive_data) < len(assets)`. This causes `physics.collisions` to either raise an `IndexError` or test narrow-phase geometry against the wrong asset in `primitive_data`.
-
----
-
-###### Review: Quality
-
-1. **Pervasive Enum `.value` Descriptor Overhead in Inner Loops**:
-   * Python's `Enum.__get__` (`enum:187:__get__`) is invoked **7,685,348 times** (**1.73%** of total runtime, or **6.69% of all active CPU work**).
-   * In `Screen._assemble`, `Screen._in_viewport`, `CollisionMechanics`, and `widgets:67:keys` (which alone accounts for **3,796,004** `Enum.__get__` calls), `.value` is repeatedly resolved on `Enum` members inside per-entity, per-frame loops. Defining `StrEnum` (Python 3.11+) or binding module-level string/integer constants eliminates descriptor lookup overhead while preserving semantic type safety.
-
-2. **Documentation & Schema Drift**:
-   * **Stairs (`01-assets.md` vs `collision.py`)**: Documentation specifies `stairs.state.blueprint` with `Directions.RIGHT`, `Directions.LEFT`, and `Directions.DOWN` (and inverted velocity signs for `RIGHT`), whereas `CollisionMechanics._traverse_stairs` inspects `stairs.state.direction` and branches on `Directions.UP`, `Directions.LEFT`, and `Directions.RIGHT` (noting `# NOTE: DOWN is impossible due to LPC perspective specification`).
-   * **Mutators (`01-assets.md` vs `base.py`)**: Documentation lists `mutators.parameters.action: bool` and `vision: bool`, whereas `SpatialMechanic.proximities` accesses `asset.state.mutators.parameters.action.radius`.
-   * **SpatialHash Capacity (`base.py` vs `collision.py`)**: `SpatialMechanic.__init__` defaults to `max_entities: int = 2000`, but `CollisionMechanics.__init__` overrides this to `max_entities: int = 200` (`num_buckets = 400`). In `Space.insert`, bucket overflow (`count >= 50`) silently drops entities without logging or resizing.
-
-3. **Redundant Singleton Lookups (`MaterialHitbox`)**:
-   * In `src/app/assets/hitboxes/crafts.py`, `MaterialHitbox.elevations` and `MaterialHitbox.get` instantiate/lookup `MaterialIndex().is_obstacle(state.blueprint)` on every call (**2,970,055 combined calls** in the profile), rather than caching the `MaterialIndex` singleton reference on the `MaterialHitbox` instance or precomputing obstacle status on `CraftState` / `Board._cache`.
-
----
-
 ###### Review: Logic
 
 1. **All-Layer Physics Execution vs. Single-Layer Rendering**:
@@ -446,3 +405,115 @@ Serializing a running board writes these runtime-synthesized entities into the s
 **Proposed Remeditation**
 
 In `Board.serialize`, skip assets where `asset.category == AssetCategories.GEOGRAPHY.value` or where `asset.instance == AssetInstances.DOORS.value and getattr(asset.state, "projection", None) == LayerProjections.OUT.value`.
+
+
+
+
+
+
+
+
+##### Draft: Cursor Properties, Projectile Frame, and Rotated Hitbox Specification
+
+- **Page**: `docs/01-assets.md`
+- **Heading**: `###### Cursor: Projectiles`
+
+###### Drift
+
+`docs/01-assets.md` currently specifies `SingleFrame` and no `Hitbox` for `Projectiles`, omits `rotation` on `CursorProperties`, and omits `position`, `angle`, `speed`, and `owner` on `MotorState`.
+
+###### Update
+
+```markdown
+###### Cursor: Projectiles
+
+Projectiles are spawned on the `release` frame of ranged [Equipment](./02-sprites.md#equipment) with an initial coordinate, quantized launch angle, and scalar speed, following a linear trajectory until impacting an obstacle or target hitbox or exceeding their range.
+
+**Properties: CursorProperties(AssetProperties)**
+
+* `frames: List[str]`
+* `rotation: int = 90`: Angular step $\Delta\theta \in (0, 360]$ partitioning the $360^\circ$ rotation space into $N = 360 // \text{rotation}$ discrete frames.
+* `hitboxes: List[Hitbox]`
+
+**Animation: None**
+
+N/A
+
+**Frame: ProjectileFrame**
+
+* `keys(id, state): returns [ (f"{id}-{state.angle}", 0, 0) ]`
+* `index(id, properties): returns { f"{id}-{k * properties.rotation}": (k * properties.dimensions.w, 0, properties.dimensions.w, properties.dimensions.l) for k in range(360 // properties.rotation) }`
+
+**Hitbox: RotatedHitbox**
+
+Projects each static base Hitbox $(x_0, y_0, w_0, l_0)$ in `properties.hitboxes` around the frame center $(c_x, c_y) = (W / 2, L / 2)$ by $\Delta\theta = \text{state.angle}$:
+
+$$
+h_{cx} = \left(x_0 + \frac{w_0}{2}\right) - c_x, \qquad h_{cy} = \left(y_0 + \frac{l_0}{2}\right) - c_y
+$$
+
+$$
+\begin{pmatrix} h'_{cx} \\ h'_{cy} \end{pmatrix} = \begin{pmatrix} \cos\Delta\theta & -\sin\Delta\theta \\ \sin\Delta\theta & \cos\Delta\theta \end{pmatrix} \begin{pmatrix} h_{cx} \\ h_{cy} \end{pmatrix}
+$$
+
+$$
+w'(\Delta\theta) = \max\Big(1,\; \operatorname{round}\big(w_0 |\cos\Delta\theta| + l_0 |\sin\Delta\theta|\big)\Big), \qquad l'(\Delta\theta) = \max\Big(1,\; \operatorname{round}\big(w_0 |\sin\Delta\theta| + l_0 |\cos\Delta\theta|\big)\Big)
+$$
+
+$$
+x'(\Delta\theta) = \operatorname{round}\left(c_x + h'_{cx} - \frac{w'(\Delta\theta)}{2}\right), \qquad y'(\Delta\theta) = \operatorname{round}\left(c_y + h'_{cy} - \frac{l'(\Delta\theta)}{2}\right)
+$$
+
+**State: MotorState(AssetState)**
+
+* `position: Position`
+* `initial: Position`
+* `velocity: Velocity`
+* `angle: int = 0`
+* `speed: int = 200`
+* `owner: Optional[str] = None`
+```
+
+##### Draft: Mutator Charge Parameter
+
+- **Page**: `docs/02-sprites.md`
+- **Heading**: `###### Model: Mutators`
+
+###### Drift
+
+`docs/02-sprites.md` does not document the `parameters.charge` accumulator used to parameterize `attack` hold duration for projectile launch speed.
+
+###### Update
+
+```markdown
+* `parameters.charge`: Tick accumulator tracking how long the `attack` Intention has been held prior to projectile release.
+```
+
+##### Draft: CombatMap Melee and Projectile Resolution
+
+- **Page**: `docs/05-mechanics.md`
+- **Heading**: `###### Map: Combat`
+
+###### Drift
+
+`###### Map: Combat` in `docs/05-mechanics.md` is currently an unpopulated `TODO` stub and does not specify either melee attackbox resolution or equipment release-frame projectile resolution.
+
+###### Update
+
+```markdown
+###### Map: Combat
+
+CombatMap bridges an attacking entity's current AnimationState and slotted Weapon Equipment to resolve either active melee Attackboxes or ranged Projectile emission parameters.
+
+**Interface: Attack Hitbox Mapping**
+
+* `attackboxes(state, equipment, elevation): returns List[Hitbox]`: Queries the slotted weapon's Hitbox component at the entity's active `<action>-<direction>-<frame>` key and elevation plane.
+
+**Interface: Projectile Release Mapping**
+
+* `projectile(state, equipment): returns Optional[Tuple[str, int]]`: Evaluates whether the slotted weapon configures a `projectile` ID and `release` frame matching the entity's current animation frame. When triggered on the entry tick of the `release` frame, calculates the initial scalar speed $s(S, n)$ from the attacker's strength $S$, held charge duration $n$, and the weapon's draw window $N_{\max} = \max(1, \text{release} \cdot \text{delay})$:
+
+$$
+\tau(n) = \min\left(1.0,\; \frac{n}{N_{\max}}\right), \qquad s(S, n) = \operatorname{round}\Big(\alpha S \big(1 + \tau(n)\big)\Big)
+$$
+```

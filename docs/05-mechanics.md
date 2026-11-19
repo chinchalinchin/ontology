@@ -247,6 +247,12 @@ CollisionMechanics resolves elevation transitions, perimeter collisions, and Ass
 
 CombatMechanics queries the active Attackboxes associated with the entity's current AnimationState. Attacker primitives are injected into the spatial hash using the result and used to evaluate the collision. Attackers with no attackboxes configured on their current Animation State `frame` bypass Combat collision checks.
 
+CombatMechanic spawns a Projectile on the release frame of the Action. The initial scalar speed $s(S, n)$ is a function of the attacker's strength $S$ and the held tick duration $n$ relative to the draw window $N_{\max}$:
+
+$$
+\tau(n) = \min\left(1.0,\; \frac{n}{N_{\max}}\right), \qquad s(S, n) = \operatorname{round}\Big(\alpha S \big(1 + \tau(n)\big)\Big)
+$$
+
 ### Mechanics: Intentional
 
 These Mechanics handle Sprite intentionality, goal-seeking, and tactical navigation.

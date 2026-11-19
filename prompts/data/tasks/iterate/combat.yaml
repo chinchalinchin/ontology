@@ -93,6 +93,10 @@ tools:
             scan:
               domain: [ system ]
               app: [ core, component ]
+          - title: Application - Devices
+            scan:
+              domain: [ user ]
+              app: [ device ]
           - title: Asset - Abstract
             scan:
               domain: [ abstract ]
@@ -126,6 +130,11 @@ tools:
               app: [ asset ]
               category: [ cursors ]
               asset: [ frame ]
+          - title: Mechanics - Transition
+            scan:
+              domain: [ concrete ]
+              app: [ mechanic ]
+              workflows: [ transitions ]
           - title: Logic - Combat
             scan:
               domain: [ logic ]
