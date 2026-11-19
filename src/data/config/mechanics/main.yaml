@@ -12,7 +12,8 @@ mechanics:
   world:
     - key: player
       executors: []
-      relations: []
+      relations: 
+        - projectiles
     - key: cognition
       executors: []
       relations: []

@@ -117,6 +117,9 @@ PROJECTILE_BASE_SPEED_FACTOR: Final[int] = 10
 PROJECTILE_MAX_RANGE: Final[int] = 512
 """Maximum range of Projectiles before garbage collection"""
 
+PROJECTILE_MAX_CHARGE_TICKS: int = 300
+"""Maximum number of ticks the attack button can be held before releasing a projectile."""
+
 # ---------------------------------------------------
 # -------------------------------- DIRECTORY SETTINGS
 # ---------------------------------------------------

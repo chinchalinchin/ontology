@@ -54,8 +54,24 @@
 {% if props.count is defined and props.count is not none -%}
   - Count: {{ props.count }}
 {% endif -%}
+{% if props.rotation is defined and props.rotation is not none -%}
+  - Rotation: {{ props.rotation }}
+{% endif -%}
+{% if props.weapon is defined and props.weapon is not none -%}
+  - Weapon: `{{ props.weapon }}`
+{% endif -%}
 {% if props.friction is defined and props.friction is not none -%}
   - Friction: {{ props.friction }}
+{% endif -%}
+{% if props.material is defined and props.material is not none -%}
+  - Material:
+    - Genus: `{{ props.material.genus.value if props.material.genus.value is defined else props.material.genus }}`
+{% if props.material.host is defined and props.material.host is not none -%}
+    - Host: `{{ props.material.host.value if props.material.host.value is defined else props.material.host }}`
+{% endif -%}
+{% endif -%}
+{% if props.blueprints is defined and props.blueprints is not none -%}
+  - Blueprints: `{{ props.blueprints.value if props.blueprints.value is defined else props.blueprints }}`
 {% endif -%}
 {% if props.loot is defined and props.loot is not none -%}
   - Loot: `{{ props.loot }}`
@@ -83,6 +99,24 @@
 {% for item in props.stack -%}
     - `{{ item }}`
 {% endfor -%}
+{% endif -%}
+{% if props.frequency is defined and props.frequency is not none -%}
+  - Frequency:
+{% if props.frequency.type is defined and props.frequency.type is not none -%}
+    - Type: `{{ props.frequency.type.value if props.frequency.type.value is defined else props.frequency.type }}`
+{% endif -%}
+{% if props.frequency.delay is defined and props.frequency.delay is not none -%}
+    - Delay: {{ props.frequency.delay }}
+{% endif -%}
+{% if props.frequency.frequency is defined and props.frequency.frequency is not none -%}
+    - Frequency: {{ props.frequency.frequency }}
+{% endif -%}
+{% if props.frequency.cooldown is defined and props.frequency.cooldown is not none -%}
+    - Cooldown: {{ props.frequency.cooldown }}
+{% endif -%}
+{% if props.frequency.persist is defined and props.frequency.persist is not none -%}
+    - Persist: {{ props.frequency.persist }}
+{% endif -%}
 {% endif -%}
 {% if props.lifecycle is defined and props.lifecycle is not none -%}
   - Lifecycle:
@@ -213,11 +247,20 @@
 {% if asset.state.velocity is defined and asset.state.velocity is not none -%}
   - Velocity: ({{ asset.state.velocity.vx }}, {{ asset.state.velocity.vy }})
 {% endif -%}
+{% if asset.state.angle is defined and asset.state.angle is not none -%}
+  - Angle: {{ asset.state.angle }}
+{% endif -%}
 {% if asset.state.speed is defined and asset.state.speed is not none -%}
   - Speed: {{ asset.state.speed }}
 {% endif -%}
 {% if asset.state.direction is defined and asset.state.direction is not none -%}
   - Direction: `{{ asset.state.direction.value if asset.state.direction.value is defined else asset.state.direction }}`
+{% endif -%}
+{% if asset.state.material is defined and asset.state.material is not none -%}
+  - Material: `{{ asset.state.material.value if asset.state.material.value is defined else asset.state.material }}`
+{% endif -%}
+{% if asset.state.blueprint is defined and asset.state.blueprint is not none -%}
+  - Blueprint: `{{ asset.state.blueprint.value if asset.state.blueprint.value is defined else asset.state.blueprint }}`
 {% endif -%}
 {% if asset.state.delta is defined and asset.state.delta is not none -%}
   - Delta: {{ asset.state.delta }}
@@ -270,6 +313,9 @@
 {% if asset.state.dirty is defined and asset.state.dirty is not none -%}
   - Dirty: {{ asset.state.dirty }}
 {% endif -%}
+{% if asset.state.active is defined and asset.state.active is not none -%}
+  - Active: {{ asset.state.active }}
+{% endif -%}
 {% if asset.state.pool is defined and asset.state.pool is not none -%}
   - Pool:
     - Position: ({{ asset.state.pool.x }}, {{ asset.state.pool.y }})
@@ -315,13 +361,16 @@
 {% if asset.state.link is defined and asset.state.link is not none -%}
   - Link: `{{ asset.state.link }}`
 {% endif -%}
-{% if (asset.state.outlayer is defined and asset.state.outlayer is not none) or (asset.state.out is defined and asset.state.out is not none) -%}
+{% if (asset.state.outlayer is defined and asset.state.outlayer is not none) or (asset.state.out is defined and asset.state.out is not none) or (asset.state.projection is defined and asset.state.projection is not none) -%}
   - Door Out:
-{% if asset.state.outlayer is not none -%}
+{% if asset.state.outlayer is defined and asset.state.outlayer is not none -%}
     - Layer: `{{ asset.state.outlayer }}`
 {% endif -%}
-{% if asset.state.out is not none -%}
+{% if asset.state.out is defined and asset.state.out is not none -%}
     - Position: ({{ asset.state.out.x }}, {{ asset.state.out.y }})
+{% endif -%}
+{% if asset.state.projection is defined and asset.state.projection is not none -%}
+    - Projection: `{{ asset.state.projection.value if asset.state.projection.value is defined else asset.state.projection }}`
 {% endif -%}
 {% endif -%}
 {% if asset.state.owner is defined and asset.state.owner is not none -%}
@@ -359,25 +408,54 @@
 {% endif -%}
 {% if asset.state.inventory is defined and asset.state.inventory is not none -%}
   - Inventory:
+{% if asset.state.inventory.wallet is defined and asset.state.inventory.wallet is not none -%}
     - Wallet: {{ asset.state.inventory.wallet }}
-{% if asset.state.inventory.pack -%}
+{% endif -%}
+{% if asset.state.inventory.bag is defined and asset.state.inventory.bag -%}
+    - Bag:
+{% for item_id in asset.state.inventory.bag -%}
+      - `{{ item_id }}`
+{% endfor -%}
+{% endif -%}
+{% if asset.state.inventory.belt is defined and asset.state.inventory.belt -%}
+    - Belt:
+{% for item_id in asset.state.inventory.belt -%}
+      - `{{ item_id }}`
+{% endfor -%}
+{% endif -%}
+{% if asset.state.inventory.sheathe is defined and asset.state.inventory.sheathe -%}
+    - Sheathe:
+{% for item_id in asset.state.inventory.sheathe -%}
+      - `{{ item_id }}`
+{% endfor -%}
+{% endif -%}
+{% if asset.state.inventory.pack is defined and asset.state.inventory.pack -%}
     - Pack:
 {% for item_id, qty in asset.state.inventory.pack.items() -%}
       - `{{ item_id }}`: {{ qty }}
 {% endfor -%}
 {% endif -%}
-{% if asset.state.inventory.pouch -%}
+{% if asset.state.inventory.pouch is defined and asset.state.inventory.pouch -%}
     - Pouch:
 {% for item_id, qty in asset.state.inventory.pouch.items() -%}
       - `{{ item_id }}`: {{ qty }}
 {% endfor -%}
 {% endif -%}
-{% if asset.state.inventory.loot -%}
+{% if asset.state.inventory.sack is defined and asset.state.inventory.sack -%}
+    - Sack:
+{% for item_id, qty in asset.state.inventory.sack.items() -%}
+      - `{{ item_id }}`: {{ qty }}
+{% endfor -%}
+{% endif -%}
+{% if asset.state.inventory.loot is defined and asset.state.inventory.loot -%}
     - Loot:
 {% for item_id, qty in asset.state.inventory.loot.items() -%}
       - `{{ item_id }}`: {{ qty }}
 {% endfor -%}
 {% endif -%}
+{% endif -%}
+{% if asset.state.slots is defined and asset.state.slots is not none -%}
+  - Slots:
 {% if asset.state.slots.equipment is defined and asset.state.slots.equipment is not none -%}
     - Equipment:
 {% if asset.state.slots.equipment.armor is not none -%}
@@ -394,6 +472,15 @@
 {% endif -%}
 {% if asset.state.slots.equipment.shield is not none -%}
       - Shield: `{{ asset.state.slots.equipment.shield }}`
+{% endif -%}
+{% endif -%}
+{% if asset.state.slots.grip is defined and asset.state.slots.grip is not none -%}
+    - Grip:
+{% if asset.state.slots.grip.left is not none -%}
+      - Left: `{{ asset.state.slots.grip.left }}`
+{% endif -%}
+{% if asset.state.slots.grip.right is not none -%}
+      - Right: `{{ asset.state.slots.grip.right }}`
 {% endif -%}
 {% endif -%}
 {% endif -%}
@@ -439,6 +526,9 @@
       - Dead: {{ asset.state.mutators.triggers.dead }}
       - Vision: {{ asset.state.mutators.triggers.vision }}
       - Submerged: {{ asset.state.mutators.triggers.submerged }}
+{% if asset.state.mutators.triggers.falling is defined and asset.state.mutators.triggers.falling is not none -%}
+      - Falling: {{ asset.state.mutators.triggers.falling }}
+{% endif -%}
 {% endif -%}
 {% if asset.state.mutators.parameters is defined and asset.state.mutators.parameters is not none -%}
     - Parameters:
@@ -459,6 +549,15 @@
 {% if asset.state.mutators.parameters.squeeze is defined and asset.state.mutators.parameters.squeeze is not none -%}
       - Squeeze:
         - Radius: {{ asset.state.mutators.parameters.squeeze.radius }}
+{% endif -%}
+{% if asset.state.mutators.parameters.descension is defined and asset.state.mutators.parameters.descension is not none -%}
+      - Descension: {{ asset.state.mutators.parameters.descension }}
+{% endif -%}
+{% if asset.state.mutators.parameters.hand is defined and asset.state.mutators.parameters.hand is not none -%}
+      - Hand: `{{ asset.state.mutators.parameters.hand.value if asset.state.mutators.parameters.hand.value is defined else asset.state.mutators.parameters.hand }}`
+{% endif -%}
+{% if asset.state.mutators.parameters.charge is defined and asset.state.mutators.parameters.charge is not none -%}
+      - Charge: {{ asset.state.mutators.parameters.charge }}
 {% endif -%}
 {% endif -%}
 {% endif -%}

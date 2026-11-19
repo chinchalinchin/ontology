@@ -76,16 +76,33 @@ class CombatMap:
         return weapon.hitbox.get(weapon.properties, state, resolved_elevation)
 
     @staticmethod
+    def delay(
+        state: SheetState,
+        equipment: EquipmentGroup
+    ) -> int:
+        """
+        Resolves the tick delay for the equipped weapon's active animation action.
+        """
+        if not state.slots or not state.slots.equipment.weapon:
+            return 1
+        weapon = equipment.weapons.get(state.slots.equipment.weapon)
+        if weapon and isinstance(weapon.properties.actions, dict):
+            action_prop = weapon.properties.actions.get(state.animation.action)
+            if action_prop:
+                return max(1, action_prop.delay)
+        return 1
+
+    @staticmethod
     def release(
         state: SheetState,
         equipment: EquipmentGroup,
         elevation: Optional[int] = None
     ) -> Optional[Tuple[Position, str]]:
         """
-        Pulls the weapon's active AttackHitbox on the frame entry tick (tick == 1),
+        Pulls the weapon's active AttackHitbox on the frame entry tick (tick == 0),
         returning the world-space spawn center and launch direction.
         """
-        if state.animation.tick != 1:
+        if state.animation.tick != 0:
             return None
 
         hitboxes = CombatMap.attackboxes(state, equipment, elevation)
@@ -104,20 +121,17 @@ class CombatMap:
     ) -> int:
         """
         Computes charged scalar launch speed s(S, n) = round(alpha * S * (1 + tau(n))),
-        where tau(n) = min(1.0, n / max(1, frame * delay)).
+        where tau(n) = min(1.0, n / N_max).
         """
         strength = state.character.strength if state.character else 10
         charge = max(0, state.mutators.parameters.charge) if state.mutators.parameters else 0
+        delay = CombatMap.delay(state, equipment)
 
-        delay = 1
-        if state.slots and state.slots.equipment.weapon:
-            weapon = equipment.weapons.get(state.slots.equipment.weapon)
-            if weapon and isinstance(weapon.properties.actions, dict):
-                action_prop = weapon.properties.actions.get(state.animation.action)
-                if action_prop:
-                    delay = max(1, action_prop.delay)
-
-        n_max = max(1, state.animation.frame * delay)
+        n_max = max(
+            settings.PROJECTILE_MAX_CHARGE_TICKS,
+            state.animation.frame * delay,
+            1,
+        )
         tau = min(1.0, charge / n_max)
         alpha = settings.PROJECTILE_BASE_SPEED_FACTOR
 

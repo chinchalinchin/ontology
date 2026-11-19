@@ -12,13 +12,17 @@ Player Mechanics for resolving DevicePayload into Player Intention, Goal, and Me
 """
 # Standard Libraries
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import (
+    Optional,
+    TYPE_CHECKING
+)
 import logging
 import collections
 
 # Application Libraries
 if TYPE_CHECKING:
     from app.game.board import Board
+    from app.game.logic.relations import ProjectileIndex
 
 from app.static.semantics import (
     Actions,
@@ -27,9 +31,11 @@ from app.static.semantics import (
     Goals,
     AnimatedIntentions,
     BlockingIntentions,
-    Menus
+    Menus,
+    Relations
 )
 from app.game.logic.modules.maps.animation import AnimationMap
+from app.game.logic.modules.maps.combat import CombatMap
 from app.game.logic.mechanics import Mechanic
 from app.models.state import (
     Goal,
@@ -60,8 +66,19 @@ _INVENTORY_MENUS = frozenset((
 class PlayerMechanics(Mechanic):
     """
     Translates DevicePayload inputs into Player Intentions, Goals, Action
-    animations, Equipment admissibility checks, and attack hold charge state.
+    animations, Equipment admissibility checks, and ranged draw-hold gating.
     """
+
+    @property
+    def relation(self) -> Optional[ProjectileIndex]:
+        return self.relations.get(Relations.PROJECTILES)
+
+    @relation.setter
+    def relation(self, relation: Optional[ProjectileIndex]) -> None:
+        if relation is None:
+            self.relations.pop(Relations.PROJECTILES, None)
+        else:
+            self.relations[Relations.PROJECTILES] = relation
 
     def update(
         self,
@@ -72,7 +89,7 @@ class PlayerMechanics(Mechanic):
     ) -> None:
         """
         Updates the Player's Menu events, Intentions, attack charge duration,
-        movement Goal, and Animation state from the current DevicePayload.
+        ranged draw-hold gating, movement Goal, and Animation state.
         """
         player = board.player()
         if not player:
@@ -196,6 +213,23 @@ class PlayerMechanics(Mechanic):
                 player.state.position,
                 player.state.goal.position
             )
+
+        # Hold ranged draw pose on (F_release - 1, delay - 1) while attack stays pressed,
+        # keeping animated=True so SpriteAnimation never resets the frame to 0.
+        if (
+            player.state.intention == Intentions.ATTACK
+            and attack_hold > 0
+            and player.state.animation.frame > 0
+            and CombatMap.projectile(player.state, self.relation) is not None
+            and CombatMap.release(
+                player.state,
+                board.equipment,
+                player.elevation
+            ) is not None
+        ):
+            delay = CombatMap.delay(player.state, board.equipment)
+            player.state.animation.frame -= 1
+            player.state.animation.tick = delay - 1
 
         if player.state.intention == Intentions.ATTACK:
             eq = player.state.slots.equipment

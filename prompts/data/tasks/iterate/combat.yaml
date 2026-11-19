@@ -113,27 +113,16 @@ tools:
             scan:
               domain: [ model ]
               category: [ sheets ]
-          - title: Implementations  - Hitboxes
-            scan:
-              domain: [ concrete ]
-              app: [ asset ]
-              asset: [ hitbox ]
-          - title: 'Implementation - Frames: Sheets'
+          - title: 'Implementation - All: Sheets'
             scan:
               domain: [ concrete ]
               app: [ asset ]
               category: [ sheets ]
-              asset: [ frame ]
           - title: 'Implementations -  All: Cursors'
             scan:
               domain: [ concrete ]
               app: [ asset ]
               category: [ cursors ]
-          - title: Mechanics - Transition
-            scan:
-              domain: [ concrete ]
-              app: [ mechanic ]
-              workflows: [ transitions ]
           - title: Logic - Combat
             scan:
               domain: [ logic ]
@@ -147,11 +136,6 @@ tools:
               domain: [ system ]
               app: [ service ]
               workflows: [ combat ]
-          - title: Libraries - Rendering
-            scan:
-              domain: [ system ]
-              app: [ library ]
-              workflows: [ rendering ]
           # - title: Combat Tests
           #   scan:
           #     domain: [ test ]
