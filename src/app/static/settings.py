@@ -111,7 +111,7 @@ GRAVITY_ACCELERATION: Final[float] = 400.0
 TERMINAL_VELOCITY: Final[float] = 350.0
 """"""
 
-PROJECTILE_BASE_SPEED_FACTOR: Final[int] = 10
+PROJECTILE_BASE_SPEED_FACTOR: Final[int] = 50
 """Base speed for Projectiles before application of speed formula."""
 
 PROJECTILE_MAX_RANGE: Final[int] = 512
