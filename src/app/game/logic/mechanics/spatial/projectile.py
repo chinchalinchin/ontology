@@ -2,8 +2,8 @@
 @domain.concrete
 @domain.logic
 @app.mechanic
-@category.cursors
 @physics.space
+@workflow.projectiles
 
 # Ontology: Source - app.game.logic.mechanics.spatial.projectile
 

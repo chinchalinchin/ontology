@@ -139,6 +139,10 @@ tools:
             scan:
               domain: [ logic ]
               workflows: [ combat ]
+          - title: Logic - Projectiles
+            scan:
+              domain: [ logic ]
+              workflows: [ projectiles ]
           - title: Service - Cradle
             scan:
               domain: [ system ]

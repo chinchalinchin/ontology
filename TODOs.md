@@ -517,3 +517,208 @@ $$
 \tau(n) = \min\left(1.0,\; \frac{n}{N_{\max}}\right), \qquad s(S, n) = \operatorname{round}\Big(\alpha S \big(1 + \tau(n)\big)\Big)
 $$
 ```
+
+
+
+
+---
+
+# Documentation Updates
+
+##### Draft: Cursor Projectiles Specification
+
+- **Page**: `docs/01-assets.md`
+- **Heading**: `Cursor: Projectiles`
+
+###### Drift
+
+`docs/01-assets.md` still specifies Projectiles as using `SingleFrame` and a minimal `MotorState` containing only `initial` and `velocity`. Under Phase 03.04, Projectiles partition a single canonical $\theta = 0^\circ$ asset into discrete rotational frames spaced by an angular increment $\Delta\theta$, transform their bounding hitboxes by their active heading $\theta$, and carry relational foreign keys binding them to the Weapons that emit them.
+
+###### Update
+
+```markdown
+###### Cursor: Projectiles
+
+Projectiles are autonomous Cursor Assets spawned on the release frame of ranged combat Actions. A Projectile Asset file contains a single canonical frame oriented at $\theta = 0^\circ$ ($+x$, `right`) and is partitioned into discrete angular frames spaced by its rotational increment $\Delta\theta$ (where $360 \bmod \Delta\theta = 0$):
+
+$$
+\Theta = \{ k \cdot \Delta\theta \mid 0 \le k < 360 / \Delta\theta \}
+$$
+
+Because Projectiles depend on the Weapons that emit them, each Projectile declares the set of Weapons bound to it in its Properties. During initialization, these bindings are inverted into a relational index mapping each ranged Weapon to its emitted Projectile.
+
+**Properties: CursorProperties(AssetProperties)**
+
+* `rotation: int`: Discrete angular increment $\Delta\theta$ in degrees ($360 \bmod \Delta\theta = 0$).
+* `weapons: List[WeaponPalette]`: Weapon keys bound to this Projectile.
+* `hitboxes: Optional[List[Hitbox]]`: Canonical AABB footprint at $\theta = 0^\circ$.
+
+**Animation: None**
+
+N/A
+
+**Frame: ProjectileFrame**
+
+Partitions the horizontal strip across $\Theta$ and projects `state.angle` directly onto its corresponding rotated frame.
+
+**Hitbox: RotatedHitbox**
+
+Rotates each canonical hitbox $(x_0, y_0, w_0, l_0)$ clockwise by $\theta = \text{state.angle}$ around the frame center $(W/2, L/2)$, yielding the enclosing axis-aligned bounding box $(x'(\theta), y'(\theta), w'(\theta), l'(\theta))$ at the Projectile's elevation.
+
+**State: MotorState(AssetState)**
+
+* `position: Position`: Active world coordinate.
+* `initial: Position`: Spawn origin coordinate used for range expiration.
+* `velocity: Velocity`: Constant linear trajectory vector.
+* `angle: int`: Quantized heading $\theta \in \Theta$.
+* `speed: int`: Scalar launch speed encoding attacker strength and draw duration.
+* `owner: Optional[str]`: Deploying entity `name`, excluded from impact resolution.
+```
+
+##### Draft: AnimationMap Admissibility & CombatMap Separation
+
+- **Page**: `docs/05-mechanics.md`
+- **Heading**: `Modules: Maps` and `Dependency: Relations`
+
+###### Drift
+
+`docs/05-mechanics.md` currently leaves `Map: Combat` as `TODO`, lacks the `projectiles` entry under `Dependency: Relations`, and does not formalize the disjoint boundary between `AnimationMap` (Intentional-Spatial Space $\to$ Animation Space, including Equipment admissibility) and `CombatMap` (Active Combat State $\to$ Combat Resolution Geometry and Launch Parameters).
+
+###### Update
+
+```markdown
+###### Dependency: Relations
+
+Relations are static secondary indices compiled at initialization and injected into requesting Mechanics.
+
+* `shorelines`: Compound index mapping `(Tile, Fluid, [Season])` keys to Shoreline Geography Asset IDs, compiled from Geography Properties.
+* `materials`: Index mapping Blueprints and Asset Instances to obstacle classifications and rendering substrates, compiled from Materials Configuration.
+* `projectiles`: Index mapping ranged Weapon keys to Projectile Cursor Asset IDs, compiled from Cursor Properties.
+
+##### Modules
+
+###### Modules: Maps
+
+Maps are stateless domain projections translating Asset State, Equipment, and Relations into target domains consumed by Mechanics. Each Map owns a disjoint codomain.
+
+###### Map: Animation
+
+AnimationMap is the projection from Intentional and Spatial State into Animation Space:
+
+$$
+(\text{Intention} \times \text{Slots} \times \text{Equipment}) \longrightarrow \text{Action} \cup \{\bot\}
+$$
+
+$$
+(\text{Position} \times \text{Target}) \longrightarrow \text{Direction}
+$$
+
+AnimationMap enforces Equipment admissibility prior to state commitment in Intentional Mechanics. Equipment-gated Intentions (`attack`, `mine`, `build`) project to the action declared by the corresponding slotted Weapon, Tool, or Utility, and evaluate to $\bot$ when the required Equipment slot is empty. Inadmissible transitions are rejected before Animation or Combat Mechanics execute.
+
+###### Map: Combat
+
+CombatMap projects an active, already-validated combat state into spatial and ballistic resolution primitives consumed by CombatMechanics:
+
+* **Projectile Binding**: $(\text{Weapon} \times \text{ProjectileIndex}) \longrightarrow \text{Projectile} \cup \{\bot\}$. Partitions combat dispatch into ranged and melee modes independently of animation row layout.
+* **Attackboxes**: $(\text{AnimationState} \times \text{Weapon} \times \text{Elevation}) \longrightarrow \mathcal{P}(\text{Hitbox})$. Resolves active melee strike geometry.
+* **Release**: $(\text{AnimationState} \times \text{Weapon} \times \text{Elevation}) \longrightarrow (\text{Position} \times \text{Direction}) \cup \{\bot\}$. Evaluates the weapon's directional hitbox on the entry tick of its release frame to determine projectile spawn origin and heading.
+* **Speed**: $(\text{Strength} \times \text{Charge} \times \text{ReleaseFrame} \times \text{Delay}) \longrightarrow \mathbb{Z}_{>0}$. Maps attacker strength $S$ and held draw duration $n$ to scalar launch speed $s(S, n)$:
+
+$$
+N_{\max} = \max(1,\; F_{\text{release}} \cdot \text{delay}), \qquad \tau(n) = \min\left(1.0,\; \frac{n}{N_{\max}}\right), \qquad s(S, n) = \operatorname{round}\Big(\alpha S \big(1 + \tau(n)\big)\Big)
+$$
+```
+
+---
+
+# Bug Reports
+
+##### Bug B-0304-01: Missing Animation Frame/Tick Reset on Action Change in `TransitionMechanics`
+
+**STATUS**: OPEN
+**SEVERITY**: High
+
+**Description**
+
+In `src/app/game/logic/mechanics/intentional/transition.py`, `TransitionMechanics.update()` assigns `sprite.state.animation.action = AnimationMap.action(sprite.state, board.equipment)` without checking whether the resolved `action` differs from the previous tick's `action`. Consequently, `sprite.state.animation.frame` and `sprite.state.animation.tick` carry over verbatim from the prior action.
+
+When a Sprite transitions from a higher-frame-count action (e.g., `walk`, 9 frames, at `frame = 7`) into a lower-frame-count action (e.g., `slash`, 6 frames), `Engine._render()` requests an out-of-bounds frame key (`<id>-slash-<dir>-7`) before `AnimationMechanics` wraps it on the next tick, resulting in a `Registry MISS` and an invisible Sprite frame. For ranged combat, carrying a non-zero `frame` into `shoot` or `thrust` can cause the attacker to skip or prematurely trigger its release frame.
+
+**Steps to Replicate**
+
+1. Run a Sprite in `Intentions.FIND` (`Actions.WALK`) until `sprite.state.animation.frame >= 6`.
+2. Trigger an Intention transition to `Intentions.ATTACK` with a `slash` weapon (`count = 6`).
+3. Inspect `sprite.state.animation.frame` and `SpriteFrame.keys()` immediately after `TransitionMechanics.update()`.
+
+**Proposed Remediation**
+
+Capture `prev_action = sprite.state.animation.action` prior to resolving the new action in `TransitionMechanics.update()`. Whenever `new_action != prev_action`, reset `sprite.state.animation.frame = 0` and `sprite.state.animation.tick = 1`.
+
+##### Bug B-0304-02: Unequipped Fallback Actions in `AnimationMap.action()` Violate Equipment Permissibility
+
+**STATUS**: OPEN
+**SEVERITY**: Medium
+
+**Description**
+
+In `src/app/game/logic/modules/maps/animation.py`, `AnimationMap.action()` falls back to `Actions.CAST` (for `Intentions.ATTACK` and `Intentions.BUILD`) and `Actions.THRUST` (for `Intentions.MINE`) when the corresponding `slots.equipment` slot is `None` or unconfigured. This contradicts the documented Equipment constraint and allows unequipped Sprites and Players to enter animated combat, mining, or building states without requisite Equipment.
+
+**Steps to Replicate**
+
+1. Create a `SheetState` with `intention = Intentions.ATTACK` and `slots.equipment.weapon = None`.
+2. Call `AnimationMap.action(state, board.equipment)`.
+3. Observe that `Actions.CAST` is returned instead of rejecting the action.
+
+**Proposed Remediation**
+
+Update `AnimationMap.action()` to return `Optional[Actions]`, returning `None` when an equipment-gated Intention (`ATTACK`, `MINE`, `BUILD`) lacks a valid slotted Equipment asset with configured `actions`. Gate transitions in `TransitionMechanics` and `PlayerMechanics` on a non-`None` result.
+
+##### Bug B-0304-03: Property Key Mismatch (`angle` vs. `rotation`) in `src/assets/cursors/main.yaml`
+
+**STATUS**: OPEN
+**SEVERITY**: Medium
+
+**Description**
+
+`src/assets/cursors/main.yaml` currently configures `angle: 45` on `cannonball` and `angle: 90` on `arrow` and `bolt`, whereas `CursorProperties` (`src/app/models/properties/assets.py`) does not declare an `angle` field (and Phase 03.04 specifies `CursorProperties.rotation: int = 90` for the static step increment to avoid semantic collision with `MotorState.angle`). Loading `cursors/main.yaml` against `CursorProperties` will fail strict validation or silently discard `cannonball`'s `45`-degree angular resolution.
+
+**Steps to Replicate**
+
+1. Inspect `src/assets/cursors/main.yaml` under `cursors.projectiles` (`cannonball`, `arrow`, `bolt`).
+2. Compare against `CursorProperties` in `src/app/models/properties/assets.py`.
+
+**Proposed Remediation**
+
+Add `rotation: int = 90` and `weapons: List[Enumerated[WeaponPalette]] = field(default_factory=list)` to `CursorProperties` and update `src/assets/cursors/main.yaml` to replace `angle:` with `rotation:` and declare `weapons:` bindings.
+
+##### Bug B-0304-04: `Position` Aliasing and Missing `elevation`/`owner` in `Cradle.spawn_projectile()`
+
+**STATUS**: OPEN
+**SEVERITY**: Medium
+
+**Description**
+
+In `src/app/services/generators/game/cradle.py`, `Cradle.spawn_projectile()` assigns the exact same `Position` object reference to both `MotorState.position` and `MotorState.initial`. Because `physics.integrate()` mutates `state.position.x` and `state.position.y` in-place every tick, `state.initial` mutates identically alongside `state.position` (making distance traveled always `0`), and if the caller passed an uncloned `Position`, the caller's coordinate is corrupted. Additionally, `spawn_projectile()` hardcodes `direction=Directions.DOWN`, `speed=10`, and omits `elevation` and `owner`, preventing elevation-partitioned collision checks and self-hit exclusion.
+
+**Steps to Replicate**
+
+1. Spawn a projectile via `cradle.spawn_projectile(id, pos, layer, velocity)`.
+2. Run `physics.integrate([projectile], delta)`.
+3. Observe `projectile.state.position is projectile.state.initial` and `projectile.state.initial` changes every tick.
+
+**Proposed Remediation**
+
+Update `Cradle.spawn_projectile()` to instantiate separate `Position(spawn_x, spawn_y)` objects for `state.position` and `state.initial`, center the projectile on the release point, quantize launch angle and velocity from `properties.rotation` and `speed`, and accept/assign `elevation` and `owner`.
+
+##### Bug B-0304-05: Typo in `ProjectilFrame` Class Name and Header in `src/app/assets/frames/cursors.py`
+
+**STATUS**: OPEN
+**SEVERITY**: Low
+
+**Description**
+
+`src/app/assets/frames/cursors.py` defines the placeholder class as `ProjectilFrame` (missing the trailing `e`) and labels its ontology header as `app.assets.frames.core` instead of `app.assets.frames.cursors`, which will cause `AssetFactory.frame("ProjectileFrame")` lookups against `recipes.cursors.projectiles` to fail at boot.
+
+**Proposed Remediation**
+
+Rename `ProjectilFrame` to `ProjectileFrame` and correct the module header to `app.assets.frames.cursors` when implementing Task 2.

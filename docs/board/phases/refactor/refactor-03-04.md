@@ -2,21 +2,24 @@
 
 **Overview**
 
-Codify `Projectiles` (`cursors.projectiles`) using the Registry Load-Time Rotation strategy (`ProjectileFrame`, `RotatedHitbox`, and `render.rotate`), allowing a single canonical projectile texture frame to be quantized into arbitrary angular increments ($\Delta\theta \in (0, 360]$) in VRAM without modifying the 60 Hz `Screen._assemble()` / `render.render()` pipeline. Configure equipment-level projectile bindings and release frames on `SheetProperties`, resolve ranged release triggers and charged launch speed through `CombatMap`, track button hold duration in `Device` and `PlayerMechanics`, and resolve impacts in `ProjectileMechanics`.
+Codify `Projectiles` (`cursors.projectiles`) using the Registry Load-Time Rotation strategy (`ProjectileFrame`, `RotatedHitbox`, and `render.rotate`), allowing a single canonical projectile texture frame to be quantized into arbitrary angular increments ($\Delta\theta \in (0, 360]$) in VRAM without modifying the 60 Hz `Screen._assemble()` / `render.render()` pipeline. Enforce strict Equipment admissibility in `AnimationMap.action()` across `TransitionMechanics` and `PlayerMechanics`, compile the Weapon-to-Projectile `ProjectileIndex` relation from `CursorProperties` via `from_properties()`, track per-intention button hold duration in `Device` and `PlayerMechanics`, fork `CombatMechanics` cleanly between melee (`_melee`) and ranged (`_project`) via `CombatMap` and `ProjectileIndex`, and resolve projectile flight impacts in `ProjectileMechanics`.
 
 ##### Specification
 
-1. **Angular Partitioning (`CursorProperties` & `MotorState`)**:
-    * Extend `CursorProperties` (`src/app/models/properties/assets.py`) with `rotation: int = 90` (degrees per discrete rotational step, where $360 \bmod \text{rotation} == 0$). Because `rotation` defines the static frame-space partitioning of the image file, it belongs on `CursorProperties`.
+1. **Angular Partitioning & Relational Indexing (`CursorProperties` & `MotorState`)**:
+    * Extend `CursorProperties` (`src/app/models/properties/assets.py`) with:
+      * `rotation: int = 90`: discrete rotational step in degrees ($360 \bmod \text{rotation} == 0$) governing load-time texture strip partitioning.
+      * `weapons: List[Enumerated[WeaponPalette]] = field(default_factory=list)`: relational foreign keys declaring which Weapons emit this Projectile.
+    * Align `src/assets/cursors/main.yaml` to declare `rotation` and `weapons` (e.g., `arrow` $\leftarrow$ `[longbow]`, `bolt` $\leftarrow$ `[crossbow]`, `cannonball` $\leftarrow$ `[]`).
     * The discrete set of valid projectile angles is $\Theta = \{ k \cdot \text{rotation} \mid 0 \le k < 360 // \text{rotation} \}$.
-    * Extend `MotorState` (`src/app/models/state/assets/cursors.py`) with `angle: int = 0` ($\text{angle} \in \Theta$), `speed: int = 200`, and `owner: Optional[str] = None`. Because launch speed, angle, and shooter identity vary per deployed projectile instance, they reside on `MotorState`.
+    * Extend `MotorState` (`src/app/models/state/assets/cursors.py`) with `angle: int = 0` ($\text{angle} \in \Theta$), `speed: int = 200`, and `owner: Optional[str] = None`.
 2. **Load-Time Texture Strip Synthesis (`ProjectileFrame` & `Registry`)**:
     * Authored projectile `.png` files contain a single canonical frame of dimensions $(W, L)$ oriented at $\theta = 0^\circ$ ($+x$, `Directions.RIGHT`).
     * `ProjectileFrame.index(id, properties)` maps each discrete angle key `f"{id}-{angle}"` ($\text{angle} = k \cdot \text{properties.rotation}$) to crop coordinate $(k \cdot W, 0, W, L)$ for $0 \le k < 360 // \text{properties.rotation}$.
-    * `Registry._get_or_load_texture()` checks whether `asset_key in self.properties.cursors.projectiles` and invokes `render.rotate(raw_tex, self.properties.cursors.projectiles[asset_key].rotation)`, which allocates a target `TexturePtr` of dimensions $(N \cdot W, L)$ where $N = 360 // \text{rotation}$ and stamps the base texture $N$ times clockwise via `SDL_RenderCopyEx`.
+    * `Registry._get_or_load_texture()` checks `asset_key in self.properties.cursors.projectiles` and invokes `render.rotate(raw_tex, self.properties.cursors.projectiles[asset_key].rotation)`, allocating a target `TexturePtr` of dimensions $(N \cdot W, L)$ ($N = 360 // \text{rotation}$) and stamping each rotated cell via `SDL_RenderCopyEx` with per-cell clip isolation (`SDL_RenderSetClipRect`), then destroys `raw_tex`.
     * `ProjectileFrame.keys(id, state)` projects `state.angle` directly to `[(f"{id}-{state.angle}", 0, 0)]`.
 3. **Rotated AABB Hitbox Projection (`RotatedHitbox`)**:
-    * Given frame dimensions $(W, L)$ with center $(c_x, c_y) = (W / 2, L / 2)$, `RotatedHitbox.get(properties, state, elevation)` rotates each base `Hitbox` $(x_0, y_0, w_0, l_0)$ in `properties.hitboxes` (falling back to the full frame bounds $(0, 0, W, L)$ when `properties.hitboxes` is `None`) by $\Delta\theta = \text{state.angle}$ clockwise around $(c_x, c_y)$:
+    * Given frame dimensions $(W, L)$ with center $(c_x, c_y) = (W / 2, L / 2)$, `RotatedHitbox.get(properties, state, elevation)` rotates each base `Hitbox` $(x_0, y_0, w_0, l_0)$ in `properties.hitboxes` (falling back to $(0, 0, W, L)$ when `properties.hitboxes` is `None`) by $\Delta\theta = \text{state.angle}$ clockwise around $(c_x, c_y)$:
 
     $$
     h_{cx} = \left(x_0 + \frac{w_0}{2}\right) - c_x, \qquad h_{cy} = \left(y_0 + \frac{l_0}{2}\right) - c_y
@@ -41,20 +44,30 @@ Codify `Projectiles` (`cursors.projectiles`) using the Registry Load-Time Rotati
     c_t(\text{code}) = \begin{cases} c_{t-1}(\text{code}) + 1 & \text{if } \text{pressed}(\text{code}) = 1 \\ 0 & \text{if } \text{pressed}(\text{code}) = 0 \end{cases}
     $$
 
-    * `WorldPayload` (`src/app/models/state/devices.py`) is extended with `hold: int = 0`, populated with $c_t(v)$ for the active held intention scancode $v$ while preserving rising-edge singularity (`c_t(v) == 1`) on `WorldPayload.intention`.
-    * `MutatorParameters` (`src/app/models/state/core.py`) is extended with `charge: int = 0` to store the accumulated `attack` hold duration on `SheetState` / `SpriteState`.
-5. **Weapon-to-Projectile Relation (`app.game.logic.relations`) & `CombatMap` Fork**:
-    * Partition combat actions in `src/app/static/semantics.py` into `MeleeActions` (`slash`, `thrust`) and `ProjectileActions` (`shoot`, `cast`).
-    * Codify the mapping between ranged Weapons (`sheets.weapons`) and Projectiles (`cursors.projectiles`) in configuration and compile it into a `Relation` index (`ProjectileIndex` / `CombatIndex` in `src/app/game/logic/relations/`) during `Builder.build_relations()`, injecting it into `CombatMechanics` via `src/data/config/mechanics/main.yaml`.
-    * Ranged weapons in `src/assets/sheets/equipments/weapons/main.yaml` configure their release frame and directional spawn offset using standard `<action>-<direction>-<frame>` `hitboxes` resolved by `AttackHitbox`.
-    * `CombatMechanics.update()` resolves `action = CombatMap.action(attacker.state, board.equipment)` and forks on action group:
-        * `action in MeleeActions`: executes `self._melee(attacker, board)` using `CombatMap.attackboxes(attacker.state, board.equipment, attacker.elevation)`.
-        * `action in ProjectileActions`: executes `self._project(attacker, board)` using `CombatMap.release(attacker.state, board.equipment, attacker.elevation)` to pull the active `AttackHitbox` as the spawn origin/direction on the release frame and `CombatMap.projectile(attacker.state, board.equipment, self.relation)` to resolve the projectile ID and charged speed $s(S, n)$:
+    * `WorldPayload` (`src/app/models/state/devices.py`) is extended with `holds: Dict[str, int] = field(default_factory=dict)`, recording $c_t(v)$ for every currently held intention key while preserving rising-edge singularity (`c_t(v) == 1`) on `WorldPayload.intention`.
+    * `MutatorParameters` (`src/app/models/state/core.py`) is extended with `charge: int = 0` to store accumulated `attack` hold duration on `SheetState` / `SpriteState`.
+5. **Disjoint Map Architecture (`AnimationMap` & `CombatMap`) and `ProjectileIndex` Relation**:
+    * **`AnimationMap`** (`src/app/game/logic/modules/maps/animation.py`) is the sole projection from `(Intention, Slots, EquipmentGroup)` $\to$ `Optional[Actions]` and `(Position, Target)` $\to$ `Directions`:
+      * Equipment-gated intentions (`ATTACK`, `MINE`, `BUILD`) return `None` when the required Equipment slot is empty or unconfigured, blocking inadmissible transitions inside `TransitionMechanics` and `PlayerMechanics`.
+      * Whenever `state.animation.action` changes in `TransitionMechanics` or `PlayerMechanics`, `frame` resets to `0` and `tick` resets to `1`.
+    * **`ProjectileIndex`** (`src/app/game/logic/relations/projectiles.py`) compiles `weapon_id -> projectile_id` via `ProjectileIndex.from_properties(properties.cursors.projectiles)` during `Builder.build_relations()` and is injected into `CombatMechanics` via `relations: [ projectiles ]` in `src/data/config/mechanics/main.yaml`.
+    * Ranged weapons in `src/assets/sheets/equipments/weapons/main.yaml` configure their release frame and directional spawn aperture using standard `<action>-<direction>-<frame>` `hitboxes` resolved by `AttackHitbox`.
+    * **`CombatMap`** (`src/app/game/logic/modules/maps/combat.py`) exposes strictly combat-domain projections (no `CombatMap.action`):
+      * `CombatMap.projectile(state, relation) -> Optional[str]`: resolves the projectile ID bound to `state.slots.equipment.weapon`.
+      * `CombatMap.attackboxes(state, equipment, elevation) -> List[Hitbox]`: resolves melee `AttackHitbox` primitives.
+      * `CombatMap.release(state, equipment, elevation) -> Optional[Tuple[Position, str]]`: pulls the active `AttackHitbox` on the frame entry tick, returning the world-space spawn center `(x_a + hb.x + hb.w // 2, y_a + hb.y + hb.l // 2)` and launch direction `state.animation.direction`.
+      * `CombatMap.speed(state, equipment) -> int`: computes charged launch speed $s(S, n)$ from strength $S$, draw ticks $n$, release frame index $F_{\text{release}} = \text{state.animation.frame}$, and active action `delay`:
 
-    $$
-    N_{\max} = \max(1,\; \text{state.animation.frame} \cdot \text{delay}), \qquad \tau(n) = \min\left(1.0,\; \frac{n}{N_{\max}}\right), \qquad s(S, n) = \operatorname{round}\Big(\alpha S \big(1 + \tau(n)\big)\Big)
-    $$
+      $$
+      N_{\max} = \max(1,\; \text{state.animation.frame} \cdot \text{delay}), \qquad \tau(n) = \min\left(1.0,\; \frac{n}{N_{\max}}\right), \qquad s(S, n) = \operatorname{round}\Big(\alpha S \big(1 + \tau(n)\big)\Big)
+      $$
 
+    * **`CombatMechanics.update()`** queries `projectile_id = CombatMap.projectile(attacker.state, self.relation)` and forks on combat modality:
+      * `projectile_id is not None`: executes `self._project(attacker, projectile_id, board)`.
+      * `projectile_id is None`: collects `CombatMap.attackboxes(...)` and executes batched `self._melee(melee_attackers, layer, board)`.
+6. **Flight Resolution & Impact (`Cradle` & `ProjectileMechanics`)**:
+    * `Cradle.spawn_projectile()` centers the projectile's top-left origin around the release coordinate using `(-props.dimensions.w // 2, -props.dimensions.l // 2)`, allocates distinct `Position` instances for `position` and `initial`, quantizes the launch angle onto `properties.rotation`, derives `Velocity(vx, vy)` (clamping cardinal trig drift to exact axis vectors), and initializes `MotorState` with `elevation` and `owner`.
+    * `ProjectileMechanics.update()` evaluates range/layer-bound expiration and elevation-partitioned intersections against `obstacles`, `SPRITES`, `PLAYERS`, and `REACTABLES`, ignoring `target.name == projectile.state.owner`, applying impact damage $\max(1, \operatorname{round}(\text{speed} / \alpha) - \text{defense})$, and removing expired/impacted projectiles immediately via `board.remove()`.
 
 ##### Architectural Analysis I
 
@@ -283,7 +296,6 @@ def update(self, board, delta, bus, payload):
     for attacker in attckers:
         # PHASE 1: Determine if Action is possible.
         action = CombatMap.action(attacker.state, board.equipment)
-        attacker.state.animation.action
 
         # PHASE 2: Fork on type of Action
         if action in MeleeActions:
@@ -294,10 +306,10 @@ def update(self, board, delta, bus, payload):
 ```
 
 * CombatMap.action: maps the current Equipment and Intent to an Action. Ensures Sprites cannot enter into Actions without the correct Equipment. 
-* CombatMap.release: pulls the AttackHitbox. Instead of using it to calculate intersections and attack vectors, it uses the AttackHitbox to determine where and in what direction the Projectil should be spawned.
+* CombatMap.release: pulls the AttackHitbox. Instead of using it to calculate intersections and attack vectors, it uses the AttackHitbox to determine where and in what direction the Projectile should be spawned.
 * CombatMap.projectile: projectile mapping.
 
-**NOTE**: this should be taken as gospel. I am attempting to clarify the logical flow.
+**NOTE**: this should not be taken as gospel. I am attempting to clarify the logical flow.
 
 No extraneous properties necessary so far. To account for the relation of Projectile to Weapon, rather than encode this into Properties, which are models of Assets in isolation, the proposed mapping is actually a *Relation* between Asset types. Thus, it calls for an addition to the Relations module. `app.game.logic.relations` is currently utilized for mapping Shorelines to Fluids (ShorelineIndex), and mapping Crafts to Material Behaviors (MaterialIndex). For example,
 
@@ -374,7 +386,7 @@ if target_pos:
 
 This maps the Sprite Intention to an (Action, Direction)
 
-2. PlayerMechanics similarly maps Intention paylods from the device to Player (Action, Direction):
+2. PlayerMechanics similarly maps Intention payloads from the device to Player (Action, Direction):
 
 ```python
 player.state.animation.action = AnimationMap.action(
@@ -535,23 +547,230 @@ Projectiles and Weapons are inherently relational. A `crossbow` cannot fire a Pr
 
 The question is what is the "independent" variable and what is the "dependent" variable. In my head, I see Projectiles are "dependent" on the existence of the Weapon, so it seems like Projectiles should contain the relational indexing properties. 
 
+##### Architectural Analysis VI
+
+###### 1. Concept of "Maps" and the Intention $\to$ Action $\to$ Combat Workflow
+
+The tension identified in **User Review V** exposes two separate flaws in the previous design: (a) a conflated responsibility between `AnimationMap` and `CombatMap`, and (b) a temporal/ownership contradiction over where an Intention becomes an Action and where Equipment admissibility is enforced.
+
+**1.1 Mathematical Ontology of `app.game.logic.modules.maps`**
+
+A **Map** is a stateless morphism translating one Engine state-space into another. Each Map must own a **disjoint codomain** so that no two Maps compete over the same state transition:
+
+| Map | Domain | Codomain | Consumers (Mechanics) |
+| :--- | :--- | :--- | :--- |
+| **`AnimationMap`** | Intentional & Spatial State $\times$ Equipment | Animation Space (`Action`, `Direction`) | `TransitionMechanics`, `PlayerMechanics` |
+| **`CombatMap`** | Active Combat/Animation State $\times$ Equipment $\times$ `ProjectileIndex` | Combat Resolution Artifacts (`projectile_id`, `Hitbox`, `(spawn_pos, direction)`, `speed`) | `CombatMechanics` |
+
+Formally:
+
+1. **`AnimationMap`** projects from **Intentional/Spatial Space** into **Animation Space**:
+   $$\text{AnimationMap.action}: \text{Intentions} \times \text{Slots} \times \text{EquipmentGroup} \longrightarrow \text{Actions} \cup \{\bot\}$$
+   $$\text{AnimationMap.direction}: \text{Position} \times \text{Position} \longrightarrow \text{Directions}$$
+
+2. **`CombatMap`** projects from an **already-validated Combat Animation State** into **Combat Resolution Space**:
+   $$\text{CombatMap.projectile}: \text{Slots.Equipment} \times \text{ProjectileIndex} \longrightarrow \text{ProjectileID} \cup \{\bot\}$$
+   $$\text{CombatMap.attackboxes}: \text{SheetState} \times \text{EquipmentGroup} \times \mathbb{Z}_{\ge 0} \longrightarrow \mathcal{P}(\text{Hitbox})$$
+   $$\text{CombatMap.release}: \text{SheetState} \times \text{EquipmentGroup} \times \mathbb{Z}_{\ge 0} \longrightarrow (\text{Position} \times \text{Directions}) \cup \{\bot\}$$
+   $$\text{CombatMap.speed}: \text{SheetState} \times \text{EquipmentGroup} \longrightarrow \mathbb{Z}_{>0}$$
+
+Under this separation, **`CombatMap.action` is eliminated**. `AnimationMap` is the single source of truth for `(Intention, Equipment) -> Action`, and `CombatMechanics` is strictly a *consumer* of `AnimationState`, never a mutator of `state.animation.action` or `state.intention`.
+
+**1.2 Where and When Equipment Permissibility Is Enforced**
+
+In `Engine._play()`, `core` mechanics (`AnimationMechanics`) execute every tick before `world` mechanics (`PlayerMechanics` $\to$ `TransitionMechanics` $\to$ `MotionMechanics` $\to$ `CombatMechanics` $\to$ `ProjectileMechanics`), followed by `Engine._render()`.
+
+Why the previous `CombatMap.action` proposal broke this lifecycle:
+
+1. **Intention Silo Violation**: Only `TransitionMechanics` (Sprites) and `PlayerMechanics` (Player) are permitted to mutate `state.intention`. If `TransitionMechanics` enters `Intentions.ATTACK` without checking Equipment admissibility, `CombatMechanics` cannot legally revert `state.intention` when it discovers no weapon is slotted.
+2. **Stale/Illegal Animation Frames**: Currently, `AnimationMap.action()` silently falls back to `Actions.CAST` (for `ATTACK`/`BUILD`) and `Actions.THRUST` (for `MINE`) when the corresponding equipment slot is `None`. This allows an unequipped Sprite or Player to enter an animated combat state and render invalid frames before `CombatMechanics` ever executes.
+3. **Action-Change Frame Reset Missing**: In `TransitionMechanics.update()`, mutating `sprite.state.animation.action` without resetting `frame = 0` and `tick = 1` when the action changes risks immediate out-of-bounds frame keys (e.g., transitioning from `walk` frame `7` into 6-frame `slash`) or skipping/prematurely triggering a weapon's release frame.
+
+**Resolution — Strict Admissibility Gate in `AnimationMap.action()`**:
+* `AnimationMap.action(state, equipment, intention=None) -> Optional[Actions]` evaluates `target_intent = intention or state.intention`:
+  * For equipment-gated Intentions (`ATTACK` $\to$ `slots.equipment.weapon`, `MINE` $\to$ `slots.equipment.tool`, `BUILD` $\to$ `slots.equipment.utility`), look up the slotted asset in `equipment`. If the slot is empty or the asset declares no `actions`, return `None` ($\bot$).
+  * For non-equipment-gated Intentions (`StaticIntentions`, `NavigationIntentions`, `USE`, etc.), return `Actions.WALK`.
+* **In `TransitionMechanics` (Sprites)**:
+  1. Evaluate `next_intent` via the Intention Transition `Executor`.
+  2. Before committing `next_intent != current_intent`, validate `AnimationMap.action(sprite.state, board.equipment, intention=next_intent)`. If it returns `None`, **reject the transition** cleanly inside the Intention Silo.
+  3. Resolve `action = AnimationMap.action(sprite.state, board.equipment)`. If `None` (e.g., equipment was unequipped mid-state), fall back to `Intentions.IDLE` and `Actions.WALK`.
+  4. If `action != prev_action`, reset `sprite.state.animation.frame = 0` and `sprite.state.animation.tick = 1`.
+* **In `PlayerMechanics` (Player)**:
+  1. When `payload.world.intention` arrives, validate `AnimationMap.action(player.state, board.equipment, intention=intention)`. If `None`, ignore the trigger rather than locking the Player into a phantom blocking animation.
+  2. Reset `frame = 0`, `tick = 1` on action change and update `mutators.parameters.charge` during `Intentions.ATTACK`.
+
+**1.3 Resolving the Combat Fork (`crossbow` / `spear` LPC Polymorphism)**
+
+A second subtle issue existed in forking `CombatMechanics` via `MeleeActions` (`slash`, `thrust`) vs. `ProjectileActions` (`shoot`, `cast`):
+* Under the LPC specification, `Action` is a **spritesheet row layout**, not a combat modality.
+* `spear` (melee) and `crossbow` (ranged) **both** animate on `lpc-thrust` (`Actions.THRUST`). Forking on `action in MeleeActions` would misclassify `crossbow` as a melee weapon and prevent it from ever spawning a `bolt`.
+
+Forking `CombatMechanics` directly on `CombatMap.projectile(attacker.state, self.relation)` resolves this completely:
+* `ProjectileIndex.resolve(weapon_id)` partitions weapons by their true combat modality:
+  * **Ranged Weapon** (`projectile_id is not None`): `longbow -> arrow` (`SHOOT`), `crossbow -> bolt` (`THRUST`) $\implies$ routes to `self._project(attacker, projectile_id, board)`.
+  * **Melee Weapon** (`projectile_id is None`): `longsword -> None` (`SLASH`), `spear -> None` (`THRUST`) $\implies$ routes to `self._melee(melee_attackers, layer, board)`.
+* `MeleeActions` and `ProjectileActions` enums are no longer needed at all, removing an artificial coupling between combat dispatch and LPC row names.
+
+```mermaid
+flowchart TD
+    subgraph Core["Core Pipeline (Tick t)"]
+        A["AnimationMechanics<br/>Advances tick & frame for animated entities"]
+    end
+
+    subgraph Intentional["World Pipeline — Stage 1: Intentional Projection"]
+        B["PlayerMechanics / TransitionMechanics"] --> C["AnimationMap.action(state, equipment, candidate_intent)"]
+        C --> D{"Permissible<br/>(Action != None)?"}
+        D -- No --> E["Reject Transition / Hold IDLE<br/>(Intention Silo preserved)"]
+        D -- Yes --> F["Commit Intention & Action<br/>Reset frame=0, tick=1 on Action change<br/>Resolve Direction via AnimationMap.direction"]
+    end
+
+    subgraph Combat["World Pipeline — Stage 2: Combat Resolution"]
+        G["CombatMechanics.update()"] --> H["Filter state.intention == Intentions.ATTACK"]
+        H --> I["projectile_id = CombatMap.projectile(state, ProjectileIndex)"]
+        I -- "projectile_id is not None" --> J["self._project(attacker, projectile_id, board)"]
+        J --> K["release = CombatMap.release(state, equipment, elevation)<br/>(AttackHitbox on entry tick)"]
+        K -- "Release Frame" --> L["speed = CombatMap.speed(state, equipment)<br/>Cradle.spawn_projectile(...) -> board.add()"]
+        I -- "projectile_id is None" --> M["CombatMap.attackboxes(state, equipment, elevation)"]
+        M --> N["self._melee(melee_attackers, layer, board)"]
+    end
+
+    subgraph Resolution["World Pipeline — Stage 3: Flight & Impact"]
+        O["MotionMechanics: integrate projectile velocity"] --> P["ProjectileMechanics: range/bounds & elevation-partitioned impacts"]
+    end
+
+    Core --> Intentional --> Combat --> Resolution
+```
+
+###### 2. Projectile–Weapon Relation (`ProjectileIndex.from_properties`)
+
+**2.1 Independent vs. Dependent Variable Analysis**
+
+| Relation | Independent Variable(s) (Domain) | Dependent Asset (Codomain) | Where Foreign Keys Live | Factory Method |
+| :--- | :--- | :--- | :--- | :--- |
+| **`ShorelineIndex`** | `(tile_id, fluid_id, [season])` | `shoreline_id` (`geography.shorelines`) | `GeographyProperties` (`tile`, `fluid`) | `ShorelineIndex.from_properties(properties.geography.shorelines)` |
+| **`ProjectileIndex`** | `weapon_id` (`sheets.weapons`) | `projectile_id` (`cursors.projectiles`) | `CursorProperties` (`weapons`) | `ProjectileIndex.from_properties(properties.cursors.projectiles)` |
+
+Why **Projectiles** are the dependent variable and should hold the relational indexing property:
+
+1. **Ontology of `Cursors`**: As defined in `01-assets.md`, *Cursors are Assets that bind to other Asset States* (`expressions` bind to Sprite Psyche; `projectiles` bind to Weapon combat releases). A Projectile (`arrow`, `bolt`) is ontologically dependent on the Weapon(s) that fire it, whereas a Weapon is a Sheet that can exist without Projectiles.
+2. **Preserving `SheetProperties` Purity**: `SheetProperties` serves 7 distinct Instances (`sprites`, `pixies`, `armor`, `shields`, `tools`, `utilities`, `weapons`) plus all melee weapons. Keeping weapon-to-projectile keys off `SheetProperties` avoids polluting non-ranged Sheets. `CursorProperties` serves only `expressions` and `projectiles`.
+3. **Many-to-One Cardinality (`weapons: List[Enumerated[WeaponPalette]]`)**:
+   * Declaring `weapons: List[Enumerated[WeaponPalette]] = field(default_factory=list)` on `CursorProperties` allows multiple weapons to share one projectile asset (e.g., `shortbow` and `longbow` both mapping to `arrow`) without duplicating `.png` files.
+   * Non-weapon-bound projectiles (e.g., `cannonball`) and `cursors.expressions` (`bubbles`) cleanly default to `weapons: []`.
+   * Strict `Enumerated[WeaponPalette]` typing validates all declared weapon references at boot via Pydantic `TypeAdapter`.
+   * `ProjectileIndex.from_properties(properties.cursors.projectiles)` compiles the $O(1)$ lookup map `weapon_id -> projectile_id`, raising an error if two projectiles claim the same `weapon_id`, eliminating any need for a separate configuration YAML file.
+
+**2.2 Additional Design Refinements Identified During Grooming**
+
+1. **Concurrent Intention Hold Isolation (`WorldPayload.holds`)**:
+   * Using a single scalar `WorldPayload.hold: int` with an early `break` in `Keyboard.poll()` causes two edge-case bugs: (a) holding an earlier intention key suppresses rising-edge triggers on later intention keys, and (b) tapping another intention key (e.g. `interact`) while locked in `ATTACK` corrupts the bow's `charge` count.
+   * Replacing scalar `hold: int` with `holds: Dict[str, int] = field(default_factory=dict)` (recording consecutive pressed ticks per active intention key while keeping `world_payload.intention` strictly rising-edge and singular) allows `PlayerMechanics` to query `payload.world.holds.get(Intentions.ATTACK, 0)` unambiguously and cleanly supports future held intentions (`block`, `sprint`).
+2. **Release Origin Centering & Self-Contained Impact Power**:
+   * `CombatMap.release()` should resolve the world-space center of the active `AttackHitbox` $(x_a + x_h + w_h // 2,\; y_a + y_h + l_h // 2)$, and `Cradle.spawn_projectile()` should offset the projectile's top-left corner by $(-W_p // 2, -L_p // 2)$ so rotated square projectile textures (`41x41` arrow, `32x32` bolt, `16x16` cannonball) emerge dead-center from the weapon's release point.
+   * Because launch speed already encodes both attacker strength and draw charge ($s(S, n) = \operatorname{round}(\alpha S(1 + \tau(n)))$), `ProjectileMechanics` can compute self-contained impact damage as $\max(1,\; \operatorname{round}(\text{speed} / \alpha) - \text{defense})$—requiring no extra damage field on `MotorState` and remaining valid even if the shooter changes layers or dies mid-flight.
+
+**Overview**
+
+Codify `Projectiles` (`cursors.projectiles`) using the Registry Load-Time Rotation strategy (`ProjectileFrame`, `RotatedHitbox`, and `render.rotate`), allowing a single canonical projectile texture frame to be quantized into arbitrary angular increments ($\Delta\theta \in (0, 360]$) in VRAM without modifying the 60 Hz `Screen._assemble()` / `render.render()` pipeline. Enforce strict Equipment admissibility in `AnimationMap.action()` across `TransitionMechanics` and `PlayerMechanics`, compile the Weapon-to-Projectile `ProjectileIndex` relation from `CursorProperties` via `from_properties()`, track per-intention button hold duration in `Device` and `PlayerMechanics`, fork `CombatMechanics` cleanly between melee (`_melee`) and ranged (`_project`) via `CombatMap` and `ProjectileIndex`, and resolve projectile flight impacts in `ProjectileMechanics`.
+
+##### Specification
+
+1. **Angular Partitioning & Relational Indexing (`CursorProperties` & `MotorState`)**:
+    * Extend `CursorProperties` (`src/app/models/properties/assets.py`) with:
+      * `rotation: int = 90`: discrete rotational step in degrees ($360 \bmod \text{rotation} == 0$) governing load-time texture strip partitioning.
+      * `weapons: List[Enumerated[WeaponPalette]] = field(default_factory=list)`: relational foreign keys declaring which Weapons emit this Projectile.
+    * Align `src/assets/cursors/main.yaml` to declare `rotation` and `weapons` (e.g., `arrow` $\leftarrow$ `[longbow]`, `bolt` $\leftarrow$ `[crossbow]`, `cannonball` $\leftarrow$ `[]`).
+    * The discrete set of valid projectile angles is $\Theta = \{ k \cdot \text{rotation} \mid 0 \le k < 360 // \text{rotation} \}$.
+    * Extend `MotorState` (`src/app/models/state/assets/cursors.py`) with `angle: int = 0` ($\text{angle} \in \Theta$), `speed: int = 200`, and `owner: Optional[str] = None`.
+2. **Load-Time Texture Strip Synthesis (`ProjectileFrame` & `Registry`)**:
+    * Authored projectile `.png` files contain a single canonical frame of dimensions $(W, L)$ oriented at $\theta = 0^\circ$ ($+x$, `Directions.RIGHT`).
+    * `ProjectileFrame.index(id, properties)` maps each discrete angle key `f"{id}-{angle}"` ($\text{angle} = k \cdot \text{properties.rotation}$) to crop coordinate $(k \cdot W, 0, W, L)$ for $0 \le k < 360 // \text{properties.rotation}$.
+    * `Registry._get_or_load_texture()` checks `asset_key in self.properties.cursors.projectiles` and invokes `render.rotate(raw_tex, self.properties.cursors.projectiles[asset_key].rotation)`, allocating a target `TexturePtr` of dimensions $(N \cdot W, L)$ ($N = 360 // \text{rotation}$) and stamping each rotated cell via `SDL_RenderCopyEx` with per-cell clip isolation (`SDL_RenderSetClipRect`), then destroys `raw_tex`.
+    * `ProjectileFrame.keys(id, state)` projects `state.angle` directly to `[(f"{id}-{state.angle}", 0, 0)]`.
+3. **Rotated AABB Hitbox Projection (`RotatedHitbox`)**:
+    * Given frame dimensions $(W, L)$ with center $(c_x, c_y) = (W / 2, L / 2)$, `RotatedHitbox.get(properties, state, elevation)` rotates each base `Hitbox` $(x_0, y_0, w_0, l_0)$ in `properties.hitboxes` (falling back to $(0, 0, W, L)$ when `properties.hitboxes` is `None`) by $\Delta\theta = \text{state.angle}$ clockwise around $(c_x, c_y)$:
+
+    $$
+    h_{cx} = \left(x_0 + \frac{w_0}{2}\right) - c_x, \qquad h_{cy} = \left(y_0 + \frac{l_0}{2}\right) - c_y
+    $$
+
+    $$
+    \begin{pmatrix} h'_{cx} \\ h'_{cy} \end{pmatrix} = \begin{pmatrix} \cos\Delta\theta & -\sin\Delta\theta \\ \sin\Delta\theta & \cos\Delta\theta \end{pmatrix} \begin{pmatrix} h_{cx} \\ h_{cy} \end{pmatrix}
+    $$
+
+    $$
+    w'(\Delta\theta) = \max\Big(1,\; \operatorname{round}\big(w_0 |\cos\Delta\theta| + l_0 |\sin\Delta\theta|\big)\Big), \qquad l'(\Delta\theta) = \max\Big(1,\; \operatorname{round}\big(w_0 |\sin\Delta\theta| + l_0 |\cos\Delta\theta|\big)\Big)
+    $$
+
+    $$
+    x'(\Delta\theta) = \operatorname{round}\left(c_x + h'_{cx} - \frac{w'(\Delta\theta)}{2}\right), \qquad y'(\Delta\theta) = \operatorname{round}\left(c_y + h'_{cy} - \frac{l'(\Delta\theta)}{2}\right)
+    $$
+
+4. **Button Hold Counter (`Keyboard` & `WorldPayload`) and Charge State (`MutatorParameters`)**:
+    * `Keyboard` (`src/app/game/devices.py`) accumulates consecutive press ticks per scancode in `self._last_state`:
+
+    $$
+    c_t(\text{code}) = \begin{cases} c_{t-1}(\text{code}) + 1 & \text{if } \text{pressed}(\text{code}) = 1 \\ 0 & \text{if } \text{pressed}(\text{code}) = 0 \end{cases}
+    $$
+
+    * `WorldPayload` (`src/app/models/state/devices.py`) is extended with `holds: Dict[str, int] = field(default_factory=dict)`, recording $c_t(v)$ for every currently held intention key while preserving rising-edge singularity (`c_t(v) == 1`) on `WorldPayload.intention`.
+    * `MutatorParameters` (`src/app/models/state/core.py`) is extended with `charge: int = 0` to store accumulated `attack` hold duration on `SheetState` / `SpriteState`.
+5. **Disjoint Map Architecture (`AnimationMap` & `CombatMap`) and `ProjectileIndex` Relation**:
+    * **`AnimationMap`** (`src/app/game/logic/modules/maps/animation.py`) is the sole projection from `(Intention, Slots, EquipmentGroup)` $\to$ `Optional[Actions]` and `(Position, Target)` $\to$ `Directions`:
+      * Equipment-gated intentions (`ATTACK`, `MINE`, `BUILD`) return `None` when the required Equipment slot is empty or unconfigured, blocking inadmissible transitions inside `TransitionMechanics` and `PlayerMechanics`.
+      * Whenever `state.animation.action` changes in `TransitionMechanics` or `PlayerMechanics`, `frame` resets to `0` and `tick` resets to `1`.
+    * **`ProjectileIndex`** (`src/app/game/logic/relations/projectiles.py`) compiles `weapon_id -> projectile_id` via `ProjectileIndex.from_properties(properties.cursors.projectiles)` during `Builder.build_relations()` and is injected into `CombatMechanics` via `relations: [ projectiles ]` in `src/data/config/mechanics/main.yaml`.
+    * Ranged weapons in `src/assets/sheets/equipments/weapons/main.yaml` configure their release frame and directional spawn aperture using standard `<action>-<direction>-<frame>` `hitboxes` resolved by `AttackHitbox`.
+    * **`CombatMap`** (`src/app/game/logic/modules/maps/combat.py`) exposes strictly combat-domain projections (no `CombatMap.action`):
+      * `CombatMap.projectile(state, relation) -> Optional[str]`: resolves the projectile ID bound to `state.slots.equipment.weapon`.
+      * `CombatMap.attackboxes(state, equipment, elevation) -> List[Hitbox]`: resolves melee `AttackHitbox` primitives.
+      * `CombatMap.release(state, equipment, elevation) -> Optional[Tuple[Position, str]]`: pulls the active `AttackHitbox` on the frame entry tick, returning the world-space spawn center `(x_a + hb.x + hb.w // 2, y_a + hb.y + hb.l // 2)` and launch direction `state.animation.direction`.
+      * `CombatMap.speed(state, equipment) -> int`: computes charged launch speed $s(S, n)$ from strength $S$, draw ticks $n$, release frame index $F_{\text{release}} = \text{state.animation.frame}$, and active action `delay`:
+
+      $$
+      N_{\max} = \max(1,\; \text{state.animation.frame} \cdot \text{delay}), \qquad \tau(n) = \min\left(1.0,\; \frac{n}{N_{\max}}\right), \qquad s(S, n) = \operatorname{round}\Big(\alpha S \big(1 + \tau(n)\big)\Big)
+      $$
+
+    * **`CombatMechanics.update()`** queries `projectile_id = CombatMap.projectile(attacker.state, self.relation)` and forks on combat modality:
+      * `projectile_id is not None`: executes `self._project(attacker, projectile_id, board)`.
+      * `projectile_id is None`: collects `CombatMap.attackboxes(...)` and executes batched `self._melee(melee_attackers, layer, board)`.
+6. **Flight Resolution & Impact (`Cradle` & `ProjectileMechanics`)**:
+    * `Cradle.spawn_projectile()` centers the projectile's top-left origin around the release coordinate using `(-props.dimensions.w // 2, -props.dimensions.l // 2)`, allocates distinct `Position` instances for `position` and `initial`, quantizes the launch angle onto `properties.rotation`, derives `Velocity(vx, vy)` (clamping cardinal trig drift to exact axis vectors), and initializes `MotorState` with `elevation` and `owner`.
+    * `ProjectileMechanics.update()` evaluates range/layer-bound expiration and elevation-partitioned intersections against `obstacles`, `SPRITES`, `PLAYERS`, and `REACTABLES`, ignoring `target.name == projectile.state.owner`, applying impact damage $\max(1, \operatorname{round}(\text{speed} / \alpha) - \text{defense})$, and removing expired/impacted projectiles immediately via `board.remove()`.
+
+##### Architectural Analysis V
+
+1. **Clarification of `AnimationMap` vs. `CombatMap` (Disjoint Codomains & Permissibility Gate)**:
+    * Removing `CombatMap.action` eliminates dual ownership of `AnimationState.action`. `AnimationMap` owns the Intentional-to-Animation boundary (`(Intention, Equipment) -> Optional[Action]`), while `CombatMap` owns the Combat-to-Geometry/Launch boundary (`projectile`, `attackboxes`, `release`, `speed`).
+    * Enforcing `AnimationMap.action(...) -> Optional[Actions]` inside `TransitionMechanics` and `PlayerMechanics` resolves Equipment permissibility *before* `AnimationMechanics` or `CombatMechanics` executes, upholding the Intention Silo invariant (`CombatMechanics` never mutates `intention` or `animation.action`) and eliminating unequipped fallback animations.
+    * Resetting `frame = 0` and `tick = 1` on `action` transitions inside `TransitionMechanics` prevents out-of-range frame misses (e.g., `walk` frame `7` carrying into 6-frame `slash`) and guarantees ranged weapons always traverse their draw frames cleanly into the release frame.
+2. **Eliminating LPC Action Polymorphism in Combat Dispatch**:
+    * Because LPC maps both `spear` (melee) and `crossbow` (ranged) onto `Actions.THRUST`, dispatching `CombatMechanics` via `MeleeActions` / `ProjectileActions` misroutes `crossbow` to melee.
+    * Forking `CombatMechanics.update()` on `CombatMap.projectile(attacker.state, self.relation) is not None` binds combat dispatch directly to the compiled Weapon-to-Projectile relation (`ProjectileIndex`), making `_melee` vs. `_project` completely invariant to LPC action row assignments.
+3. **Compiling `ProjectileIndex` via `from_properties` (Dependent-Variable Foreign Keys)**:
+    * Mirroring `ShorelineIndex.from_properties(properties.geography.shorelines)`, Projectiles (`cursors.projectiles`) are ontologically dependent on the Weapons (`sheets.weapons`) that fire them.
+    * Declaring `weapons: List[Enumerated[WeaponPalette]]` on `CursorProperties` keeps `SheetProperties` free of weapon/projectile pollution, supports many-to-one weapon sharing (`[longbow, shortbow] -> arrow`), validates references at boot via Pydantic, and compiles `ProjectileIndex` with zero additional configuration YAML files.
+4. **Concurrent Hold Tracking (`WorldPayload.holds`) & `cursors/main.yaml` Alignment**:
+    * Tracking `holds: Dict[str, int]` on `WorldPayload` avoids premature loop breaks in `Keyboard.poll()` and isolates `Intentions.ATTACK` hold duration from concurrent keypresses while maintaining strict rising-edge singularity on `WorldPayload.intention`.
+    * Aligning `src/assets/cursors/main.yaml` from `angle:` to `rotation:` removes the schema mismatch against `CursorProperties.rotation` and keeps `MotorState.angle` semantically distinct.
+
 ##### Goals
 
 ###### Goal: Implement `render.rotate` in Cython SDL2 Bindings
 
-Expose `SDL_Point`, `SDL_RendererFlip`, and `SDL_RenderCopyEx` in `src/libs/graphics/render.pyx` and implement `rotate(TexturePtr base_ptr, int rotation) -> TexturePtr` to pre-bake rotated projectile frames into a single horizontal `TexturePtr` strip during `Registry` texture loading when `asset_key in self.properties.cursors.projectiles`.
+Expose `SDL_Point`, `SDL_RendererFlip`, `SDL_RenderSetClipRect`, and `SDL_RenderCopyEx` in `src/libs/graphics/render.pyx` and implement `rotate(TexturePtr base_ptr, int rotation) -> TexturePtr` to pre-bake rotated projectile frames into a single horizontal `TexturePtr` strip during `Registry` texture loading when `asset_key in self.properties.cursors.projectiles`.
 
-###### Goal: Implement `ProjectileFrame` and `RotatedHitbox`
+###### Goal: Implement `ProjectileFrame`, `RotatedHitbox`, and `CursorProperties` Alignment
 
-Create `ProjectileFrame` (`src/app/assets/frames/cursors.py`) and `RotatedHitbox` (`src/app/assets/hitboxes/cursors.py`) and register them under `recipes.cursors.projectiles` in `src/data/config/recipes/main.yaml`.
+Align `CursorProperties` (`rotation`, `weapons`), `MotorState` (`angle`, `speed`, `owner`), and `src/assets/cursors/main.yaml`. Fix `ProjectileFrame` (`src/app/assets/frames/cursors.py`) and implement `RotatedHitbox` (`src/app/assets/hitboxes/cursors.py`).
 
-###### Goal: Track Intention Hold Duration in `Device` and `PlayerMechanics`
+###### Goal: Track Per-Intention Hold Duration in `Device` and `PlayerMechanics` and Enforce `AnimationMap` Admissibility
 
-Update `Keyboard.poll()` (`src/app/game/devices.py`) to accumulate consecutive press ticks per scancode in `self._last_state` and expose the active intention hold count on `WorldPayload.hold` (`src/app/models/state/devices.py`). Extend `MutatorParameters` (`src/app/models/state/core.py`) with `charge: int = 0` and update `PlayerMechanics.update()` to record the held tick count during `Intentions.ATTACK`.
+Update `Keyboard.poll()` (`src/app/game/devices.py`) to accumulate per-scancode press ticks in `self._last_state` and populate `WorldPayload.holds`. Extend `MutatorParameters` with `charge: int = 0`. Tighten `AnimationMap.action()` to return `Optional[Actions]` (`None` when required Equipment is missing) and update `TransitionMechanics` and `PlayerMechanics` to enforce admissibility, reset `frame`/`tick` on action change, and track `charge` during `Intentions.ATTACK`.
 
-###### Goal: Compile Weapon-to-Projectile `Relation` and Wire `CombatMap`, `Cradle`, `CombatMechanics`, and `ProjectileMechanics`
+###### Goal: Compile `ProjectileIndex` via `from_properties()` and Wire `CombatMap`, `Cradle`, `CombatMechanics`, and `ProjectileMechanics`
 
-Codify the weapon-to-projectile relation in configuration, compile it into a `Relation` index in `app.game.logic.relations` during `Builder.build_relations()`, and inject it into `CombatMechanics`. Configure release-frame `hitboxes` on ranged weapons in `src/assets/sheets/equipments/weapons/main.yaml`. Implement `CombatMap.action`, `CombatMap.release`, and `CombatMap.projectile`, fork `CombatMechanics.update()` into `_melee()` and `_project()` across `MeleeActions` and `ProjectileActions`, and resolve projectile trajectories and impacts in `Cradle.spawn_projectile()` and `ProjectileMechanics.update()`.
+Implement `ProjectileIndex.from_properties()` in `src/app/game/logic/relations/projectiles.py`, register it in `Builder.build_relations()`, and inject it into `CombatMechanics`. Configure directional release-frame `hitboxes` on ranged weapons in `src/assets/sheets/equipments/weapons/main.yaml`. Implement `CombatMap.projectile()`, `CombatMap.release()`, and `CombatMap.speed()`, fork `CombatMechanics.update()` into `_project()` and batched `_melee()`, and implement centered quantized launch and elevation-partitioned impact resolution in `Cradle.spawn_projectile()` and `ProjectileMechanics.update()`.
 
 ##### Tasks
 
@@ -559,32 +778,34 @@ Codify the weapon-to-projectile relation in configuration, compile it into a `Re
 
 *Objective*: Synthesize rotated texture strips in VRAM during `Registry` texture loading for assets registered under `properties.cursors.projectiles`.
 
-* [] Subtask: Declare `SDL_Point`, `SDL_RendererFlip`, and `SDL_RenderCopyEx` in `src/libs/graphics/render.pyx` and implement `rotate(TexturePtr base_ptr, int rotation) -> TexturePtr`.
-* [] Subtask: Update `CursorProperties` in `src/app/models/properties/assets.py` to include `rotation: int = 90` and update `MotorState` (`src/app/models/state/assets/cursors.py`) to include `angle: int = 0`, `speed: int = 200`, and `owner: Optional[str] = None`.
-* [] Subtask: Update `Registry._get_or_load_texture()` in `src/libs/graphics/registry.pyx` to check `asset_key in self.properties.cursors.projectiles`, invoke `render.rotate(raw_tex, self.properties.cursors.projectiles[asset_key].rotation)`, and destroy the temporary unrotated texture.
+* [ ] Subtask: Declare `SDL_Point`, `SDL_RendererFlip`, `SDL_FLIP_NONE`, `SDL_RenderSetClipRect`, and `SDL_RenderCopyEx` in `src/libs/graphics/render.pyx` and implement `rotate(TexturePtr base_ptr, int rotation) -> TexturePtr` with per-cell clip isolation.
+* [ ] Subtask: Update `CursorProperties` (`src/app/models/properties/assets.py`) with `rotation: int = 90` and `weapons: List[Enumerated[WeaponPalette]] = field(default_factory=list)`, align `src/assets/cursors/main.yaml` (`angle` $\to$ `rotation` and `weapons` entries for `arrow`, `bolt`, `cannonball`), and update `MotorState` (`src/app/models/state/assets/cursors.py`) with `angle: int = 0`, `speed: int = 200`, and `owner: Optional[str] = None`.
+* [ ] Subtask: Update `Registry._get_or_load_texture()` in `src/libs/graphics/registry.pyx` to check `self.properties.cursors and asset_key in self.properties.cursors.projectiles`, invoke `render.rotate(raw_tex, self.properties.cursors.projectiles[asset_key].rotation)`, and destroy the temporary unrotated texture.
 
 **2. Task: Implement `ProjectileFrame` and `RotatedHitbox`**
 
 *Objective*: Index rotated projectile frame crops and transform base AABB hitboxes by `state.angle`.
 
-* [] Subtask: Fix the `ProjectilFrame` class name typo and implement `ProjectileFrame` in `src/app/assets/frames/cursors.py` to index `f"{id}-{k * properties.rotation}"` crops and resolve `[(f"{id}-{state.angle}", 0, 0)]` in `keys()`.
-* [] Subtask: Implement `RotatedHitbox` in `src/app/assets/hitboxes/cursors.py` (and export in `src/app/assets/hitboxes/__init__.py`) to project base `properties.hitboxes` around the frame center by `state.angle` at the projectile's `elevation`.
+* [ ] Subtask: Rename `ProjectilFrame` to `ProjectileFrame` (and fix module header) in `src/app/assets/frames/cursors.py`, implementing `index()` for `f"{id}-{k * properties.rotation}"` crops and `keys()` returning `[(f"{id}-{state.angle}", 0, 0)]`.
+* [ ] Subtask: Implement `RotatedHitbox` in `src/app/assets/hitboxes/cursors.py` (and export in `src/app/assets/hitboxes/__init__.py`) to project base `properties.hitboxes` around `(W / 2, L / 2)` by `state.angle` at the projectile's `elevation`.
 * [x] Subtask: Register `ProjectileFrame` and `RotatedHitbox` under `cursors.projectiles` in `src/data/config/recipes/main.yaml`.
 
-**3. Task: Implement Button Hold Counter in `Device` and Charge Tracking in `PlayerMechanics`**
+**3. Task: Enforce `AnimationMap` Admissibility and Track Intention Hold Duration**
 
-*Objective*: Measure how many consecutive ticks an intention button is held and persist the charge count on `MutatorParameters`.
+*Objective*: Establish `AnimationMap.action()` as the single Equipment admissibility gate across `TransitionMechanics` and `PlayerMechanics`, measure consecutive press ticks per intention in `Keyboard`, and persist `attack` hold duration on `MutatorParameters.charge`.
 
-* [] Subtask: Add `hold: int = 0` to `WorldPayload` in `src/app/models/state/devices.py` and `charge: int = 0` to `MutatorParameters` in `src/app/models/state/core.py`.
-* [] Subtask: Update `Keyboard.poll()` in `src/app/game/devices.py` to increment per-scancode hold counters in `self._last_state` while pressed, reset to `0` on release, and populate `world_payload.hold` for the active intention key.
-* [] Subtask: Update `PlayerMechanics.update()` in `src/app/game/logic/mechanics/intentional/player.py` to accumulate `payload.world.hold` into `player.state.mutators.parameters.charge` during `Intentions.ATTACK` (preserving the held count if released before the animation completes) and reset `charge = 0` when returning to `Intentions.IDLE`.
+* [ ] Subtask: Update `AnimationMap.action(state, equipment, intention=None) -> Optional[Actions]` (`src/app/game/logic/modules/maps/animation.py`) to return `None` when required Equipment (`weapon` for `ATTACK`, `tool` for `MINE`, `utility` for `BUILD`) is missing or lacks actions, and update any unit tests expecting the legacy fallback actions.
+* [ ] Subtask: Update `TransitionMechanics.update()` (`src/app/game/logic/mechanics/intentional/transition.py`) to gate candidate Intention transitions via `AnimationMap.action(..., intention=next_intent)`, revert inadmissible active states to `Intentions.IDLE` / `Actions.WALK`, and reset `frame = 0`, `tick = 1` whenever `state.animation.action` changes.
+* [ ] Subtask: Add `holds: Dict[str, int] = field(default_factory=dict)` to `WorldPayload` (`src/app/models/state/devices.py`) and `charge: int = 0` to `MutatorParameters` (`src/app/models/state/core.py`).
+* [ ] Subtask: Update `Keyboard.poll()` (`src/app/game/devices.py`) to accumulate consecutive pressed ticks in `self._last_state`, reset released scancodes to `0`, populate `world_payload.holds[k]` for every active intention key, and preserve rising-edge singularity on `world_payload.intention`.
+* [ ] Subtask: Update `PlayerMechanics.update()` (`src/app/game/logic/mechanics/intentional/player.py`) to gate incoming Intentions via `AnimationMap.action()`, accumulate `payload.world.holds.get(Intentions.ATTACK, 0)` into `player.state.mutators.parameters.charge` during `Intentions.ATTACK` (preserving peak charge if released before release frame), and reset `charge = 0` upon returning to `Intentions.IDLE`.
 
-**4. Task: Implement Weapon-to-Projectile `Relation`, `CombatMap` Methods, and Ranged `CombatMechanics` / `ProjectileMechanics` Flow**
+**4. Task: Implement `ProjectileIndex`, `CombatMap`, `Cradle`, `CombatMechanics`, and `ProjectileMechanics`**
 
-*Objective*: Compile weapon-to-projectile relations from configuration, resolve release frames and spawn geometry via `AttackHitbox` and `CombatMap`, and fork `CombatMechanics` into `_melee` and `_project`.
+*Objective*: Compile the Weapon-to-Projectile relation from `CursorProperties`, resolve release-frame spawn geometry and charged launch speed via `CombatMap`, fork `CombatMechanics` on `ProjectileIndex`, and resolve projectile flight and impacts.
 
-* [] Subtask: Define `MeleeActions` and `ProjectileActions` in `src/app/static/semantics.py` and configure release-frame directional `hitboxes` on ranged weapons (`longbow`, `crossbow`) in `src/assets/sheets/equipments/weapons/main.yaml`.
-* [] Subtask: Codify the weapon-to-projectile relation in configuration, implement the relational index in `src/app/game/logic/relations/`, register it in `Builder.build_relations()`, and inject it into `CombatMechanics` in `src/data/config/mechanics/main.yaml`.
-* [] Subtask: Implement `CombatMap.action()`, `CombatMap.release()`, and `CombatMap.projectile()` in `src/app/game/logic/modules/maps/combat.py` to validate equipment actions, pull the release-frame `AttackHitbox` for projectile spawn position/direction, resolve the projectile ID from the relation index, and compute charged speed $s(S, n)$.
-* [] Subtask: Update `Cradle.spawn_projectile()` to clone `Position` for `position` and `initial`, quantize launch vectors onto the nearest multiple of `properties.rotation`, compute `Velocity(vx, vy)` from `angle` and `speed`, and populate `MotorState` at the shooter's `elevation`.
-* [] Subtask: Refactor `CombatMechanics.update()` to resolve `action = CombatMap.action(attacker.state, board.equipment)` and fork into `self._melee(attacker, board)` for `MeleeActions` and `self._project(attacker, board)` for `ProjectileActions`, and update `ProjectileMechanics.update()` to resolve elevation-partitioned target/obstacle impacts and boundary removal.
+* [ ] Subtask: Add `Relations.PROJECTILES` in `src/app/static/semantics.py` and `PROJECTILE_BASE_SPEED_FACTOR` / `PROJECTILE_MAX_RANGE` in `src/app/static/settings.py`, and configure directional release-frame `hitboxes` on ranged weapons (`longbow`, `crossbow`) in `src/assets/sheets/equipments/weapons/main.yaml`.
+* [ ] Subtask: Implement `ProjectileIndex` (`from_properties()`, `register()`, `resolve()`) in `src/app/game/logic/relations/projectiles.py` (exported in `src/app/game/logic/relations/__init__.py`), compile it from `properties.cursors.projectiles` in `Builder.build_relations()`, and inject `relations: [ projectiles ]` into `combat` in `src/data/config/mechanics/main.yaml`.
+* [ ] Subtask: Implement `CombatMap.projectile()`, `CombatMap.release()` (checking frame entry tick parity with `SpriteAnimation.animate()` and computing release hitbox world center + direction), and `CombatMap.speed()` in `src/app/game/logic/modules/maps/combat.py`.
+* [ ] Subtask: Update `Cradle.spawn_projectile()` (`src/app/services/generators/game/cradle.py`) to center the projectile frame on the spawn point, allocate distinct `Position` instances for `position` and `initial`, quantize launch angle to `properties.rotation`, compute `Velocity(vx, vy)` without cardinal trig drift, and populate `angle`, `speed`, `elevation`, and `owner` on `MotorState`.
+* [ ] Subtask: Refactor `CombatMechanics.update()` (`src/app/game/logic/mechanics/spatial/combat.py`) to fork on `CombatMap.projectile(attacker.state, self.relation)` into `self._project(attacker, projectile_id, board)` and batched `self._melee(melee_attackers, layer, board)` (removing the hardcoded `SHOOT`/`CAST` skip), and implement elevation-partitioned target/obstacle impact resolution, owner exclusion, and range/boundary expiration in `ProjectileMechanics.update()`.
