@@ -47,7 +47,8 @@ mechanics:
       relations: []
     - key: combat
       executors: []
-      relations: []
+      relations:
+        - projectiles
     - key: switch
       executors: []
       relations: []

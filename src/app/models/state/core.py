@@ -58,6 +58,7 @@ class MutatorParameters:
     squeeze: Optional[RadialParameters] = field(default_factory=RadialParameters)
     descension: Optional[float] = 0.0
     hand: Optional[Enumerated[Hands]] = None
+    charge: int = 0
 
 @dataclass(slots=True)
 class Mutators:

@@ -37,6 +37,7 @@ from app.assets.frames import (
     NoFrame,
     ObjectFrame,
     PaneFrame,
+    ProjectileFrame,
     SeasonalFrame,
     SingleFrame,
     SpriteFrame,
@@ -51,6 +52,7 @@ from app.assets.hitboxes import (
     LayeredHitbox,
     MaterialHitbox,
     NoHitbox,
+    RotatedHitbox,
     StageHitbox,
     StaticHitbox,
     SwitchHitbox
@@ -94,6 +96,7 @@ class AssetFactory:
         FrameRecipe.NONE: NoFrame(),
         FrameRecipe.OBJECT: ObjectFrame(),
         FrameRecipe.PANE: PaneFrame(),
+        FrameRecipe.PROJECTILE: ProjectileFrame(),
         FrameRecipe.SEASONAL: SeasonalFrame(),
         FrameRecipe.SINGLE: SingleFrame(),
         FrameRecipe.SPRITE: SpriteFrame(),
@@ -119,6 +122,7 @@ class AssetFactory:
         HitboxRecipe.STAGE: StageHitbox(),
         HitboxRecipe.STATIC: StaticHitbox(),
         HitboxRecipe.SWITCH: SwitchHitbox(),
+        HitboxRecipe.ROTATED: RotatedHitbox()
     }
 
     @classmethod

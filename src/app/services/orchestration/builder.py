@@ -41,7 +41,8 @@ from app.game.screen import Screen
 from app.game.logic.mechanics import Mechanic
 from app.game.logic.relations import (
     ShorelineIndex,
-    MaterialIndex
+    MaterialIndex,
+    ProjectileIndex
 )
 from app.models.groups import (
     SpawnableGroup, 
@@ -178,6 +179,9 @@ class Builder:
             ),
             Relations.MATERIALS: MaterialIndex.from_configuration(
                 self.context.configurations.materials
+            ),
+            Relations.PROJECTILES: ProjectileIndex.from_properties(
+                self.context.properties.cursors.projectiles
             )
         }
 

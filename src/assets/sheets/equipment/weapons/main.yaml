@@ -5,6 +5,7 @@ themes:
       w: 64
       l: 64
   hitboxes:
+    # ----- MELEE HITBOXES
     dagger: &dagger
       slash-up-3:
         - position:
@@ -345,13 +346,72 @@ themes:
           dimensions:
             w: 16
             l: 17
+    # ----- PROJECTILE HITBOXES 
+    longbow: &longbow
+      shoot-up-9:
+        - position:
+            x: 28
+            y: 12
+          dimensions:
+            w: 8
+            l: 8
+      shoot-left-9:
+        - position:
+            x: 10
+            y: 32
+          dimensions:
+            w: 8
+            l: 8
+      shoot-down-9:
+        - position:
+            x: 28
+            y: 48
+          dimensions:
+            w: 8
+            l: 8
+      shoot-right-9:
+        - position:
+            x: 46
+            y: 32
+          dimensions:
+            w: 8
+            l: 8
+    crossbow: &crossbow
+      thrust-up-5:
+        - position:
+            x: 28
+            y: 12
+          dimensions:
+            w: 8
+            l: 8
+      thrust-left-5:
+        - position:
+            x: 10
+            y: 34
+          dimensions:
+            w: 8
+            l: 8
+      thrust-down-5:
+        - position:
+            x: 28
+            y: 48
+          dimensions:
+            w: 8
+            l: 8
+      thrust-right-5:
+        - position:
+            x: 46
+            y: 34
+          dimensions:
+            w: 8
+            l: 8
 # -------------------------------------------------------------
 sheets:
   weapons:
     # --------------------------------------- ACTION: SHOOT
     longbow:
       dimensions: *lpc
-      hitboxes: null
+      hitboxes: *longbow
       actions: lpc-shoot
       stack: [ longbow ]
     # --------------------------------------- ACTION: SLASH
@@ -378,6 +438,6 @@ sheets:
       stack: [ spear ] 
     crossbow:
       dimensions: *lpc
-      hitboxes: null
+      hitboxes: *crossbow
       actions: lpc-thrust
       stack: [ crossbow ]

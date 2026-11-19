@@ -9,6 +9,9 @@ from app.assets.hitboxes.crafts import (
     ElevatedHitbox,
     MaterialHitbox
 )
+from app.assets.hitboxes.cursors import (
+    RotatedHitbox
+)
 from app.assets.hitboxes.objects import (
     LayeredHitbox,
     SwitchHitbox
@@ -31,5 +34,6 @@ __all__ = [
     "OrientedHitbox",
     "DirectedHitbox",
     'ElevatedHitbox',
-    'MaterialHitbox'
+    'MaterialHitbox',
+    'RotatedHitbox'
 ]

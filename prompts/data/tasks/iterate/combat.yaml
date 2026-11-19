@@ -6,7 +6,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/groom.md.j2
+  template: iterate/implement.md.j2
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ---------------------------------------------- TOOLS
@@ -21,7 +21,7 @@ tools:
     manager:
       board: true
       docs: true
-      templates: true
+      templates: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
     # --------------------------------------------
@@ -124,12 +124,11 @@ tools:
               app: [ asset ]
               category: [ sheets ]
               asset: [ frame ]
-          - title: 'Implementation - Frames: Cursors'
+          - title: 'Implementations -  All: Cursors'
             scan:
               domain: [ concrete ]
               app: [ asset ]
               category: [ cursors ]
-              asset: [ frame ]
           - title: Mechanics - Transition
             scan:
               domain: [ concrete ]
@@ -162,7 +161,7 @@ tools:
           #     domain: [ test ]
           #     test: [ fixtures ]
       data:
-        properties: [ cursors ]
+        properties: [ cursors, sheets/equipment ]
         state: [ ]
         configurations: [  ]
         templates: [ ]

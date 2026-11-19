@@ -39,9 +39,9 @@ recipes:
       animation: none
       hitbox: none
     projectiles:
-      frame: single
+      frame: projectile
       animation: none
-      hitbox: static
+      hitbox: rotated
   geography:
     shorelines:
       frame: cardinal

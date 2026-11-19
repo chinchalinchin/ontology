@@ -64,7 +64,9 @@ class CraftProperties(AssetProperties):
 class CursorProperties(AssetProperties):
     frames: List[str] = field(default_factory=list)
     hitboxes: Optional[List[Hitbox]] = None                         # type: ignore
-
+    rotation: Optional[int] = None
+    weapon: Optional[str] = None
+    
 # --------------------------------------------------------------
 
 @dataclass(slots=True)
@@ -106,8 +108,6 @@ class ResourceProperties(AssetProperties):
     hitboxes: Dict[str, Optional[List[Hitbox]]] = None              # type: ignore
 
 # --------------------------------------------------------------
-
-# TODO: attackboxes need inducted into the new HitboxSchema ECS Architecture.
 
 @dataclass(slots=True)
 class SheetProperties(AssetProperties):

@@ -33,15 +33,19 @@ logger = logging.getLogger("libs.graphics.render")
 cdef extern from "SDL2/SDL.h":
     ctypedef struct SDL_Window:
         pass
+
     ctypedef struct SDL_Renderer:
         pass
+
     ctypedef struct SDL_Texture:
         pass
+
     ctypedef struct SDL_Surface:
         void* pixels
         int pitch
         int w
         int h
+
     ctypedef struct SDL_RendererInfo:
         const char *name
         unsigned int flags
@@ -49,17 +53,45 @@ cdef extern from "SDL2/SDL.h":
         unsigned int texture_formats[16]
         int max_texture_width
         int max_texture_height
+
+    ctypedef struct SDL_Point:
+        int x
+        int y
+
     ctypedef struct SDL_Rect:
         int x
         int y
         int w
         int h
 
+    ctypedef enum SDL_RendererFlip:
+        SDL_FLIP_NONE
+        SDL_FLIP_HORIZONTAL
+        SDL_FLIP_VERTICAL
+
+    int SDL_RenderSetClipRect(
+        SDL_Renderer* renderer,
+        const SDL_Rect* rect
+    )
+
+    int SDL_RenderCopyEx(
+        SDL_Renderer* renderer,
+        SDL_Texture* texture,
+        const SDL_Rect* srcrect,
+        const SDL_Rect* dstrect,
+        const double angle,
+        const SDL_Point* center,
+        const SDL_RendererFlip flip
+    )
+
     int SDL_GetRendererInfo(SDL_Renderer* renderer, SDL_RendererInfo* info)
+    
     const char* SDL_GetCurrentVideoDriver()
+    
     const char* SDL_GetError()
     
     int SDL_Init(unsigned int flags)
+    
     void SDL_Quit()
 
     SDL_Window* SDL_CreateWindow(
@@ -70,7 +102,9 @@ cdef extern from "SDL2/SDL.h":
         int h, 
         unsigned int flags
     )
+    
     void SDL_DestroyWindow(SDL_Window* window)
+    
     void SDL_ShowWindow(SDL_Window* window)
 
     SDL_Renderer* SDL_CreateRenderer(
@@ -78,7 +112,9 @@ cdef extern from "SDL2/SDL.h":
         int index, 
         unsigned int flags
     )
+    
     SDL_Renderer* SDL_CreateSoftwareRenderer(SDL_Surface* surface)
+    
     void SDL_DestroyRenderer(SDL_Renderer* renderer)
     
     SDL_Texture* SDL_CreateTexture(
@@ -88,24 +124,30 @@ cdef extern from "SDL2/SDL.h":
         int w, 
         int h
     )
+    
     SDL_Texture* SDL_CreateTextureFromSurface(
         SDL_Renderer* renderer, 
         SDL_Surface* surface
     )
+    
     int SDL_SetRenderTarget(
         SDL_Renderer* renderer, 
         SDL_Texture* texture
     )
     
     int SDL_RenderClear(SDL_Renderer* renderer)
+    
     int SDL_RenderCopy(
         SDL_Renderer* renderer, 
         SDL_Texture* texture, 
         const SDL_Rect* srcrect, 
         const SDL_Rect* dstrect
     )
+    
     void SDL_RenderPresent(SDL_Renderer* renderer)
+    
     void SDL_PumpEvents()
+    
     int SDL_RenderReadPixels(
         SDL_Renderer* renderer, 
         const SDL_Rect* rect, 
@@ -113,10 +155,12 @@ cdef extern from "SDL2/SDL.h":
         void* pixels, 
         int pitch
     )
+    
     int SDL_SetRenderDrawBlendMode(
         SDL_Renderer* renderer, 
         int blendMode
     )
+    
     int SDL_RenderFillRect(
         SDL_Renderer* renderer, 
         const SDL_Rect* rect
@@ -129,6 +173,7 @@ cdef extern from "SDL2/SDL.h":
         int depth, 
         unsigned int format
     )
+    
     void SDL_FreeSurface(SDL_Surface* surface)
 
     int SDL_SetTextureBlendMode(
@@ -142,39 +187,53 @@ cdef extern from "SDL2/SDL.h":
         int b, 
         int a
     )
+    
     int SDL_SetTextureColorMod(
         SDL_Texture* texture, 
         unsigned char r, 
         unsigned char g, 
         unsigned char b
     )
+    
     int SDL_SetTextureAlphaMod(
         SDL_Texture* texture, 
         unsigned char alpha
     )
+    
     unsigned int SDL_INIT_VIDEO
+    
     unsigned int SDL_PIXELFORMAT_RGBA32
 
     unsigned int SDL_WINDOW_SHOWN
+    
     unsigned int SDL_WINDOW_HIDDEN
+    
     unsigned int SDL_RENDERER_ACCELERATED
+    
     unsigned int SDL_RENDERER_SOFTWARE
 
     int SDL_TEXTUREACCESS_TARGET
+    
     int SDL_BLENDMODE_BLEND
+    
     int SDL_BLENDMODE_NONE
 
 cdef extern from "SDL2/SDL_image.h":
     int IMG_Init(int flags)
+    
     void IMG_Quit()
+    
     int IMG_SavePNG(SDL_Surface* surface, const char* file)
     
     int IMG_INIT_PNG
 
 cdef extern from "SDL2/SDL_ttf.h":
     int TTF_Init()
+    
     void TTF_Quit()
+    
     SDL_Surface* TTF_RenderUTF8_Blended_Wrapped(TTF_Font* font, const char* text, SDL_Color fg, unsigned int wrapLength)
+    
     int TTF_SizeUTF8(TTF_Font* font, const char* text, int* w, int* h)
 
 # -----------------------------------------------------------------------------
@@ -700,6 +759,65 @@ cpdef tuple assemble(
     return active_assets, active_channels
 
 
+def rotate(TexturePtr base_ptr, int rotation) -> TexturePtr:
+    """
+    Synthesizes a horizontal rotated texture strip from a single canonical frame
+    oriented at 0 degrees (+x) across all discrete angles k * rotation in [0, 360).
+    Uses per-cell clip isolation so rotated corners cannot bleed into adjacent cells.
+    """
+    if base_ptr is None or base_ptr.ptr == NULL:
+        raise RuntimeError("Invalid or uninitialized base texture provided to rotate.")
+    if rotation <= 0 or rotation > 360 or (360 % rotation) != 0:
+        raise ValueError(
+            f"Rotation step must evenly divide 360 in (0, 360]; got {rotation}."
+        )
+
+    cdef int w = base_ptr.w
+    cdef int l = base_ptr.l
+    cdef int count = 360 // rotation
+    cdef int strip_w = count * w
+
+    logger.debug(
+        f"Synthesizing rotated texture strip ({w}x{l} -> {strip_w}x{l}, "
+        f"step={rotation} deg, cells={count})."
+    )
+
+    cdef TexturePtr target = canvas(strip_w, l)
+    cdef SDL_Rect c_dst
+    cdef int k
+    cdef double angle
+
+    SDL_SetTextureBlendMode(base_ptr.ptr, SDL_BLENDMODE_BLEND)
+    SDL_SetRenderTarget(_renderer, target.ptr)
+
+    c_dst.y = 0
+    c_dst.w = w
+    c_dst.h = l
+
+    for k in range(count):
+        c_dst.x = k * w
+        angle = <double>(k * rotation)
+
+        SDL_RenderSetClipRect(_renderer, &c_dst)
+        if SDL_RenderCopyEx(
+            _renderer,
+            base_ptr.ptr,
+            NULL,
+            &c_dst,
+            angle,
+            NULL,
+            SDL_FLIP_NONE,
+        ) < 0:
+            logger.error(
+                f"Rotate cell {k} ({angle} deg) CopyEx Error: "
+                f"{SDL_GetError().decode('utf-8')}"
+            )
+
+    SDL_RenderSetClipRect(_renderer, NULL)
+    SDL_SetRenderTarget(_renderer, NULL)
+    return target
+
+    
 def render(
     TexturePtr background, 
     TexturePtr foreground, 
