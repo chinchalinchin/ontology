@@ -9,10 +9,12 @@ Device Payload State Models.
 """
 # Standard Libraries
 from typing import (
+    Dict,
     List,
-    Optional, 
+    Optional,
 )
 from dataclasses import dataclass, field
+
 
 @dataclass(slots=True)
 class WorldPayload:
@@ -20,11 +22,14 @@ class WorldPayload:
     grip: Optional[str] = None
     menu: Optional[str] = None
     goals: List[str] = field(default_factory=list)
+    holds: Dict[str, int] = field(default_factory=dict)
+
 
 @dataclass(slots=True)
 class MenuPayload:
     traversal: Optional[str] = None
     interaction: Optional[str] = None
+
 
 @dataclass(slots=True)
 class DevicePayload:

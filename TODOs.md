@@ -185,47 +185,6 @@ At a macro level, **rendering preparation in Python (`_render` at 13.28%) costs 
 
 ---
 
-###### Review: Implementation
-
-1. **Spin-Wait Syscall Churn in `Engine.start` (`src/app/game/engine.py`)**:
-   * In `Engine.start`, the hybrid sleep-spin loop executes:
-     ```python
-     while (self.time() - current_time) < delta:
-         time.sleep(0)
-     ```
-   * Over 6,019 frames, `time.sleep` is called **7,983,914 times** (~1,326 times per frame) and `Engine.time` is called **7,995,978 times**, consuming **3.55%** of total execution time just in Python staticmethod dispatch and `sched_yield` overhead during the `SPIN_RATE` window.
-   * Furthermore, `frame_time = current_time - last_time` has no upper clamp before `accumulator += frame_time`. Any OS window stall, breakpoint, or synchronous I/O operation (such as `Board.serialize` or `Screen.rebake`) will inflate `accumulator` and trigger an unbounded burst of `_play(delta)` updates ("spiral of death").
-
-2. **Submerged Channel Slicing on Multi-Frame / Offset Assets (`src/app/game/screen.py`)**:
-   * In `Screen._assemble`, when an asset has `submerge_channel` active (`state.mutators.triggers.submerged == True`), `split_y = properties.dimensions.l // 2` is applied uniformly across every tuple `(frame_key, ox, oy)` in `asset.frame.keys(asset.id, asset.state)`.
-   * For composite assets like `Sprites` that emit superimposed `Expression` cursor frames with smaller dimensions (`sl < split_y`) and vertical offsets (`oy`), `rem_l = sl - split_y` evaluates to a **negative height**, and the upper slice requests a crop height `split_y > sl` beyond the expression texture's bounds.
-
-3. **Un-cleared `bg_canvas` in `Screen.reconstruct` & Destructive Blend Mode Mutation in `render.construct` (`src/app/game/screen.py`, `src/libs/graphics/render.pyx`)**:
-   * `Screen.reconstruct` clears `self.fg_canvas` (`render.clear(self.fg_canvas)`), but omits `render.clear(self.bg_canvas)` before stamping seasonal `back_tiles`.
-   * Inside `render.construct`, every tile iteration calls `SDL_SetTextureBlendMode(tex.ptr, SDL_BLENDMODE_NONE)` on the shared texture in `Registry` and never restores `SDL_BLENDMODE_BLEND`. When `construct` runs on `fore_tiles` (`CANOPY` tiles) or UI `Pane` 9-slice primitives in `Screen.stamp`, transparency is disabled, causing transparent pixels in canopy foliage or overlapping 9-slice regions to overwrite underlying pixels with raw `(0, 0, 0, 0)` and leaving shared textures in `SDL_BLENDMODE_NONE`.
-
-4. **Broken Index Alignment in `SpatialMechanic.proximities` (`src/app/game/logic/mechanics/spatial/base.py`)**:
-   * `proximities` builds `asset_map = dict(enumerate(assets))` using the original enumeration index `i`, but executes `continue` when `not asset.state.mutators or not asset.state.mutators.parameters`.
-   * Because `physics.collisions(primitive_data, self.grid)` inserts `data[0]` (`i`) into the `Space` grid and then indexes `primitive_data[id_a]` and `primitive_data[id_b]` directly by `entity_id`, skipping any element makes `len(primitive_data) < len(assets)`. This causes `physics.collisions` to either raise an `IndexError` or test narrow-phase geometry against the wrong asset in `primitive_data`.
-
----
-
-###### Review: Quality
-
-1. **Pervasive Enum `.value` Descriptor Overhead in Inner Loops**:
-   * Python's `Enum.__get__` (`enum:187:__get__`) is invoked **7,685,348 times** (**1.73%** of total runtime, or **6.69% of all active CPU work**).
-   * In `Screen._assemble`, `Screen._in_viewport`, `CollisionMechanics`, and `widgets:67:keys` (which alone accounts for **3,796,004** `Enum.__get__` calls), `.value` is repeatedly resolved on `Enum` members inside per-entity, per-frame loops. Defining `StrEnum` (Python 3.11+) or binding module-level string/integer constants eliminates descriptor lookup overhead while preserving semantic type safety.
-
-2. **Documentation & Schema Drift**:
-   * **Stairs (`01-assets.md` vs `collision.py`)**: Documentation specifies `stairs.state.blueprint` with `Directions.RIGHT`, `Directions.LEFT`, and `Directions.DOWN` (and inverted velocity signs for `RIGHT`), whereas `CollisionMechanics._traverse_stairs` inspects `stairs.state.direction` and branches on `Directions.UP`, `Directions.LEFT`, and `Directions.RIGHT` (noting `# NOTE: DOWN is impossible due to LPC perspective specification`).
-   * **Mutators (`01-assets.md` vs `base.py`)**: Documentation lists `mutators.parameters.action: bool` and `vision: bool`, whereas `SpatialMechanic.proximities` accesses `asset.state.mutators.parameters.action.radius`.
-   * **SpatialHash Capacity (`base.py` vs `collision.py`)**: `SpatialMechanic.__init__` defaults to `max_entities: int = 2000`, but `CollisionMechanics.__init__` overrides this to `max_entities: int = 200` (`num_buckets = 400`). In `Space.insert`, bucket overflow (`count >= 50`) silently drops entities without logging or resizing.
-
-3. **Redundant Singleton Lookups (`MaterialHitbox`)**:
-   * In `src/app/assets/hitboxes/crafts.py`, `MaterialHitbox.elevations` and `MaterialHitbox.get` instantiate/lookup `MaterialIndex().is_obstacle(state.blueprint)` on every call (**2,970,055 combined calls** in the profile), rather than caching the `MaterialIndex` singleton reference on the `MaterialHitbox` instance or precomputing obstacle status on `CraftState` / `Board._cache`.
-
----
-
 ###### Review: Logic
 
 1. **All-Layer Physics Execution vs. Single-Layer Rendering**:
@@ -446,3 +405,289 @@ Serializing a running board writes these runtime-synthesized entities into the s
 **Proposed Remeditation**
 
 In `Board.serialize`, skip assets where `asset.category == AssetCategories.GEOGRAPHY.value` or where `asset.instance == AssetInstances.DOORS.value and getattr(asset.state, "projection", None) == LayerProjections.OUT.value`.
+
+
+
+
+
+
+
+
+##### Draft: Cursor Properties, Projectile Frame, and Rotated Hitbox Specification
+
+- **Page**: `docs/01-assets.md`
+- **Heading**: `###### Cursor: Projectiles`
+
+###### Drift
+
+`docs/01-assets.md` currently specifies `SingleFrame` and no `Hitbox` for `Projectiles`, omits `rotation` on `CursorProperties`, and omits `position`, `angle`, `speed`, and `owner` on `MotorState`.
+
+###### Update
+
+```markdown
+###### Cursor: Projectiles
+
+Projectiles are spawned on the `release` frame of ranged [Equipment](./02-sprites.md#equipment) with an initial coordinate, quantized launch angle, and scalar speed, following a linear trajectory until impacting an obstacle or target hitbox or exceeding their range.
+
+**Properties: CursorProperties(AssetProperties)**
+
+* `frames: List[str]`
+* `rotation: int = 90`: Angular step $\Delta\theta \in (0, 360]$ partitioning the $360^\circ$ rotation space into $N = 360 // \text{rotation}$ discrete frames.
+* `hitboxes: List[Hitbox]`
+
+**Animation: None**
+
+N/A
+
+**Frame: ProjectileFrame**
+
+* `keys(id, state): returns [ (f"{id}-{state.angle}", 0, 0) ]`
+* `index(id, properties): returns { f"{id}-{k * properties.rotation}": (k * properties.dimensions.w, 0, properties.dimensions.w, properties.dimensions.l) for k in range(360 // properties.rotation) }`
+
+**Hitbox: RotatedHitbox**
+
+Projects each static base Hitbox $(x_0, y_0, w_0, l_0)$ in `properties.hitboxes` around the frame center $(c_x, c_y) = (W / 2, L / 2)$ by $\Delta\theta = \text{state.angle}$:
+
+$$
+h_{cx} = \left(x_0 + \frac{w_0}{2}\right) - c_x, \qquad h_{cy} = \left(y_0 + \frac{l_0}{2}\right) - c_y
+$$
+
+$$
+\begin{pmatrix} h'_{cx} \\ h'_{cy} \end{pmatrix} = \begin{pmatrix} \cos\Delta\theta & -\sin\Delta\theta \\ \sin\Delta\theta & \cos\Delta\theta \end{pmatrix} \begin{pmatrix} h_{cx} \\ h_{cy} \end{pmatrix}
+$$
+
+$$
+w'(\Delta\theta) = \max\Big(1,\; \operatorname{round}\big(w_0 |\cos\Delta\theta| + l_0 |\sin\Delta\theta|\big)\Big), \qquad l'(\Delta\theta) = \max\Big(1,\; \operatorname{round}\big(w_0 |\sin\Delta\theta| + l_0 |\cos\Delta\theta|\big)\Big)
+$$
+
+$$
+x'(\Delta\theta) = \operatorname{round}\left(c_x + h'_{cx} - \frac{w'(\Delta\theta)}{2}\right), \qquad y'(\Delta\theta) = \operatorname{round}\left(c_y + h'_{cy} - \frac{l'(\Delta\theta)}{2}\right)
+$$
+
+**State: MotorState(AssetState)**
+
+* `position: Position`
+* `initial: Position`
+* `velocity: Velocity`
+* `angle: int = 0`
+* `speed: int = 200`
+* `owner: Optional[str] = None`
+```
+
+##### Draft: Mutator Charge Parameter
+
+- **Page**: `docs/02-sprites.md`
+- **Heading**: `###### Model: Mutators`
+
+###### Drift
+
+`docs/02-sprites.md` does not document the `parameters.charge` accumulator used to parameterize `attack` hold duration for projectile launch speed.
+
+###### Update
+
+```markdown
+* `parameters.charge`: Tick accumulator tracking how long the `attack` Intention has been held prior to projectile release.
+```
+
+##### Draft: CombatMap Melee and Projectile Resolution
+
+- **Page**: `docs/05-mechanics.md`
+- **Heading**: `###### Map: Combat`
+
+###### Drift
+
+`###### Map: Combat` in `docs/05-mechanics.md` is currently an unpopulated `TODO` stub and does not specify either melee attackbox resolution or equipment release-frame projectile resolution.
+
+###### Update
+
+```markdown
+###### Map: Combat
+
+CombatMap bridges an attacking entity's current AnimationState and slotted Weapon Equipment to resolve either active melee Attackboxes or ranged Projectile emission parameters.
+
+**Interface: Attack Hitbox Mapping**
+
+* `attackboxes(state, equipment, elevation): returns List[Hitbox]`: Queries the slotted weapon's Hitbox component at the entity's active `<action>-<direction>-<frame>` key and elevation plane.
+
+**Interface: Projectile Release Mapping**
+
+* `projectile(state, equipment): returns Optional[Tuple[str, int]]`: Evaluates whether the slotted weapon configures a `projectile` ID and `release` frame matching the entity's current animation frame. When triggered on the entry tick of the `release` frame, calculates the initial scalar speed $s(S, n)$ from the attacker's strength $S$, held charge duration $n$, and the weapon's draw window $N_{\max} = \max(1, \text{release} \cdot \text{delay})$:
+
+$$
+\tau(n) = \min\left(1.0,\; \frac{n}{N_{\max}}\right), \qquad s(S, n) = \operatorname{round}\Big(\alpha S \big(1 + \tau(n)\big)\Big)
+$$
+```
+
+
+
+
+---
+
+# Documentation Updates
+
+##### Draft: Cursor Projectiles Specification
+
+- **Page**: `docs/01-assets.md`
+- **Heading**: `Cursor: Projectiles`
+
+###### Drift
+
+`docs/01-assets.md` still specifies Projectiles as using `SingleFrame` and a minimal `MotorState` containing only `initial` and `velocity`. Under Phase 03.04, Projectiles partition a single canonical $\theta = 0^\circ$ asset into discrete rotational frames spaced by an angular increment $\Delta\theta$, transform their bounding hitboxes by their active heading $\theta$, and carry relational foreign keys binding them to the Weapons that emit them.
+
+###### Update
+
+```markdown
+###### Cursor: Projectiles
+
+Projectiles are autonomous Cursor Assets spawned on the release frame of ranged combat Actions. A Projectile Asset file contains a single canonical frame oriented at $\theta = 0^\circ$ ($+x$, `right`) and is partitioned into discrete angular frames spaced by its rotational increment $\Delta\theta$ (where $360 \bmod \Delta\theta = 0$):
+
+$$
+\Theta = \{ k \cdot \Delta\theta \mid 0 \le k < 360 / \Delta\theta \}
+$$
+
+Because Projectiles depend on the Weapons that emit them, each Projectile declares the set of Weapons bound to it in its Properties. During initialization, these bindings are inverted into a relational index mapping each ranged Weapon to its emitted Projectile.
+
+**Properties: CursorProperties(AssetProperties)**
+
+* `rotation: int`: Discrete angular increment $\Delta\theta$ in degrees ($360 \bmod \Delta\theta = 0$).
+* `weapons: List[WeaponPalette]`: Weapon keys bound to this Projectile.
+* `hitboxes: Optional[List[Hitbox]]`: Canonical AABB footprint at $\theta = 0^\circ$.
+
+**Animation: None**
+
+N/A
+
+**Frame: ProjectileFrame**
+
+Partitions the horizontal strip across $\Theta$ and projects `state.angle` directly onto its corresponding rotated frame.
+
+**Hitbox: RotatedHitbox**
+
+Rotates each canonical hitbox $(x_0, y_0, w_0, l_0)$ clockwise by $\theta = \text{state.angle}$ around the frame center $(W/2, L/2)$, yielding the enclosing axis-aligned bounding box $(x'(\theta), y'(\theta), w'(\theta), l'(\theta))$ at the Projectile's elevation.
+
+**State: MotorState(AssetState)**
+
+* `position: Position`: Active world coordinate.
+* `initial: Position`: Spawn origin coordinate used for range expiration.
+* `velocity: Velocity`: Constant linear trajectory vector.
+* `angle: int`: Quantized heading $\theta \in \Theta$.
+* `speed: int`: Scalar launch speed encoding attacker strength and draw duration.
+* `owner: Optional[str]`: Deploying entity `name`, excluded from impact resolution.
+```
+
+##### Draft: AnimationMap Admissibility & CombatMap Separation
+
+- **Page**: `docs/05-mechanics.md`
+- **Heading**: `Modules: Maps` and `Dependency: Relations`
+
+###### Drift
+
+`docs/05-mechanics.md` currently leaves `Map: Combat` as `TODO`, lacks the `projectiles` entry under `Dependency: Relations`, and does not formalize the disjoint boundary between `AnimationMap` (Intentional-Spatial Space $\to$ Animation Space, including Equipment admissibility) and `CombatMap` (Active Combat State $\to$ Combat Resolution Geometry and Launch Parameters).
+
+###### Update
+
+```markdown
+###### Dependency: Relations
+
+Relations are static secondary indices compiled at initialization and injected into requesting Mechanics.
+
+* `shorelines`: Compound index mapping `(Tile, Fluid, [Season])` keys to Shoreline Geography Asset IDs, compiled from Geography Properties.
+* `materials`: Index mapping Blueprints and Asset Instances to obstacle classifications and rendering substrates, compiled from Materials Configuration.
+* `projectiles`: Index mapping ranged Weapon keys to Projectile Cursor Asset IDs, compiled from Cursor Properties.
+
+##### Modules
+
+###### Modules: Maps
+
+Maps are stateless domain projections translating Asset State, Equipment, and Relations into target domains consumed by Mechanics. Each Map owns a disjoint codomain.
+
+###### Map: Animation
+
+AnimationMap is the projection from Intentional and Spatial State into Animation Space:
+
+$$
+(\text{Intention} \times \text{Slots} \times \text{Equipment}) \longrightarrow \text{Action} \cup \{\bot\}
+$$
+
+$$
+(\text{Position} \times \text{Target}) \longrightarrow \text{Direction}
+$$
+
+AnimationMap enforces Equipment admissibility prior to state commitment in Intentional Mechanics. Equipment-gated Intentions (`attack`, `mine`, `build`) project to the action declared by the corresponding slotted Weapon, Tool, or Utility, and evaluate to $\bot$ when the required Equipment slot is empty. Inadmissible transitions are rejected before Animation or Combat Mechanics execute.
+
+###### Map: Combat
+
+CombatMap projects an active, already-validated combat state into spatial and ballistic resolution primitives consumed by CombatMechanics:
+
+* **Projectile Binding**: $(\text{Weapon} \times \text{ProjectileIndex}) \longrightarrow \text{Projectile} \cup \{\bot\}$. Partitions combat dispatch into ranged and melee modes independently of animation row layout.
+* **Attackboxes**: $(\text{AnimationState} \times \text{Weapon} \times \text{Elevation}) \longrightarrow \mathcal{P}(\text{Hitbox})$. Resolves active melee strike geometry.
+* **Release**: $(\text{AnimationState} \times \text{Weapon} \times \text{Elevation}) \longrightarrow (\text{Position} \times \text{Direction}) \cup \{\bot\}$. Evaluates the weapon's directional hitbox on the entry tick of its release frame to determine projectile spawn origin and heading.
+* **Speed**: $(\text{Strength} \times \text{Charge} \times \text{ReleaseFrame} \times \text{Delay}) \longrightarrow \mathbb{Z}_{>0}$. Maps attacker strength $S$ and held draw duration $n$ to scalar launch speed $s(S, n)$:
+
+$$
+N_{\max} = \max(1,\; F_{\text{release}} \cdot \text{delay}), \qquad \tau(n) = \min\left(1.0,\; \frac{n}{N_{\max}}\right), \qquad s(S, n) = \operatorname{round}\Big(\alpha S \big(1 + \tau(n)\big)\Big)
+$$
+```
+
+---
+
+## 4. Bug Reports
+
+##### Bug B-P0304-01: Dead Attackers Can Still Spawn Projectiles and Deal Melee Damage in `CombatMechanics`
+
+**STATUS**: OPEN
+**SEVERITY**: MEDIUM
+
+**Description**
+
+In `src/app/game/logic/mechanics/spatial/combat.py`, `CombatMechanics.update()` collects attacking entities solely by checking `asset.state.intention == Intentions.ATTACK`, without checking `asset.state.mutators.triggers.dead`:
+
+```python
+attackers = [
+    asset
+    for asset in (
+        board.instances(AssetInstances.PLAYERS, layer) +
+        board.instances(AssetInstances.SPRITES, layer)
+    )
+    if asset.state.intention == Intentions.ATTACK
+]
+```
+
+Similarly, `CombatMechanics._melee()` checks `target.state.mutators.triggers.dead` before applying damage, but never checks `attacker.state.mutators.triggers.dead`. As a result, a dead entity whose `intention` remains `Intentions.ATTACK` (either prior to `TransitionMechanics` / `RemoveMechanics` cleanup or when killed by another attacker earlier in the same batched melee pass) will still emit projectiles via `_project()` and inflict melee damage via `_melee()`.
+
+**Steps to Replicate**
+
+1. Set a Sprite or Player on layer `"0"` to `state.intention = Intentions.ATTACK`, `state.mutators.triggers.dead = True`, equipped with `"longbow"` at `frame = 9, tick = 0` (or `"sword"` at `frame = 3` overlapping a live target).
+2. Execute `CombatMechanics().update(board, 0.016, bus, payload)`.
+3. Observe that the dead entity still spawns an `"arrow"` onto the Board (or decrements the live target's health).
+
+**Proposed Remediation**
+
+Filter out dead attackers in `CombatMechanics.update()` (`if asset.state.intention == Intentions.ATTACK and not asset.state.mutators.triggers.dead`) and guard against mid-batch attacker death in `CombatMechanics._melee()` (`or attacker.state.mutators.triggers.dead`).
+
+---
+
+##### Bug B-P0304-02: `CursorProperties.weapon` Schema Mismatch Allows Unvalidated Weapon Bindings and Prevents Many-to-One Sharing
+
+**STATUS**: OPEN
+**SEVERITY**: LOW
+
+**Description**
+
+Per Phase 03.04 Specification §1, `CursorProperties` (`src/app/models/properties/assets.py`) should declare `weapons: List[Enumerated[WeaponPalette]] = field(default_factory=list)` and `rotation: int = 90` so that:
+1. All weapon foreign keys are validated against `WeaponPalette` at boot via Pydantic `TypeAdapter`.
+2. Multiple weapons (e.g., `shortbow` and `longbow`) can share a single projectile asset (`arrow`), while unbound projectiles (e.g., `cannonball`) default to `[]`.
+
+Currently, `CursorProperties` defines `weapon: Optional[str] = None` and `rotation: Optional[int] = None`, `ProjectileIndex.from_properties()` reads singular `props.weapon`, and `src/assets/cursors/main.yaml` declares `cannonball.weapon: cannon`, which is a dangling weapon key absent from `src/assets/sheets/equipment/weapons/main.yaml`. Because `weapon` is an unvalidated `Optional[str]`, invalid or misspelled weapon references silently pass boot validation.
+
+**Steps to Replicate**
+
+1. Inspect `src/app/models/properties/assets.py` (`CursorProperties.weapon: Optional[str] = None`) and `src/assets/cursors/main.yaml` (`cannonball.weapon: cannon`).
+2. Load properties via `Loader.load_properties()` and compile `ProjectileIndex.from_properties(properties.cursors.projectiles)`.
+3. Observe that `ProjectileIndex.resolve("cannon")` returns `"cannonball"` even though `"cannon"` is neither in `WeaponPalette` nor defined in `src/assets/sheets/equipment/weapons/main.yaml`, and no mechanism exists to bind a second weapon to `"arrow"`.
+
+**Proposed Remediation**
+
+Update `CursorProperties` to `rotation: int = 90` and `weapons: List[Enumerated[WeaponPalette]] = field(default_factory=list)`, align `src/assets/cursors/main.yaml` (`arrow.weapons: [longbow]`, `bolt.weapons: [crossbow]`, `cannonball.weapons: []`), and iterate `for weapon_id in props.weapons:` inside `ProjectileIndex.from_properties()`. (If kept as-is until `cannon` is added as a weapon, update `test_projectiles.py` accordingly when migrating to `weapons`.)
+
+

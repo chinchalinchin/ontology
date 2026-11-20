@@ -214,8 +214,25 @@ cdef class Registry:
         filepath = self._filepaths.get(asset_key)
         if filepath and filepath.endswith('.png'):
             tex = self._load_texture(filepath)
+            if not tex:
+                return None
+
+            # Synthesize load-time rotated texture strip for projectiles
+            if (
+                not raw_only
+                and self.properties.cursors
+                and asset_key in self.properties.cursors.projectiles
+            ):
+                proj_props = self.properties.cursors.projectiles[asset_key]
+                rotation = proj_props.rotation if proj_props.rotation is not None else 90
+                try:
+                    strip_tex = render.rotate(tex, rotation)
+                finally:
+                    render.destroy(tex)
+                tex = strip_tex
+
             # Prevent intermediate raw textures from polluting the composited cache
-            if not raw_only and tex: 
+            if not raw_only and tex:
                 self._textures[asset_key] = tex
             return tex
             

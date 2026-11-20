@@ -22,6 +22,7 @@ from app.assets.base import (
 from app.game.logic.modules.fields import MoistureField
 from app.game.logic.relations import (
     MaterialIndex,
+    ProjectileIndex,
     ShorelineIndex,
 )
 from app.models.config import ConfigurationSchema
@@ -69,13 +70,24 @@ def mock_material_index(
 
 
 @pytest.fixture
+def mock_projectile_index(
+    mock_properties_schema: PropertiesSchema,
+) -> ProjectileIndex:
+    return ProjectileIndex.from_properties(
+        mock_properties_schema.cursors.projectiles
+    )
+
+
+@pytest.fixture
 def mock_relations(
     mock_shoreline_index: ShorelineIndex,
     mock_material_index: MaterialIndex,
+    mock_projectile_index: ProjectileIndex,
 ) -> dict[str, Any]:
     return {
         Relations.SHORELINES.value: mock_shoreline_index,
         Relations.MATERIALS.value: mock_material_index,
+        Relations.PROJECTILES.value: mock_projectile_index,
     }
 
 

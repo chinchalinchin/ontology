@@ -709,7 +709,7 @@ def test_save_and_reload_state_roundtrip(
     assert slot_file.is_file()
 
     raw_saved = yaml.safe_load(slot_file.read_text(encoding="utf-8"))
-    assert raw_saved["sheets"]["players"][0]["slots"]["equipment"].get("armor") is None
+    assert raw_saved["sheets"]["players"][0]["slots"]["equipment"].get("armor") == "leather"
 
     reloaded = Loader.load_save("world-testbed", "0")
 

@@ -122,6 +122,7 @@ Tags are meant to capture logically related slices of the Application.
                 * `workflow.navigation` (*RRT Algorithms*)
                 * `workflow.player`
                 * `workflow.plots`
+                * `workflow.projectiles`
                 * `workflow.rendering`
                 * `workflow.seasons`
                 * `workflow.telemetry`

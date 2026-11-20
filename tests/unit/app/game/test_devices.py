@@ -303,3 +303,103 @@ def test_keyboard_singular_resolution_priority(
     menu_payload = mock_keyboard.poll()
     assert menu_payload.menu.traversal == Traversal.NORTH.value
     assert menu_payload.menu.interaction == Interactions.SELECT.value
+
+@pytest.mark.workflow_projectiles
+def test_keyboard_intention_hold_accumulation_and_reset(
+    mock_keyboard: Keyboard,
+    mock_sdl,
+):
+    """
+    Ensure held intention keys accumulate consecutive press ticks in world.holds
+    while keeping world.intention strictly rising-edge, resetting to 0 on release.
+    """
+    # Frame 1: Rising edge on 'attack' (44)
+    mock_sdl({44})
+    p1 = mock_keyboard.poll()
+    assert p1.world.intention == Intentions.ATTACK.value
+    assert p1.world.holds == {Intentions.ATTACK.value: 1}
+
+    # Frame 2: Held tick 2
+    mock_sdl({44})
+    p2 = mock_keyboard.poll()
+    assert p2.world.intention is None
+    assert p2.world.holds == {Intentions.ATTACK.value: 2}
+
+    # Frame 3: Held tick 3
+    mock_sdl({44})
+    p3 = mock_keyboard.poll()
+    assert p3.world.intention is None
+    assert p3.world.holds == {Intentions.ATTACK.value: 3}
+
+    # Frame 4: Released -> counter resets
+    mock_sdl(set())
+    p4 = mock_keyboard.poll()
+    assert p4.world.intention is None
+    assert p4.world.holds == {}
+
+    # Frame 5: Fresh press restarts counter at 1 and fires rising edge
+    mock_sdl({44})
+    p5 = mock_keyboard.poll()
+    assert p5.world.intention == Intentions.ATTACK.value
+    assert p5.world.holds == {Intentions.ATTACK.value: 1}
+
+
+@pytest.mark.workflow_projectiles
+def test_keyboard_concurrent_holds_do_not_suppress_rising_edge(
+    mock_keyboard: Keyboard,
+    mock_sdl,
+):
+    """
+    Ensure holding an earlier intention key continues accumulating its hold count
+    without suppressing rising-edge triggers on concurrently pressed intention keys.
+    """
+    # Frame 1: Press 'interact' (8)
+    mock_sdl({8})
+    p1 = mock_keyboard.poll()
+    assert p1.world.intention == Intentions.INTERACT.value
+    assert p1.world.holds == {Intentions.INTERACT.value: 1}
+
+    # Frame 2: Continue holding 'interact' (8) while pressing 'attack' (44)
+    mock_sdl({8, 44})
+    p2 = mock_keyboard.poll()
+    assert p2.world.intention == Intentions.ATTACK.value
+    assert p2.world.holds == {
+        Intentions.INTERACT.value: 2,
+        Intentions.ATTACK.value: 1,
+    }
+
+    # Frame 3: Hold both
+    mock_sdl({8, 44})
+    p3 = mock_keyboard.poll()
+    assert p3.world.intention is None
+    assert p3.world.holds == {
+        Intentions.INTERACT.value: 3,
+        Intentions.ATTACK.value: 2,
+    }
+
+    # Frame 4: Release 'interact' (8), continue holding 'attack' (44)
+    mock_sdl({44})
+    p4 = mock_keyboard.poll()
+    assert p4.world.intention is None
+    assert p4.world.holds == {Intentions.ATTACK.value: 3}
+
+
+@pytest.mark.workflow_projectiles
+def test_keyboard_context_switch_resets_hold_counters(
+    mock_keyboard: Keyboard,
+    mock_sdl,
+):
+    """
+    Ensure switching between WORLD and MENU contexts clears accumulated hold counts.
+    """
+    mock_sdl({44})
+    mock_keyboard.poll()
+    mock_keyboard.poll()
+
+    mock_keyboard.context(DeviceContexts.MENU.value)
+    mock_keyboard.context(DeviceContexts.WORLD.value)
+
+    mock_sdl({44})
+    payload = mock_keyboard.poll()
+    assert payload.world.intention == Intentions.ATTACK.value
+    assert payload.world.holds == {Intentions.ATTACK.value: 1}

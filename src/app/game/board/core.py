@@ -73,7 +73,7 @@ class Board:
     # Game Data
     plot: PlotState
     calendar: CalendarState
-    perimeters: Dict[str, List[Boundary]]
+    perimeters: Dict[str, Dict[int, List[Boundary]]]
     # Configurations
     configurations: ConfigurationSchema
     equipment: EquipmentGroup

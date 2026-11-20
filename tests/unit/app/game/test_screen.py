@@ -35,6 +35,7 @@ from app.static.semantics import (
     Menus,
     Seasons,
     Substrates,
+    Intentions
 )
 
 # Cython Libraries
@@ -109,7 +110,9 @@ def test_frame_keys_generation(mock_board):
         frame=4,
     )
     player.state.slots.equipment.armor = "leather"
-    player.state.slots.equipment.weapon = "sword"
+    player.state.slots.equipment.utility = "lantern"
+    player.state.slots.equipment.tool = "shovel"
+    player.state.slots.equipment.weapon = "spear"
     player.state.slots.equipment.shield = "buckler"
 
     # 1. NoFrame
@@ -124,16 +127,36 @@ def test_frame_keys_generation(mock_board):
     # 4. StateFrame
     assert pixie.frame.keys(pixie.id, pixie.state) == [(f"{pixie.id}-walk-down-2", 0, 0)]
 
-    # 5. SpriteFrame (Strict Z-index: Base -> Armor -> Utility -> Tool -> Weapon -> Shield)
-    expected_keys = [
+    # 5. SpriteFrame (Strict Z-index: Base -> Armor -> Utility -> [Tool | Weapon] -> Shield)
+    # ATTACK renders weapon ('spear') and suppresses tool ('shovel') despite shared THRUST action
+    player.state.intention = Intentions.ATTACK.value
+    assert player.frame.keys(player.id, player.state) == [
         ("player-thrust-up-4", 0, 0),
         ("leather-thrust-up-4", 0, 0),
-        ("sword-thrust-up-4", 0, 0),
+        ("lantern-thrust-up-4", 0, 0),
+        ("spear-thrust-up-4", 0, 0),
         ("buckler-thrust-up-4", 0, 0),
     ]
-    assert player.frame.keys(player.id, player.state) == expected_keys
 
+    # MINE renders tool ('shovel') and suppresses weapon ('spear') despite shared THRUST action
+    player.state.intention = Intentions.MINE.value
+    assert player.frame.keys(player.id, player.state) == [
+        ("player-thrust-up-4", 0, 0),
+        ("leather-thrust-up-4", 0, 0),
+        ("lantern-thrust-up-4", 0, 0),
+        ("shovel-thrust-up-4", 0, 0),
+        ("buckler-thrust-up-4", 0, 0),
+    ]
 
+    # IDLE suppresses both tool and weapon while retaining persistent gear
+    player.state.intention = Intentions.IDLE.value
+    assert player.frame.keys(player.id, player.state) == [
+        ("player-thrust-up-4", 0, 0),
+        ("leather-thrust-up-4", 0, 0),
+        ("lantern-thrust-up-4", 0, 0),
+        ("buckler-thrust-up-4", 0, 0),
+    ]
+    
 def test_screen_draw_culling_and_sorting(mock_screen, mock_board, mock_render):
     """
     Test that Screen.draw correctly culls out-of-bounds assets and sorts visible

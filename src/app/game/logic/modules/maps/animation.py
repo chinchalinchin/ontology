@@ -8,97 +8,96 @@
 
 Animation Maps for mapping SpriteState to Equipment Frames.
 """
+# Standard Libraries
+from typing import Optional
+
 # Application Libraries
 from app.static.semantics import (
-    Actions, 
-    Directions, 
+    Actions,
+    Directions,
     Intentions,
     StaticIntentions
 )
 from app.models.groups import EquipmentGroup
-from app.models.state import (
-    SpriteState
-)
+from app.models.state import SheetState
 
 # Cython Libraries
 from libs.core.models import Position
 
+
 class AnimationMap:
     """
+    Stateless projection from Intentional/Spatial state and Equipment slots
+    into Animation Space (Action, Direction). Acts as the Equipment admissibility
+    gate for equipment-bound Intentions.
     """
 
     @staticmethod
-    def action(state: SpriteState, equipment: EquipmentGroup) -> Actions:
+    def action(
+        state: SheetState,
+        equipment: EquipmentGroup,
+        intention: Optional[str] = None
+    ) -> Optional[Actions]:
         """
-        Resolves Sprite Intentions to Animation Actions.
+        Resolves a Sheet Intention and slotted Equipment to its Animation Action.
+        Returns None when an equipment-gated Intention (ATTACK, MINE, BUILD) lacks
+        the required slotted Equipment or configured Actions.
 
-        - state: sprite state
-        - equipment: equipment properties
+        - state: sheet or sprite state
+        - equipment: board equipment group
+        - intention: optional candidate intention override for transition gating
         """
-        weapon = state.slots.equipment.weapon
-        tool = state.slots.equipment.tool
-        utility = state.slots.equipment.utility
-        intention = state.intention
+        target_intention = intention if intention is not None else state.intention
 
-        if intention in StaticIntentions:
+        if target_intention in StaticIntentions:
             return Actions.WALK
 
-        if intention == Intentions.ATTACK:
-            if not weapon:
-                return Actions.CAST # Default
-            
-            weapon_asset = equipment.weapons.get(weapon)
+        if target_intention in (
+            Intentions.ATTACK,
+            Intentions.MINE,
+            Intentions.BUILD
+        ):
+            if not state.slots:
+                return None
 
-            if weapon_asset and weapon_asset.properties.actions:
-                return next(iter(weapon_asset.properties.actions))
-            
-            return Actions.CAST
-    
-        if intention == Intentions.MINE:
-            if not tool:
-                return Actions.THRUST # Default mining action fallback
-            
-            tool_asset = equipment.tools.get(tool)
-            
-            if tool_asset and tool_asset.properties.actions:
-                return next(iter(tool_asset.properties.actions))
-                
-            return Actions.THRUST
+            eq = state.slots.equipment
+            if target_intention == Intentions.ATTACK:
+                asset = equipment.weapons.get(eq.weapon) if eq.weapon else None
+            elif target_intention == Intentions.MINE:
+                asset = equipment.tools.get(eq.tool) if eq.tool else None
+            else:
+                asset = equipment.utilities.get(eq.utility) if eq.utility else None
 
-        if intention == Intentions.BUILD:
-            if not utility:
-                return Actions.CAST # Default build action fallback
-            
-            utility_asset = equipment.utilities.get(utility)
-            
-            if utility_asset and utility_asset.properties.actions:
-                return next(iter(utility_asset.properties.actions))
-                
-            return Actions.CAST
+            if asset and asset.properties.actions:
+                return next(iter(asset.properties.actions))
 
-        if intention in (
+            return None
+
+        if target_intention in (
             Intentions.INTERACT,
-            Intentions.WANDER, 
-            Intentions.FIND, 
-            Intentions.FOLLOW, 
-            Intentions.HUNT, 
-            Intentions.ESCAPE, 
+            Intentions.WANDER,
+            Intentions.FIND,
+            Intentions.FOLLOW,
+            Intentions.HUNT,
+            Intentions.ESCAPE,
             Intentions.RETURN
         ):
             return Actions.WALK
 
         return Actions.WALK
-    
 
     @staticmethod
     def direction(position: Position, target: Position) -> str:
+        """
+        Projects a source coordinate and target coordinate to a cardinal Direction.
+        """
         dx = target.x - position.x
         dy = target.y - position.y
-    
+
         # In graphics coordinates, larger y is physically lower.
         if dy > dx:
             # Lower than both diagonals means it is physically DOWN
             return Directions.DOWN if dy > -dx else Directions.LEFT
-        
+
         # Higher than both diagonals means it is physically UP
         return Directions.RIGHT if dy > -dx else Directions.UP

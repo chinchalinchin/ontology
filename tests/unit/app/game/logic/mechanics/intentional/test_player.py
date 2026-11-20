@@ -88,6 +88,7 @@ def test_player_blocking_intention_persists(
     mechanic = mock_mechanic(Mechanics.PLAYER.value)
     player = mock_board.player()
     player.state.intention = Intentions.MINE.value
+    player.state.animation.action = Actions.THRUST.value
     player.state.animation.frame = 1
     player.state.animation.tick = 0
 
@@ -104,7 +105,7 @@ def test_player_blocking_intention_persists(
     )
     assert player.state.intention == Intentions.MINE.value
     assert player.state.animation.frame == 1
-
+    
 
 def test_player_blocking_intention_completes(
     mock_mechanic,

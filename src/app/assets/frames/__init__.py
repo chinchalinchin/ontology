@@ -8,6 +8,9 @@ from app.assets.frames.core import (
 from app.assets.frames.crafts import (
     MaterialFrame
 )
+from app.assets.frames.cursors import (
+    ProjectileFrame
+)
 from app.assets.frames.effects import (
     FluidFrame
 )
@@ -52,5 +55,6 @@ __all__ = [
     'DirectedFrame',
     'StageFrame',
     'SeasonalFrame',
-    'MaterialFrame'
+    'MaterialFrame',
+    'ProjectileFrame'
 ]

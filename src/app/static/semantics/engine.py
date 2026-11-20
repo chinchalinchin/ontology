@@ -94,6 +94,7 @@ class Relations(StrEnum):
     """Enumeration of Relations"""
     SHORELINES      = "shorelines"
     MATERIALS       = "materials"
+    PROJECTILES     = "projectiles"
 
 class Executors(StrEnum):
     """Enumeration of Mechanic Executors"""

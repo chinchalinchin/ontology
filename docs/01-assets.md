@@ -603,9 +603,6 @@ The direction of the elevation transition calculation is dependent on the direct
 
 ### Category: Cursors
 
-!!! @TODO(06-02)
-    Entire system needs re-evaluated following Phase 07-04's simplifcation of the Hierarchy through Material.
-
 * Property File: `/src/assets/cursors/**/*.yaml`
 
 Cursors are Assets that bind to other Asset States.

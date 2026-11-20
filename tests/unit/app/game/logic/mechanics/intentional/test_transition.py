@@ -50,7 +50,10 @@ def test_transition_update_evaluates_executor(
     sprite.state.layer = "0"
     sprite.state.position = Position(x=10, y=10)
     sprite.state.mutators.parameters.action.radius = 25
-    sprite.state.slots.equipment.weapon = None
+    sprite.state.slots.equipment.weapon = "sword"
+    sprite.state.animation.action = Actions.WALK.value
+    sprite.state.animation.frame = 5
+    sprite.state.animation.tick = 3
     sprite.state.goal = Goal(
         name=player.name,
         category=Goals.TARGET.value,
@@ -61,10 +64,54 @@ def test_transition_update_evaluates_executor(
     mechanic.update(mock_board, 0.016, mock_bus, None)
 
     assert sprite.state.intention == Intentions.ATTACK.value
-    assert sprite.state.animation.action == Actions.CAST.value
+    assert sprite.state.animation.action == Actions.SLASH.value
+    assert sprite.state.animation.frame == 0
+    assert sprite.state.animation.tick == 1
     assert sprite.state.animation.direction == Directions.RIGHT.value
     assert sprite.state.mutators.triggers.animated is True
 
+
+def test_transition_gates_and_reverts_inadmissible_equipment(
+    mock_mechanic,
+    mock_bus,
+    mock_board,
+):
+    """
+    Verifies TransitionMechanics rejects transitions requiring missing Equipment
+    and reverts inadmissible active intentions cleanly to IDLE / WALK.
+    """
+    mechanic = mock_mechanic(Mechanics.TRANSITION.value)
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+    player = mock_board.player()
+
+    # 1. Unarmed HUNT near target rejects HUNT -> ATTACK
+    sprite.state.intention = Intentions.HUNT.value
+    sprite.state.layer = "0"
+    sprite.state.position = Position(x=10, y=10)
+    sprite.state.mutators.parameters.action.radius = 25
+    sprite.state.slots.equipment.weapon = None
+    sprite.state.goal = Goal(
+        name=player.name,
+        category=Goals.TARGET.value,
+        layer="0",
+        position=Position(x=20, y=10),
+    )
+
+    mechanic.update(mock_board, 0.016, mock_bus, None)
+    assert sprite.state.intention == Intentions.HUNT.value
+    assert sprite.state.animation.action == Actions.WALK.value
+
+    # 2. Unarmed sprite already in ATTACK reverts to IDLE / WALK
+    sprite.state.intention = Intentions.ATTACK.value
+    sprite.state.animation.action = Actions.SLASH.value
+    sprite.state.animation.frame = 3
+
+    mechanic.update(mock_board, 0.016, mock_bus, None)
+    assert sprite.state.intention == Intentions.IDLE.value
+    assert sprite.state.animation.action == Actions.WALK.value
+    assert sprite.state.animation.frame == 0
+    assert sprite.state.animation.tick == 1
+    
 
 def test_transition_update_idle_to_hunt_and_wander(
     mock_mechanic,

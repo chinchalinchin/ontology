@@ -252,3 +252,182 @@ def test_attack_hitbox_non_dict_hitboxes_returns_empty(mock_equipment, mock_asse
 
     player.state.elevation = 0
     assert longbow.hitbox.get(longbow.properties, player.state, elevation=0) == []
+
+@pytest.mark.category_sheets
+@pytest.mark.workflow_combat
+def test_attack_hitbox_non_dict_hitboxes_returns_empty(mock_equipment, mock_asset):
+    """Verifies AttackHitbox returns an empty list when weapon hitboxes are None."""
+    longbow = mock_equipment.weapons["longbow"]
+    player = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.PLAYERS.value,
+    )
+
+    longbow.properties.hitboxes = None
+    player.state.elevation = 0
+    player.state.animation.action = Actions.SHOOT.value
+    player.state.animation.direction = Directions.RIGHT.value
+    player.state.animation.frame = 9
+
+    assert longbow.hitbox.get(longbow.properties, player.state, elevation=0) == []
+
+
+@pytest.mark.category_sheets
+@pytest.mark.workflow_combat
+@pytest.mark.workflow_projectiles
+def test_attack_hitbox_ranged_release_frames(mock_equipment, mock_asset):
+    """Verifies longbow and crossbow resolve directional release hitboxes strictly on their release frames."""
+    longbow = mock_equipment.weapons["longbow"]
+    crossbow = mock_equipment.weapons["crossbow"]
+    player = mock_asset(
+        AssetCategories.SHEETS.value,
+        AssetInstances.PLAYERS.value,
+    )
+    player.state.elevation = 0
+
+    player.state.animation.action = Actions.SHOOT.value
+    player.state.animation.frame = 9
+    for direction in (
+        Directions.UP.value,
+        Directions.LEFT.value,
+        Directions.DOWN.value,
+        Directions.RIGHT.value,
+    ):
+        player.state.animation.direction = direction
+        assert (
+            longbow.hitbox.get(longbow.properties, player.state, elevation=0)
+            == longbow.properties.hitboxes[f"shoot-{direction}-9"]
+        )
+
+    player.state.animation.frame = 8
+    assert longbow.hitbox.get(longbow.properties, player.state, elevation=0) == []
+
+    player.state.animation.action = Actions.THRUST.value
+    player.state.animation.frame = 5
+    for direction in (
+        Directions.UP.value,
+        Directions.LEFT.value,
+        Directions.DOWN.value,
+        Directions.RIGHT.value,
+    ):
+        player.state.animation.direction = direction
+        assert (
+            crossbow.hitbox.get(crossbow.properties, player.state, elevation=0)
+            == crossbow.properties.hitboxes[f"thrust-{direction}-5"]
+        )
+
+    player.state.animation.frame = 4
+    assert crossbow.hitbox.get(crossbow.properties, player.state, elevation=0) == []
+
+
+@pytest.mark.category_cursors
+@pytest.mark.workflow_projectiles
+def test_rotated_hitbox_elevations_and_filtering(mock_asset):
+    """Verifies RotatedHitbox elevation clamping and cross-tier isolation."""
+    proj = mock_asset(
+        AssetCategories.CURSORS.value,
+        AssetInstances.PROJECTILES.value,
+    )
+
+    proj.state.elevation = 0
+    assert proj.hitbox.elevations(proj.properties, proj.state) == [0]
+    assert len(proj.hitbox.get(proj.properties, proj.state, elevation=0)) == 1
+    assert proj.hitbox.get(proj.properties, proj.state, elevation=1) == []
+
+    proj.state.elevation = 2
+    assert proj.hitbox.elevations(proj.properties, proj.state) == [2]
+    assert len(proj.hitbox.get(proj.properties, proj.state, elevation=2)) == 1
+    assert proj.hitbox.get(proj.properties, proj.state, elevation=0) == []
+
+    proj.state.elevation = -1
+    assert proj.hitbox.elevations(proj.properties, proj.state) == [0]
+
+
+@pytest.mark.category_cursors
+@pytest.mark.workflow_projectiles
+def test_rotated_hitbox_fallback_on_none_and_empty_list(mock_asset):
+    """Verifies None falls back to rotated frame dimensions while [] stays empty."""
+    proj = mock_asset(
+        AssetCategories.CURSORS.value,
+        AssetInstances.PROJECTILES.value,
+    )
+    proj.state.elevation = 0
+    proj.properties.hitboxes = None
+
+    # 16x16 cannonball at 0 degrees
+    proj.state.angle = 0
+    hbs_0 = proj.hitboxes
+    assert len(hbs_0) == 1
+    assert (hbs_0[0].position.x, hbs_0[0].position.y) == (0, 0)
+    assert (hbs_0[0].dimensions.w, hbs_0[0].dimensions.l) == (16, 16)
+
+    # 16x16 cannonball at 45 degrees -> circumscribed 23x23 centered on (8, 8)
+    proj.state.angle = 45
+    hbs_45 = proj.hitboxes
+    assert len(hbs_45) == 1
+    assert (hbs_45[0].position.x, hbs_45[0].position.y) == (-4, -4)
+    assert (hbs_45[0].dimensions.w, hbs_45[0].dimensions.l) == (23, 23)
+
+    # Explicit empty list preserves passability
+    proj.properties.hitboxes = []
+    assert proj.hitboxes == []
+
+
+@pytest.mark.category_cursors
+@pytest.mark.workflow_projectiles
+@pytest.mark.parametrize(
+    "angle, expected_pos, expected_dim",
+    [
+        (0, (30, 18), (10, 5)),
+        (90, (18, 30), (5, 10)),
+        (180, (1, 18), (10, 5)),
+        (270, (18, 1), (5, 10)),
+        (360, (30, 18), (10, 5)),
+        (-90, (18, 1), (5, 10)),
+    ],
+)
+def test_rotated_hitbox_cardinal_projections(
+    mock_asset,
+    mock_properties,
+    angle: int,
+    expected_pos: tuple[int, int],
+    expected_dim: tuple[int, int],
+):
+    """Verifies clockwise screen-space rotation of an asymmetric base hitbox across cardinal angles."""
+    proj = mock_asset(
+        AssetCategories.CURSORS.value,
+        AssetInstances.PROJECTILES.value,
+    )
+    arrow_props = mock_properties(
+        AssetCategories.CURSORS.value,
+        AssetInstances.PROJECTILES.value,
+        id="arrow",
+    )
+    # Arrow frame is 41x41 (center 20.5, 20.5); place arrowhead on the +x tip
+    arrow_props.hitboxes = [Hitbox(Position(30, 18), Dimensions(10, 5))]
+    proj.state.elevation = 0
+    proj.state.angle = angle
+
+    rotated = proj.hitbox.get(arrow_props, proj.state, elevation=0)
+    assert len(rotated) == 1
+    assert (rotated[0].position.x, rotated[0].position.y) == expected_pos
+    assert (rotated[0].dimensions.w, rotated[0].dimensions.l) == expected_dim
+
+
+@pytest.mark.category_cursors
+@pytest.mark.workflow_projectiles
+def test_rotated_hitbox_diagonal_projection(mock_asset):
+    """Verifies tight AABB projection at 45 degrees clockwise around the frame center."""
+    proj = mock_asset(
+        AssetCategories.CURSORS.value,
+        AssetInstances.PROJECTILES.value,
+    )
+    # 16x16 frame (center 8.0, 8.0); base hitbox center at (13, 8) -> offset (+5, 0)
+    proj.properties.hitboxes = [Hitbox(Position(10, 6), Dimensions(6, 4))]
+    proj.state.elevation = 0
+    proj.state.angle = 45
+
+    rotated = proj.hitboxes
+    assert len(rotated) == 1
+    assert (rotated[0].position.x, rotated[0].position.y) == (8, 8)
+    assert (rotated[0].dimensions.w, rotated[0].dimensions.l) == (7, 7)

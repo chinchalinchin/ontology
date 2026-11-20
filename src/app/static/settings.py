@@ -111,6 +111,15 @@ GRAVITY_ACCELERATION: Final[float] = 400.0
 TERMINAL_VELOCITY: Final[float] = 350.0
 """"""
 
+PROJECTILE_BASE_SPEED_FACTOR: Final[int] = 50
+"""Base speed for Projectiles before application of speed formula."""
+
+PROJECTILE_MAX_RANGE: Final[int] = 512
+"""Maximum range of Projectiles before garbage collection"""
+
+PROJECTILE_MAX_CHARGE_TICKS: int = 300
+"""Maximum number of ticks the attack button can be held before releasing a projectile."""
+
 # ---------------------------------------------------
 # -------------------------------- DIRECTORY SETTINGS
 # ---------------------------------------------------

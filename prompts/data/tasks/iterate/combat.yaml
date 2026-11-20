@@ -6,7 +6,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/merge.md.j2
+  template: iterate/review.md.j2
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ---------------------------------------------- TOOLS
@@ -19,26 +19,31 @@ tools:
     # ------------------------ TOOL VIEWS: MANAGER
     # --------------------------------------------
     manager:
-      board: false
-      docs: false
+      board: true
+      docs: true
       templates: true
+    # --------------------------------------------
+    # ------------------------ TOOL VIEWS: METRICS
+    # --------------------------------------------
+    metrics:
+      pstats: false
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SOURCE
     # --------------------------------------------
     source:
-      filter: false
-      data: false
+      filter: true
+      data: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: SHELL
     # --------------------------------------------
     shell:
-      directory: false
+      directory: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: TESTS
     # --------------------------------------------
     tests:  
       configuration: false
-      pipeline: false
+      pipeline: true
       session: false
 # ----------------------------------------------------
   parameters:
@@ -47,7 +52,7 @@ tools:
     # --------------------------------------------
     manager:
       board:
-        phase: '06-03'
+        phase: '03-04'
         action: refactor
       docs:
         exclude:
@@ -55,7 +60,7 @@ tools:
           # - 01-assets
           # - 02-sprites
           - 03-compositions
-          # - 04-intentions
+          - 04-intentions
           # - 05-mechanics
           - 06-widgets
           - 07-acoustics
@@ -65,7 +70,10 @@ tools:
           - 11-emergence
           # - 12-architecture
       templates:
-        - template-merge
+        # - template-backlog
+        - template-bug
+        - template-docs
+        - template-review
     # --------------------------------------------
     # ------------------------ PARAMETERS: METRICS
     # --------------------------------------------
@@ -82,61 +90,71 @@ tools:
       filter:
         default: AND
         queries:
-          # - title: Dependency Injection Pipeline
-          #   scan:
-          #     domain: [ system ]
-          #     app: [ orchestration ]
-          # - title: Asset Factory
-          #   scan:
-          #     domain: [ system ]
-          #     app: [ service, asset ]
-          #     workflows: [ injection ]
-          # - title: Core Components
-          #   scan:
-          #     domain: [ system ]
-          #     app: [ core, component ]
-          # - title: Asset Abstract
-          #   scan:
-          #     domain: [ abstract ]
-          #     app: [ asset ]
-          # - title: Mechanic Abstract
-          #   scan:
-          #     domain: [ abstract ]
-          #     app: [ mechanic ]
-          # - title: Core Models
-          #   scan:
-          #     domain: [ model ]
-          #     app: [ core, asset ]
-          # - title: Sheet Models
-          #   scan:
-          #     domain: [ model ]
-          #     category: [ sheets ]
-          # - title: Sheet Hitbox Implementations
-          #   scan:
-          #     domain: [ concrete ]
-          #     app: [ asset ]
-          #     category: [ sheets ]
-          #     asset: [ hitbox ]
-          # - title: Sheet Frame Implementations
-          #   scan:
-          #     domain: [ concrete ]
-          #     app: [ asset ]
-          #     category: [ sheets ]
-          #     asset: [ frame ]
-          # - title: Combat Logic
-          #   scan:
-          #     domain: [ logic ]
-          #     workflows: [ combat ]
+          - title: Application - Core
+            scan:
+              domain: [ system ]
+              app: [ core, component ]
+          - title: Application - Devices
+            scan:
+              domain: [ user ]
+              app: [ device ]
+          - title: Asset - Abstract
+            scan:
+              domain: [ abstract ]
+              app: [ asset ]
+          - title: Mechanic - Abstract
+            scan:
+              domain: [ abstract ]
+              app: [ mechanic ]
+          - title: Models - Core
+            scan:
+              domain: [ model ]
+              app: [ core, asset ]
+          - title: Models - Sheets
+            scan:
+              domain: [ model ]
+              category: [ sheets ]
+          - title: 'Implementation - All: Sheets'
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              category: [ sheets ]
+          - title: 'Implementations -  All: Cursors'
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              category: [ cursors ]
+          - title: Logic - Combat
+            scan:
+              domain: [ logic ]
+              workflows: [ combat ]
+          - title: Logic - Projectiles
+            scan:
+              domain: [ logic ]
+              workflows: [ projectiles ]
+          - title: Service - Cradle
+            scan:
+              domain: [ system ]
+              app: [ service ]
+              workflows: [ combat ]
           - title: Combat Tests
             scan:
               domain: [ test ]
               workflows: [ combat ]
+          - title: Projectile Tests
+            scan: 
+              domain: [ test ]
+              workflows: [ projectiles ]
+          - title: Device Tests 
+            scan:
+              domain: [ test ]
+              app: [ device ]
           - title: Test Fixtures
             scan:
               domain: [ test ]
               test: [ fixtures ]
       data:
-        # properties: [ sheets/sprites, sheets/equipment ]
+        properties: [ cursors, sheets/equipment ]
         state: [ world-testbed ]
         configurations: [  ]
         templates: [ ]
@@ -154,5 +172,5 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: workflow_combat
+        marker: '"workflow_combat or workflow_projectile"'
         # scope: '**/test_{actuator,cartographer}.py'
