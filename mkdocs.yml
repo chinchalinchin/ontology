@@ -10,7 +10,6 @@ theme:
     accent: blue
   features:
     - content.code.copy
-    - navigation.expand
     - navigation.indexes
 nav:
   - Index: index.md
