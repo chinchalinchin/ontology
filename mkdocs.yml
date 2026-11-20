@@ -59,7 +59,9 @@ nav:
         - Phase n+1 - Towns: board/phases/implement/implement-n+1.md
       - Refactor:
         - Phase 01.01 - Orchestration: board/phases/refactor/refactor-01-01.md
-        - Phase 01.02 - Render Decoupling: board/phases/refactor-01-20.md
+        - Phase 01.02 - Render Decoupling: board/phases/refactor-01-02.md
+        - Phase 01.03 - Hierarchy Refinement: board/phases/refactor-01-03.md
+        - Phase 01.04 - Board Optimization: board/phases/refactor-01-04.md
         - Phase 02.01 - Frames: board/phases/refactor/refactor-02-01.md
         - Phase 02.02 - Registry: board/phases/refactor/refactor-02-02.md
         - Phase 02.03 - Equipment: board/phases/refactor/refactor-02-03.md
