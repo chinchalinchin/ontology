@@ -1,5 +1,8 @@
 {% set bugs = [ 
-    'patch-b038'
+    'b002',
+    'b022',
+    'b023',
+    'b024',
 ] %}
 {% set path = properties.paths.root + properties.paths.phases + 'patch/open/'%}
 # Task: Ontology - Patch
@@ -25,4 +28,16 @@ This section contains **Constraints** and **Guidelines** that must be observed w
 
 #### Changes: Guidelines
 
+**Guideline: Stale Reports**
+
+Bug Reports may be stale and no longer applicable. Close all stale Bug Report.
+
+
 {% include 'blocks/controls/guideline-models.md' %}
+
+## Task: Bug Reports
+
+{% for bug in bugs %}
+{{ file(path ~ 'patch-' ~ bug ~ '.md')}}
+
+{% endfor %}

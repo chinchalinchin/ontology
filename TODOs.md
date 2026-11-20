@@ -42,34 +42,6 @@ In `src/app/game/logic/mechanics/core/menu.py`, `MenuMechanics._resolve_neighbor
 Either introduce a dedicated `Statuses` / visual state distinction for unaffordable-but-inspectable recipes, or allow `MenuMechanics` / `CraftController` to traverse onto occupied Craft Formulae slots regardless of affordability while gating execution inside `CraftController.select()`.
 
 
-
-
-##### Review: Ontology Engine & Runtime Profile Analysis
-
-###### Overview
-
-An analysis of the runtime execution profile (`latest.pstats`, captured across **6,019 rendered frames** and **6,092 logic updates** / **5,447 active world ticks**, or ~100.3 seconds at 60 FPS) alongside the core codebase reveals that the Engine easily maintains its 60 FPS frame budget (**72.78%** of wall-clock time is spent in frame-pacing/idle), but exhibits several structural hotspots in the **25.85%** of wall-clock time dedicated to active execution:
-
-| Subsystem | Wall-Clock % | Self % | Active Work Share (%) | Calls | Calls / Frame |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **`Engine.start` Pacing (`sleep` + `time` + spin)** | **72.78%** | **72.07%** | *N/A (Idle/Spin)* | 15,979,892 | ~2,655 |
-| **`Engine._render` (Total Rendering)** | **13.28%** | 0.03% | **51.37%** | 6,019 | 1.0 |
-| ├─ `Screen._assemble` (World Culling & Sort) | 7.29% | **5.18%** | **28.20%** | 6,013 | 1.0 |
-| │  └─ `Screen._in_viewport` | 1.02% | 0.58% | 3.95% | 617,989 | ~102.8 |
-| └─ `Screen._widgets` (HUD / Menu Overlays) | 4.90% | 1.04% | **18.96%** | 6,636 | 1.1 |
-|    └─ `WidgetFrame.keys` (`widgets:67:keys`) | 3.34% | 1.73% | 12.92% | 83,118 | ~13.8 |
-| **`Engine._play` (Total Mechanics)** | **12.57%** | 0.06% | **48.63%** | 6,092 | 1.01 |
-| ├─ `CollisionMechanics.update` | 5.91% | 1.25% | **22.86%** | 5,447 | 0.91 |
-| │  ├─ `MaterialHitbox.elevations` (`crafts:64`) | 1.91% *(2.37% tot)* | 1.34% | 7.39% *(9.17% tot)* | 1,737,593 *(2.27M)* | ~319.0 |
-| │  ├─ `SpatialMechanic.collisions` (`base:60`) | 1.85% | 0.48% | 7.16% | 81,896 | ~15.0 |
-| │  └─ `MaterialHitbox.get` (`crafts:73`) | 0.92% *(1.28% tot)* | 0.81% | 3.56% *(4.95% tot)* | 501,124 *(698k)* | ~92.0 |
-| └─ `MotionMechanics.update` (`fields.update`) | 1.92% | 0.81% | **7.43%** | 5,447 | 0.91 |
-| **`enum.__get__` (Global Descriptor Overhead)** | **1.73%** | **1.25%** | **6.69%** | **7,685,348** | **~1,276.8** |
-
-At a macro level, **rendering preparation in Python (`_render` at 13.28%) costs more CPU time than the entire game simulation (`_play` at 12.57%)**, and **static-environment queries inside `CollisionMechanics` (5.91%) and `Screen._widgets` (4.90%)** dominate the active frame budget despite Cython acceleration at the leaf nodes.
-
----
-
 ###### Review: Logic
 
 1. **All-Layer Physics Execution vs. Single-Layer Rendering**:
@@ -92,17 +64,9 @@ At a macro level, **rendering preparation in Python (`_render` at 13.28%) costs 
 
 ###### Review: Architecture
 
-1. **Passable Craft Inclusion in `Board._cached_weights`**:
-   * `CraftProperties` defaults to `mass: int = 0`. Consequently, decorative or passable surface crafts (e.g., `floors`, `flats`, `paths`, `corridors`) satisfy $m \ge 0$ (`predicates.is_weight`) and are indexed into `board.weights(layer)`.
-   * Every tick, `CollisionMechanics.update` (and `fields.update`) iterates through all of these passable crafts and calls `w.hitbox.elevations(w.properties, w.state)` (**2.27 million calls**, **2.37%** of total runtime) just for `MaterialHitbox.elevations` to check `MaterialIndex().is_obstacle(state.blueprint)` and return `[]`.
-   * Filtering passable `MaterialHitbox` crafts out of `_cached_weights` at board indexing time (or caching `elevations` on the asset/cache) would eliminate over **2 million Python calls** per 100 seconds.
-
 2. **Uncached Per-Frame HUD / Overlay Resolution (`Screen._widgets`)**:
    * `Screen.interface` -> `Screen._widgets` consumes **4.90%** of total wall-clock time (**18.96% of active CPU time**)—nearly as much as `CollisionMechanics` (**5.91%**).
    * Unlike `PaneState` widgets which bake to a texture via `Screen.stamp`, non-pane overlay widgets (e.g., HUD meters, slots, buttons) execute `widget.frame.keys(widget.id, widget.state)` (**83,118 calls**, **3.34%**) and `registry.image(key)` on every single frame, even when the underlying widget state has not mutated.
-
-3. **Serialization Contamination in `Board.serialize` (`src/app/game/board/core.py`)**:
-   * `Board.serialize` filters out `WIDGETS`, non-persistent `TEMPORARY` effects, and `Equipment` sheets, but does not filter out procedurally synthesized `GEOGRAPHY` (`SHORELINES`) or hydrated reciprocal `Door` shadow projections (`DoorState.projection == LayerProjections.OUT.value`). Saving and reloading a board state will persist procedural/projected entities as static state entries.
 
 ---
 

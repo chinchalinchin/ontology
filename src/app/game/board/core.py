@@ -115,54 +115,6 @@ class Board:
         logger.info("Board completely hydrated and initialized.")
 
     # ---------------------------------------------------------
-    # ------------------------------------ BACKWARD COMPATIBILITY
-    # Properties for internal components/tests inspecting cache internals directly
-
-    @property
-    def _cached_categories(self) -> Dict[str, Dict[str, List[Asset]]]:
-        return self._cache.cached_categories
-
-    @property
-    def _cached_instances(self) -> Dict[str, Dict[str, List[Asset]]]:
-        return self._cache.cached_instances
-
-    @property
-    def _cached_layers(self) -> Dict[str, List[Asset]]:
-        return self._cache.cached_layers
-
-    @property
-    def _cached_renderables(self) -> Dict[str, List[Asset]]:
-        return self._cache.cached_renderables
-
-    @property
-    def _cached_weights(self) -> Dict[str, List[Asset]]:
-        return self._cache.cached_weights
-
-    @property
-    def _cached_tilemap(self) -> Dict[str, Dict[str, Dict[Tuple[int, int], Asset]]]:
-        return self._cache.cached_tilemap
-
-    @property
-    def _cached_fluidmap(self) -> Dict[str, Dict[Tuple[int, int], List[Asset]]]:
-        return self._cache.cached_fluidmap
-
-    @property
-    def _cached_characters(self) -> Dict[str, Any]:
-        return self._cache.cached_characters
-
-    @property
-    def _all_categories(self) -> Dict[str, List[Asset]]:
-        return self._cache.all_categories
-
-    @property
-    def _all_instances(self) -> Dict[str, List[Asset]]:
-        return self._cache.all_instances
-
-    @property
-    def _shorelines(self) -> Dict[str, List[Asset]]:
-        return self._cache.shorelines
-
-    # ---------------------------------------------------------
     # ---------------------------------------------- PREDICATES
 
     def fluid(

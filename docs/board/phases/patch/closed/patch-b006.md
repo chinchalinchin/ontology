@@ -1,6 +1,6 @@
 ##### Bug B006: Raycast Boundary Grazing
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: HIGH
 
 **Description**

@@ -1,6 +1,5 @@
 """
 @domain.test
-@domain.logic
 @test.unit
 @app.module
 @app.semantics
