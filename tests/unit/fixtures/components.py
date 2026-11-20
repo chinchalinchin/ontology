@@ -12,6 +12,7 @@ import collections
 from typing import (
     Any,
     Callable,
+    Dict,
     List,
     Optional,
     Set,
@@ -176,6 +177,7 @@ def mock_payload():
         intention: Optional[str] = None,
         grip: Optional[str] = None,
         menu: Optional[str] = None,
+        holds: Optional[Dict[str, int]] = None,
         traversal: Optional[str] = None,
         interaction: Optional[str] = None,
     ) -> DevicePayload:
@@ -185,6 +187,7 @@ def mock_payload():
                 intention=intention,
                 grip=grip,
                 menu=menu,
+                holds=dict(holds) if holds else {},
             ),
             menu=MenuPayload(
                 traversal=traversal,

@@ -42,9 +42,9 @@ sheets:
         sack: {}
       slots:
         equipment:
-          armor: null
-          tool: null
-          utility: null
+          armor: leather
+          tool: shovel
+          utility: lantern
           weapon: sword
           shield: buckler
         grip:

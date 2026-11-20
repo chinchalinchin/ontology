@@ -1,0 +1,21 @@
+context: false
+# ----------------------------------------------------
+task:
+# ----------------------------------------------------
+  template: index.md.j2
+  parameters:
+    title: Unit Test Debugging 
+    description: |
+      * **DEBUGGING**: Debug the current run of the test pipeline located in the [Test Pipeline](#view-test-pipeline) section.
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    tests:
+      pipeline: true
+# ----------------------------------------------------
+  parameters:
+    tests:
+      pipeline:
+        command: pytest -m
+        marker: '"workflow_combat or workflow_projectiles"'

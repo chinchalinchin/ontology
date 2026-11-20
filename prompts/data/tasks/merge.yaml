@@ -10,7 +10,7 @@ tools:
     manager:
       templates: true
     tests:
-      pipeline: true
+      pipeline: false
 # ----------------------------------------------------
   parameters:
     manager:

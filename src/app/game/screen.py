@@ -7,6 +7,8 @@
 # Ontology: Source - app.game.screen
 
 Implementation of the Screen, an abstraction over the Cython SDL rendering interface and the Registry.
+
+**IMPORTANT**: All `libs.graphics.render` imports should be routed through this module to isolate all rendering dependencies.
 """
 
 # Standard Libraries

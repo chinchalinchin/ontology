@@ -631,94 +631,63 @@ $$
 
 ---
 
-# Bug Reports
+## 4. Bug Reports
 
-##### Bug B-0304-01: Missing Animation Frame/Tick Reset on Action Change in `TransitionMechanics`
+##### Bug B-P0304-01: Dead Attackers Can Still Spawn Projectiles and Deal Melee Damage in `CombatMechanics`
 
 **STATUS**: OPEN
-**SEVERITY**: High
+**SEVERITY**: MEDIUM
 
 **Description**
 
-In `src/app/game/logic/mechanics/intentional/transition.py`, `TransitionMechanics.update()` assigns `sprite.state.animation.action = AnimationMap.action(sprite.state, board.equipment)` without checking whether the resolved `action` differs from the previous tick's `action`. Consequently, `sprite.state.animation.frame` and `sprite.state.animation.tick` carry over verbatim from the prior action.
+In `src/app/game/logic/mechanics/spatial/combat.py`, `CombatMechanics.update()` collects attacking entities solely by checking `asset.state.intention == Intentions.ATTACK`, without checking `asset.state.mutators.triggers.dead`:
 
-When a Sprite transitions from a higher-frame-count action (e.g., `walk`, 9 frames, at `frame = 7`) into a lower-frame-count action (e.g., `slash`, 6 frames), `Engine._render()` requests an out-of-bounds frame key (`<id>-slash-<dir>-7`) before `AnimationMechanics` wraps it on the next tick, resulting in a `Registry MISS` and an invisible Sprite frame. For ranged combat, carrying a non-zero `frame` into `shoot` or `thrust` can cause the attacker to skip or prematurely trigger its release frame.
+```python
+attackers = [
+    asset
+    for asset in (
+        board.instances(AssetInstances.PLAYERS, layer) +
+        board.instances(AssetInstances.SPRITES, layer)
+    )
+    if asset.state.intention == Intentions.ATTACK
+]
+```
+
+Similarly, `CombatMechanics._melee()` checks `target.state.mutators.triggers.dead` before applying damage, but never checks `attacker.state.mutators.triggers.dead`. As a result, a dead entity whose `intention` remains `Intentions.ATTACK` (either prior to `TransitionMechanics` / `RemoveMechanics` cleanup or when killed by another attacker earlier in the same batched melee pass) will still emit projectiles via `_project()` and inflict melee damage via `_melee()`.
 
 **Steps to Replicate**
 
-1. Run a Sprite in `Intentions.FIND` (`Actions.WALK`) until `sprite.state.animation.frame >= 6`.
-2. Trigger an Intention transition to `Intentions.ATTACK` with a `slash` weapon (`count = 6`).
-3. Inspect `sprite.state.animation.frame` and `SpriteFrame.keys()` immediately after `TransitionMechanics.update()`.
+1. Set a Sprite or Player on layer `"0"` to `state.intention = Intentions.ATTACK`, `state.mutators.triggers.dead = True`, equipped with `"longbow"` at `frame = 9, tick = 0` (or `"sword"` at `frame = 3` overlapping a live target).
+2. Execute `CombatMechanics().update(board, 0.016, bus, payload)`.
+3. Observe that the dead entity still spawns an `"arrow"` onto the Board (or decrements the live target's health).
 
 **Proposed Remediation**
 
-Capture `prev_action = sprite.state.animation.action` prior to resolving the new action in `TransitionMechanics.update()`. Whenever `new_action != prev_action`, reset `sprite.state.animation.frame = 0` and `sprite.state.animation.tick = 1`.
+Filter out dead attackers in `CombatMechanics.update()` (`if asset.state.intention == Intentions.ATTACK and not asset.state.mutators.triggers.dead`) and guard against mid-batch attacker death in `CombatMechanics._melee()` (`or attacker.state.mutators.triggers.dead`).
 
-##### Bug B-0304-02: Unequipped Fallback Actions in `AnimationMap.action()` Violate Equipment Permissibility
+---
+
+##### Bug B-P0304-02: `CursorProperties.weapon` Schema Mismatch Allows Unvalidated Weapon Bindings and Prevents Many-to-One Sharing
 
 **STATUS**: OPEN
-**SEVERITY**: Medium
+**SEVERITY**: LOW
 
 **Description**
 
-In `src/app/game/logic/modules/maps/animation.py`, `AnimationMap.action()` falls back to `Actions.CAST` (for `Intentions.ATTACK` and `Intentions.BUILD`) and `Actions.THRUST` (for `Intentions.MINE`) when the corresponding `slots.equipment` slot is `None` or unconfigured. This contradicts the documented Equipment constraint and allows unequipped Sprites and Players to enter animated combat, mining, or building states without requisite Equipment.
+Per Phase 03.04 Specification §1, `CursorProperties` (`src/app/models/properties/assets.py`) should declare `weapons: List[Enumerated[WeaponPalette]] = field(default_factory=list)` and `rotation: int = 90` so that:
+1. All weapon foreign keys are validated against `WeaponPalette` at boot via Pydantic `TypeAdapter`.
+2. Multiple weapons (e.g., `shortbow` and `longbow`) can share a single projectile asset (`arrow`), while unbound projectiles (e.g., `cannonball`) default to `[]`.
+
+Currently, `CursorProperties` defines `weapon: Optional[str] = None` and `rotation: Optional[int] = None`, `ProjectileIndex.from_properties()` reads singular `props.weapon`, and `src/assets/cursors/main.yaml` declares `cannonball.weapon: cannon`, which is a dangling weapon key absent from `src/assets/sheets/equipment/weapons/main.yaml`. Because `weapon` is an unvalidated `Optional[str]`, invalid or misspelled weapon references silently pass boot validation.
 
 **Steps to Replicate**
 
-1. Create a `SheetState` with `intention = Intentions.ATTACK` and `slots.equipment.weapon = None`.
-2. Call `AnimationMap.action(state, board.equipment)`.
-3. Observe that `Actions.CAST` is returned instead of rejecting the action.
+1. Inspect `src/app/models/properties/assets.py` (`CursorProperties.weapon: Optional[str] = None`) and `src/assets/cursors/main.yaml` (`cannonball.weapon: cannon`).
+2. Load properties via `Loader.load_properties()` and compile `ProjectileIndex.from_properties(properties.cursors.projectiles)`.
+3. Observe that `ProjectileIndex.resolve("cannon")` returns `"cannonball"` even though `"cannon"` is neither in `WeaponPalette` nor defined in `src/assets/sheets/equipment/weapons/main.yaml`, and no mechanism exists to bind a second weapon to `"arrow"`.
 
 **Proposed Remediation**
 
-Update `AnimationMap.action()` to return `Optional[Actions]`, returning `None` when an equipment-gated Intention (`ATTACK`, `MINE`, `BUILD`) lacks a valid slotted Equipment asset with configured `actions`. Gate transitions in `TransitionMechanics` and `PlayerMechanics` on a non-`None` result.
+Update `CursorProperties` to `rotation: int = 90` and `weapons: List[Enumerated[WeaponPalette]] = field(default_factory=list)`, align `src/assets/cursors/main.yaml` (`arrow.weapons: [longbow]`, `bolt.weapons: [crossbow]`, `cannonball.weapons: []`), and iterate `for weapon_id in props.weapons:` inside `ProjectileIndex.from_properties()`. (If kept as-is until `cannon` is added as a weapon, update `test_projectiles.py` accordingly when migrating to `weapons`.)
 
-##### Bug B-0304-03: Property Key Mismatch (`angle` vs. `rotation`) in `src/assets/cursors/main.yaml`
 
-**STATUS**: OPEN
-**SEVERITY**: Medium
-
-**Description**
-
-`src/assets/cursors/main.yaml` currently configures `angle: 45` on `cannonball` and `angle: 90` on `arrow` and `bolt`, whereas `CursorProperties` (`src/app/models/properties/assets.py`) does not declare an `angle` field (and Phase 03.04 specifies `CursorProperties.rotation: int = 90` for the static step increment to avoid semantic collision with `MotorState.angle`). Loading `cursors/main.yaml` against `CursorProperties` will fail strict validation or silently discard `cannonball`'s `45`-degree angular resolution.
-
-**Steps to Replicate**
-
-1. Inspect `src/assets/cursors/main.yaml` under `cursors.projectiles` (`cannonball`, `arrow`, `bolt`).
-2. Compare against `CursorProperties` in `src/app/models/properties/assets.py`.
-
-**Proposed Remediation**
-
-Add `rotation: int = 90` and `weapons: List[Enumerated[WeaponPalette]] = field(default_factory=list)` to `CursorProperties` and update `src/assets/cursors/main.yaml` to replace `angle:` with `rotation:` and declare `weapons:` bindings.
-
-##### Bug B-0304-04: `Position` Aliasing and Missing `elevation`/`owner` in `Cradle.spawn_projectile()`
-
-**STATUS**: OPEN
-**SEVERITY**: Medium
-
-**Description**
-
-In `src/app/services/generators/game/cradle.py`, `Cradle.spawn_projectile()` assigns the exact same `Position` object reference to both `MotorState.position` and `MotorState.initial`. Because `physics.integrate()` mutates `state.position.x` and `state.position.y` in-place every tick, `state.initial` mutates identically alongside `state.position` (making distance traveled always `0`), and if the caller passed an uncloned `Position`, the caller's coordinate is corrupted. Additionally, `spawn_projectile()` hardcodes `direction=Directions.DOWN`, `speed=10`, and omits `elevation` and `owner`, preventing elevation-partitioned collision checks and self-hit exclusion.
-
-**Steps to Replicate**
-
-1. Spawn a projectile via `cradle.spawn_projectile(id, pos, layer, velocity)`.
-2. Run `physics.integrate([projectile], delta)`.
-3. Observe `projectile.state.position is projectile.state.initial` and `projectile.state.initial` changes every tick.
-
-**Proposed Remediation**
-
-Update `Cradle.spawn_projectile()` to instantiate separate `Position(spawn_x, spawn_y)` objects for `state.position` and `state.initial`, center the projectile on the release point, quantize launch angle and velocity from `properties.rotation` and `speed`, and accept/assign `elevation` and `owner`.
-
-##### Bug B-0304-05: Typo in `ProjectilFrame` Class Name and Header in `src/app/assets/frames/cursors.py`
-
-**STATUS**: OPEN
-**SEVERITY**: Low
-
-**Description**
-
-`src/app/assets/frames/cursors.py` defines the placeholder class as `ProjectilFrame` (missing the trailing `e`) and labels its ontology header as `app.assets.frames.core` instead of `app.assets.frames.cursors`, which will cause `AssetFactory.frame("ProjectileFrame")` lookups against `recipes.cursors.projectiles` to fail at boot.
-
-**Proposed Remediation**
-
-Rename `ProjectilFrame` to `ProjectileFrame` and correct the module header to `app.assets.frames.cursors` when implementing Task 2.

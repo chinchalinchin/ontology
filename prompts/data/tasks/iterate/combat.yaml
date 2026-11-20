@@ -6,7 +6,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/implement.md.j2
+  template: iterate/review.md.j2
 # ----------------------------------------------------
 # ----------------------------------------------------
 # ---------------------------------------------- TOOLS
@@ -21,7 +21,7 @@ tools:
     manager:
       board: true
       docs: true
-      templates: false
+      templates: true
     # --------------------------------------------
     # ------------------------ TOOL VIEWS: METRICS
     # --------------------------------------------
@@ -43,7 +43,7 @@ tools:
     # --------------------------------------------
     tests:  
       configuration: false
-      pipeline: false
+      pipeline: true
       session: false
 # ----------------------------------------------------
   parameters:
@@ -60,7 +60,7 @@ tools:
           # - 01-assets
           # - 02-sprites
           - 03-compositions
-          # - 04-intentions
+          - 04-intentions
           # - 05-mechanics
           - 06-widgets
           - 07-acoustics
@@ -70,9 +70,10 @@ tools:
           - 11-emergence
           # - 12-architecture
       templates:
-        - template-backlog
+        # - template-backlog
         - template-bug
         - template-docs
+        - template-review
     # --------------------------------------------
     # ------------------------ PARAMETERS: METRICS
     # --------------------------------------------
@@ -136,17 +137,25 @@ tools:
               domain: [ system ]
               app: [ service ]
               workflows: [ combat ]
-          # - title: Combat Tests
-          #   scan:
-          #     domain: [ test ]
-          #     workflows: [ combat ]
-          # - title: Test Fixtures
-          #   scan:
-          #     domain: [ test ]
-          #     test: [ fixtures ]
+          - title: Combat Tests
+            scan:
+              domain: [ test ]
+              workflows: [ combat ]
+          - title: Projectile Tests
+            scan: 
+              domain: [ test ]
+              workflows: [ projectiles ]
+          - title: Device Tests 
+            scan:
+              domain: [ test ]
+              app: [ device ]
+          - title: Test Fixtures
+            scan:
+              domain: [ test ]
+              test: [ fixtures ]
       data:
         properties: [ cursors, sheets/equipment ]
-        state: [ ]
+        state: [ world-testbed ]
         configurations: [  ]
         templates: [ ]
     # --------------------------------------------
@@ -163,5 +172,5 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: workflow_combat
+        marker: '"workflow_combat or workflow_projectile"'
         # scope: '**/test_{actuator,cartographer}.py'

@@ -49,6 +49,7 @@ from app.static.semantics import (
     Directions,
     ExpressionsPalette,
     Gauges,
+    Intentions,
     LayerProjections,
     Orientations,
     PerennialStages,
@@ -288,11 +289,12 @@ def test_sprite_frame(mock_asset):
         AssetCategories.SHEETS.value,
         AssetInstances.SPRITES.value,
     )
+    sprite.state.intention = Intentions.ATTACK.value
     sprite.state.animation.action = Actions.SLASH.value
     sprite.state.animation.direction = Directions.LEFT.value
     sprite.state.animation.frame = 3
     sprite.state.slots.equipment = Equipment(
-        armor="leather_armor",
+        armor="leather",
         utility="lantern",
         tool="pickaxe",
         weapon="sword",
@@ -309,14 +311,13 @@ def test_sprite_frame(mock_asset):
     keys = sprite.frame.keys(sprite.id, sprite.state)
 
     assert keys[0] == (f"{sprite.id}{SEPARATOR}slash{SEPARATOR}left{SEPARATOR}3", 0, 0)
-    assert keys[1] == (f"leather_armor{SEPARATOR}slash{SEPARATOR}left{SEPARATOR}3", 0, 0)
+    assert keys[1] == (f"leather{SEPARATOR}slash{SEPARATOR}left{SEPARATOR}3", 0, 0)
     assert keys[2] == (f"lantern{SEPARATOR}slash{SEPARATOR}left{SEPARATOR}3", 0, 0)
-    assert keys[3] == (f"pickaxe{SEPARATOR}slash{SEPARATOR}left{SEPARATOR}3", 0, 0)
-    assert keys[4] == (f"sword{SEPARATOR}slash{SEPARATOR}left{SEPARATOR}3", 0, 0)
-    assert keys[5] == (f"buckler{SEPARATOR}slash{SEPARATOR}left{SEPARATOR}3", 0, 0)
+    assert keys[3] == (f"sword{SEPARATOR}slash{SEPARATOR}left{SEPARATOR}3", 0, 0)
+    assert keys[4] == (f"buckler{SEPARATOR}slash{SEPARATOR}left{SEPARATOR}3", 0, 0)
 
     expr_key = f"{ExpressionsPalette.BUBBLES.value}{SEPARATOR}loquacity"
-    assert keys[6] == (expr_key, 10, -10)
+    assert keys[5] == (expr_key, 10, -10)
 
 @pytest.mark.category_sheets
 @pytest.mark.modality_intention
@@ -960,3 +961,114 @@ def test_meter_frame_index_and_stateless_ratio_keys(mock_asset):
         (empty_key, 0, 0),
         (f"{meter.id}-100", 0, 0),
     ]
+
+
+@pytest.mark.category_cursors
+@pytest.mark.workflow_projectiles
+def test_projectile_frame_index_cardinal_rotation(mock_asset, mock_properties):
+    """Verifies 90-degree projectile strip partitioning yields 4 horizontal cells."""
+    proj = mock_asset(
+        AssetCategories.CURSORS.value,
+        AssetInstances.PROJECTILES.value,
+    )
+    arrow_props = mock_properties(
+        AssetCategories.CURSORS.value,
+        AssetInstances.PROJECTILES.value,
+        id="arrow",
+    )
+
+    crops = proj.frame.index("arrow", arrow_props)
+    assert crops == {
+        "arrow-0": (0, 0, 41, 41),
+        "arrow-90": (41, 0, 41, 41),
+        "arrow-180": (82, 0, 41, 41),
+        "arrow-270": (123, 0, 41, 41),
+    }
+
+
+@pytest.mark.category_cursors
+@pytest.mark.workflow_projectiles
+def test_projectile_frame_index_octagonal_rotation(mock_asset):
+    """Verifies 45-degree projectile strip partitioning yields 8 horizontal cells."""
+    cannonball = mock_asset(
+        AssetCategories.CURSORS.value,
+        AssetInstances.PROJECTILES.value,
+    )
+
+    crops = cannonball.frame.index("cannonball", cannonball.properties)
+    assert crops == {
+        f"cannonball-{k * 45}": (k * 16, 0, 16, 16)
+        for k in range(8)
+    }
+
+
+@pytest.mark.category_cursors
+@pytest.mark.workflow_projectiles
+def test_projectile_frame_index_defaults_none_rotation_to_90(mock_asset):
+    """Verifies rotation=None defaults to a 90-degree cardinal strip."""
+    proj = mock_asset(
+        AssetCategories.CURSORS.value,
+        AssetInstances.PROJECTILES.value,
+    )
+    proj.properties.rotation = None
+
+    crops = proj.frame.index("cannonball", proj.properties)
+    assert list(crops.keys()) == [
+        "cannonball-0",
+        "cannonball-90",
+        "cannonball-180",
+        "cannonball-270",
+    ]
+
+@pytest.mark.category_cursors
+@pytest.mark.workflow_projectiles
+@pytest.mark.parametrize("bad_rotation", [0, -45, 70, 400])
+def test_projectile_frame_index_invalid_rotation_raises(mock_asset, bad_rotation: int):
+    """Verifies non-divisor or out-of-range rotation steps raise ValueError."""
+    proj = mock_asset(
+        AssetCategories.CURSORS.value,
+        AssetInstances.PROJECTILES.value,
+    )
+    proj.properties.rotation = bad_rotation
+
+    with pytest.raises(ValueError, match="Invalid projectile rotation step"):
+        proj.frame.index("cannonball", proj.properties)
+
+
+@pytest.mark.category_cursors
+@pytest.mark.workflow_projectiles
+@pytest.mark.parametrize(
+    "angle, expected_key",
+    [
+        (0, "cannonball-0"),
+        (45, "cannonball-45"),
+        (270, "cannonball-270"),
+        (450, "cannonball-90"),
+        (-90, "cannonball-270"),
+    ],
+)
+def test_projectile_frame_keys_projects_state_angle(
+    mock_asset,
+    angle: int,
+    expected_key: str,
+):
+    """Verifies MotorState.angle maps modulo 360 to its Registry frame key."""
+    proj = mock_asset(
+        AssetCategories.CURSORS.value,
+        AssetInstances.PROJECTILES.value,
+    )
+    proj.state.angle = angle
+
+    assert proj.frame.keys("cannonball", proj.state) == [(expected_key, 0, 0)]
+
+
+@pytest.mark.category_cursors
+@pytest.mark.workflow_projectiles
+def test_projectile_frame_keys_handles_none_state(mock_asset):
+    """Verifies keys() falls back to 0 degrees when state is None."""
+    proj = mock_asset(
+        AssetCategories.CURSORS.value,
+        AssetInstances.PROJECTILES.value,
+    )
+
+    assert proj.frame.keys("cannonball", None) == [("cannonball-0", 0, 0)]

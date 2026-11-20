@@ -744,3 +744,7 @@ Implement `ProjectileIndex.from_properties()` in `src/app/game/logic/relations/p
 * [x] Subtask: Implement `CombatMap.projectile()`, `CombatMap.release()` (checking frame entry tick parity with `SpriteAnimation.animate()` and computing release hitbox world center + direction), and `CombatMap.speed()` in `src/app/game/logic/modules/maps/combat.py`.
 * [x] Subtask: Update `Cradle.spawn_projectile()` (`src/app/services/generators/game/cradle.py`) to center the projectile frame on the spawn point, allocate distinct `Position` instances for `position` and `initial`, quantize launch angle to `properties.rotation`, compute `Velocity(vx, vy)` without cardinal trig drift, and populate `angle`, `speed`, `elevation`, and `owner` on `MotorState`.
 * [x] Subtask: Refactor `CombatMechanics.update()` (`src/app/game/logic/mechanics/spatial/combat.py`) to fork on `CombatMap.projectile(attacker.state, self.relation)` into `self._project(attacker, projectile_id, board)` and batched `self._melee(melee_attackers, layer, board)` (removing the hardcoded `SHOOT`/`CAST` skip), and implement elevation-partitioned target/obstacle impact resolution, owner exclusion, and range/boundary expiration in `ProjectileMechanics.update()`.
+
+**5. Coverage**
+
+- [x] Subtack: Add unit tests for all new functionality implemented.

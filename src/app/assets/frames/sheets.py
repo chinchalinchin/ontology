@@ -17,6 +17,7 @@ import logging
 # Application Libraries
 import app.static.settings as settings
 from app.static.semantics import (
+    Actions,
     Intentions,
     RequiredAssets,
     ExpressionsPalette,
@@ -81,15 +82,24 @@ class SpriteFrame(StateFrame):
 
     Specialized Frame component for Sprites that yields a strict Z-indexed list of frame keys based on the Sprite's inventory.
     """
-    
+
     def keys(self, id: str, state: SpriteState) -> List[str]:
         # Start with the base Persona frame key
         frame_keys = super().keys(id, state)
-        
-        # Iterate over active equipment in strict Z-index order: Base -> Armor -> Utility -> Tool -> Weapon
-        if state.slots.equipment:
+
+        # Iterate over active equipment in strict Z-index order:
+        # Base -> Armor -> Utility -> Tool (MINE) -> Weapon (ATTACK) -> Shield
+        if state.slots and state.slots.equipment:
             eq = state.slots.equipment
-            for eq_key in (eq.armor, eq.utility, eq.tool, eq.weapon, eq.shield):
+            is_implement_action = state.animation.action not in (Actions.WALK, Actions.DIE)
+            active_slots = (
+                eq.armor,
+                eq.utility,
+                eq.tool if (is_implement_action and state.intention == Intentions.MINE) else None,
+                eq.weapon if (is_implement_action and state.intention == Intentions.ATTACK) else None,
+                eq.shield,
+            )
+            for eq_key in active_slots:
                 if eq_key:
                     frame_keys.extend(super().keys(eq_key, state))
 
@@ -100,8 +110,8 @@ class SpriteFrame(StateFrame):
                 state.psyche.expression.icon
             ])
             frame_keys.append((expr_key, expr.offset.x, expr.offset.y))
-            
+
         if state.intention is not None and state.intention == Intentions.ATTACK:
             logger.info(f"SpriteFrame generated keys: {frame_keys}")
-        
+
         return frame_keys
