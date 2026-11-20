@@ -24,9 +24,9 @@
 
 Assets are the foundation of the Engine. They are, fundamentally, a class for binding image atlases on the fileystem to entities stored on the [Board](#component-board) and shown on the [Screen](#component-screen).
 
-All Assets have an *ID* and *properties*. Most, but not all, Assets have *State*. 
+All Assets have an *ID* and *Properties*. Most, but not all, Assets have *State*. 
 
-Assets are divided into non-overlapping (Category, Instance) nodes, known as the [Asset Hierarchy](./01-assets.md#asset-hierarchy). Different Categories of Assets expand the base Properties and States in various ways. In brief, the Asset categories are,
+Assets are divided into non-overlapping (Category, Instance) nodes, known as the [Asset Hierarchy](./01-assets.md#asset-hierarchy). Different Categories of Assets expand the base Properties and States in various ways. In brief, the Asset Categories are,
 
 * [Crafts](./01-assets.md#category-crafts)
 * [Cursors](./01-assets.md#category-cursors)
@@ -41,7 +41,7 @@ Assets are divided into non-overlapping (Category, Instance) nodes, known as the
 
 Assets are placed in the `/src/assets/<category>/` directory and then registered in a Asset Category index `/src/assets/<category>/**/*.yaml` file. The YAML index schema for each Asset configures its *Properties*, i.e. the static attributes that are constant and do not change as a result of gameplay. 
 
-The `/src/assets` directory is known as the *asset directory*.
+The `/src/assets` directory is known as the *Asset Directory*.
 
 See [Asset Schema](./appendices/01-schemas.md#schema-properties) for more information on the Asset Property index.
 
@@ -49,7 +49,7 @@ See [Asset Schema](./appendices/01-schemas.md#schema-properties) for more inform
 
 * Location: `/src/data/state/`
 
-An [Asset](./01-assets.md) is deployed onto a [Board](#component-board), where it acquires its State, i.e. the dynamic attributes which change as a result of [Mechanics](./05-mechanics.md). The Application ingests and stores this information in the State directory.
+An [Asset](./01-assets.md) is deployed onto a [Board](#component-board), where it acquires its State, i.e. the dynamic attributes which change as a result of [Mechanics](./05-mechanics.md). The Application ingests and stores this information in the *State Directory*.
 
 An [Asset Category](./01-assets.md#asset-hierarchy) has a single schema for Properties that each Instance utilizes, but each individual [Asset Instance](./01-assets.md#asset-hierarchy) has a unique State, particular to its deployment. For example, a [Chest](./01-assets.md#object-chests) is configured once by its Properties (its width, length, etc.), but each instance of a [Chest](./01-assets.md#object-chests) on the [Board](#component-board) is given a unique state (its Position, Content, etc.).
 
@@ -72,7 +72,7 @@ Mechanics, Relations and other components of the [Engine](#component-engine) uti
 
 ## Application 
 
-The Application consists of an interconnected and interdependent system of Configurations, Services, Libraries and Components. These system serve to interpret and operate on Asset Properties and Asset State.
+The Application consists of an interconnected and interdependent system of Configurations, Services, Libraries and Components. These systems serve to interpret and operate on Asset Properties and Asset State.
 
 See [Architecture documentation](./12-architecture.md) for more information.
 
@@ -86,21 +86,23 @@ The Loader is responsible for reading in Configurations, Properties and State fi
 
 #### Configuration: Semantics
 
-- Address: `app.static.semantics`
+* Address: `app.static.semantics`
 
 All semantic terms utilized by the [Application](#application) are enumerated within this package. 
 
 ### Services
 
-#### Service: Factory
+#### Service: Factories
 
-- Address: `app.services.generators.game.factory`
+*  Address: `app.services.generators.game.factories`
 
-The Factory builds [Assets](./01-assets.md) and other Components based on [Recipes](./appendices/01-schemas.md#configuration-recipes). 
+The AssetFactory builds [Assets](./01-assets.md) and other Components based on [Recipes](./appendices/01-schemas.md#configuration-recipes). 
+
+The MechanicFactory builds [Mechanics](./05-mechanics.md) and injects them with the appriopriate [Executors](./05-mechanics.md#dependency-executors) and [Relations](./05-mechanics.md#dependency-relations)
 
 #### Service: Orchestrator
 
-- Address: `app.services.orchestration.orchestrator`
+* Address: `app.services.orchestration.orchestrator`
 
 The Orchestrator is the dependency injection system. It is responsible for converting validated Models into application Components.
 
@@ -108,7 +110,7 @@ The Orchestrator is the dependency injection system. It is responsible for conve
 
 #### Library: Registry
 
-- Address: `libs.graphics.registry`
+* Address: `libs.graphics.registry`
 
 The Registry loads in all of the Asset files while the application bootstraps. Each Asset Frame is indexed and stored in memory. 
 
@@ -116,46 +118,50 @@ The Registry loads in all of the Asset files while the application bootstraps. E
 
 #### Component: Board
 
-- Address: `app.game.board`
+* Address: `app.game.board`
 
-The Board acts as the Game's in-memory "database". It holds all in-game Assets and Configurations during the game loop, providing queryable interfaces to the Engine and Mechanics.
+The Board acts as the Application's in-memory "database". It holds all Assets and Configurations during the Engine Loop, providing queryable interfaces to the Mechanics.
 
-The state files for each Board are maintained in `/src/data/state/<board-key>/**`.
+The State files for each Board are maintained in `/src/data/state/<board-key>/**`.
 
 **Interface: Queries**
 
-The Board exposes interfaces for querying the game state:
+The Board exposes interfaces for querying the State:
 
 * Hierarchy Queries
-    1. `board.instances(key, layer)`: Returns a List of Assets on the given layer, filtered by Instance `key`.
-    2. `board.categories(key, layer)`: Returns a List of Assets on the given layer, filtered by Category `key`.
+    1. `board.instances(key, layer)`: Returns a List of Assets on the given Layer, filtered by Instance `key`.
+    2. `board.categories(key, layer)`: Returns a List of Assets on the given Layer, filtered by Category `key`.
 * Physics Queries
-    1. `board.bridges(layer)`: Returns a list of Bridge Assets on a layer.
-    2. `board.weights(layer)`: Returns a list of Assets with non-negative mass ($m \ge 0$) on the given layer (includes static and dynamic bodies; excludes sensors).
+    1. `board.bridges(layer)`: Returns a list of Bridge Assets on a give Layer.
+    2. `board.weights(layer)`: Returns a list of Assets with non-negative mass ($m \ge 0$) on a given Layer (includes static and dynamic bodies; excludes sensors).
     3. `board.obstacles(layer)`: Returns a list of Assets that qualify as Obstacles.
 * Environment Queries
-    1. `board.tile(layer, position, instance)`: Retrieves background or foreground [Tiles](./01-assets.md#category-tiles) via $O(1)$ spatial hash lookup.
-    2. `board.shorelines(layer=None)`: Retrieves active procedural shoreline assets for a specific layer or across all layers.
-    1. `board.moisture(layer, x, y)`: Queries scalar soil moisture potential $\Phi(x, y)$ from the layer's compiled `MoistureField`.
+    1. `board.tile(layer, position, instance)`: Retrieves [Environ or Canopy Tiles](./01-assets.md#category-tiles) via spatial hash lookup.
+    2. `board.shorelines(layer=None)`: Retrieves procedurally generated [Shorelines](./09-ecology.md#geography-shorelines) for a given Layer or across all Layers.
+    1. `board.moisture(layer, x, y)`: Queries the [Moisture Field](./05-mechanics.md#field-fluids) potential scalar at a point, $\Phi(x, y)$.
 
 **Interface: Predicates**
 
-THe Board exposes predicates for asserting conditions of the Board state.
+The Board exposes predicates for asserting conditions of the State.
 
 * Environment Predicates
     1. `board.fluid(layer, position, exclude=None)`: Evaluates whether a coordinate intersects any active [Fluid](./01-assets.md#effect-fluids) stream or annular pool across the layer, with an optional entity exclusion filter.
 
 **Service: Cradle**
 
-The Cradle instantiates Assets during the course of the [Engine](#component-engine) loop through the interface of [Mechanics](./05-mechanics.md).
+* Address: `app.services.generators.game.cradle`
+
+The Cradle instantiates (*spawns*) Assets during the course of the [Engine Loops](#component-engine).
 
 **Service: Migrator**
+
+* Address: `app.services.orchestration.migrator`
 
 The Migrator asynchronously loads the Board State.
 
 #### Component: Engine
 
-- Package: `app.game.engine`
+* Package: `app.game.engine`
 
 The Engine handles the core loop and Frame rate calculations. 
 
@@ -165,19 +171,25 @@ The Bus processes asynchronous [Events](./06-widgets.md#events).
 
 **Service: Provider**
 
+* Address: `app.services.generators.menus.provider`
+
 The Provider instantiates [Menus](./06-widgets.md#configuration-menus).
 
 **Service: Binder**
+
+* Address: `app.services.generators.menus.binder`
 
 The Binder for binding [Widget](./06-widgets.md) States to [Asset](./01-assets.md) States.
 
 **Service: Library**
 
+* Address: `app.services.generators.menu.library`
+
 The Provider contains a Library for injecting Widget states with plot-dependent content.
 
 #### Component: Screen
 
-- Package: `app.game.screen`
+* Package: `app.game.screen`
 
 The Screen acts as a high-level container for a Cythonized SDL rendering interface.
 
