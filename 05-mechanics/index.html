@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -2071,6 +2071,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2128,6 +2134,34 @@
     
   
     Phase 01.01 - Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board/phases/refactor-01-20.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01.02 - Render Decoupling
   
 
     
@@ -2464,6 +2498,34 @@
     
   
     Phase 03.04 - Projectiles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board/phases/refactor/refactor-03-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.05 - Ammunition
   
 
     
@@ -2884,6 +2946,34 @@
     
   
     Phase 07.05 - Composite Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../board/phases/refactor/refactor/refactor-07-06.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.06 - Crafting
   
 
     
@@ -4311,6 +4401,10 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}, \qquad v_{2f} = \frac{v_2(m
     %% Link Connectors: Light Blue Accent
     linkStyle default color:#e0e0e0,stroke:#90caf9,stroke-width:1.5px;</code></pre>
 <p>CombatMechanics queries the active Attackboxes associated with the entity's current AnimationState. Attacker primitives are injected into the spatial hash using the result and used to evaluate the collision. Attackers with no attackboxes configured on their current Animation State <code>frame</code> bypass Combat collision checks.</p>
+<p>CombatMechanic spawns a Projectile on the release frame of the Action. The initial scalar speed <span class="arithmatex">\(s(S, n)\)</span> is a function of the attacker's strength <span class="arithmatex">\(S\)</span> and the held tick duration <span class="arithmatex">\(n\)</span> relative to the draw window <span class="arithmatex">\(N_{\max}\)</span>:</p>
+<div class="arithmatex">\[
+\tau(n) = \min\left(1.0,\; \frac{n}{N_{\max}}\right), \qquad s(S, n) = \operatorname{round}\Big(\alpha S \big(1 + \tau(n)\big)\Big)
+\]</div>
 <h3 id="mechanics-intentional">Mechanics: Intentional</h3>
 <p>These Mechanics handle Sprite intentionality, goal-seeking, and tactical navigation.</p>
 <ul>

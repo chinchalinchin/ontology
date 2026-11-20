@@ -14,14 +14,14 @@
         <link rel="prev" href="../refactor-03-03/">
       
       
-        <link rel="next" href="../refactor-04-01/">
+        <link rel="next" href="../refactor-03-05/">
       
       
         
       
       
       <link rel="icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -1653,6 +1653,12 @@
       
         
       
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1708,6 +1714,34 @@
     
   
     Phase 01.01 - Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../refactor-01-20.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 01.02 - Render Decoupling
   
 
     
@@ -2115,6 +2149,172 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#architectural-analysis-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis II
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review II
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis III
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review III
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-iv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis IV
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-iv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review IV
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Review IV">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#concept-of-maps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concept of "Maps"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#projectile-weapon-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Projectile-Weapon Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-v" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis V
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis V">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-concept-of-maps-and-the-intention-to-action-to-combat-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Concept of "Maps" and the Intention \(\to\) Action \(\to\) Combat Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-projectileweapon-relation-projectileindexfrom_properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Projectile–Weapon Relation (ProjectileIndex.from_properties)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#goals" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2138,10 +2338,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#goal-implement-projectileframe-and-rotatedhitbox" class="md-nav__link">
+  <a href="#goal-implement-projectileframe-rotatedhitbox-and-cursorproperties-alignment" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Goal: Implement ProjectileFrame and RotatedHitbox
+        Goal: Implement ProjectileFrame, RotatedHitbox, and CursorProperties Alignment
       
     </span>
   </a>
@@ -2149,10 +2349,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#goal-wire-ranged-spawning-in-cradle-and-impact-resolution-in-projectilemechanics" class="md-nav__link">
+  <a href="#goal-track-per-intention-hold-duration-in-device-and-playermechanics-and-enforce-animationmap-admissibility" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Goal: Wire Ranged Spawning in Cradle and Impact Resolution in ProjectileMechanics
+        Goal: Track Per-Intention Hold Duration in Device and PlayerMechanics and Enforce AnimationMap Admissibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-compile-projectileindex-via-from_properties-and-wire-combatmap-cradle-combatmechanics-and-projectilemechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Compile ProjectileIndex via from_properties() and Wire CombatMap, Cradle, CombatMechanics, and ProjectileMechanics
       
     </span>
   </a>
@@ -2184,6 +2395,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor-03-05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 03.05 - Ammunition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -2596,6 +2835,34 @@
     
   
     Phase 07.05 - Composite Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../refactor/refactor-07-06.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 07.06 - Crafting
   
 
     
@@ -3377,6 +3644,172 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#architectural-analysis-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review I
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis II
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review II
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis III
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review III
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-iv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis IV
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-review-iv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Review IV
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User Review IV">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#concept-of-maps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concept of "Maps"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#projectile-weapon-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Projectile-Weapon Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architectural-analysis-v" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Analysis V
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architectural Analysis V">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-concept-of-maps-and-the-intention-to-action-to-combat-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Concept of "Maps" and the Intention \(\to\) Action \(\to\) Combat Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-projectileweapon-relation-projectileindexfrom_properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Projectile–Weapon Relation (ProjectileIndex.from_properties)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#goals" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3400,10 +3833,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#goal-implement-projectileframe-and-rotatedhitbox" class="md-nav__link">
+  <a href="#goal-implement-projectileframe-rotatedhitbox-and-cursorproperties-alignment" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Goal: Implement ProjectileFrame and RotatedHitbox
+        Goal: Implement ProjectileFrame, RotatedHitbox, and CursorProperties Alignment
       
     </span>
   </a>
@@ -3411,10 +3844,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#goal-wire-ranged-spawning-in-cradle-and-impact-resolution-in-projectilemechanics" class="md-nav__link">
+  <a href="#goal-track-per-intention-hold-duration-in-device-and-playermechanics-and-enforce-animationmap-admissibility" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Goal: Wire Ranged Spawning in Cradle and Impact Resolution in ProjectileMechanics
+        Goal: Track Per-Intention Hold Duration in Device and PlayerMechanics and Enforce AnimationMap Admissibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#goal-compile-projectileindex-via-from_properties-and-wire-combatmap-cradle-combatmechanics-and-projectilemechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal: Compile ProjectileIndex via from_properties() and Wire CombatMap, Cradle, CombatMechanics, and ProjectileMechanics
       
     </span>
   </a>
@@ -3466,60 +3910,813 @@
 
 <h4 id="refactor-phase-0304-projectiles">Refactor: Phase 03.04 - Projectiles</h4>
 <p><strong>Overview</strong></p>
-<p>Codify <code>Projectiles</code> (<code>cursors.projectiles</code>) using the Registry Load-Time Rotation strategy (<code>ProjectileFrame</code>, <code>RotatedHitbox</code>, and <code>render.rotate</code>), allowing a single canonical projectile texture frame to be quantized into arbitrary angular increments (<span class="arithmatex">\(\Delta\theta \in (0, 360]\)</span>) in VRAM without modifying the 60 Hz <code>Screen._assemble()</code> / <code>render.render()</code> pipeline. Wire ranged combat spawning in <code>CombatMechanics</code> and trajectory/impact resolution in <code>ProjectileMechanics</code>.</p>
+<p>Codify <code>Projectiles</code> (<code>cursors.projectiles</code>) using the Registry Load-Time Rotation strategy (<code>ProjectileFrame</code>, <code>RotatedHitbox</code>, and <code>render.rotate</code>), allowing a single canonical projectile texture frame to be quantized into arbitrary angular increments (<span class="arithmatex">\(\Delta\theta \in (0, 360]\)</span>) in VRAM without modifying the 60 Hz <code>Screen._assemble()</code> / <code>render.render()</code> pipeline. Enforce strict Equipment admissibility in <code>AnimationMap.action()</code> across <code>TransitionMechanics</code> and <code>PlayerMechanics</code>, compile the Weapon-to-Projectile <code>ProjectileIndex</code> relation from <code>CursorProperties</code> via <code>from_properties()</code>, track per-intention button hold duration in <code>Device</code> and <code>PlayerMechanics</code>, fork <code>CombatMechanics</code> cleanly between melee (<code>_melee</code>) and ranged (<code>_project</code>) via <code>CombatMap</code> and <code>ProjectileIndex</code>, and resolve projectile flight impacts in <code>ProjectileMechanics</code>.</p>
 <h5 id="specification">Specification</h5>
 <ol>
-<li><strong>Angular Partitioning (<code>CursorProperties</code>)</strong>:</li>
-<li>Extend <code>CursorProperties</code> (<code>src/app/models/properties/assets.py</code>) with <code>delta: int = 90</code> (degrees per discrete rotational step, where <span class="arithmatex">\(360 \bmod \text{delta} == 0\)</span>) and <code>speed: int = 200</code>.</li>
-<li>
-<p>The discrete set of valid projectile angles is <span class="arithmatex">\(\Theta = \{ k \cdot \text{delta} \mid 0 \le k &lt; 360 // \text{delta} \}\)</span>.</p>
+<li><strong>Angular Partitioning &amp; Relational Indexing (<code>CursorProperties</code> &amp; <code>MotorState</code>)</strong>:<ul>
+<li>Extend <code>CursorProperties</code> (<code>src/app/models/properties/assets.py</code>) with:</li>
+<li><code>rotation: int = 90</code>: discrete rotational step in degrees (<span class="arithmatex">\(360 \bmod \text{rotation} == 0\)</span>) governing load-time texture strip partitioning.</li>
+<li><code>weapons: List[Enumerated[WeaponPalette]] = field(default_factory=list)</code>: relational foreign keys declaring which Weapons emit this Projectile.</li>
+<li>Align <code>src/assets/cursors/main.yaml</code> to declare <code>rotation</code> and <code>weapons</code> (e.g., <code>arrow</code> <span class="arithmatex">\(\leftarrow\)</span> <code>[longbow]</code>, <code>bolt</code> <span class="arithmatex">\(\leftarrow\)</span> <code>[crossbow]</code>, <code>cannonball</code> <span class="arithmatex">\(\leftarrow\)</span> <code>[]</code>).</li>
+<li>The discrete set of valid projectile angles is <span class="arithmatex">\(\Theta = \{ k \cdot \text{rotation} \mid 0 \le k &lt; 360 // \text{rotation} \}\)</span>.</li>
+<li>Extend <code>MotorState</code> (<code>src/app/models/state/assets/cursors.py</code>) with <code>angle: int = 0</code> (<span class="arithmatex">\(\text{angle} \in \Theta\)</span>), <code>speed: int = 200</code>, and <code>owner: Optional[str] = None</code>.</li>
+</ul>
 </li>
-<li>
-<p><strong>Load-Time Texture Strip Synthesis (<code>ProjectileFrame</code> &amp; <code>Registry</code>)</strong>:</p>
-</li>
-<li>Authored projectile <code>.png</code> files contain a single canonical frame of square dimensions <span class="arithmatex">\((S, S)\)</span> oriented at <span class="arithmatex">\(\theta = 0^\circ\)</span> (or canonical <code>left</code>).</li>
-<li><code>ProjectileFrame.index(id, properties)</code> maps each discrete angle key <code>f"{id}-{angle}"</code> (<span class="arithmatex">\(\text{angle} = k \cdot \text{delta}\)</span>) to crop coordinate <span class="arithmatex">\((k \cdot S, 0, S, S)\)</span>.</li>
-<li><code>Registry._get_or_load_texture()</code> detects <code>delta</code> on projectile properties and invokes <code>render.rotate(raw_tex, delta)</code>, which allocates a target <code>TexturePtr</code> of dimensions <span class="arithmatex">\((N \cdot S, S)\)</span> where <span class="arithmatex">\(N = 360 // \text{delta}\)</span> and stamps the base texture <span class="arithmatex">\(N\)</span> times via <code>SDL_RenderCopyEx</code>.</li>
-<li>
-<p><code>ProjectileFrame.keys(id, state)</code> projects <code>state.angle</code> directly to <code>[(f"{id}-{state.angle}", 0, 0)]</code>.</p>
+<li><strong>Load-Time Texture Strip Synthesis (<code>ProjectileFrame</code> &amp; <code>Registry</code>)</strong>:<ul>
+<li>Authored projectile <code>.png</code> files contain a single canonical frame of dimensions <span class="arithmatex">\((W, L)\)</span> oriented at <span class="arithmatex">\(\theta = 0^\circ\)</span> (<span class="arithmatex">\(+x\)</span>, <code>Directions.RIGHT</code>).</li>
+<li><code>ProjectileFrame.index(id, properties)</code> maps each discrete angle key <code>f"{id}-{angle}"</code> (<span class="arithmatex">\(\text{angle} = k \cdot \text{properties.rotation}\)</span>) to crop coordinate <span class="arithmatex">\((k \cdot W, 0, W, L)\)</span> for <span class="arithmatex">\(0 \le k &lt; 360 // \text{properties.rotation}\)</span>.</li>
+<li><code>Registry._get_or_load_texture()</code> checks <code>asset_key in self.properties.cursors.projectiles</code> and invokes <code>render.rotate(raw_tex, self.properties.cursors.projectiles[asset_key].rotation)</code>, allocating a target <code>TexturePtr</code> of dimensions <span class="arithmatex">\((N \cdot W, L)\)</span> (<span class="arithmatex">\(N = 360 // \text{rotation}\)</span>) and stamping each rotated cell via <code>SDL_RenderCopyEx</code> with per-cell clip isolation (<code>SDL_RenderSetClipRect</code>), then destroys <code>raw_tex</code>.</li>
+<li><code>ProjectileFrame.keys(id, state)</code> projects <code>state.angle</code> directly to <code>[(f"{id}-{state.angle}", 0, 0)]</code>.</li>
+</ul>
 </li>
 <li>
 <p><strong>Rotated AABB Hitbox Projection (<code>RotatedHitbox</code>)</strong>:</p>
+<ul>
+<li>Given frame dimensions <span class="arithmatex">\((W, L)\)</span> with center <span class="arithmatex">\((c_x, c_y) = (W / 2, L / 2)\)</span>, <code>RotatedHitbox.get(properties, state, elevation)</code> rotates each base <code>Hitbox</code> <span class="arithmatex">\((x_0, y_0, w_0, l_0)\)</span> in <code>properties.hitboxes</code> (falling back to <span class="arithmatex">\((0, 0, W, L)\)</span> when <code>properties.hitboxes</code> is <code>None</code>) by <span class="arithmatex">\(\Delta\theta = \text{state.angle}\)</span> clockwise around <span class="arithmatex">\((c_x, c_y)\)</span>:</li>
+</ul>
+<div class="arithmatex">\[
+h_{cx} = \left(x_0 + \frac{w_0}{2}\right) - c_x, \qquad h_{cy} = \left(y_0 + \frac{l_0}{2}\right) - c_y
+\]</div>
+<div class="arithmatex">\[
+\begin{pmatrix} h'_{cx} \\ h'_{cy} \end{pmatrix} = \begin{pmatrix} \cos\Delta\theta &amp; -\sin\Delta\theta \\ \sin\Delta\theta &amp; \cos\Delta\theta \end{pmatrix} \begin{pmatrix} h_{cx} \\ h_{cy} \end{pmatrix}
+\]</div>
+<div class="arithmatex">\[
+w'(\Delta\theta) = \max\Big(1,\; \operatorname{round}\big(w_0 |\cos\Delta\theta| + l_0 |\sin\Delta\theta|\big)\Big), \qquad l'(\Delta\theta) = \max\Big(1,\; \operatorname{round}\big(w_0 |\sin\Delta\theta| + l_0 |\cos\Delta\theta|\big)\Big)
+\]</div>
+<div class="arithmatex">\[
+x'(\Delta\theta) = \operatorname{round}\left(c_x + h'_{cx} - \frac{w'(\Delta\theta)}{2}\right), \qquad y'(\Delta\theta) = \operatorname{round}\left(c_y + h'_{cy} - \frac{l'(\Delta\theta)}{2}\right)
+\]</div>
 </li>
-<li><code>RotatedHitbox.get(properties, state, elevation)</code> rotates each base <code>Hitbox</code> in <code>properties.hitboxes</code> by <span class="arithmatex">\(\Delta\theta = \text{state.angle}\)</span> around the frame center <span class="arithmatex">\((S/2, S/2)\)</span>:</li>
+<li>
+<p><strong>Button Hold Counter (<code>Keyboard</code> &amp; <code>WorldPayload</code>) and Charge State (<code>MutatorParameters</code>)</strong>:</p>
+<ul>
+<li><code>Keyboard</code> (<code>src/app/game/devices.py</code>) accumulates consecutive press ticks per scancode in <code>self._last_state</code>:</li>
+</ul>
+<div class="arithmatex">\[
+c_t(\text{code}) = \begin{cases} c_{t-1}(\text{code}) + 1 &amp; \text{if } \text{pressed}(\text{code}) = 1 \\ 0 &amp; \text{if } \text{pressed}(\text{code}) = 0 \end{cases}
+\]</div>
+<ul>
+<li><code>WorldPayload</code> (<code>src/app/models/state/devices.py</code>) is extended with <code>holds: Dict[str, int] = field(default_factory=dict)</code>, recording <span class="arithmatex">\(c_t(v)\)</span> for every currently held intention key while preserving rising-edge singularity (<code>c_t(v) == 1</code>) on <code>WorldPayload.intention</code>.</li>
+<li><code>MutatorParameters</code> (<code>src/app/models/state/core.py</code>) is extended with <code>charge: int = 0</code> to store accumulated <code>attack</code> hold duration on <code>SheetState</code> / <code>SpriteState</code>.</li>
+<li><strong>Disjoint Map Architecture (<code>AnimationMap</code> &amp; <code>CombatMap</code>) and <code>ProjectileIndex</code> Relation</strong>:</li>
+<li><strong><code>AnimationMap</code></strong> (<code>src/app/game/logic/modules/maps/animation.py</code>) is the sole projection from <code>(Intention, Slots, EquipmentGroup)</code> <span class="arithmatex">\(\to\)</span> <code>Optional[Actions]</code> and <code>(Position, Target)</code> <span class="arithmatex">\(\to\)</span> <code>Directions</code>:</li>
+<li>Equipment-gated intentions (<code>ATTACK</code>, <code>MINE</code>, <code>BUILD</code>) return <code>None</code> when the required Equipment slot is empty or unconfigured, blocking inadmissible transitions inside <code>TransitionMechanics</code> and <code>PlayerMechanics</code>.</li>
+<li>Whenever <code>state.animation.action</code> changes in <code>TransitionMechanics</code> or <code>PlayerMechanics</code>, <code>frame</code> resets to <code>0</code> and <code>tick</code> resets to <code>1</code>.</li>
+<li><strong><code>ProjectileIndex</code></strong> (<code>src/app/game/logic/relations/projectiles.py</code>) compiles <code>weapon_id -&gt; projectile_id</code> via <code>ProjectileIndex.from_properties(properties.cursors.projectiles)</code> during <code>Builder.build_relations()</code> and is injected into <code>CombatMechanics</code> via <code>relations: [ projectiles ]</code> in <code>src/data/config/mechanics/main.yaml</code>.</li>
+<li>Ranged weapons in <code>src/assets/sheets/equipments/weapons/main.yaml</code> configure their release frame and directional spawn aperture using standard <code>&lt;action&gt;-&lt;direction&gt;-&lt;frame&gt;</code> <code>hitboxes</code> resolved by <code>AttackHitbox</code>.</li>
+<li><strong><code>CombatMap</code></strong> (<code>src/app/game/logic/modules/maps/combat.py</code>) exposes strictly combat-domain projections (no <code>CombatMap.action</code>):</li>
+<li><code>CombatMap.projectile(state, relation) -&gt; Optional[str]</code>: resolves the projectile ID bound to <code>state.slots.equipment.weapon</code>.</li>
+<li><code>CombatMap.attackboxes(state, equipment, elevation) -&gt; List[Hitbox]</code>: resolves melee <code>AttackHitbox</code> primitives.</li>
+<li><code>CombatMap.release(state, equipment, elevation) -&gt; Optional[Tuple[Position, str]]</code>: pulls the active <code>AttackHitbox</code> on the frame entry tick, returning the world-space spawn center <code>(x_a + hb.x + hb.w // 2, y_a + hb.y + hb.l // 2)</code> and launch direction <code>state.animation.direction</code>.</li>
+<li><code>CombatMap.speed(state, equipment) -&gt; int</code>: computes charged launch speed <span class="arithmatex">\(s(S, n)\)</span> from strength <span class="arithmatex">\(S\)</span>, draw ticks <span class="arithmatex">\(n\)</span>, release frame index <span class="arithmatex">\(F_{\text{release}} = \text{state.animation.frame}\)</span>, and active action <code>delay</code>:</li>
+</ul>
+<p>$$
+  N_{\max} = \max(1,\; \text{state.animation.frame} \cdot \text{delay}), \qquad \tau(n) = \min\left(1.0,\; \frac{n}{N_{\max}}\right), \qquad s(S, n) = \operatorname{round}\Big(\alpha S \big(1 + \tau(n)\big)\Big)
+  $$</p>
+<ul>
+<li><strong><code>CombatMechanics.update()</code></strong> queries <code>projectile_id = CombatMap.projectile(attacker.state, self.relation)</code> and forks on combat modality:</li>
+<li><code>projectile_id is not None</code>: executes <code>self._project(attacker, projectile_id, board)</code>.</li>
+<li><code>projectile_id is None</code>: collects <code>CombatMap.attackboxes(...)</code> and executes batched <code>self._melee(melee_attackers, layer, board)</code>.</li>
+<li><strong>Flight Resolution &amp; Impact (<code>Cradle</code> &amp; <code>ProjectileMechanics</code>)</strong>:</li>
+<li><code>Cradle.spawn_projectile()</code> centers the projectile's top-left origin around the release coordinate using <code>(-props.dimensions.w // 2, -props.dimensions.l // 2)</code>, allocates distinct <code>Position</code> instances for <code>position</code> and <code>initial</code>, quantizes the launch angle onto <code>properties.rotation</code>, derives <code>Velocity(vx, vy)</code> (clamping cardinal trig drift to exact axis vectors), and initializes <code>MotorState</code> with <code>elevation</code> and <code>owner</code>.</li>
+<li><code>ProjectileMechanics.update()</code> evaluates range/layer-bound expiration and elevation-partitioned intersections against <code>obstacles</code>, <code>SPRITES</code>, <code>PLAYERS</code>, and <code>REACTABLES</code>, ignoring <code>target.name == projectile.state.owner</code>, applying impact damage <span class="arithmatex">\(\max(1, \operatorname{round}(\text{speed} / \alpha) - \text{defense})\)</span>, and removing expired/impacted projectiles immediately via <code>board.remove()</code>.</li>
+</ul>
+</li>
+</ol>
+<h5 id="architectural-analysis-i">Architectural Analysis I</h5>
+<ol>
+<li>
+<p><strong>Ontology of Properties vs. State (<code>rotation</code> vs. <code>speed</code> and <code>angle</code>)</strong>:</p>
+<ul>
+<li>In the Asset Hierarchy, <code>Properties</code> encode static, immutable characteristics intrinsic to the Asset file and its atlas partitioning, whereas <code>State</code> exemplifies dynamic attributes particular to an Asset's deployment on the <code>Board</code>.</li>
+<li><code>rotation: int = 90</code> on <code>CursorProperties</code> defines the angular resolution <span class="arithmatex">\(\Delta\theta\)</span> of the synthesized texture strip in <code>Registry</code> and <code>ProjectileFrame.index()</code>. Because every projectile has a deterministic angular step (defaulting to <span class="arithmatex">\(90^\circ\)</span> for cardinal projectiles such as <code>arrow</code> and <code>bolt</code>, or <span class="arithmatex">\(45^\circ\)</span> for <code>cannonball</code>), <code>rotation</code> is a concrete <code>int = 90</code> field rather than <code>Optional[int] = None</code>.</li>
+<li>Conversely, <code>speed: int = 200</code> and <code>angle: int = 0</code> are situational parameters of a specific launch event and belong on <code>MotorState</code> alongside <code>position</code>, <code>initial</code>, <code>velocity</code>, and <code>owner</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Eliminating Duck-Typing in <code>Registry</code> via Asset Hierarchy Lookup</strong>:</p>
+<ul>
+<li><code>Registry</code> holds the validated <code>PropertySchema</code> hierarchy on <code>self.properties</code>. Rather than inspecting arbitrary property objects for the presence of an optional <code>rotation</code> attribute, <code>Registry._get_or_load_texture()</code> checks membership directly against the <code>(cursors, projectiles)</code> hierarchy node (<code>if self.properties.cursors and asset_key in self.properties.cursors.projectiles:</code>), matching the pattern established in <code>Registry._load_font()</code> (<code>if font_key not in self.properties.fonts:</code>).</li>
+<li>When <code>asset_key in self.properties.cursors.projectiles</code>, <code>Registry</code> retrieves <code>rotation = self.properties.cursors.projectiles[asset_key].rotation</code>, synthesizes the rotated horizontal texture strip via <code>render.rotate(raw_tex, rotation)</code>, and destroys the intermediate unrotated <code>raw_tex</code> via <code>render.destroy(raw_tex)</code> so single-frame textures do not linger in VRAM.</li>
+<li><code>Registry._index()</code> requires no special-case logic: it already iterates the <code>(category, instance)</code> fields of <code>self.properties</code> and <code>self.recipes</code>, delegating <code>cursors.projectiles</code> crop generation to <code>ProjectileFrame.index(item_id, item_props)</code>.</li>
+</ul>
+</li>
+</ol>
+<pre class="mermaid"><code>flowchart LR
+    subgraph Boot["Phase 1: Registry._index()"]
+        A["properties.cursors.projectiles[id]"] --&gt; B["ProjectileFrame.index(id, props)"]
+        B --&gt; C["_frames['{id}-{k * rotation}'] = (id, k * w, 0, w, l)"]
+    end
+    subgraph Hydration["Phase 2: Registry._get_or_load_texture(id)"]
+        D["_load_texture(filepath)"] --&gt; E{"id in properties.cursors.projectiles"}
+        E -- Yes --&gt; F["render.rotate(raw_tex, props.rotation)"]
+        F --&gt; G["render.destroy(raw_tex)"]
+        G --&gt; H["_textures[id] = strip_tex"]
+        E -- No --&gt; H
+    end</code></pre>
+<ol>
+<li>
+<p><strong>Screen-Space Angle Convention &amp; Launch Quantization (<code>Cradle.spawn_projectile</code>)</strong>:</p>
+<ul>
+<li>In screen coordinates (<span class="arithmatex">\(+x\)</span> right, <span class="arithmatex">\(+y\)</span> down), both <code>SDL_RenderCopyEx</code> and the 2D rotation matrix <span class="arithmatex">\(R(\Delta\theta)\)</span> rotate clockwise:<ul>
+<li><span class="arithmatex">\(\theta = 0^\circ \leftrightarrow (+1, 0)\)</span> (<code>Directions.RIGHT</code>)</li>
+<li><span class="arithmatex">\(\theta = 90^\circ \leftrightarrow (0, +1)\)</span> (<code>Directions.DOWN</code>)</li>
+<li><span class="arithmatex">\(\theta = 180^\circ \leftrightarrow (-1, 0)\)</span> (<code>Directions.LEFT</code>)</li>
+<li><span class="arithmatex">\(\theta = 270^\circ \leftrightarrow (0, -1)\)</span> (<code>Directions.UP</code>)</li>
+</ul>
+</li>
+<li>Given a continuous displacement vector <span class="arithmatex">\((\Delta x, \Delta y)\)</span> toward a target coordinate (or a cardinal <code>Directions</code> unit vector when no target coordinate is present), the raw launch angle in <span class="arithmatex">\([0, 360)\)</span> is:</li>
+</ul>
+<div class="arithmatex">\[
+\theta_{\text{raw}} = \left(\operatorname{atan2}(\Delta y, \Delta x) \cdot \frac{180}{\pi}\right) \bmod 360
+\]</div>
+<ul>
+<li>Quantizing onto the nearest discrete step <span class="arithmatex">\(R = \text{properties.rotation}\)</span> yields:</li>
+</ul>
+<div class="arithmatex">\[
+\text{angle} = \left(\operatorname{round}\left(\frac{\theta_{\text{raw}}}{R}\right) \cdot R\right) \bmod 360, \qquad \vec{v} = \begin{pmatrix} \text{speed} \cdot \cos(\text{angle} \cdot \frac{\pi}{180}) \\ \text{speed} \cdot \sin(\text{angle} \cdot \frac{\pi}{180}) \end{pmatrix}
+\]</div>
+<ul>
+<li><code>Cradle.spawn_projectile()</code> allocates distinct <code>Position(position.x, position.y)</code> instances for <code>state.position</code> and <code>state.initial</code> so in-place sub-pixel integration in <code>physics.integrate()</code> does not mutate <code>state.initial</code> or the shooter's position.</li>
+</ul>
+</li>
+<li>
+<p><strong>Ranged Combat Trigger &amp; Impact Resolution (<code>CombatMechanics</code> &amp; <code>ProjectileMechanics</code>)</strong>:</p>
+<ul>
+<li><strong>Release Frame Edge Trigger</strong>: In <code>CombatMechanics.update()</code>, an attacker with <code>state.animation.action == Actions.SHOOT</code> spawns a projectile only on the release frame when <code>state.animation.tick == 1</code>, preventing duplicate spawns when action <code>delay &gt; 1</code>.</li>
+<li><strong>Motion Integration Ownership</strong>: <code>MotionMechanics</code> integrates velocity for inert projectile assets via <code>physics.integrate()</code>. <code>ProjectileMechanics.update()</code> evaluates range/boundary expiration and elevation-partitioned intersections (<code>projectile.elevation == target.elevation</code>) against obstacles (<code>board.obstacles(layer, elevation)</code>) and targets (<code>SPRITES</code>, <code>PLAYERS</code>, <code>REACTABLES</code>), excluding <code>target.name == projectile.state.owner</code>.</li>
+</ul>
+</li>
+</ol>
+<h5 id="user-review-i">User Review I</h5>
+<ul>
+<li>Examine the Device implementation. Determine what would be necessary to add a counter to a button to determine how long it has been pressed.</li>
+<li>Examine the Sprite state definitions and create a formula for calculating the speed of a spawned projectile base on <code>sprite.state.character.strength</code> and the length of time the Sprite has held down the <code>attack</code> intention. Determine what state attributes would need added to accomodate this.<ul>
+<li>For the Player, the length of time will be determined through device polling.</li>
+<li>For the Sprite, the length of time will be determined through CognitionMechanics. This is actually a really complex problem, so let's defer it until later. MVP is Player Projectile spawning based on length of time button was held and Player strength.</li>
+</ul>
+</li>
+</ul>
+<h5 id="architectural-analysis-ii">Architectural Analysis II</h5>
+<ol>
+<li>
+<p><strong>Button Hold Duration Counter in <code>Device</code> (<code>Keyboard.poll</code>)</strong>:</p>
+<ul>
+<li>In <code>src/app/game/devices.py</code>, <code>Keyboard</code> already initializes <code>self._last_state = {code: 0 for code in self._scancodes}</code> when setting the device context and polls raw boolean key states <code>(0, 1)</code> via <code>sdl.poll(self._scancodes)</code>.</li>
+<li>By upgrading <code>current_dict</code> from a binary flag to a consecutive-tick accumulator:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="n">current_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">code</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">state</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">code</span><span class="p">,</span> <span class="n">state</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scancodes</span><span class="p">,</span> <span class="n">current_state</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>every pressed scancode tracks its exact hold duration in ticks (<span class="arithmatex">\(c_t \ge 1\)</span>) while unpressed scancodes reset to <code>0</code>:
+* <strong>Backward-Compatible Edge Triggering</strong>: Because <code>self._last_state.get(v)</code> is <code>0</code> (falsy) only when unpressed on the prior tick and <span class="arithmatex">\(\ge 1\)</span> (truthy) on every held tick, existing rising-edge checks (<code>current_dict.get(v) and not self._last_state.get(v)</code>) across <code>intentions</code>, <code>grips</code>, <code>menus</code>, <code>traversal</code>, and <code>interactions</code> remain invariant.
+* <strong>Hold Counter Propagation</strong>: Extending <code>WorldPayload</code> (<code>src/app/models/state/devices.py</code>) with <code>hold: int = 0</code> allows <code>Keyboard.poll()</code> to emit the consecutive tick count of the active intention button in configuration order (preserving the Intention singularity rule):</p>
+<div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">world</span><span class="o">.</span><span class="n">intentions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">current_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="n">world_payload</span><span class="o">.</span><span class="n">intention</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="n">world_payload</span><span class="o">.</span><span class="n">hold</span> <span class="o">=</span> <span class="n">current_dict</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+        <span class="k">break</span>
+</code></pre></div>
+</li>
+</ol>
+<pre class="mermaid"><code>flowchart LR
+    A["sdl.poll(_scancodes)"] --&gt; B["c_t(v) = c_{t-1}(v) + 1 if pressed else 0"]
+    B --&gt; C{"c_{t-1}(v) == 0?"}
+    C -- Yes --&gt; D["world_payload.intention = k&lt;br/&gt;world_payload.hold = 1"]
+    C -- No --&gt; E["world_payload.intention = None&lt;br/&gt;world_payload.hold = c_t(v)"]
+    D --&gt; F["PlayerMechanics: charge = hold"]
+    E --&gt; F
+    F --&gt; G["CombatMechanics: speed(strength, charge)"]</code></pre>
+<ol>
+<li>
+<p><strong>State Attributes for Hold Duration (<code>MutatorParameters.charge</code>)</strong>:</p>
+<ul>
+<li>Inspecting <code>SheetState</code> (<code>src/app/models/state/assets/sheets.py</code>) and <code>AssetState</code> (<code>src/app/models/state/core.py</code>), <code>MutatorParameters</code> is the canonical container for dynamic parameters modulating an entity's active Intention or physical state (already housing <code>hand: Optional[Enumerated[Hands]] = None</code> for <code>Intentions.USE</code> and <code>descension: Optional[float] = 0.0</code> for gravity freefall).</li>
+<li>Adding <code>charge: int = 0</code> to <code>MutatorParameters</code> provides a unified state field across both <code>Player</code> (<code>SheetState</code>) and <code>Sprite</code> (<code>SpriteState</code>) without duplicating fields across models:<ul>
+<li><strong>Player Lifecycle (<code>PlayerMechanics</code>)</strong>:<ol>
+<li>When <code>player.state.intention != intention</code> on a new <code>Intentions.ATTACK</code> transition, initialize <code>player.state.mutators.parameters.charge = payload.world.hold</code>.</li>
+<li>On subsequent ticks while <code>player.state.intention == Intentions.ATTACK</code> and <code>payload.world.hold &gt; 0</code>, update <code>player.state.mutators.parameters.charge = payload.world.hold</code>.</li>
+<li>If the Player releases the attack key early (<code>payload.world.hold == 0</code>) while locked in the blocking <code>SHOOT</code> animation (<code>is_locked == True</code>), <code>player.state.mutators.parameters.charge</code> retains the peak tick count <span class="arithmatex">\(n\)</span> held during that draw rather than being wiped to <code>0</code> before the release frame is reached.</li>
+<li>When <code>player.state.intention</code> returns to <code>Intentions.IDLE</code> (or upon projectile release in <code>CombatMechanics</code>), reset <code>player.state.mutators.parameters.charge = 0</code>.</li>
+</ol>
+</li>
+<li><strong>Sprite Lifecycle (Deferred to Future Phase)</strong>: Because <code>MutatorParameters.charge</code> lives on <code>AssetState</code>, <code>CognitionMechanics</code> can later populate <code>sprite.state.mutators.parameters.charge</code> without any schema or <code>CombatMechanics</code> changes.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Projectile Speed Formula (<span class="arithmatex">\(s(S, n)\)</span>)</strong>:</p>
+<ul>
+<li>Let <span class="arithmatex">\(S = \text{state.character.strength}\)</span> (default <code>10</code>), <span class="arithmatex">\(n = \text{state.mutators.parameters.charge} \in \mathbb{Z}_{\ge 0}\)</span>, and <span class="arithmatex">\(N_{\max} = \max(1, F_{\text{release}} \cdot \text{delay})\)</span> be the number of ticks from frame <code>0</code> to the release frame <span class="arithmatex">\(F_{\text{release}}\)</span> of <code>Actions.SHOOT</code>.</li>
+<li>Define the normalized draw ratio <span class="arithmatex">\(\tau(n) \in [0, 1]\)</span> and scalar launch speed <span class="arithmatex">\(s(S, n)\)</span>:</li>
+</ul>
+<div class="arithmatex">\[
+\tau(n) = \min\left(1.0,\; \frac{n}{N_{\max}}\right), \qquad s(S, n) = \operatorname{round}\Big(\alpha S \big(1 + \tau(n)\big)\Big)
+\]</div>
+<ul>
+<li>With base strength coefficient <span class="arithmatex">\(\alpha = 10\text{ px}/(\text{s}\cdot\text{strength})\)</span> (<code>settings.PROJECTILE_BASE_SPEED_FACTOR = 10</code>):<ul>
+<li><strong>Uncharged / Instant Tap (<span class="arithmatex">\(n \to 0, S = 10\)</span>)</strong>: <span class="arithmatex">\(\tau(0) = 0 \implies s(10, 0) = 100\text{ px/s}\)</span>, guaranteeing a positive minimum launch velocity even for a 1-tick tap or an uncharged NPC Sprite (<code>charge == 0</code>).</li>
+<li><strong>Half Draw (<span class="arithmatex">\(\tau = 0.5, S = 10\)</span>)</strong>: <span class="arithmatex">\(s(10, N_{\max}/2) = 150\text{ px/s}\)</span>.</li>
+<li><strong>Full Draw (<span class="arithmatex">\(n \ge N_{\max}, S = 10\)</span>)</strong>: <span class="arithmatex">\(\tau(n) = 1.0 \implies s(10, N_{\max}) = 200\text{ px/s}\)</span>, matching the nominal <code>MotorState.speed = 200</code> baseline and saturating cleanly so prolonged button holds cannot cause unbounded velocity or hitbox tunneling.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h5 id="user-review-ii">User Review II</h5>
+<ul>
+<li>The concept of "release frame" in the spec seems ill defined. If I am understanding correctly, the current spec proposes to release the projectile the first tick of the first frame.</li>
+<li>However, this will not work in terms of animation fluidity. The LPC animations require flexibility, as the "release frame" is highly variable. The projectile has to be released on a certain frame, and that frame will be dependent on the type of Equipment, e.g. a crossbow animation might release a bolt at frame 3, but a longbow animation might release an arrow at frame 7.</li>
+<li>For non-projectile Equipment, AttackHitboxes are used in conjunction with the CombatMap and AnimationMap to resolve which attackbox applies on which frame. It would seem a similar solution can be adopted for Projectiles, insofar that the release frame needs to be mapped from the Equipment that spawns the Projectile, not the Projectile itself, i.e. release frame is a property of Equipment, not Projectiles.</li>
+<li>It would seem possible to define the "release frame" on the a certain keyed Hitbox, e.g. <code>shoot-up-3</code>. However, this seems to introduce some undesirable polymorphism, as both projectile equipment and non-projectile equipment get injected with the same Hitbox implementation. So, it seems like the AttackHitbox interface would have to "bend" to accomodate the different behaviors. However, perhaps, the Combat logic could abstract the release frame lookup the same way the CombatMap abstracts the <code>attackboxes</code>.</li>
+</ul>
+<h5 id="architectural-analysis-iii">Architectural Analysis III</h5>
+<ol>
+<li>
+<p><strong>Why Action-Based Detection and <code>AttackHitbox</code> Overloading Fail for Ranged Equipment</strong>:</p>
+<ul>
+<li>Inspecting <code>src/assets/sheets/equipments/weapons/main.yaml</code> reveals why ranged combat cannot be triggered by checking <code>if attacker.state.animation.action == Actions.SHOOT:</code>:<ul>
+<li><code>longbow</code> uses <code>actions: lpc-shoot</code> (<code>Actions.SHOOT</code>), whereas <code>crossbow</code> uses <code>actions: lpc-thrust</code> (<code>Actions.THRUST</code>)—the exact same action set used by the melee <code>spear</code>!</li>
+<li>Consequently, <code>AnimationState.action</code> is not a bijective indicator of ranged vs. melee combat; the equipped weapon itself determines whether an attack is melee or ranged, which projectile asset (<code>arrow</code> vs. <code>bolt</code>) is emitted, and on which frame index <span class="arithmatex">\(F_{\text{release}}\)</span> emission occurs.</li>
+</ul>
+</li>
+<li>Furthermore, overloading <code>properties.hitboxes</code> (e.g. <code>shoot-up-7</code>) and <code>AttackHitbox</code> to encode projectile release frames introduces structural polymorphism into <code>HitboxSchema</code>:<ul>
+<li>All <code>sheets.weapons</code> share a single recipe (<code>hitbox: AttackHitbox</code>).</li>
+<li><code>AttackHitbox.get()</code> fulfills the <code>HitboxSchema</code> contract by returning spatial <code>List[Hitbox]</code> primitives for melee collision resolution in <code>CombatMechanics</code>. A ranged weapon does not strike targets via a weapon-attached AABB; it spawns an autonomous <code>Projectile</code> asset whose own <code>RotatedHitbox</code> traverses the board.</li>
+<li>Even if <code>properties.hitboxes</code> encoded a release frame key, it still could not express <em>which</em> projectile ID (<code>arrow</code> vs. <code>bolt</code> vs. <code>cannonball</code>) the weapon spawns. Keeping <code>hitboxes: null</code> on ranged weapons allows <code>AttackHitbox.get()</code> to return <code>[]</code> without modification or polymorphism.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Equipment-Driven Release Frame &amp; Projectile Binding on <code>SheetProperties</code></strong>:</p>
+<ul>
+<li>Just as <code>ResourceProperties</code> declares <code>loot: str = None</code> to bind a biological resource to the <code>Collectable</code> it spawns, <code>SheetProperties</code> (<code>src/app/models/properties/assets.py</code>) should declare two optional equipment properties:<ul>
+<li><code>projectile: Optional[Enumerated[ProjectilePalette]] = None</code>: The projectile asset ID in <code>cursors.projectiles</code> spawned by this weapon (<code>arrow</code> for <code>longbow</code>, <code>bolt</code> for <code>crossbow</code>, <code>None</code> for melee weapons).</li>
+<li><code>release: Optional[int] = None</code>: The 0-based frame index <span class="arithmatex">\(F_{\text{release}}\)</span> within the weapon's active <code>Action</code> on which the projectile is released (e.g. <code>release: 9</code> for <code>longbow</code> under 13-frame <code>lpc-shoot</code>; <code>release: 5</code> for <code>crossbow</code> under 8-frame <code>lpc-thrust</code>).</li>
+</ul>
+</li>
+<li>In <code>src/assets/sheets/equipments/weapons/main.yaml</code>:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="nt">sheets</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">weapons</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># --------------------------------------- ACTION: SHOOT</span>
+<span class="w">    </span><span class="nt">longbow</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span><span class="w"> </span><span class="nv">*lpc</span>
+<span class="w">      </span><span class="nt">hitboxes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">      </span><span class="nt">actions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lpc-shoot</span>
+<span class="w">      </span><span class="nt">stack</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">longbow</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">projectile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arrow</span>
+<span class="w">      </span><span class="nt">release</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">    </span><span class="c1"># --------------------------------------- ACTION: THRUST</span>
+<span class="w">    </span><span class="nt">crossbow</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span><span class="w"> </span><span class="nv">*lpc</span>
+<span class="w">      </span><span class="nt">hitboxes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">      </span><span class="nt">actions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lpc-thrust</span>
+<span class="w">      </span><span class="nt">stack</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">crossbow</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">projectile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bolt</span>
+<span class="w">      </span><span class="nt">release</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+</code></pre></div>
+</li>
+<li>
+<p><strong>Abstracting Release Frame &amp; Speed Resolution via <code>CombatMap.projectile()</code></strong>:</p>
+<ul>
+<li>
+<p>Mirroring how <code>CombatMap.attackboxes(state, equipment, elevation)</code> resolves active melee hitboxes from the equipped weapon, <code>CombatMap</code> (<code>src/app/game/logic/modules/maps/combat.py</code>) should expose <code>CombatMap.projectile(state: SheetState, equipment: EquipmentGroup) -&gt; Optional[Tuple[str, int]]</code>:</p>
+<ol>
+<li>Resolve <code>weapon = equipment.weapons.get(state.slots.equipment.weapon)</code>. If <code>not weapon</code> or <code>not weapon.properties.projectile</code> or <code>weapon.properties.release is None</code>, return <code>None</code>.</li>
+<li>Verify that <code>state.animation.action in weapon.properties.actions</code> and <code>state.animation.frame == weapon.properties.release</code>.</li>
+<li>Enforce single-tick edge emission within that frame (<code>state.animation.tick &lt;= 1</code>) so actions with <code>delay &gt; 1</code> only emit one projectile upon entering <code>release</code>.</li>
+<li>Derive the weapon's draw window <span class="arithmatex">\(N_{\max}\)</span> directly from the weapon's configured <code>release</code> frame and action <code>delay</code>:</li>
 </ol>
 <div class="arithmatex">\[
-\begin{pmatrix} h'_{cx} \\ h'_{cy} \end{pmatrix} = \begin{pmatrix} \cos\Delta\theta &amp; -\sin\Delta\theta \\ \sin\Delta\theta &amp; \cos\Delta\theta \end{pmatrix} \begin{pmatrix} h_{cx} \\ h_{cy} \end{pmatrix} \\
-w'(\Delta\theta) = \max\Big(1,\; \text{round}\big(w_0 |\cos\Delta\theta| + l_0 |\sin\Delta\theta|\big)\Big), \qquad l'(\Delta\theta) = \max\Big(1,\; \text{round}\big(w_0 |\sin\Delta\theta| + l_0 |\cos\Delta\theta|\big)\Big)
+N_{\max} = \max\Big(1,\; \text{weapon.properties.release} \cdot \text{weapon.properties.actions}[\text{state.animation.action}].\text{delay}\Big)
 \]</div>
+<ol>
+<li>Compute the charged launch speed <span class="arithmatex">\(s(S, n)\)</span> from <span class="arithmatex">\(S = \text{state.character.strength}\)</span> and <span class="arithmatex">\(n = \text{state.mutators.parameters.charge}\)</span>, returning <code>(weapon.properties.projectile, speed)</code>.</li>
+</ol>
+</li>
+</ul>
+</li>
+</ol>
+<pre class="mermaid"><code>flowchart TD
+    A["CombatMechanics.update()"] --&gt; B["attacker in Intentions.ATTACK"]
+    B --&gt; C["CombatMap.projectile(attacker.state, board.equipment)"]
+    C --&gt; D{"weapon.properties.projectile&lt;br/&gt;&amp; frame == weapon.properties.release&lt;br/&gt;&amp; tick &lt;= 1?"}
+    D -- Yes --&gt; E["Compute N_max = release * action.delay&lt;br/&gt;Compute speed(strength, charge)"]
+    E --&gt; F["board.cradle.spawn_projectile(projectile_id, ..., speed)"]
+    F --&gt; G["board.add([projectile])&lt;br/&gt;attacker.state.mutators.parameters.charge = 0"]
+    D -- No --&gt; H["CombatMap.attackboxes(attacker.state, board.equipment, attacker.elevation)"]
+    H --&gt; I{"attackboxes non-empty?"}
+    I -- Yes --&gt; J["melee_attackers.append((attacker, attackboxes))"]
+    I -- No --&gt; K["Skip frame"]</code></pre>
+<ol>
+<li><strong>Decoupling <code>CombatMechanics</code> from Hardcoded Actions</strong>:<ul>
+<li>In <code>CombatMechanics.update()</code>, the hardcoded <code>if attacker.state.animation.action in (Actions.SHOOT, Actions.CAST): continue</code> guard is replaced by querying <code>CombatMap.projectile(attacker.state, board.equipment)</code> and <code>CombatMap.attackboxes(attacker.state, board.equipment, attacker.elevation)</code>.</li>
+<li>Ranged weapons (<code>longbow</code> on <code>SHOOT</code>, <code>crossbow</code> on <code>THRUST</code>) have <code>hitboxes: null</code>, so on non-release frames both <code>CombatMap.projectile()</code> and <code>CombatMap.attackboxes()</code> return empty/<code>None</code>, and on the configured <code>release</code> frame <code>CombatMap.projectile()</code> returns <code>(projectile_id, speed)</code> for <code>board.cradle.spawn_projectile()</code>.</li>
+</ul>
+</li>
+</ol>
+<h5 id="user-review-iii">User Review III</h5>
+<p>Disagree with the direction of analysis and proposed solution. Introducing an Instance specific field onto a category level model (Properties) seems like a poor design decision. Let's back up and consider how CombatMechanics works.</p>
+<p>Here is how the CombatMechanics flow should work (very generally):</p>
+<p>```python:pseudocode</p>
+<p>def _melee(self, attacker, board):
+    attackboxes = CombatMap.attackboxes(
+        attacker.state,
+        board.equipment,
+        attacker.elevation
+    )
+    # existing logic</p>
+<p>def _project(self, attacker, board):
+    release_frame = CombatMap.release(
+        attacker.state,
+        board.equipment,
+        attacker.elevation
+    )
+    projectile = CombatMap.projectile(...)
+    # do other stuff</p>
+<p>def update(self, board, delta, bus, payload):
+    # existing filter of intentions 
+    # ...</p>
+<pre><code>for attacker in attckers:
+    # PHASE 1: Determine if Action is possible.
+    action = CombatMap.action(attacker.state, board.equipment)
+
+    # PHASE 2: Fork on type of Action
+    if action in MeleeActions:
+        self._melee(attacker, board)
+
+    elif action in ProjectileActions:
+        self._project(attacker, board)
+</code></pre>
+<p><code>``
+
+* CombatMap.action: maps the current Equipment and Intent to an Action. Ensures Sprites cannot enter into Actions without the correct Equipment. 
+* CombatMap.release: pulls the AttackHitbox. Instead of using it to calculate intersections and attack vectors, it uses the AttackHitbox to determine where and in what direction the Projectile should be spawned.
+* CombatMap.projectile: projectile mapping.
+
+**NOTE**: this should not be taken as gospel. I am attempting to clarify the logical flow.
+
+No extraneous properties necessary so far. To account for the relation of Projectile to Weapon, rather than encode this into Properties, which are models of Assets in isolation, the proposed mapping is actually a *Relation* between Asset types. Thus, it calls for an addition to the Relations module.</code>app.game.logic.relations` is currently utilized for mapping Shorelines to Fluids (ShorelineIndex), and mapping Crafts to Material Behaviors (MaterialIndex). For example,
+
+Probably the relation between Projectiles and Weapons should be codified as <em>Configuration</em> and then compiled into a Relation. 
+</p>
+<h5 id="architectural-analysis-iv">Architectural Analysis IV</h5>
+<ol>
+<li><strong>Preserving Category-Level <code>SheetProperties</code> Purity via <code>AttackHitbox</code> &amp; <code>CombatMap.release</code></strong>:<ul>
+<li><code>SheetProperties</code> is a Category-level model shared across all <code>sheets</code> instances (<code>sprites</code>, <code>pixies</code>, <code>armor</code>, <code>shields</code>, <code>tools</code>, <code>utilities</code>, <code>weapons</code>). Polluting <code>SheetProperties</code> with weapon-specific or projectile-specific attributes breaks the strict <span class="arithmatex">\(\text{Category} \to \text{Properties}\)</span> mapping.</li>
+<li>Every weapon in <code>sheets.weapons</code> already receives <code>AttackHitbox</code> (<code>recipes.sheets.weapons</code>) and declares <code>hitboxes: Dict[str, List[Hitbox]]</code> keyed by <code>&lt;action&gt;-&lt;direction&gt;-&lt;frame&gt;</code>.</li>
+<li>Instead of modifying <code>AttackHitbox</code> or <code>SheetProperties</code>, the distinction between melee strikes and ranged projectile releases is a difference in how <code>CombatMechanics</code> and <code>CombatMap</code> <em>interpret</em> the weapon's active <code>AttackHitbox</code> after forking on <code>action</code>:<ul>
+<li>For <code>action in MeleeActions</code> (<code>slash</code>, <code>thrust</code>), <code>CombatMap.attackboxes(attacker.state, board.equipment, attacker.elevation)</code> retrieves the active <code>Hitbox</code> list on the strike frames, and <code>CombatMechanics._melee(attacker, board)</code> evaluates narrow-phase intersections against targets.</li>
+<li>For <code>action in ProjectileActions</code> (<code>shoot</code>, <code>cast</code>), ranged weapons in <code>src/assets/sheets/equipments/weapons/main.yaml</code> define a <code>Hitbox</code> entry under <code>hitboxes</code> only on their release frame for each direction (e.g., <code>shoot-up-9</code>, <code>shoot-left-9</code>, <code>shoot-down-9</code>, <code>shoot-right-9</code> for <code>longbow</code>).</li>
+<li><code>CombatMap.release(attacker.state, board.equipment, attacker.elevation)</code> queries <code>weapon.hitbox.get(weapon.properties, attacker.state, resolved_elevation)</code> on the entry tick of the current frame. When non-empty, that <code>Hitbox</code> identifies the current frame as the weapon's release frame and defines the exact world-space spawn coordinate <code>(attacker.state.position.x + hb.position.x, attacker.state.position.y + hb.position.y)</code> where the projectile emerges!</li>
+<li>Moreover, because <code>state.animation.frame</code> on the tick <code>CombatMap.release</code> succeeds <em>is</em> the release frame index <span class="arithmatex">\(F_{\text{release}}\)</span>, the draw window <span class="arithmatex">\(N_{\max} = \max(1, \text{state.animation.frame} \cdot \text{delay})\)</span> is known directly from <code>state.animation.frame</code> without any extra property fields.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Two-Phase Action Validation &amp; Forking in <code>CombatMechanics</code></strong>:</p>
+<ul>
+<li>In <code>CombatMechanics.update()</code>, each attacking entity (<code>state.intention == Intentions.ATTACK</code>) undergoes a two-phase evaluation:<ul>
+<li><strong>Phase 1 (Action Validation via <code>CombatMap.action</code>)</strong>: <code>action = CombatMap.action(attacker.state, board.equipment)</code> validates that the attacker has the requisite equipment slotted to perform a combat action and assigns <code>attacker.state.animation.action = action</code>, ensuring Sprites cannot execute combat actions without matching equipment.</li>
+<li><strong>Phase 2 (Action Group Fork)</strong>:<ul>
+<li>If <code>action in MeleeActions</code>: routes to <code>self._melee(attacker, board)</code>.</li>
+<li>If <code>action in ProjectileActions</code>: routes to <code>self._project(attacker, board)</code>.
+
+<code>mermaid
+flowchart TD
+A["CombatMechanics.update()"] --&gt; B["attacker in Intentions.ATTACK"]
+B --&gt; C["Phase 1: action = CombatMap.action(attacker.state, board.equipment)&lt;br/&gt;attacker.state.animation.action = action"]
+C --&gt; D{"Phase 2: Fork on Action Group"}
+D -- "action in MeleeActions" --&gt; E["self._melee(attacker, board)"]
+E --&gt; F["CombatMap.attackboxes(attacker.state, board.equipment, attacker.elevation)"]
+F --&gt; G["Broad/Narrow Phase Melee Intersection &amp; Damage"]
+D -- "action in ProjectileActions" --&gt; H["self._project(attacker, board)"]
+H --&gt; I["release_hb = CombatMap.release(attacker.state, board.equipment, attacker.elevation)"]
+I --&gt; J{"release_hb is not None&lt;br/&gt;(on entry tick)?"}
+J -- Yes --&gt; K["projectile_id, speed = CombatMap.projectile(attacker.state, board.equipment, self.relation)"]
+K --&gt; L["board.cradle.spawn_projectile(projectile_id, spawn_pos, ..., speed)&lt;br/&gt;board.add([projectile])"]
+J -- No --&gt; M["Continue Draw"]</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Codifying the Weapon-to-Projectile Association as a <code>Relation</code> (<code>app.game.logic.relations</code>)</strong>:</p>
+<ul>
+<li>Because Properties model an Asset in isolation, the mapping between a <code>Weapon</code> (<code>sheets.weapons</code>, e.g., <code>longbow</code>, <code>crossbow</code>) and the <code>Projectile</code> it emits (<code>cursors.projectiles</code>, e.g., <code>arrow</code>, <code>bolt</code>) is a cross-asset <strong>Relation</strong>.</li>
+<li>Following the exact pattern of <code>MaterialIndex.from_configuration(self.context.configurations.materials)</code> in <code>Builder.build_relations()</code>:<ol>
+<li>Declare the weapon-to-projectile mapping in configuration (e.g., <code>longbow: arrow</code>, <code>crossbow: bolt</code>).</li>
+<li>Compile a <code>Singleton</code> relational index in <code>src/app/game/logic/relations/</code> (e.g., <code>ProjectileIndex</code> / <code>CombatIndex</code> with <code>from_configuration()</code> and <code>resolve(weapon_id) -&gt; Optional[str]</code>) and register it in <code>Builder.build_relations()</code>.</li>
+<li>Inject the relation into <code>CombatMechanics</code> via <code>relations</code> in <code>src/data/config/mechanics/main.yaml</code> (accessed via <code>self.relation</code> on <code>Mechanic</code>).</li>
+<li><code>CombatMap.projectile(attacker.state, board.equipment, self.relation)</code> queries the relation to resolve the projectile Asset ID for <code>attacker.state.slots.equipment.weapon</code> and computes the charged launch speed <span class="arithmatex">\(s(S, n)\)</span>.</li>
+</ol>
+</li>
+</ul>
+</li>
+</ol>
+<h5 id="user-review-iv">User Review IV</h5>
+<h6 id="concept-of-maps">Concept of "Maps"</h6>
+<p>Something seems off. The concept of "Maps" (Combat and Animation) seems to be vague. Before moving onto implementation, I want to clarify the entire Sprite Intention -&gt; Action workflow. CombatMap and AnimationMap seems to be at odds, and this seems to indicate the interface that is being used is incorrect ins some capacity.</p>
+<p>What is currently defined:</p>
+<ol>
+<li>TransitionMechanics applies the following mapping after evalatuing the Intention Transition matrix:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">animation</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">AnimationMap</span><span class="o">.</span><span class="n">action</span><span class="p">(</span>
+    <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> 
+    <span class="n">board</span><span class="o">.</span><span class="n">equipment</span>
+<span class="p">)</span>
+
+<span class="c1"># 3. Resolve Direction</span>
+<span class="n">target_pos</span> <span class="o">=</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">target</span> <span class="ow">or</span> <span class="p">(</span>
+    <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">goal</span><span class="o">.</span><span class="n">position</span> <span class="k">if</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">goal</span> <span class="k">else</span> <span class="kc">None</span>
+<span class="p">)</span>
+
+<span class="k">if</span> <span class="n">target_pos</span><span class="p">:</span>
+    <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">animation</span><span class="o">.</span><span class="n">direction</span> <span class="o">=</span> <span class="n">AnimationMap</span><span class="o">.</span><span class="n">direction</span><span class="p">(</span>
+        <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> 
+        <span class="n">target_pos</span>
+    <span class="p">)</span>
+</code></pre></div>
+<p>This maps the Sprite Intention to an (Action, Direction)</p>
+<ol>
+<li>PlayerMechanics similarly maps Intention payloads from the device to Player (Action, Direction):</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="n">player</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">animation</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">AnimationMap</span><span class="o">.</span><span class="n">action</span><span class="p">(</span>
+    <span class="n">player</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> 
+    <span class="n">board</span><span class="o">.</span><span class="n">equipment</span>
+<span class="p">)</span>
+
+<span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">goal</span> <span class="ow">and</span> <span class="n">has_movement</span><span class="p">:</span>
+    <span class="n">player</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">animation</span><span class="o">.</span><span class="n">direction</span> <span class="o">=</span> <span class="n">AnimationMap</span><span class="o">.</span><span class="n">direction</span><span class="p">(</span>
+        <span class="n">player</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">position</span><span class="p">,</span>
+        <span class="n">player</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">goal</span><span class="o">.</span><span class="n">position</span>
+    <span class="p">)</span>
+</code></pre></div>
+<ol>
+<li>CombatMechanics does the following (currently, with the planned extensions also to be taken into account):</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="n">attackboxes</span> <span class="o">=</span> <span class="n">CombatMap</span><span class="o">.</span><span class="n">attackboxes</span><span class="p">(</span>
+    <span class="n">attacker</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+    <span class="n">board</span><span class="o">.</span><span class="n">equipment</span><span class="p">,</span>
+    <span class="n">attacker</span><span class="o">.</span><span class="n">elevation</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>In summary: </p>
+<ul>
+<li>AnimationMap.action: (Intention, Equipment) -&gt; Action</li>
+<li>AnimationMap.direction: (Position, Goal) -&gt; Direction </li>
+<li>CombatMap.attackboxes: (Slots, Equipment) -&gt; Hitbox</li>
+</ul>
+<p>In each case, we have a domain comprised of a Cartesian product of categorical variables (except Position, which is continuous and quantitative) and a function that is mapping those domains to a range. (action, direction) are semantic enumerations. Hitbox is a datastructure of (relative position, dimension).</p>
+<p>Moreover, the proposed CombatMap.action overlaps with AnimationMap.action. The core issue is: where and when does the Sprite intention "transform" into an Action and Direction?</p>
+<p>If TransitionMechanics does not assign an Action, then the Sprite will not animate when AnimationMechanics executes. However, the Combat Actions are not mapped (in the proposal) until CombatMechanics executes. So, TransitionMechanics will assign the Action of Slash before CombatMechanics has had a chance to determine if that Action is permissibile.</p>
+<p>Please analyze this problem and clarify the combat flow. Update the backlog accordingly.</p>
+<h6 id="projectile-weapon-mapping">Projectile-Weapon Mapping</h6>
+<p>After examining the proposals, while I am still of the opinion that codifying the mapping as an <code>app.game.logic.relations</code> Relation is the correct move, I am now not so certain the relation shouldn't be defined as a property. Geography is an example of an Asset that is implicitly relational, i.e. shorelines cannot be embedded into the Board without awareness of the Tiles and Fluids they border, hence these are Properties of Geography. Hence,</p>
+<div class="highlight"><pre><span></span><code><span class="sd">"""</span>
+<span class="sd">@domain.logic</span>
+<span class="sd">@app.module</span>
+<span class="sd">@category.geography</span>
+<span class="sd">@workflows.generation</span>
+<span class="sd">@workflow.fluids</span>
+
+<span class="sd"># Ontology: Source - app.game.logic.relations.shorelines</span>
+
+<span class="sd">Relational index mapping Environ Tiles, Fluid Effects and Seasons to Geography Shorelines.</span>
+<span class="sd">"""</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="c1"># Standard Libraries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">TYPE_CHECKING</span>
+<span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="c1"># Application Library</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.models.abstracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">Singleton</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">app.models.properties</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeographyProperties</span>
+
+<span class="c1"># ---------------------------------------------------</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># ---------------------------------------------------</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ShorelineIndex</span><span class="p">(</span><span class="n">Singleton</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Relational secondary index mapping (tile_id, fluid_id, [season]) to shoreline Asset ID.</span>
+<span class="sd">    Supports multi-level fallback:</span>
+<span class="sd">    1. (tile_id, fluid_id, season)</span>
+<span class="sd">    2. (tile_id, fluid_id)</span>
+<span class="sd">    3. (tile_id, None, season)</span>
+<span class="sd">    4. (tile_id, None)</span>
+<span class="sd">    """</span>
+    <span class="n">_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">_fallback_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fallback_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">relations</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">shoreline_id</span> <span class="ow">in</span> <span class="n">relations</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">shoreline_id</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_properties</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">shorelines</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">GeographyProperties</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ShorelineIndex</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Factory constructor compiling relational definitions from geography property schemas.</span>
+<span class="sd">        """</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">shoreline_id</span><span class="p">,</span> <span class="n">props</span> <span class="ow">in</span> <span class="n">shorelines</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">season</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">props</span><span class="p">,</span> <span class="s2">"season"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">season</span><span class="p">:</span>
+                <span class="n">index</span><span class="o">.</span><span class="n">register</span><span class="p">((</span><span class="n">props</span><span class="o">.</span><span class="n">tile</span><span class="p">,</span> <span class="n">props</span><span class="o">.</span><span class="n">fluid</span><span class="p">,</span> <span class="n">season</span><span class="p">),</span> <span class="n">shoreline_id</span><span class="p">)</span>
+            <span class="n">index</span><span class="o">.</span><span class="n">register</span><span class="p">((</span><span class="n">props</span><span class="o">.</span><span class="n">tile</span><span class="p">,</span> <span class="n">props</span><span class="o">.</span><span class="n">fluid</span><span class="p">),</span> <span class="n">shoreline_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">index</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">shoreline_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Registers a composite relation tuple to target shoreline asset ID.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">tile_id</span><span class="p">,</span> <span class="n">fluid_id</span><span class="p">,</span> <span class="n">season</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_map</span><span class="p">[(</span><span class="n">tile_id</span><span class="p">,</span> <span class="n">fluid_id</span><span class="p">,</span> <span class="n">season</span><span class="p">)]</span> <span class="o">=</span> <span class="n">shoreline_id</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">tile_id</span><span class="p">,</span> <span class="n">fluid_id</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fallback_map</span><span class="p">[(</span><span class="n">tile_id</span><span class="p">,</span> <span class="n">fluid_id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">shoreline_id</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolve</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">tile_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">fluid_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">season</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Resolves the appropriate shoreline asset ID across compound keys with seasonal fallback.</span>
+<span class="sd">        """</span>
+        <span class="c1"># 1. Primary seasonal resolution: (tile, fluid, season)</span>
+        <span class="k">if</span> <span class="n">season</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">seasonal_key</span> <span class="o">=</span> <span class="p">(</span><span class="n">tile_id</span><span class="p">,</span> <span class="n">fluid_id</span><span class="p">,</span> <span class="n">season</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">seasonal_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map</span><span class="p">[</span><span class="n">seasonal_key</span><span class="p">]</span>
+
+            <span class="c1"># Seasonal fallback without fluid constraint</span>
+            <span class="k">if</span> <span class="n">fluid_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">dry_seasonal_key</span> <span class="o">=</span> <span class="p">(</span><span class="n">tile_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">season</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">dry_seasonal_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map</span><span class="p">[</span><span class="n">dry_seasonal_key</span><span class="p">]</span>
+
+        <span class="c1"># 2. Base relational fallback: (tile, fluid)</span>
+        <span class="n">base_key</span> <span class="o">=</span> <span class="p">(</span><span class="n">tile_id</span><span class="p">,</span> <span class="n">fluid_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">base_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fallback_map</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fallback_map</span><span class="p">[</span><span class="n">base_key</span><span class="p">]</span>
+
+        <span class="c1"># 3. Base fallback without fluid constraint: (tile, None)</span>
+        <span class="k">if</span> <span class="n">fluid_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dry_base_key</span> <span class="o">=</span> <span class="p">(</span><span class="n">tile_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dry_base_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fallback_map</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fallback_map</span><span class="p">[</span><span class="n">dry_base_key</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="kc">None</span>
+</code></pre></div>
+<p>Projectiles and Weapons are inherently relational. A <code>crossbow</code> cannot fire a Projectile without knowing what type of Projectile is to be spawned. It does seem like the proper solution is to have the ProjectileIndex expose a factory method <code>from_properties</code> in a similar way to the ShorelineIndex. Then it can get compiled from Properties, not configuration. </p>
+<p>The question is what is the "independent" variable and what is the "dependent" variable. In my head, I see Projectiles are "dependent" on the existence of the Weapon, so it seems like Projectiles should contain the relational indexing properties. </p>
+<h5 id="architectural-analysis-v">Architectural Analysis V</h5>
+<h6 id="1-concept-of-maps-and-the-intention-to-action-to-combat-workflow">1. Concept of "Maps" and the Intention <span class="arithmatex">\(\to\)</span> Action <span class="arithmatex">\(\to\)</span> Combat Workflow</h6>
+<p>The tension identified in <strong>User Review V</strong> exposes two separate flaws in the previous design: (a) a conflated responsibility between <code>AnimationMap</code> and <code>CombatMap</code>, and (b) a temporal/ownership contradiction over where an Intention becomes an Action and where Equipment admissibility is enforced.</p>
+<p><strong>1.1 Mathematical Ontology of <code>app.game.logic.modules.maps</code></strong></p>
+<p>A <strong>Map</strong> is a stateless morphism translating one Engine state-space into another. Each Map must own a <strong>disjoint codomain</strong> so that no two Maps compete over the same state transition:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Map</th>
+<th style="text-align: left;">Domain</th>
+<th style="text-align: left;">Codomain</th>
+<th style="text-align: left;">Consumers (Mechanics)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong><code>AnimationMap</code></strong></td>
+<td style="text-align: left;">Intentional &amp; Spatial State <span class="arithmatex">\(\times\)</span> Equipment</td>
+<td style="text-align: left;">Animation Space (<code>Action</code>, <code>Direction</code>)</td>
+<td style="text-align: left;"><code>TransitionMechanics</code>, <code>PlayerMechanics</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>CombatMap</code></strong></td>
+<td style="text-align: left;">Active Combat/Animation State <span class="arithmatex">\(\times\)</span> Equipment <span class="arithmatex">\(\times\)</span> <code>ProjectileIndex</code></td>
+<td style="text-align: left;">Combat Resolution Artifacts (<code>projectile_id</code>, <code>Hitbox</code>, <code>(spawn_pos, direction)</code>, <code>speed</code>)</td>
+<td style="text-align: left;"><code>CombatMechanics</code></td>
+</tr>
+</tbody>
+</table>
+<p>Formally:</p>
+<ol>
+<li>
+<p><strong><code>AnimationMap</code></strong> projects from <strong>Intentional/Spatial Space</strong> into <strong>Animation Space</strong>:
+   $<span class="arithmatex">\(\text{AnimationMap.action}: \text{Intentions} \times \text{Slots} \times \text{EquipmentGroup} \longrightarrow \text{Actions} \cup \{\bot\}\)</span>$
+   $<span class="arithmatex">\(\text{AnimationMap.direction}: \text{Position} \times \text{Position} \longrightarrow \text{Directions}\)</span>$</p>
+</li>
+<li>
+<p><strong><code>CombatMap</code></strong> projects from an <strong>already-validated Combat Animation State</strong> into <strong>Combat Resolution Space</strong>:
+   $<span class="arithmatex">\(\text{CombatMap.projectile}: \text{Slots.Equipment} \times \text{ProjectileIndex} \longrightarrow \text{ProjectileID} \cup \{\bot\}\)</span>$
+   $<span class="arithmatex">\(\text{CombatMap.attackboxes}: \text{SheetState} \times \text{EquipmentGroup} \times \mathbb{Z}_{\ge 0} \longrightarrow \mathcal{P}(\text{Hitbox})\)</span>$
+   $<span class="arithmatex">\(\text{CombatMap.release}: \text{SheetState} \times \text{EquipmentGroup} \times \mathbb{Z}_{\ge 0} \longrightarrow (\text{Position} \times \text{Directions}) \cup \{\bot\}\)</span>$
+   $<span class="arithmatex">\(\text{CombatMap.speed}: \text{SheetState} \times \text{EquipmentGroup} \longrightarrow \mathbb{Z}_{&gt;0}\)</span>$</p>
+</li>
+</ol>
+<p>Under this separation, <strong><code>CombatMap.action</code> is eliminated</strong>. <code>AnimationMap</code> is the single source of truth for <code>(Intention, Equipment) -&gt; Action</code>, and <code>CombatMechanics</code> is strictly a <em>consumer</em> of <code>AnimationState</code>, never a mutator of <code>state.animation.action</code> or <code>state.intention</code>.</p>
+<p><strong>1.2 Where and When Equipment Permissibility Is Enforced</strong></p>
+<p>In <code>Engine._play()</code>, <code>core</code> mechanics (<code>AnimationMechanics</code>) execute every tick before <code>world</code> mechanics (<code>PlayerMechanics</code> <span class="arithmatex">\(\to\)</span> <code>TransitionMechanics</code> <span class="arithmatex">\(\to\)</span> <code>MotionMechanics</code> <span class="arithmatex">\(\to\)</span> <code>CombatMechanics</code> <span class="arithmatex">\(\to\)</span> <code>ProjectileMechanics</code>), followed by <code>Engine._render()</code>.</p>
+<p>Why the previous <code>CombatMap.action</code> proposal broke this lifecycle:</p>
+<ol>
+<li><strong>Intention Silo Violation</strong>: Only <code>TransitionMechanics</code> (Sprites) and <code>PlayerMechanics</code> (Player) are permitted to mutate <code>state.intention</code>. If <code>TransitionMechanics</code> enters <code>Intentions.ATTACK</code> without checking Equipment admissibility, <code>CombatMechanics</code> cannot legally revert <code>state.intention</code> when it discovers no weapon is slotted.</li>
+<li><strong>Stale/Illegal Animation Frames</strong>: Currently, <code>AnimationMap.action()</code> silently falls back to <code>Actions.CAST</code> (for <code>ATTACK</code>/<code>BUILD</code>) and <code>Actions.THRUST</code> (for <code>MINE</code>) when the corresponding equipment slot is <code>None</code>. This allows an unequipped Sprite or Player to enter an animated combat state and render invalid frames before <code>CombatMechanics</code> ever executes.</li>
+<li><strong>Action-Change Frame Reset Missing</strong>: In <code>TransitionMechanics.update()</code>, mutating <code>sprite.state.animation.action</code> without resetting <code>frame = 0</code> and <code>tick = 1</code> when the action changes risks immediate out-of-bounds frame keys (e.g., transitioning from <code>walk</code> frame <code>7</code> into 6-frame <code>slash</code>) or skipping/prematurely triggering a weapon's release frame.</li>
+</ol>
+<p><strong>Resolution — Strict Admissibility Gate in <code>AnimationMap.action()</code></strong>:
+* <code>AnimationMap.action(state, equipment, intention=None) -&gt; Optional[Actions]</code> evaluates <code>target_intent = intention or state.intention</code>:
+  * For equipment-gated Intentions (<code>ATTACK</code> <span class="arithmatex">\(\to\)</span> <code>slots.equipment.weapon</code>, <code>MINE</code> <span class="arithmatex">\(\to\)</span> <code>slots.equipment.tool</code>, <code>BUILD</code> <span class="arithmatex">\(\to\)</span> <code>slots.equipment.utility</code>), look up the slotted asset in <code>equipment</code>. If the slot is empty or the asset declares no <code>actions</code>, return <code>None</code> (<span class="arithmatex">\(\bot\)</span>).
+  * For non-equipment-gated Intentions (<code>StaticIntentions</code>, <code>NavigationIntentions</code>, <code>USE</code>, etc.), return <code>Actions.WALK</code>.
+* <strong>In <code>TransitionMechanics</code> (Sprites)</strong>:
+  1. Evaluate <code>next_intent</code> via the Intention Transition <code>Executor</code>.
+  2. Before committing <code>next_intent != current_intent</code>, validate <code>AnimationMap.action(sprite.state, board.equipment, intention=next_intent)</code>. If it returns <code>None</code>, <strong>reject the transition</strong> cleanly inside the Intention Silo.
+  3. Resolve <code>action = AnimationMap.action(sprite.state, board.equipment)</code>. If <code>None</code> (e.g., equipment was unequipped mid-state), fall back to <code>Intentions.IDLE</code> and <code>Actions.WALK</code>.
+  4. If <code>action != prev_action</code>, reset <code>sprite.state.animation.frame = 0</code> and <code>sprite.state.animation.tick = 1</code>.
+* <strong>In <code>PlayerMechanics</code> (Player)</strong>:
+  1. When <code>payload.world.intention</code> arrives, validate <code>AnimationMap.action(player.state, board.equipment, intention=intention)</code>. If <code>None</code>, ignore the trigger rather than locking the Player into a phantom blocking animation.
+  2. Reset <code>frame = 0</code>, <code>tick = 1</code> on action change and update <code>mutators.parameters.charge</code> during <code>Intentions.ATTACK</code>.</p>
+<p><strong>1.3 Resolving the Combat Fork (<code>crossbow</code> / <code>spear</code> LPC Polymorphism)</strong></p>
+<p>A second subtle issue existed in forking <code>CombatMechanics</code> via <code>MeleeActions</code> (<code>slash</code>, <code>thrust</code>) vs. <code>ProjectileActions</code> (<code>shoot</code>, <code>cast</code>):
+* Under the LPC specification, <code>Action</code> is a <strong>spritesheet row layout</strong>, not a combat modality.
+* <code>spear</code> (melee) and <code>crossbow</code> (ranged) <strong>both</strong> animate on <code>lpc-thrust</code> (<code>Actions.THRUST</code>). Forking on <code>action in MeleeActions</code> would misclassify <code>crossbow</code> as a melee weapon and prevent it from ever spawning a <code>bolt</code>.</p>
+<p>Forking <code>CombatMechanics</code> directly on <code>CombatMap.projectile(attacker.state, self.relation)</code> resolves this completely:
+* <code>ProjectileIndex.resolve(weapon_id)</code> partitions weapons by their true combat modality:
+  * <strong>Ranged Weapon</strong> (<code>projectile_id is not None</code>): <code>longbow -&gt; arrow</code> (<code>SHOOT</code>), <code>crossbow -&gt; bolt</code> (<code>THRUST</code>) <span class="arithmatex">\(\implies\)</span> routes to <code>self._project(attacker, projectile_id, board)</code>.
+  * <strong>Melee Weapon</strong> (<code>projectile_id is None</code>): <code>longsword -&gt; None</code> (<code>SLASH</code>), <code>spear -&gt; None</code> (<code>THRUST</code>) <span class="arithmatex">\(\implies\)</span> routes to <code>self._melee(melee_attackers, layer, board)</code>.
+* <code>MeleeActions</code> and <code>ProjectileActions</code> enums are no longer needed at all, removing an artificial coupling between combat dispatch and LPC row names.</p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph Core["Core Pipeline (Tick t)"]
+        A["AnimationMechanics&lt;br/&gt;Advances tick &amp; frame for animated entities"]
+    end
+
+    subgraph Intentional["World Pipeline — Stage 1: Intentional Projection"]
+        B["PlayerMechanics / TransitionMechanics"] --&gt; C["AnimationMap.action(state, equipment, candidate_intent)"]
+        C --&gt; D{"Permissible&lt;br/&gt;(Action != None)?"}
+        D -- No --&gt; E["Reject Transition / Hold IDLE&lt;br/&gt;(Intention Silo preserved)"]
+        D -- Yes --&gt; F["Commit Intention &amp; Action&lt;br/&gt;Reset frame=0, tick=1 on Action change&lt;br/&gt;Resolve Direction via AnimationMap.direction"]
+    end
+
+    subgraph Combat["World Pipeline — Stage 2: Combat Resolution"]
+        G["CombatMechanics.update()"] --&gt; H["Filter state.intention == Intentions.ATTACK"]
+        H --&gt; I["projectile_id = CombatMap.projectile(state, ProjectileIndex)"]
+        I -- "projectile_id is not None" --&gt; J["self._project(attacker, projectile_id, board)"]
+        J --&gt; K["release = CombatMap.release(state, equipment, elevation)&lt;br/&gt;(AttackHitbox on entry tick)"]
+        K -- "Release Frame" --&gt; L["speed = CombatMap.speed(state, equipment)&lt;br/&gt;Cradle.spawn_projectile(...) -&gt; board.add()"]
+        I -- "projectile_id is None" --&gt; M["CombatMap.attackboxes(state, equipment, elevation)"]
+        M --&gt; N["self._melee(melee_attackers, layer, board)"]
+    end
+
+    subgraph Resolution["World Pipeline — Stage 3: Flight &amp; Impact"]
+        O["MotionMechanics: integrate projectile velocity"] --&gt; P["ProjectileMechanics: range/bounds &amp; elevation-partitioned impacts"]
+    end
+
+    Core --&gt; Intentional --&gt; Combat --&gt; Resolution</code></pre>
+<h6 id="2-projectileweapon-relation-projectileindexfrom_properties">2. Projectile–Weapon Relation (<code>ProjectileIndex.from_properties</code>)</h6>
+<p><strong>2.1 Independent vs. Dependent Variable Analysis</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Relation</th>
+<th style="text-align: left;">Independent Variable(s) (Domain)</th>
+<th style="text-align: left;">Dependent Asset (Codomain)</th>
+<th style="text-align: left;">Where Foreign Keys Live</th>
+<th style="text-align: left;">Factory Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong><code>ShorelineIndex</code></strong></td>
+<td style="text-align: left;"><code>(tile_id, fluid_id, [season])</code></td>
+<td style="text-align: left;"><code>shoreline_id</code> (<code>geography.shorelines</code>)</td>
+<td style="text-align: left;"><code>GeographyProperties</code> (<code>tile</code>, <code>fluid</code>)</td>
+<td style="text-align: left;"><code>ShorelineIndex.from_properties(properties.geography.shorelines)</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>ProjectileIndex</code></strong></td>
+<td style="text-align: left;"><code>weapon_id</code> (<code>sheets.weapons</code>)</td>
+<td style="text-align: left;"><code>projectile_id</code> (<code>cursors.projectiles</code>)</td>
+<td style="text-align: left;"><code>CursorProperties</code> (<code>weapons</code>)</td>
+<td style="text-align: left;"><code>ProjectileIndex.from_properties(properties.cursors.projectiles)</code></td>
+</tr>
+</tbody>
+</table>
+<p>Why <strong>Projectiles</strong> are the dependent variable and should hold the relational indexing property:</p>
+<ol>
+<li><strong>Ontology of <code>Cursors</code></strong>: As defined in <code>01-assets.md</code>, <em>Cursors are Assets that bind to other Asset States</em> (<code>expressions</code> bind to Sprite Psyche; <code>projectiles</code> bind to Weapon combat releases). A Projectile (<code>arrow</code>, <code>bolt</code>) is ontologically dependent on the Weapon(s) that fire it, whereas a Weapon is a Sheet that can exist without Projectiles.</li>
+<li><strong>Preserving <code>SheetProperties</code> Purity</strong>: <code>SheetProperties</code> serves 7 distinct Instances (<code>sprites</code>, <code>pixies</code>, <code>armor</code>, <code>shields</code>, <code>tools</code>, <code>utilities</code>, <code>weapons</code>) plus all melee weapons. Keeping weapon-to-projectile keys off <code>SheetProperties</code> avoids polluting non-ranged Sheets. <code>CursorProperties</code> serves only <code>expressions</code> and <code>projectiles</code>.</li>
+<li><strong>Many-to-One Cardinality (<code>weapons: List[Enumerated[WeaponPalette]]</code>)</strong>:</li>
+<li>Declaring <code>weapons: List[Enumerated[WeaponPalette]] = field(default_factory=list)</code> on <code>CursorProperties</code> allows multiple weapons to share one projectile asset (e.g., <code>shortbow</code> and <code>longbow</code> both mapping to <code>arrow</code>) without duplicating <code>.png</code> files.</li>
+<li>Non-weapon-bound projectiles (e.g., <code>cannonball</code>) and <code>cursors.expressions</code> (<code>bubbles</code>) cleanly default to <code>weapons: []</code>.</li>
+<li>Strict <code>Enumerated[WeaponPalette]</code> typing validates all declared weapon references at boot via Pydantic <code>TypeAdapter</code>.</li>
+<li><code>ProjectileIndex.from_properties(properties.cursors.projectiles)</code> compiles the <span class="arithmatex">\(O(1)\)</span> lookup map <code>weapon_id -&gt; projectile_id</code>, raising an error if two projectiles claim the same <code>weapon_id</code>, eliminating any need for a separate configuration YAML file.</li>
+</ol>
+<p><strong>2.2 Additional Design Refinements Identified During Grooming</strong></p>
+<ol>
+<li><strong>Concurrent Intention Hold Isolation (<code>WorldPayload.holds</code>)</strong>:</li>
+<li>Using a single scalar <code>WorldPayload.hold: int</code> with an early <code>break</code> in <code>Keyboard.poll()</code> causes two edge-case bugs: (a) holding an earlier intention key suppresses rising-edge triggers on later intention keys, and (b) tapping another intention key (e.g. <code>interact</code>) while locked in <code>ATTACK</code> corrupts the bow's <code>charge</code> count.</li>
+<li>Replacing scalar <code>hold: int</code> with <code>holds: Dict[str, int] = field(default_factory=dict)</code> (recording consecutive pressed ticks per active intention key while keeping <code>world_payload.intention</code> strictly rising-edge and singular) allows <code>PlayerMechanics</code> to query <code>payload.world.holds.get(Intentions.ATTACK, 0)</code> unambiguously and cleanly supports future held intentions (<code>block</code>, <code>sprint</code>).</li>
+<li><strong>Release Origin Centering &amp; Self-Contained Impact Power</strong>:</li>
+<li><code>CombatMap.release()</code> should resolve the world-space center of the active <code>AttackHitbox</code> <span class="arithmatex">\((x_a + x_h + w_h // 2,\; y_a + y_h + l_h // 2)\)</span>, and <code>Cradle.spawn_projectile()</code> should offset the projectile's top-left corner by <span class="arithmatex">\((-W_p // 2, -L_p // 2)\)</span> so rotated square projectile textures (<code>41x41</code> arrow, <code>32x32</code> bolt, <code>16x16</code> cannonball) emerge dead-center from the weapon's release point.</li>
+<li>Because launch speed already encodes both attacker strength and draw charge (<span class="arithmatex">\(s(S, n) = \operatorname{round}(\alpha S(1 + \tau(n)))\)</span>), <code>ProjectileMechanics</code> can compute self-contained impact damage as <span class="arithmatex">\(\max(1,\; \operatorname{round}(\text{speed} / \alpha) - \text{defense})\)</span>—requiring no extra damage field on <code>MotorState</code> and remaining valid even if the shooter changes layers or dies mid-flight.</li>
+</ol>
+<p><strong>Overview</strong></p>
+<p>Codify <code>Projectiles</code> (<code>cursors.projectiles</code>) using the Registry Load-Time Rotation strategy (<code>ProjectileFrame</code>, <code>RotatedHitbox</code>, and <code>render.rotate</code>), allowing a single canonical projectile texture frame to be quantized into arbitrary angular increments (<span class="arithmatex">\(\Delta\theta \in (0, 360]\)</span>) in VRAM without modifying the 60 Hz <code>Screen._assemble()</code> / <code>render.render()</code> pipeline. Enforce strict Equipment admissibility in <code>AnimationMap.action()</code> across <code>TransitionMechanics</code> and <code>PlayerMechanics</code>, compile the Weapon-to-Projectile <code>ProjectileIndex</code> relation from <code>CursorProperties</code> via <code>from_properties()</code>, track per-intention button hold duration in <code>Device</code> and <code>PlayerMechanics</code>, fork <code>CombatMechanics</code> cleanly between melee (<code>_melee</code>) and ranged (<code>_project</code>) via <code>CombatMap</code> and <code>ProjectileIndex</code>, and resolve projectile flight impacts in <code>ProjectileMechanics</code>.</p>
+<h6 id="summary">Summary</h6>
+<ol>
+<li><strong>Clarification of <code>AnimationMap</code> vs. <code>CombatMap</code> (Disjoint Codomains &amp; Permissibility Gate)</strong>:<ul>
+<li>Removing <code>CombatMap.action</code> eliminates dual ownership of <code>AnimationState.action</code>. <code>AnimationMap</code> owns the Intentional-to-Animation boundary (<code>(Intention, Equipment) -&gt; Optional[Action]</code>), while <code>CombatMap</code> owns the Combat-to-Geometry/Launch boundary (<code>projectile</code>, <code>attackboxes</code>, <code>release</code>, <code>speed</code>).</li>
+<li>Enforcing <code>AnimationMap.action(...) -&gt; Optional[Actions]</code> inside <code>TransitionMechanics</code> and <code>PlayerMechanics</code> resolves Equipment permissibility <em>before</em> <code>AnimationMechanics</code> or <code>CombatMechanics</code> executes, upholding the Intention Silo invariant (<code>CombatMechanics</code> never mutates <code>intention</code> or <code>animation.action</code>) and eliminating unequipped fallback animations.</li>
+<li>Resetting <code>frame = 0</code> and <code>tick = 1</code> on <code>action</code> transitions inside <code>TransitionMechanics</code> prevents out-of-range frame misses (e.g., <code>walk</code> frame <code>7</code> carrying into 6-frame <code>slash</code>) and guarantees ranged weapons always traverse their draw frames cleanly into the release frame.</li>
+</ul>
+</li>
+<li><strong>Eliminating LPC Action Polymorphism in Combat Dispatch</strong>:<ul>
+<li>Because LPC maps both <code>spear</code> (melee) and <code>crossbow</code> (ranged) onto <code>Actions.THRUST</code>, dispatching <code>CombatMechanics</code> via <code>MeleeActions</code> / <code>ProjectileActions</code> misroutes <code>crossbow</code> to melee.</li>
+<li>Forking <code>CombatMechanics.update()</code> on <code>CombatMap.projectile(attacker.state, self.relation) is not None</code> binds combat dispatch directly to the compiled Weapon-to-Projectile relation (<code>ProjectileIndex</code>), making <code>_melee</code> vs. <code>_project</code> completely invariant to LPC action row assignments.</li>
+</ul>
+</li>
+<li><strong>Compiling <code>ProjectileIndex</code> via <code>from_properties</code> (Dependent-Variable Foreign Keys)</strong>:<ul>
+<li>Mirroring <code>ShorelineIndex.from_properties(properties.geography.shorelines)</code>, Projectiles (<code>cursors.projectiles</code>) are ontologically dependent on the Weapons (<code>sheets.weapons</code>) that fire them.</li>
+<li>Declaring <code>weapons: List[Enumerated[WeaponPalette]]</code> on <code>CursorProperties</code> keeps <code>SheetProperties</code> free of weapon/projectile pollution, supports many-to-one weapon sharing (<code>[longbow, shortbow] -&gt; arrow</code>), validates references at boot via Pydantic, and compiles <code>ProjectileIndex</code> with zero additional configuration YAML files.</li>
+</ul>
+</li>
+<li><strong>Concurrent Hold Tracking (<code>WorldPayload.holds</code>) &amp; <code>cursors/main.yaml</code> Alignment</strong>:<ul>
+<li>Tracking <code>holds: Dict[str, int]</code> on <code>WorldPayload</code> avoids premature loop breaks in <code>Keyboard.poll()</code> and isolates <code>Intentions.ATTACK</code> hold duration from concurrent keypresses while maintaining strict rising-edge singularity on <code>WorldPayload.intention</code>.</li>
+<li>Aligning <code>src/assets/cursors/main.yaml</code> from <code>angle:</code> to <code>rotation:</code> removes the schema mismatch against <code>CursorProperties.rotation</code> and keeps <code>MotorState.angle</code> semantically distinct.</li>
+</ul>
+</li>
+</ol>
 <h5 id="goals">Goals</h5>
 <h6 id="goal-implement-renderrotate-in-cython-sdl2-bindings">Goal: Implement <code>render.rotate</code> in Cython SDL2 Bindings</h6>
-<p>Expose <code>SDL_RenderCopyEx</code> in <code>src/libs/graphics/render.pyx</code> and implement <code>rotate(TexturePtr base_ptr, int delta) -&gt; TexturePtr</code> to pre-bake rotated projectile frames into a single horizontal <code>TexturePtr</code> strip during Registry texture loading.</p>
-<h6 id="goal-implement-projectileframe-and-rotatedhitbox">Goal: Implement <code>ProjectileFrame</code> and <code>RotatedHitbox</code></h6>
-<p>Create <code>ProjectileFrame</code> (<code>src/app/assets/frames/cursors.py</code>) and <code>RotatedHitbox</code> (<code>src/app/assets/hitboxes/cursors.py</code>) and register them under <code>recipes.cursors.projectiles</code> in <code>src/data/config/recipes/main.yaml</code>.</p>
-<h6 id="goal-wire-ranged-spawning-in-cradle-and-impact-resolution-in-projectilemechanics">Goal: Wire Ranged Spawning in <code>Cradle</code> and Impact Resolution in <code>ProjectileMechanics</code></h6>
-<p>Update <code>Cradle.spawn_projectile()</code> to quantize launch angles to <code>properties.delta</code>, compute initial <code>Velocity(vx, vy)</code>, and instantiate the projectile <code>Asset</code> at the attacker's <code>elevation</code>. Update <code>ProjectileMechanics</code> to integrate trajectories, enforce elevation-isolated impact detection, apply damage, and garbage-collect expired projectiles.</p>
+<p>Expose <code>SDL_Point</code>, <code>SDL_RendererFlip</code>, <code>SDL_RenderSetClipRect</code>, and <code>SDL_RenderCopyEx</code> in <code>src/libs/graphics/render.pyx</code> and implement <code>rotate(TexturePtr base_ptr, int rotation) -&gt; TexturePtr</code> to pre-bake rotated projectile frames into a single horizontal <code>TexturePtr</code> strip during <code>Registry</code> texture loading when <code>asset_key in self.properties.cursors.projectiles</code>.</p>
+<h6 id="goal-implement-projectileframe-rotatedhitbox-and-cursorproperties-alignment">Goal: Implement <code>ProjectileFrame</code>, <code>RotatedHitbox</code>, and <code>CursorProperties</code> Alignment</h6>
+<p>Align <code>CursorProperties</code> (<code>rotation</code>, <code>weapons</code>), <code>MotorState</code> (<code>angle</code>, <code>speed</code>, <code>owner</code>), and <code>src/assets/cursors/main.yaml</code>. Fix <code>ProjectileFrame</code> (<code>src/app/assets/frames/cursors.py</code>) and implement <code>RotatedHitbox</code> (<code>src/app/assets/hitboxes/cursors.py</code>).</p>
+<h6 id="goal-track-per-intention-hold-duration-in-device-and-playermechanics-and-enforce-animationmap-admissibility">Goal: Track Per-Intention Hold Duration in <code>Device</code> and <code>PlayerMechanics</code> and Enforce <code>AnimationMap</code> Admissibility</h6>
+<p>Update <code>Keyboard.poll()</code> (<code>src/app/game/devices.py</code>) to accumulate per-scancode press ticks in <code>self._last_state</code> and populate <code>WorldPayload.holds</code>. Extend <code>MutatorParameters</code> with <code>charge: int = 0</code>. Tighten <code>AnimationMap.action()</code> to return <code>Optional[Actions]</code> (<code>None</code> when required Equipment is missing) and update <code>TransitionMechanics</code> and <code>PlayerMechanics</code> to enforce admissibility, reset <code>frame</code>/<code>tick</code> on action change, and track <code>charge</code> during <code>Intentions.ATTACK</code>.</p>
+<h6 id="goal-compile-projectileindex-via-from_properties-and-wire-combatmap-cradle-combatmechanics-and-projectilemechanics">Goal: Compile <code>ProjectileIndex</code> via <code>from_properties()</code> and Wire <code>CombatMap</code>, <code>Cradle</code>, <code>CombatMechanics</code>, and <code>ProjectileMechanics</code></h6>
+<p>Implement <code>ProjectileIndex.from_properties()</code> in <code>src/app/game/logic/relations/projectiles.py</code>, register it in <code>Builder.build_relations()</code>, and inject it into <code>CombatMechanics</code>. Configure directional release-frame <code>hitboxes</code> on ranged weapons in <code>src/assets/sheets/equipments/weapons/main.yaml</code>. Implement <code>CombatMap.projectile()</code>, <code>CombatMap.release()</code>, and <code>CombatMap.speed()</code>, fork <code>CombatMechanics.update()</code> into <code>_project()</code> and batched <code>_melee()</code>, and implement centered quantized launch and elevation-partitioned impact resolution in <code>Cradle.spawn_projectile()</code> and <code>ProjectileMechanics.update()</code>.</p>
 <h5 id="tasks">Tasks</h5>
 <p><strong>1. Task: Add Cython <code>render.rotate</code> and Registry Load-Time Rotation</strong></p>
-<p><em>Objective</em>: Synthesize rotated texture strips in VRAM during <code>Registry</code> texture loading.</p>
+<p><em>Objective</em>: Synthesize rotated texture strips in VRAM during <code>Registry</code> texture loading for assets registered under <code>properties.cursors.projectiles</code>.</p>
 <ul>
-<li>[] Subtask: Declare <code>SDL_Point</code>, <code>SDL_RendererFlip</code>, and <code>SDL_RenderCopyEx</code> in <code>src/libs/graphics/render.pyx</code> and implement <code>rotate(TexturePtr base_ptr, int delta) -&gt; TexturePtr</code>.</li>
-<li>[] Subtask: Update <code>CursorProperties</code> in <code>src/app/models/properties/assets.py</code> to include <code>delta: Optional[int] = None</code> and <code>speed: int = 200</code>, and update <code>MotorState</code> (<code>src/app/models/state/assets/cursors.py</code>) to include <code>angle: int = 0</code>.</li>
-<li>[] Subtask: Update <code>Registry._get_or_load_texture()</code> in <code>src/libs/graphics/registry.pyx</code> to invoke <code>render.rotate()</code> when loading a projectile texture with a configured <code>delta</code>.</li>
+<li>[x] Subtask: Declare <code>SDL_Point</code>, <code>SDL_RendererFlip</code>, <code>SDL_FLIP_NONE</code>, <code>SDL_RenderSetClipRect</code>, and <code>SDL_RenderCopyEx</code> in <code>src/libs/graphics/render.pyx</code> and implement <code>rotate(TexturePtr base_ptr, int rotation) -&gt; TexturePtr</code> with per-cell clip isolation.</li>
+<li>[x] Subtask: Update <code>CursorProperties</code> (<code>src/app/models/properties/assets.py</code>) with <code>rotation: int = 90</code> and <code>weapons: List[Enumerated[WeaponPalette]] = field(default_factory=list)</code>, align <code>src/assets/cursors/main.yaml</code> (<code>angle</code> <span class="arithmatex">\(\to\)</span> <code>rotation</code> and <code>weapons</code> entries for <code>arrow</code>, <code>bolt</code>, <code>cannonball</code>), and update <code>MotorState</code> (<code>src/app/models/state/assets/cursors.py</code>) with <code>angle: int = 0</code>, <code>speed: int = 200</code>.</li>
+<li>[x] Subtask: Update <code>Registry._get_or_load_texture()</code> in <code>src/libs/graphics/registry.pyx</code> to check <code>self.properties.cursors and asset_key in self.properties.cursors.projectiles</code>, invoke <code>render.rotate(raw_tex, self.properties.cursors.projectiles[asset_key].rotation)</code>, and destroy the temporary unrotated texture.</li>
 </ul>
-<p>**2. Task: Implement <code>ProjectileFrame</code> and <code>RotatedHitbox**</code></p>
+<p><strong>2. Task: Implement <code>ProjectileFrame</code> and <code>RotatedHitbox</code></strong></p>
 <p><em>Objective</em>: Index rotated projectile frame crops and transform base AABB hitboxes by <code>state.angle</code>.</p>
 <ul>
-<li>[] Subtask: Implement <code>ProjectileFrame</code> in <code>src/app/assets/frames/cursors.py</code> to index <code>f"{id}-{k * delta}"</code> crops and resolve <code>[(f"{id}-{state.angle}", 0, 0)]</code> in <code>keys()</code>.</li>
-<li>[] Subtask: Implement <code>RotatedHitbox</code> in <code>src/app/assets/hitboxes/cursors.py</code> to project base <code>properties.hitboxes</code> around the frame center by <code>state.angle</code> at the projectile's <code>elevation</code>.</li>
-<li>[] Subtask: Register <code>ProjectileFrame</code> and <code>RotatedHitbox</code> under <code>cursors.projectiles</code> in <code>src/data/config/recipes/main.yaml</code>.</li>
+<li>[x] Subtask: Implement <code>ProjectileFrame</code> in <code>src/app/assets/frames/cursors.py</code>, implementing <code>index()</code> for <code>f"{id}-{k * properties.rotation}"</code> crops and <code>keys()</code> returning <code>[(f"{id}-{state.angle}", 0, 0)]</code>.</li>
+<li>[x] Subtask: Implement <code>RotatedHitbox</code> in <code>src/app/assets/hitboxes/cursors.py</code> (and export in <code>src/app/assets/hitboxes/__init__.py</code>) to project base <code>properties.hitboxes</code> around <code>(W / 2, L / 2)</code> by <code>state.angle</code> at the projectile's <code>elevation</code>.</li>
+<li>[x] Subtask: Register <code>ProjectileFrame</code> and <code>RotatedHitbox</code> under <code>cursors.projectiles</code> in <code>src/data/config/recipes/main.yaml</code>.</li>
 </ul>
-<p>**3. Task: Implement <code>Cradle.spawn_projectile</code>, <code>CombatMechanics</code> Ranged Trigger, and <code>ProjectileMechanics**</code></p>
-<p><em>Objective</em>: Complete the end-to-end lifecycle of ranged projectiles from release frame to target impact or boundary removal.</p>
+<p><strong>3. Task: Enforce <code>AnimationMap</code> Admissibility and Track Intention Hold Duration</strong></p>
+<p><em>Objective</em>: Establish <code>AnimationMap.action()</code> as the single Equipment admissibility gate across <code>TransitionMechanics</code> and <code>PlayerMechanics</code>, measure consecutive press ticks per intention in <code>Keyboard</code>, and persist <code>attack</code> hold duration on <code>MutatorParameters.charge</code>.</p>
 <ul>
-<li>[] Subtask: Update <code>Cradle.spawn_projectile()</code> to quantize direction/target vectors onto the nearest multiple of <code>properties.delta</code> and populate <code>MotorState</code>.</li>
-<li>[] Subtask: Wire ranged projectile spawning in <code>CombatMechanics.update()</code> on the release frame of <code>Actions.SHOOT</code>.</li>
-<li>[] Subtask: Update <code>ProjectileMechanics.update()</code> to evaluate elevation-partitioned intersections against targets and obstacles and queue impacted or out-of-bounds projectiles for removal.</li>
+<li>[x] Subtask: Update <code>AnimationMap.action(state, equipment, intention=None) -&gt; Optional[Actions]</code> (<code>src/app/game/logic/modules/maps/animation.py</code>) to return <code>None</code> when required Equipment (<code>weapon</code> for <code>ATTACK</code>, <code>tool</code> for <code>MINE</code>, <code>utility</code> for <code>BUILD</code>) is missing or lacks actions, and update any unit tests expecting the legacy fallback actions.</li>
+<li>[x] Subtask: Update <code>TransitionMechanics.update()</code> (<code>src/app/game/logic/mechanics/intentional/transition.py</code>) to gate candidate Intention transitions via <code>AnimationMap.action(..., intention=next_intent)</code>, revert inadmissible active states to <code>Intentions.IDLE</code> / <code>Actions.WALK</code>, and reset <code>frame = 0</code>, <code>tick = 1</code> whenever <code>state.animation.action</code> changes.</li>
+<li>[x] Subtask: Add <code>holds: Dict[str, int] = field(default_factory=dict)</code> to <code>WorldPayload</code> (<code>src/app/models/state/devices.py</code>) and <code>charge: int = 0</code> to <code>MutatorParameters</code> (<code>src/app/models/state/core.py</code>).</li>
+<li>[x] Subtask: Update <code>Keyboard.poll()</code> (<code>src/app/game/devices.py</code>) to accumulate consecutive pressed ticks in <code>self._last_state</code>, reset released scancodes to <code>0</code>, populate <code>world_payload.holds[k]</code> for every active intention key, and preserve rising-edge singularity on <code>world_payload.intention</code>.</li>
+<li>[x] Subtask: Update <code>PlayerMechanics.update()</code> (<code>src/app/game/logic/mechanics/intentional/player.py</code>) to gate incoming Intentions via <code>AnimationMap.action()</code>, accumulate <code>payload.world.holds.get(Intentions.ATTACK, 0)</code> into <code>player.state.mutators.parameters.charge</code> during <code>Intentions.ATTACK</code> (preserving peak charge if released before release frame), and reset <code>charge = 0</code> upon returning to <code>Intentions.IDLE</code>.</li>
+</ul>
+<p><strong>4. Task: Implement <code>ProjectileIndex</code>, <code>CombatMap</code>, <code>Cradle</code>, <code>CombatMechanics</code>, and <code>ProjectileMechanics</code></strong></p>
+<p><em>Objective</em>: Compile the Weapon-to-Projectile relation from <code>CursorProperties</code>, resolve release-frame spawn geometry and charged launch speed via <code>CombatMap</code>, fork <code>CombatMechanics</code> on <code>ProjectileIndex</code>, and resolve projectile flight and impacts.</p>
+<ul>
+<li>[x] Subtask: Add <code>Relations.PROJECTILES</code> in <code>src/app/static/semantics.py</code> and <code>PROJECTILE_BASE_SPEED_FACTOR</code> / <code>PROJECTILE_MAX_RANGE</code> in <code>src/app/static/settings.py</code>, and configure directional release-frame <code>hitboxes</code> on ranged weapons (<code>longbow</code>, <code>crossbow</code>) in <code>src/assets/sheets/equipments/weapons/main.yaml</code>.</li>
+<li>[x] Subtask: Implement <code>ProjectileIndex</code> (<code>from_properties()</code>, <code>register()</code>, <code>resolve()</code>) in <code>src/app/game/logic/relations/projectiles.py</code> (exported in <code>src/app/game/logic/relations/__init__.py</code>), compile it from <code>properties.cursors.projectiles</code> in <code>Builder.build_relations()</code>, and inject <code>relations: [ projectiles ]</code> into <code>combat</code> in <code>src/data/config/mechanics/main.yaml</code>.</li>
+<li>[x] Subtask: Implement <code>CombatMap.projectile()</code>, <code>CombatMap.release()</code> (checking frame entry tick parity with <code>SpriteAnimation.animate()</code> and computing release hitbox world center + direction), and <code>CombatMap.speed()</code> in <code>src/app/game/logic/modules/maps/combat.py</code>.</li>
+<li>[x] Subtask: Update <code>Cradle.spawn_projectile()</code> (<code>src/app/services/generators/game/cradle.py</code>) to center the projectile frame on the spawn point, allocate distinct <code>Position</code> instances for <code>position</code> and <code>initial</code>, quantize launch angle to <code>properties.rotation</code>, compute <code>Velocity(vx, vy)</code> without cardinal trig drift, and populate <code>angle</code>, <code>speed</code>, <code>elevation</code>, and <code>owner</code> on <code>MotorState</code>.</li>
+<li>[x] Subtask: Refactor <code>CombatMechanics.update()</code> (<code>src/app/game/logic/mechanics/spatial/combat.py</code>) to fork on <code>CombatMap.projectile(attacker.state, self.relation)</code> into <code>self._project(attacker, projectile_id, board)</code> and batched <code>self._melee(melee_attackers, layer, board)</code> (removing the hardcoded <code>SHOOT</code>/<code>CAST</code> skip), and implement elevation-partitioned target/obstacle impact resolution, owner exclusion, and range/boundary expiration in <code>ProjectileMechanics.update()</code>.</li>
+</ul>
+<p><strong>5. Coverage</strong></p>
+<ul>
+<li>[x] Subtack: Add unit tests for all new functionality implemented.</li>
 </ul>
 
 

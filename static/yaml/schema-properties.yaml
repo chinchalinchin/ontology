@@ -137,6 +137,18 @@ $defs:
         - type: 'null'
         default: null
         title: Hitboxes
+      rotation:
+        anyOf:
+        - type: integer
+        - type: 'null'
+        default: null
+        title: Rotation
+      weapon:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Weapon
     required:
     - dimensions
     title: CursorProperties

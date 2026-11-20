@@ -1142,6 +1142,7 @@ $defs:
     - object
     - oriented
     - pane
+    - projectile
     - single
     - seasonal
     - sprite
@@ -1299,6 +1300,7 @@ $defs:
     - material
     - none
     - oriented
+    - rotated
     - stage
     - static
     - switch
@@ -1871,14 +1873,24 @@ $defs:
         $ref: '#/$defs/Directions'
         default: down
       speed:
-        default: 10
+        default: 200
         title: Speed
+        type: integer
+      angle:
+        default: 0
+        title: Angle
         type: integer
       velocity:
         anyOf:
         - {}
         - type: 'null'
         title: Velocity
+      owner:
+        anyOf:
+        - type: string
+        - type: 'null'
+        default: null
+        title: Owner
     required:
     - id
     title: MotorState
@@ -1968,6 +1980,10 @@ $defs:
         - $ref: '#/$defs/Hands'
         - type: 'null'
         default: null
+      charge:
+        default: 0
+        title: Charge
+        type: integer
     title: MutatorParameters
     type: object
   MutatorTriggers:
@@ -2424,6 +2440,7 @@ $defs:
     enum:
     - shorelines
     - materials
+    - projectiles
     title: Relations
     type: string
   Relationships:
