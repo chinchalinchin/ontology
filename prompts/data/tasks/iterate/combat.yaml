@@ -149,14 +149,14 @@ tools:
             scan:
               domain: [ test ]
               app: [ device ]
-          - title: Test Fixtures
-            scan:
-              domain: [ test ]
-              test: [ fixtures ]
+          # - title: Test Fixtures
+          #   scan:
+          #     domain: [ test ]
+          #     test: [ fixtures ]
       data:
         properties: [ cursors, sheets/equipment ]
-        state: [ world-testbed ]
-        configurations: [  ]
+        state: [ ]
+        configurations: [ actions, intentions ]
         templates: [ ]
     # --------------------------------------------
     # -------------------------- PARAMETERS: SHELL
