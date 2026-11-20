@@ -37,7 +37,7 @@ TODO
 MotionMechanics updates the Velocity of Assets via Symplectic Euler Integration:
 
 $$
-v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)
+--8<-- "static/tex/sympletic-euler.tex"
 $$
 
 ##### Motion: Dynamics
@@ -104,24 +104,19 @@ Let world space be parameterized by $(X, Y, Z)$, where $(X, Y)$ spans the horizo
 2. **Assumption (Right Triangle Formation)**: For a point at discrete elevation $E$ dropping by $\Delta E = 1$ to $E - 1$, the vertical elevation change ($\Delta z$), the horizontal ground change ($\Delta y$), and the camera line-of-sight ray ($L_{\text{LOS}}$) form a right triangle $\triangle$ with right angle at the base of the vertical leg and acute angle $\theta = 60^\circ$ at the ground intercept:
 
 $$
-\tan(\theta) = \frac{\Delta z}{\Delta y}, \qquad \sin(\theta) = \frac{\Delta z}{L_{\text{LOS}}}, \qquad \cos(\theta) = \frac{\Delta y}{L_{\text{LOS}}}
+--8<-- "static/tex/perspective-trig-ratios.tex"
 $$
+
 
 **Unit Elevation Drop ($\Delta y_{\text{elevation}}$):**
 
 Taking the horizontal ground run of one unit Tile as the adjacent leg ($\Delta y = U = 32\text{ px}$), the vertical leg opposite $\theta = 60^\circ$ (the Screen-space $+y$ displacement of one unit elevation) is:
 
 $$
-\Delta y_{\text{elevation}} = \lfloor U \cdot \tan(60^\circ) \rfloor = \lfloor 32\sqrt{3} \rfloor = 55\text{ px}
+--8<-- "static/tex/tier-drop-formula.tex"
 $$
 
-Equivalently, taking the line-of-sight hypotenuse across a two-tile Sprite frame ($L_{\text{LOS}} = 2U = 64\text{ px}$) yields the same opposite vertical leg:
-
-$$
-\Delta y_{\text{elevation}} = \lfloor L_{\text{LOS}} \cdot \sin(60^\circ) \rfloor = \left\lfloor 64 \cdot \frac{\sqrt{3}}{2} \right\rfloor = 55\text{ px}
-$$
-
-Under this formulation, Gravity is purely a property of the topological elevation planes $E \in \mathbb{Z}_{\ge 0}$: every $\Delta y_{\text{elevation}} = \text{TIER_DROP_DISTANCE} = 55\text{ px}$ of vertical freefall transitions an unsupported entity down one discrete elevation plane ($E \to E - 1$), where substrate support is re-evaluated immediately.
+Under this formulation, Gravity is purely a property of the topological elevation planes $E \in \mathbb{Z}_{\ge 0}$: every $\Delta y_{\text{elevation}} = \text{TIER\_DROP\_DISTANCE} = 55\text{ px}$ of vertical freefall transitions an unsupported entity down one discrete elevation plane ($E \to E - 1$), where substrate support is re-evaluated immediately.
 
 **Behavior: Substrate Support**
 
@@ -129,7 +124,7 @@ At Step 0 of `fields.update()`, entities at $E > 0$ are evaluated against walkab
 
 * **Bridges**: Deployed at $e_{\text{base}} = E$.
 * **Stairs**: Spanning $e_{\text{base}} < E \le e_{\text{base}} + \Delta e$, evaluated across the full stair tread bounding box $(x, y, w, l)$.
-* **Struts**: Deployed at $e_{\text{base}} = E$ with a non-obstacle surface blueprint ($\neg\text{MaterialIndex.is_obstacle}(\text{blueprint})$, e.g., `floors`, `flats`, `paths`, `corridors`) or sensor mass ($m < 0$).
+* **Struts**: Deployed at $e_{\text{base}} = E$ with a non-obstacle surface blueprint ($\neg\text{MaterialIndex.is\_obstacle}(\text{blueprint})$, e.g., `floors`, `flats`, `paths`, `corridors`) or sensor mass ($m < 0$).
 
 Base terrain ($E = 0$) is unconditionally supported.
 
@@ -141,14 +136,14 @@ When an entity at $E > 0$ steps off its supporting substrate:
 2. **Orthogonal Momentum Preservation**: Because the $60^\circ$ orthographic pitch occurs strictly in the $(Y, Z)$ plane, horizontal velocity $v_x$ is orthogonally decoupled from vertical drop:
 
 $$
-\begin{pmatrix} \dot{x}(t) \\ \dot{y}(t) \end{pmatrix} = \begin{pmatrix} v_{x,0} \\ v_{y,0} + g t \end{pmatrix}, \qquad v_y(t + \Delta t) = \min\Big(v_{\text{terminal}},\; v_y(t) + g \cdot \Delta t\Big)
+--8<-- "static/tex/freefall-velocities.tex"
 $$
 
 Preserving $v_{x,0}$ produces a natural screen-space parabolic trajectory $y(x) = y_0 + \frac{g}{2v_{x,0}^2}(x - x_0)^2$ until landing.
 
-3. **Tier Stepping & Remainder Clamping**: Each tick, integer vertical displacement $\Delta y_{\text{step}} = \lfloor r_y + v_y \Delta t \rfloor$ is compared against the remaining distance to the next elevation plane, $\Delta y_{\text{rem}} = \text{TIER_DROP_DISTANCE} - \text{descension}$:
+3. **Tier Stepping & Remainder Clamping**: Each tick, integer vertical displacement $\Delta y_{\text{step}} = \lfloor r_y + v_y \Delta t \rfloor$ is compared against the remaining distance to the next elevation plane, $\Delta y_{\text{rem}} = \text{TIER\_DROP\_DISTANCE} - \text{descension}$:
    * If $\Delta y_{\text{step}} \ge \Delta y_{\text{rem}}$, the entity's Y-coordinate advances to the exact plane intercept ($y + \Delta y_{\text{rem}}$), its elevation decrements ($E \to E - 1$), and support is re-evaluated at the new tier.
-   * **Supported Landing ($E \ge 0$)**: If supported at $E - 1$, `falling` is cleared to `False`, `descension`, `position.ry`, and `velocity.vy` are zeroed, clamping the landing coordinate to an exact multiple of $\text{TIER_DROP_DISTANCE}$. On the subsequent frame, normal locomotion (`kinematic`, `motive`, or `frictive`) resumes and resolves any residual horizontal velocity $v_x$.
+   * **Supported Landing ($E \ge 0$)**: If supported at $E - 1$, `falling` is cleared to `False`, `descension`, `position.ry`, and `velocity.vy` are zeroed, clamping the landing coordinate to an exact multiple of $\text{TIER\_DROP\_DISTANCE}$. On the subsequent frame, normal locomotion (`kinematic`, `motive`, or `frictive`) resumes and resolves any residual horizontal velocity $v_x$.
    * **Continuous Multi-Tier Fall**: If unsupported at $E - 1$, the entity retains $v_y$, updates `descension` with the overshoot remainder, and continues falling through intermediate planes until reaching a supported tier or $E = 0$.
 
 **Behavior: System Suppression**
@@ -234,7 +229,7 @@ CollisionMechanics resolves elevation transitions, perimeter collisions, and Ass
      * **1D Elastic Momentum Transfer**: Post-separation velocities update via conservation of momentum:
 
     $$
-    v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}, \qquad v_{2f} = \frac{v_2(m_2 - m_1) + 2m_1v_1}{m_1 + m_2}
+    --8<-- "static/tex/momentum-transfer.tex"
     $$
 
      * **Player Kinematic Exemption**: The Player retains positive mass ($m > 0$) during resolution against static walls ($m = 0$) and pushing movable Crates ($m > 0$), but bypasses velocity bounces.
@@ -250,7 +245,7 @@ CombatMechanics queries the active Attackboxes associated with the entity's curr
 CombatMechanic spawns a Projectile on the release frame of the Action. The initial scalar speed $s(S, n)$ is a function of the attacker's strength $S$ and the held tick duration $n$ relative to the draw window $N_{\max}$:
 
 $$
-\tau(n) = \min\left(1.0,\; \frac{n}{N_{\max}}\right), \qquad s(S, n) = \operatorname{round}\Big(\alpha S \big(1 + \tau(n)\big)\Big)
+--8<-- "static/tex/projectile-speed-formula.tex"
 $$
 
 ### Mechanics: Intentional

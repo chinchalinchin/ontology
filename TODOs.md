@@ -13,29 +13,11 @@ Because `SDL_PollEvent` removes all OS window events from SDL's internal queue a
 
 
 
-
-* **Per-Call List and Tuple Allocations in `predicates.in_pool` and `predicates.in_stream`**:
-    * `in_pool()` allocates a single-element list `[(pool.x, pool.y, pool.x + pool.w, pool.y + pool.l)]` on every call just to invoke `geometry.inside()` for a 4-integer comparison.
-    * `in_stream()` rebuilds `aabbs: List[Tuple[int, int, int, int]]` from `fluid.state.source` and `fluid.state.branches` on every `Board.fluid()` lookup (`60 Hz` per moving entity), even though `Actuator.propagate()` already compiles the active stream and pool geometry onto `fluid.state.hitboxes`.
-
-
 #### 3. Documentation Updates
-
-##### Draft: MaterialIndex Substrate Lookup & Pack Menu Context
-
-* **Page**: `docs/03-compositions.md` & `docs/06-widgets.md`
-* **Heading**: `Service: Materializer` / `Menu: Data`
-
-###### Drift
-
-1. In `docs/03-compositions.md`, `Decomposer` hydration documents late-binding for `bind(root.*)` and `bind(parent.*)` attributes (`layer`, `owner`), but omits `material` injection required by parameterized Armature compositions (`bind(root.material)`).
-2. In `docs/06-widgets.md`, `Menu: Data` item 3 (`Equipment, Pouch & Pack`) describes `pack` as displaying two 2x4 grid Gizmos alongside the Craft Formulae pane using `InventoryContext`, without specifying the filter strip or ledger context fields required for crafting.
 
 ###### Update
 
 ```markdown
-- **Compositions (`docs/03-compositions.md` — `Decomposer: Hydration`)**:
-  * **Root Context Attributes**: At deployment, `root_context` exposes `id`, `name`, `layer`, `owner`, `position`, `elevation`, `material`, and `blueprint` from the deployed `PropertyState`, allowing parameterized Armatures to resolve `bind(root.material)` across root and branch Struts.
 
 - **Widgets (`docs/06-widgets.md` — `Menu: Data`)**:
   * **`pack`**: Displays two 2x4 grid Gizmos for `inventory.pack` (`materials`) and `inventory.sack` (`crops`) alongside the Craft Formulae column, which comprises a `crafts` filter strip Gizmo, a filtered formula grid Gizmo, and a recipe cost readout bound to `PackContext`.
@@ -45,27 +27,6 @@ Because `SDL_PollEvent` removes all OS window events from SDL's internal queue a
 ---
 
 #### 4. Bug Reports
-
-##### Bug 07-06-A: `Decomposer.unpack` Omits `material` and `blueprint` from `root_context`
-
-**STATUS**: OPEN
-**SEVERITY**: HIGH
-
-**Description**
-
-In `src/app/services/generators/game/decomposer.py`, `Decomposer.unpack(deployed_state: PropertyState)` constructs `root_context` with only `id`, `name`, `layer`, `owner`, `position`, and `elevation`. When an Armature composition omits `material` on `root.strut` and declares `material: bind(root.material)` on component or branch struts, `CompositionCompiler` defers the macro string to deployment time, where `Decomposer._resolve_bind` fails to resolve `bind(root.material)` because `material` is absent from `root_context`.
-
-**Steps to Replicate**
-
-1. Define an Armature composition with `root.strut` omitting `material` and a component strut declaring `material: bind(root.material)`.
-2. Call `decomposer.unpack(PropertyState(id="armature/house/home", material="granite", ...))`.
-3. Inspect the hydrated child strut's `state.material`; it remains the literal string `"bind(root.material)"` instead of `"granite"`.
-
-**Proposed Remediation**
-
-Include `"material": deployed_state.material` and `"blueprint": deployed_state.blueprint` in `root_context` inside `Decomposer.unpack()`, and ensure `root.strut` inherits `deployed_state.material` when its own `material` field is `None`.
-
----
 
 ##### Bug 07-06-B: `MenuMechanics` Prevents Focusing `DISABLED` Slots in Craft Formulae
 
