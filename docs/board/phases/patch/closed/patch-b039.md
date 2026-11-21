@@ -1,6 +1,6 @@
 ##### Bug B039 - pstats Analysis and Optimization
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: HIGH
 
 **Description**
