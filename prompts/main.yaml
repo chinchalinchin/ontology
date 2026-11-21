@@ -75,7 +75,7 @@ tools:
           # - 01-assets
           # - 02-sprites
           - 03-compositions
-          - 04-intentions
+          # - 04-intentions
           # - 05-mechanics
           - 06-widgets
           - 07-acoustics

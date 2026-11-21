@@ -1,0 +1,111 @@
+# ----------------------------------------------------
+context: true
+# ----------------------------------------------------
+task:
+# ----------------------------------------------------
+  template: iterate/groom.md.j2
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    # --------------------------------------------
+    manager:
+      board: true
+      docs: true
+      templates: true
+    # --------------------------------------------
+    source:
+      data: true
+      filter: true
+    # --------------------------------------------
+    shell:
+      directory: true
+# ----------------------------------------------------
+  parameters:
+    # --------------------------------------------
+    manager:
+      board:
+        phase: 06-02
+        action: refactor
+      bugs: []
+      docs:
+        exclude:
+          # - 00-overview
+          # - 01-assets
+          # - 02-sprites
+          - 03-compositions
+          # - 04-intentions
+          # - 05-mechanics
+          - 06-widgets
+          - 07-acoustics
+          - 08-narratives
+          - 09-ecology
+          - 10-chemistry
+          - 11-emergence
+          # - 12-architecture
+      templates:
+        - template-docs
+        - template-backlog
+        - template-bug
+        # - template-design
+        # - template-merge
+        # - template-review
+        # - template-spec
+    # --------------------------------------------
+    source:
+      filter:
+        default: AND
+        queries:
+          - title: 'Application - Core'
+            scan:
+              domain: [ system ]
+              app: [ core, component ]
+          - title: 'Application - Devices'
+            scan:
+              domain: [ user ]
+              app: [ device ]
+          - title: 'Asset - Abstract'
+            scan:
+              domain: [ abstract ]
+              app: [ asset ]
+          - title: 'Mechanic - Abstract'
+            scan:
+              domain: [ abstract] 
+              app: [ mechanic ]
+          - title: 'Asset - Models'
+            scan:
+              domain: [ model ]
+              app: [ asset, core ]
+          - title: 'Asset - Models: Sheet'
+            scan:
+              domain: [ model ]
+              app: [ asset ]
+              category: [ sheets ]
+          - title: 'Asset - Implementations: Sheets'
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              category: [ sheets ]
+          - title: 'Automata - Intentional Transitions'
+            scan: 
+              domain: [ automata ]
+              modality: [ intention ]
+          - title: 'Mechanics - Intentional'
+            scan:
+              domain: [ concrete ]
+              app: [ mechanic ]
+              modality: [ intention ]
+          - title: 'Libraries - Navigation'
+            scan: 
+              domain: [ system ]
+              app: [ library ]
+              workflows: [ navigation ]
+      data:
+        properties: [ sheets ]
+        state: [ ]
+        configurations: [ actions, intentions ]
+        templates: [ ]
+    # --------------------------------------------
+    shell:
+      directory: |
+        tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"

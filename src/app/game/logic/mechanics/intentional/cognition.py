@@ -371,16 +371,18 @@ class CognitionMechanics(Mechanic):
 
         Spontaneously generates goals for a Sprite. Initializes the conditions for the Sprite to transition through different loops of the Intention Transition Matrix.
 
-        #### Speak Loops
+        #### TODO: Generalization
+
+        **Example: Speak Loop**
 
         1. `idle:find`:
-            - sprite.goal
-            - sprite.goal.category == constants.Goals.SUBJECT
+            * sprite.goal
+            * sprite.goal.category == constants.Goals.SUBJECT
         2. `find:speak`:
-            - sprite.state.psyche.dialogue
-            - sprite.goal.category == constants.Goals.SUBJECT
+            * sprite.state.psyche.dialogue
+            * sprite.goal.category == constants.Goals.SUBJECT
         3. `speak:idle`:
-            - not sprite.psyche.expression
+            * not sprite.psyche.expression
 
         !!! note
             sprite.psyche.expression = f(sprite.state.intention)
@@ -392,7 +394,7 @@ class CognitionMechanics(Mechanic):
 
             1. (**ACQUISITION**) Sprite has goal in `idle` (self._remember, self._ideate). 
             2. Sprite transitions into `find`. (TransitionMechanics)
-            3. (**IDEATION**) Sprite acquires state field (self._ideate).\
+            3. (**IDEATION**) Sprite acquires state field (self._ideate).
             4. Sprite transitions into `speak` (TransitionMechanics)
             5. (**TRANSMISSION**) Sprite transmits state field (Mechanic implementations).
                 - Side Effects (Mechanics implementations)

@@ -39,7 +39,6 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     * *Phase 01:*
       * [x]: [Phase 01.01: Orchestration](./phases/refactor/refactor-01-01.md)
       * [x]: [Phase 01.02: Render Decoupling](./phases/refactor/refactor-01-02.md)
-      * [ ]: [Phase 01.03: Hierarchy Refinement](./phases/refactor/refactor-01-03.md)
     * *Phase 02:*
       * [x]: [Phase 02.01: Frames](./phases/refactor/refactor-02-01.md)
       * [x]: [Phase 02.02: Registry](./phases/refactor/refactor-02-02.md)

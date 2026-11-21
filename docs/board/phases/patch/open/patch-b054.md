@@ -1,4 +1,3 @@
-
 ##### Bug B054: Heap Buffer Overflow in `render.save` When Exporting Targets Larger Than Requested Dimensions
 
 **STATUS**: OPEN
