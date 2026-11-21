@@ -179,6 +179,7 @@ Application source code.
 * `/src/cli`: Command Line packages.
 * `/src/data`: Application data.
 * `/src/libs`: Cython packages.
+* `/src/out`: Application output.
 
 ### /tests
 

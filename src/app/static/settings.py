@@ -125,14 +125,19 @@ PROJECTILE_MAX_CHARGE_TICKS: int = 300
 # ---------------------------------------------------
 
 SRC_DIR: Final[Path] = Path(__file__).resolve().parent.parent.parent
+# --------------------------------------- APPLICATION DIRECTORIES
 ASSET_DIR: Final[Path] = SRC_DIR / "assets"
 DATA_DIR: Final[Path] = SRC_DIR / "data"
-DUMP_DIR: Final[Path] = DATA_DIR / "dumps"
-LOG_DIR: Final[Path] = DATA_DIR / "logs"
-CONFIG_DIR: Final[Path] = DATA_DIR / "config"
+OUT_DIR: Final[Path] = SRC_DIR / "out"
+# --------------------------------------- OUTPUT DIRECTORIES
+DUMP_DIR: Final[Path] = OUT_DIR / "dumps"
+LOG_DIR: Final[Path] = OUT_DIR / "logs"
+TEMPLATE_DIR: Final[Path] = OUT_DIR / "templates"
+# --------------------------------------- DATA DIRECTORIES
+CONFIG_DIR: Final[Path] = DATA_DIR / "configurations"
 STATE_DIR: Final[Path] = DATA_DIR / "state"
-TEMPLATE_DIR: Final[Path] = DATA_DIR / "templates"
 SAVE_DIR: Final[Path] = DATA_DIR / "save"
+# --------------------------------------- ASSET DIRECTORIES
 FONT_DIR: Final[Path] = ASSET_DIR / "fonts"
 
 APP_EXT: Final[str] = "main.yaml"
