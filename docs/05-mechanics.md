@@ -37,7 +37,7 @@ TODO
 MotionMechanics updates the Velocity of Assets via Symplectic Euler Integration:
 
 $$
---8<-- "static/tex/sympletic-euler.tex"
+--8<-- "static/tex/algorithms/algorithm-000-sympletic-euler.tex"
 $$
 
 ##### Motion: Dynamics
@@ -104,7 +104,7 @@ Let world space be parameterized by $(X, Y, Z)$, where $(X, Y)$ spans the horizo
 2. **Assumption (Right Triangle Formation)**: For a point at discrete elevation $E$ dropping by $\Delta E = 1$ to $E - 1$, the vertical elevation change ($\Delta z$), the horizontal ground change ($\Delta y$), and the camera line-of-sight ray ($L_{\text{LOS}}$) form a right triangle $\triangle$ with right angle at the base of the vertical leg and acute angle $\theta = 60^\circ$ at the ground intercept:
 
 $$
---8<-- "static/tex/perspective-trig-ratios.tex"
+--8<-- "static/tex/laws/law-002-perspective-ratios.tex"
 $$
 
 
@@ -113,7 +113,7 @@ $$
 Taking the horizontal ground run of one unit Tile as the adjacent leg ($\Delta y = U = 32\text{ px}$), the vertical leg opposite $\theta = 60^\circ$ (the Screen-space $+y$ displacement of one unit elevation) is:
 
 $$
---8<-- "static/tex/tier-drop-formula.tex"
+--8<-- "static/tex/formulae/formula-001-tier-drop.tex"
 $$
 
 Under this formulation, Gravity is purely a property of the topological elevation planes $E \in \mathbb{Z}_{\ge 0}$: every $\Delta y_{\text{elevation}} = \text{TIER\_DROP\_DISTANCE} = 55\text{ px}$ of vertical freefall transitions an unsupported entity down one discrete elevation plane ($E \to E - 1$), where substrate support is re-evaluated immediately.
@@ -136,7 +136,7 @@ When an entity at $E > 0$ steps off its supporting substrate:
 2. **Orthogonal Momentum Preservation**: Because the $60^\circ$ orthographic pitch occurs strictly in the $(Y, Z)$ plane, horizontal velocity $v_x$ is orthogonally decoupled from vertical drop:
 
 $$
---8<-- "static/tex/freefall-velocities.tex"
+--8<-- "static/tex/laws/law-002-freefall-velocities.tex"
 $$
 
 Preserving $v_{x,0}$ produces a natural screen-space parabolic trajectory $y(x) = y_0 + \frac{g}{2v_{x,0}^2}(x - x_0)^2$ until landing.
@@ -171,6 +171,18 @@ MenuMechanics delegates to logic to MenuController classes. MenuMechanics is res
 
 AnimationMechanics strictly governs "World Time". MenuMechanics governs "Menu Time". The `animate()` interface for Widgets is called inside MenuMechanics, iterating over `board.overlays` (always) and `board.menus[-1]` (if active).
 
+#### Core Mechanic: RemoveMechanics
+
+* Address `app.game.logic.mechanics.core.remove`
+
+TODO
+
+#### Core Mechanic: TelemetryMechanics
+
+* Address: `app.game.logic.mechanics.core.telemetry`
+
+TODO
+
 ### Mechanics: Spatial
 
 * Address: `app.game.logic.mechanics.spatial`
@@ -195,6 +207,8 @@ This class serves to unpack the Application data structures into raw primitives 
 
 #### Spatial Mechanic: InteractionMechanics
 
+* Address: `app.game.logic.mechanics.spatial.interaction`
+
 * `source | source.state.intention == Intentions.INTERACT`
 * `target | (source, target) in self.intersections(assets)`
 * `if source.instance == AssetInstances.SPRITES`:
@@ -216,6 +230,8 @@ This class serves to unpack the Application data structures into raw primitives 
 
 #### Spatial Mechanic: CollisionMechanics
 
+* Address: `app.game.logic.mechanics.spatial.collision`
+
 CollisionMechanics resolves elevation transitions, perimeter collisions, and Asset collisions across three phases per active Layer. [Airborne entities](#field-gravity) are excluded from all three phases so freefall kinematics execute unobstructed across elevation planes.
 
 1. **Phase 0 — Stairs**:
@@ -229,12 +245,14 @@ CollisionMechanics resolves elevation transitions, perimeter collisions, and Ass
      * **1D Elastic Momentum Transfer**: Post-separation velocities update via conservation of momentum:
 
     $$
-    --8<-- "static/tex/momentum-transfer.tex"
+    --8<-- "static/tex/laws/law-000-momentum-transfer.tex"
     $$
 
      * **Player Kinematic Exemption**: The Player retains positive mass ($m > 0$) during resolution against static walls ($m = 0$) and pushing movable Crates ($m > 0$), but bypasses velocity bounces.
 
 #### Spatial Mechanic: CombatMechanics
+
+* Address: `app.game.logic.mechanics.spatial.combat`
 
 ```mermaid
 --8<-- "static/mmd/mechanics-combat.mmd"
@@ -245,8 +263,26 @@ CombatMechanics queries the active Attackboxes associated with the entity's curr
 CombatMechanic spawns a Projectile on the release frame of the Action. The initial scalar speed $s(S, n)$ is a function of the attacker's strength $S$ and the held tick duration $n$ relative to the draw window $N_{\max}$:
 
 $$
---8<-- "static/tex/projectile-speed-formula.tex"
+--8<-- "static/tex/formulae/formula-003-projectile-speed.tex"
 $$
+
+#### Spatial Mechanic: ProjectileMechanics
+
+* Address: `app.game.logic.mechanics.spatial.projectile`
+
+TODO
+
+#### Spatial Mechanic: SocialMechanics
+
+* Address: `app.game.logic.mechanics.spatial.social`
+
+TODO
+
+#### Spatial Mechanic: SwitchMechanics
+
+* Address: `app.game.logic.mechanics.spatial.switch`
+
+TODO
 
 ### Mechanics: Intentional
 
@@ -348,16 +384,18 @@ The World is a collection of correlated fields stored on the [Board](./00-overvi
 
 #### World Mechanic: FluidMechanics
 
+* Address: `app.game.logic.mechanics.world.fluid`
+
 ```mermaid
 --8<-- "static/mmd/mechanics-fluid.mmd"
 ```
 
 FluidMechanics governs [Fluid](./01-assets.md#effect-fluids) emission and recursive bifurcation across active layers. It executes after physical momentum updates ([MotionMechanics](#core-mechanic-motionmechanics) and [CollisionMechanics](#spatial-mechanic-collisionmechanics)) and uses a 3-tier reactive dirty-checking architecture:
 
-1. **Spatial Corridor Filtering**: Inspects switch-linked gates (`AssetInstances.GATES`). A mutating gate only flags the layer's fluids as `dirty` if the gate's AABB intersects active fluid compound hitboxes or falls within downstream emission corridors.
-2. **Debounce Accumulator**: Consecutive gate oscillations are coalesced using `settings.FLUID_INVALIDATION_DEBOUNCE_TICKS` before triggering propagation.
-3. **Pass 1 (Fluid Propagation & Bifurcation)**: For invalidated layers, `Actuator.propagate()` updates stream lengths, expands annular pools around static obstacles (\(m = 0\)), derives secondary branch corridors, and updates `board.update_fluid_cache(layer)`. Cache slots (`fluid.state._keys`) are cleared.
-4. **Pass 2 (Geometric Shift Detection & Shoreline Synthesis)**: Compares the pre- and post-propagation geometric signature (`_fluid_signature`: stream lengths, pool bounds, branch positions). If water geometry is invariant, shoreline regeneration is bypassed. If geometry shifted (or during hydration), the Cartographer synthesizes updated boundary contours.
+1. **Spatial Corridor Filtering**: Inspects switch-linked [Gates](./01-assets.md#object-gates). A Gate flags the Layer's [Fluids](./09-ecology.md#effect-fluids) for reconstruction if the [Gate's Hitbox](./01-assets.md#object-gates) intersects active [Fluid](./09-ecology.md#effect-fluids) hitboxes or falls within its stream.
+2. **Debounce Accumulator**: Consecutive Gate oscillations ($\text{on} \leftright \text{off}$) are coalesced before triggering propagation.
+3. **Pass 1 (Fluid Propagation & Bifurcation)**: For invalidated Layers, the [Actuator](#dependency-executors) updates stream lengths, expands annular pools around obstacles, and derives branch corridors.
+4. **Pass 2 (Geometric Shift Detection & Shoreline Synthesis)**: Compares the pre- and post-propagation geometric signature. If water geometry is invariant, shoreline regeneration is bypassed. If geometry shifted (or during hydration), the Cartographer synthesizes updated boundary contours.
 
 #### World Mechanic: SeasonMechanics
 
@@ -414,16 +452,17 @@ Executors are Services made available to Mechanics that register to receive them
 * `plot`: Executor for evaluating the conditions for [Plot Transitions](./08-narratives.md).
 * `intention`: Executor for evaluating the conditions for [Intention Transitions](./04-intentions.md)
 * `actuator`: Executor for generating [Fluid](./01-assets.md#effect-fluids) and [Shoreline](./01-assets.md#shorelines) Assets.
-* `annual`: Executor evaluating [Resource Stage](./01-assets.md#resources) transitions for annual lifespans.
-* `perennial`: Executor evaluating [Resource Stage](./01-assets.md#resources)transitions for perennial lifespans.
-* `centennial`: Executor evalutating [Resource Stage](./01-assets.md#resources) transitions for centennial lifespans.
+* `annual`: Executor evaluating [Resource Stage](./01-assets.md#resources) transitions for annual Lifespans.
+* `perennial`: Executor evaluating [Resource Stage](./01-assets.md#resources)transitions for perennial Lifespans.
+* `centennial`: Executor evalutating [Resource Stage](./01-assets.md#resources) transitions for centennial Lifespans.
 
 ### Dependency: Relations
 
 Relations are static mappings configured at runtime and then injected into requesting Mechanics.
 
 * `shorelines`: A map of [Shoreline Geography Asset IDs](./01-assets.md#shorelines) to a compound index of [Tile Asset IDs](./01-assets.md#category-tiles) and [Fluid Asset ID](./01-assets.md#effect-fluids). This relation maps [Fluid Shorelines](./09-ecology.md#geography-shorelines) to the [Environ Tiles](./01-assets.md#tile-environ) in which they are embedded, e.g. `grassy-shore` Shorelines are mapped to `grass` Environ Tiles and `water` Fluids. 
-* `materials`: TODO
+* `materials`: A map of [Asset Material](./01-assets.md#concept-materiality) containing various Configurations, such as render sort order, [cost constants](./03-compositions.md#materializer-cost) and [Composition formulas](./03-compositions.md).
+* `projectiles`: A map of [Projectile Cursors](./01-assets.md#cursor-projectiles) to [Equipment Sheets](./02-sprites.md#sheet-equipment). This mapping determines which Projectile is spawned when a Sprite equipped with the prerequisite Equipment enters into the `attack` [Intention](./04-intentions.md).
 
 ## Modules
 
@@ -433,16 +472,30 @@ Maps associate ancillary Asset States to their final Animation State. See [Anima
 
 #### Map: Animation
 
-AnimationMapS plays a crucial role in enforcing logical constraints for Animations. For example, [TransitionMechanics](#intentional-mechanic-transitionmechanics) and [PlayerMechanics](#intentional-mechanic-playermechanics) utilize AnimationMaps to resolve whether an intended Action is possible. This guarantees that an `attack` Intention will not translate into a `thrust` Action if the Sprite currently lacks the required Tool or Weapon in its [Slots](./02-sprites.md#model-slots).
+AnimationMaps enforce State-dependent logical constraints upon a Sprite's Animation Space. [TransitionMechanics](#intentional-mechanic-transitionmechanics) and [PlayerMechanics](#intentional-mechanic-playermechanics) utilize AnimationMaps to resolve whether an intended Action is possible. 
+
+An AnimationMap injects constraints into the $\text{Intention} \to \text{Action}$ Sprite State transformation. For example, by passing through an AnimationMap, an `attack` Intention cannot translate into a `thrust` Action unless the Sprite currently possesses the required Weapon in its [Slots](./02-sprites.md#model-slots).
 
 **Interface: Action Mapping**
 
 * `action(state, equipment): returns Action`
 
+**Interface: Direction Mapping**
+
+* `direction(position, goal): returns Direction`
+
 #### Map: Combat
 
-TODO
+CombatMap bridges an attacking Sprite's current AnimationState and slotted Weapon Equipment to resolve either active melee Attackboxes or ranged Projectile emission parameters.
 
 **Interface: Attack Hitbox Mapping**
 
-* `attackboxes()`: TODO
+* `attackboxes(state, equipment, elevation): returns List[Hitbox]`: Queries the slotted weapon's Hitbox component at the entity's active `<action>-<direction>-<frame>` key and elevation plane.
+
+**Interface: Projectile Release Mapping**
+
+* `projectile(state, equipment): returns Optional[Tuple[str, int]]`: Evaluates whether the slotted weapon configures a `projectile` ID and `release` frame matching the entity's current animation frame. When triggered on the entry tick of the `release` frame, calculates the initial scalar speed $s(S, n)$ from the attacker's strength $S$, held charge duration $n$, and the weapon's draw window $N_{\max} = \max(1, \text{release} \cdot \text{delay})$:
+
+$$
+--8<-- "static/tex/formulae/formula-002-attack-charge.tex"
+$$

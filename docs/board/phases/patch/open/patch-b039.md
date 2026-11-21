@@ -1,5 +1,10 @@
 ##### Bug B039 - pstats Analysis and Optimization
 
+**STATUS**: OPEN
+**SEVERITY**: HIGH
+
+**Description**
+
 The following notes are the result of analyzing the `pstats` profile of the Application.
 
 1. **Temporal Coupling and Encapsulation Leaks in `Board`**

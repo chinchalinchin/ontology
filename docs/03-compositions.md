@@ -323,5 +323,5 @@ The crafting cost $C$ depends on Material valuation weights ($\mu_{\text{mat}}$)
 **Formula: Cost**
 
 $$
---8<-- "static/tex/cost.tex"
+--8<-- "static/tex/formulae/formula-000-composition-cost.tex"
 $$

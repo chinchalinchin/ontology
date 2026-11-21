@@ -71,14 +71,14 @@ tools:
         exclude:
           # - 00-overview
           # - 01-assets
-          - 02-sprites
+          # - 02-sprites
           - 03-compositions
           - 04-intentions
           # - 05-mechanics
           - 06-widgets
           - 07-acoustics
           - 08-narratives
-          - 09-ecology
+          # - 09-ecology
           - 10-chemistry
           - 11-emergence
           # - 12-architecture
@@ -119,19 +119,29 @@ tools:
             scan:
               domain: [ abstract ]
               app: [ asset ]
+          - title: 'Asset - Models'
+            scan:
+              domain: [ model ]
+              app: [ asset ]
           - title: 'Asset - Hitboxes'
             scan:
               domain: [ concrete ]
               app: [ asset ]
               asset: [ hitbox ]
-          - title: 'Asset - Models'
-            scan:
-              domain: [ model ]
-              app: [ asset ]
-          - title: Logic - Collisions
+          - title: 'Relation - Material'
             scan:
               domain: [ logic ]
-              workflows: [ collisions ]
+              app: [ module ]
+              modality: [ material ]
+          - title: 'Services - Generation'
+            scan:
+              domain: [ logic ]
+              app: [ service ]
+              workflows: [ generation ]
+          - title: 'Libraries - Models'
+            scan: 
+              domain: [ model ]
+              app: [ library ]
       data:
         properties: [ ]
         state: [ ]

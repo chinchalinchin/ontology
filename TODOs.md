@@ -323,53 +323,6 @@ $$
 * `owner: Optional[str] = None`
 ```
 
-##### Draft: Mutator Charge Parameter
-
-- **Page**: `docs/02-sprites.md`
-- **Heading**: `###### Model: Mutators`
-
-###### Drift
-
-`docs/02-sprites.md` does not document the `parameters.charge` accumulator used to parameterize `attack` hold duration for projectile launch speed.
-
-###### Update
-
-```markdown
-* `parameters.charge`: Tick accumulator tracking how long the `attack` Intention has been held prior to projectile release.
-```
-
-##### Draft: CombatMap Melee and Projectile Resolution
-
-- **Page**: `docs/05-mechanics.md`
-- **Heading**: `###### Map: Combat`
-
-###### Drift
-
-`###### Map: Combat` in `docs/05-mechanics.md` is currently an unpopulated `TODO` stub and does not specify either melee attackbox resolution or equipment release-frame projectile resolution.
-
-###### Update
-
-```markdown
-###### Map: Combat
-
-CombatMap bridges an attacking entity's current AnimationState and slotted Weapon Equipment to resolve either active melee Attackboxes or ranged Projectile emission parameters.
-
-**Interface: Attack Hitbox Mapping**
-
-* `attackboxes(state, equipment, elevation): returns List[Hitbox]`: Queries the slotted weapon's Hitbox component at the entity's active `<action>-<direction>-<frame>` key and elevation plane.
-
-**Interface: Projectile Release Mapping**
-
-* `projectile(state, equipment): returns Optional[Tuple[str, int]]`: Evaluates whether the slotted weapon configures a `projectile` ID and `release` frame matching the entity's current animation frame. When triggered on the entry tick of the `release` frame, calculates the initial scalar speed $s(S, n)$ from the attacker's strength $S$, held charge duration $n$, and the weapon's draw window $N_{\max} = \max(1, \text{release} \cdot \text{delay})$:
-
-$$
-\tau(n) = \min\left(1.0,\; \frac{n}{N_{\max}}\right), \qquad s(S, n) = \operatorname{round}\Big(\alpha S \big(1 + \tau(n)\big)\Big)
-$$
-```
-
-
-
-
 ---
 
 # Documentation Updates
@@ -540,3 +493,65 @@ Currently, `CursorProperties` defines `weapon: Optional[str] = None` and `rotati
 Update `CursorProperties` to `rotation: int = 90` and `weapons: List[Enumerated[WeaponPalette]] = field(default_factory=list)`, align `src/assets/cursors/main.yaml` (`arrow.weapons: [longbow]`, `bolt.weapons: [crossbow]`, `cannonball.weapons: []`), and iterate `for weapon_id in props.weapons:` inside `ProjectileIndex.from_properties()`. (If kept as-is until `cannon` is added as a weapon, update `test_projectiles.py` accordingly when migrating to `weapons`.)
 
 
+##### Bug B025: `SpatialMechanic.proximities` Index Misalignment Causes `IndexError` or Wrong-Entity Pairing When Assets Are Skipped (and Unguarded `parameters.action` Access)
+
+**STATUS**: OPEN
+**SEVERITY**: HIGH
+
+**Description**
+
+In `src/app/game/logic/mechanics/spatial/base.py`, `SpatialMechanic.proximities` constructs `asset_map = dict(enumerate(assets))` and iterates `for i, asset in enumerate(assets):`. Whenever an asset fails the `if not asset.state.mutators or not asset.state.mutators.parameters:` check and executes `continue`, `primitive_data` has fewer elements than `assets`, yet subsequent assets still emit `asset.primitive(i, hitboxes=[pad_hb])` using the uncompacted index `i`.
+
+Inside `libs.core.math.physics.collisions` (`src/libs/core/math/physics.pyx`), `data[0]` (`i`) is inserted into `Space`, and candidate pairs `(id_a, id_b)` returned by `grid.query()` are used to index `primitive_data[id_a]` and `primitive_data[id_b]`. If any skipped asset precedes colliding assets, `primitive_data[id_b]` either raises an unhandled `IndexError: list index out of range` or evaluates narrow-phase geometry against shifted, unrelated entries in `primitive_data`.
+
+Additionally, `MutatorParameters.action` (`src/app/models/state/core.py`) is typed as `Optional[RadialParameters]`. Because `proximities` does not verify `asset.state.mutators.parameters.action is not None`, accessing `.action.radius` raises `AttributeError` when `action` is `None`.
+
+**Steps to Replicate**
+
+1. Instantiate three assets `[a0, a1, a2]` where `a0.state.mutators = None`, and `a1` and `a2` share the same position/elevation with valid `mutators.parameters.action`.
+2. Call `mechanic.proximities([a0, a1, a2])`.
+3. `a1` and `a2` are appended to `primitive_data` at indices `0` and `1` with entity IDs `1` and `2`, causing `physics.collisions` to index `primitive_data[2]` and raise `IndexError: list index out of range`.
+
+**Proposed Remeditation**
+
+Filter eligible assets (checking `mutators`, `mutators.parameters`, and `mutators.parameters.action`) into a contiguous list before enumerating indices into `asset_map` and `primitive_data` so that `data[0]` always matches its exact index in `primitive_data`.
+
+##### Bug B026: `Cache.get_obstacles` Omits `AssetInstances.OBSTACLES` and `AssetInstances.TREES`, and `Board.obstacles(layer=None)` Always Returns `[]`
+
+**STATUS**: OPEN
+**SEVERITY**: HIGH
+
+**Description**
+
+In `src/app/game/logic/predicates.py`, `predicates.is_obstacle` defines physical navigational obstacles as `(CHESTS, SIGNS, CRATES, GATES, STRUTS, OBSTACLES, TREES)`. However, `Cache.get_obstacles` (`src/app/game/board/modules/cache.py`, lines 369–380) maintains a separate hardcoded tuple `(CRATES, GATES, STRUTS, SIGNS, CHESTS)` that completely omits `AssetInstances.OBSTACLES` and `AssetInstances.TREES`. Consequently, `board.obstacles(layer)` silently excludes all rocks/natural obstructions and trees from pathfinding, line-of-sight checks, and other obstacle queries.
+
+Furthermore, `Board.obstacles(self, layer: Optional[str] = None, elevation: Optional[int] = None)` (`src/app/game/board/core.py`, lines 225–230) evaluates `self._cache.get_obstacles(layer) if layer is not None else []`, unconditionally returning `[]` whenever `layer is None`, which is inconsistent with `Board.weights`, `Board.assets`, `Board.categories`, `Board.instances`, and `Board.shorelines`.
+
+**Steps to Replicate**
+
+1. Hydrate a `Board` containing an `AssetInstances.OBSTACLES` rock or `AssetInstances.TREES` tree on layer `'0'`.
+2. Call `board.obstacles('0')` and observe that the obstacle and tree assets are absent from the returned list.
+3. Call `board.obstacles()` with `layer=None` and observe that `[]` is returned even when crates, gates, or struts exist on the board.
+
+**Proposed Remeditation**
+
+Align `Cache.get_obstacles` with `predicates.is_obstacle` (either by indexing obstacles into a dedicated `cached_obstacles` bucket using `predicates.is_obstacle` during `index_batch`/`evict_batch`/`relayer`, or by sharing a single canonical instance tuple including `AssetInstances.OBSTACLES` and `AssetInstances.TREES`), and support `layer=None` aggregation in `Cache.get_obstacles` and `Board.obstacles`.
+
+##### Bug B027: `Cache.evict_batch` Leaves Stale Tile References in `cached_tilemap`
+
+**STATUS**: OPEN
+**SEVERITY**: MEDIUM
+
+**Description**
+
+In `src/app/game/board/modules/cache.py`, `Cache.index_batch` populates the spatial hash `self.cached_tilemap[layer][inst][(cx, cy)] = asset` for every `AssetCategories.TILES` asset. However, `Cache.evict_batch` (lines 222–300) never removes evicted tile entries from `self.cached_tilemap`. After `board.remove(tiles)` is called, `board.tile(layer, position)` continues returning references to deleted tile assets (preserving stale terrain lookups and friction values).
+
+**Steps to Replicate**
+
+1. Add an `AssetInstances.ENVIRON` tile at `Position(0, 0)` on layer `'0'` via `board.add([tile])`.
+2. Remove the tile via `board.remove([tile])`.
+3. Query `board.tile('0', Position(0, 0))` and observe that the removed `tile` is still returned instead of `None`.
+
+**Proposed Remeditation**
+
+In `Cache.evict_batch`, when `AssetCategories.TILES` is present in `affected_categories`, iterate over evicted tiles (or rebuild affected layer tilemaps from remaining `cached_categories[layer][AssetCategories.TILES]`) to remove matching entries from `self.cached_tilemap`.

@@ -1,6 +1,7 @@
 """
 @domain.logic
 @app.module
+@app.relation
 @modality.material
 @workflow.compositions
 

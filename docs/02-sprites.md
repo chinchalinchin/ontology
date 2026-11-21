@@ -132,7 +132,7 @@ Represents the Sprite's current and potential capacity for "*magic*"
 
 **Field: Strength**
 
-TODO
+Strength is used during [CombatMechanics](./05-mechanics.md#spatial-mechanic-combatmechanics) to calculate damage dealt by an attacking Sprite, and to calculate the speed of launched [Projectiles](./01-assets.md#cursor-projectiles).
 
 **Field: Defense**
 
@@ -252,7 +252,7 @@ Sprites keep a dictionary keyed by Inventory Slot and Key for the Inventory's as
 
 **Behavior: Price Discovery**
 
-When two Sprites enter the `speak` Intention within a certain radius of each other, the `SpeechMechanic` does the following:
+When two Sprites enter the `speak` Intention within a certain radius of each other, [SocialMechanics](./05-mechanics.md#mechanics-spatial) does the following:
 
 1. It averages the intersection of Prices. For example, if one Sprite has a price of 1 for Loot A and another has a price of 5 for Loot A, then the new price of Loot A for both Sprites will be (1 + 5)/2 = 3. It performs this calculation for every such Loot Key the Sprites have in common.
 2. For each Sprite A and Sprite B, the prices of A subtracted (in the set-theoretic sense) from the prices of B is added to A and visa versa. In other words, if a Sprite converses with another Sprite that has Price information it does not possess, the `SpeechMechanic` will populate the Sprite's Prices.
