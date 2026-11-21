@@ -451,6 +451,7 @@ Executors are Services made available to Mechanics that register to receive them
 
 * `plot`: Executor for evaluating the conditions for [Plot Transitions](./08-narratives.md).
 * `intention`: Executor for evaluating the conditions for [Intention Transitions](./04-intentions.md)
+* `goal`: Evaluates conditions for the [Goal Resolution Matrix](./04-intentions.md#goal-satisfaction).
 * `actuator`: Executor for generating [Fluid](./01-assets.md#effect-fluids) and [Shoreline](./01-assets.md#shorelines) Assets.
 * `annual`: Executor evaluating [Resource Stage](./01-assets.md#resources) transitions for annual Lifespans.
 * `perennial`: Executor evaluating [Resource Stage](./01-assets.md#resources)transitions for perennial Lifespans.

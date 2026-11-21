@@ -132,7 +132,7 @@ The Board exposes interfaces for querying the State:
     1. `board.instances(key, layer)`: Returns a List of Assets on the given Layer, filtered by Instance `key`.
     2. `board.categories(key, layer)`: Returns a List of Assets on the given Layer, filtered by Category `key`.
 * Physics Queries
-    1. `board.bridges(layer)`: Returns a list of Bridge Assets on a give Layer.
+    1. `board.bridges(layer)`: Returns a list of Bridge Assets on a given Layer.
     2. `board.weights(layer)`: Returns a list of Assets with non-negative mass ($m \ge 0$) on a given Layer (includes static and dynamic bodies; excludes sensors).
     3. `board.obstacles(layer)`: Returns a list of Assets that qualify as Obstacles.
 * Environment Queries
@@ -151,7 +151,7 @@ The Board exposes predicates for asserting conditions of the State.
 
 * Address: `app.services.generators.game.cradle`
 
-The Cradle instantiates (*spawns*) Assets during the course of the [Engine Loops](#component-engine).
+The Cradle instantiates (*spawns*) Assets during the course of the [Engine Loop](#component-engine).
 
 **Service: Migrator**
 
@@ -173,19 +173,19 @@ The Bus processes asynchronous [Events](./06-widgets.md#events).
 
 * Address: `app.services.generators.menus.provider`
 
-The Provider instantiates [Menus](./06-widgets.md#configuration-menus).
+The [Provider](./06-widgets.md#service-provider) instantiates [Menus](./06-widgets.md#configuration-menus).
 
 **Service: Binder**
 
 * Address: `app.services.generators.menus.binder`
 
-The Binder for binding [Widget](./06-widgets.md) States to [Asset](./01-assets.md) States.
+The [Binder](./06-widgets.md#service-binder) binds [Widget](./06-widgets.md) States to [Asset](./01-assets.md) States.
 
 **Service: Library**
 
 * Address: `app.services.generators.menu.library`
 
-The Provider contains a Library for injecting Widget states with plot-dependent content.
+The [Library](./08-narratives.md#service-library) injects [Widget](./06-widgets.md) States with [Plot-dependent](./08-narratives.md#narratives-plots) content.
 
 #### Component: Screen
 
@@ -197,9 +197,9 @@ The Screen acts as a high-level container for a Cythonized SDL rendering interfa
 
 ### Concept: Hitboxes
 
-Many Assets have Hitboxes. Hitboxes definitions are static and read before the execution of the [Engine](#component-engine) Hitboxes have positions and dimensions. 
+Many Assets have Hitboxes. Hitboxes definitions are static and read before the execution of the [Engine](#component-engine). Hitboxes have Positions and Dimensions. 
 
-To ensures Hitboxes remain statically configured, Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. Hitbox dimensions are always absolute. The following snippet shows the hitbox schema for an LPC Sprite Frame, with the image below showing how the hitbox translates into the physical image with a blue rectangle,
+To ensures Hitboxes remain statically configured, Hitbox Positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset Frame as the origin. Hitbox Dimensions are always absolute. The following snippet shows the Hitbox schema for an LPC Sprite Frame, with the figure directly below showing how the Hitbox translates into the physical image with a blue rectangle,
 
 ```yaml
 position:
@@ -215,16 +215,16 @@ dimensions:
 LPC Sprite Hitbox in (Walk, Down, 0) State
 ///
 
-While hitboxes are statically confitured, this does not necessarily mean hitboxes are statically accessed. See [Asset Component Architecture](./01-assets.md#asset-architecture) for more information.
+While Hitboxes are statically configured, this does not necessarily mean Hitboxes are statically accessed. See [Asset Component Architecture](./01-assets.md#asset-architecture) for more information.
 
 ### Concept: Layers
 
-All deployed Assets have a Layer. Layers represent a "view" where the Asset is located. When the Screen renders an entire frame, it is rendering a Layer.  
+All deployed Assets have a Layer. Layers represent a "view" where the Asset is located. When the Screen renders an entire, composite Frame, it is rendering a Layer.  
 
-Layers on a board can be traversed through Doors. The coordinate plane of each Layer is independent of every other. For example, a Sprite may enter a Door on Layer 1 at `(x_1, y_1)` and get released on Layer 3 at `(x_2, y_2)`. For this reason, each Layer may have different dimensions.
+Layers on the [Board](#component-board) can be traversed through [Doors](./01-assets.md#object-doors). The coordinate plane of each Layer is independent of every other. For example, a Sprite may enter a Door on one Layer at `(x_1, y_1)` and get released on another Layer at `(x_2, y_2)`. For this reason, each Layer may have different Dimensions.
 
-Sprite interactions are constrained by their Layers. Because Layers are superimposed coordinates, all interaction calculations are separated by Layer, to avoid inter-Layer collisions and interactions.
+Sprite interactions are constrained by their Layers. 
 
 ### Concept: Sprites
 
-[Sprites](./02-sprites.md) are [Intentional](./04-intentions.md) [Assets](./01-assets.md). More formally, Sprite Intentions are driven through a coupled system of finite automata, logic and spatial algorithms. The data structure that drives this process is called the [Intention Transition Matrix](./04-intentions.md#transition-matrix). The processing and handling this mechanism occupies a large part of the application's internal logic.
+[Sprites](./02-sprites.md) are [Intentional](./04-intentions.md) [Assets](./01-assets.md). More formally, Sprite Intentions are driven through a coupled system of finite automata, logic and spatial algorithms. The data structure that drives this process is called the [Intention Transition Matrix](./04-intentions.md#transition-matrix). The processing and handling of this mechanism occupies a large part of the [Application](#application)'s internal logic.
