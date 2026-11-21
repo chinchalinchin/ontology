@@ -23,7 +23,7 @@ Additionally, `MutatorParameters.action` (`src/app/models/state/core.py`) is typ
 Filter eligible assets (checking `mutators`, `mutators.parameters`, and `mutators.parameters.action`) into a contiguous list before enumerating indices into `asset_map` and `primitive_data` so that `data[0]` always matches its exact index in `primitive_data`.
 
 
-##### Bug B043 (Duplicated rePORT): Index Desynchronization & Out-of-Bounds Access in `SpatialMechanic.proximities`
+##### Bug B043 (Duplicate Report): Index Desynchronization & Out-of-Bounds Access in `SpatialMechanic.proximities`
 
 **STATUS**: OPEN
 **SEVERITY**: High
