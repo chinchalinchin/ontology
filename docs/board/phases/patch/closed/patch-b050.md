@@ -1,7 +1,7 @@
 ##### Bug B050: Negative Crop Height & Corrupt Slicing on Submerged Composite Assets in `Screen._assemble`
 
-**STATUS**: OPEN
-**SEVERITY**: High
+**STATUS**: CLOSED
+**SEVERITY**: HIGH
 
 **Description**
 

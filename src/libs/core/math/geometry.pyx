@@ -67,18 +67,44 @@ cpdef tuple intersects(
 
 
 cpdef bint onscreen(
-    Position pos, 
-    Dimensions dim, 
-    Position p_pos, 
-    Dimensions p_dim, 
-    Dimensions screen
+    Position pos,
+    Dimensions dim,
+    Position p_pos,
+    Dimensions p_dim,
+    Dimensions screen,
+    Dimensions board
 ):
-    cdef int cam_x = p_pos.x + (p_dim.w // 2) - (screen.w // 2)
-    cdef int cam_y = p_pos.y + (p_dim.l // 2) - (screen.l // 2)
-    
-    return (pos.x < cam_x + screen.w and pos.x + dim.w > cam_x and
-            pos.y < cam_y + screen.l and pos.y + dim.l > cam_y)
+    """
+    Evaluates whether an asset bounding box intersects the clamped camera viewport.
+    Clamps camera coordinates to board bounds and centers layers smaller than the
+    screen viewport to match Screen.camera semantics.
+    """
+    cdef int cam_x, cam_y, max_x, max_y
 
+    if board.w < screen.w:
+        cam_x = -((screen.w - board.w) // 2)
+    else:
+        cam_x = p_pos.x + (p_dim.w // 2) - (screen.w // 2)
+        max_x = board.w - screen.w
+        if cam_x < 0:
+            cam_x = 0
+        elif cam_x > max_x:
+            cam_x = max_x
+
+    if board.l < screen.l:
+        cam_y = -((screen.l - board.l) // 2)
+    else:
+        cam_y = p_pos.y + (p_dim.l // 2) - (screen.l // 2)
+        max_y = board.l - screen.l
+        if cam_y < 0:
+            cam_y = 0
+        elif cam_y > max_y:
+            cam_y = max_y
+
+    return (
+        pos.x < cam_x + screen.w and pos.x + dim.w > cam_x and
+        pos.y < cam_y + screen.l and pos.y + dim.l > cam_y
+    )
 
 cpdef bint cone(
     int sx, 

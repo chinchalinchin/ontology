@@ -11,11 +11,12 @@ cpdef tuple intersects(
 )
 
 cpdef bint onscreen(
-    Position pos, 
-    Dimensions dim, 
-    Position p_pos, 
-    Dimensions p_dim, 
-    Dimensions screen
+    Position pos,
+    Dimensions dim,
+    Position p_pos,
+    Dimensions p_dim,
+    Dimensions screen,
+    Dimensions board
 )
 
 cpdef bint cone(

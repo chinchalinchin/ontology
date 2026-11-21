@@ -1,8 +1,8 @@
 
 ##### Bug B048: Outlined Text Glyph Misalignment & Missing Vertical Offset in `render.write`
 
-**STATUS**: OPEN
-**SEVERITY**: Medium
+**STATUS**: CLOSED
+**SEVERITY**: MEDIUM
 
 **Description**
 

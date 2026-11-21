@@ -327,7 +327,12 @@ class Screen:
         active_content = widget.state.current() if content is None else content
 
         # Skip GPU texture allocation for transparent layout containers without text
-        if not primitives and not active_content and widget.state.content_function is None:
+        if (
+            not primitives
+            and not active_content
+            and widget.state.content_function is None
+            and self.registry.get_canvas(widget.name) is None
+        ):
             return
 
         tex = self.registry.canvas(widget.name, w, l)
@@ -349,7 +354,6 @@ class Screen:
                 active_content, 
                 font
             )
-
 
     def bake(self, menu: Menu) -> None:
         """Initializes and stamps all Pane canvases for a newly unpacked Menu."""

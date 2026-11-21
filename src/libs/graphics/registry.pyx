@@ -35,19 +35,30 @@ logger = logging.getLogger("libs.graphics.registry")
 cdef extern from "SDL2/SDL_image.h":
     SDL_Texture* IMG_LoadTexture(SDL_Renderer* renderer, const char* file)
     
+
 cdef extern from "SDL2/SDL_ttf.h":
     int TTF_STYLE_NORMAL
+
     int TTF_STYLE_BOLD
+    
     int TTF_STYLE_ITALIC
+    
     int TTF_STYLE_UNDERLINE
+    
     int TTF_STYLE_STRIKETHROUGH
+    
     void TTF_SetFontStyle(TTF_Font* font, int style)
+    
     void TTF_SetFontOutline(TTF_Font* font, int outline)
 
     int TTF_Init()
+    
     int TTF_WasInit()
+    
     TTF_Font* TTF_OpenFont(const char* file, int ptsize)
+    
     void TTF_CloseFont(TTF_Font* font)
+    
     int TTF_SizeUTF8(TTF_Font* font, const char* text, int* w, int* h)
 
 # -------------------------------------------------------------------------------
@@ -67,9 +78,6 @@ cdef class TTFFont:
             if self.ptr != NULL:
                 TTF_CloseFont(self.ptr)
                 self.ptr = NULL
-            if self.outline_ptr != NULL:
-                TTF_CloseFont(self.outline_ptr)
-                self.outline_ptr = NULL
 
     def measure(self, str content) -> tuple:
         if not content:
@@ -100,6 +108,7 @@ def _sys_load_image(filepath: str):
     return wrapper
 
 def _sys_load_font(filepath: str, object style):
+    """Loads a TrueType font file into a styled TTFFont wrapper."""
     if not TTF_WasInit():
         TTF_Init()
 
@@ -108,7 +117,6 @@ def _sys_load_font(filepath: str, object style):
     cdef TTF_Font* f_ptr = TTF_OpenFont(b_filepath, pt_size)
     cdef int sdl_style = TTF_STYLE_NORMAL
     cdef TTFFont font_obj
-    cdef int outline_width = 0
 
     if f_ptr == NULL:
         raise RuntimeError(f"Failed to load font into memory: {filepath}")
@@ -129,18 +137,12 @@ def _sys_load_font(filepath: str, object style):
     font_obj.color.b = style.color.b
     font_obj.color.a = style.color.a
 
-    font_obj.outline_ptr = NULL
     if style.outline is not None and style.outline.width > 0:
-        outline_width = style.outline.width
-        font_obj.outline_width = outline_width
-        font_obj.outline_ptr = TTF_OpenFont(b_filepath, pt_size)
-        if font_obj.outline_ptr != NULL:
-            TTF_SetFontStyle(font_obj.outline_ptr, sdl_style)
-            TTF_SetFontOutline(font_obj.outline_ptr, outline_width)
-            font_obj.outline_color.r = style.outline.color.r
-            font_obj.outline_color.g = style.outline.color.g
-            font_obj.outline_color.b = style.outline.color.b
-            font_obj.outline_color.a = style.outline.color.a
+        font_obj.outline_width = style.outline.width
+        font_obj.outline_color.r = style.outline.color.r
+        font_obj.outline_color.g = style.outline.color.g
+        font_obj.outline_color.b = style.outline.color.b
+        font_obj.outline_color.a = style.outline.color.a
     else:
         font_obj.outline_width = 0
 
@@ -402,10 +404,6 @@ cdef class Registry:
                     if TTF_WasInit():
                         TTF_CloseFont(font_obj.ptr)
                     font_obj.ptr = NULL
-                if font_obj.outline_ptr != NULL:
-                    if TTF_WasInit():
-                        TTF_CloseFont(font_obj.outline_ptr)
-                    font_obj.outline_ptr = NULL
         self._fonts.clear()
 
         self._frames.clear()

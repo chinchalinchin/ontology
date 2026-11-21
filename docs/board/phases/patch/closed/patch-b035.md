@@ -1,6 +1,6 @@
 ##### Bug B035: `Screen.stamp` Does Not Clear `PaneState.canvas` Prior to Re-Stamping Transparent Text Panes
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: MEDIUM
 
 **Description**

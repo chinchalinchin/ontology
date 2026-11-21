@@ -1,7 +1,7 @@
 
 ##### Bug B036: `Screen._assemble` Applies `ChannelTypes.SUBMERGE` Slicing to Attached Expression Bubbles on Submerged Sprites
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: LOW
 
 **Description**

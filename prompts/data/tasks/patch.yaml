@@ -30,10 +30,8 @@ tools:
     manager:
       bugs: 
         - b035
-        - b036
         - b047
         - b048
-        - b049
         - b050
         - b051
       docs:

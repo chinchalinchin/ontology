@@ -1,6 +1,6 @@
 ##### Bug B051: Swallowed OS Window Events & Sub-Tick Polling in `libs.core.input` and `Device`
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: MEDIUM
 
 **Description**

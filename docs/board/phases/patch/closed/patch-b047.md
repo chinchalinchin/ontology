@@ -1,8 +1,8 @@
 
 ##### Bug B047: Unclamped Camera Coordinates in `geometry.onscreen`
 
-**STATUS**: OPEN
-**SEVERITY**: Low
+**STATUS**: CLOSED
+**SEVERITY**: LOW
 
 **Description**
 
