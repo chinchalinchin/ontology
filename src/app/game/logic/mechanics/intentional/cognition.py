@@ -194,6 +194,10 @@ class CognitionMechanics(Mechanic):
         ### _resolve(sprite: Asset, board: Board)
 
         Evaluates whether the current Goal has been satisfied or invalidated.
+
+        # TODOs
+
+        1. Common Pattern (Possible Abstraction: CognitionResolver, Interfaces: complete(), resolve()): if complete, log & reset. else, if nearby and not visible, remember Goal + optional[side effect]
         """
         goal = sprite.state.goal
         action_radius = sprite.state.mutators.parameters.action.radius
@@ -215,15 +219,13 @@ class CognitionMechanics(Mechanic):
         # ------------------------------------------------- TARGET GOAL RESOLUTION
         # ------------------------------------------------------------------------
         if goal.category == Goals.TARGET:
-            target_state = board.character(goal.name)
-
-            if target_state is None or target_state.mutators.triggers.dead:
+            if CognitionMechanics.complete(sprite, board):
                 CognitionMechanics.log_goal(sprite, verb="resolved")
                 sprite.state.goal = None
                 if goal.name in sprite.state.memory.goals.keys():
                     sprite.state.memory.goals.pop(goal.name)
 
-            elif self.nearby(
+            elif CognitionMechanics.nearby(
                 goal.position, 
                 sprite.state.position, 
                 action_radius
@@ -236,13 +238,13 @@ class CognitionMechanics(Mechanic):
         # ------------------------------------------------ SUBJECT GOAL RESOLUTION
         # ------------------------------------------------------------------------
         elif goal.category == Goals.SUBJECT:
-            if not sprite.state.psyche.dialogue:
+            if CognitionMechanics.complete(sprite, board):
                 CognitionMechanics.log_goal(sprite, verb="resolved")
                 sprite.state.goal = None
                 if goal.name in sprite.state.memory.goals.keys():
                     sprite.state.memory.goals.pop(goal.name)
 
-            elif self.nearby(
+            elif CognitionMechanics.nearby(
                 goal.position, 
                 sprite.state.position, 
                 action_radius
@@ -260,11 +262,7 @@ class CognitionMechanics(Mechanic):
         # ----------------------------------------------- POSITION GOAL RESOLUTION
         # ------------------------------------------------------------------------
         elif goal.category == Goals.POSITION:
-            if self.nearby(
-                goal.position, 
-                sprite.state.position, 
-                action_radius
-            ):
+            if CognitionMechanics.complete(sprite, board):
                 CognitionMechanics.log_goal(sprite, verb="resolved")
                 sprite.state.goal = None
                 

@@ -607,16 +607,26 @@ The direction of the elevation transition calculation is dependent on the direct
 
 Cursors are Assets that bind to other Asset States.
 
+**Properties: CursorProperties(AssetProperties)**
+
+* `frames: List[str]`
+* `rotation: int = 90`: $\Delta\theta \in (0, 360]$ dividing $360^\circ$ into $N = 360 // \text{rotation}$ Frames.
+* `weapons: List[WeaponPalette]`
+* `hitboxes: List[Hitbox]`
+
+!!! @TODO(03-05) "Cursor Redundancy"
+    Expressions utilize `frames` to index their Frame atlas. Projectils utilize `weapons` to index their Frame atlas. Both fields are Lists of strings. There appears to be a potential for simplification and solidifcation of the Cursor properties, i.e. these fields should be merged into a common Cursor `indices` property, to prevent verbosity and property sprawl/polymorphism.
+
 #### Cursor: Expressions
 
-Expressions are "Phantom States" used as visual decorators. Unlike most Assets, Expressions are not instantiated as physical entities on the [Board](./00-overview.md#component-board). Instead, their spatial offsets and frame keys are calculated dynamically by the [Cradle](./00-overview.md#component-board) and embedded directly into a [Sprite's State](./02-sprites.md) as pure data. When the [Sprite](./02-sprites.md#psyche) is rendered, the SpriteFrame reads this embedded data and superimposes the Expression onto its Frame.
+Expressions are "Phantom States" used as visual decorators. Unlike most Assets, Expressions are not instantiated as physical entities on the [Board](./00-overview.md#component-board). Instead, their spatial offsets and Frame keys are calculated dynamically by the [Cradle](./00-overview.md#component-board) and embedded directly into a [Sprite's State](./02-sprites.md). When the [Sprite](./02-sprites.md#psyche) is rendered, the SpriteFrame reads this embedded data and superimposes the Expression onto its Frame.
 
 **Required: Expressions**
 
 Due to the nature of Expressions as representations of a Sprite's internal state, there exists a hard dependency between Expression image files and their properties and the possible Expression frame enumerations. Each file name must exist and the following frames must be indexed by the Expression property index,
 
-- bubbles: `agreement`, `anger`, `confusion`, `disagreement`, `loquacity`, `surprise`, `tired`
-- buffs: TODO
+* bubbles: `agreement`, `anger`, `confusion`, `disagreement`, `loquacity`, `surprise`, `tired`
+* buffs: TODO
 
 **Animation: None**
 
@@ -624,7 +634,7 @@ N/A
 
 **Frame: IndexFrame**
 
-* `keys(id, state): returns [ (id, 0, 0) ]` *(Note: Bypassed during active rendering; `SpriteFrame` handles the dynamic offset injection).*
+* `keys(id, state): returns [ (id, 0, 0) ]` *(Note: Bypassed during active rendering; SpriteFrame handles the dynamic offset injection).*
 * `index(id, properties): returns { "{id}-{properties.frames[i]}": (i * properties.dimension.w, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **"Phantom" State: AttachmentState(AssetState)**
@@ -639,21 +649,43 @@ N/A
 
 #### Cursor: Projectiles
 
-Projectiles are spawned via the `shoot` Action (entered through the `attack` [Intention](./04-intentions.md) when the `longbow` [Equipment](./02-sprites.md#equipment) is slotted, for instance) with a certain direction and velocity and then follow a fixed trajectory based on the spawn conditions. Projectiles will either impact a hitbox or trigger garbage-collection and be removed from the [Board](./00-overview.md#component-board).
+Projectiles are spawned on the `release` Frame of ranged [Equipment](./02-sprites.md#equipment) with an initial coordinate, quantized launch angle, and scalar speed, following a linear trajectory until impacting an obstacle or target hitbox or exceeding their range. Projectiles will either impact a hitbox or trigger [garbage-collection](./05-mechanics.md#core-mechanic-removemechanics) and be removed from the [Board](./00-overview.md#component-board).
+
+Projectiles are dependent on the [Weapon](./02-sprites.md#sheet-equipment) which is used to spawn them. This [Relation](./05-mechanics.md#dependencies) is compiled from Cursor Properties into the [ProjectileIndex](./05-mechanics.md#dependency-relations) and injected into [CombatMechanics](./05-mechanics.md#spatial-mechanic-combatmechanics).
+
+**Behavior: Rotational**
+
+A Projectile Asset file contains a single Frame oriented at $\theta = 0^\circ$. This Frame rotated about its center in increments of $\Delta\theta$ (where $360 \bmod \Delta\theta = 0$):
+
+$$
+--8< -- "static/tex/formulae/formula-004-projectile-hitbox-rotation.tex"
+$$
 
 **Animation: None**
 
 N/A
 
-**Frame: SingleFrame**
+**Frame: ProjectileFrame**
 
-* `keys(id, state): returns [ (id, 0, 0) ]`
-* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, state): returns [ (f"{id}-{state.angle}", 0, 0) ]`
+* `index(id, properties): returns { f"{id}-{k * properties.rotation}": (k * properties.dimensions.w, 0, properties.dimensions.w, properties.dimensions.l) for k in range(360 // properties.rotation) }`
 
 **State: MotorState(AssetState)**
 
+* `position: Position`
 * `initial: Position`
 * `velocity: Velocity`
+* `angle: int`
+* `speed: int`
+* `owner: str`
+
+**Hitbox: RotatedHitbox**
+
+Projects each Hitbox $(x_0, y_0, w_0, l_0)$ in `properties.hitboxes` around the frame center $(c_x, c_y) = (W / 2, L / 2)$ by $\Delta\theta = \text{state.angle}$:
+
+$$
+--8< -- "static/tex/formulae/formula-005-projectile-hitbox-rotation.tex"
+$$
 
 ### Category: Effects
 
@@ -730,8 +762,8 @@ Hazard Effects deal damage to intersecting Assets (e.g., lava, floor spikes, poi
 
 **Semantics: Reactions**
 
-* `bounce`: 
-* `hinder`: 
+* `bounce`: TODO
+* `hinder`: TODO
 
 **Model: Damage**
 
