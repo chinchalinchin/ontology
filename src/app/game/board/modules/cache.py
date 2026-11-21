@@ -53,25 +53,15 @@ class Cache:
 
 
     def __init__(self) -> None:
-        self.init_layer()
+        """Initializes all categorical, instance, spatial grid, and layer-scoped stores."""
+        self.clear()
 
 
-    def init_layer(self, layer: Optional[str] = None) -> None:
+    def init_layer(self, layer: str) -> None:
         """
-        Initializes cache buckets for a specific layer, or resets all caches if layer is None.
+        Initializes cache buckets for a specific layer.
         """
         if layer is None:
-            self.cached_categories = {}
-            self.cached_instances = {}
-            self.cached_layers = {}
-            self.cached_renderables = {}
-            self.cached_weights = {}
-            self.cached_tilemap = {}
-            self.cached_fluidmap = {}
-            self.cached_characters = {}
-            self.shorelines = {}
-            self.all_categories = {}
-            self.all_instances = {}
             return
 
         self.cached_categories.setdefault(layer, {})
@@ -164,6 +154,8 @@ class Cache:
             self.map_fluid(layer, fluid)
 
 
+    # src/app/game/board/modules/cache.py
+
     def index_batch(self, assets: List[Asset]) -> None:
         """
         Indexes a batch of assets across all multi-tier dictionaries and spatial grids.
@@ -175,8 +167,20 @@ class Cache:
             cat = asset.category
             inst = asset.instance
 
+            # Always register in global catalogues regardless of layer deployment
             self.all_categories.setdefault(cat, []).append(asset)
             self.all_instances.setdefault(inst, []).append(asset)
+
+            if cat == AssetCategories.SHEETS and inst in (
+                AssetInstances.SPRITES,
+                AssetInstances.PLAYERS
+            ):
+                if asset.name:
+                    self.cached_characters[asset.name] = asset.state
+
+            # Layerless assets (e.g., stateless Equipment wrappers) skip layer-scoped caches
+            if layer is None:
+                continue
 
             if layer not in self.cached_categories:
                 self.init_layer(layer)
@@ -190,13 +194,6 @@ class Cache:
 
             if predicates.is_weight(asset):
                 self.cached_weights[layer].append(asset)
-
-            if cat == AssetCategories.SHEETS and inst in (
-                AssetInstances.SPRITES,
-                AssetInstances.PLAYERS
-            ):
-                if asset.name:
-                    self.cached_characters[asset.name] = asset.state
 
             if inst == AssetInstances.SHORELINES:
                 self.shorelines[layer].append(asset)
@@ -322,7 +319,7 @@ class Cache:
                 self.rebuild_fluid(layer)
 
 
-    def relayer(self, asset: Asset, new_layer: str) -> None:
+    def relayer(self, asset: Asset, new_layer: Optional[str]) -> None:
         """
         Atomically shifts an asset's cache indexing across layers.
         """
@@ -335,27 +332,34 @@ class Cache:
         cat = asset.category
         inst = asset.instance
 
-        if old_layer in self.cached_categories and cat in self.cached_categories[old_layer]:
-            if asset in self.cached_categories[old_layer][cat]:
-                self.cached_categories[old_layer][cat].remove(asset)
+        if old_layer is not None:
+            if old_layer in self.cached_categories and cat in self.cached_categories[old_layer]:
+                if asset in self.cached_categories[old_layer][cat]:
+                    self.cached_categories[old_layer][cat].remove(asset)
 
-        if old_layer in self.cached_instances and inst in self.cached_instances[old_layer]:
-            if asset in self.cached_instances[old_layer][inst]:
-                self.cached_instances[old_layer][inst].remove(asset)
+            if old_layer in self.cached_instances and inst in self.cached_instances[old_layer]:
+                if asset in self.cached_instances[old_layer][inst]:
+                    self.cached_instances[old_layer][inst].remove(asset)
 
-        if old_layer in self.cached_layers and asset in self.cached_layers[old_layer]:
-            self.cached_layers[old_layer].remove(asset)
+            if old_layer in self.cached_layers and asset in self.cached_layers[old_layer]:
+                self.cached_layers[old_layer].remove(asset)
 
-        if old_layer in self.cached_renderables and asset in self.cached_renderables[old_layer]:
-            self.cached_renderables[old_layer].remove(asset)
+            if old_layer in self.cached_renderables and asset in self.cached_renderables[old_layer]:
+                self.cached_renderables[old_layer].remove(asset)
 
-        if old_layer in self.cached_weights and asset in self.cached_weights[old_layer]:
-            self.cached_weights[old_layer].remove(asset)
+            if old_layer in self.cached_weights and asset in self.cached_weights[old_layer]:
+                self.cached_weights[old_layer].remove(asset)
 
-        if old_layer in self.shorelines and asset in self.shorelines[old_layer]:
-            self.shorelines[old_layer].remove(asset)
+            if old_layer in self.shorelines and asset in self.shorelines[old_layer]:
+                self.shorelines[old_layer].remove(asset)
 
         asset.state.layer = new_layer
+
+        # Detaching an asset from all layers requires no target layer registration
+        if new_layer is None:
+            if inst == AssetInstances.FLUIDS and old_layer is not None:
+                self.rebuild_fluid(old_layer)
+            return
 
         if new_layer not in self.cached_categories:
             self.init_layer(new_layer)
@@ -374,7 +378,8 @@ class Cache:
             self.shorelines[new_layer].append(asset)
 
         if inst == AssetInstances.FLUIDS:
-            self.rebuild_fluid(old_layer)
+            if old_layer is not None:
+                self.rebuild_fluid(old_layer)
             self.rebuild_fluid(new_layer)
 
 
@@ -382,7 +387,17 @@ class Cache:
         """
         Clears all indices and resets layer stores.
         """
-        self.init_layer()
+        self.cached_categories = {}
+        self.cached_instances = {}
+        self.cached_layers = {}
+        self.cached_renderables = {}
+        self.cached_weights = {}
+        self.cached_tilemap = {}
+        self.cached_fluidmap = {}
+        self.cached_characters = {}
+        self.shorelines = {}
+        self.all_categories = {}
+        self.all_instances = {}
 
     # ------------------------------------------------ GETTERS
 

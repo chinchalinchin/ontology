@@ -1,6 +1,6 @@
 ##### Bug B022: `CollisionMechanics._traverse_stairs` Raises `AttributeError` by Accessing `stairs.state.direction` Instead of `stairs.state.blueprint`
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: HIGH
 
 **Description**
