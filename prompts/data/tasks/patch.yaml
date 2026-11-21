@@ -120,5 +120,5 @@ tools:
     tests:
       pipeline:
         command: pytest -m
-        marker: '"app_core or workflow_collisions"'
+        marker: '"(app_core and app_component) or workflow_collisions"'
         # scope: '**/test_{actuator,cartographer}.py'

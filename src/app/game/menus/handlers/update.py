@@ -22,8 +22,11 @@ logger = logging.getLogger(__name__)
 class UpdateEventHandler(EventHandler):
     def handle(self, event: UpdateEvent, data: EventData) -> None:
         player = data.board.player()
-        screen = data.screens.get(
-            player.state.layer, 
-            next(iter(data.screens.values()))
+        screen = (
+            data.screens.get(player.state.layer, next(iter(data.screens.values()), None))
+            if player is not None
+            else next(iter(data.screens.values()), None)
         )
+        if screen is None:
+            return
         screen.stamp(event.widget, event.content)

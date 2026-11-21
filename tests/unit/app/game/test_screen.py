@@ -21,21 +21,25 @@ from app.models.menus import (
 from app.game.screen import Screen
 from app.models.state import (
     AnimationState,
+    AttachmentState,
     CalendarState,
     DoorState,
     PaneState,
 )
 from app.static.semantics import (
     Actions,
+    AssetCategories,
     AssetInstances,
     ChannelTypes,
     Cycles,
     Directions,
+    ExpressionsPalette,
     LayerProjections,
     Menus,
     Seasons,
     Substrates,
-    Intentions
+    SystemPanes,
+    Intentions,
 )
 
 # Cython Libraries
@@ -722,3 +726,133 @@ def test_screen_release_destroys_menu_pane_canvases(
     assert mock_render.destroy.called
     for name in baked_panes:
         assert mock_screen.registry.get_canvas(name) is None
+
+
+@pytest.mark.menu_handler
+def test_screen_stamp_transparent_pane_lifecycle_and_clearing(
+    mock_screen,
+    mock_asset,
+    mock_render,
+):
+    """
+    Verify Screen.stamp skips GPU allocation for unallocated empty transparent
+    panes, re-stamps cleanly across page updates, and clears existing cached
+    canvases when content is cleared to '' (Bug B035).
+    """
+    pane = mock_asset(
+        AssetCategories.WIDGETS.value,
+        AssetInstances.PANES.value,
+        id=SystemPanes.TRANSPARENT.value,
+    )
+    pane.state.content = [""]
+    pane.state.content_function = None
+
+    # 1. Empty transparent container with no cached canvas skips allocation
+    mock_render.construct.reset_mock()
+    mock_render.write.reset_mock()
+    mock_screen.stamp(pane)
+    assert mock_screen.registry.get_canvas(pane.name) is None
+    assert not mock_render.construct.called
+
+    # 2. First text stamp allocates canvas, clears via construct, and writes text
+    mock_screen.stamp(pane, "First Page")
+    tex = mock_screen.registry.get_canvas(pane.name)
+    assert tex is not None
+    mock_render.construct.assert_called_once_with(tex, [])
+    mock_render.write.assert_called_once()
+
+    # 3. Re-stamping with new page clears and writes updated content
+    mock_render.construct.reset_mock()
+    mock_render.write.reset_mock()
+    mock_screen.stamp(pane, "Second Page")
+    mock_render.construct.assert_called_once_with(tex, [])
+    mock_render.write.assert_called_once()
+
+    # 4. Clearing static transparent text to '' still clears existing canvas without writing
+    mock_render.construct.reset_mock()
+    mock_render.write.reset_mock()
+    mock_screen.stamp(pane, "")
+    mock_render.construct.assert_called_once_with(tex, [])
+    assert not mock_render.write.called
+
+    # 5. Non-PaneState widget and zero-dimension pane are ignored safely
+    button = mock_asset(
+        AssetCategories.WIDGETS.value,
+        AssetInstances.BUTTONS.value,
+    )
+    mock_render.construct.reset_mock()
+    mock_screen.stamp(button, "Ignored")
+    assert not mock_render.construct.called
+
+    pane.state.span = Dimensions(0, 0)
+    mock_screen.stamp(pane, "Zero")
+    assert not mock_render.construct.called
+
+
+@pytest.mark.workflow_fluids
+def test_screen_assemble_submerged_composite_expression_bounds(
+    mock_screen,
+    mock_board,
+):
+    """
+    Verify render.assemble computes local_split = split_y - oy per composite
+    frame so submerged sprites with overhead or deep-offset expressions never
+    produce negative crop heights or corrupt slicing (Bug B050).
+    """
+    sprite = mock_board.instances(AssetInstances.SPRITES.value)[0]
+    sprite.state.position = Position(x=120, y=120)
+    sprite.state.slots.equipment.armor = None
+    sprite.state.slots.equipment.weapon = None
+    sprite.state.slots.equipment.shield = None
+    sprite.state.slots.equipment.tool = None
+    sprite.state.slots.equipment.utility = None
+    sprite.state.mutators.triggers.submerged = True
+
+    split_y = sprite.dimensions.l // 2
+    expr_tex = mock_screen.registry.image(
+        f"{ExpressionsPalette.BUBBLES.value}-loquacity"
+    )
+    expr_sl = expr_tex[4]
+
+    # 1. Overhead expression (oy < 0 -> local_split >= sl): unmodulated single slice
+    sprite.state.psyche.expression = AttachmentState(
+        id=ExpressionsPalette.BUBBLES.value,
+        layer="0",
+        icon="loquacity",
+        offset=Position(x=10, y=-expr_sl),
+        ttl=30,
+    )
+    active_assets, _ = mock_screen._assemble(
+        [sprite],
+        Position(x=0, y=0),
+        Dimensions(w=480, l=480),
+    )
+
+    # 2 slices for sprite body + 1 unmodulated slice for overhead expression
+    assert len(active_assets) == 3
+    assert all(entry[4] > 0 and entry[8] > 0 for entry in active_assets)
+    expr_entry = active_assets[2]
+    assert expr_entry[4] == expr_sl
+    assert expr_entry[8] == expr_sl
+    assert expr_entry[9:] == (255, 255, 255, 255)
+
+    # 2. Below-waterline offset (oy >= split_y -> local_split <= 0): fully modulated slice
+    sprite.state.psyche.expression = AttachmentState(
+        id=ExpressionsPalette.BUBBLES.value,
+        layer="0",
+        icon="loquacity",
+        offset=Position(x=10, y=split_y),
+        ttl=30,
+    )
+    active_assets, _ = mock_screen._assemble(
+        [sprite],
+        Position(x=0, y=0),
+        Dimensions(w=480, l=480),
+    )
+
+    assert len(active_assets) == 3
+    assert all(entry[4] > 0 and entry[8] > 0 for entry in active_assets)
+    submerged_expr = active_assets[2]
+    assert submerged_expr[4] == expr_sl
+    assert submerged_expr[8] == expr_sl
+    assert submerged_expr[9:] == (40, 110, 180, 170)

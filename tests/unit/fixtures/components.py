@@ -134,24 +134,64 @@ def mock_registry(
 
 
 @pytest.fixture
-def mock_sdl(monkeypatch) -> Callable[[Set[int]], None]:
+def mock_sdl(monkeypatch):
     """
-    Fixture factory configuring active SDL scancodes returned by libs.core.input.poll.
+    Fixture factory configuring active SDL scancodes returned by libs.core.input.poll
+    and queued OS events returned by libs.core.input.pump.
     """
     active_codes: Set[int] = set()
+    pending_events: List[int] = []
+    quit_flag: List[bool] = [False]
 
-    def _set_pressed(codes: Optional[Set[int]] = None) -> None:
+    def _set_pressed(
+        codes: Optional[Set[int]] = None,
+        *,
+        pressed: Optional[List[int]] = None,
+        quit_requested: bool = False,
+    ) -> None:
         active_codes.clear()
         if codes:
             active_codes.update(codes)
+        pending_events.clear()
+        if pressed:
+            pending_events.extend(pressed)
+        quit_flag[0] = quit_requested
 
-    monkeypatch.setattr("app.game.devices.sdl.pump", lambda: None)
+    def _mock_pump() -> tuple[bool, list[int]]:
+        quit_val = quit_flag[0]
+        quit_flag[0] = False
+        events = list(pending_events)
+        pending_events.clear()
+        return (quit_val, events)
+
+    monkeypatch.setattr("app.game.devices.sdl.pump", _mock_pump)
     monkeypatch.setattr(
         "app.game.devices.sdl.poll",
         lambda scancodes: tuple(1 if code in active_codes else 0 for code in scancodes),
     )
     return _set_pressed
 
+
+@pytest.fixture
+def headless_registry(
+    mock_properties_schema: PropertiesSchema,
+    mock_configurations_schema: ConfigurationSchema,
+    mock_material_index: MaterialIndex,
+) -> Registry:
+    """
+    Initializes a live headless software SDL renderer and unmocked Registry,
+    destroying cached textures, fonts, and SDL subsystems on teardown.
+    """
+    sdl_render.init(128, 128, headless=True)
+    registry = Registry(
+        properties=mock_properties_schema,
+        recipes=mock_configurations_schema.recipes,
+    )
+    try:
+        yield registry
+    finally:
+        registry.clear()
+        sdl_render.quit_sdl()
 
 @pytest.fixture
 def mock_device(mock_configurations_schema: ConfigurationSchema):

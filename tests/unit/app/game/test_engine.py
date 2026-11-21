@@ -195,3 +195,45 @@ def test_engine_stop_releases_resources(mock_engine: Engine):
     assert len(mock_engine.bus) == 0
     assert len(mock_engine.screens) == 0
     assert len(mock_engine.board.assets()) == 0
+
+
+@pytest.mark.app_device
+def test_engine_start_terminates_on_sdl_quit(
+    mock_engine: Engine,
+    mock_render,
+    mock_sdl,
+):
+    """
+    Ensure Engine.start exits cleanly and immediately when device.pump() observes
+    an SDL_QUIT event (Bug B051).
+    """
+    mock_engine.board.loaded = True
+    mock_engine.board.paused = False
+    mock_render.reset_mock()
+    mock_sdl(quit_requested=True)
+
+    mock_engine.start(delta=0.016, spin=0.0001)
+
+    assert mock_engine.running is False
+    assert not mock_render.present.called
+
+
+@pytest.mark.workflow_rendering
+def test_engine_render_traps_missing_player_when_loaded(
+    mock_engine: Engine,
+    mock_render,
+):
+    """
+    Ensure _render safely falls back to interface rendering when the board is
+    marked loaded but no player entity exists.
+    """
+    player = mock_engine.board.player()
+    mock_engine.board.remove([player])
+    mock_engine.board.loaded = True
+    mock_render.reset_mock()
+
+    mock_engine._render()
+
+    assert mock_render.clear.called
+    assert not mock_render.render.called
+    assert mock_render.present.called

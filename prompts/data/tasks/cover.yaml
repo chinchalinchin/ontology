@@ -1,0 +1,97 @@
+# ----------------------------------------------------
+context: false
+# ----------------------------------------------------
+task:
+# ----------------------------------------------------
+  template: iterate/cover.md.j2
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    # --------------------------------------------
+    manager:
+      board: false
+      docs: false
+      templates: false
+    # --------------------------------------------
+    source:
+      data: true
+      filter: true
+    # --------------------------------------------
+    shell:
+      directory: false
+    # --------------------------------------------
+    tests:  
+      configuration: true
+      pipeline: true
+# ----------------------------------------------------
+  parameters:
+    # --------------------------------------------
+    manager:
+      board:
+        phase: 01-02
+        action: refactor
+      docs:
+        exclude:
+          # - 00-overview
+          # - 01-assets
+          # - 02-sprites
+          - 03-compositions
+          - 04-intentions
+          # - 05-mechanics
+          - 06-widgets
+          - 07-acoustics
+          - 08-narratives
+          # - 09-ecology
+          - 10-chemistry
+          - 11-emergence
+          # - 12-architecture
+      templates:
+        - template-bug
+    source:
+      filter:
+        default: AND
+        queries:
+          - title: 'Board - Cache'
+            scan:
+              domain: [ system ]
+              app: [ board, module ]
+          - title: 'Service - Perimeter'
+            scan:
+              domain: [ logic ]
+              app: [ service ]
+              workflows: [ generation, collisions ]
+          - title: 'Service - Migrator'
+            scan: 
+              domain: [ system ]
+              app: [ service ]
+              workflows: [ hydration ]
+          # --------------------------------------
+          - title: 'Test - Fixtures'
+            scan:
+              domain: [ test ]
+              test: [ fixtures ]
+          # --------------------------------------
+          - title: 'Test - Core Components'
+            scan:
+              domain: [ test ]
+              app: [ core, component ]
+          - title: 'Test - Rendering'
+            scan: 
+              domain: [ test ]
+              workflows: [ rendering ]
+      data:
+        properties: [ ]
+        state: [ world-testbed ]
+        configurations: [  ]
+        templates: [ ]
+    # --------------------------------------------
+    shell:
+      directory: |
+        tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
+    # --------------------------------------------
+    tests:
+      pipeline:
+        command: pytest -m
+        marker: '"(app_core and app_component) or workflow_rendering"'
+        # scope: '**/test_{actuator,cartographer}.py'
