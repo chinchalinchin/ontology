@@ -66,6 +66,67 @@ cpdef tuple intersects(
     return None
 
 
+cdef inline void c_camera(
+    int fx,
+    int fy,
+    int fw,
+    int fl,
+    int sw,
+    int sl,
+    int bw,
+    int bl,
+    int* cam_x,
+    int* cam_y
+) noexcept nogil:
+    """
+    Computes clamped camera viewport origin (cam_x, cam_y) in pure C.
+    Centers layers smaller than viewport dimensions via negative offsets.
+    """
+    cdef int cx, cy, max_x, max_y
+
+    if bw < sw:
+        cx = -((sw - bw) >> 1)
+    else:
+        cx = fx + (fw >> 1) - (sw >> 1)
+        max_x = bw - sw
+        if cx < 0:
+            cx = 0
+        elif cx > max_x:
+            cx = max_x
+
+    if bl < sl:
+        cy = -((sl - bl) >> 1)
+    else:
+        cy = fy + (fl >> 1) - (sl >> 1)
+        max_y = bl - sl
+        if cy < 0:
+            cy = 0
+        elif cy > max_y:
+            cy = max_y
+
+    cam_x[0] = cx
+    cam_y[0] = cy
+
+
+cpdef Position camera(
+    Position focus,
+    Dimensions dim,
+    Dimensions screen,
+    Dimensions board
+):
+    """
+    Calculates clamped camera viewport coordinates for a focus entity.
+    Centers layers smaller than viewport dimensions via negative offsets.
+    """
+    cdef int cam_x, cam_y
+    c_camera(
+        focus.x, focus.y, dim.w, dim.l,
+        screen.w, screen.l, board.w, board.l,
+        &cam_x, &cam_y
+    )
+    return Position(x=cam_x, y=cam_y)
+
+
 cpdef bint onscreen(
     Position pos,
     Dimensions dim,
@@ -79,33 +140,18 @@ cpdef bint onscreen(
     Clamps camera coordinates to board bounds and centers layers smaller than the
     screen viewport to match Screen.camera semantics.
     """
-    cdef int cam_x, cam_y, max_x, max_y
-
-    if board.w < screen.w:
-        cam_x = -((screen.w - board.w) // 2)
-    else:
-        cam_x = p_pos.x + (p_dim.w // 2) - (screen.w // 2)
-        max_x = board.w - screen.w
-        if cam_x < 0:
-            cam_x = 0
-        elif cam_x > max_x:
-            cam_x = max_x
-
-    if board.l < screen.l:
-        cam_y = -((screen.l - board.l) // 2)
-    else:
-        cam_y = p_pos.y + (p_dim.l // 2) - (screen.l // 2)
-        max_y = board.l - screen.l
-        if cam_y < 0:
-            cam_y = 0
-        elif cam_y > max_y:
-            cam_y = max_y
-
+    cdef int cam_x, cam_y
+    c_camera(
+        p_pos.x, p_pos.y, p_dim.w, p_dim.l,
+        screen.w, screen.l, board.w, board.l,
+        &cam_x, &cam_y
+    )
     return (
         pos.x < cam_x + screen.w and pos.x + dim.w > cam_x and
         pos.y < cam_y + screen.l and pos.y + dim.l > cam_y
     )
 
+    
 cpdef bint cone(
     int sx, 
     int sy, 

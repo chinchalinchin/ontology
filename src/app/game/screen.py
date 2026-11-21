@@ -34,6 +34,7 @@ from app.static.semantics import (
 
 # Cython Libraries
 import libs.graphics.render as render
+import libs.core.math.geometry as geometry
 from libs.core.models import (
     Dimensions,
     Position,
@@ -178,6 +179,7 @@ class Screen:
         bounds: Dimensions,
     ) -> Tuple[list, list]:
         return render.assemble(assets, self.registry, pov, bounds)
+
     
     def _widgets(self, menus: List[Menu]) -> None:
         """Helper to collect and superimpose widget primitives for a set of menus."""
@@ -228,21 +230,7 @@ class Screen:
         Calculates camera viewport coordinates.
         Centers layers smaller than viewport dimensions via negative offsets.
         """
-        if self.boardsize.w < self.screensize.w:
-            cam_x = -((self.screensize.w - self.boardsize.w) // 2)
-        else:
-            cam_x = focus.x + (dim.w // 2) - (self.screensize.w // 2)
-            max_x = self.boardsize.w - self.screensize.w
-            cam_x = max(0, min(cam_x, max_x))
-
-        if self.boardsize.l < self.screensize.l:
-            cam_y = -((self.screensize.l - self.boardsize.l) // 2)
-        else:
-            cam_y = focus.y + (dim.l // 2) - (self.screensize.l // 2)
-            max_y = self.boardsize.l - self.screensize.l
-            cam_y = max(0, min(cam_y, max_y))
-
-        return Position(x=cam_x, y=cam_y)
+        return geometry.camera(focus, dim, self.screensize, self.boardsize)
 
 
     def clear(self) -> None: render.clear()
