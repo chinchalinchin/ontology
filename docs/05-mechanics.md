@@ -461,18 +461,29 @@ Executors are Services made available to Mechanics that register to receive them
 Relations are static mappings configured at runtime and then injected into requesting Mechanics.
 
 * `shorelines`: A map of [Shoreline Geography Asset IDs](./01-assets.md#shorelines) to a compound index of [Tile Asset IDs](./01-assets.md#category-tiles) and [Fluid Asset ID](./01-assets.md#effect-fluids). This relation maps [Fluid Shorelines](./09-ecology.md#geography-shorelines) to the [Environ Tiles](./01-assets.md#tile-environ) in which they are embedded, e.g. `grassy-shore` Shorelines are mapped to `grass` Environ Tiles and `water` Fluids. 
-* `materials`: A map of [Asset Material](./01-assets.md#concept-materiality) containing various Configurations, such as render sort order, [cost constants](./03-compositions.md#materializer-cost) and [Composition formulas](./03-compositions.md).
+* `materials`: A map of [Asset Material](./01-assets.md#concept-materiality) containing various Configurations, such as rendering substrates, obstacle classification, [cost constants](./03-compositions.md#materializer-cost) and [Composition formulas](./03-compositions.md).
 * `projectiles`: A map of [Projectile Cursors](./01-assets.md#cursor-projectiles) to [Equipment Sheets](./02-sprites.md#sheet-equipment). This mapping determines which Projectile is spawned when a Sprite equipped with the prerequisite Equipment enters into the `attack` [Intention](./04-intentions.md).
 
 ## Modules
 
 ### Modules: Maps
 
-Maps associate ancillary Asset States to their final Animation State. See [AnimationMap](./04-intentions.md#animationmap) for more information.
+Maps are stateless domain projections translating Asset State, Equipment, and Relations into target domains consumed by Mechanics. Each Map owns a disjoint codomain.
+
 
 #### Map: Animation
 
+* See [AnimationMap](./04-intentions.md#animationmap) for more information.
+
 AnimationMaps enforce State-dependent logical constraints upon a Sprite's Animation Space. [TransitionMechanics](#intentional-mechanic-transitionmechanics) and [PlayerMechanics](#intentional-mechanic-playermechanics) utilize AnimationMaps to resolve whether an intended Action is possible. 
+
+$$
+--8<-- "static/tex/functions/function-000-action-map.tex"
+$$
+
+$$
+--8<-- "static/tex/functions/function-001-direction-map.tex"
+$$
 
 An AnimationMap injects constraints into the $\text{Intention} \to \text{Action}$ Sprite State transformation. For example, by passing through an AnimationMap, an `attack` Intention cannot translate into a `thrust` Action unless the Sprite currently possesses the required Weapon in its [Slots](./02-sprites.md#model-slots).
 
@@ -486,15 +497,39 @@ An AnimationMap injects constraints into the $\text{Intention} \to \text{Action}
 
 #### Map: Combat
 
-CombatMap bridges an attacking Sprite's current AnimationState and slotted Weapon Equipment to resolve either active melee Attackboxes or ranged Projectile emission parameters.
+CombatMaps map an attacking Sprite's current State and resolve either active melee Attackboxes or ranged Projectile parameters.
+
+$$
+--8<-- "static/tex/functions/function-002-projectile-map.tex"
+$$
+
+$$
+--8<-- "static/tex/functions/function-003-attackbox-map.tex"
+$$
+
+$$
+--8<-- "static/tex/functions/function-004-release-map.tex"
+$$
+
+$$
+--8<-- "static/tex/functions/function-005-speed-map.tex"
+$$
 
 **Interface: Attack Hitbox Mapping**
 
 * `attackboxes(state, equipment, elevation): returns List[Hitbox]`: Queries the slotted weapon's Hitbox component at the entity's active `<action>-<direction>-<frame>` key and elevation plane.
 
-**Interface: Projectile Release Mapping**
+**Interface: Projectile Asset Mapping**
 
-* `projectile(state, equipment): returns Optional[Tuple[str, int]]`: Evaluates whether the slotted weapon configures a `projectile` ID and `release` frame matching the entity's current animation frame. When triggered on the entry tick of the `release` frame, calculates the initial scalar speed $s(S, n)$ from the attacker's strength $S$, held charge duration $n$, and the weapon's draw window $N_{\max} = \max(1, \text{release} \cdot \text{delay})$:
+* `projectile(state, equipment): returns Optional[Tuple[str, int]]`: Evaluates whether the slotted weapon configures a `projectile` ID and `release` frame matching the entity's current animation frame. When triggered on the entry tick of the `release` frame, calculates the initial scalar speed $s(S, n)$ from the attacker's strength $S$, held charge duration $n$, and the weapon's draw window $N_{\max} = \max(1, \text{release} \cdot \text{delay})$.
+
+**Interface: Projectile Release Frame Mapping**
+
+* `release(todo): returns todo`:  Evaluates the weapon's directional hitbox on the entry tick of its release frame to determine projectile spawn origin and heading.
+
+**Interface: Projectile Speed Mapping**
+
+* `speed(todo): returns todo`: Maps attacker strength $S$ and held draw duration $n$ to scalar launch speed $s(S, n)$.
 
 $$
 --8<-- "static/tex/formulae/formula-002-attack-charge.tex"

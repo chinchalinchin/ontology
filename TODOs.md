@@ -377,60 +377,6 @@ Rotates each canonical hitbox $(x_0, y_0, w_0, l_0)$ clockwise by $\theta = \tex
 * `owner: Optional[str]`: Deploying entity `name`, excluded from impact resolution.
 ```
 
-##### Draft: AnimationMap Admissibility & CombatMap Separation
-
-- **Page**: `docs/05-mechanics.md`
-- **Heading**: `Modules: Maps` and `Dependency: Relations`
-
-###### Drift
-
-`docs/05-mechanics.md` currently leaves `Map: Combat` as `TODO`, lacks the `projectiles` entry under `Dependency: Relations`, and does not formalize the disjoint boundary between `AnimationMap` (Intentional-Spatial Space $\to$ Animation Space, including Equipment admissibility) and `CombatMap` (Active Combat State $\to$ Combat Resolution Geometry and Launch Parameters).
-
-###### Update
-
-```markdown
-###### Dependency: Relations
-
-Relations are static secondary indices compiled at initialization and injected into requesting Mechanics.
-
-* `shorelines`: Compound index mapping `(Tile, Fluid, [Season])` keys to Shoreline Geography Asset IDs, compiled from Geography Properties.
-* `materials`: Index mapping Blueprints and Asset Instances to obstacle classifications and rendering substrates, compiled from Materials Configuration.
-* `projectiles`: Index mapping ranged Weapon keys to Projectile Cursor Asset IDs, compiled from Cursor Properties.
-
-##### Modules
-
-###### Modules: Maps
-
-Maps are stateless domain projections translating Asset State, Equipment, and Relations into target domains consumed by Mechanics. Each Map owns a disjoint codomain.
-
-###### Map: Animation
-
-AnimationMap is the projection from Intentional and Spatial State into Animation Space:
-
-$$
-(\text{Intention} \times \text{Slots} \times \text{Equipment}) \longrightarrow \text{Action} \cup \{\bot\}
-$$
-
-$$
-(\text{Position} \times \text{Target}) \longrightarrow \text{Direction}
-$$
-
-AnimationMap enforces Equipment admissibility prior to state commitment in Intentional Mechanics. Equipment-gated Intentions (`attack`, `mine`, `build`) project to the action declared by the corresponding slotted Weapon, Tool, or Utility, and evaluate to $\bot$ when the required Equipment slot is empty. Inadmissible transitions are rejected before Animation or Combat Mechanics execute.
-
-###### Map: Combat
-
-CombatMap projects an active, already-validated combat state into spatial and ballistic resolution primitives consumed by CombatMechanics:
-
-* **Projectile Binding**: $(\text{Weapon} \times \text{ProjectileIndex}) \longrightarrow \text{Projectile} \cup \{\bot\}$. Partitions combat dispatch into ranged and melee modes independently of animation row layout.
-* **Attackboxes**: $(\text{AnimationState} \times \text{Weapon} \times \text{Elevation}) \longrightarrow \mathcal{P}(\text{Hitbox})$. Resolves active melee strike geometry.
-* **Release**: $(\text{AnimationState} \times \text{Weapon} \times \text{Elevation}) \longrightarrow (\text{Position} \times \text{Direction}) \cup \{\bot\}$. Evaluates the weapon's directional hitbox on the entry tick of its release frame to determine projectile spawn origin and heading.
-* **Speed**: $(\text{Strength} \times \text{Charge} \times \text{ReleaseFrame} \times \text{Delay}) \longrightarrow \mathbb{Z}_{>0}$. Maps attacker strength $S$ and held draw duration $n$ to scalar launch speed $s(S, n)$:
-
-$$
-N_{\max} = \max(1,\; F_{\text{release}} \cdot \text{delay}), \qquad \tau(n) = \min\left(1.0,\; \frac{n}{N_{\max}}\right), \qquad s(S, n) = \operatorname{round}\Big(\alpha S \big(1 + \tau(n)\big)\Big)
-$$
-```
-
 ---
 
 ## 4. Bug Reports
@@ -555,3 +501,119 @@ In `src/app/game/board/modules/cache.py`, `Cache.index_batch` populates the spat
 **Proposed Remeditation**
 
 In `Cache.evict_batch`, when `AssetCategories.TILES` is present in `affected_categories`, iterate over evicted tiles (or rebuild affected layer tilemaps from remaining `cached_categories[layer][AssetCategories.TILES]`) to remove matching entries from `self.cached_tilemap`.
+
+
+---
+
+
+### Backlog Entry (B039.1 — Board Temporal Coupling & Late-Bound Dependencies)
+
+#### Refactor: Eliminate Late-Bound Service Setters and Temporal Coupling on `Board`
+
+**Overview**
+
+While the immediate annotation mismatches on `Board` (`plot`, `device`, `cradle`, `materializer`) have been corrected to `Optional[...]`, `Board.__init__` still initializes its core runtime collaborators (`device`, `cradle`, `migrator`, `materializer`, `plot`) to `None` and relies on external callers (`Orchestrator`, `Migrator`, event handlers, and test fixtures) invoking mutable setter methods in an undocumented order. Eliminating this temporal coupling spans multiple orchestration and service layers outside the immediate `Board` patch boundary and warrants a dedicated refactoring pass.
+
+##### Specification
+
+Separate **Boot-Time Collaborators** (always present once `Board` is constructed in Phase 1: `device`, `cradle`, `migrator`, and `materializer` if active) from **Hydrated World State** (loaded/reset in Phase 2: `plot`, `calendar`, `assets`, `perimeters`, `overlays`).
+
+* **Constructor Injection**: `Device` and `Cradle` (which depend only on `configurations` / `spawnables`, not a live `Board` instance) must be injected directly into `Board.__init__`.
+* **Circular Dependency Resolution**: If `Migrator` requires a `Board` reference (or vice versa), invert the dependency so `Engine` / `LoadController` / `StateEventHandler` owns `Migrator` (or passes `board` into `migrator.step(board)`), eliminating `Board.migrator` and `Board.set_migrator()` altogether.
+* **Orphaned Attribute Audit**: Audit `self.materializer` across the entire codebase; either inject it strictly as a typed component or remove it if unused.
+* **Non-Optional `PlotState`**: Default `self.plot = PlotState()` (matching `self.calendar = CalendarState()`) and update `Board.serialize()` to emit `Shortcuts.PLOTS` only when `self.plot.current is not None or self.plot.previous`.
+
+##### Goals
+
+###### Goal: Construct `Board` in a Valid, Non-Null Boot State
+
+Every `Board` returned by `Orchestrator` should hold non-optional, ready-to-use `device` and `cradle` collaborators so `Engine._play()` (`self.board.device.poll()`) and `Cartographer` / `CombatMechanics` (`board.cradle`) cannot fail with `AttributeError` on `None`.
+
+###### Goal: Decouple `Migrator` Lifecycle from `Board`
+
+`Board` is the in-memory world database, whereas `Migrator` is an orchestration service that hydrates `Board`. Moving `Migrator` ownership to `EventData` / `Engine` (or passing `board` to `Migrator` methods) breaks the `Board <-> Migrator` cycle and removes `set_migrator`.
+
+##### Tasks
+
+**1. Task: Audit `Board` Collaborator Wiring and Remove Dead Attributes**
+
+*Objective*: Map every caller of `set_device`, `set_cradle`, `set_plot`, `set_migrator`, and `board.materializer` across `app.services.orchestration`, `app.game.menus`, and `tests/`.
+
+* [ ] Subtask: Verify whether `board.materializer` is referenced anywhere in `src/` or `tests/`; schedule removal or strict typing.
+* [ ] Subtask: Trace whether `Cradle` or `Device` holds a back-reference to `Board`, and break any accidental reverse coupling.
+
+**2. Task: Refactor `Board.__init__` and `Orchestrator` for Constructor Injection**
+
+*Objective*: Inject mandatory Phase 1 collaborators at construction and eliminate mutable setter methods.
+
+* [ ] Subtask: Update `Board.__init__` to accept `device: Device` and `cradle: Cradle` directly, removing `set_device` and `set_cradle`.
+* [ ] Subtask: Default `Board.plot` to `PlotState()` and guard `Board.serialize()` on non-empty plot state (`self.plot.current is not None or self.plot.previous`).
+* [ ] Subtask: Move `Migrator` ownership out of `Board` into `EventData` / `LoadController` (or pass `board` per step), removing `Board.migrator` and `set_migrator`.
+* [ ] Subtask: Update `Orchestrator`, `StateEventHandler`, `LoadController`, and `tests/unit/conftest.py` fixtures to construct `Board` with the new signature.
+
+---
+
+### New Bug Reports (Unrelated Bugs Detected During Review)
+
+##### Bug B041: `Cache.get_obstacles()` Diverges from `predicates.is_obstacle()`, Omits `OBSTACLES` and `TREES`, and Fails on `layer=None`
+
+**STATUS**: OPEN
+**SEVERITY**: HIGH
+
+**Description**
+
+1. `Cache.get_obstacles(layer)` (`src/app/game/board/modules/cache.py`, lines 404–414) hardcodes five instance keys (`CRATES`, `GATES`, `STRUTS`, `SIGNS`, `CHESTS`), omitting `AssetInstances.OBSTACLES` and `AssetInstances.TREES` even though `predicates.is_obstacle()` (`src/app/game/logic/predicates.py`, lines 46–59) explicitly classifies both as navigational obstacles. Consequently, `NavigationMechanics` and obstacle-aware callers querying `board.obstacles(layer)` ignore rocks/outcroppings and trees.
+2. `Cache.get_obstacles()` rebuilds and allocates a new `List[Asset]` on every invocation and includes passable `AssetInstances.STRUTS` (e.g., `floors`, `flats`, `paths`, `corridors`).
+3. `Board.obstacles(layer=None)` (`src/app/game/board/core.py`, line 248) unconditionally returns `[]` when `layer is None`, contradicting its `Optional[str]` signature and all sibling query methods (`weights`, `categories`, `instances`).
+
+**Steps to Replicate**
+
+1. Construct a `Board` with an `AssetInstances.OBSTACLES` asset and an `AssetInstances.TREES` asset on layer `"main"`.
+2. Call `board.obstacles("main")`: neither asset is returned.
+3. Call `board.obstacles()` (with `layer=None`): returns `[]` even when crates/gates/struts exist on `"main"`.
+
+**Proposed Remeditation**
+
+Maintain a layer-keyed `cached_obstacles: Dict[str, List[Asset]]` inside `Cache` populated during `index_batch`, `evict_batch`, `relayer`, and `clear` using `predicates.is_obstacle(asset)` (further filtering passable `MaterialHitbox` struts via `MaterialIndex().is_obstacle(asset.state.blueprint)`), and support `layer=None` aggregation in `Cache.get_obstacles(layer=None)`.
+
+---
+
+##### Bug B042: `Cache.evict_batch()` and `Cache.relayer()` Leave Stale Tile References in `cached_tilemap`
+
+**STATUS**: OPEN
+**SEVERITY**: MEDIUM
+
+**Description**
+
+`Cache.index_batch()` (`src/app/game/board/modules/cache.py`, lines 212–233) indexes `AssetCategories.TILES` cells into `self.cached_tilemap[layer][inst][(cx, cy)] = asset`, but neither `Cache.evict_batch()` nor `Cache.relayer()` removes or updates entries in `self.cached_tilemap`. Removing or relayering a Tile leaves dangling asset references in `cached_tilemap`, causing `board.tile(layer, pos)` to return removed tiles (corrupting friction lookups in `MotionMechanics` and shoreline probes in `Cartographer`) and retaining references that prevent garbage collection.
+
+**Steps to Replicate**
+
+1. Add an `AssetInstances.ENVIRON` tile at `Position(0, 0)` on layer `"main"` to a `Board`.
+2. Call `board.remove([tile])` (or `board.relayer(tile, "other")`).
+3. Call `board.tile("main", Position(0, 0))`: the removed/relayered tile is still returned instead of `None`.
+
+**Proposed Remeditation**
+
+Add a `rebuild_tilemap(layer: str)` helper (or cell-level eviction/re-indexing) on `Cache` and invoke it in `evict_batch()` whenever `AssetCategories.TILES in affected_categories`, and in `relayer()` whenever `asset.category == AssetCategories.TILES` (updating both `old_layer` and `new_layer`).
+
+---
+
+##### Bug B043: Secondary Bifurcation Pools Omitted from `Cache.cached_fluidmap` and `Actuator.compile_moisture_field()`
+
+**STATUS**: OPEN
+**SEVERITY**: MEDIUM
+
+**Description**
+
+When a fluid with `flow >= 3` bifurcates (`Actuator._propagate_branches()`, `src/app/services/generators/game/actuator.py`, lines 259–306) and a child branch (`child_flow > 1`) strikes a downstream obstacle, `_partition_pool()` generates a secondary annular pool whose relative hitbox is appended only to `fluid.state.hitboxes` (not to `fluid.state.pool` or `Branch`). While `Cartographer._collect_water_rectangles()` explicitly iterates `fluid.state.hitboxes` to capture secondary pools, `Cache.map_fluid()` (`src/app/game/board/modules/cache.py`, lines 81–145) only indexes the primary corridor, primary `fluid.state.pool`, and `fluid.state.branches`. Consequently, spatial hash cells strictly inside secondary bifurcation pools are absent from `cached_fluidmap`, causing `Board.fluid(layer, pos)` to falsely return `False`. Likewise, `Actuator.compile_moisture_field()` (lines 310–362) omits secondary branch pools when emitting disk moisture sources.
+
+**Steps to Replicate**
+
+1. Deploy a `Fluid` with `flow = 3` flowing toward static Obstacle A, and place static Obstacle B downstream in the path of one of the resulting `child_flow = 2` flank branches.
+2. Execute `Actuator.pump(fluid, board)` and `board.update_fluid_cache(layer)`.
+3. Query `board.fluid(layer, pos)` for a coordinate inside Obstacle B's secondary pool (outside the truncated branch corridor); `Cache.get_fluid_bucket()` returns `None` and `board.fluid()` returns `False`.
+
+**Proposed Remeditation**
+
+Index `fluid.state.hitboxes` inside `Cache.map_fluid()` (mirroring `Cartographer._collect_water_rectangles()`), and attach an optional `pool: Optional[Pool] = None` field to `Branch` (`src/app/models/state/assets/effects.py`) so `Actuator.compile_moisture_field()` also registers secondary bifurcation pools as disk sources.

@@ -7,43 +7,57 @@
 
 Stateless Predicates for making assertions of Assets.
 """
-# Standard Libraries
-from typing import (
-    List, 
-    Tuple
-)
-
 # Application Libraries
 from app.assets.base import Asset
+from app.assets.hitboxes.core import NoHitbox
+from app.assets.hitboxes.crafts import MaterialHitbox
+from app.assets.hitboxes.objects import LayeredHitbox
+from app.game.logic.relations.materials import MaterialIndex
 from app.static.semantics import (
     AssetCategories,
     AssetInstances,
-    Directions
+    Directions,
+    LayerProjections
 )
 
 # Cython Libraries
-import libs.core.math.geometry as geometry
 from libs.core.models import Position
 
 
 def is_weight(asset: Asset) -> bool:
     """
     Evaluates physical candidate qualification for weight caching, excluding
-    sensors, cursors, effects, geography, and terrain tiles.
+    sensors, non-physical categories, NoHitbox assets, passable MaterialHitbox
+    crafts, and non-blocking Door out-projections.
     """
-    try:
-        mass = asset.properties.mass
-        return (
-            mass >= 0
-            and asset.category not in (
-                AssetCategories.CURSORS,
-                AssetCategories.EFFECTS,
-                AssetCategories.GEOGRAPHY,
-                AssetCategories.TILES
-            )
-        )
-    except AttributeError:
+    if asset.category in (
+        AssetCategories.CURSORS,
+        AssetCategories.EFFECTS,
+        AssetCategories.GEOGRAPHY,
+        AssetCategories.TILES,
+        AssetCategories.WIDGETS
+    ):
         return False
+
+    if asset.properties.mass < 0:
+        return False
+
+    if isinstance(asset.hitbox, NoHitbox):
+        return False
+
+    if (
+        isinstance(asset.hitbox, MaterialHitbox)
+        and not MaterialIndex().is_obstacle(asset.state.blueprint)
+    ):
+        return False
+
+    if (
+        isinstance(asset.hitbox, LayeredHitbox)
+        and asset.state.projection == LayerProjections.OUT
+    ):
+        return False
+
+    return True
 
 
 def is_obstacle(asset: Asset) -> bool:
@@ -61,6 +75,35 @@ def is_obstacle(asset: Asset) -> bool:
     )
 
 
+def _in_corridor(
+    px: int,
+    py: int,
+    ox: int,
+    oy: int,
+    w: int,
+    l: int,
+    length: int,
+    direction: str
+) -> bool:
+    """
+    Evaluates whether integer coordinate (px, py) intersects a single directional
+    fluid corridor using half-open AABB bounds without heap allocation.
+    """
+    if length <= 0:
+        return False
+
+    if direction == Directions.DOWN:
+        return ox <= px < ox + w and oy <= py < oy + length
+    if direction == Directions.UP:
+        return ox <= px < ox + w and oy - length <= py < oy
+    if direction == Directions.RIGHT:
+        return ox <= px < ox + length and oy <= py < oy + l
+    if direction == Directions.LEFT:
+        return ox - length <= px < ox and oy <= py < oy + l
+
+    return False
+
+
 def in_pool(position: Position, fluid: Asset) -> bool:
     """
     Evaluates whether a Cartesian coordinate intersects the annular pool of a fluid entity.
@@ -71,10 +114,9 @@ def in_pool(position: Position, fluid: Asset) -> bool:
 
     px = int(position.x)
     py = int(position.y)
-    return geometry.inside(
-        px,
-        py,
-        [(pool.x, pool.y, pool.x + pool.w, pool.y + pool.l)]
+    return (
+        pool.x <= px < pool.x + pool.w
+        and pool.y <= py < pool.y + pool.l
     )
 
 
@@ -85,47 +127,39 @@ def in_stream(position: Position, fluid: Asset) -> bool:
     """
     px = int(position.x)
     py = int(position.y)
-    fx = int(fluid.state.position.x)
-    fy = int(fluid.state.position.y)
     fw = fluid.properties.dimensions.w
     fl = fluid.properties.dimensions.l
-    slen = fluid.state.length
 
-    direction = fluid.state.source
+    if _in_corridor(
+        px,
+        py,
+        int(fluid.state.position.x),
+        int(fluid.state.position.y),
+        fw,
+        fl,
+        fluid.state.length,
+        fluid.state.source
+    ):
+        return True
 
-    aabbs: List[Tuple[int, int, int, int]] = []
-
-    if slen > 0:
-        if direction == Directions.DOWN:
-            aabbs.append((fx, fy, fx + fw, fy + slen))
-        elif direction == Directions.UP:
-            aabbs.append((fx, fy - slen, fx + fw, fy))
-        elif direction == Directions.RIGHT:
-            aabbs.append((fx, fy, fx + slen, fy + fl))
-        elif direction == Directions.LEFT:
-            aabbs.append((fx - slen, fy, fx, fy + fl))
-
-    if fluid.state.branches:
-        for branch in fluid.state.branches:
-            if branch.length <= 0:
-                continue
-            bx = int(branch.position.x)
-            by = int(branch.position.y)
-            b_dir = branch.source
-            
-            if b_dir == Directions.DOWN:
-                aabbs.append((bx, by, bx + fw, by + branch.length))
-            elif b_dir == Directions.UP:
-                aabbs.append((bx, by - branch.length, bx + fw, by))
-            elif b_dir == Directions.RIGHT:
-                aabbs.append((bx, by, bx + branch.length, by + fl))
-            elif b_dir == Directions.LEFT:
-                aabbs.append((bx - branch.length, by, bx, by + fl))
-
-    if not aabbs:
+    branches = fluid.state.branches
+    if not branches:
         return False
 
-    return geometry.inside(px, py, aabbs)
+    for branch in branches:
+        if _in_corridor(
+            px,
+            py,
+            int(branch.position.x),
+            int(branch.position.y),
+            fw,
+            fl,
+            branch.length,
+            branch.source
+        ):
+            return True
+
+    return False
 
 
 def in_fluid(position: Position, fluid: Asset) -> bool:
@@ -133,8 +167,22 @@ def in_fluid(position: Position, fluid: Asset) -> bool:
     Evaluates whether a Cartesian coordinate intersects either the annular pool
     or directional stream corridors of a fluid entity.
     """
+    hitboxes = fluid.state.hitboxes
+    if hitboxes:
+        px = int(position.x)
+        py = int(position.y)
+        fx = int(fluid.state.position.x)
+        fy = int(fluid.state.position.y)
+        for hb in hitboxes:
+            hx = fx + hb.position.x
+            hy = fy + hb.position.y
+            if (
+                hx <= px < hx + hb.dimensions.w
+                and hy <= py < hy + hb.dimensions.l
+            ):
+                return True
+        return False
+
     if in_pool(position, fluid):
         return True
-    if in_stream(position, fluid):
-        return True
-    return False
+    return in_stream(position, fluid)

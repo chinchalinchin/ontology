@@ -19,6 +19,9 @@ cdef class Position:
         self.rx = rx
         self.ry = ry
 
+    def __reduce__(self):
+        return (Position, (self.x, self.y, self.rx, self.ry))
+
     def to_dict(self) -> dict:
         return {"x": self.x, "y": self.y, "rx": self.rx, "ry": self.ry}
 
@@ -30,6 +33,9 @@ cdef class Dimensions:
         self.w = w
         self.l = l
 
+    def __reduce__(self):
+        return (Dimensions, (self.w, self.l))
+
     def to_dict(self) -> dict:
         return {"w": self.w, "l": self.l}
 
@@ -40,6 +46,9 @@ cdef class Multiple:
     def __init__(self, int nx, int ny):
         self.nx = nx
         self.ny = ny
+
+    def __reduce__(self):
+        return (Multiple, (self.nx, self.ny))
         
     def to_dict(self) -> dict:
         return {"nx": self.nx, "ny": self.ny}
@@ -52,6 +61,9 @@ cdef class Velocity:
         self.vx = vx
         self.vy = vy
 
+    def __reduce__(self):
+        return (Velocity, (self.vx, self.vy))
+
     def to_dict(self) -> dict:
         return {"vx": self.vx, "vy": self.vy}
 
@@ -62,6 +74,9 @@ cdef class Hitbox:
     def __init__(self, Position position, Dimensions dimensions):
         self.position = position
         self.dimensions = dimensions
+
+    def __reduce__(self):
+        return (Hitbox, (self.position, self.dimensions))
 
     def to_dict(self) -> dict:
         return {
@@ -80,6 +95,9 @@ cdef class Scale:
         self.pw = pw
         self.pl = pl
 
+    def __reduce__(self):
+        return (Scale, (self.pw, self.pl))
+
     def to_dict(self) -> dict:
         return {"pw": self.pw, "pl": self.pl}
 
@@ -90,6 +108,9 @@ cdef class Boundary:
     def __init__(self, Position position, Dimensions dimensions):
         self.position = position
         self.dimensions = dimensions
+
+    def __reduce__(self):
+        return (Boundary, (self.position, self.dimensions))
 
     def to_dict(self) -> dict:
         return {

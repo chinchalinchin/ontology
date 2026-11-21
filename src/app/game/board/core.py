@@ -19,7 +19,6 @@ from typing import (
     Optional,
     TYPE_CHECKING
 )
-from dataclasses import asdict
 
 # Application Libraries
 import app.static.settings as settings
@@ -30,12 +29,14 @@ from app.static.semantics import (
     AssetCategories,
     AssetInstances,
     Frequencies,
+    LayerProjections,
     Shortcuts
 )
 from app.static.loader import Loader
 from app.game.logic.modules.fields import MoistureField
 from app.game.devices import Device
 from app.game.menus.core import Menu
+from app.models.adapters import serialize
 from app.models.state.core import (
     PlotState,
     CalendarState
@@ -70,15 +71,16 @@ class Board:
     loaded: bool
     paused: bool
     # Game Data
-    plot: PlotState
+    plot: Optional[PlotState]
     calendar: CalendarState
     perimeters: Dict[str, Dict[int, List[Boundary]]]
     # Configurations
     configurations: ConfigurationSchema
     equipment: EquipmentGroup
     # Game Components
-    device: Device
-    cradle: Cradle
+    device: Optional[Device]
+    cradle: Optional[Cradle]
+    materializer: Optional[Any]
     migrator: Optional[Migrator]
     menus: List[Menu]
     overlays: List[Menu]
@@ -192,8 +194,8 @@ class Board:
 
 
     def asset(self, name: str, layer: Optional[str] = None) -> Optional[Asset]:
-        search_list = self.renderables(layer) if layer else self._assets
-        return next((a for a in search_list if a.name == name), None)
+        """Retrieves an asset in O(1) by unique name, optionally scoped to a layer."""
+        return self._cache.get_asset(name, layer)
 
 
     def assets(self, layer: Optional[str] = None, elevation: Optional[int] = None) -> List[Asset]:
@@ -208,9 +210,8 @@ class Board:
 
 
     def weights(self, layer: Optional[str] = None, elevation: Optional[int] = None) -> List[Asset]:
-        weights = self._cache.get_weights(layer) if layer is not None else [
-            a for a in self._assets if predicates.is_weight(a)
-        ]
+        """Retrieves physical weight candidates, optionally filtered by layer and elevation."""
+        weights = self._cache.get_weights(layer)
         if elevation is not None:
             target_e = max(0, elevation)
             return [w for w in weights if target_e in w.hitbox.elevations(w.properties, w.state)]
@@ -274,32 +275,9 @@ class Board:
 
 
     def size(self, layer: Optional[str] = None) -> List[Dimensions]:
+        """Returns cached layer dimensions for a specific layer or all layers."""
         layers = [layer] if layer is not None else self.layers()
-        layer_sizes = []
-
-        for l in layers:
-            layer_assets = self.assets(l)
-            max_w = 0
-            max_l = 0
-
-            for asset in layer_assets:
-                if asset.category == AssetCategories.TILES:
-                    ext_w = int(asset.state.position.x) + (asset.state.multiple.nx * asset.properties.dimensions.w)
-                    ext_l = int(asset.state.position.y) + (asset.state.multiple.ny * asset.properties.dimensions.l)
-                elif asset.dimensions:
-                    ext_w = int(asset.state.position.x) + asset.dimensions.w
-                    ext_l = int(asset.state.position.y) + asset.dimensions.l
-                else:
-                    continue
-
-                if ext_w > max_w:
-                    max_w = ext_w
-                if ext_l > max_l:
-                    max_l = ext_l
-
-            layer_sizes.append(Dimensions(w=max_w, l=max_l))
-
-        return layer_sizes
+        return [self._cache.get_size(l) for l in layers]
 
     # ------------------------------------------------ MUTATORS
 
@@ -384,16 +362,31 @@ class Board:
     # ------------------------------------------------ EXPORTERS
 
     def serialize(self, world: str, slot: str) -> None:
+        """
+        Serializes persistent Board asset states and world metadata into plain
+        YAML-safe dictionaries and saves them via Loader.
+        """
         dump: Dict[str, Any] = {}
 
         for asset in self._assets:
-            if asset.category == AssetCategories.WIDGETS:
+            if asset.category in (
+                AssetCategories.WIDGETS,
+                AssetCategories.GEOGRAPHY
+            ):
+                continue
+
+            if (
+                asset.instance == AssetInstances.DOORS
+                and asset.state.projection == LayerProjections.OUT
+            ):
                 continue
 
             if asset.category == AssetCategories.EFFECTS:
-                if asset.properties.frequency and \
-                    asset.properties.frequency.type == Frequencies.TEMPORARY and \
-                    not asset.properties.frequency.persist:
+                if (
+                    asset.properties.frequency
+                    and asset.properties.frequency.type == Frequencies.TEMPORARY
+                    and not asset.properties.frequency.persist
+                ):
                     continue
 
             if asset.category == AssetCategories.SHEETS and asset.instance not in (
@@ -411,12 +404,12 @@ class Board:
             if inst not in dump[cat]:
                 dump[cat][inst] = []
 
-            dump[cat][inst].append(asdict(asset.state))
+            dump[cat][inst].append(serialize(asset.state))
 
         # Serialize abstract world metadata
         if self.calendar:
-            dump[Shortcuts.CALENDAR] = asdict(self.calendar)
+            dump[Shortcuts.CALENDAR] = serialize(self.calendar)
         if self.plot:
-            dump[Shortcuts.PLOTS] = asdict(self.plot) if hasattr(self.plot, "__dataclass_fields__") else self.plot
+            dump[Shortcuts.PLOTS] = serialize(self.plot)
 
         Loader.save_state(world, slot, dump)
