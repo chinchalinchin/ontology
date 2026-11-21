@@ -1,5 +1,6 @@
 """
 @domain.concrete
+@domain.system
 @app.menu
 @menu.handler
 @workflow.rendering

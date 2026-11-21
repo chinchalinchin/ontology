@@ -131,7 +131,9 @@ tools:
     # ------------------------------------------------
     manager:
       board: false
+      bugs: false
       docs: false
+      templates: false
     # ------------------------------------------------
     metrics:
       pstats: false
@@ -160,10 +162,12 @@ tools:
       board:
         phase: <phase>
         action: <action>
+      bugs: 
+        - <bug-id>
       docs:
         exclude:
           - <doc-page>
-      template: 
+      templates: 
         - <template>
     # ------------------------------------------------
     metrics:

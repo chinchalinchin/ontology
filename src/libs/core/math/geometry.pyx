@@ -6,6 +6,7 @@
 @workflow.combat
 @workflow.collisions
 @workflow.navigation
+@workflow.rendering
 
 # Ontology: Libraries - libs.core.math.geometry
 

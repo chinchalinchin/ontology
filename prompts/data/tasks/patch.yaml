@@ -1,0 +1,126 @@
+# ----------------------------------------------------
+context: true
+# ----------------------------------------------------
+task:
+# ----------------------------------------------------
+  template: maintain/patch.md.j2
+# ----------------------------------------------------
+tools:
+# ----------------------------------------------------
+  views:
+    # --------------------------------------------
+    manager:
+      bugs: true
+      docs: true
+      templates: true
+    # --------------------------------------------
+    source:
+      data: false
+      filter: true
+    # --------------------------------------------
+    shell:
+      directory: true
+    # --------------------------------------------
+    tests:  
+      configuration: false
+      pipeline: false
+# ----------------------------------------------------
+  parameters:
+    # --------------------------------------------
+    manager:
+      bugs: 
+        - b035
+        - b036
+        - b047
+        - b048
+        - b049
+        - b050
+        - b051
+      docs:
+        exclude:
+          # - 00-overview
+          # - 01-assets
+          # - 02-sprites
+          - 03-compositions
+          - 04-intentions
+          # - 05-mechanics
+          # - 06-widgets
+          - 07-acoustics
+          - 08-narratives
+          - 09-ecology
+          - 10-chemistry
+          - 11-emergence
+          # - 12-architecture
+      templates:
+        - template-backlog
+        - template-bug
+    # --------------------------------------------
+    source:
+      filter:
+        default: AND
+        queries:
+          - title: 'Application - Core'
+            scan:
+              domain: [ system ]
+              app: [ core, component ]
+          - title: 'Application - Devices'
+            scan:
+              domain: [ user ]
+              app: [ device ]
+          # - title: 'Application - Predicates'
+          #   scan:
+          #     domain: [ logic ]
+          #     app: [ module, semantics ]
+          # - title: 'Board - Cache'
+          #   scan:
+          #     domain: [ system ]
+          #     app: [ module, board ]
+          - title: 'Asset - Abstract'
+            scan:
+              domain: [ abstract ]
+              app: [ asset ]
+          - title: 'Asset - Core Models'
+            scan:
+              domain: [ model ]
+              app: [ asset, core ]
+          - title: 'Asset - Frames'
+            scan:
+              domain: [ concrete ]
+              app: [ asset ]
+              asset: [ frame ]
+          - title: 'Handlers - Rendering'
+            scan: 
+              domain: [ system ]
+              app: [ menu ]
+              menu: [ handler ]
+              workflows: [ rendering ]
+          - title: 'Libraries - Rendering'
+            scan:
+              domain: [ system ]
+              app: [ library ]
+              workflows: [ rendering ]
+          # - title: 'Relation - Material'
+          #   scan:
+          #     domain: [ logic ]
+          #     app: [ module ]
+          #     modality: [ material ]
+          # - title: 'Services - Generation'
+          #   scan:
+          #     domain: [ logic ]
+          #     app: [ service ]
+          #     workflows: [ generation ]
+      data:
+        properties: [ ]
+        state: [ ]
+        configurations: [  ]
+        templates: [ ]
+    # --------------------------------------------
+    shell:
+      directory: |
+        tree -L 3 --gitignore -I "build|*.so|*.png|__pycache__|__init__.py"
+    # --------------------------------------------
+    tests:
+      pipeline:
+        command: pytest -m
+        marker: '"app_core or workflow_collisions"'
+        # scope: '**/test_{actuator,cartographer}.py'

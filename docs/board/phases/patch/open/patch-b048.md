@@ -1,5 +1,5 @@
 
-##### Bug B004: Outlined Text Glyph Misalignment & Missing Vertical Offset in `render.write`
+##### Bug B048: Outlined Text Glyph Misalignment & Missing Vertical Offset in `render.write`
 
 **STATUS**: OPEN
 **SEVERITY**: Medium

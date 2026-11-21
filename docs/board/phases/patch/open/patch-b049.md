@@ -1,5 +1,5 @@
 
-##### Bug B003: Texture Blend Mode Corruption in `render.construct` & Un-cleared `bg_canvas` in `Screen.reconstruct`
+##### Bug B049: Texture Blend Mode Corruption in `render.construct` & Un-cleared `bg_canvas` in `Screen.reconstruct`
 
 **STATUS**: OPEN
 **SEVERITY**: Medium

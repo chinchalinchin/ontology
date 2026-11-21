@@ -1,0 +1,7 @@
+{% set path = properties.paths.root + properties.paths.phases + 'patch/open/'%}
+### View: Bug Reports
+
+{% for bug in tools.parameters.manager.bugs %}
+{{ file(path ~ 'patch-' ~ bug ~ '.md')}}
+
+{% endfor %}

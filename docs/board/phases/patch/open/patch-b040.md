@@ -18,7 +18,6 @@ In `src/app/game/board/modules/cache.py`, `Cache.index_batch` populates the spat
 
 In `Cache.evict_batch`, when `AssetCategories.TILES` is present in `affected_categories`, iterate over evicted tiles (or rebuild affected layer tilemaps from remaining `cached_categories[layer][AssetCategories.TILES]`) to remove matching entries from `self.cached_tilemap`.
 
-
 ##### Bug B040-B (Duplicate Report): `Cache.evict_batch()` and `Cache.relayer()` Leave Stale Tile References in `cached_tilemap`
 
 **STATUS**: OPEN
