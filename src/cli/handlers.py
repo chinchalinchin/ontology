@@ -1,4 +1,5 @@
 """
+@domain.system
 @domain.logic
 @workflow.cli
 

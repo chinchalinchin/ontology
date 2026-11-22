@@ -109,41 +109,46 @@ tools:
             scan:
               domain: [ system ]
               app: [ core, component ]
-          - title: 'Application - Predicates'
+          - title: 'Application - Devices'
             scan:
-              domain: [ logic ]
-              app: [ module, semantics ]
-          - title: 'Board - Cache'
-            scan:
-              domain: [ system ]
-              app: [ module, board ]
+              domain: [ user ]
+              app: [ device ]
           - title: 'Asset - Abstract'
             scan:
               domain: [ abstract ]
               app: [ asset ]
+          - title: 'Mechanic - Abstract'
+            scan:
+              domain: [ abstract] 
+              app: [ mechanic ]
           - title: 'Asset - Models'
             scan:
               domain: [ model ]
+              app: [ asset, core ]
+          - title: 'Asset - Models: Sheet'
+            scan:
+              domain: [ model ]
               app: [ asset ]
-          - title: 'Asset - Hitboxes'
+              category: [ sheets ]
+          - title: 'Asset - Implementations: Sheets'
             scan:
               domain: [ concrete ]
               app: [ asset ]
-              asset: [ hitbox ]
-          - title: 'Relation - Material'
-            scan:
-              domain: [ logic ]
-              app: [ module ]
-              modality: [ material ]
-          - title: 'Services - Generation'
-            scan:
-              domain: [ logic ]
-              app: [ service ]
-              workflows: [ generation ]
-          - title: 'Libraries - Models'
+              category: [ sheets ]
+          - title: 'Automata - Intentional Transitions'
             scan: 
-              domain: [ model ]
+              domain: [ automata ]
+              modality: [ intention ]
+          - title: 'Mechanics - Intentional'
+            scan:
+              domain: [ concrete ]
+              app: [ mechanic ]
+              modality: [ intention ]
+          - title: 'Libraries - Navigation'
+            scan: 
+              domain: [ system ]
               app: [ library ]
+              workflows: [ navigation ]
       data:
         properties: [ ]
         state: [ ]

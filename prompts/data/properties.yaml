@@ -13,7 +13,7 @@ properties:
     # ---------------------------------------
     blocks: prompts/tasks/blocks/
     board: docs/board/
-    config: src/data/config
+    config: src/data/configurations
     docs: docs/
     diagrams: docs/static/mmd/
     dumps: src/data/dumps/

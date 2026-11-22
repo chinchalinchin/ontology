@@ -3,13 +3,13 @@
 {% for config in tools.parameters.source.data.configurations %}
 #### Configurations: {{ config }}
 
-* Location: `src/data/config/{{ config }}`
+* Location: `src/data/configurations/{{ config }}`
 
-{% for f in yamls('src/data/config/' ~ config, recursive=True) | sort %}
+{% for f in yamls('src/data/configurations/' ~ config, recursive=True) | sort %}
 **{{ f }}**
 
 ```yaml
-{{ file(properties.paths.root ~ 'src/data/config/' ~ config ~ '/' ~ f) }}
+{{ file(properties.paths.root ~ 'src/data/configurations/' ~ config ~ '/' ~ f) }}
 ```
 
 {% endfor %}
