@@ -1,4 +1,4 @@
-##### Bug 06-02-04: `attack` Intention Softlock, Unreachable `attack -> scavenge`, and Unsafe Attribute Dereference
+##### Bug B060: `attack` Intention Softlock, Unreachable `attack -> scavenge`, and Unsafe Attribute Dereference
 
 **STATUS**: OPEN
 **SEVERITY**: HIGH

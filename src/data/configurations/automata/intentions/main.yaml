@@ -26,8 +26,11 @@ intentions:
     - next: threaten
       conditions:
         - sprite.goal 
-        - sprite.goal.category == constants.Goals.LOOT
-        - sprite.inventory.wallet < sprite.memory.prices.get(sprite.goal.name)
+        - sprite.goal.category == constants.Goals.RESOURCE
+        # TODO: need to expose a Materializer function to the 
+        #       to the execution environment to calculate
+        #       precise inventory cost.
+        - sprite.inventory.pouch.get(sprite.goal.name) < sprite.memory.prices.get(sprite.goal.name)
         - sprite.psyche.motivation == constants.Motivations.SURVIVAL
     - next: idle
       conditions: 
@@ -155,11 +158,19 @@ intentions:
     - next: build
       conditions:
         - sprite.goal
-        - sprite.goal.category == constants.Goals.LOOT
+        - sprite.goal.category == constants.Goals.RESOURCE
+        # TODO: expose a Materializer function to the 
+        #       execution environment to calculate
+        #       exact cost for transition
+        - sprite.inventory.pack.get(sprite.goal.name) > 0
     - next: mine
       conditions:
         - sprite.goal
-        - sprite.goal.category == constants.Goals.LOOT
+        - sprite.goal.category == constants.Goals.RESOURCE
+        # TODO: expose a Materializer function to the 
+        #       execution environment to calculate
+        #       exact cost for transition
+        - sprite.inventory.pack.get(sprite.goal.name) == 0
     - next: idle
       conditions:
         - not sprite.goal

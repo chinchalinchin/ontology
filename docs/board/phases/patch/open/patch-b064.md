@@ -1,4 +1,3 @@
-
 ##### Bug B064: `CognitionMechanics._track` Blocks Cross-Layer Door Subsumption for Static Goals
 
 **STATUS**: OPEN

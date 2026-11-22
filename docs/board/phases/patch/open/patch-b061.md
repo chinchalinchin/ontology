@@ -1,22 +1,18 @@
-##### Bug 06-02-04: `attack` Intention Softlock, Unreachable `attack -> scavenge`, and Unsafe Attribute Dereference
+##### Bug 061: Per-Tick `logger.info` Logging in `PlayerMechanics` and Dead Statement in `StateFrame`
 
 **STATUS**: OPEN
-**SEVERITY**: HIGH
+**SEVERITY**: LOW
 
 **Description**
 
-In `src/data/config/intentions/main.yaml` (lines 3–22):
-1. `CognitionMechanics` runs before `TransitionMechanics` and clears `sprite.state.goal = None` as soon as `target.mutators.triggers.dead` becomes `True`. Consequently, `attack -> scavenge` (which requires `sprite.goal` and `target.dead`) is unreachable.
-2. `attack` has no exitpoint to `idle` when `not sprite.goal` and no other `TARGET` exists in `memory.goals`, violating the Intention Loop hub invariant and leaving the Sprite permanently stuck in `attack`.
-3. `attack -> attack` accesses `sprites.get(sprite.goal.name).mutators.triggers.dead` without an existential `sprites.get(sprite.goal.name)` check, and does not check `is_near(..., action.radius)` to transition back to `hunt` when a Target retreats out of attack range.
+1. `src/app/game/logic/mechanics/intentional/player.py` emits two `logger.info` statements on every simulation tick while `player.state.intention == Intentions.ATTACK`, causing hot-loop log I/O overhead analogous to `SpriteFrame`.
+2. `src/app/assets/frames/sheets.py` contains a stray no-op expression `properties.actions` in `StateFrame.index`.
 
 **Steps to Replicate**
 
-1. Put an autonomous Sprite in `Intentions.ATTACK` targeting an enemy with `memory.goals = {}`.
-2. Set the target's `mutators.triggers.dead = True`.
-3. Run `CognitionMechanics.update()` then `TransitionMechanics.update()`.
-4. Observe `sprite.state.goal` becomes `None`, `attack -> scavenge` does not trigger, and `sprite.state.intention` stays `Intentions.ATTACK` indefinitely.
+1. Hold or trigger `Intentions.ATTACK` on the Player with logging at `INFO` level.
+2. Observe two `SheetState(...)` / `Equipment(...)` log entries emitted every tick for the full duration of the attack animation.
 
 **Proposed Remediation**
 
-Add a terminal `- next: idle` rule (`conditions: [not sprite.goal]`) to `attack`, guard `sprites.get(sprite.goal.name)` before dereferencing `.mutators`, add a range-loss transition back to `hunt` when the live Target leaves `action.radius`, and decouple `scavenge` acquisition cleanly via `idle` rather than relying on a cleared `TARGET` goal.
+Downgrade the per-tick `logger.info` calls in `PlayerMechanics` (and `SpriteFrame`) to `logger.debug`, and remove the dead `properties.actions` statement in `StateFrame.index`.
