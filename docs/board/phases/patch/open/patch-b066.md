@@ -1,4 +1,4 @@
-##### Bug 06-02-10: `SheetState.goal` Default Factory Instantiates a Truthy Empty `Goal()`
+##### Bug B066: `SheetState.goal` Default Factory Instantiates a Truthy Empty `Goal()`
 
 **STATUS**: OPEN
 **SEVERITY**: LOW

@@ -1,4 +1,4 @@
-##### Bug 0602-03: Silent Conjunct Dropping on ISL Compilation Failure
+##### Bug B069: Silent Conjunct Dropping on ISL Compilation Failure
 
 **STATUS**: OPEN
 **SEVERITY**: MEDIUM

@@ -1,4 +1,4 @@
-##### Bug 0602-02: Cross-Layer Door Subsumption Deadlocks Sprites in `hunt`
+##### Bug B068: Cross-Layer Door Subsumption Deadlocks Sprites in `hunt`
 
 **STATUS**: OPEN
 **SEVERITY**: HIGH

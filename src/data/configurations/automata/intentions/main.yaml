@@ -181,7 +181,7 @@ intentions:
         - sprite.goal
         - sprite.goal.category == constants.Goals.TARGET
         - sprites.get(sprite.goal.name)
-        - sprites.get(sprite.goal.name).intention == constants.Intentions.ATTACK
+        - sprites.get(sprite.goal.name).intention == constants.Intentions.MOCK
     - next: idle
       conditions:
         - not sprite.goal

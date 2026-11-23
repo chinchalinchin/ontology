@@ -1,4 +1,4 @@
-##### Bug 0602-04: `any_memories_visible` Matches Dead Targets
+##### Bug B070: `any_memories_visible` Matches Dead Targets
 
 **STATUS**: OPEN
 **SEVERITY**: MEDIUM

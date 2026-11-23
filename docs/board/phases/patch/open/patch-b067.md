@@ -1,4 +1,4 @@
-##### Bug 0602-01: `find -> interact` Radius Stops Sprites Outside `InteractionMechanics` Hitbox Overlap
+##### Bug B067: `find -> interact` Radius Stops Sprites Outside `InteractionMechanics` Hitbox Overlap
 
 **STATUS**: OPEN
 **SEVERITY**: HIGH
