@@ -4,7 +4,7 @@
 @app.config
 @app.mechanic
 
-# Ontology: Source - app.models.config.mechanics
+# Ontology: Source - app.models.configurations.engine.mechanics
 
 Models for typing the configuration attributes of Mechanics.
 """

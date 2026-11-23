@@ -21,33 +21,24 @@ from dataclasses import (
 from app.static.semantics import (
     Intentions
 )
-from app.models.config.actions import (
-    ActionConfiguration
+from app.models.configurations.assets import (
+    ActionConfiguration,
+    CompositionConfiguration,
+    MaterialsConfiguration,
+    RecipeConfiguration
 )
-from app.models.config.transitions import (
+from app.models.configurations.automata import (
     IntentionConfiguration,
     PlotConfiguration,
     StageConfiguration,
 )
-from app.models.config.compositions import (
-    CompositionConfiguration
-)
-from app.models.config.mechanics import (
-    MechanicsConfiguration
-)
-from app.models.config.materials import (
-    MaterialsConfiguration
-)
-from app.models.config.mappings import (
+from app.models.configurations.engine import (
+    MechanicsConfiguration,
     MappingConfiguration
 )
-from app.models.config.menus import (
+from app.models.configurations.menus import (
     MenuConfiguration
 )
-from app.models.config.recipes import (
-    RecipeConfiguration
-)
-
 # ---------------------------------------------------------
 
 @dataclass(slots=True, frozen=True)

@@ -1,29 +1,34 @@
 # Application Libraries
-from app.models.config.core import (
+from app.models.configurations.core import (
     Configuration,
 )
-from app.models.config.actions import (
-    ActionConfiguration
-)
-from app.models.config.compositions import (
-    CompositionPseudoState,
-    CompositionConfiguration
-)
-from app.models.config.mappings import (
+from app.models.configurations.engine import (
     WorldMapping,
     MenuMapping,
     DeviceMapping,
-    MappingConfiguration
-)
-from app.models.config.materials import (
-    Cost,
-    MaterialsConfiguration
-)
-from app.models.config.mechanics import (
+    MappingConfiguration,
     MechanicsInstance,
     MechanicsConfiguration
 )
-from app.models.config.menus import (
+from app.models.configurations.assets import (
+    ActionConfiguration,
+    Cost,
+    MaterialsConfiguration,
+    CompositionPseudoState,
+    CompositionConfiguration,
+    Recipe,
+    TileRecipe,
+    CraftRecipe,
+    CursorRecipe,
+    EffectRecipe,
+    ObjectRecipe,
+    SheetRecipe,
+    GeographyRecipe,
+    ResourceRecipe,
+    WidgetRecipe,
+    RecipeConfiguration
+)
+from app.models.configurations.menus import (
     MenuConfiguration,
     MenuNode,
     MenuBinding,
@@ -39,25 +44,12 @@ from app.models.config.menus import (
     SelectTarget,
     BindingTarget,
 )
-from app.models.config.recipes import (
-    Recipe,
-    TileRecipe,
-    CraftRecipe,
-    CursorRecipe,
-    EffectRecipe,
-    ObjectRecipe,
-    SheetRecipe,
-    GeographyRecipe,
-    ResourceRecipe,
-    WidgetRecipe,
-    RecipeConfiguration
-)
-from app.models.config.transitions import (
+from app.models.configurations.automata.transitions import (
     IntentionConfiguration,
     PlotConfiguration,
     StageConfiguration
 )
-from app.models.config.schemas import ConfigurationSchema
+from app.models.configurations.schemas import ConfigurationSchema
 
 __all__ = [ 
     'Configuration',

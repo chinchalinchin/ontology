@@ -4,7 +4,7 @@
 @app.config
 @modality.material
 
-# Ontology: Source - app.models.config.materials
+# Ontology: Source - app.models.configurations.assets.materials
 
 Material Configuration Models.
 """

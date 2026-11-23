@@ -3,7 +3,7 @@
 @app.config
 @modality.action
 
-# Ontology: Source - app.models.config.actions
+# Ontology: Source - app.models.configurations.assets.actions
 
 Action Configuration Models.
 """

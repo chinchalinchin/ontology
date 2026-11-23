@@ -3,7 +3,7 @@
 @app.config
 @modality.auditory
 
-# Ontology: Source - app.models.config.sounds
+# Ontology: Source - app.models.configurations.acoustics.sounds
 
 Sound Configuration models.
 """

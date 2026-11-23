@@ -4,7 +4,7 @@
 @app.config
 @app.device
 
-# Ontology: Source - app.models.config.mappings
+# Ontology: Source - app.models.configurations.engine.devices
 
 Device Mapping Configuration Models.
 """

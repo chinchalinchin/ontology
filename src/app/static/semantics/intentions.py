@@ -96,12 +96,26 @@ class Inventories(StrEnum):
 # -------------------------------- GOAL ENUMERATIONS
 
 class Goals(StrEnum):
+    DOOR            = "door"
     OBJECT          = "object"
     PROPERTY        = "property"
     POSITION        = "position"
     TARGET          = "target"
+    RESOURCE        = "resource"
     SUBJECT         = "subject"
 
+class Outcomes(StrEnum):
+    COMPLETE        = "complete"
+    LAYERED         = "layered"
+    LOST            = "lost"
+
+class Responses(StrEnum):
+    FORGET          = "forget"
+    STORE           = "store"
+    PUSH            = "push"
+
+class SideEffect(StrEnum):
+    CONFUSION       = "confusion"
 class PlayerGoals(StrEnum):
     UP              = "up"
     LEFT            = "left"
