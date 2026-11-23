@@ -18,7 +18,7 @@ from app.game.menus.bindings.text import (
     TextBinding,
     paginate,
 )
-from app.models.config.menus import (
+from app.models.configurations.menus import (
     ButtonParameters,
     IconTarget,
     MenuBinding,

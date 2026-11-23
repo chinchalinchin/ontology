@@ -25,7 +25,7 @@ from app.static.semantics import (
     Bindings
 )
 from app.models.core import AxisAlignment
-from app.models.config.menus import (
+from app.models.configurations.menus import (
     MenuNode,
     PaneParameters,
     GizmoParameters,

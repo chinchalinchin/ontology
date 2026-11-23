@@ -21,7 +21,7 @@ from app.static.semantics import (
     MultiplicationStrategies
 )
 from app.game.logic.relations.materials import MaterialIndex
-from app.models.config.materials import Cost
+from app.models.configurations.materials import Cost
 from app.models.properties import Material
 
 # Cython Libraries

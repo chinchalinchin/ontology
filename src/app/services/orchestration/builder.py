@@ -50,7 +50,7 @@ from app.models.groups import (
 )
 from app.models.properties import PropertiesSchema
 from app.models.state import NoState
-from app.models.config import (
+from app.models.configurations import (
     ConfigurationSchema, 
     MechanicsInstance
 )

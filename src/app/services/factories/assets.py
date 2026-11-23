@@ -59,7 +59,7 @@ from app.assets.hitboxes import (
 )
 from app.game.menus.bindings import Binding
 from app.game.menus.core import Widget
-from app.models.config import (
+from app.models.configurations import (
     Recipe,
     MenuNode
 )

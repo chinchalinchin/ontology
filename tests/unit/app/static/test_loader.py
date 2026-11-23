@@ -38,7 +38,7 @@ from app.models.adapters import (
     serialize_scale,
     serialize_vel,
 )
-from app.models.config import (
+from app.models.configurations import (
     ActionConfiguration,
     CompositionConfiguration,
     ConfigurationSchema,

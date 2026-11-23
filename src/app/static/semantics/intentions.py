@@ -114,8 +114,9 @@ class Responses(StrEnum):
     STORE           = "store"
     PUSH            = "push"
 
-class SideEffect(StrEnum):
+class Reflexes(StrEnum):
     CONFUSION       = "confusion"
+
 class PlayerGoals(StrEnum):
     UP              = "up"
     LEFT            = "left"

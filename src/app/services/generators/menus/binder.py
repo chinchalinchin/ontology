@@ -17,7 +17,7 @@ from typing import (
 
 # Application Libraries
 from app.static.semantics import Bindings
-from app.models.config.menus import MenuBinding
+from app.models.configurations.menus import MenuBinding
 from app.models.menus import MenuContext
 from app.game.menus.bindings import (
     Binding, 

@@ -20,7 +20,7 @@ from dataclasses import (
 )
 
 # Application Libraries
-from app.models.config.core import Configuration
+from app.models.configurations.core import Configuration
 from app.models.state import (
     PropertyState, 
     StateSchema

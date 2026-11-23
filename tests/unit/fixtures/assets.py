@@ -19,7 +19,7 @@ from app.assets.base import (
     Taxonomy,
 )
 from app.game.logic.relations import MaterialIndex
-from app.models.config import (
+from app.models.configurations import (
     ConfigurationSchema,
     MenuNode,
 )

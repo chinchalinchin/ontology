@@ -44,7 +44,7 @@ from app.game.logic.mechanics import (
     TelemetryMechanics,
     TransitionMechanics
 )
-from app.models.config import MechanicsInstance
+from app.models.configurations import MechanicsInstance
 from app.services.translators import (
     CompilerTranslator,
     LambdaTranslator

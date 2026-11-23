@@ -40,7 +40,7 @@ from app.models.state import (
     IconState,
     CollectionState
 )
-from app.models.config.menus import (
+from app.models.configurations.menus import (
     MenuConfiguration,
     MenuNode,
     PaneParameters,

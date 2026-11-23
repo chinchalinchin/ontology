@@ -20,8 +20,8 @@ from app.game.menus.core import (
     Menu,
 )
 from app.game.screen import Screen
-from app.models.config import ConfigurationSchema
-from app.models.config.menus import (
+from app.models.configurations import ConfigurationSchema
+from app.models.configurations.menus import (
     ApertureTarget,
     CollectionTarget,
     GizmoParameters,

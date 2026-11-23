@@ -37,7 +37,7 @@ from app.game.logic.relations import (
     ShorelineIndex,
 )
 from app.game.screen import Screen
-from app.models.config import (
+from app.models.configurations import (
     ConfigurationSchema,
     MechanicsInstance,
 )

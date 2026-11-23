@@ -16,7 +16,7 @@ import pytest
 import app.static.settings as settings
 from app.game.board import Board
 from app.game.logic.relations import MaterialIndex
-from app.models.config import ConfigurationSchema
+from app.models.configurations import ConfigurationSchema
 from app.models.groups import SpawnableGroup
 from app.models.properties import PropertiesSchema
 from app.models.state import StateSchema

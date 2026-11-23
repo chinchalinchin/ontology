@@ -23,7 +23,7 @@ from app.game.menus.bindings import (
     SelectBinding,
     TextBinding,
 )
-from app.models.config.menus import (
+from app.models.configurations.menus import (
     CollectionTarget,
     MenuBinding,
     TextTarget,

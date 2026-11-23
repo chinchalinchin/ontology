@@ -10,23 +10,34 @@ Everything that is rendered in the [Application](./00-overview.md#application) i
 
 See [Sheets](./01-assets.md#category-sheets) for a complete description of the Asset Category.
 
-#### Sheet: Sprite
+#### Sheet: Player
 
-**State: SpriteState**
+A Player is a special type of Sprite Sheet. It may be thought of as a "*pseudo*"-Asset. It has no Properties that differentiate it in the Hierarchy; Instead, it utilizes Sprite Sheet properties. However, it is differentiated by having a unique [State](./00-overview.md#core-state) and isolated [Intention](./04-intentions.md) management Mechanics. 
+
+The Player Sprite Sheet is configured through the `player` Sprite Sheet. 
+
+!!! important "Player Required"
+    The `player` Sprite *must* be defined in `/src/assets/sheets/main.yml#sprites`.
+
+**State: CharacterState**
 
 * `position: Position`
 * `velocity: Velocity`
-* `layer: str`
-* `intention: Intentions`
+* `meters: Meters`
 * `character: Character`
     * `strength: int`
     * `defense: int`
     * `speed: int` (Maximum magnitude of Velocity vector)
     * `impulse: int` (Amount of acceleration applied to Velocity per game-tick)
 * `animation: AnimationState`
-    * `action: str`
-    * `direction: str`
+    * `action: Actions`
+    * `direction: Directions`
     * `frame: int`
+* `goal: Goal`
+    * `name: str`
+    * `layer: str`
+    * `category: Goals`
+    * `position: Position`
 * `slots: Slots`
     * `equipment: Equipment`
         * `armor: ArmorPalette`
@@ -51,9 +62,11 @@ See [Sheets](./01-assets.md#category-sheets) for a complete description of the A
     * `magic: Meter`
         * `current: int`
         * `maximum: int`
-* `mutators: Mutators`
-    * `triggers: MutatorTriggers`
-    * `parameters: MutatorParameters`
+
+#### Sheet: Sprite
+
+**State: SpriteState(CharacterState)**
+
 * `memory: Memory`
     * `doors: Dict[str, str]`
     * `goals: Dict[str, Goal]`
@@ -67,11 +80,6 @@ See [Sheets](./01-assets.md#category-sheets) for a complete description of the A
     * `expression: AttachmentState`
     * `motivation: Motivations`
     * `persona: str` (*Key for [Library](./08-narratives.md#service-library) dialogue retrieval*)
-* `goal: Goal`
-    * `name: str`
-    * `layer: str`
-    * `category: Goals`
-    * `position: Position`
 * `trajectory: Trajectory`
     * `target: Position`
     * `vertices: List[Position]`
@@ -104,6 +112,13 @@ See [Intentions documentation](./04-intentions.md) for more information.
 Goals are the current focus of the Sprite's path-finding and Direction resolution.
 
 See [Goals documentation](./04-intentions.md) for more information.
+
+###### Goals: Player Goals & Intentions
+
+Players utilize the same information channel (e.g. Goals and Intentions) as Sprites for communicating state changes.
+
+* **Goals (Level-Triggered & Polymorphic):** Players use a "pseudo" Goal to project their input into their intended direction of motion. Multiple directional inputs can overlap simultaneously (e.g., `UP` and `RIGHT`) and are accumulated as a list to allow for diagonal vector movement. This determines the direction of the Player's Velocity in their [kinematic sliding](./05-mechanics.md#core), i.e. $\text{player.velocity} \parallel \text{player.state.goal.position} - \text{player.state.position}$.
+* **Intentions (Edge-Triggered & Singular):** Unlike Goals, Intentions represent discrete state transitions. The hardware polling layer enforces a strict singularity rule: overlapping Intention inputs are collapsed into a single scalar value based on configuration order. This acts as a blocking mechanism, preventing impossible state superpositions (e.g., trying to `build` and `attack` simultaneously).
 
 ##### Model: Trajectory
 
@@ -375,41 +390,6 @@ sprite.state.animation.action = AnimationMap.action(
 
 !!! note "Equipment"
     Equipment Properties are stored in the [Board](./00-overview.md#component-board) database, *not* the Sprite Asset.
-
-#### Sheet: Player
-
-A Player is a special type of Sprite Sheet. It may be thought of as a "*pseudo*"-Asset. It has no Properties that differentiate it in the Hierarchy; Instead, it utilizes Sprite Sheet properties. However, it is differentiated by having a unique [State](./00-overview.md#core-state) and isolated [Intention](./04-intentions.md) management Mechanics. 
-
-The Player Sprite Sheet is configured through the `player` Sprite Sheet. 
-
-!!! important "Player Required"
-    The `player` Sprite *must* be defined in `/src/assets/sheets/main.yml#sprites`.
-
-**State: PlayerState**
-
-* `position: Position`
-* `velocity: Velocity`
-* `layer: str`
-* `meters: Meters`
-* `character: Character`
-* `animation: AnimationState`
-    * `action: Actions`
-    * `direction: Direftions`
-    * `frame: int`
-* `goal: Goal`
-* `intention: Intentions` 
-* `slots: Slots`
-* `inventory: Inventory`
-
-!!! note "PlayerState vs. SpriteState"
-    The PlayerState is a *truncated* SpriteState, i.e. it lacks the complex data structures for managing its `intention`.
-
-##### Field: Player Goals & Intentions
-
-Players utilize the same information channel (e.g. Goals and Intentions) as Sprites for communicating state changes.
-
-* **Goals (Level-Triggered & Polymorphic):** Players use a "pseudo" Goal to project their input into their intended direction of motion. Multiple directional inputs can overlap simultaneously (e.g., `UP` and `RIGHT`) and are accumulated as a list to allow for diagonal vector movement. This determines the direction of the Player's Velocity in their [kinematic sliding](./05-mechanics.md#core), i.e. $\text{player.velocity} \parallel \text{player.state.goal.position} - \text{player.state.position}$.
-* **Intentions (Edge-Triggered & Singular):** Unlike Goals, Intentions represent discrete state transitions. The hardware polling layer enforces a strict singularity rule: overlapping Intention inputs are collapsed into a single scalar value based on configuration order. This acts as a blocking mechanism, preventing impossible state superpositions (e.g., trying to `build` and `attack` simultaneously).
 
 ## Devices
 

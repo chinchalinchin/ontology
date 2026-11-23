@@ -22,7 +22,7 @@ import cli.utilities as utilities
 # Application Libraries
 from app.models.state import StateSchema
 from app.models.properties import PropertiesSchema
-from app.models.config import ConfigurationSchema
+from app.models.configurations import ConfigurationSchema
 
 # Cython Libraries
 from libs.core.models import (

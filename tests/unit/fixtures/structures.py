@@ -25,7 +25,7 @@ from app.game.logic.relations import (
     ProjectileIndex,
     ShorelineIndex,
 )
-from app.models.config import ConfigurationSchema
+from app.models.configurations import ConfigurationSchema
 from app.models.groups import (
     EquipmentGroup,
     SpawnableGroup,

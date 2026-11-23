@@ -17,7 +17,7 @@ from dataclasses import (
 )
 
 # Application Libraries
-from app.models.config import Configuration
+from app.models.configurations import Configuration
 
 
 # ---------------------------------------------------------

@@ -76,10 +76,9 @@ from app.game.logic.mechanics import (
     SeasonMechanics,
     SocialMechanics,
     SwitchMechanics,
-    TelemetryMechanics,
     TransitionMechanics,
 )
-from app.models.config import (
+from app.models.configurations import (
     ConfigurationSchema,
     MechanicsInstance,
 )

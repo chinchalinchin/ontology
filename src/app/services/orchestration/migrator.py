@@ -29,7 +29,7 @@ from app.static.semantics import (
 )
 from app.game.logic.relations import MaterialIndex
 from app.models.properties import PropertiesSchema
-from app.models.config import ConfigurationSchema
+from app.models.configurations import ConfigurationSchema
 from app.services.factories.assets import AssetFactory
 from app.services.generators.game import (
     Decomposer,

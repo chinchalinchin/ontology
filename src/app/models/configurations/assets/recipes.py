@@ -17,7 +17,7 @@ from app.static.semantics import (
     AnimationRecipe,
     HitboxRecipe
 )
-from app.models.config.core import Configuration
+from app.models.configurations.core import Configuration
 
 # ---------------------------------------------------------
 

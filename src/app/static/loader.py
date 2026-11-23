@@ -23,7 +23,7 @@ import app.static.settings as settings
 from app.static.macros.compositions import CompositionCompiler
 from app.models.state import StateSchema
 from app.models.properties import PropertiesSchema
-from app.models.config import ConfigurationSchema
+from app.models.configurations import ConfigurationSchema
 
 logger = logging.getLogger(__name__)
 

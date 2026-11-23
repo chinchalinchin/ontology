@@ -17,7 +17,7 @@ import pytest
 # Application Libraries
 from app.game.menus.bindings import SelectBinding
 from app.services.generators.menus.layout import Layout
-from app.models.config.menus import (
+from app.models.configurations.menus import (
     MenuNode,
     PaneParameters,
     SelectTarget,

@@ -14,7 +14,7 @@ from typing import (
 )
 
 # Application Libraries
-from app.models.config.menus import IconTarget
+from app.models.configurations.menus import IconTarget
 from app.models.menus.contexts import MenuContext
 from app.game.menus.bindings.base import Binding
 

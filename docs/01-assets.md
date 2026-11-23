@@ -893,7 +893,7 @@ Resources do not cycle through animations. Their appearance updates when [Season
 
 * Property File: `/src/assets/sheets/**/*.yaml`
 
-*Sheets* are intentional Assets whose Frames are organized into Actions and Directions. Sheets form the core Asset of the [Engine Loop](./00-overview.md#component-engine); they are used to encapsulate character entities, such as the Player and Non-Playable Sprites. Most of the application is scaffolding for the complex interactions and calculations that occur when Sheet Assets interact with each other and their environment.
+*Sheets* are intentional Assets whose Frames are organized into Actions and Directions. Sheets form the core Asset of the [Engine Loop](./00-overview.md#component-engine); they are used to encapsulate character entities, such as the Player and Non-Playable Sprites. Most of the [Application](./00-overview.md#application) is scaffolding for the complex interactions and calculations that occur when Sheet Assets interact with each other and their environment.
 
 **Semantics: Directions**
 
@@ -966,7 +966,7 @@ Many Sheet Assets reuse the same Action specification. Common Action specificati
 
 A Stack is a list of Sheet Asset IDs to superimpose over one another to form the resultant Sheet displayed on the [Screen](./00-overview.md#component-screen). A Sheet Stack is drawn in the order it is specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.
 
-For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.png` might be stacked on top of `src/assets/sheets/<sheet-category>/skins/male-dark-human.png` to create a new Sheet asset used in the game. This Sprite stack is assembled in the [Registry](./00-overview.md#library-registry) using the `stack` property during the [application bootstrap](./12-architecture.md#specification-initialization). The assembled `stack` is saved as a Sheet Asset, using the `<sheet-id>` as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.
+For example, the `src/assets/sheets/sprites/features/hair-blonde-bangs.png` might be stacked on top of `src/assets/sheets/sprites/skins/male-ivory-human.png` to create a new Sheet asset used in the game. This Sprite stack is assembled in the [Registry](./00-overview.md#library-registry) using the `stack` property during the [Application Initialization](./12-architecture.md#specification-initialization). The assembled `stack` is saved as a Sheet Asset, using the `<sheet-id>` as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.
 
 !!! note "Sheet Stacks"
     It is assumed all Sheets in a Stack conform to the same (Action, Direction) row mapping.
@@ -984,6 +984,14 @@ For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.
 
 * `get(properties, state, frame): returns properties.hitboxes`
 
+**Models: Sheets**
+
+All Sheet Instances inherit and extend the basic SheetState, building in sequence of a hierarchy of complexity.
+
+* SheetState(AssetState): Base Sheet Model.
+* CharacterState(SheetState): Adds Intentionality to Sheet State.
+* SpriteState(CharacterState): Adds autonomous [Cognition](./05-mechanics.md#intentional-mechanic-cognitionmechanics) and [Navigation](./05-mechanics.md#intentional-mechanic-navigationmechanics) to CharacterState.
+
 #### Sheet: Pixies
 
 !!! @TODO(10-03)
@@ -993,17 +1001,22 @@ Pixies are Sheets that have simple game mechanics, i.e. they are excluded from t
 
 **Animation: StateAnimation**
 
-- `state.animation.frame += 1`
-- `if state.animation.frame >= properties.actions[state.animation.action].count: state.animation.frame = 0`
+* `state.animation.frame += 1`
+* `if state.animation.frame >= properties.actions[state.animation.action].count: state.animation.frame = 0`
 
 **Frame: StateFrame**
 
 * `keys(id, state): returns [ ("{id}-{state.animation.action}-{state,animation.direction}-{state.animation.frame}", 0, 0) ]`
 * `index(id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
-**State: TBD**
+**Models: SheetState(AssetState)**
 
-TBD
+* `position: Position`
+* `velocity: Velocity`
+* `animation: AnimationState`
+    * `action: Actions`
+    * `direction: Directions`
+    * `frame: int`
 
 #### Sheet: Sprites
 

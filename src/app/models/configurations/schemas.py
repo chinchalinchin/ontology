@@ -3,7 +3,7 @@
 @app.config
 @app.schema
 
-# Ontology: Source - app.models.config.schemas
+# Ontology: Source - app.models.configurations.schemas
 
 Models for typing Configuration schemas.
 """

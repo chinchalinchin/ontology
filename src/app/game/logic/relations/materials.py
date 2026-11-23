@@ -33,7 +33,7 @@ from app.static.semantics import (
 )
 
 if TYPE_CHECKING:
-    from app.models.config.materials import MaterialsConfiguration
+    from app.models.configurations.assets.materials import MaterialsConfiguration
 
 logger = logging.getLogger(__name__)
 

@@ -41,7 +41,7 @@ from app.game.logic.modules.multipliers import (
     ExpansionMultiplier,
     PerimeterMultiplier,
 )
-from app.models.config import (
+from app.models.configurations import (
     CompositionConfiguration,
     RecipeConfiguration
 )
