@@ -103,7 +103,7 @@ tools:
       data:
         properties: [ sheets ]
         state: [ ]
-        configurations: [ automata/actions, automata/intentions ]
+        configurations: [ assets/actions, automata/intentions, automata ]
         templates: [ ]
     # --------------------------------------------
     shell:

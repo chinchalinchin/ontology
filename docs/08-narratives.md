@@ -16,9 +16,9 @@ A Sprite, whose `psyche.persona = <persona>` is defined through [State files](./
 
 ### Service: Library
 
-* Address: `src/data/config/library/main.yaml`
+* Address: `src/data/configurations/library/main.yaml`
 
-The Library reads in the dialogue scripts stored in `src/data/config/library/main.yaml`, otherwise known as the *Library directory*.
+The Library reads in the dialogue scripts stored in `src/data/configurations/library/main.yaml`, otherwise known as the *Library directory*.
 
 TODO
 

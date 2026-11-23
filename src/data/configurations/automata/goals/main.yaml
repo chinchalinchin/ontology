@@ -1,0 +1,108 @@
+goals:
+  subject:
+    complete:
+      reactions: [ forget ]
+      conditions:
+        - not sprite.psyche.dialogue
+    layered:
+      reactions: [ push ]
+      conditions:
+        - sprite.goal.layer
+        - sprite.layer != sprite.goal.layer
+    lost:
+      reactions: [ store, confusion ]
+      conditions:
+        - functions.is_near(
+            sprite.goal.position,
+            sprite.position,
+            sprite.mutators.parameters.action.radius
+          )
+        - not sprite.mutators.triggers.vision
+  target:
+    complete:
+      reactions: [ forget ]
+      conditions:
+        - not target or target.mutators.triggers.dead
+    layered:
+      reactions: [ push ]
+      conditions:
+        - sprite.goal.layer
+        - sprite.layer != sprite.goal.layer
+    lost:
+      reactions: [ store, confusion ]
+      conditions:
+        - functions.is_near(
+            sprite.goal.position,
+            sprite.position,
+            sprite.mutators.parameters.action.radius
+          )
+        - not sprite.mutators.triggers.vision
+  position:
+    complete:
+      reactions: []
+      conditions:
+        - functions.is_near(
+            sprite.goal.position,
+            sprite.position,
+            sprite.mutators.parameters.action.radius
+          )
+    layered:
+      reactions: [ push ]
+      conditions:
+        - sprite.goal.layer
+        - sprite.layer != sprite.goal.layer
+    lost:
+      reactions: []
+      conditions:
+        - sprite.trajectory.stalled or sprite.intention in [constants.Intentions.FIND, constants.Intentions.HUNT]
+  door:
+    complete:
+      reactions: [ forget ]
+      conditions:
+        - sprite.layer != sprite.goal.layer
+    lost:
+      reactions: [ forget ]
+      conditions:
+        - not target or sprite.trajectory.stalled
+  object:
+    complete:
+      reactions: [ forget ]
+      conditions:
+        - not target or getattr(target, 'switch', False)  # Replace once Object interaction completion contract is finalized
+    layered:
+      reactions: [ push ]
+      conditions:
+        - sprite.goal.layer
+        - sprite.layer != sprite.goal.layer
+    lost:
+      reactions: [ store ]
+      conditions:
+        - sprite.trajectory.stalled
+  property:
+    complete:
+      reactions: [ forget ]
+      conditions:
+        - sprite.goal.name in sprite.memory.property
+    layered:
+      reactions: [ push ]
+      conditions:
+        - sprite.goal.layer
+        - sprite.layer != sprite.goal.layer
+    lost:
+      reactions: [ store ]
+      conditions:
+        - sprite.trajectory.stalled
+  resource:
+    complete:
+      reactions: [ forget ]
+      conditions:
+        - not target
+    layered:
+      reactions: [ push ]
+      conditions:
+        - sprite.goal.layer
+        - sprite.layer != sprite.goal.layer
+    lost:
+      reactions: [ store ]
+      conditions:
+        - sprite.trajectory.stalled

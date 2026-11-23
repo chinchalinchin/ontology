@@ -2,7 +2,7 @@
 
 A Composition is collection of multiple Assets organized into a formula to allow their "*virtualization*" and reuse. A Composition Configuration defines a Composition `id` that can be referenced like any other Asset in the [State file](./00-overview.md#state). 
 
-Composition Configuration can be found in `/src/data/config/compositions/**/*.yml`, otherwise known as the *Composition directories*.
+Composition Configuration can be found in `/src/data/configurations/assets/compositions/**/*.yml`, otherwise known as the *Composition directories*.
 
 ## Category: Crafts
 

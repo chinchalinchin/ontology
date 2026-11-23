@@ -1,5 +1,3 @@
-
-
 ##### Draft: Three-Tier Sheet State & Component Hierarchy
 
 - **Page**: `docs/01-assets.md` & `docs/02-sprites.md`

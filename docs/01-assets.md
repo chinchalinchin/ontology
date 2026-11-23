@@ -921,7 +921,7 @@ A Sheet Asset is partitioned along the axes of *Direction*, *Action* and *Count*
     For Sheets, it is assumed coordinates of an image in the Asset file are *completely determined* by Action, Direction and Frame. It is assumed Actions form contiguous rows partitioned by Direction, and Frames are organized in horizontal cells of equal length. This specification is enforced on the application level.
 
 !!! note "LPC Specification"
-    While an arbitrary Action Set can be defined in `/src/data/config/actions/main.yaml`, the documentation will often assume the LPC (Liberated Pixel Cup) specification when discussing Action, Direction and Frame, without loss of generality. The values for these fields in the LPC Spec are enumerated below,
+    While an arbitrary Action Set can be defined in `/src/data/configurations/assets/actions/main.yaml`, the documentation will often assume the LPC (Liberated Pixel Cup) specification when discussing Action, Direction and Frame, without loss of generality. The values for these fields in the LPC Spec are enumerated below,
 
     The Frames per Action for the LPC Spec are given below,
 

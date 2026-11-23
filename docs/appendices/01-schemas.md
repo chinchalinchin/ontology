@@ -78,49 +78,47 @@ Brick Frame Strut Hitbox
 
 #### Configuration: Actions
 
-* Location: `/src/data/config/actions/main.yaml`
+* Location: `/src/data/configurations/assets/actions/main.yaml`
 
 Action Configurations determine the (Action, Direction) partitions employed by a Sheet Asset.
 
 #### Configuration: Compositions
 
-* Location: `/src/data/config/compositions.yaml`
+* Location: `/src/data/configurations/assets/compositions.yaml`
 
 Composition Configuration defines a collection of Assets that can be deployed as a unit onto the Board.
 
 #### Configuration: Intentions
     
-* Location: `/src/data/config/intentions/main.yaml`
-
+* Location: `/src/data/configurations/automata/intentions/main.yaml`
 
 #### Configuration: Library
 
-* Location: `/src/data/config/library/main.yaml`
+* Location: `/src/data/configurations/library/main.yaml`
 
-#### Configuration: Mapping
+#### Configuration: Device Mappings
 
-* Location: `/src/data/config/mappings/main.yaml`
-
+* Location: `/src/data/configurations/engine/devices/main.yaml`
 
 #### Configuration: Materials
 
-TODO
+* Location: `src/data/configurations/assets/materials/main.yaml`
 
 #### Configuration: Mechanics
 
-* Location: `/src/data/config/mechanics/main.yaml`
+* Location: `/src/data/configurations/engine/mechanics/main.yaml`
 
 Mechanics Configuration defines what Mechanic classes are instantiated by the game engine. The order in which they are specified in the schema becomes the order of execution in the game engine.
 
 #### Configuration: Menus
 
-* Location: `src/data/config/menus/main.yaml`
+* Location: `src/data/configurations/menus/**/main.yaml`
 
 TODO
 
 #### Configuration: Recipes
 
-* Location: `/src/data/config/recipes/main.yaml`
+* Location: `/src/data/configurations/assets/recipes/main.yaml`
 
 Recipe Configuration files determine the specific (Animation, Frame, Hitbox) components injected into a (Category, Instance)-node in the Asset Hierarchy. The Category and Instance key are encoded into the top-level fields of each Recipe.
 

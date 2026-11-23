@@ -413,7 +413,7 @@ TODO
 
 ## Configuration: Mechanics
 
-* Location: `/src/data/config/mechanics/main.yaml`
+* Location: `/src/data/configurations/engine/mechanics/main.yaml`
 
 Mechanics Configuration defines what Mechanic classes are instantiated by the [Factory](./00-overview.md#service-factory) and what dependencies are injected into them. 
 

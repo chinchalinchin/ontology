@@ -163,7 +163,7 @@ Synthesizing formal BDI, HTN, SMDP Option theory, and ABL precondition-monitorin
 
 ###### Goal: Declarative Goal Resolution Executor
 
-Replace ad-hoc resolution logic with a compiled `Executors.GOAL` Executor backed by `src/data/config/goals/main.yaml`, supporting canonical `(COMPLETE, LAYERED, LOST)` precedence, commitment-stack `push`, and stall/removal `lost` guards:
+Replace ad-hoc resolution logic with a compiled `Executors.GOAL` Executor backed by `src/data/configurations/automata/goals/main.yaml`, supporting canonical `(COMPLETE, LAYERED, LOST)` precedence, commitment-stack `push`, and stall/removal `lost` guards:
 
 ```yaml
 goals:

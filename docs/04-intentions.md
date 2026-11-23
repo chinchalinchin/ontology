@@ -82,7 +82,7 @@ If $i_j:i_{j+1}$ where $i_j, i_{j+1} \neq \text{idle}$, then that transition is 
 
 ### Intention: Transition Matrix
 
-* Location: `/src/data/config/intentions/main.yaml`
+* Location: `/src/data/configuration/automata/intentions/main.yaml`
 
 !!! important "Player Exclusion"
     The Player State does not observe the Intention Transition matrix; the Player State is managed by polling the user's input and mapping input to intention. See [Player documentation](./02-sprites.md#instance-player) for more information on the Player.
@@ -214,7 +214,7 @@ Each Goal Category identifies the class of outcomes a Sprite is pursuing:
 
 ### Goal: Satisfaction
 
-* Location: `/src/data/config/goals/main.yaml`
+* Location: `/src/data/configurations/automata/goals/main.yaml`
 
 Goal lifecycle resolution is governed declaratively by the **Goal Resolution Matrix**, compiled and evaluated using the same propositional condition language as the [Intention Transition Matrix](#intention-transition-matrix).
 
