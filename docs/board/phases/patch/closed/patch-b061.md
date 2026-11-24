@@ -1,6 +1,6 @@
 ##### Bug 061: Per-Tick `logger.info` Logging in `PlayerMechanics` and Dead Statement in `StateFrame`
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: LOW
 
 **Description**
@@ -16,3 +16,5 @@
 **Proposed Remediation**
 
 Downgrade the per-tick `logger.info` calls in `PlayerMechanics` (and `SpriteFrame`) to `logger.debug`, and remove the dead `properties.actions` statement in `StateFrame.index`.
+
+- **NOTE**: This is not a legitimate bug. Do not open "bugs" about logging. Closed.

@@ -1,7 +1,9 @@
 **Guideline: Documentation**
 
 * **Generality** Documentation should **not** be *hyper-specific*. Do **not** document each and every function call, or `dict` lookup. Do **not** litter the Documentation with string literals, i.e. `tickmarks`. The point of Documentation is to create a metalogical framework for understanding the Application, not for replicating the Codebase into pseudocode. Do **not** reference specific function calls like `malloc()` or `cosf()`. The Documentation should **not** contain any reference to implementation-specific libraries beyond the Application libraries themselves. 
-* **Conciseness** Do **not** employ pointless filler words like "*precisely*", "*exactly*", "*pure*", etc. All unnecessary adjectives and abverbs should be culled from the Documentation.
+* **Conciseness** Do **not** employ pointless filler words like "*precisely*", "*exactly*", "*purely*", etc. All unnecessary adjectives and abverbs should be culled from the Documentation.
+* In Documentation drafts, use plain English and existing capitalized terms. Do not invent compound technical nouns (e.g., "minimal kinematic base", "aquatic frame modulation"). Do not import terminology or jargon that has not been defined into Documentation.
+* State what a thing is or does using simple subject–verb–object sentences. Never replace a concrete action with an abstract noun (write "tints the lower half of the Asset", not "governs aquatic frame modulation"). Never invent reasons or performance justifications for why a system is designed a certain way unless stated in the provided docs.
 
 **Example: Poor Documentation**
 
@@ -9,10 +11,10 @@ Example of **Extremely Poor** Documentation:
 
     This module implements the Rapidly-exploring Random Tree (RRT) pathfinding algorithm in pure C memory.
 
-    - **Broad-Phase Culling & Memory Management**: Computes an AABB search window around `(sx, sy)` and `(tx, ty)` padded by `20% + 2 * step_size` (with origin fallback clamping), packing only intersecting obstacles into a contiguous `RRTObstacle*` buffer via `malloc()`. Allocates `RRTNode*` and integer index buffers (`path_buf`, `forward_buf`, `pruned_buf`) sized to `max_iter + 2`, freeing all buffers synchronously in a `try...finally` block.
-    - **Tree Representation**: Nodes are represented as flat `RRTNode` structs containing coordinate values and an integer `parent_idx`, eliminating object pointer chasing and heap fragmentation.
-    - **Inner Loop (`nogil`)**: Releases the Python GIL during tree exploration. Executes 5% goal-biased continuous coordinate sampling, $O(N)$ nearest-neighbor distance minimization, distance-clamped trigonometric steering (`fminf(step_size, hypotf(dx, dy))`) via `atan2f()`, `cosf()`, and `sinf()`, and line-of-sight segment verification via `c_punctures`.
-    - **String-Pulling & Path Reconstruction**: Backtraces the `parent_idx` chain from `target_idx` to the root node, reverses the index chain into `forward_buf`, and executes a `nogil` greedy raycast string-pulling pass (`_prune_path`) to collapse redundant intermediate vertices before re-acquiring the GIL to instantiate Python `Position` models. 
+    * **Broad-Phase Culling & Memory Management**: Computes an AABB search window around `(sx, sy)` and `(tx, ty)` padded by `20% + 2 * step_size` (with origin fallback clamping), packing only intersecting obstacles into a contiguous `RRTObstacle*` buffer via `malloc()`. Allocates `RRTNode*` and integer index buffers (`path_buf`, `forward_buf`, `pruned_buf`) sized to `max_iter + 2`, freeing all buffers synchronously in a `try...finally` block.
+    * **Tree Representation**: Nodes are represented as flat `RRTNode` structs containing coordinate values and an integer `parent_idx`, eliminating object pointer chasing and heap fragmentation.
+    * **Inner Loop (`nogil`)**: Releases the Python GIL during tree exploration. Executes 5% goal-biased continuous coordinate sampling, $O(N)$ nearest-neighbor distance minimization, distance-clamped trigonometric steering (`fminf(step_size, hypotf(dx, dy))`) via `atan2f()`, `cosf()`, and `sinf()`, and line-of-sight segment verification via `c_punctures`.
+    * **String-Pulling & Path Reconstruction**: Backtraces the `parent_idx` chain from `target_idx` to the root node, reverses the index chain into `forward_buf`, and executes a `nogil` greedy raycast string-pulling pass (`_prune_path`) to collapse redundant intermediate vertices before re-acquiring the GIL to instantiate Python `Position` models. 
 
 Why this **Extremely Poor** Documentation:
 

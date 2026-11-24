@@ -20,7 +20,7 @@ from app.static.semantics import (
     DeviceContexts,
     Intentions
 )
-from app.models.config import DeviceMapping
+from app.models.configurations import DeviceMapping
 from app.models.state import (
     DevicePayload,
     WorldPayload,

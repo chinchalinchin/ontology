@@ -41,7 +41,7 @@ from app.models.state.core import (
     PlotState,
     CalendarState
 )
-from app.models.config import ConfigurationSchema
+from app.models.configurations import ConfigurationSchema
 from app.models.groups import EquipmentGroup
 from app.game.board.modules.cache import Cache
 

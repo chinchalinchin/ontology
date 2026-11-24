@@ -12,6 +12,7 @@ tools:
     manager:
       board: true
       docs: true
+      bugs: true
       templates: true
     # --------------------------------------------
     source:
@@ -27,7 +28,16 @@ tools:
       board:
         phase: 06-02
         action: refactor
-      bugs: []
+      bugs: 
+        - b019
+        - b058
+        - b059
+        - b060
+        - b064
+        - b066
+        - b067
+        - b069
+        - b070
       docs:
         exclude:
           # - 00-overview
@@ -103,7 +113,7 @@ tools:
       data:
         properties: [ sheets ]
         state: [ ]
-        configurations: [ assets/actions, automata/intentions, automata ]
+        configurations: [ assets/actions, automata/intentions, automata/goals ]
         templates: [ ]
     # --------------------------------------------
     shell:

@@ -12,7 +12,7 @@ from typing import Dict
 from dataclasses import dataclass
 
 # Application Libraries
-from app.models.config import Configuration
+from app.models.configurations import Configuration
 from app.models.properties import Action
 
 # ---------------------------------------------------------

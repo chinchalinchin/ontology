@@ -42,7 +42,7 @@ from app.static.semantics import (
     Substrates
 )
 from app.models.adapters import Enumerated
-from app.models.config.core import Configuration
+from app.models.configurations.core import Configuration
 
 # ---------------------------------------------------------
 

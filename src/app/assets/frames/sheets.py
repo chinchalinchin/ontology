@@ -91,12 +91,21 @@ class SpriteFrame(StateFrame):
         # Base -> Armor -> Utility -> Tool (MINE) -> Weapon (ATTACK) -> Shield
         if state.slots and state.slots.equipment:
             eq = state.slots.equipment
-            is_implement_action = state.animation.action not in (Actions.WALK, Actions.DIE)
+            is_implement_action = state.animation.action not in (
+                Actions.WALK, 
+                Actions.DIE
+            )
             active_slots = (
                 eq.armor,
                 eq.utility,
-                eq.tool if (is_implement_action and state.intention == Intentions.MINE) else None,
-                eq.weapon if (is_implement_action and state.intention == Intentions.ATTACK) else None,
+                eq.tool if (
+                    is_implement_action and 
+                    state.intention == Intentions.MINE
+                ) else None,
+                eq.weapon if (
+                    is_implement_action and 
+                    state.intention == Intentions.ATTACK
+                ) else None,
                 eq.shield,
             )
             for eq_key in active_slots:

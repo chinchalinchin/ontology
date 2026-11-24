@@ -36,7 +36,7 @@ from app.models.adapters import (
     Enumerated
 )
 from app.models.core import AxisAlignment
-from app.models.config import Configuration
+from app.models.configurations import Configuration
 from app.models.adapters import Enumerated
 
 # Cython Libraries

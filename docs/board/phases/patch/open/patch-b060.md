@@ -20,3 +20,5 @@ In `src/data/config/intentions/main.yaml` (lines 3–22):
 **Proposed Remediation**
 
 Add a terminal `- next: idle` rule (`conditions: [not sprite.goal]`) to `attack`, guard `sprites.get(sprite.goal.name)` before dereferencing `.mutators`, add a range-loss transition back to `hunt` when the live Target leaves `action.radius`, and decouple `scavenge` acquisition cleanly via `idle` rather than relying on a cleared `TARGET` goal.
+
+- **Note**: No. Do not do this. There is no point in checking the existence of `.mutators`, as it is guaranteed to exist. Do not fight the data models.

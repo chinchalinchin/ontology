@@ -1,6 +1,8 @@
+- NOTE: THIS IS NOT A BUG. THINK ABOUT IT FOR THREE SECONDS. THERE IS NO APPLICATION WITHOUT A PLAYER. STOP OPENING THIS BUG. 
+
 ##### Bug B062: `CognitionMechanics.update` Dereferences `board.player().name` Without `None` Guard
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: MEDIUM
 
 **Description**
@@ -20,7 +22,7 @@ Hoist `player = board.player()` outside the Sprite loop and guard with `if playe
 
 ##### Bug 0602-04: `any_memories_visible` Matches Dead Targets
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: MEDIUM
 
 **Description**
@@ -42,6 +44,27 @@ Guard `any_memories_visible` with `if target.mutators.triggers.dead: continue` f
 ##### Bug B062 (Duplicate): `CognitionMechanics.update` Dereferences `board.player()` Without `None` Guard
 
 **STATUS**: OPEN
+**SEVERITY**: MEDIUM
+
+**Description**
+
+In `src/app/game/logic/mechanics/intentional/cognition.py`, `CognitionMechanics.update` evaluates `if sprite.name == board.player().name:` on every sprite iteration without checking whether `board.player()` is `None` (unlike `TransitionMechanics` and `NavigationMechanics`), causing an `AttributeError` on boards without a deployed Player (such as headless or unit-test simulations).
+
+**Steps to Replicate**
+
+1. Instantiate a `Board` containing at least one `Sprite` and zero `Player` assets.
+2. Invoke `CognitionMechanics().update(board, delta, bus, payload)`.
+3. Observe `AttributeError: 'NoneType' object has no attribute 'name'`.
+
+**Proposed Remediation**
+
+Hoist `player = board.player()` outside the sprite loop and guard with `if player and sprite.name == player.name: continue`.
+
+---
+
+##### Bug B062 (Duplicated): `CognitionMechanics.update` Dereferences `board.player()` Without `None` Guard
+
+**STATUS**: CLOSED
 **SEVERITY**: MEDIUM
 
 **Description**
