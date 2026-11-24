@@ -233,14 +233,14 @@ class PlayerMechanics(Mechanic):
 
         if player.state.intention == Intentions.ATTACK:
             eq = player.state.slots.equipment
-            logger.info(
+            logger.debug(
                 f"SheetState("
                 f"id={player.id}"
                 f"name={player.name},"
                 f"intention={player.state.intention},"
                 f"action={player.state.animation.action})"
             )
-            logger.info(
+            logger.debug(
                 f"Equipment("
                 f"weapon={eq.weapon}, "
                 f"armor={eq.armor}, "

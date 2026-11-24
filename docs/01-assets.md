@@ -49,12 +49,12 @@ In addition, all Assets have a `mutators` attribute that is used to augment the 
 **Model: Mutators**
 
 * `parameters`: 
-    * `action: bool`: The radius of the Asset's action.
-    * `vision: bool`: The radius of Asset's vision.
-* `triggers`: Boolean flags. 
-    * `animated: bool`: Flag for receiving animation updates.
-    * `dead: bool`: Flag for receiving Mechanic updates.
-    * `submerged: bool`: Flag for receiving Frame channels.
+    * `action: bool`: Radius of interaction.
+    * `vision: bool`: Radius of perception.
+* `triggers`: 
+    * `animated: bool`: Flag governing animation progression.
+    * `dead: bool`: Flag indicating death.
+    * `submerged: bool`: Flag governing aquatic Frame modulation.
 
 **Base Model: AssetProperties**
 
@@ -997,7 +997,7 @@ All Sheet Instances inherit and extend the basic SheetState, building in sequenc
 !!! @TODO(10-03)
     The whole concept of Pixies needs re-evaluated from the ground up before implementation. It is still uncertain how Pixie intentionality will differ from Sprite intentionality. 
 
-Pixies are Sheets that have simple game mechanics, i.e. they are excluded from the complex calculations of the [Intention Mechanic](./04-intentions.md). *Pixies* encapsulate simple Characters, such as animals or bugs.
+Pixies are low-level Sheet Assets excluded from [Intentional Mechanics](./05-mechanics.md#mechanics-intentional). They possess simple States for modelling environmental flora and fauna.
 
 **Animation: StateAnimation**
 

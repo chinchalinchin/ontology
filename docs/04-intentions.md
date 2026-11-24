@@ -59,7 +59,13 @@ Intentions form natural groups based on the logic they cluster around during the
 
 **Concept: Intention Loops**
 
-In order to avoid modeling the Sprite as an overly complex automata, `idle` acts as the origin and terminus of all "*Intention Loops*" in the Intention Transition Matrix. In other words, `idle` is the "hub" Intention. All autonomous Sprite Animations are modelled as loops back into the `idle` Intention. For example, one variation of the *Dialogue Loop* is given below,
+Each Intention Loop rooted at `idle` forms a closed "*intentional act*", $\langle I, \pi, \beta \rangle$:
+
+1. **Initiation ($I$):** The Entrypoint transition $\text{idle} : i_1$ together with any required equipment admissibility constraint.
+2. **Execution ($\pi$):** Interpoint transitions $i_j : i_{j+1}$ ($i_j, i_{j+1} \neq \text{idle}$) paired with spatial and navigational mechanics.
+3. **Termination ($\beta$):** Goal resolution (`complete` or `lost`) or a context-invariant violation (the active Goal category no longer matches the active Intention), routing the Sprite back to `idle` via an Exitpoint $i_{n-1} : \text{idle}$.
+
+All autonomous Sprite Animations are modelled as loops back into the `idle` Intention. For example, one variation of the *Dialogue Loop* is given below,
 
 $$
 \text{idle} \to \text{find} \to \text{speak} \to \text{idle}
@@ -71,7 +77,7 @@ $$
 \text{idle} \to \text{find} \to \text{speak} \to \text{follow} \to \text{find} \to \text{speak} \text{idle}
 $$
 
-For this reason, Intention *Transitions* are further classified as *Entrypoints*, *Interpoints* and *Exitpoints*, where the entrance and exit is in reference to the particular loop being traversed. 
+For this reason, Intention *Transitions* are classified as *Entrypoints*, *Interpoints* and *Exitpoints*, where the entrance and exit is in reference to the particular loop being traversed. 
 
 A valid Intention Loop with $n$ steps must always satisfy the following constraints,
 
@@ -126,63 +132,71 @@ Terms:
 
 * `None`: null value
 * `str`: constants
-* `sprite.<attribute>`: self State variable
-* `sprites.get(<sprite-name>).<attribute>`: other Sprites state variable
-* `constants`: A dictionary of game constants.
+* `sprite.<attribute>`: self State reference.
+* `sprites.get(<sprite-name>).<attribute>`: other Sprites' State reference.
+* `constants`: A dictionary of Application constants.
 * `functions`: A dictionary of helper functions.
 
-For example, in the default Intention Transition matrix given above, the transition from `attack` to `hunt` is conditional on the following,
+For example, in the Application's default Intention Transition Matrix, the transition from `attack` to `hunt` is conditional on,
 
 ```yaml
 - not sprite.goal
-- sprite.memory.goal.category == constants.Goals.TARGET.value
+- sprite.memory.goal.category == constants.Goals.TARGET
 ```
 
-`sprite` is a reference to the Sprite's state which is currently having its Intention processed by the Engine. Thus, the Sprite's Intention will transition to `hunt` if the Sprite currently does not have a Goal, but remembers having a Goal of Category `sprite`.
+`sprite` is a reference to the Sprite's State which is currently having its Intention processed by the Engine. Thus, the Sprite's Intention will transition to `hunt` if the Sprite currently does not have a Goal, but remembers having a Goal of Category `target`.
 
 !!! note
     The expression `not sprite.goal` is a *truthy* expression, i.e. it is to be interpretted as an existential claim. In other words, this expression evaluates to `true` if `sprite.goal` does not exist. If the expression involves a List, e.g. `sprite.memory.communications`, this expression evaluates to `true` in the event it has more than 0 entries.
 
-In another example, the transition from `attack` to `scavenge` in the default Intention Transition matrix is given by,
+In another example, the transition from `attack` to `scavenge` in the default Intention Transition Matrix is given by,
 
 ```yaml
 - sprites.get(sprite.goal.name)
 - sprites.get(sprite.goal.name).mutators.triggers.dead
 ```
 
-`sprites` is a reference to a cross-layer dictionary of all Sprites States on the [Board](./00-overview.md#component-board) keyed by their unique `name`.
+`sprites` is a reference to a cross-Layer dictionary of all Sprites States on the [Board](./00-overview.md#component-board) keyed by their unique `name`.
 
 !!! important "Intention Order"
-    The conditions for an Intention transition are evaluated in the order they specified. In the given example, if `sprite.goal.category == constants.Goals.TARGET.value`, none of the other conditions for Intention transitions are evaluated and the Intention transitions back into `attack`.
+    The conditions for an Intention transition are evaluated in the order they specified. In the example, if `not sprite.goal`, none of the other conditions for Intention transitions are evaluated and the Intention remains into `attack`.
 
-Intention transition conditions are compiled by the application during initialization and evaluated at runtime. The engine supports two execution strategies, configured via `TRANSLATOR_IMPLEMENTATION` in `settings.py`: `lambda` (which generates inline Python functions) and `compiler` (which generates native Abstract Syntax Trees). The application evaluates conditions sequentially utilizing Python's native short-circuit logic.
+Intention transition conditions are compile during [Application Initialization](./12-architecture.md#specification-initialization) and evaluated at runtime. 
 
-To avoid AttributeError exceptions during runtime, existential checks must strictly precede attribute accesses. Consider,
+**Behavior: Translation**
+
+The engine supports two execution strategies, configured via `TRANSLATOR_IMPLEMENTATION` in `settings.py`: `lambda` (which generates inline Python functions) and `compiler` (which generates native Abstract Syntax Trees). The application evaluates conditions sequentially utilizing Python's native short-circuit logic.
+
+**Example: Configuration Syntax**
+
+Consider
 
 ```yaml
 # CORRECT CONFIGURATION
 - sprite.goal
-- sprite.goal.category == constants.Goals.TARGET.value
+- sprite.goal.category == constants.Goals.TARGET
 ```
 
 versus,
 
 ```yaml
 # INCORRECT CONFIGURATION
-- sprite.goal.category == constants.Goals.TARGET.value
+- sprite.goal.category == constants.Goals.TARGET
 - sprite.goal
 ```
 
 In the first case, `goal` is guaranteed to exist before the subsequent condition is applied to `goal.category`, while the second will generate a runtime error.
 
-The Transition execution environment is injected with variables during execution:
+**Environment: Variables**
 
-* `sprite`: The SpriteState of the entity currently evaluating its transitions.
-* `sprites`: The `_cached_characters` dictionary mapping `name: AssetState` for all mutable characters (Sprites and Players) currently on the board.
-* `constants`: A dictionary of Enums. Keys are: `AssetInstances`, `AssetCategories`, `Goals`, `Intentions`, `Motivations`.
+The Transition execution environment is injected with variables during execution.
+
+* `sprite`: The SpriteState of the Asset currently evaluating its transitions.
+* `sprites`: The dictionary mapping `name: AssetState` for all mutable characters (Sprites and Players) currently on the board.
+* `constants`: A dictionary of Enums. Keys are: `AssetInstances`, `AssetCategories`, `Goals`, `Intentions`, `Motivations`, `Relationship`
 * `functions`: A dictionary of boolean helper functions. All functions return a truth value.
     * `is_near(p1: Position, p2: Position, radius: int)`: Determine if positions are close.
-    * `any_goals(m: List[Goal], category: str)`: Determine if a GoalCategory exists in the Sprite memory.
+    * `any_goals(goals: Dict[str, Goal], category: Optional[str])`: Determines whether any remembered Goal matches the requested Category (or whether Memory contains any Goals when `category` is omitted).
     * `any_memories_visible(sprite: SpriteState, sprites: Dict[str, SpriteState], categories: List[GoalCategories])`
 
 !!! warning "KeyErrors"
@@ -238,7 +252,9 @@ Evaluating `complete` prior to `layered` prevents pursuit of already-satisfied G
 
 ## Module: AnimationMap
 
-A Sprite's State is mapped onto an (Action, Direction) through an AnimationMap. This component of the Application statically ingests a Sprite State, applies formulas and returns the mapped tuple.
+A Sprite's State is mapped onto an (Action, Direction) through an AnimationMap. AnimationMap statically ingests a Sprite State, applies mapping formulae and returns the mapped tuple.
+
+See [Map Modules](./05-mechanics.md#modules-maps) for more information.
 
 **Behavior: Player Preprocessing**
 
@@ -252,62 +268,34 @@ $$
 f(\text{Intention}, \text{Equipment}) \to \text{Action}
 $$
 
-In order to pass from an `attack` Intention to a phsyically animated Action, an Equipment constraint must be satisfied. Likewise for other animated Intentions.
-
-* `attack`: Uses `equipment.weapon`
-* `mine`: Uses `equipment.tool`
-
-**Formulae**
-
-* `if state.intention == Intentions.ATTACK.value: state.animation.action = board.equipment.weapons[state.equipment.weapon].action`
-* `if state.intention == Intentions.MINE.value: state.animation.action = board.equipment.tools[state.equipment.tools].action`
-
 ### Mapping: Directions
 
-The Direction of a Sprite's AnimationState is a function of the Sprite's Position and Trajectory,
+The Direction of a Sprite's AnimationState is a function of the Sprite's Position and Goal,
 
 $$
-f(\text{Position}, \text{Trajectory}) \to \text{Direction}
+f(\text{Position}, \text{Goal}) \to \text{Direction}
 $$
-
-**Direction Mapping: Player**
-
-* `if input.scancode == rightarrow: goal.position.x += speed`
-* `if input.scancode == leftarrow: goal.position.x -= speed`
-* `if input.scancode == uparrow: goal.position.y -= speed`
-* `if input.scancode == downarrow: goal.position.y += speed`
-
-**Direction Mapping: Sprite**
-
-$$
-\text{target} = \text{trajectory.target} \lor \text{goal.position}
-$$
-
-$$
-dx = \text{position.x} - \text{target.x}$ and $dy = \text{position.y} - \text{target.y}
-$$
-
-* $(dy > dx \land dy > -dx) \implies (\text{direction} = \text{down})$
-* $(dy < dx \land dy > -dx) \implies (\text{direction} = \text{right})$
-* $(dy < dx \land dy < -dx) \implies (\text{direction} = \text{up})$
-* $(dy > dx and dy < -dx) \implies \text{direction} = \text{left}$
 
 ## Mechanics: Intention Workflow
 
-The (Intention, Goal, Trajectory) triad of a Sprite is managed across the application lifecycle by [Mechanics](./05-mechanics.md):
+The (Intention, Goal, Trajectory) triad of a Sprite is managed across the application lifecycle by [Mechanics](./05-mechanics.md).
 
 * [CognitionMechanics](./05-mechanics.md#intentional-mechanic-cognitionmechanics): Manages the Goal lifecycle. Evaluates environmental perceptions, consults Motivations and Psyche, sets and completes Goals, and manages Memory.
 * [TransitionMechanics](./05-mechanics.md#intentional-mechanic-transitionmechanics): Manages Intention Transitions. Evaluates Transition conditions sequentially and shunts the Sprite to its next Intention state when criteria are satisfied.
+    * [AnimationMaps](./05-mechanics.md#map-animation) are applied after each Transition to project the new Intention into its accompanying (Action, Direction).
 * [NavigationMechanics](./05-mechanics.md#intentional-mechanic-navigationmechanics): Manages Trajectories. Queries the environment, evaluates obstacle geometry, and raycasts to maintain Trajectory.
 * [MotionMechanics](./05-mechanics.md#core-mechanic-motionmechanics): Induces movement. Accelerates velocity vectors toward the Trajectory target.
 * [SpatialMechanics](./05-mechanics.md#mechanics-spatial): Resolves collisions, combat, and interactions (e.g., passing through [Doors](./01-assets.md#object-doors) or opening a [Chest](./01-assets.md#object-chests)).
 
 ### Workflow Component: Cognition
 
-CognitionMechanics manages Sprite Goals across four deterministic stages per tick:
+[CognitionMechanics](./05-mechanics.md#intentional-mechanic-cognitionmechanics) manages the lifecycle of Sprite Goals.
 
-1. **Perception**: Scans same-Layer entities within Vision radius, snapshots observed coordinates into Memory, refreshes remembered Goal coordinates, and updates active Goal visibility (`triggers.vision`), coordinates, and Layer.
-2. **Resolution**: Evaluates the active Goal against the compiled Goal Resolution Matrix, executing configured Reactions and the matched Outcome (`complete`, `layered`, or `lost`).
+1. **Sensory Processing**:
+    * **Perception:** Same-Layer sensory updates bounded by vision radius. Unseen Assets freeze at their last observed Layer and coordinates until re-observed.
+    * **Commitment:** An ordered LIFO stack of parent Goals suspended by prerequisite sub-Goals. Completing a prerequisite immediately resumes the top suspended parent Goal.
+    * **Memory:** An unordered store of abandoned or remembered Goals evaluated only when the Commitment Stack is empty, filtered by Intention.
+2. **Resolution**: Evaluates the active Goal against the compiled Goal Resolution Matrix, executing the configured Responses, Reflexes for the matched Outcome.
 3. **Acquisition**: When no active Goal is present (and Intention permits acquisition without violating the `idle` hub invariant), recruits a Goal via:
    * **Recall**: Selects a non-dormant remembered Goal compatible with the active Intention. A remembered mobile Goal is dormant if and only if its entity is currently unseen and the Sprite is already within Action radius of its last-known same-Layer coordinates.
    * **Ideation**: Generates Goals from internal Psyche drivers (such as active Dialogue).

@@ -447,7 +447,7 @@ Systems requiring external services (such as the Actuator for [FluidMechanics](.
 
 ### Dependency: Executors
 
-Executors are Services made available to Mechanics that register to receive them in the [Configuration](#configuration-mechanics). Available Executors are enumerated below,
+Executors are Services made available to Mechanics that register to receive them in the [Configuration](#configuration-mechanics). 
 
 * `plot`: Executor for evaluating the conditions for [Plot Transitions](./08-narratives.md).
 * `intention`: Executor for evaluating the conditions for [Intention Transitions](./04-intentions.md)
@@ -462,7 +462,7 @@ Executors are Services made available to Mechanics that register to receive them
 Relations are static mappings configured at runtime and then injected into requesting Mechanics.
 
 * `shorelines`: A map of [Shoreline Geography Asset IDs](./01-assets.md#shorelines) to a compound index of [Tile Asset IDs](./01-assets.md#category-tiles) and [Fluid Asset ID](./01-assets.md#effect-fluids). This relation maps [Fluid Shorelines](./09-ecology.md#geography-shorelines) to the [Environ Tiles](./01-assets.md#tile-environ) in which they are embedded, e.g. `grassy-shore` Shorelines are mapped to `grass` Environ Tiles and `water` Fluids. 
-* `materials`: A map of [Asset Material](./01-assets.md#concept-materiality) containing various Configurations, such as rendering substrates, obstacle classification, [cost constants](./03-compositions.md#materializer-cost) and [Composition formulas](./03-compositions.md).
+* `materials`: A map of [Asset Material](./01-assets.md#concept-materiality) containing various Configurations, such as rendering substrates, obstacle classification, [cost constants](./03-compositions.md#materializer-cost) and [Composition formulae](./03-compositions.md).
 * `projectiles`: A map of [Projectile Cursors](./01-assets.md#cursor-projectiles) to [Equipment Sheets](./02-sprites.md#sheet-equipment). This mapping determines which Projectile is spawned when a Sprite equipped with the prerequisite Equipment enters into the `attack` [Intention](./04-intentions.md).
 
 ## Modules
@@ -471,20 +471,9 @@ Relations are static mappings configured at runtime and then injected into reque
 
 Maps are stateless domain projections translating Asset State, Equipment, and Relations into target domains consumed by Mechanics. Each Map owns a disjoint codomain.
 
-
 #### Map: Animation
 
-* See [AnimationMap](./04-intentions.md#animationmap) for more information.
-
-AnimationMaps enforce State-dependent logical constraints upon a Sprite's Animation Space. [TransitionMechanics](#intentional-mechanic-transitionmechanics) and [PlayerMechanics](#intentional-mechanic-playermechanics) utilize AnimationMaps to resolve whether an intended Action is possible. 
-
-$$
---8<-- "static/tex/functions/function-000-action-map.tex"
-$$
-
-$$
---8<-- "static/tex/functions/function-001-direction-map.tex"
-$$
+AnimationMaps enforce State-dependent logical constraints on a Sprite's Animation Space. [TransitionMechanics](#intentional-mechanic-transitionmechanics) and [PlayerMechanics](#intentional-mechanic-playermechanics) utilize AnimationMaps to resolve whether an intended Action is possible. 
 
 An AnimationMap injects constraints into the $\text{Intention} \to \text{Action}$ Sprite State transformation. For example, by passing through an AnimationMap, an `attack` Intention cannot translate into a `thrust` Action unless the Sprite currently possesses the required Weapon in its [Slots](./02-sprites.md#model-slots).
 
@@ -492,46 +481,58 @@ An AnimationMap injects constraints into the $\text{Intention} \to \text{Action}
 
 * `action(state, equipment): returns Action`
 
+$$
+--8<-- "static/tex/functions/function-000-action-map.tex"
+$$
+
 **Interface: Direction Mapping**
 
 * `direction(position, goal): returns Direction`
+
+$$
+--8<-- "static/tex/functions/function-001-direction-map.tex"
+$$
 
 #### Map: Combat
 
 CombatMaps map an attacking Sprite's current State and resolve either active melee Attackboxes or ranged Projectile parameters.
 
-$$
---8<-- "static/tex/functions/function-002-projectile-map.tex"
-$$
+**Behavior: Charging**
+
+The `attack` Intention may be "*pressed and held*". This factor contributes to the resultant speed of attack according to the formula,
 
 $$
---8<-- "static/tex/functions/function-003-attackbox-map.tex"
-$$
-
-$$
---8<-- "static/tex/functions/function-004-release-map.tex"
-$$
-
-$$
---8<-- "static/tex/functions/function-005-speed-map.tex"
+--8<-- "static/tex/formulae/formula-002-attack-charge.tex"
 $$
 
 **Interface: Attack Hitbox Mapping**
 
 * `attackboxes(state, equipment, elevation): returns List[Hitbox]`: Queries the slotted weapon's Hitbox component at the entity's active `<action>-<direction>-<frame>` key and elevation plane.
 
+$$
+--8<-- "static/tex/functions/function-003-attackbox-map.tex"
+$$
+
 **Interface: Projectile Asset Mapping**
 
-* `projectile(state, equipment): returns Optional[Tuple[str, int]]`: Evaluates whether the slotted weapon configures a `projectile` ID and `release` frame matching the entity's current animation frame. When triggered on the entry tick of the `release` frame, calculates the initial scalar speed $s(S, n)$ from the attacker's strength $S$, held charge duration $n$, and the weapon's draw window $N_{\max} = \max(1, \text{release} \cdot \text{delay})$.
+* `projectile(state, equipment): returns id`: Evaluates whether the slotted weapon configures a `projectile` ID and `release` frame matching the entity's current animation frame. When triggered on the entry tick of the `release` frame, calculates the initial scalar speed $s(S, n)$ from the attacker's strength $S$, held charge duration $n$, and the weapon's draw window $N_{\max} = \max(1, \text{release} \cdot \text{delay})$.
+
+$$
+--8<-- "static/tex/functions/function-002-projectile-map.tex"
+$$
 
 **Interface: Projectile Release Frame Mapping**
 
-* `release(todo): returns todo`:  Evaluates the weapon's directional hitbox on the entry tick of its release frame to determine projectile spawn origin and heading.
+* `release(state, equipment, elevatiob): returns (Position, Frame Index)`:  Evaluates the Weapon's Hitbox on the first tick of its release Frame to determine Projectile spawn Position and Direction.
+
+$$
+--8<-- "static/tex/functions/function-004-release-map.tex"
+$$
 
 **Interface: Projectile Speed Mapping**
 
-* `speed(todo): returns todo`: Maps attacker strength $S$ and held draw duration $n$ to scalar launch speed $s(S, n)$.
+* `speed(state, equipment): returns int`: Maps attacker strength $S$ and held draw duration $n$ to Projectile speed $s(S, n)$.
 
 $$
---8<-- "static/tex/formulae/formula-002-attack-charge.tex"
+--8<-- "static/tex/functions/function-005-speed-map.tex"
 $$

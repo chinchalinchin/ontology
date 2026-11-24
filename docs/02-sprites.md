@@ -2,7 +2,7 @@
 
 Everything that is rendered in the [Application](./00-overview.md#application) is an [Asset](./01-assets.md). Therefore, Sprites are Assets. Sprites, however, unique in their deployment, are the most important Asset in the [Application] and thus have many unique attributes and methods; the [Engine Loop](./00-overview.md#component-engine) can be understood mainly as a medium for the Sprite States to interact and react to one another, the Player included. 
 
-## Specification: Sprites
+## Sprites: Specification
 
 ### Category: Sheets
 
@@ -12,12 +12,7 @@ See [Sheets](./01-assets.md#category-sheets) for a complete description of the A
 
 #### Sheet: Player
 
-A Player is a special type of Sprite Sheet. It may be thought of as a "*pseudo*"-Asset. It has no Properties that differentiate it in the Hierarchy; Instead, it utilizes Sprite Sheet properties. However, it is differentiated by having a unique [State](./00-overview.md#core-state) and isolated [Intention](./04-intentions.md) management Mechanics. 
-
-The Player Sprite Sheet is configured through the `player` Sprite Sheet. 
-
-!!! important "Player Required"
-    The `player` Sprite *must* be defined in `/src/assets/sheets/main.yml#sprites`.
+The Player Sheet extends the basic [SheetState](./01-assets.md#category-sheets) with dimensions of *Intentionality*. 
 
 **State: CharacterState**
 
@@ -64,6 +59,8 @@ The Player Sprite Sheet is configured through the `player` Sprite Sheet.
         * `maximum: int`
 
 #### Sheet: Sprite
+
+Sprite Sheets extend the Player's CharacterState with dimensions of *Autonomy*. Sprite States are hooked into a variety of [automata](./04-intentions.md) that govern how they change change.
 
 **State: SpriteState(CharacterState)**
 
@@ -112,13 +109,6 @@ See [Intentions documentation](./04-intentions.md) for more information.
 Goals are the current focus of the Sprite's path-finding and Direction resolution.
 
 See [Goals documentation](./04-intentions.md) for more information.
-
-###### Goals: Player Goals & Intentions
-
-Players utilize the same information channel (e.g. Goals and Intentions) as Sprites for communicating state changes.
-
-* **Goals (Level-Triggered & Polymorphic):** Players use a "pseudo" Goal to project their input into their intended direction of motion. Multiple directional inputs can overlap simultaneously (e.g., `UP` and `RIGHT`) and are accumulated as a list to allow for diagonal vector movement. This determines the direction of the Player's Velocity in their [kinematic sliding](./05-mechanics.md#core), i.e. $\text{player.velocity} \parallel \text{player.state.goal.position} - \text{player.state.position}$.
-* **Intentions (Edge-Triggered & Singular):** Unlike Goals, Intentions represent discrete state transitions. The hardware polling layer enforces a strict singularity rule: overlapping Intention inputs are collapsed into a single scalar value based on configuration order. This acts as a blocking mechanism, preventing impossible state superpositions (e.g., trying to `build` and `attack` simultaneously).
 
 ##### Model: Trajectory
 
@@ -399,11 +389,18 @@ The [Board](./00-overview.md#component-board) contains a Device, which polls for
 
 The input State of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See [SDL documentation](https://wiki.libsdl.org/SDL2/SDL_Scancode) for more information.
 
+#### Device: Player Goals & Intentions
+
+Players utilize the same information channel (e.g. Goals and Intentions) as Sprites for communicating state changes.
+
+* **Goals (Level-Triggered & Polymorphic):** Players use a "pseudo" Goal to project their input into their intended direction of motion. Multiple directional inputs can overlap simultaneously (e.g., `UP` and `RIGHT`) and are accumulated as a list to allow for diagonal vector movement. This determines the direction of the Player's Velocity in their [kinematic sliding](./05-mechanics.md#core), i.e. $\text{player.velocity} \parallel \text{player.state.goal.position} - \text{player.state.position}$.
+* **Intentions (Edge-Triggered & Singular):** Unlike Goals, Intentions represent discrete State transitions. Overlapping Intention inputs are collapsed into a single value based on Configuration order. This acts as a blocking mechanism, preventing impossible state superpositions (e.g., trying to `build` and `attack` simultaneously).
+
 ### Device: Contexts
 
-The Device class implements a stateful context flag (`world`, `menu`). Each Device Mapping includes a nested mapping for each separate context, which strictly segregates the resulting `DevicePayload`:
+The Device contains a context flag (`world`, `menu`) to determine how input should be polled and processed. The Device Configuration contains a mapping for each context.
 
-* `world`: Resolves a World Payload containing a singular Intention, a singular Grip trigger (`left` or `right`, which defaults `intention` to `use` and sets `mutators.parameters.hand`), a singular Menu trigger (`pause`, `equipment`, `pouch`, `pack`, `trade`), and a polymorphic list of Goals.
+* `world`: Resolves a World Payload containing a singular Intention, a singular Grip trigger (`left` or `right`), a singular Menu trigger (`pause`, `equipment`, `pouch`, `pack`, `trade`), and a polymorphic list of Goals.
 * `menu`: Resolves a Menu Payload containing a singular Traversal direction and a singular Interaction.
 
 When the [Board](./00-overview.md#component-board) Menus are populated, [MenuMechanics](./05-mechanics.md#core-mechanic-menumechanics) toggles the device context to `menu`, ensuring the [SDL polling](./12-architecture.md#specification-cython-libraries) only evaluates and returns Menu commands.
