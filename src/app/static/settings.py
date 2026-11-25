@@ -172,5 +172,7 @@ TITLE_FONT: Final[Path] = FONT_DIR / "title.ttf"
 TRANSLATOR_IMPLEMENTATION: Final[str] = os.getenv("ONTOLOGY_TRANSLATOR", "lambda")
 """Evaluation strategy for Transition conditions ('lambda' or 'compiler')."""
 
-LAMBDA_SIGNATURE: Final[str] = "lambda sprite=None, sprites=None, plot=None, resource=None, calendar=None, **kwargs: {cond}"
+# TODO: do not like the 'target' in the signature. ill-defined and a very clear placeholder for 
+#       a Goal category, which is already part of Sprite state.
+LAMBDA_SIGNATURE: Final[str] = "lambda sprite=None, sprites=None, plot=None, resource=None, calendar=None, target=None,**kwargs: {cond}"
 """Function signature for Lambda transitions."""

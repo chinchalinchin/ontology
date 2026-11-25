@@ -46,13 +46,11 @@ from app.game.logic.mechanics import (
 )
 from app.models.configurations import MechanicsInstance
 from app.services.translators import (
-    ConditionBackend,
-    CompilerConditionBackend,
-    LambdaConditionBackend,
-    CompilerTranslator,
-    LambdaTranslator,
-    GoalTranslator,
-    Translator,
+    Backend, 
+    Compiler,
+    Lambda,
+    TransitionTranslator,
+    GoalTranslator
 )
 from app.static.semantics import (
     Devices,
@@ -92,8 +90,8 @@ class MechanicFactory:
     }
 
     TRANSLATOR_MAP = {
-        Translators.LAMBDA: LambdaTranslator,
-        Translators.COMPILER: CompilerTranslator,
+        Translators.LAMBDA: Lambda,
+        Translators.COMPILER: Compiler,
     }
 
     @classmethod
@@ -102,25 +100,20 @@ class MechanicFactory:
         return target_cls(mapping)
 
     @staticmethod
-    def backend(implementation: str) -> ConditionBackend:
+    def backend(implementation: str) -> Backend:
         if implementation == Translators.COMPILER:
-            return CompilerConditionBackend()
+            return Compiler()
         if implementation == Translators.LAMBDA:
-            return LambdaConditionBackend()
+            return Lambda()
         raise ValueError(f"Unsupported translator implementation: '{implementation}'")
 
     @staticmethod
-    def translator(implementation: str) -> Translator:
-        backend = MechanicFactory.condition_backend(implementation)
-        if isinstance(backend, CompilerConditionBackend):
-            return CompilerTranslator(backend=backend)
-        return LambdaTranslator(backend=backend)
+    def transitions(implementation: str) -> TransitionTranslator:
+        return TransitionTranslator(backend=MechanicFactory.backend(implementation))
 
     @staticmethod
     def goals(implementation: str) -> GoalTranslator:
-        return GoalTranslator(
-            backend=MechanicFactory.condition_backend(implementation)
-        )
+        return GoalTranslator(backend=MechanicFactory.backend(implementation))
     
     @classmethod
     def mechanics(

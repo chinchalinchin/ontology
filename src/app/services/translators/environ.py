@@ -2,12 +2,6 @@
 @domain.automata
 @domain.logic
 @app.service
-@app.module
-@modality.intention
-@workflow.cognition
-@workflow.plot
-@workflow.seasons
-@workflow.transitions
 
 # Ontology: Source - app.services.translators.environ
 

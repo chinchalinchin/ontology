@@ -28,17 +28,7 @@ tools:
       board:
         phase: 06-02
         action: refactor
-      bugs: 
-        - b019
-        - b058
-        - b059
-        - b060
-        - b064
-        - b066
-        - b067
-        - b069
-        - b070
-        - b071
+      bugs: []
       docs:
         exclude:
           # - 00-overview
@@ -67,10 +57,11 @@ tools:
       filter:
         default: AND
         queries:
-          - title: 'Application - Orchestration'
+          - title: 'Application - Dependency Injection'
             scan: 
               domain: [ system ]
-              app: [ orchestration ]
+              app: [ service ]
+              workflow: [ injection ]
           - title: 'Application - Core'
             scan:
               domain: [ system ]
@@ -97,20 +88,20 @@ tools:
               domain: [ concrete ]
               app: [ asset ]
               category: [ sheets ]
-          - title: 'Automata - Intentional Automata'
+          - title: 'Services - Automata'
             scan: 
               domain: [ automata ]
-              modality: [ intention ]
+              app: [ service ]
           - title: 'Mechanics - Intentional'
             scan:
               domain: [ concrete ]
               app: [ mechanic ]
               modality: [ intention ]
-          - title: 'Libraries - Navigation'
-            scan: 
-              domain: [ system ]
-              app: [ library ]
-              workflows: [ navigation ]
+          # - title: 'Libraries - Navigation'
+          #   scan: 
+          #     domain: [ system ]
+          #     app: [ library ]
+          #     workflows: [ navigation ]
       data:
         properties: [ sheets/sprites ]
         state: [ ]

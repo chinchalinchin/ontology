@@ -1,13 +1,7 @@
 """
 @domain.automata
 @domain.concrete
-@domain.logic
 @app.service
-@modality.intention
-@workflow.cognition
-@workflow.plot
-@workflow.seasons
-@workflow.transitions
 
 # Ontology: Source - app.services.translators.lamb
 
@@ -46,7 +40,7 @@ class Lambda(Backend):
             env_globals if env_globals is not None else Environ.globals()
         )
 
-    def compile_condition(self, condition: str) -> Callable[..., bool]:
+    def conditionalize(self, condition: str) -> Callable[..., bool]:
         if not isinstance(condition, str):
             raise TypeError(
                 f"ISL lambda condition must be a string; got {type(condition).__name__}."

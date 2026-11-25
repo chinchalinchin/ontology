@@ -1,7 +1,6 @@
 """
 @domain.automata
-@domain.concrete
-@app.base
+@domain.logic
 @app.service
 @modality.intention
 @workflow.plot
@@ -80,7 +79,7 @@ class TransitionTranslator:
     def __init__(self, backend: Backend):
         self.backend = backend
 
-    def compile(self, raw_configs: Dict[str, List[Any]]) -> Executor:
+    def compile(self, raw_configs: Dict[str, List[Any]]) -> TransitionExecutor:
         """
         Compiles string conditions into backend executables and constructs an
         Executor capable of evaluating them at runtime.
@@ -96,7 +95,7 @@ class TransitionTranslator:
             for state_str, configs in raw_configs.items()
         }
 
-        return Executor(
+        return TransitionExecutor(
             transitions=compiled_transitions,
             backend=self.backend
         )

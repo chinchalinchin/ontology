@@ -1,8 +1,6 @@
 """
 @domain.automata
-@domain.concrete
 @domain.logic
-@domain.model
 @app.service
 @modality.intention
 @workflow.cognition

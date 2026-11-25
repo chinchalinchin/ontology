@@ -1,13 +1,7 @@
 """
 @domain.automata
 @domain.concrete
-@domain.logic
 @app.service
-@modality.intention
-@workflow.cognition
-@workflow.plot
-@workflow.seasons
-@workflow.transitions
 
 # Ontology: Source - app.services.translators.compiler
 
@@ -41,7 +35,7 @@ class Compiler(Backend):
             env_globals if env_globals is not None else Environ.globals()
         )
 
-    def compile_condition(self, condition: str) -> Any:
+    def conditionalize(self, condition: str) -> Any:
         if not isinstance(condition, str):
             raise TypeError(
                 f"ISL AST condition must be a string; got {type(condition).__name__}."

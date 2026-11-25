@@ -70,6 +70,10 @@ from app.services.generators.menus import (
     Fabricator
 )
 from app.services.orchestration.migrator import Migrator
+from app.services.translators import (
+    GoalTranslator,
+    TransitionTranslator
+)
 
 # Cython Libraries
 import libs.graphics.render as render
@@ -155,15 +159,13 @@ class Builder:
 
     def build_executors(self) -> None:
         logger.info("Compiling master mechanic executors...")
-        transitions = MechanicFactory.transitions(settings.TRANSLATOR_IMPLEMENTATION)
-        goals = MechanicFactory.rules(
-            settings.TRANSLATOR_IMPLEMENTATION
-        )
-        intention_executor = translator.compile(self.context.configurations.intentions)
-        plot_executor = translator.compile(self.context.configurations.plots)
-        goal_evaluator = goal_translator.compile(
-            self.context.configurations.goals or {}
-        )
+        backend = MechanicFactory.backend(settings.TRANSLATOR_IMPLEMENTATION)
+        transitions = TransitionTranslator(backend)
+        goals = GoalTranslator(backend)
+
+        intention_executor = transitions.compile(self.context.configurations.intentions)
+        plot_executor = goals.compile(self.context.configurations.plots)
+        goal_evaluator = goals.compile(self.context.configurations.goals)
 
         self.executors = {
             Executors.INTENTION: intention_executor,
@@ -175,7 +177,8 @@ class Builder:
         for lifespan in Lifespans:
             stage_rules = self.context.configurations.stages.get(lifespan)
             if stage_rules:
-                self.executors[lifespan] = translator.compile(stage_rules)
+                self.executors[lifespan] = transitions.compile(stage_rules)
+
 
     def build_relations(self) -> None:
         logger.info("Compiling relational indices...")

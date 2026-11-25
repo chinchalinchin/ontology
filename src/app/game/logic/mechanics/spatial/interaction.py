@@ -3,9 +3,6 @@
 @domain.logic
 @app.mechanic
 @physics.space
-@category.sheets
-@category.objects
-@modality.intention
 @workflow.interactions
 
 # Ontology: Source - app.game.logic.mechanics.spatial.interaction

@@ -3,11 +3,6 @@
 @domain.abstract
 @app.base
 @app.service
-@modality.intention
-@workflow.cognition
-@workflow.plot
-@workflow.seasons
-@workflow.transitions
 
 # Ontology: Source - app.services.translators.base
 
@@ -34,7 +29,7 @@ class Backend(ABC):
     """
 
     @abstractmethod
-    def condition(self, condition: str) -> Any:
+    def conditionalize(self, condition: str) -> Any:
         """
         Compiles a single ISL condition string into a backend executable.
         Must fail fast by raising on invalid syntax.
@@ -46,7 +41,7 @@ class Backend(ABC):
         Compiles an ordered conjunction of ISL condition strings.
         Fails fast if any conjunct fails to compile.
         """
-        return tuple(self.condition(cond) for cond in conditions)
+        return tuple(self.conditionalize(cond) for cond in conditions)
 
     @abstractmethod
     def evaluate(
