@@ -92,6 +92,10 @@ tools:
             scan: 
               domain: [ automata ]
               app: [ service ]
+          - title: 'Modules - Automata'
+            scan:
+              domain: [ automata ]
+              app: [ module ]
           - title: 'Mechanics - Intentional'
             scan:
               domain: [ concrete ]
