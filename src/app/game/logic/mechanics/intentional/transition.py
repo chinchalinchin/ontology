@@ -31,7 +31,7 @@ from app.static.semantics import (
 from app.game.logic.modules.maps import AnimationMap
 from app.game.logic.mechanics import Mechanic
 from app.models.state import DevicePayload
-from app.services.automaton.base import Executor
+from app.services.automaton import TransitionExecutor
 
 # --------------------------------------------------------------
 
@@ -47,11 +47,11 @@ class TransitionMechanics(Mechanic):
     """
 
     @property
-    def executor(self) -> Optional[Executor]:
+    def executor(self) -> Optional[TransitionExecutor]:
         return self.executors.get(Executors.INTENTION)
 
     @executor.setter
-    def executor(self, executor: Optional[Executor]) -> None:
+    def executor(self, executor: Optional[TransitionExecutor]) -> None:
         if executor is None:
             self.executors.pop(Executors.INTENTION, None)
         else:

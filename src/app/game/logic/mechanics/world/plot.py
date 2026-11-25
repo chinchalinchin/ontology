@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING, Optional
 from app.static.semantics import Executors
 from app.game.logic.mechanics import Mechanic
 from app.models.state import DevicePayload
-from app.services.automaton.base import Executor
+from app.services.automaton import TransitionExecutor
 
 if TYPE_CHECKING:
     from app.game.board import Board
@@ -32,11 +32,11 @@ class PlotMechanics(Mechanic):
     Evaluates global Plot transitions via the ISL executor against game world state.
     """
     @property
-    def executor(self) -> Optional[Executor]:
+    def executor(self) -> Optional[TransitionExecutor]:
         return self.executors.get(Executors.PLOT)
 
     @executor.setter
-    def executor(self, executor: Optional[Executor]) -> None:
+    def executor(self, executor: Optional[TransitionExecutor]) -> None:
         if executor is None:
             self.executors.pop(Executors.PLOT, None)
         else:

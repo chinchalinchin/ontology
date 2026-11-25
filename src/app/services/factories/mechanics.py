@@ -45,7 +45,7 @@ from app.game.logic.mechanics import (
     TransitionMechanics
 )
 from app.models.configurations import MechanicsInstance
-from app.services.translators import (
+from app.services.automaton import (
     Backend, 
     Compiler,
     Lambda,

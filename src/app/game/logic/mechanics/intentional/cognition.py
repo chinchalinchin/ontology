@@ -40,7 +40,7 @@ from app.models.state import (
     DevicePayload, 
     Goal
 )
-from ontology.src.app.services.automaton.old.goals import GoalEvaluator
+from app.services.automaton import GoalEvaluator
 
 # Cython Libraries
 import libs.core.math.geometry as geometry

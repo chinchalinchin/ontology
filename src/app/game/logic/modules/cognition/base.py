@@ -29,10 +29,6 @@ import logging
 
 # Application Libraries
 from app.assets.base import Asset
-from app.game.logic.modules.cognition import (
-    ResponseOperator,
-    ReflexOperator
-)
 from app.models.state.assets.cursors import AttachmentState
 from app.models.state.assets.sheets import (
     Goal,
@@ -47,7 +43,11 @@ from app.services.automaton import GoalRule
 
 if TYPE_CHECKING:
     from app.game.board import Board
-
+    from app.game.logic.modules.cognition import (
+        ResponseOperator,
+        ReflexOperator
+    )
+    
 # -----------------------------------------------------
 
 K = TypeVar('K')

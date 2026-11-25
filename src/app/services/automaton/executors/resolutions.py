@@ -21,7 +21,7 @@ from typing import (
 
 # Application Libraries
 from app.models.configurations.automata.goals import GoalConfiguration
-from app.services.translators.base import Backend
+from app.services.automaton.base import Backend
 from app.static.semantics import (
     Goals,
     Outcomes,

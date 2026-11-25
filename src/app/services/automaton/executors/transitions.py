@@ -22,7 +22,7 @@ from typing import (
 )
 
 # Application Libraries
-from app.services.translators.base import Backend
+from app.services.automaton.base import Backend
 
 
 @dataclass(slots=True, frozen=True)

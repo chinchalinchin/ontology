@@ -43,14 +43,23 @@ Goal resolution is defined in `/src/data/configurations/automata/goals/main.yaml
 
 $$\text{Precedence}: \quad \texttt{complete} \succ \texttt{layered} \succ \texttt{lost}$$
 
-Each matched `GoalRule` carries `(outcome, responses, reflexes)` and dispatches across three orthogonal slices of `SpriteState`:
+Each matched `GoalRule` carries `(outcome, responses, reflexes)` and dispatches across three orthogonal slices of `SpriteState`.
+
 
 ```mermaid
 flowchart LR
-    E[GoalEvaluator\nCategory x Context -> GoalRule] --> R[GoalResolver]
-    R --> RES[ResponseResolver\nresponses, goal, memory]
-    R --> REF[ReflexResolver\nreflexes, goal, psyche]
-    R --> GL[Goal Lifecycle\ncomplete/lost -> None\nlayered -> Door or None]
+    GR[GoalResolver] --> EV[GoalEvaluator\nCategory x sprite,sprites,assets -> GoalRule]
+    GR --> CTX[ResolutionContext\nresponses, reflexes, locators, spawn]
+    GR --> OO[OutcomeOperator\nOutcomes -> Outcome]
+    CTX --> OO
+    OO --> TO[TerminalOutcome\nCOMPLETE / LOST]
+    OO --> LO[LayeredOutcome\nLAYERED]
+    TO --> RO[ResponseOperator\nMemory]
+    TO --> FX[ReflexOperator\nPsyche]
+    LO --> LC[LocatorOperator\nLocators -> Locator]
+    LO --> RO
+    LO --> FX
+    LC --> DL[DoorLocator\nLocators.DOOR]
 ```
 
 * **Outcomes** (Goal lifecycle transitions):
@@ -527,12 +536,7 @@ Separate `SheetState` (`Pixies`), `CharacterState(SheetState)` (`Players`), and 
 
 ### Addressing User Review III
 
-#### A. Eliminating `target` and `GoalResolver._target()` in Favor of Layer-Scoped `assets`
-
-User Review III correctly identifies the two smells around `target`:
-
-1. **Semantic Collision:** `target` is already a domain enum (`Goals.TARGET`, a hostile Character pursued for combat). Using `target` in `goals/main.yaml` under `door:`, `object:`, and `resource:` makes rules like `door.lost: not target` read as if a Door is inspecting a combat target.
-2. **Defensive Fallback Spaghetti:** To feed that single magic variable into ISL, `GoalResolver._target()` re-introduced the exact category `if/elif` branching that `GoalEvaluator` was built to eliminate (`POSITION` $\to$ `DOOR` with `goal.layer` fallback $\to$ `board.asset(name, layer) or board.asset(name)` $\to$ `sprites.get(name)` fallback), and leaked a special-case `eval_locals` shim into `GoalEvaluator.evaluate()` plus a `target=None` parameter into `settings.LAMBDA_SIGNATURE`.
+#### Eliminating `target` and `GoalResolver._target()` in Favor of Layer-Scoped `assets`
 
 **Audit of what `goals/main.yaml` actually needs:**
 
@@ -550,14 +554,6 @@ User Review III correctly identifies the two smells around `target`:
 
 $$\text{locals} = \{\,\texttt{sprite}: \text{SpriteState},\;\; \texttt{sprites}: \text{Dict}[\text{str}, \text{CharacterState}],\;\; \texttt{assets}: \text{Dict}[\text{str}, \text{AssetState}]\,\}$$
 
-Why `assets = board.states(sprite.state.layer)` solves every problem at once:
-
-* **Zero naming collision & uniform ISL idiom:** `sprite`, `sprites`, and `assets` are all native Ontology nouns using the same `.get(sprite.goal.name)` syntax across both `intentions/main.yaml` and `goals/main.yaml`.
-* **Zero Door `IN`/`OUT` name collision:** Because a Door projects an `IN` asset on `layer` and a reciprocal `OUT` asset with the same `name` on `outlayer`, a global `Dict[str, AssetState]` keyed only by `name` collides. Scoping `assets` to `sprite.state.layer` guarantees at most one Door projection per `name` on any Layer.
-* **Zero cross-layer epistemic telepathy:** Guarding `object.complete` and `resource.complete` with `sprite.layer == sprite.goal.layer` ensures a cross-layer Object/Resource falls cleanly through `complete` to `layered` (since $\texttt{complete} \succ \texttt{layered} \succ \texttt{lost}$), and only verifies asset existence once the Sprite actually enters that Layer.
-* **Zero defensive code:** `GoalResolver._target()` is deleted entirely, `GoalEvaluator.evaluate()` drops its `eval_locals` `'target': None` hack, and `settings.LAMBDA_SIGNATURE` swaps `target=None` for `assets=None`.
-
-Resulting `goals/main.yaml` conditions (clean, uniform, unambiguous):
 
 ```yaml
   target:
@@ -593,45 +589,7 @@ Resulting `goals/main.yaml` conditions (clean, uniform, unambiguous):
         - not assets.get(sprite.goal.name)
 ```
 
----
-
-#### B. Completing `Locator` & `LocatorOperator` Integration
-
-Right now, `LocatorOperator` is the odd one out across the four `Operator` registries in `app.game.logic.modules.cognition`:
-
-| Operator | Key Enum | Handler ABC | Dispatch Method | Wired in `GoalResolver`? |
-| --- | --- | --- | --- | --- |
-| `ResponseOperator` | `Responses` | `Response.apply(goal, memory)` | `resolve(responses, goal, memory)` | Yes |
-| `ReflexOperator` | `Reflexes` | `Reflex.apply(goal, psyche, spawn)` | `resolve(reflexes, goal, psyche, spawn)` | Yes |
-| `OutcomeOperator` | `Outcomes` | `Outcome.apply(...)` | `resolve(...)` | Yes |
-| `LocatorOperator` | `Locators` | `Locator.locate(sprite, board)` | **Missing** | **Dead field**; `LayeredOutcome` holds `locator=None`; `GoalResolver.door` calls nonexistent `cls.locator` |
-
-**Recommended Architecture:**
-
-1. Add `resolve(self, key: Locators, sprite: Asset, board: Board) -> Optional[Asset]` to `LocatorOperator` (delegating to `self.get(key).locate(sprite, board)`), matching the uniform `.resolve(...)` interface of the other three operators.
-2. Introduce a lightweight frozen dataclass `ResolutionContext(responses, reflexes, locators, spawn)` in `cognition/base.py` (following Ontology's existing `EventData` / `ApplicationContext` pattern) so `Outcome.apply(rule, sprite, board, context)` and `OutcomeOperator.resolve(rule, sprite, board, context)` stay at 4 parameters instead of growing to 7 arguments.
-3. Replace `LayeredOutcome.locator: Optional[Locator] = None` with a semantic key `locator: Locators = Locators.DOOR`, resolving via `context.locators.resolve(self.locator, sprite, board)`. Now `OutcomeOperator.defaults()` is always valid, and overriding `Locators.DOOR` on `LocatorOperator` automatically propagates without re-instantiating `OutcomeOperator`.
-4. Delete the broken `GoalResolver.door` `@classmethod`. Give `GoalResolver.__init__` sensible `None` defaults for all four operators (`ResponseOperator()`, `ReflexOperator()`, `OutcomeOperator()`, `LocatorOperator()`) while keeping full constructor injection.
-
-```mermaid
-flowchart LR
-    GR[GoalResolver] --> EV[GoalEvaluator\nCategory x sprite,sprites,assets -> GoalRule]
-    GR --> CTX[ResolutionContext\nresponses, reflexes, locators, spawn]
-    GR --> OO[OutcomeOperator\nOutcomes -> Outcome]
-    CTX --> OO
-    OO --> TO[TerminalOutcome\nCOMPLETE / LOST]
-    OO --> LO[LayeredOutcome\nLAYERED]
-    TO --> RO[ResponseOperator\nMemory]
-    TO --> FX[ReflexOperator\nPsyche]
-    LO --> LC[LocatorOperator\nLocators -> Locator]
-    LO --> RO
-    LO --> FX
-    LC --> DL[DoorLocator\nLocators.DOOR]
-```
-
----
-
-### 1.3 Additional Architectural Gaps Discovered in Audit
+### Additional Architectural Gaps Discovered in Audit
 
 Beyond User Review III and the import crashes in Section 2, five deeper logical flaws need attention before finishing Phase 06.02:
 
@@ -659,22 +617,6 @@ Beyond User Review III and the import crashes in Section 2, five deeper logical 
 
 ## 2. Bug Reports
 
-### Bug Report: B077 — Broken Translator Imports Across `resolutions.py`, `transition.py`, and `cognition.py`
-* **Severity:** Blocker (Import Crash)
-* **Location:**
-  * `src/app/services/translators/executors/resolutions.py`: imports `ConditionBackend` from `app.services.translators.base` (class is named `Backend`).
-  * `src/app/game/logic/mechanics/intentional/transition.py`: imports `Executor` from `app.services.translators.base` (renamed/moved to `TransitionExecutor` in `app.services.translators.executors.transitions`).
-  * `src/app/game/logic/mechanics/intentional/cognition.py`: imports `GoalEvaluator` from nonexistent path `ontology.src.app.services.translators.old.goals`.
-* **Impact:** `ImportError` / `ModuleNotFoundError` on module import. (Audit `PlotMechanics`, `SeasonMechanics`, and test files for stale `Executor` / `ConditionBackend` imports as well.)
-* **Remediation:** Standardize on `Backend`, `TransitionExecutor`, and `GoalEvaluator` re-exported from `app.services.translators`, and update all callers and docstrings.
-
-### Bug Report: B078 — Circular Runtime Import in `cognition/base.py`
-* **Severity:** Blocker (Import Crash)
-* **Location:** `src/app/game/logic/modules/cognition/base.py`
-* **Root Cause:** `base.py` imports `ResponseOperator` and `ReflexOperator` at top level from `app.game.logic.modules.cognition`, while `responses.py`, `reflexes.py`, `outcomes.py`, and `locators.py` all import ABCs from `base.py`.
-* **Impact:** Circular `ImportError` when importing the `cognition` package.
-* **Remediation:** Move `ResponseOperator`, `ReflexOperator`, and `LocatorOperator` type references in `base.py` under `if TYPE_CHECKING:` (file already enables `from __future__ import annotations`).
-
 ### Bug Report: B079 — Unwired `LocatorOperator` & `None` `LayeredOutcome.locator` Crash
 * **Severity:** Critical (Runtime Crash)
 * **Location:** `src/app/game/logic/modules/cognition/{outcomes.py, locators.py, core.py}`
@@ -687,6 +629,7 @@ Beyond User Review III and the import crashes in Section 2, five deeper logical 
 * **Remediation:** Add `LocatorOperator.resolve(key, sprite, board)`, bundle operators into `ResolutionContext` passed to `OutcomeOperator.resolve()`, key `LayeredOutcome` by `Locators.DOOR`, and delete `GoalResolver.door()`.
 
 ### Bug Report: B080 — `Memory.doors` Flat Dict Breaks Bidirectional Door Return Routing
+
 * **Severity:** High (Navigation / Cross-Layer Regression)
 * **Location:** `src/app/models/state/assets/sheets.py` (`Memory.doors`), `src/app/game/logic/modules/cognition/locators.py` (`DoorLocator`)
 * **Root Cause:** Reciprocal `IN` and `OUT` Door projections share the same `door.name` across two Layers. Storing a single `door_name -> outlayer` string overwrites the return edge on transit; `DoorLocator` then fails to recognize the traversed Door as leading back to the origin Layer once the Sprite moves outside `vision.radius`.
@@ -694,6 +637,7 @@ Beyond User Review III and the import crashes in Section 2, five deeper logical 
 * **Remediation:** Type `Memory.doors` as `Dict[str, Dict[str, str]]` (`from_layer -> {door_name: to_layer}`), record both directions on traversal when a reciprocal projection exists, and query `memory.doors.get(sprite.state.layer, {})` (with optional BFS for multi-hop paths) in `DoorLocator`.
 
 ### Bug Report: B081 — Potential Infinite Stall–Unwind–Wake Loop on Blocked Unmapped Doors (Design Defect in Task 4 Spec)
+
 * **Severity:** High (Infinite Loop)
 * **Location:** Task 4 Subtask 1 (`Perception.scan` cross-layer dormancy wake rule)
 * **Root Cause:** Waking cross-layer dormant Goals whenever an unmapped door lies within `vision.radius` immediately re-wakes a Goal that was just unwound by `door.lost` due to stalling on that very same door.
