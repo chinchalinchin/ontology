@@ -155,13 +155,20 @@ class Builder:
 
     def build_executors(self) -> None:
         logger.info("Compiling master mechanic executors...")
-        translator = MechanicFactory.translator(settings.TRANSLATOR_IMPLEMENTATION)
+        transitions = MechanicFactory.transitions(settings.TRANSLATOR_IMPLEMENTATION)
+        goals = MechanicFactory.rules(
+            settings.TRANSLATOR_IMPLEMENTATION
+        )
         intention_executor = translator.compile(self.context.configurations.intentions)
         plot_executor = translator.compile(self.context.configurations.plots)
+        goal_evaluator = goal_translator.compile(
+            self.context.configurations.goals or {}
+        )
 
         self.executors = {
             Executors.INTENTION: intention_executor,
             Executors.PLOT: plot_executor,
+            Executors.GOAL: goal_evaluator,
         }
 
         # Compile independent stage executors keyed by Lifespan enum values
@@ -169,7 +176,6 @@ class Builder:
             stage_rules = self.context.configurations.stages.get(lifespan)
             if stage_rules:
                 self.executors[lifespan] = translator.compile(stage_rules)
-
 
     def build_relations(self) -> None:
         logger.info("Compiling relational indices...")

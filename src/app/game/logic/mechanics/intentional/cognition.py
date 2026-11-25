@@ -14,7 +14,10 @@ from __future__ import annotations
 
 # Standard Libraries
 import random
-from typing import TYPE_CHECKING
+from typing import (
+    Optional,
+    TYPE_CHECKING
+)
 import collections
 import logging
 
@@ -24,18 +27,20 @@ if TYPE_CHECKING:
 # Application Libraries
 from app.assets.base import Asset
 from app.static.semantics import (
-    Intentions, 
-    Goals, 
+    Intentions,
+    Goals,
     Motivations,
     AssetInstances,
     ExpressionsPalette,
-    Expressions
+    Expressions,
+    Executors
 )
 from app.game.logic.mechanics import Mechanic
 from app.models.state import (
     DevicePayload, 
     Goal
 )
+from app.services.translators.goals import GoalEvaluator
 
 # Cython Libraries
 import libs.core.math.geometry as geometry
@@ -57,6 +62,17 @@ class CognitionMechanics(Mechanic):
 
     The central Mechanic for managing the frequency of Sprite Goals. Acts as the sensory input for Sprites, handling target acquisition, vision radiuses, and goal coordinate updates. 
     """
+    @property
+    def executor(self) -> Optional[GoalEvaluator]:
+        """Typed GoalEvaluator bound to Executors.GOAL."""
+        return self.executors.get(Executors.GOAL)
+
+    @executor.setter
+    def executor(self, executor: Optional[GoalEvaluator]) -> None:
+        if executor is None:
+            self.executors.pop(Executors.GOAL, None)
+        else:
+            self.executors[Executors.GOAL] = executor
 
     @staticmethod
     def log_goal(sprite: Asset, verb: str = "transformed", level: str = "info"):
@@ -303,7 +319,7 @@ class CognitionMechanics(Mechanic):
             if other_name == sprite.name: 
                 continue
 
-            # STRICT LAYER CHECK: Cannot see across dimensions
+            # STRICT LAYER CHECK: Cannot see across Layers
             if other_state.layer != sprite.state.layer:
                 continue
 

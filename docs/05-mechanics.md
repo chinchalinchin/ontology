@@ -449,13 +449,16 @@ Systems requiring external services (such as the Actuator for [FluidMechanics](.
 
 Executors are Services made available to Mechanics that register to receive them in the [Configuration](#configuration-mechanics). 
 
-* `plot`: Executor for evaluating the conditions for [Plot Transitions](./08-narratives.md).
-* `intention`: Executor for evaluating the conditions for [Intention Transitions](./04-intentions.md)
-* `goal`: Evaluates conditions for the [Goal Resolution Matrix](./04-intentions.md#goal-satisfaction).
-* `actuator`: Executor for generating [Fluid](./01-assets.md#effect-fluids) and [Shoreline](./01-assets.md#shorelines) Assets.
-* `annual`: Executor evaluating [Resource Stage](./01-assets.md#resources) transitions for annual Lifespans.
-* `perennial`: Executor evaluating [Resource Stage](./01-assets.md#resources)transitions for perennial Lifespans.
-* `centennial`: Executor evalutating [Resource Stage](./01-assets.md#resources) transitions for centennial Lifespans.
+* **Automaton Transition Executors**
+    * `plot`: Executor for evaluating the conditions for [Plot Transitions](./08-narratives.md).
+    * `intention`: Executor for evaluating the conditions for [Intention Transitions](./04-intentions.md)
+    * `annual`: Executor evaluating [Resource Stage](./01-assets.md#resources) transitions for annual Lifespans.
+    * `perennial`: Executor evaluating [Resource Stage](./01-assets.md#resources) transitions for perennial Lifespans.
+    * `centennial`: Executor evalutating [Resource Stage](./01-assets.md#resources) transitions for centennial Lifespans.
+* **Rule Evaluation Executors**
+    * `goal`: Evaluates conditions for the [Goal Resolution Matrix](./04-intentions.md#goal-satisfaction).
+* **Procedural Generatoration Executors**
+    * `actuator`: Executor for generating [Fluid](./01-assets.md#effect-fluids) and [Shoreline](./01-assets.md#shorelines) Assets.
 
 ### Dependency: Relations
 
@@ -507,7 +510,7 @@ $$
 
 **Interface: Attack Hitbox Mapping**
 
-* `attackboxes(state, equipment, elevation): returns List[Hitbox]`: Queries the slotted weapon's Hitbox component at the entity's active `<action>-<direction>-<frame>` key and elevation plane.
+* `attackboxes(state, equipment, elevation): returns List[Hitbox]`: Queries the slotted weapon's Hitbox component at the Asset's active `<action>-<direction>-<frame>` key and elevation plane.
 
 $$
 --8<-- "static/tex/functions/function-003-attackbox-map.tex"
@@ -515,7 +518,7 @@ $$
 
 **Interface: Projectile Asset Mapping**
 
-* `projectile(state, equipment): returns id`: Evaluates whether the slotted weapon configures a `projectile` ID and `release` frame matching the entity's current animation frame. When triggered on the entry tick of the `release` frame, calculates the initial scalar speed $s(S, n)$ from the attacker's strength $S$, held charge duration $n$, and the weapon's draw window $N_{\max} = \max(1, \text{release} \cdot \text{delay})$.
+* `projectile(state, equipment): returns id`: Evaluates whether the slotted Weapon configures a `projectile` ID and `release` Frame matching the Sprite's current Animation Frame. When triggered on the entry tick of the `release` Frame, calculates the initial Projectiles speed $s(S, n)$ from the attacker's strength $S$, held charge duration $n$, and the weapon's draw window $N_{\max} = \max(1, \text{release} \cdot \text{delay})$.
 
 $$
 --8<-- "static/tex/functions/function-002-projectile-map.tex"

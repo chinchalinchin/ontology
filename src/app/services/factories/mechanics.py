@@ -46,8 +46,13 @@ from app.game.logic.mechanics import (
 )
 from app.models.configurations import MechanicsInstance
 from app.services.translators import (
+    ConditionBackend,
+    CompilerConditionBackend,
+    LambdaConditionBackend,
     CompilerTranslator,
-    LambdaTranslator
+    LambdaTranslator,
+    GoalTranslator,
+    Translator,
 )
 from app.static.semantics import (
     Devices,
@@ -96,11 +101,27 @@ class MechanicFactory:
         target_cls = cls.DEVICE_MAP.get(dev, Keyboard)
         return target_cls(mapping)
 
-    @classmethod
-    def translator(cls, translation: str):
-        target_cls = cls.TRANSLATOR_MAP.get(translation, LambdaTranslator)
-        return target_cls()
+    @staticmethod
+    def backend(implementation: str) -> ConditionBackend:
+        if implementation == Translators.COMPILER:
+            return CompilerConditionBackend()
+        if implementation == Translators.LAMBDA:
+            return LambdaConditionBackend()
+        raise ValueError(f"Unsupported translator implementation: '{implementation}'")
 
+    @staticmethod
+    def translator(implementation: str) -> Translator:
+        backend = MechanicFactory.condition_backend(implementation)
+        if isinstance(backend, CompilerConditionBackend):
+            return CompilerTranslator(backend=backend)
+        return LambdaTranslator(backend=backend)
+
+    @staticmethod
+    def goals(implementation: str) -> GoalTranslator:
+        return GoalTranslator(
+            backend=MechanicFactory.condition_backend(implementation)
+        )
+    
     @classmethod
     def mechanics(
         cls,

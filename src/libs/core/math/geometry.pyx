@@ -201,12 +201,13 @@ cpdef bint nearby(
     int radius
 ):
     """
-    Zero-allocation squared distance check. 
+    Zero-allocation inclusive closed-ball squared distance check.
     """
+    if radius < 0:
+        return False
     cdef int dx = tx - sx
     cdef int dy = ty - sy
-    return (dx * dx + dy * dy) < (radius * radius)
-
+    return (dx * dx + dy * dy) <= (radius * radius)
 
 cpdef tuple bounded(
     int a_x, 

@@ -240,15 +240,15 @@ The formula for an Asset, i.e. the list of components which go into a particular
 
 * Property File: `/src/assets/tiles/**/*.yaml`
 
-Tiles are static Assets that form environmental foundation of the game. 
+Tiles are static Assets that form the environmental foundation of the game. 
 
-**Behavior: Rendering**
+**Behavior: Multliplication**
 
 When a Tile is drawn, it is rendered as a `multiple` of the unit Tile, usings the Dimensions configured in the Asset directory to expand the multiplied area.
 
 **Behavior: Friction**
 
-Tiles have coefficients of friction. These coefficient are used by [MotionMechanics](./05-mechanics.md#mechanics-spatial) to determine the rate of velocity decay for Frictive Assets traversing their area.
+Tiles have coefficients of friction. These coefficient are used by [MotionMechanics](./05-mechanics.md#mechanics-spatial) to determine the rate of Velocity decay for Frictive Assets traversing their area.
 
 **Properties: TileProperties(AssetProperties)**
 
@@ -363,11 +363,11 @@ N/A
 
 #### Object: Chests
 
-*Chests* are Objects with a binary state whose Frame can be changed by the Player or Sprite entering the `interact` [Intention](./04-intentions.md) while in the immediate proximity of the Chest. When `switch == true`, the Chest is *on* (open). When `switch == false`, the Chest is *off* (closed).
+*Chests* are Objects with a binary State whose Frame can be changed by the Player or Sprite entering the `interact` [Intention](./04-intentions.md) while in the immediate proximity of the Chest. When `switch == true`, the Chest is *on* (open). When `switch == false`, the Chest is *off* (closed).
 
-A Chest is *reusable* through the `interact` [Intention](./04-intentions.md), meaning [Inventory Loot](./02-sprites.md#inventory) can be taken out of and also placed into a Chest. The `content` state field manages the current contents of the Chest through a list of Inventory Loot keys.
+A Chest is *reusable* through the `interact` [Intention](./04-intentions.md), meaning [Inventory](./02-sprites.md#inventory) can be taken out of and also placed into a Chest. The `content` state field manages the current contents of the Chest through a list of Inventory keys.
 
-When interacting with a Chest, the [Player](./02-sprites.md#player) is shown the [Chest Menu](./06-widgets.md#menu-data), allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an `interact` Intention with a Chest through its [Intention Transition Matrix](./04-intentions.md#transition-matrix). This interaction is managed through a dedicated Sprite [Mechanic](05-mechanics.md)
+When interacting with a Chest, the [Player](./02-sprites.md#player) is shown the [Chest Menu](./06-widgets.md#menu-data), allowing them to exchange the contents of their Inventory with the contents of the Chest. A Sprite may also enter into an `interact` Intention with a Chest through its [Intention Transition Matrix](./04-intentions.md#transition-matrix). This interaction is managed through a dedicated Sprite [Mechanic](05-mechanics.md)
 
 **State: ContainerState**
 
@@ -381,11 +381,11 @@ When interacting with a Chest, the [Player](./02-sprites.md#player) is shown the
 **Frame: BinaryFrame**
 
 * `index(id, properties): returns { "{id}-{i}-{j}": (j * properties.dimension.w, i * properties.dimensions.l, properties.dimensions.w, properties.dimension.l )} for i,j in product(properties.count, properties.material)`
-* `keys(id, state): returns "{id}-{state.material}-{Switches.ON.value}" if state.switch else {id}-{state.material}-{Switches.OFF.value}"`
+* `keys(id, state): returns "{id}-{state.material}-{Switches.ON}" if state.switch else {id}-{state.material}-{Switches.OFF}"`
 
 #### Object: Crates
 
-Crates are Objects who state can be altered by collisions. When acted upon by an external force, momentum is transferred to the Crate and it acquires velocity. See [CollisionMechanics](./05-mechanics.md#spatial-mechanic-collisionmechanics) for more information on game physics.
+Crates are Objects who State can be altered by collisions. When acted upon by an external force, momentum is transferred to the Crate and it acquires velocity. See [CollisionMechanics](./05-mechanics.md#spatial-mechanic-collisionmechanics) for more information on game physics.
 
 **State: MotiveState**
 
@@ -589,12 +589,12 @@ Stairs are Crafts that transition the elevation of dynamic Assets.
 
 The direction of the elevation transition calculation is dependent on the direction of the transitioning Asset's velocity,
 
-- `stairs.state.blueprint == Directions.RIGHT and asset.state.velocity.vx < 0: asset.state.elevation += stairs.state.delta`
-- `stairs.state.blueprint == Directions.RIGHT  and asset.state.velocity.vx > 0: asset.state.elevation -= stairs.state.delta`
-- `stairs.state.blueprint == Directions.LEFT and asset.state.velocity.vx < 0: asset.state.elevation -= stairs.state.delta`
-- `stairs.state.blueprint == Directions.LEFT and asset.state.velocity.vx > 0: asset.state.elevation += stairs.state.delta`
-- `stairs.state.blueprint == Directions.DOWN and asset.state.velocity.vy < 0: asset.state.elevation += stairs.state.delta`
-- `stairs.state.blueprint == DIRECTION.DOWN and asset.state.velocity.vy > 0: asset.state.elevation -= stairs.state.delta`
+* `stairs.state.blueprint == Directions.RIGHT and asset.state.velocity.vx < 0: asset.state.elevation += stairs.state.delta`
+*  `stairs.state.blueprint == Directions.RIGHT  and asset.state.velocity.vx > 0: asset.state.elevation -= stairs.state.delta`
+* `stairs.state.blueprint == Directions.LEFT and asset.state.velocity.vx < 0: asset.state.elevation -= stairs.state.delta`
+* `stairs.state.blueprint == Directions.LEFT and asset.state.velocity.vx > 0: asset.state.elevation += stairs.state.delta`
+* `stairs.state.blueprint == Directions.DOWN and asset.state.velocity.vy < 0: asset.state.elevation += stairs.state.delta`
+* `stairs.state.blueprint == DIRECTION.DOWN and asset.state.velocity.vy > 0: asset.state.elevation -= stairs.state.delta`
 
 **State: StairState**
 
@@ -614,7 +614,7 @@ Cursors are Assets that bind to other Asset States.
 * `hitboxes: List[Hitbox]`
 
 !!! @TODO(03-05) "Cursor Redundancy"
-    Expressions utilize `frames` to index their Frame atlas. Projectils utilize `weapons` to index their Frame atlas. Both fields are Lists of strings. There appears to be a potential for simplification and solidifcation of the Cursor properties, i.e. these fields should be merged into a common Cursor `indices` property, to prevent verbosity and property sprawl/polymorphism.
+    Expressions utilize `frames` to index their Frame atlas. Projectils utilize `weapons` to index their Frame atlas. Both fields are Lists of strings. There appears to be a potential for simplification and solidification of the Cursor properties, i.e. these fields should be merged into a common Cursor `indices` property, to prevent verbosity and property sprawl/polymorphism.
 
 #### Cursor: Expressions
 

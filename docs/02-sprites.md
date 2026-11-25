@@ -33,6 +33,7 @@ The Player Sheet extends the basic [SheetState](./01-assets.md#category-sheets) 
     * `layer: str`
     * `category: Goals`
     * `position: Position`
+    * `dormant: bool`
 * `slots: Slots`
     * `equipment: Equipment`
         * `armor: ArmorPalette`
@@ -57,6 +58,14 @@ The Player Sheet extends the basic [SheetState](./01-assets.md#category-sheets) 
     * `magic: Meter`
         * `current: int`
         * `maximum: int`
+
+**Animation: CharacterAnimation**
+
+TODO
+
+**Frame: CharacterFrame**
+
+TODO
 
 #### Sheet: Sprite
 
@@ -161,6 +170,7 @@ Mutators are *condition-driven*. These conditions may be *parameterized*.
 
 * `trigger.animated`: Triggered if a Sprite is currently able to animate, i.e. alter its AnimationState. When this Mutator trigger is false, the Sprite does not receive animation updates from the Engine Loop.
 * `triggers.dead`: Triggered if a Sprite dies. This can only occur if the Sprite's `meters.health.current == 0`
+* `triggers.interacted`: Triggered when a Sprite completes an `interact` Action with an Object, cleared after leaving `interact`.
 * `triggers.frightened`: Triggered for the logical disjunction of the following conditions:
     * If the Sprite's health dips below `fear.limit`
     * If the Sprite is surrounded by more than `fear.enemy` enemies with the pixel distance of `fear.radius`.
@@ -243,6 +253,7 @@ Motivations are long-term state variables that are used to modulate the [Intenti
 * `memory.property: Dict[str, Position]`: Locations of Sprite-owned structures, keyed by `name`.
 * `memory.relationships: Dict[str, Relationships]`: Sprite social relationships, keyed by `name`.
 * `memory.rumors: List[str]`: Lexicon dialogue keys received via conversation.
+* `memory.stack: List[Goal]`: LIFO Commitment Stack of parent Goals suspended by prerequisite sub-Goals.
 
 **Semantics: Relationships**
 

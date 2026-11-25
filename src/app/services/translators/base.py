@@ -1,61 +1,61 @@
 """
 @domain.automata
 @domain.abstract
-@domain.logic
 @app.base
 @app.service
 @modality.intention
+@workflow.cognition
 @workflow.plot
 @workflow.seasons
 @workflow.transitions
 
 # Ontology: Source - app.services.translators.base
 
-Interfaces for Transition Translation and Execution.
+Abstract ISL ConditionBackend contract and finite-automaton Transition
+Translator and Executor.
 """
 # Standard Libraries
-from dataclasses import dataclass
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Any
+from typing import (
+    Any,
+    Dict,
+    Sequence,
+    Tuple
+)
 
-@dataclass(slots=True)
-class Transition:
-    """
-    Dynamic game model representing a compiled transition rule.
-    """
-    next: str
-    conditions: List[Any]  # Can hold Callables (Lambdas) or CodeType objects (AST)
+# ---------------------------------------------------------
 
-class Executor(ABC):
+
+class Backend(ABC):
     """
-    Defines the execution contract for evaluating intention/plot transitions.
+    Defines the shared ISL expression compilation and conjunction evaluation
+    strategy (AST vs. Lambda), decoupled from both finite-automaton Executors
+    and declarative GoalEvaluators.
     """
-    transitions: Dict[str, List[Transition]]
-    
-    def __init__(self, transitions: Dict[str, List[Transition]]):
-        self.transitions = transitions
 
     @abstractmethod
-    def evaluate(self, current_state: str, locals: Dict[str, Any]) -> Optional[str]:
+    def condition(self, condition: str) -> Any:
         """
-        Evaluates the dynamic locals against the compiled ISL conditions for a given state.
-        
-        Returns the string key for the next valid state transition, 
-        or None if no transitions evaluate to True.
+        Compiles a single ISL condition string into a backend executable.
+        Must fail fast by raising on invalid syntax.
         """
         pass
 
-
-class Translator(ABC):
-    """
-    Defines the compilation contract for translating raw ISL string rules into 
-    executable components.
-    """
-    
-    @abstractmethod
-    def compile(self, raw_configs: Dict[str, List[Any]]) -> Executor:
+    def compile(self, conditions: Sequence[str]) -> Tuple[Any, ...]:
         """
-        Compiles string conditions into Python executables and constructs an Executor 
-        capable of evaluating them at runtime.
+        Compiles an ordered conjunction of ISL condition strings.
+        Fails fast if any conjunct fails to compile.
+        """
+        return tuple(self.condition(cond) for cond in conditions)
+
+    @abstractmethod
+    def evaluate(
+        self,
+        conditions: Sequence[Any],
+        locals: Dict[str, Any]
+    ) -> bool:
+        """
+        Short-circuit evaluates a compiled conjunction against dynamic locals.
+        Returns False for empty condition sequences.
         """
         pass

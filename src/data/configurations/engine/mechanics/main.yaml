@@ -15,7 +15,8 @@ mechanics:
       relations: 
         - projectiles
     - key: cognition
-      executors: []
+      executors:
+        - goal
       relations: []
     - key: transition
       executors:

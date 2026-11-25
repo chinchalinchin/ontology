@@ -104,8 +104,10 @@ class Executors(StrEnum):
     ANNUAL          = "annual"
     PERENNIAL       = "perennial"
     CENTENNIAL      = "centennial"
-    # GENERATORS
+    # PROCEDURAL GENERATORS
     ACTUATOR        = "actuator"
+    # RULE EVALUATORS
+    GOAL            = "goal"
 
 class Translators(StrEnum):
     """Enumeration of Transition compilation techniques."""

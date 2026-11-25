@@ -24,7 +24,7 @@ flowchart LR
 
 1. **Bootstrapping**: Loads Configuration files via Pydantic TypeAdaptor, instantiates Service singletons, compiles [Executors](./05-mechanics.md#dependency-executors) and [Relations](./05-mechanics.md#dependency-relations)
 2. **Cython**: Initializes video, image, and typography subsystems.
-3. **Registry**: Recursively parses the Asset directory, mapping file paths and generating crop-map indexes. *VRAM allocation is completely deferred.*
+3. **Registry**: Recursively parses the Asset directory, mapping file paths and generating crop-map indexes. *VRAM allocation is deferred.*
 4. **Components**: Instantiates [Mechanics](./05-mechanics.md) and an empty [Board](./00-overview.md#component-board). 
 5. **Ignition**: The [Engine Loop](#specification-engine-loop) begins. A [MenuEvent](./06-widgets.md#events) is injected into the [Engine Bus](./00-overview.md#component-engine) prior to ignition to immediately render the [Main Menu](./06-widgets.md#menu-data).
 
@@ -32,34 +32,19 @@ flowchart LR
 
 When the User selects "*New Game*" or "*Load*" from the [Main Menu](./06-widgets.md#menu-data), an [Event](./06-widgets.md#concept-asychronicity) is thrown to the [Engine Bus](./00-overview.md#component-engine), signaling the onset of the [World Mechanic context](./05-mechanics.md#mechanics-world).
 
-1. **Generation**: The [LoadController](./06-widgets.md#controllers) calls the Migrator each frame. The Migrator applies calls the [Factory](./00-overview.md#service-factory) to generate batches of Assets from the State file, injecting Frame, Animation, Hitbox, Properties, and State components, then yields execution back to the Engine.
+1. **Generation**: The [LoadController](./06-widgets.md#controllers) calls the Migrator each frame. The Migrator applies calls the [AssetFactory](./00-overview.md#service-factories) to generate batches of Assets from the State file. As it does so, the AssetFactory injects Frame, Animation, Hitbox, Properties, and State components, and then yields execution back to the Engine.
 2. **Prewarming**: Concurrently, the Registry parses a queue of keys, loading Asset files into memory.
-3. **Allocation**: Once hydration is complete, the Migrator triggers the Screen to reallocate canvases for the Painter's Algorithm.
+3. **Allocation**: Once hydration is complete, the Migrator triggers the Screen to reallocate canvases for rendering.
 4. **Execution**: The LoadController emits a [TerminalEvent](./06-widgets.md#events), popping the loading screen, activating the Board, and unpausing the [World Mechanics](./05-mechanics.md#mechanics-world).
 
 ### Specification: Engine Loop
 
 The Engine delegates behavior to [Mechanics](./05-mechanics.md). Rather than the [Engine](./00-overview.md#component-engine) passing arguments to a system, a Mechanic is responsible for querying the [Board](./00-overview.md#component=board) for the exact data it requires, processing the state, and optionally pushing Events to the Engine Bus.
 
-Mechanics are segregated into `core` pipelines and `world` pipelines. The [Engine](./00-overview.md#component-engine) processes these pipelines conditionally:
-
-```python
-def _play(self, delta) -> None:
-    """
-    Apply Mechanics.
-    """
-    for mechanic in self.core:
-        mechanic.update(self.board, delta, self.bus)
-
-    if not self.board.paused:
-        for mechanic in self.world:
-            mechanic.update(self.board, delta, self.bus)
-```
+Mechanics are segregated into `core` pipelines and `world` pipelines by the [Engine](./00-overview.md#component-engine).
 
 * **Core Mechanics:** Systems that must execute every tick regardless of the Board State. This includes [MenuMechanics](./05-mechanics.md#core) (to process input and layout traversals), [AnimationMechanics](./05-mechanics.md#core) (to keep Assets animating), and RemoveMechanics (to optimize memory).
-* **World Mechanics:** Systems that govern logic, physics, and behavior. This includes [MotionMechanics, CombatMechanics, and PlayerMechanics](./05-mechanics.md).
-
-When an [Event](./06-widgets.md#events) fires and a Menu is pushed to the screen, the Board is paused. The Engine skips the World Mechanics loop entirely. The World freezes, but Core Mechanics continue ticking, allowing the User to navigate the Menu.
+* **World Mechanics:** Systems that govern logic, physics, and behavior. This includes [MotionMechanics, CombatMechanics, and PlayerMechanics](./05-mechanics.md). These Mechanics only execute if the Board is unpaused. When an [Event](./06-widgets.md#events) fires and a [Menu](./06-widgets.md#configuration-menus) is pushed to the [Screen](./00-overview.md#component-screen), the [Board](./00-overview.md#component-board) is paused. The Engine skips the World Mechanics loop entirely. The World freezes, but Core Mechanics continue ticking, allowing the User to navigate the Menu.
 
 ### Specification: Board Caches
 
@@ -103,9 +88,7 @@ $$
 
 A Font configuration pairs a `.ttf` file with styling rules. During bootstrap, the Registry ingests each Font declared in `/src/assets/fonts/**/*.yaml`, storing them as styled Cython wrappers. 
 
-In [Menu Configurations](./06-widgets.md#configuration-menus), Font are scoped at the [Pane](./06-widgets.md#widget-panes) level: any Fany declared on a parent Pane cascades down to all child Widgets unless explicitly overridden by a nested pane.
-
-See [Library: Graphics](#library-graphics) for more implementation details.
+In [Menu Configurations](./06-widgets.md#configuration-menus), Font are scoped at the [Pane](./06-widgets.md#widget-panes) level: any Font declared on a parent Pane cascades down to all child Widgets unless explicitly overridden by a nested pane.
 
 **Properties: FontProperties**
 
@@ -137,9 +120,9 @@ See [Library: Graphics](#library-graphics) for more implementation details.
 
 ### Specification: Cython Libraries
 
-While Python objects are fast enough for general logic, calculating collisions and processing rendering instructions for thousands of entities requires maximum performance. The engine uses Cython to bridge this gap, adhering to a **"Zero Heap Allocation in the Inner Loop"** philosophy to prevent frame stutters caused by the Python Garbage Collector.
+The Engine delegates all intensive processing and calculation to pre-compiled Cython libraries, adhering to a **"Zero Heap Allocation in the Inner Loop"** philosophy to prevent frame stutters caused by the Python Garbage Collector.
 
-!!! important "Zero Heap Allocation Flexibility"
+!!! important "Zero Heap Allocation in the Inner Loop"
     Zero Heap Allocation is more of an ideal/driving principle than an enforced constraint. 
 
 #### Library: Models
@@ -242,12 +225,12 @@ An Asset is visible on screen if its bounding box intersects $R(x_c, y_c, w_s, l
     (\frac{\mathbf{d} \cdot \hat{\mathbf{u}}}{\|\mathbf{d}\|} \ge \cos\alpha)
     $$
 
-    4. **`nearby`**: Euclidean distance check.
+4. **`nearby`**: Euclidean distance check.
 
     $\mathbf{t}$ lies within radius $r$ of $\mathbf{s}$ if and only if:
 
     $$
-    \|\mathbf{d}\|^2 = \Delta x^2 + \Delta y^2 < r^2
+    \|\mathbf{d}\|^2 = \Delta x^2 + \Delta y^2 \le r^2
     $$
 
 5. **`punctures`**: Implementation of the Liang-Barsky line clipping algorithm. Evaluates whether a line segment $(x_1, y_1) \to (x_2, y_2)$ penetrates the interior of an AABB obstacle with non-degenerate penetration depth ($u_1 < u_2 - \epsilon$).

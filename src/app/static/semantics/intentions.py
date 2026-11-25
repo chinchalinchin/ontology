@@ -113,6 +113,7 @@ class Responses(StrEnum):
     FORGET          = "forget"
     STORE           = "store"
     PUSH            = "push"
+    UNWIND          = "unwind"
 
 class Reflexes(StrEnum):
     CONFUSION       = "confusion"

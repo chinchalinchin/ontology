@@ -7,7 +7,7 @@
 
 # Ontology: Source - app.models.configurations.automata.transitions
 
-Models for typing the transition configuration attributes of game components.
+Models for typing the configuration attributes of automaton transition.
 """
 # Standard Libraries
 from typing import List

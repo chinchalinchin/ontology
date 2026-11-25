@@ -19,8 +19,11 @@ from dataclasses import (
 
 # Application Libraries
 from app.static.semantics import (
-    Intentions
+    Intentions,
+    Goals,
+    Outcomes
 )
+from app.models.adapters import Enumerated
 from app.models.configurations.assets import (
     ActionConfiguration,
     CompositionConfiguration,
@@ -31,6 +34,7 @@ from app.models.configurations.automata import (
     IntentionConfiguration,
     PlotConfiguration,
     StageConfiguration,
+    GoalConfiguration
 )
 from app.models.configurations.engine import (
     MechanicsConfiguration,
@@ -45,7 +49,7 @@ from app.models.configurations.menus import (
 class ConfigurationSchema:
     actions: List[ActionConfiguration] = field(default_factory=list)
     compositions: Dict[str, CompositionConfiguration] = field(default_factory=dict)
-    intentions: Dict[Intentions, List[IntentionConfiguration]] = field(default_factory=dict)
+    intentions: Dict[Enumerated[Intentions], List[IntentionConfiguration]] = field(default_factory=dict)
     library: Dict[str, Dict[str, Dict[str, str]]] = field(default_factory=dict)
     mappings: MappingConfiguration = field(default_factory=MappingConfiguration)
     materials: MaterialsConfiguration = field(default_factory=MaterialsConfiguration)
@@ -54,3 +58,4 @@ class ConfigurationSchema:
     stages: Dict[str, Dict[str, List[StageConfiguration]]] = field(default_factory=dict)
     recipes: RecipeConfiguration = field(default_factory=RecipeConfiguration)
     menus: Dict[str, MenuConfiguration] = field(default_factory=dict)
+    goals: Dict[Enumerated[Goals], Dict[Enumerated[Outcomes], GoalConfiguration]]

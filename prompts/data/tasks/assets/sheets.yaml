@@ -3,7 +3,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/groom.md.j2
+  template: iterate/implement.md.j2
 # ----------------------------------------------------
 tools:
 # ----------------------------------------------------
@@ -12,8 +12,8 @@ tools:
     manager:
       board: true
       docs: true
-      bugs: true
-      templates: true
+      bugs: false
+      templates: false
     # --------------------------------------------
     source:
       data: true
@@ -38,6 +38,7 @@ tools:
         - b067
         - b069
         - b070
+        - b071
       docs:
         exclude:
           # - 00-overview
@@ -66,14 +67,14 @@ tools:
       filter:
         default: AND
         queries:
+          - title: 'Application - Orchestration'
+            scan: 
+              domain: [ system ]
+              app: [ orchestration ]
           - title: 'Application - Core'
             scan:
               domain: [ system ]
               app: [ core, component ]
-          - title: 'Application - Devices'
-            scan:
-              domain: [ user ]
-              app: [ device ]
           - title: 'Asset - Abstract'
             scan:
               domain: [ abstract ]
@@ -96,7 +97,7 @@ tools:
               domain: [ concrete ]
               app: [ asset ]
               category: [ sheets ]
-          - title: 'Automata - Intentional Transitions'
+          - title: 'Automata - Intentional Automata'
             scan: 
               domain: [ automata ]
               modality: [ intention ]
@@ -111,7 +112,7 @@ tools:
               app: [ library ]
               workflows: [ navigation ]
       data:
-        properties: [ sheets ]
+        properties: [ sheets/sprites ]
         state: [ ]
         configurations: [ assets/actions, automata/intentions, automata/goals ]
         templates: [ ]

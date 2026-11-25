@@ -7,20 +7,44 @@ Intentions represent a node in the Sprite's "*finite automaton*", the **Intentio
 Goals represent the focus of the Sprite's Intention, e.g. a Position to move to, a [Chest](./01-assets.md#object-chests) to open, etc.
 
 !!! important "Separation of Duties"
-    [CognitionMechanics](./05-mechanics.md#intentional-mechanic-cognitionmechanics) mutates Goals, [TransitionMechanics](./05-mechanics.md#intentional-mechanic-transitionmechanics) mutates Intentions. The [Intention Transition Matrix](#transition-matrix) governs all mutations of Sprite Intentions. This rule **must** be followed at all times.
+    [CognitionMechanics](./05-mechanics.md#intentional-mechanic-cognitionmechanics) mutates Goals, [TransitionMechanics](./05-mechanics.md#intentional-mechanic-transitionmechanics) mutates Intentions. The [Intention Transition Matrix](#intention-transition-matrix) governs all mutations of Sprite Intentions. This rule **must** be followed at all times.
 
-Both [Sprites and Players](./02-sprites.md) utilize the interface of Intention and Goals to communicate State updates and reactions to the environment. The key difference is how Intentions and Goals are generated. In the case of the [Player](./02-sprites.md#instance-player), they are mapped by polling the [Device](./02-sprites.md#devices). For a non-playable Sprite, they are calculated using the [Intention Transition Matrix](#transition-matrix).
+Both [Sprites and Players](./02-sprites.md) utilize the interface of Intention and Goals to communicate State updates and reactions to the environment. The key difference is how Intentions and Goals are generated. In the case of the [Player](./02-sprites.md#instance-player), they are mapped by polling the [Device](./02-sprites.md#devices). For a non-playable Sprite, the progression of Intentions towards a Goal is calculated using the [Intention Transition Matrix](#intention-transition-matrix) while the resolution of a Goal is calculated by the [Goal Resolution Matrix](#goal-resolution-matrix).
 
 Broadly speaking, an Intention is a "verb", e.g. `attack`, `find`, `barter`, etc. A Goal is a "noun" (e.g. `object`, `position`, `property`, etc.). 
 
-While the exact mapping is more complex and interdependent, in general terms: Intentions produce Actions, Goals produce Directions.
+In general terms: Intentions produce Actions, Goals produce Directions.
 
 !!! note "Transition Notation"
     A Transition from the Intention $i_1$ to the Intention $i_2$ is denoted $i_1:i_2$
 
-## Specification: Intention
+## Intentions: Concepts
 
-An Intention is a [Sprite](./02-sprites.md) field that factors into the its Animation calculations indirectly; It may be thought of as a "hidden" State. An Animation is a "projection" of a Sprite's Intention into the (Action, Direction)-space. 
+### Concepts: Cognition
+
+A Sprite's cognitive processes are distributed through successive layers of interdependent abstractions.
+
+1. Actions: Animate Events that generate collisions or interactions.
+2. Intentions: Predisposition to Action
+3. Goals: Objective of Action
+4. Instincts: Procedure for generating Goals
+5. Motivations: TODO
+
+The Action layer represents the actual physical events that occur on the [Board](./00-overview.md#component-board) and is ultimately rendered on the [Screen](./00-overview.md#component-screen). Everything above the Action layer represents abstractions governing the internal data structure of Sprites.
+
+### Concept: Praxeology
+
+At a high-level, the *Cognitive Pipeline* represents the Sprite's *praxeological process* for engaging in Action in the "*world*".
+
+1. The Sprite observes the Board State.
+2. The Sprite's Instincts produce Goals. 
+3. Goals and their pursuit induce transitions through Intentions.
+4. An (Intention, Goal) projects into (Action, Direction).
+5. An (Action, Direction) has an effect on the external world. 
+
+## Specification: Intentions
+
+An Intention is a [Sprite](./02-sprites.md) field that factors into the its Animation calculations indirectly; It may be thought of as a "hidden" State. An Animation is a "*projection*" of a Sprite's Intention into the (Action, Direction)-space. 
 
 Intentions may also indirectly alter the Sprite State changes or other Properties of the Sprites, e.g. entering into the `sprint` state increases the Velocity of the `walk` Actions, but does not factor into the Animation speed or the Frame indexing scheme. Similarly, entering into the `interact` state does not alter the Sprite's current Animation or Frame, but instead allows, for example, the Sprite to open a Chest or Door.
 
@@ -49,13 +73,13 @@ Intentions may also indirectly alter the Sprite State changes or other Propertie
 
 **Semantics: Intention Groups**
 
-Intentions form natural groups based on the logic they cluster around during the course of [Engine Loop](./00-overview.md#component-engine). Intention Groups are enumerated below,
+Intentions form natural groups based on the logic they cluster around during the course of [Engine Loop](./00-overview.md#component-engine).
 
 * BlockingIntentions (`attack`, `mine`): Intentions whose projected Animations must be complete before control is released.
 * AnimatedIntentions (`attack`, `mine`): Intentions that produce an Animation.
 * StaticIntentions (`idle`, `barter`, `speak`, `interact`, `threaten`, `mock`): Intentions that do not produce an Animation.
 * NavigationIntentions (`find`, `follow`, `hunt`, `escape`, `wander`, `return`): Intentions that produce a Velocity.
-* StationaryIntentions (`barter`, `build`, `idle`, `interact`, `mine`,): Intentions that do not produce a Velocity.
+* StationaryIntentions (`barter`, `build`, `idle`, `interact`, `mine`): Intentions that do not produce a Velocity.
 
 **Concept: Intention Loops**
 
@@ -230,9 +254,11 @@ Each Goal Category identifies the class of outcomes a Sprite is pursuing:
 
 * Location: `/src/data/configurations/automata/goals/main.yaml`
 
-Goal lifecycle resolution is governed declaratively by the **Goal Resolution Matrix**, compiled and evaluated using the same propositional condition language as the [Intention Transition Matrix](#intention-transition-matrix).
+Goal lifecycle resolution is governed declaratively by the *Goal Resolution Matrix*, compiled and evaluated using the same propositional condition language as the [Intention Transition Matrix](#intention-transition-matrix). 
 
-For each Goal Category, rules are partitioned into three canonical **Outcomes**, evaluated in descending precedence:
+The *Goal Resolution Matrix* classifies the active Goal by its Category using the propositional condition language, evaluating three canonical Outcome in descending precedence.
+
+**Semantics: Outcomes**
 
 $$
 \text{complete} \succ \text{layered} \succ \text{lost}
@@ -242,13 +268,22 @@ $$
 2. **Outcome: `layered`**: The Goal resides on a different Layer than the Sprite. Attempts to assign a prerequisite `door` Goal on the Sprite's current Layer, or clears the active Goal if no reachable portal exists.
 3. **Outcome: `lost`**: The Goal has failed, been invalidated, or been superseded by an Intention transition. Clears the active Goal.
 
-Each Outcome declares a sequence of **Reactions** executed prior to the Outcome transition:
+Each Outcome declares two orthogonal operator lists executed when its conditions match: Response and Reflexes.
 
-* `forget`: Evicts the Goal from episodic Memory.
-* `store`: Preserves the Goal in episodic Memory for future recall.
+**Semantics: Responses**
+
+Mutate the Sprite's Memory.
+
+* `forget`: Removes the Goal from episodic Memory.
+* `store`: Marks the Goal dormant and stores it in episodic Memory.
+* `push`: Pushes the Goal onto the Commitment Stack.
+* `unwind`: Pops a suspended parent Goal from the Commitment Stack into dormant episodic Memory.
+
+**Semantics: Reflexes**
+
+Mutate the Sprite's Psyche.
+
 * `confusion`: Attaches a `confusion` Expression to the Sprite's Psyche.
-
-Evaluating `complete` prior to `layered` prevents pursuit of already-satisfied Goals across Layers; evaluating `layered` prior to `lost` prevents overlapping coordinates on independent Layer planes from falsely triggering same-Layer abandonment.
 
 ## Module: AnimationMap
 
@@ -262,7 +297,7 @@ See [Map Modules](./05-mechanics.md#modules-maps) for more information.
 
 ### Mapping: Actions
 
-The Action of a Sprite's AnimationState is as a function of the Sprite's Intention and Equipment,
+The Action of a Sprite's AnimationState is a function of the Sprite's Intention and Equipment,
 
 $$
 f(\text{Intention}, \text{Equipment}) \to \text{Action}
@@ -289,16 +324,18 @@ The (Intention, Goal, Trajectory) triad of a Sprite is managed across the applic
 
 ### Workflow Component: Cognition
 
-[CognitionMechanics](./05-mechanics.md#intentional-mechanic-cognitionmechanics) manages the lifecycle of Sprite Goals.
+[CognitionMechanics](./05-mechanics.md#intentional-mechanic-cognitionmechanics) manages the lifecycle of Sprite Goals across four stages each tick:
 
-1. **Sensory Processing**:
-    * **Perception:** Same-Layer sensory updates bounded by vision radius. Unseen Assets freeze at their last observed Layer and coordinates until re-observed.
-    * **Commitment:** An ordered LIFO stack of parent Goals suspended by prerequisite sub-Goals. Completing a prerequisite immediately resumes the top suspended parent Goal.
-    * **Memory:** An unordered store of abandoned or remembered Goals evaluated only when the Commitment Stack is empty, filtered by Intention.
-2. **Resolution**: Evaluates the active Goal against the compiled Goal Resolution Matrix, executing the configured Responses, Reflexes for the matched Outcome.
-3. **Acquisition**: When no active Goal is present (and Intention permits acquisition without violating the `idle` hub invariant), recruits a Goal via:
-   * **Recall**: Selects a non-dormant remembered Goal compatible with the active Intention. A remembered mobile Goal is dormant if and only if its entity is currently unseen and the Sprite is already within Action radius of its last-known same-Layer coordinates.
-   * **Ideation**: Generates Goals from internal Psyche drivers (such as active Dialogue).
-   * **Motivation**: Generates strategic Goals from the Sprite's Motivation when no immediate Goal exists.
-   * **Projection**: Computes bounded spatial destinations for projective Intentions (`wander`, `escape`).
-4. **Synchronization**: Synchronizes visibility and evaluates cross-Layer `door` subsumption for any Goal acquired during the current tick before handing control to TransitionMechanics.
+1.  **Sensory Processing**:
+    * **Perception**: Updates same-Layer Memory coordinates within vision radius, wakes dormant Goals upon observing their target or an accessible Door, and evaluates the `frightened` trigger. Unseen Assets freeze at their last observed Layer and coordinates until re-observed.
+2.  **Resolution**:
+    * If the Sprite becomes `frightened` while pursuing another Goal, shelves the active Goal in Memory and clears it so the Sprite returns to `idle`.
+    * Otherwise classifies the active Goal against the Goal Resolution Matrix and runs the configured Responses, Reflexes, and Goal lifecycle update for the matched Outcome.
+3.  **Acquisition (`idle` Only)**: When the Sprite is in the `idle` Intention with no active Goal, Cognition selects the first Goal produced across ordered tiers:
+    * **Survival Instincts**: Generates an `escape` Position Goal when `frightened`, taking precedence over Memory.
+    * **Commitment Stack**: Pops the top suspended parent Goal from the LIFO Commitment Stack when non-empty.
+    * **Episodic Memory**: Selects a non-dormant remembered Goal from episodic Memory.
+    * **Drive Instincts**: Runs low-level Goal procedures (such as engaging a visible foe or speaking to a visible ally when dialogue is present).
+    * **Exploratory Instinct**: Generates a bounded `wander` Position Goal when no higher tier produces a Goal.
+4.  **Synchronization**:
+    Updates visibility and checks cross-Layer Door subsumption for any Goal acquired during the current tick before TransitionMechanics runs.

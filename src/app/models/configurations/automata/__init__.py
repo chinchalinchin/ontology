@@ -3,9 +3,13 @@ from app.models.configurations.automata.transitions import (
     PlotConfiguration,
     StageConfiguration
 )
+from app.models.configurations.automata.goals import (
+    GoalConfiguration
+)
 
 __all__ = [
     'IntentionConfiguration',
     'PlotConfiguration',
-    'StageConfiguration'
+    'StageConfiguration',
+    'GoalConfiguration'
 ]

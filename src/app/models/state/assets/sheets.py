@@ -123,6 +123,7 @@ class Goal:
     category: Optional[str] = None
     layer: Optional[str] = None 
     position: Optional[Position] = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
+    dormant: bool = False
 
 @dataclass(slots=True)
 class Memory:
@@ -133,7 +134,8 @@ class Memory:
     property: Optional[Dict[str, Position]] = None # type: ignore
     sprites: Optional[Dict[str, Position]] = None # type: ignore
     doors: Optional[Dict[str, str]] = None
-
+    stack: List[Goal] = field(default_factory=list)
+    
     def __post_init__(self) -> None:
         if self.goals is None:
             self.goals = {}
