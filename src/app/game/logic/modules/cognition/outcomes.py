@@ -39,7 +39,7 @@ from app.static.semantics import (
     Outcomes,
     Responses
 )
-from app.services.translators import GoalRule
+from app.services.automaton import GoalRule
 
 
 # Cython Libraries

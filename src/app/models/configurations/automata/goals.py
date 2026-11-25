@@ -18,8 +18,6 @@ from app.models.configurations import Configuration
 from app.static.semantics import (
     Reflexes,
     Responses,
-    Outcomes,
-    Goals
 )
 
 # ---------------------------------------------------------

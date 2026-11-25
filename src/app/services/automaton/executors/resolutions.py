@@ -21,7 +21,7 @@ from typing import (
 
 # Application Libraries
 from app.models.configurations.automata.goals import GoalConfiguration
-from app.services.translators.base import ConditionBackend
+from app.services.translators.base import Backend
 from app.static.semantics import (
     Goals,
     Outcomes,
@@ -60,12 +60,12 @@ class GoalEvaluator:
     Goal remains undetermined (free).
     """
     rules: Dict[Goals, Tuple[GoalRule, ...]]
-    backend: ConditionBackend
+    backend: Backend
 
     def __init__(
         self,
         rules: Dict[Goals, Tuple[GoalRule, ...]],
-        backend: ConditionBackend
+        backend: Backend
     ):
         self.rules = rules
         self.backend = backend
@@ -99,14 +99,14 @@ class GoalTranslator:
     Compiles ConfigurationSchema.goals into a GoalEvaluator ordered by
     canonical (COMPLETE, LAYERED, LOST) outcome precedence.
     """
-    backend: ConditionBackend
+    backend: Backend
 
-    def __init__(self, backend: ConditionBackend):
+    def __init__(self, backend: Backend):
         self.backend = backend
 
     def compile(
         self,
-        raw_configs: Dict[Goals, Dict[Outcomes, GoalConfiguration]]
+        configs: Dict[Goals, Dict[Outcomes, GoalConfiguration]]
     ) -> GoalEvaluator:
         """
         Compiles category -> outcome -> GoalConfiguration tables into
@@ -115,7 +115,7 @@ class GoalTranslator:
         """
         compiled_rules: Dict[Goals, Tuple[GoalRule, ...]] = {}
 
-        for category, outcome_map in raw_configs.items():
+        for category, outcome_map in configs.items():
             unknown = [
                 outcome for outcome in outcome_map
                 if outcome not in OUTCOME_PRECEDENCE

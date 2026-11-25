@@ -79,7 +79,7 @@ class TransitionTranslator:
     def __init__(self, backend: Backend):
         self.backend = backend
 
-    def compile(self, raw_configs: Dict[str, List[Any]]) -> TransitionExecutor:
+    def compile(self, configs: Dict[str, List[Any]]) -> TransitionExecutor:
         """
         Compiles string conditions into backend executables and constructs an
         Executor capable of evaluating them at runtime.
@@ -92,7 +92,7 @@ class TransitionTranslator:
                 )
                 for config in configs
             )
-            for state_str, configs in raw_configs.items()
+            for state_str, configs in configs.items()
         }
 
         return TransitionExecutor(

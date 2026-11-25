@@ -40,7 +40,7 @@ from app.models.state import (
     DevicePayload, 
     Goal
 )
-from ontology.src.app.services.translators.old.goals import GoalEvaluator
+from ontology.src.app.services.automaton.old.goals import GoalEvaluator
 
 # Cython Libraries
 import libs.core.math.geometry as geometry
@@ -395,13 +395,13 @@ class CognitionMechanics(Mechanic):
             * sprite.goal
             * sprite.goal.category == constants.Goals.SUBJECT
         2. `find:speak`:
-            * sprite.state.psyche.dialogue
+            * sprite.psyche.dialogue
             * sprite.goal.category == constants.Goals.SUBJECT
         3. `speak:idle`:
             * not sprite.psyche.expression
 
         !!! note
-            sprite.psyche.expression = f(sprite.state.intention)
+            sprite.psyche.expression = f(sprite.intention)
 
             In other words, sprite.psyche.expression is a *side effect* of `speak`.
 

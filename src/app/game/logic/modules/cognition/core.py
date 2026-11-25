@@ -34,7 +34,7 @@ from app.static.semantics import (
     Goals,
     Outcomes
 )
-from app.services.translators import (
+from app.services.automaton import (
     GoalEvaluator,
     GoalRule
 )

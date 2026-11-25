@@ -43,36 +43,25 @@ from app.static.semantics import (
     Expressions,
     ExpressionsPalette,
 )
-from app.services.translators import GoalRule
+from app.services.automaton import GoalRule
+
+if TYPE_CHECKING:
+    from app.game.board import Board
 
 # -----------------------------------------------------
 
 K = TypeVar('K')
 Op = TypeVar('Op')
-
-# -----------------------------------------------------
-
-
-if TYPE_CHECKING:
-    from app.game.board import Board
-
+ExpressionSpawner = Callable[
+    [ExpressionsPalette, Expressions],
+    Optional[AttachmentState]
+]
 
 # -----------------------------------------------------
 
 logger = logging.getLogger(__name__)
 
 # -----------------------------------------------------
-
-
-class Locator(ABC):
-    """
-    Abstract strategy for locating an Asset.
-    """
-
-    @abstractmethod
-    def locate(self, sprite: Asset, board: Board) -> Optional[Asset]:
-        """Locate an Asset."""
-        pass
 
 
 class Operator(ABC, Generic[K, Op]):
@@ -111,6 +100,18 @@ class Operator(ABC, Generic[K, Op]):
 
 # -----------------------------------------------------
 
+class Locator(ABC):
+    """
+    Abstract strategy for locating an Asset.
+    """
+
+    @abstractmethod
+    def locate(self, sprite: Asset, board: Board) -> Optional[Asset]:
+        """Locate an Asset."""
+        pass
+
+# -----------------------------------------------------
+
 
 class Response(ABC):
     """
@@ -122,13 +123,6 @@ class Response(ABC):
     def apply(self, goal: Goal, memory: Memory) -> None:
         """Mutates memory for the given Goal."""
         pass
-
-# -----------------------------------------------------
-
-ExpressionSpawner = Callable[
-    [ExpressionsPalette, Expressions],
-    Optional[AttachmentState]
-]
 
 # -----------------------------------------------------
 

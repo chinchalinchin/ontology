@@ -70,7 +70,7 @@ from app.services.generators.menus import (
     Fabricator
 )
 from app.services.orchestration.migrator import Migrator
-from app.services.translators import (
+from app.services.automaton import (
     GoalTranslator,
     TransitionTranslator
 )
@@ -122,7 +122,9 @@ class Builder:
 
     def _actions(self) -> None:
         """
-        Globally pre-hydrates Actions in Properties.
+        Globally pre-hydrates Actions in Properties for Sheets that declare an Action Set key, i.e. a reference to a pre-defined Action Sets in `src/data/configurations/assets/actions/**/*.yaml`.
+
+        * Action Set Keys: `lpc-full`, `lpc-walk`, `lpc-slash`, `lpc-shoot`, `lpc-thrust`, `lpc-cast`, `lpc-die`, `simple-walk`, `extended-walk`
         """
         resolved_sheets = {}
         for sheet_field in dataclasses.fields(self.context.properties.sheets):
@@ -164,20 +166,19 @@ class Builder:
         goals = GoalTranslator(backend)
 
         intention_executor = transitions.compile(self.context.configurations.intentions)
-        plot_executor = goals.compile(self.context.configurations.plots)
-        goal_evaluator = goals.compile(self.context.configurations.goals)
+        plot_executor = transitions.compile(self.context.configurations.plots)
+        goal_executor = goals.compile(self.context.configurations.goals)
 
         self.executors = {
             Executors.INTENTION: intention_executor,
             Executors.PLOT: plot_executor,
-            Executors.GOAL: goal_evaluator,
+            Executors.GOAL: goal_executor,
         }
 
         # Compile independent stage executors keyed by Lifespan enum values
         for lifespan in Lifespans:
             stage_rules = self.context.configurations.stages.get(lifespan)
-            if stage_rules:
-                self.executors[lifespan] = transitions.compile(stage_rules)
+            self.executors[lifespan] = transitions.compile(stage_rules)
 
 
     def build_relations(self) -> None:
@@ -326,6 +327,7 @@ class Builder:
             MechanicsInstance(Mechanics.PLAYER), 
             MechanicsInstance(Mechanics.COGNITION), 
             MechanicsInstance(Mechanics.TRANSITION), 
+            MechanicsInstance(Mechanics.NAVIGATION),
             MechanicsInstance(Mechanics.MOTION)
         ]
         

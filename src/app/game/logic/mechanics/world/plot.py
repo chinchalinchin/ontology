@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING, Optional
 from app.static.semantics import Executors
 from app.game.logic.mechanics import Mechanic
 from app.models.state import DevicePayload
-from app.services.translators.base import Executor
+from app.services.automaton.base import Executor
 
 if TYPE_CHECKING:
     from app.game.board import Board

@@ -3,7 +3,7 @@ context: true
 # ----------------------------------------------------
 task:
 # ----------------------------------------------------
-  template: iterate/implement.md.j2
+  template: iterate/groom.md.j2
 # ----------------------------------------------------
 tools:
 # ----------------------------------------------------
@@ -61,7 +61,7 @@ tools:
             scan: 
               domain: [ system ]
               app: [ service ]
-              workflow: [ injection ]
+              workflows: [ injection ]
           - title: 'Application - Core'
             scan:
               domain: [ system ]
@@ -70,10 +70,10 @@ tools:
             scan:
               domain: [ abstract ]
               app: [ asset ]
-          - title: 'Mechanic - Abstract'
-            scan:
-              domain: [ abstract] 
-              app: [ mechanic ]
+          # - title: 'Mechanic - Abstract'
+          #   scan:
+          #     domain: [ abstract] 
+          #     app: [ mechanic ]
           - title: 'Asset - Models'
             scan:
               domain: [ model ]
@@ -83,11 +83,11 @@ tools:
               domain: [ model ]
               app: [ asset ]
               category: [ sheets ]
-          - title: 'Asset - Implementations: Sheets'
-            scan:
-              domain: [ concrete ]
-              app: [ asset ]
-              category: [ sheets ]
+          # - title: 'Asset - Implementations: Sheets'
+          #   scan:
+          #     domain: [ concrete ]
+          #     app: [ asset ]
+          #     category: [ sheets ]
           - title: 'Services - Automata'
             scan: 
               domain: [ automata ]
