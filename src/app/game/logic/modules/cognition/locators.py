@@ -7,8 +7,7 @@
 
 # Ontology: Source - app.game.logic.modules.cognition.outcomes
 
-Abstract PortalLocator and OutcomeHandler interfaces, concrete lifecycle
-implementations, and OutcomeResolver dispatcher.
+Locator implementations
 """
 from __future__ import annotations
 
@@ -16,6 +15,7 @@ from __future__ import annotations
 import logging
 from typing import (
     Optional,
+    Dict,
     TYPE_CHECKING
 )
 
@@ -24,8 +24,14 @@ if TYPE_CHECKING:
 
 # Application Libraries
 from app.assets.base import Asset
-from app.game.logic.modules.cognition.base import Locator
-from app.static.semantics import AssetInstances
+from app.game.logic.modules.cognition.base import (
+    Locator,
+    Operator
+)
+from app.static.semantics import (
+    AssetInstances,
+    Locators
+)
 
 # Cython Libraries
 import libs.core.math.geometry as geometry
@@ -100,3 +106,15 @@ class DoorLocator(Locator):
 
 
 # -----------------------------------------------------
+
+
+class LocatorOperator(Operator[Locators, Locator]):
+    """
+    Dispatches matched GoalRule outcomes to registered OutcomeHandler objects.
+    """
+
+    @classmethod
+    def defaults(cls) -> Dict[Locators, Locator]:
+        return {
+            Locators.DOOR: DoorLocator(),
+        }

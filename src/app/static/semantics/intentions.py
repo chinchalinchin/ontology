@@ -118,6 +118,9 @@ class Responses(StrEnum):
 class Reflexes(StrEnum):
     CONFUSION       = "confusion"
 
+class Locators(StrEnum):
+    DOOR            = "door"
+    
 class PlayerGoals(StrEnum):
     UP              = "up"
     LEFT            = "left"

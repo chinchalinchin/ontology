@@ -7,13 +7,11 @@
 
 # Ontology: Source - app.game.logic.modules.cognition.outcomes
 
-Abstract PortalLocator and OutcomeHandler interfaces, concrete lifecycle
-implementations, and OutcomeResolver dispatcher.
+Outcome implementations.
 """
 from __future__ import annotations
 
 # Standard Libraries
-from abc import ABC, abstractmethod
 import logging
 from typing import (
     Dict,
@@ -27,17 +25,24 @@ if TYPE_CHECKING:
 
 # Application Libraries
 from app.assets.base import Asset
-from app.game.logic.modules.cognition.base import Locator
+from app.game.logic.modules.cognition.base import (
+    Locator,
+    Operator,
+    Outcome,
+    ExpressionSpawner
+)
+from app.game.logic.modules.cognition.reflexes import ReflexOperator
+from app.game.logic.modules.cognition.responses import ResponseOperator
 from app.models.state.assets.sheets import Goal
 from app.static.semantics import (
-    AssetInstances,
     Goals,
     Outcomes,
     Responses
 )
+from app.services.translators import GoalRule
+
 
 # Cython Libraries
-import libs.core.math.geometry as geometry
 from libs.core.models import Position
 
 # -----------------------------------------------------
@@ -46,92 +51,7 @@ logger = logging.getLogger(__name__)
 
 # -----------------------------------------------------
 
-class DoorLocator(Locator):
-    """
-    Locates Doors (both LayerProjections.IN and
-    LayerProjections.OUT) on the Sprite's current Layer. Prioritizes the
-    nearest mapped door in memory.doors targeting goal.layer, falling back
-    to the nearest unmapped door within vision.radius.
-    """
-
-    @staticmethod
-    def _distance_sq(p1: Position, p2: Position) -> int:
-        dx = p2.x - p1.x
-        dy = p2.y - p1.y
-        return dx * dx + dy * dy
-
-    def locate(self, sprite: Asset, board: Board) -> Optional[Asset]:
-        goal = sprite.state.goal
-        if not goal or sprite.state.layer is None:
-            return None
-
-        doors = board.instances(AssetInstances.DOORS, sprite.state.layer)
-        if not doors:
-            return None
-
-        sprite_pos = sprite.state.position
-        memory_doors = sprite.state.memory.doors
-
-        # 1. Prioritize nearest mapped door known to reach goal.layer
-        mapped_candidates = [
-            portal for portal in doors
-            if memory_doors.get(portal.name) == goal.layer
-        ]
-        if mapped_candidates:
-            return min(
-                mapped_candidates,
-                key=lambda d: self._distance_sq(sprite_pos, d.state.position)
-            )
-
-        # 2. Fall back to nearest unmapped door within vision.radius
-        vision_radius = sprite.state.mutators.parameters.vision.radius
-        unmapped_candidates = [
-            portal for portal in doors
-            if (
-                portal.name not in memory_doors
-                or memory_doors[portal.name] == sprite.state.layer
-            )
-            and geometry.nearby(
-                portal.state.position.x,
-                portal.state.position.y,
-                sprite_pos.x,
-                sprite_pos.y,
-                vision_radius
-            )
-        ]
-        if unmapped_candidates:
-            return min(
-                unmapped_candidates,
-                key=lambda d: self._distance_sq(sprite_pos, d.state.position)
-            )
-
-        return None
-
-
-# -----------------------------------------------------
-
-
-class OutcomeHandler(ABC):
-    """
-    Abstract interface for executing the Goal lifecycle transition associated
-    with a matched GoalRule outcome.
-    """
-
-    @abstractmethod
-    def apply(
-        self,
-        rule: GoalRule,
-        sprite: Asset,
-        board: Board,
-        response: ResponseOperators,
-        reflex: ReflexOperators,
-        spawn: ExpressionSpawner
-    ) -> None:
-        """Applies Memory responses, Psyche reflexes, and active Goal updates."""
-        pass
-
-
-class TerminalOutcome(OutcomeHandler):
+class TerminalOutcome(Outcome):
     """
     Terminal lifecycle handler executing configured Responses and Reflexes
     and clearing the active Goal to None (used for COMPLETE and LOST).
@@ -142,8 +62,8 @@ class TerminalOutcome(OutcomeHandler):
         rule: GoalRule,
         sprite: Asset,
         board: Board,
-        response: ResponseOperators,
-        reflex: ReflexOperators,
+        response: ResponseOperator,
+        reflex: ReflexOperator,
         spawn: ExpressionSpawner
     ) -> None:
         goal = sprite.state.goal
@@ -157,7 +77,7 @@ class TerminalOutcome(OutcomeHandler):
         )
 
 
-class LayeredOutcome(OutcomeHandler):
+class LayeredOutcome(Outcome):
     """
     Cross-layer lifecycle handler subsuming an active Goal with a prerequisite
     Goals.DOOR Goal when a portal is located, or demoting it directly to
@@ -168,12 +88,10 @@ class LayeredOutcome(OutcomeHandler):
 
     def __init__(
         self,
-        locator: Optional[PortalLocator] = None,
+        locator: Optional[Locator] = None,
         fallback_responses: Tuple[Responses, ...] = (Responses.STORE,)
     ):
-        self.locator = (
-            locator if locator is not None else BidirectionalDoorLocator()
-        )
+        self.locator = locator
         self.fallback_responses = fallback_responses
 
     def apply(
@@ -181,8 +99,8 @@ class LayeredOutcome(OutcomeHandler):
         rule: GoalRule,
         sprite: Asset,
         board: Board,
-        response: ResponseResolver,
-        reflex: ReflexResolver,
+        response: ResponseOperator,
+        reflex: ReflexOperator,
         spawn: ExpressionSpawner
     ) -> None:
         goal = sprite.state.goal
@@ -221,18 +139,17 @@ class LayeredOutcome(OutcomeHandler):
 # -----------------------------------------------------
 
 
-class OutcomeResolver(OperatorResolver[Outcomes, OutcomeHandler]):
+class OutcomeOperator(Operator[Outcomes, Outcome]):
     """
     Dispatches matched GoalRule outcomes to registered OutcomeHandler objects.
     """
 
     @classmethod
-    def defaults(cls) -> Dict[Outcomes, OutcomeHandler]:
-        terminal = TerminalOutcome()
+    def defaults(cls) -> Dict[Outcomes, Outcome]:
         return {
-            Outcomes.COMPLETE: terminal,
+            Outcomes.COMPLETE: TerminalOutcome(),
             Outcomes.LAYERED: LayeredOutcome(),
-            Outcomes.LOST: terminal,
+            Outcomes.LOST: TerminalOutcome(),
         }
 
     def resolve(
@@ -240,8 +157,8 @@ class OutcomeResolver(OperatorResolver[Outcomes, OutcomeHandler]):
         rule: GoalRule,
         sprite: Asset,
         board: Board,
-        response: ResponseResolver,
-        reflex: ReflexResolver,
+        response: ResponseOperator,
+        reflex: ReflexOperator,
         spawn: ExpressionSpawner
     ) -> Outcomes:
         """

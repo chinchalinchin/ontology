@@ -7,8 +7,7 @@
 
 # Ontology: Source - app.game.logic.modules.cognition.responses
 
-Abstract Response operator interface, concrete Memory operators, and
-ResponseResolver dispatcher.
+Response implementations.
 """
 # Standard Libraries
 from typing import (
@@ -87,7 +86,7 @@ class UnwindResponse(Response):
 # -----------------------------------------------------
 
 
-class ResponseOperators(Operator[Responses, Response]):
+class ResponseOperator(Operator[Responses, Response]):
     """
     Dispatches declarative Goal Responses to registered Response objects
     operating strictly on a Sprite's Memory state.

@@ -110,7 +110,8 @@ from app.static.semantics.intentions import (
     Hands,
     Responses,
     Reflexes,
-    Outcomes
+    Outcomes,
+    Locators,
 )
 
 __all__ = [
@@ -189,6 +190,7 @@ __all__ = [
     'Responses',
     'Reflexes',
     'Outcomes',
+    'Locators',
     # ------
     'Mechanics',
     'Configurations',

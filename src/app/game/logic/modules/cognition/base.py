@@ -29,6 +29,10 @@ import logging
 
 # Application Libraries
 from app.assets.base import Asset
+from app.game.logic.modules.cognition import (
+    ResponseOperator,
+    ReflexOperator
+)
 from app.models.state.assets.cursors import AttachmentState
 from app.models.state.assets.sheets import (
     Goal,
@@ -39,6 +43,8 @@ from app.static.semantics import (
     Expressions,
     ExpressionsPalette,
 )
+from app.services.translators import GoalRule
+
 # -----------------------------------------------------
 
 K = TypeVar('K')
@@ -141,4 +147,24 @@ class Reflex(ABC):
         spawn: ExpressionSpawner
     ) -> None:
         """Mutates psyche in response to the resolved Goal."""
+        pass
+
+
+class Outcome(ABC):
+    """
+    Abstract interface for executing the Goal lifecycle transition associated
+    with a matched GoalRule outcome.
+    """
+
+    @abstractmethod
+    def apply(
+        self,
+        rule: GoalRule,
+        sprite: Asset,
+        board: Board,
+        response: ResponseOperator,
+        reflex: ReflexOperator,
+        spawn: ExpressionSpawner
+    ) -> None:
+        """Applies Memory responses, Psyche reflexes, and active Goal updates."""
         pass

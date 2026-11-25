@@ -411,7 +411,7 @@ So:
 ##### User Review III
 
 * `target` in the Goal Resolution condition is not very well defined and is the source of undesirable defensive programming and fallbacks. I believe it is a placeholder for the more unambiguous `goal.category == Goals.TARGET`, however, this is doesn't make sense in the context it is used in `src/data/configurations/automata/goals.yaml`. It appears to be a shorthand for the current goal. If that is the case, it is a poor name choice, given there is already a `target` Goal category.
-* What is the point of abstracting the condition backend interface and then differentiating CompilerTranslator/CompilerExecutor from LambdaTranslator/LambdaExecutor? If the ConditionBackend is already abstracting the conditions, the Translators/Executor differentiation is redundant.
+* Locator needs the same treatment as the other interfaces in the Cognition module. Currently, it's an adhoc DoorHandler. It needs wired into the LocatorOperator.
 
 ##### Goals
 

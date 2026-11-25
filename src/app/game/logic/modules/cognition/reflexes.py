@@ -7,16 +7,12 @@
 
 # Ontology: Source - app.game.logic.modules.cognition.reflexes
 
-Abstract Reflex operator interface, concrete Psyche operators, and
-ReflexResolver dispatcher.
+Reflex implementations.
 """
 # Standard Libraries
-from abc import ABC, abstractmethod
 from typing import (
-    Callable,
     Dict,
     Iterable,
-    Optional
 )
 
 # Application Libraries
@@ -80,7 +76,7 @@ class ConfusionReflex(ExpressionReflex):
 # -----------------------------------------------------
 
 
-class ReflexOperators(Operator[Reflexes, Reflex]):
+class ReflexOperator(Operator[Reflexes, Reflex]):
     """
     Dispatches declarative Goal Reflexes to registered Reflex objects
     operating strictly on a Sprite's Psyche state.

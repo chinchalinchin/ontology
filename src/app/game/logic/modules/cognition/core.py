@@ -21,6 +21,10 @@ if TYPE_CHECKING:
 
 # Application Libraries
 from app.assets.base import Asset
+from app.game.logic.modules.cognition.locators import LocatorOperator
+from app.game.logic.modules.cognition.reflexes import ReflexOperator
+from app.game.logic.modules.cognition.responses import ResponseOperator
+from app.game.logic.modules.cognition.outcomes import OutcomeOperator
 from app.models.state.assets.cursors import AttachmentState
 from app.models.state.assets.sheets import SpriteState
 from app.models.state.core import AssetState
@@ -30,6 +34,11 @@ from app.static.semantics import (
     Goals,
     Outcomes
 )
+from app.services.translators import (
+    GoalEvaluator,
+    GoalRule
+)
+
 
 # -----------------------------------------------------
 
@@ -41,31 +50,34 @@ class GoalResolver:
     (Psyche), and OutcomeResolver (Goal lifecycle) operators.
     """
     evaluator: GoalEvaluator
-    response: ResponseResolver
-    reflex: ReflexResolver
-    outcomes: OutcomeResolver
-
-    _door_locator: PortalLocator = BidirectionalDoorLocator()
+    response: ResponseOperator
+    reflex: ReflexOperator
+    outcomes: OutcomeOperator
+    locators: LocatorOperator
 
     def __init__(
         self,
         evaluator: GoalEvaluator,
-        response: Optional[ResponseResolver] = None,
-        reflex: Optional[ReflexResolver] = None,
-        outcomes: Optional[OutcomeResolver] = None
+        response: ResponseOperator,
+        reflex: ReflexOperator,
+        outcomes: OutcomeOperator,
+        locators: LocatorOperator
     ):
         self.evaluator = evaluator
-        self.response = response if response is not None else ResponseResolver()
-        self.reflex = reflex if reflex is not None else ReflexResolver()
-        self.outcomes = outcomes if outcomes is not None else OutcomeResolver()
+        self.response = response
+        self.reflex = reflex
+        self.outcomes = outcomes
+        self.locators = locators
 
     @classmethod
     def door(cls, sprite: Asset, board: Board) -> Optional[Asset]:
         """
+        - todo: improper abstraction of locator interface, i.e. does not have to be door.
+
         Locates a bidirectional portal Door (LayerProjections.IN or OUT) on
         the Sprite's active Layer using the configured PortalLocator strategy.
         """
-        return cls._door_locator.locate(sprite, board)
+        return cls.locator.locate(sprite, board)
 
     @staticmethod
     def _target(
@@ -74,6 +86,8 @@ class GoalResolver:
         sprites: Dict[str, Any]
     ) -> Optional[AssetState]:
         """
+        - todo: what is this? why is this a thing?
+
         Resolves the active Goal's target AssetState in O(1) for ISL evaluation.
         """
         goal = sprite.state.goal
