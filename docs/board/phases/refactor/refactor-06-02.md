@@ -550,13 +550,13 @@ Separate `SheetState` (`Pixies`), `CharacterState(SheetState)` (`Players`), and 
 
 *Objective*: Align `src/data/configurations/automata/intentions/main.yaml` with the `idle` hub invariant and new Goal taxonomy, eliminate deadlocks and `TypeError` crashes, and close epistemic telepathy leaks.
 
-* [ ] Subtask: Enforce strict `idle` hub routing in `src/data/configurations/automata/intentions/main.yaml`:
+* [x] Subtask: Enforce strict `idle` hub routing in `src/data/configurations/automata/intentions/main.yaml`:
   * Remove hub-bypassing `wander -> hunt`, `wander -> find`, `attack -> hunt` (`not sprite.goal`), and goal-less `idle -> wander` (`not sprite.goal`) rules.
   * Update `idle` to route `Goals.POSITION` to `escape` when `triggers.frightened` and `wander` otherwise, route `SUBJECT`/`OBJECT`/`DOOR` unconditionally to `find` (removing `not functions.is_near(...)` proximity-stall guards, **B073**), and route `TARGET` to `hunt`.
   * Update `find` to support `Goals.DOOR` in `find -> interact` and replace omniscient `sprites.get(sprite.goal.name).position` checks with perceived `sprite.goal.position` + `sprite.mutators.triggers.vision`.
-* [ ] Subtask: Add category-mismatch exitpoints (`-> idle`) on `hunt`, `attack`, `follow`, `find`, `interact`, `threaten`, `escape`, and `wander` so cross-layer `Goals.DOOR` subsumption re-routes cleanly through `idle` (**B064**), and add `sprite.goal.category == constants.Goals.SUBJECT` to `follow -> speak` (**B073**).
-* [ ] Subtask: Update `attack` with a terminal `not sprite.goal or sprite.goal.category != constants.Goals.TARGET -> idle` exitpoint, dict-presence check `sprites.get(sprite.goal.name)` (without guarding `.mutators` per **Guideline: Models**), a live-target range-loss `attack -> hunt` transition, and remove/decouple the unreachable `attack -> scavenge` rule (**B060**).
-* [ ] Subtask: Add `sprite.mutators.triggers.frightened -> idle` to `speak`, reconcile `speak -> idle` (Player) ordering with `GoalResolver` clearing `sprite.goal`, update `escape` persistence/exit directly to `idle` governed by `triggers.frightened` and `Goals.POSITION` (removing the `escape -> return` detour), and fix missing-key `TypeError` crashes in `barter` and `mine` by supplying numeric defaults to `.get(..., 0)` (**B071**).
+* [x] Subtask: Add category-mismatch exitpoints (`-> idle`) on `hunt`, `attack`, `follow`, `find`, `interact`, `threaten`, `escape`, and `wander` so cross-layer `Goals.DOOR` subsumption re-routes cleanly through `idle` (**B064**), and add `sprite.goal.category == constants.Goals.SUBJECT` to `follow -> speak` (**B073**).
+* [x] Subtask: Update `attack` with a terminal `not sprite.goal or sprite.goal.category != constants.Goals.TARGET -> idle` exitpoint, dict-presence check `sprites.get(sprite.goal.name)` (without guarding `.mutators` per **Guideline: Models**), a live-target range-loss `attack -> hunt` transition, and remove/decouple the unreachable `attack -> scavenge` rule (**B060**).
+* [x] Subtask: Add `sprite.mutators.triggers.frightened -> idle` to `speak`, reconcile `speak -> idle` (Player) ordering with `GoalResolver` clearing `sprite.goal`, update `escape` persistence/exit directly to `idle` governed by `triggers.frightened` and `Goals.POSITION` (removing the `escape -> return` detour), and fix missing-key `TypeError` crashes in `barter` and `mine` by supplying numeric defaults to `.get(..., 0)` (**B071**).
 
 **8. Task: Verification & Test Coverage**
 

@@ -58,4 +58,4 @@ class ConfigurationSchema:
     stages: Dict[str, Dict[str, List[StageConfiguration]]] = field(default_factory=dict)
     recipes: RecipeConfiguration = field(default_factory=RecipeConfiguration)
     menus: Dict[str, MenuConfiguration] = field(default_factory=dict)
-    goals: Dict[Enumerated[Goals], Dict[Enumerated[Outcomes], GoalConfiguration]]
+    goals: Dict[Enumerated[Goals], Dict[Enumerated[Outcomes], GoalConfiguration]] = field(default_factory=dict)
