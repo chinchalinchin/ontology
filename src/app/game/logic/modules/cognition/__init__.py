@@ -1,30 +1,19 @@
-from app.game.logic.modules.cognition.base import (
+from app.game.logic.modules.cognition.goals import (
     Locator,
     Operator,
     Outcome,
     Response,
     Reflex,
-    ExpressionSpawner   
-)
-from app.game.logic.modules.cognition.core import (
-    GoalResolver
-)
-from app.game.logic.modules.cognition.locators import (
+    ExpressionSpawner,
+    GoalResolver,
     DoorLocator,
-    LocatorOperator
-)
-from app.game.logic.modules.cognition.outcomes import (
+    LocatorOperator,
     TerminalOutcome,
     LayeredOutcome,
-    OutcomeOperator
-)
-from app.game.logic.modules.cognition.reflexes import (
+    OutcomeOperator,
     ExpressionReflex,
     ConfusionReflex,
-    ReflexOperator
-)
-
-from app.game.logic.modules.cognition.responses import (
+    ReflexOperator,
     ForgetResponse,
     StoreResponse,
     PushResponse,

@@ -21,7 +21,7 @@ from app.models.state.assets.sheets import (
     Memory
 )
 from app.static.semantics import Responses
-from app.game.logic.modules.cognition.base import (
+from app.game.logic.modules.cognition.goals.base import (
     Response,
     Operator
 )

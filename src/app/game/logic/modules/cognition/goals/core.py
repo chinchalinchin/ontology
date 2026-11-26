@@ -21,11 +21,11 @@ if TYPE_CHECKING:
 
 # Application Libraries
 from app.assets.base import Asset
-from app.game.logic.modules.cognition.base import ResolutionContext
-from app.game.logic.modules.cognition.locators import LocatorOperator
-from app.game.logic.modules.cognition.reflexes import ReflexOperator
-from app.game.logic.modules.cognition.responses import ResponseOperator
-from app.game.logic.modules.cognition.outcomes import OutcomeOperator
+from app.game.logic.modules.cognition.goals.base import ResolutionContext
+from app.game.logic.modules.cognition.goals.locators import LocatorOperator
+from app.game.logic.modules.cognition.goals.reflexes import ReflexOperator
+from app.game.logic.modules.cognition.goals.responses import ResponseOperator
+from app.game.logic.modules.cognition.goals.outcomes import OutcomeOperator
 from app.models.state.assets.cursors import AttachmentState
 from app.models.state.assets.sheets import SpriteState
 from app.models.state.core import AssetState

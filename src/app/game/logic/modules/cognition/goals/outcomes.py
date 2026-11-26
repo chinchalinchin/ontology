@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 # Application Libraries
 from app.assets.base import Asset
-from app.game.logic.modules.cognition.base import (
+from app.game.logic.modules.cognition.goals.base import (
     Operator,
     Outcome,
     ResolutionContext

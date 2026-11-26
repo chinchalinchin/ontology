@@ -1,9 +1,9 @@
-from app.services.translators.executors.resolutions import (
+from app.services.automaton.executors.resolutions import (
     GoalRule,
     GoalEvaluator,
     GoalTranslator
 )
-from app.services.translators.executors.transitions import (
+from app.services.automaton.executors.transitions import (
     Transition,
     TransitionExecutor,
     TransitionTranslator   

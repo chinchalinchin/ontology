@@ -57,19 +57,10 @@ tools:
       filter:
         default: AND
         queries:
-          - title: 'Application - Dependency Injection'
-            scan: 
-              domain: [ system ]
-              app: [ service ]
-              workflows: [ injection ]
           - title: 'Application - Core'
             scan:
               domain: [ system ]
               app: [ core, component ]
-          - title: 'Board - Modules'
-            scan: 
-              domain: [ system ]
-              app: [ module, board ]
           - title: 'Asset - Abstract'
             scan:
               domain: [ abstract ]
@@ -114,11 +105,21 @@ tools:
               app: [ mechanic ]
               modality: [ intention ]
               workflows: [ transitions ]
-          # - title: 'Libraries - Navigation'
-          #   scan: 
-          #     domain: [ system ]
-          #     app: [ library ]
-          #     workflows: [ navigation ]
+          - title: 'Mechanics - Navigation'
+            scan:
+              domain: [ concrete ]
+              app: [ mechanic ]
+              workflows: [ navigation ]
+          - title: 'Mechanics - Interaction'
+            scan:
+              domain: [ concrete ]
+              app: [ mechanic ]
+              workflows: [ interactions ]
+          - title: 'Libraries - Navigation'
+            scan: 
+              domain: [ system ]
+              app: [ library ]
+              workflows: [ navigation ]
       data:
         properties: [ sheets/sprites ]
         state: [ ]

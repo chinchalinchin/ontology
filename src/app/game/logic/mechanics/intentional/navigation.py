@@ -29,6 +29,7 @@ if TYPE_CHECKING:
 from app.assets.base import Asset
 from app.static.semantics import (
     AssetInstances,
+    Goals,
     NavigationIntentions,
 )
 import app.static.settings as settings
@@ -158,13 +159,14 @@ class NavigationMechanics(Mechanic):
     def _target(self, sprite: Asset, board: Board) -> Optional[Position]:
         """
         Resolves the physical anchor coordinate of the sprite's goal.
+        Bypasses board asset lookup for synthetic Goals.POSITION coordinates (B072).
         """
         goal = sprite.state.goal
         if not goal:
             return None
 
         # Same-layer deployed asset: track physical footprint center
-        if goal.name:
+        if goal.name and goal.category != Goals.POSITION:
             target_asset = board.asset(goal.name, sprite.state.layer) or \
                            board.asset(goal.name)
             if target_asset and target_asset.state.layer == sprite.state.layer:
@@ -191,6 +193,7 @@ class NavigationMechanics(Mechanic):
         offset: Tuple[int, int]
     ) -> bool:
         """
+        Executes RRT planning and populates trajectory waypoints or stall state.
         """
         planner = Planner(
             start=anchor,
@@ -260,8 +263,11 @@ class NavigationMechanics(Mechanic):
         else:
             goal_target = Position(x=goal_x, y=goal_y)
 
-        exclude = [ sprite.name ]
-        if sprite.state.goal.name:
+        exclude = [sprite.name]
+        if (
+            sprite.state.goal.name
+            and sprite.state.goal.category != Goals.POSITION
+        ):
             exclude.append(sprite.state.goal.name)
 
         pad_x, pad_y = self.padding(sprite)

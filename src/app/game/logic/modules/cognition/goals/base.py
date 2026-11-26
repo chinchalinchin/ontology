@@ -44,9 +44,9 @@ from app.services.automaton import GoalRule
 
 if TYPE_CHECKING:
     from app.game.board import Board
-    from app.game.logic.modules.cognition.locators import LocatorOperator
-    from app.game.logic.modules.cognition.reflexes import ReflexOperator
-    from app.game.logic.modules.cognition.responses import ResponseOperator
+    from app.game.logic.modules.cognition.goals.locators import LocatorOperator
+    from app.game.logic.modules.cognition.goals.reflexes import ReflexOperator
+    from app.game.logic.modules.cognition.goals.responses import ResponseOperator
     
 # -----------------------------------------------------
 

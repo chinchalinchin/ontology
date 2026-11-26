@@ -451,26 +451,6 @@ So:
 
 ##### Bug Reports
 
-###### Bug Report: B079 — Unwired `LocatorOperator` & `None` `LayeredOutcome.locator` Crash
-
-* **Severity:** Critical (Runtime Crash)
-* **Location:** `src/app/game/logic/modules/cognition/{outcomes.py, locators.py, core.py}`
-* **Root Cause:**
-  1. `OutcomeOperator.defaults()` constructs `LayeredOutcome()` with `locator=None`, causing `self.locator.locate(sprite, board)` to raise `AttributeError`.
-  2. `GoalResolver.locators` is stored in `__init__` and never passed to `OutcomeOperator.resolve()`.
-  3. `GoalResolver.door()` is a `@classmethod` calling nonexistent `cls.locator.locate()`.
-  4. `LocatorOperator` lacks a `resolve()` dispatch method (and carries copy-pasted docstrings from `outcomes.py`).
-* **Impact:** First cross-layer Goal resolution crashes the engine loop.
-* **Remediation:** Add `LocatorOperator.resolve(key, sprite, board)`, bundle operators into `ResolutionContext` passed to `OutcomeOperator.resolve()`, key `LayeredOutcome` by `Locators.DOOR`, and delete `GoalResolver.door()`.
-
-###### Bug Report: B080 — `Memory.doors` Flat Dict Breaks Bidirectional Door Return Routing
-
-* **Severity:** High (Navigation / Cross-Layer Regression)
-* **Location:** `src/app/models/state/assets/sheets.py` (`Memory.doors`), `src/app/game/logic/modules/cognition/locators.py` (`DoorLocator`)
-* **Root Cause:** Reciprocal `IN` and `OUT` Door projections share the same `door.name` across two Layers. Storing a single `door_name -> outlayer` string overwrites the return edge on transit; `DoorLocator` then fails to recognize the traversed Door as leading back to the origin Layer once the Sprite moves outside `vision.radius`.
-* **Impact:** Sprites that enter an interior Layer forget which Door returns to the outer Layer as soon as they move away from the threshold.
-* **Remediation:** Type `Memory.doors` as `Dict[str, Dict[str, str]]` (`from_layer -> {door_name: to_layer}`), record both directions on traversal when a reciprocal projection exists, and query `memory.doors.get(sprite.state.layer, {})` (with optional BFS for multi-hop paths) in `DoorLocator`.
-
 ###### Bug Report: B081 — Potential Infinite Stall–Unwind–Wake Loop on Blocked Unmapped Doors (Design Defect in Task 4 Spec)
 
 * **Severity:** High (Infinite Loop)

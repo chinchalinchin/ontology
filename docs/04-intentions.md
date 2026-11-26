@@ -226,7 +226,7 @@ The Transition execution environment is injected with live State variables durin
 * `sprites`: Map of deployed Character `name` to Character State across the Board.
 * `assets`: Map of deployed Asset `name` to Asset State on the Sprite's current Layer.
 * `constants`: Map of Application semantics. 
-    * `AssetInstances`, `AssetCategories`, `Goals`, `Intentions`, `Motivations`, `Relationship`
+    * `AssetInstances`, `AssetCategories`, `Goals`, `Intentions`, `Motivations`, `Relationship`, (TODO: all of it)
 * `functions`: A dictionary of boolean helper functions. All functions return a truth value.
     * `is_near(p1: Position, p2: Position, radius: int)`: Determine if positions are close.
     * `any_goals(goals: Dict[str, Goal], category: Optional[str])`: Determines whether any remembered Goal matches the requested Category (or whether Memory contains any Goals when `category` is omitted).

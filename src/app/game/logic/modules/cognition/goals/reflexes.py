@@ -25,7 +25,7 @@ from app.static.semantics import (
     ExpressionsPalette,
     Reflexes
 )
-from app.game.logic.modules.cognition.base import (
+from app.game.logic.modules.cognition.goals.base import (
     Operator,
     ExpressionSpawner,
     Reflex
