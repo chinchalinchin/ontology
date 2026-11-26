@@ -1,8 +1,8 @@
-from app.services.translators.base import Backend
-from app.services.translators.environ import Environ
-from app.services.translators.backends.compiler import Compiler
-from app.services.translators.backends.lamb import Lambda
-from app.services.translators.executors import (
+from app.services.automaton.base import Backend
+from app.services.automaton.environ import Environ
+from app.services.automaton.backends.compiler import Compiler
+from app.services.automaton.backends.lamb import Lambda
+from app.services.automaton.executors import (
     Transition,
     TransitionTranslator,
     TransitionExecutor,

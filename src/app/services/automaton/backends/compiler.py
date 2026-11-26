@@ -17,8 +17,8 @@ from typing import (
 )
 
 # Application Libraries
-from app.services.translators.base import Backend
-from app.services.translators.environ import Environ
+from app.services.automaton.base import Backend
+from app.services.automaton.environ import Environ
 
 logger = logging.getLogger(__name__)
 

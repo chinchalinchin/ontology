@@ -22,7 +22,7 @@ In general terms: Intentions produce Actions, Goals produce Directions.
 
 ### Concepts: Cognition
 
-A Sprite's cognitive processes are distributed through successive layers of interdependent abstractions.
+A Sprite's cognitive processes are distributed through successive layers of interdependent abstractions, called the *Cognitive Pipeline*.
 
 1. Actions: Animate Events that generate collisions or interactions.
 2. Intentions: Predisposition to Action
@@ -30,7 +30,7 @@ A Sprite's cognitive processes are distributed through successive layers of inte
 4. Instincts: Procedure for generating Goals
 5. Motivations: TODO
 
-The Action layer represents the actual physical events that occur on the [Board](./00-overview.md#component-board) and is ultimately rendered on the [Screen](./00-overview.md#component-screen). Everything above the Action layer represents abstractions governing the internal data structure of Sprites.
+The Action layer represents the actual physical events that occur on the [Board](./00-overview.md#component-board) and are ultimately rendered on the [Screen](./00-overview.md#component-screen). Everything beyond the Action layer represents abstractions governing the internal data structure of Sprites.
 
 ### Concept: Praxeology
 
@@ -44,9 +44,9 @@ At a high-level, the *Cognitive Pipeline* represents the Sprite's *praxeological
 
 ## Specification: Intentions
 
-An Intention is a [Sprite](./02-sprites.md) field that factors into the its Animation calculations indirectly; It may be thought of as a "hidden" State. An Animation is a "*projection*" of a Sprite's Intention into the (Action, Direction)-space. 
+An Intention is a [Sprite](./02-sprites.md) field that factors into the its Animation calculations and State mutations indirectly; It may be thought of as a "hidden" State variable. An Animation is a "*projection*" of a Sprite's Intention into the (Action, Direction)-space. 
 
-Intentions may also indirectly alter the Sprite State changes or other Properties of the Sprites, e.g. entering into the `sprint` state increases the Velocity of the `walk` Actions, but does not factor into the Animation speed or the Frame indexing scheme. Similarly, entering into the `interact` state does not alter the Sprite's current Animation or Frame, but instead allows, for example, the Sprite to open a Chest or Door.
+Intentions, as hidden State variables, may have no "*visible*" (more precisely, *animate*) effect on the [Board](./00-overview.md#component-screen) or [Screen](./00-overview.md#component-screen), but may indirectly alter the Sprite State rates of changes or modulate calculations involving Sprite Properties, e.g. entering into the `sprint` Intention increases the Velocity of the `walk` Actions, but does not factor into the Animation speed or the Frame indexing scheme. Similarly, entering into the `scavenge` state does not alter the Sprite's current Animation or Frame, but instead allows, for example, the Sprite to open a Chest and increase its Inventory.
 
 **Semantics: Intentions**
 
@@ -215,9 +215,11 @@ In the first case, `goal` is guaranteed to exist before the subsequent condition
 
 The Transition execution environment is injected with variables during execution.
 
-* `sprite`: The SpriteState of the Asset currently evaluating its transitions.
-* `sprites`: The dictionary mapping `name: AssetState` for all mutable characters (Sprites and Players) currently on the board.
-* `constants`: A dictionary of Enums. Keys are: `AssetInstances`, `AssetCategories`, `Goals`, `Intentions`, `Motivations`, `Relationship`
+* `sprite`: The Sprite State of the Asset evaluating its conditions.
+* `sprites`: Map of deployed Character `name` to Character State across the Board.
+* `assets`: Map of deployed Asset `name` to Asset State on the Sprite's current Layer.
+* `constants`: Map of Application semantics. 
+    * `AssetInstances`, `AssetCategories`, `Goals`, `Intentions`, `Motivations`, `Relationship`
 * `functions`: A dictionary of boolean helper functions. All functions return a truth value.
     * `is_near(p1: Position, p2: Position, radius: int)`: Determine if positions are close.
     * `any_goals(goals: Dict[str, Goal], category: Optional[str])`: Determines whether any remembered Goal matches the requested Category (or whether Memory contains any Goals when `category` is omitted).
@@ -228,10 +230,11 @@ The Transition execution environment is injected with variables during execution
 
 ## Specification: Goal
 
-*Goals* provide the seed (or energy) for transitions through Intentions and the application of Motivations to modulate said transitions. A Goal is a Sprite's *modus operandi*, the abstract thing it pursues over the course of the game loop. A Sprite's transition through Intentions is *in order* to achieve a Goal.
+*Goals* provide the seed (or energy) for transitions through Intentions Loops. A Goal is a Sprite's *modus operandi*, the abstract thing it pursues over the course of the [Engine Loop](./00-overview.md#component-engine). A Sprite's transition through Intentions is *in order* to achieve a Goal.
 
 * `name`: Unique Identifier of the Goal.
 * `category`: Category of the Goal. 
+* `layer`: Layer of the Goal.
 * `position`: Last-known position of the Goal. 
 
 ### Goal: Position 
@@ -240,23 +243,21 @@ When the Goal is within the `mutators.vision.radius`, the Sprite's Mmeory of thi
 
 ### Goal: Category
 
-Each Goal Category identifies the class of outcomes a Sprite is pursuing:
+Goal Categories identify the class of outcomes a Sprite is pursuing:
 
 * `position`: A spatial coordinate on a Layer. `name` is a synthetic label (e.g., `wander`).
-* `door`: A portal used to transition between Layers. `name` is the deployed Door `name`.
-* `object`: A non-portal interactive Object (such as a Chest, Plate, or Sign). `name` is the deployed Object `name`.
-* `resource`: A biological or geological Resource targeted for harvesting. `name` is the deployed Resource `name`.
-* `property`: A structure targeted for construction or ownership. `name` is the Craft identifier or deployed Strut `name`.
-* `target`: A Character pursued with hostile intent. `name` is the deployed Character `name`.
-* `subject`: A Character pursued with passive or social intent. `name` is the deployed Character `name`.
+* `door`: A portal used to transition between Layers. 
+* `object`: A non-portal interactive Object (such as a Chest, Plate, or Sign). 
+* `resource`: A biological or geological Resource targeted for harvesting.
+* `property`: A structure targeted for construction or ownership.
+* `target`: A Character pursued with hostile intent.
+* `subject`: A Character pursued with passive or social intent.
 
 ### Goal: Satisfaction
 
 * Location: `/src/data/configurations/automata/goals/main.yaml`
 
-Goal lifecycle resolution is governed declaratively by the *Goal Resolution Matrix*, compiled and evaluated using the same propositional condition language as the [Intention Transition Matrix](#intention-transition-matrix). 
-
-The *Goal Resolution Matrix* classifies the active Goal by its Category using the propositional condition language, evaluating three canonical Outcome in descending precedence.
+Goal lifecycle resolution is governed declaratively by the *Goal Resolution Matrix*, compiled and evaluated using the same propositional condition language as the [Intention Transition Matrix](#intention-transition-matrix).  The *Goal Resolution Matrix* classifies the active Goal by its Category, using three possible Outcomes in descending precedence.
 
 **Semantics: Outcomes**
 
@@ -264,15 +265,15 @@ $$
 \text{complete} \succ \text{layered} \succ \text{lost}
 $$
 
-1. **Outcome: `complete`**: The Goal's objective has been achieved. Clears the active Goal.
-2. **Outcome: `layered`**: The Goal resides on a different Layer than the Sprite. Attempts to assign a prerequisite `door` Goal on the Sprite's current Layer, or clears the active Goal if no reachable portal exists.
-3. **Outcome: `lost`**: The Goal has failed, been invalidated, or been superseded by an Intention transition. Clears the active Goal.
+1. `complete`: The Goal's objective has been achieved. Clears the active Goal.
+2. `layered`: The Goal resides on a different Layer than the Sprite. Attempts to assign a prerequisite `door` Goal on the Sprite's current Layer, or clears the active Goal if no reachable portal exists.
+3. `lost`: The Goal has failed, been invalidated, or been superseded by an Intention transition. Clears the active Goal.
 
-Each Outcome declares two orthogonal operator lists executed when its conditions match: Response and Reflexes.
+Each Outcome dispatches across modular cognitive operators: Responses, Reflexes, Locators.
 
 **Semantics: Responses**
 
-Mutate the Sprite's Memory.
+Responses mutate [Sprite Memory](./02-sprites.md#model-memory).
 
 * `forget`: Removes the Goal from episodic Memory.
 * `store`: Marks the Goal dormant and stores it in episodic Memory.
@@ -281,9 +282,15 @@ Mutate the Sprite's Memory.
 
 **Semantics: Reflexes**
 
-Mutate the Sprite's Psyche.
+Reflexes mutate [Sprite Psyche](./02-sprites.md#model-psyche).
 
 * `confusion`: Attaches a `confusion` Expression to the Sprite's Psyche.
+
+**Semantics: Locators**
+
+Locators search the Sprite's active Layer for candidate Assets needed to satisfy an Outcome.
+
+* `door`: Sensory recall of Doors.
 
 ## Module: AnimationMap
 

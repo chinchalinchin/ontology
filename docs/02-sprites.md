@@ -248,7 +248,7 @@ Motivations are long-term state variables that are used to modulate the [Intenti
 
 * `memory.goals: Dict[str, Goal]`: Episodic store of true strategic [Goals](#model-goal). Keyed by the Asset `name`. Strategic memory stores no intermediate [Trajectory](#model-trajectory) waypoints.
 * `memory.sprites: Dict[str, Position]`: Map of last-known Sprite locations keyed by Asset `name`.
-* `memory.doors: Dict[str, str]`: Map of [Doors](./01-assets.md#object-doors) the Sprite has used, keyed by `name`.
+* `memory.doors: Dict[str, Dict[str, str]]`: Map of traversed [Doors](./01-assets.md#object-doors) keyed by origin Layer and Door `name` to destination Layer.
 * `memory.prices: Dict[str, Dict[str, float]]`: Subjective Sprite valuations for [Inventory](#model-inventory).
 * `memory.property: Dict[str, Position]`: Locations of Sprite-owned structures, keyed by `name`.
 * `memory.relationships: Dict[str, Relationships]`: Sprite social relationships, keyed by `name`.
